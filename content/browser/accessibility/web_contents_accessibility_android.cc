@@ -216,7 +216,7 @@ std::optional<int> MaybeFindRowColumn(BrowserAccessibility* start_node,
     table_node = table_node->PlatformGetParent();
   }
 
-  if (!table_node || !cell_node) {
+  if (!table_node) {
     return ui::kInvalidAXNodeID;
   }
 
@@ -224,6 +224,18 @@ std::optional<int> MaybeFindRowColumn(BrowserAccessibility* start_node,
   ui::AXTableInfo* table_info = tree->GetTableInfo(table_node->node());
   if (!table_info) {
     return ui::kInvalidAXNodeID;
+  }
+
+  // Nothing more to do if the table is empty.
+  if (table_info->cell_ids.empty()) {
+    return ui::kInvalidAXNodeID;
+  }
+
+  // This may occur if we're somewhere in the table but not within a cell e.g.
+  // on the table node itself. In these cases, try to go to the first cell.
+  if (!cell_node) {
+    return table_info->cell_ids[0].empty() ? ui::kInvalidAXNodeID
+                                           : table_info->cell_ids[0][0];
   }
 
   // Move in the desired direction by the element type.
