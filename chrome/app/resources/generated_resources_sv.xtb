@@ -938,7 +938,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1650801028905250434">Filerna på Min enhet synkroniseras automatiskt med Chromebook så att du kan komma åt dem utan internetanslutning. Du kan när som helst ändra detta i Inställningar &gt; Filer.</translation>
 <translation id="1651008383952180276">Du måste ange samma lösenfras två gånger</translation>
 <translation id="1651609627703324721">På den här fliken visas VR-innehåll för en kikare</translation>
-<translation id="1652281434788353738">Omtänksamt</translation>
+<translation id="1652281434788353738">Tankeväckande</translation>
 <translation id="1652326691684645429">Aktivera Närdelning</translation>
 <translation id="1652862280638399816">Om du vill använda Lösenordshantering med en macOS-nyckelring ska du starta om Chromium och tillåta åtkomst till nyckelringen. Flikarna öppnas igen när du har startat om enheten.</translation>
 <translation id="1653958716132599769">Gruppera relaterade flikar</translation>
@@ -2540,7 +2540,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2772936498786524345">Ninja</translation>
 <translation id="2773288106548584039">Stöd för äldre webbläsare</translation>
 <translation id="2773621783913034737">Inaktivera flikar</translation>
-<translation id="2774876860084746535">Intellektuellt</translation>
+<translation id="2774876860084746535">Intellektuell</translation>
 <translation id="2775104091073479743">Redigera fingeravtryck</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Tillägget <ph name="EXTENSION" /> hade åtkomst till enheter}=1{Tillägget <ph name="EXTENSION" /> har åtkomst till {0} enhet}other{Tillägget <ph name="EXTENSION" /> har åtkomst till {0} enheter}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Ta bort 1 app som inte stöds}other{Ta bort # appar som inte stöds}}</translation>
@@ -4708,7 +4708,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="436926121798828366">Du kan när som helst ändra detta i <ph name="SETTINGS_LINK" /></translation>
 <translation id="4370975561335139969">E-postadressen och lösenordet matchar inte</translation>
 <translation id="4373418556073552953">Logga in med Android-telefonen</translation>
-<translation id="4373973310429385827">Lighthouse</translation>
+<translation id="4373973310429385827">Fyr</translation>
 <translation id="4374805630006466253">Använd en annan telefon eller surfplatta</translation>
 <translation id="4374831787438678295">Linux-installationsprogram</translation>
 <translation id="4375035964737468845">Öppna nedladdade filer</translation>
@@ -11403,7 +11403,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Kameran och mikrofonen spelar in</translation>
 <translation id="984275831282074731">Betalningsmetoder</translation>
 <translation id="984705303330760860">Lägg till språk för stavningskontroll</translation>
-<translation id="98515147261107953">Liggande</translation>
+<translation id="98515147261107953">Landskap</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Allmänt</translation>
 <translation id="987475089238841621">Språkpaket används för Live Caption och lagras på enheten</translation>

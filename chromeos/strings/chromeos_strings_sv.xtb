@@ -238,7 +238,7 @@
 <translation id="2135668738111962377">Redigera <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Med strömmen</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
-<translation id="2148716181193084225">Idag</translation>
+<translation id="2148716181193084225">I dag</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foton</translation>
 <translation id="2156072344042480449">Dina två senaste promptar. Du kan bara använda dessa promptar när du befinner dig på den här sidan.</translation>
 <translation id="2157660087437850958">emojiväljare</translation>
@@ -1575,7 +1575,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="966787709310836684">meny</translation>
 <translation id="979450713603643090">Ljusrosa</translation>
 <translation id="982713511914535780">Kör urladdningstest</translation>
-<translation id="98515147261107953">Liggande</translation>
+<translation id="98515147261107953">Landskap</translation>
 <translation id="987264212798334818">Allmänt</translation>
 <translation id="995062385528875723">Det går inte att använda bokstäver med accenttecken, icke-latinska tecken eller symboler</translation>
 </translationbundle>
