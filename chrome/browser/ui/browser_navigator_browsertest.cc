@@ -97,14 +97,13 @@ void ShowSettings(Browser* browser) {
 
 }  // namespace
 
-void BrowserNavigatorTest::SetUp() {
+BrowserNavigatorTest::BrowserNavigatorTest() {
   scoped_feature_list_.InitWithFeatures(
       {
           features::kFileSystemAccessPersistentPermissions,
           blink::features::kPartitionedPopins,
       },
       {});
-  InProcessBrowserTest::SetUp();
 }
 
 NavigateParams BrowserNavigatorTest::MakeNavigateParams() const {
