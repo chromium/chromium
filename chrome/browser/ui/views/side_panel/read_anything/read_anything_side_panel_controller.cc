@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/check_is_test.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_web_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
@@ -46,6 +48,10 @@ ReadAnythingSidePanelController::ReadAnythingSidePanelController(
                           base::Unretained(this)));
   side_panel_entry->AddObserver(this);
   side_panel_registry_->Register(std::move(side_panel_entry));
+
+  tab_subscriptions_.push_back(tab_->RegisterWillDetach(
+      base::BindRepeating(&ReadAnythingSidePanelController::TabWillDetach,
+                          weak_factory_.GetWeakPtr())));
 }
 
 ReadAnythingSidePanelController::~ReadAnythingSidePanelController() {
@@ -111,4 +117,30 @@ ReadAnythingSidePanelController::CreateContainerView() {
       tab_->GetBrowserWindowInterface()->GetProfile());
 
   return std::move(web_view);
+}
+
+void ReadAnythingSidePanelController::TabWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  // TODO(https://crbug.com/360169305): TabStripModel unit tests currently
+  // create TabFeatures but are not associated with a Browser, which is
+  // conceptually incorrect.
+  if (!tab_->GetBrowserWindowInterface()) {
+    CHECK_IS_TEST();
+    return;  // IN-TEST
+  }
+
+  auto* coordinator =
+      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
+  // TODO(https://crbug.com/360163254): BrowserWithTestWindowTest currently does
+  // not create a SidePanelCoordinator. This block will be unnecessary once that
+  // changes.
+  if (!coordinator) {
+    CHECK_IS_TEST();
+    return;  // IN-TEST
+  }
+  if (coordinator->IsSidePanelEntryShowing(
+          SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything))) {
+    coordinator->Close(/*suppress_animation=*/true);
+  }
 }
