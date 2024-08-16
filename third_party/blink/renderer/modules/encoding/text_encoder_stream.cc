@@ -89,14 +89,11 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
       return ToResolvedUndefinedPromise(script_state_.Get());
 
     const std::string replacement_character = ReplacementCharacterInUtf8();
-    const uint8_t* u8buffer =
-        reinterpret_cast<const uint8_t*>(replacement_character.c_str());
     controller->enqueue(
         script_state_,
-        ScriptValue::From(script_state_,
-                          DOMUint8Array::Create(
-                              u8buffer, static_cast<unsigned int>(
-                                            replacement_character.length()))),
+        ScriptValue::From(
+            script_state_,
+            DOMUint8Array::Create(base::as_byte_span(replacement_character))),
         exception_state);
 
     return ToResolvedUndefinedPromise(script_state_.Get());

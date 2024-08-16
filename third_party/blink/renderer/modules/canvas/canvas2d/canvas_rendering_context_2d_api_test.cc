@@ -919,13 +919,11 @@ MATCHER_P(Mesh2dBufferIs, matcher, "") {
 }
 
 NotShared<DOMFloat32Array> CreateFloat32Array(std::vector<float> array) {
-  return NotShared<DOMFloat32Array>(
-      DOMFloat32Array::Create(array.data(), array.size()));
+  return NotShared<DOMFloat32Array>(DOMFloat32Array::Create(array));
 }
 
 NotShared<DOMUint16Array> CreateUint16Array(std::vector<uint16_t> array) {
-  return NotShared<DOMUint16Array>(
-      DOMUint16Array::Create(array.data(), array.size()));
+  return NotShared<DOMUint16Array>(DOMUint16Array::Create(array));
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DVertexBuffer0Floats) {

@@ -92,10 +92,9 @@ NotShared<DOMUint8Array> TextEncoder::encode(const String& input,
                                         "Failed to allocate buffer.");
     }
     return result_array;
-  } else {
-    return NotShared<DOMUint8Array>(
-        DOMUint8Array::Create(unsigned_buffer, result.size()));
   }
+  return NotShared<DOMUint8Array>(
+      DOMUint8Array::Create(base::as_byte_span(result)));
 }
 
 TextEncoderEncodeIntoResult* TextEncoder::encodeInto(

@@ -389,7 +389,7 @@ class WebTransport::DatagramUnderlyingSource final
         return;
       }
 
-      auto* datagram = DOMUint8Array::Create(data.data(), data.size());
+      auto* datagram = DOMUint8Array::Create(data);
       controller->enqueue(script_state_, NotShared(datagram), exception_state);
       return;
     }
@@ -412,7 +412,7 @@ class WebTransport::DatagramUnderlyingSource final
       ++dropped_datagram_count_;
     }
 
-    auto* datagram = DOMUint8Array::Create(data.data(), data.size());
+    auto* datagram = DOMUint8Array::Create(data);
     auto now = base::TimeTicks::Now();
     queue_.push_back(MakeGarbageCollected<QueueEntry>(datagram, now));
     MaybeExpireDatagrams(now);

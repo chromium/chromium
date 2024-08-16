@@ -4454,8 +4454,7 @@ void NavigatorAuction::GetInterestGroupAdAuctionDataComplete(
   }
 
   AdAuctionData* result = AdAuctionData::Create();
-  auto not_shared =
-      NotShared<DOMUint8Array>(DOMUint8Array::Create(data.data(), data.size()));
+  auto not_shared = NotShared<DOMUint8Array>(DOMUint8Array::Create(data));
   result->setRequest(std::move(not_shared));
   std::string request_id_str;
   if (request_id) {
