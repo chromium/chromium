@@ -2188,10 +2188,6 @@ public class RootUiCoordinator
         mActivity = null;
     }
 
-    public BottomControlsStacker getBottomControlsStackerForTesting() {
-        return mBottomControlsStacker;
-    }
-
     public DataSharingTabManager getDataSharingTabManager() {
         return mDataSharingTabManager;
     }

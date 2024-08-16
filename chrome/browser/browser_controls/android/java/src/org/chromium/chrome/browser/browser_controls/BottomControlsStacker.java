@@ -516,8 +516,4 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                         + " YOffset "
                         + layerYOffset);
     }
-
-    public BottomControlsLayer getLayerForTesting(@LayerType int layerType) {
-        return mLayers.get(layerType);
-    }
 }
