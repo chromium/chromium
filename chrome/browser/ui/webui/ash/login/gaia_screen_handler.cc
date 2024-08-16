@@ -1579,6 +1579,9 @@ void GaiaScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
       error_screen_->SetHideCallback(base::BindOnce(
           &GaiaScreenHandler::OnErrorScreenHide, weak_factory_.GetWeakPtr()));
     }
+
+    auth_flow_auto_reload_manager_.Terminate();
+
     // Show `ErrorScreen` or update network error message.
     error_screen_->ShowNetworkErrorMessage(state, reason);
     histogram_helper_->OnErrorShow(error_screen_->GetErrorState());
