@@ -1050,16 +1050,16 @@ class GPU_GLES2_EXPORT RasterImageRepresentation
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-// VideoDecodeImageRepresentation
+// VideoImageRepresentation
 
-class GPU_GLES2_EXPORT VideoDecodeImageRepresentation
+class GPU_GLES2_EXPORT VideoImageRepresentation
     : public SharedImageRepresentation {
  public:
   class GPU_GLES2_EXPORT ScopedWriteAccess
-      : public ScopedAccessBase<VideoDecodeImageRepresentation> {
+      : public ScopedAccessBase<VideoImageRepresentation> {
    public:
-    ScopedWriteAccess(base::PassKey<VideoDecodeImageRepresentation> pass_key,
-                      VideoDecodeImageRepresentation* representation);
+    ScopedWriteAccess(base::PassKey<VideoImageRepresentation> pass_key,
+                      VideoImageRepresentation* representation);
     ~ScopedWriteAccess();
 
 #if BUILDFLAG(IS_WIN)
@@ -1069,12 +1069,27 @@ class GPU_GLES2_EXPORT VideoDecodeImageRepresentation
 #endif  // BUILDFLAG(IS_WIN)
   };
 
-  VideoDecodeImageRepresentation(SharedImageManager* manager,
-                                 SharedImageBacking* backing,
-                                 MemoryTypeTracker* tracker);
-  ~VideoDecodeImageRepresentation() override;
+  class GPU_GLES2_EXPORT ScopedReadAccess
+      : public ScopedAccessBase<VideoImageRepresentation> {
+   public:
+    ScopedReadAccess(base::PassKey<VideoImageRepresentation> pass_key,
+                     VideoImageRepresentation* representation);
+    ~ScopedReadAccess();
+
+#if BUILDFLAG(IS_WIN)
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> GetD3D11Texture() const {
+      return representation()->GetD3D11Texture();
+    }
+#endif  // BUILDFLAG(IS_WIN)
+  };
+
+  VideoImageRepresentation(SharedImageManager* manager,
+                           SharedImageBacking* backing,
+                           MemoryTypeTracker* tracker);
+  ~VideoImageRepresentation() override;
 
   virtual std::unique_ptr<ScopedWriteAccess> BeginScopedWriteAccess();
+  virtual std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess();
 
  protected:
 #if BUILDFLAG(IS_WIN)
@@ -1082,6 +1097,8 @@ class GPU_GLES2_EXPORT VideoDecodeImageRepresentation
 #endif  // BUILDFLAG(IS_WIN)
   virtual bool BeginWriteAccess() = 0;
   virtual void EndWriteAccess() = 0;
+  virtual bool BeginReadAccess() = 0;
+  virtual void EndReadAccess() = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

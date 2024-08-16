@@ -268,10 +268,10 @@ std::unique_ptr<RasterImageRepresentation> SharedImageBacking::ProduceRaster(
   return nullptr;
 }
 
-std::unique_ptr<VideoDecodeImageRepresentation>
-SharedImageBacking::ProduceVideoDecode(SharedImageManager* manager,
-                                       MemoryTypeTracker* tracker,
-                                       VideoDecodeDevice device) {
+std::unique_ptr<VideoImageRepresentation> SharedImageBacking::ProduceVideo(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    VideoDevice device) {
   return nullptr;
 }
 

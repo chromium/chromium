@@ -97,8 +97,8 @@ class GPU_GLES2_EXPORT SharedImageManager
   std::unique_ptr<RasterImageRepresentation> ProduceRaster(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);
-  std::unique_ptr<VideoDecodeImageRepresentation> ProduceVideoDecode(
-      VideoDecodeDevice device,
+  std::unique_ptr<VideoImageRepresentation> ProduceVideo(
+      VideoDevice device,
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);
 

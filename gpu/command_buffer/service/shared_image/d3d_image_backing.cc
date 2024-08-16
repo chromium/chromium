@@ -619,11 +619,11 @@ void D3DImageBacking::UpdateExternalFence(
   write_fences_.insert(std::move(external_fence));
 }
 
-std::unique_ptr<VideoDecodeImageRepresentation>
-D3DImageBacking::ProduceVideoDecode(SharedImageManager* manager,
-                                    MemoryTypeTracker* tracker,
-                                    VideoDecodeDevice device) {
-  return std::make_unique<D3D11VideoDecodeImageRepresentation>(
+std::unique_ptr<VideoImageRepresentation> D3DImageBacking::ProduceVideo(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    VideoDevice device) {
+  return std::make_unique<D3D11VideoImageRepresentation>(
       manager, this, tracker, device, d3d11_texture_);
 }
 

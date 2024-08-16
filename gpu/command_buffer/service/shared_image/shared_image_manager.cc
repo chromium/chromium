@@ -355,10 +355,10 @@ std::unique_ptr<RasterImageRepresentation> SharedImageManager::ProduceRaster(
   return (*found)->ProduceRaster(this, tracker);
 }
 
-std::unique_ptr<VideoDecodeImageRepresentation>
-SharedImageManager::ProduceVideoDecode(VideoDecodeDevice device,
-                                       const Mailbox& mailbox,
-                                       MemoryTypeTracker* tracker) {
+std::unique_ptr<VideoImageRepresentation> SharedImageManager::ProduceVideo(
+    VideoDevice device,
+    const Mailbox& mailbox,
+    MemoryTypeTracker* tracker) {
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
@@ -372,7 +372,7 @@ SharedImageManager::ProduceVideoDecode(VideoDecodeDevice device,
 
   // This is expected to fail based on the SharedImageBacking type, so don't log
   // error here. Caller is expected to handle nullptr.
-  return (*found)->ProduceVideoDecode(this, tracker, device);
+  return (*found)->ProduceVideo(this, tracker, device);
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
