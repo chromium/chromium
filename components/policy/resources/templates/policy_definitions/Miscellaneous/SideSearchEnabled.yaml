@@ -1,11 +1,7 @@
 caption: Allow showing the most recent default search engine results page in a Browser
   side panel
-deprecated: true
-
 default: true
 desc: |-
-  This policy is deprecated, the feature it controls is no longer supported.
-
   Setting the policy to Enabled or leaving the policy unset means that users can bring up their most recent default search engine results page in a side panel via toggling an icon in the toolbar.
 
         Setting the policy to Disabled removes the icon from the toolbar that opens the side panel with the default search engine results page.
@@ -26,7 +22,7 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome_os:96-128
-- chrome.*:101-128
+- chrome_os:96-
+- chrome.*:101-
 tags: []
 type: main
