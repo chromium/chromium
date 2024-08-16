@@ -46,12 +46,13 @@ namespace enterprise_connectors {
 
 namespace {
 
+constexpr ReportingConnector kAllReportingConnectors[] = {
+    ReportingConnector::SECURITY_EVENT};
+
+#if !BUILDFLAG(IS_ANDROID)
 constexpr AnalysisConnector kAllAnalysisConnectors[] = {
     AnalysisConnector::FILE_DOWNLOADED, AnalysisConnector::FILE_ATTACHED,
     AnalysisConnector::BULK_DATA_ENTRY, AnalysisConnector::PRINT};
-
-constexpr ReportingConnector kAllReportingConnectors[] = {
-    ReportingConnector::SECURITY_EVENT};
 
 constexpr char kEmptySettingsPref[] = "[]";
 
@@ -107,6 +108,7 @@ constexpr char kNormalReportingSettingsWithEvents[] =
     R"([{ "service_provider": "google",
          "enabled_event_names" : ["event 1", "event 2", "event 3"]
        }])";
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -217,6 +219,7 @@ class ConnectorsManagerTest : public testing::Test {
   std::set<std::string> expected_mime_types_;
 };
 
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 // Platform policies should only act as a kill switch.
 class ConnectorsManagerLocalAnalysisPolicyTest
     : public ConnectorsManagerTest,
@@ -242,7 +245,9 @@ INSTANTIATE_TEST_SUITE_P(
     ConnectorsManagerLocalAnalysisPolicyTest,
     testing::Combine(testing::ValuesIn(kAllAnalysisConnectors),
                      testing::Bool()));
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 class ConnectorsManagerConnectorPoliciesTest
     : public ConnectorsManagerTest,
       public testing::WithParamInterface<
@@ -355,6 +360,7 @@ INSTANTIATE_TEST_SUITE_P(
                                      kNoTagsUrl),
                      testing::Values(kNormalCloudAnalysisSettingsPref,
                                      kNormalLocalAnalysisSettingsPref)));
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 using VolumeInfo = SourceDestinationTestingHelper::VolumeInfo;
@@ -702,6 +708,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 class ConnectorsManagerAnalysisConnectorsTest
     : public ConnectorsManagerTest,
       public testing::WithParamInterface<
@@ -782,6 +789,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::ValuesIn(kAllAnalysisConnectors),
                      testing::Values(kNormalCloudAnalysisSettingsPref,
                                      kNormalLocalAnalysisSettingsPref)));
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -883,6 +891,11 @@ class ConnectorsManagerReportingTest
 };
 
 TEST_P(ConnectorsManagerReportingTest, DynamicPolicies) {
+  // TODO(b/344593927): Re-enable this test for Android.
+#if BUILDFLAG(IS_ANDROID)
+  ASSERT_FALSE(pref_service()->FindPreference(
+      "enterprise_connectors.on_security_event"));
+#else
   ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
   // The cache is initially empty.
   ASSERT_TRUE(manager.GetReportingConnectorsSettingsForTesting().empty());
@@ -907,6 +920,7 @@ TEST_P(ConnectorsManagerReportingTest, DynamicPolicies) {
 
   // The cache should be empty again after the pref is reset.
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
+#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(ConnectorsManagerReportingTest,
@@ -999,6 +1013,7 @@ INSTANTIATE_TEST_SUITE_P(ConnectorsManagerLocalAnalysisConnectorTest,
                          testing::ValuesIn(kAllAnalysisConnectors));
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
+#if !BUILDFLAG(IS_ANDROID)
 class ConnectorsManagerDataRegionTest
     : public ConnectorsManagerTest,
       public testing::WithParamInterface<
@@ -1047,8 +1062,14 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Values(DataRegion::NO_PREFERENCE,
                                      DataRegion::UNITED_STATES,
                                      DataRegion::EUROPE)));
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ConnectorsManagerTest, ReportingUrlFlagOverrideNoProviderSettings) {
+  // TODO(b/344593927): Re-enable this test for Android.
+#if BUILDFLAG(IS_ANDROID)
+  ASSERT_FALSE(pref_service()->FindPreference(
+      "enterprise_connectors.on_security_event"));
+#else
   ScopedConnectorPref scoped_pref(
       pref_service(), ConnectorPref(ReportingConnector::SECURITY_EVENT),
       kNoProviderReportingSettings);
@@ -1057,10 +1078,16 @@ TEST_F(ConnectorsManagerTest, ReportingUrlFlagOverrideNoProviderSettings) {
   std::optional<ReportingSettings> reporting_settings =
       manager.GetReportingSettings(ReportingConnector::SECURITY_EVENT);
   ASSERT_FALSE(reporting_settings.has_value());
+#endif
 }
 
 TEST_F(ConnectorsManagerTest,
        ReportingUrlFlagOverrideNormalSettingsWithoutEvents) {
+  // TODO(b/344593927): Re-enable this test for Android.
+#if BUILDFLAG(IS_ANDROID)
+  ASSERT_FALSE(pref_service()->FindPreference(
+      "enterprise_connectors.on_security_event"));
+#else
   ScopedConnectorPref scoped_pref(
       pref_service(), ConnectorPref(ReportingConnector::SECURITY_EVENT),
       kNormalReportingSettingsWithoutEvents);
@@ -1072,10 +1099,16 @@ TEST_F(ConnectorsManagerTest,
 
   ASSERT_TRUE(reporting_settings->reporting_url.is_valid());
   ASSERT_EQ(reporting_settings->reporting_url, "https://test.com/reports");
+#endif
 }
 
 TEST_F(ConnectorsManagerTest,
        ReportingUrlFlagOverrideNormalSettingsWithEvents) {
+  // TODO(b/344593927): Re-enable this test for Android.
+#if BUILDFLAG(IS_ANDROID)
+  ASSERT_FALSE(pref_service()->FindPreference(
+      "enterprise_connectors.on_security_event"));
+#else
   ScopedConnectorPref scoped_pref(
       pref_service(), ConnectorPref(ReportingConnector::SECURITY_EVENT),
       kNormalReportingSettingsWithEvents);
@@ -1087,6 +1120,7 @@ TEST_F(ConnectorsManagerTest,
 
   ASSERT_TRUE(reporting_settings->reporting_url.is_valid());
   ASSERT_EQ(reporting_settings->reporting_url, "https://test.com/reports");
+#endif
 }
 
 }  // namespace enterprise_connectors

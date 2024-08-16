@@ -413,12 +413,16 @@ std::vector<const AnalysisConfig*> ConnectorsManager::GetAnalysisServiceConfigs(
 }
 
 DataRegion ConnectorsManager::GetDataRegion() const {
+#if BUILDFLAG(IS_ANDROID)
+  return DataRegion::NO_PREFERENCE;
+#else
   bool apply_data_region =
       prefs()->HasPrefPath(prefs::kChromeDataRegionSetting) &&
       base::FeatureList::IsEnabled(safe_browsing::kDlpRegionalizedEndpoints);
   return apply_data_region ? ChromeDataRegionSettingToEnum(prefs()->GetInteger(
                                  prefs::kChromeDataRegionSetting))
                            : DataRegion::NO_PREFERENCE;
+#endif
 }
 
 void ConnectorsManager::StartObservingPrefs(PrefService* pref_service) {

@@ -6633,15 +6633,19 @@ static_library("browser") {
 
   if (enterprise_cloud_content_analysis || is_android) {
     # Use this scope to migrate files/deps from
-    # `enterprise_cloud_content_analysis` condiitions that now need to be
-    # compiled on Android.
+    # `enterprise_cloud_content_analysis` conditions that now need to compile
+    # on Android.
+    sources += [
+      "enterprise/connectors/analysis/analysis_service_settings.cc",
+      "enterprise/connectors/analysis/analysis_service_settings.h",
+      "enterprise/connectors/connectors_manager.cc",
+      "enterprise/connectors/connectors_manager.h",
+    ]
     deps += [ "//components/enterprise/connectors/core" ]
   }
 
   if (enterprise_cloud_content_analysis) {
     sources += [
-      "enterprise/connectors/analysis/analysis_service_settings.cc",
-      "enterprise/connectors/analysis/analysis_service_settings.h",
       "enterprise/connectors/analysis/content_analysis_delegate.cc",
       "enterprise/connectors/analysis/content_analysis_delegate.h",
       "enterprise/connectors/analysis/content_analysis_delegate_base.h",
@@ -6657,8 +6661,6 @@ static_library("browser") {
       "enterprise/connectors/analysis/request_handler_base.h",
       "enterprise/connectors/common.cc",
       "enterprise/connectors/common.h",
-      "enterprise/connectors/connectors_manager.cc",
-      "enterprise/connectors/connectors_manager.h",
       "enterprise/connectors/connectors_service.cc",
       "enterprise/connectors/connectors_service.h",
       "enterprise/connectors/reporting/browser_crash_event_router.cc",
