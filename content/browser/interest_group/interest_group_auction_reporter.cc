@@ -809,8 +809,9 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
   // An exception to this is contextual bids, which have access to page
   // information anyway.
   if (winning_bid_info_.provided_as_additional_bid ||
-      IsKAnonForReporting(winning_bid_info_.storage_interest_group, chosen_ad,
-                          selected_buyer_and_seller_reporting_id)) {
+      IsKAnonForReporting(
+          winning_bid_info_.storage_interest_group, chosen_ad,
+          winning_bid_info_.selected_buyer_and_seller_reporting_id)) {
     SetReportWinReportingIds(
         winning_bid_info_.storage_interest_group->interest_group.name,
         winning_bid_info_.selected_buyer_and_seller_reporting_id, chosen_ad,
