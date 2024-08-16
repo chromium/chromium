@@ -54,7 +54,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -87,7 +86,6 @@ import java.io.IOException;
     "force-fieldtrials=Study/Group"
 })
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@DisableFeatures({ChromeFeatureList.ARCHIVE_TAB_SERVICE})
 public class PriceAlertsMessageCardTest {
     private static final String BASE_PARAMS =
             "force-fieldtrial-params=Study.Group:implicit_subscriptions_enabled/true";

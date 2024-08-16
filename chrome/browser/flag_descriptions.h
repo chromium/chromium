@@ -2500,9 +2500,6 @@ extern const char kAndroidTabDeclutterArchiveAllButActiveTabDescription[];
 extern const char kAppSpecificHistoryName[];
 extern const char kAppSpecificHistoryDescription[];
 
-extern const char kArchiveTabServiceName[];
-extern const char kArchiveTabServiceDescription[];
-
 extern const char kBackGestureActivityTabProviderName[];
 extern const char kBackGestureActivityTabProviderDescription[];
 
