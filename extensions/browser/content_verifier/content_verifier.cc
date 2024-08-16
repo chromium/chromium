@@ -588,7 +588,7 @@ void ContentVerifier::OnJobCreated(scoped_refptr<ContentVerifyJob> job) {
   // If the extension data is not ready yet, add the job to the pending list.
   // It will be started when the data is available.
   if (!ready_extensions_.contains(job->extension_id())) {
-    pending_jobs_.push_back(std::move(job));
+    pending_jobs_[job->extension_id()].push_back(std::move(job));
     return;
   }
 
@@ -823,27 +823,19 @@ void ContentVerifier::OnExtensionUnloadedOnIO(
     hash_helper->Cancel(extension_id, extension_version);
 
   ready_extensions_.erase(extension_id);
-  RemovePendingJobsForId(extension_id);
+  pending_jobs_.erase(extension_id);
 }
 
 void ContentVerifier::OnExtensionDataReady(const ExtensionId& extension_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   ready_extensions_.insert(extension_id);
 
-  for (auto& job : pending_jobs_) {
-    if (job->extension_id() == extension_id) {
+  if (auto it = pending_jobs_.find(extension_id); it != pending_jobs_.end()) {
+    for (const auto& job : it->second) {
       StartJob(job);
     }
+    pending_jobs_.erase(it);
   }
-
-  RemovePendingJobsForId(extension_id);
-}
-
-void ContentVerifier::RemovePendingJobsForId(const ExtensionId& extension_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  base::ranges::remove_if(pending_jobs_, [&extension_id](const auto& job) {
-    return job->extension_id() == extension_id;
-  });
 }
 
 bool ContentVerifier::StartJob(const scoped_refptr<ContentVerifyJob>& job) {
