@@ -862,6 +862,17 @@ void DecodeNetworkPolicies(const em::ChromeDeviceSettingsProto& policy,
                     /*external_data_fetcher=*/nullptr);
     }
   }
+
+  if (policy.has_devicepostquantumkeyagreementenabled()) {
+    const em::BooleanPolicyProto& container(
+        policy.devicepostquantumkeyagreementenabled());
+    if (container.has_value()) {
+      policies->Set(key::kDevicePostQuantumKeyAgreementEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                    nullptr);
+    }
+  }
 }
 
 void DecodeIntegerReportingPolicy(PolicyMap* policies,
