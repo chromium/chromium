@@ -68,6 +68,8 @@
       <structure type="lottie" name="IDR_MAGIC_BOOST_DISCLAIMER_ILLUSTRATION" file="unscaled_resources/magic_boost_disclaimer_image.json" compress="gzip" />
       <!-- Shortcut Nudge -->
       <structure type="lottie" name="IDR_KEYBOARD_FN_KEY_NUDGE_IMAGE" file="unscaled_resources/keyboard_fn_key_nudge_image.json" compress="gzip" />
+      <!-- Capslock Nudge -->
+      <structure type="lottie" name="IDR_KEYBOARD_CAPSLOCK_KEY_NUDGE_IMAGE" file="unscaled_resources/keyboard_capslock_key_nudge_image.json" compress="gzip" />
     </structures>
   </release>
 </grit>

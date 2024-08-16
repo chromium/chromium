@@ -1278,7 +1278,7 @@ void InputDeviceSettingsNotificationController::ShowCapsLockRewritingNudge() {
   nudge_data.keyboard_codes = {ui::VKEY_FUNCTION, ui::VKEY_RIGHT_ALT};
   nudge_data.image_model =
       ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
-          IDR_KEYBOARD_FN_KEY_NUDGE_IMAGE);
+          IDR_KEYBOARD_CAPSLOCK_KEY_NUDGE_IMAGE);
 
   AnchoredNudgeManager::Get()->Show(nudge_data);
 }
