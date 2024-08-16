@@ -23,30 +23,6 @@ namespace ash::boca {
 // Defines the interface for sub features to access hub Events
 class BocaAppClient {
  public:
-  // Interface for observing events.
-  class Observer : public base::CheckedObserver {
-   public:
-    // Notifies when session started. Pure virtual function, must be handled by
-    // observer.
-    virtual void OnSessionStarted(const std::string& session_id) = 0;
-
-    // Notifies when session ended. Pure virtual function, must be handled by
-    // observer.
-    virtual void OnSessionEnded(const std::string& session_id) = 0;
-
-    // Notifies when bundle updated. In the event of session started with a
-    // bundle configured, both events will be fired.
-    virtual void OnBundleUpdated(const ::boca::Bundle& bundle);
-
-    // Notifies when caption producer's config updated.
-    virtual void OnProducerCaptionConfigUpdated(
-        const ::boca::CaptionsConfig& config);
-
-    // Notifies when caption consumer's config updated.
-    virtual void OnConsumerCaptionConfigUpdated(
-        const ::boca::CaptionsConfig& config);
-  };
-
   BocaAppClient(const BocaAppClient&) = delete;
   BocaAppClient& operator=(const BocaAppClient&) = delete;
 
@@ -59,15 +35,10 @@ class BocaAppClient {
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
  protected:
   BocaAppClient();
   virtual ~BocaAppClient();
 
- private:
-  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ash::boca

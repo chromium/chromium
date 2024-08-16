@@ -22,7 +22,9 @@ OnTaskSessionManager::OnTaskSessionManager(
 
 OnTaskSessionManager::~OnTaskSessionManager() = default;
 
-void OnTaskSessionManager::OnSessionStarted(const std::string& session_id) {
+void OnTaskSessionManager::OnSessionStarted(
+    const std::string& session_id,
+    const ::boca::UserIdentity& producer) {
   if (const SessionID window_id =
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
@@ -33,7 +35,7 @@ void OnTaskSessionManager::OnSessionStarted(const std::string& session_id) {
     // TODO (b/354007279): Look out for and break from loop should window close
     // fail more than once.
     system_web_app_manager_->CloseSystemWebAppWindow(window_id);
-    OnSessionStarted(session_id);
+    OnSessionStarted(session_id, producer);
     return;
   }
 

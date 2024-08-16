@@ -5,11 +5,15 @@
 #ifndef CHROME_BROWSER_ASH_BOCA_BOCA_APP_CLIENT_IMPL_H_
 #define CHROME_BROWSER_ASH_BOCA_BOCA_APP_CLIENT_IMPL_H_
 
-#include "base/observer_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 
 namespace network {
 class SharedURLLoaderFactory;
+}
+
+namespace signin {
+class IdentityManager;
 }
 
 namespace ash::boca {
@@ -24,9 +28,6 @@ class BocaAppClientImpl : public BocaAppClient {
   signin::IdentityManager* GetIdentityManager() override;
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
-
- private:
-  base::ObserverList<Observer> observers_;
 };
 }  // namespace ash::boca
 

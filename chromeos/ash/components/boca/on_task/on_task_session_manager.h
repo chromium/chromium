@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chromeos/ash/components/boca/boca_app_client.h"
+#include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 
@@ -17,7 +17,7 @@ namespace ash::boca {
 
 // Session manager implementation that is primarily used for configuring and
 // managing OnTask components and services throughout a Boca session.
-class OnTaskSessionManager : public boca::BocaAppClient::Observer {
+class OnTaskSessionManager : public boca::BocaSessionManager::Observer {
  public:
   explicit OnTaskSessionManager(
       std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager);
@@ -25,8 +25,9 @@ class OnTaskSessionManager : public boca::BocaAppClient::Observer {
   OnTaskSessionManager& operator=(const OnTaskSessionManager&) = delete;
   ~OnTaskSessionManager() override;
 
-  // BocaAppClient::Observer:
-  void OnSessionStarted(const std::string& session_id) override;
+  // BocaSessionManager::Observer:
+  void OnSessionStarted(const std::string& session_id,
+                        const ::boca::UserIdentity& producer) override;
   void OnSessionEnded(const std::string& session_id) override;
 
  private:

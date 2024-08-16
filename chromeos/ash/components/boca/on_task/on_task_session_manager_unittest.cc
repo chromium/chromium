@@ -8,6 +8,8 @@
 
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
+#include "chromeos/ash/components/boca/proto/roster.pb.h"
+#include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,7 +60,7 @@ TEST_F(OnTaskSessionManagerTest, ShouldLaunchBocaSWAOnSessionStart) {
       .WillOnce([](base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(true);
       });
-  session_manager_->OnSessionStarted("test_session_id");
+  session_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldPrepareBocaSWAOnLaunch) {
@@ -78,7 +80,7 @@ TEST_F(OnTaskSessionManagerTest, ShouldPrepareBocaSWAOnLaunch) {
       .WillOnce([](base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(true);
       });
-  session_manager_->OnSessionStarted("test_session_id");
+  session_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldClosePreExistingBocaSWAOnSessionStart) {
@@ -92,7 +94,7 @@ TEST_F(OnTaskSessionManagerTest, ShouldClosePreExistingBocaSWAOnSessionStart) {
       .WillOnce([](base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(true);
       });
-  session_manager_->OnSessionStarted("test_session_id");
+  session_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldCloseBocaSWAOnSessionEnd) {
