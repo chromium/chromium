@@ -137,6 +137,10 @@ class PasswordsClientUIDelegate {
   // that to the user.
   virtual void OnPasskeyUpdated() = 0;
 
+  // Called when a passkey has just been deleted because it was not present on
+  // an all accepted credentials report.
+  virtual void OnPasskeyNotAccepted() = 0;
+
  protected:
   virtual ~PasswordsClientUIDelegate() = default;
 };

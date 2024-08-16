@@ -260,6 +260,11 @@ void ManagePasswordsState::OnPasskeyUpdated() {
   SetState(password_manager::ui::PASSKEY_UPDATED_CONFIRMATION_STATE);
 }
 
+void ManagePasswordsState::OnPasskeyNotAccepted() {
+  ClearData();
+  SetState(password_manager::ui::PASSKEY_NOT_ACCEPTED_STATE);
+}
+
 void ManagePasswordsState::TransitionToState(
     password_manager::ui::State state) {
   CHECK_NE(password_manager::ui::INACTIVE_STATE, state_);

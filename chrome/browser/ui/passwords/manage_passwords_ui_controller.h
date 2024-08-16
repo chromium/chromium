@@ -126,6 +126,7 @@ class ManagePasswordsUIController
                       bool gpm_pin_created) override;
   void OnPasskeyDeleted() override;
   void OnPasskeyUpdated() override;
+  void OnPasskeyNotAccepted() override;
 
   virtual void NotifyUnsyncedCredentialsWillBeDeleted(
       std::vector<password_manager::PasswordForm> unsynced_credentials);

@@ -2081,6 +2081,14 @@ TEST_F(ManagePasswordsUIControllerTest, OpenPasskeyUpdatedBubble) {
       password_manager::ui::PASSKEY_UPDATED_CONFIRMATION_STATE);
 }
 
+TEST_F(ManagePasswordsUIControllerTest, OpenPasskeyNotAcceptedBubble) {
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnPasskeyNotAccepted();
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
+  ExpectIconAndControllerStateIs(
+      password_manager::ui::PASSKEY_NOT_ACCEPTED_STATE);
+}
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 TEST_F(ManagePasswordsUIControllerTest,
        ShouldShowBiometricAuthenticationForFillingPromo) {
