@@ -1753,6 +1753,8 @@ component("ash") {
     "system/focus_mode/focus_mode_histogram_names.h",
     "system/focus_mode/focus_mode_metrics_recorder.cc",
     "system/focus_mode/focus_mode_metrics_recorder.h",
+    "system/focus_mode/focus_mode_retry_util.cc",
+    "system/focus_mode/focus_mode_retry_util.h",
     "system/focus_mode/focus_mode_session.cc",
     "system/focus_mode/focus_mode_session.h",
     "system/focus_mode/focus_mode_task_view.cc",

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/system/focus_mode/focus_mode_retry_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_delegate.h"
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_controller.h"
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_types.h"
@@ -102,6 +103,7 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
     std::string last_playlist_id;
     std::string last_queue_id;
     FocusModeSoundsDelegate::TrackCallback done_callback;
+    FocusModeRetryState retry_state;
   };
 
   // Struct that keeps track of ongoing `ReportPlaybackRequest` request. It
@@ -132,6 +134,9 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
       size_t bucket,
       google_apis::ApiErrorCode http_error_code,
       std::optional<const std::vector<youtube_music::Playlist>> playlists);
+
+  // Triggers request to get next track depending on the current request state.
+  void GetNextTrackInternal(const std::string& playlist_id);
 
   // Called when switching to next track is done.
   void OnNextTrackDone(
