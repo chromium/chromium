@@ -5665,7 +5665,6 @@
             '--verbose',
           ],
         },
-        'experiment_percentage': 100,
       },
     },
 
@@ -5682,7 +5681,6 @@
             '--verbose',
           ],
         },
-        'experiment_percentage': 100,
       },
     },
   },

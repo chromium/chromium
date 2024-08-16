@@ -5386,9 +5386,6 @@ targets.legacy_basic_suite(
             swarming = targets.swarming(
                 shards = 4,
             ),
-            # TODO(crbug.com/40279492): Remove experimental status once this
-            # suite is added to CQ and gardened CI.
-            experiment_percentage = 100,
         ),
     },
 )
@@ -5400,9 +5397,6 @@ targets.legacy_basic_suite(
             swarming = targets.swarming(
                 shards = 4,
             ),
-            # TODO(crbug.com/40279492): Remove experimental status once this
-            # suite is added to CQ and gardened CI.
-            experiment_percentage = 100,
         ),
     },
 )
