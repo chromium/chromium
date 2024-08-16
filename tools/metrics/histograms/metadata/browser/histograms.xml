@@ -1269,7 +1269,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.SpareProcessRefusedByEmbedderReason"
-    enum="SpareProcessMaybeTakeAction" expires_after="2025-02-10">
+    enum="SpareProcessRefusedByEmbedderReason" expires_after="2025-02-10">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
