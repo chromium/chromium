@@ -133,7 +133,11 @@ constexpr FeatureParam<BackupRefPtrEnabledProcesses>::Option
 const base::FeatureParam<BackupRefPtrEnabledProcesses>
     kBackupRefPtrEnabledProcessesParam{
         &kPartitionAllocBackupRefPtr, "enabled-processes",
+#if PA_BUILDFLAG(IS_MAC) && PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
         BackupRefPtrEnabledProcesses::kNonRenderer,
+#else
+        BackupRefPtrEnabledProcesses::kAllProcesses,
+#endif
         &kBackupRefPtrEnabledProcessesOptions};
 
 constexpr FeatureParam<BackupRefPtrMode>::Option kBackupRefPtrModeOptions[] = {
