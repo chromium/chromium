@@ -790,7 +790,6 @@ component("base") {
     "task/thread_pool/pooled_task_runner_delegate.h",
     "task/thread_pool/priority_queue.cc",
     "task/thread_pool/priority_queue.h",
-    "task/thread_pool/semaphore.h",
     "task/thread_pool/sequence.cc",
     "task/thread_pool/sequence.h",
     "task/thread_pool/service_thread.cc",
@@ -807,8 +806,6 @@ component("base") {
     "task/thread_pool/thread_group.h",
     "task/thread_pool/thread_group_impl.cc",
     "task/thread_pool/thread_group_impl.h",
-    "task/thread_pool/thread_group_semaphore.cc",
-    "task/thread_pool/thread_group_semaphore.h",
     "task/thread_pool/thread_group_worker_delegate.cc",
     "task/thread_pool/thread_group_worker_delegate.h",
     "task/thread_pool/thread_pool_impl.cc",
@@ -819,8 +816,6 @@ component("base") {
     "task/thread_pool/worker_thread.cc",
     "task/thread_pool/worker_thread.h",
     "task/thread_pool/worker_thread_observer.h",
-    "task/thread_pool/worker_thread_semaphore.cc",
-    "task/thread_pool/worker_thread_semaphore.h",
     "task/thread_pool/worker_thread_set.cc",
     "task/thread_pool/worker_thread_set.h",
     "task/thread_pool/worker_thread_waitable_event.cc",
@@ -1553,7 +1548,6 @@ component("base") {
       "rand_util_nacl.cc",
       "sync_socket_nacl.cc",
       "system/sys_info_nacl.cc",
-      "task/thread_pool/semaphore/semaphore_default.cc",
       "threading/platform_thread_linux_base.cc",
       "threading/platform_thread_nacl.cc",
     ]
@@ -1631,10 +1625,6 @@ component("base") {
         "base_paths_android.cc",
         "base_paths_android.h",
       ]
-    }
-
-    if (is_linux || is_chromeos || is_android || is_fuchsia) {
-      sources += [ "task/thread_pool/semaphore/semaphore_posix.cc" ]
     }
 
     if (is_posix) {
@@ -1815,7 +1805,6 @@ component("base") {
       "synchronization/waitable_event_watcher_win.cc",
       "synchronization/waitable_event_win.cc",
       "system/sys_info_win.cc",
-      "task/thread_pool/semaphore/semaphore_win.cc",
       "threading/platform_thread_win.cc",
       "threading/platform_thread_win.h",
       "threading/thread_local_storage_win.cc",
@@ -2030,7 +2019,6 @@ component("base") {
       "strings/sys_string_conversions_apple.mm",
       "synchronization/waitable_event_apple.cc",
       "system/sys_info_apple.mm",
-      "task/thread_pool/semaphore/semaphore_apple.cc",
       "threading/platform_thread_apple.mm",
       "time/time_apple.mm",
     ]
@@ -3464,7 +3452,6 @@ test("base_unittests") {
     "task/thread_pool/job_task_source_unittest.cc",
     "task/thread_pool/pooled_single_thread_task_runner_manager_unittest.cc",
     "task/thread_pool/priority_queue_unittest.cc",
-    "task/thread_pool/semaphore/semaphore_unittest.cc",
     "task/thread_pool/sequence_unittest.cc",
     "task/thread_pool/service_thread_unittest.cc",
     "task/thread_pool/task_source_sort_key_unittest.cc",
@@ -3474,7 +3461,6 @@ test("base_unittests") {
     "task/thread_pool/test_utils.cc",
     "task/thread_pool/test_utils.h",
     "task/thread_pool/thread_group_impl_unittest.cc",
-    "task/thread_pool/thread_group_semaphore_unittest.cc",
     "task/thread_pool/thread_group_unittest.cc",
     "task/thread_pool/thread_pool_impl_unittest.cc",
     "task/thread_pool/tracked_ref_unittest.cc",

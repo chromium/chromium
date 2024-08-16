@@ -21,13 +21,11 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/thread_pool/environment_config.h"
-#include "base/task/thread_pool/semaphore.h"
 #include "base/task/thread_pool/sequence.h"
 #include "base/task/thread_pool/task.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/test_utils.h"
 #include "base/task/thread_pool/worker_thread_observer.h"
-#include "base/task/thread_pool/worker_thread_semaphore.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/test_waitable_event.h"
@@ -61,11 +59,7 @@ namespace {
 
 enum class WorkerThreadType {
   WaitableEvent,
-  Semaphore,
 };
-
-template <typename T>
-concept UsingSemaphore = std::is_same<T, WorkerThreadSemaphore>::value;
 
 template <typename T>
 concept UsingWaitableEvent = std::is_same<T, WorkerThreadWaitableEvent>::value;
@@ -78,9 +72,6 @@ class WorkerThreadDefaultDelegate : public WorkerType::Delegate {
   WorkerThreadDefaultDelegate()
     requires UsingWaitableEvent<WorkerType>
   = default;
-  explicit WorkerThreadDefaultDelegate(Semaphore* semaphore)
-    requires UsingSemaphore<WorkerType>
-      : WorkerType::Delegate(semaphore, &join_called_for_testing_) {}
 
   WorkerThreadDefaultDelegate() = default;
   WorkerThreadDefaultDelegate(const WorkerThreadDefaultDelegate&) = delete;
@@ -161,13 +152,6 @@ class ControllableCleanupDelegate
   explicit ControllableCleanupDelegate(TaskTracker* task_tracker)
     requires UsingWaitableEvent<WorkerType>
       : task_tracker_(task_tracker), controls_(new Controls()) {}
-
-  explicit ControllableCleanupDelegate(Semaphore* semaphore,
-                                       TaskTracker* task_tracker)
-    requires UsingSemaphore<WorkerType>
-      : WorkerThreadDefaultDelegate<WorkerType>(semaphore),
-        task_tracker_(task_tracker),
-        controls_(new Controls()) {}
 
   ControllableCleanupDelegate(const ControllableCleanupDelegate&) = delete;
   ControllableCleanupDelegate& operator=(const ControllableCleanupDelegate&) =
@@ -253,11 +237,6 @@ class MockedControllableCleanupDelegate
   explicit MockedControllableCleanupDelegate(TaskTracker* task_tracker)
     requires UsingWaitableEvent<WorkerType>
       : ControllableCleanupDelegate<WorkerType>(task_tracker) {}
-  explicit MockedControllableCleanupDelegate(Semaphore* semaphore,
-                                             TaskTracker* task_tracker)
-    requires UsingSemaphore<WorkerType>
-      : ControllableCleanupDelegate<WorkerType>(semaphore, task_tracker) {}
-
   MockedControllableCleanupDelegate(const MockedControllableCleanupDelegate&) =
       delete;
   MockedControllableCleanupDelegate& operator=(
@@ -306,18 +285,6 @@ class ThreadPoolWorkerTest : public testing::Test {
 
     ASSERT_TRUE(worker_);
   }
-  template <typename DelegateType, typename... DelegateParams>
-  void ConstructWorker(ThreadType thread_type, DelegateParams&&... params)
-    requires UsingSemaphore<WorkerType>
-  {
-    std::unique_ptr<DelegateType> delegate = std::make_unique<DelegateType>(
-        &semaphore_, std::forward<DelegateParams>(params)...);
-    delegate_raw_ = delegate.get();
-    worker_ = MakeRefCounted<WorkerType>(thread_type, std::move(delegate),
-                                         task_tracker_.GetTrackedRef(), 0);
-
-    ASSERT_TRUE(worker_);
-  }
 
   template <template <typename Worker> class DelegateType,
             typename... DelegateParams>
@@ -327,20 +294,6 @@ class ThreadPoolWorkerTest : public testing::Test {
     std::unique_ptr<DelegateType<WorkerType>> delegate =
         std::make_unique<DelegateType<WorkerType>>(
             std::forward<DelegateParams>(params)...);
-    delegate_raw_ = delegate.get();
-    worker_ = MakeRefCounted<WorkerType>(thread_type, std::move(delegate),
-                                         task_tracker_.GetTrackedRef(), 0);
-
-    ASSERT_TRUE(worker_);
-  }
-  template <template <typename Worker> class DelegateType,
-            typename... DelegateParams>
-  void ConstructWorker(ThreadType thread_type, DelegateParams&&... params)
-    requires UsingSemaphore<WorkerType>
-  {
-    std::unique_ptr<DelegateType<WorkerType>> delegate =
-        std::make_unique<DelegateType<WorkerType>>(
-            &semaphore_, std::forward<DelegateParams>(params)...);
     delegate_raw_ = delegate.get();
     worker_ = MakeRefCounted<WorkerType>(thread_type, std::move(delegate),
                                          task_tracker_.GetTrackedRef(), 0);
@@ -361,22 +314,10 @@ class ThreadPoolWorkerTest : public testing::Test {
   {
     worker_->WakeUp();
   }
-  void WakeUpWorker()
-    requires UsingSemaphore<WorkerType>
-  {
-    semaphore_.Signal();
-  }
 
   void JoinWorker()
     requires UsingWaitableEvent<WorkerType>
   {
-    worker_->JoinForTesting();
-  }
-  void JoinWorker()
-    requires UsingSemaphore<WorkerType>
-  {
-    delegate_raw_->join_called_for_testing_.Set();
-    semaphore_.Signal();
     worker_->JoinForTesting();
   }
 
@@ -436,7 +377,6 @@ class ThreadPoolWorkerTest : public testing::Test {
     return did_run_task_sources_;
   }
 
-  Semaphore semaphore_{0};
   scoped_refptr<WorkerType> worker_;
   raw_ptr<WorkerThreadDefaultDelegate<WorkerType>> delegate_raw_;
   Thread service_thread_ = Thread("ServiceThread");
@@ -453,11 +393,6 @@ class ThreadPoolWorkerTest : public testing::Test {
     explicit TestWorkerThreadDelegate(ThreadPoolWorkerTest* outer)
       requires UsingWaitableEvent<WorkerType>
         : outer_(outer) {}
-    explicit TestWorkerThreadDelegate(Semaphore* semaphore,
-                                      ThreadPoolWorkerTest* outer)
-      requires UsingSemaphore<WorkerType>
-        : WorkerThreadDefaultDelegate<WorkerType>(semaphore), outer_(outer) {}
-
     TestWorkerThreadDelegate(const TestWorkerThreadDelegate&) = delete;
     TestWorkerThreadDelegate& operator=(const TestWorkerThreadDelegate&) =
         delete;
@@ -633,9 +568,7 @@ class ThreadPoolWorkerTest : public testing::Test {
 
 using WorkerThreadTestTypes = ::testing::Types<
     std::pair<WorkerThreadWaitableEvent, std::integral_constant<int, 1>>,
-    std::pair<WorkerThreadWaitableEvent, std::integral_constant<int, 2>>,
-    std::pair<WorkerThreadSemaphore, std::integral_constant<int, 1>>,
-    std::pair<WorkerThreadSemaphore, std::integral_constant<int, 2>>>;
+    std::pair<WorkerThreadWaitableEvent, std::integral_constant<int, 2>>>;
 TYPED_TEST_SUITE(ThreadPoolWorkerTest, WorkerThreadTestTypes);
 
 }  // namespace
@@ -856,11 +789,6 @@ class ExpectThreadTypeDelegate
     requires UsingWaitableEvent<WorkerType>
       : thread_type_verified_in_get_work_event_(
             WaitableEvent::ResetPolicy::AUTOMATIC) {}
-  explicit ExpectThreadTypeDelegate(Semaphore* semaphore)
-    requires UsingSemaphore<WorkerType>
-      : WorkerThreadDefaultDelegate<WorkerType>(semaphore),
-        thread_type_verified_in_get_work_event_(
-            WaitableEvent::ResetPolicy::AUTOMATIC) {}
   ExpectThreadTypeDelegate(const ExpectThreadTypeDelegate&) = delete;
   ExpectThreadTypeDelegate& operator=(const ExpectThreadTypeDelegate&) = delete;
 
@@ -946,14 +874,6 @@ class VerifyCallsToObserverDelegate
     requires UsingWaitableEvent<WorkerType>
       : ControllableCleanupDelegate<WorkerType>(task_tracker),
         observer_(observer) {}
-  explicit VerifyCallsToObserverDelegate(
-      Semaphore* semaphore,
-      TaskTracker* task_tracker,
-      test::MockWorkerThreadObserver* observer)
-    requires UsingSemaphore<WorkerType>
-      : ControllableCleanupDelegate<WorkerType>(semaphore, task_tracker),
-        observer_(observer) {}
-
   VerifyCallsToObserverDelegate(const VerifyCallsToObserverDelegate&) = delete;
   VerifyCallsToObserverDelegate& operator=(
       const VerifyCallsToObserverDelegate&) = delete;
@@ -1013,10 +933,6 @@ class WorkerThreadThreadCacheDelegate
   explicit WorkerThreadThreadCacheDelegate()
     requires UsingWaitableEvent<WorkerType>
       : WorkerThreadDefaultDelegate<WorkerType>() {}
-  explicit WorkerThreadThreadCacheDelegate(Semaphore* semaphore)
-    requires UsingSemaphore<WorkerType>
-      : WorkerThreadDefaultDelegate<WorkerType>(semaphore) {}
-
   void PrepareForTesting() {
     TimeTicks now = TimeTicks::Now();
     WorkerThreadDefaultDelegate<WorkerType>::set_first_sleep_time_for_testing(
