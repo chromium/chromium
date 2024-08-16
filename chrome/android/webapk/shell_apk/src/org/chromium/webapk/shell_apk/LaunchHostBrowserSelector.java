@@ -15,7 +15,7 @@ import android.util.Log;
 
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 
-/** Selects host browser to launch, showing a dialog to select browser if necessary. */
+/** Selects host browser to launch. */
 public class LaunchHostBrowserSelector {
     private static final String LAST_RESORT_HOST_BROWSER = "com.android.chrome";
     private static final String LAST_RESORT_HOST_BROWSER_APPLICATION_NAME = "Google Chrome";
@@ -66,8 +66,7 @@ public class LaunchHostBrowserSelector {
         String packageName = mContext.getPackageName();
         Log.v(TAG, "Package name of the WebAPK:" + packageName);
 
-        String runtimeHost =
-                HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(mContext);
+        String runtimeHost = HostBrowserUtils.computeHostBrowserPackageName(mContext);
         if (!TextUtils.isEmpty(runtimeHost)) {
             selectCallback.onBrowserSelected(runtimeHost, /* dialogShown= */ false);
             return;
@@ -103,7 +102,6 @@ public class LaunchHostBrowserSelector {
                     @Override
                     public void onConfirmInstall(String packageName) {
                         installBrowser(packageName);
-                        HostBrowserUtils.writeHostBrowserToSharedPref(mContext, packageName);
                         selectCallback.onBrowserSelected(null, /* dialogShown= */ true);
                     }
 
