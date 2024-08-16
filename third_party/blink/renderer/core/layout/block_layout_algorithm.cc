@@ -1789,9 +1789,9 @@ LayoutResult::EStatus BlockLayoutAlgorithm::HandleNewFormattingContext(
   }
 
   // Update line-clamp data, and abort if needed
-  if (!line_clamp_data_.UpdateAfterLayout(layout_result,
-                                          container_builder_.BfcBlockOffset(),
-                                          *previous_inflow_position)) {
+  if (!line_clamp_data_.UpdateAfterLayout(
+          layout_result, container_builder_.BfcBlockOffset(),
+          *previous_inflow_position, Padding().block_end)) {
     return LayoutResult::kNeedsLineClampRelayout;
   }
 
@@ -2465,9 +2465,9 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
   }
 
   // Update |line_clamp_data_| from the LayoutResult, and abort if needed.
-  if (!line_clamp_data_.UpdateAfterLayout(layout_result,
-                                          container_builder_.BfcBlockOffset(),
-                                          *previous_inflow_position)) {
+  if (!line_clamp_data_.UpdateAfterLayout(
+          layout_result, container_builder_.BfcBlockOffset(),
+          *previous_inflow_position, Padding().block_end)) {
     return LayoutResult::kNeedsLineClampRelayout;
   }
 
@@ -3171,6 +3171,7 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     }
     builder.SetLineClampData(line_clamp_data_.data);
     builder.SetLineClampEndMarginStrut(line_clamp_data_.end_margin_strut);
+    builder.SetLineClampEndPadding(Padding().block_end);
   }
   builder.SetBlockStartAnnotationSpace(block_start_annotation_space);
 

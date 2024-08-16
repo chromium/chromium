@@ -154,10 +154,10 @@ struct BlockLineClampData {
   }
 
   // Returns false if we need to relayout with a different clamp BFC offset.
-  bool UpdateAfterLayout(
-      const LayoutResult* layout_result,
-      const std::optional<LayoutUnit>& bfc_block_offset,
-      const PreviousInflowPosition& previous_inflow_position) {
+  bool UpdateAfterLayout(const LayoutResult* layout_result,
+                         const std::optional<LayoutUnit>& bfc_block_offset,
+                         const PreviousInflowPosition& previous_inflow_position,
+                         LayoutUnit block_end_padding) {
     if (data.state == LineClampData::kClampByLines) {
       if (!layout_result->GetPhysicalFragment().IsFormattingContextRoot()) {
         data.lines_until_clamp = layout_result->LinesUntilClamp();
@@ -173,6 +173,8 @@ struct BlockLineClampData {
         return true;
       }
 
+      // We compute the margin strut we'd have after this block if we were to
+      // clamp here.
       MarginStrut collapsed_strut = previous_inflow_position.margin_strut;
       collapsed_strut.positive_margin = std::max(
           collapsed_strut.positive_margin, end_margin_strut.positive_margin);
@@ -182,9 +184,21 @@ struct BlockLineClampData {
       collapsed_strut.negative_margin = std::max(
           collapsed_strut.negative_margin, end_margin_strut.negative_margin);
 
+      // The extra space after the current box that would be added by ruby
+      // annotations, considering that the annotations eat into the following
+      // padding if it exists, and that we have already subtracted the block end
+      // padding from the clamp BFC offset.
+      LayoutUnit padding_annotation_overflow;
+      if (previous_inflow_position.block_end_annotation_space < LayoutUnit()) {
+        padding_annotation_overflow =
+            std::max(previous_inflow_position.block_end_annotation_space,
+                     -block_end_padding);
+      }
+
       DCHECK(bfc_block_offset);
       LayoutUnit bfc_offset = *bfc_block_offset +
                               previous_inflow_position.logical_block_offset +
+                              padding_annotation_overflow +
                               (collapsed_strut.Sum() - end_margin_strut.Sum());
 
       if (layout_result->HasContentAfterLineClamp()) {
