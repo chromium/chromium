@@ -29,6 +29,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.GroupsProto.GroupConfig;
@@ -290,7 +291,7 @@ public class CachedZeroSuggestionsManager {
      * @return Whether or not the suggestion can be cached.
      */
     private static boolean shouldCacheSuggestion(AutocompleteMatch suggestion) {
-        return !suggestion.hasAnswer()
+        return suggestion.getAnswerType() == AnswerType.ANSWER_TYPE_UNSPECIFIED
                 && suggestion.getType() != OmniboxSuggestionType.CLIPBOARD_URL
                 && suggestion.getType() != OmniboxSuggestionType.CLIPBOARD_TEXT
                 && suggestion.getType() != OmniboxSuggestionType.CLIPBOARD_IMAGE
