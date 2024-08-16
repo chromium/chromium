@@ -7595,7 +7595,7 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall.https.html [ 
 [ Mac15-arm64 ] http/tests/security/webgl-remote-read-remote-image-allowed.html [ Timeout ]
 [ Mac15-arm64 ] http/tests/security/webgl-remote-read-remote-image-blocked-no-crossorigin.html [ Timeout ]
 [ Mac15-arm64 ] images/color-profile-munsell-adobe-to-srgb-webgl.html [ Timeout ]
-[ Mac15-arm64 ] inspector-protocol/debugger/domdebugger-webgl-breakpoint.js [ Timeout ]
+[ Mac15-arm64 ] inspector-protocol/debugger/domdebugger-webgl-breakpoint.js [ Skip Timeout ]
 [ Mac15-arm64 ] media/controls/doubletap-to-toggle-fullscreen.html [ Timeout ]
 [ Mac15-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
 [ Mac15-arm64 ] virtual/threaded-synchronous-animation-cancel/external/wpt/css/css-transforms/animation/canvas-webgl-translate-in-animation.html [ Timeout ]
