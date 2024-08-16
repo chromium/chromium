@@ -133,10 +133,10 @@ BASE_FEATURE(kWebAuthnCredProtectWin10BugWorkaround,
              "WebAuthenticationCredProtectWin10BugWorkaround",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Default enabled in M126. Remove in or after M129.
+// Default disabled as it was found to be buggy in M129.
 BASE_FEATURE(kWebAuthnICloudRecoveryKey,
              "WebAuthenticationICloudRecoveryKey",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Not yet default enabled and not intended to be. Remove after M128 is Stable.
 BASE_FEATURE(kWebAuthnCacheSecurityDomain,

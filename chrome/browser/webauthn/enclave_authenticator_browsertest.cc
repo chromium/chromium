@@ -981,7 +981,8 @@ class EnclaveAuthenticatorWithPinBrowserTest
   EnclaveAuthenticatorWithPinBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{device::kWebAuthnEnclaveAuthenticator,
-          {{device::kWebAuthnGpmPin.name, "true"}}}},
+          {{device::kWebAuthnGpmPin.name, "true"}}},
+         {device::kWebAuthnICloudRecoveryKey, {}}},
         /*disabled_features=*/{
             device::kWebAuthnUseInsecureSoftwareUnexportableKeys});
   }
