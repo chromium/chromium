@@ -2197,6 +2197,10 @@ message Policy {
 
   // The error message of policy.
   optional string error = 6;
+
+  // Other sources that set the same policy. Including the ones that are
+  // merged in or have the same value.
+  repeated Policy conflicts = 7;
 }
 
 // Extension policy information.
