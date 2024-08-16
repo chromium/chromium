@@ -18,13 +18,16 @@ PickerSearchResult::CapsLockData::Shortcut GetPickerShortcutForCapsLock() {
     return PickerSearchResult::CapsLockData::Shortcut::kAltSearch;
   }
 
+  if (Shell::Get()->keyboard_capability()->HasFunctionKeyOnAnyKeyboard()) {
+    return PickerSearchResult::CapsLockData::Shortcut::kFnRightAlt;
+  }
+
   switch (Shell::Get()->keyboard_capability()->GetMetaKeyToDisplay()) {
     case ui::mojom::MetaKey::kSearch:
       return PickerSearchResult::CapsLockData::Shortcut::kAltSearch;
     case ui::mojom::MetaKey::kLauncher:
-      return PickerSearchResult::CapsLockData::Shortcut::kAltLauncher;
     case ui::mojom::MetaKey::kLauncherRefresh:
-      return PickerSearchResult::CapsLockData::Shortcut::kFnRightAlt;
+      return PickerSearchResult::CapsLockData::Shortcut::kAltLauncher;
     case ui::mojom::MetaKey::kExternalMeta:
     case ui::mojom::MetaKey::kCommand:
       NOTREACHED_NORETURN();
