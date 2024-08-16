@@ -6697,10 +6697,6 @@ ScriptPromise<IDLBoolean> Document::hasRedemptionRecord(
     ScriptState* script_state,
     const String& issuer,
     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
-      script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
-
   // Private State Tokens state is keyed by issuer and top-frame origins that
   // are both (1) HTTP or HTTPS and (2) potentially trustworthy. Consequently,
   // we can return early if either the issuer or the top-frame origin fails to
@@ -6712,8 +6708,7 @@ ScriptPromise<IDLBoolean> Document::hasRedemptionRecord(
     exception_state.ThrowTypeError(
         "hasRedemptionRecord: Private Token issuer origins must be both "
         "HTTP(S) and secure (\"potentially trustworthy\").");
-    resolver->Reject(exception_state);
-    return promise;
+    return EmptyPromise();
   }
 
   scoped_refptr<const SecurityOrigin> top_frame_origin = TopFrameOrigin();
@@ -6726,8 +6721,7 @@ ScriptPromise<IDLBoolean> Document::hasRedemptionRecord(
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "hasRedemptionRecord: Cannot execute in "
                                       "documents lacking top-frame origins.");
-    resolver->Reject(exception_state);
-    return promise;
+    return EmptyPromise();
   }
 
   DCHECK(top_frame_origin->IsPotentiallyTrustworthy());
@@ -6737,10 +6731,12 @@ ScriptPromise<IDLBoolean> Document::hasRedemptionRecord(
         DOMExceptionCode::kNotAllowedError,
         "hasRedemptionRecord: Cannot execute in "
         "documents without secure, HTTP(S), top-frame origins.");
-    resolver->Reject(exception_state);
-    return promise;
+    return EmptyPromise();
   }
 
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
   if (!data_->trust_token_query_answerer_.is_bound()) {
     GetFrame()->GetBrowserInterfaceBroker().GetInterface(
         data_->trust_token_query_answerer_.BindNewPipeAndPassReceiver(

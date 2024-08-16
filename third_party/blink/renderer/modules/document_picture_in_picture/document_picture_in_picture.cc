@@ -84,7 +84,7 @@ ScriptPromise<DOMWindow> DocumentPictureInPicture::requestWindow(
   auto promise = resolver->Promise();
   PictureInPictureControllerImpl::From(*document)
       .CreateDocumentPictureInPictureWindow(script_state, *dom_window, options,
-                                            resolver, exception_state);
+                                            resolver);
 
   return promise;
 }

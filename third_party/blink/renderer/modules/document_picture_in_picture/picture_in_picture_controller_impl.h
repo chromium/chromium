@@ -21,7 +21,6 @@ namespace blink {
 #if !BUILDFLAG(TARGET_OS_IS_ANDROID)
 class DocumentPictureInPictureOptions;
 #endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
-class ExceptionState;
 class HTMLVideoElement;
 class PictureInPictureWindow;
 class ScriptState;
@@ -69,8 +68,7 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   void CreateDocumentPictureInPictureWindow(ScriptState*,
                                             LocalDOMWindow&,
                                             DocumentPictureInPictureOptions*,
-                                            ScriptPromiseResolver<DOMWindow>*,
-                                            ExceptionState&);
+                                            ScriptPromiseResolver<DOMWindow>*);
 #endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 
   // Implementation of PictureInPictureController.

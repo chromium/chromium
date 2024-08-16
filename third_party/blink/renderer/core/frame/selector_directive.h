@@ -36,7 +36,7 @@ class SelectorDirective : public Directive {
   void Trace(Visitor*) const override;
 
   // Web-exposed SelectorDirective interface.
-  ScriptPromise<Range> getMatchingRange(ScriptState*) const;
+  ScriptPromise<Range> getMatchingRange(ScriptState*, ExceptionState&) const;
 
  private:
   void ResolvePromise() const;

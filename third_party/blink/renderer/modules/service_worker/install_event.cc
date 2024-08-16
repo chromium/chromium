@@ -70,11 +70,9 @@ ScriptPromise<IDLUndefined> InstallEvent::addRoutes(
   ServiceWorkerGlobalScope* global_scope =
       To<ServiceWorkerGlobalScope>(ExecutionContext::From(script_state));
   if (!global_scope) {
-    return ScriptPromise<IDLUndefined>::Reject(
-        script_state,
-        V8ThrowDOMException::CreateOrDie(script_state->GetIsolate(),
-                                         DOMExceptionCode::kInvalidStateError,
-                                         "No ServiceWorkerGlobalScope."));
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "No ServiceWorkerGlobalScope.");
+    return EmptyPromise();
   }
 
   blink::ServiceWorkerRouterRules rules;
@@ -82,7 +80,7 @@ ScriptPromise<IDLUndefined> InstallEvent::addRoutes(
                                   global_scope->BaseURL(),
                                   global_scope->FetchHandlerType(), rules);
   if (exception_state.HadException()) {
-    return ScriptPromise<IDLUndefined>::Reject(script_state, exception_state);
+    return EmptyPromise();
   }
 
   auto* resolver =

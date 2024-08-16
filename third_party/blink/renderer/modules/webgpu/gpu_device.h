@@ -129,7 +129,8 @@ class GPUDevice final : public EventTarget,
       ExceptionState& exception_state);
   ScriptPromise<GPURenderPipeline> createRenderPipelineAsync(
       ScriptState* script_state,
-      const GPURenderPipelineDescriptor* descriptor);
+      const GPURenderPipelineDescriptor* descriptor,
+      ExceptionState&);
   ScriptPromise<GPUComputePipeline> createComputePipelineAsync(
       ScriptState* script_state,
       const GPUComputePipelineDescriptor* descriptor);

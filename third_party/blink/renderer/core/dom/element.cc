@@ -8622,22 +8622,20 @@ void Element::SetIsInTopLayer(bool in_top_layer) {
 ScriptValue Element::requestPointerLock(ScriptState* script_state,
                                         const PointerLockOptions* options,
                                         ExceptionState& exception_state) {
+  if (!GetDocument().GetPage()) {
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+               script_state, MakeGarbageCollected<DOMException>(
+                                 DOMExceptionCode::kWrongDocumentError,
+                                 "PointerLock cannot be request when there "
+                                 "is no frame or that frame has no page."))
+        .AsScriptValue();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
-  if (GetDocument().GetPage()) {
-    GetDocument().GetPage()->GetPointerLockController().RequestPointerLock(
-        resolver, this, exception_state, options);
-  } else {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kWrongDocumentError,
-        "PointerLock cannot be request when there "
-        "is no frame or that frame has no page.");
-  }
-
-  if (exception_state.HadException()) {
-    resolver->Reject(exception_state);
-  }
+  GetDocument().GetPage()->GetPointerLockController().RequestPointerLock(
+      resolver, this, options);
   return promise.AsScriptValue();
 }
 

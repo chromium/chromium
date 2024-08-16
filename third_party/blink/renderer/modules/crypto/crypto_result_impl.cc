@@ -214,14 +214,6 @@ void CryptoResultImpl::CompleteWithKeyPair(const WebCryptoKey& public_key,
   ClearResolver();
 }
 
-void CryptoResultImpl::CompleteWithError(ExceptionState& exception_state) {
-  if (!resolver_)
-    return;
-
-  resolver_->Reject(exception_state);
-  ClearResolver();
-}
-
 void CryptoResultImpl::Cancel() {
   cancel_->Cancel();
   ClearResolver();

@@ -703,8 +703,7 @@ ScriptPromise<RTCSessionDescriptionInit> RTCPeerConnection::createOffer(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   RTCSessionDescriptionRequest* request =
-      RTCSessionDescriptionRequestPromiseImpl::Create(
-          this, resolver, "RTCPeerConnection", "createOffer");
+      RTCSessionDescriptionRequestPromiseImpl::Create(this, resolver);
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   UseCounter::Count(context, WebFeature::kRTCPeerConnectionCreateOffer);
@@ -773,8 +772,7 @@ ScriptPromise<RTCSessionDescriptionInit> RTCPeerConnection::createAnswer(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   RTCSessionDescriptionRequest* request =
-      RTCSessionDescriptionRequestPromiseImpl::Create(
-          this, resolver, "RTCPeerConnection", "createAnswer");
+      RTCSessionDescriptionRequestPromiseImpl::Create(this, resolver);
   peer_handler_->CreateAnswer(request,
                               ConvertToRTCAnswerOptionsPlatform(options));
   return promise;
@@ -914,13 +912,14 @@ void RTCPeerConnection::UpdateIceConnectionState() {
 }
 
 ScriptPromise<IDLUndefined> RTCPeerConnection::setLocalDescription(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   DCHECK(script_state->ContextIsValid());
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
-  auto* request = MakeGarbageCollected<RTCVoidRequestPromiseImpl>(
-      this, resolver, "RTCPeerConnection", "setLocalDescription");
+  auto* request =
+      MakeGarbageCollected<RTCVoidRequestPromiseImpl>(this, resolver);
   peer_handler_->SetLocalDescription(request);
   return promise;
 }
@@ -937,7 +936,7 @@ ScriptPromise<IDLUndefined> RTCPeerConnection::setLocalDescription(
 
   DCHECK(script_state->ContextIsValid());
   if (!session_description_init->hasType()) {
-    return setLocalDescription(script_state);
+    return setLocalDescription(script_state, exception_state);
   }
   String sdp = session_description_init->sdp();
   // https://w3c.github.io/webrtc-pc/#dom-peerconnection-setlocaldescription
@@ -975,8 +974,8 @@ ScriptPromise<IDLUndefined> RTCPeerConnection::setLocalDescription(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
-  auto* request = MakeGarbageCollected<RTCVoidRequestPromiseImpl>(
-      this, resolver, "RTCPeerConnection", "setLocalDescription");
+  auto* request =
+      MakeGarbageCollected<RTCVoidRequestPromiseImpl>(this, resolver);
   peer_handler_->SetLocalDescription(request, std::move(parsed_sdp));
   return promise;
 }
@@ -1096,8 +1095,8 @@ ScriptPromise<IDLUndefined> RTCPeerConnection::setRemoteDescription(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
-  auto* request = MakeGarbageCollected<RTCVoidRequestPromiseImpl>(
-      this, resolver, "RTCPeerConnection", "setRemoteDescription");
+  auto* request =
+      MakeGarbageCollected<RTCVoidRequestPromiseImpl>(this, resolver);
   peer_handler_->SetRemoteDescription(request, std::move(parsed_sdp));
   return promise;
 }
@@ -1470,8 +1469,8 @@ ScriptPromise<IDLUndefined> RTCPeerConnection::addIceCandidate(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
-  auto* request = MakeGarbageCollected<RTCVoidRequestPromiseImpl>(
-      this, resolver, "RTCPeerConnection", "addIceCandidate");
+  auto* request =
+      MakeGarbageCollected<RTCVoidRequestPromiseImpl>(this, resolver);
   peer_handler_->AddIceCandidate(request, std::move(platform_candidate));
   return promise;
 }

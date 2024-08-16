@@ -23,8 +23,7 @@ MODULES_EXPORT bool IsDigitalIdentityCredentialType(
     const CredentialRequestOptions& options);
 
 // Requests the digital-identity credential specified by `options`.
-MODULES_EXPORT ScriptPromise<IDLNullable<Credential>>
-DiscoverDigitalIdentityCredentialFromExternalSource(
+MODULES_EXPORT void DiscoverDigitalIdentityCredentialFromExternalSource(
     ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
     ExceptionState& expection_state,
     const CredentialRequestOptions& options);

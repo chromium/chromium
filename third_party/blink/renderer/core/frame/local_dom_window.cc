@@ -2335,8 +2335,7 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
 
 DOMWindow* LocalDOMWindow::openPictureInPictureWindow(
     v8::Isolate* isolate,
-    const WebPictureInPictureWindowOptions& options,
-    ExceptionState& exception_state) {
+    const WebPictureInPictureWindowOptions& options) {
   LocalDOMWindow* entered_window = EnteredDOMWindow(isolate);
   DCHECK(isSecureContext());
 

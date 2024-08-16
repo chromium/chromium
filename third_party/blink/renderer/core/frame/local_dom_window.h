@@ -392,9 +392,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
                   const String& features,
                   ExceptionState&);
 
-  DOMWindow* openPictureInPictureWindow(v8::Isolate*,
-                                        const WebPictureInPictureWindowOptions&,
-                                        ExceptionState&);
+  DOMWindow* openPictureInPictureWindow(
+      v8::Isolate*,
+      const WebPictureInPictureWindowOptions&);
 
   FrameConsole* GetFrameConsole() const;
 

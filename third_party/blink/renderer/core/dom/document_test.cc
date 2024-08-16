@@ -1681,12 +1681,10 @@ TEST_F(DocumentTest,
 
   auto promise = document.hasRedemptionRecord(
       script_state, "https://issuer.example", exception_state);
-
-  ScriptPromiseTester promise_tester(script_state, promise);
-  promise_tester.WaitUntilSettled();
-  EXPECT_TRUE(promise_tester.IsRejected());
-  EXPECT_TRUE(IsDOMException(script_state, promise_tester.Value(),
-                             DOMExceptionCode::kNotAllowedError));
+  EXPECT_TRUE(promise.IsEmpty());
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kNotAllowedError);
 }
 
 /**

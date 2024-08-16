@@ -103,7 +103,7 @@ LocalDOMWindow* OpenDocumentPictureInPictureWindow(
   EXPECT_EQ(opener_url.GetString(), document.BaseURL().GetString());
 
   controller.CreateDocumentPictureInPictureWindow(
-      script_state, *document.domWindow(), options, resolver, exception_state);
+      script_state, *document.domWindow(), options, resolver);
 
   return controller.documentPictureInPictureWindow();
 }
@@ -848,7 +848,7 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
 
   // Create document picture in picture window.
   controller.CreateDocumentPictureInPictureWindow(
-      script_state, *document.domWindow(), options, resolver, exception_state);
+      script_state, *document.domWindow(), options, resolver);
 
   // Verify the document picture in picture window was not created.
   auto* pictureInPictureWindow = controller.documentPictureInPictureWindow();

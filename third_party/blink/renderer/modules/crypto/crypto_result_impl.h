@@ -90,8 +90,6 @@ class MODULES_EXPORT CryptoResultImpl final
     return resolver_ ? resolver_->GetExecutionContext() : nullptr;
   }
 
-  void CompleteWithError(ExceptionState&);
-
   WebCryptoResult Result() { return WebCryptoResult(this, cancel_.get()); }
 
   // ExecutionContextLifecycleObserver override:
