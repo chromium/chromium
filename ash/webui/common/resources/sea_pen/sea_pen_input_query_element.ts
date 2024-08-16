@@ -159,6 +159,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
 
   private onSampleSelected_(e: SeaPenSampleSelectedEvent) {
     this.textValue_ = e.detail;
+    this.showCreateButton_();
   }
 
   // Called when there is a custom dom-change event dispatched from
@@ -197,6 +198,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   private onClickInspire_() {
     const index = Math.floor(Math.random() * SEA_PEN_SAMPLES.length);
     this.textValue_ = SEA_PEN_SAMPLES[index].prompt;
+    this.showCreateButton_();
   }
 
   private onSeaPenQueryChanged_(seaPenQuery: SeaPenQuery|null) {
@@ -249,12 +251,16 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
       thumbnails: SeaPenThumbnail[]|null, seaPenQuery: SeaPenQuery|null) {
     if (!thumbnails || !seaPenQuery) {
       // The thumbnails are not loaded yet.
-      this.searchButtonText_ = this.i18n('seaPenCreateButton');
-      this.searchButtonIcon_ = 'sea-pen:photo-spark';
+      this.showCreateButton_();
     } else {
       this.searchButtonText_ = this.i18n('seaPenRecreateButton');
       this.searchButtonIcon_ = 'personalization-shared:refresh';
     }
+  }
+
+  private showCreateButton_() {
+    this.searchButtonText_ = this.i18n('seaPenCreateButton');
+    this.searchButtonIcon_ = 'sea-pen:photo-spark';
   }
 
   private updateShouldShowSuggestions_(

@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenActionName, SeaPenInputQueryElement, SeaPenRouterElement, SeaPenSuggestionsElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenActionName, SeaPenInputQueryElement, SeaPenRouterElement, SeaPenSampleSelectedEvent, SeaPenSuggestionsElement} from 'chrome://personalization/js/personalization_app.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrTextareaElement} from 'chrome://resources/ash/common/cr_elements/cr_textarea/cr_textarea.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -426,6 +426,67 @@ suite('SeaPenInputQueryElementTest', function() {
         seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
             '#queryInput');
     assertTrue(!!inputElement?.value, 'input should show text');
+  });
+
+  test('shows create button after inspire button clicked', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnails =
+        seaPenProvider.thumbnails;
+    personalizationStore.data.wallpaper.seaPen.currentSeaPenQuery =
+        seaPenProvider.seaPenFreeformQuery;
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    await waitAfterNextRender(seaPenInputQueryElement);
+    const searchButton =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            '#searchButton');
+    const icon = searchButton!.querySelector<HTMLElement>('iron-icon');
+    const inspireButton =
+        seaPenInputQueryElement.shadowRoot!.getElementById('inspire');
+    assertTrue(!!inspireButton);
+
+    // Shows recreate button.
+    assertEquals(
+        seaPenInputQueryElement.i18n('seaPenRecreateButton'),
+        searchButton!.innerText);
+    assertEquals('personalization-shared:refresh', icon!.getAttribute('icon'));
+
+    inspireButton!.click();
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    // After inspire button is clicked, switch back to the create button.
+    assertEquals(
+        seaPenInputQueryElement.i18n('seaPenCreateButton'),
+        searchButton!.innerText);
+    assertEquals('sea-pen:photo-spark', icon!.getAttribute('icon'));
+  });
+
+  test('shows create button after inspire button clicked', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnails =
+        seaPenProvider.thumbnails;
+    personalizationStore.data.wallpaper.seaPen.currentSeaPenQuery =
+        seaPenProvider.seaPenFreeformQuery;
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    await waitAfterNextRender(seaPenInputQueryElement);
+    const searchButton =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            '#searchButton');
+    const icon = searchButton!.querySelector<HTMLElement>('iron-icon');
+
+    // Shows recreate button.
+    assertEquals(
+        seaPenInputQueryElement.i18n('seaPenRecreateButton'),
+        searchButton!.innerText);
+    assertEquals('personalization-shared:refresh', icon!.getAttribute('icon'));
+
+    // Sample prompt clicked.
+    seaPenInputQueryElement.dispatchEvent(
+        new SeaPenSampleSelectedEvent('test'));
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    // After inspire button is clicked, switch back to the create button.
+    assertEquals(
+        seaPenInputQueryElement.i18n('seaPenCreateButton'),
+        searchButton!.innerText);
+    assertEquals('sea-pen:photo-spark', icon!.getAttribute('icon'));
   });
 
   test('rejects HTML query', async () => {
