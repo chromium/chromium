@@ -75,16 +75,13 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
   // TODO: b/344685737 - Rank and collect suggestions in a more intelligent way.
   for (PickerCategory category : model.GetRecentResultsCategories()) {
     GetSuggestionsForCategory(
-        model, category,
-        base::BindRepeating(&GetMostRecentResult).Then(callback));
+        category, base::BindRepeating(&GetMostRecentResult).Then(callback));
   }
 }
 
 void PickerSuggestionsController::GetSuggestionsForCategory(
-    const PickerModel& model,
     PickerCategory category,
     SuggestionsCallback callback) {
-  std::vector<ash::PickerSearchResult> recent_results;
   switch (category) {
     case PickerCategory::kEditorWrite:
     case PickerCategory::kEditorRewrite:

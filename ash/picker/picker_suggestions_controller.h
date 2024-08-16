@@ -31,8 +31,7 @@ class ASH_EXPORT PickerSuggestionsController {
   ~PickerSuggestionsController();
 
   void GetSuggestions(const PickerModel& model, SuggestionsCallback callback);
-  void GetSuggestionsForCategory(const PickerModel& model,
-                                 PickerCategory category,
+  void GetSuggestionsForCategory(PickerCategory category,
                                  SuggestionsCallback callback);
 
  private:

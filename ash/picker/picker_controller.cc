@@ -399,7 +399,7 @@ void PickerController::GetResultsForCategory(PickerCategory category,
           : PickerSectionType::kNone;
 
   suggestions_controller_->GetSuggestionsForCategory(
-      *model_, category,
+      category,
       base::BindRepeating(CreateSingleSectionForCategoryResults, section_type)
           .Then(std::move(callback)));
 }
