@@ -531,6 +531,9 @@
   <message name="IDS_COMPARE_DEFAULT_PAGE_TITLE" desc="The default page title for the tab compare feature.">
     Compare
   </message>
+  <message name="IDS_COMPARE_DEFAULT_TABLE_TITLE" desc="The default title for a new comparison table.">
+    New table
+  </message>
   <message name="IDS_COMPARE_DELETE" desc="The title of the menu item for deleting the tab compare table.">
     Delete comparison table
   </message>
@@ -544,10 +547,10 @@
     First, open tabs and visit sites
   </message>
   <message name="IDS_COMPARE_EMPTY_STATE_TITLE" desc="The title of the prompt that shows for tab compare when no products have been selected.">
-    Missing some info
+    Compare products
   </message>
   <message name="IDS_COMPARE_EMPTY_STATE_TITLE_DESCRIPTION" desc="The description of the prompt that shows for tab compare when no products have been selected.">
-    Something will show here once you select something from the dropdown under this
+    Add tabs with similar products to easily compare the details that matter to you
   </message>
   <message name="IDS_COMPARE_ENTRY_POINT_DEFAULT" desc="The default text for the Compare entry point button.">
     Compare tabs?

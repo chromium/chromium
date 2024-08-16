@@ -439,8 +439,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
 
     assert(!this.id_ && !this.setName_);
-    // TODO(b/346381503): Use a more targeted set name.
-    this.setName_ = 'Product specs';
+    this.setName_ = loadTimeData.getString('defaultTableTitle');
     const {createdSet} = await this.shoppingApi_.addProductSpecificationsSet(
         this.setName_, urls.map(url => ({url})));
     if (createdSet) {

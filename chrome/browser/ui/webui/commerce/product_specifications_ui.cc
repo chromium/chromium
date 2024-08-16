@@ -93,6 +93,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
 
       // Main UI strings:
       {"delete", IDS_COMPARE_DELETE},
+      {"defaultTableTitle", IDS_COMPARE_DEFAULT_TABLE_TITLE},
       {"emptyMenu", IDS_COMPARE_EMPTY_SELECTION_MENU},
       {"emptyProductSelector", IDS_COMPARE_EMPTY_PRODUCT_SELECTOR},
       {"emptyStateDescription", IDS_COMPARE_EMPTY_STATE_TITLE_DESCRIPTION},

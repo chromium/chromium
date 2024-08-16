@@ -145,8 +145,11 @@ suite('AppTest', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    loadTimeData.overrideValues(
-        {priceRowTitle: 'price', productSummaryRowTitle: 'summary'});
+    loadTimeData.overrideValues({
+      defaultTableTitle: 'title',
+      priceRowTitle: 'price',
+      productSummaryRowTitle: 'summary',
+    });
     shoppingServiceApi.reset();
     shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
     shoppingServiceApi.setResultFor(
@@ -170,7 +173,7 @@ suite('AppTest', () => {
     assertEquals(
         1, shoppingServiceApi.getCallCount('addProductSpecificationsSet'));
     assertEquals(
-        'Product specs',
+        'title',
         shoppingServiceApi.getArgs('addProductSpecificationsSet')[0][0]);
     assertArrayEquals(
         urlsParam.map(url => ({url})),
@@ -253,7 +256,7 @@ suite('AppTest', () => {
     assertEquals(
         1, shoppingServiceApi.getCallCount('addProductSpecificationsSet'));
     assertEquals(
-        'Product specs',
+        'title',
         shoppingServiceApi.getArgs('addProductSpecificationsSet')[0][0]);
     const mappedUrlsParams = urlsParam.map(url => ({url}));
     assertArrayEquals(
@@ -1313,7 +1316,7 @@ suite('AppTest', () => {
 
       // TODO(b/338427523): Parameterize this test once there is UI for
       // choosing the name.
-      assertEquals('Product specs', appElement.$.header.subtitle);
+      assertEquals('title', appElement.$.header.subtitle);
     });
 
     test('displays correct subtitle for empty state', async () => {
