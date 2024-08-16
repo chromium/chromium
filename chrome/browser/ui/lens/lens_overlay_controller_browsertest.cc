@@ -1875,8 +1875,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_false_, 0);
 }
 
+// TODO(crbug.com/360161233): This test is flaky.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       CloseSearchBubbleOnOverlayInteraction) {
+                       DISABLED_CloseSearchBubbleOnOverlayInteraction) {
   WaitForPaint();
 
   // State should start in off.
@@ -1918,8 +1919,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(!!bubble_controller->bubble_view_for_testing());
 }
 
+// TODO(crbug.com/360161233): This test is flaky.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       SearchBubblePageClassification) {
+                       DISABLED_SearchBubblePageClassification) {
   WaitForPaint();
 
   // State should start in off.
@@ -3933,8 +3935,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSearchBubbleDisabled,
   ASSERT_TRUE(preselection_widget->IsVisible());
 }
 
+// TODO(crbug.com/360161233): This test is flaky.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerSearchBubbleDisabled,
-                       PreselectionToastDisappearsOnSelection) {
+                       DISABLED_PreselectionToastDisappearsOnSelection) {
   WaitForPaint();
 
   // State should start in off.
