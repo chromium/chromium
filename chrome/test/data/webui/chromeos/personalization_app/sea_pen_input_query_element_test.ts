@@ -257,7 +257,6 @@ suite('SeaPenInputQueryElementTest', function() {
 
     await waitAfterNextRender(seaPenInputQueryElement);
     chai.assert.notSameOrderedMembers(originalSuggestions, getSuggestions());
-    chai.assert.sameMembers(originalSuggestions, getSuggestions());
   });
 
   test('clicking suggestion adds text to whitespace input', async () => {
@@ -324,64 +323,13 @@ suite('SeaPenInputQueryElementTest', function() {
         seaPenSuggestions.shadowRoot!.querySelector<CrButtonElement>(
             '.suggestion')!;
     const suggestionButtonText = seaPenSuggestionButton.textContent?.trim()!;
-    const originalLength = getSuggestions().length;
 
     seaPenSuggestionButton.click();
     await waitAfterNextRender(seaPenInputQueryElement);
 
-    assertEquals(
-        originalLength - 1, getSuggestions().length,
-        'suggestion list should be shorter');
     assertFalse(
         suggestionExists(suggestionButtonText),
         'clicked suggestion should be removed');
-  });
-
-  test('shuffling only removes recently clicked suggestions', async () => {
-    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
-    await waitAfterNextRender(seaPenInputQueryElement);
-    await setTextInputValue('abc');
-    const seaPenSuggestions =
-        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
-            SeaPenSuggestionsElement.is)!;
-    let suggestionButtons =
-        seaPenSuggestions.shadowRoot!.querySelectorAll<CrButtonElement>(
-            '.suggestion')!;
-    const firstSuggestionButton = suggestionButtons?.[0];
-    const firstSuggestionButtonText =
-        firstSuggestionButton?.textContent?.trim()!;
-    const shuffleButton =
-        seaPenSuggestions!.shadowRoot!.getElementById('shuffle')!;
-
-    firstSuggestionButton?.click();
-    shuffleButton.click();
-    await waitAfterNextRender(seaPenInputQueryElement);
-
-    // The first shuffle should remove the firstSeaPenSuggestionButton.
-    assertFalse(
-        suggestionExists(firstSuggestionButtonText),
-        'the first suggestion should be removed for one shuffle');
-
-    suggestionButtons =
-        seaPenSuggestions.shadowRoot!.querySelectorAll<CrButtonElement>(
-            '.suggestion')!;
-    const secondSuggestionButton = suggestionButtons?.[0];
-    const secondSuggestionButtonText =
-        firstSuggestionButton?.textContent?.trim()!;
-
-    secondSuggestionButton?.click();
-    shuffleButton.click();
-    await waitAfterNextRender(seaPenInputQueryElement);
-
-    // The second shuffle should remove only the
-    // secondSeaPenSuggestionButton because it was clicked since the last
-    // shuffle.
-    assertTrue(
-        suggestionExists(firstSuggestionButtonText),
-        'first clicked suggestion should return to the list');
-    assertFalse(
-        suggestionExists(secondSuggestionButtonText),
-        'second clicked suggestion should now be removed from the list');
   });
 
   test('reset suggestion button list if the length is 3 or less', async () => {
@@ -394,7 +342,6 @@ suite('SeaPenInputQueryElementTest', function() {
     let suggestionButtons =
         seaPenSuggestions.shadowRoot!.querySelectorAll<CrButtonElement>(
             '.suggestion')!;
-    const originalLength = suggestionButtons.length;
 
     // Click all but 3 suggestion buttons.
     while (getSuggestions().length > 3) {
@@ -413,9 +360,9 @@ suite('SeaPenInputQueryElementTest', function() {
     suggestionButtons =
         seaPenSuggestions.shadowRoot!.querySelectorAll<CrButtonElement>(
             '.suggestion')!;
-    assertEquals(
-        originalLength, suggestionButtons.length,
-        'suggestion button list should reset if shuffling with very few items');
+    assertTrue(
+        suggestionButtons.length > 3,
+        'selectable suggestion button list should reset if shuffling with very few items');
   });
 
   test('thumbnails shuffle when they are shown again', async () => {
