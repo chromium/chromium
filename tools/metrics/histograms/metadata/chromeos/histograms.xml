@@ -2644,6 +2644,19 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Mahi.ProviderCreationStatus"
+    enum="MahiProviderCreationStatus" expires_after="2025-06-01">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
+  <summary>
+    Records the result of Mahi provider creation. Mahi provider is initialized
+    when Help Me Read is called for the first time after the user logs in.
+    However when error happens, this may log a non-OK status on each Help Me
+    Read call.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Mahi.ResponseStatusOnRequest"
     enum="MahiResponseStatus" expires_after="2025-06-01">
   <owner>thanhdng@chromium.org</owner>

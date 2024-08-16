@@ -69,17 +69,33 @@ using crosapi::mojom::MahiContextMenuActionType;
 
 const char kMahiCacheHit[] = "ChromeOS.Mahi.CacheStateOnAccess";
 const char kMahiResponseStatus[] = "ChromeOS.Mahi.ResponseStatusOnRequest";
+const char kMahiProviderCreationStatus[] =
+    "ChromeOS.Mahi.ProviderCreationStatus";
+
+// The following enum classes are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
 
 // CacheHit --------------------------------------------------------------------
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 enum class CacheHit {
   kNoHit = 0,
   kSummary = 1,
   kContent = 2,
   kMaxValue = kContent,
 };
+
+// Provider creation -----------------------------------------------------------
+enum class ProviderCreationStatus {
+  kOk = 0,
+  kMantaServiceDisabled = 1,
+  kProfileUnavailable = 2,
+  kMantaServiceIsNull = 3,
+  kMantaServiceFailedToCreate = 4,
+  kMaxValue = kMantaServiceFailedToCreate,
+};
+
+void LogProviderCreationStatus(ProviderCreationStatus status) {
+  base::UmaHistogramEnumeration(kMahiProviderCreationStatus, status);
+}
 
 // OnConsentStateUpdateClosureRunner -------------------------------------------
 
@@ -171,19 +187,30 @@ MahiResponseStatus GetMahiResponseStatusFromMantaStatus(
 
 std::unique_ptr<manta::MahiProvider> CreateProvider() {
   if (!manta::features::IsMantaServiceEnabled()) {
+    LogProviderCreationStatus(ProviderCreationStatus::kMantaServiceDisabled);
     return nullptr;
   }
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile) {
+    LogProviderCreationStatus(ProviderCreationStatus::kProfileUnavailable);
     return nullptr;
   }
 
   if (manta::MantaService* service =
           manta::MantaServiceFactory::GetForProfile(profile)) {
-    return service->CreateMahiProvider();
+    auto provider = service->CreateMahiProvider();
+    if (!provider) {
+      LogProviderCreationStatus(
+          ProviderCreationStatus::kMantaServiceFailedToCreate);
+      return nullptr;
+    }
+
+    LogProviderCreationStatus(ProviderCreationStatus::kOk);
+    return provider;
   }
 
+  LogProviderCreationStatus(ProviderCreationStatus::kMantaServiceIsNull);
   return nullptr;
 }
 
