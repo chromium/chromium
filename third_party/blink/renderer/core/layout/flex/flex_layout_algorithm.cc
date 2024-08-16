@@ -1881,8 +1881,10 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     // shift was (if any). Only do this if the item has completed layout.
     if (is_column_) {
       LayoutUnit cloned_block_decorations;
-      if (!is_at_block_end) {
-        cloned_block_decorations += fragment.BoxDecorations().BlockSum();
+      if (!is_at_block_end &&
+          flex_item->ng_input_node.Style().BoxDecorationBreak() ==
+              EBoxDecorationBreak::kClone) {
+        cloned_block_decorations = fragment.BoxDecorations().BlockSum();
       }
 
       // Cloned box decorations grow the border-box size of the flex item. In
