@@ -243,34 +243,13 @@ bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
   // Only animate between calc-size() expressions if they have compatible
   // basis.  This includes checking the type of the keyword, but it also
   // includes broad compatibility for 'any', and for animating between
-  // different <calc-sum> values.
+  // different <calc-sum> values.  There are also some cases where we
+  // need to check that we don't exceed the expansion limit for
+  // substituting to handle nested calc-size() expressions.
+  //
+  // CreateArithmeticOperationAndSimplifyCalcSize knows how to determine
+  // this.
   if (start_length.IsCalcSize() && end_length.IsCalcSize()) {
-    const CSSMathExpressionNode& start_basis =
-        ExtractCalcSizeBasis(start_length.expression_);
-    const CSSMathExpressionNode& end_basis =
-        ExtractCalcSizeBasis(end_length.expression_);
-    auto is_any_keyword = [](const CSSMathExpressionNode& node) -> bool {
-      const auto* literal = DynamicTo<CSSMathExpressionKeywordLiteral>(node);
-      return literal && literal->GetValue() == CSSValueID::kAny;
-    };
-    auto is_calc_sum = [](const CSSMathExpressionNode& node) -> bool {
-      // Something is a <calc-sum> for our purposes if it's *not* a
-      // keyword literal that was created for calc-size().
-      auto* keyword_literal = DynamicTo<CSSMathExpressionKeywordLiteral>(node);
-      CHECK(!keyword_literal ||
-            keyword_literal->GetContext() ==
-                CSSMathExpressionKeywordLiteral::Context::kCalcSize);
-      return !keyword_literal;
-    };
-    if (!(start_basis == end_basis || is_any_keyword(start_basis) ||
-          is_any_keyword(end_basis) ||
-          (is_calc_sum(start_basis) && is_calc_sum(end_basis)))) {
-      return false;
-    }
-    // We can interpolate in theory, but we need to test this to make
-    // sure we don't hit the expansion limit for nested calc-size()
-    // (which fortunately depends only on the bases and not on any
-    // addition or multiplication of numbers).
     return CSSMathExpressionOperation::
                CreateArithmeticOperationAndSimplifyCalcSize(
                    start_length.expression_, end_length.expression_,

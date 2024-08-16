@@ -1853,38 +1853,116 @@ std::tuple<const CSSMathExpressionNode*, wtf_size_t> SubstituteForSizeKeyword(
   return std::make_tuple(source, 0);
 }
 
+// https://drafts.csswg.org/css-values-5/#de-percentify-a-calc-size-calculation
+const CSSMathExpressionNode* SubstituteForPercentages(
+    const CSSMathExpressionNode* source) {
+  if (const auto* operation = DynamicTo<CSSMathExpressionOperation>(source)) {
+    using Operands = CSSMathExpressionOperation::Operands;
+    const Operands& source_operands = operation->GetOperands();
+    Operands dest_operands;
+    dest_operands.reserve(source_operands.size());
+    for (const CSSMathExpressionNode* source_op : source_operands) {
+      const CSSMathExpressionNode* dest_op =
+          SubstituteForPercentages(source_op);
+      dest_operands.push_back(dest_op);
+    }
+
+    return MakeGarbageCollected<CSSMathExpressionOperation>(
+        operation->Category(), std::move(dest_operands),
+        operation->OperatorType());
+  }
+
+  if (const auto* numeric_literal =
+          DynamicTo<CSSMathExpressionNumericLiteral>(source)) {
+    const CSSNumericLiteralValue& value = numeric_literal->GetValue();
+    if (value.IsPercentage()) {
+      return CSSMathExpressionOperation::CreateArithmeticOperation(
+          CSSMathExpressionKeywordLiteral::Create(
+              CSSValueID::kSize,
+              CSSMathExpressionKeywordLiteral::Context::kCalcSize),
+          CSSMathExpressionNumericLiteral::Create(
+              value.DoubleValue() / 100.0,
+              CSSPrimitiveValue::UnitType::kNumber),
+          CSSMathOperator::kMultiply);
+    }
+  }
+  return source;
+}
+
+bool BasisIsCanonical(const CSSMathExpressionNode* basis) {
+  // A basis is canonical if it is a sizing keyword, 'any', or '100%'.
+  if (const auto* numeric_literal =
+          DynamicTo<CSSMathExpressionNumericLiteral>(basis)) {
+    const CSSNumericLiteralValue& value = numeric_literal->GetValue();
+    return value.IsPercentage() &&
+           value.IsHundred() == CSSMathFunctionValue::BoolStatus::kTrue;
+  }
+
+  if (const auto* keyword_literal =
+          DynamicTo<CSSMathExpressionKeywordLiteral>(basis)) {
+    return keyword_literal->GetContext() ==
+           CSSMathExpressionKeywordLiteral::Context::kCalcSize;
+  }
+
+  return false;
+}
+
 // Do substitution in order to produce a calc-size() whose basis is not
-// another calc-size().
-const CSSMathExpressionNode* UnnestCalcSize(
+// another calc-size() and is not in non-canonical form.
+const CSSMathExpressionOperation* MakeBasisCanonical(
     const CSSMathExpressionOperation* calc_size_input) {
   DCHECK(calc_size_input->IsCalcSize());
   HeapVector<Member<const CSSMathExpressionNode>, 4> calculation_stack;
-  const CSSMathExpressionNode* innermost_basis = nullptr;
+  const CSSMathExpressionNode* final_basis = nullptr;
   const CSSMathExpressionNode* current_result = nullptr;
 
+  wtf_size_t substitution_count = 1;
   const CSSMathExpressionOperation* current_calc_size = calc_size_input;
   while (true) {
+    // If the basis is a calc-size(), push the calculation on the stack, and
+    // enter this loop again with its basis.
     const CSSMathExpressionNode* basis = current_calc_size->GetOperands()[0];
     const CSSMathExpressionNode* calculation =
         current_calc_size->GetOperands()[1];
-    const CSSMathExpressionOperation* basis_calc_size =
-        DynamicToCalcSize(basis);
-    if (!basis_calc_size) {
+    if (const CSSMathExpressionOperation* basis_calc_size =
+            DynamicToCalcSize(basis)) {
+      calculation_stack.push_back(calculation);
+      current_calc_size = basis_calc_size;
+      continue;
+    }
+
+    // If the basis is canonical, use it.
+    if (BasisIsCanonical(basis)) {
+      if (calculation_stack.empty()) {
+        // No substitution is needed; return the original.
+        return calc_size_input;
+      }
+
       current_result = calculation;
-      innermost_basis = basis;
+      final_basis = basis;
       break;
     }
-    calculation_stack.push_back(calculation);
-    current_calc_size = basis_calc_size;
+
+    // Otherwise, we have a <calc-sum>, and our canonical basis should be
+    // '100%' if we have a percentage and 'any' if we don't.  The percentage
+    // case also requires that we substitute (size * (P/100)) for P% in the
+    // basis.
+    if (basis->HasPercentage()) {
+      basis = SubstituteForPercentages(basis);
+      final_basis = CSSMathExpressionNumericLiteral::Create(
+          100.0, CSSPrimitiveValue::UnitType::kPercentage);
+    } else {
+      final_basis = CSSMathExpressionKeywordLiteral::Create(
+          CSSValueID::kAny,
+          CSSMathExpressionKeywordLiteral::Context::kCalcSize);
+    }
+    CHECK_EQ(substitution_count, 1u);
+    std::tie(current_result, substitution_count) =
+        SubstituteForSizeKeyword(calculation, basis, 1u);
+    break;
   }
 
-  if (calculation_stack.empty()) {
-    // No substitution is needed; return the original.
-    return calc_size_input;
-  }
-
-  wtf_size_t substitution_count = 1;
-  do {
+  while (!calculation_stack.empty()) {
     std::tie(current_result, substitution_count) =
         SubstituteForSizeKeyword(calculation_stack.back(), current_result,
                                  std::max(substitution_count, 1u));
@@ -1893,10 +1971,11 @@ const CSSMathExpressionNode* UnnestCalcSize(
       return nullptr;
     }
     calculation_stack.pop_back();
-  } while (!calculation_stack.empty());
+  }
 
-  return CSSMathExpressionOperation::CreateCalcSizeOperation(innermost_basis,
-                                                             current_result);
+  return To<CSSMathExpressionOperation>(
+      CSSMathExpressionOperation::CreateCalcSizeOperation(final_basis,
+                                                          current_result));
 }
 
 }  // namespace
@@ -1920,104 +1999,68 @@ CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
       if (op != CSSMathOperator::kAdd && op != CSSMathOperator::kSubtract) {
         return nullptr;
       }
+      // In theory we could check for basis equality or for one basis being
+      // 'any' before we canonicalize to make some cases faster (and then
+      // check again after).  However, the spec doesn't have this
+      // optimization, and it is observable.
+
+      // If either value has a non-canonical basis, substitute to produce a
+      // canonical basis and try again recursively (with only one level of
+      // recursion possible).
+      //
+      // We need to interpolate between the values *following* substitution of
+      // the basis in the calculation, because if we interpolate the two
+      // separately we are likely to get nonlinear interpolation behavior
+      // (since we would be interpolating two different things linearly and
+      // then multiplying them together).
+      if (!BasisIsCanonical(left_calc_size->GetOperands()[0])) {
+        left_calc_size = MakeBasisCanonical(left_calc_size);
+        if (!left_calc_size) {
+          return nullptr;  // hit the expansion limit
+        }
+      }
+      if (!BasisIsCanonical(right_calc_size->GetOperands()[0])) {
+        right_calc_size = MakeBasisCanonical(right_calc_size);
+        if (!right_calc_size) {
+          return nullptr;  // hit the expansion limit
+        }
+      }
+
       const CSSMathExpressionNode* left_basis =
           left_calc_size->GetOperands()[0];
       const CSSMathExpressionNode* right_basis =
           right_calc_size->GetOperands()[0];
+
+      CHECK(BasisIsCanonical(left_basis));
+      CHECK(BasisIsCanonical(right_basis));
+
       const CSSMathExpressionNode* final_basis = nullptr;
       // If the bases are equal, or one of them is the
       // any keyword, then we can interpolate only the calculations.
+      auto is_any_keyword = [](const CSSMathExpressionNode* node) -> bool {
+        const auto* literal = DynamicTo<CSSMathExpressionKeywordLiteral>(node);
+        return literal && literal->GetValue() == CSSValueID::kAny &&
+               literal->GetContext() ==
+                   CSSMathExpressionKeywordLiteral::Context::kCalcSize;
+      };
+
       if (*left_basis == *right_basis) {
         final_basis = left_basis;
-      } else {
-        if (DynamicToCalcSize(left_basis) || DynamicToCalcSize(right_basis)) {
-          // If either value has a calc-size() as a basis, substitute to
-          // produce an un-nested calc-size() and try again recursively (with
-          // only one level of recursion possible).
-          const CSSMathExpressionNode* left_unnested =
-              UnnestCalcSize(left_calc_size);
-          const CSSMathExpressionNode* right_unnested =
-              UnnestCalcSize(right_calc_size);
-          if (!left_unnested || !right_unnested) {
-            // hit the expansion limit
-            return nullptr;
-          }
-          return CreateArithmeticOperationAndSimplifyCalcSize(
-              left_unnested, right_unnested, op);
-        }
-
-        auto is_any_keyword = [](const CSSMathExpressionNode* node) -> bool {
-          const auto* literal =
-              DynamicTo<CSSMathExpressionKeywordLiteral>(node);
-          return literal && literal->GetValue() == CSSValueID::kAny &&
-                 literal->GetContext() ==
-                     CSSMathExpressionKeywordLiteral::Context::kCalcSize;
-        };
-        if (is_any_keyword(left_basis)) {
-          final_basis = right_basis;
-        } else if (is_any_keyword(right_basis)) {
-          final_basis = left_basis;
-        }
+      } else if (is_any_keyword(left_basis)) {
+        final_basis = right_basis;
+      } else if (is_any_keyword(right_basis)) {
+        final_basis = left_basis;
+      }
+      if (!final_basis) {
+        return nullptr;
       }
       const CSSMathExpressionNode* left_calculation =
           left_calc_size->GetOperands()[1];
       const CSSMathExpressionNode* right_calculation =
           right_calc_size->GetOperands()[1];
-      if (final_basis) {
-        return CreateCalcSizeOperation(
-            final_basis, CreateArithmeticOperationSimplified(
-                             left_calculation, right_calculation, op));
-      } else {
-        // We need to interpolate between the values *following* substitution
-        // of the basis in the calculation, because if we interpolate the two
-        // separately we are likely to get nonlinear interpolation behavior
-        // (since we would be interpolating two different things linearly and
-        // then multiplying them together).
-        CHECK(!DynamicToCalcSize(left_basis))
-            << "should have made recursive call above";
-        CHECK(!DynamicToCalcSize(right_basis))
-            << "should have made recursive call above";
-
-        auto is_sizing_keyword = [](const CSSMathExpressionNode* node) -> bool {
-          const auto* literal =
-              DynamicTo<CSSMathExpressionKeywordLiteral>(node);
-          if (!literal ||
-              literal->GetContext() !=
-                  CSSMathExpressionKeywordLiteral::Context::kCalcSize) {
-            return false;
-          }
-          CHECK(literal->GetValue() != CSSValueID::kAny)
-              << "should have determined a final_basis above";
-          return true;
-        };
-
-        if (is_sizing_keyword(left_basis) || is_sizing_keyword(right_basis)) {
-          // It's not possible to interpolate between incompatible
-          // sizing keywords (theoretically hard), or between a sizing
-          // keyword and a <calc-sum> (disallowed by the spec but could
-          // be implemented in an extra 5-10 lines of code here, by
-          // substituting on one side and using the basis from the other
-          // side).
-          return nullptr;
-        }
-
-        final_basis = CSSMathExpressionKeywordLiteral::Create(
-            CSSValueID::kAny,
-            CSSMathExpressionKeywordLiteral::Context::kCalcSize);
-        std::tie(right_calculation, std::ignore) =
-            SubstituteForSizeKeyword(right_calculation, right_basis, 1);
-        std::tie(left_calculation, std::ignore) =
-            SubstituteForSizeKeyword(left_calculation, left_basis, 1);
-        if (!right_calculation || !left_calculation) {
-          // We hit the substitution limit (which would be surprising for
-          // non-recursive substitution).
-          return nullptr;
-        }
-
-        return CreateCalcSizeOperation(
-            final_basis, CreateArithmeticOperationSimplified(
-                             left_calculation, right_calculation, op));
-      }
+      return CreateCalcSizeOperation(
+          final_basis, CreateArithmeticOperationSimplified(
+                           left_calculation, right_calculation, op));
     } else {
       const CSSMathExpressionNode* left_basis =
           left_calc_size->GetOperands()[0];
