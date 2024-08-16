@@ -203,6 +203,57 @@ TEST_F(PickerSuggestionsControllerTest,
   controller.GetSuggestions(model, callback.Get());
 }
 
+TEST_F(PickerSuggestionsControllerTest,
+       GetSuggestionsReturnsOneSuggestionPerCategory) {
+  NiceMock<MockPickerClient> client;
+  EXPECT_CALL(client, GetSuggestedLinkResults)
+      .WillRepeatedly(
+          WithArg<1>(RunCallbackArgWith(std::vector<PickerSearchResult>{
+              PickerSearchResult::BrowsingHistory(GURL("a.com"), u"a",
+                                                  /*icon=*/{}),
+              PickerSearchResult::BrowsingHistory(GURL("b.com"), u"b",
+                                                  /*icon=*/{}),
+          })));
+  EXPECT_CALL(client, GetRecentDriveFileResults)
+      .WillRepeatedly(
+          WithArg<1>(RunCallbackArgWith(std::vector<PickerSearchResult>{
+              PickerSearchResult::DriveFile(/*id=*/{}, u"a", GURL("a.com"),
+                                            /*file_path=*/{}),
+              PickerSearchResult::DriveFile(/*id=*/{}, u"b", GURL("b.com"),
+                                            /*file_path=*/{}),
+          })));
+  EXPECT_CALL(client, GetRecentLocalFileResults)
+      .WillRepeatedly(
+          WithArg<1>(RunCallbackArgWith(std::vector<PickerSearchResult>{
+              PickerSearchResult::LocalFile(u"a", /*file_path=*/{}),
+              PickerSearchResult::LocalFile(u"b", /*file_path=*/{}),
+          })));
+  PickerSuggestionsController controller(&client);
+  input_method::FakeImeKeyboard keyboard;
+  PickerModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr, &keyboard,
+                    PickerModel::EditorStatus::kEnabled);
+
+  base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
+  EXPECT_CALL(callback, Run).Times(AnyNumber());
+  EXPECT_CALL(callback,
+              Run(ElementsAre(Property(
+                  &PickerSearchResult::data,
+                  VariantWith<PickerSearchResult::BrowsingHistoryData>(_)))))
+      .Times(1);
+  EXPECT_CALL(callback,
+              Run(ElementsAre(
+                  Property(&PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::DriveFileData>(_)))))
+      .Times(1);
+  EXPECT_CALL(callback,
+              Run(ElementsAre(
+                  Property(&PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::LocalFileData>(_)))))
+      .Times(1);
+
+  controller.GetSuggestions(model, callback.Get());
+}
+
 TEST_F(PickerSuggestionsControllerTest, GetSuggestionsForLinkCategory) {
   const std::vector<PickerSearchResult> suggested_links = {
       PickerSearchResult::BrowsingHistory(GURL("a.com"), u"a", /*icon=*/{}),
