@@ -207,7 +207,8 @@ class CORE_EXPORT StyleColor {
   // colors properties are system colors so we need to re-resolve them to ensure
   // they pick up the correct color on theme change.
   StyleColor ResolveSystemColor(mojom::blink::ColorScheme color_scheme,
-                                const ui::ColorProvider* color_provider) const;
+                                const ui::ColorProvider* color_provider,
+                                bool is_in_web_app_scope) const;
 
   bool IsNumeric() const {
     return EffectiveColorKeyword() == CSSValueID::kInvalid;
@@ -215,7 +216,8 @@ class CORE_EXPORT StyleColor {
 
   static Color ColorFromKeyword(CSSValueID,
                                 mojom::blink::ColorScheme color_scheme,
-                                const ui::ColorProvider* color_provider);
+                                const ui::ColorProvider* color_provider,
+                                bool is_in_web_app_scope);
   static bool IsColorKeyword(CSSValueID);
   static bool IsSystemColorIncludingDeprecated(CSSValueID);
   static bool IsSystemColor(CSSValueID);

@@ -2255,6 +2255,7 @@ ShadowData StyleBuilderConverter::ConvertShadow(
 
       color = ResolveColorValue(*shadow.color, black_text_link_colors,
                                 mojom::blink::ColorScheme::kLight, nullptr,
+                                /*is_in_web_app_scope=*/false,
                                 /*for_visited_link=*/false);
       if (!color.IsAbsoluteColor()) {
         color = StyleColor(Color::kBlack);
@@ -2390,6 +2391,7 @@ StyleColor ResolveColorValue(const CSSValue& value,
                              const TextLinkColors& text_link_colors,
                              mojom::blink::ColorScheme used_color_scheme,
                              const ui::ColorProvider* color_provider,
+                             bool is_in_web_app_scope,
                              bool for_visited_link) {
   if (auto* color_value = DynamicTo<cssvalue::CSSColor>(value)) {
     Color result_color = color_value->Value();
@@ -2406,8 +2408,8 @@ StyleColor ResolveColorValue(const CSSValue& value,
       return StyleColor(ResolveQuirkOrLinkOrFocusRingColor(
           value_id, text_link_colors, used_color_scheme, for_visited_link));
     }
-    Color color = StyleColor::ColorFromKeyword(value_id, used_color_scheme,
-                                               color_provider);
+    Color color = StyleColor::ColorFromKeyword(
+        value_id, used_color_scheme, color_provider, is_in_web_app_scope);
     // Preserve the identifier for system colors since this is needed by
     // 'forced colors mode'.
     if (StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
@@ -2417,12 +2419,12 @@ StyleColor ResolveColorValue(const CSSValue& value,
   }
 
   if (auto* color_mix_value = DynamicTo<cssvalue::CSSColorMixValue>(value)) {
-    const StyleColor style_color1 =
-        ResolveColorValue(color_mix_value->Color1(), text_link_colors,
-                          used_color_scheme, color_provider, for_visited_link);
-    const StyleColor style_color2 =
-        ResolveColorValue(color_mix_value->Color2(), text_link_colors,
-                          used_color_scheme, color_provider, for_visited_link);
+    const StyleColor style_color1 = ResolveColorValue(
+        color_mix_value->Color1(), text_link_colors, used_color_scheme,
+        color_provider, is_in_web_app_scope, for_visited_link);
+    const StyleColor style_color2 = ResolveColorValue(
+        color_mix_value->Color2(), text_link_colors, used_color_scheme,
+        color_provider, is_in_web_app_scope, for_visited_link);
     // If neither color is "currentcolor" (or a color-mix function containing a
     // currentcolor) then color-mix functions can be resolved right now like
     // other colors. Otherwise we need to store an unresolved value on
@@ -2448,7 +2450,8 @@ StyleColor ResolveColorValue(const CSSValue& value,
     // TODO(crbug.com/325309578): Convert unresolved relative color values.
     return ResolveColorValue(relative_color_value->OriginColor(),
                              text_link_colors, used_color_scheme,
-                             color_provider, for_visited_link);
+                             color_provider, is_in_web_app_scope,
+                             for_visited_link);
   }
 
   auto& light_dark_pair = To<CSSLightDarkValuePair>(value);
@@ -2457,7 +2460,8 @@ StyleColor ResolveColorValue(const CSSValue& value,
           ? light_dark_pair.First()
           : light_dark_pair.Second();
   return ResolveColorValue(color_value, text_link_colors, used_color_scheme,
-                           color_provider, for_visited_link);
+                           color_provider, is_in_web_app_scope,
+                           for_visited_link);
 }
 
 StyleColor StyleBuilderConverter::ConvertStyleColor(StyleResolverState& state,
@@ -2465,10 +2469,10 @@ StyleColor StyleBuilderConverter::ConvertStyleColor(StyleResolverState& state,
                                                     bool for_visited_link) {
   mojom::blink::ColorScheme color_scheme =
       state.StyleBuilder().UsedColorScheme();
-  return ResolveColorValue(
-      value, state.GetDocument().GetTextLinkColors(), color_scheme,
-      state.GetDocument().GetColorProviderForPainting(color_scheme),
-      for_visited_link);
+  auto& document = state.GetDocument();
+  return ResolveColorValue(value, document.GetTextLinkColors(), color_scheme,
+                           document.GetColorProviderForPainting(color_scheme),
+                           document.IsInWebAppScope(), for_visited_link);
 }
 
 StyleAutoColor StyleBuilderConverter::ConvertStyleAutoColor(
@@ -2893,9 +2897,10 @@ static const CSSValue& ComputeColorValue(
     const Document& document,
     mojom::blink::ColorScheme color_scheme) {
   const bool kNotForVisitedLink = false;
-  const StyleColor style_color = ResolveColorValue(
-      color_value, document.GetTextLinkColors(), color_scheme,
-      document.GetColorProviderForPainting(color_scheme), kNotForVisitedLink);
+  const StyleColor style_color =
+      ResolveColorValue(color_value, document.GetTextLinkColors(), color_scheme,
+                        document.GetColorProviderForPainting(color_scheme),
+                        document.IsInWebAppScope(), kNotForVisitedLink);
   return *ComputedStyleUtils::ValueForColor(style_color);
 }
 

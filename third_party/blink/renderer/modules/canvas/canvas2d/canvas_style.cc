@@ -74,8 +74,11 @@ static ColorParseResult ParseColor(Color& parsed_color,
               CSSPropertyID::kColor, color_string,
               StrictCSSParserContext(SecureContextMode::kInsecureContext)))) {
     static const TextLinkColors kDefaultTextLinkColors{};
+    // TODO(crbug.com/40229450): Pass down if within installed webapp scope from
+    // Document.
     const StyleColor style_color = ResolveColorValue(
-        *color_mix_value, kDefaultTextLinkColors, color_scheme, color_provider);
+        *color_mix_value, kDefaultTextLinkColors, color_scheme, color_provider,
+        /*is_in_web_app_scope=*/false);
     parsed_color = style_color.Resolve(Color::kBlack, color_scheme);
     return ColorParseResult::kColorMix;
   }

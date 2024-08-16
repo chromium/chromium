@@ -904,6 +904,7 @@ void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyleBuilder& builder,
   }
   const ui::ColorProvider* color_provider =
       document.GetColorProviderForPainting(color_scheme);
+  auto is_in_web_app_scope = document.IsInWebAppScope();
 
   // Re-resolve some internal forced color properties whose initial
   // values are system colors. This is necessary to ensure we get
@@ -912,17 +913,17 @@ void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyleBuilder& builder,
   if (builder.InternalForcedBackgroundColor().IsSystemColor()) {
     builder.SetInternalForcedBackgroundColor(
         builder.InternalForcedBackgroundColor().ResolveSystemColor(
-            color_scheme, color_provider));
+            color_scheme, color_provider, is_in_web_app_scope));
   }
   if (builder.InternalForcedColor().IsSystemColor()) {
     builder.SetInternalForcedColor(
-        builder.InternalForcedColor().ResolveSystemColor(color_scheme,
-                                                         color_provider));
+        builder.InternalForcedColor().ResolveSystemColor(
+            color_scheme, color_provider, is_in_web_app_scope));
   }
   if (builder.InternalForcedVisitedColor().IsSystemColor()) {
     builder.SetInternalForcedVisitedColor(
         builder.InternalForcedVisitedColor().ResolveSystemColor(
-            color_scheme, color_provider));
+            color_scheme, color_provider, is_in_web_app_scope));
   }
 }
 

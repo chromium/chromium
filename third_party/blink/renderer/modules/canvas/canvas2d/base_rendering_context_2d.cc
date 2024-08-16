@@ -938,8 +938,11 @@ ColorParseResult BaseRenderingContext2D::ParseColorOrCurrentColor(
     const TextLinkColors& text_link_colors =
         window ? window->document()->GetTextLinkColors()
                : kDefaultTextLinkColors;
-    const StyleColor style_color = ResolveColorValue(
-        *color_mix_value, text_link_colors, color_scheme_, GetColorProvider());
+    auto* document = window ? window->document() : nullptr;
+    bool is_in_web_app_scope = document && document->IsInWebAppScope();
+    const StyleColor style_color =
+        ResolveColorValue(*color_mix_value, text_link_colors, color_scheme_,
+                          GetColorProvider(), is_in_web_app_scope);
     color = style_color.Resolve(GetCurrentColor(), color_scheme_);
     return ColorParseResult::kColor;
   }

@@ -2265,7 +2265,9 @@ namespace {
 // TODO(crbug.com/1111385): Remove this when we move color-contrast()
 // representation to ComputedStyle. This method does not handle currentColor
 // correctly.
-Color ResolveColor(CSSValue* value, const ui::ColorProvider* color_provider) {
+Color ResolveColor(CSSValue* value,
+                   const ui::ColorProvider* color_provider,
+                   bool is_in_web_app_scope) {
   if (auto* color = DynamicTo<cssvalue::CSSColor>(value)) {
     return color->Value();
   }
@@ -2273,8 +2275,9 @@ Color ResolveColor(CSSValue* value, const ui::ColorProvider* color_provider) {
   if (auto* color = DynamicTo<CSSIdentifierValue>(value)) {
     CSSValueID color_id = color->GetValueID();
     DCHECK(StyleColor::IsColorKeyword(color_id));
-    return StyleColor::ColorFromKeyword(
-        color_id, mojom::blink::ColorScheme::kLight, color_provider);
+    return StyleColor::ColorFromKeyword(color_id,
+                                        mojom::blink::ColorScheme::kLight,
+                                        color_provider, is_in_web_app_scope);
   }
 
   NOTREACHED_IN_MIGRATION();
@@ -2292,6 +2295,8 @@ CSSValue* ConsumeColorContrast(CSSParserTokenStream& stream,
   int highest_contrast_index = -1;
   SkColor4f resolved_background_color;
   const ui::ColorProvider* color_provider = nullptr;
+  const auto* document = context.GetDocument();
+  bool is_in_web_app_scope = document && document->IsInWebAppScope();
   {
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
@@ -2343,8 +2348,7 @@ CSSValue* ConsumeColorContrast(CSSParserTokenStream& stream,
     if (!stream.AtEnd()) {
       return nullptr;
     }
-
-    if (const auto* document = context.GetDocument()) {
+    if (document) {
       // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
       color_provider = document->GetColorProviderForPainting(
           mojom::blink::ColorScheme::kLight);
@@ -2354,12 +2358,14 @@ CSSValue* ConsumeColorContrast(CSSParserTokenStream& stream,
     // currentColor and other variables at used-value time instead of doing it
     // at parse time below.
     resolved_background_color =
-        ResolveColor(background_color, color_provider).toSkColor4f();
+        ResolveColor(background_color, color_provider, is_in_web_app_scope)
+            .toSkColor4f();
     float highest_contrast_ratio = 0;
     for (unsigned i = 0; i < colors_to_compare_against.size(); i++) {
       float contrast_ratio = color_utils::GetContrastRatio(
           resolved_background_color,
-          ResolveColor(colors_to_compare_against[i], color_provider)
+          ResolveColor(colors_to_compare_against[i], color_provider,
+                       is_in_web_app_scope)
               .toSkColor4f());
       if (target_contrast.has_value()) {
         if (contrast_ratio >= target_contrast.value()) {
@@ -2389,8 +2395,9 @@ CSSValue* ConsumeColorContrast(CSSParserTokenStream& stream,
                : MakeGarbageCollected<cssvalue::CSSColor>(Color::kBlack);
   }
 
-  return MakeGarbageCollected<cssvalue::CSSColor>(ResolveColor(
-      colors_to_compare_against[highest_contrast_index], color_provider));
+  return MakeGarbageCollected<cssvalue::CSSColor>(
+      ResolveColor(colors_to_compare_against[highest_contrast_index],
+                   color_provider, is_in_web_app_scope));
 }
 
 namespace {

@@ -215,7 +215,8 @@ std::optional<Color> TryResolveAtParseTime(const CSSValue& value) {
       // depend on that value (i.e it's a dummy argument). Ditto for the null
       // color provider.
       return StyleColor::ColorFromKeyword(
-          value_id, mojom::blink::ColorScheme::kLight, nullptr);
+          value_id, mojom::blink::ColorScheme::kLight, nullptr,
+          /*is_in_web_app_scope=*/false);
     }
     return std::nullopt;
   }

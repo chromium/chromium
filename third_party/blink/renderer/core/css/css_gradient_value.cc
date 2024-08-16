@@ -371,7 +371,8 @@ static Color ResolveStopColor(const CSSValue& stop_color,
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
   const StyleColor style_stop_color =
       ResolveColorValue(stop_color, document.GetTextLinkColors(), color_scheme,
-                        document.GetColorProviderForPainting(color_scheme));
+                        document.GetColorProviderForPainting(color_scheme),
+                        document.IsInWebAppScope());
   return style_stop_color.Resolve(
       style.VisitedDependentColor(GetCSSPropertyColor()), color_scheme);
 }
@@ -415,9 +416,12 @@ static const CSSValue* GetComputedStopColor(const CSSValue& color,
                                             bool allow_visited_style,
                                             CSSValuePhase value_phase) {
   // TODO(crbug.com/40779801): Need to pass an appropriate color provider here.
+  // TODO(crbug.com/40229450): Need to pass an appropriate boolean to say if it
+  // is within webapp scope.
   const mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
   const StyleColor style_stop_color =
-      ResolveColorValue(color, TextLinkColors(), color_scheme, nullptr);
+      ResolveColorValue(color, TextLinkColors(), color_scheme, nullptr,
+                        /*is_in_web_app_scope=*/false);
   const Color current_color =
       style.VisitedDependentColor(GetCSSPropertyColor());
   return ComputedStyleUtils::ValueForColor(
