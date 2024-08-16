@@ -110,7 +110,13 @@ public class NotificationPlatformBridge {
     // Set of origins that are showing the "provisionally unsubscribed" service notification, and
     // for which we will revoke the permission after a grace period of
     // `PROVISIONAL_UNSUBSCRIBE_DURATION_MS`, unless the user hits the `ACTION_UNDO_UNSUBSCRIBE`.
-    private Set<String> mOriginsWithProvisionallyRevokedPermissions;
+    //
+    // This set will be reset to empty if the application process is killed and then restarted.
+    // However, this is unlikely during the brief `PROVISIONAL_UNSUBSCRIBE_DURATION_MS` period.
+    // Even if it happens, it is not catastrophic: The revocation will still happen as that is
+    // wired up to the provisionally unsubscribed notification getting closed. However, we won't
+    // suppress new notifications anymore.
+    private static Set<String> sOriginsWithProvisionallyRevokedPermissions = new HashSet<String>();
 
     // Set of `notificationId`s for which we need to expressly clear an Android-side dismiss timeout
     // if the `notificationId` is to be re-used for another notification, otherwise Android will
@@ -228,13 +234,6 @@ public class NotificationPlatformBridge {
         mNativeNotificationPlatformBridge = nativeNotificationPlatformBridge;
         Context context = ContextUtils.getApplicationContext();
         mNotificationManager = createNotificationManagerProxy(context);
-
-        // This set will be reset to empty if the application process is killed and then restarted.
-        // However, this is unlikely during the brief `PROVISIONAL_UNSUBSCRIBE_DURATION_MS` period.
-        // Even if it happens, it is not catastrophic: The revocation will still happen as that is
-        // wired up to the service notification getting closed. However, we won't suppress new
-        // notifications anymore.
-        mOriginsWithProvisionallyRevokedPermissions = new HashSet<String>();
 
         // This will also be reset on process kill, however, it will be non-empty only for periods
         // of O(k*100ms). If it does get wiped, we may cancel some notifications prematurely.
@@ -848,7 +847,7 @@ public class NotificationPlatformBridge {
             return Promise.fulfilled(false);
         }
 
-        if (mOriginsWithProvisionallyRevokedPermissions.contains(identifyingAttributes.origin)) {
+        if (sOriginsWithProvisionallyRevokedPermissions.contains(identifyingAttributes.origin)) {
             return Promise.fulfilled(true);
         }
 
@@ -1205,7 +1204,7 @@ public class NotificationPlatformBridge {
         // response to it being closed by the developer. If the user clicks `UNDO_UNSUBSCRIBE`, we
         // will not restore the cancelled notification.
         String origin = getOriginFromNotificationTag(notificationId);
-        if (origin != null && mOriginsWithProvisionallyRevokedPermissions.contains(origin)) {
+        if (origin != null && sOriginsWithProvisionallyRevokedPermissions.contains(origin)) {
             return;
         }
 
@@ -1232,7 +1231,7 @@ public class NotificationPlatformBridge {
         // want to stop getting these notifications, resolve this conflict by silently discarding
         // the action.
         if (identifyingAttributes.origin != null
-                && mOriginsWithProvisionallyRevokedPermissions.contains(
+                && sOriginsWithProvisionallyRevokedPermissions.contains(
                         identifyingAttributes.origin)) {
             return;
         }
@@ -1289,7 +1288,7 @@ public class NotificationPlatformBridge {
         // native startup and it takes long. Record how often this happens and ignore duplicate
         // unsubscribe actions.
         boolean duplicatePreUnsubscribe =
-                mOriginsWithProvisionallyRevokedPermissions.contains(identifyingAttributes.origin);
+                sOriginsWithProvisionallyRevokedPermissions.contains(identifyingAttributes.origin);
         NotificationUmaTracker.getInstance()
                 .recordIsDuplicatePreUnsubscribe(duplicatePreUnsubscribe);
         if (duplicatePreUnsubscribe) {
@@ -1302,7 +1301,7 @@ public class NotificationPlatformBridge {
                         ProfileManager.getLastUsedRegularProfile(),
                         ContextUtils.getApplicationContext(),
                         mNotificationManager);
-        mOriginsWithProvisionallyRevokedPermissions.add(identifyingAttributes.origin);
+        sOriginsWithProvisionallyRevokedPermissions.add(identifyingAttributes.origin);
         suspender.storeNotificationResourcesFromOrigins(
                 Collections.singletonList(Uri.parse(identifyingAttributes.origin)),
                 (notificationIdsToCancel) -> {
@@ -1330,7 +1329,7 @@ public class NotificationPlatformBridge {
         // Manually canceling the "provisionally unsubscribed" notification is needed in case the
         // website closed the web notification that we replaced with it.
         mNotificationManager.cancel(identifyingAttributes.notificationId, PLATFORM_ID);
-        mOriginsWithProvisionallyRevokedPermissions.remove(identifyingAttributes.origin);
+        sOriginsWithProvisionallyRevokedPermissions.remove(identifyingAttributes.origin);
         mNotificationIdsWithStaleTimeouts.add(identifyingAttributes.notificationId);
 
         // TODO(crbug.com/41494401): Verify if we can/need to use the correct profile here.
@@ -1361,7 +1360,7 @@ public class NotificationPlatformBridge {
                         identifyingAttributes.origin,
                         identifyingAttributes.profileId,
                         identifyingAttributes.incognito);
-        mOriginsWithProvisionallyRevokedPermissions.remove(identifyingAttributes.origin);
+        sOriginsWithProvisionallyRevokedPermissions.remove(identifyingAttributes.origin);
     }
 
     private TrustedWebActivityClient getTwaClient() {
