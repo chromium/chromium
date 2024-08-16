@@ -165,17 +165,8 @@ class CORE_EXPORT CSSParserImpl {
       wtf_size_t offset,
       const CSSParserContext*);
 
-  // A value for a standard property has the following restriction:
-  // it can not contain braces unless it's the whole value [1].
-  // This function makes use of that restriction to early-out of the
-  // streaming tokenizer as soon as possible.
-  //
-  // [1] https://github.com/w3c/csswg-drafts/issues/9317
-  static CSSTokenizedValue ConsumeRestrictedPropertyValue(
-      CSSParserTokenStream&);
-
-  // Custom properties (as well as descriptors) do not have the restriction
-  // explained above. This function will simply consume until AtEnd.
+  // Legacy function, mostly used for parsing descriptors. Will parsed
+  // until AtEnd.
   static CSSTokenizedValue ConsumeUnrestrictedPropertyValue(
       CSSParserTokenStream&);
 
@@ -299,9 +290,9 @@ class CORE_EXPORT CSSParserImpl {
                                CSSPropertyID,
                                bool is_in_declaration_list,
                                StyleRule::RuleType);
-  void ConsumeVariableValue(const CSSTokenizedValue&,
+  bool ConsumeVariableValue(CSSParserTokenStream& stream,
                             const AtomicString& property_name,
-                            bool important,
+                            bool allow_important_annotation,
                             bool is_animation_tainted);
 
   // Consumes tokens from the stream using the provided function, and wraps

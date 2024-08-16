@@ -69,6 +69,15 @@ class CORE_EXPORT CSSPropertyParser {
                                           CSSParserTokenStream&,
                                           const CSSParserContext*);
 
+  // Tries to parse an entire value consisting solely of a CSS-wide
+  // keyword (and potentially !important). Returns nullptr on failure,
+  // and then leaves the stream position untouched (but “important”
+  // in an undeterminate state). Unlike the ParseFoo() functions,
+  // this is static, so does not touch parsed_properties_.
+  static const CSSValue* ConsumeCSSWideKeyword(CSSParserTokenStream& stream,
+                                               bool allow_important_annotation,
+                                               bool& important);
+
  private:
   CSSPropertyParser(CSSParserTokenStream&,
                     const CSSParserContext*,
@@ -78,8 +87,8 @@ class CORE_EXPORT CSSPropertyParser {
   bool ParseValueStart(CSSPropertyID unresolved_property,
                        bool allow_important_annotation,
                        StyleRule::RuleType rule_type);
-  bool ConsumeCSSWideKeyword(CSSPropertyID unresolved_property,
-                             bool allow_important_annotation);
+  bool ParseCSSWideKeyword(CSSPropertyID unresolved_property,
+                           bool allow_important_annotation);
 
   bool ParseFontFaceDescriptor(CSSPropertyID);
 

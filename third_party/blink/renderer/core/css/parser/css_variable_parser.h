@@ -14,16 +14,20 @@
 
 namespace blink {
 
-class CSSUnparsedDeclarationValue;
 class CSSParserContext;
+class CSSParserTokenStream;
 class CSSUnparsedDeclarationValue;
+class CSSVariableData;
 struct CSSTokenizedValue;
 
 class CORE_EXPORT CSSVariableParser {
  public:
+  // TODO(sesse): Get rid of this (and then a lot of utility functions can go
+  // away, too).
   static bool ContainsValidVariableReferences(CSSParserTokenRange,
                                               const ExecutionContext* context);
 
+  // TODO(sesse): Same.
   static CSSValue* ParseDeclarationIncludingCSSWide(const CSSTokenizedValue&,
                                                     bool is_animation_tainted,
                                                     const CSSParserContext&);
@@ -31,6 +35,42 @@ class CORE_EXPORT CSSVariableParser {
       const CSSTokenizedValue&,
       bool is_animation_tainted,
       const CSSParserContext&);
+
+  // Consume a declaration without trying to parse it as any specific
+  // property. This is mostly useful for either custom property declarations,
+  // or for standard properties referencing custom properties
+  // (var(), or similarly env() etc.).
+  //
+  // Returns nullptr on failure, such as a stray top-level ! or },
+  // or if “must_contain_variable_reference” (useful for standard
+  // properties), “restricted_value” or “allow_important_annotation”
+  // is violated. If so, the parser is left at an indeterminate place,
+  // but with the same block level as it started. On success, returns
+  // a CSSVariableData containing the original text for the property,
+  // with leading and trailing whitespace and comments removed,
+  // plus “!important” (if existing) stripped. The parser will be
+  // at the end of the declaration, i.e., typically at a semicolon.
+  //
+  // A value for a standard property (restricted_value=true) has
+  // the following restriction: it can not contain braces unless
+  // it's the whole value [1]. This function makes use of that
+  // restriction to early-out of the streaming tokenizer as
+  // soon as possible. (This used to be important to avoid a O(n²),
+  // but it is not anymore, as failure of this function is no longer
+  // a common case in the happy parsing path.) If restricted_value=false
+  // (as is the case with custom properties and descriptors), the function
+  // will simply consume until AtEnd(), unless an error is encountered.
+  //
+  // [1] https://github.com/w3c/csswg-drafts/issues/9317
+  static CSSVariableData* ConsumeUnparsedDeclaration(
+      CSSParserTokenStream& stream,
+      bool allow_important_annotation,
+      bool is_animation_tainted,
+      bool must_contain_variable_reference,
+      bool restricted_value,
+      bool& important,
+      const ExecutionContext* context);
+
   // Custom properties registered with universal syntax [1] are parsed with
   // this function.
   //

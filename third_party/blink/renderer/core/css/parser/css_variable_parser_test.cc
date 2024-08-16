@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenized_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -98,6 +99,19 @@ TEST_P(ValidVariableReferenceTest, ContainsValidVariableReferences) {
       range, context->GetExecutionContext()));
 }
 
+TEST_P(ValidVariableReferenceTest, ConsumeUnparsedDeclaration) {
+  SCOPED_TRACE(GetParam());
+  CSSTokenizer tokenizer{String(GetParam())};
+  CSSParserTokenStream stream(tokenizer);
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  bool important;
+  EXPECT_TRUE(CSSVariableParser::ConsumeUnparsedDeclaration(
+      stream, /*allow_important_annotation=*/false,
+      /*is_animation_tainted=*/false, /*must_contain_variable_reference=*/true,
+      /*restricted_value=*/true, important, context->GetExecutionContext()));
+}
+
 TEST_P(ValidVariableReferenceTest, ParseUniversalSyntaxValue) {
   SCOPED_TRACE(GetParam());
   Vector<CSSParserToken, 32> tokens = Parse(GetParam());
@@ -129,6 +143,19 @@ TEST_P(InvalidVariableReferenceTest, ContainsValidVariableReferences) {
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   EXPECT_FALSE(CSSVariableParser::ContainsValidVariableReferences(
       range, context->GetExecutionContext()));
+}
+
+TEST_P(InvalidVariableReferenceTest, ConsumeUnparsedDeclaration) {
+  SCOPED_TRACE(GetParam());
+  CSSTokenizer tokenizer{String(GetParam())};
+  CSSParserTokenStream stream(tokenizer);
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  bool important;
+  EXPECT_FALSE(CSSVariableParser::ConsumeUnparsedDeclaration(
+      stream, /*allow_important_annotation=*/false,
+      /*is_animation_tainted=*/false, /*must_contain_variable_reference=*/true,
+      /*restricted_value=*/true, important, context->GetExecutionContext()));
 }
 
 TEST_P(InvalidVariableReferenceTest, ParseUniversalSyntaxValue) {

@@ -324,6 +324,337 @@ CSSUnparsedDeclarationValue* CSSVariableParser::ParseDeclarationValue(
       &context);
 }
 
+static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
+                                 bool restricted_value,
+                                 bool& has_references,
+                                 bool& has_font_units,
+                                 bool& has_root_font_units,
+                                 bool& has_line_height_units,
+                                 const ExecutionContext* context);
+
+static bool ConsumeVariableReference(CSSParserTokenStream& stream,
+                                     bool& has_references,
+                                     bool& has_font_units,
+                                     bool& has_root_font_units,
+                                     bool& has_line_height_units,
+                                     const ExecutionContext* context) {
+  CSSParserTokenStream::BlockGuard guard(stream);
+  stream.ConsumeWhitespace();
+  if (stream.Peek().GetType() != kIdentToken ||
+      !CSSVariableParser::IsValidVariableName(
+          stream.ConsumeIncludingWhitespace())) {
+    return false;
+  }
+  if (stream.AtEnd()) {
+    return true;
+  }
+
+  if (stream.Consume().GetType() != kCommaToken) {
+    return false;
+  }
+
+  // Parse the fallback value.
+  if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false, has_references,
+                            has_font_units, has_root_font_units,
+                            has_line_height_units, context)) {
+    return false;
+  }
+  return stream.AtEnd();
+}
+
+static bool ConsumeEnvVariableReference(CSSParserTokenStream& stream,
+                                        bool& has_references,
+                                        bool& has_font_units,
+                                        bool& has_root_font_units,
+                                        bool& has_line_height_units,
+                                        const ExecutionContext* context) {
+  CSSParserTokenStream::BlockGuard guard(stream);
+  stream.ConsumeWhitespace();
+  if (stream.Peek().GetType() != kIdentToken) {
+    return false;
+  }
+  CSSParserToken token = stream.ConsumeIncludingWhitespace();
+  if (stream.AtEnd()) {
+    return true;
+  }
+
+  if (RuntimeEnabledFeatures::ViewportSegmentsEnabled(context)) {
+    // Consume any number of integer values that indicate the indices for a
+    // multi-dimensional variable.
+    while (stream.Peek().GetType() == kNumberToken) {
+      token = stream.ConsumeIncludingWhitespace();
+      if (token.GetNumericValueType() != kIntegerValueType) {
+        return false;
+      }
+      if (token.NumericValue() < 0.) {
+        return false;
+      }
+    }
+
+    // If that's all we had (either ident then integers or just the ident) then
+    // the env() is valid.
+    if (stream.AtEnd()) {
+      return true;
+    }
+    token = stream.ConsumeIncludingWhitespace();
+  } else {
+    token = stream.Consume();
+  }
+  // Otherwise we need a comma followed by an optional fallback value.
+  if (token.GetType() != kCommaToken) {
+    return false;
+  }
+
+  // Parse the fallback value.
+  if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false, has_references,
+                            has_font_units, has_root_font_units,
+                            has_line_height_units, context)) {
+    return false;
+  }
+  return stream.AtEnd();
+}
+
+// attr() = attr( <attr-name> <attr-type>? , <declaration-value>?)
+static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
+                                      bool& has_references,
+                                      bool& has_font_units,
+                                      bool& has_root_font_units,
+                                      bool& has_line_height_units,
+                                      const ExecutionContext* context) {
+  CSSParserTokenStream::BlockGuard guard(stream);
+  stream.ConsumeWhitespace();
+  // Parse <attr-name>.
+  auto token = stream.ConsumeIncludingWhitespace();
+  if (token.GetType() != kIdentToken) {
+    return false;
+  }
+  if (stream.AtEnd()) {
+    // attr = attr(<attr-name>) is allowed, so return true.
+    return true;
+  }
+
+  token = stream.ConsumeIncludingWhitespace();
+
+  // Parse <attr-type>.
+  if (token.GetType() == kIdentToken) {
+    if (!CSSAttrType::Parse(token.Value()).IsValid()) {
+      return false;
+    }
+    if (stream.AtEnd()) {
+      // attr = attr(<attr-name> <attr-type>) is allowed, so return true.
+      return true;
+    }
+  }
+
+  if (stream.Peek().GetType() != kCommaToken) {
+    return false;
+  }
+  stream.Consume();
+  if (stream.AtEnd()) {
+    return false;
+  }
+
+  // Parse the fallback value.
+  if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false, has_references,
+                            has_font_units, has_root_font_units,
+                            has_line_height_units, context)) {
+    return false;
+  }
+  return stream.AtEnd();
+}
+
+// Utility function for ConsumeUnparsedDeclaration(). Parses until it
+// detects some error (such as a stray top-level right-paren; if so,
+// returns false) or something that should end a declaration, such as
+// a top-level exclamation semicolon (returns true). AtEnd() must be
+// checked by the caller even if this returns success, although on
+// top-level, it may need to strip !important first.
+//
+// Called recursively for parsing fallback values.
+static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
+                                 bool restricted_value,
+                                 bool& has_references,
+                                 bool& has_font_units,
+                                 bool& has_root_font_units,
+                                 bool& has_line_height_units,
+                                 const ExecutionContext* context) {
+  size_t block_stack_size = 0;
+
+  // https://drafts.csswg.org/css-syntax/#component-value
+  size_t top_level_component_values = 0;
+  bool has_top_level_brace = false;
+  bool error = false;
+
+  while (true) {
+    const CSSParserToken& token = stream.Peek();
+    if (token.IsEOF()) {
+      break;
+    }
+
+    // Save this, since we'll change it below.
+    const bool at_top_level = block_stack_size == 0;
+
+    // First check if this is a valid variable reference, then handle the next
+    // token accordingly.
+    if (token.GetBlockType() == CSSParserToken::kBlockStart) {
+      // A block may have both var and env references. They can also be nested
+      // and used as fallbacks.
+      switch (token.FunctionId()) {
+        case CSSValueID::kInvalid:
+          // Not a built-in function, but it might be a user-defined
+          // CSS function (e.g. --foo()).
+          if (RuntimeEnabledFeatures::CSSFunctionsEnabled() &&
+              token.GetType() == kFunctionToken &&
+              CSSVariableParser::IsValidVariableName(token.Value())) {
+            has_references = true;
+          }
+          break;
+        case CSSValueID::kVar:
+          if (!ConsumeVariableReference(stream, has_references, has_font_units,
+                                        has_root_font_units,
+                                        has_line_height_units, context)) {
+            error = true;
+            break;
+          }
+          has_references = true;
+          continue;
+        case CSSValueID::kEnv:
+          if (!ConsumeEnvVariableReference(stream, has_references,
+                                           has_font_units, has_root_font_units,
+                                           has_line_height_units, context)) {
+            error = true;
+            break;
+          }
+          has_references = true;
+          continue;
+        case CSSValueID::kAttr:
+          if (!RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
+            break;
+          }
+          if (!ConsumeAttributeReference(stream, has_references, has_font_units,
+                                         has_root_font_units,
+                                         has_line_height_units, context)) {
+            error = true;
+            break;
+          }
+          has_references = true;
+          continue;
+        default:
+          break;
+      }
+    }
+
+    if (token.GetBlockType() == CSSParserToken::kBlockStart) {
+      ++block_stack_size;
+    } else if (token.GetBlockType() == CSSParserToken::kBlockEnd) {
+      if (block_stack_size == 0) {
+        break;
+      }
+      --block_stack_size;
+    } else {
+      switch (token.GetType()) {
+        case kDelimiterToken: {
+          if (token.Delimiter() == '!' && block_stack_size == 0) {
+            return !error;
+          }
+          break;
+        }
+        case kRightParenthesisToken:
+        case kRightBraceToken:
+        case kRightBracketToken:
+        case kBadStringToken:
+        case kBadUrlToken:
+          error = true;
+          break;
+        case kSemicolonToken:
+          if (block_stack_size == 0) {
+            return !error;
+          }
+          break;
+        default:
+          break;
+      }
+    }
+
+    if (error && at_top_level) {
+      // We cannot safely exit until we are at the top level; this is a waste,
+      // but it's not a big problem since we need to fast-forward through error
+      // recovery in nearly all cases anyway (the only exception would be when
+      // we retry as a nested rule, but nested rules that look like custom
+      // property declarations are illegal and cannot happen in legal CSS).
+      return false;
+    }
+
+    // Now that we know this token wasn't an end-of-value marker,
+    // check whether we are violating the rules for restricted values.
+    if (restricted_value && at_top_level) {
+      ++top_level_component_values;
+      if (token.GetType() == kLeftBraceToken) {
+        has_top_level_brace = true;
+      }
+      if (has_top_level_brace && top_level_component_values > 1) {
+        return false;
+      }
+    }
+
+    CSSVariableData::ExtractFeatures(token, has_font_units, has_root_font_units,
+                                     has_line_height_units);
+    stream.ConsumeRaw();
+  }
+
+  return !error;
+}
+
+CSSVariableData* CSSVariableParser::ConsumeUnparsedDeclaration(
+    CSSParserTokenStream& stream,
+    bool allow_important_annotation,
+    bool is_animation_tainted,
+    bool must_contain_variable_reference,
+    bool restricted_value,
+    bool& important,
+    const ExecutionContext* context) {
+  // Consume leading whitespace and comments, as required by the spec.
+  stream.ConsumeWhitespace();
+  wtf_size_t value_start_offset = stream.LookAheadOffset();
+
+  bool has_references = false;
+  bool has_font_units = false;
+  bool has_root_font_units = false;
+  bool has_line_height_units = false;
+  if (!ConsumeUnparsedValue(stream, restricted_value, has_references,
+                            has_font_units, has_root_font_units,
+                            has_line_height_units, context)) {
+    return nullptr;
+  }
+
+  if (must_contain_variable_reference && !has_references) {
+    return nullptr;
+  }
+
+  stream.EnsureLookAhead();
+  wtf_size_t value_end_offset = stream.LookAheadOffset();
+
+  important = css_parsing_utils::MaybeConsumeImportant(
+      stream, allow_important_annotation);
+  if (!stream.AtEnd()) {
+    return nullptr;
+  }
+
+  StringView original_text = stream.StringRangeAt(
+      value_start_offset, value_end_offset - value_start_offset);
+
+  if (original_text.length() > CSSVariableData::kMaxVariableBytes) {
+    return nullptr;
+  }
+  original_text =
+      CSSVariableParser::StripTrailingWhitespaceAndComments(original_text);
+
+  return CSSVariableData::Create(original_text, is_animation_tainted,
+                                 /*needs_variable_resolution=*/has_references,
+                                 has_font_units, has_root_font_units,
+                                 has_line_height_units);
+}
+
 CSSUnparsedDeclarationValue* CSSVariableParser::ParseUniversalSyntaxValue(
     CSSTokenizedValue value,
     const CSSParserContext& context,

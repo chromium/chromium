@@ -200,14 +200,15 @@ MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseVariableValue(
   STACK_UNINITIALIZED CSSParserImpl parser(context);
   CSSTokenizer tokenizer(value);
   CSSParserTokenStream stream(tokenizer);
-  CSSTokenizedValue tokenized_value = ConsumeUnrestrictedPropertyValue(stream);
-  parser.ConsumeVariableValue(tokenized_value, property_name, important,
-                              is_animation_tainted);
-  if (parser.parsed_properties_.empty()) {
+  if (!parser.ConsumeVariableValue(stream, property_name,
+                                   /*allow_important_annotation=*/false,
+                                   is_animation_tainted)) {
     return MutableCSSPropertyValueSet::kParseError;
-  } else {
-    return declaration->AddParsedProperties(parser.parsed_properties_);
   }
+  if (important) {
+    parser.parsed_properties_.back().SetImportant();
+  }
+  return declaration->AddParsedProperties(parser.parsed_properties_);
 }
 
 static inline void FilterProperties(
@@ -2120,13 +2121,12 @@ StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
   CSSVariableData* return_value = nullptr;
   {
     CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
-    CSSTokenizedValue tokenized_value =
-        ConsumeUnrestrictedPropertyValue(stream);
-    // TODO(sesse): Are these the right values for is_animation_tainted and
-    // needs_variable_resolution?
-    return_value =
-        CSSVariableData::Create(tokenized_value, /*is_animation_tainted=*/false,
-                                /*needs_variable_resolution=*/true);
+    bool important_ignored;
+    return_value = CSSVariableParser::ConsumeUnparsedDeclaration(
+        stream, /*allow_important_annotation=*/false,
+        /*is_animation_tainted=*/false,
+        /*must_contain_variable_reference=*/false, /*restricted_value=*/false,
+        important_ignored, context_->GetExecutionContext());
   }
 
   while (!stream.AtEnd()) {
@@ -2564,7 +2564,7 @@ void CSSParserImpl::ConsumeDeclarationList(
             stream.UncheckedConsume();  // kSemicolonToken
           }
           break;
-        } else if (stream.UncheckedPeek().GetType() == kSemicolonToken) {
+        } else if (stream.Peek().GetType() == kSemicolonToken) {
           // As an optimization, we avoid the restart below (retrying as a
           // nested style rule) if we ended on a kSemicolonToken, as this
           // situation can't produce a valid rule.
@@ -2742,6 +2742,9 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
 
   if (id) {
     if (parsing_descriptor) {
+      // TODO(sesse): When we move descriptor parsing entirely
+      // to the streaming parser, remove this and the remnants
+      // of ConsumeUnrestrictedPropertyValue().
       CSSTokenizedValue tokenized_value =
           ConsumeUnrestrictedPropertyValue(stream);
       important = RemoveImportantAnnotationIfPresent(tokenized_value);
@@ -2758,16 +2761,14 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
             rule_type != StyleRule::kKeyframe) {
           return false;
         }
-        CSSTokenizedValue tokenized_value =
-            ConsumeUnrestrictedPropertyValue(stream);
-        important = RemoveImportantAnnotationIfPresent(tokenized_value);
-        if (important && (rule_type == StyleRule::kKeyframe)) {
+        AtomicString variable_name = lhs.Value().ToAtomicString();
+        bool allow_important_annotation = (rule_type != StyleRule::kKeyframe);
+        bool is_animation_tainted = rule_type == StyleRule::kKeyframe;
+        if (!ConsumeVariableValue(stream, variable_name,
+                                  allow_important_annotation,
+                                  is_animation_tainted)) {
           return false;
         }
-        AtomicString variable_name = lhs.Value().ToAtomicString();
-        bool is_animation_tainted = rule_type == StyleRule::kKeyframe;
-        ConsumeVariableValue(tokenized_value, variable_name, important,
-                             is_animation_tainted);
       } else if (unresolved_property != CSSPropertyID::kInvalid) {
         if (observer_) {
           CSSParserTokenStream::State savepoint = stream.Save();
@@ -2782,9 +2783,13 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
             important = parsed_properties_.back().IsImportant();
           } else {
             stream.Restore(savepoint);
-            CSSTokenizedValue tokenized_value =
-                ConsumeRestrictedPropertyValue(stream);
-            important = RemoveImportantAnnotationIfPresent(tokenized_value);
+            // NOTE: This call is solely to update “important”.
+            CSSVariableParser::ConsumeUnparsedDeclaration(
+                stream, /*allow_important_annotation=*/true,
+                /*is_animation_tainted=*/false,
+                /*must_contain_variable_reference=*/false,
+                /*restricted_value=*/true, important,
+                context_->GetExecutionContext());
           }
         } else {
           ConsumeDeclarationValue(stream, unresolved_property,
@@ -2802,9 +2807,12 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
       // If we skipped the main call to ConsumeValue due to an invalid
       // property/descriptor, the inspector still needs to know the offset
       // where the would-be declaration ends.
-      CSSTokenizedValue tokenized_value =
-          ConsumeRestrictedPropertyValue(stream);
-      important = RemoveImportantAnnotationIfPresent(tokenized_value);
+      CSSVariableParser::ConsumeUnparsedDeclaration(
+          stream, /*allow_important_annotation=*/true,
+          /*is_animation_tainted=*/false,
+          /*must_contain_variable_reference=*/false,
+          /*restricted_value=*/true, important,
+          context_->GetExecutionContext());
     }
     // The end offset is the offset of the terminating token, which is peeked
     // but not yet consumed.
@@ -2816,17 +2824,36 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
   return parsed_properties_.size() != properties_count;
 }
 
-void CSSParserImpl::ConsumeVariableValue(
-    const CSSTokenizedValue& tokenized_value,
-    const AtomicString& variable_name,
-    bool important,
-    bool is_animation_tainted) {
-  if (CSSValue* value = CSSVariableParser::ParseDeclarationIncludingCSSWide(
-          tokenized_value, is_animation_tainted, *context_)) {
-    parsed_properties_.push_back(
-        CSSPropertyValue(CSSPropertyName(variable_name), *value, important));
-    context_->Count(context_->Mode(), CSSPropertyID::kVariable);
+bool CSSParserImpl::ConsumeVariableValue(CSSParserTokenStream& stream,
+                                         const AtomicString& variable_name,
+                                         bool allow_important_annotation,
+                                         bool is_animation_tainted) {
+  stream.EnsureLookAhead();
+
+  // First, see if this is (only) a CSS-wide keyword.
+  bool important;
+  const CSSValue* value = CSSPropertyParser::ConsumeCSSWideKeyword(
+      stream, allow_important_annotation, important);
+  if (!value) {
+    // It was not, so try to parse it as an unparsed declaration value
+    // (which is pretty free-form).
+    CSSVariableData* variable_data =
+        CSSVariableParser::ConsumeUnparsedDeclaration(
+            stream, allow_important_annotation, is_animation_tainted,
+            /*must_contain_variable_reference=*/false,
+            /*restricted_value=*/false, important,
+            context_->GetExecutionContext());
+    if (!variable_data) {
+      return false;
+    }
+
+    value = MakeGarbageCollected<CSSUnparsedDeclarationValue>(variable_data,
+                                                              context_);
   }
+  parsed_properties_.push_back(
+      CSSPropertyValue(CSSPropertyName(variable_name), *value, important));
+  context_->Count(context_->Mode(), CSSPropertyID::kVariable);
+  return true;
 }
 
 // NOTE: Leading whitespace must be stripped from the stream, since
@@ -2857,24 +2884,6 @@ CSSTokenizedValue CSSParserImpl::ConsumeValue(
 
   return {range, stream.StringRangeAt(value_start_offset,
                                       value_end_offset - value_start_offset)};
-}
-
-CSSTokenizedValue CSSParserImpl::ConsumeRestrictedPropertyValue(
-    CSSParserTokenStream& stream) {
-  if (stream.Peek().GetType() == kLeftBraceToken) {
-    // '{}' must be the whole value, hence we simply consume a component
-    // value from the stream, and consider this the whole value.
-    return ConsumeValue(stream, [](CSSParserTokenStream& stream) {
-      return stream.ConsumeComponentValueIncludingWhitespace();
-    });
-  }
-  // Otherwise, we consume until we're AtEnd() (which in the normal case
-  // means we hit a kSemicolonToken), or until we see kLeftBraceToken.
-  // The latter is a kind of error state, which is dealt with via additional
-  // AtEnd() checks at the call site.
-  return ConsumeValue(stream, [](CSSParserTokenStream& stream) {
-    return stream.ConsumeUntilPeekedTypeIs<kLeftBraceToken>();
-  });
 }
 
 CSSTokenizedValue CSSParserImpl::ConsumeUnrestrictedPropertyValue(

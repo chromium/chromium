@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
@@ -492,7 +493,8 @@ TEST(CSSParserImplTest, NestedIdent) {
   EXPECT_EQ(test_css_parser_observer.rule_header_start_, 6u);
 }
 
-TEST(CSSParserImplTest, RemoveImportantAnnotationIfPresent) {
+TEST(CSSParserImplTest,
+     ConsumeUnparsedDeclarationRemovesImportantAnnotationIfPresent) {
   test::TaskEnvironment task_environment;
   struct TestCase {
     String input;
@@ -503,26 +505,36 @@ TEST(CSSParserImplTest, RemoveImportantAnnotationIfPresent) {
       {"", "", false},
       {"!important", "", true},
       {" !important", "", true},
-      {"!", "!", false},
+      {"!", "PARSE ERROR", false},
       {"1px", "1px", false},
       {"2px!important", "2px", true},
-      {"3px !important", "3px ", true},
-      {"4px ! important", "4px ", true},
-      {"5px !important ", "5px ", true},
-      {"6px !!important", "6px !", true},
-      {"7px !important !important", "7px !important ", true},
+      {"3px !important", "3px", true},
+      {"4px ! important", "4px", true},
+      {"5px !important ", "5px", true},
+      {"6px !!important", "PARSE ERROR", true},
+      {"7px !important !important", "PARSE ERROR", true},
       {"8px important", "8px important", false},
   };
   for (auto current_case : test_cases) {
+    SCOPED_TRACE(current_case.input);
     CSSTokenizer tokenizer(current_case.input);
     CSSParserTokenStream stream(tokenizer);
-    CSSTokenizedValue tokenized_value =
-        CSSParserImpl::ConsumeRestrictedPropertyValue(stream);
-    SCOPED_TRACE(current_case.input);
-    bool is_important =
-        CSSParserImpl::RemoveImportantAnnotationIfPresent(tokenized_value);
-    EXPECT_EQ(is_important, current_case.expected_is_important);
-    EXPECT_EQ(tokenized_value.text.ToString(), current_case.expected_text);
+    bool is_important;
+    CSSVariableData* data = CSSVariableParser::ConsumeUnparsedDeclaration(
+        stream, /*allow_important_annotation=*/true,
+        /*is_animation_tainted=*/false,
+        /*must_contain_variable_reference=*/false,
+        /*restricted_value=*/true, is_important,
+        /*context=*/nullptr);
+    if (current_case.expected_text == "PARSE ERROR") {
+      EXPECT_FALSE(data);
+    } else {
+      EXPECT_TRUE(data);
+      if (data) {
+        EXPECT_EQ(is_important, current_case.expected_is_important);
+        EXPECT_EQ(data->OriginalText().ToString(), current_case.expected_text);
+      }
+    }
   }
 }
 
@@ -1064,7 +1076,6 @@ TEST(CSSParserImplTest, FontFeatureValuesOffsets) {
   EXPECT_EQ(test_css_parser_observer.rule_body_start_, 28u);
   EXPECT_EQ(test_css_parser_observer.rule_body_end_, 53u);
 }
-
 
 TEST(CSSParserImplTest, CSSFunction) {
   test::TaskEnvironment task_environment;
