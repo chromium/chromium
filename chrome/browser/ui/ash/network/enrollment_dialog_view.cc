@@ -189,8 +189,6 @@ bool EnrollmentDialogAllowed(Profile* profile) {
       return false;
     case LoginState::LOGGED_IN_USER_REGULAR:
       return true;
-    case LoginState::LOGGED_IN_USER_OWNER:
-      return true;
     case LoginState::LOGGED_IN_USER_GUEST:
       return true;
     case LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT:

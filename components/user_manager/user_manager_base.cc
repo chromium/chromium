@@ -1425,9 +1425,8 @@ void UserManagerBase::NotifyActiveUserChanged(User* active_user) {
 
 void UserManagerBase::NotifyLoginStateUpdated() {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
-  bool is_current_user_owner = IsCurrentUserOwner();
   for (auto& observer : session_state_observer_list_) {
-    observer.OnLoginStateUpdated(active_user_, is_current_user_owner);
+    observer.OnLoginStateUpdated(active_user_);
   }
 }
 

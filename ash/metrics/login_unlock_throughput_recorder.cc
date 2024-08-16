@@ -295,7 +295,6 @@ void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
     return;
 
   const bool is_regular_user_or_owner =
-      logged_in_user == LoginState::LOGGED_IN_USER_OWNER ||
       logged_in_user == LoginState::LOGGED_IN_USER_REGULAR;
 
   auto now = base::TimeTicks::Now();
