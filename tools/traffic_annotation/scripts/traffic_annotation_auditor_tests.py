@@ -143,8 +143,7 @@ class TrafficAnnotationTestsChecker():
     stdout_text, stderr_text, return_code = self.tools.RunAuditor(
         args + [
             "--annotations-file", self.annotations_filename, "--errors-file",
-            self.errors_filename,
-            (self.annotations_filename, self.errors_filename)
+            self.errors_filename
         ], use_python_auditor)
 
     annotations = None
