@@ -3422,6 +3422,10 @@ const FeatureEntry::FeatureVariation kTpcdHeuristicsGrantsVariations[] = {
      nullptr}};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+const FeatureEntry::FeatureParam kVcInferenceBackendAuto[] = {
+    {"inference_backend", "AUTO"},
+};
+
 const FeatureEntry::FeatureParam kVcInferenceBackendGpu[] = {
     {"inference_backend", "GPU"},
 };
@@ -3431,13 +3435,17 @@ const FeatureEntry::FeatureParam kVcInferenceBackendNpu[] = {
 };
 
 const FeatureEntry::FeatureVariation kVcRelightingInferenceBackendVariations[] =
-    {{"GPU", kVcInferenceBackendGpu, std::size(kVcInferenceBackendGpu),
+    {{"AUTO", kVcInferenceBackendAuto, std::size(kVcInferenceBackendAuto),
+      nullptr},
+     {"GPU", kVcInferenceBackendGpu, std::size(kVcInferenceBackendGpu),
       nullptr},
      {"NPU", kVcInferenceBackendNpu, std::size(kVcInferenceBackendNpu),
       nullptr}};
 
 const FeatureEntry::FeatureVariation
     kVcSegmentationInferenceBackendVariations[] = {
+        {"AUTO", kVcInferenceBackendAuto, std::size(kVcInferenceBackendAuto),
+         nullptr},
         {"GPU", kVcInferenceBackendGpu, std::size(kVcInferenceBackendGpu),
          nullptr},
         {"NPU", kVcInferenceBackendNpu, std::size(kVcInferenceBackendNpu),

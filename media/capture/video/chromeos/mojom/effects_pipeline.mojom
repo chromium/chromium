@@ -56,8 +56,9 @@ enum SegmentationModel {
 // Defines the backends to run the ML model inference.
 [Extensible]
 enum InferenceBackend {
-  [Default] kGpu = 0,
+  kGpu = 0,
   kNpu = 1,
+  [Default] kAuto = 2,
 };
 
 // Structure used for configuring and enabling video conferencing effects.

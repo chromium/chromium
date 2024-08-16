@@ -376,7 +376,9 @@ cros::mojom::InferenceBackend GetInferenceBackend(
     const base::Feature& feature) {
   const std::string value =
       GetFieldTrialParamValueByFeature(feature, "inference_backend");
-  if (value == "GPU") {
+  if (value == "AUTO") {
+    return cros::mojom::InferenceBackend::kAuto;
+  } else if (value == "GPU") {
     return cros::mojom::InferenceBackend::kGpu;
   } else if (value == "NPU") {
     return cros::mojom::InferenceBackend::kNpu;
