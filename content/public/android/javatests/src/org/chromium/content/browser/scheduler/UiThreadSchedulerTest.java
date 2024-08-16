@@ -57,8 +57,7 @@ public class UiThreadSchedulerTest {
     @Test
     @MediumTest
     public void testSimpleUiThreadPostingBeforeNativeLoaded() {
-        TaskRunner uiThreadTaskRunner =
-                PostTask.createSingleThreadTaskRunner(TaskTraits.UI_DEFAULT);
+        TaskRunner uiThreadTaskRunner = PostTask.createTaskRunner(TaskTraits.UI_DEFAULT);
         List<Integer> orderList = new ArrayList<>();
         SchedulerTestHelpers.postRecordOrderTask(uiThreadTaskRunner, orderList, 1);
         SchedulerTestHelpers.postRecordOrderTask(uiThreadTaskRunner, orderList, 2);
@@ -71,8 +70,7 @@ public class UiThreadSchedulerTest {
     @Test
     @MediumTest
     public void testUiThreadTaskRunnerMigrationToNative() {
-        TaskRunner uiThreadTaskRunner =
-                PostTask.createSingleThreadTaskRunner(TaskTraits.UI_DEFAULT);
+        TaskRunner uiThreadTaskRunner = PostTask.createTaskRunner(TaskTraits.UI_DEFAULT);
         List<Integer> orderList = new ArrayList<>();
         SchedulerTestHelpers.postRecordOrderTask(uiThreadTaskRunner, orderList, 1);
 
@@ -90,8 +88,7 @@ public class UiThreadSchedulerTest {
     @Test
     @MediumTest
     public void testSimpleUiThreadPostingAfterNativeLoaded() {
-        TaskRunner uiThreadTaskRunner =
-                PostTask.createSingleThreadTaskRunner(TaskTraits.UI_DEFAULT);
+        TaskRunner uiThreadTaskRunner = PostTask.createTaskRunner(TaskTraits.UI_DEFAULT);
         startContentMainOnUiThread();
 
         uiThreadTaskRunner.postTask(
@@ -107,8 +104,7 @@ public class UiThreadSchedulerTest {
     @Test
     @MediumTest
     public void testTaskNotRunOnUiThreadWithoutUiThreadTaskTraits() {
-        TaskRunner uiThreadTaskRunner =
-                PostTask.createSingleThreadTaskRunner(TaskTraits.USER_BLOCKING);
+        TaskRunner uiThreadTaskRunner = PostTask.createTaskRunner(TaskTraits.USER_BLOCKING);
         // Test times out without this.
         UiThreadSchedulerTestUtils.postBrowserMainLoopStartupTasks(true);
         startContentMainOnUiThread();
@@ -164,7 +160,6 @@ public class UiThreadSchedulerTest {
     @Test
     @MediumTest
     public void testRunSynchronously() {
-        final Object lock = new Object();
         final AtomicBoolean taskExecuted = new AtomicBoolean();
 
         PostTask.runSynchronously(

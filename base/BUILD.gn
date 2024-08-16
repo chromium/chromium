@@ -4732,8 +4732,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/task/SequencedTaskRunner.java",
       "android/java/src/org/chromium/base/task/SequencedTaskRunnerImpl.java",
       "android/java/src/org/chromium/base/task/SerialExecutor.java",
-      "android/java/src/org/chromium/base/task/SingleThreadTaskRunner.java",
-      "android/java/src/org/chromium/base/task/SingleThreadTaskRunnerImpl.java",
       "android/java/src/org/chromium/base/task/TaskOriginException.java",
       "android/java/src/org/chromium/base/task/TaskRunner.java",
       "android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
