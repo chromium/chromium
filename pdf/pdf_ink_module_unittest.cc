@@ -38,6 +38,7 @@ using testing::ElementsAre;
 using testing::ElementsAreArray;
 using testing::InSequence;
 using testing::Pair;
+using testing::SizeIs;
 
 namespace chrome_pdf {
 
@@ -598,7 +599,7 @@ TEST_F(PdfInkModuleStrokeTest, StrokeInsidePages) {
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage0),
       kTwoPageVerticalLayoutPoint3InsidePage0);
 
-  EXPECT_THAT(StrokeInputPositions(), ElementsAre(Pair(0, testing::SizeIs(1))));
+  EXPECT_THAT(StrokeInputPositions(), ElementsAre(Pair(0, SizeIs(1))));
 
   // A stroke in the second page generates a stroke only for that page.
   ApplyStrokeWithMouseAtPoints(
@@ -606,8 +607,8 @@ TEST_F(PdfInkModuleStrokeTest, StrokeInsidePages) {
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage1),
       kTwoPageVerticalLayoutPoint3InsidePage1);
 
-  EXPECT_THAT(StrokeInputPositions(), ElementsAre(Pair(0, testing::SizeIs(1)),
-                                                  Pair(1, testing::SizeIs(1))));
+  EXPECT_THAT(StrokeInputPositions(),
+              ElementsAre(Pair(0, SizeIs(1)), Pair(1, SizeIs(1))));
 }
 
 TEST_F(PdfInkModuleStrokeTest, StrokeAcrossPages) {
@@ -624,7 +625,7 @@ TEST_F(PdfInkModuleStrokeTest, StrokeAcrossPages) {
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage1),
       kTwoPageVerticalLayoutPoint3InsidePage1);
 
-  EXPECT_THAT(StrokeInputPositions(), ElementsAre(Pair(0, testing::SizeIs(1))));
+  EXPECT_THAT(StrokeInputPositions(), ElementsAre(Pair(0, SizeIs(1))));
 }
 
 TEST_F(PdfInkModuleStrokeTest, StrokePageExitAndReentry) {
@@ -773,6 +774,42 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
       kMouseMovePoint, base::span_from_ref(kMouseMovePoint), kMouseMovePoint);
 
   // Check that there are now no visible strokes.
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+  EXPECT_EQ(3, client().stroke_finished_count());
+}
+
+TEST_F(PdfInkModuleStrokeTest, EraseStrokesAcrossTwoPages) {
+  EnableAnnotationMode();
+  InitializeVerticalTwoPageLayout();
+
+  // Start out without any strokes.
+  EXPECT_TRUE(StrokeInputPositions().empty());
+  EXPECT_EQ(0, client().stroke_finished_count());
+
+  // A stroke in the first page generates a stroke only for that page.
+  ApplyStrokeWithMouseAtPoints(
+      kTwoPageVerticalLayoutPoint1InsidePage0,
+      base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage0),
+      kTwoPageVerticalLayoutPoint3InsidePage0);
+  EXPECT_THAT(StrokeInputPositions(), ElementsAre(Pair(0, SizeIs(1))));
+  EXPECT_EQ(1, client().stroke_finished_count());
+
+  // A stroke in the second page generates a stroke only for that page.
+  ApplyStrokeWithMouseAtPoints(
+      kTwoPageVerticalLayoutPoint1InsidePage1,
+      base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage1),
+      kTwoPageVerticalLayoutPoint3InsidePage1);
+  EXPECT_THAT(StrokeInputPositions(),
+              ElementsAre(Pair(0, SizeIs(1)), Pair(1, SizeIs(1))));
+  EXPECT_EQ(2, client().stroke_finished_count());
+
+  // Erasing across the two pages should erase everything.
+  SelectEraserTool();
+  ApplyStrokeWithMouseAtPoints(
+      kTwoPageVerticalLayoutPoint1InsidePage0,
+      std::vector<gfx::PointF>{kTwoPageVerticalLayoutPoint2InsidePage0,
+                               kTwoPageVerticalLayoutPoint1InsidePage1},
+      kTwoPageVerticalLayoutPoint3InsidePage1);
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   EXPECT_EQ(3, client().stroke_finished_count());
 }
