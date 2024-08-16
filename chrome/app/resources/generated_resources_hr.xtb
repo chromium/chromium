@@ -2714,7 +2714,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2960942820860729477">Učestalost osvježavanja</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (omogućeno produženje)</translation>
 <translation id="2961695502793809356">Kliknite za kretanje prema naprijed, zadržite da biste vidjeli povijest</translation>
-<translation id="29618148602069201">Predmet</translation>
+<translation id="29618148602069201">Tema slike</translation>
 <translation id="2963151496262057773">Sljedeći dodatak ne reagira: <ph name="PLUGIN_NAME" />. Želite li ga zaustaviti?</translation>
 <translation id="2964193600955408481">Onemogući Wi-Fi</translation>
 <translation id="2964245677645334031">Vidljivost dijeljenja u blizini</translation>
@@ -6834,7 +6834,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="610487644502954950">Bočna ploča je otkvačena</translation>
 <translation id="6104929924898022309">Upotrijebite tipku za pretraživanje da biste promijenili ponašanje funkcijskih tipki</translation>
 <translation id="6106167152849320869">Ako ste u prethodnom koraku odabrali i slanje podataka o dijagnostici i upotrebi, ti će se podaci prikupljati za instalirane aplikacije.</translation>
-<translation id="6108952804512516814">Izrada pomoću umjetne inteligencije</translation>
+<translation id="6108952804512516814">Izradite pomoću AI-ja</translation>
 <translation id="6111718295497931251">Ukloni pristup Google diska</translation>
 <translation id="6111972606040028426">Omogućivanje Google asistenta</translation>
 <translation id="6112727384379533756">Dodajte tiket</translation>
@@ -11096,7 +11096,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – snimanje kamerom i mikrofonom</translation>
 <translation id="984275831282074731">Načini plaćanja</translation>
 <translation id="984705303330760860">Dodavanje jezika za provjeru pravopisa</translation>
-<translation id="98515147261107953">Pejzaž</translation>
+<translation id="98515147261107953">Pejzaži</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Općenito</translation>
 <translation id="987475089238841621">Jezični paketi upotrebljavaju se za automatske titlove i pohranjuju se na vašem uređaju</translation>

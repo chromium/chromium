@@ -3368,7 +3368,7 @@
 <translation id="3480612136143976912">自訂即時字幕的文字大小和樣式。部分應用程式及網站也會套用這項設定。</translation>
 <translation id="3480827850068960424">找到 <ph name="NUM" /> 個分頁</translation>
 <translation id="3481268647794498892">將於 <ph name="COUNTDOWN_SECONDS" /> 秒後在 <ph name="ALTERNATIVE_BROWSER_NAME" /> 中開啟</translation>
-<translation id="348247802372410699">選擇樣式</translation>
+<translation id="348247802372410699">選擇風格</translation>
 <translation id="348268549820508141">語音辨識</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> 可以檢視下列檔案</translation>
 <translation id="3484595034894304035">自訂桌布、螢幕保護程式、深色主題等項目</translation>
@@ -11085,7 +11085,7 @@
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - 攝影機和麥克風正在錄影和錄音</translation>
 <translation id="984275831282074731">付款方式</translation>
 <translation id="984705303330760860">新增拼字檢查支援的語言</translation>
-<translation id="98515147261107953">橫向</translation>
+<translation id="98515147261107953">風景</translation>
 <translation id="987068745968718743">Parallels Desktop：<ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">一般</translation>
 <translation id="987475089238841621">語言套件會儲存在裝置上，並會用於即時字幕</translation>

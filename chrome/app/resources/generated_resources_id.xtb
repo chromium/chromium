@@ -3487,7 +3487,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3561201631376780358">Buka Panel Samping untuk melihat Semua Bookmark</translation>
 <translation id="3562423906127931518">Proses ini dapat memerlukan waktu beberapa menit. Menyiapkan container Linux.</translation>
 <translation id="3562655211539199254">Lihat tab Chrome terbaru dari ponsel</translation>
-<translation id="3563392617245068355">Mood</translation>
+<translation id="3563392617245068355">Suasana</translation>
 <translation id="3563432852173030730">Aplikasi Kios tidak dapat didownload.</translation>
 <translation id="3563558822383875692">Mengonfigurasi DLC.</translation>
 <translation id="3564334271939054422">Jaringan Wi-Fi yang Anda gunakan (<ph name="NETWORK_ID" />) mungkin mengharuskan Anda mengunjungi halaman masuknya.</translation>
@@ -7744,7 +7744,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="6803766346203101854">Situs ini diizinkan menyimpan data di perangkat Anda.</translation>
 <translation id="680488281839478944">VM "<ph name="DEFAULT_VM_NAME" />" ada</translation>
-<translation id="6805478749741295868">Fitur ini adalah fitur AI eksperimental dan tidak selalu benar.</translation>
+<translation id="6805478749741295868">Fitur ini adalah fitur AI eksperimental dan tidak selalu memberikan hasil yang tepat.</translation>
 <translation id="6805647936811177813">Harap masuk ke <ph name="TOKEN_NAME" /> untuk mengimpor sertifikat dari <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">Aktifkan pelacakan RLZ pada <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6806089545527108739">Jangan izinkan tetapi tanyakan nanti</translation>
