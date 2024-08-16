@@ -87,6 +87,8 @@ template("rust_bindgen") {
     script = rebase_path("//build/rust/run_bindgen.py")
     inputs = [
       _bindgen_path,
+      "//build/action_helpers.py",
+      "//build/gn_helpers.py",
       "//build/rust/filter_clang_args.py",
     ]
 
