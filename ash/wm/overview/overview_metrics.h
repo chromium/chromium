@@ -5,6 +5,15 @@
 #ifndef ASH_WM_OVERVIEW_OVERVIEW_METRICS_H_
 #define ASH_WM_OVERVIEW_OVERVIEW_METRICS_H_
 
+#include <memory>
+
+#include "ash/ash_export.h"
+#include "ash/wm/overview/overview_types.h"
+
+namespace ui {
+class PresentationTimeRecorder;
+}  // namespace ui
+
 namespace ash {
 
 // Used for histograms. Current values should not be renumbered or removed.
@@ -69,6 +78,17 @@ inline constexpr char kExitOverviewPresentationHistogram[] =
     "Ash.Overview.Exit.PresentationTime";
 inline constexpr char kOverviewDelayedDeskBarPresentationHistogram[] =
     "Ash.Overview.DelayedDeskBar.PresentationTime";
+
+// Records a metric name of the format"
+// "Ash.Overview.[Enter|Exit].PresentationTime.WithDeskBarAndNumWindows[N]"
+//
+// Where N is the number of windows currently open across all desks. If N is
+// greater than 10, the suffix becomes "MoreThan10". Metrics currently show that
+// most users will have less than 10 open.
+ASH_EXPORT void SchedulePresentationTimeMetricsWithDeskBar(
+    std::unique_ptr<ui::PresentationTimeRecorder> enter_recorder,
+    std::unique_ptr<ui::PresentationTimeRecorder> exit_recorder,
+    DeskBarVisibility desk_bar_visibility);
 
 }  // namespace ash
 

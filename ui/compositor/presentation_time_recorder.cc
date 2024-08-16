@@ -39,11 +39,10 @@ class PresentationTimeRecorder::PresentationTimeRecorderInternal
       const PresentationTimeRecorderInternal&) = delete;
 
   ~PresentationTimeRecorderInternal() override {
-    const int average_latency_ms =
-        present_count_ ? total_latency_ms_ / present_count_ : 0;
+    const std::optional<base::TimeDelta> average_latency = GetAverageLatency();
     VLOG(1) << "Finished Recording FrameTime: average latency="
-            << average_latency_ms << "ms, max latency=" << max_latency_ms_
-            << "ms";
+            << (average_latency ? average_latency->InMilliseconds() : 0)
+            << "ms, max latency=" << max_latency_ms_ << "ms";
     if (compositor_)
       compositor_->RemoveObserver(this);
   }
@@ -51,6 +50,13 @@ class PresentationTimeRecorder::PresentationTimeRecorderInternal
   // Start recording next frame. It skips requesting next frame and returns
   // false if the previous frame has not been committed yet.
   bool RequestNext();
+
+  std::optional<base::TimeDelta> GetAverageLatency() const {
+    if (present_count_) {
+      return base::Milliseconds(total_latency_ms_ / present_count_);
+    }
+    return std::nullopt;
+  }
 
   // ui::CompositorObserver:
   void OnCompositingDidCommit(ui::Compositor* compositor) override {
@@ -190,6 +196,11 @@ PresentationTimeRecorder::~PresentationTimeRecorder() {
 
 bool PresentationTimeRecorder::RequestNext() {
   return recorder_internal_->RequestNext();
+}
+
+std::optional<base::TimeDelta> PresentationTimeRecorder::GetAverageLatency()
+    const {
+  return recorder_internal_->GetAverageLatency();
 }
 
 // static
