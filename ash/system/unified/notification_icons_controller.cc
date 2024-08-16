@@ -4,6 +4,9 @@
 
 #include "ash/system/unified/notification_icons_controller.h"
 
+#include <optional>
+#include <string>
+
 #include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -227,7 +230,12 @@ size_t NotificationIconsController::TrayNotificationIconsCount() const {
   return first_unused_item_index_;
 }
 
-std::u16string NotificationIconsController::GetAccessibleNameString() const {
+std::optional<std::u16string>
+NotificationIconsController::GetAccessibleNameString() const {
+  if (quiet_mode_view_ && quiet_mode_view_->GetVisible()) {
+    return quiet_mode_view_->GetAccessibleNameString();
+  }
+
   if (!TrayItemHasNotification())
     return notification_counter_view_->GetAccessibleNameString();
 
@@ -238,7 +246,9 @@ std::u16string NotificationIconsController::GetAccessibleNameString() const {
   for (NotificationIconTrayItemView* tray_item : tray_items_) {
     status.push_back(tray_item->GetAccessibleNameString());
   }
-  status.push_back(notification_counter_view_->GetAccessibleNameString());
+  status.push_back(
+      notification_counter_view_->GetAccessibleNameString().value_or(
+          std::u16string()));
   return l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_NOTIFICATIONS_ICONS_ACCESSIBLE_NAME, status, nullptr);
 }
