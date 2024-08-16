@@ -5497,7 +5497,7 @@ ax::mojom::blink::IsPopup AXObject::IsPopup() const {
 }
 
 bool AXObject::IsEditable() const {
-  const Node* node = GetNode();
+  const Node* node = GetClosestNode();
   if (IsDetached() || !node)
     return false;
 #if DCHECK_IS_ON()  // Required in order to get Lifecycle().ToString()
@@ -5549,7 +5549,7 @@ bool AXObject::IsMultiline() const {
 }
 
 bool AXObject::IsRichlyEditable() const {
-  const Node* node = GetNode();
+  const Node* node = GetClosestNode();
   if (IsDetached() || !node)
     return false;
 

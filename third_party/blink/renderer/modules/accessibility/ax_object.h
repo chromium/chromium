@@ -1294,10 +1294,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Works for all nodes, and may return nodes that are accessibility ignored.
   AXObject* ParentObjectIncludedInTree() const;
 
-  // Looks for the first ancestor AXObject (inclusive) that has an element, and
-  // returns that element.
-  Element* GetClosestElement() const;
-
   AXObject* ContainerWidget() const;
   bool IsContainerWidget() const;
 
@@ -1337,6 +1333,14 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // returns a pseudoelement. It does not return the node that generated the
   // content or the list marker.
   virtual Node* GetNode() const;
+  // Looks for the first ancestor AXObject (inclusive) that has a node, and
+  // returns that node.
+  Node* GetClosestNode() const {
+    return GetNode() ? GetNode() : ParentObject()->GetClosestNode();
+  }
+  // Looks for the first ancestor AXObject (inclusive) that has an element, and
+  // returns that element.
+  Element* GetClosestElement() const;
 
   // Returns the associated layout object if any.
   virtual LayoutObject* GetLayoutObject() const;

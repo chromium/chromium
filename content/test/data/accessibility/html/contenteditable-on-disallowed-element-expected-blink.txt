@@ -13,7 +13,7 @@ rootWebArea focusable
 ++++++++menuListPopup invisible
 ++++++++++menuListOption editable focusable multiline nonAtomicTextFieldRoot=true selected=true
 ++++++lineBreak editable focusable multiline nonAtomicTextFieldRoot=true
-++++++++inlineTextBox editable focusable
+++++++++inlineTextBox editable
 ++++++splitter editable focusable horizontal multiline nonAtomicTextFieldRoot=true
 ++++++image editable focusable multiline nonAtomicTextFieldRoot=true
 ++++++staticText

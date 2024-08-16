@@ -4912,8 +4912,11 @@ String AXNodeObject::TextFromDescendants(
     AXObjectSet& visited,
     const AXObject* aria_label_or_description_root,
     bool recursive) const {
-  if (!CanHaveChildren())
-    return recursive ? String() : GetElement()->GetInnerTextWithoutUpdate();
+  if (!CanHaveChildren()) {
+    return recursive || !GetElement()
+               ? String()
+               : GetElement()->GetInnerTextWithoutUpdate();
+  }
 
   StringBuilder accumulated_text;
   AXObject* previous = nullptr;

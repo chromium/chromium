@@ -924,7 +924,7 @@ TEST_F(AccessibilityTest, NextOnLine) {
 
   const AXObject* next = span1->NextOnLine();
   ASSERT_NE(nullptr, next);
-  EXPECT_EQ("b", next->GetNode()->textContent());
+  EXPECT_EQ("b", next->GetClosestNode()->textContent());
 }
 
 TEST_F(AccessibilityTest, NextOnLineInlineBlock) {
@@ -946,7 +946,7 @@ TEST_F(AccessibilityTest, NextOnLineInlineBlock) {
 
   next = next->NextOnLine();
   ASSERT_NE(nullptr, next);
-  EXPECT_EQ(" broken.", next->GetNode()->textContent());
+  EXPECT_EQ(" broken.", next->GetClosestNode()->textContent());
 
   AXObject* prev = next->PreviousOnLine();
   ASSERT_NE(nullptr, prev);
@@ -954,7 +954,7 @@ TEST_F(AccessibilityTest, NextOnLineInlineBlock) {
 
   prev = prev->PreviousOnLine();
   ASSERT_NE(nullptr, prev);
-  EXPECT_EQ("this line ", prev->GetNode()->textContent());
+  EXPECT_EQ("this line ", prev->GetClosestNode()->textContent());
 }
 
 TEST_F(AccessibilityTest, NextAndPreviousOnLineInert) {
@@ -972,12 +972,12 @@ TEST_F(AccessibilityTest, NextAndPreviousOnLineInert) {
 
   const AXObject* next = span1->NextOnLine();
   ASSERT_NE(nullptr, next);
-  EXPECT_EQ("blue", next->GetNode()->textContent());
+  EXPECT_EQ("blue", next->GetClosestNode()->textContent());
 
   // Now we go backwards.
 
   const AXObject* previous = next->PreviousOnLine();
-  EXPECT_EQ("go ", previous->GetNode()->textContent());
+  EXPECT_EQ("go ", previous->GetClosestNode()->textContent());
 }
 
 TEST_F(AccessibilityTest, NextOnLineAriaHidden) {
@@ -995,11 +995,11 @@ TEST_F(AccessibilityTest, NextOnLineAriaHidden) {
 
   const AXObject* next = this_object->NextOnLine();
   ASSERT_NE(nullptr, next);
-  EXPECT_EQ(" broken.", next->GetNode()->textContent());
+  EXPECT_EQ(" broken.", next->GetClosestNode()->textContent());
 
   const AXObject* prev = next->PreviousOnLine();
   ASSERT_NE(nullptr, prev);
-  EXPECT_EQ("this line ", prev->GetNode()->textContent());
+  EXPECT_EQ("this line ", prev->GetClosestNode()->textContent());
 }
 
 TEST_F(AccessibilityTest, TableRowAndCellIsLineBreakingObject) {

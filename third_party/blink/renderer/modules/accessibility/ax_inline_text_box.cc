@@ -199,13 +199,6 @@ ax::mojom::blink::WritingDirection AXInlineTextBox::GetTextDirection() const {
   return AXObject::GetTextDirection();
 }
 
-Node* AXInlineTextBox::GetNode() const {
-  if (IsDetached())
-    return nullptr;
-
-  return inline_text_box_->GetNode();
-}
-
 Document* AXInlineTextBox::GetDocument() const {
   return ParentObject() ? ParentObject()->GetDocument() : nullptr;
 }
@@ -328,7 +321,7 @@ void AXInlineTextBox::SerializeMarkerAttributes(
                                                  markers_used_by_accessibility);
   const int start_text_offset_in_parent = TextOffsetInContainer(0);
   for (const auto& node_marker_pair : node_marker_pairs) {
-    DCHECK_EQ(GetNode(), node_marker_pair.first);
+    DCHECK_EQ(inline_text_box_->GetNode(), node_marker_pair.first);
     const DocumentMarker* marker = node_marker_pair.second;
 
     if (aria_marker_type == marker->GetType())
@@ -339,11 +332,11 @@ void AXInlineTextBox::SerializeMarkerAttributes(
     // accessibility tree, first in this object's parent and then to local text
     // offsets.
     const auto start_position = AXPosition::FromPosition(
-        Position(*GetNode(), marker->StartOffset()), TextAffinity::kDownstream,
-        AXPositionAdjustmentBehavior::kMoveLeft);
+        Position(*inline_text_box_->GetNode(), marker->StartOffset()),
+        TextAffinity::kDownstream, AXPositionAdjustmentBehavior::kMoveLeft);
     const auto end_position = AXPosition::FromPosition(
-        Position(*GetNode(), marker->EndOffset()), TextAffinity::kDownstream,
-        AXPositionAdjustmentBehavior::kMoveRight);
+        Position(*inline_text_box_->GetNode(), marker->EndOffset()),
+        TextAffinity::kDownstream, AXPositionAdjustmentBehavior::kMoveRight);
     if (!start_position.IsValid() || !end_position.IsValid())
       continue;
 
