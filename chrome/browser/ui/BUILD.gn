@@ -5253,6 +5253,8 @@ static_library("ui") {
       "views/webauthn/passkey_deleted_confirmation_view.h",
       "views/webauthn/passkey_detail_view.cc",
       "views/webauthn/passkey_detail_view.h",
+      "views/webauthn/passkey_not_accepted_bubble_view.cc",
+      "views/webauthn/passkey_not_accepted_bubble_view.h",
       "views/webauthn/passkey_saved_confirmation_view.cc",
       "views/webauthn/passkey_saved_confirmation_view.h",
       "views/webauthn/passkey_updated_confirmation_view.cc",

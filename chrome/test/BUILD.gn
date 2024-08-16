@@ -7870,6 +7870,7 @@ test("unit_tests") {
       "../browser/ui/views/side_panel/companion/exps_registration_success_observer_unittest.cc",
       "../browser/ui/views/side_panel/side_panel_entry_key_unittest.cc",
       "../browser/ui/views/webauthn/passkey_deleted_confirmation_view_unittest.cc",
+      "../browser/ui/views/webauthn/passkey_not_accepted_bubble_view_unittest.cc",
       "../browser/ui/views/webauthn/passkey_saved_confirmation_view_unittest.cc",
       "../browser/ui/views/webauthn/passkey_updated_confirmation_view_unittest.cc",
       "../browser/ui/views/webauthn/ring_progress_bar_unittest.cc",

@@ -16733,6 +16733,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_GPM_PASSKEY_DELETED_TITLE" desc="The title of a bubble that is displayed as a confirmation that a passkey was deleted in Google Password Manager. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
         Passkey deleted
       </message>
+      <message name="IDS_WEBAUTHN_GPM_PASSKEY_DELETED_LABEL" desc="The label in a bubble that is displayed as a confirmation that a passkey was deleted in Google Password Manager, explaining that the passkeys can be managed in Google Password Manager. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
+        You can view and manage your passkeys saved in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph>
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_PASSKEY_DELETED_LINK" desc="Link text that directs the user to the Google Password Manager passwords page within a bubble that is displayed as a confirmation that a passkey was deleted in Google Password Manager. See IDS_WEBAUTHN_GPM_PASSKEY_DELETED_LABEL for more details.">
+        Google Password Manager
+      </message>
       <!-- Web-modal dialog shown during Digital Credential request -->
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_BLUETOOTH_POWER_ON_MANUAL_TITLE" translateable="false">
         Bluetooth is disabled
