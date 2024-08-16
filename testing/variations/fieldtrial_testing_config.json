@@ -396,6 +396,9 @@
                     "name": "Enabled_20240718",
                     "enable_features": [
                         "AndroidBrowserControlsInViz"
+                    ],
+                    "disable_features": [
+                        "AndroidBcivWithSuppression"
                     ]
                 }
             ]

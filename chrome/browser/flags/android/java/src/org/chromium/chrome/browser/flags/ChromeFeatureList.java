@@ -228,6 +228,7 @@ public abstract class ChromeFeatureList {
             "BackGestureMoveToBackDuringStartup";
     public static final String BACK_GESTURE_REFACTOR = "BackGestureRefactorAndroid";
     public static final String BACK_TO_HOME_ANIMATION = "BackToHomeAnimation";
+    public static final String BCIV_WITH_SUPPRESSION = "AndroidBcivWithSuppression";
     public static final String BLOCK_INTENTS_WHILE_LOCKED = "BlockIntentsWhileLocked";
     public static final String BOARDING_PASS_DETECTOR = "BoardingPassDetector";
     public static final String BOTTOM_BROWSER_CONTROLS_REFACTOR = "BottomBrowserControlsRefactor";
@@ -829,6 +830,10 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH, true);
     public static final MutableFlagWithSafeDefault sBottomBrowserControlsRefactor =
             newMutableFlagWithSafeDefault(BOTTOM_BROWSER_CONTROLS_REFACTOR, true);
+    public static final MutableFlagWithSafeDefault sBcivWithSuppression =
+            newMutableFlagWithSafeDefault(BCIV_WITH_SUPPRESSION, false);
+    public static final MutableFlagWithSafeDefault sBrowserControlsInViz =
+            newMutableFlagWithSafeDefault(BROWSER_CONTROLS_IN_VIZ, true);
     public static final MutableFlagWithSafeDefault sBrowserControlsEarlyResize =
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_EARLY_RESIZE, false);
     public static final MutableFlagWithSafeDefault sGtsCloseTabAnimation =
@@ -863,8 +868,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END, false);
     public static final MutableFlagWithSafeDefault sToolbarScrollAblation =
             newMutableFlagWithSafeDefault(TOOLBAR_SCROLL_ABLATION, false);
-    public static final MutableFlagWithSafeDefault sBrowserControlsInViz =
-            newMutableFlagWithSafeDefault(BROWSER_CONTROLS_IN_VIZ, false);
     public static final MutableFlagWithSafeDefault sVoiceSearchAudioCapturePolicy =
             newMutableFlagWithSafeDefault(VOICE_SEARCH_AUDIO_CAPTURE_POLICY, false);
 
