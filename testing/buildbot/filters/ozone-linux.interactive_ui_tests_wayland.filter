@@ -11,17 +11,6 @@
 # implementation similar to what was introduced in https://crrev.com/c/4738688.
 -TabDragging/DetachToBrowserTabDragControllerTest.DragDirectlyToSecondWindow/*
 
-# Flaky. These are the variants where fallback tab dragging is disabled. As it
-# will soon be enabled by default, it's okay to disable these variants.
--TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow*/0
--TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow*/2
--TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow*/4
--TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow*/6
--TabDragging/DetachToBrowserTabDragControllerTest.DragCollapsedGroupHeaderToSeparateWindow/0
--TabDragging/DetachToBrowserTabDragControllerTest.DragCollapsedGroupHeaderToSeparateWindow/2
--TabDragging/DetachToBrowserTabDragControllerTest.DragCollapsedGroupHeaderToSeparateWindow/4
--TabDragging/DetachToBrowserTabDragControllerTest.DragCollapsedGroupHeaderToSeparateWindow/6
-
 # Failing interactive ui tests
 -BookmarkBarViewTest12.CloseWithModalDialog
 -BookmarkBarViewTest13.ClickOnContextMenuSeparator
