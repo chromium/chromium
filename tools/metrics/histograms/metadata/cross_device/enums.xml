@@ -316,6 +316,16 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Unknown error"/>
 </enum>
 
+<enum name="GCMInstanceIdResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid parameter"/>
+  <int value="2" label="Disabled"/>
+  <int value="3" label="Async operation pending"/>
+  <int value="4" label="Network error"/>
+  <int value="5" label="Server error"/>
+  <int value="7" label="Unknown error"/>
+</enum>
+
 <enum name="InstantTethering_ConnectionToHostResult_EndResult">
   <int value="0" label="Success"/>
   <int value="1" label="Internal error"/>

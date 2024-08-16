@@ -1036,14 +1036,33 @@ chromium-metrics-reviews@google.com.
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    The result code from a GCM registration request made by the CryptAuth GCM
-    manager. CryptAuth registration with GCM is only performed once, if
-    successful, for a given user on a device as the first step in CryptAuth v1
-    or v2 Enrollment. Recorded when the CryptAuth GCM manager is notified by the
-    GCM driver that the registration attempt finished, successfully or not. The
-    GCM driver might quietly retry failures before notifying the CryptAuth GCM
-    manager. This metric will not include results codes that were quietly
-    retried by the GCM driver.
+    DEPRECATED. Please use CryptAuth.Gcm.Registration.Result2. The result code
+    from a GCM registration request made by the CryptAuth GCM manager. CryptAuth
+    registration with GCM is only performed once, if successful, for a given
+    user on a device as the first step in CryptAuth v1 or v2 Enrollment.
+    Recorded when the CryptAuth GCM manager is notified by the GCM driver that
+    the registration attempt finished, successfully or not. The GCM driver might
+    quietly retry failures before notifying the CryptAuth GCM manager. This
+    metric will not include results codes that were quietly retried by the GCM
+    driver.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.Gcm.Registration.Result2" enum="GCMInstanceIdResult"
+    expires_after="2025-05-05">
+  <owner>dclasson@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    This new version of CryptAuth.Gcm.Registration.Result2 uses V4 GCM tokens
+    instead of V3 tokens, which also have a different success enum. The result
+    code from a GCM registration request made by the CryptAuth GCM manager.
+    CryptAuth registration with GCM is only performed once, if successful, for a
+    given user on a device as the first step in CryptAuth v1 or v2 Enrollment.
+    Recorded when the CryptAuth GCM manager is notified by the GCM driver that
+    the registration attempt finished, successfully or not. The GCM driver might
+    quietly retry failures before notifying the CryptAuth GCM manager. This
+    metric will not include results codes that were quietly retried by the GCM
+    driver.
   </summary>
 </histogram>
 
