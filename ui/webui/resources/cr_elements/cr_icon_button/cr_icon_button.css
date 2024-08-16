@@ -71,12 +71,15 @@
   --cr-icon-button-margin-start: 0;
 }
 
-:host-context([dir=rtl]):host(:not([dir=ltr]):not([multiple-icons_])) {
+/* TODO(crbug.com/331074421): Consider removing the |:not([dir=ltr])| selector
+ * and use the |:not([suppress-rtl-flip])| one instead. Same for |cr-icon|. */
+:host-context([dir=rtl]):host(
+    :not([dir=ltr]):not([suppress-rtl-flip]):not([multiple-icons_])) {
   transform: scaleX(-1);  /* Invert X: flip on the Y axis (aka mirror). */
 }
 
-:host-context([dir=rtl]):host(:not([dir=ltr])[multiple-icons_])
-    cr-icon {
+:host-context([dir=rtl]):host(
+    :not([dir=ltr]):not([suppress-rtl-flip])[multiple-icons_]) cr-icon {
   transform: scaleX(-1);  /* Invert X: flip on the Y axis (aka mirror). */
 }
 
