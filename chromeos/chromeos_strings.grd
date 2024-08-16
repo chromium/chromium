@@ -6341,7 +6341,7 @@
           full screen
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ACCESSIBILITY" desc="The text read aloud by the screen reader describing the keyboard icon 'accessibility'.">
-          accessibility action
+          accessibility options
         </message>
 
         <!-- End of Shortcut Customization -->
