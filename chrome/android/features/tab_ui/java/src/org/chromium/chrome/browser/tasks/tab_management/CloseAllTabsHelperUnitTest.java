@@ -28,6 +28,8 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
@@ -41,6 +43,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 
 /** Unit test for {@link CloseAllTabsHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.GTS_CLOSE_TAB_ANIMATION)
 public class CloseAllTabsHelperUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -114,6 +117,7 @@ public class CloseAllTabsHelperUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.GTS_CLOSE_TAB_ANIMATION)
     public void testBuildCloseAllTabsRunnable_RegularDefault() {
         setAnimationStateForTesting(false);
         Runnable r =
@@ -133,6 +137,7 @@ public class CloseAllTabsHelperUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.GTS_CLOSE_TAB_ANIMATION)
     public void testBuildCloseAllTabsRunnable_IncognitoDefault() {
         setAnimationStateForTesting(false);
         Runnable r =
@@ -267,6 +272,80 @@ public class CloseAllTabsHelperUnitTest {
         verify(mRegularTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
         verify(mIncognitoTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
 
+        verifyNoInteractions(mRegularTabSwitcher);
+    }
+
+    @Test
+    public void testBuildCloseAllTabsRunnable_CustomAnimation_IncognitoOnly() {
+        setAnimationStateForTesting(false);
+        mHubVisibilitySupplier.set(true);
+        when(mPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
+        Runnable r =
+                CloseAllTabsHelper.buildCloseAllTabsRunnable(
+                        mHubManagerSupplier,
+                        mRegularTabSwitcherSupplier,
+                        mIncognitoTabSwitcherSupplier,
+                        mTabModelSelector,
+                        /* isIncognitoOnly= */ true);
+
+        doCallback(0, (Runnable onAnimationEnd) -> onAnimationEnd.run())
+                .when(mIncognitoTabSwitcher)
+                .showCloseAllTabsAnimation(any());
+        r.run();
+
+        verify(mIncognitoTabSwitcher).showCloseAllTabsAnimation(any());
+        verify(mIncognitoTabModel).closeTabs(argThat(params -> params.isAllTabs));
+
+        verifyNoInteractions(mRegularTabSwitcher);
+        verify(mRegularTabGroupModelFilter, never()).closeTabs(any());
+        verify(mIncognitoTabGroupModelFilter, never()).closeTabs(any());
+    }
+
+    @Test
+    public void testBuildCloseAllTabsRunnable_CustomAnimation_All_RegularPane() {
+        setAnimationStateForTesting(false);
+        mHubVisibilitySupplier.set(true);
+        when(mPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
+        Runnable r =
+                CloseAllTabsHelper.buildCloseAllTabsRunnable(
+                        mHubManagerSupplier,
+                        mRegularTabSwitcherSupplier,
+                        mIncognitoTabSwitcherSupplier,
+                        mTabModelSelector,
+                        /* isIncognitoOnly= */ false);
+
+        doCallback(0, (Runnable onAnimationEnd) -> onAnimationEnd.run())
+                .when(mRegularTabSwitcher)
+                .showCloseAllTabsAnimation(any());
+        r.run();
+
+        verify(mRegularTabSwitcher).showCloseAllTabsAnimation(any());
+        verify(mRegularTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
+        verify(mIncognitoTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
+        verifyNoInteractions(mIncognitoTabSwitcher);
+    }
+
+    @Test
+    public void testBuildCloseAllTabsRunnable_CloseAllAnimation_All_IncognitoPane() {
+        setAnimationStateForTesting(false);
+        mHubVisibilitySupplier.set(true);
+        when(mPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
+        Runnable r =
+                CloseAllTabsHelper.buildCloseAllTabsRunnable(
+                        mHubManagerSupplier,
+                        mRegularTabSwitcherSupplier,
+                        mIncognitoTabSwitcherSupplier,
+                        mTabModelSelector,
+                        /* isIncognitoOnly= */ false);
+
+        doCallback(0, (Runnable onAnimationEnd) -> onAnimationEnd.run())
+                .when(mIncognitoTabSwitcher)
+                .showCloseAllTabsAnimation(any());
+        r.run();
+
+        verify(mIncognitoTabSwitcher).showCloseAllTabsAnimation(any());
+        verify(mRegularTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
+        verify(mIncognitoTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
         verifyNoInteractions(mRegularTabSwitcher);
     }
 }

@@ -871,9 +871,22 @@ public class TabListCoordinator
         mMediator.showQuickDeleteAnimation(onAnimationEnd, tabs, mRecyclerView);
     }
 
-    void showCloseAllTabsAnimation(Runnable onAnimationEnd) {
-        assert mMode == TabListMode.GRID : "Can only run animation in GRID mode.";
-        mMediator.showCloseAllTabsAnimation(onAnimationEnd, mRecyclerView);
+    void showCloseAllTabsAnimation(Runnable closeTabs) {
+        @Nullable var itemAnimator = mRecyclerView.getItemAnimator();
+        if (itemAnimator == null) {
+            closeTabs.run();
+            return;
+        }
+
+        // Temporarily double the duration of the animation until it is finished then reset the
+        // behavior to the default duration.
+        itemAnimator.setRemoveDuration(TabListItemAnimator.DEFAULT_REMOVE_DURATION * 2);
+        closeTabs.run();
+        Runnable restoreRemoveDuration =
+                () -> {
+                    itemAnimator.setRemoveDuration(TabListItemAnimator.DEFAULT_REMOVE_DURATION);
+                };
+        runOnItemAnimatorFinished(restoreRemoveDuration);
     }
 
     /** Runs a runnable after the item animator has finished its animations. */

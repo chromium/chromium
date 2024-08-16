@@ -63,9 +63,7 @@ public class CloseAllTabsHelper {
             TabModelSelector tabModelSelector,
             boolean isIncognitoOnly) {
 
-        // TODO(crbug.com/346777141): Remove the custom animation logic once we are sure we don't
-        // need it.
-        boolean useCustomAnimation = false;
+        boolean useCustomAnimation = ChromeFeatureList.sGtsCloseTabAnimation.isEnabled();
         boolean useQuickDeleteAnimation =
                 ChromeFeatureList.sGtsCloseTabAnimationCloseAllQuickDeleteAnimation.getValue();
 
@@ -84,12 +82,12 @@ public class CloseAllTabsHelper {
                             : regularTabSwitcherSupplier.get();
             assert tabSwitcher != null;
 
-            if (useCustomAnimation) {
-                tabSwitcher.showCloseAllTabsAnimation(onAnimationFinished);
-            } else if (useQuickDeleteAnimation) {
+            if (useQuickDeleteAnimation) {
                 TabModel tabModel = tabModelSelector.getModel(isIncognitoHubPane);
                 List<Tab> tabs = TabModelUtils.convertTabListToListOfTabs(tabModel);
                 tabSwitcher.showQuickDeleteAnimation(onAnimationFinished, tabs);
+            } else if (useCustomAnimation) {
+                tabSwitcher.showCloseAllTabsAnimation(onAnimationFinished);
             } else {
                 assert false : "Not reached";
             }

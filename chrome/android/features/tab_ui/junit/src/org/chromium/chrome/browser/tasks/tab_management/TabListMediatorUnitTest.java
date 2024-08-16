@@ -83,7 +83,6 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -4380,33 +4379,6 @@ public class TabListMediatorUnitTest {
         callback.onResult(true);
 
         assertEquals(0, mModel.size());
-    }
-
-    @Test
-    @LooperMode(LooperMode.Mode.PAUSED)
-    public void testCloseAllTabsAnimation() {
-        assertEquals(mModel.size(), 2);
-        assertEquals(mModel.get(0).model.get(TabProperties.VISIBILITY), View.VISIBLE);
-        assertEquals(mModel.get(1).model.get(TabProperties.VISIBILITY), View.VISIBLE);
-
-        when(mTabListRecyclerView.getLayoutManager()).thenReturn(mGridLayoutManager);
-        when(mGridLayoutManager.findFirstVisibleItemPosition()).thenReturn(0);
-        when(mGridLayoutManager.findLastVisibleItemPosition()).thenReturn(1);
-        when(mTabListRecyclerView.findViewHolderForAdapterPosition(0)).thenReturn(mFakeViewHolder1);
-        when(mTabListRecyclerView.findViewHolderForAdapterPosition(1)).thenReturn(mFakeViewHolder2);
-
-        Runnable r = mock(Runnable.class);
-        mMediator.showCloseAllTabsAnimation(r, mTabListRecyclerView);
-        ShadowLooper.runUiThreadTasks();
-        verify(r).run();
-
-        assertEquals(mModel.get(0).model.get(TabProperties.VISIBILITY), View.INVISIBLE);
-        assertEquals(mModel.get(1).model.get(TabProperties.VISIBILITY), View.INVISIBLE);
-
-        mMediator.resetWithListOfTabs(null, false);
-        mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), false);
-        assertEquals(mModel.get(0).model.get(TabProperties.VISIBILITY), View.VISIBLE);
-        assertEquals(mModel.get(1).model.get(TabProperties.VISIBILITY), View.VISIBLE);
     }
 
     private void setUpCloseButtonDescriptionString(boolean isGroup) {

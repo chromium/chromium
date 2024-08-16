@@ -583,8 +583,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         mTabListCoordinator.showQuickDeleteAnimation(onAnimationEnd, tabs);
     }
 
-    void showCloseAllTabsAnimation(Runnable onAnimationEnd) {
-        mTabListCoordinator.showCloseAllTabsAnimation(onAnimationEnd);
+    void showCloseAllTabsAnimation(Runnable closeTabs) {
+        mTabListCoordinator.showCloseAllTabsAnimation(closeTabs);
     }
 
     /** Returns the filter index of a tab from its view index. */
