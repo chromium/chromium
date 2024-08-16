@@ -43,7 +43,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -136,7 +135,6 @@ namespace {
 // thread.
 void MaybeCreateSafeBrowsingForRenderer(
     int process_id,
-    base::WeakPtr<content::ResourceContext> resource_context,
     base::RepeatingCallback<scoped_refptr<safe_browsing::UrlCheckerDelegate>(
         bool safe_browsing_enabled,
         bool should_check_on_sb_disabled,
@@ -161,7 +159,7 @@ void MaybeCreateSafeBrowsingForRenderer(
       safe_browsing::IsSafeBrowsingEnabled(*pref_service);
 
   safe_browsing::MojoSafeBrowsingImpl::MaybeCreate(
-      process_id, std::move(resource_context),
+      process_id,
       base::BindRepeating(get_checker_delegate, safe_browsing_enabled,
                           // Navigation initiated from renderer should never
                           // check when safe browsing is disabled, because
@@ -233,12 +231,9 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (safe_browsing_service_) {
-    content::ResourceContext* resource_context =
-        render_process_host->GetBrowserContext()->GetResourceContext();
     registry->AddInterface<safe_browsing::mojom::SafeBrowsing>(
         base::BindRepeating(
             &MaybeCreateSafeBrowsingForRenderer, render_process_host->GetID(),
-            resource_context->GetWeakPtr(),
             base::BindRepeating(
                 &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
                 base::Unretained(this))),

@@ -23,7 +23,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/resource_context.h"
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -81,7 +80,6 @@ void CreateMediaDrmStorage(
 // over to the IO thread.
 void MaybeCreateSafeBrowsing(
     int rph_id,
-    base::WeakPtr<content::ResourceContext> resource_context,
     base::RepeatingCallback<scoped_refptr<safe_browsing::UrlCheckerDelegate>()>
         get_checker_delegate,
     mojo::PendingReceiver<safe_browsing::mojom::SafeBrowsing> receiver) {
@@ -93,8 +91,7 @@ void MaybeCreateSafeBrowsing(
     return;
 
   safe_browsing::MojoSafeBrowsingImpl::MaybeCreate(
-      rph_id, std::move(resource_context), std::move(get_checker_delegate),
-      std::move(receiver));
+      rph_id, std::move(get_checker_delegate), std::move(receiver));
 }
 
 void BindNetworkHintsHandler(
@@ -241,12 +238,9 @@ void AwContentBrowserClient::ExposeInterfacesToRenderer(
     service_manager::BinderRegistry* registry,
     blink::AssociatedInterfaceRegistry* associated_registry,
     content::RenderProcessHost* render_process_host) {
-  content::ResourceContext* resource_context =
-      render_process_host->GetBrowserContext()->GetResourceContext();
   registry->AddInterface<safe_browsing::mojom::SafeBrowsing>(
       base::BindRepeating(
           &MaybeCreateSafeBrowsing, render_process_host->GetID(),
-          resource_context->GetWeakPtr(),
           base::BindRepeating(
               &AwContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
               base::Unretained(this))),
