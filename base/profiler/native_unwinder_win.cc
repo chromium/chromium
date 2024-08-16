@@ -89,7 +89,8 @@ UnwindResult NativeUnwinderWin::TryUnwind(UnwinderStateCapture* capture_state,
                             RegisterContextInstructionPointer(thread_context)));
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
+  return UnwindResult::kCompleted;
 }
 
 }  // namespace base

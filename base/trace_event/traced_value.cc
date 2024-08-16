@@ -313,7 +313,7 @@ class PickleWriter final : public TracedValue::Writer {
         }
 
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
 
       state_stack[current_state_index].needs_comma = true;
@@ -439,7 +439,7 @@ class PickleWriter final : public TracedValue::Writer {
         } break;
 
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     }
     DCHECK(stack.empty());

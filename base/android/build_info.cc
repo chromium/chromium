@@ -48,7 +48,7 @@ struct BuildInfoSingletonTraits {
 
   static void Delete(BuildInfo* x) {
     // We're leaking this type, see kRegisterAtExit.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   static const bool kRegisterAtExit = false;

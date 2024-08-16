@@ -186,7 +186,8 @@ const ProcCpuInfo& ParseProcCpu() {
 
     StringPairs pairs;
     if (!SplitStringIntoKeyValuePairs(cpuinfo, ':', '\n', &pairs)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
+      return info;
     }
 
     auto model_name = FindFirstProcCpuKey(pairs, kModelNamePrefix);

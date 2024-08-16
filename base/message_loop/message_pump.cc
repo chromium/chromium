@@ -75,7 +75,8 @@ std::unique_ptr<MessagePump> MessagePump::Create(MessagePumpType type) {
 #elif BUILDFLAG(IS_NACL) || BUILDFLAG(IS_AIX)
       // Currently NaCl and AIX don't have a UI MessagePump.
       // TODO(abarth): Figure out if we need this.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
+      return nullptr;
 #elif BUILDFLAG(IS_ANDROID)
       {
         auto message_pump = std::make_unique<MessagePumpAndroid>();
@@ -100,7 +101,8 @@ std::unique_ptr<MessagePump> MessagePump::Create(MessagePumpType type) {
 #endif
 
     case MessagePumpType::CUSTOM:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
+      return nullptr;
 
     case MessagePumpType::DEFAULT:
 #if BUILDFLAG(IS_IOS)

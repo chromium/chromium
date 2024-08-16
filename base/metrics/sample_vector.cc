@@ -370,9 +370,11 @@ bool SampleVectorBase::AddSubtractImpl(SampleCountIterator* iter,
       SCOPED_CRASH_KEY_NUMBER("SampleVector", "range_max",
                               bucket_ranges_->range(dest_index + 1));
 #endif  // !BUILDFLAG(IS_NACL)
-      NOTREACHED() << "sample=" << min << "," << max
-                   << "; range=" << bucket_ranges_->range(dest_index) << ","
-                   << bucket_ranges_->range(dest_index + 1);
+      NOTREACHED_IN_MIGRATION()
+          << "sample=" << min << "," << max
+          << "; range=" << bucket_ranges_->range(dest_index) << ","
+          << bucket_ranges_->range(dest_index + 1);
+      return false;
     }
 
     // Sample's bucket matches exactly. Adjust count.
@@ -649,7 +651,11 @@ PersistentSampleVector::~PersistentSampleVector() = default;
 
 bool PersistentSampleVector::IsDefinitelyEmpty() const {
   // Not implemented.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
+
+  // Always return false. If we are wrong, this will just make the caller
+  // perform some extra work thinking that |this| is non-empty.
+  return false;
 }
 
 bool PersistentSampleVector::MountExistingCountsStorage() const {

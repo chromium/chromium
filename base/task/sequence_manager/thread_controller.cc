@@ -719,7 +719,8 @@ const char* ThreadController::RunLevelTracker::TimeKeeper::PhaseToEventName(
     case kWorkItemSuspendedOnNested:
       // kWorkItemSuspendedOnNested should be transformed into kNativeWork or
       // kApplicationTask before this point.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
+      return "";
   }
 }
 

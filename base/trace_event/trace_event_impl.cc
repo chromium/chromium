@@ -271,7 +271,8 @@ void TraceEvent::AppendAsJSON(
         break;
 
       default:
-        NOTREACHED() << "More than one of the ID flags are set";
+        NOTREACHED_IN_MIGRATION() << "More than one of the ID flags are set";
+        break;
     }
   }
 

@@ -37,8 +37,8 @@ class DefaultLocaleBreakIteratorCache {
     main_ = UBreakIteratorPtr(
         ubrk_open(break_type, nullptr, nullptr, 0, &main_status_));
     if (U_FAILURE(main_status_)) {
-      NOTREACHED() << "ubrk_open failed for type " << break_type
-                   << " with error " << main_status_;
+      NOTREACHED_IN_MIGRATION() << "ubrk_open failed for type " << break_type
+                                << " with error " << main_status_;
     }
   }
   UBreakIteratorPtr Lease(UErrorCode& status) {
@@ -61,8 +61,8 @@ class DefaultLocaleBreakIteratorCache {
     UBreakIteratorPtr result(
         ubrk_open(break_type, nullptr, nullptr, 0, &status));
     if (U_FAILURE(status)) {
-      NOTREACHED() << "ubrk_open failed for type " << break_type
-                   << " with error " << status;
+      NOTREACHED_IN_MIGRATION() << "ubrk_open failed for type " << break_type
+                                << " with error " << status;
     }
     return result;
   }
@@ -146,8 +146,9 @@ bool BreakIterator::Init() {
           ubrk_openRules(rules_.c_str(), static_cast<int32_t>(rules_.length()),
                          nullptr, 0, &parse_error, &status));
       if (U_FAILURE(status)) {
-        NOTREACHED() << "ubrk_openRules failed to parse rule string at line "
-                     << parse_error.line << ", offset " << parse_error.offset;
+        NOTREACHED_IN_MIGRATION()
+            << "ubrk_openRules failed to parse rule string at line "
+            << parse_error.line << ", offset " << parse_error.offset;
       }
       break;
   }
@@ -208,7 +209,8 @@ bool BreakIterator::SetText(std::u16string_view text) {
   pos_ = 0;  // implicit when ubrk_setText is done
   prev_ = npos;
   if (U_FAILURE(status)) {
-    NOTREACHED() << "ubrk_setText failed";
+    NOTREACHED_IN_MIGRATION() << "ubrk_setText failed";
+    return false;
   }
   string_ = text;
   return true;

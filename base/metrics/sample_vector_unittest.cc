@@ -205,8 +205,8 @@ TEST_F(SampleVectorTest, AddSubtractBucketNotMatchDeath) {
   // DCHECK.
   samples2.Accumulate(6, -100);
   samples2.Accumulate(3, 100);
-  EXPECT_NOTREACHED_DEATH(samples1.Add(samples2));
-  EXPECT_NOTREACHED_DEATH(samples1.Subtract(samples2));
+  EXPECT_DCHECK_DEATH(samples1.Add(samples2));
+  EXPECT_DCHECK_DEATH(samples1.Subtract(samples2));
 }
 
 TEST_F(SampleVectorTest, Iterate) {

@@ -21,7 +21,8 @@ const char* TaskPriorityToString(TaskPriority task_priority) {
     case TaskPriority::USER_BLOCKING:
       return "USER_BLOCKING";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
+  return "";
 }
 
 const char* TaskShutdownBehaviorToString(
@@ -34,7 +35,8 @@ const char* TaskShutdownBehaviorToString(
     case TaskShutdownBehavior::BLOCK_SHUTDOWN:
       return "BLOCK_SHUTDOWN";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
+  return "";
 }
 
 std::ostream& operator<<(std::ostream& os, const TaskPriority& task_priority) {

@@ -69,7 +69,8 @@ FilePath ThreadTypeToCgroupDirectory(const FilePath& cgroup_filepath,
     case ThreadType::kRealtimeAudio:
       return cgroup_filepath.Append(FILE_PATH_LITERAL("urgent"));
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
+  return FilePath();
 }
 
 void SetThreadCgroup(PlatformThreadId thread_id,

@@ -120,7 +120,8 @@ void SparseHistogram::Add(Sample value) {
 
 void SparseHistogram::AddCount(Sample value, int count) {
   if (count <= 0) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
+    return;
   }
   {
     base::AutoLock auto_lock(lock_);

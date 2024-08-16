@@ -84,7 +84,8 @@ std::string TestResult::StatusAsString() const {
       // Rely on compiler warnings to ensure all possible values are handled.
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
+  return std::string();
 }
 
 std::string TestResult::GetTestName() const {

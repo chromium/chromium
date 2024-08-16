@@ -47,7 +47,8 @@ PRUNTIME_FUNCTION Win32UnwindFunctions::LookupFunctionEntry(
 #if defined(ARCH_CPU_64_BITS)
   return ::RtlLookupFunctionEntry(program_counter, image_base, nullptr);
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
+  return nullptr;
 #endif
 }
 
@@ -63,7 +64,7 @@ void Win32UnwindFunctions::VirtualUnwind(DWORD64 image_base,
                      runtime_function, context, &handler_data,
                      &establisher_frame, &nvcontext);
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 
@@ -133,7 +134,8 @@ bool Win32StackFrameUnwinder::TryUnwind(
   // code. See https://crbug.com/542919.
   return false;
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
+  return false;
 #endif
 }
 

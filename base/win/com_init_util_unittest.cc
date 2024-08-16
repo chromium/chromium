@@ -12,7 +12,7 @@ namespace base {
 namespace win {
 
 TEST(ComInitUtil, AssertNotInitialized) {
-  EXPECT_NOTREACHED_DEATH(AssertComInitialized());
+  EXPECT_DCHECK_DEATH(AssertComInitialized());
 }
 
 TEST(ComInitUtil, AssertUninitialized) {
@@ -22,7 +22,7 @@ TEST(ComInitUtil, AssertUninitialized) {
     ScopedCOMInitializer com_initializer;
     ASSERT_TRUE(com_initializer.Succeeded());
   }
-  EXPECT_NOTREACHED_DEATH(AssertComInitialized());
+  EXPECT_DCHECK_DEATH(AssertComInitialized());
 }
 
 TEST(ComInitUtil, AssertSTAInitialized) {

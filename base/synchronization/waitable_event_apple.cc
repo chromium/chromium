@@ -215,7 +215,8 @@ size_t WaitableEvent::WaitManyImpl(base::span<WaitableEvent*> raw_waitables) {
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
+  return 0;
 }
 
 // static

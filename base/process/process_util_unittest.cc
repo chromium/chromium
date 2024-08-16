@@ -1060,7 +1060,7 @@ MULTIPROCESS_TEST_MAIN(ProcessUtilsLeakFDChildProcess) {
 int ProcessUtilTest::CountOpenFDsInChild() {
   int fds[2];
   if (pipe(fds) < 0)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   LaunchOptions options;
   options.fds_to_remap.emplace_back(fds[1], kChildPipe);

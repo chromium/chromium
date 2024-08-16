@@ -115,7 +115,8 @@ UnwindResult FramePointerUnwinder::TryUnwind(
     stack->emplace_back(retaddr, module);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
+  return UnwindResult::kCompleted;
 }
 
 }  // namespace base

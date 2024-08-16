@@ -72,6 +72,9 @@ enum class ProcessCPUUsageError {
   // Process CPU usage couldn't be measured because the process wasn't running.
   // Some platforms may return kSystemError instead in this situation.
   kProcessNotFound,
+
+  // CPU usage measurement isn't implemented on this platform.
+  kNotImplemented,
 };
 
 // Provides performance metrics for a specified process (CPU usage and IO

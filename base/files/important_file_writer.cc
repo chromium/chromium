@@ -313,7 +313,8 @@ bool ImportantFileWriter::HasPendingWrite() const {
 void ImportantFileWriter::WriteNow(std::string data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsValueInRangeForNumericType<int32_t>(data.length())) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
+    return;
   }
 
   WriteNowWithBackgroundDataProducer(base::BindOnce(
@@ -336,8 +337,11 @@ void ImportantFileWriter::WriteNowWithBackgroundDataProducer(
                                          std::move(split_task.first),
                                          /*is_immediate=*/true))) {
     // Posting the task to background message loop is not expected
-    // to fail.
-    NOTREACHED();
+    // to fail, but if it does, avoid losing data and just hit the disk
+    // on the current thread.
+    NOTREACHED_IN_MIGRATION();
+
+    std::move(split_task.second).Run();
   }
   ClearPendingWrite();
 }

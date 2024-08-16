@@ -304,7 +304,7 @@ TEST_F(AsanBackupRefPtrTest, BoundArgumentsNotProtected) {
       [](AsanStruct* outer_ptr, base::OnceClosure inner_callback) {
         std::move(inner_callback).Run();
         // This will never be executed, as we will crash in inner_callback
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       },
       base::Unretained(protected_ptr),
       base::BindOnce(

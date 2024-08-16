@@ -62,9 +62,10 @@ std::string ErrorCodeToString(JSONParser::JsonParseError error_code) {
     case JSONParser::JSON_UNREPRESENTABLE_NUMBER:
       return JSONParser::kUnrepresentableNumber;
     case JSONParser::JSON_PARSE_ERROR_COUNT:
-      NOTREACHED();
+      break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
+  return std::string();
 }
 
 const int32_t kExtendedASCIIStart = 0x80;

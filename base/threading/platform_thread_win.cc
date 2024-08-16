@@ -555,7 +555,9 @@ ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
       DPCHECK(false) << "::GetThreadPriority error";
   }
 
-  NOTREACHED() << "::GetThreadPriority returned " << priority << ".";
+  NOTREACHED_IN_MIGRATION()
+      << "::GetThreadPriority returned " << priority << ".";
+  return ThreadPriorityForTest::kNormal;
 }
 
 void InitializePlatformThreadFeatures() {

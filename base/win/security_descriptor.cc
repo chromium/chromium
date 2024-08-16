@@ -104,7 +104,8 @@ GENERIC_MAPPING GetGenericMappingForType(SecurityObjectType object_type) {
           WINSTA_READATTRIBUTES | WINSTA_READSCREEN | WINSTA_WRITEATTRIBUTES;
       break;
     case SecurityObjectType::kKernel:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
+      break;
   }
   return generic_mapping;
 }

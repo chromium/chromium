@@ -456,7 +456,8 @@ void CommandLine::RemoveSwitch(std::string_view switch_key_without_prefix) {
                                  return IsSwitchWithKey(arg, switch_key_native);
                                });
   if (expell == argv_switches_end) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
+    return;
   }
   begin_args_ -= argv_switches_end - expell;
   argv_.erase(expell, argv_switches_end);

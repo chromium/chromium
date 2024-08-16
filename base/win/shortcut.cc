@@ -86,7 +86,8 @@ bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
   // A target is required unless |operation| is kUpdateExisting.
   if (operation != ShortcutOperation::kUpdateExisting &&
       !(properties.options & ShortcutProperties::PROPERTIES_TARGET)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
+    return false;
   }
 
   bool shortcut_existed = PathExists(shortcut_path);
@@ -117,7 +118,7 @@ bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
         InitializeShortcutInterfaces(nullptr, &i_shell_link, &i_persist_file);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // Return false immediately upon failure to initialize shortcut interfaces.
@@ -217,7 +218,7 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
   if (options & ~ShortcutProperties::PROPERTIES_ALL)
-    NOTREACHED() << "Unhandled property is used.";
+    NOTREACHED_IN_MIGRATION() << "Unhandled property is used.";
 
   ComPtr<IShellLink> i_shell_link;
 
@@ -296,7 +297,9 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
           properties->set_app_id(pv_app_id.get().pwszVal);
           break;
         default:
-          NOTREACHED() << "Unexpected variant type: " << pv_app_id.get().vt;
+          NOTREACHED_IN_MIGRATION()
+              << "Unexpected variant type: " << pv_app_id.get().vt;
+          return false;
       }
     }
 
@@ -314,7 +317,9 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
           properties->set_dual_mode(pv_dual_mode.get().boolVal == VARIANT_TRUE);
           break;
         default:
-          NOTREACHED() << "Unexpected variant type: " << pv_dual_mode.get().vt;
+          NOTREACHED_IN_MIGRATION()
+              << "Unexpected variant type: " << pv_dual_mode.get().vt;
+          return false;
       }
     }
 
@@ -334,8 +339,9 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
               *(pv_toast_activator_clsid.get().puuid));
           break;
         default:
-          NOTREACHED() << "Unexpected variant type: "
-                       << pv_toast_activator_clsid.get().vt;
+          NOTREACHED_IN_MIGRATION() << "Unexpected variant type: "
+                                    << pv_toast_activator_clsid.get().vt;
+          return false;
       }
     }
   }

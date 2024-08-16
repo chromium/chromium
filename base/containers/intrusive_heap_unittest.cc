@@ -133,7 +133,7 @@ void DoGrowingOperation(IntrusiveHeap<T>* heap) {
     }
 
     case kGrowingOperationsCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   EXPECT_EQ(old_size + 1, heap->size());
@@ -217,7 +217,7 @@ void DoShrinkingOperation(IntrusiveHeap<T>* heap) {
     }
 
     case kShrinkingOperationsCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   EXPECT_EQ(old_size - 1, heap->size());
@@ -256,7 +256,7 @@ void DoSameSizeOperation(IntrusiveHeap<T>* heap) {
     }
 
     case kSameSizeOperationsCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   EXPECT_EQ(old_size, heap->size());
@@ -293,7 +293,7 @@ void DoRandomHeapOperation(IntrusiveHeap<T>* heap) {
       DoSameSizeOperation(heap);
       break;
     case kOperationTypesCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

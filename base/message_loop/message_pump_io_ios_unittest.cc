@@ -70,9 +70,13 @@ class BaseWatcher : public MessagePumpIOSForIO::FdWatcher {
   ~BaseWatcher() override {}
 
   // MessagePumpIOSForIO::FdWatcher interface
-  void OnFileCanReadWithoutBlocking(int /* fd */) override { NOTREACHED(); }
+  void OnFileCanReadWithoutBlocking(int /* fd */) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
-  void OnFileCanWriteWithoutBlocking(int /* fd */) override { NOTREACHED(); }
+  void OnFileCanWriteWithoutBlocking(int /* fd */) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
  protected:
   MessagePumpIOSForIO::FdWatchController* controller_;

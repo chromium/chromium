@@ -182,17 +182,20 @@ class HookManager {
     HotpatchPlaceholderFormat format = GetHotpatchPlaceholderFormat(
         reinterpret_cast<const void*>(co_create_instance_padded_address_));
     if (format == HotpatchPlaceholderFormat::UNKNOWN) {
-      NOTREACHED() << "Unrecognized hotpatch function format: "
-                   << FirstSevenBytesToString(
-                          co_create_instance_padded_address_);
+      NOTREACHED_IN_MIGRATION()
+          << "Unrecognized hotpatch function format: "
+          << FirstSevenBytesToString(co_create_instance_padded_address_);
+      return;
     } else if (format == HotpatchPlaceholderFormat::EXTERNALLY_PATCHED) {
-      NOTREACHED() << "CoCreateInstance appears to be previously patched. <"
-                   << FirstSevenBytesToString(
-                          co_create_instance_padded_address_)
-                   << "> Attempted to write <"
-                   << FirstSevenBytesToString(
-                          reinterpret_cast<uint32_t>(&structured_hotpatch_))
-                   << ">";
+      hotpatch_placeholder_format_ = format;
+      NOTREACHED_IN_MIGRATION()
+          << "CoCreateInstance appears to be previously patched. <"
+          << FirstSevenBytesToString(co_create_instance_padded_address_)
+          << "> Attempted to write <"
+          << FirstSevenBytesToString(
+                 reinterpret_cast<uint32_t>(&structured_hotpatch_))
+          << ">";
+      return;
     } else if (format == HotpatchPlaceholderFormat::APPHELP_SHIM) {
       // The apphelp shim placeholder does not allocate enough bytes for a
       // trampolined jump. In this case, we skip patching.
@@ -288,12 +291,14 @@ class HookManager {
       return false;
     }
 
-    NOTREACHED() << "CoCreateInstance patch overwritten. Expected: <"
-                 << FirstSevenBytesToString(co_create_instance_padded_address_)
-                 << ">, Actual: <"
-                 << FirstSevenBytesToString(
-                        reinterpret_cast<uint32_t>(&structured_hotpatch_))
-                 << ">";
+    NOTREACHED_IN_MIGRATION()
+        << "CoCreateInstance patch overwritten. Expected: <"
+        << FirstSevenBytesToString(co_create_instance_padded_address_)
+        << ">, Actual: <"
+        << FirstSevenBytesToString(
+               reinterpret_cast<uint32_t>(&structured_hotpatch_))
+        << ">";
+    return true;
   }
 
   // Indirect call to original_co_create_instance_body_function_ triggers CFI

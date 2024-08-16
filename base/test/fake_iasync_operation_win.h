@@ -62,7 +62,8 @@ class FakeIAsyncOperation final
   IFACEMETHODIMP get_Completed(
       ABI::Windows::Foundation::IAsyncOperationCompletedHandler<T>** handler)
       final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
+    return E_NOTIMPL;
   }
   IFACEMETHODIMP GetResults(internal::AsyncOperationAbi<T>* results) final {
     if (!is_complete_) {
@@ -75,7 +76,10 @@ class FakeIAsyncOperation final
   }
 
   // ABI::Windows::Foundation::IAsyncInfo:
-  IFACEMETHODIMP get_Id(uint32_t* id) final { NOTREACHED(); }
+  IFACEMETHODIMP get_Id(uint32_t* id) final {
+    NOTREACHED_IN_MIGRATION();
+    return E_NOTIMPL;
+  }
   IFACEMETHODIMP get_Status(AsyncStatus* status) final {
     *status = status_;
     return S_OK;
@@ -91,8 +95,14 @@ class FakeIAsyncOperation final
     *error_code = error_code_;
     return S_OK;
   }
-  IFACEMETHODIMP Cancel() final { NOTREACHED(); }
-  IFACEMETHODIMP Close() final { NOTREACHED(); }
+  IFACEMETHODIMP Cancel() final {
+    NOTREACHED_IN_MIGRATION();
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP Close() final {
+    NOTREACHED_IN_MIGRATION();
+    return E_NOTIMPL;
+  }
 
   // Completes the operation with |error_code|.
   //

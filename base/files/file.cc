@@ -204,7 +204,8 @@ std::string File::ErrorToString(Error error) {
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
+  return "";
 }
 
 void File::WriteIntoTrace(perfetto::TracedValue context) const {

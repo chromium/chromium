@@ -71,7 +71,8 @@ bool CreatePairImpl(ScopedHandle* socket_a,
   } while (!handle_a.is_valid() && (GetLastError() == ERROR_PIPE_BUSY));
 
   if (!handle_a.is_valid()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
+    return false;
   }
 
   // The SECURITY_ANONYMOUS flag means that the server side (handle_a) cannot
