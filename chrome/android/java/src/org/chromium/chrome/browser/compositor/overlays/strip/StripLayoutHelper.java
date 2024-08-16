@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Looper;
@@ -93,6 +94,7 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.ui.widget.RectProvider;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -360,6 +362,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private final StripTabEventHandler mStripTabEventHandler = new StripTabEventHandler();
     private final TabLoadTrackerCallback mTabLoadTrackerHost = new TabLoadTrackerCallbackImpl();
     private final RectF mTouchableRect = new RectF();
+    private final Supplier<Rect> mWindowRectSupplier;
 
     // Common state used for animations on the strip triggered by independent actions including and
     // not limited to tab closure, tab creation/selection, and tab reordering. Not intended to be
@@ -516,6 +519,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             LayoutManagerHost managerHost,
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
+            Supplier<Rect> windowRectSupplier,
             boolean incognito,
             CompositorButton modelSelectorButton,
             @Nullable TabDragSource tabDragSource,
@@ -535,6 +539,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         mActionConfirmationManager = actionConfirmationManager;
         mTabStripHeight = tabStripHeight;
         mTabStripVisibleSupplier = tabStripVisibleSupplier;
+        mWindowRectSupplier = windowRectSupplier;
 
         // Use toolbar menu button padding to align NTB with menu button.
         mFixedEndPadding =
@@ -1958,8 +1963,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     }
 
     private void showTabGroupContextMenu(StripLayoutGroupTitle groupTitle) {
-        // TODO(crbug.com/354258700): Set the correct view position to anchor the context menu.
-        View tabView = TabModelUtils.getCurrentTab(mModel).getView();
         if (mTabGroupContextMenuCoordinator == null) {
             mTabGroupContextMenuCoordinator =
                     new TabGroupContextMenuCoordinator(
@@ -1970,7 +1973,11 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                             mWindowAndroid,
                             TabGroupSyncFeatures.isTabGroupSyncEnabled(mModel.getProfile()));
         }
-        mTabGroupContextMenuCoordinator.showMenu(tabView, groupTitle.getRootId());
+        // Popup menu requires screen coordinates for anchor view. Get absolute position for title.
+        Rect tabGroupTitleRect = new Rect();
+        groupTitle.getDrawBoundsOnScreen(tabGroupTitleRect, mWindowRectSupplier);
+        mTabGroupContextMenuCoordinator.showMenu(
+                new RectProvider(tabGroupTitleRect), groupTitle.getRootId());
     }
 
     private void startDragOrReorderTab(long time, float x, float y, StripLayoutTab clickedTab) {
@@ -2902,7 +2909,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private StripLayoutGroupTitle createGroupTitle(int rootId) {
         // Delay setting the collapsed state, since mStripViews may not yet be up to date.
         StripLayoutGroupTitle groupTitle =
-                new StripLayoutGroupTitle(/* delegate= */ this, mIncognito, rootId);
+                new StripLayoutGroupTitle(mContext, /* delegate= */ this, mIncognito, rootId);
         pushPropertiesToGroupTitle(groupTitle);
         // Must pass in the group title instead of rootId, since the StripLayoutGroupTitle has not
         // been added to mStripViews yet.

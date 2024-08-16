@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import android.content.Context;
+import android.graphics.Rect;
 import android.util.FloatProperty;
 
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.LocalizationUtils;
@@ -19,6 +22,26 @@ import org.chromium.ui.base.LocalizationUtils;
  * onto the GL canvas.
  */
 public class StripLayoutGroupTitle extends StripLayoutView {
+
+    private final Context mContext;
+
+    /**
+     * Get the bounds of the view w.r.t screen.
+     *
+     * @param out Screen coordinates of the view to populate.
+     * @param windowRectSupplier Supplier for holder window bounds for computation.
+     */
+    public void getDrawBoundsOnScreen(Rect out, Supplier<Rect> windowRectSupplier) {
+        float dpToPx = mContext.getResources().getDisplayMetrics().density;
+        int leftWithOffset = (int) (getPaddedX() * dpToPx) + windowRectSupplier.get().left;
+        int topWithOffset = (int) (getPaddedY() * dpToPx) + windowRectSupplier.get().top;
+        out.set(
+                leftWithOffset,
+                topWithOffset,
+                (int) (leftWithOffset + (getPaddedWidth() * dpToPx)),
+                (int) (topWithOffset + (getPaddedHeight() * dpToPx)));
+    }
+
     /** Delegate for additional group title functionality. */
     public interface StripLayoutGroupTitleDelegate {
         /**
@@ -94,10 +117,14 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      * @param rootId The root ID for the tab group.
      */
     public StripLayoutGroupTitle(
-            StripLayoutGroupTitleDelegate delegate, boolean incognito, int rootId) {
+            Context context,
+            StripLayoutGroupTitleDelegate delegate,
+            boolean incognito,
+            int rootId) {
         super(incognito);
         assert rootId != Tab.INVALID_TAB_ID : "Tried to create a group title for an invalid group.";
         mRootId = rootId;
+        mContext = context;
         mDelegate = delegate;
     }
 

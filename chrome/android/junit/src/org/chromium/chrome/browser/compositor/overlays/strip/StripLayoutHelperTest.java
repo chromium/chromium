@@ -31,6 +31,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.text.TextUtils;
@@ -59,6 +60,7 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -97,6 +99,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
+import org.chromium.ui.widget.RectProvider;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -165,6 +168,7 @@ public class StripLayoutHelperTest {
     private static final float REORDER_OVERLAP_SWITCH_PERCENTAGE = 0.53f;
     private static final PointF DRAG_START_POINT = new PointF(70f, 20f);
     private static final float EPSILON = 0.001f;
+    private final Supplier<Rect> mWindowRectSupplier = () -> new Rect(1, 1, 1000, 100);
 
     /** Reset the environment before each test. */
     @Before
@@ -1828,8 +1832,19 @@ public class StripLayoutHelperTest {
         // Long press on group title
         mStripLayoutHelper.onLongPress(TIMESTAMP, 10f, 0f);
 
+        ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
+                ArgumentCaptor.forClass(RectProvider.class);
         // Verify tab group context menu is showing.
-        verify(mTabGroupContextMenuCoordinator).showMenu(any(), anyInt());
+        verify(mTabGroupContextMenuCoordinator)
+                .showMenu(rectProviderArgumentCaptor.capture(), anyInt());
+        // Verify anchorView coordinates.
+        StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
+        assertTrue(view instanceof StripLayoutGroupTitle);
+        StripLayoutGroupTitle titleView = (StripLayoutGroupTitle) view;
+        Rect actualRect = rectProviderArgumentCaptor.getValue().getRect();
+        Rect expectedRect = new Rect();
+        titleView.getDrawBoundsOnScreen(expectedRect, mWindowRectSupplier);
+        assertEquals("Anchor view for menu is positioned incorrectly", expectedRect, actualRect);
     }
 
     @Test
@@ -4051,6 +4066,7 @@ public class StripLayoutHelperTest {
                         mManagerHost,
                         mUpdateHost,
                         mRenderHost,
+                        mWindowRectSupplier,
                         incognito,
                         mModelSelectorBtn,
                         mTabDragSource,

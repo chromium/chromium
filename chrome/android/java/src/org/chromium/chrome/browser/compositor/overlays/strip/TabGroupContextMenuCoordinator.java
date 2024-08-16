@@ -11,6 +11,7 @@ import android.widget.EditText;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -37,6 +38,7 @@ import org.chromium.ui.listmenu.ListSectionDividerProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.RectProvider;
 
 /**
  * A coordinator for the context menu on the tab strip by long-pressing on the group titles. It is
@@ -125,12 +127,19 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     /**
      * Show the context menu of the tab group.
      *
-     * @param anchorView The anchor {@link View} of the context menu.
+     * @param anchorViewRectProvider The context menu's anchor view rect provider. These are screen
+     *     coordinates..
      * @param rootId The root id of the interacting tab group.
      */
-    protected void showMenu(View anchorView, int rootId) {
+    protected void showMenu(RectProvider anchorViewRectProvider, int rootId) {
         mGroupRootId = rootId;
-        createAndShowMenu(anchorView, rootId, mWindowAndroid.getActivity().get());
+        createAndShowMenu(
+                anchorViewRectProvider,
+                rootId,
+                /* horizontalOverlapAnchor= */ true,
+                /* verticalOverlapAnchor= */ false,
+                /* animStyle= */ ResourcesCompat.ID_NULL,
+                mWindowAndroid.getActivity().get());
     }
 
     @Override
