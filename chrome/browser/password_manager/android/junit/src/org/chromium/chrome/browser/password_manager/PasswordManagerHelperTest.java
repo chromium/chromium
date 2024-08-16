@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
@@ -21,6 +22,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.START_PASSWORDS_EXPORT;
 
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
@@ -39,6 +42,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
@@ -1983,6 +1987,23 @@ public class PasswordManagerHelperTest {
         // user.
         when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(mSyncServiceMock, mPrefService))
                 .thenReturn(true);
+    }
+
+    @Test
+    public void testShowMainSettingsAndStartExport() {
+        Context mockContext = mock(Context.class);
+        PasswordManagerHelper.showMainSettingsAndStartExport(mockContext);
+
+        ArgumentMatcher<Bundle> bundleStartsExport =
+                (ArgumentMatcher<Bundle>)
+                        bundle -> {
+                            if (!bundle.containsKey(START_PASSWORDS_EXPORT)) return false;
+                            if (!bundle.getBoolean(START_PASSWORDS_EXPORT)) return false;
+                            return true;
+                        };
+        verify(mSettingsLauncherMock)
+                .createSettingsActivityIntent(
+                        eq(mockContext), eq(SettingsFragment.MAIN), argThat(bundleStartsExport));
     }
 
     private void chooseToSyncButNotSyncPasswords() {

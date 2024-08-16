@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.password_manager.settings.PasswordsPreference;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -500,6 +501,24 @@ public class MainSettings extends ChromeBaseSettingsFragment
                             /* managePasskeys= */ false);
                     return true;
                 });
+
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList
+                        .UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
+            // This is temporary code needed for migrating people to UPM. With UPM there is no
+            // longer passwords setting page in Chrome, so we need to ask users to export their
+            // passwords here, in main settings.
+            boolean startPasswordsExportFlow =
+                    getArguments() != null
+                            && getArguments()
+                                    .containsKey(PasswordManagerHelper.START_PASSWORDS_EXPORT)
+                            && getArguments()
+                                    .getBoolean(PasswordManagerHelper.START_PASSWORDS_EXPORT);
+            if (startPasswordsExportFlow) {
+                PasswordManagerHelper.getForProfile(getProfile()).launchExportFlow(getContext());
+                getArguments().putBoolean(PasswordManagerHelper.START_PASSWORDS_EXPORT, false);
+            }
+        }
     }
 
     private void updatePlusAddressesPreference() {

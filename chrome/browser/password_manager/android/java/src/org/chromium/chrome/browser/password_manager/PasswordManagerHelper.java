@@ -64,6 +64,10 @@ public class PasswordManagerHelper {
     // all points of entry to the passwords settings.
     public static final String MANAGE_PASSWORDS_REFERRER = "manage-passwords-referrer";
 
+    // Launch argument for the main settings. If set to to true, the passwords
+    // export flow starts immediately.
+    public static final String START_PASSWORDS_EXPORT = "start-passwords-export";
+
     // Indicates the operation that was requested from the {@link PasswordCheckupClientHelper}.
     @IntDef({
         PasswordCheckOperation.RUN_PASSWORD_CHECKUP,
@@ -175,7 +179,7 @@ public class PasswordManagerHelper {
                             modalDialogManagerSupplier.get(),
                             warningType,
                             PasswordManagerHelper::launchGmsUpdate,
-                            this::launchExportFlow);
+                            PasswordManagerHelper::showMainSettingsAndStartExport);
             return;
         }
 
@@ -230,6 +234,15 @@ public class PasswordManagerHelper {
                 SettingsLauncherFactory.createSettingsLauncher()
                         .createSettingsActivityIntent(
                                 context, SettingsFragment.PASSWORDS, fragmentArgs));
+    }
+
+    public static void showMainSettingsAndStartExport(Context context) {
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putBoolean(START_PASSWORDS_EXPORT, true);
+        context.startActivity(
+                SettingsLauncherFactory.createSettingsLauncher()
+                        .createSettingsActivityIntent(
+                                context, SettingsFragment.MAIN, fragmentArgs));
     }
 
     /**
@@ -445,7 +458,7 @@ public class PasswordManagerHelper {
         }
     }
 
-    private void launchExportFlow(Context context) {
+    public void launchExportFlow(Context context) {
         FragmentActivity activity = (FragmentActivity) ContextUtils.activityFromContext(context);
         assert activity != null : "Context is expected to be a fragment activity";
 
