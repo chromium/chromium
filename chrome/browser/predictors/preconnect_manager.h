@@ -167,7 +167,7 @@ class PreconnectManager {
 
   virtual ~PreconnectManager();
 
-  // Starts preconnect and preresolve jobs keyed by |url|.
+  // Starts preconnect and preresolve jobs associated with |url|.
   virtual void Start(const GURL& url, std::vector<PreconnectRequest> requests);
 
   // Starts special preconnect and preresolve jobs that are not cancellable and
@@ -189,7 +189,7 @@ class PreconnectManager {
       bool allow_credentials,
       net::NetworkAnonymizationKey network_anonymization_key);
 
-  // No additional jobs keyed by the |url| will be queued after this.
+  // No additional jobs associated with the |url| will be queued after this.
   virtual void Stop(const GURL& url);
 
   base::WeakPtr<PreconnectManager> GetWeakPtr() {
