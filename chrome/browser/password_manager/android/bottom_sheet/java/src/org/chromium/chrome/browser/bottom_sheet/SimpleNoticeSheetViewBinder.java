@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.browser.bottom_sheet;
 
-import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.DISMISS_HANDLER;
-import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.VISIBLE;
-
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -25,17 +21,8 @@ class SimpleNoticeSheetViewBinder {
      */
     static void bindSimpleNoticeSheetView(
             PropertyModel model, SimpleNoticeSheetView view, PropertyKey propertyKey) {
-        if (propertyKey == DISMISS_HANDLER) {
-            view.setDismissHandler(model.get(DISMISS_HANDLER));
-        } else if (propertyKey == VISIBLE) {
-            boolean visibilityChangeSuccessful = view.setVisible(model.get(VISIBLE));
-            if (!visibilityChangeSuccessful && model.get(VISIBLE)) {
-                assert model.get(DISMISS_HANDLER) != null;
-                model.get(DISMISS_HANDLER).onResult(BottomSheetController.StateChangeReason.NONE);
-            }
-        } else {
-            assert false : "Unhandled update to property:" + propertyKey;
-        }
+        // TODO: crbug.com/353283268 - Add properties.
+        assert false : "Unhandled update to property:" + propertyKey;
     }
 
     private SimpleNoticeSheetViewBinder() {}

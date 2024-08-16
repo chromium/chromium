@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.bottom_sheet;
+package org.chromium.chrome.browser.access_loss;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
@@ -28,7 +28,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 
 /** Tests for {@link TouchToFillPasswordGenerationBridge} */
@@ -36,8 +35,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class SimpleNoticeSheetCoordinatorRobolectricTest {
-    private SimpleNoticeSheetCoordinator mCoordinator;
+public class PasswordAccessLossWarningBridgeTest {
+    private PasswordAccessLossWarningBridge mBridge;
     private final ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor =
             ArgumentCaptor.forClass(BottomSheetObserver.class);
 
@@ -50,8 +49,8 @@ public class SimpleNoticeSheetCoordinatorRobolectricTest {
 
         setUpBottomSheetController();
 
-        mCoordinator =
-                new SimpleNoticeSheetCoordinator(
+        mBridge =
+                new PasswordAccessLossWarningBridge(
                         ContextUtils.getApplicationContext(), mBottomSheetController);
     }
 
@@ -61,12 +60,9 @@ public class SimpleNoticeSheetCoordinatorRobolectricTest {
     }
 
     @Test
-    public void showsAndHidesBottomSheet() {
-        mCoordinator.showSheet();
+    public void showsSheet() {
+        mBridge.show(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
         verify(mBottomSheetController).addObserver(any());
-
-        mCoordinator.onDismissed(StateChangeReason.SWIPE);
-        verify(mBottomSheetController).removeObserver(mBottomSheetObserverCaptor.getValue());
     }
 }

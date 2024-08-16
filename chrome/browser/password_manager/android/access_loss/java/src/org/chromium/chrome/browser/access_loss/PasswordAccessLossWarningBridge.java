@@ -4,17 +4,47 @@
 
 package org.chromium.chrome.browser.access_loss;
 
+import android.content.Context;
+
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
 
-class PasswordAccessLossWarningBridge {
+import org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetCoordinator;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.ui.base.WindowAndroid;
 
-    @CalledByNative
-    private static PasswordAccessLossWarningBridge create() {
-        return new PasswordAccessLossWarningBridge();
+class PasswordAccessLossWarningBridge {
+    final Context mContext;
+    final BottomSheetController mBottomSheetController;
+
+    public PasswordAccessLossWarningBridge(
+            Context context, BottomSheetController bottomSheetController) {
+        mContext = context;
+        mBottomSheetController = bottomSheetController;
     }
 
     @CalledByNative
-    private void show() {
-        // TODO: crbug.com/356627466 - Show the sheet.
+    @Nullable
+    private static PasswordAccessLossWarningBridge create(WindowAndroid windowAndroid) {
+        BottomSheetController bottomSheetController =
+                BottomSheetControllerProvider.from(windowAndroid);
+        if (bottomSheetController == null) {
+            return null;
+        }
+        Context context = windowAndroid.getContext().get();
+        if (context == null) {
+            return null;
+        }
+        return new PasswordAccessLossWarningBridge(context, bottomSheetController);
+    }
+
+    @CalledByNative
+    public void show(@PasswordAccessLossWarningType int warningType) {
+        SimpleNoticeSheetCoordinator coordinator =
+                new SimpleNoticeSheetCoordinator(mContext, mBottomSheetController);
+        // TODO: crbug.com/353283268 - Use the warningType to show the sheet with specific looks.
+        coordinator.showSheet();
     }
 }

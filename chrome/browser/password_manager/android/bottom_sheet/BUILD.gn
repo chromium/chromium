@@ -15,7 +15,6 @@ android_library("java") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/bottom_sheet/SimpleNoticeSheetCoordinator.java",
-    "java/src/org/chromium/chrome/browser/bottom_sheet/SimpleNoticeSheetMediator.java",
     "java/src/org/chromium/chrome/browser/bottom_sheet/SimpleNoticeSheetProperties.java",
     "java/src/org/chromium/chrome/browser/bottom_sheet/SimpleNoticeSheetView.java",
     "java/src/org/chromium/chrome/browser/bottom_sheet/SimpleNoticeSheetViewBinder.java",
@@ -27,51 +26,23 @@ android_library("java") {
 robolectric_library("junit") {
   testonly = true
 
-  sources = [
-    "java/src/org/chromium/chrome/browser/bottom_sheet/SimpleNoticeSheetCoordinatorRobolectricTest.java",
-    "java/src/org/chromium/chrome/browser/bottom_sheet/SimpleNoticeSheetMediatorTest.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/bottom_sheet/SimpleNoticeSheetCoordinatorRobolectricTest.java" ]
 
   deps = [
     ":java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base:callback_java",
-    "//components/browser_ui/bottomsheet/android:java",
-    "//third_party/hamcrest:hamcrest_core_java",
-    "//third_party/hamcrest:hamcrest_library_java",
-    "//third_party/junit:junit",
-    "//third_party/mockito:mockito_java",
-    "//ui/android:ui_no_recycler_view_java",
-  ]
-}
-
-android_library("javatests") {
-  testonly = true
-  resources_package = "org.chromium.chrome.browser.bottom_sheet"
-
-  sources = [ "java/src/org/chromium/chrome/browser/bottom_sheet/SimpleNoticeSheetViewTest.java" ]
-
-  deps = [
-    ":java",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
-    "//chrome/test/android:chrome_java_integration_test_support",
-    "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/bottomsheet/android:java",
-    "//components/browser_ui/bottomsheet/android:manager_java",
-    "//components/browser_ui/bottomsheet/android/test:java",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_test_core_java",
-    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
-    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 

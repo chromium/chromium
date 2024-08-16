@@ -384,7 +384,7 @@ TEST_F(TouchToFillControllerAutofillTest, FillingShowsAccessLossWarning) {
   EXPECT_CALL(*last_mock_filler(), UpdateTriggerSubmission(false));
   EXPECT_CALL(client(), StartSubmissionTrackingAfterTouchToFill(_)).Times(0);
   EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              MaybeShowAccessLossNoticeSheet());
+              MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _));
 
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 }
