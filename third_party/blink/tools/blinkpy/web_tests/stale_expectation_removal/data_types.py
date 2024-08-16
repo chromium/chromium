@@ -129,9 +129,12 @@ class WebTestTestExpectationMap(data_types.BaseTestExpectationMap):
     Identical to the base implementation except it correctly handles adding
     slow results.
     """
-
+    # pytype: disable=signature-mismatch
+    # Pytype complains that WebTestResult is not a type of BaseResult, despite
+    # WebTestResult being a child. Suspected bug, but pytype team was laid off.
     def _AddSingleResult(self, result: WebTestResult,
                          stats: data_types.BuildStats) -> None:
+        # pytype: enable=signature-mismatch
         super(WebTestTestExpectationMap, self)._AddSingleResult(result, stats)
         if result.is_slow_result:
             stats.AddSlowBuild(result.build_id)

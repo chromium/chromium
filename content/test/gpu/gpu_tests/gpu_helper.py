@@ -301,9 +301,8 @@ def GetMockArgs(webgl_version: str = '1.0.0') -> mock.MagicMock:
   return args
 
 
-def MatchDriverTag(tag: str) -> Match[str]:
+def MatchDriverTag(tag: str) -> Optional[Match[str]]:
   return DRIVER_TAG_MATCHER.match(tag.lower())
-
 
 # No good way to reduce the number of local variables, particularly since each
 # argument is also considered a local. Also no good way to reduce the number of
@@ -385,11 +384,13 @@ def IsDriverTagDuplicated(driver_tag1: str, driver_tag2: str) -> bool:
     return True
 
   match = MatchDriverTag(driver_tag1)
+  assert match is not None
   vendor1 = match.group(1)
   operation1 = match.group(2)
   version1 = match.group(3)
 
   match = MatchDriverTag(driver_tag2)
+  assert match is not None
   vendor2 = match.group(1)
   operation2 = match.group(2)
   version2 = match.group(3)

@@ -122,6 +122,7 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
       requires_fullscreen_os_screenshot_func = lambda: False
     self.RequiresFullScreenOSScreenshot = requires_fullscreen_os_screenshot_func
 
+# pytype: disable=signature-mismatch
 
 class TestActionCrashGpuProcess(sghitb.TestAction):
   """Runs JavaScript to crash the GPU process once."""
@@ -251,7 +252,7 @@ class TestActionRunLowToHighPowerTest(sghitb.TestAction):
     is_dual_gpu = test_instance.IsDualGPUMacLaptop()
     sghitb.EvalInTestIframe(tab_data.tab,
                             'initialize(%s)' % json.dumps(is_dual_gpu))
-
+# pytype: enable=signature-mismatch
 
 def GetMediaStreamTestBrowserArgs(media_stream_source_relpath: str
                                   ) -> List[str]:

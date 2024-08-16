@@ -108,9 +108,12 @@ def CaptureFullScreenshotOnFuchsia(browser: browser_module.Browser) -> bool:
 
 def MapsTestCases() -> List[ExpectedColorTestCase]:
   class TestActionStartMapsTest(sghitb.TestAction):
-    def Run(self, test_case: ExpectedColorTestCase, tab_data: sghitb.TabData,
-            loop_state: sghitb.LoopState,
-            test_instance: sghitb.SkiaGoldHeartbeatIntegrationTestBase) -> None:
+
+    def Run(
+        self, test_case: ExpectedColorTestCase, tab_data: sghitb.TabData,
+        loop_state: sghitb.LoopState,
+        test_instance: sghitb.SkiaGoldHeartbeatIntegrationTestBase
+    ) -> None:  # pytype: disable=signature-mismatch
       sghitb.EvalInTestIframe(
           tab_data.tab, """
         function _checkIfTestCanStart() {

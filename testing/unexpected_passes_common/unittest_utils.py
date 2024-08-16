@@ -108,14 +108,14 @@ class GenericBuilders(builders.Builders):
   def _BuilderRunsTestOfInterest(self, _test_map) -> bool:
     return True
 
-  def GetIsolateNames(self) -> dict:
-    return {}
+  def GetIsolateNames(self) -> Set[str]:
+    return set()
 
   def GetFakeCiBuilders(self) -> dict:
     return {}
 
-  def GetNonChromiumBuilders(self) -> dict:
-    return {}
+  def GetNonChromiumBuilders(self) -> Set[data_types.BuilderEntry]:
+    return set()
 
 
 def RegisterGenericBuildersImplementation() -> None:

@@ -131,7 +131,9 @@ def _GetAvailableGpus() -> List[_Gpu]:
 
 @functools.lru_cache(maxsize=1)
 def _GetWmiWbem() -> Any:
+  # pytype: disable=name-error
   wmi_service = win32com.client.Dispatch('WbemScripting.SWbemLocator')
+  # pytype: enable=name-error
   return wmi_service.ConnectServer('.', _WMI_DEFAULT_NAMESPACE)
 
 
@@ -224,7 +226,7 @@ def _get_system_profiler(data_type: str) -> dict:
   process = subprocess.run(['system_profiler', data_type, '-xml'],
                            stdout=subprocess.PIPE,
                            check=True)
-  plist = plistlib.loads(process.stdout)
+  plist = plistlib.loads(process.stdout)  # pytype: disable=name-error
   return plist[0].get('_items', [])
 
 
