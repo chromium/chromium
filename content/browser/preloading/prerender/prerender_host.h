@@ -57,9 +57,9 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
                                      public NavigationControllerDelegate {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused. This enum corresponds to
-  // PrerenderActivationNavigationParamsMatch in
-  // tools/metrics/histograms/enums.xml
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ActivationNavigationParamsMatch)
   enum class ActivationNavigationParamsMatch {
     kOk = 0,
     kInitiatorFrameToken = 1,
@@ -88,6 +88,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     kRequestDestination = 24,
     kMaxValue = kRequestDestination,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:PrerenderActivationNavigationParamsMatch)
 
   // Reasons blocking navigation while waiting for headers started.
   enum class WaitingForHeadersStartedReason { kWithoutTimeout, kWithTimeout };
