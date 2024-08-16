@@ -4,11 +4,13 @@
 
 #include "third_party/blink/renderer/modules/ai/ai_writer.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_writer_write_options.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 
@@ -45,6 +47,13 @@ ScriptPromise<IDLString> AIWriter::write(ScriptState* script_state,
     ThrowInvalidContextException(exception_state);
     return ScriptPromise<IDLString>();
   }
+  base::UmaHistogramEnumeration(
+      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kWriter),
+      AIMetrics::AIAPI::kWriterWrite);
+  base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
+                                 AIMetrics::AISessionType::kWriter),
+                             int(input.CharactersSizeInBytes()));
+
   CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
@@ -60,7 +69,7 @@ ScriptPromise<IDLString> AIWriter::write(ScriptState* script_state,
     return ScriptPromise<IDLString>();
   }
   auto [promise, pending_remote] = CreateModelExecutionResponder(
-      script_state, signal, task_runner_, AIMetrics::AISessionType::kWrite);
+      script_state, signal, task_runner_, AIMetrics::AISessionType::kWriter);
   remote_->Write(input, context_string, std::move(pending_remote));
   return promise;
 }
@@ -73,6 +82,12 @@ ReadableStream* AIWriter::writeStreaming(ScriptState* script_state,
     ThrowInvalidContextException(exception_state);
     return nullptr;
   }
+  base::UmaHistogramEnumeration(
+      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kWriter),
+      AIMetrics::AIAPI::kWriterWriteStreaming);
+  base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
+                                 AIMetrics::AISessionType::kWriter),
+                             int(input.CharactersSizeInBytes()));
   CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
@@ -89,7 +104,7 @@ ReadableStream* AIWriter::writeStreaming(ScriptState* script_state,
   }
   auto [readable_stream, pending_remote] =
       CreateModelExecutionStreamingResponder(script_state, signal, task_runner_,
-                                             AIMetrics::AISessionType::kWrite);
+                                             AIMetrics::AISessionType::kWriter);
   remote_->Write(input, context_string, std::move(pending_remote));
   return readable_stream;
 }

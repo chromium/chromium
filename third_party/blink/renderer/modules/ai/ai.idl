@@ -44,13 +44,13 @@ interface AI {
   readonly attribute AISummarizerFactory summarizer;
 
   [
-    // TODO(crbug.com/357967382): Add `Measure`
+    Measure,
     RuntimeEnabled=AIWriterAPI
   ]
   readonly attribute AIWriterFactory writer;
 
   [
-    // TODO(crbug.com/358214322): Add `Measure`
+    Measure,
     RuntimeEnabled=AIRewriterAPI
   ]
   readonly attribute AIRewriterFactory rewriter;

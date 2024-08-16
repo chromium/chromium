@@ -4,12 +4,14 @@
 
 #include "third_party/blink/renderer/modules/ai/ai_rewriter.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_rewriter_rewrite_options.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
+#include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 
@@ -52,6 +54,12 @@ ScriptPromise<IDLString> AIRewriter::rewrite(
     ThrowInvalidContextException(exception_state);
     return ScriptPromise<IDLString>();
   }
+  base::UmaHistogramEnumeration(
+      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kRewriter),
+      AIMetrics::AIAPI::kRewriterRewrite);
+  base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
+                                 AIMetrics::AISessionType::kRewriter),
+                             int(input.CharactersSizeInBytes()));
   CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
@@ -67,7 +75,7 @@ ScriptPromise<IDLString> AIRewriter::rewrite(
     return ScriptPromise<IDLString>();
   }
   auto [promise, pending_remote] = CreateModelExecutionResponder(
-      script_state, signal, task_runner_, AIMetrics::AISessionType::kWrite);
+      script_state, signal, task_runner_, AIMetrics::AISessionType::kWriter);
   remote_->Rewrite(input, context_string, std::move(pending_remote));
   return promise;
 }
@@ -81,6 +89,12 @@ ReadableStream* AIRewriter::rewriteStreaming(
     ThrowInvalidContextException(exception_state);
     return nullptr;
   }
+  base::UmaHistogramEnumeration(
+      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kRewriter),
+      AIMetrics::AIAPI::kRewriterRewriteStreaming);
+  base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
+                                 AIMetrics::AISessionType::kRewriter),
+                             int(input.CharactersSizeInBytes()));
   CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
@@ -97,7 +111,7 @@ ReadableStream* AIRewriter::rewriteStreaming(
   }
   auto [readable_stream, pending_remote] =
       CreateModelExecutionStreamingResponder(script_state, signal, task_runner_,
-                                             AIMetrics::AISessionType::kWrite);
+                                             AIMetrics::AISessionType::kWriter);
   remote_->Rewrite(input, context_string, std::move(pending_remote));
   return readable_stream;
 }

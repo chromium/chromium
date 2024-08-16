@@ -16,10 +16,10 @@ std::string_view GetAISessionTypeName(AIMetrics::AISessionType session_type) {
   switch (session_type) {
     case AIMetrics::AISessionType::kText:
       return "Text";
-    case AIMetrics::AISessionType::kWrite:
-      return "Write";
-    case AIMetrics::AISessionType::kRewrite:
-      return "Rewrite";
+    case AIMetrics::AISessionType::kWriter:
+      return "Writer";
+    case AIMetrics::AISessionType::kRewriter:
+      return "Rewriter";
   }
   NOTREACHED_IN_MIGRATION();
 }

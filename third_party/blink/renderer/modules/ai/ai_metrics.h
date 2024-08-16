@@ -14,13 +14,14 @@ class AIMetrics {
   // This class contains all the supported session types.
   enum class AISessionType {
     kText = 0,
-    kWrite = 1,
-    kRewrite = 2,
-    kMaxValue = kRewrite,
+    kWriter = 1,
+    kRewriter = 2,
+    kMaxValue = kRewriter,
   };
 
   // This class contains all the model execution API supported.
-  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   // LINT.IfChange(AIAPI)
   enum class AIAPI {
     kCanCreateSession = 0,
@@ -33,8 +34,12 @@ class AIMetrics {
     kTextModelInfo = 7,
     kSessionSummarize = 8,
     kSessionSummarizeStreaming = 9,
+    kWriterWrite = 10,
+    kWriterWriteStreaming = 11,
+    kRewriterRewrite = 12,
+    kRewriterRewriteStreaming = 13,
 
-    kMaxValue = kSessionSummarizeStreaming,
+    kMaxValue = kRewriterRewriteStreaming,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AIAPI)
 

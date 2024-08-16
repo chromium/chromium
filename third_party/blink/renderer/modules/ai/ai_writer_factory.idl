@@ -16,6 +16,7 @@ dictionary AIWriterCreateOptions {
 ]
 interface AIWriterFactory {
   [
+    Measure,
     CallWith=ScriptState,
     RaisesException
   ]

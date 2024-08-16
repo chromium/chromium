@@ -10790,6 +10790,16 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5059" label="SharedStorageWriteFromSellerReportResult"/>
   <int value="5060" label="CSSInsetAreaProperty"/>
   <int value="5061" label="StructuredCloneMethod"/>
+  <int value="5062" label="V8AI_Writer_AttributeGetter"/>
+  <int value="5063" label="V8AIWriterFactory_Create_Method"/>
+  <int value="5064" label="V8AIWriter_Write_Method"/>
+  <int value="5065" label="V8AIWriter_WriteStreaming_Method"/>
+  <int value="5066" label="V8AIWriter_Destroy_Method"/>
+  <int value="5067" label="V8AI_Rewriter_AttributeGetter"/>
+  <int value="5068" label="V8AIRewriterFactory_Create_Method"/>
+  <int value="5069" label="V8AIRewriter_Rewrite_Method"/>
+  <int value="5070" label="V8AIRewriter_RewriteStreaming_Method"/>
+  <int value="5071" label="V8AIRewriter_Destroy_Method"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

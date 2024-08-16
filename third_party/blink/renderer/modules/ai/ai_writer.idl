@@ -16,6 +16,7 @@ dictionary AIWriterWriteOptions {
 ]
 interface AIWriter {
   [
+    Measure,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -24,6 +25,7 @@ interface AIWriter {
     optional AIWriterWriteOptions options = {});
 
   [
+    Measure,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -32,6 +34,7 @@ interface AIWriter {
     optional AIWriterWriteOptions options = {});
 
   [
+    Measure,
     CallWith=ScriptState,
     RaisesException
   ]

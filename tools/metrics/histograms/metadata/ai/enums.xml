@@ -39,6 +39,10 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="ai.textModelInfo"/>
   <int value="8" label="ai.sessionSummarize"/>
   <int value="9" label="ai.sessionSummarizeStreaming"/>
+  <int value="10" label="AIWriter.write"/>
+  <int value="11" label="AIWriter.writeStreaming"/>
+  <int value="12" label="AIRewriter.rewrite"/>
+  <int value="13" label="AIRewriter.rewriteStreaming"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:AIAPI) -->

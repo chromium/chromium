@@ -4428,6 +4428,16 @@ enum WebFeature {
   kSharedStorageWriteFromSellerReportResult = 5059,
   kCSSInsetAreaProperty = 5060,
   kStructuredCloneMethod = 5061,
+  kV8AI_Writer_AttributeGetter = 5062,
+  kV8AIWriterFactory_Create_Method = 5063,
+  kV8AIWriter_Write_Method = 5064,
+  kV8AIWriter_WriteStreaming_Method = 5065,
+  kV8AIWriter_Destroy_Method = 5066,
+  kV8AI_Rewriter_AttributeGetter = 5067,
+  kV8AIRewriterFactory_Create_Method = 5068,
+  kV8AIRewriter_Rewrite_Method = 5069,
+  kV8AIRewriter_RewriteStreaming_Method = 5070,
+  kV8AIRewriter_Destroy_Method = 5071,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
