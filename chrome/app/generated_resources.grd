@@ -17395,6 +17395,27 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_LENS_OVERLAY_AUTO_DETECT_LANGUAGE_LABEL" desc="Label for the language picker button denoting that source language of the page will be automatically detected.">
       Auto-detect
     </message>
+    <message name="IDS_LENS_OVERLAY_TRANSLATE_BUTTON_LABEL" desc="Label for the translate button. Informs the user that the entire screen will be translated when clicked.">
+      Translate screen
+    </message>
+      <message name="IDS_LENS_OVERLAY_SOURCE_LANGUAGE_PICKER_MENU_TITLE" desc="Label for the source language picker menu title denoting that the user can select a language for the screen to be translated to.">
+      Translate from
+    </message>
+    <message name="IDS_LENS_OVERLAY_TARGET_LANGUAGE_PICKER_MENU_TITLE" desc="Label for the target language picker menu title denoting that the user can select a language for the screen to be translated to.">
+      Translate to
+    </message>
+    <message name="IDS_LENS_OVERLAY_RECENT_LANGUAGES_LABEL" desc="Label in the language picker menu denoting that the following language menu items are ones that have been selected recently by the user.">
+      Recent languages
+    </message>
+    <message name="IDS_LENS_OVERLAY_ALL_LANGUAGES_LABEL" desc="Label in the language picker menu denoting that the following language menu items are all of the possible selections that can be made.">
+      All languages
+    </message>
+    <message name="IDS_LENS_OVERLAY_DETECTED_LABEL" desc="Label in the language picker menu denoting that the following language is the one that has been detected.">
+      Detected
+    </message>
+    <message name="IDS_LENS_OVERLAY_DETECT_LANGUAGE_LABEL" desc="Label in the language picker menu denoting that the following language is the one that has been detected.">
+      Detect language
+    </message>
     <message name="IDS_LENS_SEND_FEEDBACK" desc="Text that is shown in the more options menu to open the feedback dialog.">
       Send feedback
     </message>
