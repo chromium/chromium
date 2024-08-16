@@ -87,7 +87,11 @@ class HttpStreamPool::PooledStreamRequestHelper
 
   int RestartTunnelWithProxyAuth() override { NOTREACHED(); }
 
-  void SetPriority(RequestPriority priority) override { NOTREACHED(); }
+  void SetPriority(RequestPriority priority) override {
+    if (stream_) {
+      stream_->SetPriority(priority);
+    }
+  }
 
  private:
   void CallRequestComplete() {

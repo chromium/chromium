@@ -47,6 +47,7 @@
 #include "net/socket/socket_test_util.h"
 #include "net/socket/stream_socket_handle.h"
 #include "net/socket/tcp_stream_attempt.h"
+#include "net/spdy/spdy_http_stream.h"
 #include "net/spdy/spdy_test_util_common.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/test/cert_test_util.h"
@@ -1582,6 +1583,21 @@ TEST_F(HttpStreamPoolJobTest, SpdyAvailableSession) {
   requester.RequestStream(pool());
   RunUntilIdle();
   EXPECT_THAT(requester.result(), Optional(IsOk()));
+}
+
+// Test that setting the priority for a request that will be served via an
+// existing SPDY session doesn't crash the network service.
+TEST_F(HttpStreamPoolJobTest, ChangePriorityForPooledStreamRequest) {
+  StreamRequester requester;
+  requester.set_destination("https://a.test");
+
+  CreateFakeSpdySession(requester.GetStreamKey());
+
+  HttpStreamRequest* request = requester.RequestStream(pool());
+  request->SetPriority(RequestPriority::HIGHEST);
+  RunUntilIdle();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  // HttpStream{,Request} don't provide a way to get its priority.
 }
 
 TEST_F(HttpStreamPoolJobTest, SpdyOk) {
