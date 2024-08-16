@@ -24,7 +24,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/ip_protection/common/ip_protection_config_provider_helper.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
-#include "components/ip_protection/common/ip_protection_token_fetcher.h"
+#include "components/ip_protection/common/ip_protection_token_direct_fetcher.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
@@ -66,14 +66,14 @@ IpProtectionConfigProvider::IpProtectionConfigProvider(
 
 void IpProtectionConfigProvider::SetUp() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!ip_protection_token_fetcher_) {
+  if (!ip_protection_token_direct_fetcher_) {
     if (!url_loader_factory_) {
       CHECK(profile_);
       url_loader_factory_ = profile_->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
     }
-    ip_protection_token_fetcher_ =
-        base::SequenceBound<ip_protection::IpProtectionTokenFetcher>(
+    ip_protection_token_direct_fetcher_ =
+        base::SequenceBound<ip_protection::IpProtectionTokenDirectFetcher>(
             token_fetcher_task_runner_, url_loader_factory_->Clone());
   }
   if (!ip_protection_proxy_config_fetcher_) {
@@ -93,11 +93,11 @@ void IpProtectionConfigProvider::SetUpForTesting(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Carefully destroy any existing values in the correct order.
   ip_protection_proxy_config_fetcher_ = nullptr;
-  ip_protection_token_fetcher_.Reset();
+  ip_protection_token_direct_fetcher_.Reset();
   url_loader_factory_ = nullptr;
 
-  ip_protection_token_fetcher_ =
-      base::SequenceBound<ip_protection::IpProtectionTokenFetcher>(
+  ip_protection_token_direct_fetcher_ =
+      base::SequenceBound<ip_protection::IpProtectionTokenDirectFetcher>(
           token_fetcher_task_runner_, url_loader_factory->Clone(),
           std::move(bsa));
   ip_protection_proxy_config_fetcher_ =
@@ -302,9 +302,9 @@ void IpProtectionConfigProvider::FetchBlindSignedToken(
     TryGetAuthTokensCallback callback) {
   std::optional<std::string> access_token = access_token_info.value().token;
   auto bsa_get_tokens_start_time = base::TimeTicks::Now();
-  ip_protection_token_fetcher_
+  ip_protection_token_direct_fetcher_
       .AsyncCall(
-          &ip_protection::IpProtectionTokenFetcher::FetchBlindSignedToken)
+          &ip_protection::IpProtectionTokenDirectFetcher::FetchBlindSignedToken)
       .WithArgs(
           std::move(access_token), batch_size, quiche_proxy_layer,
           base::BindPostTaskToCurrentDefault(base::BindOnce(
@@ -502,7 +502,7 @@ void IpProtectionConfigProvider::Shutdown() {
   tracking_protection_settings_ = nullptr;
   pref_service_ = nullptr;
   profile_ = nullptr;
-  ip_protection_token_fetcher_.Reset();
+  ip_protection_token_direct_fetcher_.Reset();
   // If we are shutting down, we can't process messages anymore because we
   // rely on having `identity_manager_` to get the OAuth token. Thus, just
   // reset the receiver set.

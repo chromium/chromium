@@ -10,7 +10,7 @@ include_rules = [
 
 # time.h and statusor.h are required for quiche integration
 specific_include_rules = {
-  ".*\.cc": [
+  ".*(\.cc|\.h)": [
     "+third_party/abseil-cpp/absl/time/time.h",
     "+third_party/abseil-cpp/absl/status/statusor.h",
   ]

@@ -18,7 +18,7 @@
 #include "components/ip_protection/common/ip_protection_config_provider_helper.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_retriever.h"
-#include "components/ip_protection/common/ip_protection_token_fetcher.h"
+#include "components/ip_protection/common/ip_protection_token_direct_fetcher.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -137,7 +137,7 @@ class IpProtectionConfigProvider
 
   // Like `SetUp()`, but providing values for each of the member variables. Note
   // `bsa` is moved onto a separate sequence when initializing
-  // `ip_protection_token_fetcher_`.
+  // `ip_protection_token_direct_fetcher_`.
   void SetUpForTesting(
       std::unique_ptr<ip_protection::IpProtectionProxyConfigRetriever>
           ip_protection_proxy_config_retriever,
@@ -153,15 +153,15 @@ class IpProtectionConfigProvider
                            OnIpProtectionEnabledChanged);
 
   // Set up `ip_protection_proxy_config_fetcher_`,
-  // `ip_protection_token_fetcher_` and `url_loader_factory_`, if not already
-  // initialized. This accomplishes lazy loading of these components to break
-  // dependency loops in browser startup.
+  // `ip_protection_token_direct_fetcher_` and `url_loader_factory_`, if
+  // not already initialized. This accomplishes lazy loading of these components
+  // to break dependency loops in browser startup.
   void SetUp();
 
-  // `FetchBlindSignedToken()` uses the `ip_protection_token_fetcher_` to make
-  // an async call on the bound sequence into the `quiche::BlindSignAuth`
-  // library to request a blind-signed auth token for use at the IP Protection
-  // proxies.
+  // `FetchBlindSignedToken()` uses the
+  // `ip_protection_token_direct_fetcher_` to make an async call on the
+  // bound sequence into the `quiche::BlindSignAuth` library to request a
+  // blind-signed auth token for use at the IP Protection proxies.
   void FetchBlindSignedToken(
       std::optional<signin::AccessTokenInfo> access_token_info,
       uint32_t batch_size,
@@ -257,15 +257,16 @@ class IpProtectionConfigProvider
       ip_protection_proxy_config_fetcher_;
 
   // The thread pool task runner on which async calls are made to
-  // `ip_protection_token_fetcher_` to fetch blind signed tokens. This is needed
-  // to move some of the expensive token generation work off the UI thread.
+  // `ip_protection_token_direct_fetcher_` to fetch blind signed tokens.
+  // This is needed to move some of the expensive token generation work off the
+  // UI thread.
   scoped_refptr<base::SequencedTaskRunner> token_fetcher_task_runner_;
 
   // An IpProtectionTokenFetcher instance that is bound to the given sequenced
-  // `task_runner_` on which all calls to the `quiche::BlindSignAuth` library
-  // will happen on.
-  base::SequenceBound<ip_protection::IpProtectionTokenFetcher>
-      ip_protection_token_fetcher_;
+  // `token_fetcher_task_runner_` on which all calls to the
+  // `quiche::BlindSignAuth` library will happen on.
+  base::SequenceBound<ip_protection::IpProtectionTokenDirectFetcher>
+      ip_protection_token_direct_fetcher_;
 
   // Whether `Shutdown()` has been called.
   bool is_shutting_down_ = false;

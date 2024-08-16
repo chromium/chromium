@@ -15,8 +15,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
-#include "components/ip_protection/android/blind_sign_message_android_impl.h"
+#include "components/ip_protection/android/ip_protection_token_ipc_fetcher.h"
 #include "components/ip_protection/common/ip_protection_config_provider_helper.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_retriever.h"
@@ -27,10 +29,11 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 
 namespace quiche {
 class BlindSignAuthInterface;
-class BlindSignAuth;
+enum class ProxyLayer;
 struct BlindSignToken;
 }  // namespace quiche
 
@@ -109,29 +112,30 @@ class AwIpProtectionConfigProvider
       mojo::PendingRemote<network::mojom::IpProtectionProxyDelegate>
           pending_remote);
 
-  // Like `SetUp()`, but providing values for each of the member variables.
+  // Like `SetUp()`, but providing values for each of the member variables. Note
+  // `bsa` is moved onto a separate sequence when initializing
+  // `ip_protection_token_ipc_fetcher_`.
   void SetUpForTesting(
       std::unique_ptr<ip_protection::IpProtectionProxyConfigRetriever>
           ip_protection_proxy_config_retriever,
-      std::unique_ptr<ip_protection::BlindSignMessageAndroidImpl>
-          blind_sign_message_android_impl,
-      quiche::BlindSignAuthInterface* bsa);
+      std::unique_ptr<quiche::BlindSignAuthInterface> bsa);
 
  private:
-  // Set up
-  // `blind_sign_message_android_impl_`,`ip_protection_proxy_config_retriever_`
-  // and `bsa_`, if not already initialized.
+  // Set up `ip_protection_token_ipc_fetcher_`
+  // and`ip_protection_proxy_config_retriever_`, if not already initialized.
   void SetUp();
 
-  // `FetchBlindSignedToken()` calls into the `quiche::BlindSignAuth` library to
-  // request a blind-signed auth token for use at the IP Protection proxies.
+  // `FetchBlindSignedToken()` uses the `ip_protection_token_ipc_fetcher_`
+  // to make an async call on the bound sequence into the
+  // `quiche::BlindSignAuth` library to request a blind-signed auth token for
+  // use at the IP Protection proxies.
   void FetchBlindSignedToken(int batch_size,
-                             network::mojom::IpProtectionProxyLayer proxy_layer,
+                             quiche::ProxyLayer quiche_proxy_layer,
                              TryGetAuthTokensCallback callback);
   void OnFetchBlindSignedTokenCompleted(
       base::TimeTicks bsa_get_tokens_start_time,
       TryGetAuthTokensCallback callback,
-      absl::StatusOr<absl::Span<quiche::BlindSignToken>>);
+      absl::StatusOr<std::vector<quiche::BlindSignToken>> tokens);
 
   // Finish a call to `TryGetAuthTokens()` by recording the result and invoking
   // its callback.
@@ -145,18 +149,23 @@ class AwIpProtectionConfigProvider
   std::optional<base::TimeDelta> CalculateBackoff(
       AwIpProtectionTryGetAuthTokensResult result);
 
-  std::unique_ptr<ip_protection::IpProtectionProxyConfigFetcher>
-      ip_protection_proxy_config_fetcher_;
-  std::unique_ptr<ip_protection::BlindSignMessageAndroidImpl>
-      blind_sign_message_android_impl_;
-  std::unique_ptr<quiche::BlindSignAuth> blind_sign_auth_;
-
   // Injected browser context.
   raw_ptr<AwBrowserContext> aw_browser_context_;
 
-  // For testing, BlindSignAuth is accessed via its interface. In production,
-  // this is the same pointer as `blind_sign_auth_`.
-  raw_ptr<quiche::BlindSignAuthInterface> bsa_ = nullptr;
+  std::unique_ptr<ip_protection::IpProtectionProxyConfigFetcher>
+      ip_protection_proxy_config_fetcher_;
+
+  // The thread pool task runner on which async calls are made to
+  // `ip_protection_token_ipc_fetcher` to fetch blind signed tokens. This
+  // is needed to move some of the expensive token generation work off the UI
+  // thread.
+  scoped_refptr<base::SequencedTaskRunner> token_fetcher_task_runner_;
+
+  // An IpProtectionTokenIpcFetcher instance that is bound to the given
+  // sequenced `token_fetcher_task_runner_` on which all calls to the
+  // `quiche::BlindSignAuth` library will happen on.
+  base::SequenceBound<ip_protection::IpProtectionTokenIpcFetcher>
+      ip_protection_token_ipc_fetcher_;
 
   // Whether `Shutdown()` has been called.
   bool is_shutting_down_ = false;

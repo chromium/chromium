@@ -47,6 +47,8 @@ constexpr char kTokenBatchHistogram[] =
 
 constexpr char kTestEmail[] = "test@example.com";
 
+// TODO(b/360340499): Move MockBlindSignAuth to separate class to deduplicate
+// code in chrome and webview config providers.
 class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
  public:
   void GetTokens(std::optional<std::string> oauth_token,

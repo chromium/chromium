@@ -38,6 +38,8 @@ source_set("browser") {
     "common/ip_protection_proxy_config_fetcher.h",
     "common/ip_protection_proxy_config_retriever.cc",
     "common/ip_protection_proxy_config_retriever.h",
+    "common/ip_protection_token_direct_fetcher.cc",
+    "common/ip_protection_token_direct_fetcher.h",
     "common/ip_protection_token_fetcher.cc",
     "common/ip_protection_token_fetcher.h",
   ]
@@ -45,6 +47,8 @@ source_set("browser") {
     sources += [
       "android/blind_sign_message_android_impl.cc",
       "android/blind_sign_message_android_impl.h",
+      "android/ip_protection_token_ipc_fetcher.cc",
+      "android/ip_protection_token_ipc_fetcher.h",
     ]
   }
 
