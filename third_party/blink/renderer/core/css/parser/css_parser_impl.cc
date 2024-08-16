@@ -2568,10 +2568,7 @@ void CSSParserImpl::ConsumeDeclarationList(
           // As an optimization, we avoid the restart below (retrying as a
           // nested style rule) if we ended on a kSemicolonToken, as this
           // situation can't produce a valid rule.
-          stream.SkipUntilPeekedTypeIs<kSemicolonToken>();
-          if (!stream.AtEnd()) {
-            stream.UncheckedConsume();  // kSemicolonToken
-          }
+          stream.UncheckedConsume();  // kSemicolonToken
           break;
         }
         // Retry as nested rule.
