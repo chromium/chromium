@@ -917,11 +917,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Disconnected without explicit user action"/>
 </enum>
 
-<enum name="NetworkDisconnectType">
-  <int value="0" label="System Disconnect"/>
-  <int value="1" label="User Disconnect"/>
-</enum>
-
 <enum name="NetworkEligibilityStatus">
   <int value="0" label="Network Is Eligible"/>
   <int value="1" label="No Metedata"/>
@@ -1247,6 +1242,16 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Cellular Metered"/>
   <int value="5" label="Tether"/>
   <int value="6" label="Tether Metered"/>
+</enum>
+
+<enum name="NetworkWiFiDisconnectType">
+  <int value="0" label="System Disconnect"/>
+  <int value="1" label="User Disconnect"/>
+  <int value="2" label="Suspend"/>
+  <int value="3" label="Switch Network"/>
+  <int value="4" label="Disable"/>
+  <int value="5" label="Service Unload"/>
+  <int value="6" label="Disconnect On Ethernet"/>
 </enum>
 
 <enum name="NotificationSuppressionState">

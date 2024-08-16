@@ -3752,13 +3752,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.Wifi.Disconnect" enum="NetworkDisconnectType"
-    expires_after="2024-12-31">
+<histogram name="Network.Shill.Wifi.Disconnect"
+    enum="NetworkWiFiDisconnectType" expires_after="2024-12-31">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    ChromeOS network usage metric that tracks whether an 802.11 wireless network
-    was disconnected due to an error or was explicitly disconnected by the user.
+    ChromeOS network usage metric that tracks the cause of an 802.11 wireless
+    network disconnection. The disconnect types were expanded in release
+    R129-15997.0.0. Refer to go/cros-wifi-disconnect-type for details.
   </summary>
 </histogram>
 
