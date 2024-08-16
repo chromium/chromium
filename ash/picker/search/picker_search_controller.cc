@@ -24,10 +24,13 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/language/core/browser/pref_names.h"
+#include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 
@@ -89,6 +92,14 @@ std::vector<std::string> GetLanguageCodesFromPrefs(PrefService* prefs) {
       it != kImeToLangCode.end()) {
     results.push_back(std::string(it->second));
   }
+
+  // Add ui language as second set of results.
+  // EmojiSearch expects the "base language" without region e.g. "en" instead of
+  // "en-US".
+  std::string ui_locale(language::ExtractBaseLanguage(
+      prefs->GetString(language::prefs::kApplicationLocale)));
+
+  results.push_back(ui_locale);
 
   // All enabled engines
   std::vector<std::string> full_ids =

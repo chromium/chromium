@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chromeos/ash/components/emoji/grit/emoji.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1002,6 +1003,8 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataInAllLanguages) {
             "keywords":["笑顔","smile"]}}]}])"},
         FakeResource{IDR_EMOJI_PICKER_JA_REMAINING, R"([])"}}});
   prefs_service().registry()->RegisterStringPref(
+      language::prefs::kApplicationLocale, "");
+  prefs_service().registry()->RegisterStringPref(
       prefs::kLanguageCurrentInputMethod,
       "_comp_ime_jkghodnilhceideoidjikpgommlajknknacl_mozc_jp");
   prefs_service().registry()->RegisterStringPref(
@@ -1059,6 +1062,8 @@ TEST_F(PickerSearchControllerTest,
                      R"-([{"group":"Classic","emoji":[
               {"base":{"string":":-)","name":"smiley face "}}]}])-"}}});
   prefs_service().registry()->RegisterStringPref(
+      language::prefs::kApplicationLocale, "en-US");
+  prefs_service().registry()->RegisterStringPref(
       prefs::kLanguageCurrentInputMethod,
       "_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:notareallanguage");
   prefs_service().registry()->RegisterStringPref(
@@ -1115,6 +1120,8 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
             "keywords":["笑顔","smile"]}}]}])"},
         FakeResource{IDR_EMOJI_PICKER_JA_REMAINING, R"([])"}}});
   prefs_service().registry()->RegisterStringPref(
+      language::prefs::kApplicationLocale, "");
+  prefs_service().registry()->RegisterStringPref(
       prefs::kLanguageCurrentInputMethod,
       "_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:us::eng");
   prefs_service().registry()->RegisterStringPref(
@@ -1151,6 +1158,68 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
       prefs::kLanguagePreloadEngines,
       base::Value("_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:us::eng,"
                   "_comp_ime_jkghodnilhceideoidjikpgommlajknknacl_mozc_jp,"));
+  MockEmojiSearchResultsCallback results_callback_jp;
+  EXPECT_CALL(
+      results_callback_jp,
+      Call(ElementsAre(
+          Property(
+              "data", &PickerSearchResult::data,
+              VariantWith<PickerSearchResult::EmojiData>(Field(
+                  "text", &PickerSearchResult::EmojiData::text, Eq(u"😀en")))),
+          Property(
+              "data", &PickerSearchResult::data,
+              VariantWith<PickerSearchResult::EmojiData>(Field(
+                  "text", &PickerSearchResult::EmojiData::text, Eq(u"😀jp")))),
+          Property(
+              "data", &PickerSearchResult::data,
+              VariantWith<PickerSearchResult::EmojiData>(Field(
+                  "text", &PickerSearchResult::EmojiData::text, Eq(u":-)")))))))
+      .Times(1);
+  controller.StartEmojiSearch(
+      u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
+                                    base::Unretained(&results_callback_jp)));
+}
+
+TEST_F(PickerSearchControllerTest, LoadsEmojiDataForJapaneseUiLocale) {
+  ScopedFakeResourceBundleDelegate mock_resource_delegate(
+      {{FakeResource{
+            IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START,
+            R"([{"emoji":[{"base":{"string":"😀en","name":"grinning face",
+            "keywords":["face","grin","grinning face",":D","smile"]}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
+                     R"([])"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_EN_INTERNAL, R"([])"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
+                     R"([{"group":"Arrows","emoji":[{"base":
+            {"string":"←","name":"leftwards arrow"}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_SYMBOL_JA,
+                     R"([{"group":"Arrows","emoji":[{"base":
+            {"string":"←","name":"leftwards arrow","keywords":["矢印"]}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON,
+                     R"-([{"group":"Classic","emoji":[
+              {"base":{"string":":-)","name":"smiley face "}}]}])-"},
+        FakeResource{
+            IDR_EMOJI_PICKER_JA_START,
+            R"([{"emoji":[{"base":{"string":"😀jp","name":"grinning face",
+            "keywords":["笑顔","smile"]}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_JA_REMAINING, R"([])"}}});
+  prefs_service().registry()->RegisterStringPref(
+      language::prefs::kApplicationLocale, "ja-JP");
+  prefs_service().registry()->RegisterStringPref(
+      prefs::kLanguageCurrentInputMethod,
+      "_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:us::eng");
+  prefs_service().registry()->RegisterStringPref(
+      prefs::kLanguagePreloadEngines,
+      "_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:us::eng");
+  prefs_service().registry()->RegisterDictionaryPref(
+      prefs::kEmojiPickerPreferences, base::Value::Dict());
+
+  PickerSearchController controller(&client(),
+                                    /*burn_in_period=*/base::Milliseconds(100));
+
+  controller.LoadEmojiLanguagesFromPrefs();
   MockEmojiSearchResultsCallback results_callback_jp;
   EXPECT_CALL(
       results_callback_jp,
