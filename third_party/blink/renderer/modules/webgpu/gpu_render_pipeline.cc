@@ -166,6 +166,15 @@ void GPUDepthStencilStateAsWGPUDepthStencilState(
   dawn_state->dawn_desc.nextInChain = nullptr;
   dawn_state->dawn_desc.format = AsDawnEnum(webgpu_desc->format());
 
+#ifdef WGPU_BREAKING_CHANGE_DEPTH_WRITE_ENABLED
+  wgpu::OptionalBool depthWriteEnabled = wgpu::OptionalBool::Undefined;
+  if (webgpu_desc->hasDepthWriteEnabled()) {
+    depthWriteEnabled = webgpu_desc->depthWriteEnabled()
+                            ? wgpu::OptionalBool::True
+                            : wgpu::OptionalBool::False;
+  }
+  dawn_state->dawn_desc.depthWriteEnabled = depthWriteEnabled;
+#else
   // This extension struct is required so that the Dawn C API can differentiate
   // whether depthWriteEnabled was provided or not. The Dawn C API will assume
   // the boolean is defined, unless the extension struct is added and
@@ -175,6 +184,7 @@ void GPUDepthStencilStateAsWGPUDepthStencilState(
   dawn_state->dawn_desc.nextInChain = depth_write_defined;
   dawn_state->dawn_desc.depthWriteEnabled =
       webgpu_desc->hasDepthWriteEnabled() && webgpu_desc->depthWriteEnabled();
+#endif
 
   wgpu::CompareFunction depthCompare = wgpu::CompareFunction::Undefined;
   if (webgpu_desc->hasDepthCompare()) {
