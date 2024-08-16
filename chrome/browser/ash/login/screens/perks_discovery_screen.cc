@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,6 +20,7 @@ namespace {
 
 constexpr const char kUserActionFinish[] = "finished";
 constexpr const char kUserActionLoaded[] = "loaded";
+constexpr const char kPerkGamgeeId[] = "Gamgee";
 
 // Current max amount of perks we should get from the server.
 constexpr const int kMaxPerksFetched = 10;
@@ -245,6 +247,15 @@ void PerksDiscoveryScreen::GetOobePerksPayloadAndShow() {
 
   if (view_ && !perks_data_.empty()) {
     view_->SetPerksData(perks_data_);
+    auto perk = std::find_if(perks_data_.cbegin(), perks_data_.cend(),
+                             [&](const SinglePerkDiscoveryPayload& perk_data) {
+                               return perk_data.id == kPerkGamgeeId;
+                             });
+    if (perk != perks_data_.end()) {
+      // Mark the gamgee perk screen as shown for this user.
+      PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+      prefs->SetBoolean(prefs::kOobePerksDiscoveryGamgeeShown, true);
+    }
     return;
   }
 
