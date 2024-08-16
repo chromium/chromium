@@ -66,7 +66,6 @@ class ASH_EXPORT Combobox : public views::Button,
   void SetCallback(PressedCallback callback) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnBlur() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   void Layout(PassKey) override;
@@ -108,9 +107,11 @@ class ASH_EXPORT Combobox : public views::Button,
   // views::Button:
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& e) override;
   bool OnKeyPressed(const ui::KeyEvent& e) override;
+  void OnEnabledChanged() override;
 
   void UpdateExpandedCollapsedAccessibleState() const;
   void UpdateAccessibleAccessibleActiveDescendantId();
+  void UpdateAccessibleDefaultAction();
 
   // Optionally used to tie the lifetime of the model to this combobox. See
   // constructor.

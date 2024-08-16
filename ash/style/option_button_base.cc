@@ -63,6 +63,7 @@ void OptionButtonBase::SetSelected(bool selected) {
     delegate_->OnButtonSelected(this);
   }
   SetAndUpdateAccessibleDefaultActionVerb();
+  OnSelectedChanged();
 }
 
 void OptionButtonBase::SetLabelStyle(TypographyToken token) {

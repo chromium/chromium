@@ -94,4 +94,34 @@ TEST_F(ComboboxTest, AccessibleCheckedState) {
   CloseComboBoxDropDownMenu();
 }
 
+TEST_F(ComboboxTest, AccessibleDefaultActionVerb) {
+  auto* combobox = GetComboboxView();
+  ui::AXNodeData data;
+
+  combobox->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kOpen);
+
+  combobox->SetEnabled(false);
+  data = ui::AXNodeData();
+  combobox->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kOpen);
+
+  // ComboboxMenuOption default action verb test.
+  combobox->SetEnabled(true);
+  ShowComboBoxDropDownMenu();
+  combobox->SetSelectedIndex(1);
+  auto* menu_option = combobox->MenuItemAtIndex(1);
+  data = ui::AXNodeData();
+  ASSERT_TRUE(menu_option);
+  menu_option->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kClick);
+
+  menu_option->SetEnabled(false);
+  data = ui::AXNodeData();
+  menu_option->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kClick);
+
+  CloseComboBoxDropDownMenu();
+}
+
 }  // namespace ash

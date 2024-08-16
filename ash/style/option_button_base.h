@@ -56,6 +56,7 @@ class ASH_EXPORT OptionButtonBase : public views::LabelButton {
 
   // Updates the `select_` state.
   void SetSelected(bool selected);
+  virtual void OnSelectedChanged() {}
 
   // Sets a TypographyToken as the style of the label.
   void SetLabelStyle(TypographyToken token);
