@@ -669,13 +669,19 @@ void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
 
   FrameIntervalDecider::Settings settings = decider->settings();
   if (interval_decider_use_fixed_intervals_) {
-    FrameIntervalDecider::FixedIntervalSettings fixed_interval_settings;
+    FrameIntervalMatcher::FixedIntervalSettings fixed_interval_settings;
     fixed_interval_settings.supported_intervals = GetSupportedFrameIntervals();
     fixed_interval_settings.default_interval =
         *fixed_interval_settings.supported_intervals.begin();
-    settings.fixed_intervals = fixed_interval_settings;
+    settings.interval_settings = fixed_interval_settings;
+  } else if (max_vsync_interval_.has_value()) {
+    FrameIntervalMatcher::ContinuousRangeSettings continuous_range_settings;
+    continuous_range_settings.min_interval =
+        *GetSupportedFrameIntervals().begin();
+    continuous_range_settings.max_interval = max_vsync_interval_.value();
+    settings.interval_settings = continuous_range_settings;
   } else {
-    settings.fixed_intervals.reset();
+    settings.interval_settings = {};
   }
 
   // Unretained is safe since this owns Display which owns FrameIntervalDecider.
@@ -835,8 +841,9 @@ void RootCompositorFrameSinkImpl::SetPreferredFrameInterval(
         refresh_rate = it->second;
       } else {
         refresh_rate = 1 / interval.InSecondsF();
-        LOG(WARNING) << "Requested unsupported preferred frame interval "
-                     << interval << " (=" << refresh_rate << "Hz)";
+        LOG_IF(WARNING, interval_decider_use_fixed_intervals_)
+            << "Requested unsupported preferred frame interval " << interval
+            << " (=" << refresh_rate << "Hz)";
       }
     }
     display_client_->SetPreferredRefreshRate(refresh_rate);
@@ -869,12 +876,19 @@ BeginFrameSource* RootCompositorFrameSinkImpl::begin_frame_source() {
 void RootCompositorFrameSinkImpl::SetMaxVSyncAndVrr(
     std::optional<base::TimeDelta> max_vsync_interval,
     display::VariableRefreshRateState vrr_state) {
+  max_vsync_interval_ = max_vsync_interval;
+
   if (synthetic_begin_frame_source_) {
     synthetic_begin_frame_source_->SetMaxVrrInterval(
         vrr_state == display::VariableRefreshRateState::kVrrEnabled
             ? max_vsync_interval
             : std::nullopt);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  interval_decider_use_fixed_intervals_ = !max_vsync_interval.has_value();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  UpdateFrameIntervalDeciderSettings();
 }
 
 }  // namespace viz

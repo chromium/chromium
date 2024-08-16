@@ -32,6 +32,7 @@ class VIZ_SERVICE_EXPORT FrameIntervalDecider {
   using Result = FrameIntervalMatcher::Result;
   using ResultCallback = FrameIntervalMatcher::ResultCallback;
   using FixedIntervalSettings = FrameIntervalMatcher::FixedIntervalSettings;
+  using ContinuousRangeSettings = FrameIntervalMatcher::ContinuousRangeSettings;
   using Settings = FrameIntervalMatcher::Settings;
 
   // This object should be created and held for the duration when surface

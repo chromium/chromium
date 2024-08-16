@@ -50,12 +50,8 @@ class VIZ_SERVICE_EXPORT FrameIntervalMatcher {
   using ResultCallback =
       base::RepeatingCallback<void(Result, FrameIntervalMatcherType)>;
 
-  // Settings for configuration where display supports a fixed set of frame
-  // intervals. If this setting is provided, then `FrameIntervalDecider`
-  // matchers should never return a FrameIntervalClass result, and instead
-  // should pick one of the `supported_intervals`.
-  // If this setting is not provided, then `FrameIntervalClass` as well as any
-  // frame interval can be returned.
+  // Settings for configuration where display supports a fixed set of discrete
+  // frame intervals.
   struct VIZ_SERVICE_EXPORT FixedIntervalSettings {
     FixedIntervalSettings();
     FixedIntervalSettings(const FixedIntervalSettings&);
@@ -64,6 +60,18 @@ class VIZ_SERVICE_EXPORT FrameIntervalMatcher {
     base::TimeDelta default_interval;  // Must be in `supported_intervals`.
     base::flat_set<base::TimeDelta> supported_intervals;  // Cannot be empty.
   };
+
+  // Settings for configuration where display supports a continuous range of
+  // frame intervals.
+  struct VIZ_SERVICE_EXPORT ContinuousRangeSettings {
+    ContinuousRangeSettings();
+    ContinuousRangeSettings(const ContinuousRangeSettings&);
+    ~ContinuousRangeSettings();
+
+    base::TimeDelta min_interval;  // Used as default value.
+    base::TimeDelta max_interval;
+  };
+
   struct VIZ_SERVICE_EXPORT Settings {
     Settings();
     ~Settings();
@@ -77,7 +85,14 @@ class VIZ_SERVICE_EXPORT FrameIntervalMatcher {
     // call for the lifetime of FrameIntervalDecider.
     ResultCallback result_callback;
 
-    std::optional<FixedIntervalSettings> fixed_intervals;
+    // Settings for what intervals are supported by the display. If this is
+    // provided, then `FrameIntervalDecider` matchers should never return a
+    // FrameIntervalClass result, and instead should pick one of the
+    // supported intervals. If this is set to `monostate`, then
+    // `FrameIntervalClass` as well as any frame interval can be returned.
+    absl::
+        variant<absl::monostate, FixedIntervalSettings, ContinuousRangeSettings>
+            interval_settings;
 
     // Timeout to wait for when increasing frame interval, to avoid blip when
     // rapidly switching frame intervals..
