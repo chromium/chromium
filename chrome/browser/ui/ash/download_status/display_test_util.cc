@@ -8,7 +8,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ui/ash/ash_test_util.h"
+#include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 
 namespace ash::download_status {

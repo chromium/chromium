@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/ash_test_util.h"
+#include "chrome/test/base/ash/util/ash_test_util.h"
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

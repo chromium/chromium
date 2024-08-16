@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_ASH_TEST_UTIL_H_
-#define CHROME_BROWSER_UI_ASH_ASH_TEST_UTIL_H_
+#ifndef CHROME_TEST_BASE_ASH_UTIL_ASH_TEST_UTIL_H_
+#define CHROME_TEST_BASE_ASH_UTIL_ASH_TEST_UTIL_H_
 
 #include <string_view>
 
@@ -41,4 +41,4 @@ void CreateSystemWebApp(Profile* profile, ash::SystemWebAppType app_type);
 
 }  // namespace ash::test
 
-#endif  // CHROME_BROWSER_UI_ASH_ASH_TEST_UTIL_H_
+#endif  // CHROME_TEST_BASE_ASH_UTIL_ASH_TEST_UTIL_H_

@@ -339,8 +339,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "ash_test_util.cc",
-    "ash_test_util.h",
     "clipboard_history_test_util.cc",
     "clipboard_history_test_util.h",
     "mock_activation_change_observer.cc",
@@ -357,21 +355,13 @@ static_library("test_support") {
 
   deps = [
     ":ash",
-    "//ash",
     "//ash/public/cpp",
-    "//ash/public/mojom",
+    "//ash/webui/common/mojom:sea_pen",
     "//base",
-    "//base/test:test_support",
-    "//chrome/browser/apps/app_service",
-    "//chrome/browser/apps/app_service:constants",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash/system_web_apps",
-    "//chrome/browser/ui",
-    "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/ash/system_web_apps",
+    "//components/user_manager",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/events:test_support",
+    "//ui/wm/public",
   ]
 }
 
@@ -508,6 +498,7 @@ source_set("browser_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base/ash/util:test_support",
     "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
     "//chromeos/ash/components/settings",
     "//components/account_id",
