@@ -82,7 +82,6 @@ source_set("browser") {
     "//base:base_static",
     "//base:clang_profiling_buildflags",
     "//base/tracing/protos:chrome_track_event_resources",
-    "//build:android_buildflags",
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
