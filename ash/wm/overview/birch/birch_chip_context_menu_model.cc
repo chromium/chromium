@@ -91,10 +91,6 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
                 is_celsius ? IDS_ASH_BIRCH_SHOW_TEMPERATURE_IN_FAHRENHEIT
                            : IDS_ASH_BIRCH_SHOW_TEMPERATURE_IN_CELSIUS));
   }
-  AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
-  AddItemWithIcon(base::to_underlying(CommandId::kFeedback),
-                  l10n_util::GetStringUTF16(IDS_ASH_BIRCH_SEND_FEEDBACK),
-                  CreateIconForMenuItem(kFeedbackIcon));
 }
 
 BirchChipContextMenuModel::~BirchChipContextMenuModel() = default;

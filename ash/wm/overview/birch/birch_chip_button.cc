@@ -7,7 +7,6 @@
 #include "ash/birch/birch_item.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
-#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "ash/wm/overview/birch/birch_bar_constants.h"
@@ -396,11 +395,6 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
     case base::to_underlying(CommandId::kHideMediaSuggestions):
       birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kMedia,
                                                   /*show=*/false);
-      break;
-    case base::to_underlying(CommandId::kFeedback):
-      Shell::Get()->shell_delegate()->OpenFeedbackDialog(
-          ShellDelegate::FeedbackSource::kBirch,
-          /*description_template=*/std::string(), /*category_tag=*/"fromBirch");
       break;
   }
 }

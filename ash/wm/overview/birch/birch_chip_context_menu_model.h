@@ -34,7 +34,6 @@ class BirchChipContextMenuModel : public ui::SimpleMenuModel {
     kHideMediaSuggestions,      // Hide all media related chips.
     kCustomizeSuggestions,  // Pop out the expanded bar menu with customizing
                             // suggestions options.
-    kFeedback,              // Send user feedback for birch bar.
   };
 
   BirchChipContextMenuModel(ui::SimpleMenuModel::Delegate* delegate,

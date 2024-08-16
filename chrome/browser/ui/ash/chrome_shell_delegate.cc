@@ -126,8 +126,6 @@ content::WebContents* GetActiveWebContentsForNativeBrowserWindow(
 feedback::FeedbackSource ToChromeFeedbackSource(
     ash::ShellDelegate::FeedbackSource source) {
   switch (source) {
-    case ash::ShellDelegate::FeedbackSource::kBirch:
-      return feedback::FeedbackSource::kFeedbackSourceBirch;
     case ash::ShellDelegate::FeedbackSource::kGameDashboard:
       return feedback::FeedbackSource::kFeedbackSourceGameDashboard;
     case ash::ShellDelegate::FeedbackSource::kOverview:

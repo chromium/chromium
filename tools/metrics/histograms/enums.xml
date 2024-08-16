@@ -11238,7 +11238,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="38" label="DEPRECATED: Focus Mode"/>
   <int value="39" label="Overview Grid"/>
   <int value="40" label="DEPRECATED: Snap Groups"/>
-  <int value="41" label="Birch"/>
+  <int value="41" label="DEPRECATED: Birch"/>
   <int value="42" label="Borealis"/>
 </enum>
 
