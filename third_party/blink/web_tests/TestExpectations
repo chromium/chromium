@@ -2652,8 +2652,8 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
-[ Win11-arm64 ] virtual/threaded/external/wpt/css/css-view-transitions/nested/nested-exit.tentative.html?vtmode=crossdoc [ Failure ]
-[ Mac13 ] virtual/threaded/external/wpt/css/css-view-transitions/nested/nested-exit.tentative.html?vtmode=crossdoc [ Failure ]
+crbug.com/360232040 [ Win11-arm64 ] virtual/threaded/external/wpt/css/css-view-transitions/nested/nested-exit.tentative.html?vtmode=crossdoc [ Failure ]
+crbug.com/360232040 [ Mac13 ] virtual/threaded/external/wpt/css/css-view-transitions/nested/nested-exit.tentative.html?vtmode=crossdoc [ Failure ]
 crbug.com/360201083 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-bad-chunk.https.html [ Timeout ]
 crbug.com/360201083 [ Mac15 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-bad-chunk.https.html [ Timeout ]
 crbug.com/360201083 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/script-transform.https.html [ Timeout ]
