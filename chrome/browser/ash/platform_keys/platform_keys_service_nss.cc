@@ -355,7 +355,7 @@ class EncryptDecryptState : public NSSOperationState {
   // Determines the algorithm that is used to encrypt/decrypt.
   const std::string algorithm_;
 
-  // Initializition vector that is required for encryption/decryption.
+  // Initialization vector that is required for encryption/decryption.
   // Must have a length of 16 bytes.
   const std::vector<uint8_t> init_vector_;
 
@@ -904,8 +904,8 @@ class IsKeyOnTokenState : public NSSOperationState {
 };
 
 // Returns the private key corresponding to the der-encoded
-// |public_key_spki_der| if found in |slot|. If |slot| is nullptr, the
-// private key will be searched in all slots.
+// |public_key_spki_der| if found in |slot|. If |slot| is nullptr, the private
+// key will be searched in all slots.
 crypto::ScopedSECKEYPrivateKey GetPrivateKey(
     const std::vector<uint8_t>& public_key_spki_der,
     PK11SlotInfo* slot) {
@@ -915,8 +915,8 @@ crypto::ScopedSECKEYPrivateKey GetPrivateKey(
   return crypto::FindNSSKeyFromPublicKeyInfo(public_key_spki_der);
 }
 
-// Returns the symmetric key with CKA_ID equal to |key_id|
-// found in |slot|. |type| specifies the type of the key.
+// Returns the symmetric key with CKA_ID equal to |key_id| found in |slot|.
+// |type| specifies the type of the key.
 crypto::ScopedPK11SymKey GetSymKey(
     std::vector<uint8_t> key_id,
     PK11SlotInfo* slot,

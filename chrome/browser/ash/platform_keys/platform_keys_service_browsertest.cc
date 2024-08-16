@@ -857,7 +857,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest, SymKeySign) {
             kDefaultSymSignatureSize);
 }
 
-// Cannot sign with invalid/abscent key.
+// Cannot sign with invalid/absent key.
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
                        SymKeySignInvalidKey) {
   const TokenId token_id = GetParam().token_id;
@@ -926,7 +926,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   EXPECT_EQ(kTestingData, decrypt_waiter.Get<std::vector<uint8_t>>());
 }
 
-// Cannot encrypt with invalid/abscent key.
+// Cannot encrypt with invalid/absent key.
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
                        SymKeyEncryptInvalidKey) {
   const TokenId token_id = GetParam().token_id;
@@ -955,7 +955,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   EXPECT_EQ(encrypt_waiter2.Get<Status>(), Status::kErrorInternal);
 }
 
-// Cannot decrypt with invalid/abscent key.
+// Cannot decrypt with invalid/absent key.
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
                        SymKeyDecryptInvalidKey) {
   const TokenId token_id = GetParam().token_id;
