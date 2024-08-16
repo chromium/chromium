@@ -1726,8 +1726,8 @@ SelectionModel RenderTextHarfBuzz::AdjacentLineSelectionModel(
   return next;
 }
 
-void RenderTextHarfBuzz::OnLayoutTextAttributeChanged(bool text_changed) {
-  RenderText::OnLayoutTextAttributeChanged(text_changed);
+void RenderTextHarfBuzz::OnLayoutTextAttributeChanged() {
+  RenderText::OnLayoutTextAttributeChanged();
 
   update_layout_run_list_ = true;
   OnDisplayTextAttributeChanged();

@@ -244,7 +244,7 @@ class GFX_EXPORT RenderTextHarfBuzz : public RenderText {
   SelectionModel AdjacentLineSelectionModel(
       const SelectionModel& selection,
       VisualCursorDirection direction) override;
-  void OnLayoutTextAttributeChanged(bool text_changed) override;
+  void OnLayoutTextAttributeChanged() override;
   void OnDisplayTextAttributeChanged() override;
   void EnsureLayout() override;
   void DrawVisualText(internal::SkiaTextRenderer* renderer,

@@ -782,9 +782,8 @@ class GFX_EXPORT RenderText {
   size_t DisplayIndexToTextIndex(size_t index) const;
 
   // Notifies that layout text, or attributes that affect the layout text
-  // shape have changed. |text_changed| is true if the content of the
-  // |layout_text_| has changed, not just attributes.
-  virtual void OnLayoutTextAttributeChanged(bool text_changed);
+  // shape have changed.
+  virtual void OnLayoutTextAttributeChanged();
 
   // Notifies that attributes that affect the display text shape have changed.
   virtual void OnDisplayTextAttributeChanged() = 0;

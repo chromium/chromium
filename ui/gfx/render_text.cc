@@ -609,7 +609,7 @@ void RenderText::SetFontList(const FontList& font_list) {
       (font_style & Font::STRIKE_THROUGH) != 0);
   baseline_ = kInvalidBaseline;
   cached_bounds_and_offset_valid_ = false;
-  OnLayoutTextAttributeChanged(false);
+  OnLayoutTextAttributeChanged();
 }
 
 void RenderText::SetCursorEnabled(bool cursor_enabled) {
@@ -639,7 +639,7 @@ void RenderText::SetObscuredRevealIndex(std::optional<size_t> index) {
 void RenderText::SetObscuredGlyphSpacing(int spacing) {
   if (obscured_glyph_spacing_ != spacing) {
     obscured_glyph_spacing_ = spacing;
-    OnLayoutTextAttributeChanged(true);
+    OnLayoutTextAttributeChanged();
   }
 }
 
@@ -895,35 +895,35 @@ void RenderText::SetCompositionRange(const Range& composition_range) {
         Range(0, text_.length()).Contains(composition_range));
   composition_range_.set_end(composition_range.end());
   composition_range_.set_start(composition_range.start());
-  OnLayoutTextAttributeChanged(false);
+  OnLayoutTextAttributeChanged();
 }
 
 void RenderText::SetColor(SkColor value) {
   if (colors_.ClearAndSetInitialValue(value)) {
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
 void RenderText::ApplyColor(SkColor value, const Range& range) {
   if (colors_.ApplyValue(value, range))
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
 }
 
 void RenderText::SetBaselineStyle(BaselineStyle value) {
   if (baselines_.ClearAndSetInitialValue(value)) {
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
 void RenderText::ApplyBaselineStyle(BaselineStyle value, const Range& range) {
   if (baselines_.ApplyValue(value, range))
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
 }
 
 void RenderText::ApplyFontSizeOverride(int font_size_override,
                                        const Range& range) {
   if (font_size_overrides_.ApplyValue(font_size_override, range))
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
 }
 
 void RenderText::SetStyle(TextStyle style, bool value) {
@@ -931,7 +931,7 @@ void RenderText::SetStyle(TextStyle style, bool value) {
     cached_bounds_and_offset_valid_ = false;
     // TODO(oshima|msw): Not all style change requires layout changes.
     // Consider optimizing based on the type of change.
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
@@ -940,56 +940,56 @@ void RenderText::ApplyStyle(TextStyle style, bool value, const Range& range) {
     cached_bounds_and_offset_valid_ = false;
     // TODO(oshima|msw): Not all style change requires layout changes.
     // Consider optimizing based on the type of change.
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
 void RenderText::SetWeight(Font::Weight weight) {
   if (weights_.ClearAndSetInitialValue(weight)) {
     cached_bounds_and_offset_valid_ = false;
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
 void RenderText::ApplyWeight(Font::Weight weight, const Range& range) {
   if (weights_.ApplyValue(weight, range)) {
     cached_bounds_and_offset_valid_ = false;
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
 void RenderText::SetFillStyle(cc::PaintFlags::Style style) {
   if (fill_styles_.ClearAndSetInitialValue(style)) {
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
 void RenderText::ApplyFillStyle(cc::PaintFlags::Style style,
                                 const Range& range) {
   if (fill_styles_.ApplyValue(style, range)) {
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
 void RenderText::SetStrokeWidth(SkScalar stroke_width) {
   if (stroke_widths_.ClearAndSetInitialValue(stroke_width)) {
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
 void RenderText::ApplyStrokeWidth(SkScalar stroke_width, const Range& range) {
   if (stroke_widths_.ApplyValue(stroke_width, range)) {
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 void RenderText::SetEliding(bool value) {
   elidings_.ClearAndSetInitialValue(value);
-  OnLayoutTextAttributeChanged(false);
+  OnLayoutTextAttributeChanged();
 }
 
 void RenderText::ApplyEliding(bool value, const Range& range) {
   elidings_.ApplyValue(value, range);
-  OnLayoutTextAttributeChanged(false);
+  OnLayoutTextAttributeChanged();
 }
 
 bool RenderText::GetStyle(TextStyle style) const {
@@ -1002,7 +1002,7 @@ void RenderText::SetDirectionalityMode(DirectionalityMode mode) {
     directionality_mode_ = mode;
     text_direction_ = base::i18n::UNKNOWN_DIRECTION;
     cached_bounds_and_offset_valid_ = false;
-    OnLayoutTextAttributeChanged(false);
+    OnLayoutTextAttributeChanged();
   }
 }
 
@@ -1631,7 +1631,7 @@ size_t RenderText::DisplayIndexToTextIndex(size_t index) const {
   return GetTextIndex(GetGraphemeIteratorAtDisplayTextIndex(index));
 }
 
-void RenderText::OnLayoutTextAttributeChanged(bool text_changed) {
+void RenderText::OnLayoutTextAttributeChanged() {
   layout_text_up_to_date_ = false;
 }
 
@@ -2134,8 +2134,7 @@ void RenderText::OnTextAttributeChanged() {
   text_elided_ = false;
 
   layout_text_up_to_date_ = false;
-
-  OnLayoutTextAttributeChanged(true);
+  OnLayoutTextAttributeChanged();
 }
 
 std::u16string RenderText::Elide(const std::u16string& text,
