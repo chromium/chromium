@@ -1206,10 +1206,13 @@ std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans) {
         suggestion.main_text.value = std::move(iban_identifier);
       }
     } else {
-      suggestion.main_text =
-          Suggestion::Text(iban_identifier, Suggestion::Text::IsPrimary(true));
-      if (!iban.nickname().empty()) {
-        suggestion.labels = {{Suggestion::Text(iban.nickname())}};
+      if (iban.nickname().empty()) {
+        suggestion.main_text = Suggestion::Text(
+            iban_identifier, Suggestion::Text::IsPrimary(true));
+      } else {
+        suggestion.main_text = Suggestion::Text(
+            iban.nickname(), Suggestion::Text::IsPrimary(true));
+        suggestion.labels = {{Suggestion::Text(iban_identifier)}};
       }
     }
     suggestions.push_back(suggestion);

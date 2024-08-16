@@ -112,10 +112,13 @@ class IbanManagerTest : public testing::Test {
         iban_suggestion.main_text.value = iban_identifier;
       }
     } else {
-      iban_suggestion.main_text =
-          Suggestion::Text(iban_identifier, Suggestion::Text::IsPrimary(true));
-      if (!iban.nickname().empty()) {
-        iban_suggestion.labels = {{Suggestion::Text(iban.nickname())}};
+      if (iban.nickname().empty()) {
+        iban_suggestion.main_text = Suggestion::Text(
+            iban_identifier, Suggestion::Text::IsPrimary(true));
+      } else {
+        iban_suggestion.main_text = Suggestion::Text(
+            iban.nickname(), Suggestion::Text::IsPrimary(true));
+        iban_suggestion.labels = {{Suggestion::Text(iban_identifier)}};
       }
     }
 

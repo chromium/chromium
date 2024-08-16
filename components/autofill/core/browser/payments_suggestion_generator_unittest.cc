@@ -124,15 +124,20 @@ Matcher<Suggestion> EqualsIbanSuggestion(
         Field(&Suggestion::minor_text, Suggestion::Text(identifier_string)),
         Field(&Suggestion::payload, payload));
   }
-  return AllOf(Field(&Suggestion::type, SuggestionType::kIbanEntry),
-               Field(&Suggestion::main_text,
-                     Suggestion::Text(identifier_string,
-                                      Suggestion::Text::IsPrimary(true))),
-               Field(&Suggestion::payload, payload),
-               EqualLabels(nickname.empty()
-                               ? std::vector<std::vector<Suggestion::Text>>{}
-                               : std::vector<std::vector<Suggestion::Text>>{
-                                     {Suggestion::Text(nickname)}}));
+  if (nickname.empty()) {
+    return AllOf(Field(&Suggestion::type, SuggestionType::kIbanEntry),
+                 Field(&Suggestion::main_text,
+                       Suggestion::Text(identifier_string,
+                                        Suggestion::Text::IsPrimary(true))),
+                 Field(&Suggestion::payload, payload));
+  }
+  return AllOf(
+      Field(&Suggestion::type, SuggestionType::kIbanEntry),
+      Field(&Suggestion::main_text,
+            Suggestion::Text(nickname, Suggestion::Text::IsPrimary(true))),
+      Field(&Suggestion::payload, payload),
+      EqualLabels(std::vector<std::vector<Suggestion::Text>>{
+          {Suggestion::Text(identifier_string)}}));
 }
 
 #if !BUILDFLAG(IS_IOS)
