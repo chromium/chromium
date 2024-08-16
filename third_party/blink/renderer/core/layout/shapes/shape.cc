@@ -291,13 +291,12 @@ static bool IsValidRasterShapeSize(const gfx::Size& size) {
 std::unique_ptr<Shape> Shape::CreateRasterShape(
     Image* image,
     float threshold,
-    const DeprecatedLayoutRect& image_r,
+    const gfx::Rect& image_rect,
     const DeprecatedLayoutRect& margin_r,
     const gfx::Rect& margin_physical_rect,
     WritingMode writing_mode,
     float margin,
     RespectImageOrientationEnum respect_orientation) {
-  gfx::Rect image_rect = ToPixelSnappedRect(image_r);
   gfx::Rect margin_rect = ToPixelSnappedRect(margin_r);
   gfx::Size margin_box_size =
       RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()

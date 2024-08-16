@@ -194,29 +194,26 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
       style_image->ForceOrientationIfNecessary(
           layout_box_->StyleRef().ImageOrientation());
 
-  const DeprecatedLayoutSize& image_size =
-      RoundedLayoutSize(style_image->ImageSize(
-          layout_box_->StyleRef().EffectiveZoom(),
-          RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()
-              ? gfx::SizeF(reference_physical_size)
-              : gfx::SizeF(reference_box_logical_size_.inline_size.ToFloat(),
-                           reference_box_logical_size_.block_size.ToFloat()),
-          respect_orientation));
+  const gfx::SizeF image_size = style_image->ImageSize(
+      layout_box_->StyleRef().EffectiveZoom(),
+      RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()
+          ? gfx::SizeF(reference_physical_size)
+          : gfx::SizeF(reference_box_logical_size_.inline_size.ToFloat(),
+                       reference_box_logical_size_.block_size.ToFloat()),
+      respect_orientation);
 
   const LogicalRect& margin_rect =
       GetShapeImageMarginRect(*layout_box_, reference_box_logical_size_);
   const PhysicalRect margin_physical_rect =
       GetShapeImagePhysicalMarginRect(*layout_box_, reference_physical_size);
-  const DeprecatedLayoutRect& image_rect =
-      (layout_box_->IsLayoutImage())
-          ? To<LayoutImage>(layout_box_.Get())
-                ->ReplacedContentRect()
-                .ToLayoutRect()
-          : DeprecatedLayoutRect(LayoutPoint(), image_size);
+  const gfx::Rect image_rect = ToPixelSnappedRect(
+      layout_box_->IsLayoutImage()
+          ? To<LayoutImage>(layout_box_.Get())->ReplacedContentRect()
+          : PhysicalRect({}, PhysicalSize::FromSizeFRound(image_size)));
 
   scoped_refptr<Image> image =
       style_image->GetImage(*layout_box_, layout_box_->GetDocument(),
-                            layout_box_->StyleRef(), gfx::SizeF(image_size));
+                            layout_box_->StyleRef(), image_size);
 
   return Shape::CreateRasterShape(image.get(), shape_image_threshold,
                                   image_rect, margin_rect.ToLayoutRect(),

@@ -53,9 +53,6 @@ class PLATFORM_EXPORT DeprecatedLayoutSize {
   constexpr DeprecatedLayoutSize(LayoutUnit width, LayoutUnit height)
       : width_(width), height_(height) {}
 
-  constexpr explicit DeprecatedLayoutSize(const gfx::SizeF& size)
-      : width_(size.width()), height_(size.height()) {}
-
   constexpr explicit operator gfx::SizeF() const {
     return gfx::SizeF(width_.ToFloat(), height_.ToFloat());
   }
@@ -73,10 +70,6 @@ class PLATFORM_EXPORT DeprecatedLayoutSize {
  private:
   LayoutUnit width_, height_;
 };
-
-inline DeprecatedLayoutSize RoundedLayoutSize(const gfx::SizeF& s) {
-  return DeprecatedLayoutSize(s);
-}
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&,
                                          const DeprecatedLayoutSize&);
