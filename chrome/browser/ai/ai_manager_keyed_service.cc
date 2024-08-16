@@ -133,6 +133,7 @@ void AIManagerKeyedService::CanCreateTextSession(
 std::unique_ptr<AITextSession> AIManagerKeyedService::CreateTextSessionInternal(
     mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
     const blink::mojom::AITextSessionSamplingParamsPtr& sampling_params,
+    AITextSessionSet* session_set,
     const std::optional<const AITextSession::Context>& context) {
   CHECK(browser_context_);
   OptimizationGuideKeyedService* service =
@@ -160,7 +161,8 @@ std::unique_ptr<AITextSession> AIManagerKeyedService::CreateTextSessionInternal(
 
   return std::make_unique<AITextSession>(
       std::move(session), config_params.sampling_params,
-      browser_context_->GetWeakPtr(), std::move(receiver), context);
+      browser_context_->GetWeakPtr(), std::move(receiver), session_set,
+      context);
 }
 
 void AIManagerKeyedService::CreateTextSession(
@@ -168,8 +170,11 @@ void AIManagerKeyedService::CreateTextSession(
     blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
     const std::optional<std::string>& system_prompt,
     CreateTextSessionCallback callback) {
-  std::unique_ptr<AITextSession> session =
-      CreateTextSessionInternal(std::move(receiver), sampling_params);
+  // Since this is a mojo IPC implementation, the context should be non-null;
+  AITextSessionSet* session_set =
+      AITextSessionSet::GetFromContext(receivers_.current_context());
+  std::unique_ptr<AITextSession> session = CreateTextSessionInternal(
+      std::move(receiver), sampling_params, session_set);
   if (!session) {
     // TODO(crbug.com/343325183): probably we should consider returning an error
     // enum and throw a clear exception from the blink side.
@@ -185,8 +190,7 @@ void AIManagerKeyedService::CreateTextSession(
     std::move(callback).Run(true);
   }
 
-  AITextSessionSet::GetFromContext(receivers_.current_context())
-      ->AddSession(std::move(session));
+  session_set->AddSession(std::move(session));
 }
 
 void AIManagerKeyedService::GetTextModelInfo(
@@ -250,17 +254,17 @@ void AIManagerKeyedService::CreateTextSessionForCloning(
     base::PassKey<AITextSession> pass_key,
     mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
     blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
+    AITextSessionSet* session_set,
     const AITextSession::Context& context,
     base::OnceCallback<void(bool)> callback) {
-  std::unique_ptr<AITextSession> session =
-      CreateTextSessionInternal(std::move(receiver), sampling_params, context);
+  std::unique_ptr<AITextSession> session = CreateTextSessionInternal(
+      std::move(receiver), sampling_params, session_set, context);
   if (!session) {
     std::move(callback).Run(false);
     return;
   }
 
-  AITextSessionSet::GetFromContext(receivers_.current_context())
-      ->AddSession(std::move(session));
+  session_set->AddSession(std::move(session));
   std::move(callback).Run(true);
 }
 

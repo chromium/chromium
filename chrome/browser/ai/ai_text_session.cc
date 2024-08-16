@@ -81,10 +81,12 @@ AITextSession::AITextSession(
     std::optional<optimization_guide::SamplingParams> sampling_params,
     base::WeakPtr<content::BrowserContext> browser_context,
     mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
+    AITextSessionSet* session_set,
     const std::optional<const Context>& context)
     : session_(std::move(session)),
       sampling_params_(sampling_params),
       browser_context_(browser_context),
+      session_set_(session_set),
       receiver_(this, std::move(receiver)) {
   if (context.has_value()) {
     // If the context is provided, it will be used in this session.
@@ -268,7 +270,7 @@ void AITextSession::Fork(
   }
   service->CreateTextSessionForCloning(
       base::PassKey<AITextSession>(), std::move(session),
-      std::move(sampling_params), *context_, std::move(callback));
+      std::move(sampling_params), session_set_, *context_, std::move(callback));
 }
 
 void AITextSession::Destroy() {

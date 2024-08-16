@@ -10,13 +10,17 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/supports_user_data.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/ai/ai_text_session.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-forward.h"
+
+class AITextSessionSet;
 
 // The implementation of `blink::mojom::ModelGenericSession`, which exposes the
 // single stream-based `Execute()` API for model execution.
@@ -73,6 +77,7 @@ class AITextSession : public blink::mojom::AITextSession {
       std::optional<optimization_guide::SamplingParams> sampling_params,
       base::WeakPtr<content::BrowserContext> browser_context,
       mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
+      AITextSessionSet* session_set,
       const std::optional<const Context>& context = std::nullopt);
   AITextSession(const AITextSession&) = delete;
   AITextSession& operator=(const AITextSession&) = delete;
@@ -119,6 +124,9 @@ class AITextSession : public blink::mojom::AITextSession {
   base::WeakPtr<content::BrowserContext> browser_context_;
   // Holds all the input and output from the previous prompt.
   std::unique_ptr<Context> context_;
+  // It's safe to store a `raw_ptr` here since `this` is owned by
+  // `session_set_`.
+  const raw_ptr<AITextSessionSet> session_set_;
 
   mojo::Receiver<blink::mojom::AITextSession> receiver_;
 

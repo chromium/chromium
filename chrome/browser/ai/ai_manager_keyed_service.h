@@ -36,6 +36,7 @@ class AIManagerKeyedService : public KeyedService,
       base::PassKey<AITextSession> pass_key,
       mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
       blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
+      AITextSessionSet* session_set,
       const AITextSession::Context& context,
       base::OnceCallback<void(bool)> callback);
 
@@ -74,6 +75,7 @@ class AIManagerKeyedService : public KeyedService,
   std::unique_ptr<AITextSession> CreateTextSessionInternal(
       mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
       const blink::mojom::AITextSessionSamplingParamsPtr& sampling_params,
+      AITextSessionSet* session_set,
       const std::optional<const AITextSession::Context>& context =
           std::nullopt);
 
