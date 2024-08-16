@@ -1281,5 +1281,37 @@ TEST_F(SearchBoxViewAnimationTest, SearchBoxIconImageViewAnimation) {
   EXPECT_EQ(old_animator->GetTargetOpacity(), 0.0f);
 }
 
+// Accessible value test for the search box.
+TEST_F(SearchBoxViewAutocompleteTest, AccessibleValue) {
+  SimulateQuery(u"he");
+
+  // Add two SearchResults. The higher ranked result should be selected by
+  // default and it's title should be autocompleted into the search box.
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 2.0, u"hello list",
+                     std::u16string(), ash::AppListSearchResultCategory::kWeb);
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, u"hello list2",
+                     std::u16string(), ash::AppListSearchResultCategory::kApps);
+  base::RunLoop().RunUntilIdle();
+
+  ProcessAutocomplete();
+
+  ui::AXNodeData data;
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(view()->search_box()->GetText(), u"hello list");
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE,
+                                       view()->search_box()->GetText()),
+            data.GetString16Attribute(ax::mojom::StringAttribute::kValue));
+
+  EXPECT_EQ("Websites", view()->GetSearchBoxGhostTextForTest());
+  KeyPress(ui::VKEY_DOWN);
+  EXPECT_EQ("Apps", view()->GetSearchBoxGhostTextForTest());
+
+  ui::AXNodeData data2;
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data2);
+  EXPECT_EQ(view()->search_box()->GetText(), u"hello list2");
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE,
+                                       view()->search_box()->GetText()),
+            data2.GetString16Attribute(ax::mojom::StringAttribute::kValue));
+}
 }  // namespace
 }  // namespace ash

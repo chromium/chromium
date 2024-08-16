@@ -561,6 +561,7 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   SetShowAssistantButton(search_box_model->show_assistant_button());
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTextField);
+  UpdateAccessibleValue();
 }
 
 SearchBoxView::~SearchBoxView() {
@@ -694,6 +695,10 @@ void SearchBoxView::HandleQueryChange(const std::u16string& query,
 
   current_query_ = query;
 
+  if (query_changed_callback_) {
+    query_changed_callback_.Run();
+  }
+
   // Any query changes will dismiss the Launcher search IPH.
   UpdateIphViewVisibility(false);
 
@@ -709,6 +714,10 @@ void SearchBoxView::HandleQueryChange(const std::u16string& query,
   // - see http://crbug.com/979594).
   if (initiated_by_user || !trimmed_query.empty() || query_empty_changed)
     view_delegate_->StartSearch(query);
+}
+
+void SearchBoxView::SetQueryChangedCallback(QueryChangedCallback callback) {
+  query_changed_callback_ = std::move(callback);
 }
 
 void SearchBoxView::UpdatePlaceholderTextStyle() {
@@ -968,13 +977,6 @@ void SearchBoxView::OnKeyEvent(ui::KeyEvent* evt) {
   evt->SetHandled();
 }
 
-void SearchBoxView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (HasAutocompleteText()) {
-    node_data->SetValue(l10n_util::GetStringFUTF16(
-        IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE, search_box()->GetText()));
-  }
-}
-
 void SearchBoxView::UpdateBackground(AppListState target_state) {
   int corner_radius = GetSearchBoxBorderCornerRadiusForState(target_state);
   SetSearchBoxBackgroundCornerRadius(corner_radius);
@@ -1072,7 +1074,7 @@ void SearchBoxView::ProcessAutocomplete(
     // it back to the current query. This could happen due to the racing
     // between results update and user press key to select a result.
     // See crbug.com/1065454.
-    search_box()->SetText(current_query_);
+    SetText(current_query_);
   }
 
   // Current non-autocompleted text.
@@ -1383,7 +1385,7 @@ void SearchBoxView::SetAutocompleteText(
   // Send an event to alert ChromeVox that an autocomplete has occurred.
   // The |kValueChanged| type lets ChromeVox know that it should scan
   // |node_data| for "Value".
-  NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+  UpdateAccessibleValue();
 
   MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
 }
@@ -1402,8 +1404,13 @@ SearchBoxView::PlaceholderTextType SearchBoxView::SelectPlaceholderText()
 }
 
 void SearchBoxView::UpdateQuery(const std::u16string& new_query) {
-  search_box()->SetText(new_query);
+  SetText(new_query);
   ContentsChanged(search_box(), new_query);
+}
+
+void SearchBoxView::SetText(const std::u16string& text) {
+  search_box()->SetText(text);
+  UpdateAccessibleValue();
 }
 
 void SearchBoxView::EnterSearchResultSelection(const ui::KeyEvent& event) {
@@ -1522,7 +1529,7 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
         // Reset the selected result to the default result.
         result_selection_controller_->ResetSelection(
             nullptr, true /* default_selection */);
-        search_box()->SetText(std::u16string());
+        SetText(std::u16string());
         return true;
       }
     }
@@ -1790,6 +1797,15 @@ CategoryEnableStateMap SearchBoxView::GetSearchCategoryEnableState() {
                                       : SearchCategoryEnableState::kDisabled;
   }
   return category_to_state;
+}
+
+void SearchBoxView::UpdateAccessibleValue() {
+  if (!HasAutocompleteText()) {
+    GetViewAccessibility().RemoveValue();
+    return;
+  }
+  GetViewAccessibility().SetValue(l10n_util::GetStringFUTF16(
+      IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE, search_box()->GetText()));
 }
 
 BEGIN_METADATA(SearchBoxView)
