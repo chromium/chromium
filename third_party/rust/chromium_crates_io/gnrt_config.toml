@@ -85,6 +85,7 @@ remove_crates = [
     # C/C++ dependencies must be explicitly writting in GN rules somehow.
     'cc',
     'link-cplusplus',
+    'shlex',
     # minimal-lexical is unsound see https://crrev.com/c/4977110 for more info.
     # It is a dependency of nom, but not actually used.
     'minimal-lexical',
