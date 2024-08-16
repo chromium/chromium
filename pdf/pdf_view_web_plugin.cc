@@ -1482,7 +1482,7 @@ void PdfViewWebPlugin::HandleGetSelectedTextMessage(
 
 void PdfViewWebPlugin::HandleGetThumbnailMessage(
     const base::Value::Dict& message) {
-  const int page_index = message.FindInt("page").value();
+  const int page_index = message.FindInt("pageIndex").value();
   base::Value::Dict reply = PrepareReplyMessage("getThumbnailReply", message);
 
   engine_->RequestThumbnail(

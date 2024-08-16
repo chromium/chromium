@@ -95,7 +95,8 @@ export class ViewerThumbnailBarElement extends CrLitElement {
               return;
             }
 
-            this.pluginController_.requestThumbnail(thumbnail.pageNumber)
+            // Convert to zero-based page index.
+            this.pluginController_.requestThumbnail(thumbnail.pageNumber - 1)
                 .then(response => {
                   const array = new Uint8ClampedArray(response.imageData);
                   const imageData = new ImageData(array, response.width);

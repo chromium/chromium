@@ -6,7 +6,7 @@ import {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgieh
 
 const tests = [
   async function testRequestThumbnail() {
-    const data = await PluginController.getInstance().requestThumbnail(1);
+    const data = await PluginController.getInstance().requestThumbnail(0);
 
     const expectedWidth = 108 * window.devicePixelRatio;
     const expectedHeight = 140 * window.devicePixelRatio;

@@ -330,11 +330,10 @@ export class PluginController implements ContentController {
    * Post a thumbnail request message to the plugin.
    * @return A promise holding the thumbnail response from the plugin.
    */
-  requestThumbnail(page: number): Promise<ThumbnailMessageData> {
+  requestThumbnail(pageIndex: number): Promise<ThumbnailMessageData> {
     return this.postMessageWithReply_({
       type: 'getThumbnail',
-      // The plugin references pages using zero-based indices.
-      page: page - 1,
+      pageIndex: pageIndex,
     });
   }
 
