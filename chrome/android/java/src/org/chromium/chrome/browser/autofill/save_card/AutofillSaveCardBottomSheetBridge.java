@@ -51,14 +51,16 @@ public class AutofillSaveCardBottomSheetBridge
      * BottomSheetController#requestShowContent}
      *
      * @param uiInfo An object providing text and images to the bottom sheet view.
+     * @param skipLoadingForFixFlow When true, loading is skipped due to the fix flow.
      */
     @CalledByNative
-    public void requestShowContent(AutofillSaveCardUiInfo uiInfo) {
+    public void requestShowContent(AutofillSaveCardUiInfo uiInfo, boolean skipLoadingForFixFlow) {
         if (mNativeAutofillSaveCardBottomSheetBridge == 0) return;
         mCoordinator =
                 new AutofillSaveCardBottomSheetCoordinator(
                         mContext,
                         uiInfo,
+                        skipLoadingForFixFlow,
                         mBottomSheetController,
                         mLayoutStateProvider,
                         mTabModel,

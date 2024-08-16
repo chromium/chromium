@@ -32,6 +32,15 @@ class AutofillSaveCardDelegate {
         save_card_callback_);
   }
 
+  // Returns true if an additional fix flow is needed for the save card.
+  // The following are the fixes that are possible:
+  // - Name
+  // - Expiration date
+  bool requires_fix_flow() const {
+    return options_.should_request_name_from_user ||
+           options_.should_request_expiration_date_from_user;
+  }
+
   void OnUiShown();
   // `on_save_card_completed` will be triggered after the save card flow has
   // finished.

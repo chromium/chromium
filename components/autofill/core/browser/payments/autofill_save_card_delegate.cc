@@ -32,9 +32,7 @@ void AutofillSaveCardDelegate::OnUiAccepted(base::OnceClosure callback) {
   // 2. or when we don't need more info in order to upload.
   if (options_.card_save_type !=
           payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly &&
-      (!is_for_upload() ||
-       !(options_.should_request_name_from_user ||
-         options_.should_request_expiration_date_from_user))) {
+      (!is_for_upload() || !requires_fix_flow())) {
     LogSaveCreditCardPromptResult(
         autofill_metrics::SaveCreditCardPromptResult::kAccepted,
         is_for_upload(), options_);

@@ -118,6 +118,25 @@ testing::Matcher<UploadCallbackArgs> EqualToUploadCallbackArgs(
 
 INSTANTIATE_TEST_SUITE_P(All, AutofillSaveCardDelegateTest, testing::Bool());
 
+TEST_P(AutofillSaveCardDelegateTest, RequiresFixFlowWithNameFix) {
+  autofill::AutofillSaveCardDelegate delegate =
+      CreateDelegate(payments::PaymentsAutofillClient::SaveCreditCardOptions{}
+                         .with_should_request_name_from_user(true));
+  EXPECT_TRUE(delegate.requires_fix_flow());
+}
+
+TEST_P(AutofillSaveCardDelegateTest, RequiresFixFlowWithExpirationDateFix) {
+  autofill::AutofillSaveCardDelegate delegate =
+      CreateDelegate(payments::PaymentsAutofillClient::SaveCreditCardOptions{}
+                         .with_should_request_expiration_date_from_user(true));
+  EXPECT_TRUE(delegate.requires_fix_flow());
+}
+
+TEST_P(AutofillSaveCardDelegateTest, RequiresFixFlowWithNoFix) {
+  autofill::AutofillSaveCardDelegate delegate = CreateDelegate();
+  EXPECT_FALSE(delegate.requires_fix_flow());
+}
+
 TEST_P(AutofillSaveCardDelegateTest,
        OnUiAcceptedWithCallbackArgumentRunsCallback) {
   base::MockOnceClosure mock_finish_gathering_consent_callback;

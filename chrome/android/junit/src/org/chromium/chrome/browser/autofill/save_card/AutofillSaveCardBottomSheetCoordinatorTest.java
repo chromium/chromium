@@ -68,6 +68,7 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
                 new AutofillSaveCardBottomSheetCoordinator(
                         mActivity,
                         uiInfoForTest(),
+                        /* skipLoadingForFixFlow= */ false,
                         mBottomSheetController,
                         mLayoutStateProvider,
                         mTabModel,
@@ -194,6 +195,32 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
                                         new CardDetail(
                                                 TEST_DRAWABLE_RES, "Card label", "Card sub label"))
                                 .build(),
+                        /* skipLoadingForFixFlow= */ false,
+                        mBottomSheetController,
+                        mLayoutStateProvider,
+                        mTabModel,
+                        mDelegate);
+
+        coordinator.requestShowContent();
+        coordinator.getAutofillSaveCardBottomSheetViewForTesting().mAcceptButton.performClick();
+
+        verify(mDelegate).onUiAccepted();
+        verify(mBottomSheetController)
+                .hideContent(
+                        any(AutofillSaveCardBottomSheetContent.class),
+                        /* animate= */ eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SAVE_CARD_LOADING_AND_CONFIRMATION})
+    public void testClickAccept_whenLoadingDisabled_withLoadingConfirmation() {
+        // Create a coordinator with `skipLoadingForFixFlow` set as true.
+        AutofillSaveCardBottomSheetCoordinator coordinator =
+                new AutofillSaveCardBottomSheetCoordinator(
+                        mActivity,
+                        uiInfoForTest(),
+                        /* skipLoadingForFixFlow= */ true,
                         mBottomSheetController,
                         mLayoutStateProvider,
                         mTabModel,

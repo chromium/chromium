@@ -50,6 +50,7 @@ public class AutofillSaveCardBottomSheetCoordinator {
      *
      * @param context The context for this component.
      * @param uiInfo An object providing initial values for the bottom sheet model.
+     * @param skipLoadingForFixFlow When true, loading is skipped due to the fix flow.
      * @param bottomSheetController The bottom sheet controller where this bottom sheet will be
      *     shown.
      * @param layoutStateProvider The LayoutStateProvider used to detect when the bottom sheet needs
@@ -61,6 +62,7 @@ public class AutofillSaveCardBottomSheetCoordinator {
     public AutofillSaveCardBottomSheetCoordinator(
             Context context,
             AutofillSaveCardUiInfo uiInfo,
+            boolean skipLoadingForFixFlow,
             BottomSheetController bottomSheetController,
             LayoutStateProvider layoutStateProvider,
             TabModel tabModel,
@@ -116,7 +118,8 @@ public class AutofillSaveCardBottomSheetCoordinator {
                         bottomSheetController,
                         mModel,
                         delegate,
-                        uiInfo.isForUpload());
+                        uiInfo.isForUpload(),
+                        skipLoadingForFixFlow);
 
         mView.mAcceptButton.setOnClickListener(
                 (View button) -> {

@@ -54,7 +54,8 @@ public final class AutofillSaveCardBottomSheetMediatorTest {
                         mBottomSheetController,
                         mModel,
                         mDelegate,
-                        /* isServerCard= */ true);
+                        /* isServerCard= */ true,
+                        /* isLoadingDisabled= */ false);
     }
 
     @Test
@@ -104,7 +105,8 @@ public final class AutofillSaveCardBottomSheetMediatorTest {
                         mBottomSheetController,
                         mModel,
                         mDelegate,
-                        /* isServerCard= */ false);
+                        /* isServerCard= */ false,
+                        /* isLoadingDisabled= */ false);
         mediator.onAccepted();
 
         verify(mLifeCycle).end();
@@ -114,6 +116,32 @@ public final class AutofillSaveCardBottomSheetMediatorTest {
                         /* animate= */ eq(true),
                         eq(StateChangeReason.INTERACTION_COMPLETE));
         verify(mDelegate).onUiAccepted();
+        assertFalse(mModel.get(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SAVE_CARD_LOADING_AND_CONFIRMATION})
+    public void testOnAccepted_whenLoadingDisabled_withLoadingConfirmation() {
+        // Create a mediator with `isLoadingDisabled` set as true.
+        AutofillSaveCardBottomSheetMediator mediator =
+                new AutofillSaveCardBottomSheetMediator(
+                        mBottomSheetContent,
+                        mLifeCycle,
+                        mBottomSheetController,
+                        mModel,
+                        mDelegate,
+                        /* isServerCard= */ true,
+                        /* isLoadingDisabled= */ true);
+        mediator.onAccepted();
+
+        verify(mLifeCycle).end();
+        verify(mBottomSheetController)
+                .hideContent(
+                        any(AutofillSaveCardBottomSheetContent.class),
+                        /* animate= */ eq(true),
+                        eq(StateChangeReason.INTERACTION_COMPLETE));
+        verify(mDelegate).onUiAccepted();
+        assertFalse(mModel.get(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE));
     }
 
     @Test

@@ -75,7 +75,8 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
         mBridge.requestShowContent(
                 new AutofillSaveCardUiInfo.Builder()
                         .withCardDetail(new CardDetail(/* iconId= */ 0, "label", "subLabel"))
-                        .build());
+                        .build(),
+                /* skipLoadingForFixFlow= */ false);
     }
 
     @Test
