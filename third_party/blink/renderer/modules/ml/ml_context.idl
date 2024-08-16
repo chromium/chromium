@@ -64,6 +64,7 @@ dictionary MLWhereSupportLimits {
 };
 
 dictionary MLOpSupportLimits {
+  MLInputOperandLayout preferredInputLayout;
   MLSupportLimits input;
   MLSupportLimits constant;
   MLSupportLimits output;

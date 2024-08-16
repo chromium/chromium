@@ -61,6 +61,16 @@ MLSupportLimits* SupportedDataTypesToSupportLimits(
   return support_limits;
 }
 
+blink::V8MLInputOperandLayout::Enum InputOperandLayoutToBlink(
+    webnn::InputOperandLayout layout) {
+  switch (layout) {
+    case webnn::InputOperandLayout::kNchw:
+      return blink::V8MLInputOperandLayout::Enum::kNchw;
+    case webnn::InputOperandLayout::kNhwc:
+      return blink::V8MLInputOperandLayout::Enum::kNhwc;
+  }
+}
+
 }  // namespace
 
 MLContext::MLContext(
@@ -206,6 +216,8 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   const webnn::DataTypeLimits& data_type_limits = properties_.data_type_limits;
 
   MLOpSupportLimits* op_support_limits = MLOpSupportLimits::Create();
+  op_support_limits->setPreferredInputLayout(
+      InputOperandLayoutToBlink(properties_.input_operand_layout));
   op_support_limits->setInput(
       SupportedDataTypesToSupportLimits(data_type_limits.input));
   op_support_limits->setConstant(
