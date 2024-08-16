@@ -1124,12 +1124,6 @@ TEST_F(PrefetchServiceTest, SuccessCase) {
 
   NavigateInitiatedByRenderer(GURL("https://example.com"));
 
-  // No servable PrefetchContainer is returned for different DocumentToken.
-  blink::DocumentToken different_document_token;
-  PrefetchContainer::Reader serveable_reader_for_different_initiator =
-      GetPrefetchToServe(GURL("https://example.com"), different_document_token);
-  EXPECT_FALSE(serveable_reader_for_different_initiator);
-
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
   ExpectServingMetricsSuccess();
 
@@ -1143,6 +1137,35 @@ TEST_F(PrefetchServiceTest, SuccessCase) {
               blink::mojom::SpeculationEagerness::kEager)
               .c_str()),
       false, 1);
+}
+
+TEST_F(PrefetchServiceTest, PrefetchDoesNotMatchIfDocumentTokenDoesNotMatch) {
+  base::HistogramTester histogram_tester;
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com"),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
+                   blink::mojom::SpeculationEagerness::kEager));
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example.com"),
+                           {.use_prefetch_proxy = true});
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/true,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
+  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
+
+  NavigateInitiatedByRenderer(GURL("https://example.com"));
+
+  // No servable PrefetchContainer is returned for different DocumentToken.
+  blink::DocumentToken different_document_token;
+  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com"),
+                                  different_document_token));
 }
 
 TEST_F(PrefetchServiceTest, SuccessCase_Embedder) {
@@ -1183,15 +1206,55 @@ TEST_F(PrefetchServiceTest, SuccessCase_Embedder) {
 
   NavigateInitiatedByBrowser(GURL("https://example.com"));
 
-  // No servable PrefetchContainer is returned for different DocumentToken.
-  EXPECT_FALSE(
-      GetPrefetchToServe(GURL("https://example.com"), MainDocumentToken()));
-
   ExpectServingReaderSuccess(
       GetPrefetchToServe(GURL("https://example.com"), std::nullopt));
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.RedirectChainSize", 1, 1);
+}
+
+TEST_F(PrefetchServiceTest,
+       PrefetchDoesNotMatchIfDocumentTokenDoesNotMatch_Embedder) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kPrefetchBrowserInitiatedTriggers);
+
+  base::HistogramTester histogram_tester;
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/std::nullopt));
+
+  MakePrefetchFromEmbedder(GURL("https://example.com"),
+                           PrefetchType(PreloadingTriggerType::kEmbedder,
+                                        /*use_prefetch_proxy=*/true));
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example.com"),
+                           {.use_prefetch_proxy = true});
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/true,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
+  // Verify that the prefetch request was successful.
+  // TODO(crbug.com/40269462): Revise current helper functions (ExpectPrefetch*)
+  // for browser-initiated prefetch.
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
+
+  NavigateInitiatedByBrowser(GURL("https://example.com"));
+
+  // No servable PrefetchContainer is returned for different DocumentToken.
+  EXPECT_FALSE(
+      GetPrefetchToServe(GURL("https://example.com"), MainDocumentToken()));
 }
 
 TEST_F(PrefetchServiceTest, NoPrefetchingPreloadingDisabled) {
