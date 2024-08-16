@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/one_shot_event.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/apps/almanac_api_client/almanac_icon_cache.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
@@ -23,6 +24,13 @@ namespace apps {
 namespace {
 
 constexpr int kSvgRasterSize = 192;
+
+bool IsSvgExtension(const GURL& icon_url, std::string_view icon_mime_type) {
+  std::string url_string = icon_url.spec();
+  return icon_mime_type.empty()
+             ? base::EndsWith(url_string, ".svg", base::CompareCase::SENSITIVE)
+             : icon_mime_type == "image/svg+xml";
+}
 
 }  // namespace
 
@@ -101,7 +109,7 @@ void AlmanacAppIconLoader::GetAppIcon(
     std::move(callback).Run(nullptr);
   }
 
-  if (icon_mime_type == "image/svg+xml") {
+  if (IsSvgExtension(icon_url, icon_mime_type)) {
     if (!svg_loader_) {
       svg_loader_ = std::make_unique<SvgLoader>(*profile_);
     }
