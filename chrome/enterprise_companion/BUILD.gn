@@ -191,6 +191,14 @@ test("enterprise_companion_tests") {
   }
 }
 
+copy("integration_test_service_files") {
+  testonly = true
+  sources =
+      [ "test/service/enterprise_companion_integration_tests_launcher.py" ]
+  outputs = [ "$root_build_dir/test_service/{{source_file_part}}" ]
+  visibility = [ ":enterprise_companion_integration_tests" ]
+}
+
 test("enterprise_companion_integration_tests") {
   testonly = true
 
@@ -210,18 +218,22 @@ test("enterprise_companion_integration_tests") {
     "//chrome/updater:public_sources",
     "//testing/gtest",
   ]
+  data = [ "//testing/scripts/run_telemetry_as_googletest.py" ]
+  data_deps = []
 
   # The MacOS integration tests require the pkg installer to be built, which is
   # only possible on MacOS hosts.
   if (is_mac && host_os == "mac") {
     sources += [ "test/integration_tests_mac.cc" ]
-    data_deps = [ "//chrome/enterprise_companion/mac:enterprise_companion_installer_unsigned" ]
+    data_deps += [ "//chrome/enterprise_companion/mac:enterprise_companion_installer_unsigned" ]
   }
 
   if (is_win) {
     sources += [ "test/integration_tests_win.cc" ]
-    data_deps = [ ":enterprise_companion_test" ]
+    data_deps += [ ":enterprise_companion_test" ]
   }
+
+  data_deps += [ ":integration_test_service_files" ]
 }
 
 static_library("client") {

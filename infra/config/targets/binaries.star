@@ -741,10 +741,16 @@ targets.binaries.windowed_test_launcher(
     label = "//chrome/elevation_service:elevation_service_unittests",
 )
 
-targets.binaries.console_test_launcher(
+targets.binaries.script(
     name = "enterprise_companion_integration_tests",
     label = "//chrome/enterprise_companion:enterprise_companion_integration_tests",
-    args = ["--gtest_shuffle"],
+    script = "//testing/scripts/run_telemetry_as_googletest.py",
+    args = [
+        "test_service/enterprise_companion_integration_tests_launcher.py",
+        "--test-output-dir=${ISOLATED_OUTDIR}",
+        "--test-launcher-bot-mode",
+        "--gtest_shuffle",
+    ],
 )
 
 targets.binaries.console_test_launcher(
