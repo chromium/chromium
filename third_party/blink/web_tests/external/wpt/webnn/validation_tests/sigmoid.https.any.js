@@ -10,5 +10,4 @@
 validateInputFromAnotherBuilder('sigmoid');
 
 const label = 'sigmoid_xxx';
-const regrexp = new RegExp('\\[' + label + '\\]');
-validateSingleInputOperation('sigmoid', label, regrexp);
+validateSingleInputOperation('sigmoid', label);

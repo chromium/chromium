@@ -9,10 +9,10 @@
 
 validateInputFromAnotherBuilder('elu');
 
-validateSingleInputOperation('elu');
-
 const label = 'elu_xxx';
 const regrexp = new RegExp('\\[' + label + '\\]');
+
+validateSingleInputOperation('elu', label);
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);

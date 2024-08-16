@@ -9,7 +9,8 @@
 
 validateInputFromAnotherBuilder('linear');
 
-validateUnaryOperation('linear', floatingPointTypes);
+const label = 'linear_xxx';
+validateUnaryOperation('linear', floatingPointTypes, label);
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);

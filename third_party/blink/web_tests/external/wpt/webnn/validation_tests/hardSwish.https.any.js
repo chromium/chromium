@@ -10,5 +10,4 @@
 validateInputFromAnotherBuilder('hardSwish');
 
 const label = 'hard_swish';
-const regrexp = new RegExp('\\[' + label + '\\]');
-validateUnaryOperation('hardSwish', floatingPointTypes, label, regrexp);
+validateUnaryOperation('hardSwish', floatingPointTypes, label);

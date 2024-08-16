@@ -16,12 +16,11 @@ const kElementwiseLogicalBinaryOperators = [
 ];
 
 const label = 'elementwise_logic_op';
-const regrexp = new RegExp('\\[' + label + '\\]');
 
 kElementwiseLogicalBinaryOperators.forEach((operatorName) => {
-  validateTwoInputsOfSameDataType(operatorName, label, regrexp);
+  validateTwoInputsOfSameDataType(operatorName, label);
   validateTwoInputsFromMultipleBuilders(operatorName);
-  validateTwoInputsBroadcastable(operatorName, label, regrexp);
+  validateTwoInputsBroadcastable(operatorName, label);
 });
 
 // The `logicalNot()` operator is unary.

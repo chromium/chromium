@@ -9,7 +9,8 @@
 
 validateInputFromAnotherBuilder('leakyRelu');
 
-validateSingleInputOperation('leakyRelu');
+const label = 'leaky_relu';
+validateSingleInputOperation('leakyRelu', label);
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);

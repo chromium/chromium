@@ -95,8 +95,8 @@ function runElementWiseBinaryTests(operatorName, tests) {
 }
 
 kElementwiseBinaryOperators.forEach((operatorName) => {
-  validateTwoInputsOfSameDataType(operatorName, label, regrexp);
-  validateTwoInputsBroadcastable(operatorName, label, regrexp);
+  validateTwoInputsOfSameDataType(operatorName, label);
+  validateTwoInputsBroadcastable(operatorName, label);
   validateTwoInputsFromMultipleBuilders(operatorName);
   runElementWiseBinaryTests(operatorName, tests);
 });

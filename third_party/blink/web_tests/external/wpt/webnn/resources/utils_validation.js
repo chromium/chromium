@@ -218,7 +218,7 @@ function assert_throws_with_label(func, regrexp) {
   }
 }
 
-function validateTwoInputsBroadcastable(operationName, label, regrexp) {
+function validateTwoInputsBroadcastable(operationName, label) {
   if (navigator.ml === undefined) {
     return;
   }
@@ -240,6 +240,7 @@ function validateTwoInputsBroadcastable(operationName, label, regrexp) {
             const inputB = builder.input(`inputB${++inputBIndex}`, {dataType, dimensions: unbroadcastableDimensions});
             assert_equals(typeof builder[operationName], 'function');
             const options = {label};
+            const regrexp = new RegExp('\\[' + label + '\\]');
             assert_throws_with_label(
                 () => builder[operationName](inputA, inputB, options), regrexp);
             assert_throws_with_label(
@@ -251,7 +252,7 @@ function validateTwoInputsBroadcastable(operationName, label, regrexp) {
   }, `[${operationName}] TypeError is expected if two inputs aren't broadcastable`);
 }
 
-function validateTwoInputsOfSameDataType(operationName, label, regrexp) {
+function validateTwoInputsOfSameDataType(operationName, label) {
   if (navigator.ml === undefined) {
     return;
   }
@@ -288,6 +289,7 @@ function validateTwoInputsOfSameDataType(operationName, label, regrexp) {
             if (dataType !== dataTypeB) {
               const inputB = builder.input(`inputB${++inputBIndex}`, {dataType: dataTypeB, dimensions});
               const options = {label};
+              const regrexp = new RegExp('\\[' + label + '\\]');
               assert_equals(typeof builder[subOperationName], 'function');
               assert_throws_with_label(
                   () => builder[subOperationName](inputA, inputB, options),
@@ -423,8 +425,7 @@ function validateOptionsAxes(operationName) {
  * @param {Array} supportedDataTypes - Test building with these data types
  *     succeeds and test building with all other data types fails
  */
-function validateUnaryOperation(
-    operationName, supportedDataTypes, label, regrexp) {
+function validateUnaryOperation(operationName, supportedDataTypes, label) {
   promise_test(async t => {
     const builder = new MLGraphBuilder(context);
     for (let dataType of supportedDataTypes) {
@@ -461,6 +462,7 @@ function validateUnaryOperation(
         const input = builder.input(`input`, {dataType, dimensions});
         assert_equals(typeof builder[operationName], 'function');
         const options = {label};
+        const regrexp = new RegExp('\\[' + label + '\\]');
         assert_throws_with_label(
             () => builder[operationName](input, options), regrexp);
       }
@@ -472,7 +474,7 @@ function validateUnaryOperation(
  * Validate a single input operation
  * @param {String} operationName - An operation name
  */
-function validateSingleInputOperation(operationName, label, regrexp) {
+function validateSingleInputOperation(operationName, label) {
   promise_test(async t => {
     const builder = new MLGraphBuilder(context);
     const supportedDataTypes =
@@ -508,6 +510,7 @@ function validateSingleInputOperation(operationName, label, regrexp) {
         const input = builder.input(`input`, {dataType, dimensions});
         assert_equals(typeof builder[operationName], 'function');
         const options = {label};
+        const regrexp = new RegExp('\\[' + label + '\\]');
         assert_throws_with_label(
             () => builder[operationName](input, options), regrexp);
       }

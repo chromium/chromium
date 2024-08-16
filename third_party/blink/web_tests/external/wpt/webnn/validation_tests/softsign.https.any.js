@@ -10,5 +10,4 @@
 validateInputFromAnotherBuilder('softsign');
 
 const label = 'softsign_xxx';
-const regrexp = new RegExp('\\[' + label + '\\]');
-validateSingleInputOperation('softsign', label, regrexp);
+validateSingleInputOperation('softsign', label);

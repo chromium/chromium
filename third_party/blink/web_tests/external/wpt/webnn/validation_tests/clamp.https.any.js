@@ -9,7 +9,9 @@
 
 validateInputFromAnotherBuilder('clamp');
 
-validateUnaryOperation('clamp', allWebNNOperandDataTypes);
+const label = '123_clamp';
+
+validateUnaryOperation('clamp', allWebNNOperandDataTypes, label);
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);
@@ -45,7 +47,6 @@ promise_test(async t => {
   assert_array_equals(output.shape(), [1, 2, 3, 4]);
 }, '[clamp] Build with options.minValue == options.maxValue');
 
-const label = '123_clamp';
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);
   const options = {

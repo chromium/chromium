@@ -17,7 +17,6 @@ kElementwiseUnaryOperators.forEach((operatorName) => {
 });
 
 const label = 'elementwise_unary_op';
-const regrexp = new RegExp('\\[' + label + '\\]');
 kElementwiseUnaryOperators.forEach((operatorName) => {
-  validateSingleInputOperation(operatorName, label, regrexp);
+  validateSingleInputOperation(operatorName, label);
 });
