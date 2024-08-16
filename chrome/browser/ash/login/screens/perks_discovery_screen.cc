@@ -21,6 +21,7 @@ namespace {
 constexpr const char kUserActionFinish[] = "finished";
 constexpr const char kUserActionLoaded[] = "loaded";
 constexpr const char kPerkGamgeeId[] = "Gamgee";
+constexpr const char kPerkStandardGamgeeId[] = "StandardGamgee";
 
 // Current max amount of perks we should get from the server.
 constexpr const int kMaxPerksFetched = 10;
@@ -249,7 +250,8 @@ void PerksDiscoveryScreen::GetOobePerksPayloadAndShow() {
     view_->SetPerksData(perks_data_);
     auto perk = std::find_if(perks_data_.cbegin(), perks_data_.cend(),
                              [&](const SinglePerkDiscoveryPayload& perk_data) {
-                               return perk_data.id == kPerkGamgeeId;
+                               return ((perk_data.id == kPerkGamgeeId) ||
+                                       (perk_data.id == kPerkStandardGamgeeId));
                              });
     if (perk != perks_data_.end()) {
       // Mark the gamgee perk screen as shown for this user.
