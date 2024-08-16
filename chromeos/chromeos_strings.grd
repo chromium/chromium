@@ -3432,7 +3432,7 @@
           More
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_PROMPTING_GUIDE" desc="A link to a guide with instructions on how to write a prompt to generate AI images.">
-          Try one of these prompts or see the <ph name="BEGIN_LINK_PROMPTING_GUIDE">&lt;a href="chrome://help-app/help/sub/3399710/id/1251809"&gt;</ph>prompting guide<ph name="END_LINK_PROMPTING_GUIDE">&lt;/a&gt;</ph>
+          Try one of these prompts or see the <ph name="BEGIN_LINK_PROMPTING_GUIDE">&lt;a target="_blank" href="https://cloud.google.com/vertex-ai/generative-ai/docs/image/img-gen-prompt-guide"&gt;</ph>prompting guide<ph name="END_LINK_PROMPTING_GUIDE">&lt;/a&gt;</ph>
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_NAVIGATION_DESCRIPTION" desc="Description shown in each template page to help users navigate to freeform page.">
           You can also <ph name="BEGIN_LINK_FREEFORM_SUBPAGE">&lt;a href="chrome://personalization/wallpaper/sea-pen/freeform"&gt;</ph>write your own prompt<ph name="END_LINK_FREEFORM_SUBPAGE">&lt;/a&gt;</ph>
