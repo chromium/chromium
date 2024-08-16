@@ -146,7 +146,7 @@ class MODULES_EXPORT IDBFactory final
   CreatePendingRemote(std::unique_ptr<IDBFactoryClient> client);
 
   mojo::PendingRemote<mojom::blink::ObservedFeature>
-  CreatePendingRemoteFeatureObserver();
+  CreatePendingRemoteFeatureObserver(const String& name);
 
   // Whether the context has permission to use IDB.
   std::optional<bool> allowed_;

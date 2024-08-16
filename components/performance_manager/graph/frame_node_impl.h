@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
@@ -98,7 +99,12 @@ class FrameNodeImpl
   bool GetNetworkAlmostIdle() const override;
   bool IsAdFrame() const override;
   bool IsHoldingWebLock() const override;
+  bool IsHoldingWebLock(WebLockNameHash name_hash) const override;
+  const base::flat_set<WebLockNameHash>& GetHeldWebLocks() const override;
   bool IsHoldingIndexedDBLock() const override;
+  bool IsHoldingIndexedDBLock(IndexedDBLockNameHash name_hash) const override;
+  const base::flat_set<IndexedDBLockNameHash>& GetHeldIndexedDBLocks()
+      const override;
   bool HadUserActivation() const override;
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
@@ -128,8 +134,9 @@ class FrameNodeImpl
   // Setters are not thread safe.
   void SetIsCurrent(bool is_current);
   void SetHadUserActivation();
-  void SetIsHoldingWebLock(bool is_holding_weblock);
-  void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
+  void SetIsHoldingWebLock(WebLockNameHash name_hash, bool is_holding_weblock);
+  void SetIsHoldingIndexedDBLock(IndexedDBLockNameHash name_hash,
+                                 bool is_holding_indexeddb_lock);
   void SetIsAudible(bool is_audible);
   void SetIsCapturingMediaStream(bool is_capturing_media_stream);
   void SetViewportIntersectionState(
@@ -312,14 +319,9 @@ class FrameNodeImpl
   // Locks held by a frame are tracked independently from navigation
   // (specifically, a few tasks must run in the Web Lock and IndexedDB
   // subsystems after a navigation for locks to be released).
-  ObservedProperty::NotifiesOnlyOnChanges<
-      bool,
-      &FrameNodeObserver::OnFrameIsHoldingWebLockChanged>
-      is_holding_weblock_{false};
-  ObservedProperty::NotifiesOnlyOnChanges<
-      bool,
-      &FrameNodeObserver::OnFrameIsHoldingIndexedDBLockChanged>
-      is_holding_indexeddb_lock_{false};
+  base::flat_set<WebLockNameHash> held_weblocks_;
+
+  base::flat_set<IndexedDBLockNameHash> held_indexeddb_locks_;
 
   ObservedProperty::
       NotifiesOnlyOnChanges<bool, &FrameNodeObserver::OnIsCurrentChanged>

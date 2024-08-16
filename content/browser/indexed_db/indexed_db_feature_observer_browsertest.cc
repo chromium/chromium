@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -63,12 +64,16 @@ class MockObserverClient : public FeatureObserverClient {
   ~MockObserverClient() override = default;
 
   // PerformanceManagerFeatureObserver implementation:
-  MOCK_METHOD2(OnStartUsing,
-               void(GlobalRenderFrameHostId id,
-                    blink::mojom::ObservedFeatureType type));
-  MOCK_METHOD2(OnStopUsing,
-               void(GlobalRenderFrameHostId id,
-                    blink::mojom::ObservedFeatureType type));
+  MOCK_METHOD(void,
+              OnStartUsing,
+              (GlobalRenderFrameHostId id,
+               blink::mojom::ObservedFeatureType type,
+               uint32_t name_hash));
+  MOCK_METHOD(void,
+              OnStopUsing,
+              (GlobalRenderFrameHostId id,
+               blink::mojom::ObservedFeatureType type,
+               uint32_t name_hash));
 };
 
 class IndexedDBFeatureObserverBrowserTest : public ContentBrowserTest {
@@ -132,23 +137,24 @@ class IndexedDBFeatureObserverBrowserTest : public ContentBrowserTest {
       const IndexedDBFeatureObserverBrowserTest&) = delete;
 };
 
-bool OpenConnectionA(RenderFrameHost* rfh) {
-  return EvalJs(rfh, R"(
-      (async () => {
-        return await OpenConnection('A');
-      }) ();
-  )")
-      .ExtractBool();
+bool OpenConnection(RenderFrameHost* rfh, std::string_view name) {
+  static const char kScript[] = R"(
+    (async () => {
+      return await OpenConnection($1)
+    }) ();
+  )";
+
+  return EvalJs(rfh, JsReplace(kScript, name)).ExtractBool();
 }
 
-bool OpenConnectionB(RenderFrameHost* rfh) {
-  return EvalJs(rfh, R"(
-      (async () => {
-        return await OpenConnection('B');
-      }) ();
-  )")
-      .ExtractBool();
+bool CloseConnection(RenderFrameHost* rfh, std::string_view name) {
+  return ExecJs(rfh, JsReplace("CloseConnection($1)", name));
 }
+
+static const char kNameA[] = "A";
+static uint32_t kNameHashA = 7850657u;
+static const char kNameB[] = "B";
+static uint32_t kNameHashB = 13313561u;
 
 }  // namespace
 
@@ -168,10 +174,12 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
     EXPECT_CALL(
         mock_observer_client_,
         OnStartUsing(rfh_id,
-                     blink::mojom::ObservedFeatureType::kIndexedDBConnection))
+                     blink::mojom::ObservedFeatureType::kIndexedDBConnection,
+                     kNameHashA))
         .WillOnce([&](GlobalRenderFrameHostId,
-                      blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
-    EXPECT_TRUE(OpenConnectionA(rfh));
+                      blink::mojom::ObservedFeatureType,
+                      uint32_t) { run_loop.Quit(); });
+    EXPECT_TRUE(OpenConnection(rfh, kNameA));
     // Quit when OnFrameStartsHoldingIndexedDBConnections(rfh_id)
     // is invoked.
     run_loop.Run();
@@ -183,10 +191,12 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
     EXPECT_CALL(
         mock_observer_client_,
         OnStopUsing(rfh_id,
-                    blink::mojom::ObservedFeatureType::kIndexedDBConnection))
+                    blink::mojom::ObservedFeatureType::kIndexedDBConnection,
+                    kNameHashA))
         .WillOnce([&](GlobalRenderFrameHostId,
-                      blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
-    EXPECT_TRUE(ExecJs(rfh, "CloseConnection('A');"));
+                      blink::mojom::ObservedFeatureType,
+                      uint32_t) { run_loop.Quit(); });
+    EXPECT_TRUE(CloseConnection(rfh, kNameA));
     // Quit when OnFrameStopsHoldingIndexedDBConnections(rfh_id)
     // is invoked.
     run_loop.Run();
@@ -216,35 +226,63 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
     EXPECT_CALL(
         mock_observer_client_,
         OnStartUsing(rfh_id,
-                     blink::mojom::ObservedFeatureType::kIndexedDBConnection))
+                     blink::mojom::ObservedFeatureType::kIndexedDBConnection,
+                     kNameHashA))
         .WillOnce([&](GlobalRenderFrameHostId,
-                      blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
-    EXPECT_TRUE(OpenConnectionA(rfh));
+                      blink::mojom::ObservedFeatureType,
+                      uint32_t) { run_loop.Quit(); });
+    EXPECT_TRUE(OpenConnection(rfh, kNameA));
     // Quit when OnFrameStartsHoldingIndexedDBConnections(rfh_id)
     // is invoked.
     run_loop.Run();
   }
 
-  // Open a second connection. Don't expect a notification.
-  EXPECT_TRUE(OpenConnectionB(rfh));
-  // Wait a short timeout to make sure that the observer is not notified.
-  RunLoopWithTimeout();
-
-  // Close the connection. Don't expect a notification.
-  EXPECT_TRUE(ExecJs(rfh, "CloseConnection('B');"));
-  // Wait a short timeout to make sure that the observer is not notified.
-  RunLoopWithTimeout();
+  {
+    // Open a second connection. Expect observer notification.
+    base::RunLoop run_loop;
+    EXPECT_CALL(
+        mock_observer_client_,
+        OnStartUsing(rfh_id,
+                     blink::mojom::ObservedFeatureType::kIndexedDBConnection,
+                     kNameHashB))
+        .WillOnce([&](GlobalRenderFrameHostId,
+                      blink::mojom::ObservedFeatureType,
+                      uint32_t) { run_loop.Quit(); });
+    EXPECT_TRUE(OpenConnection(rfh, kNameB));
+    // Quit when OnFrameStartsHoldingIndexedDBConnections(rfh_id)
+    // is invoked.
+    run_loop.Run();
+  }
 
   {
-    // Close the connection. Expect observer notification.
+    // Close the connection B. Expect observer notification.
     base::RunLoop run_loop;
     EXPECT_CALL(
         mock_observer_client_,
         OnStopUsing(rfh_id,
-                    blink::mojom::ObservedFeatureType::kIndexedDBConnection))
+                    blink::mojom::ObservedFeatureType::kIndexedDBConnection,
+                    kNameHashB))
         .WillOnce([&](GlobalRenderFrameHostId,
-                      blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
-    EXPECT_TRUE(ExecJs(rfh, "CloseConnection('A');"));
+                      blink::mojom::ObservedFeatureType,
+                      uint32_t) { run_loop.Quit(); });
+    EXPECT_TRUE(CloseConnection(rfh, kNameB));
+    // Quit when OnFrameStopsHoldingIndexedDBConnections(rfh_id)
+    // is invoked.
+    run_loop.Run();
+  }
+
+  {
+    // Close the connection A. Expect observer notification.
+    base::RunLoop run_loop;
+    EXPECT_CALL(
+        mock_observer_client_,
+        OnStopUsing(rfh_id,
+                    blink::mojom::ObservedFeatureType::kIndexedDBConnection,
+                    kNameHashA))
+        .WillOnce([&](GlobalRenderFrameHostId,
+                      blink::mojom::ObservedFeatureType,
+                      uint32_t) { run_loop.Quit(); });
+    EXPECT_TRUE(CloseConnection(rfh, kNameA));
     // Quit when OnFrameStopsHoldingIndexedDBConnections(rfh_id)
     // is invoked.
     run_loop.Run();
@@ -275,10 +313,12 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest, ObserverNavigate) {
     EXPECT_CALL(
         mock_observer_client_,
         OnStartUsing(rfh_id,
-                     blink::mojom::ObservedFeatureType::kIndexedDBConnection))
+                     blink::mojom::ObservedFeatureType::kIndexedDBConnection,
+                     kNameHashA))
         .WillOnce([&](GlobalRenderFrameHostId,
-                      blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
-    EXPECT_TRUE(OpenConnectionA(rfh));
+                      blink::mojom::ObservedFeatureType,
+                      uint32_t) { run_loop.Quit(); });
+    EXPECT_TRUE(OpenConnection(rfh, kNameA));
     // Quit when OnFrameStartsHoldingIndexedDBConnections(rfh_id)
     // is invoked.
     run_loop.Run();
@@ -290,9 +330,11 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest, ObserverNavigate) {
     EXPECT_CALL(
         mock_observer_client_,
         OnStopUsing(rfh_id,
-                    blink::mojom::ObservedFeatureType::kIndexedDBConnection))
+                    blink::mojom::ObservedFeatureType::kIndexedDBConnection,
+                    kNameHashA))
         .WillOnce([&](GlobalRenderFrameHostId,
-                      blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
+                      blink::mojom::ObservedFeatureType,
+                      uint32_t) { run_loop.Quit(); });
     EXPECT_TRUE(NavigateToURL(shell(), GetTestURL("b.com")));
     // Quit when OnFrameStopsHoldingIndexedDBConnections(rfh_id)
     // is invoked.

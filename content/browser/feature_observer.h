@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_FEATURE_OBSERVER_H_
 #define CONTENT_BROWSER_FEATURE_OBSERVER_H_
 
+#include <map>
+
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -33,15 +35,20 @@ class FeatureObserver : public blink::mojom::FeatureObserver {
   // For a given FeatureObserver receiver passed in through Bind, register the
   // lifetime of a feature of a given type.
   void Register(mojo::PendingReceiver<blink::mojom::ObservedFeature> feature,
-                blink::mojom::ObservedFeatureType type) override;
+                blink::mojom::ObservedFeatureType type,
+                uint32_t name_hash) override;
+
+  void OnObservedFeatureDisconnected(blink::mojom::ObservedFeatureType type,
+                                     uint32_t name_hash);
 
  private:
   // FeatureObservers notifying us about features used in this frame.
   mojo::ReceiverSet<blink::mojom::FeatureObserver> observers_;
 
-  // Registered features.
-  mojo::ReceiverSet<blink::mojom::ObservedFeature> features_by_type_
-      [static_cast<int>(blink::mojom::ObservedFeatureType::kMaxValue) + 1];
+  // Track features. A std::map is used instead of base::flat_map because
+  // mojo::ReceiverSet is not copyable or movable.
+  using MapKey = std::pair<blink::mojom::ObservedFeatureType, uint32_t>;
+  std::map<MapKey, mojo::ReceiverSet<blink::mojom::ObservedFeature>> features_;
 
   const raw_ptr<FeatureObserverClient> client_;
   const GlobalRenderFrameHostId id_;

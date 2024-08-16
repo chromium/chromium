@@ -9,8 +9,8 @@
 
 #include "base/containers/flat_set.h"
 #include "base/observer_list_types.h"
-#include "base/types/strong_alias.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/performance_manager/public/graph/common_types.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/graph/node_set_view.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
@@ -183,9 +183,24 @@ class FrameNode : public TypedNode<FrameNode> {
   // Returns true if this frame holds at least one Web Lock.
   virtual bool IsHoldingWebLock() const = 0;
 
+  // Returns true if this frame holds a specific Web Lock.
+  virtual bool IsHoldingWebLock(WebLockNameHash name_hash) const = 0;
+
+  // Returns all held Web Locks.
+  virtual const base::flat_set<WebLockNameHash>& GetHeldWebLocks() const = 0;
+
   // Returns true if this frame holds at least one IndexedDB lock. An IndexedDB
   // lock is held by an active transaction or an active DB open request.
   virtual bool IsHoldingIndexedDBLock() const = 0;
+
+  // Returns true if this frame holds a specific IndexedDB lock. An IndexedDB
+  // lock is held by an active transaction or an active DB open request.
+  virtual bool IsHoldingIndexedDBLock(
+      IndexedDBLockNameHash name_hash) const = 0;
+
+  // Returns all held IndexedDB locks.
+  virtual const base::flat_set<IndexedDBLockNameHash>& GetHeldIndexedDBLocks()
+      const = 0;
 
   // Returns the child workers of this frame. These are either dedicated workers
   // or shared workers created by this frame, or a service worker that handles
@@ -287,12 +302,19 @@ class FrameNodeObserver : public base::CheckedObserver {
   // Invoked when the IsAdFrame property changes.
   virtual void OnIsAdFrameChanged(const FrameNode* frame_node) = 0;
 
-  // Invoked when the IsHoldingWebLock() property changes.
+  // Invoked when the IsHoldingWebLock()/IsHoldingIndexedDBLock property
+  // changes. There is a generic and a specific version. The generic version is
+  // called when the frame starts/stops holding any lock, and the specific
+  // version is called when the frame starts/stops holding a lock with a
+  // specific name.
   virtual void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node) = 0;
-
-  // Invoked when the IsHoldingIndexedDBLock() property changes.
+  virtual void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node,
+                                              WebLockNameHash name_hash) = 0;
   virtual void OnFrameIsHoldingIndexedDBLockChanged(
       const FrameNode* frame_node) = 0;
+  virtual void OnFrameIsHoldingIndexedDBLockChanged(
+      const FrameNode* frame_node,
+      IndexedDBLockNameHash name_hash) = 0;
 
   // Invoked when the frame priority and reason changes.
   virtual void OnPriorityAndReasonChanged(
@@ -367,8 +389,13 @@ class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
       const std::optional<url::Origin>& previous_value) override {}
   void OnIsAdFrameChanged(const FrameNode* frame_node) override {}
   void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node) override {}
+  void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node,
+                                      WebLockNameHash name_hash) override {}
   void OnFrameIsHoldingIndexedDBLockChanged(
       const FrameNode* frame_node) override {}
+  void OnFrameIsHoldingIndexedDBLockChanged(
+      const FrameNode* frame_node,
+      IndexedDBLockNameHash name_hash) override {}
   void OnPriorityAndReasonChanged(
       const FrameNode* frame_node,
       const PriorityAndReason& previous_value) override {}

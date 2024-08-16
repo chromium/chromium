@@ -4,11 +4,14 @@
 
 #include "components/performance_manager/graph/frame_node_impl_describer.h"
 
+#include <algorithm>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
@@ -19,6 +22,25 @@ namespace performance_manager {
 namespace {
 
 const char kDescriberName[] = "FrameNodeImpl";
+
+template <typename NameHashType>
+  requires std::same_as<NameHashType, WebLockNameHash> ||
+           std::same_as<NameHashType, IndexedDBLockNameHash>
+std::string HashNameFlatSetToString(const base::flat_set<NameHashType>& set) {
+  if (set.empty()) {
+    return "[None]";
+  }
+
+  std::vector<std::string> str_vector;
+  str_vector.reserve(set.size());
+
+  std::transform(set.cbegin(), set.cend(), std::back_inserter(str_vector),
+                 [](NameHashType hash_name) {
+                   return base::NumberToString(hash_name.value());
+                 });
+
+  return base::JoinString(str_vector, ", ");
+}
 
 std::string ViewportIntersectionStateToString(
     std::optional<ViewportIntersectionState> viewport_intersection_state) {
@@ -86,9 +108,9 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.Set("site_instance_group_id", impl->site_instance_group_id_.value());
   ret.Set("lifecycle_state", MojoEnumToString(impl->lifecycle_state_.value()));
   ret.Set("is_ad_frame", impl->is_ad_frame_.value());
-  ret.Set("is_holding_weblock", impl->is_holding_weblock_.value());
-  ret.Set("is_holding_indexeddb_lock",
-          impl->is_holding_indexeddb_lock_.value());
+  ret.Set("held_weblocks", HashNameFlatSetToString(impl->GetHeldWebLocks()));
+  ret.Set("held_indexeddb_locks",
+          HashNameFlatSetToString(impl->GetHeldIndexedDBLocks()));
   ret.Set("is_current", impl->is_current_.value());
   ret.Set("priority", PriorityAndReasonToValue(impl->GetPriorityAndReason()));
   ret.Set("is_audible", impl->is_audible_.value());

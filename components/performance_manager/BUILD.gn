@@ -155,6 +155,7 @@ static_library("performance_manager") {
     "public/execution_context_priority/execution_context_priority.h",
     "public/features.h",
     "public/freezing/freezing.h",
+    "public/graph/common_types.h",
     "public/graph/frame_node.h",
     "public/graph/graph.h",
     "public/graph/graph_operations.h",

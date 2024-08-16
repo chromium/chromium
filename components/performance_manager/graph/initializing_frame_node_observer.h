@@ -40,8 +40,13 @@ class InitializingFrameNodeObserver {
       const std::optional<url::Origin>& previous_value) {}
   virtual void OnIsAdFrameChanged(const FrameNode* frame_node) {}
   virtual void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node) {}
+  virtual void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node,
+                                              WebLockNameHash name_hash) {}
   virtual void OnFrameIsHoldingIndexedDBLockChanged(
       const FrameNode* frame_node) {}
+  virtual void OnFrameIsHoldingIndexedDBLockChanged(
+      const FrameNode* frame_node,
+      IndexedDBLockNameHash name_hash) {}
   virtual void OnPriorityAndReasonChanged(
       const FrameNode* frame_node,
       const PriorityAndReason& previous_value) {}
@@ -91,8 +96,13 @@ class InitializingFrameNodeObserverManager final : public FrameNodeObserver {
       const std::optional<url::Origin>& previous_value) override;
   void OnIsAdFrameChanged(const FrameNode* frame_node) override;
   void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node) override;
+  void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node,
+                                      WebLockNameHash name_hash) override;
   void OnFrameIsHoldingIndexedDBLockChanged(
       const FrameNode* frame_node) override;
+  void OnFrameIsHoldingIndexedDBLockChanged(
+      const FrameNode* frame_node,
+      IndexedDBLockNameHash name_hash) override;
   void OnPriorityAndReasonChanged(
       const FrameNode* frame_node,
       const PriorityAndReason& previous_value) override;

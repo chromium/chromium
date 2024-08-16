@@ -99,10 +99,26 @@ void InitializingFrameNodeObserverManager::OnFrameIsHoldingWebLockChanged(
   }
 }
 
+void InitializingFrameNodeObserverManager::OnFrameIsHoldingWebLockChanged(
+    const FrameNode* frame_node,
+    WebLockNameHash name_hash) {
+  for (InitializingFrameNodeObserver& observer : observer_list_) {
+    observer.OnFrameIsHoldingWebLockChanged(frame_node, name_hash);
+  }
+}
+
 void InitializingFrameNodeObserverManager::OnFrameIsHoldingIndexedDBLockChanged(
     const FrameNode* frame_node) {
   for (InitializingFrameNodeObserver& observer : observer_list_) {
     observer.OnFrameIsHoldingIndexedDBLockChanged(frame_node);
+  }
+}
+
+void InitializingFrameNodeObserverManager::OnFrameIsHoldingIndexedDBLockChanged(
+    const FrameNode* frame_node,
+    IndexedDBLockNameHash name_hash) {
+  for (InitializingFrameNodeObserver& observer : observer_list_) {
+    observer.OnFrameIsHoldingIndexedDBLockChanged(frame_node, name_hash);
   }
 }
 

@@ -15,14 +15,15 @@ class CONTENT_EXPORT FeatureObserverClient {
  public:
   virtual ~FeatureObserverClient() {}
 
-  // These functions are invoked after the number of features of |feature_type|
-  // used by a frame switches between zero to non-zero. There is no guarantee
-  // that the frame identified by |render_process_id| and |render_frame_id|
-  // still exists when this is called.
+  // These functions are invoked when a named feature of `feature_type`
+  // starts/stops being used. There is no guarantee that the frame identified by
+  // |render_process_id| and |render_frame_id| still exists when this is called.
   virtual void OnStartUsing(GlobalRenderFrameHostId id,
-                            blink::mojom::ObservedFeatureType feature_type) = 0;
+                            blink::mojom::ObservedFeatureType feature_type,
+                            uint32_t name_hash) = 0;
   virtual void OnStopUsing(GlobalRenderFrameHostId id,
-                           blink::mojom::ObservedFeatureType feature_type) = 0;
+                           blink::mojom::ObservedFeatureType feature_type,
+                           uint32_t name_hash) = 0;
 };
 
 }  // namespace content

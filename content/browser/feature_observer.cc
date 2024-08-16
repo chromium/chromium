@@ -19,23 +19,6 @@ FeatureObserver::FeatureObserver(FeatureObserverClient* client,
                                  GlobalRenderFrameHostId id)
     : client_(client), id_(id) {
   DCHECK(client_);
-
-  for (size_t i = 0;
-       i <= static_cast<size_t>(blink::mojom::ObservedFeatureType::kMaxValue);
-       ++i) {
-    features_by_type_[i].set_disconnect_handler(base::BindRepeating(
-        [](mojo::ReceiverSet<blink::mojom::ObservedFeature>* set,
-           FeatureObserverClient* client, GlobalRenderFrameHostId id,
-           blink::mojom::ObservedFeatureType type) {
-          if (!set->empty())
-            return;
-
-          // Notify if this is the last receiver.
-          client->OnStopUsing(id, type);
-        },
-        base::Unretained(&features_by_type_[i]), client_, id_,
-        static_cast<blink::mojom::ObservedFeatureType>(i)));
-  }
 }
 
 FeatureObserver::~FeatureObserver() = default;
@@ -47,16 +30,35 @@ void FeatureObserver::GetFeatureObserver(
 
 void FeatureObserver::Register(
     mojo::PendingReceiver<blink::mojom::ObservedFeature> feature,
-    blink::mojom::ObservedFeatureType type) {
+    blink::mojom::ObservedFeatureType type,
+    uint32_t name_hash) {
   DCHECK(client_);
 
-  auto& set = features_by_type_[static_cast<int>(type)];
+  auto& receiver_set = features_[{type, name_hash}];
 
   // Notify if this is the first receiver.
-  if (set.empty())
-    client_->OnStartUsing(id_, type);
+  if (receiver_set.empty()) {
+    receiver_set.set_disconnect_handler(
+        base::BindRepeating(&FeatureObserver::OnObservedFeatureDisconnected,
+                            base::Unretained(this), type, name_hash));
+    client_->OnStartUsing(id_, type, name_hash);
+  }
 
-  set.Add(nullptr, std::move(feature));
+  receiver_set.Add(nullptr, std::move(feature));
+}
+
+void FeatureObserver::OnObservedFeatureDisconnected(
+    blink::mojom::ObservedFeatureType type,
+    uint32_t name_hash) {
+  auto it = features_.find({type, name_hash});
+  CHECK(it != features_.end());
+
+  // If this was the last receiver, erase the entry and notify the client.
+  auto& receiver_set = it->second;
+  if (receiver_set.empty()) {
+    features_.erase(it);
+    client_->OnStopUsing(id_, type, name_hash);
+  }
 }
 
 }  // namespace content
