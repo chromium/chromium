@@ -25,7 +25,6 @@ public class CustomTabLaunchCauseMetrics extends LaunchCauseMetrics {
         if (type == ActivityType.CUSTOM_TAB) {
             return LaunchCause.CUSTOM_TAB;
         }
-        assert false : type == ActivityType.AUTH_TAB;
         return LaunchCause.AUTH_TAB;
     }
 }

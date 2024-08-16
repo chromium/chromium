@@ -283,8 +283,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         if (mMinimizeDelegateSupplier.hasValue()) {
             toolbar.setMinimizeDelegate(mMinimizeDelegateSupplier.get());
         }
-        if (MinimizedFeatureUtils.isWebApp(mIntentDataProvider.get())
-                || MinimizedFeatureUtils.isFedCmIntent(mIntentDataProvider.get())) {
+        if (!MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider.get())) {
             toolbar.setMinimizeButtonEnabled(false);
         }
         if (mIntentDataProvider.get().isPartialCustomTab()) {

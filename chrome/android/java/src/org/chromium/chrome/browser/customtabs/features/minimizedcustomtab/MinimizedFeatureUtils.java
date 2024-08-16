@@ -170,17 +170,31 @@ public class MinimizedFeatureUtils {
         return ICON_VARIANT.getValue() == 1 ? R.drawable.ic_pip_24dp : R.drawable.ic_minimize;
     }
 
-    /** Returns whether the current Activity is a web app, web apk or TWA. */
-    public static boolean isWebApp(BrowserServicesIntentDataProvider intentDataProvider) {
-        return intentDataProvider.isWebappOrWebApkActivity()
-                || intentDataProvider.isTrustedWebActivity();
-    }
+    /**
+     * Returns whether Minimized Custom Tabs should be enabled based on the intent data provider.
+     *
+     * @param intentDataProvider The {@link BrowserServicesIntentDataProvider}.
+     * @return Whether Minimized Custom Tabs should be enabled.
+     */
+    public static boolean shouldEnableMinimizedCustomTabs(
+            BrowserServicesIntentDataProvider intentDataProvider) {
+        boolean isWebApp =
+                intentDataProvider.isWebappOrWebApkActivity()
+                        || intentDataProvider.isTrustedWebActivity();
+        if (isWebApp) return false;
 
-    /** Returns whether the intent was launched by the FedCM code. */
-    public static boolean isFedCmIntent(BrowserServicesIntentDataProvider intentDataProvider) {
-        return intentDataProvider.isTrustedIntent()
-                && IntentUtils.safeGetIntExtra(
-                                intentDataProvider.getIntent(), IntentHandler.EXTRA_FEDCM_ID, -1)
-                        != -1;
+        boolean isFedCmIntent =
+                intentDataProvider.isTrustedIntent()
+                        && IntentUtils.safeGetIntExtra(
+                                        intentDataProvider.getIntent(),
+                                        IntentHandler.EXTRA_FEDCM_ID,
+                                        -1)
+                                != -1;
+        if (isFedCmIntent) return false;
+
+        boolean isAuthTab = intentDataProvider.isAuthTab();
+        if (isAuthTab) return false;
+
+        return true;
     }
 }
