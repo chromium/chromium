@@ -130,6 +130,11 @@ bool PrefetchNIKScopeEnabled();
 // Please see crbug.com/40946257 for more details.
 bool PrefetchBrowserInitiatedTriggersEnabled();
 
+// Returns true iff prefetch code should use new wait loop in
+// `PrefetchMatchResolver2::FindPrefetch()` instead of
+// `PrefetchService::GetPrefetchToServe()`.
+CONTENT_EXPORT bool UseNewWaitLoop();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PARAMS_H_

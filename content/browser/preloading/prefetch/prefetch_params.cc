@@ -12,6 +12,7 @@
 #include "base/rand_util.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/preloading_trigger_type_impl.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/common/features.h"
 #include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/common/content_features.h"
@@ -274,6 +275,12 @@ bool PrefetchNIKScopeEnabled() {
 bool PrefetchBrowserInitiatedTriggersEnabled() {
   return base::FeatureList::IsEnabled(
       features::kPrefetchBrowserInitiatedTriggers);
+}
+
+bool UseNewWaitLoop() {
+  return base::FeatureList::IsEnabled(features::kPrefetchNewWaitLoop) ||
+         base::FeatureList::IsEnabled(
+             features::kPrerender2FallbackPrefetchSpecRules);
 }
 
 }  // namespace content

@@ -73,6 +73,10 @@ BASE_DECLARE_FEATURE(kPrefetchProxy);
 // if the relevant cookie values have changed.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchCookieIndices);
 
+// If enabled, use the new wait loop, which is driven by
+// `PrefetchMatchResolver2` instead of `PrefetchService`.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchNewWaitLoop);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_
