@@ -35,6 +35,7 @@ class EmptyWebMediaPlayer : public WebMediaPlayer {
   void SetLatencyHint(double) override {}
   void SetPreservesPitch(bool) override {}
   void SetWasPlayedWithUserActivation(bool) override {}
+  void SetShouldPauseWhenFrameIsHidden(bool) override {}
   void OnRequestPictureInPicture() override {}
   WebTimeRanges Buffered() const override;
   WebTimeRanges Seekable() const override;

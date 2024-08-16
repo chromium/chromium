@@ -179,6 +179,12 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void SetVolumeMultiplier(double multiplier) override;
   void SuspendForFrameClosed() override;
 
+  void SetShouldPauseWhenFrameIsHidden(
+      bool should_pause_when_frame_is_hidden) override;
+  bool GetShouldPauseWhenFrameIsHidden() override;
+
+  bool ShouldPausePlaybackWhenHidden() const;
+
   // WebMediaPlayerDelegate::Observer implementation.
   void OnFrameHidden() override;
   void OnFrameShown() override;
@@ -335,6 +341,9 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   // True if playback should be started upon the next call to OnShown(). Only
   // used on Android.
   bool should_play_upon_shown_;
+
+  bool should_pause_when_frame_is_hidden_ = false;
+
   WebMediaStream web_stream_;
   // IDs of the tracks currently played.
   WebString current_video_track_id_;

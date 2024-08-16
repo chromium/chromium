@@ -1194,6 +1194,15 @@ void WebMediaPlayerImpl::SetWasPlayedWithUserActivation(
       was_played_with_user_activation);
 }
 
+void WebMediaPlayerImpl::SetShouldPauseWhenFrameIsHidden(
+    bool should_pause_when_frame_is_hidden) {
+  should_pause_when_frame_is_hidden_ = should_pause_when_frame_is_hidden;
+}
+
+bool WebMediaPlayerImpl::GetShouldPauseWhenFrameIsHidden() {
+  return should_pause_when_frame_is_hidden_;
+}
+
 void WebMediaPlayerImpl::OnRequestPictureInPicture() {
   ActivateSurfaceLayerForVideo();
 
@@ -2611,14 +2620,48 @@ void WebMediaPlayerImpl::OnIdleTimeout() {
 
 void WebMediaPlayerImpl::OnFrameShown() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  // TODO(crbug.com/351354996): This method should be implemented in a follow-up
-  // CL.
+  background_pause_timer_.Stop();
+
+  // Foreground videos don't require user gesture to continue playback.
+  video_locked_when_paused_when_hidden_ = false;
+
+  was_suspended_for_frame_closed_ = false;
+
+  if (watch_time_reporter_) {
+    watch_time_reporter_->OnShown();
+  }
+
+  if (video_decode_stats_reporter_) {
+    video_decode_stats_reporter_->OnShown();
+  }
+
+  UpdateBackgroundVideoOptimizationState();
+
+  UpdatePlayState();
 }
 
 void WebMediaPlayerImpl::OnFrameHidden() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  // TODO(crbug.com/351354996): This method should be implemented in a follow-up
-  // CL.
+
+  // Backgrounding a video requires a user gesture to resume playback.
+  if (IsFrameHidden()) {
+    video_locked_when_paused_when_hidden_ = true;
+  }
+
+  if (watch_time_reporter_) {
+    watch_time_reporter_->OnHidden();
+  }
+
+  if (video_decode_stats_reporter_) {
+    video_decode_stats_reporter_->OnHidden();
+  }
+
+  UpdateBackgroundVideoOptimizationState();
+  UpdatePlayState();
+
+  // Schedule suspended playing media to be paused if the user doesn't come back
+  // to it within some timeout period to avoid any autoplay surprises.
+  ScheduleIdlePauseTimer();
 }
 
 void WebMediaPlayerImpl::SetVolumeMultiplier(double multiplier) {
@@ -3506,6 +3549,12 @@ bool WebMediaPlayerImpl::IsPageHidden() const {
   return delegate_->IsPageHidden() && !was_suspended_for_frame_closed_;
 }
 
+bool WebMediaPlayerImpl::IsFrameHidden() const {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+  return delegate_->IsFrameHidden() && !was_suspended_for_frame_closed_;
+}
+
 bool WebMediaPlayerImpl::IsStreaming() const {
   return demuxer_manager_->IsStreaming();
 }
@@ -3597,6 +3646,10 @@ base::WeakPtr<WebMediaPlayer> WebMediaPlayerImpl::AsWeakPtr() {
 bool WebMediaPlayerImpl::ShouldPausePlaybackWhenHidden() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
+  if (should_pause_when_frame_is_hidden_ && IsFrameHidden()) {
+    return true;
+  }
+
   const bool preserve_audio =
       should_pause_background_muted_audio_
           ? HasUnmutedAudio() || audio_source_provider_->IsAudioBeingCaptured()
@@ -3674,7 +3727,8 @@ bool WebMediaPlayerImpl::ShouldDisableVideoWhenHidden() const {
 }
 
 void WebMediaPlayerImpl::UpdateBackgroundVideoOptimizationState() {
-  if (IsPageHidden()) {
+  if (IsPageHidden() ||
+      (IsFrameHidden() && should_pause_when_frame_is_hidden_)) {
     if (ShouldPausePlaybackWhenHidden()) {
       update_background_status_cb_.Cancel();
       is_background_status_change_cancelled_ = true;
@@ -3702,7 +3756,7 @@ void WebMediaPlayerImpl::UpdateBackgroundVideoOptimizationState() {
 }
 
 void WebMediaPlayerImpl::PauseVideoIfNeeded() {
-  DCHECK(IsPageHidden());
+  DCHECK(IsPageHidden() || IsFrameHidden());
 
   // Don't pause video while the pipeline is stopped, resuming or seeking.
   // Also if the video is paused already.
@@ -3710,11 +3764,16 @@ void WebMediaPlayerImpl::PauseVideoIfNeeded() {
       seeking_ || paused_)
     return;
 
+  auto pause_reason =
+      WebMediaPlayerClient::PauseReason::kBackgroundVideoOptimization;
+  if (IsFrameHidden() && should_pause_when_frame_is_hidden_) {
+    pause_reason = WebMediaPlayerClient::PauseReason::kFrameHidden;
+  }
+
   // client_->PausePlayback() will get `paused_when_hidden_` set to
   // false and UpdatePlayState() called, so set the flag to true after and then
   // return.
-  client_->PausePlayback(
-      WebMediaPlayerClient::PauseReason::kBackgroundVideoOptimization);
+  client_->PausePlayback(pause_reason);
   paused_when_hidden_ = true;
 }
 
@@ -3735,7 +3794,7 @@ void WebMediaPlayerImpl::EnableVideoTrackIfNeeded() {
 }
 
 void WebMediaPlayerImpl::DisableVideoTrackIfNeeded() {
-  DCHECK(IsPageHidden());
+  DCHECK(IsPageHidden() || IsFrameHidden());
 
   // Don't change video track while the pipeline is resuming or seeking.
   if (is_pipeline_resuming_ || seeking_)

@@ -51,6 +51,9 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   virtual bool ShouldReportMainFrameIntersection() const { return false; }
 
   Frame& GetFrame() const;
+  std::optional<mojom::blink::FrameVisibility> GetFrameVisibility() const {
+    return frame_visibility_;
+  }
 
   // This is used to control render throttling, which determines whether
   // lifecycle updates in the child frame will skip rendering work.

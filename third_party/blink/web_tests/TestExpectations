@@ -7962,6 +7962,9 @@ crbug.com/356041709 [ Linux ] http/tests/devtools/elements/highlight/highlight-c
 
 crbug.com/40899458 fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass Timeout ]
 
+crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/media-playback-while-not-visible-permission-policy-pause-when-hidden.html [ Failure Skip ]
+crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/media-playback-while-not-visible-permission-policy-cant-play-if-hidden.html [ Failure Skip ]
+
 crbug.com/352831220 virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/common-to-both-axes-supercedes-first-in-tree-order.html [ Failure Pass ]
 
 # Gardener 2024-07-30

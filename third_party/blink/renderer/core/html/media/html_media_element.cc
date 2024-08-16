@@ -1638,6 +1638,15 @@ void HTMLMediaElement::StartPlayerLoad() {
   web_media_player_->RequestRemotePlaybackDisabled(
       FastHasAttribute(html_names::kDisableremoteplaybackAttr));
 
+  if (RuntimeEnabledFeatures::
+          MediaPlaybackWhileNotVisiblePermissionPolicyEnabled()) {
+    web_media_player_->SetShouldPauseWhenFrameIsHidden(
+        !GetDocument().GetExecutionContext()->IsFeatureEnabled(
+            mojom::blink::PermissionsPolicyFeature::
+                kMediaPlaybackWhileNotVisible,
+            ReportOptions::kDoNotReport));
+  }
+
   bool is_cache_disabled = false;
   probe::IsCacheDisabled(GetDocument().GetExecutionContext(),
                          &is_cache_disabled);
@@ -4614,6 +4623,11 @@ void HTMLMediaElement::RejectScheduledPlayPromises() {
     case PlayPromiseError::kPaused_PauseRequestedInternally:
       reason = " because a pause was requested by the browser";
       break;
+    case PlayPromiseError::kPaused_FrameHidden:
+      reason =
+          " because the media playback is not allowed by the "
+          "media-playback-while-not-visible permission policy";
+      break;
     case PlayPromiseError::kNotSupported:
       NOTREACHED_IN_MIGRATION();
   }
@@ -4754,6 +4768,8 @@ void HTMLMediaElement::PausePlayback(PauseReason pause_reason) {
           PlayPromiseError::kPaused_SuspendedPlayerIdleTimeout);
     case PauseReason::kRemotePlayStateChange:
       return PauseInternal(PlayPromiseError::kPaused_RemotePlayStateChange);
+    case PauseReason::kFrameHidden:
+      return PauseInternal(PlayPromiseError::kPaused_FrameHidden);
   }
   NOTREACHED_IN_MIGRATION();
 }

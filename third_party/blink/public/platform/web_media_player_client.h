@@ -82,6 +82,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
     kBackgroundVideoOptimization,
     kSuspendedPlayerIdleTimeout,
     kRemotePlayStateChange,
+    kFrameHidden,
   };
 
   static const int kMediaRemotingStopNoText = -1;

@@ -921,6 +921,16 @@ void WebMediaPlayerMS::SetPreservesPitch(bool preserves_pitch) {
 void WebMediaPlayerMS::SetWasPlayedWithUserActivation(
     bool was_played_with_user_activation) {}
 
+void WebMediaPlayerMS::SetShouldPauseWhenFrameIsHidden(
+    bool should_pause_when_frame_is_hidden) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  should_pause_when_frame_is_hidden_ = should_pause_when_frame_is_hidden;
+}
+
+bool WebMediaPlayerMS::GetShouldPauseWhenFrameIsHidden() {
+  return should_pause_when_frame_is_hidden_;
+}
+
 void WebMediaPlayerMS::OnRequestPictureInPicture() {
   if (!bridge_) {
     ActivateSurfaceLayerForVideo(compositor_->GetMetadata().video_transform);
@@ -1220,14 +1230,12 @@ void WebMediaPlayerMS::OnIdleTimeout() {}
 
 void WebMediaPlayerMS::OnFrameShown() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // TODO(crbug.com/351354996): This method should be implemented in a follow-up
-  // CL.
+  OnPageShown();
 }
 
 void WebMediaPlayerMS::OnFrameHidden() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // TODO(crbug.com/351354996): This method should be implemented in a follow-up
-  // CL.
+  OnPageHidden();
 }
 
 void WebMediaPlayerMS::SetVolumeMultiplier(double multiplier) {
