@@ -347,6 +347,8 @@ class VIEWS_EXPORT TreeView : public View,
   // visible.
   void PopulateAccessibilityData(InternalNode* node, ui::AXNodeData* data);
 
+  void SetAccessibleSelectionForNode(InternalNode* node, bool selected);
+
   // Invoked when the set of drawn nodes changes.
   void DrawnNodesChanged();
 

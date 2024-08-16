@@ -805,7 +805,9 @@ void TreeView::UpdateSelection(TreeModelNode* model_node,
 
   if (selection_changed) {
     SchedulePaintForNode(selected_node_);
+    SetAccessibleSelectionForNode(selected_node_, false);
     selected_node_ = node;
+    SetAccessibleSelectionForNode(selected_node_, true);
     SchedulePaintForNode(selected_node_);
   }
 
@@ -917,15 +919,6 @@ std::unique_ptr<AXVirtualView> TreeView::CreateAndSetAccessibilityView(
 void TreeView::PopulateAccessibilityData(InternalNode* node,
                                          ui::AXNodeData* data) {
   DCHECK(node);
-  TreeModelNode* selected_model_node = GetSelectedNode();
-  InternalNode* selected_node =
-      selected_model_node
-          ? GetInternalNodeForModelNode(selected_model_node,
-                                        CreateType::kDontCreateIfNotLoaded)
-          : nullptr;
-  const bool selected = (node == selected_node);
-  data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected);
-  data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kSelect);
 
   if (node->is_expanded())
     data->AddState(ax::mojom::State::kExpanded);
@@ -986,6 +979,19 @@ void TreeView::PopulateAccessibilityData(InternalNode* node,
     data->AddState(node != &root_ || root_shown_ ? ax::mojom::State::kInvisible
                                                  : ax::mojom::State::kIgnored);
   }
+}
+
+void TreeView::SetAccessibleSelectionForNode(InternalNode* node,
+                                             bool selected) {
+  if (!node) {
+    return;
+  }
+  AXVirtualView* ax_view = node->accessibility_view();
+  DCHECK(ax_view);
+
+  ui::AXNodeData& node_data = ax_view->GetCustomData();
+  node_data.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected);
+  node_data.SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kSelect);
 }
 
 void TreeView::DrawnNodesChanged() {
