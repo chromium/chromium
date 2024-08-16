@@ -123,6 +123,21 @@ bool AccountChecker::IsSubjectToParentalControls() {
          signin::Tribool::kTrue;
 }
 
+bool AccountChecker::CanUseModelExecutionFeatures() {
+  if (!identity_manager_) {
+    return false;
+  }
+
+  AccountCapabilities capabilities =
+      identity_manager_
+          ->FindExtendedAccountInfo(identity_manager_->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin))
+          .capabilities;
+
+  return capabilities.can_use_model_execution_features() ==
+         signin::Tribool::kTrue;
+}
+
 std::string AccountChecker::GetCountry() {
   return country_;
 }

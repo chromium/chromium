@@ -41,6 +41,8 @@ class FeatureUtilsTest : public testing::Test {
         .WillByDefault(testing::Return(true));
     account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
     account_checker_->SetSignedIn(true);
+    account_checker_->SetIsSubjectToParentalControls(false);
+    account_checker_->SetCanUseModelExecutionFeatures(true);
 
     // 0 is the enabled enterprise state for the feature.
     SetTabCompareEnterprisePolicyPref(prefs_.get(), 0);
@@ -193,6 +195,32 @@ TEST_F(FeatureUtilsTest,
       2);
 
   ASSERT_TRUE(IsProductSpecificationsAllowedForEnterprise(&prefs));
+}
+
+TEST_F(FeatureUtilsTest,
+       CanFetchProductSpecificationsData_BlockedByParentalControls) {
+  test_features_.InitAndEnableFeature(kProductSpecifications);
+  SetupProductSpecificationsEnabled();
+
+  // We should be able to fetch data before turning off enterprise.
+  ASSERT_TRUE(CanFetchProductSpecificationsData(account_checker_.get()));
+
+  account_checker_->SetIsSubjectToParentalControls(true);
+
+  ASSERT_FALSE(CanFetchProductSpecificationsData(account_checker_.get()));
+}
+
+TEST_F(FeatureUtilsTest,
+       CanFetchProductSpecificationsData_ModelExecutionNotAllowed) {
+  test_features_.InitAndEnableFeature(kProductSpecifications);
+  SetupProductSpecificationsEnabled();
+
+  // We should be able to fetch data before turning off enterprise.
+  ASSERT_TRUE(CanFetchProductSpecificationsData(account_checker_.get()));
+
+  account_checker_->SetCanUseModelExecutionFeatures(false);
+
+  ASSERT_FALSE(CanFetchProductSpecificationsData(account_checker_.get()));
 }
 
 }  // namespace

@@ -96,12 +96,15 @@ bool CanManageProductSpecificationsSets(
 }
 
 bool CanFetchProductSpecificationsData(AccountChecker* account_checker) {
-  // msbb, enterprise, parental controls, sync type
+  // msbb, enterprise, parental controls, sync type, and model execution
+  // features.
   return account_checker &&
          IsProductSpecificationsAllowedForEnterprise(
              account_checker->GetPrefs()) &&
          account_checker->IsSignedIn() &&
          account_checker->IsAnonymizedUrlDataCollectionEnabled() &&
+         !account_checker->IsSubjectToParentalControls() &&
+         account_checker->CanUseModelExecutionFeatures() &&
          IsSyncingProductSpecifications(account_checker) &&
          CanLoadProductSpecificationsFullPageUi(account_checker);
 }

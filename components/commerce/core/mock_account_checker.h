@@ -36,6 +36,8 @@ class MockAccountChecker : public AccountChecker {
 
   MOCK_METHOD(bool, IsSubjectToParentalControls, (), (override));
 
+  MOCK_METHOD(bool, CanUseModelExecutionFeatures, (), (override));
+
   MOCK_METHOD(std::string, GetCountry, (), (override));
 
   MOCK_METHOD(std::string, GetLocale, (), (override));
@@ -49,6 +51,8 @@ class MockAccountChecker : public AccountChecker {
   void SetAnonymizedUrlDataCollectionEnabled(bool enabled);
 
   void SetIsSubjectToParentalControls(bool subject_to_parental_controls);
+
+  void SetCanUseModelExecutionFeatures(bool can_use_model_execution_features);
 
   void SetCountry(std::string country);
 

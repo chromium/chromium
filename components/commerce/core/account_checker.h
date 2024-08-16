@@ -51,6 +51,9 @@ class AccountChecker {
 
   virtual bool IsSubjectToParentalControls();
 
+  // Whether a user is allowed to use model execution features.
+  virtual bool CanUseModelExecutionFeatures();
+
   // Gets the user's country as determined at startup.
   virtual std::string GetCountry();
 
