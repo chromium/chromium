@@ -3344,7 +3344,7 @@
       type_name: "ComputedGridTrackList",
       style_builder_template: "grid",
       style_builder_template_args: {
-        type: "Column",
+        type: "GridTemplateColumns",
       },
       keywords: ["none"],
       typedom_types: ["Keyword"],
@@ -3362,7 +3362,7 @@
       type_name: "ComputedGridTrackList",
       style_builder_template: "grid",
       style_builder_template_args: {
-        type: "Row",
+        type: "GridTemplateRows",
       },
       keywords: ["none"],
       typedom_types: ["Keyword"],
@@ -3834,6 +3834,22 @@
       typedom_types: ["Keyword"],
       default_value: "luminance",
       invalidate: ["paint"],
+    },
+    {
+      name: "masonry-template-tracks",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
+      layout_dependent: true,
+      field_group: "*",
+      field_template: "external",
+      include_paths: ["third_party/blink/renderer/core/style/computed_grid_track_list.h"],
+      default_value: "ComputedGridTrackList::DefaultMasonryTrackList()",
+      type_name: "ComputedGridTrackList",
+      style_builder_template: "grid",
+      style_builder_template_args: {
+        type: "MasonryTemplateTracks",
+      },
+      invalidate: ["layout", "paint"],
+      runtime_flag: "CSSMasonryLayout",
     },
     {
       name: "masonry-track-end",

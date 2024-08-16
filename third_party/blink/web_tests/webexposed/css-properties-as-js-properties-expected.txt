@@ -286,6 +286,7 @@ maskPosition
 maskRepeat
 maskSize
 maskType
+masonryTemplateTracks
 masonryTrackEnd
 masonryTrackStart
 mathDepth

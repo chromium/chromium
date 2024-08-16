@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_font_variation_value.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
+#include "third_party/blink/renderer/core/css/css_grid_auto_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_template_areas_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_color_value.h"
@@ -5992,6 +5993,33 @@ const CSSValue* MaskType::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return CSSIdentifierValue::Create(style.MaskType());
+}
+
+const CSSValue* MasonryTemplateTracks::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeGridTemplatesRowsOrColumns(stream, context);
+}
+
+bool MasonryTemplateTracks::IsLayoutDependent(
+    const ComputedStyle* style,
+    LayoutObject* layout_object) const {
+  return layout_object && layout_object->IsLayoutMasonry();
+}
+
+const CSSValue* MasonryTemplateTracks::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValueForMasonryTrackList(layout_object, style);
+}
+
+const CSSValue* MasonryTemplateTracks::InitialValue() const {
+  auto* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
+  return list;
 }
 
 const CSSValue* MasonryTrackEnd::ParseSingleValue(
