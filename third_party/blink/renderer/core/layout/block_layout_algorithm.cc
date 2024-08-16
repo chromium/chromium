@@ -598,6 +598,7 @@ BlockLayoutAlgorithm::RelayoutWithLineClampBlockSize() {
   DCHECK_EQ(line_clamp_data_.data.state, LineClampData::kClampByBfcOffset);
   DCHECK(!line_clamp_data_.previous_inflow_position_when_clamped);
   DCHECK(line_clamp_data_.latest_clampable_offset);
+  DCHECK(!line_clamp_data_.is_relayout);
   LayoutAlgorithmParams params(Node(),
                                container_builder_.InitialFragmentGeometry(),
                                GetConstraintSpace(), GetBreakToken(), nullptr);
@@ -612,10 +613,7 @@ BlockLayoutAlgorithm::RelayoutWithLineClampBlockSize() {
   BoxFragmentBuilder& new_builder =
       algorithm_ignoring_line_clamp.container_builder_;
   new_builder.SetBoxType(container_builder_.GetBoxType());
-
-  const LayoutResult* ret = algorithm_ignoring_line_clamp.Layout();
-  DCHECK_NE(ret->Status(), LayoutResult::kNeedsLineClampRelayout);
-  return ret;
+  return algorithm_ignoring_line_clamp.Layout();
 }
 
 // Re-layout when the `child` failed to apply `text-box-trim: end`.

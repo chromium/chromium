@@ -210,6 +210,12 @@ struct BlockLineClampData {
       } else if (bfc_offset == data.clamp_bfc_offset) {
         previous_inflow_position_when_clamped = previous_inflow_position;
       } else if (!previous_inflow_position_when_clamped.has_value()) {
+        // If we're doing a relayout, it means the current clamp offset should
+        // be the offset we'd get after the layout some line or box. If this is
+        // not the case, something other than the placement of the ellipsis must
+        // have changed between the layouts, which shouldn't happen.
+        DCHECK(!is_relayout);
+
         // We only relayout if there was any clamp opportunity in the entire
         // block box.
         if (latest_clampable_offset.has_value()) {
