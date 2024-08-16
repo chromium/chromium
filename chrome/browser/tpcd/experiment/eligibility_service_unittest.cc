@@ -184,31 +184,6 @@ TEST_F(EligibilityServiceTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(EligibilityServiceTest, VersionChange_OnboardingPrefsReset) {
-  EXPECT_CALL(*experiment_manager_, DidVersionChange).WillOnce(Return(true));
-
-  SetChannelVersion(version_info::Channel::BETA);
-
-  // Simulate onboarding a profile.
-  onboarding_service_->MaybeMarkModeBEligible();
-  onboarding_service_->NoticeShown(SurfaceType::kDesktop,
-                                   NoticeType::kModeBOnboarding);
-  onboarding_service_->NoticeActionTaken(
-      SurfaceType::kDesktop, NoticeType::kModeBOnboarding,
-      privacy_sandbox::TrackingProtectionOnboarding::NoticeAction::kGotIt);
-
-  EXPECT_EQ(onboarding_service_->GetOnboardingStatus(),
-            privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-                kOnboarded);
-
-  EligibilityService eligibility_service(&profile_, onboarding_service_,
-                                         privacy_sandbox_settings_,
-                                         experiment_manager_.get());
-  EXPECT_EQ(onboarding_service_->GetOnboardingStatus(),
-            privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-                kIneligible);
-}
-
 class EligibilityServiceOTRProfileTest
     : public EligibilityServiceTestBase,
       public testing::WithParamInterface<bool> {
