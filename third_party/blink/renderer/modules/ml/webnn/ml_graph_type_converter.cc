@@ -379,14 +379,14 @@ constexpr std::array<uint32_t, 4> kNchwToNhwcPermutation = {0u, 2u, 3u, 1u};
 constexpr std::array<uint32_t, 4> kNhwcToNchwPermutation = {0u, 3u, 1u, 2u};
 
 std::optional<base::span<const uint32_t>> GetInputOperandPermutation(
-    blink::V8MLInputOperandLayout input_layout,
+    blink::V8MLInputOperandLayout::Enum input_layout,
     const webnn::ContextProperties& context_properties) {
-  if (BlinkInputOperandLayoutToNative(input_layout.AsEnum()) ==
+  if (BlinkInputOperandLayoutToNative(input_layout) ==
       context_properties.input_operand_layout) {
     return std::nullopt;
   }
 
-  switch (input_layout.AsEnum()) {
+  switch (input_layout) {
     case blink::V8MLInputOperandLayout::Enum::kNchw:
       CHECK_EQ(context_properties.input_operand_layout,
                webnn::InputOperandLayout::kNhwc);
@@ -399,9 +399,9 @@ std::optional<base::span<const uint32_t>> GetInputOperandPermutation(
 }
 
 std::optional<base::span<const uint32_t>> GetOutputOperandPermutation(
-    blink::V8MLInputOperandLayout input_layout,
+    blink::V8MLInputOperandLayout::Enum input_layout,
     const webnn::ContextProperties& context_properties) {
-  if (BlinkInputOperandLayoutToNative(input_layout.AsEnum()) ==
+  if (BlinkInputOperandLayoutToNative(input_layout) ==
       context_properties.input_operand_layout) {
     return std::nullopt;
   }
@@ -409,7 +409,7 @@ std::optional<base::span<const uint32_t>> GetOutputOperandPermutation(
   // The output layout is the same as the input layout and so the output
   // needs to have the inverse of the permutation returned by
   // `GetInputOperandPermutation()` applied.
-  switch (input_layout.AsEnum()) {
+  switch (input_layout) {
     case blink::V8MLInputOperandLayout::Enum::kNchw:
       CHECK_EQ(context_properties.input_operand_layout,
                webnn::InputOperandLayout::kNhwc);
@@ -629,7 +629,8 @@ std::optional<String> SerializeConv2dOperation(
   uint64_t output_operand_id = operand_to_id_map.at(output_operand);
 
   const std::optional<base::span<const uint32_t>> input_permutation =
-      GetInputOperandPermutation(options->inputLayout(), context_properties);
+      GetInputOperandPermutation(options->inputLayout().AsEnum(),
+                                 context_properties);
   if (input_permutation.has_value()) {
     conv2d_mojo->input_operand_id =
         InsertInputTranspose(operand_to_id_map, input_operand,
@@ -689,7 +690,8 @@ std::optional<String> SerializeConv2dOperation(
       blink_mojom::Operation::NewConv2d(std::move(conv2d_mojo)));
 
   const std::optional<base::span<const uint32_t>> output_permutation =
-      GetOutputOperandPermutation(options->inputLayout(), context_properties);
+      GetOutputOperandPermutation(options->inputLayout().AsEnum(),
+                                  context_properties);
   if (output_permutation) {
     auto output_transpose = blink_mojom::Transpose::New();
     output_transpose->input_operand_id = output_operand_id;
@@ -1161,7 +1163,8 @@ void SerializePool2dOperation(
       static_cast<const blink::MLPool2dOptions*>(pool2d->Options());
   CHECK(options);
   const std::optional<base::span<const uint32_t>> input_permutation =
-      GetInputOperandPermutation(options->layout(), context_properties);
+      GetInputOperandPermutation(options->layout().AsEnum(),
+                                 context_properties);
   if (input_permutation.has_value()) {
     pool2d_mojo->input_operand_id =
         InsertInputTranspose(operand_to_id_map, input_operand,
@@ -1217,7 +1220,8 @@ void SerializePool2dOperation(
       blink_mojom::Operation::NewPool2d(std::move(pool2d_mojo)));
 
   const std::optional<base::span<const uint32_t>> output_permutation =
-      GetOutputOperandPermutation(options->layout(), context_properties);
+      GetOutputOperandPermutation(options->layout().AsEnum(),
+                                  context_properties);
   if (output_permutation) {
     auto output_transpose = blink_mojom::Transpose::New();
     output_transpose->input_operand_id = output_operand_id;
@@ -1266,14 +1270,12 @@ OperationPtr CreateReduceOperator(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewReduce(std::move(reduce_mojo));
 }
 
-OperationPtr CreateResample2dOperation(const OperandToIdMap& operand_to_id_map,
-                                       const MLOperator* resample2d) {
+void SerializeResample2dOperation(
+    const OperandToIdMap& operand_to_id_map,
+    const webnn::ContextProperties& context_properties,
+    const MLOperator* resample2d,
+    blink_mojom::GraphInfo* graph_info) {
   auto resample2d_mojo = blink_mojom::Resample2d::New();
-
-  resample2d_mojo->input_operand_id =
-      GetOperatorInputId(resample2d, operand_to_id_map);
-  resample2d_mojo->output_operand_id =
-      GetOperatorOutputId(resample2d, operand_to_id_map);
 
   const auto* options =
       static_cast<const blink::MLResample2dOptions*>(resample2d->Options());
@@ -1297,13 +1299,72 @@ OperationPtr CreateResample2dOperation(const OperandToIdMap& operand_to_id_map,
     resample2d_mojo->scales = {scales[0], scales[1]};
   }
 
+  const Vector<uint32_t> channel_first_axes{2, 3};
+  const Vector<uint32_t> channel_last_axes{1, 2};
   // If axes are not present, the values are assumed to be [2, 3].
-  auto axes = options->getAxesOr({2, 3});
+  auto axes = options->getAxesOr(channel_first_axes);
   CHECK_EQ(axes.size(), 2u);
+
+  const MLOperand* input_operand = resample2d->Inputs()[0];
+  const MLOperand* output_operand = resample2d->Outputs()[0];
+  uint64_t input_operand_id = operand_to_id_map.at(input_operand);
+  uint64_t output_operand_id = operand_to_id_map.at(output_operand);
+
+  // TODO: crbug.com/329658123 - Support other axes or pass input_layout
+  // instead.
+  std::optional<blink::V8MLInputOperandLayout::Enum> input_layout;
+  if (axes == channel_first_axes) {
+    input_layout = blink::V8MLInputOperandLayout::Enum::kNchw;
+  } else if (axes == channel_last_axes) {
+    input_layout = blink::V8MLInputOperandLayout::Enum::kNhwc;
+  }
+
+  if (input_layout) {
+    const std::optional<base::span<const uint32_t>> input_permutation =
+        GetInputOperandPermutation(*input_layout, context_properties);
+    if (input_permutation.has_value()) {
+      if (axes == channel_first_axes) {
+        axes = channel_last_axes;
+      } else {
+        axes = channel_first_axes;
+      }
+      input_operand_id = InsertInputTranspose(operand_to_id_map, input_operand,
+                                              *input_permutation, graph_info,
+                                              options->label());
+
+      output_operand_id = InsertTemporaryOperand(
+          operand_to_id_map,
+          *webnn::OperandDescriptor::Create(
+              output_operand->DataType(),
+              PermuteShape(output_operand->Shape(), *input_permutation)),
+          graph_info);
+    }
+  }
+
+  resample2d_mojo->input_operand_id = input_operand_id;
+  resample2d_mojo->output_operand_id = output_operand_id;
+
   resample2d_mojo->axes = {axes[0], axes[1]};
   resample2d_mojo->label = options->label();
 
-  return blink_mojom::Operation::NewResample2d(std::move(resample2d_mojo));
+  graph_info->operations.push_back(
+      blink_mojom::Operation::NewResample2d(std::move(resample2d_mojo)));
+
+  if (input_layout) {
+    const std::optional<base::span<const uint32_t>> output_permutation =
+        GetOutputOperandPermutation(*input_layout, context_properties);
+    if (output_permutation) {
+      auto output_transpose = blink_mojom::Transpose::New();
+      output_transpose->input_operand_id = output_operand_id;
+      output_transpose->output_operand_id =
+          operand_to_id_map.at(output_operand);
+      output_transpose->permutation = Vector<uint32_t>(*output_permutation);
+      output_transpose->label = options->label();
+
+      graph_info->operations.push_back(
+          blink_mojom::Operation::NewTranspose(std::move(output_transpose)));
+    }
+  }
 }
 
 OperationPtr CreateReluOperation(const OperandToIdMap& operand_to_id_map,
@@ -1615,8 +1676,8 @@ std::optional<String> SerializeMojoOperation(
           operand_to_id_map, op, op->SubKind<blink_mojom::Reduce::Kind>()));
       break;
     case blink_mojom::Operation::Tag::kResample2d:
-      graph_info->operations.push_back(
-          CreateResample2dOperation(operand_to_id_map, op));
+      SerializeResample2dOperation(operand_to_id_map, context_properties, op,
+                                   graph_info);
       break;
     case blink_mojom::Operation::Tag::kRelu:
       graph_info->operations.push_back(
