@@ -3259,7 +3259,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kAllowLoopbackInPeerConnection,
     switches::kAudioBufferSize,
     switches::kAutoplayPolicy,
-    switches::kMojoCoreLibraryPath,
     switches::kDisable2dCanvasImageChromium,
     switches::kDisableYUVImageDecoding,
     switches::kDisableAcceleratedVideoDecode,

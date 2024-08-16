@@ -7,7 +7,6 @@
 #include <string.h>
 
 #include "base/clang_profiling_buildflags.h"
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/process/process_handle.h"
@@ -18,10 +17,7 @@
 #include "build/build_config.h"
 #include "build/config/compiler/compiler_buildflags.h"
 #include "content/child/child_thread_impl.h"
-#include "content/common/mojo_core_library_support.h"
 #include "content/common/process_visibility_tracker.h"
-#include "content/public/common/content_switches.h"
-#include "mojo/public/cpp/system/dynamic_library_support.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
@@ -70,25 +66,6 @@ ChildProcess::ChildProcess(base::ThreadType io_thread_type,
                                thread_pool_init_params)
     : resetter_(&child_process, this, nullptr),
       io_thread_(std::make_unique<ChildIOThread>()) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  const bool is_embedded_in_browser_process =
-      !command_line.HasSwitch(switches::kProcessType);
-  if (IsMojoCoreSharedLibraryEnabled() && !is_embedded_in_browser_process) {
-    // If we're in a child process on Linux and dynamic Mojo Core is in use, we
-    // expect early process startup code (see ContentMainRunnerImpl::Run()) to
-    // have already loaded the library via |mojo::LoadCoreLibrary()|, rendering
-    // this call safe even from within a strict sandbox.
-    MojoInitializeFlags flags = MOJO_INITIALIZE_FLAG_NONE;
-    if (sandbox::policy::IsUnsandboxedSandboxType(
-            sandbox::policy::SandboxTypeFromCommandLine(command_line))) {
-      flags |= MOJO_INITIALIZE_FLAG_FORCE_DIRECT_SHARED_MEMORY_ALLOCATION;
-    }
-    CHECK_EQ(MOJO_RESULT_OK, mojo::InitializeCoreLibrary(flags));
-  }
-#endif
-
   // Start ThreadPoolInstance if not already done. A ThreadPoolInstance
   // should already exist, and may already be running when ChildProcess is
   // instantiated in the browser process or in a test process.

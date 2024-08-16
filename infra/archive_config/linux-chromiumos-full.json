@@ -12,7 +12,6 @@
                 "libEGL.so",
                 "libGLESv2.so",
                 "libminigbm.so",
-                "libmojo_core.so",
                 "MEIPreload/manifest.json",
                 "MEIPreload/preloaded_data.pb",
                 "nacl_helper",

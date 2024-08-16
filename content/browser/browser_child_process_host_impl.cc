@@ -326,7 +326,6 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
       switches::kDisableBestEffortTasks,
       switches::kIPCConnectionTimeout,
       switches::kLogBestEffortTasks,
-      switches::kMojoCoreLibraryPath,
       switches::kPerfettoDisableInterning,
       switches::kTraceToConsole,
   };

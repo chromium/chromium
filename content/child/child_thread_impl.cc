@@ -50,7 +50,6 @@
 #include "content/common/features.h"
 #include "content/common/field_trial_recorder.mojom.h"
 #include "content/common/in_process_child_thread_params.h"
-#include "content/common/mojo_core_library_support.h"
 #include "content/common/pseudonymization_salt.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_client.h"
@@ -645,19 +644,17 @@ void ChildThreadImpl::Init(const Options& options) {
   mojo::ScopedMessagePipeHandle child_process_host_pipe_for_remote;
   mojo::ScopedMessagePipeHandle legacy_ipc_bootstrap_pipe;
   if (!IsInBrowserProcess()) {
-    // If using a shared Mojo Core library, IPC support is already initialized.
-    if (!IsMojoCoreSharedLibraryEnabled()) {
-      scoped_refptr<base::SingleThreadTaskRunner> mojo_ipc_task_runner =
-          GetIOTaskRunner();
-      if (base::FeatureList::IsEnabled(features::kMojoDedicatedThread)) {
-        mojo_ipc_thread_.StartWithOptions(
-            base::Thread::Options(base::MessagePumpType::IO, 0));
-        mojo_ipc_task_runner = mojo_ipc_thread_.task_runner();
-      }
-      mojo_ipc_support_ = std::make_unique<mojo::core::ScopedIPCSupport>(
-          mojo_ipc_task_runner,
-          mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
+    scoped_refptr<base::SingleThreadTaskRunner> mojo_ipc_task_runner =
+        GetIOTaskRunner();
+    if (base::FeatureList::IsEnabled(features::kMojoDedicatedThread)) {
+      mojo_ipc_thread_.StartWithOptions(
+          base::Thread::Options(base::MessagePumpType::IO, 0));
+      mojo_ipc_task_runner = mojo_ipc_thread_.task_runner();
     }
+    mojo_ipc_support_ = std::make_unique<mojo::core::ScopedIPCSupport>(
+        mojo_ipc_task_runner,
+        mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
+
     mojo::IncomingInvitation invitation = InitializeMojoIPCChannel();
     if (!invitation.is_valid()) {
       LOG(ERROR) << "Child process could not find its Mojo invitation";

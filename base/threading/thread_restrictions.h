@@ -355,7 +355,6 @@ namespace module_installer {
 class ScopedAllowModulePakLoad;
 }
 namespace mojo {
-class CoreLibraryInitializer;
 class SyncCallRestrictions;
 namespace core {
 class ScopedIPCSupport;
@@ -644,7 +643,6 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
   friend class metrics::AndroidMetricsServiceClient;
   friend class metrics::CleanExitBeacon;
   friend class module_installer::ScopedAllowModulePakLoad;
-  friend class mojo::CoreLibraryInitializer;
   friend class net::GSSAPISharedLibrary;    // http://crbug.com/66702
   friend class net::ProxyConfigServiceWin;  // http://crbug.com/61453
   friend class net::

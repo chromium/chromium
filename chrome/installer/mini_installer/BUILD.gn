@@ -8,7 +8,6 @@ import("//build/config/python.gni")
 import("//build/config/ui.gni")
 import("//build/timestamp.gni")
 import("//chrome/process_version_rc_template.gni")
-import("//mojo/features.gni")
 import("//third_party/dawn/scripts/dawn_features.gni")
 import("//third_party/ffmpeg/ffmpeg_options.gni")
 import("//third_party/icu/config.gni")
@@ -241,10 +240,6 @@ action("mini_installer_archive") {
 
   if (dawn_use_built_dxc) {
     args += [ "--include_dxc=1" ]
-  }
-
-  if (mojo_support_legacy_core) {
-    deps += [ "//mojo/core:shared_library" ]
   }
 
   depfile = "$target_gen_dir/archive.d"

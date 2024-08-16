@@ -2225,10 +2225,7 @@ test("content_browsertests") {
       "//mojo/public/cpp/platform",
       "//mojo/public/mojom/base",
     ]
-    data_deps += [
-      "//content/shell:content_shell",
-      "//mojo/core:shared_library",
-    ]
+    data_deps += [ "//content/shell:content_shell" ]
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
     }

@@ -526,10 +526,6 @@ const char kMessageLoopTypeUi[] = "message-loop-type-ui";
 const char kMockCertVerifierDefaultResultForTesting[] =
     "mock-cert-verifier-default-result-for-testing";
 
-// Initializes Mojo Core from a shared library at the specified path, rather
-// than using the version of Mojo Core embedded within the Content executable.
-const char kMojoCoreLibraryPath[] = "mojo-core-library-path";
-
 // Use a Mojo-based LocalStorage implementation.
 const char kMojoLocalStorage[]              = "mojo-local-storage";
 

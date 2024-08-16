@@ -53,29 +53,6 @@ executables built within the tree.
 
 To support other scenarios, use dynamic linking.
 
-### Dynamic Linking
-On some platforms, it's also possible for applications to rely on a
-dynamically-linked Mojo Core library (`libmojo_core.so` or `mojo_core.dll`)
-instead of statically linking against Mojo Core.
-
-In order to take advantage of this mechanism, the library's binary must be
-present in either:
-
-  - The working directory of the application
-  - A directory named by the `MOJO_CORE_LIBRARY_PATH` environment variable
-  - A directory named explicitly by the application at runtime
-
-Instead of calling `mojo::core::Init()` as embedders do, an application using
-dynamic Mojo Core instead calls `MojoInitialize()` from the C System API. This
-call will attempt to locate (see above) and load the Mojo Core library to
-support subsequent Mojo API usage within the process.
-
-Note that the Mojo Core shared library presents a **stable C ABI** designed with
-both forward- and backward-compatibility in mind. Thus old applications will
-work with new versions of the shared library, and new applications can work
-with old versions of the shared library (modulo any dependency on newer
-features, whose absence can be gracefully detected at runtime).
-
 ## C System API
 Once Mojo is initialized within a process, the public
 [**C System API**](/mojo/public/c/system/README.md) is usable on any thread for
