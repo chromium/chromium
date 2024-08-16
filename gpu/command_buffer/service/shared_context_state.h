@@ -116,6 +116,8 @@ class GPU_GLES2_EXPORT SharedContextState
   bool GrContextIsVulkan() const {
     return gr_context_type_ == GrContextType::kVulkan;
   }
+  bool IsGraphiteDawn() const;
+  bool IsGraphiteMetal() const;
   bool IsGraphiteDawnMetal() const;
   bool IsGraphiteDawnD3D() const;
   bool IsGraphiteDawnVulkan() const;

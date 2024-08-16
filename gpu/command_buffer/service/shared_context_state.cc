@@ -356,11 +356,20 @@ bool SharedContextState::IsUsingGL() const {
          gr_context_type_ == GrContextType::kNone;
 }
 
+bool SharedContextState::IsGraphiteDawn() const {
+  return gr_context_type() == GrContextType::kGraphiteDawn &&
+         dawn_context_provider();
+}
+
+bool SharedContextState::IsGraphiteMetal() const {
+  return gr_context_type() == GrContextType::kGraphiteMetal &&
+         metal_context_provider();
+}
+
 bool SharedContextState::IsGraphiteDawnMetal() const {
 #if BUILDFLAG(SKIA_USE_DAWN)
-  return gr_context_type_ == GrContextType::kGraphiteDawn &&
-         dawn_context_provider_ &&
-         dawn_context_provider_->backend_type() == wgpu::BackendType::Metal;
+  return IsGraphiteDawn() &&
+         dawn_context_provider()->backend_type() == wgpu::BackendType::Metal;
 #else
   return false;
 #endif
@@ -368,10 +377,9 @@ bool SharedContextState::IsGraphiteDawnMetal() const {
 
 bool SharedContextState::IsGraphiteDawnD3D() const {
 #if BUILDFLAG(SKIA_USE_DAWN)
-  return gr_context_type_ == GrContextType::kGraphiteDawn &&
-         dawn_context_provider_ &&
-         (dawn_context_provider_->backend_type() == wgpu::BackendType::D3D11 ||
-          dawn_context_provider_->backend_type() == wgpu::BackendType::D3D12);
+  return IsGraphiteDawn() &&
+         (dawn_context_provider()->backend_type() == wgpu::BackendType::D3D11 ||
+          dawn_context_provider()->backend_type() == wgpu::BackendType::D3D12);
 #else
   return false;
 #endif
@@ -379,9 +387,8 @@ bool SharedContextState::IsGraphiteDawnD3D() const {
 
 bool SharedContextState::IsGraphiteDawnVulkan() const {
 #if BUILDFLAG(SKIA_USE_DAWN)
-  return gr_context_type_ == GrContextType::kGraphiteDawn &&
-         dawn_context_provider_ &&
-         dawn_context_provider_->backend_type() == wgpu::BackendType::Vulkan;
+  return IsGraphiteDawn() &&
+         dawn_context_provider()->backend_type() == wgpu::BackendType::Vulkan;
 #else
   return false;
 #endif
@@ -389,9 +396,8 @@ bool SharedContextState::IsGraphiteDawnVulkan() const {
 
 bool SharedContextState::IsGraphiteDawnVulkanSwiftShader() const {
 #if BUILDFLAG(SKIA_USE_DAWN)
-  return gr_context_type_ == GrContextType::kGraphiteDawn &&
-         dawn_context_provider_ &&
-         dawn_context_provider_->is_vulkan_swiftshader_adapter();
+  return IsGraphiteDawn() &&
+         dawn_context_provider()->is_vulkan_swiftshader_adapter();
 #else
   return false;
 #endif

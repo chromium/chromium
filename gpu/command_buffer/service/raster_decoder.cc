@@ -1216,9 +1216,20 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
     caps.texture_half_float_linear =
         gr_context()->colorTypeSupportedAsImage(kA16_float_SkColorType);
   } else if (graphite_context()) {
-    // TODO(b/281151641): Determine if there are checks to be made here.
-    caps.texture_norm16 = true;
+    caps.context_supports_distance_field_text = true;
     caps.texture_half_float_linear = true;
+#if BUILDFLAG(SKIA_USE_DAWN)
+    if (shared_context_state_->IsGraphiteDawn()) {
+      caps.texture_norm16 =
+          shared_context_state_->dawn_context_provider()->SupportsFeature(
+              wgpu::FeatureName::Unorm16TextureFormats);
+    }
+#endif
+#if BUILDFLAG(SKIA_USE_METAL)
+    if (shared_context_state_->IsGraphiteMetal()) {
+      caps.texture_norm16 = true;
+    }
+#endif
   } else {
     caps.texture_norm16 = feature_info()->feature_flags().ext_texture_norm16;
     caps.texture_half_float_linear =
@@ -1228,12 +1239,10 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   if (graphite_context()) {
     bool supports_multiplanar_rendering = false;
 #if BUILDFLAG(SKIA_USE_DAWN)
-    auto* dawn_context_provider =
-        shared_context_state_->dawn_context_provider();
-    if (dawn_context_provider &&
-        dawn_context_provider->SupportsFeature(
-            wgpu::FeatureName::MultiPlanarRenderTargets)) {
-      supports_multiplanar_rendering = true;
+    if (shared_context_state_->IsGraphiteDawn()) {
+      supports_multiplanar_rendering =
+          shared_context_state_->dawn_context_provider()->SupportsFeature(
+              wgpu::FeatureName::MultiPlanarRenderTargets);
     }
 #endif
     caps.supports_rgb_to_yuv_conversion = supports_multiplanar_rendering;
