@@ -5790,6 +5790,7 @@ hooks = [
                 'download',
                 '--depot-tools',
                 'src/third_party/depot_tools',
+                '--check-v8-revision',
                 '--quiet',
     ],
   },
