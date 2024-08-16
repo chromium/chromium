@@ -363,6 +363,7 @@ cc_component("cc") {
     "trees/compositor_commit_data.cc",
     "trees/compositor_commit_data.h",
     "trees/compositor_mode.h",
+    "trees/damage_reason.h",
     "trees/damage_tracker.cc",
     "trees/damage_tracker.h",
     "trees/debug_rect_history.cc",
