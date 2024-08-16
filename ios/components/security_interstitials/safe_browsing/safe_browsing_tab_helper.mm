@@ -326,7 +326,17 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowResponse(
     pending_main_frame_redirect_chain_.clear();
   }
 
-  auto decision = MainFrameRedirectChainDecision();
+  std::optional<web::WebStatePolicyDecider::PolicyDecision> decision;
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+    // Logic only needs to check if sync queries in the redirect chain are
+    // completed since async queries can respond after navigation.
+    decision =
+        RedirectChainDecisionWithFilter(RedirectChainFilter::kSyncQueries);
+  } else {
+    decision = MainFrameRedirectChainDecision();
+  }
+
   if (decision) {
     RecordCheckCompletedOnResponseMetric(/*check_completed=*/true);
     std::move(callback).Run(*decision);
@@ -418,17 +428,19 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlSyncQueryDecided(
   const GURL& url = query_data.query.url;
   SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check =
       query_data.performed_check;
-  GetOldestPendingMainFrameQuery(query_data)->decision = decision;
+  MainFrameUrlQuery* query = GetOldestPendingMainFrameQuery(query_data);
+  query->decision = decision;
+  query->sync_check_complete = true;
 
   // If ShouldAllowResponse() has already been called for this URL, and if
   // an overall decision for the redirect chain can be computed, invoke this
   // URL's callback with the overall decision.
   auto& response_callback = pending_main_frame_query_->response_callback;
   if (!response_callback.is_null()) {
-    std::optional<web::WebStatePolicyDecider::PolicyDecision> overall_decision =
-        MainFrameRedirectChainDecision();
-    if (overall_decision) {
-      if (overall_decision->ShouldAllowNavigation()) {
+    std::optional<web::WebStatePolicyDecider::PolicyDecision> sync_decision =
+        RedirectChainDecisionWithFilter(RedirectChainFilter::kSyncQueries);
+    if (sync_decision) {
+      if (sync_decision->ShouldAllowNavigation()) {
         RecordTotalDelayMetricForDelayedAllowedNavigation(
             pending_main_frame_query_->delay_start_time, performed_check);
       } else {
@@ -436,7 +448,10 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlSyncQueryDecided(
                                 pending_main_frame_query_->delay_start_time;
         RecordTotalDelay2MetricForNavigation(delay, performed_check);
       }
-      std::move(response_callback).Run(*overall_decision);
+      std::move(response_callback).Run(*sync_decision);
+
+      // TODO(crbug.com/337243708): Move clearing the chain behind a guard that
+      // checks if both sync and async checks are complete.
       pending_main_frame_redirect_chain_.clear();
     }
   } else {
@@ -467,6 +482,54 @@ SafeBrowsingTabHelper::PolicyDecider::MainFrameRedirectChainDecision() {
       decision = query.decision;
       break;
     }
+  }
+
+  return decision;
+}
+
+std::optional<web::WebStatePolicyDecider::PolicyDecision>
+SafeBrowsingTabHelper::PolicyDecider::RedirectChainDecisionWithFilter(
+    RedirectChainFilter filter) {
+  if (pending_main_frame_query_->decision &&
+      pending_main_frame_query_->decision->ShouldCancelNavigation()) {
+    return pending_main_frame_query_->decision;
+  }
+
+  std::optional<web::WebStatePolicyDecider::PolicyDecision> decision =
+      pending_main_frame_query_->decision;
+
+  for (auto& query : pending_main_frame_redirect_chain_) {
+    if (!query.decision) {
+      decision = std::nullopt;
+    } else if (query.decision->ShouldCancelNavigation()) {
+      decision = query.decision;
+      break;
+    } else {
+      decision = QueryDecisionFromFilter(query, decision, filter);
+    }
+  }
+
+  return decision;
+}
+
+std::optional<web::WebStatePolicyDecider::PolicyDecision>
+SafeBrowsingTabHelper::PolicyDecider::QueryDecisionFromFilter(
+    const MainFrameUrlQuery& query,
+    std::optional<web::WebStatePolicyDecider::PolicyDecision> decision,
+    RedirectChainFilter filter) {
+  switch (filter) {
+    case RedirectChainFilter::kSyncQueries:
+      if (!query.sync_check_complete) {
+        return std::nullopt;
+      }
+      break;
+    case RedirectChainFilter::kAllQueries:
+      if (!query.sync_check_complete || !query.async_check_complete) {
+        return std::nullopt;
+      }
+      break;
+    default:
+      break;
   }
 
   return decision;

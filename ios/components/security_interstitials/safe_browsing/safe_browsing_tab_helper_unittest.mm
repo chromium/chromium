@@ -403,6 +403,38 @@ TEST_P(SafeBrowsingTabHelperTest, SafeRedirectChain) {
   EXPECT_TRUE(response_decision.ShouldAllowNavigation());
 }
 
+// Tests the case of a redirection chain with async checks, where all URLs in
+// the chain are safe.
+TEST_P(SafeBrowsingTabHelperTest, SafeRedirectChainWithAsyncCheck) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
+
+  GURL url1("http://chromium1.test");
+  GURL url2("http://chromium2.test");
+  GURL url3("http://chromium3.test");
+  EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+  SimulateMainFrameRedirect();
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+  SimulateMainFrameRedirect();
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url3);
+  EXPECT_TRUE(response_decision.ShouldAllowNavigation());
+}
+
 // Tests the case of a redirection chain, where the first URL in the chain is
 // unsafe and the rest are safe.
 TEST_P(SafeBrowsingTabHelperTest, RedirectChainFirstRequestUnsafe) {
