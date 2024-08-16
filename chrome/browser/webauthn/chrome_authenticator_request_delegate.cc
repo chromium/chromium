@@ -667,6 +667,7 @@ void ChromeWebAuthenticationDelegate::DeleteUnacceptedPasskeys(
   webauthn::PasskeyModel* passkey_store =
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  bool is_passkey_deleted = false;
   for (auto passkey :
        passkey_store->GetPasskeysForRelyingPartyId(relying_party_id)) {
     if (std::vector<uint8_t>(passkey.user_id().begin(),
@@ -675,6 +676,14 @@ void ChromeWebAuthenticationDelegate::DeleteUnacceptedPasskeys(
                         std::vector<uint8_t>(passkey.credential_id().begin(),
                                              passkey.credential_id().end()))) {
       passkey_store->DeletePasskey(passkey.credential_id(), FROM_HERE);
+      is_passkey_deleted = true;
+    }
+  }
+  if (is_passkey_deleted) {
+    PasswordsClientUIDelegate* manage_passwords_ui_controller =
+        PasswordsClientUIDelegateFromWebContents(web_contents);
+    if (manage_passwords_ui_controller) {
+      manage_passwords_ui_controller->OnPasskeyNotAccepted();
     }
   }
 }

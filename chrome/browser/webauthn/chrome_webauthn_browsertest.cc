@@ -510,7 +510,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, FilterGPMPasskeys) {
               testing::ElementsAre(expected));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportGPMPasskeys) {
+IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
+                       ReportUnknownCredentialGPMPasskeys) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
 
@@ -537,7 +538,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportGPMPasskeys) {
       passkey_model->GetPasskeysForRelyingPartyId("www.example.com").empty());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportAllAcceptedGPMPasskeys) {
+IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
+                       ReportAllAcceptedCredsNoPasskeyDeletion) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
   // Set up GPM Passkey.
@@ -545,10 +547,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportAllAcceptedGPMPasskeys) {
       PasskeyModelFactory::GetForProfile(browser()->profile()));
   passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
       kCredentialID, kUserId1, kUsername1, kDisplayName1));
-  passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
-      kCredentialID2, kUserId2, kUsername2, kDisplayName2));
 
-  // Reports the user ID and credential ID matching the created passkey #1.
+  // Reports the user ID and credential ID matching the created passkey.
   // The passkey will not be deleted.
   EXPECT_EQ(
       "webauthn: OK",
@@ -570,7 +570,27 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportAllAcceptedGPMPasskeys) {
       "www.example.com",
       std::string(reinterpret_cast<const char*>(kCredentialID), 16)));
 
-  // Reports the user ID that matches passkey #2 with an empty
+  password_manager::ui::State model_state =
+      PasswordsModelDelegateFromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents())
+          ->GetState();
+
+  // If the model_state is INACTIVE_STATE, it means that DeletePasskey didn't
+  // run, and hence the Passkey Not Accepted bubble did not show up.
+  EXPECT_EQ(model_state, password_manager::ui::INACTIVE_STATE);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
+                       ReportAllAcceptedCredsPasskeyDeletion) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+  // Set up GPM Passkey.
+  auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
+      PasskeyModelFactory::GetForProfile(browser()->profile()));
+  passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
+      kCredentialID2, kUserId2, kUsername2, kDisplayName2));
+
+  // Reports the user ID that matches the passkey created with an empty
   // allCurrentCredentialsIds. The passkey will be deleted.
   EXPECT_EQ(
       "webauthn: OK",
@@ -591,6 +611,14 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportAllAcceptedGPMPasskeys) {
   EXPECT_FALSE(passkey_model->GetPasskeyByCredentialId(
       "www.example.com",
       std::string(reinterpret_cast<const char*>(kCredentialID2), 16)));
+
+  password_manager::ui::State model_state =
+      PasswordsModelDelegateFromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents())
+          ->GetState();
+
+  // Check if the Passkey Not Accepted bubble showed up.
+  EXPECT_EQ(model_state, password_manager::ui::PASSKEY_NOT_ACCEPTED_STATE);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportInvalidStrings) {
