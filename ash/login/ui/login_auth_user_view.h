@@ -96,11 +96,19 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // might be in. This is determined by the current authentication methods
   // that a user has.
   enum class InputFieldMode {
-    NONE,              // Not showing any input field.
-    PASSWORD_ONLY,     // No PIN set. Password only field.
-    PIN_AND_PASSWORD,  // PIN set, but auto-submit feature disabled.
-    PIN_WITH_TOGGLE,   // PIN field for auto submit.
-    PWD_WITH_TOGGLE    // PWD field when auto submit enabled.
+    kNone,                  // Not showing any input field.
+    kPasswordOnly,          // Password only field, no PIN set.
+    kPinOnlyAutosubmitOn,   // PIN only field, auto-submit feature enabled, no
+                            // password set.
+    kPinOnlyAutosubmitOff,  // PIN only field, auto-submit feature disabled, no
+                            // password set.
+    kPwdWithToggle,         // Password field with toggle, PIN auto-submit
+                            // feature enabled.
+    kPinWithToggle,         // PIN field with toggle, auto-submit feature
+                            // enabled.
+    // TODO(b/357606198): Separate password and PIN field.
+    kPasswordAndPin,  // Both password and PIN are set, PIN auto-submit feature
+                      // disabled.
   };
 
   // TestApi is used for tests to get internal implementation details.
@@ -316,7 +324,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   AuthMethodsMetadata auth_metadata_ = AuthMethodsMetadata();
 
   // Controls which input field is currently being shown.
-  InputFieldMode input_field_mode_ = InputFieldMode::NONE;
+  InputFieldMode input_field_mode_ = InputFieldMode::kNone;
 
   raw_ptr<LoginUserView> user_view_ = nullptr;
   raw_ptr<LoginPasswordView> password_view_ = nullptr;

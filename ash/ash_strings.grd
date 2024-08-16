@@ -4900,6 +4900,9 @@ No devices connected.
       <message name="IDS_ASH_LOGIN_POD_PASSWORD_PLACEHOLDER" desc="Text to display as placeholder in the password field when password is the only auth method.">
         Password
       </message>
+      <message name="IDS_ASH_LOGIN_POD_PIN_PLACEHOLDER" desc="Text to display as placeholder in the password field when pin is the only auth method.">
+        PIN
+      </message>
       <message name="IDS_ASH_LOGIN_POD_PASSWORD_PIN_PLACEHOLDER" desc="Text to display as placeholder in the password field when both password and pin are allowed.">
         PIN or password
       </message>
