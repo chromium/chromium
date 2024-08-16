@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Course, PageHandlerRemote, Student, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
+import {Course, Identity, PageHandlerRemote, TabInfo, Window} from '../mojom/boca.mojom-webui.js';
 
 import {ClientApiDelegate} from './boca_app.js';
 
@@ -43,11 +43,11 @@ export class ClientDelegateFactory {
       },
       getStudentList: async (id: string) => {
         const result = await pageHandler.listStudents(id);
-        return result.students.map((student: Student) => {
+        return result.students.map((student: Identity) => {
           return {
-            id: student.profile.id,
-            name: student.profile.name.fullName,
-            email: student.profile.emailAddress,
+            id: student.id,
+            name: student.name,
+            email: student.email,
           };
         });
       },

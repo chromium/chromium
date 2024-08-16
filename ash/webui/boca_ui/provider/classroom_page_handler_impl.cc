@@ -140,10 +140,9 @@ void ClassroomPageHandlerImpl::OnListStudentsFetched(
   }
 
   for (const auto& item : result.value()->items()) {
-    mojom::StudentPtr student = mojom::Student::New(mojom::UserProfile::New(
-        item->profile().id(),
-        mojom::Name::New(item->profile().name().full_name()),
-        item->profile().email_address()));
+    mojom::IdentityPtr student = mojom::Identity::New(
+        item->profile().id(), item->profile().name().full_name(),
+        item->profile().email_address());
 
     fetched_students->push_back(std::move(student));
   }

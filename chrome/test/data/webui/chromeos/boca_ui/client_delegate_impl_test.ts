@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ClientDelegateFactory} from 'chrome-untrusted://boca-app/app/client_delegate.js';
-import {Course, PageHandlerRemote, Student, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import {Course, Identity, PageHandlerRemote, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
@@ -33,13 +33,13 @@ class MockRemoteHandler extends PageHandlerRemote {
         {courses: [{id: '1', name: 'course1'}, {id: '2', name: 'course2'}]});
   }
 
-  override listStudents(id: string): Promise<{students: Student[]}> {
+  override listStudents(id: string): Promise<{students: Identity[]}> {
     // Dummy action get around with unused variable check.
     id;
     return Promise.resolve({
       students: [
-        {profile: {id: '1', name: {fullName: 'cat'}, emailAddress: 'email1'}},
-        {profile: {id: '2', name: {fullName: 'dog'}, emailAddress: 'email2'}},
+        {id: '1', name: 'cat', email: 'email1'},
+        {id: '2', name: 'dog', email: 'email2'},
       ],
     });
   }
