@@ -92,7 +92,7 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
       data.pinned || model->delegate()->ShouldDisplayFavicon(contents);
   data.blocked = model->IsTabBlocked(index);
   data.should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
-  data.alert_state = chrome::GetTabAlertStatesForContents(contents);
+  data.alert_state = GetTabAlertStatesForContents(contents);
 
   content::NavigationEntry* entry =
       contents->GetController().GetLastCommittedEntry();

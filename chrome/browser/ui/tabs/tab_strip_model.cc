@@ -1802,7 +1802,7 @@ void TabStripModel::ExecuteCloseTabsByIndicesCommand(
 }
 
 bool TabStripModel::WillContextMenuMuteSites(int index) {
-  return !chrome::AreAllSitesMuted(*this, GetIndicesForCommand(index));
+  return !AreAllSitesMuted(*this, GetIndicesForCommand(index));
 }
 
 bool TabStripModel::WillContextMenuPin(int index) {
@@ -2938,9 +2938,8 @@ void TabStripModel::SetSitesMuted(const std::vector<int>& indices,
     if (url.SchemeIs(content::kChromeUIScheme)) {
       // chrome:// URLs don't have content settings but can be muted, so just
       // mute the WebContents.
-      chrome::SetTabAudioMuted(web_contents, mute,
-                               TabMutedReason::CONTENT_SETTING_CHROME,
-                               std::string());
+      SetTabAudioMuted(web_contents, mute,
+                       TabMutedReason::CONTENT_SETTING_CHROME, std::string());
     } else {
       Profile* profile =
           Profile::FromBrowserContext(web_contents->GetBrowserContext());

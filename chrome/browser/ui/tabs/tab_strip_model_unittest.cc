@@ -4499,17 +4499,17 @@ TEST_P(TabStripModelTest, ToggleSiteMuted) {
   // Validate if the mute site menu item shows up and the site is unmuted
   EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
       0, TabStripModel::CommandToggleSiteMuted));
-  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip, 0));
 
   // Validate if toggling the state successfully mutes the site
   tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
-  EXPECT_TRUE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_TRUE(IsSiteMuted(tabstrip, 0));
   EXPECT_TRUE(IsSiteInContentSettingExceptionList(settings, url,
                                                   ContentSettingsType::SOUND));
 
   // Toggling the state again to successfully unmute the site
   tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
-  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip, 0));
   EXPECT_FALSE(IsSiteInContentSettingExceptionList(settings, url,
                                                    ContentSettingsType::SOUND));
 
@@ -4535,7 +4535,7 @@ TEST_P(TabStripModelTest, ToggleSiteMutedWithLessSpecificRule) {
   // Validate if the mute site menu item shows up and the site is unmuted
   EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
       0, TabStripModel::CommandToggleSiteMuted));
-  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip, 0));
 
   // Add a wildcard to mute all HTTPS sites as a custom behavior
   ContentSettingsPattern primary_pattern =
@@ -4545,21 +4545,21 @@ TEST_P(TabStripModelTest, ToggleSiteMutedWithLessSpecificRule) {
   settings->SetContentSettingCustomScope(primary_pattern, secondary_pattern,
                                          ContentSettingsType::SOUND,
                                          CONTENT_SETTING_BLOCK);
-  EXPECT_TRUE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_TRUE(IsSiteMuted(tabstrip, 0));
 
   // Validate we are able to unmute the site (with the wildcard custom behavior)
   tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
-  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip, 0));
   EXPECT_TRUE(IsSiteInContentSettingExceptionList(settings, url,
                                                   ContentSettingsType::SOUND));
 
   // Validate we are able to mute the site
   tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
-  EXPECT_TRUE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_TRUE(IsSiteMuted(tabstrip, 0));
 
   // Validate we are able to unmute the site
   tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
-  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip, 0));
   EXPECT_TRUE(IsSiteInContentSettingExceptionList(settings, url,
                                                   ContentSettingsType::SOUND));
 
@@ -4585,7 +4585,7 @@ TEST_P(TabStripModelTest, ToggleSiteMutedWithOtherDisjointRule) {
   // Validate if the mute site menu item shows up and the site is unmuted
   EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
       0, TabStripModel::CommandToggleSiteMuted));
-  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip, 0));
 
   // Add a wildcard to mute all HTTPS sites as a custom behavior
   ContentSettingsPattern primary_pattern =
@@ -4595,17 +4595,17 @@ TEST_P(TabStripModelTest, ToggleSiteMutedWithOtherDisjointRule) {
   settings->SetContentSettingCustomScope(primary_pattern, secondary_pattern,
                                          ContentSettingsType::SOUND,
                                          CONTENT_SETTING_BLOCK);
-  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip, 0));
 
   // Validate we are able to mute the site
   tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
-  EXPECT_TRUE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_TRUE(IsSiteMuted(tabstrip, 0));
   EXPECT_TRUE(IsSiteInContentSettingExceptionList(settings, url,
                                                   ContentSettingsType::SOUND));
 
   // Validate we are able to unmute the site
   tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
-  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip, 0));
   EXPECT_FALSE(IsSiteInContentSettingExceptionList(settings, url,
                                                    ContentSettingsType::SOUND));
 
@@ -4634,11 +4634,11 @@ TEST_P(TabStripModelTest, ToggleSiteMutedWithDifferentDefault) {
   // Validate if the mute site menu item shows up and the site is muted
   EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
       0, TabStripModel::CommandToggleSiteMuted));
-  EXPECT_TRUE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_TRUE(IsSiteMuted(tabstrip, 0));
 
   // Validate if toggling the state successfully unmutes the site
   tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
-  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip, 0));
   EXPECT_TRUE(IsSiteInContentSettingExceptionList(settings, url,
                                                   ContentSettingsType::SOUND));
 
@@ -4656,7 +4656,7 @@ TEST_P(TabStripModelTest, ToggleMuteUnmuteMultipleSites) {
       ->SetLastCommittedURL(url1);
   tabstrip.AddWebContents(std::move(new_tab_contents1), -1,
                           ui::PAGE_TRANSITION_TYPED, AddTabTypes::ADD_ACTIVE);
-  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip, 0));
 
   GURL url2("https://example2.com/");
   std::unique_ptr<WebContents> new_tab_contents2 = CreateWebContents();
@@ -4664,18 +4664,18 @@ TEST_P(TabStripModelTest, ToggleMuteUnmuteMultipleSites) {
       ->SetLastCommittedURL(url2);
   tabstrip.AddWebContents(std::move(new_tab_contents2), -1,
                           ui::PAGE_TRANSITION_TYPED, AddTabTypes::ADD_ACTIVE);
-  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 1));
+  EXPECT_FALSE(IsSiteMuted(tabstrip, 1));
 
   EXPECT_TRUE(tabstrip.ToggleSelectionAt(0));
   EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
 
   tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
-  EXPECT_TRUE(chrome::IsSiteMuted(tabstrip, 0));
-  EXPECT_TRUE(chrome::IsSiteMuted(tabstrip, 1));
+  EXPECT_TRUE(IsSiteMuted(tabstrip, 0));
+  EXPECT_TRUE(IsSiteMuted(tabstrip, 1));
 
   tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
-  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
-  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 1));
+  EXPECT_FALSE(IsSiteMuted(tabstrip, 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip, 1));
 
   tabstrip.CloseAllTabs();
 }

@@ -978,7 +978,7 @@ std::u16string Tab::GetTooltipText(const std::u16string& title,
   if (!result.empty()) {
     result.append(1, '\n');
   }
-  result.append(chrome::GetTabAlertStateText(alert_state.value()));
+  result.append(GetTabAlertStateText(alert_state.value()));
   return result;
 }
 

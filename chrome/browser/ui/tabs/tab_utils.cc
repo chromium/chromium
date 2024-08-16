@@ -21,8 +21,6 @@
 #include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chrome {
-
 std::vector<TabAlertState> GetTabAlertStatesForContents(
     content::WebContents* contents) {
   std::vector<TabAlertState> states;
@@ -207,8 +205,6 @@ bool AreAllSitesMuted(const TabStripModel& tab_strip,
   }
   return true;
 }
-
-}  // namespace chrome
 
 LastMuteMetadata::LastMuteMetadata(content::WebContents* contents)
     : content::WebContentsUserData<LastMuteMetadata>(*contents) {}

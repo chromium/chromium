@@ -137,7 +137,7 @@ void FadeAlertFooterRow::SetData(const AlertFooterRowData& data) {
   } else if (alert_state.has_value()) {
     SetContent(AlertIndicatorButton::GetTabAlertIndicatorImageForHoverCard(
                    alert_state.value()),
-               chrome::GetTabAlertStateText(alert_state.value()));
+               GetTabAlertStateText(alert_state.value()));
   } else {
     SetContent(ui::ImageModel(), std::u16string());
   }

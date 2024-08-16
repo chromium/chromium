@@ -125,7 +125,7 @@ void SoundContentSettingObserver::MuteOrUnmuteIfNecessary() {
   if (mute == web_contents()->IsAudioMuted())
     return;
 
-  TabMutedReason reason = chrome::GetTabAudioMutedReason(web_contents());
+  TabMutedReason reason = GetTabAudioMutedReason(web_contents());
 
   // Do not override the decisions of an extension.
   if (reason == TabMutedReason::EXTENSION)
@@ -143,8 +143,8 @@ void SoundContentSettingObserver::MuteOrUnmuteIfNecessary() {
   if (!mute && reason == TabMutedReason::AUDIO_INDICATOR)
     return;
 
-  chrome::SetTabAudioMuted(web_contents(), mute,
-                           TabMutedReason::CONTENT_SETTING, std::string());
+  SetTabAudioMuted(web_contents(), mute, TabMutedReason::CONTENT_SETTING,
+                   std::string());
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

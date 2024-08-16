@@ -597,7 +597,7 @@ api::tabs::MutedInfo ExtensionTabUtil::CreateMutedInfo(
   DCHECK(contents);
   api::tabs::MutedInfo info;
   info.muted = contents->IsAudioMuted();
-  switch (chrome::GetTabAudioMutedReason(contents)) {
+  switch (GetTabAudioMutedReason(contents)) {
     case TabMutedReason::NONE:
       break;
     case TabMutedReason::AUDIO_INDICATOR:

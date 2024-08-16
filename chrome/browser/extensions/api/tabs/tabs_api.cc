@@ -1596,8 +1596,8 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   }
 
   if (params->update_properties.muted &&
-      !chrome::SetTabAudioMuted(contents, *params->update_properties.muted,
-                                TabMutedReason::EXTENSION, extension()->id())) {
+      !SetTabAudioMuted(contents, *params->update_properties.muted,
+                        TabMutedReason::EXTENSION, extension()->id())) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
         tabs_constants::kCannotUpdateMuteCaptured,
         base::NumberToString(tab_id))));
