@@ -15,9 +15,14 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/files/scoped_temp_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/posix/eintr_wrapper.h"
+#include "base/process/launch.h"
+#include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -248,6 +253,173 @@ TEST(CodeSignCloneManagerTest, ChromeCodeSignCloneCleanupMain) {
   }
 
   CodeSignCloneManager::ClearTemporaryDirectoryPathForTesting();
+}
+
+TEST(CodeSignCloneManagerTest, IsFileOpenMoreThanOnceSameProcess) {
+  base::ScopedTempFile temp_file;
+  ASSERT_TRUE(temp_file.Create());
+
+  // Open the file. We are assuming this is the first time the file has been
+  // opened, by any process on the host. This is a reasonable assumption given
+  // the temp file is relatively out of the way. However, it is not guaranteed.
+  // Another process could open the temp file before the call to
+  // `IsFileOpenMoreThanOnce`, throwing off the results. If this test is flaky,
+  // we should find another approach.
+  base::ScopedFD fd_first(
+      HANDLE_EINTR(open(temp_file.path().value().c_str(), O_RDONLY)));
+  ASSERT_NE(fd_first, -1) << strerror(errno);
+  EXPECT_EQ(internal::IsFileOpenMoreThanOnce(fd_first.get()),
+            internal::FileOpenMoreThanOnce::kNo);
+
+  // Open it again.
+  base::ScopedFD fd_second(
+      HANDLE_EINTR(open(temp_file.path().value().c_str(), O_RDONLY)));
+  ASSERT_NE(fd_second, -1) << strerror(errno);
+  EXPECT_EQ(internal::IsFileOpenMoreThanOnce(fd_first.get()),
+            internal::FileOpenMoreThanOnce::kYes);
+  EXPECT_EQ(internal::IsFileOpenMoreThanOnce(fd_second.get()),
+            internal::FileOpenMoreThanOnce::kYes);
+
+  // Close one of the file descriptors. Ensure `IsFileOpenMoreThanOnce` reflects
+  // the change.
+  fd_first.reset();
+  EXPECT_EQ(internal::IsFileOpenMoreThanOnce(fd_second.get()),
+            internal::FileOpenMoreThanOnce::kNo);
+
+  // With one file descriptor still open, check for exclusivity using the path.
+  // In this case, the file will be opened by `IsFileOpenMoreThanOnce`, `kYes`
+  // should be returned.
+  EXPECT_EQ(internal::IsFileOpenMoreThanOnce(temp_file.path()),
+            internal::FileOpenMoreThanOnce::kYes);
+
+  // Close the last file descriptor, checking by path should now return `kNo`.
+  fd_second.reset();
+  EXPECT_EQ(internal::IsFileOpenMoreThanOnce(temp_file.path()),
+            internal::FileOpenMoreThanOnce::kNo);
+}
+
+TEST(CodeSignCloneManagerTest, IsFileOpenMoreThanOnceSeparateProcess) {
+  base::ScopedTempFile temp_file;
+  ASSERT_TRUE(temp_file.Create());
+
+  // The same comment about this test potentially being flaky also applies here.
+  EXPECT_EQ(internal::IsFileOpenMoreThanOnce(temp_file.path()),
+            internal::FileOpenMoreThanOnce::kNo);
+
+  // Open the temp file. The temp file will be opened again by the child
+  // process.
+  base::ScopedFD fd(
+      HANDLE_EINTR(open(temp_file.path().value().c_str(), O_RDONLY)));
+  ASSERT_NE(fd, -1) << strerror(errno);
+
+  // Ensure the file is still only open once. Again, the same comment about this
+  // test potentially being flaky also applies here.
+  EXPECT_EQ(internal::IsFileOpenMoreThanOnce(fd.get()),
+            internal::FileOpenMoreThanOnce::kNo);
+
+  {
+    // Use TEE(1) to open `temp_file` a second time, as well as synchronizing
+    // when `IsFileOpenMoreThanOnce` is safe to be called. The test will write a
+    // sentinel byte to `tee`'s stdin and wait for the byte to arrive on `tee`'s
+    // stdout'. This indicates that `tee` is up and running and has opened the
+    // `temp_file`. The sentinel byte will also be written to `temp_file`, but
+    // that is immaterial. It is simply a side effect of using `tee` as the
+    // "opener" of `temp_file`.
+
+    // `TeeChildProcess` is a small, special purpose class. On construction, a
+    // `tee` child process is started. A sentinel byte is written to
+    // `stdin_writer`, then read back from `stdout_reader`. On destruction,
+    // `stdin_writer` is closed, causing `tee` to exit.
+    class TeeChildProcess {
+     public:
+      TeeChildProcess(const base::FilePath& temp_file_path) {
+        Init(temp_file_path);
+        if (testing::Test::HasFatalFailure()) {
+          return;
+        }
+        RoundTripSentinelByte();
+      }
+      TeeChildProcess(const TeeChildProcess&) = delete;
+      TeeChildProcess& operator=(const TeeChildProcess&) = delete;
+
+      ~TeeChildProcess() {
+        if (!process_.IsValid()) {
+          return;
+        }
+        WaitForExit();
+      }
+
+     private:
+      void Init(const base::FilePath& temp_file_path) {
+        int tee_input_pipe[2];
+        ASSERT_EQ(pipe(tee_input_pipe), 0) << strerror(errno);
+        base::ScopedFD stdin_reader(tee_input_pipe[0]);
+        stdin_writer_.reset(tee_input_pipe[1]);
+
+        int tee_output_pipe[2];
+        ASSERT_EQ(pipe(tee_output_pipe), 0) << strerror(errno);
+        stdout_reader_.reset(tee_output_pipe[0]);
+        base::ScopedFD stdout_writer(tee_output_pipe[1]);
+
+        base::LaunchOptions options;
+        options.fds_to_remap.emplace_back(stdin_reader.get(), STDIN_FILENO);
+        options.fds_to_remap.emplace_back(stdout_writer.get(), STDOUT_FILENO);
+        process_ = base::LaunchProcess(
+            {
+                "/usr/bin/tee",
+                temp_file_path.value().c_str(),
+            },
+            options);
+        ASSERT_TRUE(process_.IsValid());
+      }
+
+      void RoundTripSentinelByte() {
+        // Write the sentinel byte.
+        char buff = '\0';
+        ASSERT_EQ(HANDLE_EINTR(write(stdin_writer_.get(), &buff, 1)), 1);
+
+        // Wait for `tee` to respond back with the byte.
+        buff = 'A';
+        ASSERT_EQ(HANDLE_EINTR(read(stdout_reader_.get(), &buff, 1)), 1);
+        EXPECT_EQ(buff, '\0');
+      }
+
+      void WaitForExit() {
+        stdin_writer_.reset();
+        int status;
+        ASSERT_TRUE(process_.WaitForExit(&status));
+        EXPECT_EQ(status, 0);
+      }
+
+      base::Process process_;
+      base::ScopedFD stdout_reader_;
+      base::ScopedFD stdin_writer_;
+    };
+
+    TeeChildProcess tee_child_process_scoper(temp_file.path());
+    ASSERT_NO_FATAL_FAILURE();
+
+    // The temp file should now be open by both this test and `tee`.
+    EXPECT_EQ(internal::IsFileOpenMoreThanOnce(fd.get()),
+              internal::FileOpenMoreThanOnce::kYes);
+
+    // `tee` will exit when this scope ends.
+  }
+
+  // The temp file should now only be open by this test. Yet again, the same
+  // comment about this test potentially being flaky also applies here.
+  EXPECT_EQ(internal::IsFileOpenMoreThanOnce(fd.get()),
+            internal::FileOpenMoreThanOnce::kNo);
+}
+
+TEST(CodeSignCloneManagerTest, IsFileOpenMoreThanOnceInvalidPath) {
+  EXPECT_EQ(internal::IsFileOpenMoreThanOnce(base::FilePath()),
+            internal::FileOpenMoreThanOnce::kError);
+}
+
+TEST(CodeSignCloneManagerTest, IsFileOpenMoreThanOnceBadFileDescriptor) {
+  EXPECT_EQ(internal::IsFileOpenMoreThanOnce(-1),
+            internal::FileOpenMoreThanOnce::kError);
 }
 
 }  // namespace code_sign_clone_manager

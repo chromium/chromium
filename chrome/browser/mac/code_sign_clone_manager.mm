@@ -5,10 +5,14 @@
 #include "chrome/browser/mac/code_sign_clone_manager.h"
 
 #import <Foundation/Foundation.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <paths.h>
+#include <stdint.h>
 #include <sys/attr.h>
 #include <sys/clonefile.h>
 #include <sys/fcntl.h>
+#include <sys/ioccom.h>
 #include <sys/stat.h>
 #include <sys/syslimits.h>
 #include <unistd.h>
@@ -743,6 +747,35 @@ int ChromeCodeSignCloneCleanupMain(
 
   base::DeletePathRecursively(unique_temp_dir_path);
   return 0;
+}
+
+// `FSIOC_FD_ONLY_OPEN_ONCE` is not a part of the SDK. The definition was
+// introduced in XNU 6153.11.26 (macOS 10.15). It may have existed earlier in
+// another location, but for Chrome's purposes macOS 10.15+ is just fine.
+// https://github.com/apple-oss-distributions/xnu/blob/xnu-6153.11.26/bsd/sys/fsctl.h#L327
+#ifndef FSIOC_FD_ONLY_OPEN_ONCE
+#define FSIOC_FD_ONLY_OPEN_ONCE _IOWR('A', 21, uint32_t)
+#endif
+
+FileOpenMoreThanOnce IsFileOpenMoreThanOnce(int file_descriptor) {
+  uint32_t val;
+  int result = ffsctl(file_descriptor, FSIOC_FD_ONLY_OPEN_ONCE, &val, 0);
+  if (result == -1) {
+    if (errno == EBUSY) {
+      return FileOpenMoreThanOnce::kYes;
+    }
+    return FileOpenMoreThanOnce::kError;
+  }
+  return FileOpenMoreThanOnce::kNo;
+}
+
+FileOpenMoreThanOnce IsFileOpenMoreThanOnce(const base::FilePath& path) {
+  base::ScopedFD fd(HANDLE_EINTR(open(path.value().c_str(), O_RDONLY)));
+  if (fd == -1) {
+    DPLOG(ERROR) << "open " << std::quoted(path.value());
+    return FileOpenMoreThanOnce::kError;
+  }
+  return IsFileOpenMoreThanOnce(fd.get());
 }
 
 }  // namespace internal
