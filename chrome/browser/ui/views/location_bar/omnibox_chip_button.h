@@ -64,8 +64,8 @@ class OmniboxChipButton : public views::MdTextButton {
   // of the chips, consider subclassing and overriding as needed.
   virtual ui::ImageModel GetIconImageModel() const;
   virtual const gfx::VectorIcon& GetIcon() const;
-  virtual SkColor GetForegroundColor() const;
-  virtual SkColor GetBackgroundColor() const;
+  virtual ui::ColorId GetForegroundColorId() const;
+  virtual ui::ColorId GetBackgroundColorId() const;
 
   // Updates the icon, and then updates text, icon, and background colors from
   // the theme.
