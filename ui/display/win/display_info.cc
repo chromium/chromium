@@ -4,6 +4,8 @@
 
 #include "ui/display/win/display_info.h"
 
+#include <string.h>
+
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -11,6 +13,18 @@
 #include "ui/display/win/display_config_helper.h"
 
 namespace display::win::internal {
+
+namespace {
+
+// Return a string view from a fixed-length array representing a string, up
+// until the first nul terminator, if any.
+template <size_t N>
+std::wstring_view FixedArrayToStringView(
+    const std::wstring_view::value_type (&str)[N]) {
+  return std::wstring_view(str, ::wcsnlen(str, N));
+}
+
+}  // namespace
 
 DisplayInfo::DisplayInfo(
     const MONITORINFOEX& monitor_info,
@@ -31,7 +45,7 @@ DisplayInfo::DisplayInfo(
       pixels_per_inch_(pixels_per_inch),
       output_technology_(output_technology),
       label_(label),
-      device_name_(monitor_info.szDevice) {}
+      device_name_(FixedArrayToStringView(monitor_info.szDevice)) {}
 
 DisplayInfo::DisplayInfo(const DisplayInfo& other) {
   id_ = other.id_;
@@ -69,8 +83,8 @@ int64_t DisplayInfo::DisplayIdFromMonitorInfo(const MONITORINFOEX& monitor) {
   // This value (e.g. "\\.\DISPLAY1") may change when adding/removing displays,
   // and even be reassigned between physical monitors during those changes,
   // which can cause subtle unexpected behavior.
-  return static_cast<int64_t>(
-      base::PersistentHash(base::WideToUTF8(monitor.szDevice)));
+  return static_cast<int64_t>(base::PersistentHash(
+      base::WideToUTF8(FixedArrayToStringView(monitor.szDevice))));
 }
 
 bool DisplayInfo::operator==(const DisplayInfo& rhs) const = default;
