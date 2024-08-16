@@ -212,12 +212,9 @@ void ScrollbarThemeOverlay::PaintThumb(GraphicsContext& context,
   blink::WebThemeEngine::ExtraParams params(scrollbar_thumb);
 
   mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
-  const ui::ColorProvider* color_provider =
-      scrollbar.GetScrollableArea()->GetColorProvider(color_scheme);
-
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       canvas, part, state, rect, &params, color_scheme,
-      scrollbar.GetScrollableArea()->InForcedColorsMode(), color_provider);
+      scrollbar.InForcedColorsMode(), scrollbar.GetColorProvider(color_scheme));
 
   if (scrollbar.IsLeftSideVerticalScrollbar())
     canvas->restore();

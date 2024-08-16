@@ -498,9 +498,9 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   // If clicking on a frame scrollbar, do not mess up with content focus.
   if (auto* layout_view = frame_->ContentLayoutObject()) {
     if (hit_test_result.GetScrollbar() && frame_->ContentLayoutObject()) {
-      if (hit_test_result.GetScrollbar()->GetScrollableArea() ==
-          layout_view->GetScrollableArea())
+      if (hit_test_result.GetScrollbar()->GetLayoutBox() == layout_view) {
         return WebInputEventResult::kNotHandled;
+      }
     }
   }
 

@@ -43,8 +43,13 @@ namespace gfx {
 class Rect;
 }
 
+namespace ui {
+class ColorProvider;
+}
+
 namespace blink {
 
+class LayoutBox;
 class LayoutObject;
 class ScrollableArea;
 class ScrollbarTheme;
@@ -108,7 +113,6 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   virtual void OffsetDidChange(mojom::blink::ScrollType scroll_type);
 
   virtual void DisconnectFromScrollableArea();
-  ScrollableArea* GetScrollableArea() const { return scrollable_area_.Get(); }
 
   int PressedPos() const { return pressed_pos_; }
 
@@ -235,6 +239,16 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   mojom::blink::ColorScheme UsedColorScheme() const;
 
   void Trace(Visitor*) const override;
+
+  LayoutBox* GetLayoutBox() const;
+  bool IsScrollCornerVisible() const;
+  bool ShouldPaint() const;
+  bool LastKnownMousePositionInFrameRect() const;
+
+  // Returns the color provider for this scrollbar.
+  const ui::ColorProvider* GetColorProvider(mojom::blink::ColorScheme) const;
+  // Returns the forced colors state for this scrollbar.
+  bool InForcedColorsMode() const;
 
  protected:
   void AutoscrollTimerFired(TimerBase*);

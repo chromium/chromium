@@ -356,8 +356,9 @@ void Scrollbar::SetPressedPart(ScrollbarPart part, WebInputEvent::Type type) {
     SetNeedsPaintInvalidation(
         static_cast<ScrollbarPart>(pressed_part_ | hovered_part_ | part));
 
-  if (GetScrollableArea() && part != kNoPart)
-    GetScrollableArea()->DidScrollWithScrollbar(part, Orientation(), type);
+  if (scrollable_area_ && part != kNoPart) {
+    scrollable_area_->DidScrollWithScrollbar(part, Orientation(), type);
+  }
 
   pressed_part_ = part;
 }
@@ -948,6 +949,40 @@ mojom::blink::ColorScheme Scrollbar::UsedColorScheme() const {
   return IsOverlayScrollbar()
              ? scrollable_area_->GetOverlayScrollbarColorScheme()
              : scrollable_area_->UsedColorSchemeScrollbars();
+}
+
+LayoutBox* Scrollbar::GetLayoutBox() const {
+  return scrollable_area_ ? scrollable_area_->GetLayoutBox() : nullptr;
+}
+
+bool Scrollbar::IsScrollCornerVisible() const {
+  return scrollable_area_ && scrollable_area_->IsScrollCornerVisible();
+}
+
+bool Scrollbar::ShouldPaint() const {
+  // When the frame is throttled, the scrollbar will not be painted because
+  // the frame has not had its lifecycle updated.
+  return scrollable_area_ && !scrollable_area_->IsThrottled();
+}
+
+bool Scrollbar::LastKnownMousePositionInFrameRect() const {
+  return scrollable_area_ &&
+         FrameRect().Contains(scrollable_area_->LastKnownMousePosition());
+}
+
+const ui::ColorProvider* Scrollbar::GetColorProvider(
+    mojom::blink::ColorScheme color_scheme) const {
+  if (const auto* box = GetLayoutBox()) {
+    return box->GetDocument().GetColorProviderForPainting(color_scheme);
+  }
+  return nullptr;
+}
+
+bool Scrollbar::InForcedColorsMode() const {
+  if (const auto* box = GetLayoutBox()) {
+    return box->GetDocument().InForcedColorsMode();
+  }
+  return false;
 }
 
 }  // namespace blink

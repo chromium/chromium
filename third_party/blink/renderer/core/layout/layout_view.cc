@@ -188,19 +188,17 @@ bool LayoutView::HitTestNoLifecycleUpdate(const HitTestLocation& location,
       // below too.
       result.SetInnerNode(nullptr);
       result.SetURLElement(nullptr);
-      ScrollableArea* scrollable_area =
-          result.GetScrollbar()->GetScrollableArea();
-      if (scrollable_area && scrollable_area->GetLayoutBox() &&
-          scrollable_area->GetLayoutBox()->GetNode()) {
-        Node* node = scrollable_area->GetLayoutBox()->GetNode();
+      if (LayoutBox* layout_box = result.GetScrollbar()->GetLayoutBox()) {
+        if (Node* node = layout_box->GetNode()) {
+          // If scrollbar belongs to Document, we should set innerNode to the
+          // <html> element to match other browser.
+          if (node->IsDocumentNode()) {
+            node = node->GetDocument().documentElement();
+          }
 
-        // If scrollbar belongs to Document, we should set innerNode to the
-        // <html> element to match other browser.
-        if (node->IsDocumentNode())
-          node = node->GetDocument().documentElement();
-
-        result.SetInnerNode(node);
-        result.SetURLElement(node->EnclosingLinkEventParentOrSelf());
+          result.SetInnerNode(node);
+          result.SetURLElement(node->EnclosingLinkEventParentOrSelf());
+        }
       }
     }
 

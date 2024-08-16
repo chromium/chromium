@@ -394,13 +394,7 @@ void ScrollableAreaPainter::PaintScrollCorner(
                              DisplayItem::kScrollCorner);
   }
 
-  mojom::blink::ColorScheme color_scheme =
-      scrollable_area_.UsedColorSchemeScrollbars();
-  const ui::ColorProvider* color_provider =
-      scrollable_area_.GetColorProvider(color_scheme);
-  theme->PaintScrollCorner(
-      context, scrollable_area_.VerticalScrollbar(), client, visual_rect,
-      color_scheme, scrollable_area_.InForcedColorsMode(), color_provider);
+  theme->PaintScrollCorner(context, scrollable_area_, client, visual_rect);
 }
 
 }  // namespace blink

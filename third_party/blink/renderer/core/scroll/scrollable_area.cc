@@ -156,16 +156,6 @@ void ScrollableArea::ClearScrollableArea() {
     fade_overlay_scrollbars_timer_->Value().Stop();
 }
 
-const ui::ColorProvider* ScrollableArea::GetColorProvider(
-    mojom::blink::ColorScheme color_scheme) const {
-  return GetLayoutBox()->GetDocument().GetColorProviderForPainting(
-      color_scheme);
-}
-
-bool ScrollableArea::InForcedColorsMode() const {
-  return GetLayoutBox()->GetDocument().InForcedColorsMode();
-}
-
 MacScrollbarAnimator* ScrollableArea::GetMacScrollbarAnimator() const {
 #if BUILDFLAG(IS_MAC)
   if (!mac_scrollbar_animator_) {

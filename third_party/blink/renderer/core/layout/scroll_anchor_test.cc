@@ -111,7 +111,8 @@ class ScrollAnchorTest : public SimTest {
     int thumb_center = scrollbar->GetTheme().ThumbPosition(*scrollbar) +
                        scrollbar->GetTheme().ThumbLength(*scrollbar) / 2;
     scrollbar_drag_point_ =
-        gfx::PointF(scrollbar->GetScrollableArea()
+        gfx::PointF(scrollbar->GetLayoutBox()
+                        ->GetScrollableArea()
                         ->ConvertFromScrollbarToContainingEmbeddedContentView(
                             *scrollbar, gfx::Point(0, thumb_center)));
     scrollbar->MouseDown(blink::WebMouseEvent(
@@ -122,7 +123,7 @@ class ScrollAnchorTest : public SimTest {
 
   void MouseDragVerticalScrollbar(Scrollbar* scrollbar, float scroll_delta_y) {
     DCHECK(scrollbar_drag_point_);
-    ScrollableArea* scroller = scrollbar->GetScrollableArea();
+    ScrollableArea* scroller = scrollbar->GetLayoutBox()->GetScrollableArea();
     scrollbar_drag_point_->Offset(
         0, scroll_delta_y *
                (scrollbar->GetTheme().TrackLength(*scrollbar) -

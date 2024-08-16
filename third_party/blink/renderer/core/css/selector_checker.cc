@@ -2536,8 +2536,7 @@ bool SelectorChecker::CheckScrollbarPseudoClass(
       return scrollbar_part_ == kBackTrackPart ||
              scrollbar_part_ == kForwardTrackPart;
     case CSSSelector::kPseudoCornerPresent:
-      return scrollbar_->GetScrollableArea() &&
-             scrollbar_->GetScrollableArea()->IsScrollCornerVisible();
+      return scrollbar_->IsScrollCornerVisible();
     default:
       return false;
   }

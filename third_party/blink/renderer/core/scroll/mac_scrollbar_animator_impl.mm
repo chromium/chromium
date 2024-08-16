@@ -121,9 +121,7 @@ int MacScrollbarImplV2::GetTrackBoxWidth() {
 }
 
 bool MacScrollbarImplV2::IsMouseInScrollbarFrameRect() const {
-  if (auto* area = scrollbar_->GetScrollableArea())
-    return scrollbar_->FrameRect().Contains(area->LastKnownMousePosition());
-  return false;
+  return scrollbar_->LastKnownMousePositionInFrameRect();
 }
 void MacScrollbarImplV2::SetHidden(bool hidden) {
   scrollbar_->SetScrollbarsHiddenFromExternalAnimator(hidden);

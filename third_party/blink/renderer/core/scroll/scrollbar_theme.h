@@ -36,13 +36,10 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace ui {
-class ColorProvider;
-}  // namespace ui
-
 namespace blink {
 
 class GraphicsContext;
+class ScrollableArea;
 class WebMouseEvent;
 
 class CORE_EXPORT ScrollbarTheme {
@@ -109,12 +106,9 @@ class CORE_EXPORT ScrollbarTheme {
   }
 
   virtual void PaintScrollCorner(GraphicsContext&,
-                                 const Scrollbar* vertical_scrollbar,
+                                 const ScrollableArea&,
                                  const DisplayItemClient&,
-                                 const gfx::Rect& corner_rect,
-                                 mojom::blink::ColorScheme color_scheme,
-                                 bool in_forced_colors,
-                                 const ui::ColorProvider* color_provider);
+                                 const gfx::Rect& corner_rect);
   virtual void PaintTickmarks(GraphicsContext&,
                               const Scrollbar&,
                               const gfx::Rect&);

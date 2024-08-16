@@ -168,11 +168,10 @@ int LayoutCustomScrollbarPart::ComputeLength() const {
   NOT_DESTROYED();
   DCHECK_NE(kScrollbarBGPart, part_);
 
-  gfx::Rect visible_content_rect =
-      scrollbar_->GetScrollableArea()->VisibleContentRect(kIncludeScrollbars);
-  if (scrollbar_->Orientation() == kHorizontalScrollbar)
-    return ComputeWidth(visible_content_rect.width());
-  return ComputeHeight(visible_content_rect.height());
+  if (scrollbar_->Orientation() == kHorizontalScrollbar) {
+    return ComputeWidth(scrollbar_->FrameRect().width());
+  }
+  return ComputeHeight(scrollbar_->FrameRect().height());
 }
 
 void LayoutCustomScrollbarPart::SetOverriddenSize(const PhysicalSize& size) {
