@@ -1389,30 +1389,25 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     }
   }
 
-  if (!IsTextObject()) {
-    if (accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
-      SerializeHTMLTagAndClass(node_data);
-    }
-
+  if (RoleValue() != ax::mojom::blink::Role::kStaticText) {
     // Needed on Android for testing frameworks.
     SerializeHTMLId(node_data);
   }
-
-  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader))
-    SerializeScreenReaderAttributes(node_data);
 
   SerializeUnignoredAttributes(node_data, accessibility_mode);
 
   SerializeNameAndDescriptionAttributes(accessibility_mode, node_data);
 
-  if (accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
-    // Return early. None of the following attributes are needed for PDFs.
-    return;
-  }
-
   if (!accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
     // Return early. None of the following attributes are needed outside of
     // screen reader mode.
+    return;
+  }
+
+  SerializeScreenReaderAttributes(node_data);
+
+  if (accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
+    // Return early. None of the following attributes are needed for PDFs.
     return;
   }
 
@@ -1791,6 +1786,8 @@ void AXObject::SerializeScreenReaderAttributes(ui::AXNodeData* node_data) const 
     // Don't serialize these attributes on text, where it is uninteresting.
     return;
   }
+  SerializeHTMLTagAndClass(node_data);
+
   String display_style;
   if (Element* element = GetElement()) {
     if (const ComputedStyle* computed_style = element->GetComputedStyle()) {
