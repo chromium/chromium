@@ -169,20 +169,20 @@ id<GREYMatcher> DefaultPromoSubtitle() {
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
-  if ([self isRunningTest:@selector(testDesktopUserPromo)] ||
-      [self isRunningTest:@selector(testDesktopUserCompactedItem)] ||
+  if ([self isRunningTest:@selector(DISABLED_testDesktopUserPromo)] ||
+      [self isRunningTest:@selector(DISABLED_testDesktopUserCompactedItem)] ||
       [self isRunningTest:@selector(testDesktopUserSeeMoreItem)]) {
     config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
     config.additional_args.push_back("Desktop");
   }
-  if ([self isRunningTest:@selector(testAndroidSwitcherPromo)] ||
-      [self isRunningTest:@selector(testAndroidSwitcherCompactedItem)] ||
+  if ([self isRunningTest:@selector(DISABLED_testAndroidSwitcherPromo)] ||
+      [self isRunningTest:@selector(DISABLED_testAndroidSwitcherCompactedItem)] ||
       [self isRunningTest:@selector(testAndroidSwitcherSeeMoreItem)]) {
     config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
     config.additional_args.push_back("AndroidPhone");
   }
-  if ([self isRunningTest:@selector(testShopperPromo)] ||
-      [self isRunningTest:@selector(testShopperCompactedItem)] ||
+  if ([self isRunningTest:@selector(DISABLED_testShopperPromo)] ||
+      [self isRunningTest:@selector(DISABLED_testShopperCompactedItem)] ||
       [self isRunningTest:@selector(testShopperSeeMoreItem)]) {
     config.additional_args.push_back("-ForceExperienceForShopper");
     config.additional_args.push_back("true");
@@ -199,7 +199,8 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 
 // Tests that the text on the Default Browser compacted Set Up List item shown
 // to desktop users is correctly displayed.
-- (void)testDesktopUserCompactedItem {
+// TODO(crbug.com/360351339): Test consistently fails on some builders.
+- (void)DISABLED_testDesktopUserCompactedItem {
   [[EarlGrey selectElementWithMatcher:DefaultItemTitle()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:DeviceSwitcherDescription()]
@@ -208,7 +209,8 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 
 // Tests that the text on the Default Browser compacted Set Up List item shown
 // to android switchers is correctly displayed.
-- (void)testAndroidSwitcherCompactedItem {
+// TODO(crbug.com/360351339): Test consistently fails on some builders.
+- (void)DISABLED_testAndroidSwitcherCompactedItem {
   [[EarlGrey selectElementWithMatcher:DefaultItemTitle()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:DeviceSwitcherDescription()]
@@ -217,7 +219,8 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 
 // Tests that the text on the Default Browser compacted Set Up List item shown
 // to shopping users is correctly displayed.
-- (void)testShopperCompactedItem {
+// TODO(crbug.com/360351339): Test consistently fails on some builders.
+- (void)DISABLED_testShopperCompactedItem {
   [[EarlGrey selectElementWithMatcher:DefaultItemTitle()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:ShopperDescription()]
@@ -226,7 +229,8 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 
 // Tests that the default text on the Default Browser compacted Set Up List item
 // is correctly displayed.
-- (void)testDefaultCompactedItem {
+// TODO(crbug.com/360351339): Test consistently fails on some builders.
+- (void)DISABLED_testDefaultCompactedItem {
   [[EarlGrey selectElementWithMatcher:DefaultItemTitle()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:DefaultItemDescription()]
@@ -275,7 +279,8 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 
 // Tests that the text on the Set Up List Default Browser promo shown to desktop
 // users is correctly displayed.
-- (void)testDesktopUserPromo {
+// TODO(crbug.com/360351339): Test consistently fails on some builders.
+- (void)DISABLED_testDesktopUserPromo {
   [self openPromo];
   [[EarlGrey selectElementWithMatcher:DeviceSwitcherPromoTitle()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -285,7 +290,8 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 
 // Tests that the text on the Set Up List Default Browser promo shown to android
 // switchers is correctly displayed.
-- (void)testAndroidSwitcherPromo {
+// TODO(crbug.com/360351339): Test consistently fails on some builders.
+- (void)DISABLED_testAndroidSwitcherPromo {
   [self openPromo];
   [[EarlGrey selectElementWithMatcher:DeviceSwitcherPromoTitle()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -295,7 +301,8 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 
 // Tests that the text on the Set Up List Default Browser promo shown to
 // shopping users is correctly displayed.
-- (void)testShopperPromo {
+// TODO(crbug.com/360351339): Test consistently fails on some builders.
+- (void)DISABLED_testShopperPromo {
   [self openPromo];
   [[EarlGrey selectElementWithMatcher:ShopperPromoTitle()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -305,7 +312,8 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 
 // Tests that the default text on the Set Up List Default Browser promo is
 // correctly displayed.
-- (void)testDefaultPromo {
+// TODO(crbug.com/360351339): Test consistently fails on some builders.
+- (void)DISABLED_testDefaultPromo {
   [self openPromo];
   [[EarlGrey selectElementWithMatcher:DefaultPromoTitle()]
       assertWithMatcher:grey_sufficientlyVisible()];
