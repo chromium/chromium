@@ -115,7 +115,6 @@ int TlsStreamAttempt::DoTcpAttemptComplete(int rv) {
   const LoadTimingInfo::ConnectTiming& nested_timing =
       nested_attempt_->connect_timing();
   mutable_connect_timing().connect_start = nested_timing.connect_start;
-  mutable_connect_timing().connect_end = nested_timing.connect_end;
 
   if (tcp_handshake_completion_callback_) {
     std::move(tcp_handshake_completion_callback_).Run(rv);

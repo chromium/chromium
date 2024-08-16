@@ -83,9 +83,10 @@ void ValidateConnectTiming(LoadTimingInfo::ConnectTiming& connect_timing) {
   EXPECT_LE(connect_timing.domain_lookup_start,
             connect_timing.domain_lookup_end);
   EXPECT_LE(connect_timing.domain_lookup_end, connect_timing.connect_start);
-  EXPECT_LE(connect_timing.connect_start, connect_timing.connect_end);
-  EXPECT_LE(connect_timing.connect_end, connect_timing.ssl_start);
+  EXPECT_LE(connect_timing.connect_start, connect_timing.ssl_start);
   EXPECT_LE(connect_timing.ssl_start, connect_timing.ssl_end);
+  // connectEnd should cover TLS handshake.
+  EXPECT_LE(connect_timing.ssl_end, connect_timing.connect_end);
 }
 
 // A helper to create an HttpStreamKey.
@@ -609,7 +610,7 @@ TEST_F(HttpStreamPoolJobTest, ConnectTiming) {
       connect_timing.domain_lookup_end - connect_timing.domain_lookup_start,
       kDnsUpdateDelay);
   ASSERT_EQ(connect_timing.connect_end - connect_timing.connect_start,
-            kTcpDelay + kDnsFinishDelay);
+            kDnsFinishDelay + kTcpDelay + kTlsDelay);
   ASSERT_EQ(connect_timing.ssl_end - connect_timing.ssl_start, kTlsDelay);
 }
 

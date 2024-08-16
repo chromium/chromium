@@ -92,6 +92,7 @@ void StreamAttempt::NotifyOfCompletion(int rv) {
 }
 
 void StreamAttempt::LogCompletion(int rv) {
+  connect_timing_.connect_end = base::TimeTicks::Now();
   net_log().EndEventWithNetErrorCode(net_log_attempt_event_type_, rv);
 }
 

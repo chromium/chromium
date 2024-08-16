@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/test/bind.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
@@ -34,6 +35,17 @@ using test::IsError;
 using test::IsOk;
 
 namespace {
+
+void ValidateConnectTiming(
+    const LoadTimingInfo::ConnectTiming& connect_timing) {
+  EXPECT_LE(connect_timing.domain_lookup_start,
+            connect_timing.domain_lookup_end);
+  EXPECT_LE(connect_timing.domain_lookup_end, connect_timing.connect_start);
+  EXPECT_LE(connect_timing.connect_start, connect_timing.ssl_start);
+  EXPECT_LE(connect_timing.ssl_start, connect_timing.ssl_end);
+  // connectEnd should cover TLS handshake.
+  EXPECT_LE(connect_timing.ssl_end, connect_timing.connect_end);
+}
 
 class TlsStreamAttemptHelper : public TlsStreamAttempt::SSLConfigProvider {
  public:
@@ -169,10 +181,7 @@ TEST_F(TlsStreamAttemptTest, SuccessSync) {
       helper.attempt()->ReleaseStreamSocket();
   ASSERT_TRUE(stream_socket);
   ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_IDLE);
-  ASSERT_FALSE(helper.attempt()->connect_timing().connect_start.is_null());
-  ASSERT_FALSE(helper.attempt()->connect_timing().connect_end.is_null());
-  ASSERT_FALSE(helper.attempt()->connect_timing().ssl_start.is_null());
-  ASSERT_FALSE(helper.attempt()->connect_timing().ssl_end.is_null());
+  ValidateConnectTiming(helper.attempt()->connect_timing());
 }
 
 TEST_F(TlsStreamAttemptTest, SuccessAsync) {
@@ -193,10 +202,30 @@ TEST_F(TlsStreamAttemptTest, SuccessAsync) {
       helper.attempt()->ReleaseStreamSocket();
   ASSERT_TRUE(stream_socket);
   ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_IDLE);
-  ASSERT_FALSE(helper.attempt()->connect_timing().connect_start.is_null());
-  ASSERT_FALSE(helper.attempt()->connect_timing().connect_end.is_null());
-  ASSERT_FALSE(helper.attempt()->connect_timing().ssl_start.is_null());
-  ASSERT_FALSE(helper.attempt()->connect_timing().ssl_end.is_null());
+  ValidateConnectTiming(helper.attempt()->connect_timing());
+}
+
+TEST_F(TlsStreamAttemptTest, ConnectAndConfirmDelayed) {
+  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
+
+  StaticSocketDataProvider data;
+  data.set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory().AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.connect_callback =
+      base::BindLambdaForTesting([&] { FastForwardBy(kDelay); });
+  ssl.confirm = MockConfirm(SYNCHRONOUS, OK);
+  ssl.confirm_callback =
+      base::BindLambdaForTesting([&] { FastForwardBy(kDelay); });
+  socket_factory().AddSSLSocketDataProvider(&ssl);
+
+  TlsStreamAttemptHelper helper(params());
+  int rv = helper.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = helper.WaitForCompletion();
+  EXPECT_THAT(rv, IsOk());
+  ValidateConnectTiming(helper.attempt()->connect_timing());
 }
 
 TEST_F(TlsStreamAttemptTest, SSLConfigDelayed) {
@@ -219,6 +248,7 @@ TEST_F(TlsStreamAttemptTest, SSLConfigDelayed) {
   helper.SetSSLConfig(SSLConfig());
   rv = helper.WaitForCompletion();
   EXPECT_THAT(rv, IsOk());
+  ValidateConnectTiming(helper.attempt()->connect_timing());
 }
 
 TEST_F(TlsStreamAttemptTest, TcpFail) {
