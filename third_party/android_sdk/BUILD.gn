@@ -6,7 +6,7 @@ import("//build/config/android/rules.gni")
 
 if (enable_java_templates) {
   android_system_java_prebuilt("public_framework_system_java") {
-    jar_path = "//third_party/android_system_sdk/android_system.jar"
+    jar_path = "//third_party/android_system_sdk/cipd/android_system.jar"
   }
 
   android_system_java_prebuilt("android_sdk_java") {

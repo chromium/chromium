@@ -1463,14 +1463,14 @@ deps = {
       'condition': 'checkout_android',
   },
 
-  'src/third_party/android_system_sdk': {
+  'src/third_party/android_system_sdk/cipd': {
       'packages': [
           {
               'package': 'chromium/third_party/android_system_sdk/public',
               'version': 'XzzECzCzGLrccJS1U-HdmM5VMh9BotgQ_mWhFQ464PwC',
           },
       ],
-      'condition': 'checkout_android',
+      'condition': 'checkout_android and non_git_source',
       'dep_type': 'cipd',
   },
 

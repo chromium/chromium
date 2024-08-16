@@ -12,7 +12,7 @@
 /android_sdk/public/
 /android_sdk/sources/
 /android_support_test_runner/lib/
-/android_system_sdk/*.jar
+/android_system_sdk/cipd/
 /android_toolchain/ndk/
 /android_toolchain_canary/ndk/
 /android_tools_internal/
