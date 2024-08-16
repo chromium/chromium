@@ -34,6 +34,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
+#include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
@@ -48,6 +49,7 @@
 #include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/core/test_hints_component_creator.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
@@ -1422,8 +1424,11 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   ASSERT_FALSE(
       g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
 
-  EXPECT_FALSE(ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(
-      UserVisibleFeatureKey::kCompose));
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kCompose);
+  EXPECT_FALSE(
+      ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(metadata));
 
   // Upload should be disabled as there is no metrics consent, so total
   // histogram bucket count will be 1.
@@ -1488,9 +1493,11 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   policy_provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(
-      model_execution_features_controller()
-          ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kCompose);
+  EXPECT_FALSE(model_execution_features_controller()
+                   ->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
 
   // Attempt to upload a new quality log.
   ModelQualityLogEntry::Upload(GetModelQualityLogEntryForCompose());
@@ -1506,9 +1513,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   policy_provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(
-      model_execution_features_controller()
-          ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+  EXPECT_FALSE(model_execution_features_controller()
+                   ->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
 
   // Attempt to upload a new quality log.
   ModelQualityLogEntry::Upload(GetModelQualityLogEntryForCompose());
@@ -1527,10 +1533,10 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(model_execution_features_controller()
-                  ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+                  ->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
 
-  EXPECT_TRUE(ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(
-      UserVisibleFeatureKey::kCompose));
+  EXPECT_TRUE(
+      ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(metadata));
 
   // Attempt to upload a new quality log.
   ModelQualityLogEntry::Upload(GetModelQualityLogEntryForCompose());
@@ -1578,12 +1584,14 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   policy_provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(
-      model_execution_features_controller()
-          ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kCompose);
+  EXPECT_FALSE(model_execution_features_controller()
+                   ->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
 
-  EXPECT_FALSE(ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(
-      UserVisibleFeatureKey::kCompose));
+  EXPECT_FALSE(
+      ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(metadata));
 
   // Disable logging via the enterprise policy to kDisable state this should
   // return ChromeModelQualityLogsUploaderService::CanUploadLogs to false.
@@ -1597,12 +1605,11 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   policy_provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(
-      model_execution_features_controller()
-          ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+  EXPECT_FALSE(model_execution_features_controller()
+                   ->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
 
-  EXPECT_FALSE(ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(
-      UserVisibleFeatureKey::kCompose));
+  EXPECT_FALSE(
+      ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(metadata));
 
   // Enable logging via the enterprise policy to state kAllow this shouldn't
   // stop upload and should return
@@ -1619,10 +1626,10 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(model_execution_features_controller()
-                  ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+                  ->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
 
-  EXPECT_TRUE(ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(
-      UserVisibleFeatureKey::kCompose));
+  EXPECT_TRUE(
+      ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(metadata));
 
   // Log uploads should have been recorded as disabled twice because of
   // enterprise policy.
@@ -1645,9 +1652,11 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       policy::key::kHelpMeWriteSettings,
       ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
 
-  EXPECT_FALSE(
-      model_execution_features_controller()
-          ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kCompose);
+  EXPECT_FALSE(model_execution_features_controller()
+                   ->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1661,9 +1670,11 @@ IN_PROC_BROWSER_TEST_F(
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableModelQualityDogfoodLogging);
 
-  EXPECT_FALSE(
-      model_execution_features_controller()
-          ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kCompose);
+  EXPECT_FALSE(model_execution_features_controller()
+                   ->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
 }
 
 IN_PROC_BROWSER_TEST_F(DogfoodOptimizationGuideKeyedServiceBrowserTest,
@@ -1674,9 +1685,11 @@ IN_PROC_BROWSER_TEST_F(DogfoodOptimizationGuideKeyedServiceBrowserTest,
       policy::key::kHelpMeWriteSettings,
       ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
 
-  EXPECT_FALSE(
-      model_execution_features_controller()
-          ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kCompose);
+  EXPECT_FALSE(model_execution_features_controller()
+                   ->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
 }
 
 IN_PROC_BROWSER_TEST_F(DogfoodOptimizationGuideKeyedServiceBrowserTest,
@@ -1689,8 +1702,11 @@ IN_PROC_BROWSER_TEST_F(DogfoodOptimizationGuideKeyedServiceBrowserTest,
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableModelQualityDogfoodLogging);
 
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kCompose);
   EXPECT_TRUE(model_execution_features_controller()
-                  ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+                  ->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -1700,8 +1716,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   SetEnterprisePolicy(policy::key::kHelpMeWriteSettings,
                       ModelExecutionEnterprisePolicyValue::kAllow);
 
-  EXPECT_TRUE(
-      service()->ShouldFeatureBeCurrentlyAllowedForFeedback(compose_feature));
+  EXPECT_TRUE(service()->ShouldFeatureBeCurrentlyAllowedForFeedback(
+      proto::LogAiDataRequest::FeatureCase::kCompose));
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -1713,8 +1729,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
   SetIsDogfoodClient(false);
 
-  EXPECT_FALSE(
-      service()->ShouldFeatureBeCurrentlyAllowedForFeedback(compose_feature));
+  EXPECT_FALSE(service()->ShouldFeatureBeCurrentlyAllowedForFeedback(
+      proto::LogAiDataRequest::FeatureCase::kCompose));
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -1726,21 +1742,20 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
   SetIsDogfoodClient(true);
 
-  EXPECT_TRUE(
-      service()->ShouldFeatureBeCurrentlyAllowedForFeedback(compose_feature));
+  EXPECT_TRUE(service()->ShouldFeatureBeCurrentlyAllowedForFeedback(
+      proto::LogAiDataRequest::FeatureCase::kCompose));
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
                        FeedbackIsDisabledWhenFeatureIsDisabled_Dogfood) {
-  auto compose_feature = UserVisibleFeatureKey::kCompose;
   // Note: Unlike the tests above, do not enable the feature; leave it in the
   // default state.
   SetEnterprisePolicy(policy::key::kHelpMeWriteSettings,
                       ModelExecutionEnterprisePolicyValue::kDisable);
   SetIsDogfoodClient(true);
 
-  EXPECT_FALSE(
-      service()->ShouldFeatureBeCurrentlyAllowedForFeedback(compose_feature));
+  EXPECT_FALSE(service()->ShouldFeatureBeCurrentlyAllowedForFeedback(
+      proto::LogAiDataRequest::FeatureCase::kCompose));
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -1770,11 +1785,14 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
                     static_cast<int>(prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
 
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kCompose);
   EXPECT_TRUE(model_execution_features_controller()
-                  ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+                  ->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
 
-  EXPECT_TRUE(ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(
-      UserVisibleFeatureKey::kCompose));
+  EXPECT_TRUE(
+      ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(metadata));
 
   // Intercept network requests.
   network::TestURLLoaderFactory url_loader_factory;

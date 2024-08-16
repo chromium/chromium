@@ -14,11 +14,6 @@
 class PrefService;
 namespace optimization_guide {
 
-// Returns ModelExecutionFeature corresponding to the
-// proto::LogAiDataRequest::FeatureCase.
-std::optional<UserVisibleFeatureKey> GetModelExecutionFeature(
-    proto::LogAiDataRequest::FeatureCase feature);
-
 // Helper method to get the quality_data from `log_ai_data_request` for
 // different features.
 template <typename FeatureType>
@@ -28,14 +23,16 @@ FeatureType::Quality* GetModelQualityData(
 }
 
 // Returns the hashed client id with the feature and day.
-int64_t GetHashedModelQualityClientId(UserVisibleFeatureKey feature,
-                                      base::Time day,
-                                      int64_t client_id);
+int64_t GetHashedModelQualityClientId(
+    proto::LogAiDataRequest::FeatureCase feature,
+    base::Time day,
+    int64_t client_id);
 
 // Creates a new client id if not persisted to prefs. Returns a different ID for
 // different `feature` for each day.
-int64_t GetOrCreateModelQualityClientId(UserVisibleFeatureKey feature,
-                                        PrefService* pref_service);
+int64_t GetOrCreateModelQualityClientId(
+    proto::LogAiDataRequest::FeatureCase feature,
+    PrefService* pref_service);
 
 }  // namespace optimization_guide
 

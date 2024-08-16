@@ -123,6 +123,8 @@ component("features") {
   sources = [
     "feature_registry/enterprise_policy_registry.cc",
     "feature_registry/enterprise_policy_registry.h",
+    "feature_registry/feature_registration.cc",
+    "feature_registry/feature_registration.h",
     "feature_registry/mqls_feature_registry.cc",
     "feature_registry/mqls_feature_registry.h",
     "feature_registry/settings_ui_registry.cc",
@@ -131,6 +133,7 @@ component("features") {
     "model_execution/feature_keys.h",
     "model_execution/model_execution_prefs.cc",
     "model_execution/model_execution_prefs.h",
+    "model_quality/feature_type_map.h",
     "optimization_guide_constants.cc",
     "optimization_guide_constants.h",
     "optimization_guide_enums.h",
@@ -180,7 +183,6 @@ static_library("core") {
     "memory_hint.cc",
     "memory_hint.h",
     "model_handler.h",
-    "model_quality/feature_type_map.h",
     "model_quality/model_quality_log_entry.cc",
     "model_quality/model_quality_log_entry.h",
     "model_quality/model_quality_logs_uploader_service.cc",
@@ -540,6 +542,7 @@ source_set("unit_tests") {
   deps = [
     ":bloomfilter",
     ":core",
+    ":features",
     ":prediction",
     ":test_support",
     ":unit_tests_bundle_data",

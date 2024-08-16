@@ -27,6 +27,8 @@
 #include "url/gurl.h"
 
 namespace optimization_guide {
+
+class MqlsFeatureMetadata;
 namespace features {
 
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -344,7 +346,7 @@ bool IsModelQualityLoggingEnabled();
 
 // Whether model quality logging is enabled for a feature.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsModelQualityLoggingEnabledForFeature(UserVisibleFeatureKey feature);
+bool IsModelQualityLoggingEnabledForFeature(const MqlsFeatureMetadata*);
 
 // Returns whether the `model_version` for `opt_target` is part of emergency
 // killswitch, and this model should be stopped serving immediately.

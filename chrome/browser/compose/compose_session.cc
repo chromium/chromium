@@ -47,6 +47,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/page_navigator.h"
@@ -883,7 +884,7 @@ bool ComposeSession::CanShowFeedbackPage() {
           Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
   if (!opt_guide_keyed_service ||
       !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForFeedback(
-          optimization_guide::UserVisibleFeatureKey::kCompose)) {
+          optimization_guide::proto::LogAiDataRequest::FeatureCase::kCompose)) {
     return false;
   }
 

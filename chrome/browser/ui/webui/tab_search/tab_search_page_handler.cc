@@ -58,6 +58,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/user_education/common/tutorial_identifier.h"
 #include "components/user_education/common/tutorial_service.h"
@@ -594,7 +595,7 @@ void TabSearchPageHandler::TriggerFeedback(int32_t session_id) {
       OptimizationGuideKeyedServiceFactory::GetForProfile(browser->profile());
   if (!opt_guide_keyed_service ||
       !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForFeedback(
-          optimization_guide::UserVisibleFeatureKey::kTabOrganization)) {
+          optimization_guide::proto::LogAiDataRequest::kTabOrganization)) {
     return;
   }
   base::Value::Dict feedback_metadata;

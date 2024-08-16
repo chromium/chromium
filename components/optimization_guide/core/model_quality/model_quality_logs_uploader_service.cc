@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/access_token_helper.h"
+#include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
@@ -21,6 +22,7 @@
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "net/base/url_util.h"
@@ -36,21 +38,16 @@ namespace optimization_guide {
 
 namespace {
 
-void RecordUploadStatusHistogram(UserVisibleFeatureKey feature,
+void RecordUploadStatusHistogram(proto::LogAiDataRequest::FeatureCase feature,
                                  ModelQualityLogsUploadStatus status) {
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(feature);
+  CHECK(metadata);
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.",
-           GetStringNameForModelExecutionFeature(feature)}),
+           metadata->name()}),
       status);
-}
-
-void RecordUserFeedbackHistogram(UserVisibleFeatureKey feature,
-                                 proto::UserFeedback user_feedback) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"OptimizationGuide.ModelQuality.UserFeedback.",
-                    GetStringNameForModelExecutionFeature(feature)}),
-      static_cast<ModelQualityUserFeedback>(user_feedback));
 }
 
 // Returns the URL endpoint for the model quality service along with the needed
@@ -67,66 +64,26 @@ GURL GetModelQualityLogsUploaderServiceURL() {
 // Sets user feedback for the ModelExecutionFeature corresponding to the
 // `log_entry`.
 void RecordUserFeedbackHistogram(proto::LogAiDataRequest* log_ai_data_request) {
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(
+          log_ai_data_request->feature_case());
+  CHECK(metadata);
   proto::UserFeedback user_feedback =
-      proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
-  auto feature =
-      GetModelExecutionFeature(log_ai_data_request->feature_case()).value();
-  switch (feature) {
-    case UserVisibleFeatureKey::kCompose:
-      user_feedback =
-          GetModelQualityData<ComposeFeatureTypeMap>(log_ai_data_request)
-              ->user_feedback();
-      RecordUserFeedbackHistogram(feature, user_feedback);
-      break;
-    case UserVisibleFeatureKey::kTabOrganization:
-      // If there is no tab organization, we don't have any user_feedback mark
-      // it as unspecified.
-      if (GetModelQualityData<TabOrganizationFeatureTypeMap>(
-              log_ai_data_request)
-              ->organizations()
-              .empty()) {
-        RecordUserFeedbackHistogram(feature, user_feedback);
-      } else if (GetModelQualityData<TabOrganizationFeatureTypeMap>(
-                     log_ai_data_request)
-                     ->user_feedback()) {
-        user_feedback = GetModelQualityData<TabOrganizationFeatureTypeMap>(
-                            log_ai_data_request)
-                            ->user_feedback();
-        RecordUserFeedbackHistogram(feature, user_feedback);
-      } else {
-        for (auto organization :
-             GetModelQualityData<TabOrganizationFeatureTypeMap>(
-                 log_ai_data_request)
-                 ->organizations()) {
-          // TODO(b/331852814): Remove this else case along with the multi tab
-          // organization flag
-          // We assume there is only one tab organization when we upload the
-          // model quality data for this version.
-          user_feedback = organization.user_feedback();
-          RecordUserFeedbackHistogram(feature, user_feedback);
-        }
-      }
-      break;
-    case UserVisibleFeatureKey::kWallpaperSearch:
-      user_feedback = GetModelQualityData<WallpaperSearchFeatureTypeMap>(
-                          log_ai_data_request)
-                          ->user_feedback();
-      RecordUserFeedbackHistogram(feature, user_feedback);
-      break;
-    case UserVisibleFeatureKey::kHistorySearch:
-      // TODO(crbug.com/345308285): Add user feedback for history searches.
-      break;
-  }
+      metadata->get_user_feedback_callback().Run(*log_ai_data_request);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"OptimizationGuide.ModelQuality.UserFeedback.", metadata->name()}),
+      static_cast<ModelQualityUserFeedback>(user_feedback));
 }
 
 // URL load completion callback.
 void OnURLLoadComplete(
     std::unique_ptr<network::SimpleURLLoader> active_url_loader,
-    UserVisibleFeatureKey feature,
+    proto::LogAiDataRequest::FeatureCase feature,
     std::unique_ptr<std::string> response_body) {
   CHECK(active_url_loader) << "loader shouldn't be null\n";
   TRACE_EVENT1("browser", "ModelQualityLogsUploaderService::OnURLLoadComplete",
-               "feature", GetStringNameForModelExecutionFeature(feature));
+               "feature", feature);
 
   auto net_error = active_url_loader->NetError();
   int response_code = -1;
@@ -198,7 +155,7 @@ ModelQualityLogsUploaderService::ModelQualityLogsUploaderService(
 ModelQualityLogsUploaderService::~ModelQualityLogsUploaderService() = default;
 
 bool ModelQualityLogsUploaderService::CanUploadLogs(
-    UserVisibleFeatureKey feature) {
+    const MqlsFeatureMetadata* metadata) {
   return false;
 }
 
@@ -214,20 +171,25 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
     std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Don't do anything if the data is null. Nothing to upload.
+  // Don't do anything if the data is null or no feature is set.
   if (!log_ai_data_request) {
+    return;
+  }
+  proto::LogAiDataRequest::FeatureCase feature =
+      log_ai_data_request->feature_case();
+  if (feature == proto::LogAiDataRequest::FeatureCase::FEATURE_NOT_SET) {
     return;
   }
 
   // Log User Feedback Histogram corresponding to the LogAiDataRequest.
   RecordUserFeedbackHistogram(log_ai_data_request.get());
 
-  auto feature =
-      GetModelExecutionFeature(log_ai_data_request->feature_case()).value();
-
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(feature);
+  CHECK(metadata);
   TRACE_EVENT1("browser",
                "ModelQualityLogsUploaderService::UploadModelQualityLogs",
-               "feature", GetStringNameForModelExecutionFeature(feature));
+               "feature", metadata->name());
 
   // Set the client id for logging if non-zero.
   proto::LoggingMetadata* logging_metadata =
@@ -250,7 +212,7 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
 
 void ModelQualityLogsUploaderService::UploadFinalizedLog(
     std::unique_ptr<proto::LogAiDataRequest> log,
-    UserVisibleFeatureKey feature) {
+    proto::LogAiDataRequest::FeatureCase feature) {
   std::string serialized_logs;
   log->SerializeToString(&serialized_logs);
 

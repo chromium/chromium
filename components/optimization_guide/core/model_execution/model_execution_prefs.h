@@ -30,23 +30,7 @@ enum class GenAILocalFoundationalModelEnterprisePolicySettings {
 };
 
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kTabOrganizationEnterprisePolicyAllowed[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kComposeEnterprisePolicyAllowed[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kWallpaperSearchEnterprisePolicyAllowed[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kHistorySearchEnterprisePolicyAllowed[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kTabCompareSettingsEnterprisePolicyAllowed[];
-
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
-// Returns the name of the pref to check for enterprise policy for `feature`.
-// Null is returned when no enterprise policy is defined for the `feature`.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-const char* GetEnterprisePolicyPrefName(UserVisibleFeatureKey feature);
 
 namespace localstate {
 

@@ -5,6 +5,8 @@
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 
 #include "base/notreached.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -12,58 +14,8 @@
 
 namespace optimization_guide::model_execution::prefs {
 
-const char kTabOrganizationEnterprisePolicyAllowed[] =
-    "optimization_guide.model_execution.tab_organization_enterprise_policy_"
-    "allowed";
-
-const char kComposeEnterprisePolicyAllowed[] =
-    "optimization_guide.model_execution.compose_enterprise_policy_allowed";
-
-const char kWallpaperSearchEnterprisePolicyAllowed[] =
-    "optimization_guide.model_execution.wallpaper_search_enterprise_policy_"
-    "allowed";
-
-const char kHistorySearchEnterprisePolicyAllowed[] =
-    "optimization_guide.model_execution.history_search_"
-    "enterprise_policy_allowed";
-
-const char kTabCompareSettingsEnterprisePolicyAllowed[] =
-    "optimization_guide.model_execution.tab_compare_settings_enterprise_policy";
-
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(
-      kTabOrganizationEnterprisePolicyAllowed,
-      static_cast<int>(ModelExecutionEnterprisePolicyValue::kAllow),
-      PrefRegistry::LOSSY_PREF);
-  registry->RegisterIntegerPref(
-      kComposeEnterprisePolicyAllowed,
-      static_cast<int>(ModelExecutionEnterprisePolicyValue::kAllow),
-      PrefRegistry::LOSSY_PREF);
-  registry->RegisterIntegerPref(
-      kWallpaperSearchEnterprisePolicyAllowed,
-      static_cast<int>(ModelExecutionEnterprisePolicyValue::kAllow),
-      PrefRegistry::LOSSY_PREF);
-  registry->RegisterIntegerPref(
-      kHistorySearchEnterprisePolicyAllowed,
-      static_cast<int>(ModelExecutionEnterprisePolicyValue::kAllow),
-      PrefRegistry::LOSSY_PREF);
-  registry->RegisterIntegerPref(
-      kTabCompareSettingsEnterprisePolicyAllowed,
-      static_cast<int>(ModelExecutionEnterprisePolicyValue::kAllow),
-      PrefRegistry::LOSSY_PREF);
-}
-
-const char* GetEnterprisePolicyPrefName(UserVisibleFeatureKey feature) {
-  switch (feature) {
-    case UserVisibleFeatureKey::kCompose:
-      return kComposeEnterprisePolicyAllowed;
-    case UserVisibleFeatureKey::kTabOrganization:
-      return kTabOrganizationEnterprisePolicyAllowed;
-    case UserVisibleFeatureKey::kWallpaperSearch:
-      return kWallpaperSearchEnterprisePolicyAllowed;
-    case UserVisibleFeatureKey::kHistorySearch:
-      return kHistorySearchEnterprisePolicyAllowed;
-  }
+  RegisterGenAiFeatures(registry);
 }
 
 namespace localstate {

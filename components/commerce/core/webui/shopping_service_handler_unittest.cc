@@ -29,6 +29,7 @@
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/proto/features/product_specifications.pb.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
@@ -197,6 +198,8 @@ class ShoppingServiceHandlerTest : public testing::Test {
     shopping_service_->SetAccountChecker(account_checker_.get());
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     RegisterPrefs(pref_service_->registry());
+    optimization_guide::model_execution::prefs::RegisterProfilePrefs(
+        pref_service_->registry());
     SetShoppingListEnterprisePolicyPref(pref_service_.get(), true);
 
     ON_CALL(*shopping_service_, GetProductSpecificationsService)

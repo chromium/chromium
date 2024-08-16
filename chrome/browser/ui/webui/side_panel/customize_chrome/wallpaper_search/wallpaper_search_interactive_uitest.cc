@@ -21,6 +21,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -498,7 +499,8 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
                        FeedbackDialogShowsOnThumbsDown) {
   EXPECT_CALL(mock_optimization_guide_keyed_service(),
               ShouldFeatureBeCurrentlyAllowedForFeedback(
-                  optimization_guide::UserVisibleFeatureKey::kWallpaperSearch))
+                  optimization_guide::proto::LogAiDataRequest::FeatureCase::
+                      kWallpaperSearch))
       .WillOnce(testing::Return(true));
 
   // Intercept Wallpaper Search descriptor fetches, and respond with data.

@@ -26,6 +26,7 @@ class SharedURLLoaderFactory;
 
 namespace optimization_guide {
 
+class MqlsFeatureMetadata;
 class ModelQualityLogEntry;
 
 class ModelQualityLogsUploaderService {
@@ -43,7 +44,7 @@ class ModelQualityLogsUploaderService {
 
   // Does various checks like metrics consent, enterprise check before uploading
   // the logs.
-  virtual bool CanUploadLogs(UserVisibleFeatureKey feature);
+  virtual bool CanUploadLogs(const MqlsFeatureMetadata* metadata);
 
   // Sets system metadata, including the UMA system profile.
   virtual void SetSystemMetadata(proto::LoggingMetadata* logging_metadata);
@@ -60,7 +61,7 @@ class ModelQualityLogsUploaderService {
 
  protected:
   virtual void UploadFinalizedLog(std::unique_ptr<proto::LogAiDataRequest> log,
-                                  UserVisibleFeatureKey feature);
+                                  proto::LogAiDataRequest::FeatureCase feature);
 
  private:
   friend class ModelQualityLogsUploaderServiceTest;

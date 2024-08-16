@@ -10,10 +10,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/component_updater/pref_names.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
+#include "components/optimization_guide/core/feature_registry/settings_ui_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -79,8 +83,10 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
 
   void SetEnterprisePolicy(UserVisibleFeatureKey feature,
                            ModelExecutionEnterprisePolicyValue value) {
-    const char* key =
-        model_execution::prefs::GetEnterprisePolicyPrefName(feature);
+    const char* key = SettingsUiRegistry::GetInstance()
+                          .GetFeature(feature)
+                          ->enterprise_policy()
+                          .name();
     ASSERT_TRUE(key);
     return pref_service_->SetInteger(key, static_cast<int>(value));
   }
@@ -337,8 +343,11 @@ TEST_F(ModelExecutionFeaturesControllerTest,
   SetEnterprisePolicy(
       feature, ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
 
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kCompose);
   EXPECT_FALSE(
-      controller()->ShouldFeatureBeCurrentlyAllowedForLogging(feature));
+      controller()->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
 }
 
 TEST_F(ModelExecutionFeaturesControllerTest,
@@ -354,8 +363,11 @@ TEST_F(ModelExecutionFeaturesControllerTest,
   SetEnterprisePolicy(
       feature, ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
 
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kCompose);
   EXPECT_FALSE(
-      controller()->ShouldFeatureBeCurrentlyAllowedForLogging(feature));
+      controller()->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
 }
 
 TEST_F(ModelExecutionFeaturesControllerTest,
@@ -373,8 +385,11 @@ TEST_F(ModelExecutionFeaturesControllerTest,
   SetEnterprisePolicy(
       feature, ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
 
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kCompose);
   EXPECT_FALSE(
-      controller()->ShouldFeatureBeCurrentlyAllowedForLogging(feature));
+      controller()->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
 }
 
 TEST_F(ModelExecutionFeaturesControllerTest,
@@ -392,8 +407,11 @@ TEST_F(ModelExecutionFeaturesControllerTest,
   SetEnterprisePolicy(
       feature, ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
 
+  const MqlsFeatureMetadata* metadata =
+      MqlsFeatureRegistry::GetInstance().GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kCompose);
   EXPECT_FALSE(
-      controller()->ShouldFeatureBeCurrentlyAllowedForLogging(feature));
+      controller()->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
 }
 
 TEST_F(ModelExecutionFeaturesControllerTest,

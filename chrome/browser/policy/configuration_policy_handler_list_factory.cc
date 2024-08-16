@@ -97,6 +97,7 @@
 #include "components/network_time/network_time_pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -2211,20 +2212,20 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 #endif // BUILDFLAG(ENABLE_EXTENSIONS)
 #if !BUILDFLAG(IS_ANDROID)
   { key::kTabOrganizerSettings,
-    optimization_guide::model_execution::prefs::kTabOrganizationEnterprisePolicyAllowed,
+    optimization_guide::prefs::kTabOrganizationEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
   { key::kHelpMeWriteSettings,
-    optimization_guide::model_execution::prefs::kComposeEnterprisePolicyAllowed,
+    optimization_guide::prefs::kComposeEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
   { key::kCreateThemesSettings,
-    optimization_guide::model_execution::prefs::kWallpaperSearchEnterprisePolicyAllowed,
+    optimization_guide::prefs::kWallpaperSearchEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
   { key::kHistorySearchSettings,
-    optimization_guide::model_execution::prefs::kHistorySearchEnterprisePolicyAllowed,
+    optimization_guide::prefs::kHistorySearchEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
 #endif
   { key::kTabCompareSettings,
-    optimization_guide::model_execution::prefs::kTabCompareSettingsEnterprisePolicyAllowed,
+    optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   { key::kChromeForTestingAllowed,

@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
@@ -93,6 +94,10 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
       const ModelQualityLogsUploaderServiceTest&) = delete;
 
   ~ModelQualityLogsUploaderServiceTest() override = default;
+
+  void SetUp() override {
+    model_execution::prefs::RegisterProfilePrefs(pref_service_.registry());
+  }
 
   void WritePerformanceClassToPref(OnDeviceModelPerformanceClass perf_class) {
     pref_service_.SetInteger(
@@ -392,14 +397,13 @@ TEST_F(ModelQualityLogsUploaderServiceTest,
 
   UploadModelQualityLogsWithLogEntry(std::move(log_entry));
 
-  // We should record two user feedback values corresponding to each of the tab
-  // organization.
+  // We only record the first user feedback value.
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
       proto::USER_FEEDBACK_THUMBS_UP, 1);
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
-      proto::USER_FEEDBACK_THUMBS_DOWN, 1);
+      proto::USER_FEEDBACK_THUMBS_DOWN, 0);
 }
 
 TEST_F(ModelQualityLogsUploaderServiceTest, ComposeUserFeedbackUMA) {

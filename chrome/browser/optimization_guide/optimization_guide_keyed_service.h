@@ -21,6 +21,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -153,7 +154,7 @@ class OptimizationGuideKeyedService
   // Returns whether the `feature` should be currently allowed for showing the
   // Feedback UI (and sending Feedback reports).
   virtual bool ShouldFeatureBeCurrentlyAllowedForFeedback(
-      optimization_guide::UserVisibleFeatureKey feature) const;
+      optimization_guide::proto::LogAiDataRequest::FeatureCase feature) const;
 
   // Returns true if the opt-in setting should be shown for this profile for
   // given `feature`. This should only be called by settings UX.

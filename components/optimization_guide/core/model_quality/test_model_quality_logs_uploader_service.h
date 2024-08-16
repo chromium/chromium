@@ -9,12 +9,15 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 
 class PrefService;
 
 namespace optimization_guide {
+
+class MqlsFeatureMetadata;
 
 // A test double for the ModelQualityLogsUploaderService, which stores uploaded
 // logs in memory rather than uploading them to a server.
@@ -30,7 +33,7 @@ class TestModelQualityLogsUploaderService
 
   ~TestModelQualityLogsUploaderService() override;
 
-  bool CanUploadLogs(UserVisibleFeatureKey feature) override;
+  bool CanUploadLogs(const MqlsFeatureMetadata* metadata) override;
 
   // Sets a callback that will be run after the next log is uploaded.
   void WaitForLogUpload(base::OnceCallback<void()> callback);
@@ -41,8 +44,9 @@ class TestModelQualityLogsUploaderService
   }
 
  private:
-  void UploadFinalizedLog(std::unique_ptr<proto::LogAiDataRequest> log,
-                          UserVisibleFeatureKey feature) override;
+  void UploadFinalizedLog(
+      std::unique_ptr<proto::LogAiDataRequest> log,
+      proto::LogAiDataRequest::FeatureCase feature) override;
 
   // The list of "uploaded" logs (which are stored in memory rather than
   // actually uploaded), in FIFO order.

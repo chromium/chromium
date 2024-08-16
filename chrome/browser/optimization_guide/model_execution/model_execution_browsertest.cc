@@ -17,6 +17,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
@@ -451,10 +453,12 @@ class ModelExecutionEnabledBrowserTest : public ModelExecutionBrowserTestBase {
   }
 
   bool ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey feature) {
+      proto::LogAiDataRequest::FeatureCase feature) {
+    const MqlsFeatureMetadata* metadata =
+        MqlsFeatureRegistry::GetInstance().GetFeature(feature);
     return GetOptGuideKeyedService()
         ->model_execution_features_controller_
-        ->ShouldFeatureBeCurrentlyAllowedForLogging(feature);
+        ->ShouldFeatureBeCurrentlyAllowedForLogging(metadata);
   }
 };
 
@@ -760,9 +764,8 @@ class ModelExecutionComposeLoggingDisabledTest
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationGuideModelExecution, {}},
-         {features::kModelQualityLogging,
-          {{"model_execution_feature_compose", "false"}}}},
-        {});
+         {features::kModelQualityLogging, {}}},
+        {features::kComposeMqlsLogging});
   }
 
  private:
@@ -912,10 +915,10 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kTabOrganization));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey::kTabOrganization));
+      proto::LogAiDataRequest::FeatureCase::kTabOrganization));
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey::kCompose));
+      proto::LogAiDataRequest::FeatureCase::kCompose));
 
   // Disable via the enterprise policy.
   policy::PolicyMap policies;
@@ -933,9 +936,9 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       UserVisibleFeatureKey::kTabOrganization));
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey::kCompose));
+      proto::LogAiDataRequest::FeatureCase::kCompose));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey::kTabOrganization));
+      proto::LogAiDataRequest::FeatureCase::kTabOrganization));
 
   // Enable via the enterprise policy.
   policies.Set(
@@ -953,10 +956,10 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kTabOrganization));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey::kTabOrganization));
+      proto::LogAiDataRequest::FeatureCase::kTabOrganization));
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey::kCompose));
+      proto::LogAiDataRequest::FeatureCase::kCompose));
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
@@ -1182,10 +1185,10 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kTabOrganization));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey::kTabOrganization));
+      proto::LogAiDataRequest::FeatureCase::kTabOrganization));
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey::kCompose));
+      proto::LogAiDataRequest::FeatureCase::kCompose));
 }
 
 #endif  //  !BUILDFLAG(IS_ANDROID)
