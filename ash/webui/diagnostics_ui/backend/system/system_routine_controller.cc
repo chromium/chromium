@@ -81,8 +81,7 @@ mojom::StandardRoutineResult TestStatusToResult(
     case healthd::DiagnosticRoutineStatusEnum::kRemoved:
     case healthd::DiagnosticRoutineStatusEnum::kCancelling:
     case healthd::DiagnosticRoutineStatusEnum::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      return mojom::StandardRoutineResult::kExecutionError;
+      NOTREACHED();
   }
 }
 

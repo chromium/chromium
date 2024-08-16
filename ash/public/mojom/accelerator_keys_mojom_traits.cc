@@ -447,8 +447,7 @@ mojom_vkey EnumTraits<mojom_vkey, ui::KeyboardCode>::ToMojom(
       return mojom_vkey::kButtonZ;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return mojom_vkey::kUnknown;
+  NOTREACHED();
 }
 
 bool EnumTraits<mojom_vkey, ui::KeyboardCode>::FromMojom(
@@ -1101,8 +1100,7 @@ bool EnumTraits<mojom_vkey, ui::KeyboardCode>::FromMojom(
       *out = ui::KeyboardCode::VKEY_BUTTON_Z;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

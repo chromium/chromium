@@ -257,7 +257,7 @@ ResultSelectionController::GetNextResultLocationForLocation(
     } break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return *next_location == location ? MoveResult::kNone
                                     : MoveResult::kResultChanged;

@@ -219,7 +219,7 @@ void CaptureModeDemoToolsController::OnTouchEvent(
       return;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -51,8 +51,7 @@ void ViewDrawnWaiter::OnViewBoundsChanged(views::View* view) {
 }
 
 void ViewDrawnWaiter::OnViewIsDeleting(views::View* view) {
-  NOTREACHED_IN_MIGRATION()
-      << "View deleted while waiting for it to be visible";
+  NOTREACHED() << "View deleted while waiting for it to be visible";
 }
 
 }  // namespace ash

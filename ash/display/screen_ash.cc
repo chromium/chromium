@@ -83,7 +83,7 @@ class ScreenForShutdown : public display::Screen {
     return primary_display_;
   }
   void AddObserver(display::DisplayObserver* observer) override {
-    NOTREACHED_IN_MIGRATION() << "Observer should not be added during shutdown";
+    NOTREACHED() << "Observer should not be added during shutdown";
   }
   void RemoveObserver(display::DisplayObserver* observer) override {}
 

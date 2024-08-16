@@ -41,7 +41,7 @@ void NullCaptureModeSession::OnCaptureSourceChanged(
   // Currently, the null session only applies to game dashboard, which only
   // records selected windows.
   if (new_source != CaptureModeSource::kWindow) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -77,11 +77,11 @@ void NullCaptureModeSession::StartCountDown(
 }
 
 void NullCaptureModeSession::OnCaptureFolderMayHaveChanged() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NullCaptureModeSession::OnDefaultCaptureFolderSelectionChanged() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool NullCaptureModeSession::CalculateCameraPreviewTargetVisibility() const {

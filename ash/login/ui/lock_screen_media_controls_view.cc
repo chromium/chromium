@@ -137,12 +137,10 @@ const gfx::VectorIcon& GetVectorIconForMediaAction(MediaSessionAction action) {
     case MediaSessionAction::kPreviousSlide:
     case MediaSessionAction::kNextSlide:
     case MediaSessionAction::kEnterAutoPictureInPicture:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return gfx::kNoneIcon;
+  NOTREACHED();
 }
 
 // MediaActionButton is an image button with a custom ink drop mask.
@@ -651,8 +649,8 @@ void LockScreenMediaControlsView::MediaControllerImageChanged(
       break;
     }
     case media_session::mojom::MediaSessionImageType::kChapter: {
-      NOTREACHED_IN_MIGRATION() << " The chpater images should be updated in "
-                                   "`MediaControllerChapterImageChanged` ";
+      NOTREACHED() << " The chpater images should be updated in "
+                      "`MediaControllerChapterImageChanged` ";
     }
   }
 }

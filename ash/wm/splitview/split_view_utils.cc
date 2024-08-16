@@ -297,9 +297,7 @@ void DoSplitviewOpacityAnimation(ui::Layer* layer,
       target_opacity = 1.f;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Not a valid split view opacity animation type.";
-      return;
+      NOTREACHED() << "Not a valid split view opacity animation type.";
   }
 
   if (layer->GetTargetOpacity() == target_opacity)
@@ -331,8 +329,7 @@ void DoSplitviewTransformAnimation(
     case SPLITVIEW_ANIMATION_SET_WINDOW_TRANSFORM:
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Not a valid split view transform type.";
-      return;
+      NOTREACHED() << "Not a valid split view transform type.";
   }
 
   const AnimationValues values = GetAnimationValuesForType(type);
@@ -365,8 +362,7 @@ void DoSplitviewClipRectAnimation(
     case SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_OUT:
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Not a valid split view clip rect type.";
-      return;
+      NOTREACHED() << "Not a valid split view clip rect type.";
   }
 
   const AnimationValues values = GetAnimationValuesForType(type);

@@ -473,8 +473,7 @@ void BackGestureAffordance::AnimationProgressed(
     const gfx::Animation* animation) {
   switch (state_) {
     case State::DRAGGING:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case State::ABORTING:
       SetAbortProgress(animation->GetCurrentValue());
       break;
@@ -485,7 +484,7 @@ void BackGestureAffordance::AnimationProgressed(
 }
 
 void BackGestureAffordance::AnimationCanceled(const gfx::Animation* animation) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace ash

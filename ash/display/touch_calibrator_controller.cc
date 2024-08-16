@@ -344,9 +344,8 @@ void TouchCalibratorController::OnTouchEvent(ui::TouchEvent* touch) {
         std::make_pair(display_point, gfx::ToRoundedPoint(event_location_f));
   } else {
     // TODO(malaykeshav): Display some kind of error for the user.
-    NOTREACHED_IN_MIGRATION()
-        << "Touch calibration failed. Could not retrieve location for"
-           " display point. Retry calibration.";
+    NOTREACHED() << "Touch calibration failed. Could not retrieve location for"
+                    " display point. Retry calibration.";
   }
 
   target_screen_calibration_view->AdvanceToNextState();

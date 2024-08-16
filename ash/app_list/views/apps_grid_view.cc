@@ -2360,7 +2360,7 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
       // item.
       MaybeCreateDragReorderAccessibilityEvent();
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 

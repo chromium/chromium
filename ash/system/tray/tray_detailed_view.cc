@@ -278,7 +278,7 @@ views::Button* TrayDetailedView::CreateHelpButton(
 }
 
 void TrayDetailedView::HandleViewClicked(views::View* view) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::unique_ptr<TriView> TrayDetailedView::CreateTitleTriView(int string_id) {

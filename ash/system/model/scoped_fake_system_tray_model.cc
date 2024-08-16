@@ -18,8 +18,7 @@ ScopedFakeSystemTrayModel* ScopedFakeSystemTrayModel::instance_ = nullptr;
 ScopedFakeSystemTrayModel::ScopedFakeSystemTrayModel() {
   // Only allow one scoped instance at a time.
   if (instance_) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   instance_ = this;
 
@@ -35,8 +34,7 @@ ScopedFakeSystemTrayModel::ScopedFakeSystemTrayModel() {
 
 ScopedFakeSystemTrayModel::~ScopedFakeSystemTrayModel() {
   if (instance_ != this) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   instance_ = nullptr;

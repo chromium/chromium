@@ -572,8 +572,7 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
   assistant_page_->SetVisible(page == AppListBubblePage::kAssistant);
   switch (current_page_) {
     case AppListBubblePage::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case AppListBubblePage::kApps:
       apps_page_->ResetScrollPosition();
       if (previous_page == AppListBubblePage::kSearch) {
@@ -704,8 +703,7 @@ bool AppListBubbleView::AcceleratorPressed(const ui::Accelerator& accelerator) {
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
   // Don't let the accelerator propagate any further.

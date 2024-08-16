@@ -152,8 +152,7 @@ void UserSwitchAnimator::AdvanceUserTransitionAnimation() {
       animation_step_ = ANIMATION_STEP_ENDED;
       break;
     case ANIMATION_STEP_ENDED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

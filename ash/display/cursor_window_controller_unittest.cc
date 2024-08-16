@@ -232,8 +232,7 @@ class TestCursorImageSource : public gfx::ImageSkiaSource {
     } else if (resource_scale == 2.f) {
       return rep_2x_;
     }
-    NOTREACHED_IN_MIGRATION();
-    return rep_1x_;
+    NOTREACHED();
   }
 
  private:

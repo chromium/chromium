@@ -58,8 +58,7 @@ std::optional<ArcContainerLifetimeEvent> GetArcContainerLifetimeEvent(
                          : ArcContainerLifetimeEvent::CONTAINER_CRASHED_EARLY;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 // Returns true if restart is needed for given conditions.
@@ -92,8 +91,7 @@ bool IsRestartNeeded(std::optional<ArcInstanceMode> target_mode,
       return was_running;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // Returns true if the request to start/upgrade ARC instance is allowed

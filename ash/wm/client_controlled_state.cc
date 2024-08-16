@@ -82,10 +82,9 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
           window_state, window_state->GetRestoreWindowState(), event);
       break;
     case WM_EVENT_SHOW_INACTIVE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown event :" << event->type();
+      NOTREACHED() << "Unknown event :" << event->type();
   }
 }
 
@@ -179,8 +178,7 @@ void ClientControlledState::HandleCompoundEvents(WindowState* window_state,
       CycleSnap(window_state, event->type());
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid event :" << event->type();
-      break;
+      NOTREACHED() << "Invalid event :" << event->type();
   }
 }
 
@@ -226,8 +224,7 @@ void ClientControlledState::HandleBoundsEvents(WindowState* window_state,
                 bounds, bounds_change_animation_duration_);
             break;
           case WindowState::BoundsChangeAnimationType::kAnimateZero:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
         }
         next_bounds_change_animation_type_ =
             WindowState::BoundsChangeAnimationType::kNone;
@@ -256,7 +253,7 @@ void ClientControlledState::HandleBoundsEvents(WindowState* window_state,
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown event:" << event->type();
+      NOTREACHED() << "Unknown event:" << event->type();
   }
 }
 

@@ -162,7 +162,7 @@ void RecordMenuIndexPastedUserAction(int command_id) {
           base::UserMetricsAction("Ash_ClipboardHistory_PastedItem5"));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -369,8 +369,7 @@ class ClipboardHistoryControllerImpl::AcceleratorTarget
     } else if (accelerator == paste_first_item_plaintext_) {
       HandlePasteFirstItem(ClipboardHistoryPasteType::kPlainTextCtrlV);
     } else {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
 
     return true;

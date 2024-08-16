@@ -119,8 +119,7 @@ std::optional<ui::ColorId> GetDefaultBackgroundColorId(PillButton::Type type) {
       color_id = kColorAshControlBackgroundColorInactive;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid and floating pill button type: " << type;
+      NOTREACHED() << "Invalid and floating pill button type: " << type;
   }
 
   return color_id;
@@ -166,7 +165,7 @@ std::optional<ui::ColorId> GetDefaultButtonTextIconColorId(
       color_id = kColorAshButtonLabelColorBlue;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid pill button type: " << type;
+      NOTREACHED() << "Invalid pill button type: " << type;
   }
 
   return color_id;

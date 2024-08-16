@@ -481,8 +481,7 @@ class DeskBarHoverObserver : public ui::EventObserver {
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -1335,7 +1334,7 @@ void DeskBarViewBase::HandleDragEvent(DeskMiniView* mini_view,
       ContinueDragDesk(mini_view, location);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -1361,7 +1360,7 @@ bool DeskBarViewBase::HandleReleaseEvent(DeskMiniView* mini_view,
       EndDragDesk(drag_view_, /*end_by_user=*/true);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return true;
 }

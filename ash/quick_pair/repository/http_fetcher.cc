@@ -14,12 +14,12 @@ HttpFetcher::~HttpFetcher() = default;
 void HttpFetcher::ExecutePostRequest(const GURL& url,
                                      const std::string& body,
                                      FetchCompleteCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void HttpFetcher::ExecuteDeleteRequest(const GURL& url,
                                        FetchCompleteCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace quick_pair

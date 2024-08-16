@@ -330,8 +330,7 @@ OverviewWindowDragController::CompleteDrag(
 
   switch (current_drag_behavior_) {
     case DragBehavior::kNoDrag:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case DragBehavior::kUndefined:
       ActivateDraggedWindow();

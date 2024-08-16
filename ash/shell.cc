@@ -1997,8 +1997,7 @@ std::unique_ptr<ui::EventTargetIterator> Shell::GetChildIterator() const {
 }
 
 ui::EventTargeter* Shell::GetEventTargeter() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void Shell::OnWindowActivated(

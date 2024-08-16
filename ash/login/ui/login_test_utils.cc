@@ -36,8 +36,7 @@ const char* AuthTargetToString(AuthTarget target) {
     case AuthTarget::kSecondary:
       return kSecondaryName;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 LockContentsViewTestApi MakeLockContentsViewTestApi(LockContentsView* view) {
@@ -56,7 +55,7 @@ LoginAuthUserView::TestApi MakeLoginAuthTestApi(LockContentsView* view,
                                             ->auth_user());
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 LoginPasswordView::TestApi MakeLoginPasswordTestApi(LockContentsView* view,

@@ -70,7 +70,7 @@ void FastPairDataEncryptorImpl::Factory::CreateAsync(
   } else {
     // This object doesn't handle any other protocols, calling with another
     // is a bug.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

@@ -52,9 +52,7 @@ int ConvertAndroidPriority(ArcNotificationPriority android_priority) {
       return message_center::MAX_PRIORITY;
   }
 
-  NOTREACHED_IN_MIGRATION() << "Invalid Priority: " << android_priority;
-  // Invalid values are treated as Android's DEFAULT priority.
-  return message_center::LOW_PRIORITY;
+  NOTREACHED() << "Invalid Priority: " << android_priority;
 }
 
 }  // anonymous namespace

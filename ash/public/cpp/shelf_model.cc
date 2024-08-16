@@ -29,12 +29,10 @@ int ShelfItemTypeToWeight(ShelfItemType type) {
     case TYPE_DIALOG:
       return 3;
     case TYPE_UNDEFINED:
-      NOTREACHED_IN_MIGRATION() << "ShelfItemType must be set";
-      return -1;
+      NOTREACHED() << "ShelfItemType must be set";
   }
 
-  NOTREACHED_IN_MIGRATION() << "Invalid type " << type;
-  return 1;
+  NOTREACHED() << "Invalid type " << type;
 }
 
 bool CompareByWeight(const ShelfItem& a, const ShelfItem& b) {
@@ -220,8 +218,7 @@ void ShelfModel::Move(int index, int target_index) {
 
 void ShelfModel::Set(int index, const ShelfItem& item) {
   if (index < 0 || index >= item_count()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   int new_index = item.type == items_[index].type

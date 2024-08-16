@@ -198,7 +198,7 @@ class DeskContainerObserver : public aura::WindowObserver {
     // We should never get here. We should be notified in
     // `OnRootWindowClosing()` before the child containers of the root window
     // are destroyed, and this object should have already been destroyed.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:
@@ -1010,7 +1010,7 @@ void Desk::AllDeskWindowMovedToNewRoot(aura::Window* window) {
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool Desk::ContentUpdateNotificationSuspended() const {

@@ -24,8 +24,7 @@ EnumTraits<arc::mojom::DeviceType, ash::DeviceType>::ToMojom(
       // UNKNOWN and let Android decides how to handle this.
       return arc::mojom::DeviceType::DEVICE_TYPE_UNKNOWN;
   }
-  NOTREACHED_IN_MIGRATION();
-  return arc::mojom::DeviceType::DEVICE_TYPE_UNKNOWN;
+  NOTREACHED();
 }
 
 bool EnumTraits<arc::mojom::DeviceType, ash::DeviceType>::FromMojom(
@@ -42,8 +41,7 @@ bool EnumTraits<arc::mojom::DeviceType, ash::DeviceType>::FromMojom(
       *out = ash::DeviceType::kUnknown;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 arc::mojom::MountEvent
@@ -55,8 +53,7 @@ EnumTraits<arc::mojom::MountEvent, ash::disks::DiskMountManager::MountEvent>::
     case ash::disks::DiskMountManager::MountEvent::UNMOUNTING:
       return arc::mojom::MountEvent::UNMOUNTING;
   }
-  NOTREACHED_IN_MIGRATION();
-  return arc::mojom::MountEvent::MOUNTING;
+  NOTREACHED();
 }
 
 bool EnumTraits<arc::mojom::MountEvent,
@@ -71,8 +68,7 @@ bool EnumTraits<arc::mojom::MountEvent,
       *out = ash::disks::DiskMountManager::MountEvent::UNMOUNTING;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

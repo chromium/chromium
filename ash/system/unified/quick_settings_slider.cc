@@ -56,7 +56,7 @@ float GetSliderRoundedCornerRadius(Style slider_style) {
     case Style::kRadioInactive:
       return kInactiveRadioSliderRoundedRadius;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -70,7 +70,7 @@ float GetSliderWidth(Style slider_style) {
     case Style::kRadioInactive:
       return kRadioSliderWidth;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -124,7 +124,7 @@ SkColor QuickSettingsSlider::GetThumbColor() const {
       return GetColorProvider()->GetColor(
           static_cast<ui::ColorId>(cros_tokens::kCrosSysDisabledContainer));
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -142,7 +142,7 @@ SkColor QuickSettingsSlider::GetTroughColor() const {
       return GetColorProvider()->GetColor(
           static_cast<ui::ColorId>(cros_tokens::kCrosSysDisabledContainer));
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -179,7 +179,7 @@ void QuickSettingsSlider::OnPaint(gfx::Canvas* canvas) {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   cc::PaintFlags slider_flags;

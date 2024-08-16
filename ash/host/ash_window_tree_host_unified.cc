@@ -45,9 +45,7 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
     if (root == src_root_ && !event->target()) {
       return root;
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << "event type:" << base::to_underlying(event->type());
-      return aura::WindowTargeter::FindTargetForEvent(root, event);
+      NOTREACHED() << "event type:" << base::to_underlying(event->type());
     }
   }
   ui::EventSink* GetNewEventSinkForEvent(const ui::EventTarget* current_root,

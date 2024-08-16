@@ -447,9 +447,8 @@ views::View* Combobox::MenuView() const {
 }
 
 void Combobox::SetCallback(PressedCallback callback) {
-  NOTREACHED_IN_MIGRATION()
-      << "Clients shouldn't modify this. Maybe you want to use "
-         "SetSelectionChangedCallback?";
+  NOTREACHED() << "Clients shouldn't modify this. Maybe you want to use "
+                  "SetSelectionChangedCallback?";
 }
 
 void Combobox::OnBoundsChanged(const gfx::Rect& previous_bounds) {

@@ -49,9 +49,7 @@ SkColor GetColor(const ui::ColorProvider* color_provider,
       return dark_mode_enabled ? color_provider->GetColor(color_id)
                                : SK_ColorWHITE;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported content layer type";
-      // Return a very bright color so it's obvious there is a mistake.
-      return gfx::kPlaceholderColor;
+      NOTREACHED() << "Unsupported content layer type";
   }
 }
 

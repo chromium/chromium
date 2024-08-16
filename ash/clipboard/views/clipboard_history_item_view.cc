@@ -367,8 +367,7 @@ void ClipboardHistoryItemView::MaybeHandleGestureEventFromMainButton(
         DCHECK(delete_button_->GetVisible());
         break;
       case PseudoFocus::kMaxValue:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     event->SetHandled();
   }

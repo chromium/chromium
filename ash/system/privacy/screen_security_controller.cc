@@ -101,7 +101,7 @@ void ScreenSecurityController::CreateNotification(
                         "StatusArea_ScreenCapture_Change_Source"));
                   }
                 } else {
-                  NOTREACHED_IN_MIGRATION();
+                  NOTREACHED();
                 }
               },
               weak_ptr_factory_.GetWeakPtr(), is_screen_access_notification));

@@ -111,8 +111,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearFormat(
     case ui::ClipboardInternalFormat::kWeb:
       return ClearWebSmartPaste();
   }
-  NOTREACHED_IN_MIGRATION();
-  return *this;
+  NOTREACHED();
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetText(

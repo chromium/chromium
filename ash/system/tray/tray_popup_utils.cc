@@ -92,8 +92,7 @@ std::unique_ptr<views::LayoutManager> CreateDefaultLayoutManager(
       return CreateDefaultCenterLayoutManager(use_wide_layout);
   }
   // Required by some compilers.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 // Configures the default size and flex value for the specified |container|

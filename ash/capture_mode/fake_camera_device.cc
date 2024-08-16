@@ -205,8 +205,7 @@ class FakeCameraDevice::Buffer {
             new Buffer(buffer_id, buffer_type, frame_size,
                        std::make_unique<GpuMemoryBufferStrategy>(frame_size)));
       default:
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
     }
   }
 

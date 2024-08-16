@@ -90,8 +90,7 @@ const gfx::VectorIcon& GetIconForTool(AnnotatorToolType tool, SkColor color) {
       }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return kPaletteTrayIconProjectorIcon;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -343,8 +342,7 @@ int AnnotationTray::GetAccessibleNameForColor(SkColor color) {
     case kAnnotatorMagentaPenColor:
       return IDS_MAGENTA_COLOR_BUTTON;
   }
-  NOTREACHED_IN_MIGRATION();
-  return IDS_RED_COLOR_BUTTON;
+  NOTREACHED();
 }
 
 void AnnotationTray::ResetTray() {

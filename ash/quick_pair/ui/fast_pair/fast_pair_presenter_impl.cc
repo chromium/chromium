@@ -258,7 +258,7 @@ void FastPairPresenterImpl::OnDiscoveryDismissed(
       callback.Run(DiscoveryAction::kDismissedByTimeout);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -347,10 +347,9 @@ void FastPairPresenterImpl::OnPairingFailedDismissed(
     case FastPairNotificationDismissReason::kDismissedByTimeout:
       // Fast Pair Error Notifications do not have a timeout, so this is never
       // expected to be hit.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -441,7 +440,7 @@ void FastPairPresenterImpl::OnAssociateAccountDismissed(
       callback.Run(AssociateAccountAction::kDismissedByTimeout);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -579,7 +578,7 @@ void FastPairPresenterImpl::OnCompanionAppDismissed(
       callback.Run(CompanionAppAction::kDismissed);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

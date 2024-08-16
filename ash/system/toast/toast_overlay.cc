@@ -128,8 +128,7 @@ class ToastOverlay::ToastHoverObserver : public ui::EventObserver {
         on_hover_state_changed_.Run(/*is_hovering=*/false);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 

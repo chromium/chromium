@@ -19,11 +19,8 @@ std::ostream& operator<<(std::ostream& os,
     case ArcManagementTransition::UNMANAGED_TO_MANAGED:
       return os << "UNMANAGED_TO_MANAGED";
   }
-  NOTREACHED_IN_MIGRATION() << "Unexpected value for ArcManagementTransition: "
-                            << static_cast<int>(management_transition);
-
-  return os << "ArcManagementTransition("
-            << static_cast<int>(management_transition) << ")";
+  NOTREACHED() << "Unexpected value for ArcManagementTransition: "
+               << static_cast<int>(management_transition);
 }
 
 }  // namespace arc

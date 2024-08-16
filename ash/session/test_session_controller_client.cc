@@ -292,8 +292,7 @@ void TestSessionControllerClient::CycleActiveUser(
         return session && session->session_id == session_id;
       });
   if (it == sessions.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   SwitchActiveUser((*it)->user_info.account_id);

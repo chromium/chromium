@@ -105,7 +105,7 @@ void AdaptiveChargingNotificationController::Click(
     chromeos::PowerManagerClient::Get()->ChargeNowForAdaptiveCharging();
     CloseAdaptiveChargingNotification(/*by_user=*/true);
   } else {
-    NOTREACHED_IN_MIGRATION() << "Unknown button index value";
+    NOTREACHED() << "Unknown button index value";
   }
 }
 

@@ -304,8 +304,7 @@ void PowerButtonMenuScreenView::UpdateMenuBoundsOrigins() {
       right_power_button_y = top_power_button_x = power_button_offset;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   switch (power_button_position_) {
@@ -335,8 +334,7 @@ void PowerButtonMenuScreenView::UpdateMenuBoundsOrigins() {
       bottom_screen_orientation = chromeos::OrientationType::kLandscapePrimary;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   menu_bounds_origins_.clear();

@@ -262,7 +262,7 @@ views::View* NetworkDetailedNetworkViewImpl::GetNetworkList(NetworkType type) {
     default:
       return scroll_content();
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NetworkDetailedNetworkViewImpl::ReorderFirstListView(size_t index) {

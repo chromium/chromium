@@ -103,7 +103,7 @@ void ProgressRingPulseAnimation::UpdateAnimatableProperties(
 
   // This LOC should never be reached as the correct key frames for the current
   // animation `fraction` should have been found in the loop above.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace ash

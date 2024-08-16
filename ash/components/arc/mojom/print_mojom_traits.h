@@ -69,8 +69,7 @@ struct StructTraits<arc::mojom::PrinterCapabilitiesDataView,
   static bool Read(arc::mojom::PrinterCapabilitiesDataView data,
                    printing::PrinterSemanticCapsAndDefaults* out) {
     // This is never used.
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 

@@ -1264,7 +1264,7 @@ void LockDebugView::CycleAuthErrorMessage() {
           DebugLoginDetachableBaseModel::kNullBaseId);
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

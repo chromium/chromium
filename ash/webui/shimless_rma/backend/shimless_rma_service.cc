@@ -1466,8 +1466,7 @@ void ShimlessRmaService::OnOsUpdateStatusCallback(
       // Added to avoid lint error
       case update_engine::Operation::Operation_INT_MIN_SENTINEL_DO_NOT_USE_:
       case update_engine::Operation::Operation_INT_MAX_SENTINEL_DO_NOT_USE_:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   OsUpdateProgress(operation, progress, error_code);

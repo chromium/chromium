@@ -115,10 +115,8 @@ void SearchHandler::OnLocalSearchDone(
     int matching_content_id;
     if (!base::StringToInt(local_result.positions.front().content_id,
                            &matching_content_id)) {
-      NOTREACHED_IN_MIGRATION()
-          << "All content ids are expected to be a valid integer: "
-          << local_result.positions.front().content_id;
-      continue;
+      NOTREACHED() << "All content ids are expected to be a valid integer: "
+                   << local_result.positions.front().content_id;
     }
 
     search_results.push_back(mojom::SearchResult::New(

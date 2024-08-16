@@ -279,9 +279,7 @@ double NotificationListView::GetCurrentAnimationValue() const {
   switch (state_) {
     case State::IDLE:
       // No animations are used for State::IDLE.
-      NOTREACHED_IN_MIGRATION();
-      tween = gfx::Tween::LINEAR;
-      break;
+      NOTREACHED();
     case State::CLEAR_ALL_STACKED:
     case State::MOVE_DOWN:
       tween = gfx::Tween::FAST_OUT_SLOW_IN;

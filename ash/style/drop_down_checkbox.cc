@@ -330,9 +330,8 @@ bool DropDownCheckbox::IsMenuRunning() const {
 }
 
 void DropDownCheckbox::SetCallback(PressedCallback callback) {
-  NOTREACHED_IN_MIGRATION()
-      << "Clients shouldn't modify this. Maybe you want to use "
-         "SetSelectedAction?";
+  NOTREACHED() << "Clients shouldn't modify this. Maybe you want to use "
+                  "SetSelectedAction?";
 }
 
 void DropDownCheckbox::OnBoundsChanged(const gfx::Rect& previous_bounds) {

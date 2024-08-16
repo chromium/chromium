@@ -330,9 +330,7 @@ void BirchBarView::SetupChips(const std::vector<raw_ptr<BirchItem>>& items) {
 
 void BirchBarView::AddChip(BirchItem* item) {
   if (static_cast<int>(chips_.size()) == kMaxChipsNum) {
-    NOTREACHED_IN_MIGRATION()
-        << "The number of birch chips reaches the limit of 4";
-    return;
+    NOTREACHED() << "The number of birch chips reaches the limit of 4";
   }
 
   auto chip = views::Builder<BirchChipButton>()

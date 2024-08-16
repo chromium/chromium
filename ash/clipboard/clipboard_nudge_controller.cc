@@ -80,12 +80,11 @@ NudgeCatalogName GetCatalogName(ClipboardNudgeType type) {
     case kZeroStateNudge:
       return NudgeCatalogName::kClipboardHistoryZeroState;
     case kScreenshotNotificationNudge:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case kDuplicateCopyNudge:
       return NudgeCatalogName::kClipboardHistoryDuplicateCopy;
   }
-  return NudgeCatalogName::kTestCatalogName;
+  NOTREACHED();
 }
 
 ui::ImageModel GetImage(ClipboardNudgeType type) {

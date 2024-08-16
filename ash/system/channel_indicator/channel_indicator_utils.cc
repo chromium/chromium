@@ -140,8 +140,7 @@ const gfx::VectorIcon& GetVectorIcon(version_info::Channel channel) {
       return kChannelCanaryIcon;
     case version_info::Channel::UNKNOWN:
     case version_info::Channel::STABLE:
-      NOTREACHED_IN_MIGRATION();
-      return kChannelCanaryIcon;
+      NOTREACHED();
   }
 }
 

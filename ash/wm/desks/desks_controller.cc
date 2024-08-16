@@ -1451,8 +1451,7 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
           case chromeos::WindowStateType::kPinned:
           case chromeos::WindowStateType::kTrustedPinned:
           case chromeos::WindowStateType::kPip:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
         }
       }
 

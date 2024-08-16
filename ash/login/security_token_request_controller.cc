@@ -64,7 +64,7 @@ void SecurityTokenRequestController::OnBack() {
 }
 
 void SecurityTokenRequestController::OnHelp() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool SecurityTokenRequestController::SetPinUiState(

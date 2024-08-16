@@ -350,8 +350,7 @@ bool AppListView::AcceleratorPressed(const ui::Accelerator& accelerator) {
       Back();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
   // Don't let DialogClientView handle the accelerator.

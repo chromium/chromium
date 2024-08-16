@@ -141,8 +141,7 @@ void AccessibilityProvider::HandleAccessibilityEventReceived(
     case ax::android::mojom::AccessibilityFilterType::OFF:
       break;
     case ax::android::mojom::AccessibilityFilterType::INVALID_ENUM_VALUE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

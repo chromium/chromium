@@ -139,8 +139,7 @@ CalendarEventSource GetEventType(const ui::Event& event) {
   if (event.IsTouchEvent())
     return CalendarEventSource::kStylus;
 
-  NOTREACHED_IN_MIGRATION();
-  return CalendarEventSource::kInvalid;
+  NOTREACHED();
 }
 
 void RecordCalendarShowMetrics(

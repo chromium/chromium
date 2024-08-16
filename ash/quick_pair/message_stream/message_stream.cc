@@ -197,8 +197,7 @@ std::string MessageStream::MessageStreamMessageTypeToString(
   if (message->is_sdk_version())
     return "SDK version";
 
-  NOTREACHED_IN_MIGRATION();
-  return "INVALID MESSAGE TYPE";
+  NOTREACHED();
 }
 
 void MessageStream::NotifyObservers(
@@ -285,7 +284,7 @@ void MessageStream::NotifyObservers(
   }
 
   CD_LOG(WARNING, Feature::FP) << __func__ << ": unexpected message type.";
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MessageStream::OnUtilityProcessStopped(

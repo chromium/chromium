@@ -326,8 +326,7 @@ bool MoveWindowToDisplay(aura::Window* window, int64_t display_id) {
 
   aura::Window* root = Shell::GetRootWindowForDisplayId(display_id);
   if (!root || root == window->GetRootWindow()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   WindowState* window_state = WindowState::Get(window);

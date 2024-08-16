@@ -63,8 +63,7 @@ bool NetworkTypeIsConfigurable(NetworkType type) {
     case NetworkType::kWireless:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool IsNetworkBehindPortalOrProxy(PortalState portalState) {

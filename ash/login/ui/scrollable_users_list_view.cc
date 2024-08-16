@@ -121,8 +121,7 @@ LayoutParams BuildLayoutForStyle(LoginDisplayStyle style) {
       return params;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
-      return LayoutParams();
+      NOTREACHED();
     }
   }
 }
@@ -156,8 +155,7 @@ ScrollableUsersListView::GradientParams::BuildForStyle(LoginDisplayStyle style,
       return params;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
-      return GradientParams();
+      NOTREACHED();
     }
   }
 }

@@ -51,8 +51,7 @@ void EmitScreenOpenDuration(const NavigationView screen,
 
   auto iter = kOpenDurationMetrics.find(screen);
   if (iter == kOpenDurationMetrics.end()) {
-    NOTREACHED_IN_MIGRATION() << "Unknown NavigationView requested";
-    return;
+    NOTREACHED() << "Unknown NavigationView requested";
   }
 
   base::UmaHistogramLongTimes100(iter->second, time_elapsed);

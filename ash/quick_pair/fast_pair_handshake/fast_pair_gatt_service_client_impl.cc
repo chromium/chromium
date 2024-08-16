@@ -93,8 +93,7 @@ constexpr const char* ErrorCodeToString(
     case device::BluetoothGattService::GattErrorCode::kNotSupported:
       return "GATT_ERROR_NOT_SUPPORTED";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -118,7 +117,7 @@ constexpr ash::quick_pair::AccountKeyFailure GattErrorCodeToAccountKeyFailure(
     case device::BluetoothGattService::GattErrorCode::kNotSupported:
       return ash::quick_pair::AccountKeyFailure::kGattErrorNotSupported;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -142,8 +141,7 @@ constexpr const char* ErrorCodeToString(
     case device::BluetoothDevice::ConnectErrorCode::ERROR_UNSUPPORTED_DEVICE:
       return "ERROR_UNSUPPORTED_DEVICE";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -693,7 +691,7 @@ void FastPairGattServiceClientImpl::OnNotifySessionError(
         << ": for passkey characteristic: " << ErrorCodeToString(error);
     NotifyWritePasskeyError(failure);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

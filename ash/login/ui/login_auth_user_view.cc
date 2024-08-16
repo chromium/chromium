@@ -1479,9 +1479,7 @@ std::u16string LoginAuthUserView::GetMultiUserSignInDisableAuthMessage() const {
       message_id = IDS_ASH_LOGIN_MULTI_USER_SIGN_IN_NOT_ALLOWED_POLICY_MSG;
       break;
     case user_manager::MultiUserSignInPolicy::kUnrestricted:
-      NOTREACHED_IN_MIGRATION();
-      message_id = 0;
-      break;
+      NOTREACHED();
   }
   return l10n_util::GetStringUTF16(message_id);
 }

@@ -186,8 +186,7 @@ class ASH_EXPORT NavigationButtonAnimationMetricsReporter {
                 smoothness);
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
         }
         break;
       case HotseatState::kExtended:
@@ -205,8 +204,7 @@ class ASH_EXPORT NavigationButtonAnimationMetricsReporter {
                 smoothness);
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
         }
         break;
       case HotseatState::kHidden:
@@ -224,13 +222,11 @@ class ASH_EXPORT NavigationButtonAnimationMetricsReporter {
                 smoothness);
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
         }
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 

@@ -23,8 +23,7 @@ const char* ShutdownReasonToString(ShutdownReason reason) {
     case ShutdownReason::DEBUG_ACCELERATOR:
       return "debug accelerator";
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid reason " << static_cast<int>(reason);
-  return "invalid";
+  NOTREACHED() << "Invalid reason " << static_cast<int>(reason);
 }
 
 }  // namespace ash

@@ -71,8 +71,7 @@ void PolicyRecommendationRestorer::Restore(bool allow_delay,
   const PrefService::Preference* pref =
       pref_change_registrar_->prefs()->FindPreference(pref_name);
   if (!pref) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   if (!pref->GetRecommendedValue() || !pref->HasUserSetting())

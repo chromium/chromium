@@ -264,8 +264,7 @@ RefreshRateController::GetDesiredThrottleState() {
     case ModeState::kIntelligent:
       return GetDynamicThrottleState();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ThrottleState::kEnabled;
+      NOTREACHED();
   }
 }
 

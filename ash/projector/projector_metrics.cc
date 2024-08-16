@@ -86,8 +86,7 @@ void RecordCreationFlowError(int message_id) {
       error = ProjectorCreationFlowError::kSessionAbortedByAudioPolicyDisabled;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   base::UmaHistogramEnumeration(
       GetHistogramName(kProjectorCreationFlowErrorHistogramName), error);

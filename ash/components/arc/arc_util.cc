@@ -470,8 +470,7 @@ void ConfigureUpstartJobs(std::deque<JobDesc> jobs,
                                          std::move(wrapped_callback));
       break;
     case UpstartOperation::JOB_STOP_AND_START:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

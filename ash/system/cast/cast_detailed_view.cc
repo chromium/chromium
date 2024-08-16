@@ -67,8 +67,7 @@ const gfx::VectorIcon& SinkIconTypeToIcon(SinkIconType icon_type) {
       return kSystemMenuCastGenericIcon;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return kSystemMenuCastGenericIcon;
+  NOTREACHED();
 }
 
 std::unique_ptr<views::View> MakeButtonContainer() {

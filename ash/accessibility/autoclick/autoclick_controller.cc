@@ -262,7 +262,7 @@ void AutoclickController::DoScrollAction(ScrollPadAction action) {
       scroll_x = -kScrollDelta;
       break;
     case ScrollPadAction::kScrollClose:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // Generate a scroll event at the current scroll location.

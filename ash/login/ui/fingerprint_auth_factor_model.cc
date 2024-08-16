@@ -125,7 +125,7 @@ int FingerprintAuthFactorModel::GetLabelId() const {
       return can_use_pin_ ? IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED
                           : IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool FingerprintAuthFactorModel::ShouldAnnounceLabel() const {

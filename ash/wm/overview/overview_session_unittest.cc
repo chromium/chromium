@@ -7356,8 +7356,7 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
         start_location = item->target_bounds().bottom_left();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     GetOverviewSession()->InitiateDrag(item, start_location,
                                        /*is_touch_dragging=*/true,

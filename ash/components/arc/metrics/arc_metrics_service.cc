@@ -99,8 +99,7 @@ const char* DnsQueryToString(mojom::ArcDnsQuery query) {
     case mojom::ArcDnsQuery::ANDROID_API_HOST_NAME:
       return "AndroidApi";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* WaylandTimingEventToString(mojom::WaylandTimingEvent event) {
@@ -128,8 +127,7 @@ const char* WaylandTimingEventToString(mojom::WaylandTimingEvent event) {
     case mojom::WaylandTimingEvent::kZcrVsyncTimingUpdate:
       return ".ZcrVsyncTimingUpdate";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 struct LoadAverageHistogram {
   const char* name;

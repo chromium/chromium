@@ -428,7 +428,7 @@ TEST_F(SessionLogHandlerTest, NoUseAfterFree) {
   base::RunLoop run_loop;
 
   session_log_handler_->SetLogCreatedClosureForTest(
-      base::BindLambdaForTesting([]() { NOTREACHED_IN_MIGRATION(); }));
+      base::BindLambdaForTesting([]() { NOTREACHED(); }));
   EXPECT_EQ(0u, task_runner_->NumPendingTasks());
   web_ui_.HandleReceivedMessage("saveSessionLog", args);
   EXPECT_EQ(1u, task_runner_->NumPendingTasks());

@@ -47,8 +47,7 @@ EnumTraits<MojomWallpaperLayout, ash::WallpaperLayout>::ToMojom(
     case ash::WallpaperLayout::WALLPAPER_LAYOUT_TILE:
       return MojomWallpaperLayout::kTile;
     case ash::WallpaperLayout::NUM_WALLPAPER_LAYOUT:
-      NOTREACHED_IN_MIGRATION();
-      return MojomWallpaperLayout::kCenter;
+      NOTREACHED();
   }
 }
 
@@ -69,8 +68,7 @@ bool EnumTraits<MojomWallpaperLayout, ash::WallpaperLayout>::FromMojom(
       *output = ash::WallpaperLayout::WALLPAPER_LAYOUT_TILE;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 MojomWallpaperType EnumTraits<MojomWallpaperType, ash::WallpaperType>::ToMojom(
@@ -101,8 +99,7 @@ MojomWallpaperType EnumTraits<MojomWallpaperType, ash::WallpaperType>::ToMojom(
     case ash::WallpaperType::kSeaPen:
       return MojomWallpaperType::kSeaPen;
     case ash::WallpaperType::kCount:
-      NOTREACHED_IN_MIGRATION();
-      return MojomWallpaperType::kDefault;
+      NOTREACHED();
   }
 }
 
@@ -147,8 +144,7 @@ bool EnumTraits<MojomWallpaperType, ash::WallpaperType>::FromMojom(
       *output = ash::WallpaperType::kSeaPen;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 MojomOnlineImageType
@@ -193,8 +189,7 @@ bool EnumTraits<MojomOnlineImageType, ::backdrop::Image::ImageType>::FromMojom(
       *output = ::backdrop::Image::IMAGE_TYPE_PREVIEW_MODE;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 const std::string&
@@ -395,8 +390,7 @@ bool EnumTraits<MojomTemperatureUnit, ash::AmbientModeTemperatureUnit>::
       *output = ash::AmbientModeTemperatureUnit::kCelsius;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 MojomAmbientUiVisibility
@@ -431,8 +425,7 @@ bool EnumTraits<MojomAmbientUiVisibility, ash::AmbientUiVisibility>::FromMojom(
       *output = ash::AmbientUiVisibility::kClosed;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 SkColor

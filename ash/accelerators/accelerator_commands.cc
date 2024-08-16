@@ -193,8 +193,7 @@ display::Display::Rotation GetNextRotationInClamshell(
     case display::Display::ROTATE_270:
       return display::Display::ROTATE_0;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown rotation:" << current;
-  return display::Display::ROTATE_0;
+  NOTREACHED() << "Unknown rotation:" << current;
 }
 
 display::Display::Rotation GetNextRotationInTabletMode(
@@ -248,8 +247,7 @@ display::Display::Rotation GetNextRotationInTabletMode(
       return add_180_degrees ? display::Display::ROTATE_90
                              : display::Display::ROTATE_0;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown rotation:" << current;
-  return display::Display::ROTATE_0;
+  NOTREACHED() << "Unknown rotation:" << current;
 }
 
 views::Widget* FindPipWidget() {

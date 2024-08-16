@@ -56,8 +56,7 @@ struct EnumTraits<arc::mojom::AppDiscoveryRequestState,
       case ArcState::STATE_COUNT:
         break;
     }
-    NOTREACHED_IN_MIGRATION();
-    return MojoState::SUCCESS;
+    NOTREACHED();
   }
 
   static bool FromMojom(MojoState input, ArcState* out) {
@@ -115,8 +114,7 @@ struct EnumTraits<arc::mojom::AppDiscoveryRequestState,
         *out = ArcState::PHONESKY_RESULT_INVALID_DATA;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 

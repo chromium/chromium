@@ -294,8 +294,7 @@ void MouseKeysController::PressKey(MouseKey key) {
       SelectNextButton();
       break;
     case kKeyCount:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -328,8 +327,7 @@ void MouseKeysController::ReleaseKey(MouseKey key) {
     case kKeySelectNextButton:
       break;
     case kKeyCount:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

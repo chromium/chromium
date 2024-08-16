@@ -116,8 +116,7 @@ CameraHalBackgroundBlurState MapBackgroundBlurPrefValueToCameraHalState(
       return std::make_pair(cros::mojom::BlurLevel::kMaximum, true);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::make_pair(cros::mojom::BlurLevel::kLowest, false);
+  NOTREACHED();
 }
 
 // Maps the `CameraHalDispatcherImpl`-ready background blur state
@@ -143,8 +142,7 @@ MapBackgroundBlurCameraHalStateToPrefValue(cros::mojom::BlurLevel level,
       return CameraEffectsController::BackgroundBlurPrefValue::kMaximum;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return CameraEffectsController::BackgroundBlurPrefValue::kLowest;
+  NOTREACHED();
 }
 
 CameraEffectsController::BackgroundBlurState MapBackgroundBlurPrefValueToState(
@@ -168,8 +166,7 @@ CameraEffectsController::BackgroundBlurState MapBackgroundBlurPrefValueToState(
       return CameraEffectsController::BackgroundBlurState::kImage;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return CameraEffectsController::BackgroundBlurState::kOff;
+  NOTREACHED();
 }
 
 inline base::FilePath GetMetadataFilePath(const base::FilePath& filepath) {
@@ -651,8 +648,7 @@ std::optional<int> CameraEffectsController::GetEffectState(
     case VcEffectId::kStyleTransfer:
     case VcEffectId::kLiveCaption:
     case VcEffectId::kTestEffect:
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
   }
 }
 
@@ -708,8 +704,7 @@ void CameraEffectsController::OnEffectControlActivated(
     case VcEffectId::kStyleTransfer:
     case VcEffectId::kLiveCaption:
     case VcEffectId::kTestEffect:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   SetCameraEffects(std::move(new_effects), /*is_initialization*/ false,

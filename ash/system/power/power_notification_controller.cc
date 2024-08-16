@@ -76,8 +76,7 @@ std::string GetNotificationStateString(
     case PowerNotificationController::NOTIFICATION_CRITICAL:
       return "critical power";
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown state " << notification_state;
-  return "Unknown state";
+  NOTREACHED() << "Unknown state " << notification_state;
 }
 
 void LogBattery(PowerNotificationController::NotificationState state,
@@ -573,8 +572,7 @@ bool PowerNotificationController::UpdateNotificationStateForRemainingTime() {
     case NOTIFICATION_CRITICAL:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool PowerNotificationController::
@@ -615,8 +613,7 @@ bool PowerNotificationController::
     case NOTIFICATION_CRITICAL:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool PowerNotificationController::
@@ -662,8 +659,7 @@ bool PowerNotificationController::
     case NOTIFICATION_CRITICAL:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void PowerNotificationController::NotifyUsbNotificationClosedByUser() {

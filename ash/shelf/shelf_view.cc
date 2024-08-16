@@ -787,8 +787,7 @@ void ShelfView::ButtonPressed(views::Button* sender,
       break;
 
     case TYPE_UNDEFINED:
-      NOTREACHED_IN_MIGRATION() << "ShelfItemType must be set.";
-      break;
+      NOTREACHED() << "ShelfItemType must be set.";
   }
 
   // Run AfterItemSelected directly if the item has no delegate (ie. in tests).
@@ -1918,8 +1917,7 @@ bool ShelfView::SameDragType(ShelfItemType typea, ShelfItemType typeb) const {
   if (IsPinnedShelfItemType(typea) && IsPinnedShelfItemType(typeb))
     return true;
   if (typea == TYPE_UNDEFINED || typeb == TYPE_UNDEFINED) {
-    NOTREACHED_IN_MIGRATION() << "ShelfItemType must be set.";
-    return false;
+    NOTREACHED() << "ShelfItemType must be set.";
   }
   // Running app or dialog.
   return typea == typeb;

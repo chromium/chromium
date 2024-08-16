@@ -430,7 +430,7 @@ void Mediator::UpdateDiscoveryBlockList(scoped_refptr<Device> device) {
       // If the device had the state `kLongBan`, it should have never been
       // shown again, so we are expected to never get to this state when a
       // `kLongBan` was shown, and then dismissed by user.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
