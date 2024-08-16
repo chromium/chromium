@@ -724,6 +724,11 @@ bool IsTouchCalibrationAvailable() {
          display::HasExternalTouchscreenDevice();
 }
 
+bool IsTouchscreenRemappingExperienceAvailable() {
+  return features::IsTouchscreenMappingExperienceEnabled() &&
+         display::HasExternalTouchscreenDevice();
+}
+
 bool IsListAllDisplayModesEnabled() {
   return display::features::IsListAllDisplayModesEnabled();
 }
@@ -1967,6 +1972,8 @@ void DeviceSection::AddDeviceDisplayStrings(
        IDS_SETTINGS_DISPLAY_TOUCH_CALIBRATION_TEXT},
       {"displayTouchCalibrationTitle",
        IDS_SETTINGS_DISPLAY_TOUCH_CALIBRATION_TITLE},
+      {"displayTouchMappingText", IDS_SETTINGS_DISPLAY_TOUCH_MAPPING_TEXT},
+      {"displayTouchMappingTitle", IDS_SETTINGS_DISPLAY_TOUCH_MAPPING_TITLE},
       {"displayUnifiedDesktop", IDS_SETTINGS_DISPLAY_UNIFIED_DESKTOP},
       {"displayUnifiedDesktopOff", IDS_SETTINGS_DISPLAY_UNIFIED_DESKTOP_OFF},
       {"displayUnifiedDesktopOn", IDS_SETTINGS_DISPLAY_UNIFIED_DESKTOP_ON},
@@ -2011,6 +2018,9 @@ void DeviceSection::AddDeviceDisplayStrings(
 
   html_source->AddBoolean("enableTouchCalibrationSetting",
                           IsTouchCalibrationAvailable());
+
+  html_source->AddBoolean("enableTouchscreenMappingExperience",
+                          IsTouchscreenRemappingExperienceAvailable());
 
   html_source->AddString("invalidDisplayId",
                          base::NumberToString(display::kInvalidDisplayId));

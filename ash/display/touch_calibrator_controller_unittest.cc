@@ -13,15 +13,18 @@
 #include "base/containers/contains.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/display/manager/test/test_display_layout_manager.h"
 #include "ui/display/manager/test/touch_device_manager_test_api.h"
 #include "ui/display/manager/test/touch_transform_controller_test_api.h"
 #include "ui/display/manager/touch_device_manager.h"
 #include "ui/display/manager/touch_transform_setter.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/touch_device_transform.h"
 #include "ui/events/event_handler.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/events_test_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -46,8 +49,8 @@ ui::TouchscreenDevice GetExternalTouchDevice(int touch_device_id) {
 
 class TouchCalibratorControllerTest : public AshTestBase {
  public:
-  TouchCalibratorControllerTest() = default;
-
+  TouchCalibratorControllerTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   TouchCalibratorControllerTest(const TouchCalibratorControllerTest&) = delete;
   TouchCalibratorControllerTest& operator=(
       const TouchCalibratorControllerTest&) = delete;
@@ -87,6 +90,8 @@ class TouchCalibratorControllerTest : public AshTestBase {
     UpdateDisplay("600x500,600x500");
     // Assuming index 0 points to the native display, we will calibrate the
     // touch display at index 1.
+    display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+        .SetFirstDisplayAsInternalDisplay();
     const int kTargetDisplayIndex = 1;
     display::DisplayIdList display_id_list =
         display_manager()->GetConnectedDisplayIdList();
@@ -105,6 +110,7 @@ class TouchCalibratorControllerTest : public AshTestBase {
 
     ctrl->StartCalibration(target_display, false /* is_custom_calibration */,
                            std::move(empty_callback));
+
     EXPECT_TRUE(ctrl->IsCalibrating());
     EXPECT_EQ(ctrl->state_,
               TouchCalibratorController::CalibrationState::kNativeCalibration);
@@ -117,6 +123,37 @@ class TouchCalibratorControllerTest : public AshTestBase {
     TouchCalibratorView* target_calibrator_view =
         static_cast<TouchCalibratorView*>(
             GetCalibratorViews(ctrl)[target_display.id()]->GetContentsView());
+
+    // End the background fade in animation.
+    target_calibrator_view->SkipCurrentAnimation();
+
+    // TouchCalibratorView on the display being calibrated should be at the
+    // state where the first display point is visible.
+    EXPECT_EQ(target_calibrator_view->state(),
+              TouchCalibratorView::DISPLAY_POINT_1);
+  }
+
+  void StartMappingChecks(TouchCalibratorController* ctrl,
+                          const display::Display& external_display) {
+    EXPECT_FALSE(ctrl->IsCalibrating());
+    EXPECT_FALSE(!!ctrl->touch_calibrator_widgets_.size());
+
+    TouchCalibratorController::TouchCalibrationCallback empty_callback;
+
+    ctrl->StartNativeTouchscreenMappingExperience(std::move(empty_callback));
+
+    EXPECT_TRUE(ctrl->IsCalibrating());
+    EXPECT_EQ(ctrl->state_, TouchCalibratorController::CalibrationState::
+                                kNativeCalibrationTouchscreenMapping);
+
+    // There should be a touch calibrator view associated with each of the
+    // active displays.
+    EXPECT_EQ(ctrl->touch_calibrator_widgets_.size(),
+              display_manager()->GetConnectedDisplayIdList().size());
+
+    TouchCalibratorView* target_calibrator_view =
+        static_cast<TouchCalibratorView*>(
+            GetCalibratorViews(ctrl)[external_display.id()]->GetContentsView());
 
     // End the background fade in animation.
     target_calibrator_view->SkipCurrentAnimation();
@@ -199,6 +236,211 @@ TEST_F(TouchCalibratorControllerTest, StartCalibration) {
   EXPECT_TRUE(base::Contains(handlers, &touch_calibrator_controller));
 }
 
+TEST_F(TouchCalibratorControllerTest, StartTouchscreenMapping) {
+  const display::Display& touch_display = InitDisplays();
+  TouchCalibratorController touch_calibrator_controller;
+  StartMappingChecks(&touch_calibrator_controller, touch_display);
+
+  ui::EventTargetTestApi test_api(Shell::Get());
+  ui::EventHandlerList handlers = test_api.GetPreTargetHandlers();
+  EXPECT_TRUE(base::Contains(handlers, &touch_calibrator_controller));
+}
+
+TEST_F(TouchCalibratorControllerTest, Mapping_OneExternalDisplay_FullFlow) {
+  const display::Display& touch_display = InitDisplays();
+  TouchCalibratorController touch_calibrator_controller;
+  StartMappingChecks(&touch_calibrator_controller, touch_display);
+
+  // Initialize touch device so that |event_transformer_| can be computed.
+  ui::TouchscreenDevice touchdevice =
+      InitTouchDevice(touch_display.id(), GetExternalTouchDevice(12));
+
+  // Clock must be advanced between each touch so the controller recognizes them
+  // as discreet touches.
+  EXPECT_TRUE(touch_calibrator_controller.IsCalibrating());
+  task_environment()->AdvanceClock(base::Seconds(1));
+  GenerateTouchEvent(touch_display, touchdevice.id);
+
+  EXPECT_TRUE(touch_calibrator_controller.IsCalibrating());
+  task_environment()->AdvanceClock(base::Seconds(1));
+  GenerateTouchEvent(touch_display, touchdevice.id);
+
+  EXPECT_TRUE(touch_calibrator_controller.IsCalibrating());
+  task_environment()->AdvanceClock(base::Seconds(1));
+  GenerateTouchEvent(touch_display, touchdevice.id);
+
+  EXPECT_TRUE(touch_calibrator_controller.IsCalibrating());
+  task_environment()->AdvanceClock(base::Seconds(1));
+  GenerateTouchEvent(touch_display, touchdevice.id);
+
+  // Done calibrating after first display has been touched 4 times.
+  EXPECT_FALSE(touch_calibrator_controller.IsCalibrating());
+}
+
+TEST_F(TouchCalibratorControllerTest, Mapping_TwoExternalDisplays_FullFlow) {
+  UpdateDisplay("600x500,600x500,600x500");
+  display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+
+  const display::DisplayIdList display_id_list =
+      display_manager()->GetConnectedDisplayIdList();
+  const display::Display& first_display =
+      display_manager()->GetDisplayForId(display_id_list[1]);
+  const display::Display& second_display =
+      display_manager()->GetDisplayForId(display_id_list[2]);
+
+  TouchCalibratorController touch_calibrator_controller;
+  StartMappingChecks(&touch_calibrator_controller, first_display);
+
+  // Initialize touch devices so that |event_transformer_| can be computed.
+  // We create 2 touch devices.
+  const int kExternalTouchId1 = 10;
+  const int kExternalTouchId2 = 11;
+
+  ui::TouchscreenDevice external_touchscreen1(
+      kExternalTouchId1, ui::InputDeviceType::INPUT_DEVICE_USB,
+      std::string("external touch device 1"), gfx::Size(1000, 1000), 1);
+  ui::TouchscreenDevice external_touchscreen2(
+      kExternalTouchId2, ui::InputDeviceType::INPUT_DEVICE_USB,
+      std::string("external touch device 2"), gfx::Size(1000, 1000), 1);
+
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices(
+      {external_touchscreen1, external_touchscreen2});
+
+  // Associate both touch devices to the first display.
+  std::vector<ui::TouchDeviceTransform> transforms;
+  ui::TouchDeviceTransform touch_device_transform;
+  touch_device_transform.display_id = first_display.id();
+  touch_device_transform.device_id = external_touchscreen1.id;
+  transforms.push_back(touch_device_transform);
+
+  touch_device_transform.device_id = external_touchscreen2.id;
+  transforms.push_back(touch_device_transform);
+
+  display::test::TouchTransformControllerTestApi(
+      Shell::Get()->touch_transformer_controller())
+      .touch_transform_setter()
+      ->ConfigureTouchDevices(transforms);
+
+  // Update touch device manager with the associations.
+  display::test::TouchDeviceManagerTestApi(touch_device_manager())
+      .Associate(first_display.id(), external_touchscreen1);
+  display::test::TouchDeviceManagerTestApi(touch_device_manager())
+      .Associate(first_display.id(), external_touchscreen2);
+
+  // Touch the first device four times.
+  {
+    EXPECT_TRUE(touch_calibrator_controller.IsCalibrating());
+    task_environment()->AdvanceClock(base::Seconds(1));
+    GenerateTouchEvent(first_display, external_touchscreen1.id);
+
+    EXPECT_TRUE(touch_calibrator_controller.IsCalibrating());
+    task_environment()->AdvanceClock(base::Seconds(1));
+    GenerateTouchEvent(first_display, external_touchscreen1.id);
+
+    EXPECT_TRUE(touch_calibrator_controller.IsCalibrating());
+    task_environment()->AdvanceClock(base::Seconds(1));
+    GenerateTouchEvent(first_display, external_touchscreen1.id);
+
+    EXPECT_TRUE(touch_calibrator_controller.IsCalibrating());
+    task_environment()->AdvanceClock(base::Seconds(1));
+    GenerateTouchEvent(first_display, external_touchscreen1.id);
+  }
+
+  // We still should be calibrating for the touchscreen mapping since there are
+  // two monitors.
+  EXPECT_EQ(touch_calibrator_controller.state_,
+            TouchCalibratorController::CalibrationState::
+                kNativeCalibrationTouchscreenMapping);
+  TouchCalibratorView* target_calibrator_view =
+      static_cast<TouchCalibratorView*>(
+          GetCalibratorViews(&touch_calibrator_controller)[second_display.id()]
+              ->GetContentsView());
+  // Need to skip the first animation to get to a state where we can touch the
+  // screen.
+  target_calibrator_view->SkipCurrentAnimation();
+
+  // Touch the second device four times.
+  {
+    EXPECT_TRUE(touch_calibrator_controller.IsCalibrating());
+    task_environment()->AdvanceClock(base::Seconds(1));
+    GenerateTouchEvent(second_display, external_touchscreen2.id);
+
+    EXPECT_TRUE(touch_calibrator_controller.IsCalibrating());
+    task_environment()->AdvanceClock(base::Seconds(1));
+    GenerateTouchEvent(second_display, external_touchscreen2.id);
+
+    EXPECT_TRUE(touch_calibrator_controller.IsCalibrating());
+    task_environment()->AdvanceClock(base::Seconds(1));
+    GenerateTouchEvent(second_display, external_touchscreen2.id);
+
+    EXPECT_TRUE(touch_calibrator_controller.IsCalibrating());
+    task_environment()->AdvanceClock(base::Seconds(1));
+    GenerateTouchEvent(second_display, external_touchscreen2.id);
+  }
+
+  // Done calibrating after both displays have been fully calibrated.
+  EXPECT_FALSE(touch_calibrator_controller.IsCalibrating());
+}
+
+TEST_F(TouchCalibratorControllerTest, Mapping_TwoExternalDisplays_SkipFirst) {
+  UpdateDisplay("600x500,600x500,600x500");
+  display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+
+  const display::DisplayIdList display_id_list =
+      display_manager()->GetConnectedDisplayIdList();
+  const display::Display& first_display =
+      display_manager()->GetDisplayForId(display_id_list[1]);
+  const display::Display& second_display =
+      display_manager()->GetDisplayForId(display_id_list[2]);
+
+  TouchCalibratorController touch_calibrator_controller;
+  StartMappingChecks(&touch_calibrator_controller, first_display);
+
+  // Initialize touch devices so that |event_transformer_| can be computed.
+  ui::TouchscreenDevice touchdevice =
+      InitTouchDevice(first_display.id(), GetExternalTouchDevice(13));
+
+  // Press escape to skip first display.
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+  // We still should be calibrating for the touchscreen mapping since there are
+  // two monitors.
+  EXPECT_EQ(touch_calibrator_controller.state_,
+            TouchCalibratorController::CalibrationState::
+                kNativeCalibrationTouchscreenMapping);
+  TouchCalibratorView* target_calibrator_view =
+      static_cast<TouchCalibratorView*>(
+          GetCalibratorViews(&touch_calibrator_controller)[second_display.id()]
+              ->GetContentsView());
+  // Need to skip the first animation to get to a state where we can touch the
+  // screen.
+  target_calibrator_view->SkipCurrentAnimation();
+
+  // Touch the second device four times.
+  {
+    EXPECT_TRUE(touch_calibrator_controller.IsCalibrating());
+    task_environment()->AdvanceClock(base::Seconds(1));
+    GenerateTouchEvent(second_display, touchdevice.id);
+
+    EXPECT_TRUE(touch_calibrator_controller.IsCalibrating());
+    task_environment()->AdvanceClock(base::Seconds(1));
+    GenerateTouchEvent(second_display, touchdevice.id);
+
+    EXPECT_TRUE(touch_calibrator_controller.IsCalibrating());
+    task_environment()->AdvanceClock(base::Seconds(1));
+    GenerateTouchEvent(second_display, touchdevice.id);
+
+    EXPECT_TRUE(touch_calibrator_controller.IsCalibrating());
+    task_environment()->AdvanceClock(base::Seconds(1));
+    GenerateTouchEvent(second_display, touchdevice.id);
+  }
+
+  // Done calibrating after both displays have been fully calibrated.
+  EXPECT_FALSE(touch_calibrator_controller.IsCalibrating());
+}
+
 TEST_F(TouchCalibratorControllerTest, KeyEventIntercept) {
   const display::Display& touch_display = InitDisplays();
   TouchCalibratorController touch_calibrator_controller;
@@ -228,6 +470,7 @@ TEST_F(TouchCalibratorControllerTest, TouchThreshold) {
   EXPECT_EQ(touch_calibrator_controller.last_touch_timestamp_,
             current_timestamp);
 
+  task_environment()->AdvanceClock(base::Seconds(1));
   ResetTimestampThreshold(&touch_calibrator_controller);
 
   // This time the events should be registered as the threshold is crossed.
@@ -262,7 +505,7 @@ TEST_F(TouchCalibratorControllerTest, CustomCalibration) {
   EXPECT_FALSE(!!GetCalibratorViews(&touch_calibrator_controller).size());
 
   touch_calibrator_controller.StartCalibration(
-      touch_display, true /* is_custom_calibbration */,
+      touch_display, true /* is_custom_calibration */,
       TouchCalibratorController::TouchCalibrationCallback());
 
   ui::TouchscreenDevice touchdevice =
@@ -309,7 +552,7 @@ TEST_F(TouchCalibratorControllerTest, CustomCalibrationInvalidTouchId) {
   EXPECT_FALSE(!!GetCalibratorViews(&touch_calibrator_controller).size());
 
   touch_calibrator_controller.StartCalibration(
-      touch_display, true /* is_custom_calibbration */,
+      touch_display, true /* is_custom_calibration */,
       TouchCalibratorController::TouchCalibrationCallback());
 
   EXPECT_TRUE(touch_calibrator_controller.IsCalibrating());
@@ -429,7 +672,7 @@ TEST_F(TouchCalibratorControllerTest, HighDPIMonitorsCalibration) {
 
   TouchCalibratorController touch_calibrator_controller;
   touch_calibrator_controller.StartCalibration(
-      touch_display, false /* is_custom_calibbration */,
+      touch_display, false /* is_custom_calibration */,
       TouchCalibratorController::TouchCalibrationCallback());
 
   // Skip any UI animations associated with the start of calibration.
@@ -523,7 +766,7 @@ TEST_F(TouchCalibratorControllerTest, RotatedHighDPIMonitorsCalibration) {
 
   TouchCalibratorController touch_calibrator_controller;
   touch_calibrator_controller.StartCalibration(
-      touch_display, false /* is_custom_calibbration */,
+      touch_display, false /* is_custom_calibration */,
       TouchCalibratorController::TouchCalibrationCallback());
 
   // Skip any UI animations associated with the start of calibration.

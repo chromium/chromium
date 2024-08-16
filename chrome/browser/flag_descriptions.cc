@@ -7645,6 +7645,12 @@ const char kTouchscreenCalibrationDescription[] =
     "If enabled, the user can calibrate the touch screen displays in "
     "chrome://settings/display.";
 
+const char kTouchscreenMappingName[] =
+    "Enable/disable touchscreen mapping option in material design settings";
+const char kTouchscreenMappingDescription[] =
+    "If enabled, the user can map the touch screen display to the correct "
+    "input device in chrome://settings/display.";
+
 const char kTrafficCountersEnabledName[] = "Traffic counters enabled";
 const char kTrafficCountersEnabledDescription[] =
     "If enabled, data usage will be visible in the Cellular Settings UI and "

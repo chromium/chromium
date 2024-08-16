@@ -7,18 +7,23 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "ash/display/cros_display_config.h"
 #include "ash/display/display_performance_mode_controller.h"
 #include "ash/display/display_prefs.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/system/brightness_control_delegate.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.mojom.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
+#include "content/public/browser/browser_thread.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/util/display_util.h"
@@ -447,6 +452,21 @@ void DisplaySettingsProvider::OnGetHasAmbientLightSensor(
     return;
   }
   std::move(callback).Run(has_ambient_light_sensor.value());
+}
+
+void DisplaySettingsProvider::StartNativeTouchscreenMappingExperience() {
+  // CrosDisplayConfig must be called from the UI thread, so post this task
+  // instead of directly calling it.
+  // base::Unretained is safe as Shell is deleted in PostMainMessageLoopRun
+  // which means the cros_display_config object will always outlive the posted
+  // task.
+  content::GetUIThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &CrosDisplayConfig::TouchCalibration,
+          base::Unretained(Shell::Get()->cros_display_config()), "",
+          crosapi::mojom::DisplayConfigOperation::kShowNativeMappingDisplays,
+          nullptr, base::DoNothing()));
 }
 
 }  // namespace ash::settings

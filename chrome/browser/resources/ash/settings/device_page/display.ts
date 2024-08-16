@@ -942,6 +942,13 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   }
 
   /**
+   * Returns true if external touch devices are connected a
+   */
+  private showTouchRemappingExperience_(): boolean {
+    return loadTimeData.getBoolean('enableTouchscreenMappingExperience');
+  }
+
+  /**
    * Returns true if the overscan setting should be shown for |display|.
    */
   private showOverscanSetting_(display: DisplayUnitInfo): boolean {
@@ -1192,6 +1199,10 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    */
   private onTouchCalibrationClick_(): void {
     getDisplayApi().showNativeTouchCalibration(this.selectedDisplay!.id);
+  }
+
+  private onTouchMappingClick_(): void {
+    this.displaySettingsProvider.startNativeTouchscreenMappingExperience();
   }
 
   /**

@@ -150,6 +150,10 @@ interface DisplaySettingsProvider {
   // sensor to automatically set the display brightness.
   SetInternalDisplayAmbientLightSensorEnabled(bool enabled);
 
+  // Initiates the native experience to map all touchscreen devices to the
+  // correct display.
+  StartNativeTouchscreenMappingExperience();
+
   // Returns whether the device has at least one ambient light sensor.
   // In case of error, |callback| will be run with |false|.
   HasAmbientLightSensor() => (bool has_ambient_light_sensor);

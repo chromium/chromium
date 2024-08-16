@@ -852,6 +852,12 @@ BASE_FEATURE(kEnableAllSystemWebApps,
 // Enables RFC8925 (prefer IPv6-only on an IPv6-only-capable network).
 BASE_FEATURE(kEnableRFC8925, "EnableRFC8925", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// TODO:(b/345017297): If enabled, touchscreen mapping experience is visible in
+// settings.
+BASE_FEATURE(kEnableTouchscreenMappingExperience,
+             "EnableTouchscreenMappingExperience",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, touchpad cards will be shown in the diagnostics app's input
 // section.
 BASE_FEATURE(kEnableTouchpadsInDiagnosticsApp,
@@ -4729,6 +4735,10 @@ bool IsTimeOfDayWallpaperEnabled() {
 
 bool IsTabClusterUIEnabled() {
   return base::FeatureList::IsEnabled(kTabClusterUI);
+}
+
+bool IsTouchscreenMappingExperienceEnabled() {
+  return base::FeatureList::IsEnabled(kEnableTouchscreenMappingExperience);
 }
 
 bool IsTouchpadInDiagnosticsAppEnabled() {

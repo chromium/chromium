@@ -8,7 +8,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/display/mojom/display.mojom";
 
 // This API is used for communication between Settings WebUI and Ash C++ code.
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 // All points, bounds, and insets are in display pixels unless otherwise
 // sepcified.
@@ -91,6 +91,10 @@ enum DisplayConfigOperation {
   kComplete,
   // Displays the native touch calibration.
   kShowNative,
+  // Displays the native touch screen mapping experience which goes through each
+  // connected external display and allows you to map the touch device to the
+  // corresponding display.
+  [MinVersion=2] kShowNativeMappingDisplays,
 };
 
 // Describes who initiated configuration change.

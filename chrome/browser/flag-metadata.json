@@ -4141,6 +4141,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-touchscreen-mapping",
+    "owners": [ "dpad@google.org", "cros-peripherals@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "enable-touchscreens-in-diagnostics-app",
     "owners": [ "jimmyxgong@chromium.org", "michaelcheco@chromium.org", "cros-peripherals@google.com" ],
     "expiry_milestone": 130

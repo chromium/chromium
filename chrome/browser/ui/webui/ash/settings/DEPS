@@ -19,6 +19,7 @@ specific_include_rules = {
   'display_settings_provider\.(cc|h)': [
     '+ash/shell.h',
     '+ash/shell_observer.h',
+    "+ash/display/cros_display_config.h",
     "+ash/display/display_prefs.h",
     "+ash/display/display_performance_mode_controller.h",
   ],

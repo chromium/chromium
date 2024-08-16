@@ -378,3 +378,14 @@
 <settings-display-night-light prefs="{{prefs}}"
     is-internal-display="[[selectedDisplay.isInternal]]">
 </settings-display-night-light>
+
+<!-- Touchscreen Mapping Experience -->
+<template is="dom-if" if="[[showTouchRemappingExperience_()]]" restamp>
+  <div class="settings-box continuation start layout vertical">
+    <cr-link-row class="hr" id="touchMapping"
+      label="$i18n{displayTouchMappingTitle}"
+      sub-label="$i18n{displayTouchMappingText}"
+      on-click="onTouchMappingClick_" embedded>
+    </cr-link-row>
+  </div>
+</template>

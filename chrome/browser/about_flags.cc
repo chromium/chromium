@@ -6192,6 +6192,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTouchscreenCalibrationName,
      flag_descriptions::kTouchscreenCalibrationDescription, kOsCrOS,
      SINGLE_VALUE_TYPE(ash::switches::kEnableTouchCalibrationSetting)},
+    {"enable-touchscreen-mapping", flag_descriptions::kTouchscreenMappingName,
+     flag_descriptions::kTouchscreenMappingDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kEnableTouchscreenMappingExperience)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"prefer-constant-frame-rate",

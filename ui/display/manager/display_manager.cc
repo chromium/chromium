@@ -1819,7 +1819,8 @@ void DisplayManager::SetTouchCalibrationData(
     int64_t display_id,
     const TouchCalibrationData::CalibrationPointPairQuad& point_pair_quad,
     const gfx::Size& display_bounds,
-    const ui::TouchscreenDevice& touchdevice) {
+    const ui::TouchscreenDevice& touchdevice,
+    bool apply_spatial_calibration) {
   // We do not proceed with setting the calibration and association if the
   // touch device identified by |touch_device_identifier| is an internal touch
   // device.
@@ -1836,9 +1837,13 @@ void DisplayManager::SetTouchCalibrationData(
   bool update_add_support = false;
   bool update_remove_support = false;
 
-  TouchCalibrationData calibration_data(point_pair_quad, display_bounds);
-  touch_device_manager_->AddTouchCalibrationData(touchdevice, display_id,
-                                                 calibration_data);
+  if (apply_spatial_calibration) {
+    TouchCalibrationData calibration_data(point_pair_quad, display_bounds);
+    touch_device_manager_->AddTouchCalibrationData(touchdevice, display_id,
+                                                   calibration_data);
+  } else {
+    touch_device_manager_->AddTouchAssociation(touchdevice, display_id);
+  }
 
   DisplayInfoList display_info_list;
   for (const auto& display : active_display_list_) {

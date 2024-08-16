@@ -18513,6 +18513,7 @@ from previous Chrome versions.
   <int value="-825942229" label="tab-management-experiment-type-elderberry"/>
   <int value="-825514105" label="TimeOfDayDlc:enabled"/>
   <int value="-825312041" label="CastStreamingAv1:enabled"/>
+  <int value="-825284137" label="EnableTouchscreenMappingExperience:disabled"/>
   <int value="-824199802" label="ContextualSearchSimplifiedServer:enabled"/>
   <int value="-823394398" label="TargetEmbeddingLookalikes:enabled"/>
   <int value="-823165021" label="MaterialDesignUserMenu:enabled"/>
@@ -25006,6 +25007,7 @@ from previous Chrome versions.
   <int value="1883856892" label="SupportToolCopyTokenButton:disabled"/>
   <int value="1883998150" label="WebAppsCrosapi:disabled"/>
   <int value="1885566305" label="EsbDownloadRowPromo:enabled"/>
+  <int value="1886462832" label="EnableTouchscreenMappingExperience:enabled"/>
   <int value="1887031213" label="AutofillManualFallbackAndroid:disabled"/>
   <int value="1887085478" label="WallpaperGooglePhotosSharedAlbums:enabled"/>
   <int value="1887882558" label="RTCUnifiedPlanByDefault:enabled"/>

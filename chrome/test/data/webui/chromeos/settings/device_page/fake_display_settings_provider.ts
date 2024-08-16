@@ -226,6 +226,8 @@ export class FakeDisplaySettingsProvider implements
     }
   }
 
+  startNativeTouchscreenMappingExperience(): void {}
+
   // Implement DisplaySettingsProviderInterface.
   setShinyPerformance(enabled: boolean): void {
     this.performanceSettingEnabled = enabled;

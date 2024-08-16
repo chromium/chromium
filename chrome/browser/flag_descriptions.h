@@ -4432,6 +4432,9 @@ extern const char kTilingWindowResizeDescription[];
 extern const char kTouchscreenCalibrationName[];
 extern const char kTouchscreenCalibrationDescription[];
 
+extern const char kTouchscreenMappingName[];
+extern const char kTouchscreenMappingDescription[];
+
 extern const char kTrafficCountersEnabledName[];
 extern const char kTrafficCountersEnabledDescription[];
 

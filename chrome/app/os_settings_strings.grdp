@@ -5984,6 +5984,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_DISPLAY_TOUCH_CALIBRATION_TEXT" desc="In Device Settings > Displays, the sublabel for initiating touch calibration.">
     Set up and adjust the accuracy of your touchscreen
   </message>
+  <message name="IDS_SETTINGS_DISPLAY_TOUCH_MAPPING_TITLE" desc="In Device Settings > Displays, the label for initiating mapping your touchscreen device to the correct display.">
+    Map your touchscreen
+  </message>
+  <message name="IDS_SETTINGS_DISPLAY_TOUCH_MAPPING_TEXT" desc="In Device Settings > Displays, the sublabel for initiating mapping your touchscreen.">
+    Set up and map your touchscreen device to the correct display
+  </message>
   <message name="IDS_SETTINGS_DISPLAY_LAYOUT_DONW_A11Y_LABEL" desc="A11y announcement when display position moved downwards.">
     Window moved downwards
   </message>

@@ -949,8 +949,14 @@ need to be translated for each locale.-->
       </message>
 
       <!-- Strings describing the touch calibration UX -->
-      <message name="IDS_DISPLAY_TOUCH_CALIBRATION_EXIT_LABEL" desc="A message to notify the user about using the escape key to exit the calibration mode.">
+      <message name="IDS_DISPLAY_TOUCH_CALIBRATION_EXIT_LABEL" translateable="false" desc="A message to notify the user about using the escape key to exit the calibration mode.">
         To exit calibration press Esc.
+      </message>
+      <message name="IDS_DISPLAY_TOUCH_CALIBRATION_SECONDARY_SKIP_LABEL" translateable="false" desc="A message to notify the user about using the escape key to exit the calibration mode.">
+        If the current display is not a touchscreen, press Esc.
+      </message>
+      <message name="IDS_DISPLAY_TOUCH_CALIBRATION_PRIMARY_SKIP_LABEL" translateable="false" desc="A message to notify the user about using the escape key to exit the calibration mode.">
+        If this display is not a touchscreen, press Esc.
       </message>
       <message name="IDS_DISPLAY_TOUCH_CALIBRATION_HINT_LABEL_TEXT" desc="Title of the hint message to inform the user what the next step is in touch calibration is">
        Calibrate your touchscreen
