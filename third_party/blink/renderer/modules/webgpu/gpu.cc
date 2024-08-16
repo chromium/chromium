@@ -191,8 +191,8 @@ void GPU::OnRequestAdapterCallback(
   GPUAdapter* gpu_adapter = nullptr;
   switch (status) {
     case wgpu::RequestAdapterStatus::Success:
-      gpu_adapter = MakeGarbageCollected<GPUAdapter>(this, std::move(adapter),
-                                                     dawn_control_client_);
+      gpu_adapter = MakeGarbageCollected<GPUAdapter>(
+          this, std::move(adapter), dawn_control_client_, options);
       break;
 
     // Note: requestAdapter never rejects, but we print a console warning if

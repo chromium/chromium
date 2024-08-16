@@ -12270,6 +12270,20 @@ interface XRFrame
     method getLightEstimate
     method getPose
     method getViewerPose
+interface XRGPUBinding
+    attribute @@toStringTag
+    getter nativeProjectionScaleFactor
+    method constructor
+    method createProjectionLayer
+    method getPreferredColorFormat
+    method getViewSubImage
+interface XRGPUSubImage : XRSubImage
+    attribute @@toStringTag
+    getter colorTexture
+    getter depthStencilTexture
+    getter motionVectorTexture
+    method constructor
+    method getViewDescriptor
 interface XRHand
     attribute @@toStringTag
     getter size

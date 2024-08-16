@@ -1215,6 +1215,8 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/xr/xr_dom_overlay_state.idl",
   "//third_party/blink/renderer/modules/xr/xr_frame.idl",
   "//third_party/blink/renderer/modules/xr/xr_frame_request_callback.idl",
+  "//third_party/blink/renderer/modules/xr/xr_gpu_binding.idl",
+  "//third_party/blink/renderer/modules/xr/xr_gpu_sub_image.idl",
   "//third_party/blink/renderer/modules/xr/xr_hand.idl",
   "//third_party/blink/renderer/modules/xr/xr_hit_test_options_init.idl",
   "//third_party/blink/renderer/modules/xr/xr_hit_test_result.idl",

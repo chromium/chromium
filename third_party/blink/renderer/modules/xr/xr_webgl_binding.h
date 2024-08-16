@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
+#include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
@@ -23,7 +24,7 @@ class XRProjectionLayer;
 class XRProjectionLayerInit;
 class XRWebGLSubImage;
 
-class XRWebGLBinding final : public ScriptWrappable {
+class XRWebGLBinding final : public ScriptWrappable, public XRGraphicsBinding {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -34,7 +35,6 @@ class XRWebGLBinding final : public ScriptWrappable {
                                 const V8XRWebGLRenderingContext* context,
                                 ExceptionState& exception_state);
 
-  double nativeProjectionScaleFactor() const;
   bool usesDepthValues() const;
 
   XRProjectionLayer* createProjectionLayer(const XRProjectionLayerInit* init,
@@ -43,8 +43,6 @@ class XRWebGLBinding final : public ScriptWrappable {
   XRWebGLSubImage* getViewSubImage(XRProjectionLayer* layer,
                                    XRView* view,
                                    ExceptionState& exception_state);
-
-  XRSession* session() const { return session_.Get(); }
 
   WebGLTexture* getReflectionCubeMap(XRLightProbe*, ExceptionState&);
 
@@ -57,7 +55,6 @@ class XRWebGLBinding final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  const Member<XRSession> session_;
   Member<WebGLRenderingContextBase> webgl_context_;
   bool webgl2_;
 };

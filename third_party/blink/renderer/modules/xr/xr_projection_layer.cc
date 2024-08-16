@@ -9,9 +9,8 @@
 
 namespace blink {
 
-XRProjectionLayer::XRProjectionLayer(XRSession* session,
-                                     const XRProjectionLayerInit* init)
-    : XRCompositionLayer(session) {}
+XRProjectionLayer::XRProjectionLayer(XRGraphicsBinding* binding)
+    : XRCompositionLayer(binding) {}
 
 uint16_t XRProjectionLayer::textureWidth() const {
   return texture_width_;

@@ -41,6 +41,13 @@ blink_modules_sources("xr") {
     "xr_frame_provider.h",
     "xr_frame_request_callback_collection.cc",
     "xr_frame_request_callback_collection.h",
+    "xr_gpu_binding.cc",
+    "xr_gpu_binding.h",
+    "xr_gpu_projection_layer.cc",
+    "xr_gpu_projection_layer.h",
+    "xr_gpu_sub_image.h",
+    "xr_graphics_binding.cc",
+    "xr_graphics_binding.h",
     "xr_grip_space.cc",
     "xr_grip_space.h",
     "xr_hand.cc",
@@ -129,5 +136,8 @@ blink_modules_sources("xr") {
     "//services/metrics/public/cpp:ukm_builders",
   ]
 
-  public_deps = [ "//third_party/blink/renderer/modules/gamepad:gamepad" ]
+  public_deps = [
+    "//third_party/blink/renderer/modules/gamepad:gamepad",
+    "//third_party/blink/renderer/modules/webgpu:webgpu",
+  ]
 }
