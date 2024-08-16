@@ -27,6 +27,8 @@ namespace network {
 
 namespace {
 
+constexpr char kGeoChangeTokenPresence[] =
+    "NetworkService.IpProtection.GeoChangeTokenPresence";
 constexpr char kGetAuthTokenResultHistogram[] =
     "NetworkService.IpProtection.GetAuthTokenResult";
 constexpr char kProxyATokenSpendRateHistogram[] =
@@ -797,6 +799,9 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, Prefill) {
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_a_token_cache_manager_->IsAuthTokenAvailable(
       kMountainViewGeoId));
+
+  // Histogram should have no samples for a prefill.
+  histogram_tester_.ExpectTotalCount(kGeoChangeTokenPresence, 0);
 }
 
 // The cache will initiate a refill when it reaches the low-water mark.
@@ -913,6 +918,10 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, RefillAfterExpiration) {
   auto got_token =
       ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId);
   EXPECT_EQ(got_token.value().token, "exp3");
+
+  // Histogram should have no samples because after the initial fill there was
+  // no geo change.
+  histogram_tester_.ExpectTotalCount(kGeoChangeTokenPresence, 0);
 }
 
 // Once a geo changes, the new geo will have a key in the cache map meaning
@@ -921,9 +930,17 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
        GeoChangeNewGeoAvailableForGetToken) {
   SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
 
+  // We have to re-mock this behavior b/c the default behavior mocks both proxy
+  // A and B which would lead to incorrect histogram sampling.
   // A geo change means this is called twice: once for prefill and once for
   // second batch.
-  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(2);
+  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_))
+      .Times(2)
+      .WillRepeatedly([this](const std::string& geo_id) {
+        if (ipp_proxy_a_token_cache_manager_->CurrentGeo() != geo_id) {
+          ipp_proxy_a_token_cache_manager_->SetCurrentGeo(geo_id);
+        }
+      });
 
   // First batch should contain tokens for Mountain View geo.
   mock_.ExpectTryGetAuthTokensCall(
@@ -958,6 +975,10 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
 
   // New geo should return a valid token.
   ASSERT_TRUE(ipp_proxy_a_token_cache_manager_->GetAuthToken(kSunnyvaleGeoId));
+
+  // There was a single geo change, but the new geo did not have any preexisting
+  // tokens in the cache.
+  histogram_tester_.ExpectUniqueSample(kGeoChangeTokenPresence, false, 1);
 }
 
 // Once a geo changes, the map will contain multiple geo's. Tokens from a
@@ -1020,10 +1041,18 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
        SetCurrentGeoDifferentGeoRetrievesNewTokens) {
   SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
 
+  // We have to re-mock this behavior b/c the default behavior mocks both proxy
+  // A and B which would lead to incorrect histogram sampling.
   // The geo change to Sunnyvale occurs through a call to `SetCurrentGeo`
   // which means there will not be an additional call to `GeoObserved`
   // aside from the first one during the prefill.
-  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(1);
+  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_))
+      .Times(1)
+      .WillRepeatedly([this](const std::string& geo_id) {
+        if (ipp_proxy_a_token_cache_manager_->CurrentGeo() != geo_id) {
+          ipp_proxy_a_token_cache_manager_->SetCurrentGeo(geo_id);
+        }
+      });
 
   // Original geo will be Mountain View.
   mock_.ExpectTryGetAuthTokensCall(
@@ -1049,6 +1078,10 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
 
   // New geo should return a valid token.
   ASSERT_TRUE(ipp_proxy_a_token_cache_manager_->GetAuthToken(kSunnyvaleGeoId));
+
+  // There was a single geo change, but the new geo did not have any preexisting
+  // tokens in the cache.
+  histogram_tester_.ExpectUniqueSample(kGeoChangeTokenPresence, false, 1);
 }
 
 // If setting new geo causes overflow of tokens in cache for certain geo,
@@ -1111,6 +1144,144 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
 
   ipp_proxy_a_token_cache_manager_->SetCurrentGeo(kMountainViewGeoId);
   ASSERT_NE(ipp_proxy_a_token_cache_manager_->CurrentGeo(), kMountainViewGeoId);
+}
+
+// Testing the existence of tokens in the cache when a new geo matches a
+// previous geo that was cached. This test mimics a geo change introduced from
+// a token refill from within the class.
+TEST_F(IpProtectionTokenCacheManagerImplTest,
+       GeoChangeFromWithinTokenManagerNewGeoAlreadyHasTokensPresent) {
+  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+
+  // We have to re-mock this behavior b/c the default behavior mocks both proxy
+  // A and B which would lead to incorrect histogram sampling.
+  // A geo change means this is called three times: once for prefill and twice
+  // for the second and third batch.
+  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_))
+      .Times(3)
+      .WillRepeatedly([this](const std::string& geo_id) {
+        if (ipp_proxy_a_token_cache_manager_->CurrentGeo() != geo_id) {
+          ipp_proxy_a_token_cache_manager_->SetCurrentGeo(geo_id);
+        }
+      });
+
+  // First batch should contain tokens for Mountain View geo.
+  mock_.ExpectTryGetAuthTokensCall(
+      expected_batch_size_,
+      TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
+  ipp_proxy_a_token_cache_manager_->EnableCacheManagementForTesting();
+  WaitForTryGetAuthTokensCompletion(IpProtectionProxyLayer::kProxyA);
+  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+
+  // Spend tokens down to (but not below) the low-water mark.
+  for (int i = expected_batch_size_ - 1; i > cache_low_water_mark_; i--) {
+    ASSERT_TRUE(
+        ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+    ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+  }
+
+  // New Geo (Sunnyvale) that should be retrieved once the next
+  // `GetAuthToken`is called.
+  mock_.ExpectTryGetAuthTokensCall(
+      expected_batch_size_,
+      TokenBatch(expected_batch_size_, kFutureExpiration, kSunnyvaleGeo));
+  // Triggers new token retrieval.
+  ASSERT_TRUE(
+      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+  // Tokens should contain the new geo.
+  CallTryGetAuthTokensAndWait(IpProtectionProxyLayer::kProxyA);
+  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+
+  // Spend tokens down to (but not below) the low-water mark.
+  for (int i = expected_batch_size_ - 1; i > cache_low_water_mark_; i--) {
+    ASSERT_TRUE(
+        ipp_proxy_a_token_cache_manager_->GetAuthToken(kSunnyvaleGeoId));
+    ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+  }
+
+  // New Geo (Mountain View) that should be retrieved once the next
+  // `GetAuthToken`is called.
+  mock_.ExpectTryGetAuthTokensCall(
+      expected_batch_size_,
+      TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
+  // Triggers new token retrieval.
+  ASSERT_TRUE(ipp_proxy_a_token_cache_manager_->GetAuthToken(kSunnyvaleGeoId));
+  // Tokens should contain the new geo.
+  CallTryGetAuthTokensAndWait(IpProtectionProxyLayer::kProxyA);
+  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+
+  // There was a two geo changes not counting the prefill: Mountain View ->
+  // Sunnyvale and Sunnyvale -> Mountain View. When the geo changed to Sunnyvale
+  // there were no tokens matching in the cache, but the change back to Mountain
+  // View contained previously cached tokens.
+  histogram_tester_.ExpectBucketCount(kGeoChangeTokenPresence, true, 1);
+  histogram_tester_.ExpectBucketCount(kGeoChangeTokenPresence, false, 1);
+}
+
+// Testing the existence of tokens in the cache when a new geo matches a
+// previous geo that was cached. This test mimics a geo change introduced from
+// outside of this class.
+TEST_F(IpProtectionTokenCacheManagerImplTest,
+       GeoChangeFromOutsideTokenManagerNewGeoAlreadyHasTokensPresent) {
+  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+
+  // We have to re-mock this behavior b/c the default behavior mocks both proxy
+  // A and B which would lead to incorrect histogram sampling.
+  // The geo change to Sunnyvale and Mountain View (second time) occurs through
+  // a call to `SetCurrentGeo` which means there will not be an additional call
+  // to `GeoObserved` aside from the first one during the prefill.
+  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_))
+      .Times(1)
+      .WillRepeatedly([this](const std::string& geo_id) {
+        if (ipp_proxy_a_token_cache_manager_->CurrentGeo() != geo_id) {
+          ipp_proxy_a_token_cache_manager_->SetCurrentGeo(geo_id);
+        }
+      });
+
+  // Original geo will be Mountain View.
+  mock_.ExpectTryGetAuthTokensCall(
+      expected_batch_size_,
+      TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
+  ipp_proxy_a_token_cache_manager_->EnableCacheManagementForTesting();
+  WaitForTryGetAuthTokensCompletion(IpProtectionProxyLayer::kProxyA);
+  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+
+  // Contains Valid Tokens.
+  ASSERT_TRUE(
+      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+
+  // New geo introduced by `SetCurrentGeo` (Sunnyvale).
+  mock_.ExpectTryGetAuthTokensCall(
+      expected_batch_size_,
+      TokenBatch(expected_batch_size_, kFutureExpiration, kSunnyvaleGeo));
+
+  // Trigger refill.
+  ipp_proxy_a_token_cache_manager_->SetCurrentGeo(kSunnyvaleGeoId);
+
+  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+
+  // New geo should return a valid token.
+  ASSERT_TRUE(ipp_proxy_a_token_cache_manager_->GetAuthToken(kSunnyvaleGeoId));
+
+  // Another new geo introduced by `SetCurrentGeo` but this time, the geo was
+  // previously stored in our cache (Mountain View).
+  mock_.ExpectTryGetAuthTokensCall(
+      expected_batch_size_,
+      TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
+
+  // Trigger refill.
+  ipp_proxy_a_token_cache_manager_->SetCurrentGeo(kMountainViewGeoId);
+
+  // New geo should return a valid token.
+  ASSERT_TRUE(
+      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+
+  // There was a two geo changes not counting the prefill: Mountain View ->
+  // Sunnyvale and Sunnyvale -> Mountain View. When the geo changed to Sunnyvale
+  // there were no tokens matching in the cache, but the change back to Mountain
+  // View contained previously cached tokens.
+  histogram_tester_.ExpectBucketCount(kGeoChangeTokenPresence, true, 1);
+  histogram_tester_.ExpectBucketCount(kGeoChangeTokenPresence, false, 1);
 }
 }  // namespace
 }  // namespace network

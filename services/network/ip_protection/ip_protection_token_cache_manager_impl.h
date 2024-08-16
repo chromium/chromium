@@ -143,6 +143,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
   // outstanding.
   bool fetching_auth_tokens_ = false;
 
+  // True if the "NetworkService.IpProtection.GeoChangeTokenPresence" metric
+  // needs to be sampled. False if the presence has already been sampled. This
+  // value should be reset to true after `SetCurrentGeo` is called after a token
+  // refill.
+  // A boolean flag is crucial to prevent duplicate or incorrect histogram
+  // measurements. By tracking whether a histogram has already been logged for a
+  // given geo change, we can avoid redundant or misleading data which could be
+  // caused b/c a cache is filled with tokens before a call to `SetCurrentGeo`
+  // is made.
+  bool emitted_geo_presence_histogram_before_refill_ = true;
+
   // If not null, this is the `try_again_after` time from the last call to
   // `TryGetAuthTokens()`, and no calls should be made until this time.
   base::Time try_get_auth_tokens_after_;

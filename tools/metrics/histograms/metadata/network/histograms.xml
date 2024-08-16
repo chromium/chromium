@@ -4798,6 +4798,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.IpProtection.GeoChangeTokenPresence"
+    enum="BooleanAvailable" expires_after="2025-02-09">
+  <owner>abhipatel@chromium.org</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    This histogram is emitted to when changing to a new geo, and tracks whether
+    the token cache already contains tokens for the new geo.
+
+    `IpProtectionConfigCache::SetCurrentGeo(geo_id)` is called when a geo is
+    observed in the `IpProtectionProxyListManager` or
+    `IpProtectionTokenCacheManager`. This metric is useful to help understand if
+    token caching by geo is useful in providing tokens for when a geo shifts
+    back to a previous geo that is contained within the cache.
+
+    If the value is `Available`, it means that when the geo change was observed,
+    the token cache contained some number of tokens for the new geo from a
+    previous refill.
+
+    If the value is `Not Available`, it means that the a new geo was observed,
+    but there was no tokens already in the cache that matched this new geo.
+
+    This histogram will only be emitted to if the MaskedDomainList and
+    EnableIpPrivacyProxy features are enabled, the IpPrivacyCacheTokensByGeo
+    feature parameter is enabled, and a platform-dependent sign-in is complete.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.IpProtection.GetAuthTokenResult"
     enum="BooleanSuccess" expires_after="2025-01-26">
   <owner>djmitche@chromium.org</owner>

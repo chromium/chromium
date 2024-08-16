@@ -168,7 +168,19 @@ void IpProtectionTokenCacheManagerImpl::SetCurrentGeo(
     return;
   }
 
+  // Ensuring that a geo change has occurred.
+  if (emitted_geo_presence_histogram_before_refill_ && current_geo_id_ != "" &&
+      current_geo_id_ != geo_id) {
+    base::UmaHistogramBoolean(
+        "NetworkService.IpProtection.GeoChangeTokenPresence",
+        cache_by_geo_.contains(geo_id));
+  }
+
   current_geo_id_ = geo_id;
+
+  // Now that the current geo has been set, the next opportunity to record the
+  // "GeoChangeTokenPresence" metric should be taken.
+  emitted_geo_presence_histogram_before_refill_ = true;
 
   if (NeedsRefill(current_geo_id_) && !fetching_auth_tokens_) {
     MaybeRefillCache();
@@ -262,7 +274,6 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
     std::optional<std::vector<BlindSignedAuthToken>> tokens,
     std::optional<base::Time> try_again_after) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   // Failed Call - Short circuit and schedule refill.
   // If `tokens.has_value()` is true, a non-empty list of valid tokens exists.
   if (!tokens.has_value()) {
@@ -281,6 +292,8 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
   VLOG(2) << "IPPATC::OnGotAuthTokens got " << tokens->size() << " tokens";
   try_get_auth_tokens_after_ = base::Time();
 
+  RemoveExpiredTokens();
+
   // Ensure token list is not empty.
   CHECK(!tokens->empty());
 
@@ -295,12 +308,25 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
     }
   }
 
-  // TODO: crbug.com/357439021 - Refactor so that each TryAuthTokensCallback
+  // TODO(crbug.com/357439021): Refactor so that each TryAuthTokensCallback
   // contains a single `geo_hint`.
   std::string geo_id_from_token =
       enable_token_caching_by_geo_
           ? network::GetGeoIdFromGeoHint(tokens->front().geo_hint)
           : kDefaultGeo;
+
+  // Metric should only be recorded under the following conditions:
+  // 1. Token caching by geo is enabled.
+  // 2. The geo from the token is different from the current geo of the cache.
+  // 2. Current geo is not empty which signifies the initial fill of the cache.
+  bool has_geo_id_changed = geo_id_from_token != current_geo_id_;
+  if (enable_token_caching_by_geo_ && has_geo_id_changed &&
+      current_geo_id_ != "") {
+    base::UmaHistogramBoolean(
+        "NetworkService.IpProtection.GeoChangeTokenPresence",
+        cache_by_geo_.contains(geo_id_from_token));
+    emitted_geo_presence_histogram_before_refill_ = false;
+  }
 
   // The latest tokens should be placed into the map of caches.
   if (!cache_by_geo_.contains(geo_id_from_token)) {
@@ -332,7 +358,8 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
 
   fetching_auth_tokens_ = false;
 
-  bool has_geo_id_changed = geo_id_from_token != current_geo_id_;
+  // TODO(abhipatel): Change logic so that external code is not being relied on
+  // to update our internal state.
   if (enable_token_caching_by_geo_ && has_geo_id_changed) {
     ip_protection_config_cache_->GeoObserved(geo_id_from_token);
   }
