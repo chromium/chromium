@@ -6,6 +6,7 @@
 
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/sync/model/ios_user_event_service_factory.h"
 #include "ios/chrome/browser/sync/model/sync_invalidations_service_factory.h"
 #include "ios/chrome/browser/sync/model/sync_service_factory.h"
 #include "ios/chrome/common/channel_info.h"
@@ -22,6 +23,12 @@ syncer::SyncInvalidationsService* GetSyncInvalidationsServiceForWebUI(
     web::WebUIIOS* web_ui) {
   ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
   return SyncInvalidationsServiceFactory::GetForBrowserState(
+      browser_state->GetOriginalChromeBrowserState());
+}
+
+syncer::UserEventService* GetUserEventServiceForWebUI(web::WebUIIOS* web_ui) {
+  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
+  return IOSUserEventServiceFactory::GetForBrowserState(
       browser_state->GetOriginalChromeBrowserState());
 }
 

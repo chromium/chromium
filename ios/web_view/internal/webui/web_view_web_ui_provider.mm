@@ -27,6 +27,10 @@ syncer::SyncInvalidationsService* GetSyncInvalidationsServiceForWebUI(
       GetForBrowserState(browser_state->GetRecordingBrowserState());
 }
 
+syncer::UserEventService* GetUserEventServiceForWebUI(web::WebUIIOS* web_ui) {
+  return nullptr;
+}
+
 std::string GetChannelString() {
   return std::string();
 }
