@@ -210,14 +210,24 @@ public class NotificationPlatformBridge {
         sNotificationManagerOverride = notificationManager;
     }
 
+    /**
+     * Retuns the abstraction around the NotificationManager that either delegates to the real thing
+     * in production code or to a fake in tests.
+     */
+    private static BaseNotificationManagerProxy createNotificationManagerProxy(Context context) {
+        BaseNotificationManagerProxy notificationManager;
+        if (sNotificationManagerOverride != null) {
+            notificationManager = sNotificationManagerOverride;
+        } else {
+            notificationManager = BaseNotificationManagerProxyFactory.create(context);
+        }
+        return notificationManager;
+    }
+
     private NotificationPlatformBridge(long nativeNotificationPlatformBridge) {
         mNativeNotificationPlatformBridge = nativeNotificationPlatformBridge;
         Context context = ContextUtils.getApplicationContext();
-        if (sNotificationManagerOverride != null) {
-            mNotificationManager = sNotificationManagerOverride;
-        } else {
-            mNotificationManager = BaseNotificationManagerProxyFactory.create(context);
-        }
+        mNotificationManager = createNotificationManagerProxy(context);
 
         // This set will be reset to empty if the application process is killed and then restarted.
         // However, this is unlikely during the brief `PROVISIONAL_UNSUBSCRIBE_DURATION_MS` period.
@@ -937,7 +947,7 @@ public class NotificationPlatformBridge {
      * this notification is showing. Instead, the permission is revoked when this notification is
      * OK'ed, dismissed, or times out.
      */
-    private void displayProvisionallyUnsubscribedNotification(
+    private static void displayProvisionallyUnsubscribedNotification(
             NotificationIdentifyingAttributes identifyingAttributes) {
         Context context = ContextUtils.getApplicationContext();
         Resources res = context.getResources();
@@ -997,7 +1007,9 @@ public class NotificationPlatformBridge {
 
         NotificationWrapper notification =
                 buildNotificationWrapper(notificationBuilder, identifyingAttributes.notificationId);
-        mNotificationManager.notify(notification);
+
+        BaseNotificationManagerProxy notificationManager = createNotificationManagerProxy(context);
+        notificationManager.notify(notification);
     }
 
     private void appendSiteSettingsButton(
