@@ -276,8 +276,8 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Gets the index of the most visible page, or -1 if none are visible.
   int GetMostVisiblePage();
 
-  // Returns whether the page at `index` is visible or not.
-  virtual bool IsPageVisible(int index) const;
+  // Returns whether the page at `page_index` is visible or not.
+  virtual bool IsPageVisible(int page_index) const;
 
   // Gets the current layout orientation.
   PageOrientation GetCurrentOrientation() const;

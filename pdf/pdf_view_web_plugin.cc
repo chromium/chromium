@@ -2041,8 +2041,8 @@ float PdfViewWebPlugin::GetZoom() const {
   return zoom_;
 }
 
-bool PdfViewWebPlugin::IsPageVisible(int index) {
-  return engine_->IsPageVisible(index);
+bool PdfViewWebPlugin::IsPageVisible(int page_index) {
+  return engine_->IsPageVisible(page_index);
 }
 
 void PdfViewWebPlugin::StrokeFinished() {

@@ -84,8 +84,8 @@ class PdfInkModule {
     // the `blink::WebMouseEvent` positions during stroking.
     virtual void Invalidate(const gfx::Rect& rect) {}
 
-    // Returns whether the page at `index` is visible or not.
-    virtual bool IsPageVisible(int index) = 0;
+    // Returns whether the page at `page_index` is visible or not.
+    virtual bool IsPageVisible(int page_index) = 0;
 
     // Notifies the client that a stroke has finished drawing or erasing.
     virtual void StrokeFinished() {}

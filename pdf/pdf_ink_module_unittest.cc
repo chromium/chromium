@@ -105,8 +105,8 @@ class FakeClient : public PdfInkModule::Client {
     invalidations_.push_back(rect);
   }
 
-  bool IsPageVisible(int index) override {
-    return base::Contains(visible_page_indices_, index);
+  bool IsPageVisible(int page_index) override {
+    return base::Contains(visible_page_indices_, page_index);
   }
 
   void StrokeFinished() override { ++stroke_finished_count_; }

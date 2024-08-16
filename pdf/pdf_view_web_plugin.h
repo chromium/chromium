@@ -408,7 +408,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   gfx::Rect GetPageContentsRect(int index) override;
   gfx::Vector2dF GetViewportOriginOffset() override;
   float GetZoom() const override;
-  bool IsPageVisible(int index) override;
+  bool IsPageVisible(int page_index) override;
   void StrokeFinished() override;
   void UpdateInkCursorImage(SkBitmap bitmap) override;
   int VisiblePageIndexFromPoint(const gfx::PointF& point) override;
