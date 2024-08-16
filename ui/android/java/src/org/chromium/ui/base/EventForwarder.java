@@ -21,6 +21,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ContentUriUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
@@ -565,7 +566,7 @@ public class EventForwarder {
         }
 
         String content = "";
-        List<String> filenames = new ArrayList<String>();
+        List<String[]> filenames = new ArrayList<String[]>();
         String text = null;
         String html = null;
         String url = null;
@@ -584,7 +585,12 @@ public class EventForwarder {
                     // If there are any Uris, set them as files.
                     Uri uri = clipData.getItemAt(i).getUri();
                     if (uri != null) {
-                        filenames.add(uri.toString());
+                        String uriString = uri.toString();
+                        String displayName = ContentUriUtils.maybeGetDisplayName(uriString);
+                        if (displayName == null) {
+                            displayName = new String();
+                        }
+                        filenames.add(new String[] {uriString, displayName});
                     }
                 }
 
@@ -636,7 +642,7 @@ public class EventForwarder {
                         screenY,
                         mimeTypes,
                         content,
-                        filenames.toArray(new String[0]),
+                        filenames.toArray(new String[][] {}),
                         text,
                         html,
                         url);
@@ -830,7 +836,7 @@ public class EventForwarder {
                 float screenY,
                 String[] mimeTypes,
                 String content,
-                String[] filenames,
+                String[][] filenames,
                 String text,
                 String html,
                 String url);

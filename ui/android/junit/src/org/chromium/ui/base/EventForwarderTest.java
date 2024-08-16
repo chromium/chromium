@@ -9,6 +9,8 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -240,7 +242,7 @@ public class EventForwarderTest {
         validateDragDropEvent(
                 new String[] {"text/plain"},
                 new ClipData.Item[] {new ClipData.Item("text content")},
-                new String[0], // expectedFilenames
+                new String[][] {}, // expectedFilenames
                 "text content", // expectedText
                 null, // expectedHtml
                 null); // expectedUrl
@@ -249,7 +251,7 @@ public class EventForwarderTest {
         validateDragDropEvent(
                 new String[] {"text/html"},
                 new ClipData.Item[] {new ClipData.Item("text content", "html content")},
-                new String[0], // expectedFilenames
+                new String[][] {}, // expectedFilenames
                 "text content", // expectedText
                 "html content", // expectedHtml
                 null); // expectedUrl
@@ -258,7 +260,7 @@ public class EventForwarderTest {
         validateDragDropEvent(
                 new String[] {"text/x-moz-url"},
                 new ClipData.Item[] {new ClipData.Item("url content")},
-                new String[0], // expectedFilenames
+                new String[][] {}, // expectedFilenames
                 "url content", // expectedText
                 null, // expectedHtml
                 "url content"); // expectedUrl
@@ -270,7 +272,7 @@ public class EventForwarderTest {
                     new ClipData.Item(Uri.parse("image.jpg")),
                     new ClipData.Item(Uri.parse("hello.txt"))
                 },
-                new String[] {"image.jpg", "hello.txt"}, // expectedFilenames
+                new String[][] {{"image.jpg", ""}, {"hello.txt", ""}}, // expectedFilenames
                 null, // expectedText
                 null, // expectedHtml
                 null); // expectedUrl
@@ -355,7 +357,7 @@ public class EventForwarderTest {
     private void validateDragDropEvent(
             String[] mimeTypes,
             ClipData.Item[] items,
-            String[] expectedFilenames,
+            String[][] expectedFilenames,
             String expectedText,
             String expectedHtml,
             String expectedUrl) {
@@ -378,19 +380,33 @@ public class EventForwarderTest {
         eventForwarder.onDragEvent(event, mock(View.class));
         verify(mNativeMock, times(1))
                 .onDragEvent(
-                        EventForwarderTest.NATIVE_EVENT_FORWARDER_ID,
-                        eventForwarder,
-                        DragEvent.ACTION_DROP,
-                        14, // x
-                        21, // y
-                        14, // screenX
-                        21, // screenY
-                        mimeTypes,
-                        "", // content
-                        expectedFilenames,
-                        expectedText,
-                        expectedHtml,
-                        expectedUrl);
+                        eq(EventForwarderTest.NATIVE_EVENT_FORWARDER_ID),
+                        eq(eventForwarder),
+                        eq(DragEvent.ACTION_DROP),
+                        eq(14.0f), // x
+                        eq(21.0f), // y
+                        eq(14.0f), // screenX
+                        eq(21.0f), // screenY
+                        eq(mimeTypes),
+                        eq(""), // content
+                        argThat(
+                                filenames -> {
+                                    if (filenames.length != expectedFilenames.length) {
+                                        return false;
+                                    }
+                                    for (int i = 0; i < filenames.length; i++) {
+                                        if (filenames[i].length != 2
+                                                || !expectedFilenames[i][0].equals(filenames[i][0])
+                                                || !expectedFilenames[i][1].equals(
+                                                        filenames[i][1])) {
+                                            return false;
+                                        }
+                                    }
+                                    return true;
+                                }),
+                        eq(expectedText),
+                        eq(expectedHtml),
+                        eq(expectedUrl));
         histograms.assertExpected();
     }
 }
