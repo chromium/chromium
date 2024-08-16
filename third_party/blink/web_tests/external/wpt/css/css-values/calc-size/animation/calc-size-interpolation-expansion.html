@@ -119,6 +119,14 @@ var TESTS = [
       0.75: "calc-size(any, 50px)",
     },
   },
+  {
+    property: "width",
+    start: "calc-size(80px, size)",
+    end: "calc-size(calc-size(any, 20px), size + 20px)",
+    expected: {
+      0.75: "calc-size(any, 50px)",
+    },
+  },
 ];
 
 let e = document.getElementById("test");

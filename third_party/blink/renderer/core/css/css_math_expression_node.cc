@@ -3715,8 +3715,6 @@ class CSSMathExpressionNodeParser {
       if (!basis) {
         return nullptr;
       }
-      // TODO(https://crbug.com/313072): If basis is a calc-size()
-      // expression whose basis is 'any', set basis_is_any to true.
     }
 
     if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(tokens)) {
