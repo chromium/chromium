@@ -309,7 +309,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   gfx::Size GetIconPreferredSize() const;
 
   // Sets the command id of this menu item.
-  void SetCommand(int command) { command_ = command; }
+  void SetCommand(int command);
 
   // Returns the command id of this item.
   int GetCommand() const { return command_; }
@@ -474,6 +474,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
     return parent_menu_item_->GetSubmenu();
   }
 
+  void UpdateAccessibleCheckedState();
   // The RunXXX methods call into this to set up the necessary state before
   // running.
   void PrepareForRun(bool has_mnemonics, bool show_mnemonics);

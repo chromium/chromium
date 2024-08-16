@@ -405,6 +405,20 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
+  test::TestMenuDelegate* GetDelegate() { return menu_delegate_.get(); }
+
+  ax::mojom::CheckedState GetCheckedStatus(int command,
+                                           views::MenuItemView::Type type) {
+    if (type == views::MenuItemView::Type::kRadio ||
+        type == views::MenuItemView::Type::kCheckbox) {
+      bool is_checked = GetDelegate() && GetDelegate()->IsItemChecked(command);
+      return is_checked ? ax::mojom::CheckedState::kTrue
+                        : ax::mojom::CheckedState::kFalse;
+    } else {
+      return ax::mojom::CheckedState::kNone;
+    }
+  }
+
  protected:
   virtual std::unique_ptr<test::TestMenuDelegate> CreateMenuDelegate() {
     return std::make_unique<test::TestMenuDelegate>();
@@ -639,6 +653,48 @@ TEST_F(MenuItemViewPaintUnitTest, SelectionBasedStateUpdatedDuringDragAndDrop) {
   submenu->SetDropMenuItem(nullptr, MenuDelegate::DropPosition::kOn);
   EXPECT_TRUE(submenu_child1->last_paint_as_selected_for_testing());
   EXPECT_FALSE(submenu_child2->last_paint_as_selected_for_testing());
+}
+
+TEST_F(MenuItemViewPaintUnitTest, AccessibleCheckedStateChange) {
+  int command = 1000;
+  auto type = views::MenuItemView::Type::kNormal;
+  ui::AXNodeData data;
+
+  auto AddItem = [this](auto command_, auto type_) {
+    menu_item_view()->AddMenuItemAt(
+        0, command_, u"No custom colors", std::u16string(), std::u16string(),
+        ui::ImageModel(), ui::ImageModel(), type_, ui::NORMAL_SEPARATOR,
+        std::nullopt, std::nullopt, std::nullopt);
+  };
+
+  type = views::MenuItemView::Type::kRadio;
+  AddItem(command, type);
+  menu_item_view()
+      ->GetMenuItemByID(command)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), GetCheckedStatus(command, type));
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+
+  data = ui::AXNodeData();
+  type = views::MenuItemView::Type::kCheckbox;
+  AddItem(command, type);
+  menu_item_view()
+      ->GetMenuItemByID(command)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), GetCheckedStatus(command, type));
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+
+  data = ui::AXNodeData();
+  type = views::MenuItemView::Type::kNormal;
+  AddItem(command, type);
+  menu_item_view()
+      ->GetMenuItemByID(command)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), GetCheckedStatus(command, type));
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kNone);
 }
 
 // Sets up a custom MenuDelegate that expects functions aren't called. See
