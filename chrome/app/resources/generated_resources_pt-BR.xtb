@@ -3607,7 +3607,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3577487026101678864">Sincronização de arquivos ativada</translation>
 <translation id="3577745545227000795">Coleta de dados de hardware do <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">Configurar endereço IP automaticamente</translation>
-<translation id="3581861561942370740">Pesquisar histórico de downloads</translation>
+<translation id="3581861561942370740">Pesquisar no histórico de downloads</translation>
 <translation id="3582057310199111521">Inserida em um fraudulento e encontrada em uma violação de dados</translation>
 <translation id="3582299299336701326">Escureça telas claras e clareie as escuras. Pressione as teclas Pesquisa + Ctrl + H para ativar e desativar a inversão de cores.</translation>
 <translation id="3584169441612580296">Ler e alterar fotos, músicas e outras mídias do seu computador</translation>
@@ -5604,7 +5604,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5049614114599109018">Usar o histórico de entrada</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{Este site enviou muitas notificações recentemente. Você pode impedir que ele envie outras.}one{Este site enviou muitas notificações recentemente. Você pode impedir que ele envie outras.}other{Estes sites enviaram muitas notificações recentemente. Você pode impedir que eles enviem outras.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
-<translation id="5051461727068120271">Fazer o download de arquivo não verificado</translation>
+<translation id="5051461727068120271">Baixar arquivo não verificado</translation>
 <translation id="5051836348807686060">A verificação ortográfica não é compatível com os idiomas selecionados</translation>
 <translation id="5052499409147950210">Editar site</translation>
 <translation id="5052853071318006357">Clique com o botão direito do mouse em uma guia e selecione "Adicionar guia ao novo grupo"</translation>
@@ -8419,7 +8419,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7124712201233930202">As políticas da sua organização não foram atendidas</translation>
 <translation id="7125148293026877011">Excluir Crostini</translation>
 <translation id="7125932261198019860">Confira se a impressora está conectada à mesma rede Wi-Fi do Chromebook ou use um cabo USB. <ph name="LINK_BEGIN" />Saiba mais sobre compatibilidade<ph name="LINK_END" /></translation>
-<translation id="7127980134843952133">Histórico de download</translation>
+<translation id="7127980134843952133">Histórico de downloads</translation>
 <translation id="7128151990937044829">Mostrar um indicador na barra de endereço quando notificações forem bloqueadas</translation>
 <translation id="7130438335435247835">Nome do ponto de acesso (APN)</translation>
 <translation id="7131040479572660648">Leia seus dados em <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e <ph name="WEBSITE_3" /></translation>

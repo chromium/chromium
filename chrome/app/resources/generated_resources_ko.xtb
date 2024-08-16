@@ -1341,7 +1341,7 @@
 <translation id="1935303383381416800">사용자 위치 확인이 허용됨</translation>
 <translation id="193565226207940518">지원 도구</translation>
 <translation id="1935995810530254458">무시하고 복사</translation>
-<translation id="1936157145127842922">폴더 열기</translation>
+<translation id="1936157145127842922">폴더에서 열기</translation>
 <translation id="1936931585862840749">숫자로 인쇄 부수를 표시하세요(1부터 <ph name="MAX_COPIES" />까지).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> 기기에서는 <ph name="ARCHITECTURE_CONTAINER" /> 컨테이너 아키텍처 유형을 가져올 수 없습니다. 이 컨테이너를 다른 기기에서 복원할 수 있으며, 컨테이너 이미지를 Files 앱에서 열면 컨테이너 이미지에 포함된 파일에 액세스할 수 있습니다.</translation>
 <translation id="1938320257168860255">문제가 발생했습니다. 휴대전화가 근처에 있고, 잠금 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
@@ -3253,7 +3253,7 @@
 <translation id="3308134619352333507">버튼 숨기기</translation>
 <translation id="3308604065765626613">{GROUP_COUNT,plural, =1{이 기기에서 탭은 열린 상태로 유지되지만, 그룹은 완전히 삭제됩니다.}other{이 기기에서 탭은 열린 상태로 유지되지만, 그룹은 완전히 삭제됩니다.}}</translation>
 <translation id="3308852433423051161">Google 어시스턴트 로드 중...</translation>
-<translation id="3309124184713871355">구조</translation>
+<translation id="3309124184713871355">구조물</translation>
 <translation id="3309330461362844500">인증서 프로필 ID</translation>
 <translation id="3311445899360743395">앱과 관련된 데이터가 기기에서 삭제될 수 있습니다.</translation>
 <translation id="3312470654018965389">Linux 컨테이너를 설정하는 중</translation>
@@ -10837,7 +10837,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8873075098103007382">탭 그룹으로 깔끔하게 정리</translation>
 <translation id="8874341931345877644">기기로 전송:</translation>
 <translation id="8874448314264883207">'<ph name="EXTENSION_NAME" />'이(가) 사용 중지되었습니다</translation>
-<translation id="8874647982044395866">유기적임</translation>
+<translation id="8874647982044395866">유기적</translation>
 <translation id="8874790741333031443">서드 파티 쿠키를 일시적으로 허용해 보세요. 인터넷 사용 시 보안은 취약해지지만 사이트 기능이 예상대로 작동할 가능성은 높아집니다.</translation>
 <translation id="8875520811099717934">Linux 업그레이드</translation>
 <translation id="8875736897340638404">공개 범위 선택</translation>
@@ -11404,7 +11404,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - 카메라 녹화 및 마이크 녹음 중</translation>
 <translation id="984275831282074731">결제 수단</translation>
 <translation id="984705303330760860">맞춤법 검사 언어 추가</translation>
-<translation id="98515147261107953">가로 방향</translation>
+<translation id="98515147261107953">풍경</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">일반</translation>
 <translation id="987475089238841621">언어 팩은 실시간 자막에 사용되며 기기에 저장됩니다</translation>

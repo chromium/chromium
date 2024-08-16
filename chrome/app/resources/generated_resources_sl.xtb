@@ -941,7 +941,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1650801028905250434">Datoteke v Mojem disku se bodo samodejno sinhronizirale s Chromebookom, tako da boste do njih lahko dostopali brez internetne povezave. To lahko kadar koli spremenite v »Nastavitve &gt; Datoteke«.</translation>
 <translation id="1651008383952180276">Dvakrat morate vnesti isto geslo</translation>
 <translation id="1651609627703324721">Ta zavihek predvaja vsebino VR v slušalkah z mikrofonom</translation>
-<translation id="1652281434788353738">Pozorno</translation>
+<translation id="1652281434788353738">Zamišljeno</translation>
 <translation id="1652326691684645429">Omogočanje deljenja v bližini</translation>
 <translation id="1652862280638399816">Če želite Googlovega upravitelja gesel uporabljati s shrambo poverilnic sistema macOS, Keychain, znova zaženite Chromium in omogočite dostop do shrambe poverilnic Keychain. Zavihki se bodo po vnovičnem zagonu znova odprli.</translation>
 <translation id="1653958716132599769">Združitev sorodnih zavihkov</translation>
@@ -1080,7 +1080,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="17513872634828108">Odprti zavihki</translation>
 <translation id="175196451752279553">&amp;Znova odpri zaprt zavihek</translation>
 <translation id="1753067873202720523">Vaš Chromebook se morda ne polni, ko je vklopljen.</translation>
-<translation id="1753557900380512635">Notranjost</translation>
+<translation id="1753557900380512635">Interierji</translation>
 <translation id="1753905327828125965">Najpogosteje obiskane</translation>
 <translation id="1755601632425835748">Velikost besedila</translation>
 <translation id="1757132445735080748">Če želite dokončati nastavitev Linuxa, posodobite sistem ChromeOS Flex in poskusite znova.</translation>
@@ -1754,7 +1754,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2232876851878324699">V datoteki je bilo eno potrdilo, ki ni bilo uvoženo:</translation>
 <translation id="2233502537820838181">&amp;Več informacij</translation>
 <translation id="223356358902285214">Dejavnost v spletu in aplikacijah</translation>
-<translation id="2234065144797002621">Potoček</translation>
+<translation id="2234065144797002621">Potok</translation>
 <translation id="2234827758954819389">Vodnik po zasebnosti</translation>
 <translation id="2234876718134438132">Sinhronizacija in Googlove storitve</translation>
 <translation id="2235344399760031203">Piškotki drugih spletnih mest so blokirani</translation>
@@ -11182,7 +11182,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="9103868373786083162">Pritisnite, če želite nazaj, s kontekstnim menijem pa prikažete zgodovino</translation>
 <translation id="9106236359747881194">Izberite besedilo, če želite iskati</translation>
 <translation id="9107096627210171112">P&amp;revedi …</translation>
-<translation id="9107624673674616016">Barvica</translation>
+<translation id="9107624673674616016">Barvni svinčnik</translation>
 <translation id="9108035152087032312">Poimenuj &amp;okno …</translation>
 <translation id="9108072915170399168">Trenutna nastavitev za preneseno količino podatkov je »Brez interneta«</translation>
 <translation id="9108294543511800041">Zdaj si lahko ogledate nedavne fotografije, predstavnost in obvestila telefona</translation>

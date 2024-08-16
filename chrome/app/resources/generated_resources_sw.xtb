@@ -4763,7 +4763,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4411344321892622527">Haziruhusiwi kusogeza na kukuza vichupo unavyotumia na wengine</translation>
 <translation id="4411578466613447185">Kitia Misimbo sahihi</translation>
 <translation id="4411719918614785832">Funguo hizi za siri zimehifadhiwa kwenye kipengele cha Windows Hello katika kompyuta hii. Hazijahifadhiwa kwenye Akaunti yako ya Google.</translation>
-<translation id="4412544493002546580">Jaribu tena au uchague kwenye mojawapo ya hamasisho hapo chini.</translation>
+<translation id="4412544493002546580">Jaribu tena au uchague mojawapo ya mifano iliyo hapa chini.</translation>
 <translation id="4412547955014928315">Je, ungependa kufuta data na ruhusa za tovuti ya <ph name="SITE_NAME" /> na tovuti zote zilizomo?</translation>
 <translation id="4412632005703201014">Programu za Chrome zinahamia kwenye Programu ya Wavuti ya kisasa. Programu hii ya Chrome ilisanikishwa kwenye kivinjari chako na shirika lako. Ili ufungue Programu ya Wavuti ya Kisasa kwenye Orodha ya programu, kwanza wasiliana na msimamizi wako kisha umwombe aiondoe Programu ya Chrome. Kwa sasa bado unaweza kutembelea <ph name="EXTENSION_LAUNCH_URL" /> ili kufungua <ph name="EXTENSION_NAME" /> kwenye wavuti.</translation>
 <translation id="4412698727486357573">Kituo cha usaidizi</translation>
@@ -4861,7 +4861,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4490798467014431984">Viendelezi haviruhusiwi kwenye tovuti hii</translation>
 <translation id="449102748655090594">Inaweka vichupo vyako katika kikundi…</translation>
 <translation id="449126573531210296">Simba kwa njia fiche manenosiri yaliyosawazishwa ukitumia vitambulisho vya Akaunti yako ya Google</translation>
-<translation id="4492265221907525667">Ili kutumia kipengele hiki kipya cha majaribio, tafadhali ingia katika akaunti.</translation>
+<translation id="4492265221907525667">Ili utumie kipengele hiki kipya cha majaribio, tafadhali ingia katika akaunti.</translation>
 <translation id="449232563137139956">Tovuti huonyesha picha ili kukupa kielelezo, kama vile picha za maduka ya mtandaoni au makala ya habari</translation>
 <translation id="4493167769966437077">Ondoa <ph name="LANGUAGE_NAME" /> kwenye orodha ya lugha ambazo kamwe hazipaswi kutafsiriwa</translation>
 <translation id="4493468155686877504">Unaopendekezwa (<ph name="INSTALL_SIZE" />)</translation>
@@ -5320,7 +5320,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4837128290434901661">Ungependa kurudi kwenye huduma ya Tafuta na Google?</translation>
 <translation id="4837926214103741331">Huruhusiwi kukitumia kifaa hiki. Tafadhali wasiliana na mmiliki wa kifaa kwa ruhusa ya kuingia katika akaunti.</translation>
 <translation id="4838170306476614339">Angalia picha, maudhui na arifa za simu yako.</translation>
-<translation id="4838327282952368871">Dreamy</translation>
+<translation id="4838327282952368871">Kama Ndoto</translation>
 <translation id="4838836835474292213">Imepewa idhini ya kusoma ubao wa kunakili</translation>
 <translation id="4838907349371614303">Nenosiri limesasishwa</translation>
 <translation id="4838958829619609362">Uteuzi haupatikani katika lugha ya <ph name="LANGUAGE" /></translation>
@@ -6165,7 +6165,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5458998536542739734">Kuandika kwenye skrini iliyofungwa</translation>
 <translation id="5459864179070366255">Endelea kusakinisha</translation>
 <translation id="5460641065520325899">Dhibiti aina za taarifa ambazo tovuti zinaweza kutumia kukufuatilia unapovinjari.</translation>
-<translation id="5460861858595506978">Hamasisho</translation>
+<translation id="5460861858595506978">Mifano</translation>
 <translation id="5461050611724244538">Muunganisho wa simu yako umekatika</translation>
 <translation id="5463275305984126951">Fahirisi ya <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Jisajili kwa ajili ya barua pepe za <ph name="DEVICE_TYPE" /></translation>
@@ -7022,7 +7022,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6093803049406781019">Futa wasifu</translation>
 <translation id="6093888419484831006">Inaghairi usasishaji...</translation>
 <translation id="6095541101974653012">Umeondoka kwenye akaunti.</translation>
-<translation id="6095696531220637741">Rangi ya pinki</translation>
+<translation id="6095696531220637741">Biskuti</translation>
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Fungua iliyoongezwa</translation>
 <translation id="6096326118418049043">Jina la X.500</translation>
@@ -7671,7 +7671,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6586213706115310390">Fikia programu yako ya Mratibu unaposema "Ok Google."</translation>
 <translation id="6586451623538375658">Badilisha kitufe msingi cha kipanya</translation>
 <translation id="6588043302623806746">Tumia DNS salama</translation>
-<translation id="6589760925779188068">Mandhari ya Panna cotta</translation>
+<translation id="6589760925779188068">Panna cotta</translation>
 <translation id="659005207229852190">Imekamilisha ukaguzi wa usalama.</translation>
 <translation id="6590458744723262880">Badilisha jina la folda</translation>
 <translation id="6592267180249644460">Kumbukumbu ya WebRTC ilipigwa picha <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>

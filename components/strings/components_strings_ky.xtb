@@ -281,7 +281,7 @@
 <translation id="1483493594462132177">Жөнтүү</translation>
 <translation id="1484449009683144042">Бул ЖИнин негизинде жазуу боюнча тажрыйбалык функция жана ал ар дайым туура иштебейт.
     <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
-<translation id="1492194039220927094">Саясаттарды колдонуу:</translation>
+<translation id="1492194039220927094">Эрежелерди колдонуу:</translation>
 <translation id="1495677929897281669">Өтмөккө кайтуу</translation>
 <translation id="1500286806237135498">Камералар (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1501859676467574491">Google аккаунтуңуздагы карталарды көрсөтүү</translation>
@@ -1601,7 +1601,7 @@
 <translation id="3987940399970879459">1 Мб азыраак</translation>
 <translation id="3990250421422698716">Оффсеттик басып чыгаруу</translation>
 <translation id="3992684624889376114">Бул бет жөнүндө</translation>
-<translation id="3995639283717357522">Саясаттарды колдонуу</translation>
+<translation id="3995639283717357522">Эрежелерди колдонуу</translation>
 <translation id="399754345297554962">Стандартташтырылган жана кабыл алуу сынактары</translation>
 <translation id="3999173941208168054">Үрөй учурган тасмалар</translation>
 <translation id="4000598935132966791">Башкарылган серепчилердеги сайт чектөөлөрү тууралуу кеңири маалымат</translation>
@@ -1964,7 +1964,7 @@
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows Тармак мүчүлүштүгүн аныктоону иштетиңиз<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> дарегинин сырсөзү</translation>
 <translation id="4724144314178270921">Алмашуу буфериңиздеги текст менен сүрөттөрдү көрүүгө уруксат сурай алат</translation>
-<translation id="4726672564094551039">Саясаттарды кайра жүктөө</translation>
+<translation id="4726672564094551039">Эрежелерди кайра жүктөө</translation>
 <translation id="4728558894243024398">Платформа</translation>
 <translation id="4729147136006144950">Кайрымдуулук жана филантропия</translation>
 <translation id="4730977633786878901">Сын-пикирлер</translation>
@@ -2056,7 +2056,7 @@
 <translation id="4880827082731008257">Издөө таржымалы</translation>
 <translation id="4881695831933465202">Ачуу</translation>
 <translation id="4881808915112408168">24 x 31,5 дюйм</translation>
-<translation id="4882314601499260499">Колдонуучулар үчүн саясаттар колдонулган жок. Саясаттарды кошуу үчүн уюмуңуз <ph name="LINK_BEGIN" />доменди ырасташы керек<ph name="LINK_END" />.</translation>
+<translation id="4882314601499260499">Колдонуучулар үчүн саясаттар колдонулган жок. Эрежелерди кошуу үчүн уюмуңуз <ph name="LINK_BEGIN" />доменди ырасташы керек<ph name="LINK_END" />.</translation>
 <translation id="4885030148564729407">Бал айлары жана романтикалуу эс алуу</translation>
 <translation id="4885256590493466218"><ph name="CARD_DETAIL" /> картасы менен төлөңүз</translation>
 <translation id="4887406273302438710">Сырсөздөрдү Windows Hello функциясы менен коргоо</translation>
@@ -2814,7 +2814,7 @@
 <translation id="6328784461820205019">"Туташууңуз купуя эмес" же "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" же "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" же "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" же "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" же "SSL тастыктамасынын катасы"</translation>
 <translation id="6335029926534404762">Спорттук бут кийим</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> чейин орун бошотулат. Кийинки жолу киргениңизде, айрым сайттар жайыраак жүктөлүшү мүмкүн.</translation>
-<translation id="6337534724793800597">Саясаттарды аталышы боюнча чыпкалоо</translation>
+<translation id="6337534724793800597">Эрежелерди аталышы боюнча чыпкалоо</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> мааниси жараксыз, андыктан колдонулбайт.</translation>
 <translation id="6340739886198108203">Администратордун саясаты купуя мазмун көрүнүп турганда скриншотторду тартууну же жаздырууну сунуштабайт:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Администратордун саясаты бул файлды төмөнкүгө жүктөп берүүнү сунуштабайт: <ph name="DESTINATION_NAME" />}other{Администратордун саясаты бул файлдарды төмөнкүгө жүктөп берүүнү сунуштабайт: <ph name="DESTINATION_NAME" />}}</translation>

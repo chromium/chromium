@@ -7971,7 +7971,7 @@
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="6803766346203101854">உங்கள் சாதனத்தில் தரவைச் சேமிக்க இந்தத் தளம் அனுமதிக்கப்பட்டுள்ளது.</translation>
 <translation id="680488281839478944">"<ph name="DEFAULT_VM_NAME" />" என்ற VM உள்ளது</translation>
-<translation id="6805478749741295868">இது பரிசோதனைக் கட்டத்தில் உள்ள AI அம்சம், எப்போதும் சரியாக இருக்காது.</translation>
+<translation id="6805478749741295868">இது பரிசோதனைக் கட்டத்தில் உள்ள AI அம்சம் என்பதால் சில சமயங்களில் சரியாகச் செயல்படாமல் போகலாம்.</translation>
 <translation id="6805647936811177813"><ph name="HOST_NAME" /> இல் இருந்து கிளையண்ட் சான்றிதழை இறக்குமதி செய்ய <ph name="TOKEN_NAME" /> இல் தயவுசெய்து உள்நுழைக.</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" /> இல் RLZ கண்காணிப்பை இயக்கு.</translation>
 <translation id="6806089545527108739">இப்போது அனுமதிக்காதே, பின்னர் கேள்</translation>

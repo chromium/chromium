@@ -2288,7 +2288,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2610374175948698697">Poden veure els fitxers o les carpetes del dispositiu</translation>
 <translation id="2610780100389066815">Signatura de llista de confiança de Microsoft</translation>
 <translation id="261114180663074524">Inicia la sessió al teu compte de Microsoft i torna-ho a provar</translation>
-<translation id="2611765907167846862">Serena</translation>
+<translation id="2611765907167846862">Serè</translation>
 <translation id="2611776654555141051">Eina de rectangle</translation>
 <translation id="2612676031748830579">Número de targeta</translation>
 <translation id="261305050785128654">Deixa que els llocs web sàpiguen els idiomes que parles. Quan sigui possible, mostraran el contingut en aquests idiomes.</translation>
@@ -4752,7 +4752,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4411344321892622527">No es permet desplaçar-se ni fer zoom a les pestanyes compartides</translation>
 <translation id="4411578466613447185">Signant del codi</translation>
 <translation id="4411719918614785832">Aquestes claus d'accés es desen a Windows Hello en aquest ordinador, i no al teu Compte de Google.</translation>
-<translation id="4412544493002546580">Torna-ho a provar o selecciona una de les inspiracions més avall.</translation>
+<translation id="4412544493002546580">Torna-ho a provar o selecciona una de les inspiracions de més avall.</translation>
 <translation id="4412547955014928315">Vols suprimir les dades i els permisos del lloc web <ph name="SITE_NAME" /> i tots els llocs web que conté?</translation>
 <translation id="4412632005703201014">Les aplicacions de Chrome s'estan migrant a aplicacions web progressives. La teva organització ha instal·lat aquesta aplicació de Chrome al navegador. Per obrir l'aplicació web progressiva a la llista d'aplicacions, primer contacta amb l'administrador i demana-li que desinstal·li l'aplicació Chrome. Mentrestant, pots visitar <ph name="EXTENSION_LAUNCH_URL" /> per obrir <ph name="EXTENSION_NAME" /> al web.</translation>
 <translation id="4412698727486357573">Centre d'ajuda</translation>
@@ -5218,7 +5218,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4769632191812288342">Tens una protecció estàndard</translation>
 <translation id="4770119228883592393">S'ha sol·licitat permís, prem ⌘+Opció+fletxa avall per respondre</translation>
 <translation id="4770755495532014179">Utilitza aquesta contrasenya a l'iPhone</translation>
-<translation id="4772914216048388646">Ordenadament</translation>
+<translation id="4772914216048388646">Ordenat</translation>
 <translation id="4773112038801431077">Actualitza Linux</translation>
 <translation id="477548766361111120">Permet que l'extensió llegeixi i canviï aquest lloc web</translation>
 <translation id="4776311127346151860">S'ha connectat <ph name="DEVICE_NAME" /></translation>
@@ -5308,7 +5308,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4837128290434901661">Vols tornar a utilitzar la Cerca de Google?</translation>
 <translation id="4837926214103741331">No teniu autorització per fer servir aquest dispositiu. Contacteu amb el propietari del dispositiu per obtenir el permís d'inici de sessió.</translation>
 <translation id="4838170306476614339">Mostra les fotos, els fitxers multimèdia i les notificacions del telèfon</translation>
-<translation id="4838327282952368871">Somiadora</translation>
+<translation id="4838327282952368871">Somiador</translation>
 <translation id="4838836835474292213">S'ha permès l'accés de lectura al porta-retalls</translation>
 <translation id="4838907349371614303">S'ha actualitzat la contrasenya</translation>
 <translation id="4838958829619609362">La selecció no està en <ph name="LANGUAGE" /></translation>
@@ -9052,7 +9052,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7628392600831846024">Estil de símbols</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), de grau <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Selecciona una acció per a cada clau</translation>
-<translation id="7629206210984165492">Tènue</translation>
+<translation id="7629206210984165492">Apagat</translation>
 <translation id="7629827748548208700">Pestanya: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> gestiona aquest dispositiu i requereix que hi iniciïs la sessió cada vegada.</translation>
 <translation id="7631014249255418691">S'ha creat la còpia de seguretat dels fitxers i de les aplicacions de Linux</translation>
@@ -10818,7 +10818,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8873075098103007382">Organitza't amb els grups de pestanyes</translation>
 <translation id="8874341931345877644">Emet a un dispositiu:</translation>
 <translation id="8874448314264883207">S'ha desactivat "<ph name="EXTENSION_NAME" />"</translation>
-<translation id="8874647982044395866">Ecològic</translation>
+<translation id="8874647982044395866">Orgànic</translation>
 <translation id="8874790741333031443">Prova de permetre temporalment les galetes de tercers. Això implica menys protecció de navegació, però és més probable que les funcions del lloc web funcionin de la manera prevista.</translation>
 <translation id="8875520811099717934">Actualització de Linux</translation>
 <translation id="8875736897340638404">Tria la teva visibilitat</translation>
@@ -11385,7 +11385,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" />: la càmera i el micròfon estan gravant</translation>
 <translation id="984275831282074731">Formes de pagament</translation>
 <translation id="984705303330760860">Afegeix idiomes al corrector ortogràfic</translation>
-<translation id="98515147261107953">Horitzontal</translation>
+<translation id="98515147261107953">Paisatge</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">General</translation>
 <translation id="987475089238841621">Els paquets d'idioma s'utilitzen per a la funció Subtítols instantanis i s'emmagatzemen al teu dispositiu</translation>

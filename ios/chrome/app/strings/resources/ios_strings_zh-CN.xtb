@@ -254,7 +254,7 @@
 <translation id="2286505070150039482">突出显示的文字</translation>
 <translation id="2287614783861766820">{count,plural, =1{这个地址将被从此设备中删除。}other{这些地址将被从此设备中删除。}}</translation>
 <translation id="2297989278479054870">当您退出 Google 账号后，该账号中的书签、密码等信息都将从此设备中移除。</translation>
-<translation id="2299218006564889602">系统会先在设备上对您的密码进行加密，然后再将其保存到 Google 密码管理器中。</translation>
+<translation id="2299218006564889602">系统会先在设备上对您的密码进行加密，然后再将其保存到 Google 密码管理工具中。</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">在网站上更改密码</translation>
 <translation id="230956208401264723">您跟踪的所有包裹都会显示在此轮播界面</translation>
@@ -1434,10 +1434,10 @@
 <translation id="7978018860671536736">3. 点按“自动填充密码”</translation>
 <translation id="797824194429476746">相应标签页将在此设备上保持打开状态，但分组将被永久删除。</translation>
 <translation id="7982789257301363584">网络</translation>
-<translation id="7987685713885608670">为了提高安全性，请先在设备上对密码进行加密，然后再将其保存到 Google 密码管理器中。</translation>
+<translation id="7987685713885608670">为了提高安全性，请先在设备上对密码进行加密，然后再将其保存到 Google 密码管理工具中。</translation>
 <translation id="7993619969781047893">某些网站上的功能可能会无法正常运作</translation>
 <translation id="800361585186029508">在 Google Chrome 中打开输入的网址。</translation>
-<translation id="8005666035647241369">保存到此设备上的 Google 密码管理器中</translation>
+<translation id="8005666035647241369">保存到此设备上的 Google 密码管理工具中</translation>
 <translation id="8009225694047762179">管理密码</translation>
 <translation id="8011489434346330032">网页检查器</translation>
 <translation id="8016714545083187120">一律使用安全连接</translation>

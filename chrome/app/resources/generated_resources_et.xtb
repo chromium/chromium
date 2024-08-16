@@ -5253,7 +5253,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4794810983896241342">Värskendusi haldab <ph name="BEGIN_LINK" />administraator<ph name="END_LINK" /></translation>
 <translation id="4794910597689955457">Kas teisaldada avamiseks <ph name="NUM_OF_FILES" /> faili teenusesse <ph name="CLOUD_PROVIDER" />?</translation>
 <translation id="479536056609751218">Veebileht, ainult HTML</translation>
-<translation id="4795670271446126525">Murduvad lained</translation>
+<translation id="4795670271446126525">Tormilained</translation>
 <translation id="4796142525425001238">Taasta alati</translation>
 <translation id="4797314204379834752">Proovige vahelehegruppe, et korrastada toiminguid, ostelda veebis ja teha muudki</translation>
 <translation id="479863874072008121">Seadmete haldamine</translation>
@@ -10003,7 +10003,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8276850948802942358">Vaadake lisateavet saidile ajutise loa andmise kohta kolmandate osapoolte küpsiste kasutamiseks</translation>
 <translation id="8277907305629781277">Lõite selle pääsuvõtme kuupäeval <ph name="DATE" /></translation>
 <translation id="8280267190418431666">Veebisaidid teie keeltes</translation>
-<translation id="8280848878018088610">Murduvad lained merel fantastilise linna ja lossi taustal, pimedas atmosfääris.</translation>
 <translation id="828180235270931531">Muud saadaolevad printerid</translation>
 <translation id="8281886186245836920">Jäta vahele</translation>
 <translation id="8284279544186306258">kõik domeeni <ph name="WEBSITE_1" /> saidid</translation>
@@ -11394,7 +11393,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – kaamera ja mikrofon salvestavad</translation>
 <translation id="984275831282074731">Makseviisid</translation>
 <translation id="984705303330760860">Õigekirjakontrolli keelte lisamine</translation>
-<translation id="98515147261107953">Horisontaalpaigutus</translation>
+<translation id="98515147261107953">Maastik</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Üldine</translation>
 <translation id="987475089238841621">Keelepakette kasutatakse funktsiooni Reaalajas subtiitrid jaoks ja need salvestatakse teie seadmesse</translation>

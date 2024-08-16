@@ -1752,7 +1752,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2232876851878324699">Naglalaman ang file ng isang certificate, na hindi na-import:</translation>
 <translation id="2233502537820838181">&amp;Higit pang impormasyon</translation>
 <translation id="223356358902285214">Aktibidad sa Web at App</translation>
-<translation id="2234065144797002621">Creek</translation>
+<translation id="2234065144797002621">Sapa</translation>
 <translation id="2234827758954819389">Gabay sa Privacy</translation>
 <translation id="2234876718134438132">Sync at mga serbisyo ng Google</translation>
 <translation id="2235344399760031203">Bina-block ang third-party na cookies</translation>
@@ -2793,7 +2793,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="2960942820860729477">Rate ng pag-refresh</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (ibinigay ang extension)</translation>
 <translation id="2961695502793809356">I-click upang sumulong, pindutin nang matagal upang makita ang history</translation>
-<translation id="29618148602069201">Paksa</translation>
+<translation id="29618148602069201">Subject</translation>
 <translation id="2963151496262057773">Hindi tumutugon ang sumusunod na plugin: <ph name="PLUGIN_NAME" />Gusto mo bang ihinto ito?</translation>
 <translation id="2964193600955408481">Huwag paganahin ang Wi-Fi</translation>
 <translation id="2964245677645334031">Visibility sa Nearby Share</translation>
@@ -4709,7 +4709,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="436926121798828366">Puwede mo itong baguhin anumang oras sa <ph name="SETTINGS_LINK" /></translation>
 <translation id="4370975561335139969">Hindi nagtutugma ang inilagay mong email at password</translation>
 <translation id="4373418556073552953">Mag-sign in gamit ang iyong Android phone</translation>
-<translation id="4373973310429385827">Lighthouse</translation>
+<translation id="4373973310429385827">Parola</translation>
 <translation id="4374805630006466253">Gumamit ng ibang telepono o tablet</translation>
 <translation id="4374831787438678295">Installer ng Linux</translation>
 <translation id="4375035964737468845">Buksan ang mga na-download na file</translation>
@@ -5157,7 +5157,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="469838979880025581">Puwedeng hilingin ng mga site na gamitin ang iyong mikropono</translation>
 <translation id="4699172675775169585">Mga naka-cache na larawan at file</translation>
 <translation id="4699357559218762027">(awtomatikong inilunsad)</translation>
-<translation id="4699473989647132421">Shoreline</translation>
+<translation id="4699473989647132421">Baybayin</translation>
 <translation id="4701025263201366865">Pag-sign in ng magulang</translation>
 <translation id="4701335814944566468">Tiningnan kahapon</translation>
 <translation id="470644585772471629">Pag-invert ng kulay</translation>
@@ -5551,7 +5551,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5003993274120026347">Susunod na pangungusap</translation>
 <translation id="5005498671520578047">Kopyahin password</translation>
 <translation id="5006218871145547804">ADB ng Android app sa Crostini</translation>
-<translation id="5006778209728626987">Lightning</translation>
+<translation id="5006778209728626987">Kidlat</translation>
 <translation id="5007392906805964215">Suriin</translation>
 <translation id="50080882645628821">Alisin ang Profile</translation>
 <translation id="5008936837313706385">Pangalan ng Aktibidad</translation>
@@ -8325,7 +8325,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7050037487872780845">Invalid na configuration ng hotspot</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Na-save ang password sa iyong Google Account na <ph name="USER_EMAIL" />}one{Na-save ang mga password sa iyong Google Account na <ph name="USER_EMAIL" />}other{Na-save ang mga password sa iyong Google Account na <ph name="USER_EMAIL" />}}</translation>
 <translation id="7052762602787632571">&amp;I-delete ang data mula sa pag-browse...</translation>
-<translation id="705352103640172578">Waterfall</translation>
+<translation id="705352103640172578">Talon</translation>
 <translation id="7053983685419859001">I-block</translation>
 <translation id="7055152154916055070">Na-block ang pag-redirect:</translation>
 <translation id="7055451306017383754">Hindi ma-unshare dahil ginagamit ng isang application ang folder na ito. Maa-unshare ang folder kapag na-shutdown ang Parallels Desktop.</translation>
@@ -11335,7 +11335,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="932327136139879170">Home</translation>
 <translation id="932508678520956232">Hindi masimulan ang pag-print.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Masyadong malaki ang file na ito para sa pagsusuri sa seguridad. Makakapag-upload ka ng mga file na hanggang 50 MB.}one{Masyadong malaki ang ilan sa mga file na ito para sa pagsusuri sa seguridad. Makakapag-upload ka ng mga file na hanggang 50 MB.}other{Masyadong malaki ang ilan sa mga file na ito para sa pagsusuri sa seguridad. Makakapag-upload ka ng mga file na hanggang 50 MB.}}</translation>
-<translation id="93343527085570547">Pumunta sa <ph name="BEGIN_LINK1" />page ng Legal na Tulong<ph name="END_LINK1" /> para humiling ng mga pagbabago sa content nang may mga legal na dahilan.  Maaaring ipadala sa Google ang ilang impormasyon ng account at system.  Gagamitin namin ang impormasyong ibibigay mo sa amin para makatulong sa pagtugon ng mga teknikal na isyu at para mapahusay ang aming mga serbisyo, na napapailalim sa aming <ph name="BEGIN_LINK2" />Patakaran sa Privacy<ph name="END_LINK2" /> at <ph name="BEGIN_LINK3" />Mga Tuntunin ng Serbisyo<ph name="END_LINK3" />.</translation>
+<translation id="93343527085570547">Pumunta sa <ph name="BEGIN_LINK1" />page ng Legal na Tulong<ph name="END_LINK1" /> para humiling ng mga pagbabago sa content nang may mga legal na dahilan.  Posibleng ipadala sa Google ang ilang impormasyon ng account at system.  Gagamitin namin ang impormasyong ibibigay mo sa amin para makatulong sa pagtugon ng mga teknikal na isyu at para mapahusay ang aming mga serbisyo, na napapailalim sa aming <ph name="BEGIN_LINK2" />Patakaran sa Privacy<ph name="END_LINK2" /> at <ph name="BEGIN_LINK3" />Mga Tuntunin ng Serbisyo<ph name="END_LINK3" />.</translation>
 <translation id="93393615658292258">Password lang</translation>
 <translation id="934244546219308557">Pangalanan ang grupong ito</translation>
 <translation id="93480724622239549">Bug o Error</translation>

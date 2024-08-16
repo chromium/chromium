@@ -464,7 +464,6 @@ Zet het beleid alleen uit als er compatibiliteitsproblemen zijn met software van
 <translation id="1369698103169067223">Glanceables staan niet aan voor gebruikers.</translation>
 <translation id="1371626834351873151">Inkorting van user-agent wordt aangezet voor alle origins.</translation>
 <translation id="1371851989348083665">Het gebruik van <ph name="ASSISTANT_PRODUCT_NAME" /> op internet toestaan</translation>
-<translation id="1372511977715560169">Bepalen of de functie <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> in <ph name="PRODUCT_OS_NAME" /> kan worden aangezet</translation>
 <translation id="1372618949173323717">JavaScript uitzetten</translation>
 <translation id="1376119291123231789">Geavanceerde batterijoplaadmodus aanzetten</translation>
 <translation id="1376299650477150211">Hiermee kun je een lijst met URL-patronen instellen voor sites waarvoor geavanceerde JavaScript-optimalisaties zijn uitgezet.
@@ -879,6 +878,7 @@ Als je het beleid niet instelt, kan <ph name="PRODUCT_OS_NAME" /> standaardhandl
 <translation id="165769015320654523">Automatisch rechten aan deze sites geven om verbinding te maken met HID-apparaten met de opgegeven leveranciers- en product-ID's.</translation>
 <translation id="1659406551862245683">Het standaardgedrag voor formaataanpassing van het virtuele toetsenbord is gewijzigd om het formaat van het opmaakkijkvenster aan te passen</translation>
 <translation id="166427968280387991">Proxyserver</translation>
+<translation id="1666001345366986837">Instellingen voor de functie VC-achtergrond met generatieve AI</translation>
 <translation id="1670638264428789878">Gerelateerde websitesets aanzetten</translation>
 <translation id="1671405606278443620">Instellingen voor AI-gestuurd zoeken in geschiedenis</translation>
 <translation id="1673097259557436886">Websites altijd laten weten dat er geen betaalmethoden zijn opgeslagen</translation>
@@ -1512,7 +1512,6 @@ Het afzonderlijke beleid <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> kan worden geb
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> niet instelt, is er geen icoon voor de zoekprovider.</translation>
 <translation id="2136073175041447267">Cloudschijven (Google Drive, Microsoft OneDrive) instellen in <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="2140379319368541863">GenAI Wallpaper niet toestaan</translation>
 <translation id="2144236546337326489">Toestaan dat Telefoonhub-taakvoortzetting wordt aangezet</translation>
 <translation id="2145735238144543545">Vereiste clientcertificaten</translation>
 <translation id="2146103669166779785">Hexadecimale kleur waarmee een thema voor de browser wordt samengesteld en toegepast.</translation>
@@ -1795,7 +1794,6 @@ Als je het beleid niet instelt, kunnen gebruikers de lijst met vastgezette apps 
       Als je het beleid niet instelt, is <ph name="DEFAULT_CLIPBOARD_SETTING" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
-<translation id="2297432074108752232">GenAI VC Background toestaan zonder AI-modellen te verbeteren</translation>
 <translation id="2299220924812062390">Lijst met aangezette plug-ins specificeren</translation>
 <translation id="2299815818824242485">Lookups via proxy met hogere beveiliging niet toestaan</translation>
 <translation id="2303795211377219696">Automatisch invullen aanzetten voor creditcards</translation>
@@ -2777,7 +2775,6 @@ Dit beleid is tijdelijk en wordt in de toekomst verwijderd.</translation>
       Als een site overeenkomt met een URL-patroon in dit beleid, wordt er geen rekening gehouden met de volgende beleidsregels: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen.  Dit beleid zoekt alleen overeenkomsten op basis van de herkomst, dus elk pad in het URL-patroon wordt genegeerd.</translation>
-<translation id="3111315283985318774">Bepalen of de functie <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> in <ph name="PRODUCT_OS_NAME" /> kan worden aangezet</translation>
 <translation id="3112501357749061018">Een lijst met TLS-certificaten die <ph name="PRODUCT_NAME" /> moet vertrouwen voor serververificatie, met beperkingen die buiten het certificaat worden toegevoegd. Als er geen beperking van een bepaald type aanwezig is, is elke naam van dat type toegestaan.
 Certificaten moeten base64-gecodeerd zijn. Er moet minstens één beperking worden gespecificeerd voor elk certificaat.</translation>
 <translation id="3118552207903834734">Toestaan dat een gebruiker de hostnaam van het eigen apparaat instelt</translation>
@@ -3499,6 +3496,7 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 
           Dit is een tijdelijk beleid dat volgens planning wordt verwijderd in <ph name="PRODUCT_NAME" /> 107. Deze deadline kan worden verlengd als daar bij bedrijven behoefte aan is.
           </translation>
+<translation id="3677660004554019617">VC-achtergrond met generatieve AI niet toestaan</translation>
 <translation id="3678069907945250643">Toestaan dat Google Foto's toegang krijgt vanuit de personalisatie-app</translation>
 <translation id="3680529017993214255">De functies aanzetten en gegevens versturen om AI-modellen te trainen</translation>
 <translation id="3685979383016152590">Als je dit beleid instelt, kun je aangeven welk toegangsbeleid wordt toegepast op bulksgewijze printerconfiguratie en beheren welke printers van <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> beschikbaar zijn voor gebruikers.
@@ -3514,7 +3512,6 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 <translation id="3695204334462456702">Op zeroconf gebaseerde (mDNS + DNS-SD) protocolbestemmingen (beëindigd)</translation>
 <translation id="3695706037816556327">Actie bij verwijdering van beveiligingstoken (bijv. smartcard) voor <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3696134803170884851">Oplaadgeluiden uitzetten</translation>
-<translation id="3699322543136447790">GenAI Wallpaper toestaan zonder AI-modellen te verbeteren</translation>
 <translation id="3699986274986041335">Altijd toestemming vragen als een site het recht voor lokale lettertypen wil hebben</translation>
 <translation id="3700193037252896716">Frequentie waarmee opnieuw opstarten moet plaatsvinden.</translation>
 <translation id="3700318587977845664">Frequentie waarmee de updatecheck moet worden herhaald.</translation>
@@ -3680,6 +3677,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
       Gebruikers kunnen een protocolhandler niet verwijderen als deze is geregistreerd door een beleid. Als ze een nieuwe standaard handler installeren, kunnen ze de protocolhandlers wijzigen die door het beleid zijn geïnstalleerd.</translation>
 <translation id="3842619997238271109">Staat niet toe dat de host voor externe toegang pincode- en koppelingsverificaties gebruikt bij de acceptatie van clientverbindingen</translation>
+<translation id="3845318141474759319">Generatieve AI-achtergronden toestaan zonder AI-modellen te verbeteren</translation>
 <translation id="3851443303439635700">De nestdrempel bepalen waarvoor de JavaScript-functie setTimeout() wordt vastgezet</translation>
 <translation id="3858658082795336534">Standaard afdrukken in duplexmodus</translation>
 <translation id="3859780406608282662">Voeg een parameter toe aan het ophalen van de varianten-seed in <ph name="PRODUCT_OS_NAME" />.
@@ -6859,6 +6857,14 @@ Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns vo
 <translation id="632248221998836641">De IPv6-bereikbaarheidscheck overschrijven. Vraag de AAAA-record altijd op voor hostnaamresolutie.</translation>
 <translation id="6324274808543634377">F11-/F12-instellingen gebruiken de sneltoets met de functietoets Alt</translation>
 <translation id="6327643515544933974">Web-USB-instellingen</translation>
+<translation id="6328272502368270191">Met dit beleid kun je de functie VC-achtergrond met generatieve AI aan- of uitzetten voor <ph name="PRODUCT_OS_NAME" />.
+De standaardwaarde is 1.
+
+1 = Generatieve AI-achtergrond toestaan zonder AI-modellen te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Generatieve AI-achtergrond niet toestaan.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="6330882599388782338">Toestaan dat sites toegang hebben tot sensoren</translation>
 <translation id="6331167725613770725">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
@@ -7266,6 +7272,7 @@ Als je ervoor kiest het volgende te gebruiken:
 
       Als dit beleid niet is ingesteld, kan de gebruiker elke op het systeem geïnstalleerde plug-in gebruiken, behalve hardgecodeerde ongeschikte, verouderde of gevaarlijke plug-ins.</translation>
 <translation id="6571055160227165318">Toestaan dat WebSQL wordt aangezet door Chrome-flag.</translation>
+<translation id="6574216414580419109">Instellingen voor de functie Generatieve AI-achtergrond</translation>
 <translation id="6574903167639386816">Profielgegevens op schijf wissen als gebruikerssessie eindigt</translation>
 <translation id="6575403002861093126">Als je dit beleid instelt, geef je aan hoeveel uur het Group Policy Object (GPO) in het cachegeheugen wordt bewaard. Dit is de maximale periode dat GPO's kunnen worden hergebruikt tot ze opnieuw worden gedownload. Het systeem gebruikt de in het cachegeheugen opgeslagen GPO's opnieuw in plaats van die opnieuw te downloaden bij het ophalen van elk beleid, zolang de versie van de GPO's niet is gewijzigd.
 
@@ -7292,13 +7299,6 @@ Opmerking: Het cachegeheugen wordt gewist als je opnieuw opstart en uitlogt.</tr
 <translation id="658537215958747575">Toestaan dat in aanmerking komende bronnen directe netwerkverbindingen gebruiken</translation>
 <translation id="6588634282328239769">De volledige URL tonen</translation>
 <translation id="6589049539706330510">Ondersteuning aanzetten</translation>
-<translation id="6590906503707750118">Met dit beleid kun je <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> aan- of uitzetten voor <ph name="PRODUCT_OS_NAME" />.
-0 = <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> niet toestaan.
-
-1 = <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> toestaan zonder AI-modellen te verbeteren.
-
-Als je dit beleid niet instelt, is de functie <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> toegestaan zonder AI-modellen te verbeteren voor zakelijke en EDU-gebruikers.
-In M127 werd het beleid standaard niet toegepast voor zakelijke gebruikers.</translation>
 <translation id="6593025196187527239">Tenzij ARC op een andere manier is uitgezet, kunnen gebruikers ARC gebruiken als je het beleid instelt op True, of niet instelt. Als je het beleid instelt op False, kunnen niet-aangesloten gebruikers ARC niet gebruiken.
 
 Wijzigingen in het beleid zijn alleen van toepassing als ARC niet actief is, bijvoorbeeld bij het opstarten van ChromeOS.</translation>
@@ -7736,13 +7736,6 @@ Als je het beleid niet toepast of niet instelt, is het standaardgedrag van toepa
 <translation id="6929746927224321095">Automatisch invullen uitzetten</translation>
 <translation id="6931242315485576290">Synchronisatie van gegevens met Google uitzetten</translation>
 <translation id="6932282102911647185">Paarse achtergrondverlichting van toetsenbord</translation>
-<translation id="6934127980901887540">Met dit beleid kun je de functie <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> aan- of uitzetten voor <ph name="PRODUCT_OS_NAME" />.
-0 = <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> niet toestaan.
-
-1 = <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> toestaan zonder AI-modellen te verbeteren.
-
-Als je dit beleid niet instelt, is de functie <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> toegestaan voor zakelijke en EDU-gebruikers.
-In M127 werd het beleid standaard niet toegepast voor zakelijke gebruikers.</translation>
 <translation id="6938424179790370595">Als je het beleid instelt op None (Geen), wordt het vergrootglas uitgezet.
 
 Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je dit beleid niet instelt, staat het vergrootglas in eerste instantie uit, maar kunnen gebruikers dit op elk moment aanzetten.</translation>
@@ -8423,7 +8416,6 @@ Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instell
 
       Als je het beleid niet toepast, toont de pagina Nieuw tabblad de aankondiging in de middelste ruimte niet, ook niet als die beschikbaar is.
       </translation>
-<translation id="7457431437931521451">GenAI VC Background niet toestaan</translation>
 <translation id="7459601923199346224">Beheert het gebruikers- en apparaatbeleid voor certificaatbeheer.</translation>
 <translation id="7459633275230216698">Dialoogvensters voor bestandsselectie toestaan</translation>
 <translation id="7462256705280836453">Kiezen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor door sites voorgestelde advertenties kan worden uitgezet</translation>
@@ -8456,6 +8448,14 @@ Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instell
 <translation id="748292668225669178">Hiermee stel je de activering van <ph name="MICROSOFT_ONE_DRIVE_NAME" /> in</translation>
 <translation id="7485481791539008776">Regels voor selectie van standaardprinter</translation>
 <translation id="7486205887492534734">Prompt voor als meerdere certificaten overeenkomen op het inlogscherm</translation>
+<translation id="7487148156560435405">Met dit beleid kun je de functie VC-achtergrond met generatieve AI aan- of uitzetten voor <ph name="PRODUCT_OS_NAME" />.
+De standaardwaarde is 1.
+
+1 = VC-achtergrond met generatieve AI toestaan zonder AI-modellen te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = VC-achtergrond met generatieve AI niet toestaan.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="748873163367340515">Alleen essentiële cookies en gegevens gebruiken voor zoeken.</translation>
 <translation id="7489169777107143496">Uitgebreide Safe Browsing-scans van downloads uitzetten</translation>
 <translation id="7489661071474025727">Hiermee bepaal je of de service voor accountherstel is geactiveerd voor je gebruikers op <ph name="PRODUCT_OS_NAME" />-apparaten.
@@ -8584,6 +8584,7 @@ Als je geen beleid opgeeft, zijn er geen uitzonderingen toegestaan op <ph name="
 
       Als je het beleid toepast of niet instelt, wordt Eenheidsconversie van Snelle antwoorden aangezet.
       Als je het beleid niet toepast, wordt Eenheidsconversie van Snelle antwoorden uitgezet.</translation>
+<translation id="7584363090329234690">VC-achtergrond met generatieve AI toestaan zonder AI-modellen te verbeteren</translation>
 <translation id="7585312329612243723">Het attestproces <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> aanzetten voor een lijst met URL's in beheerde browsers</translation>
 <translation id="7587345076013230465">De gebruiker vragen om het clientcertificaat te selecteren als het beleid voor automatische selectie overeenkomt met meerdere certificaten op het inlogscherm</translation>
 <translation id="7587921466180902617">Dogfood-versie van Screencast aanzetten voor gebruikers van Family Link</translation>
@@ -9141,6 +9142,7 @@ Het gebruik van <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> of <ph name="LA
 <translation id="802776363472387903">De SHA-256-hash van de <ph name="PLUGIN_VM_NAME" />-afbeelding.</translation>
 <translation id="8028814157747157754">De standaard zoekprovider aanzetten en toestaan dat gebruikers de lijst met zoekproviders wijzigen</translation>
 <translation id="8029201909194194377">Maximale toegestane sessieduur voor verbindingen voor externe toegang</translation>
+<translation id="8031651557770840616">Generatieve AI-achtergrond niet toestaan</translation>
 <translation id="8033450879690820321">Dit beleid biedt een tijdelijke afmelding voor het nieuwe gedrag van focusbare scrollers voor het toetsenbord.
 
 Als je dit beleid aanzet of niet instelt, kunnen scrollers zonder onderliggende focusbare items standaard worden gefocust met het toetsenbord. Daarnaast zijn scrollers standaard klik-focusbaar en programmatic focusbaar.

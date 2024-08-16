@@ -465,7 +465,6 @@ Cette règle ne doit être désactivée qu'en cas de problèmes de compatibilit�
 <translation id="1369698103169067223">Les Glanceables ne sont pas activés pour les utilisateurs.</translation>
 <translation id="1371626834351873151">La réduction user-agent sera activée pour toutes les origines.</translation>
 <translation id="1371851989348083665">Autoriser l'utilisation de l'<ph name="ASSISTANT_PRODUCT_NAME" /> sur le Web</translation>
-<translation id="1372511977715560169">Contrôler l'activation de la fonctionnalité <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> dans <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1372618949173323717">Désactiver JavaScript</translation>
 <translation id="1376119291123231789">Activer le mode avancé de recharge de la batterie</translation>
 <translation id="1376299650477150211">Permet de lister les formats d'URL des sites pour lesquels les optimisations JavaScript avancées sont désactivées.
@@ -1512,7 +1511,6 @@ La règle <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> distincte permet d'éviter qu
 
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> n'est pas configurée, aucune icône n'est affichée pour le moteur de recherche.</translation>
 <translation id="2136073175041447267">Cette règle permet de configurer les services cloud (Google Drive, Microsoft OneDrive) dans <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="2140379319368541863">Ne pas autoriser GenAI Wallpaper</translation>
 <translation id="2144236546337326489">Autoriser l'activation de la poursuite des tâches via Phone Hub</translation>
 <translation id="2145735238144543545">Certificats client requis</translation>
 <translation id="2146103669166779785">Couleur hexadécimale qui sera utilisée pour générer et appliquer un thème au navigateur.</translation>
@@ -1796,7 +1794,6 @@ Si cette règle n'est pas configurée, les utilisateurs peuvent modifier la list
       Si cette règle n'est pas configurée, <ph name="DEFAULT_CLIPBOARD_SETTING" /> s'applique pour tous les sites, à condition qu'elle soit elle-même configurée. Sinon, le paramètre défini par l'utilisateur s'applique.
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.</translation>
-<translation id="2297432074108752232">Autoriser GenAI VC Background sans améliorer les modèles d'IA</translation>
 <translation id="2299220924812062390">Indiquer une liste de plug-ins activés</translation>
 <translation id="2299815818824242485">Ne pas autoriser la recherche de protection supérieure via proxy</translation>
 <translation id="2303795211377219696">Activer la saisie automatique pour les cartes de crédit</translation>
@@ -2779,7 +2776,6 @@ Cette règle est provisoire et sera supprimée prochainement.</translation>
       Si un site correspond à un format d'URL dans cette règle, les règles suivantes sont ignorées : <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré.</translation>
-<translation id="3111315283985318774">Contrôler l'activation de la fonctionnalité <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> dans <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3112501357749061018">Liste des certificats TLS qui devraient être approuvés par <ph name="PRODUCT_NAME" /> pour l'authentification du serveur, avec des contraintes ajoutées en dehors du certificat. Si aucune contrainte d'un certain type n'est présente, n'importe quel nom de ce type est autorisé.
 Les certificats doivent être encodés en base64. Vous devez spécifier au moins une contrainte pour chaque certificat.</translation>
 <translation id="3118552207903834734">Autoriser l'utilisateur à configurer le nom d'hôte de son appareil</translation>
@@ -3519,7 +3515,6 @@ Si le résultat de la vérification n'est pas concluant pour une connexion, l'er
 <translation id="3695204334462456702">Destinations des protocoles basés sur Zeroconf (mDNS + DNS-SD) (obsolète)</translation>
 <translation id="3695706037816556327">Action lors du retrait du jeton de sécurité (carte à puce, par exemple) pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3696134803170884851">Désactiver les sons de recharge</translation>
-<translation id="3699322543136447790">Autoriser GenAI Wallpaper sans améliorer les modèles d'IA</translation>
 <translation id="3699986274986041335">Demander chaque fois qu'un site souhaite obtenir l'autorisation d'utiliser des polices locales</translation>
 <translation id="3700193037252896716">Fréquence de redémarrage prévue.</translation>
 <translation id="3700318587977845664">Fréquence de recherche des mises à jour.</translation>
@@ -7323,13 +7318,6 @@ Remarque : Le cache est vidé à la suite d'un redémarrage et d'une déconnexi
 <translation id="658537215958747575">Autoriser les origines éligibles à utiliser Direct Sockets</translation>
 <translation id="6588634282328239769">Afficher l'URL complète</translation>
 <translation id="6589049539706330510">Activer la prise en charge</translation>
-<translation id="6590906503707750118">Cette règle active ou désactive <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> pour <ph name="PRODUCT_OS_NAME" />.
-0 = Ne pas autoriser <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" />.
-
-1 = Autoriser <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> sans améliorer les modèles d'IA.
-
-Si cette règle n'est pas configurée, la fonctionnalité <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> est autorisée sans améliorer les modèles d'IA pour les utilisateurs des versions Enterprise et Education.
-Dans M127, la règle était désactivée par défaut pour les utilisateurs de la version Enterprise.</translation>
 <translation id="6593025196187527239">Si cette règle est définie sur "True" ou n'est pas définie, les utilisateurs peuvent utiliser ARC, sauf si celui-ci est désactivé par un autre moyen. Si elle est définie sur "False", les utilisateurs non affiliés ne peuvent pas utiliser ARC.
 
 Pour que les modifications apportées à cette règle puissent être appliquées, ARC ne doit pas être en cours d'exécution (par exemple, au démarrage de ChromeOS).</translation>
@@ -7769,13 +7757,6 @@ Si la règle est désactivée ou n'est pas configurée, le comportement par déf
 <translation id="6929746927224321095">Désactiver la saisie automatique</translation>
 <translation id="6931242315485576290">Désactiver la synchronisation des données avec Google</translation>
 <translation id="6932282102911647185">Rétroéclairage du clavier violet</translation>
-<translation id="6934127980901887540">Cette règle active ou désactive la fonctionnalité <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> pour <ph name="PRODUCT_OS_NAME" />.
-0 = Ne pas autoriser <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" />.
-
-1 = Autoriser <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> sans améliorer les modèles d'IA.
-
-Si cette règle n'est pas configurée, la fonctionnalité <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> est autorisée pour les utilisateurs des versions Enterprise et Education.
-Dans M127, la règle était désactivée par défaut pour les utilisateurs de la version Enterprise.</translation>
 <translation id="6938424179790370595">Définissez cette règle sur "None" pour désactiver la loupe.
 
 Si vous définissez cette règle, les utilisateurs ne peuvent pas modifier la configuration. Si vous ne la définissez pas, la loupe est désactivée par défaut, mais les utilisateurs peuvent l'activer à tout moment.</translation>
@@ -8457,7 +8438,6 @@ Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name
 
       Si elle est désactivée, la page "Nouvel onglet" n'affichera pas l'annonce d'espace intermédiaire, même si elle est disponible.
       </translation>
-<translation id="7457431437931521451">Ne pas autoriser GenAI VC Background</translation>
 <translation id="7459601923199346224">Configure les règles au niveau de l'utilisateur et de l'appareil dans le cadre de la gestion des certificats.</translation>
 <translation id="7459633275230216698">Autoriser l'affichage de boîtes de dialogue de sélection de fichiers</translation>
 <translation id="7462256705280836453">Choisissez si le paramètre des annonces suggérées par le site de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé</translation>

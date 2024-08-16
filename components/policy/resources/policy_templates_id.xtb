@@ -477,7 +477,6 @@ Nonaktifkan kebijakan hanya jika terdapat masalah kompatibilitas dengan software
 <translation id="1369698103169067223">Widget Sekilas Info tidak diaktifkan untuk pengguna.</translation>
 <translation id="1371626834351873151">Pengurangan Agen Pengguna akan diaktifkan untuk semua asal.</translation>
 <translation id="1371851989348083665">Izinkan penggunaan <ph name="ASSISTANT_PRODUCT_NAME" /> di web</translation>
-<translation id="1372511977715560169">Kontrol pengaktifan fitur <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1372618949173323717">Nonaktifkan JavaScript</translation>
 <translation id="1376119291123231789">Mengaktifkan mode pengisian daya baterai lanjutan</translation>
 <translation id="1376299650477150211">Memungkinkan Anda menetapkan daftar pola URL situs yang menentukan situs
@@ -1590,7 +1589,6 @@ diupgrade ke HTTPS oleh fitur ini.</translation>
 
       Jika <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> tidak disetel, tidak akan ada ikon untuk penyedia penelusuran.</translation>
 <translation id="2136073175041447267">Mengonfigurasi cloud drive (Google Drive, Microsoft OneDrive) di <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="2140379319368541863">Jangan izinkan "Wallpaper AI Generatif"</translation>
 <translation id="2144236546337326489">Izinkan pengaktifkan kelanjutan tugas Phone Hub</translation>
 <translation id="2145735238144543545">Sertifikat Klien yang diperlukan</translation>
 <translation id="2146103669166779785">Warna hex yang akan digunakan untuk membuat dan menerapkan tema ke browser.</translation>
@@ -1877,7 +1875,6 @@ Jika kebijakan ini tidak disetel, pengguna akan diizinkan mengubah daftar aplika
       Jika kebijakan ini tidak disetel, <ph name="DEFAULT_CLIPBOARD_SETTING" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.</translation>
-<translation id="2297432074108752232">Izinkan "Latar Belakang AI Generatif" tanpa meningkatkan model AI</translation>
 <translation id="2299220924812062390">Tentukan daftar plugin yang diaktifkan</translation>
 <translation id="2299815818824242485">Jangan izinkan pemeriksaan lewat proxy dengan perlindungan yang lebih tinggi</translation>
 <translation id="2303795211377219696">Mengaktifkan IsiOtomatis untuk kartu kredit</translation>
@@ -2906,7 +2903,6 @@ Kebijakan ini bersifat sementara dan akan dihapus pada masa mendatang.</translat
       Jika situs cocok dengan pola URL di kebijakan ini, kebijakan berikut akan diabaikan: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Kebijakan ini hanya mencocokkan berdasarkan asal, sehingga jalur apa pun di pola URL akan diabaikan.</translation>
-<translation id="3111315283985318774">Kontrol pengaktifan fitur <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3112501357749061018">Daftar sertifikat TLS yang seharusnya dipercaya oleh <ph name="PRODUCT_NAME" /> untuk autentikasi server, dengan batasan yang ditambahkan di luar sertifikat. Jika tidak ada batasan jenis tertentu, semua nama jenis tersebut akan diizinkan.
 Sertifikat harus dienkode dengan base64. Minimal satu batasan harus ditentukan untuk setiap sertifikat.</translation>
 <translation id="3118552207903834734">Mengizinkan pengguna mengonfigurasi nama host perangkatnya</translation>
@@ -3670,7 +3666,6 @@ menyertakan keduanya di sertifikat RSA yang ditujukan untuk HTTPS.</translation>
 <translation id="3695204334462456702">Tujuan protokol berbasis Zeroconf (mDNS + DNS-SD/Tidak digunakan lagi)</translation>
 <translation id="3695706037816556327">Tindakan terkait penghapusan token keamanan (misalnya, kartu smart) untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3696134803170884851">Nonaktifkan suara pengisian daya</translation>
-<translation id="3699322543136447790">Izinkan "Wallpaper AI Generatif" tanpa meningkatkan model AI</translation>
 <translation id="3699986274986041335">Tanyakan setiap kali situs ingin mendapatkan izin Font Lokal</translation>
 <translation id="3700193037252896716">Frekuensi saat mulai ulang harus dilakukan kembali.</translation>
 <translation id="3700318587977845664">Frekuensi pengulangan pemeriksaan update.</translation>
@@ -7671,13 +7666,6 @@ Catatan: Memulai ulang dan logout akan menghapus cache.</translation>
 <translation id="658537215958747575">Izinkan origin yang memenuhi syarat untuk menggunakan Direct Sockets</translation>
 <translation id="6588634282328239769">Tampilkan URL lengkap</translation>
 <translation id="6589049539706330510">Aktifkan dukungan</translation>
-<translation id="6590906503707750118">Kebijakan ini mengaktifkan atau menonaktifkan <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> untuk <ph name="PRODUCT_OS_NAME" />.
-0 = Jangan izinkan <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" />.
-
-1 = Izinkan <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> tanpa meningkatkan model AI.
-
-Jika kebijakan ini disetel ke Tidak Disetel, fitur <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> diizinkan tanpa meningkatkan model AI untuk pengguna versi bisnis dan EDU.
-Di M127, kebijakan ini dinonaktifkan untuk pengguna versi bisnis secara default.</translation>
 <translation id="6593025196187527239">Jika kebijakan disetel ke Benar (True) atau tidak disetel, pengguna akan dapat menggunakan ARC, kecuali jika ARC dinonaktifkan dengan cara lain. Jika kebijakan disetel ke Salah (False), pengguna yang tidak berafiliasi tidak boleh menggunakan ARC.
 
 Perubahan kebijakan hanya berlaku saat ARC tidak berjalan, misalnya saat memulai ChromeOS.</translation>
@@ -8133,13 +8121,6 @@ pemblokiran permintaan semacam itu akan diterapkan.</translation>
 <translation id="6929746927224321095">Nonaktifkan Isi Otomatis</translation>
 <translation id="6931242315485576290">Nonaktifkan sinkronisasi data dengan Google</translation>
 <translation id="6932282102911647185">Warna lampu latar keyboard ungu</translation>
-<translation id="6934127980901887540">Kebijakan ini mengaktifkan atau menonaktifkan fitur <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> untuk <ph name="PRODUCT_OS_NAME" />.
-0 = Jangan izinkan <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" />.
-
-1 = Izinkan <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> tanpa meningkatkan model AI.
-
-Jika kebijakan ini disetel ke Tidak Disetel, fitur <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> diizinkan untuk pengguna versi bisnis dan EDU.
-Di M127, kebijakan ini dinonaktifkan untuk pengguna versi bisnis secara default.</translation>
 <translation id="6938424179790370595">Jika kebijakan disetel ke Tidak Ada (None), pembesar layar akan dinonaktifkan.
 
 Jika Anda menyetel kebijakan, pengguna tidak dapat mengubahnya. Jika kebijakan tidak disetel, pembesar layar pada awalnya akan dinonaktifkan, tetapi pengguna dapat mengaktifkannya kapan saja.</translation>
@@ -8834,7 +8815,6 @@ baca lisan akan diaktifkan.</translation>
 
       Jika kebijakan disetel ke Nonaktif, Halaman Tab Baru tidak akan menampilkan pengumuman slot tengah meskipun jika tersedia.
       </translation>
-<translation id="7457431437931521451">Jangan izinkan "Latar Belakang VC AI Generatif"</translation>
 <translation id="7459601923199346224">Mengontrol kebijakan pengguna dan perangkat untuk pengelolaan sertifikat.</translation>
 <translation id="7459633275230216698">Izinkan dialog pemilihan file</translation>
 <translation id="7462256705280836453">Memilih apakah setelan Iklan yang disarankan situs <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan</translation>

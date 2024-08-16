@@ -2539,7 +2539,7 @@
 <translation id="2772936498786524345">מתגנב</translation>
 <translation id="2773288106548584039">תמיכה בדפדפן מדור קודם</translation>
 <translation id="2773621783913034737">השבתת הכרטיסיות</translation>
-<translation id="2774876860084746535">אינטלקטואלי</translation>
+<translation id="2774876860084746535">רוחני</translation>
 <translation id="2775104091073479743">עריכת טביעות האצבעות</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{התוסף ’<ph name="EXTENSION" />‘ ניגש למכשירים}=1{התוסף ’<ph name="EXTENSION" />‘ ניגש למכשיר אחד ({0})}one{התוסף ’<ph name="EXTENSION" />‘ ניגש ל-{0} מכשירים}two{התוסף ’<ph name="EXTENSION" />‘ ניגש ל-{0} מכשירים}other{התוסף ’<ph name="EXTENSION" />‘ ניגש ל-{0} מכשירים}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{הסרת אפליקציה אחת שלא נתמכת}one{הסרת # אפליקציות שלא נתמכות}two{הסרת # אפליקציות שלא נתמכות}other{הסרת # אפליקציות שלא נתמכות}}</translation>
@@ -3552,7 +3552,7 @@
 <translation id="3537099313456411235">‏עליך לחבר את החשבון <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> כדי לגשת לקבצים שלך ב-Drive באפליקציה 'קבצים'</translation>
 <translation id="3537881477201137177">ניתן לשנות זאת מאוחר יותר ב'הגדרות'</translation>
 <translation id="3538066758857505094">‏קרתה שגיאה בהסרת ההתקנה של Linux. צריך לנסות שוב.</translation>
-<translation id="3539537154248488260">הצגה או הסתרה של ההשראה</translation>
+<translation id="3539537154248488260">הצגה או הסתרה של הרעיונות להשראה</translation>
 <translation id="3540173484406326944">אין חיבור לרשת דרך <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="354060433403403521">‏מתאם AC</translation>
 <translation id="354068948465830244">התוסף יכול לקרוא ולשנות נתוני אתרים</translation>
@@ -5467,7 +5467,7 @@
 <translation id="4930447554870711875">מפתחים</translation>
 <translation id="4930714375720679147">הפעלה</translation>
 <translation id="4931347390544064118">אם בוחרים ברשת ברירת המחדל, לא בטוח שתמיד יהיה חיבור מאובטח. מומלץ לבחור ספק אחר כדי שהחיבור שלך תמיד יהיה מאובטח.</translation>
-<translation id="4931387733184123331">ליקוי מאורות</translation>
+<translation id="4931387733184123331">ליקויי מאורות</translation>
 <translation id="4932733599132424254">תאריך</translation>
 <translation id="4933484234309072027">מוטבע ב-<ph name="URL" /></translation>
 <translation id="4936042273057045735">אין תמיכה בסנכרון התראות בטלפונים שמחוברים לפרופיל עבודה</translation>
@@ -7974,7 +7974,7 @@
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="6803766346203101854">לאתר הזה יש הרשאה לשמור נתונים במכשיר שלך.</translation>
 <translation id="680488281839478944">‏יש VM בשם "<ph name="DEFAULT_VM_NAME" />"</translation>
-<translation id="6805478749741295868">‏זוהי תכונה ניסיונית שמבוססת על AI ויכול להיות שהארגון לא יתאים לך.</translation>
+<translation id="6805478749741295868">‏זוהי תכונה ניסיונית שמבוססת על AI ויכול להיות שהתוצאה לא תמיד תתאים לך.</translation>
 <translation id="6805647936811177813">יש להיכנס אל <ph name="TOKEN_NAME" /> כדי לייבא אישור לקוח מ-<ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">‏הפעלת מעקב RLZ ב-<ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6806089545527108739">אין אישור, אבל יש לשאול מאוחר יותר</translation>

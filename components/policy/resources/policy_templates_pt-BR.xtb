@@ -473,7 +473,6 @@ Só desative a política se houver problemas de compatibilidade com softwares de
 <translation id="1369698103169067223">Os Glanceables não estão ativados para os usuários.</translation>
 <translation id="1371626834351873151">A redução do user agent vai ser ativada para todas as origens.</translation>
 <translation id="1371851989348083665">Permitir o uso do <ph name="ASSISTANT_PRODUCT_NAME" /> na Web</translation>
-<translation id="1372511977715560169">Controlar a ativação do recurso <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> no <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1372618949173323717">Desativar JavaScript</translation>
 <translation id="1376119291123231789">Ativar o modo avançado de carregamento da bateria</translation>
 <translation id="1376299650477150211">Permite definir uma lista de padrões de URL que especifica os sites em que as otimizações avançadas
@@ -1589,7 +1588,6 @@ atualizados para HTTPS por esse recurso.</translation>
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> não for definida, o provedor de pesquisa não terá um ícone.</translation>
 <translation id="2136073175041447267">Configure os drives na nuvem (Google Drive, Microsoft OneDrive) no <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="2140379319368541863">Não permitir o recurso "GenAI Wallpaper"</translation>
 <translation id="2144236546337326489">Permitir que a continuação da tarefa do recurso "Seu smartphone" seja ativada</translation>
 <translation id="2145735238144543545">Certificados do cliente obrigatórios</translation>
 <translation id="2146103669166779785">Cor hexadecimal que será usada para gerar e aplicar um tema ao navegador.</translation>
@@ -1876,7 +1874,6 @@ Se a política for deixada sem definição, os usuários poderão mudar a lista 
       Se a política não tiver definição, <ph name="DEFAULT_CLIPBOARD_SETTING" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
-<translation id="2297432074108752232">Permitir o recurso "GenAI VC Background" sem melhorar os modelos de IA</translation>
 <translation id="2299220924812062390">Especifica uma lista de plug-ins ativados</translation>
 <translation id="2299815818824242485">Não permitir pesquisas por proxy com maior proteção</translation>
 <translation id="2303795211377219696">Ativar o preenchimento automático para cartões de crédito</translation>
@@ -2902,7 +2899,6 @@ Essa política é temporária e vai ser removida.</translation>
       Se um site corresponder a um padrão de URL nesta política, <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> e <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" /> não serão consideradas.
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  A política só faz a correspondência com base na origem, então os caminhos no padrão do URL serão ignorados.</translation>
-<translation id="3111315283985318774">Controlar a ativação do recurso <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> no <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3112501357749061018">Uma lista de certificados TLS em que o <ph name="PRODUCT_NAME" /> confia para autenticação do servidor, com restrições adicionadas fora do certificado. Se nenhuma restrição de um determinado tipo estiver presente, qualquer nome desse tipo será permitido.
 Os certificados precisam ser codificados em base64. É preciso especificar pelo menos uma restrição para cada certificado.</translation>
 <translation id="3118552207903834734">Permitir que o usuário configure o nome do host do dispositivo</translation>
@@ -3661,7 +3657,6 @@ incluir as duas opções em certificados RSA destinados a HTTPS.</translation>
 <translation id="3695204334462456702">Destinos de protocolo que não precisam de configuração (mDNS e DNS-SD) (descontinuado)</translation>
 <translation id="3695706037816556327">Ação na remoção do token de segurança (por exemplo, um cartão inteligente) do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3696134803170884851">Desativar sons de carregamento</translation>
-<translation id="3699322543136447790">Permitir o uso do recurso "GenAI Wallpaper" sem melhorar os modelos de IA</translation>
 <translation id="3699986274986041335">Perguntar sempre que um site quiser uma permissão para fontes locais</translation>
 <translation id="3700193037252896716">Frequência com que a reinicialização acontecerá.</translation>
 <translation id="3700318587977845664">Periodicidade de recorrência da verificação de atualização.</translation>
@@ -7651,13 +7646,6 @@ Observação: reiniciar o dispositivo ou sair da conta faz com que o cache seja 
 <translation id="658537215958747575">Permitir que origens qualificadas usem a API Direct Sockets</translation>
 <translation id="6588634282328239769">Mostrar o URL completo</translation>
 <translation id="6589049539706330510">Ativar suporte</translation>
-<translation id="6590906503707750118">Esta política ativa ou desativa o recurso <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> no <ph name="PRODUCT_OS_NAME" />.
-0 = Não permitir <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" />.
-
-1 = Permitir <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> sem melhorar os modelos de IA.
-
-Se a política for deixada sem definição, o recurso <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> será autorizado sem melhorar os modelos de IA para usuários corporativos e educacionais.
-Na versão M127, a política foi desativada para usuários corporativos por padrão.</translation>
 <translation id="6593025196187527239">A não ser que o ARC seja desativado por outros meios, definir a política como verdadeira ou não defini-la vai permitir que os usuários usem o ARC. Definir a política como falsa vai impedir que usuários sem afiliação usem o ARC.
 
 Mudanças na política são aplicadas apenas enquanto o ARC não está em execução, como durante a inicialização do ChromeOS.</translation>
@@ -8110,13 +8098,6 @@ bloqueio dessas solicitações será aplicado.</translation>
 <translation id="6929746927224321095">Desativar o preenchimento automático</translation>
 <translation id="6931242315485576290">Desativar a sincronização de dados com o Google</translation>
 <translation id="6932282102911647185">Luz de fundo roxa do teclado</translation>
-<translation id="6934127980901887540">Esta política ativa ou desativa o recurso <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> no <ph name="PRODUCT_OS_NAME" />.
-0 = Não permitir <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" />.
-
-1 = Permitir <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> sem melhorar os modelos de IA.
-
-Se a política for deixada sem definição, o recurso <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> será permitido para usuários corporativos e educacionais.
-Na versão M127, a política foi desativada para usuários corporativos por padrão.</translation>
 <translation id="6938424179790370595">Se a política for definida como "Nenhuma", a lupa será desativada.
 
 Se você definir a política, os usuários não poderão mudá-la. Se a política não for definida, a lupa será inicialmente desativada, mas os usuários poderão ativá-la quando quiserem.</translation>
@@ -8809,7 +8790,6 @@ a leitura em voz alta será ativada.</translation>
       Se a política estiver definida como Ativada, a página "Nova guia" vai mostrar o aviso abaixo da caixa de pesquisa, caso esteja disponível.
 
       Se a política estiver definida como Desativada, a página "Nova guia" não vai mostrar o aviso abaixo da caixa de pesquisa, mesmo se estiver disponível.</translation>
-<translation id="7457431437931521451">Não permitir o recurso "GenAI VC Background"</translation>
 <translation id="7459601923199346224">Controla as políticas do usuário e dispositivo para o gerenciamento de certificados.</translation>
 <translation id="7459633275230216698">Permitir caixas de diálogo para seleção de arquivo</translation>
 <translation id="7462256705280836453">Definir se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para anúncios sugeridos pelo site pode ser desativada</translation>

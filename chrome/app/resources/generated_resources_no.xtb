@@ -3245,7 +3245,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3308134619352333507">Skjul knappen</translation>
 <translation id="3308604065765626613">{GROUP_COUNT,plural, =1{Fanene fortsetter å være åpne på denne enheten, men gruppen slettes permanent.}other{Fanene fortsetter å være åpne på denne enheten, men gruppene slettes permanent.}}</translation>
 <translation id="3308852433423051161">Laster inn Google-assistenten …</translation>
-<translation id="3309124184713871355">Strukturer</translation>
+<translation id="3309124184713871355">Byggverk</translation>
 <translation id="3309330461362844500">Sertifikatprofil-ID</translation>
 <translation id="3311445899360743395">Data som er tilknyttet denne appen, kan bli fjernet fra denne enheten.</translation>
 <translation id="3312470654018965389">Konfigurerer Linux-beholderen</translation>
@@ -4844,7 +4844,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4477015793815781985">Inkluder Ctrl, Alt eller ⌘</translation>
 <translation id="4478161224666880173">Du kan bruke <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-kontoen din på dette nettstedet. For å fortsette, logg på <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4478664379124702289">Lagre lin&amp;ken som</translation>
-<translation id="4479424953165245642">Administrer kiosk-apper</translation>
+<translation id="4479424953165245642">Administrer kioskapper</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4479877282574735775">Konfigurerer den virtuelle maskinen. Dette kan ta noen minutter.</translation>
 <translation id="4481448477173043917"><ph name="DEVICE_TYPE" /> startet på nytt uventet</translation>
@@ -6005,7 +6005,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="534449933710420173">Mappe uten navn</translation>
 <translation id="5345916423802287046">Start appen når du logger på</translation>
 <translation id="5347920333985823270">Chrome støtter et kostnadsfritt nett</translation>
-<translation id="5350116201946341974">Morsomt</translation>
+<translation id="5350116201946341974">Morsom</translation>
 <translation id="5350293332385664455">Slå av Google-assistenten</translation>
 <translation id="535123479159372765">Tekst er kopiert fra en annen enhet</translation>
 <translation id="5352033265844765294">Tidsangivelse</translation>
@@ -6557,7 +6557,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5756163054456765343">&amp;Brukerstøtte</translation>
 <translation id="5757187557809630523">neste spor</translation>
 <translation id="5758631781033351321">Her finner du leselisten din</translation>
-<translation id="5759397201362801675">Velg et humør</translation>
+<translation id="5759397201362801675">Velg en stemning</translation>
 <translation id="5759728514498647443">Dokumenter du sender til utskrift via <ph name="APP_NAME" />, kan leses av <ph name="APP_NAME" />.</translation>
 <translation id="5760318332127300368">Slett også nettlesingsdata (<ph name="URL" />), noe som kan medføre at du blir logget av Google.com. <ph name="LEARN_MORE" /></translation>
 <translation id="5762787084360227629">Oppgi Google-kontoinformasjon</translation>

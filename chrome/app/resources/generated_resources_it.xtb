@@ -350,7 +350,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1240903469550363138">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e l'immagine del tuo profilo con questo sito. Leggi le <ph name="BEGIN_LINK1" />Norme sulla privacy<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio<ph name="END_LINK2" /> del sito.</translation>
 <translation id="1241066500170667906">Seleziona lo stato dell'esperimento <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Altre lingue</translation>
-<translation id="1241381048229838873">Mostra tutti i Preferiti</translation>
+<translation id="1241381048229838873">Mostra tutti i preferiti</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> vuole ripristinare le impostazioni.</translation>
 <translation id="1243002225871118300">Modifica dimensioni display e testo</translation>
 <translation id="1243314992276662751">Carica</translation>
@@ -4931,7 +4931,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4549791035683739768">Nel token di sicurezza non sono archiviate impronte</translation>
 <translation id="4550737096585299960">Riprova tra qualche minuto.</translation>
 <translation id="4550926046134589611">Alcuni link supportati saranno comunque aperti nell'app <ph name="APP_NAME" />.</translation>
-<translation id="4551379727767354516">I tuoi temi IA recenti</translation>
+<translation id="4551379727767354516">I tuoi temi AI recenti</translation>
 <translation id="4551763574344810652">Premi <ph name="MODIFIER_KEY_DESCRIPTION" /> per annullare</translation>
 <translation id="4553526521109675518">Per cambiare la lingua del dispositivo, devi riavviare il Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Ulteriori informazioni<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">La versione dell'estensione esterna è pari o precedente a quella dell'estensione esistente.</translation>
@@ -6551,7 +6551,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5756163054456765343">Centro assistenza</translation>
 <translation id="5757187557809630523">traccia successiva</translation>
 <translation id="5758631781033351321">Qui troverai il tuo elenco di lettura</translation>
-<translation id="5759397201362801675">Scegli uno stato d'animo</translation>
+<translation id="5759397201362801675">Scegli un umore</translation>
 <translation id="5759728514498647443">I documenti inviati alla stampante tramite <ph name="APP_NAME" /> possono essere letti da <ph name="APP_NAME" />.</translation>
 <translation id="5760318332127300368">Elimina anche i dati di navigazione (<ph name="URL" />) che potrebbero farti uscire dall'account su Google.com. <ph name="LEARN_MORE" /></translation>
 <translation id="5762787084360227629">Inserisci i dati dell'Account Google</translation>

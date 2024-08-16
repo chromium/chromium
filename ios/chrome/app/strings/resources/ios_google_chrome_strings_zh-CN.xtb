@@ -4,7 +4,7 @@
 <translation id="1021782183249308751">按住 Chrome 图标，然后点击“修改主屏幕”</translation>
 <translation id="1066101356081285416">Chrome 将检测您所访问的网站上的跟踪编号，并在新标签页中向您显示包裹动态。为实现此功能，系统会将包裹跟踪编号和网站名称发送给 Google。这些信息还将用于完善 Google 购物功能，让所有用户受益。您可以随时在<ph name="BEGIN_LINK" />包裹跟踪设置<ph name="END_LINK" />中更新此设置。</translation>
 <translation id="1085696779717592361">默认使用 Chrome</translation>
-<translation id="1143896152279775643">系统会将您的密码保存到 <ph name="EMAIL" /> 的 Google 密码管理器中。</translation>
+<translation id="1143896152279775643">系统会将您的密码保存到 <ph name="EMAIL" /> 的 Google 密码管理工具中。</translation>
 <translation id="1177414119866731261">打开 Chrome 菜单</translation>
 <translation id="1180362651362502943">请继续使用您的 Google 账号中的 Chrome 数据。</translation>
 <translation id="1200396280085622191">每次点按消息和其他应用中的链接时，都使用 Chrome 打开。</translation>
@@ -68,7 +68,7 @@
 <translation id="2576431527583832481">Chrome 浏览器刚刚经过了改进！新版本已推出。</translation>
 <translation id="257708665678654955">下次访问这个网站时，您希望 Google Chrome 翻译其中的<ph name="LANGUAGE_NAME" />网页吗？</translation>
 <translation id="2650286135394207535">让 Chrome 帮助您跟踪包裹</translation>
-<translation id="2671426118752779020">您可在 iPhone 上的其他应用内使用已保存至 Google 密码管理器的密码。</translation>
+<translation id="2671426118752779020">您可在 iPhone 上的其他应用内使用已保存至 Google 密码管理工具的密码。</translation>
 <translation id="2689064829982324496">若要在所有网站上退出您的 Google 账号，请<ph name="BEGIN_LINK" />退出 Chrome<ph name="END_LINK" />。</translation>
 <translation id="2695886661449553974">Chrome 无法检查是否有更新。请稍后再试。</translation>
 <translation id="2702250627063295552">将阅读清单项添加到 Chrome</translation>
@@ -193,7 +193,7 @@
 <translation id="6648150602980899529">您正要登录由 <ph name="DOMAIN" /> 管理的账号，并要授权其管理员控制您的 Chrome 数据。您的数据将与此账号永久关联。退出 Chrome 后，您的数据将从这台设备上删除，但仍会保留在您的 Google 账号中。</translation>
 <translation id="6683891932310469419">打开 Chrome 历史记录页面。</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{当 Chrome 闲置 {THRESHOLD} 分钟后，就会发生这种情况。系统会删除您在登录期间仅保存在此设备上的数据。这些数据可能包括历史记录和密码。}other{当 Chrome 闲置 {THRESHOLD} 分钟后，就会发生这种情况。系统会删除您在登录期间仅保存在此设备上的数据。这些数据可能包括历史记录和密码。}}</translation>
-<translation id="6709398533399187136">您的密码在数据泄露事件中外泄。Google 密码管理器建议您立即更改此密码。</translation>
+<translation id="6709398533399187136">您的密码在数据泄露事件中外泄。Google 密码管理工具建议您立即更改此密码。</translation>
 <translation id="6820553595690137150">口令加密不涵盖付款方式和地址。
 
 如要更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
@@ -213,7 +213,7 @@
 <translation id="7187993566681480880">保护您在 Chrome 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用。</translation>
 <translation id="7200524487407690471">Chrome 每天都会自动运行安全检查，以保护您免受数据泄露、不安全网站等问题的影响。您可在“设置”中详细了解安全检查。</translation>
 <translation id="7203324561587388418">及时了解相关内容和实用 Chrome 提示。</translation>
-<translation id="72119412072970160">您可在 iPad 上的其他应用内使用已保存至 Google 密码管理器的密码。</translation>
+<translation id="72119412072970160">您可在 iPad 上的其他应用内使用已保存至 Google 密码管理工具的密码。</translation>
 <translation id="722167379782941918">Chrome 建议使用增强型保护</translation>
 <translation id="723787869754590019">使用 Chrome 自动填充</translation>
 <translation id="7254380941803999489">将 Chrome 设为默认浏览器</translation>
@@ -278,7 +278,7 @@
 <translation id="8760668027640688122">在 Chrome 中打开新标签页</translation>
 <translation id="8765470054473112089">当您在地址栏或搜索框中输入内容时，Chrome 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="8772179140489533211">显示意在引导用户登录 Chrome 的提示。</translation>
-<translation id="8788269841521769222">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的 Google 密码管理器中</translation>
+<translation id="8788269841521769222">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的 Google 密码管理工具中</translation>
 <translation id="878917453316810648">Chrome 提示：默认使用 Chrome</translation>
 <translation id="8808828119384186784">Chrome 设置</translation>
 <translation id="8850736900032787670">如要根据您的兴趣接收个性化内容，请登录 Chrome。</translation>
