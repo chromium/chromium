@@ -9,11 +9,11 @@
 #import "base/check.h"
 #import "base/ios/ios_util.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
-#import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -878,19 +878,19 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   // The combined horizontal inset distance of the label and title with respect
   // to the bubble.
   CGFloat textHorizontalInset = kBubbleHorizontalMargin * 2;
-  // Add close button size, which is on the trailing edge of the labels.
+
+  // Add the correct amount of horizontal padding depending on the bubble's
+  // features.
   if (self.showsCloseButton) {
-    textHorizontalInset += MAX(kCloseButtonSize, kBubbleHorizontalPadding);
-  } else {
-    textHorizontalInset += kBubbleHorizontalPadding;
+    textHorizontalInset += MAX(kCloseButtonSize, kBubbleHorizontalPadding) +
+                           kBubbleHorizontalPadding;
+  } else if (self.imageView) {
+    textHorizontalInset += kImageViewLeadingMargin + kImageViewSize +
+                           kImageViewTrailingMargin + kBubbleHorizontalPadding;
+  } else if (!self.titleLabel) {
+    textHorizontalInset += kBubbleHorizontalPadding * 2;
   }
-  // Add image view size, which is on the leading edge of the labels.
-  if (self.imageView) {
-    textHorizontalInset +=
-        kImageViewLeadingMargin + kImageViewSize + kImageViewTrailingMargin;
-  } else {
-    textHorizontalInset += kBubbleHorizontalPadding;
-  }
+
   CGFloat textMaxWidth = size.width - textHorizontalInset;
   CGSize optimalTextSize =
       [self optimalTextSize:CGSizeMake(textMaxWidth, size.height)];
