@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client.h"
 #include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
@@ -59,6 +60,8 @@ void BlindSignMessageAndroidImpl::DoRequest(
 }
 
 void BlindSignMessageAndroidImpl::CreateIpProtectionAuthClient() {
+  TRACE_EVENT0("toplevel",
+               "BlindSignMessageAndroidImpl::CreateIpProtectionAuthClient");
   client_factory_.Run(base::BindPostTaskToCurrentDefault(base::BindOnce(
       &BlindSignMessageAndroidImpl::OnCreateIpProtectionAuthClientComplete,
       weak_ptr_factory_.GetWeakPtr())));
@@ -89,6 +92,7 @@ void BlindSignMessageAndroidImpl::SendRequest(
     const std::string& body,
     quiche::BlindSignMessageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT0("toplevel", "BlindSignMessageAndroidImpl::SendRequest");
   switch (request_type) {
     case quiche::BlindSignMessageRequestType::kGetInitialData: {
       privacy::ppn::GetInitialDataRequest get_initial_data_request_proto;
