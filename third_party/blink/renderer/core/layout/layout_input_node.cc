@@ -171,7 +171,7 @@ void LayoutInputNode::IntrinsicSize(
           ? std::make_optional(
                 LayoutUnit::FromFloatRound(legacy_sizing_info.size.height()))
           : std::nullopt;
-  if (!IsHorizontalWritingMode(Style().GetWritingMode())) {
+  if (!IsHorizontalWritingMode()) {
     std::swap(intrinsic_inline_size, intrinsic_block_size);
   }
 

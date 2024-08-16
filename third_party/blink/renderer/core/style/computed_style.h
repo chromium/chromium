@@ -1080,6 +1080,9 @@ class ComputedStyle final : public ComputedStyleBase {
   bool IsHorizontalWritingMode() const {
     return blink::IsHorizontalWritingMode(GetWritingMode());
   }
+  bool IsHorizontalTypographicMode() const {
+    return blink::IsHorizontalTypographicMode(GetWritingMode());
+  }
   bool IsFlippedLinesWritingMode() const {
     return blink::IsFlippedLinesWritingMode(GetWritingMode());
   }

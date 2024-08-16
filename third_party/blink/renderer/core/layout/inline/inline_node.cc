@@ -1170,7 +1170,7 @@ void InlineNode::SegmentScriptRuns(InlineNodeData* data,
         data->segments = nullptr;
         return;
       }
-    } else if (GetLayoutBlockFlow()->IsHorizontalWritingMode()) {
+    } else if (IsHorizontalTypographicMode()) {
       // We can reuse InlineNodeData::segments only in horizontal writing modes
       // because we might update it by SegmentFontOrientation() in vertical
       // writing modes.
@@ -1216,8 +1216,9 @@ void InlineNode::SegmentScriptRuns(InlineNodeData* data,
 void InlineNode::SegmentFontOrientation(InlineNodeData* data) const {
   // Segment by orientation, only if vertical writing mode and items with
   // 'text-orientation: mixed'.
-  if (GetLayoutBlockFlow()->IsHorizontalWritingMode())
+  if (IsHorizontalTypographicMode()) {
     return;
+  }
 
   HeapVector<InlineItem>& items = data->items;
   if (items.empty())

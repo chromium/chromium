@@ -1420,6 +1420,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return bitfields_.HorizontalWritingMode();
   }
+  bool IsHorizontalTypographicMode() const {
+    NOT_DESTROYED();
+    return IsHorizontalWritingMode() ||
+           StyleRef().IsHorizontalTypographicMode();
+  }
   bool HasFlippedBlocksWritingMode() const {
     NOT_DESTROYED();
     return StyleRef().IsFlippedBlocksWritingMode();
