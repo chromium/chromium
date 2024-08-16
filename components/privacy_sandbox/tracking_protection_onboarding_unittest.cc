@@ -5,7 +5,6 @@
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 
 #include <memory>
-#include <optional>
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
@@ -385,51 +384,6 @@ TEST_F(TrackingProtectionOnboardingTest,
 
   // Expectation
   testing::Mock::VerifyAndClearExpectations(&observer);
-}
-
-TEST_F(TrackingProtectionOnboardingTest, OnboardedToAckForNotOnboardedProfile) {
-  tracking_protection_onboarding()->MaybeMarkModeBEligible();
-  EXPECT_EQ(tracking_protection_onboarding()->OnboardedToAcknowledged(),
-            std::nullopt);
-}
-
-TEST_F(TrackingProtectionOnboardingTest, OnboardedToAckForNotAckedProfile) {
-  tracking_protection_onboarding()->MaybeMarkModeBEligible();
-  tracking_protection_onboarding()->NoticeShown(SurfaceType::kDesktop,
-                                                NoticeType::kModeBOnboarding);
-  EXPECT_EQ(tracking_protection_onboarding()->OnboardedToAcknowledged(),
-            std::nullopt);
-}
-
-TEST_F(TrackingProtectionOnboardingTest, OnboardedToAckForAckedProfile) {
-  tracking_protection_onboarding()->MaybeMarkModeBEligible();
-  tracking_protection_onboarding()->NoticeShown(SurfaceType::kDesktop,
-                                                NoticeType::kModeBOnboarding);
-  auto delay = base::Seconds(15);
-  task_env_.FastForwardBy(delay);
-  tracking_protection_onboarding()->NoticeActionTaken(
-      SurfaceType::kDesktop, NoticeType::kModeBOnboarding,
-      NoticeAction::kGotIt);
-
-  EXPECT_EQ(tracking_protection_onboarding()->OnboardedToAcknowledged(),
-            std::make_optional(delay));
-}
-
-TEST_F(TrackingProtectionOnboardingTest,
-       OnboardingTimestampIsNullForNotOnboardedProfile) {
-  tracking_protection_onboarding()->MaybeMarkModeBEligible();
-  EXPECT_EQ(tracking_protection_onboarding()->GetOnboardingTimestamp(),
-            std::nullopt);
-}
-
-TEST_F(TrackingProtectionOnboardingTest,
-       ReturnsOnboardingTimestampForOnboardedProfile) {
-  tracking_protection_onboarding()->MaybeMarkModeBEligible();
-  tracking_protection_onboarding()->NoticeShown(SurfaceType::kDesktop,
-                                                NoticeType::kModeBOnboarding);
-
-  EXPECT_EQ(tracking_protection_onboarding()->GetOnboardingTimestamp(),
-            std::make_optional(base::Time::Now()));
 }
 
 TEST_F(TrackingProtectionOnboardingTest, UserActionMetrics) {
@@ -1188,23 +1142,6 @@ TEST_F(TrackingProtectionSilentOnboardingTest,
 
   // Expectation
   testing::Mock::VerifyAndClearExpectations(&observer);
-}
-
-TEST_F(TrackingProtectionSilentOnboardingTest,
-       SilentOnboardingTimestampIsNullForNotOnboardedProfile) {
-  tracking_protection_onboarding()->MaybeMarkModeBSilentEligible();
-  EXPECT_EQ(tracking_protection_onboarding()->GetSilentOnboardingTimestamp(),
-            std::nullopt);
-}
-
-TEST_F(TrackingProtectionSilentOnboardingTest,
-       ReturnsSilentOnboardingTimestampForSilentlyOnboardedProfile) {
-  tracking_protection_onboarding()->MaybeMarkModeBSilentEligible();
-  tracking_protection_onboarding()->NoticeShown(
-      SurfaceType::kDesktop, NoticeType::kModeBSilentOnboarding);
-
-  EXPECT_EQ(tracking_protection_onboarding()->GetSilentOnboardingTimestamp(),
-            std::make_optional(base::Time::Now()));
 }
 
 class TrackingProtectionSilentOnboardingAccessorTest

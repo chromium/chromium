@@ -4,8 +4,6 @@
 
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 
-#include <optional>
-
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -557,39 +555,6 @@ NoticeType TrackingProtectionOnboarding::GetRequiredNotice(
                  : NoticeType::kModeBOnboarding;
     }
   }
-}
-
-std::optional<base::TimeDelta>
-TrackingProtectionOnboarding::OnboardedToAcknowledged() {
-  if (!pref_service_->HasPrefPath(
-          prefs::kTrackingProtectionOnboardingAckedSince)) {
-    return std::nullopt;
-  }
-  if (!pref_service_->HasPrefPath(prefs::kTrackingProtectionOnboardedSince)) {
-    return std::nullopt;
-  }
-  return pref_service_->GetTime(
-             prefs::kTrackingProtectionOnboardingAckedSince) -
-         pref_service_->GetTime(prefs::kTrackingProtectionOnboardedSince);
-}
-
-std::optional<base::Time>
-TrackingProtectionOnboarding::GetOnboardingTimestamp() {
-  if (!pref_service_->HasPrefPath(prefs::kTrackingProtectionOnboardedSince) ||
-      GetOnboardingStatus() != OnboardingStatus::kOnboarded) {
-    return std::nullopt;
-  }
-  return pref_service_->GetTime(prefs::kTrackingProtectionOnboardedSince);
-}
-
-std::optional<base::Time>
-TrackingProtectionOnboarding::GetSilentOnboardingTimestamp() {
-  if (!pref_service_->HasPrefPath(
-          prefs::kTrackingProtectionSilentOnboardedSince) ||
-      GetSilentOnboardingStatus() != SilentOnboardingStatus::kOnboarded) {
-    return std::nullopt;
-  }
-  return pref_service_->GetTime(prefs::kTrackingProtectionSilentOnboardedSince);
 }
 
 TrackingProtectionOnboarding::OnboardingStatus
