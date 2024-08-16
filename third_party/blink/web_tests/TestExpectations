@@ -8037,4 +8037,4 @@ crbug.com/359824074 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 crbug.com/359824074 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/parallel-dispatch.https.any.worker.html?gpu [ Failure Pass ]
 
 # Gardener 2024-08-15
-crbug.com/360163253 [ Debug Linux ] virtual/threaded/wpt_internal/scheduler/integration_tests/prioritize-rendering-after-input-click.html [ Failure ]
+crbug.com/360163253 [ Linux ] virtual/threaded/wpt_internal/scheduler/integration_tests/prioritize-rendering-after-input-click.html [ Failure ]
