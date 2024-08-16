@@ -15616,6 +15616,34 @@
             ],
             "experiments": [
                 {
+                    "name": "Enabled_i18n_p0_p1_langs_from_128_Dogfood",
+                    "params": {
+                        "ime_allowlist": "[\"xkb:es::spa\"]"
+                    },
+                    "enable_features": [
+                        "OrcaDanish",
+                        "OrcaDogfood",
+                        "OrcaDutch",
+                        "OrcaFinnish",
+                        "OrcaItalian",
+                        "OrcaNorwegian",
+                        "OrcaPortugese",
+                        "OrcaSpanish",
+                        "OrcaSwedish"
+                    ]
+                },
+                {
+                    "name": "Enabled_i18n_p0_langs_pre_128_Dogfood",
+                    "params": {
+                        "ime_allowlist": "[\"xkb:es::spa\"]"
+                    },
+                    "enable_features": [
+                        "OrcaDogfood",
+                        "OrcaInternationalize",
+                        "OrcaUseL10nStrings"
+                    ]
+                },
+                {
                     "name": "Enabled_From_121_Dogfood",
                     "params": {
                         "ime_allowlist": "[\"xkb:es::spa\"]"
