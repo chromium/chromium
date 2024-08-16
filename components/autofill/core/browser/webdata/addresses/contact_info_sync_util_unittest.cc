@@ -26,6 +26,8 @@ constexpr char kGuid[] = "00000000-0000-0000-0000-000000000001";
 constexpr char kInvalidGuid[] = "1234";
 constexpr int kNonChromeModifier = 1234;
 const auto kUseDate = base::Time::FromSecondsSinceUnixEpoch(123);
+const auto kUseDate2 = base::Time::FromSecondsSinceUnixEpoch(34);
+// No third last use date, to test that absence is handled correctly.
 const auto kModificationDate = base::Time::FromSecondsSinceUnixEpoch(456);
 
 // Returns a profile with all fields set. Contains identical data to the data
@@ -36,7 +38,8 @@ AutofillProfile ConstructBaseProfile(
                           country_code);
 
   profile.set_use_count(123);
-  profile.set_use_date(kUseDate);
+  profile.set_use_date(kUseDate, 1);
+  profile.set_use_date(kUseDate2, 2);
   profile.set_modification_date(kModificationDate);
   profile.set_language_code("en");
   profile.set_profile_label("profile_label");
@@ -327,6 +330,7 @@ ContactInfoSpecifics ConstructBaseSpecifics() {
   specifics.set_guid(kGuid);
   specifics.set_use_count(123);
   specifics.set_use_date_unix_epoch_seconds(kUseDate.ToTimeT());
+  specifics.set_use_date2_unix_epoch_seconds(kUseDate2.ToTimeT());
   specifics.set_date_modified_unix_epoch_seconds(kModificationDate.ToTimeT());
   specifics.set_language_code("en");
   specifics.set_profile_label("profile_label");
@@ -692,7 +696,8 @@ class ContactInfoSyncUtilTest
          features::kAutofillEnableSupportForAddressOverflowAndLandmark,
          features::kAutofillEnableSupportForAdminLevel2,
          features::kAutofillEnableSupportForApartmentNumbers,
-         features::kAutofillEnableDependentLocalityParsing},
+         features::kAutofillEnableDependentLocalityParsing,
+         features::kAutofillTrackMultipleUseDates},
         {});
   }
 
