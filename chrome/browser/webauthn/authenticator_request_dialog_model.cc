@@ -34,6 +34,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/ui/webauthn/ambient/ambient_signin_controller.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_window.h"
 #include "chrome/browser/ui/webauthn/user_actions.h"
@@ -2035,6 +2036,15 @@ void AuthenticatorRequestDialogController::StartConditionalMediationRequest() {
     // May be null on tests.
     webauthn_credentials_delegate_factory->OnCredentialsReceived(
         std::move(credentials), offer_passkey_from_another_device);
+  }
+  if (base::FeatureList::IsEnabled(device::kWebAuthnAmbientSignin)) {
+    auto* controller =
+        ambient_signin::AmbientSigninController::GetOrCreateForCurrentDocument(
+            render_frame_host);
+    // TODO(crbug.com/358119268): Autofill conditional UI filters some
+    // credentials. Do the same for the Ambient UI.
+    controller->AddAndShowWebAuthnMethods(model());
+    model()->AddObserver(controller);
   }
   SetCurrentStep(Step::kConditionalMediation);
 }
