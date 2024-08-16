@@ -1294,8 +1294,8 @@ public class StripLayoutHelperTest {
 
     @Test
     public void testScrollOffset_OnResume_StartOnLeft_SelectedRightmostTab() {
-        // Arrange: Initialize tabs with last tab selected and MSB visible (long fade).
-        initializeTest(false, true, true, 9, 10);
+        // Arrange: Initialize tabs with tenth tab selected and MSB visible (long fade).
+        initializeTest(false, true, true, 9, 12);
         mStripLayoutHelper.setIsFirstLayoutPassForTesting(false);
 
         // Set screen width to 800dp and scroll selected tab to view.
@@ -1313,8 +1313,8 @@ public class StripLayoutHelperTest {
 
     @Test
     public void testScrollOffset_OnResume_StartOnLeft_NoModelSelBtn_SelectedRightmostTab() {
-        // Arrange: Initialize tabs with last tab selected and MSB not visible (medium fade).
-        initializeTest(false, false, true, 9, 10);
+        // Arrange: Initialize tabs with tenth tab selected and MSB not visible (medium fade).
+        initializeTest(false, false, true, 9, 12);
         mStripLayoutHelper.setIsFirstLayoutPassForTesting(false);
 
         // Set screen width to 800dp and scroll selected tab to view.

@@ -22,7 +22,6 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.FloatProperty;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
@@ -109,20 +108,6 @@ import java.util.Set;
  * <p>The stacking and visual behavior is driven by setting a {@link StripStacker}.
  */
 public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGroupTitleDelegate {
-    /** A property for animations to use for changing the X offset of the tab. */
-    public static final FloatProperty<StripLayoutHelper> SCROLL_OFFSET =
-            new FloatProperty<StripLayoutHelper>("scrollOffset") {
-                @Override
-                public void setValue(StripLayoutHelper object, float value) {
-                    object.setScrollOffset(value);
-                }
-
-                @Override
-                public Float get(StripLayoutHelper object) {
-                    return object.getScrollOffset();
-                }
-            };
-
     // Drag Constants
     private static final int REORDER_SCROLL_NONE = 0;
     private static final int REORDER_SCROLL_LEFT = 1;
@@ -389,8 +374,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
     // Strip State
     private StackScroller mScroller;
-    private float mScrollOffset;
-    private float mMinScrollOffset;
+    private ScrollDelegate mScrollDelegate = new ScrollDelegate();
     private float mCachedTabWidth;
 
     // Reorder State
@@ -400,7 +384,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private float mTabMarginWidth;
     private float mHalfTabWidth;
     private float mStripStartMarginForReorder;
-    private float mReorderExtraMinScrollOffset;
     private long mLastReorderScrollTime;
     private long mLastUpdateTime;
     private long mHoverStartTime;
@@ -785,43 +768,29 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     }
 
     /**
-     * When the {@link ScrollingStripStacker} is being used, a fade is shown at the left and
-     * right edges to indicate there is tab strip content off screen. As the scroll position
-     * approaches the edge of the screen, the fade opacity is lowered.
+     * When the {@link ScrollingStripStacker} is being used, a fade is shown at the left and right
+     * edges to indicate there is tab strip content off screen. As the scroll position approaches
+     * the edge of the screen, the fade opacity is lowered.
      *
      * @param isLeft Whether the opacity for the left or right side should be returned.
      * @return The opacity to use for the fade.
      */
     private float getFadeOpacity(boolean isLeft) {
-        // In RTL, scroll position 0 is on the right side of the screen, whereas in LTR scroll
-        // position 0 is on the left. Account for that in the offset calculation.
-        boolean isRtl = LocalizationUtils.isLayoutRtl();
-        boolean useUnadjustedScrollOffset = isRtl != isLeft;
-        float offset =
-                -(useUnadjustedScrollOffset ? mScrollOffset : (mMinScrollOffset - mScrollOffset));
-
-        if (offset <= 0.f) {
+        float edgeOffset = mScrollDelegate.getEdgeOffset(isLeft);
+        if (edgeOffset <= 0.f) {
             return 0.f;
-        } else if (offset >= FADE_FULL_OPACITY_THRESHOLD_DP) {
+        } else if (edgeOffset >= FADE_FULL_OPACITY_THRESHOLD_DP) {
             return 1.f;
         } else {
-            return offset / FADE_FULL_OPACITY_THRESHOLD_DP;
+            return edgeOffset / FADE_FULL_OPACITY_THRESHOLD_DP;
         }
-    }
-
-    /**
-     * Set the scroll offset.
-     * @param scrollOffset The scroll offset.
-     */
-    void setScrollOffset(float scrollOffset) {
-        mScrollOffset = scrollOffset;
     }
 
     /**
      * @return The strip's current scroll offset.
      */
     float getScrollOffset() {
-        return mScrollOffset;
+        return mScrollDelegate.getScrollOffset();
     }
 
     float getVisibleLeftBound() {
@@ -1811,7 +1780,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                 RecordUserAction.record("MobileToolbarSlideTabs");
                 onStripScrollStart();
             }
-            updateScrollOffsetPosition(mScrollOffset + deltaX);
+            updateScrollOffsetPosition(mScrollDelegate.getScrollOffset() + deltaX);
         }
 
         // If we're scrolling at all we aren't interacting with any particular tab.
@@ -1862,7 +1831,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         // to the end of this fling.
         int scrollDeltaRemaining = 0;
         if (!mScroller.isFinished()) {
-            scrollDeltaRemaining = mScroller.getFinalX() - Math.round(mScrollOffset);
+            scrollDeltaRemaining =
+                    mScroller.getFinalX() - Math.round(mScrollDelegate.getScrollOffset());
 
             mInteractingTab = null;
             mScroller.forceFinished(true);
@@ -1870,11 +1840,11 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
         // 3. Kick off the fling.
         mScroller.fling(
-                Math.round(mScrollOffset),
+                Math.round(mScrollDelegate.getScrollOffset()),
                 0,
                 (int) velocityX,
                 0,
-                (int) mMinScrollOffset,
+                (int) mScrollDelegate.getMinScrollOffset(),
                 0,
                 0,
                 0,
@@ -2275,7 +2245,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         List<Animator> tabExpandAnimators = computeAndUpdateTabWidth(true, true, closedTab);
         if (tabExpandAnimators != null) tabStripAnimators.addAll(tabExpandAnimators);
 
-        // 2. Calculate new mScrollOffset and idealX for tab offset animation.
+        // 2. Calculate new scroll offset and idealX for tab offset animation.
         updateScrollOffsetLimits();
         computeTabInitialPositions();
 
@@ -2501,13 +2471,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     }
 
     private void updateScrollOffsetPosition(float pos) {
-        float oldScrollOffset = mScrollOffset;
-        mScrollOffset = MathUtils.clamp(pos, mMinScrollOffset - mReorderExtraMinScrollOffset, 0);
+        float delta = mScrollDelegate.setClampedScrollOffset(pos);
 
         if (mInReorderMode && mScroller.isFinished()) {
-            float delta =
-                    MathUtils.flipSignIf(
-                            oldScrollOffset - mScrollOffset, LocalizationUtils.isLayoutRtl());
             if (mReorderingForTabDrop) {
                 updateReorderPositionForTabDrop(mLastReorderX);
             } else {
@@ -2525,44 +2491,17 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
     @VisibleForTesting
     void updateScrollOffsetLimits() {
-        // 1. Compute the width of the available space for all tabs.
-        float stripWidth = mWidth - mLeftMargin - mRightMargin;
-
-        // 2. Compute the effective width of every strip view (i.e. tabs, title indicators).
-        float tabsWidth = 0.f;
-        for (int i = 0; i < mStripViews.length; i++) {
-            final StripLayoutView view = mStripViews[i];
-            if (view instanceof final StripLayoutTab tab) {
-                if (tab.isCollapsed()) {
-                    // Need to use real width here (which gets animated to effectively 0), so we
-                    // don't "jump", but instead smoothly scroll when collapsing near the end of a
-                    // full tab strip.
-                    tabsWidth += tab.getWidth() - mTabOverlapWidth;
-                } else if (!tab.isClosed() && !tab.isDraggedOffStrip()) {
-                    tabsWidth += mCachedTabWidth - mTabOverlapWidth;
-                }
-            } else if (view instanceof StripLayoutGroupTitle groupTitle) {
-                tabsWidth += (groupTitle.getWidth() - mGroupTitleOverlapWidth);
-            }
-        }
-
-        if (mInReorderMode || mTabGroupMarginAnimRunning) {
-            tabsWidth += mStripStartMarginForReorder;
-            for (int i = 0; i < mStripTabs.length; i++) {
-                final StripLayoutTab tab = mStripTabs[i];
-                tabsWidth += tab.getTrailingMargin();
-            }
-        }
-
-        // 3. Correct fencepost error in tabswidth;
-        tabsWidth = tabsWidth + mTabOverlapWidth;
-
-        // 4. Calculate the minimum scroll offset.  Round > -EPSILON to 0.
-        mMinScrollOffset = Math.min(0.f, stripWidth - tabsWidth);
-        if (mMinScrollOffset > -EPSILON) mMinScrollOffset = 0.f;
-
-        // 5. Clamp mScrollOffset to make sure it's in the valid range.
-        updateScrollOffsetPosition(mScrollOffset);
+        boolean shouldShowTrailingMargins = mInReorderMode || mTabGroupMarginAnimRunning;
+        mScrollDelegate.updateScrollOffsetLimits(
+                mStripViews,
+                mWidth,
+                mLeftMargin,
+                mRightMargin,
+                mCachedTabWidth,
+                mTabOverlapWidth,
+                mGroupTitleOverlapWidth,
+                mStripStartMarginForReorder,
+                shouldShowTrailingMargins);
     }
 
     private List<Animator> computeAndUpdateTabOrders(boolean delayResize, boolean deferAnimations) {
@@ -3390,11 +3329,11 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         // Shift all of the tabs over by the the left margin because we're
         // no longer base lined at 0
         if (!LocalizationUtils.isLayoutRtl()) {
-            return mScrollOffset + mLeftMargin + mStripStartMarginForReorder;
+            return mScrollDelegate.getScrollOffset() + mLeftMargin + mStripStartMarginForReorder;
         } else {
             return mWidth
                     - mCachedTabWidth
-                    - mScrollOffset
+                    - mScrollDelegate.getScrollOffset()
                     - mRightMargin
                     - mStripStartMarginForReorder;
         }
@@ -3552,15 +3491,16 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         // TODO(wenyufu): Account for offsetX{Left,Right} result too much offset. Is this expected?
         final float startOffset = (isRtl ? mRightFadeWidth : mLeftFadeWidth);
         final float endOffset = (isRtl ? mLeftFadeWidth : mRightFadeWidth);
-        final float tabPosition = tab.getIdealX() - mScrollOffset + mLeftMargin;
+        final float scrollOffset = mScrollDelegate.getScrollOffset();
+        final float tabPosition = tab.getIdealX() - scrollOffset + mLeftMargin;
 
         final float optimalStart = startOffset - tabPosition;
         final float optimalEnd = mWidth - endOffset - tabWidth - tabPosition - mTabOverlapWidth;
 
         // 2. Return the scroll delta to make the given tab fully visible with the least scrolling.
         // This will result in the tab being at either the start or end of the strip.
-        final float deltaToOptimalStart = optimalStart - mScrollOffset;
-        final float deltaToOptimalEnd = optimalEnd - mScrollOffset;
+        final float deltaToOptimalStart = optimalStart - scrollOffset;
+        final float deltaToOptimalEnd = optimalEnd - scrollOffset;
 
         // 3. If the delta to the optimal start is negative and the delta to the optimal end is
         // positive, the given index is already completely in the visible area of the strip.
@@ -3972,7 +3912,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private void autoScrollForTabGroupMargins(
             float startMarginDelta, int numMarginsToSlide, List<Animator> animationList) {
         float delta = (numMarginsToSlide * mTabMarginWidth);
-        float startValue = mScrollOffset - startMarginDelta;
+        float startValue = mScrollDelegate.getScrollOffset() - startMarginDelta;
         float endValue = startValue - delta;
 
         // If the current tab width is at its max, this means there are not enough tabs to fill the
@@ -3980,21 +3920,12 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         // tab group margins. Allocate additional space to account for this. See
         // http://crbug.com/1374918 for additional details.
         if (mCachedTabWidth == mMaxTabWidth) {
-            mReorderExtraMinScrollOffset = mStripStartMarginForReorder + Math.abs(delta);
+            mScrollDelegate.setReorderMinScrollOffset(
+                    mStripStartMarginForReorder + Math.abs(delta));
         }
 
-        if (animationList != null) {
-            animationList.add(
-                    CompositorAnimator.ofFloatProperty(
-                            mUpdateHost.getAnimationHandler(),
-                            this,
-                            SCROLL_OFFSET,
-                            startValue,
-                            endValue,
-                            ANIM_TAB_SLIDE_OUT_MS));
-        } else {
-            mScrollOffset = endValue;
-        }
+        mScrollDelegate.maybeAnimateScrollOffset(
+                mUpdateHost.getAnimationHandler(), animationList, startValue, endValue);
     }
 
     private AnimatorListener getTabGroupMarginAnimatorListener(boolean resetExtraMinScrollOffset) {
@@ -4007,7 +3938,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             @Override
             public void onAnimationEnd(Animator animation) {
                 mTabGroupMarginAnimRunning = false;
-                if (resetExtraMinScrollOffset) mReorderExtraMinScrollOffset = 0.f;
+                if (resetExtraMinScrollOffset) mScrollDelegate.setReorderMinScrollOffset(0.f);
             }
         };
     }
@@ -4085,13 +4016,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
         // 2. Adjust the scroll offset accordingly to prevent the interacting tab from shifting away
         // from where the user long-pressed.
-        if (autoScroll && !mAnimationsDisabledForTesting) {
+        if (autoScroll) {
             autoScrollForTabGroupMargins(startMarginDelta, 0, animationList);
-        } else {
-            if (mCachedTabWidth == mMaxTabWidth) {
-                mReorderExtraMinScrollOffset = mStripStartMarginForReorder;
-            }
-            mScrollOffset = mScrollOffset - startMarginDelta;
         }
     }
 
@@ -4666,7 +4592,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
             // 3.c. Re-compute tab group margins. Skip if group indicators are enabled instead.
             float oldIdealX = mInteractingTab.getIdealX();
-            float oldOffset = mScrollOffset;
+            float oldOffset = mScrollDelegate.getScrollOffset();
             if (!ChromeFeatureList.sTabStripGroupIndicators.isEnabled()) {
                 computeAndUpdateTabGroupMargins(false, null);
             } else {
@@ -4704,7 +4630,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                     // position.
                     offset -=
                             MathUtils.flipSignIf(
-                                    (mScrollOffset - oldOffset), LocalizationUtils.isLayoutRtl());
+                                    (mScrollDelegate.getScrollOffset() - oldOffset),
+                                    LocalizationUtils.isLayoutRtl());
                 }
             } else {
                 offset += MathUtils.flipSignIf(tabWidth, shouldFlip);
@@ -4896,8 +4823,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             float delta = mTabMarginWidth - mStripStartMarginForReorder;
             mStripStartMarginForReorder = mTabMarginWidth;
             if (delta != 0.f) {
-                mReorderExtraMinScrollOffset += delta;
-                mScrollOffset -= delta;
+                mScrollDelegate.setReorderMinScrollOffset(
+                        mScrollDelegate.getReorderExtraMinScrollOffset() + delta);
+                mScrollDelegate.setClampedScrollOffset(mScrollDelegate.getScrollOffset() - delta);
             }
 
             finishAnimations();
@@ -5105,7 +5033,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         if (dragSpeedRatio != 0.f) {
             // 4.a. We're in a gutter.  Update the scroll offset.
             float dragSpeed = REORDER_EDGE_SCROLL_MAX_SPEED_DP * dragSpeedRatio;
-            updateScrollOffsetPosition(mScrollOffset + dragSpeed * deltaSec);
+            updateScrollOffsetPosition(mScrollDelegate.getScrollOffset() + (dragSpeed * deltaSec));
 
             mUpdateHost.requestUpdate();
         } else {
@@ -5220,10 +5148,11 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
     /**
      * Sets the current scroll offset of the TabStrip.
+     *
      * @param offset The offset to set the TabStrip's scroll state to.
      */
     public void setScrollOffsetForTesting(float offset) {
-        mScrollOffset = offset;
+        mScrollDelegate.setScrollOffset(offset);
         updateStrip();
     }
 
@@ -5269,18 +5198,24 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
         if (shouldAnimate && !mAnimationsDisabledForTesting) {
             mScroller.startScroll(
-                    Math.round(mScrollOffset), 0, (int) delta, 0, time, getScrollDuration());
+                    Math.round(mScrollDelegate.getScrollOffset()),
+                    0,
+                    (int) delta,
+                    0,
+                    time,
+                    getScrollDuration());
         } else {
-            mScrollOffset = mScrollOffset + delta;
+            mScrollDelegate.setClampedScrollOffset(mScrollDelegate.getScrollOffset() + delta);
         }
     }
 
     /**
      * Scales the scroll duration based on the scroll offset.
+     *
      * @return the duration in ms.
      */
     private int getScrollDuration() {
-        float scrollDistance = Math.abs(mScrollOffset);
+        float scrollDistance = Math.abs(mScrollDelegate.getScrollOffset());
         if (scrollDistance <= SCROLL_DISTANCE_SHORT) {
             return SCROLL_DURATION_MS;
         } else if (scrollDistance <= SCROLL_DISTANCE_MEDIUM) {
@@ -5395,14 +5330,14 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
      * @return The strip's minimum scroll offset.
      */
     float getMinimumScrollOffsetForTesting() {
-        return mMinScrollOffset;
+        return mScrollDelegate.getMinScrollOffset();
     }
 
     /**
      * @return The strip's additional minimum scroll offset for reorder mode.
      */
     float getReorderExtraMinScrollOffsetForTesting() {
-        return mReorderExtraMinScrollOffset;
+        return mScrollDelegate.getReorderExtraMinScrollOffset();
     }
 
     /**
