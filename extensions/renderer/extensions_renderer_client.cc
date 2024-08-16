@@ -74,6 +74,19 @@ void ExtensionsRendererClient::AddAPIProvider(
   api_providers_.push_back(std::move(api_provider));
 }
 
+void ExtensionsRendererClient::RenderThreadStarted() {
+  // Tests may create their own ExtensionDispatcher and inject it using
+  // `SetDispatcherForTesting()`. Don't overwrite it.
+  if (!dispatcher()) {
+    dispatcher_ = std::make_unique<Dispatcher>(std::move(api_providers_));
+  }
+  content::RenderThread* thread = content::RenderThread::Get();
+  dispatcher()->OnRenderThreadStarted(thread);
+  thread->AddObserver(dispatcher());
+
+  FinishInitialization();
+}
+
 void ExtensionsRendererClient::WebViewCreated(
     blink::WebView* web_view,
     const url::Origin* outermost_origin) {
@@ -205,11 +218,6 @@ void ExtensionsRendererClient::RunScriptsAtDocumentIdle(
 void ExtensionsRendererClient::SetDispatcherForTesting(
     std::unique_ptr<Dispatcher> dispatcher) {
   dispatcher_ = std::move(dispatcher);
-}
-
-void ExtensionsRendererClient::CreateDispatcher() {
-  CHECK(!dispatcher_);
-  dispatcher_ = std::make_unique<Dispatcher>(std::move(api_providers_));
 }
 
 }  // namespace extensions

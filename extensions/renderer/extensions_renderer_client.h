@@ -51,10 +51,6 @@ class ExtensionsRendererClient {
   ExtensionsRendererClient();
   virtual ~ExtensionsRendererClient();
 
-  // Notifies that the main render thread has started. Used to finalize any
-  // setup. Mirrors the ContentRendererClient method of the same name.
-  virtual void RenderThreadStarted() = 0;
-
   // Returns true if the current render process was launched incognito.
   virtual bool IsIncognitoProcess() const = 0;
 
@@ -75,6 +71,7 @@ class ExtensionsRendererClient {
 
   // The following methods mirror the ContentRendererClient methods of the same
   // names.
+  void RenderThreadStarted();
   void WebViewCreated(blink::WebView* web_view,
                       const url::Origin* outermost_origin);
   void RenderFrameCreated(content::RenderFrame* render_frame,
@@ -102,10 +99,11 @@ class ExtensionsRendererClient {
 
   void SetDispatcherForTesting(std::unique_ptr<Dispatcher> dispatcher);
 
- protected:
-  void CreateDispatcher();
-
  private:
+  // Called to allow embedders to finish any initialization as part of
+  // RenderThreadStarted().
+  virtual void FinishInitialization() {}
+
   std::vector<std::unique_ptr<const ExtensionsRendererAPIProvider>>
       api_providers_;
 

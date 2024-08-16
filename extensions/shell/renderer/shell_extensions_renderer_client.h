@@ -18,7 +18,6 @@ class ShellExtensionsRendererClient : public ExtensionsRendererClient {
   ~ShellExtensionsRendererClient() override;
 
   // ExtensionsRendererClient implementation.
-  void RenderThreadStarted() override;
   bool IsIncognitoProcess() const override;
   int GetLowestIsolatedWorldId() const override;
 };

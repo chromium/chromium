@@ -51,7 +51,6 @@ class ChromeExtensionsRendererClient
   static ChromeExtensionsRendererClient* GetInstance();
 
   // extensions::ExtensionsRendererClient implementation.
-  void RenderThreadStarted() override;
   bool IsIncognitoProcess() const override;
   int GetLowestIsolatedWorldId() const override;
   void OnExtensionLoaded(const extensions::Extension& extension) override;
@@ -76,6 +75,9 @@ class ChromeExtensionsRendererClient
       const content::WebPluginInfo& plugin_info);
 
  private:
+  // extensions::ExtensionsRendererClient implementation.
+  void FinishInitialization() override;
+
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
   std::unique_ptr<extensions::RendererPermissionsPolicyDelegate>
       permissions_policy_delegate_;

@@ -74,22 +74,12 @@ void ChromeExtensionsRendererClient::OnExtensionUnloaded(
   resource_request_policy_->OnExtensionUnloaded(extension_id);
 }
 
-void ChromeExtensionsRendererClient::RenderThreadStarted() {
-  content::RenderThread* thread = content::RenderThread::Get();
-  // ChromeRenderViewTest::SetUp() creates its own ExtensionDispatcher and
-  // injects it using SetExtensionDispatcher(). Don't overwrite it.
-  if (!dispatcher()) {
-    CreateDispatcher();
-  }
-  dispatcher()->OnRenderThreadStarted(thread);
+void ChromeExtensionsRendererClient::FinishInitialization() {
   permissions_policy_delegate_ =
       std::make_unique<extensions::RendererPermissionsPolicyDelegate>(
-
           dispatcher());
   resource_request_policy_ =
       std::make_unique<extensions::ResourceRequestPolicy>(dispatcher());
-
-  thread->AddObserver(dispatcher());
 }
 
 void ChromeExtensionsRendererClient::WillSendRequest(
