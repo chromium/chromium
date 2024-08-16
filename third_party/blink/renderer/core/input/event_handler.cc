@@ -1617,7 +1617,9 @@ bool EventHandler::HasPointerCapture(PointerId pointer_id,
 }
 
 void EventHandler::ElementRemoved(Element* target) {
-  pointer_event_manager_->ElementRemoved(target);
+  if (!target->GetDocument().StatePreservingAtomicMoveInProgress()) {
+    pointer_event_manager_->ElementRemoved(target);
+  }
   if (target)
     mouse_wheel_event_manager_->ElementRemoved(target);
 }
