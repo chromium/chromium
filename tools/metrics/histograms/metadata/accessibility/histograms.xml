@@ -2783,21 +2783,6 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.{Feature}.Idle.Connected"
-    enum="BooleanConnected" expires_after="2025-02-28">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records whether the {Feature} has been connected to a client or not while
-    being idle (initialized but not used for more than 10min). This metric is
-    collected only once during the life time of ScreenAI service.
-  </summary>
-  <token key="Feature">
-    <variant name="MainContentExtraction" summary="Main Content Extraction"/>
-    <variant name="OCR" summary="Optical Character Recognition"/>
-  </token>
-</histogram>
-
 <histogram name="Accessibility.ScreenAI.{feature}.InitializationLatency"
     units="ms" expires_after="2025-02-28">
   <owner>rhalavati@chromium.org</owner>

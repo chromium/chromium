@@ -44,7 +44,7 @@ namespace screen_ai {
 namespace {
 
 // How often it would be checked that the service is idle and can be shutdown.
-constexpr base::TimeDelta kIdleCheckingDelay = base::Minutes(10);
+constexpr base::TimeDelta kIdleCheckingDelay = base::Minutes(5);
 
 // How long after all clients are disconnected, it is checked if service is
 // idle.
@@ -509,34 +509,17 @@ void ScreenAIService::CheckIdleStateAfterDelay() {
 }
 
 void ScreenAIService::ShutDownIfNoClients() {
-  bool ocr_has_clients = screen_ai_annotators_.size();
-  bool main_content_extraction_has_clients =
-      screen2x_main_content_extractors_.size();
-  if (!ocr_has_clients && !main_content_extraction_has_clients) {
-    VLOG(2) << "Shutting down since no client.";
-    base::Process::TerminateCurrentProcessImmediately(0);
-  }
-
-  // Collect data on whether each functionality of the service is idle.
-  // This will be used to plan further to shut down the service when idle, or
-  // track features which keep the service in idle state.
-  // TODO(b/353718857): Shut down when both features are idle, after ensuring
-  // all clients support reconnecting.
   const base::TimeTicks kIdlenessThreshold =
       base::TimeTicks::Now() - kIdleCheckingDelay;
-  if (!ocr_idle_reported_ && !ocr_last_used_.is_null() &&
-      ocr_last_used_ < kIdlenessThreshold) {
-    ocr_idle_reported_ = true;
-    base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Idle.Connected",
-                              ocr_has_clients);
-  }
-  if (!main_content_extraction_idle_reported_ &&
-      !main_content_extraction_last_used_.is_null() &&
-      main_content_extraction_last_used_ < kIdlenessThreshold) {
-    main_content_extraction_idle_reported_ = true;
-    base::UmaHistogramBoolean(
-        "Accessibility.ScreenAI.MainContentExtraction.Idle.Connected",
-        main_content_extraction_has_clients);
+  bool ocr_not_needed =
+      !screen_ai_annotators_.size() || ocr_last_used_ < kIdlenessThreshold;
+  bool main_content_extractioncan_not_needed =
+      !screen2x_main_content_extractors_.size() ||
+      main_content_extraction_last_used_ < kIdlenessThreshold;
+
+  if (ocr_not_needed && main_content_extractioncan_not_needed) {
+    VLOG(2) << "Shutting down since no client or idle.";
+    base::Process::TerminateCurrentProcessImmediately(0);
   }
 }
 

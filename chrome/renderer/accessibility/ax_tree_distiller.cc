@@ -26,11 +26,6 @@
 
 namespace {
 
-// Time after which an idle connection to Screen AI service is disconnected.
-// TODO(b/353718857): Remove this when ScreenAI service is set to auto shut down
-// on idle.
-constexpr base::TimeDelta kScreenAIIdleDisconnectDelay = base::Minutes(5);
-
 // TODO: Consider moving this to AXNodeProperties.
 static const ax::mojom::Role kContentRoles[]{
     ax::mojom::Role::kHeading, ax::mojom::Role::kParagraph,
@@ -239,7 +234,6 @@ void AXTreeDistiller::DistillViaScreen2x(
     render_frame()->GetBrowserInterfaceBroker().GetInterface(
         main_content_extractor_.BindNewPipeAndPassReceiver());
     main_content_extractor_.reset_on_disconnect();
-    main_content_extractor_.reset_on_idle_timeout(kScreenAIIdleDisconnectDelay);
     main_content_extractor_.set_disconnect_handler(
         base::BindOnce(&AXTreeDistiller::OnMainContentExtractorDisconnected,
                        weak_ptr_factory_.GetWeakPtr()));

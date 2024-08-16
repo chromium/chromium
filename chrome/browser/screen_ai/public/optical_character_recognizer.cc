@@ -12,12 +12,6 @@
 
 namespace {
 
-// The delay after which the idle connection to OCR service will be
-// disconnected.
-// TODO(b/353718857): Remove this when ScreenAI service is set to auto shut down
-// on idle.
-constexpr base::TimeDelta kIdleDisconnectDelay = base::Minutes(5);
-
 class SequenceBoundReceiver {
  public:
   SequenceBoundReceiver() = default;
@@ -127,7 +121,6 @@ void OpticalCharacterRecognizer::MaybeConnectToOcrService() {
       ->BindScreenAIAnnotator(
           screen_ai_annotator_->BindNewPipeAndPassReceiver());
   screen_ai_annotator_->reset_on_disconnect();
-  screen_ai_annotator_->reset_on_idle_timeout(kIdleDisconnectDelay);
   (*screen_ai_annotator_)->SetClientType(client_type_);
 }
 

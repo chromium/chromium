@@ -17,11 +17,6 @@ using blink::WebDocument;
 
 namespace {
 
-// Time after which an idle connection to Screen AI service is disconnected.
-// TODO(b/353718857): Remove this when ScreenAI service is set to auto shut down
-// on idle.
-constexpr base::TimeDelta kScreenAIIdleDisconnectDelay = base::Minutes(5);
-
 const char kHistogramsName[] =
     "Accessibility.MainNodeAnnotations.AnnotationResult";
 
@@ -122,7 +117,6 @@ void AXMainNodeAnnotator::Annotate(const WebDocument& document,
         .GetInterface(annotator.InitWithNewPipeAndPassReceiver());
     annotator_remote_.Bind(std::move(annotator));
     annotator_remote_.reset_on_disconnect();
-    annotator_remote_.reset_on_idle_timeout(kScreenAIIdleDisconnectDelay);
   }
 
   // Identify the main node using Screen2x.
