@@ -1,0 +1,41 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+import("//build/config/ui.gni")
+
+source_set("toasts") {
+  sources = [
+    "toast_specification.cc",
+    "toast_specification.h",
+  ]
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "toast_registry_unittest.cc" ]
+  deps = [
+    ":toasts",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//testing/gtest",
+    "//ui/gfx",
+  ]
+}

@@ -2021,6 +2021,7 @@ static_library("ui") {
       "//chrome/browser/ui/color:mixers",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/tabs",
+      "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/views/side_panel:side_panel_enums",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
