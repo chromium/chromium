@@ -2677,7 +2677,6 @@ interface Element : Node
     method setAttributeNS
     method setAttributeNode
     method setAttributeNodeNS
-    method setHTML
     method setHTMLUnsafe
     method setPointerCapture
     method toggleAttribute
@@ -9381,13 +9380,6 @@ interface SVGViewElement : SVGElement
     getter zoomAndPan
     method constructor
     setter zoomAndPan
-interface Sanitizer
-    static method getDefaultConfiguration
-    attribute @@toStringTag
-    method constructor
-    method getConfiguration
-    method sanitize
-    method sanitizeFor
 interface Scheduler
     attribute @@toStringTag
     method constructor

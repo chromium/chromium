@@ -30,7 +30,6 @@ blink_perf.layout,"ikilpatrick@chromium.org, kojii@chromium.org",Blink>Layout,ht
 blink_perf.owp_storage,ayui@chromium.org,Blink>Storage,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.paint,"pdr@chromium.org, wangxianzhu@chromium.org",Blink>Paint,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.parser,masonf@chromium.org,Blink>HTML>Parser,https://bit.ly/blink-perf-benchmarks,all
-blink_perf.sanitizer-api,lyf@chromium.org,Blink>Security>SanitizerAPI,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.shadow_dom,masonf@chromium.org,Blink>DOM>ShadowDOM,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.svg,"fs@opera.com, pdr@chromium.org",Blink>SVG,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.webaudio,"hongchan@chromium.org, mjwilson@chromium.org",Blink>WebAudio,https://bit.ly/blink-perf-benchmarks,all

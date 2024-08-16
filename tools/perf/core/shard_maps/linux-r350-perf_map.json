@@ -124,9 +124,6 @@
                 "begin": 14,
                 "abridged": false
             },
-            "blink_perf.sanitizer-api": {
-                "abridged": false
-            },
             "blink_perf.shadow_dom": {
                 "end": 24,
                 "abridged": false

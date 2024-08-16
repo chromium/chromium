@@ -330,7 +330,6 @@ third_party/blink/perf_tests/MotionMark/tests/simple 1 1
 third_party/blink/perf_tests/MotionMark/tests/svg 2 1
 third_party/blink/perf_tests/MotionMark/tests/text 2 2
 third_party/blink/perf_tests/parser/resources 84 2
-third_party/blink/perf_tests/sanitizer-api/resources 77 1
 third_party/blink/perf_tests/shadow_dom 1 1
 third_party/blink/perf_tests/speedometer20 1 1
 third_party/blink/perf_tests/speedometer20/resources/flightjs-example-app 1 1

@@ -1460,10 +1460,6 @@
         "name": "blink_perf.parser/xml-parser.html"
     },
     {
-        "duration": "6.0",
-        "name": "blink_perf.sanitizer-api/sanitizer.html"
-    },
-    {
         "duration": "5.0",
         "name": "blink_perf.shadow_dom/declarative-api.html"
     },

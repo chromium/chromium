@@ -49,13 +49,6 @@
   {
     "repeat": 1,
     "stories": [
-      "sanitizer.html"
-    ],
-    "name": "blink_perf.sanitizer-api"
-  },
-  {
-    "repeat": 1,
-    "stories": [
       "AttributeDescendantSelector.html",
       "CSSPropertySetterGetter.html",
       "CSSPropertySetterGetterMethods.html",

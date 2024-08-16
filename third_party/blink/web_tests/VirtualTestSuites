@@ -3571,5 +3571,14 @@
     "args": ["--disable-blink-features=CSSRelativeColorSupportsCurrentcolor"],
     "owners": ["kbabbitt@microsoft.com"],
     "expires": "Jan 1, 2025"
+  },
+  {
+    "prefix": "sanitizer-api",
+    "platforms": ["Linux"],
+    "bases": [ "external/wpt/sanitizer-api/" ],
+    "args": [ "--enable-features=SanitizerAPI" ],
+    "expires": "Jul 18, 2025",
+    "owners": ["vogelheim@google.com"],
+    "exclusive_tests": "ALL"
   }
 ]

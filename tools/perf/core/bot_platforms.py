@@ -270,7 +270,6 @@ def _GetBenchmarkConfig(benchmark_name, abridged=False, pageset_repeat=None):
 OFFICIAL_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig(b.Name()) for b in OFFICIAL_BENCHMARKS])
 OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
-    'blink_perf.sanitizer-api',
     'blink_perf.svg',
     'blink_perf.paint',
     'jetstream2-minorms',
@@ -468,7 +467,6 @@ _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
     'v8.runtime_stats.top_25',
 ]).Add([
-    'blink_perf.sanitizer-api',
     'blink_perf.svg',
     'blink_perf.paint',
 ])

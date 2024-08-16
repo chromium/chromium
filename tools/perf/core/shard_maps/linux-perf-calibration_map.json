@@ -235,9 +235,6 @@
                 "begin": 10,
                 "abridged": false
             },
-            "blink_perf.sanitizer-api": {
-                "abridged": false
-            },
             "blink_perf.svg": {
                 "end": 19,
                 "abridged": false

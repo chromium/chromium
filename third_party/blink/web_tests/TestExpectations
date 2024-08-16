@@ -7981,6 +7981,11 @@ crbug.com/356566702 [ Win11-arm64 ] external/wpt/css/css-color/parsing/color-val
 # Gardener 2024-08-02
 crbug.com/356963272 [ Linux ] external/wpt/webrtc/RTCDataChannel-send-close.html [ Failure Pass Timeout ]
 
+# Feature removal: Sanitizer API will be removed for now. We expect to
+# re-implement it, based on the now updated spec, soon enough, at which point
+# we can remove this expectation.
+crbug.com/40900417 virtual/sanitizer-api/* [ Skip Failure Pass ]
+
 # Gardener 2024-08-05
 crbug.com/357571602 http/tests/devtools/components/datagrid.js [ Failure Pass ]
 crbug.com/357571602 http/tests/devtools/elements/styles-2/parse-comments.js [ Failure Pass ]

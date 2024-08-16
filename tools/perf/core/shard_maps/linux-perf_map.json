@@ -358,9 +358,6 @@
             "blink_perf.parser": {
                 "abridged": false
             },
-            "blink_perf.sanitizer-api": {
-                "abridged": false
-            },
             "blink_perf.shadow_dom": {
                 "end": 7,
                 "abridged": false
