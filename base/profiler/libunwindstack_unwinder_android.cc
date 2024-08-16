@@ -87,17 +87,6 @@ void WriteLibunwindstackTraceEventArgs(unwindstack::ErrorCode error_code,
   }
 }
 
-bool IsJavaModule(const base::ModuleCache::Module* module) {
-  if (!module) {
-    return false;
-  }
-
-  const std::string& debug_basename = module->GetDebugBasename().value();
-
-  return debug_basename.find("chrome.apk") != std::string::npos ||
-         debug_basename.find("base.apk") != std::string::npos;
-}
-
 }  // namespace
 
 LibunwindstackUnwinderAndroid::LibunwindstackUnwinderAndroid()
@@ -223,8 +212,7 @@ UnwindResult LibunwindstackUnwinderAndroid::TryUnwind(
                             });
       }
     }
-    std::string function_name = IsJavaModule(module) ? frame.function_name : "";
-    stack->emplace_back(frame.pc, module, std::move(function_name));
+    stack->emplace_back(frame.pc, module, frame.function_name);
   }
   return UnwindResult::kCompleted;
 }
