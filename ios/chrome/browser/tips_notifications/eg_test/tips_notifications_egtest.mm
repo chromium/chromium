@@ -96,7 +96,7 @@ void MaybeDismissNotification() {
 
   // Enable Tips Notifications with trigger time params.
   std::string enableFeatures = base::StringPrintf(
-      "--enable-features=%s:%s/%s,%s/%s,%s/%s", kIOSTipsNotifications.name,
+      "--enable-features=%s:%s/%s/%s/%s/%s/%s", kIOSTipsNotifications.name,
       kIOSTipsNotificationsUnknownTriggerTimeParam, triggerTime.c_str(),
       kIOSTipsNotificationsLessEngagedTriggerTimeParam, triggerTime.c_str(),
       kIOSTipsNotificationsActiveSeekerTriggerTimeParam, triggerTime.c_str());
