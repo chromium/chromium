@@ -97,6 +97,7 @@ static_library("personalization_app") {
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/wallpaper",
     "//chrome/browser/feedback",
+    "//chrome/browser/ui/ash/thumbnail_loader",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum_shared",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum_shared_cpp_sources",

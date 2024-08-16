@@ -94,8 +94,6 @@ static_library("ash") {
     "tab_cluster_ui_client.h",
     "test_ime_controller.cc",
     "test_ime_controller.h",
-    "thumbnail_loader.cc",
-    "thumbnail_loader.h",
     "vpn_list_forwarder.cc",
     "vpn_list_forwarder.h",
     "wallpaper_controller_client_impl.cc",
@@ -462,7 +460,6 @@ source_set("browser_tests") {
     "snap_group_browsertest.cc",
     "system_tray_client_impl_browsertest.cc",
     "system_tray_tray_cast_browsertest_media_router_chromeos.cc",
-    "thumbnail_loader_browsertest.cc",
     "volume_controller_browsertest.cc",
   ]
 
@@ -539,6 +536,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/ash/sharesheet:browser_tests",
     "//chrome/browser/ui/ash/shelf:browser_tests",
     "//chrome/browser/ui/ash/shelf/app_service:browser_tests",
+    "//chrome/browser/ui/ash/thumbnail_loader:browser_tests",
     "//chrome/browser/ui/ash/user_education:browser_tests",
     "//chrome/browser/ui/ash/user_education/views:browser_tests",
   ]

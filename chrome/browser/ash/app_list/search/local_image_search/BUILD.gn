@@ -44,6 +44,7 @@ static_library("local_image_search") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/screen_ai/public:optical_character_recognizer",
+    "//chrome/browser/ui/ash/thumbnail_loader",
     "//chromeos/ash/components/string_matching",
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/machine_learning/public/mojom",

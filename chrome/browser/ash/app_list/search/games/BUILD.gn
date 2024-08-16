@@ -27,7 +27,7 @@ static_library("games") {
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources:app_icon_resources",
-    "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash/thumbnail_loader",
     "//chromeos/ash/components/string_matching",
     "//components/prefs",
     "//ui/base",
