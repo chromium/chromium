@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ai/ai_manager_keyed_service.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
+#include "chrome/browser/ai/ai_utils.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
