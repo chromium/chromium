@@ -6575,6 +6575,21 @@
             ]
         }
     ],
+    "CrOSLateBootSetRtForDisplayThreads": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootSetRtForDisplayThreads"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootSlowAdaptiveCharging": [
         {
             "platforms": [
