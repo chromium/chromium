@@ -297,20 +297,23 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 #pragma mark - PasswordSuggestionBottomSheetDelegate
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
                  completion:(ProceduralBlock)completion {
   [self logReauthEvent:kAttempt];
   [self markSharedPasswordNotificationsDisplayed];
 
   if (!suggestion.requiresReauth) {
     [self logReauthEvent:kSuccess];
-    [self selectSuggestion:suggestion];
+    [self selectSuggestion:suggestion atIndex:index];
     completion();
     return;
   }
   if ([_reauthenticationModule canAttemptReauth]) {
     __weak __typeof(self) weakSelf = self;
     auto completionHandler = ^(ReauthenticationResult result) {
-      [weakSelf selectSuggestion:suggestion reauthenticationResult:result];
+      [weakSelf selectSuggestion:suggestion
+                         atIndex:index
+          reauthenticationResult:result];
       completion();
     };
 
@@ -321,7 +324,7 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
                                  handler:completionHandler];
   } else {
     [self logReauthEvent:kMissingPasscode];
-    [self selectSuggestion:suggestion];
+    [self selectSuggestion:suggestion atIndex:index];
     completion();
   }
 }
@@ -413,10 +416,10 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 }
 
 // Perform suggestion selection
-- (void)selectSuggestion:(FormSuggestion*)suggestion {
+- (void)selectSuggestion:(FormSuggestion*)suggestion atIndex:(NSInteger)index {
   default_browser::NotifyPasswordAutofillSuggestionUsed(_engagementTracker);
   if (self.suggestionsProvider.type == SuggestionProviderTypePassword) {
-    [self.suggestionsProvider didSelectSuggestion:suggestion];
+    [self.suggestionsProvider didSelectSuggestion:suggestion atIndex:index];
   } else {
     [self logExitReason:kBadProvider];
   }
@@ -425,10 +428,11 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 
 // Perform suggestion selection based on the reauthentication result.
 - (void)selectSuggestion:(FormSuggestion*)suggestion
+                   atIndex:(NSInteger)index
     reauthenticationResult:(ReauthenticationResult)result {
   if (result != ReauthenticationResult::kFailure) {
     [self logReauthEvent:kSuccess];
-    [self selectSuggestion:suggestion];
+    [self selectSuggestion:suggestion atIndex:index];
   } else {
     [self logReauthEvent:kFailure];
     [self disconnect];

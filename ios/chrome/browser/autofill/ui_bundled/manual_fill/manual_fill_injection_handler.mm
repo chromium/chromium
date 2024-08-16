@@ -199,8 +199,9 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   }
 }
 
-- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion {
-  [self.formSuggestionClient didSelectSuggestion:formSuggestion];
+- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion
+                           atIndex:(NSInteger)index {
+  [self.formSuggestionClient didSelectSuggestion:formSuggestion atIndex:index];
 }
 
 - (BOOL)isActiveFormAPasswordForm {

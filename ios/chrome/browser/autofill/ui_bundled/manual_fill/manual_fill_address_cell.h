@@ -18,12 +18,15 @@
 @interface ManualFillAddressItem : TableViewItem
 
 // Inits an address with an `address`, a `contentInjector` and `menuActions` for
-// user selection. `cellIndexAccessibilityLabel` is the cell's accessibility
-// label and is used to indicate the index at which the address represented by
-// this item is positioned in the list of addresses to show.
+// user selection. `cellIndex` indicates the index (0-based) at which the
+// address represented by this item is positioned in the list of addresses to
+// show. `cellIndexAccessibilityLabel` is the cell's accessibility label and is
+// used to indicate the cell's index (1-based) and the number of available
+// addresses to accessibility users.
 - (instancetype)initWithAddress:(ManualFillAddress*)address
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
+                      cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton
     NS_DESIGNATED_INITIALIZER;
@@ -37,13 +40,15 @@
 @interface ManualFillAddressCell : TableViewCell
 
 // Updates the cell with an `address`, a `contentInjector` to be notified and
-// `menuActions` to set up an overflow menu. `cellIndexAccessibilityLabel` is
-// this cell's accessibility label and is used to indicate the index at which
-// the address represented by this cell is positioned in the list of addresses
-// to show.
+// `menuActions` to set up an overflow menu. `cellIndex` indicates the index
+// (0-based) at which the address represented by this cell is positioned in the
+// list of addresses to show. `cellIndexAccessibilityLabel` is the cell's
+// accessibility label and is used to indicate the cell's index (1-based) and
+// the number of available addresses to accessibility users.
 - (void)setUpWithAddress:(ManualFillAddress*)address
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
+                      cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton;
 

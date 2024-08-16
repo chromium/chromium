@@ -207,7 +207,8 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
 
 #pragma mark - PaymentsSuggestionBottomSheetDelegate
 
-- (void)didSelectCreditCard:(CreditCardData*)creditCardData {
+- (void)didSelectCreditCard:(CreditCardData*)creditCardData
+                    atIndex:(NSInteger)index {
   if (!_webStateList) {
     return;
   }
@@ -258,7 +259,7 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
           base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
 
-  [provider didSelectSuggestion:suggestion params:_params];
+  [provider didSelectSuggestion:suggestion atIndex:index params:_params];
 }
 
 - (void)disableBottomSheetAndRefocus:(BOOL)refocus {

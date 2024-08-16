@@ -224,7 +224,8 @@ CGFloat const kTitleLogoHeight = 32;
   self.disableBottomSheetOnExit = NO;
 
   NSInteger index = [self selectedRow];
-  [self.handler primaryButtonTapped:_creditCardData[index]];
+  [self.handler primaryButtonTappedForCard:_creditCardData[index]
+                                   atIndex:index];
 
   if ([self rowCount] > 1) {
     base::UmaHistogramCounts100("Autofill.TouchToFill.CreditCard.SelectedIndex",

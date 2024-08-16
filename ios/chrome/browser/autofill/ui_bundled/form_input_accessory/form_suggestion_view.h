@@ -14,9 +14,11 @@
 
 @protocol FormSuggestionViewDelegate <NSObject>
 
-// User accepted a suggestion from FormSuggestionView.
+// User accepted a suggestion from FormSuggestionView. `index` indicates the
+// position of the selected suggestion among the available suggestions.
 - (void)formSuggestionView:(FormSuggestionView*)formSuggestionView
-       didAcceptSuggestion:(FormSuggestion*)suggestion;
+       didAcceptSuggestion:(FormSuggestion*)suggestion
+                   atIndex:(NSInteger)index;
 
 // The view received a long pull in the content direction. The delegate should
 // probably unlock the trailing view and reset to a clean state.

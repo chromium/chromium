@@ -144,7 +144,8 @@ constexpr CGFloat kScrollHintDuration = 0.5;
   DCHECK(index != NSNotFound);
   FormSuggestion* suggestion = [self.suggestions objectAtIndex:index];
   [self.formSuggestionViewDelegate formSuggestionView:self
-                                  didAcceptSuggestion:suggestion];
+                                  didAcceptSuggestion:suggestion
+                                              atIndex:index];
 }
 
 #pragma mark - Helper methods

@@ -567,8 +567,9 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type) {
 #pragma mark - FormSuggestionViewDelegate
 
 - (void)formSuggestionView:(FormSuggestionView*)formSuggestionView
-       didAcceptSuggestion:(FormSuggestion*)suggestion {
-  [self.formSuggestionClient didSelectSuggestion:suggestion];
+       didAcceptSuggestion:(FormSuggestion*)suggestion
+                   atIndex:(NSInteger)index {
+  [self.formSuggestionClient didSelectSuggestion:suggestion atIndex:index];
 }
 
 - (void)formSuggestionViewShouldResetFromPull:

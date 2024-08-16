@@ -172,7 +172,8 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
                          }];
 }
 
-- (void)primaryButtonTapped:(FormSuggestion*)formSuggestion {
+- (void)primaryButtonTappedForSuggestion:(FormSuggestion*)formSuggestion
+                                 atIndex:(NSInteger)index {
   _dismissing = YES;
   [self.mediator logExitReason:kUsePasswordSuggestion];
   __weak __typeof(self) weakSelf = self;
@@ -183,6 +184,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
       dismissViewControllerAnimated:NO
                          completion:^{
                            [weakSelf.mediator didSelectSuggestion:formSuggestion
+                                                          atIndex:index
                                                        completion:completion];
                          }];
 }

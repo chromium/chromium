@@ -308,6 +308,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 }
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
                        form:(NSString*)formName
              formRendererID:(FormRendererId)formRendererID
             fieldIdentifier:(NSString*)fieldIdentifier
@@ -350,8 +351,6 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
        suggestion.type == autofill::SuggestionType::kVirtualCreditCardEntry)) {
     _pendingAutocompleteFieldID = fieldRendererID;
     if (_suggestionDelegate) {
-      // TODO(crbug.com/41460687): Replace 0 with the index of the selected
-      // suggestion.
       autofill::Suggestion autofill_suggestion;
       autofill_suggestion.main_text.value =
           SysNSStringToUTF16(suggestion.value);
@@ -364,7 +363,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                 SysNSStringToUTF8(suggestion.backendIdentifier)));
       }
 
-      _suggestionDelegate->DidAcceptSuggestion(autofill_suggestion, {0, 0});
+      _suggestionDelegate->DidAcceptSuggestion(autofill_suggestion,
+                                               {static_cast<int>(index), 0});
     }
     return;
   }

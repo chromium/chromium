@@ -140,14 +140,16 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
   }
 }
 
-- (void)primaryButtonTapped:(CreditCardData*)creditCardData {
+- (void)primaryButtonTappedForCard:(CreditCardData*)creditCardData
+                           atIndex:(NSInteger)index {
   _dismissing = YES;
   [self.mediator logExitReason:kUsePaymentsSuggestion];
   __weak __typeof(self) weakSelf = self;
   [self.viewController
       dismissViewControllerAnimated:NO
                          completion:^{
-                           [weakSelf didSelectCreditCard:creditCardData];
+                           [weakSelf didSelectCreditCard:creditCardData
+                                                 atIndex:index];
                            [weakSelf.browserCoordinatorCommandsHandler
                                    dismissPaymentSuggestions];
                          }];
@@ -170,9 +172,10 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
 
 #pragma mark - Private
 
-- (void)didSelectCreditCard:(CreditCardData*)creditCardData {
+- (void)didSelectCreditCard:(CreditCardData*)creditCardData
+                    atIndex:(NSInteger)index {
   // Send a notification to fill the credit card related fields.
-  [self.mediator didSelectCreditCard:creditCardData];
+  [self.mediator didSelectCreditCard:creditCardData atIndex:index];
   [self.mediator disconnect];
 }
 

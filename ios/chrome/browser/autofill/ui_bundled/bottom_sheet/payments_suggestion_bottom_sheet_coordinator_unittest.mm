@@ -114,9 +114,10 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButton) {
 
   [coordinator_ start];
 
-  [coordinator_ primaryButtonTapped:[[CreditCardData alloc]
-                                        initWithCreditCard:credit_card_
-                                                      icon:nil]];
+  [coordinator_ primaryButtonTappedForCard:[[CreditCardData alloc]
+                                               initWithCreditCard:credit_card_
+                                                             icon:nil]
+                                   atIndex:0];
   [coordinator_ stop];
   task_environment_.RunUntilIdle();
 
@@ -135,9 +136,10 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButtonVirtualCard) {
 
   [coordinator_ start];
 
-  [coordinator_ primaryButtonTapped:[[CreditCardData alloc]
-                                        initWithCreditCard:virtual_card_
-                                                      icon:nil]];
+  [coordinator_ primaryButtonTappedForCard:[[CreditCardData alloc]
+                                               initWithCreditCard:virtual_card_
+                                                             icon:nil]
+                                   atIndex:0];
   [coordinator_ stop];
   task_environment_.RunUntilIdle();
 

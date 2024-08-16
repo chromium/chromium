@@ -36,6 +36,9 @@
 @end
 
 @implementation ManualFillAddressItem {
+  // The 0-based index at which the address is in the list of addresses to show.
+  NSInteger _cellIndex;
+
   // If `YES`, autofill button is shown for the item.
   BOOL _showAutofillFormButton;
 }
@@ -43,6 +46,7 @@
 - (instancetype)initWithAddress:(ManualFillAddress*)address
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
+                      cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton {
   self = [super initWithType:kItemTypeEnumZero];
@@ -50,6 +54,7 @@
     _contentInjector = contentInjector;
     _address = address;
     _menuActions = menuActions;
+    _cellIndex = cellIndex;
     _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
     _showAutofillFormButton = showAutofillFormButton;
     self.cellClass = [ManualFillAddressCell class];
@@ -63,10 +68,10 @@
   [cell setUpWithAddress:self.address
                   contentInjector:self.contentInjector
                       menuActions:self.menuActions
+                        cellIndex:_cellIndex
       cellIndexAccessibilityLabel:self.cellIndexAccessibilityLabel
            showAutofillFormButton:_showAutofillFormButton];
 }
-
 @end
 
 @interface ManualFillAddressCell ()
@@ -142,6 +147,9 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 }  // namespace
 
 @implementation ManualFillAddressCell {
+  // The 0-based index at which the address is in the list of addresses to show.
+  NSInteger _cellIndex;
+
   // If `YES`, autofill button is shown for the cell.
   BOOL _showAutofillFormButton;
 
@@ -183,8 +191,10 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 - (void)setUpWithAddress:(ManualFillAddress*)address
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
+                      cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton {
+  _cellIndex = cellIndex;
   _showAutofillFormButton = showAutofillFormButton;
   if (self.contentView.subviews.count == 0) {
     [self createViewHierarchy];
@@ -733,7 +743,8 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
           base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
 
-  [self.contentInjector autofillFormWithSuggestion:suggestion];
+  [self.contentInjector autofillFormWithSuggestion:suggestion
+                                           atIndex:_cellIndex];
 }
 
 // Sets the title and accessbility label of the given `chipButton` using the

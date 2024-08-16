@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -303,12 +304,22 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface clearCreditCardStore];
   [AutofillAppInterface clearAllServerDataForTesting];
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
+
+  // Set up histogram tester.
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
 - (void)tearDown {
   [AutofillAppInterface clearCreditCardStore];
   [AutofillAppInterface clearAllServerDataForTesting];
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+
+  // Clean up histogram tester.
+  [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Failed to release histogram tester.");
   [super tearDown];
 }
 
@@ -1192,6 +1203,16 @@ void DismissPaymentBottomSheet() {
 
   // Verify that the page is filled properly.
   [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
+
+  // Verify that the acceptance of the card suggestion at index 1 was
+  // recorded in the right histogram.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:0
+                         forHistogram:
+                             @"Autofill.SuggestionAcceptedIndex.CreditCard"],
+      @"Unexpected histogram error for accepted card suggestion index.");
 
   [AutofillAppInterface clearMockReauthenticationModule];
 }

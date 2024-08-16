@@ -540,9 +540,11 @@ BOOL AreCredentialsAtIndicesConnected(
                                       shouldReauth:shouldReauth];
 }
 
-- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion {
+- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion
+                           atIndex:(NSInteger)index {
   [self.delegate manualFillPasswordMediatorWillInjectContent:self];
-  [self.contentInjector autofillFormWithSuggestion:formSuggestion];
+  [self.contentInjector autofillFormWithSuggestion:formSuggestion
+                                           atIndex:index];
 }
 
 - (BOOL)isActiveFormAPasswordForm {

@@ -638,6 +638,7 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
 
   [passwordController_.sharedPasswordController
       didSelectSuggestion:suggestion
+                  atIndex:0
                      form:SysUTF8ToNSString(test_data.form_name)
            formRendererID:FormRendererId(test_data.form_renderer_id)
           fieldIdentifier:SysUTF8ToNSString(test_data.username_element)

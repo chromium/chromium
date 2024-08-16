@@ -761,6 +761,7 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
                                form_signature, field_signature, max_length));
 
   [controller_ didSelectSuggestion:suggestion
+                           atIndex:0
                               form:@"test-form-name"
                     formRendererID:form_id
                    fieldIdentifier:@"test-field-id"
@@ -836,6 +837,7 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
   EXPECT_CALL(password_manager_, SetGenerationElementAndTypeForForm);
 
   [controller_ didSelectSuggestion:suggestion
+                           atIndex:0
                               form:@"test-form-name"
                     formRendererID:form_id
                    fieldIdentifier:@"test-field-id"
@@ -1570,6 +1572,7 @@ TEST_F(SharedPasswordControllerTest, DeclinePasswordGenerationDialog) {
   EXPECT_CALL(password_manager_, OnPasswordNoLongerGenerated);
 
   [controller_ didSelectSuggestion:suggestion
+                           atIndex:0
                               form:@"test-form-name"
                     formRendererID:form_id
                    fieldIdentifier:@"test-field-id"

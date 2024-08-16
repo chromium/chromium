@@ -165,10 +165,12 @@ bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {
             CreditCard::VirtualCardEnrollmentState::kEnrolled) {
       CreditCard virtualCard = CreditCard::CreateVirtualCard(*card);
       [cardItems addObject:[self createManualFillCardItemForCard:&virtualCard
+                                                       cellIndex:i
                                      cellIndexAccessibilityLabel:
                                          cellIndexAccessibilityLabel]];
     }
     [cardItems addObject:[self createManualFillCardItemForCard:card
+                                                     cellIndex:i
                                    cellIndexAccessibilityLabel:
                                        cellIndexAccessibilityLabel]];
   }
@@ -178,6 +180,7 @@ bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {
 
 // Creates a ManualFillCardItem for the given `card`.
 - (ManualFillCardItem*)createManualFillCardItemForCard:(CreditCard*)card
+                                             cellIndex:(NSInteger)cellIndex
                            cellIndexAccessibilityLabel:
                                (NSString*)cellIndexAccessibilityLabel {
   ManualFillCreditCard* manualFillCreditCard = [[ManualFillCreditCard alloc]
@@ -193,6 +196,7 @@ bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {
                                      contentInjector:self.contentInjector
                                   navigationDelegate:self.navigationDelegate
                                          menuActions:menuActions
+                                           cellIndex:cellIndex
                          cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
                               showAutofillFormButton:_showAutofillFormButton];
 }

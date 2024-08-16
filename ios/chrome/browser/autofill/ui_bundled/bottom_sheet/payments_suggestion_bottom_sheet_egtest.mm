@@ -213,6 +213,54 @@ NSString* ExpirationDateNSString() {
               forHistogram:@"Autofill.TouchToFill.CreditCard.SelectedIndex"],
       @"Unexpected histogram error for touch to fill credit card selected");
 
+  // Verify that the acceptance of the card suggestion at index 0 was recorded
+  // in the right histogram.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:0
+                         forHistogram:
+                             @"Autofill.SuggestionAcceptedIndex.CreditCard"],
+      @"Unexpected histogram error for accepted credit card suggestion index.");
+
+  // Verify that the page is filled properly.
+  [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
+}
+
+// Tests that the expected metric is logged when accepting a suggestion from
+// the bottom sheet that is not the first one in the list.
+- (void)testAcceptedSuggestionIndexLogged {
+  // Add a credit card to the Personal Data Manager.
+  [AutofillAppInterface saveMaskedCreditCard];
+
+  [self loadPaymentsPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
+
+  id<GREYMatcher> continueButton = ContinueButton();
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:continueButton];
+
+  // Make sure the user is seeing 2 cards on the bottom sheet.
+  GREYAssertEqual(2, [AutofillAppInterface localCreditCount],
+                  @"Wrong number of stored credit cards.");
+
+  // Select and use the second credit card.
+  [[EarlGrey selectElementWithMatcher:grey_text(_lastDigits)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
+
+  // Verify that the acceptance of the card suggestion at index 1 was recorded
+  // in the right histogram.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:1
+                         forHistogram:
+                             @"Autofill.SuggestionAcceptedIndex.CreditCard"],
+      @"Unexpected histogram error for accepted credit card suggestion index.");
+
   // Verify that the page is filled properly.
   [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
 }

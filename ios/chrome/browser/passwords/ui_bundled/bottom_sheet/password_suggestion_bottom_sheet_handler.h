@@ -17,7 +17,10 @@
 - (void)displayPasswordDetailsForFormSuggestion:(FormSuggestion*)formSuggestion;
 
 // Handles tapping the primary button. The selected suggestion must be provided.
-- (void)primaryButtonTapped:(FormSuggestion*)formSuggestion;
+// `index` represents the position of the suggestion among the available
+// suggestions.
+- (void)primaryButtonTappedForSuggestion:(FormSuggestion*)formSuggestion
+                                 atIndex:(NSInteger)index;
 
 // Handles tapping the secondary button.
 - (void)secondaryButtonTapped;

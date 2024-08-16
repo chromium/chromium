@@ -60,9 +60,11 @@ CWV_EXPORT
 // |fieldIdentifier| property and executes the appropriate action.
 // If |suggestion| is a form suggestion, the form will be autofilled.
 // Else, the |suggestions|'s action will be taken.
-// No-op if no such form and field can be found in the current page.
+// No-op if no such form and field can be found in the current page. |index|
+// indicates the position of |suggestion| among the available suggestions.
 // |completionHandler| will only be called on success.
 - (void)acceptSuggestion:(CWVAutofillSuggestion*)suggestion
+                 atIndex:(NSInteger)index
        completionHandler:(nullable void (^)(void))completionHandler;
 
 // Changes focus to the previous sibling of the currently focused field.

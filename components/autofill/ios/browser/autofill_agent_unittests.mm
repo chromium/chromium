@@ -1118,6 +1118,7 @@ TEST_F(AutofillAgentTests, DidSelectSuggestion_AutocompleteEntry) {
   FormSuggestion* form_suggestion = SimpleFormSuggestion(
       field1_value, autofill::SuggestionType::kAutocompleteEntry);
   [autofill_agent_ didSelectSuggestion:form_suggestion
+                               atIndex:0
                                   form:@"single-username-form"
                         formRendererID:form_id
                        fieldIdentifier:@"username-field-1"
@@ -1174,6 +1175,7 @@ TEST_F(AutofillAgentTests, DidSelectSuggestion_ClearFormEntry) {
   FormSuggestion* form_suggestion =
       SimpleFormSuggestion(u"", autofill::SuggestionType::kUndoOrClear);
   [autofill_agent_ didSelectSuggestion:form_suggestion
+                               atIndex:0
                                   form:@"single-username-form"
                         formRendererID:form_id
                        fieldIdentifier:@"username-field-1"

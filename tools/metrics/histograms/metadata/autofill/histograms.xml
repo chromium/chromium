@@ -5784,8 +5784,7 @@ chromium-metrics-reviews@google.com.
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    The index of the accepted Autofill suggestion in the popup. Due to
-    crbug.com/966411, the iOS data is incorrect. {SuggestionType}
+    The index of the accepted Autofill suggestion in the popup. {SuggestionType}
   </summary>
   <token key="SuggestionType">
     <variant name=""/>

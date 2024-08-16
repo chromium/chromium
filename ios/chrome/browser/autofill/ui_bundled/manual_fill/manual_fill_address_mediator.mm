@@ -136,6 +136,7 @@ NSString* const ManageAddressAccessibilityIdentifier =
                     initWithAddress:manualFillAddress
                     contentInjector:self.contentInjector
                         menuActions:menuActions
+                          cellIndex:static_cast<NSInteger>(i)
         cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
              showAutofillFormButton:_showAutofillFormButton];
     [items addObject:item];

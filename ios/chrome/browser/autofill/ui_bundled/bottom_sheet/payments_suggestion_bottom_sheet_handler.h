@@ -18,8 +18,10 @@
     (NSString*)creditCardIdentifier;
 
 // Handles tapping the primary button. The selected credit card's backend
-// identifier must be provided.
-- (void)primaryButtonTapped:(CreditCardData*)creditCardData;
+// identifier must be provided. `index` represents the position of the card
+// among the available card suggestions.
+- (void)primaryButtonTappedForCard:(CreditCardData*)creditCardData
+                           atIndex:(NSInteger)index;
 
 // Handles tapping the secondary button.
 - (void)secondaryButtonTapped;

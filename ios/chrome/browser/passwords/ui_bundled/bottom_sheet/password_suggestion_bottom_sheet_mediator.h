@@ -82,6 +82,7 @@ class GURL;
 // Sends the information about which suggestion from the bottom sheet was
 // selected by the user, which is expected to fill the relevant fields.
 - (void)didSelectSuggestion:(FormSuggestion*)formSuggestion
+                    atIndex:(NSInteger)index
                  completion:(ProceduralBlock)completion;
 
 // Notify that the bottom sheet is getting dismissed.

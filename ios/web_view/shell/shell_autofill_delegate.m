@@ -17,7 +17,8 @@
 @property(nonatomic, strong) ShellRiskDataLoader* riskDataLoader;
 
 // Returns an action for a suggestion.
-- (UIAlertAction*)actionForSuggestion:(CWVAutofillSuggestion*)suggestion;
+- (UIAlertAction*)actionForSuggestion:(CWVAutofillSuggestion*)suggestion
+                              atIndex:(NSInteger)index;
 
 @end
 
@@ -66,8 +67,10 @@
                                  style:UIAlertActionStyleCancel
                                handler:nil];
     [alertController addAction:cancelAction];
-    for (CWVAutofillSuggestion* suggestion in suggestions) {
-      [alertController addAction:[self actionForSuggestion:suggestion]];
+    for (NSUInteger i = 0; i < suggestions.count; ++i) {
+      CWVAutofillSuggestion* suggestion = suggestions[i];
+      [alertController addAction:[self actionForSuggestion:suggestion
+                                                   atIndex:i]];
     }
 
     [[self anyKeyWindow].rootViewController
@@ -361,7 +364,8 @@
 
 #pragma mark - Private Methods
 
-- (UIAlertAction*)actionForSuggestion:(CWVAutofillSuggestion*)suggestion {
+- (UIAlertAction*)actionForSuggestion:(CWVAutofillSuggestion*)suggestion
+                              atIndex:(NSInteger)index {
   NSString* title =
       [NSString stringWithFormat:@"%@ %@", suggestion.value,
                                  suggestion.displayDescription ?: @""];
@@ -375,6 +379,7 @@
                   return;
                 }
                 [strongSelf.autofillController acceptSuggestion:suggestion
+                                                        atIndex:index
                                               completionHandler:nil];
                 [[self anyKeyWindow] endEditing:YES];
               }];

@@ -51,7 +51,9 @@
 // be used.
 //
 // @param formSuggestion The suggestion to fill out the form with.
-- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion;
+// @param index The position of the suggestion among the available suggestions.
+- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion
+                           atIndex:(NSInteger)index;
 
 // Indicates whether the current form is password-related.
 - (BOOL)isActiveFormAPasswordForm;

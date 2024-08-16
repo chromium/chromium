@@ -263,6 +263,7 @@ TEST_F(CWVAutofillControllerTest, AcceptSuggestion) {
                                        isPasswordSuggestion:NO];
   __block BOOL accept_completion_was_called = NO;
   [autofill_controller_ acceptSuggestion:suggestion
+                                 atIndex:0
                        completionHandler:^{
                          accept_completion_was_called = YES;
                        }];

@@ -229,7 +229,8 @@ CGFloat const kSpacingAfterTitle = 4;
 
 - (void)confirmationAlertPrimaryAction {
   NSInteger index = [self selectedRow];
-  [self.handler primaryButtonTapped:_suggestions[index]];
+  [self.handler primaryButtonTappedForSuggestion:_suggestions[index]
+                                         atIndex:index];
 
   if ([self rowCount] > 1) {
     base::UmaHistogramCounts100("PasswordManager.TouchToFill.CredentialIndex",

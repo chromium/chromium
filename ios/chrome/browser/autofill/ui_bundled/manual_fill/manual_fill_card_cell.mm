@@ -60,6 +60,10 @@ using base::SysNSStringToUTF8;
 @end
 
 @implementation ManualFillCardItem {
+  // The 0-based index at which the payment method is in the list of payment
+  // methods to show.
+  NSInteger _cellIndex;
+
   // If `YES`, autofill button is shown for the item.
   BOOL _showAutofillFormButton;
 }
@@ -69,6 +73,7 @@ using base::SysNSStringToUTF8;
                        (id<ManualFillContentInjector>)contentInjector
                 navigationDelegate:(id<CardListDelegate>)navigationDelegate
                        menuActions:(NSArray<UIAction*>*)menuActions
+                         cellIndex:(NSInteger)cellIndex
        cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
             showAutofillFormButton:(BOOL)showAutofillFormButton {
   self = [super initWithType:kItemTypeEnumZero];
@@ -77,6 +82,7 @@ using base::SysNSStringToUTF8;
     _navigationDelegate = navigationDelegate;
     _card = card;
     _menuActions = menuActions;
+    _cellIndex = cellIndex;
     _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
     _showAutofillFormButton = showAutofillFormButton;
     self.cellClass = [ManualFillCardCell class];
@@ -91,10 +97,10 @@ using base::SysNSStringToUTF8;
                   contentInjector:self.contentInjector
                navigationDelegate:self.navigationDelegate
                       menuActions:self.menuActions
+                        cellIndex:_cellIndex
       cellIndexAccessibilityLabel:self.cellIndexAccessibilityLabel
            showAutofillFormButton:_showAutofillFormButton];
 }
-
 @end
 
 namespace {
@@ -224,6 +230,10 @@ CGFloat GPayIconTopAnchorOffset() {
 @end
 
 @implementation ManualFillCardCell {
+  // The 0-based index at which the payment method is in the list of payment
+  // methods to show.
+  NSInteger _cellIndex;
+
   // If `YES`, autofill button is shown for the cell.
   BOOL _showAutofillFormButton;
 }
@@ -270,12 +280,14 @@ CGFloat GPayIconTopAnchorOffset() {
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
              navigationDelegate:(id<CardListDelegate>)navigationDelegate
                     menuActions:(NSArray<UIAction*>*)menuActions
+                      cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton {
   if (!self.dynamicConstraints) {
     self.dynamicConstraints = [[NSMutableArray alloc] init];
   }
 
+  _cellIndex = cellIndex;
   _showAutofillFormButton = showAutofillFormButton;
 
   if (self.contentView.subviews.count == 0) {
@@ -823,7 +835,8 @@ CGFloat GPayIconTopAnchorOffset() {
                    base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
                        IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
 
-  [self.contentInjector autofillFormWithSuggestion:suggestion];
+  [self.contentInjector autofillFormWithSuggestion:suggestion
+                                           atIndex:_cellIndex];
 }
 
 - (const char*)createMetricsAction:(NSString*)selectedChip {

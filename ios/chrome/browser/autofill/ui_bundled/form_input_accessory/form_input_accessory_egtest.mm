@@ -11,12 +11,13 @@
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/service/sync_prefs.h"
-#import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -84,6 +85,11 @@ id<GREYMatcher> KeyboardAccessoryPasswordSuggestion() {
   // Make sure an address suggestion is available.
   [AutofillAppInterface clearProfilesStore];
   [AutofillAppInterface saveExampleProfile];
+
+  // Set up histogram tester.
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
 - (void)tearDown {
@@ -91,6 +97,11 @@ id<GREYMatcher> KeyboardAccessoryPasswordSuggestion() {
   [AutofillAppInterface clearProfilesStore];
   GREYAssertTrue([PasswordManagerAppInterface clearCredentials],
                  @"Clearing credentials wasn't done.");
+
+  // Clean up histogram tester.
+  [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Failed to release histogram tester.");
   [super tearDown];
 }
 
@@ -326,13 +337,15 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 }
 
 // Tests that tapping on a credit card related field opens the keyboard
-// accessory with the proper suggestion visible and that tapping on that
+// accessory with the proper suggestions visible and that tapping on a
 // suggestion properly fills the related fields on the form.
 - (void)testFillCreditCardFieldsOnForm {
   [AutofillAppInterface setUpMockReauthenticationModule];
   [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
   [AutofillAppInterface mockReauthenticationModuleExpectedResult:
                             ReauthenticationResult::kSuccess];
+
+  [AutofillAppInterface saveMaskedCreditCard];
 
   [self loadPaymentsPage];
 
@@ -360,6 +373,16 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   // Verify that the page is filled properly.
   [self verifyCreditCardInfosHaveBeenFilled:card];
 
+  // Verify that the acceptance of the card suggestion at index 1 was
+  // recorded in the right histogram.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:1
+                         forHistogram:
+                             @"Autofill.SuggestionAcceptedIndex.CreditCard"],
+      @"Unexpected histogram error for accepted card suggestion index.");
+
   [AutofillAppInterface clearMockReauthenticationModule];
 }
 
@@ -383,6 +406,16 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 
   // Verify that the page is filled properly.
   [self verifyAddressInfosHaveBeenFilled:profile];
+
+  // Verify that the acceptance of the address suggestion at index 0 was
+  // recorded in the right histogram.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:0
+                         forHistogram:
+                             @"Autofill.SuggestionAcceptedIndex.Profile"],
+      @"Unexpected histogram error for accepted address suggestion index.");
 }
 
 // Tests that the manual fill button opens the expanded manual fill view.

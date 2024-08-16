@@ -343,17 +343,21 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
 
 #pragma mark - FormSuggestionClient
 
-- (void)didSelectSuggestion:(FormSuggestion*)suggestion {
+- (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index {
   const AutofillSuggestionState* suggestionState = _suggestionState.get();
   if (suggestionState) {
-    [self didSelectSuggestion:suggestion state:(*suggestionState)];
+    [self didSelectSuggestion:suggestion
+                      atIndex:index
+                        state:(*suggestionState)];
   }
 }
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
                      params:(const autofill::FormActivityParams&)params {
   AutofillSuggestionState suggestionState(params);
-  [self didSelectSuggestion:suggestion state:suggestionState];
+  [self didSelectSuggestion:suggestion atIndex:index state:suggestionState];
 }
 
 #pragma mark - FormInputSuggestionsProvider
@@ -436,8 +440,10 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
   return suggestionsCopy;
 }
 
-// Performs the suggestion selection based on the provided suggestion state.
+// Performs the selection of the suggestion at the provided `index` based on the
+// provided `suggestionState`.
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
                       state:(const AutofillSuggestionState&)suggestionState {
   // If a password related suggestion was selected, reset the password bottom
   // sheet dismiss count to 0.
@@ -450,6 +456,7 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
   __weak FormSuggestionController* weakSelf = self;
   [_provider
       didSelectSuggestion:suggestion
+                  atIndex:index
                      form:base::SysUTF8ToNSString(suggestionState.form_name)
            formRendererID:suggestionState.form_renderer_id
           fieldIdentifier:base::SysUTF8ToNSString(
