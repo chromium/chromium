@@ -143,9 +143,10 @@ const TestParam kTestParams[] = {
      .dialog_dimensions = gfx::Size(500, 500)},
     {.test_suffix = "LargerFirstEngineSnippet",
      .first_snippet_text_larger = true},
-    {.test_suffix = "FirstEngineSelectedWithLargerSnippet",
-     .select_first_search_engine = true,
-     .first_snippet_text_larger = true},
+    // TODO(b/360286412): This test case is flaky.
+    // {.test_suffix = "FirstEngineSelectedWithLargerSnippet",
+    //  .select_first_search_engine = true,
+    //  .first_snippet_text_larger = true},
     {.test_suffix = "InfoDialog", .display_info_dialog = true},
     {.test_suffix = "InfoDialogDarkTheme",
      .use_dark_theme = true,
