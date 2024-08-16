@@ -69,7 +69,7 @@ export class IndexedDbTransactionTable extends CustomElement {
       const row = (transactionRowTemplateElement.content.cloneNode(true) as
                    DocumentFragment)
                       .firstElementChild!;
-      row.classList.add(transactionState(transaction.status).toLowerCase());
+      row.classList.add(transactionState(transaction.state).toLowerCase());
       row.querySelector('td.tid')!.textContent = transaction.tid.toString();
       row.querySelector('td.mode')!.textContent =
           transactionMode(transaction.mode);
@@ -80,14 +80,21 @@ export class IndexedDbTransactionTable extends CustomElement {
           (transaction.tasksScheduled - transaction.tasksCompleted).toString();
       row.querySelector('td.age')!.textContent =
           Math.round(transaction.age).toString();
-      if (transaction.status === IdbTransactionState.kStarted ||
-          transaction.status === IdbTransactionState.kRunning ||
-          transaction.status === IdbTransactionState.kCommitting) {
+      if (transaction.state === IdbTransactionState.kStarted ||
+          transaction.state === IdbTransactionState.kRunning ||
+          transaction.state === IdbTransactionState.kCommitting) {
         row.querySelector('td.runtime')!.textContent =
             Math.round(transaction.runtime).toString();
       }
-      row.querySelector('td.state')!.textContent =
-          transactionState(transaction.status);
+      row.querySelector('td.state .text')!.textContent =
+          transactionState(transaction.state);
+      for (const state of transaction.stateHistory) {
+        const li = document.createElement('li');
+        li.textContent =
+            `${transactionState(state.state)}: ${Math.round(state.duration)}ms`;
+        row.querySelector('td.state ul')!.appendChild(li);
+      }
+
       transactionTableBodyElement.appendChild(row);
     }
   }

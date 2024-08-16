@@ -159,7 +159,7 @@ IndexedDBTransaction::IndexedDBTransaction(
   diagnostics_.tasks_scheduled = 0;
   diagnostics_.tasks_completed = 0;
   diagnostics_.creation_time = base::Time::Now();
-  NotifyOfIdbInternalsRelevantChange();
+  SetState(state_);  // Process the initial state.
 }
 
 IndexedDBTransaction::~IndexedDBTransaction() {
@@ -803,22 +803,23 @@ IndexedDBTransaction::GetIdbInternalsMetadata() const {
   info->mode = static_cast<storage::mojom::IdbTransactionMode>(mode());
   switch (state()) {
     case IndexedDBTransaction::CREATED:
-      info->status = storage::mojom::IdbTransactionState::kBlocked;
+      info->state = storage::mojom::IdbTransactionState::kBlocked;
       break;
     case IndexedDBTransaction::STARTED:
-      info->status = diagnostics().tasks_scheduled > 0
-                         ? storage::mojom::IdbTransactionState::kRunning
-                         : storage::mojom::IdbTransactionState::kStarted;
+      info->state = diagnostics().tasks_scheduled > 0
+                        ? storage::mojom::IdbTransactionState::kRunning
+                        : storage::mojom::IdbTransactionState::kStarted;
       break;
     case IndexedDBTransaction::COMMITTING:
-      info->status = storage::mojom::IdbTransactionState::kCommitting;
+      info->state = storage::mojom::IdbTransactionState::kCommitting;
       break;
     case IndexedDBTransaction::FINISHED:
-      info->status = storage::mojom::IdbTransactionState::kFinished;
+      info->state = storage::mojom::IdbTransactionState::kFinished;
       break;
   }
 
   info->tid = id();
+  info->connection_id = connection()->id();
   info->client_token = connection()->client_token().ToString();
   info->age =
       (base::Time::Now() - diagnostics().creation_time).InMillisecondsF();
@@ -835,7 +836,6 @@ IndexedDBTransaction::GetIdbInternalsMetadata() const {
       info->scope.emplace_back(stores_it->second.name);
     }
   }
-
   return info;
 }
 

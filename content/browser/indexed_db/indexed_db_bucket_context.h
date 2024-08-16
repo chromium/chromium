@@ -362,6 +362,8 @@ class CONTENT_EXPORT IndexedDBBucketContext
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TooLongOrigin);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, BasicFactoryCreationAndTearDown);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBBucketContextTest, BucketSpaceDecay);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBBucketContextTest,
+                           MetadataRecordingStateHistory);
 
   // The data structure that stores everything bound to the receiver. This will
   // be stored together with the receiver in the `mojo::ReceiverSet`.

@@ -84,6 +84,7 @@ class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
   // determine whether the mojo connection is inactive, which is synonymous with
   // whether `this` is being destroyed.
   bool is_shutting_down() const { return is_shutting_down_; }
+  int32_t id() const { return id_; }
 
   IndexedDBTransaction* CreateVersionChangeTransaction(
       int64_t id,

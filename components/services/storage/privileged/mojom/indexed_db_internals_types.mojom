@@ -51,14 +51,24 @@ struct IdbDatabaseMetadata {
 // Metadata for a transaction of an IndexedDB database.
 struct IdbTransactionMetadata{
   IdbTransactionMode mode;
-  IdbTransactionState status;
+  IdbTransactionState state;
   int64 tid;
+  int32 connection_id;
   string client_token;
   double age;
   double runtime;
   double tasks_scheduled;
   double tasks_completed;
   array<mojo_base.mojom.String16> scope;
+  // Stores how long the transaction was in each observed state.
+  // Only populated when snapshot recording mode was enabled.
+  array<IdbTransactionMetadataStateHistory> state_history;
+};
+
+struct IdbTransactionMetadataStateHistory {
+  IdbTransactionState state;
+  // Length of time (ms) the transaction was in the specified state.
+  double duration;
 };
 
 // The mode the transaction is running in.

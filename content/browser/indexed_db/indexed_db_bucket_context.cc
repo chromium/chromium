@@ -21,6 +21,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -59,6 +60,7 @@
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
+#include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom-forward.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom-shared.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-shared.h"
@@ -631,6 +633,42 @@ void IndexedDBBucketContext::StartMetadataRecording() {
 std::vector<storage::mojom::IdbBucketMetadataPtr>
 IndexedDBBucketContext::StopMetadataRecording() {
   metadata_recording_enabled_ = false;
+
+  // Track the previous snapshot for each transaction in each database, keyed
+  // by a string of db name, transaction ID and connection ID.
+  std::unordered_map<std::string, storage::mojom::IdbTransactionMetadata*>
+      transaction_snapshots;
+  for (const storage::mojom::IdbBucketMetadataPtr& snapshot :
+       metadata_recording_buffer_) {
+    for (const storage::mojom::IdbDatabaseMetadataPtr& db :
+         snapshot->databases) {
+      for (const storage::mojom::IdbTransactionMetadataPtr& tx :
+           db->transactions) {
+        auto key = base::StringPrintf(
+            "%s-%li-%i", base::UTF16ToASCII(db->name).c_str(),
+            static_cast<long>(tx->tid), tx->connection_id);
+        if (storage::mojom::IdbTransactionMetadata* prev_snapshot =
+                base::FindPtrOrNull(transaction_snapshots, key)) {
+          // Copy the state from the previous snapshot for this transaction ID.
+          for (const auto& snap : prev_snapshot->state_history) {
+            tx->state_history.push_back(snap->Clone());
+          }
+          tx->state_history.back()->duration += tx->age - prev_snapshot->age;
+          if (prev_snapshot->state != tx->state) {
+            tx->state_history.push_back(
+                storage::mojom::IdbTransactionMetadataStateHistory::New(
+                    tx->state, 0));
+          }
+        } else {
+          tx->state_history.push_back(
+              storage::mojom::IdbTransactionMetadataStateHistory::New(tx->state,
+                                                                      tx->age));
+        }
+        transaction_snapshots[key] = tx.get();
+      }
+    }
+  }
+
   return std::move(metadata_recording_buffer_);
 }
 
