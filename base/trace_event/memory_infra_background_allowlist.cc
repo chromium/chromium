@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/trace_event/memory_infra_background_allowlist.h"
 
 #include <string.h>
@@ -14,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -24,8 +20,7 @@
 #include "base/android/meminfo_dump_provider.h"
 #endif
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 namespace {
 
 // The names of dump providers allowed to perform background tracing. Dump
@@ -337,24 +332,16 @@ constexpr auto kAllocatorDumpNameAllowlist =
         // clang-format on
     });
 
-const char* const* g_dump_provider_allowlist_for_testing = nullptr;
-const char* const* g_allocator_dump_name_allowlist_for_testing = nullptr;
-
-bool IsNameInList(const char* name, const char* const* list) {
-  for (size_t i = 0; list[i] != nullptr; ++i) {
-    if (strcmp(name, list[i]) == 0)
-      return true;
-  }
-  return false;
-}
+base::span<const std::string_view> g_dump_provider_allowlist_for_testing;
+base::span<const std::string_view> g_allocator_dump_name_allowlist_for_testing;
 
 }  // namespace
 
 bool IsMemoryDumpProviderInAllowlist(const char* mdp_name) {
-  if (!g_dump_provider_allowlist_for_testing) {
+  if (g_dump_provider_allowlist_for_testing.empty()) {
     return kDumpProviderAllowlist.contains(mdp_name);
   } else {
-    return IsNameInList(mdp_name, g_dump_provider_allowlist_for_testing);
+    return base::Contains(g_dump_provider_allowlist_for_testing, mdp_name);
   }
 }
 
@@ -395,21 +382,22 @@ bool IsMemoryAllocatorDumpNameInAllowlist(const std::string& name) {
     }
   }
 
-  if (!g_allocator_dump_name_allowlist_for_testing) {
+  if (g_allocator_dump_name_allowlist_for_testing.empty()) {
     return kAllocatorDumpNameAllowlist.contains(stripped_str);
   } else {
-    return IsNameInList(stripped_str.c_str(),
-                        g_allocator_dump_name_allowlist_for_testing);
+    return base::Contains(g_allocator_dump_name_allowlist_for_testing,
+                          stripped_str);
   }
 }
 
-void SetDumpProviderAllowlistForTesting(const char* const* list) {
+void SetDumpProviderAllowlistForTesting(
+    base::span<const std::string_view> list) {
   g_dump_provider_allowlist_for_testing = list;
 }
 
-void SetAllocatorDumpNameAllowlistForTesting(const char* const* list) {
+void SetAllocatorDumpNameAllowlistForTesting(
+    base::span<const std::string_view> list) {
   g_allocator_dump_name_allowlist_for_testing = list;
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

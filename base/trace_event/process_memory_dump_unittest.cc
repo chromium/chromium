@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
@@ -29,15 +30,14 @@
 #include <sys/mman.h>
 #endif
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
 const MemoryDumpArgs kDetailedDumpArgs = {MemoryDumpLevelOfDetail::kDetailed};
-const char* const kTestDumpNameAllowlist[] = {
+constexpr std::string_view kTestDumpNameAllowlist[] = {
     "Allowlisted/TestName", "Allowlisted/TestName_0x?",
-    "Allowlisted/0x?/TestName", "Allowlisted/0x?", nullptr};
+    "Allowlisted/0x?/TestName", "Allowlisted/0x?"};
 
 void* Map(size_t size) {
 #if BUILDFLAG(IS_WIN)
@@ -584,5 +584,4 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
 }
 #endif  // defined(COUNT_RESIDENT_BYTES_SUPPORTED)
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event
