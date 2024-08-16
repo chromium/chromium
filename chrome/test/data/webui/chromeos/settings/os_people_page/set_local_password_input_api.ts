@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import {CrInputElement} from 'chrome://os-settings/os_settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {SetLocalPasswordInputApiInterface, SetLocalPasswordInputApiReceiver, SetLocalPasswordInputApiRemote} from '../set_local_password_input_api.test-mojom-webui.js';
@@ -27,12 +27,14 @@ export class SetLocalPasswordInputApi implements
     const input = await retry(() => this.firstInput());
     input.focus();
     input.value = value;
+    input.dispatchEvent(new CustomEvent('input'));
   }
 
   async enterConfirmInput(value: string): Promise<void> {
     const input = await retry(() => this.confirmInput());
     input.focus();
     input.value = value;
+    input.dispatchEvent(new CustomEvent('input'));
   }
 
   async assertFirstInputInvalid(invalid: boolean): Promise<void> {
