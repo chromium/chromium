@@ -234,3 +234,56 @@ TEST_F(PriceInsightsModulatorTest, TestPriceInsightsItemDataFromConfig) {
   EXPECT_EQ(GURL(kTestUrl), item.productURL);
   EXPECT_EQ(kClusterId, item.clusterId);
 }
+
+// Tests that PriceInsightsItem displays a valid title when
+// product_cluster_title is empty.
+TEST_F(PriceInsightsModulatorTest, TestPriceInsightsItemTitle) {
+  base::RunLoop run_loop;
+
+  commerce::ProductInfo info;
+  info.title = kTestTitle;
+  info.product_cluster_title = "";
+  info.product_cluster_id = kClusterId;
+  info.currency_code = kCurrency;
+  info.country_code = kCountry;
+
+  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
+  shopping_service_->SetIsSubscribedCallbackValue(true);
+
+  // Fetch data from the model.
+  price_insights_model_->FetchConfigurationForWebState(
+      web_state_ptr_,
+      base::BindOnce(&PriceInsightsModulatorTest::FetchConfigurationCallback,
+                     base::Unretained(this))
+          .Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+
+  PriceInsightsItemConfiguration* config =
+      static_cast<PriceInsightsItemConfiguration*>(
+          returned_configuration_.get());
+
+  shopping_service_->SetIsSubscribedCallbackValue(true);
+
+  PriceInsightsModulator* modulator = [[PriceInsightsModulator alloc]
+      initWithBaseViewController:base_view_controller_
+                         browser:browser_.get()
+               itemConfiguration:config->weak_ptr_factory.GetWeakPtr()];
+
+  // Start the modulator.
+  [modulator start];
+
+  UICollectionView* collection_view = [[UICollectionView alloc]
+             initWithFrame:CGRectZero
+      collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
+  PriceInsightsCell* cell = static_cast<PriceInsightsCell*>([collection_view
+      dequeueConfiguredReusableCellWithRegistration:modulator.panelBlockData
+                                                        .cellRegistration
+                                       forIndexPath:[NSIndexPath
+                                                        indexPathForRow:0
+                                                              inSection:0]
+                                               item:@"id"]);
+  PriceInsightsItem* item = cell.priceInsightsItem;
+
+  EXPECT_EQ(kTestTitle, base::SysNSStringToUTF8(item.title));
+}

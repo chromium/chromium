@@ -73,7 +73,8 @@ void PriceInsightsModel::FetchConfigurationForWebState(
 void PriceInsightsModel::OnProductInfoUrlReceived(
     const GURL& url,
     const std::optional<const commerce::ProductInfo>& info) {
-  if (!info.has_value()) {
+  if (!info.has_value() ||
+      (info->title.empty() && info->product_cluster_title.empty())) {
     price_insights_executions_[url]->is_subscribed_processed = true;
     price_insights_executions_[url]->is_price_insights_info_processed = true;
     RunCallbacks(url);

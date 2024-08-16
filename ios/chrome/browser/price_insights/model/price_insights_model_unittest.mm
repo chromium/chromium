@@ -126,6 +126,34 @@ TEST_F(PriceInsightsModelTest, TestFetchConfigurationNoProductInfo) {
   EXPECT_EQ(nullptr, config);
 }
 
+// Tests that fetching the configuration for the price insights model returns no
+// data when product info has no title and no product cluster title.
+TEST_F(PriceInsightsModelTest, TestFetchConfigurationNoTitleNoClusterTitle) {
+  base::RunLoop run_loop;
+
+  std::optional<commerce::ProductInfo> info;
+  info.emplace();
+  info->product_cluster_id = 12345L;
+  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
+
+  EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
+  EXPECT_CALL(*shopping_service_, GetPriceInsightsInfoForUrl(_, _)).Times(0);
+
+  price_insights_model_->FetchConfigurationForWebState(
+      web_state_.get(),
+      base::BindOnce(&PriceInsightsModelTest::FetchConfigurationCallback,
+                     base::Unretained(this))
+          .Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+
+  PriceInsightsItemConfiguration* config =
+      static_cast<PriceInsightsItemConfiguration*>(
+          returned_configuration_.get());
+
+  EXPECT_EQ(nullptr, config);
+}
+
 // Test that GetProductInfoForUrl return data when the configuration is fetched.
 TEST_F(PriceInsightsModelTest, TestFetchProductInfo) {
   base::RunLoop run_loop;

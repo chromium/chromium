@@ -251,8 +251,11 @@ NSDate* getNSDateFromString(std::string date) {
   DCHECK(config->product_info.has_value());
 
   PriceInsightsItem* item = [[PriceInsightsItem alloc] init];
-  item.title =
-      base::SysUTF8ToNSString(config->product_info->product_cluster_title);
+  std::string product_title =
+      config->product_info->product_cluster_title.empty()
+          ? config->product_info->title
+          : config->product_info->product_cluster_title;
+  item.title = base::SysUTF8ToNSString(product_title);
   item.currency = config->product_info->currency_code;
   item.country = config->product_info->country_code;
   item.canPriceTrack = config->can_price_track;
