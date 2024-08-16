@@ -80,6 +80,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Content error"/>
 </enum>
 
+<enum name="MvtReselectUrlMatchResult">
+  <summary>
+    For MVT Reselect: The degree of match between the &quot;key&quot; URL from a
+    suggestion and the best &quot;candidate&quot; URL chosen from TabList.
+  </summary>
+  <int value="0" label="None: No Match"/>
+  <int value="1" label="Exact: Exact Match"/>
+  <int value="2" label="Partial: Partial Match"/>
+</enum>
+
 <enum name="NewTabPageActionAndroid2">
   <int value="0" label="Searched using the omnibox"/>
   <int value="1" label="Navigated to Google search homepage using the omnibox"/>

@@ -1186,6 +1186,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="NewTabPage.MostVisited.ReselectMatch.{StrictnessSuffix}"
+    enum="MvtReselectUrlMatchResult" expires_after="2025-04-16">
+  <owner>fredmello@chromium.org</owner>
+  <owner>huangs@chromium.org</owner>
+  <summary>
+    For each strict / lax match arm, histogram of the best matching result from
+    &quot;key&quot; URL (recommended by a Most Visited Tile) to
+    &quot;candidate&quot; URLs (from Tabs). Recorded when a MVT is clicked and
+    matching is performed. Only measured on Android.
+  </summary>
+  <token key="StrictnessSuffix">
+    <variant name="LaxUpToPath"/>
+    <variant name="LaxUpToQuery"/>
+    <variant name="LaxUpToRef"/>
+    <variant name="Strict"/>
+  </token>
+</histogram>
+
 <histogram name="NewTabPage.MostVisitedMigratedDefaultAppType"
     enum="TypeOfDeletedMostVisitedApp" expires_after="2024-06-02">
   <owner>dibyapal@chromium.org</owner>

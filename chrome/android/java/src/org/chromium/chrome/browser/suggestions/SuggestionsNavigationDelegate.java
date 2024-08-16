@@ -10,6 +10,7 @@ import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.suggestions.UrlSimilarityScorer.MatchResult;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -94,10 +95,11 @@ public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateI
         boolean laxPath = MOST_VISITED_TILES_RESELECT_LAX_PATH.getValue();
         UrlSimilarityScorer scorer =
                 new UrlSimilarityScorer(keyUrl, laxSchemeHost, laxRef, laxQuery, laxPath);
-        int index = scorer.findTabWithMostSimilarUrl(tabModel);
-        if (index == TabList.INVALID_TAB_INDEX) return false;
+        MatchResult result = scorer.findTabWithMostSimilarUrl(tabModel);
+        scorer.recordMatchResult(result);
+        if (result.index == TabList.INVALID_TAB_INDEX) return false;
 
-        tabModel.setIndex(index, TabSelectionType.FROM_USER);
+        tabModel.setIndex(result.index, TabSelectionType.FROM_USER);
         tabModel.closeTabs(TabClosureParams.closeTab(mTab).allowUndo(false).build());
         return true;
     }
