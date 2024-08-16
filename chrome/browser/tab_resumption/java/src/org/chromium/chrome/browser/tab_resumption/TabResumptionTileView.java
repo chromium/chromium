@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import static org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.DISPLAY_TEXT_MAX_LINES_DEFAULT;
+import static org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.DISPLAY_TEXT_MAX_LINES_WITH_REASON;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -25,8 +28,6 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
 public class TabResumptionTileView extends RelativeLayout {
     static final String SEPARATE_COMMA = ", ";
     static final String SEPARATE_PERIOD = ". ";
-    static final int DISPLAY_TEXT_MAX_LINES_DEFAULT = 3;
-    static final int DISPLAY_TEXT_MAX_LINES_WITH_REASON = 2;
 
     private RoundedCornerImageView mIconView;
     private TextView mTilePreInfoView;

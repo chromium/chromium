@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import static org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.DISPLAY_TEXT_MAX_LINES_DEFAULT;
+import static org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.DISPLAY_TEXT_MAX_LINES_WITH_REASON;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -126,7 +129,8 @@ public class TabResumptionTileContainerView extends LinearLayout {
                                 entry,
                                 urlImageProvider,
                                 suggestionClickCallbackWithLogging,
-                                clickInfo);
+                                clickInfo,
+                                recencyMs);
             } else {
                 int layoutId =
                         isSingle
@@ -212,7 +216,8 @@ public class TabResumptionTileContainerView extends LinearLayout {
             SuggestionEntry localTabEntry,
             UrlImageProvider urlImageProvider,
             SuggestionClickCallback suggestionClickCallback,
-            @ClickInfo int clickInfo) {
+            @ClickInfo int clickInfo,
+            long recencyMs) {
         assert localTabEntry.isLocalTab();
         Resources res = getContext().getResources();
         LocalTileView tileView =
@@ -225,6 +230,13 @@ public class TabResumptionTileContainerView extends LinearLayout {
         String domainUrl = TabResumptionModuleUtils.getDomainUrl(localTabEntry.url);
         tileView.setUrl(domainUrl);
         tileView.setTitle(localTabEntry.title);
+
+        String reason = getReasonToShowTab(localTabEntry.reasonToShowTab, recencyMs);
+        boolean showReason = !TextUtils.isEmpty(reason);
+        tileView.setShowReason(reason);
+        tileView.setMaxLinesForTitle(
+                showReason ? DISPLAY_TEXT_MAX_LINES_WITH_REASON : DISPLAY_TEXT_MAX_LINES_DEFAULT);
+
         urlImageProvider.fetchImageForUrl(
                 localTabEntry.url,
                 (Bitmap bitmap) -> {
@@ -241,10 +253,17 @@ public class TabResumptionTileContainerView extends LinearLayout {
         bindSuggestionClickCallback(tileView, suggestionClickCallback, localTabEntry, clickInfo);
 
         parentView.addView(tileView);
-        return localTabEntry.title
-                + TabResumptionTileView.SEPARATE_COMMA
-                + domainUrl
-                + TabResumptionTileView.SEPARATE_PERIOD;
+
+        StringBuilder builder = new StringBuilder();
+        if (showReason) {
+            builder.append(reason);
+            builder.append(TabResumptionTileView.SEPARATE_COMMA);
+        }
+        builder.append(localTabEntry.title);
+        builder.append(TabResumptionTileView.SEPARATE_COMMA);
+        builder.append(domainUrl);
+        builder.append(TabResumptionTileView.SEPARATE_PERIOD);
+        return builder.toString();
     }
 
     /** Loads the main URL image of a {@link TabResumptionTileView}. */

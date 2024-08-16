@@ -18,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 /** Utilities for the tab resumption module. */
 public class TabResumptionModuleUtils {
+    static final int DISPLAY_TEXT_MAX_LINES_DEFAULT = 3;
+    static final int DISPLAY_TEXT_MAX_LINES_WITH_REASON = 2;
     private static final int DEFAULT_MAX_TILES_NUMBER = 2;
 
     /** Callback to handle click on suggestion tiles. */

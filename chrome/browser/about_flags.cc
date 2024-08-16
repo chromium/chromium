@@ -2412,6 +2412,16 @@ const FeatureEntry::FeatureParam
         {"use_default_app_filter", "true"},
         {"use_salient_image", "true"},
 };
+const FeatureEntry::FeatureParam
+    kTabResumptionModule_combine_tabs_with_salient_image_single_tab_show_default_reason
+        [] = {
+            {"max_tiles_number", "1"},
+            {"show_default_reason", "true"},
+            {"show_see_more", "true"},
+            {"show_tabs_in_one_module", "true"},
+            {"use_default_app_filter", "true"},
+            {"use_salient_image", "true"},
+};
 const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_arm1[] = {
     {"disable_blend", "true"},          {"enable_v2", "true"},
     {"show_see_more", "true"},          {"show_tabs_in_one_module", "true"},
@@ -2488,6 +2498,11 @@ const FeatureEntry::FeatureVariation kTabResumptionModuleAndroidVariations[] = {
      kTabResumptionModule_single_tile_with_salient_image_show_default_reason,
      std::size(
          kTabResumptionModule_single_tile_with_salient_image_show_default_reason),
+     nullptr},
+    {"Default app filter + one Tab module + single tab + default reason",
+     kTabResumptionModule_combine_tabs_with_salient_image_single_tab_show_default_reason,
+     std::size(
+         kTabResumptionModule_combine_tabs_with_salient_image_single_tab_show_default_reason),
      nullptr},
     {"V2 Arm3 with default reason",
      kTabResumptionModule_enable_v2_arm3_show_default_reason,

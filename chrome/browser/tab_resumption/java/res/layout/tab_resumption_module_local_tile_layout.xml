@@ -78,6 +78,20 @@ found in the LICENSE file.
       android:baselineAligned="false"
       android:orientation="vertical">
     <TextView
+        android:id="@+id/tab_show_reason"
+        android:layout_gravity="center_vertical|start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/tab_resumption_module_reason_padding_start"
+        android:paddingEnd="@dimen/tab_resumption_module_reason_padding_start"
+        android:paddingTop="@dimen/tab_resumption_module_reason_padding_top"
+        android:paddingBottom="@dimen/tab_resumption_module_reason_padding_top"
+        android:layout_marginBottom="4dp"
+        android:singleLine="true"
+        android:visibility="gone"
+        android:background="@drawable/tab_resumption_module_tile_reason_background"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
+    <TextView
         android:id="@+id/tab_title_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"

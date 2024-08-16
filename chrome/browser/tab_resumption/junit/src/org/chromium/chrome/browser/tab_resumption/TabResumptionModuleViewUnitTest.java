@@ -322,6 +322,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     @SmallTest
     public void testRenderSingleLocalView() {
         initModuleView();
+        TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_DEFAULT_REASON.setForTesting(false);
 
         SuggestionEntry entry1 = SuggestionEntry.createFromLocalTab(mTab);
         mSuggestionBundle.entries.add(entry1);
@@ -343,8 +344,93 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
 
         // Check tile texts.
         LocalTileView localTileView = (LocalTileView) mTileContainerView.getChildAt(0);
+        // The default reason isn't shown.
         Assert.assertEquals(
-                TAB_TITLE, ((TextView) localTileView.findViewById(R.id.tab_title_view)).getText());
+                View.GONE, localTileView.findViewById(R.id.tab_show_reason).getVisibility());
+        TextView titleView = localTileView.findViewById(R.id.tab_title_view);
+        Assert.assertEquals(TAB_TITLE, titleView.getText());
+        // Verifies that the maximum lines are the default 3 lines when the reason chip isn't shown.
+        Assert.assertEquals(
+                TabResumptionModuleUtils.DISPLAY_TEXT_MAX_LINES_DEFAULT, titleView.getMaxLines());
+        // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
+        Assert.assertEquals(
+                "www.one.com",
+                ((TextView) localTileView.findViewById(R.id.tab_url_view)).getText());
+        // Verifies that a placeholder icon drawable is set for the tab thumbnail.
+        Assert.assertNotNull(
+                ((TabThumbnailView) localTileView.findViewById(R.id.tab_thumbnail))
+                        .getIconDrawableForTesting());
+
+        // Provide test image, and check that it's shown as icon.
+        Bitmap expectedBitmap = makeBitmap(48, 48);
+        mFetchImageCallbackCaptor.getAllValues().get(0).onBitmap(expectedBitmap);
+        BitmapDrawable drawable =
+                (BitmapDrawable)
+                        ((ImageView) localTileView.findViewById(R.id.tab_favicon_view))
+                                .getDrawable();
+        Assert.assertNotNull(drawable);
+        Assert.assertEquals(expectedBitmap, drawable.getBitmap());
+
+        mThumbnailCallbackCaptor.getAllValues().get(0).onResult(makeBitmap(64, 64));
+        // Verifies that the placeholder icon drawable is removed after setting a foreground bitmap.
+        Assert.assertNull(
+                ((TabThumbnailView) localTileView.findViewById(R.id.tab_thumbnail))
+                        .getIconDrawableForTesting());
+
+        // Simulate click on the local Tab.
+        Assert.assertEquals(0, mClickCount);
+        Assert.assertNull(mLastClickEntry);
+        localTileView.performClick();
+        Assert.assertEquals(1, mClickCount);
+        Assert.assertEquals(TAB_ID, mLastClickEntry.localTabId);
+    }
+
+    @Test
+    @SmallTest
+    public void testRenderSingleLocalViewWithDefaultReason() {
+        initModuleView();
+        TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_DEFAULT_REASON.setForTesting(true);
+
+        SuggestionEntry entry1 =
+                new SuggestionEntry(
+                        SuggestionEntryType.LOCAL_TAB,
+                        /* sourceName= */ "",
+                        mTab.getUrl(),
+                        mTab.getTitle(),
+                        makeTimestamp(24 - 3, 0, 0),
+                        mTab.getId(),
+                        /* appId= */ null,
+                        /* reasonToShowTab= */ null);
+        mSuggestionBundle.entries.add(entry1);
+        Assert.assertEquals(0, mTileContainerView.getChildCount());
+
+        mModuleView.setSuggestionBundle(mSuggestionBundle);
+        Assert.assertEquals(1, mTileContainerView.getChildCount());
+
+        // Capture call to fetch favicon.
+        verify(mUrlImageProvider, atLeastOnce())
+                .fetchImageForUrl(
+                        mFetchImagePageUrlCaptor.capture(), mFetchImageCallbackCaptor.capture());
+
+        // Capture call to fetch tab thumbnail.
+        verify(mUrlImageProvider, atLeastOnce())
+                .getTabThumbnail(
+                        eq(TAB_ID), eq(mThumbnailSize), mThumbnailCallbackCaptor.capture());
+
+        LocalTileView localTileView = (LocalTileView) mTileContainerView.getChildAt(0);
+        // The default reason is displayed.
+        String expectedDefaultReason = "You visited 3 hr ago";
+        TextView reasonView = localTileView.findViewById(R.id.tab_show_reason);
+        Assert.assertEquals(View.VISIBLE, reasonView.getVisibility());
+        Assert.assertEquals(expectedDefaultReason, reasonView.getText());
+
+        // Verifies that the maximum lines are 2 lines instead of the default 3 lines when a reason
+        // chip is shown.
+        TextView titleView = localTileView.findViewById(R.id.tab_title_view);
+        Assert.assertEquals(
+                TabResumptionModuleUtils.DISPLAY_TEXT_MAX_LINES_WITH_REASON,
+                titleView.getMaxLines());
+        Assert.assertEquals(TAB_TITLE, titleView.getText());
         // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
         Assert.assertEquals(
                 "www.one.com",
@@ -652,7 +738,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         // Verifies that the maximum lines are the default 3 lines for the display text.
         TextView displayTextView = tile1.findViewById(R.id.tile_display_text);
         Assert.assertEquals(
-                TabResumptionTileView.DISPLAY_TEXT_MAX_LINES_DEFAULT,
+                TabResumptionModuleUtils.DISPLAY_TEXT_MAX_LINES_DEFAULT,
                 displayTextView.getMaxLines());
         Assert.assertEquals(View.GONE, tile1.findViewById(R.id.tile_app_chip).getVisibility());
         Assert.assertEquals("Google Dog", displayTextView.getText());
@@ -714,7 +800,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         // chip is shown.
         TextView displayTextView = tile1.findViewById(R.id.tile_display_text);
         Assert.assertEquals(
-                TabResumptionTileView.DISPLAY_TEXT_MAX_LINES_WITH_REASON,
+                TabResumptionModuleUtils.DISPLAY_TEXT_MAX_LINES_WITH_REASON,
                 displayTextView.getMaxLines());
 
         Assert.assertEquals(View.GONE, tile1.findViewById(R.id.tile_app_chip).getVisibility());
@@ -762,7 +848,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         // chip is shown.
         TextView displayTextView = tile1.findViewById(R.id.tile_display_text);
         Assert.assertEquals(
-                TabResumptionTileView.DISPLAY_TEXT_MAX_LINES_WITH_REASON,
+                TabResumptionModuleUtils.DISPLAY_TEXT_MAX_LINES_WITH_REASON,
                 displayTextView.getMaxLines());
 
         Assert.assertEquals(View.GONE, tile1.findViewById(R.id.tile_app_chip).getVisibility());
