@@ -47,7 +47,7 @@ class ASH_PUBLIC_EXPORT MockPickerClient : public PickerClient {
               (override));
   MOCK_METHOD(void,
               GetSuggestedLinkResults,
-              (SuggestedLinksCallback),
+              (size_t, SuggestedLinksCallback),
               (override));
   MOCK_METHOD(bool, IsFeatureAllowedForDogfood, (), (override));
   MOCK_METHOD(void,

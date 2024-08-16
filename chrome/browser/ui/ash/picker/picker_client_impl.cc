@@ -386,8 +386,9 @@ void PickerClientImpl::GetRecentDriveFileResults(size_t max_files,
 }
 
 void PickerClientImpl::GetSuggestedLinkResults(
+    size_t max_results,
     SuggestedLinksCallback callback) {
-  link_suggester_->GetSuggestedLinks(std::move(callback));
+  link_suggester_->GetSuggestedLinks(max_results, std::move(callback));
 }
 
 bool PickerClientImpl::IsFeatureAllowedForDogfood() {

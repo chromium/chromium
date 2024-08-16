@@ -18,7 +18,7 @@ namespace ash {
 namespace {
 
 constexpr int kMaxRecentFiles = 10;
-
+constexpr int kMaxRecentLinks = 10;
 }
 
 PickerSuggestionsController::PickerSuggestionsController(PickerClient* client)
@@ -87,7 +87,7 @@ void PickerSuggestionsController::GetSuggestionsForCategory(
     case PickerCategory::kEditorRewrite:
       NOTREACHED_NORETURN();
     case PickerCategory::kLinks:
-      client_->GetSuggestedLinkResults(std::move(callback));
+      client_->GetSuggestedLinkResults(kMaxRecentLinks, std::move(callback));
       return;
     case PickerCategory::kEmojisGifs:
     case PickerCategory::kEmojis:

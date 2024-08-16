@@ -831,7 +831,8 @@ TEST_F(PickerControllerTest, ShowEditorCallsCallbackFromClient) {
 TEST_F(PickerControllerTest, GetResultsForCategoryReturnsEmptyForEmptyResults) {
   base::test::TestFuture<std::vector<PickerSearchResultsSection>> future;
   EXPECT_CALL(client(), GetSuggestedLinkResults)
-      .WillRepeatedly([](TestPickerClient::SuggestedLinksCallback callback) {
+      .WillRepeatedly([](size_t max_results,
+                         TestPickerClient::SuggestedLinksCallback callback) {
         std::move(callback).Run({});
       });
 

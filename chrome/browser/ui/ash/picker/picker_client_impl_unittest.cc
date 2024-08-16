@@ -154,12 +154,14 @@ std::unique_ptr<KeyedService> BuildTestDriveIntegrationService(
   return service;
 }
 
-void AddSearchToHistory(TestingProfile* profile, GURL url) {
+void AddSearchToHistory(TestingProfile* profile,
+                        GURL url,
+                        base::Time last_visit = base::Time::Now()) {
   history::HistoryService* history = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
   history->AddPageWithDetails(url, /*title=*/u"", /*visit_count=*/1,
                               /*typed_count=*/1,
-                              /*last_visit=*/base::Time::Now(),
+                              /*last_visit=*/last_visit,
                               /*hidden=*/false, history::SOURCE_BROWSED);
   profile->BlockUntilHistoryProcessesPendingRequests();
 }
@@ -552,22 +554,55 @@ TEST_F(PickerClientImplTest, GetRecentDriveFilesTruncates) {
 TEST_F(PickerClientImplTest, GetSuggestedLinkResultsReturnsLinks) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
-  AddSearchToHistory(profile(), GURL("http://foo.com/history"));
+  const base::Time now = base::Time::Now();
+  AddSearchToHistory(profile(), GURL("http://a.com/history"),
+                     now - base::Seconds(1));
+  AddSearchToHistory(profile(), GURL("http://b.com/history"), now);
   TestFaviconService favicon_service;
   client.get_link_suggester_for_test()->set_favicon_service_for_test(
       &favicon_service);
 
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
-  client.GetSuggestedLinkResults(future.GetRepeatingCallback());
+  client.GetSuggestedLinkResults(100u, future.GetRepeatingCallback());
 
   EXPECT_THAT(
       future.Get(),
-      IsSupersetOf({Property(
+      ElementsAre(
+          Property(
+              "data", &ash::PickerSearchResult::data,
+              VariantWith<ash::PickerSearchResult::BrowsingHistoryData>(Field(
+                  "url", &ash::PickerSearchResult::BrowsingHistoryData::url,
+                  GURL("http://b.com/history")))),
+          Property(
+              "data", &ash::PickerSearchResult::data,
+              VariantWith<ash::PickerSearchResult::BrowsingHistoryData>(Field(
+                  "url", &ash::PickerSearchResult::BrowsingHistoryData::url,
+                  GURL("http://a.com/history"))))));
+  EXPECT_EQ(favicon_service.page_url_, GURL("http://a.com/history"));
+}
+
+TEST_F(PickerClientImplTest, GetSuggestedLinkResultsAreTruncatedToMostRecent) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  const base::Time now = base::Time::Now();
+  AddSearchToHistory(profile(), GURL("http://a.com/history"),
+                     now - base::Seconds(1));
+  AddSearchToHistory(profile(), GURL("http://b.com/history"), now);
+  TestFaviconService favicon_service;
+  client.get_link_suggester_for_test()->set_favicon_service_for_test(
+      &favicon_service);
+
+  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  client.GetSuggestedLinkResults(1u, future.GetRepeatingCallback());
+
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(Property(
           "data", &ash::PickerSearchResult::data,
           VariantWith<ash::PickerSearchResult::BrowsingHistoryData>(
               Field("url", &ash::PickerSearchResult::BrowsingHistoryData::url,
-                    GURL("http://foo.com/history"))))}));
-  EXPECT_EQ(favicon_service.page_url_, GURL("http://foo.com/history"));
+                    GURL("http://b.com/history"))))));
+  EXPECT_EQ(favicon_service.page_url_, GURL("http://b.com/history"));
 }
 
 class PickerClientImplEditorTest : public PickerClientImplTest {

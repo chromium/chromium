@@ -19,7 +19,6 @@
 
 namespace {
 
-constexpr int kMaxResults = 10;
 constexpr int kRecentDayRange = 7;
 
 }  // namespace
@@ -33,10 +32,11 @@ PickerLinkSuggester::PickerLinkSuggester(Profile* profile) {
 
 PickerLinkSuggester::~PickerLinkSuggester() = default;
 
-void PickerLinkSuggester::GetSuggestedLinks(SuggestedLinksCallback callback) {
+void PickerLinkSuggester::GetSuggestedLinks(size_t max_links,
+                                            SuggestedLinksCallback callback) {
   CHECK(history_service_);
   history::QueryOptions options;
-  options.max_count = kMaxResults;
+  options.max_count = max_links;
   options.SetRecentDayRange(kRecentDayRange);
   history_service_->QueryHistory(
       std::u16string(), options,

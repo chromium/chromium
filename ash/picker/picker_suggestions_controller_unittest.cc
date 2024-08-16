@@ -210,7 +210,7 @@ TEST_F(PickerSuggestionsControllerTest, GetSuggestionsForLinkCategory) {
   };
   NiceMock<MockPickerClient> client;
   EXPECT_CALL(client, GetSuggestedLinkResults)
-      .WillRepeatedly(RunCallbackArgWith(suggested_links));
+      .WillRepeatedly(WithArg<1>(RunCallbackArgWith(suggested_links)));
   PickerSuggestionsController controller(&client);
 
   base::test::TestFuture<std::vector<PickerSearchResult>> future;

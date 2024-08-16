@@ -72,7 +72,8 @@ class ASH_PUBLIC_EXPORT PickerClient {
   virtual void GetRecentDriveFileResults(size_t max_files,
                                          RecentFilesCallback callback) = 0;
 
-  virtual void GetSuggestedLinkResults(SuggestedLinksCallback callback) = 0;
+  virtual void GetSuggestedLinkResults(size_t max_results,
+                                       SuggestedLinksCallback callback) = 0;
 
   virtual bool IsFeatureAllowedForDogfood() = 0;
 
