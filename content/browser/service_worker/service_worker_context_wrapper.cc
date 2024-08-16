@@ -654,9 +654,8 @@ void ServiceWorkerContextWrapper::UnregisterServiceWorkerImmediatelyImpl(
 
   if (!context_core_) {
     GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       blink::ServiceWorkerStatusCode::kErrorFailed));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
   }
   context()->UnregisterServiceWorker(net::SimplifyUrlForRequest(scope), key,
