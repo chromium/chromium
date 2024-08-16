@@ -47,6 +47,7 @@ namespace {
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
 // "TextToSpeechSource" in src/tools/metrics/histograms/enums.xml.
+// LINT.IfChange(UMATextToSpeechSource)
 enum class UMATextToSpeechSource {
   kOther = 0,
   kChromeVox = 1,
@@ -54,6 +55,7 @@ enum class UMATextToSpeechSource {
 
   kMaxValue = kSelectToSpeak,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:TextToSpeechSource)
 
 }  // namespace
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

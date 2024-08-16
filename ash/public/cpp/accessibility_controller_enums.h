@@ -153,6 +153,8 @@ enum class MagnifierCommand {
 // dwelling. These values are written to prefs and correspond to
 // AutoclickActionType in enums.xml, so should not be changed. New values
 // should be added at the end.
+//
+// LINT.IfChange(AutoclickEventType)
 enum class AutoclickEventType {
   // Perform a left click.
   kLeftClick = 0,
@@ -176,6 +178,7 @@ enum class AutoclickEventType {
 
   kMaxValue = kScroll
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AutoclickActionType)
 
 // Display location of the on-screen floating menus used by accessibility
 // features(e.g. the Automatic Clicks) . These values are written to prefs so

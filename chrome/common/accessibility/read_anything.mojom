@@ -56,6 +56,7 @@ interface UntrustedPageHandlerFactory {
 // Used as identifiers for the Read Anything theme options.
 // Next value: 5
 [Extensible, Stable, Uuid="03f38cfc-a34f-460a-a0a7-faf711f11a64"]
+// LINT.IfChange(Colors)
 enum Colors {
   [Default]kDefault = 0,
   kLight = 1,
@@ -63,24 +64,29 @@ enum Colors {
   kYellow = 3,
   [MinVersion=1] kBlue = 4,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingColor)
 
 [Extensible, Stable, Uuid="2B5C793A-D81E-4C76-8CDF-695C7E0A30E2",
  RenamedFrom="read_anything.mojom.Spacing"]
+// LINT.IfChange(LetterSpacing)
 enum LetterSpacing {
   kTightDeprecated = 0,
   [Default]kStandard = 1,
   kWide = 2,
   kVeryWide = 3,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingLetterSpacing)
 
 [Extensible, Stable, Uuid="49212e28-ae8a-4244-94df-0cbb7fcdf5bc",
  RenamedFrom="read_anything.mojom.Spacing"]
+// LINT.IfChange(LineSpacing)
 enum LineSpacing {
   kTightDeprecated = 0,
   kStandard = 1,
   [Default]kLoose = 2,
   kVeryLoose = 3,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingLineSpacing)
 
 [Extensible, Stable, Uuid="b8c27619-fe28-44a6-bb89-f4eda846b0f8"]
 // Granularity used for highlighting text as it's spoken.

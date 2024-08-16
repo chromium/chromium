@@ -22,12 +22,14 @@ const char kHistogramsName[] =
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(MainNodeAnnotationResult)
 enum class MainNodeAnnotationResult {
   kSuccess = 0,
   kInvalid = 1,
   kDuplicate = 2,
   kMaxValue = kDuplicate,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:MainNodeAnnotationResult)
 
 }  // namespace
 

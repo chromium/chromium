@@ -37,6 +37,8 @@ class AXSelection;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(AXTreeUnserializeError)
 enum class AXTreeUnserializeError {
   // Tree has no root.
   kNoRoot = 0,
@@ -58,6 +60,7 @@ enum class AXTreeUnserializeError {
   // increase, but none of the other enum values may change.
   kMaxValue = kPendingChanges
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityTreeUnserializeError)
 
 #define ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(enum_value) \
   base::UmaHistogramEnumeration(                                   \

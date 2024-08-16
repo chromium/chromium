@@ -25,6 +25,7 @@ extern const char kSodaBinaryInstallationFailureTimeTaken[];
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(LanguageCode)
 enum class LanguageCode {
   kNone = 0,
   kEnUs = 1,
@@ -65,6 +66,7 @@ enum class LanguageCode {
   kViVn = 35,
   kMaxValue = kViVn,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:SodaLanguageCode)
 
 // Describes all metadata needed to dynamically install SODA language pack
 // components.

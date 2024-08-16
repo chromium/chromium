@@ -17,11 +17,13 @@ namespace dom_distiller {
 class UMAHelper {
  public:
   // Must agree with ReaderModeEntryPoint in enums.xml.
+  // LINT.IfChange(ReaderModeEntryPoint)
   enum class ReaderModeEntryPoint {
     kOmniboxIcon = 0,
     kMenuOption = 1,
     kMaxValue = kMenuOption,
   };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReaderModeEntryPoint)
 
   // A page can be distillable (an article), distilled (a reader mode
   // page), or neither (some other webpage).

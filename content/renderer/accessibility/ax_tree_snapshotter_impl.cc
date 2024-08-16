@@ -43,6 +43,8 @@ constexpr char kAXTreeSnapshotterErrorHistogramName[] =
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(AXTreeSnapshotErrorReason)
 enum class AXTreeSnapshotErrorReason {
   kGenericSerializationError = 0,
   kNoWebFrame = 1,
@@ -53,6 +55,7 @@ enum class AXTreeSnapshotErrorReason {
   kSerializeMaxNodesAndTimeoutReached = 6,
   kMaxValue = kSerializeMaxNodesAndTimeoutReached,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AXTreeSnapshotErrorReason)
 
 AXTreeSnapshotterImpl::AXTreeSnapshotterImpl(RenderFrameImpl* render_frame,
                                              ui::AXMode ax_mode)

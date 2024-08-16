@@ -18,6 +18,8 @@ enum UmaName {
 // Enum for logging when we play speech on a page.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(ReadAnythingNewPage)
 export enum ReadAnythingNewPage {
   NEW_PAGE = 0,
   SPEECH_PLAYED_ON_NEW_PAGE = 1,
@@ -25,10 +27,13 @@ export enum ReadAnythingNewPage {
   // Must be last.
   COUNT = 2,
 }
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingNewPage)
 
 // Enum for logging which kind of voice is being used to read aloud.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(ReadAnythingVoiceType)
 export enum ReadAnythingVoiceType {
   NATURAL = 0,
   ESPEAK = 1,
@@ -37,10 +42,13 @@ export enum ReadAnythingVoiceType {
   // Must be last.
   COUNT = 3,
 }
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingReadAloudVoice)
 
 // Enum for logging when a text style setting is changed.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(ReadAnythingSettingsChange)
 export enum ReadAnythingSettingsChange {
   FONT_CHANGE = 0,
   FONT_SIZE_CHANGE = 1,
@@ -53,10 +61,13 @@ export enum ReadAnythingSettingsChange {
   // Must be last.
   COUNT = 7,
 }
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingSettingsChange)
 
 // Enum for logging the reading highlight state.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(ReadAloudHighlightState)
 export enum ReadAloudHighlightState {
   HIGHLIGHT_ON = 0,
   HIGHLIGHT_OFF = 1,
@@ -64,10 +75,13 @@ export enum ReadAloudHighlightState {
   // Must be last.
   COUNT = 2,
 }
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingHighlightState)
 
 // Enum for logging when a read aloud speech setting is changed.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(ReadAloudSettingsChange)
 export enum ReadAloudSettingsChange {
   VOICE_SPEED_CHANGE = 0,
   VOICE_NAME_CHANGE = 1,
@@ -76,10 +90,13 @@ export enum ReadAloudSettingsChange {
   // Must be last.
   COUNT = 3,
 }
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingReadAloudSettingsChange)
 
 // Enum for logging when a speech error event occurs.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(ReadAnythingSpeechError)
 export enum ReadAnythingSpeechError {
   TEXT_TOO_LONG = 0,
   LANGUAGE_UNAVAILABLE = 1,
@@ -94,6 +111,7 @@ export enum ReadAnythingSpeechError {
   // Must be last.
   COUNT = 9,
 }
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingSpeechError)
 
 // A proxy for forwarding logging calls to chrome.metricsPrivate or
 // chrome.readingMode.

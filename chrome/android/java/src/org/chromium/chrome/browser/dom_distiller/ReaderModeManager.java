@@ -97,9 +97,10 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
      * Conditions under which the Reader Mode prompt was dismissed in conjunction with the
      * accessibility setting.
      *
-     * Note: These values are persisted to logs. Entries should not be renumbered and numeric values
-     * should never be reused.
+     * <p>Note: These values are persisted to logs. Entries should not be renumbered and numeric
+     * values should never be reused.
      */
+    // LINT.IfChange(MessageDismissalCondition)
     @IntDef({
         MessageDismissalCondition.ACCEPTED_WITH_ACCESSIBILITY_SETTING_SELECTED,
         MessageDismissalCondition.ACCEPTED_WITH_ACCESSIBILITY_SETTING_DESELECTED,
@@ -116,6 +117,8 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         // Number of entries
         int NUM_ENTRIES = 4;
     }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReaderModeMessageDismissalCondition)
 
     /** The key to access this object from a {@Tab}. */
     public static final Class<ReaderModeManager> USER_DATA_KEY = ReaderModeManager.class;

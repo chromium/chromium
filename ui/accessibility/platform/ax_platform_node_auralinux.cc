@@ -82,6 +82,8 @@ namespace {
 // IMPORTANT!
 // These values are written to logs.  Do not renumber or delete
 // existing items; add new entries to the end of the list.
+//
+// LINT.IfChange(UmaAtkApi)
 enum class UmaAtkApi {
   kGetName = 0,
   kGetDescription = 1,
@@ -97,6 +99,7 @@ enum class UmaAtkApi {
   // increase, but none of the other enum values may change.
   kMaxValue = kRefStateSet,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityATKAPIEnum)
 
 void RecordAccessibilityAtkApi(UmaAtkApi enum_value) {
   UMA_HISTOGRAM_ENUMERATION("Accessibility.ATK-APIs", enum_value);

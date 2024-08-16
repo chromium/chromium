@@ -44,6 +44,8 @@ const uint32_t kPasswordPackageHashes[] = {
 // below. For example, UMA_EVENT_ANNOUNCEMENT corresponds to
 // ACCESSIBILITYEVENT_TYPE_ANNOUNCEMENT via the macro
 // EVENT_TYPE_HISTOGRAM(event_type_mask, ANNOUNCEMENT).
+//
+// LINT.IfChange
 enum {
   UMA_CAPABILITY_CAN_CONTROL_MAGNIFICATION = 0,
   UMA_CAPABILITY_CAN_PERFORM_GESTURES = 1,
@@ -117,6 +119,7 @@ enum {
   // increase, but none of the other enum values may change.
   UMA_ACCESSIBILITYSERVICEINFO_MAX
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityAndroidServiceInfoEnum)
 
 // These are constants from
 // android.view.accessibility.AccessibilityEvent in Java.

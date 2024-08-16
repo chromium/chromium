@@ -29,11 +29,13 @@ namespace pdf {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(PdfOcrRequestStatus)
 enum class PdfOcrRequestStatus {
   kRequested = 0,
   kPerformed = 1,
   kMaxValue = kPerformed,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:PdfOcrRequestStatus)
 
 // Used for storing OCR requests either before performing an OCR job, or after
 // the results have been received. This is for scheduling the work in another
