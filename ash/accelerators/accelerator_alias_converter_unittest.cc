@@ -581,6 +581,58 @@ TEST_F(AcceleratorAliasConverterTest, CheckCapsLockAlias) {
   EXPECT_EQ(0u, accelerator_aliases.size());
 }
 
+TEST_F(AcceleratorAliasConverterTest, CheckRightAltInList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kModifierSplit);
+  auto ignore_modifier_split_secret_key =
+      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
+  Shell::Get()
+      ->keyboard_capability()
+      ->ResetModifierSplitDogfoodControllerForTesting();
+
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
+      std::make_unique<FakeDeviceManager>();
+  ui::KeyboardDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/kKbdTopRowLayout1Tag, /*has_assistant_key=*/true,
+      /*has_function_key=*/true);
+  fake_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout1Tag);
+
+  const ui::Accelerator right_alt_accelerator{ui::VKEY_RIGHT_ALT, ui::EF_NONE};
+
+  AcceleratorAliasConverter accelerator_alias_converter;
+
+  EXPECT_EQ(std::vector<ui::Accelerator>{right_alt_accelerator},
+            accelerator_alias_converter.CreateAcceleratorAlias(
+                right_alt_accelerator));
+}
+
+TEST_F(AcceleratorAliasConverterTest, CheckRightAltNotInList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kModifierSplit);
+  auto ignore_modifier_split_secret_key =
+      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
+  Shell::Get()
+      ->keyboard_capability()
+      ->ResetModifierSplitDogfoodControllerForTesting();
+
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
+      std::make_unique<FakeDeviceManager>();
+  ui::KeyboardDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/kKbdTopRowLayout1Tag);
+  fake_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout1Tag);
+
+  const ui::Accelerator right_alt_accelerator{ui::VKEY_RIGHT_ALT, ui::EF_NONE};
+
+  AcceleratorAliasConverter accelerator_alias_converter;
+  EXPECT_TRUE(
+      accelerator_alias_converter.CreateAcceleratorAlias(right_alt_accelerator)
+          .empty());
+}
+
 TEST_F(AcceleratorAliasConverterTest, MetaFKeyRewritesSuppressed) {
   // Needs to be in user session to edit input device settings.
   SimulateGuestLogin();
