@@ -57,12 +57,12 @@ constexpr net::NetworkTrafficAnnotationTag kShoppingListTrafficAnnotation =
         semantics {
           sender: "Chrome Shopping"
           description:
-            "Retrieves product specifications for a list of products as they "
+            "Retrieves Tab Comparison data for a list of products as they "
             "relate to each other based on their cluster IDs. This will only "
             "be called while the UI for the feature is open."
           trigger:
-            "When the product specifications UI is opened, we will send a "
-            "request any time the list of currently viewed products changes."
+            "When the Tab Compare UI is opened, we will send a request any "
+            "time the list of currently viewed products changes."
           user_data {
             type: ACCESS_TOKEN
             type: SENSITIVE_URL
@@ -84,7 +84,12 @@ constexpr net::NetworkTrafficAnnotationTag kShoppingListTrafficAnnotation =
             "feature based on things like country, locale, and whether the "
             "user is signed in. The request is only made after the user "
             "chooses to engage with the feature."
-          chrome_policy {}
+          chrome_policy {
+            TabCompareSettings {
+              policy_options {mode: MANDATORY}
+              TabCompareSettings: 2
+            }
+          }
         })");
 
 std::optional<ProductSpecifications::DescriptionText> ParseDescriptionText(

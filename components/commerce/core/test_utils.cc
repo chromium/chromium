@@ -14,9 +14,12 @@
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,6 +85,20 @@ void AddProductInfoToExistingBookmark(
 void SetShoppingListEnterprisePolicyPref(TestingPrefServiceSimple* prefs,
                                          bool enabled) {
   prefs->SetManagedPref(kShoppingListEnabledPrefName, base::Value(enabled));
+}
+
+void RegisterCommercePrefs(PrefRegistrySimple* registry) {
+  RegisterPrefs(registry);
+  registry->RegisterIntegerPref(
+      optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
+      0);
+}
+
+void SetTabCompareEnterprisePolicyPref(TestingPrefServiceSimple* prefs,
+                                       int enabled_state) {
+  prefs->SetManagedPref(
+      optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
+      base::Value(enabled_state));
 }
 
 std::optional<PriceInsightsInfo> CreateValidPriceInsightsInfo(

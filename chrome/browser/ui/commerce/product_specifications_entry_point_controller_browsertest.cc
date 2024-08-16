@@ -21,7 +21,9 @@
 #include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
+#include "components/commerce/core/test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "content/public/test/browser_test.h"
@@ -58,12 +60,18 @@ class ProductSpecificationsEntryPointControllerBrowserTest
     : public InProcessBrowserTest {
  public:
   ProductSpecificationsEntryPointControllerBrowserTest()
-      : account_checker_(std::make_unique<commerce::MockAccountChecker>()) {
+      : prefs_(std::make_unique<TestingPrefServiceSimple>()),
+        account_checker_(std::make_unique<commerce::MockAccountChecker>()) {
     test_features_.InitAndEnableFeature(commerce::kProductSpecifications);
     account_checker_->SetCountry("us");
     account_checker_->SetLocale("en-us");
     account_checker_->SetSignedIn(true);
     account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
+    account_checker_->SetPrefs(prefs_.get());
+
+    commerce::RegisterCommercePrefs(prefs_->registry());
+    commerce::SetTabCompareEnterprisePolicyPref(prefs_.get(), 0);
+
     ON_CALL(*account_checker_, IsSyncTypeEnabled)
         .WillByDefault(testing::Return(true));
   }
@@ -115,6 +123,7 @@ class ProductSpecificationsEntryPointControllerBrowserTest
   }
 
  protected:
+  std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<commerce::MockAccountChecker> account_checker_;
   raw_ptr<commerce::MockShoppingService, AcrossTasksDanglingUntriaged>
       mock_shopping_service_;

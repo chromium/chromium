@@ -49,9 +49,9 @@ constexpr net::NetworkTrafficAnnotationTag
               "Ask server for comparable products from a list of product Ids."
             trigger:
               "A Chrome-initiated request that requires user enabling the "
-              "product specification feature. The request is sent after Chrome "
-              "detects several open tabs has similar products, before showing "
-              "the user a button to allow them to compare some of the products."
+              "Tab Compare feature. The request is sent after Chrome detects "
+              "several open tabs has similar products, before showing the user"
+              "a button to allow them to compare some of the products."
             user_data {
               type: OTHER
               type: ACCESS_TOKEN
@@ -70,9 +70,13 @@ constexpr net::NetworkTrafficAnnotationTag
             setting:
               "This fetch is enabled for any user that is eligible to use this "
               "feature based on things like country, locale, and whether the "
-              "user is signed in. The request is enabled with the product "
-              "specification feature."
+              "user is signed in. The request is enabled with the Tab Compare "
+              "feature."
             chrome_policy {
+              TabCompareSettings {
+                policy_options {mode: MANDATORY}
+                TabCompareSettings: 2
+              }
             }
           }
         )");

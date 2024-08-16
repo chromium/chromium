@@ -197,9 +197,9 @@ class ShoppingServiceHandlerTest : public testing::Test {
     shopping_service_ = std::make_unique<MockShoppingService>();
     shopping_service_->SetAccountChecker(account_checker_.get());
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    RegisterPrefs(pref_service_->registry());
-    optimization_guide::model_execution::prefs::RegisterProfilePrefs(
-        pref_service_->registry());
+    account_checker_->SetPrefs(pref_service_.get());
+    RegisterCommercePrefs(pref_service_->registry());
+    SetTabCompareEnterprisePolicyPref(pref_service_.get(), 0);
     SetShoppingListEnterprisePolicyPref(pref_service_.get(), true);
 
     ON_CALL(*shopping_service_, GetProductSpecificationsService)
@@ -1267,7 +1267,6 @@ TEST_F(ShoppingServiceHandlerTest,
       uuid, 0, 0, {GURL("https://example.com/")}, "set1"));
   ON_CALL(*product_spec_service_, GetAllProductSpecifications())
       .WillByDefault(testing::Return(std::move(sets)));
-
   base::RunLoop run_loop;
   handler_->GetProductSpecificationsFeatureState(
       base::BindOnce(
@@ -1329,7 +1328,9 @@ class ShoppingServiceHandlerProductSpecsDisabledTest : public testing::Test {
     shopping_service_ = std::make_unique<MockShoppingService>();
     shopping_service_->SetAccountChecker(account_checker_.get());
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    RegisterPrefs(pref_service_->registry());
+    account_checker_->SetPrefs(pref_service_.get());
+    RegisterCommercePrefs(pref_service_->registry());
+    SetTabCompareEnterprisePolicyPref(pref_service_.get(), 0);
     SetShoppingListEnterprisePolicyPref(pref_service_.get(), true);
 
     ON_CALL(*shopping_service_, GetProductSpecificationsService)

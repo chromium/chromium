@@ -8,6 +8,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -39,8 +40,13 @@ bool IsShoppingListEligible(AccountChecker* account_checker) {
 }
 
 bool IsProductSpecificationsAllowedForEnterprise(PrefService* prefs) {
-  // TODO(b/325109916): Implement enterprise policy.
-  return true;
+  // Currently the only supported state is 0 (enabled with logging).
+  return prefs->GetInteger(optimization_guide::prefs::
+                               kProductSpecificationsEnterprisePolicyAllowed) ==
+             0 ||
+         !prefs->IsManagedPreference(
+             optimization_guide::prefs::
+                 kProductSpecificationsEnterprisePolicyAllowed);
 }
 
 bool IsSyncingProductSpecifications(AccountChecker* account_checker) {
@@ -80,6 +86,8 @@ bool CanManageProductSpecificationsSets(
             : 0;
 
     if (entity_count == 0) {
+      // If there are no entities, we can only manage them if the full page
+      // UI is enabled.
       return false;
     }
   }

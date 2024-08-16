@@ -13,6 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 class GURL;
+class PrefRegistrySimple;
 class TestingPrefServiceSimple;
 
 namespace bookmarks {
@@ -74,6 +75,13 @@ void AddProductInfoToExistingBookmark(
 // testing.
 void SetShoppingListEnterprisePolicyPref(TestingPrefServiceSimple* prefs,
                                          bool enabled);
+
+// Register prefs related to commerce in the provided prefs.
+void RegisterCommercePrefs(PrefRegistrySimple* registry);
+
+// Set the tab compare enterprise policy for testing.
+void SetTabCompareEnterprisePolicyPref(TestingPrefServiceSimple* prefs,
+                                       int enabled_state);
 
 std::optional<PriceInsightsInfo> CreateValidPriceInsightsInfo(
     bool has_price_range_data = false,

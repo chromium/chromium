@@ -21,6 +21,7 @@
 #include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/test_utils.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,7 +52,8 @@ std::optional<ProductGroup> CreateProductGroup() {
 
 class ProductSpecificationsPageActionControllerUnittest : public testing::Test {
  public:
-  ProductSpecificationsPageActionControllerUnittest() = default;
+  ProductSpecificationsPageActionControllerUnittest()
+      : prefs_(std::make_unique<TestingPrefServiceSimple>()) {}
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(commerce::kProductSpecifications);
@@ -62,6 +64,7 @@ class ProductSpecificationsPageActionControllerUnittest : public testing::Test {
     account_checker_->SetLocale("en-us");
     account_checker_->SetSignedIn(true);
     account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
+    account_checker_->SetPrefs(prefs_.get());
     ON_CALL(*account_checker_, IsSyncTypeEnabled)
         .WillByDefault(testing::Return(true));
     shopping_service_->SetAccountChecker(account_checker_.get());
@@ -70,6 +73,8 @@ class ProductSpecificationsPageActionControllerUnittest : public testing::Test {
     mock_product_specifications_service_ =
         static_cast<commerce::MockProductSpecificationsService*>(
             shopping_service_->GetProductSpecificationsService());
+    commerce::RegisterCommercePrefs(prefs_->registry());
+    commerce::SetTabCompareEnterprisePolicyPref(prefs_.get(), 0);
     controller_ = std::make_unique<ProductSpecificationsPageActionController>(
         std::move(callback), shopping_service_.get());
   }
@@ -82,6 +87,7 @@ class ProductSpecificationsPageActionControllerUnittest : public testing::Test {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<MockAccountChecker> account_checker_;
   base::MockRepeatingCallback<void()> notify_host_callback_;
   std::unique_ptr<MockShoppingService> shopping_service_;

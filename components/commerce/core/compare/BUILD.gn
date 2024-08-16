@@ -60,6 +60,7 @@ source_set("unit_tests") {
     "//components/commerce/core:feature_list",
     "//components/commerce/core:pref_names",
     "//components/commerce/core:proto",
+    "//components/commerce/core:shopping_service_test_support",
     "//components/commerce/core:utils",
     "//components/commerce/core/product_specifications",
     "//components/commerce/core/product_specifications:test_support",
