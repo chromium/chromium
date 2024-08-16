@@ -99,6 +99,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     };
   }
 
+  private maxTextLength_: number;
   private textValue_: string;
   private seaPenQuery_: SeaPenQuery|null;
   private thumbnails_: SeaPenThumbnail[]|null;
@@ -236,9 +237,12 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
 
   private onSuggestionSelected_(event: SeaPenSuggestionSelectedEvent) {
     this.textValue_ = this.textValue_.trim();
-    this.textValue_ = this.textValue_.length > 0 ?
-        `${this.textValue_}, ${event.detail}` :
-        event.detail;
+    const newTextValue = `${this.textValue_}, ${event.detail}`;
+    if (newTextValue.length > this.maxTextLength_) {
+      // Do nothing if the suggestion overflows the max text length.
+      return;
+    }
+    this.textValue_ = this.textValue_.length > 0 ? newTextValue : event.detail;
   }
 
   private updateSearchButton_(

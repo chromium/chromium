@@ -312,6 +312,33 @@ suite('SeaPenInputQueryElementTest', function() {
         'suggestion text should be added at the end of the text input');
   });
 
+  test('clicking suggestion does nothing if over the max length', async () => {
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    await waitAfterNextRender(seaPenInputQueryElement);
+    const inputElement =
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
+            '#queryInput');
+    // The max length is 1000 characters.
+    const textValue = 'a'.repeat(999);
+    await setTextInputValue(textValue);
+
+    const seaPenSuggestions =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenSuggestionsElement.is);
+    assertTrue(!!seaPenSuggestions, 'suggestions should exist');
+    const seaPenSuggestionButton =
+        seaPenSuggestions.shadowRoot!.querySelector<CrButtonElement>(
+            '.suggestion');
+    assertTrue(!!seaPenSuggestionButton, 'suggestion buttons should exist');
+
+    seaPenSuggestionButton.click();
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    assertEquals(
+        `${textValue}`, inputElement!.value,
+        'suggestion text should not be changed');
+  });
+
   test('clicking suggestion removes the button', async () => {
     seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
     await waitAfterNextRender(seaPenInputQueryElement);
