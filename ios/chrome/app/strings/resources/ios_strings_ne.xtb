@@ -1222,7 +1222,7 @@
 <translation id="7082853213442715471">यो सेटिङ अन गरियो भने वेबका निश्चित प्रविधिहरू ब्लक गरिन्छन्। जसले गर्दा केही वेबसाइटहरू सुस्तरी लोड हुन वा राम्रोसँग काम नगर्न सक्छन्।</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> को Google पासवर्ड म्यानेजरमा सेभ गर्नुहोस्</translation>
 <translation id="7101580180124131336">तपाईं अब "फलो गरिएका" ट्याबमा <ph name="CHANNEL_NAME" /> का तथा सो च्यानलका बारेमा सामग्री देख्नु हुने छ।</translation>
-<translation id="7102005569666697658">डाउनलोड गर्दै… <ph name="FILE_SIZE" /></translation>
+<translation id="7102005569666697658">डाउनलोड गरिँदै छ… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">लुकाउनुहोस्</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">पूरा नाम</translation>

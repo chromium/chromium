@@ -2726,7 +2726,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2960942820860729477">Aktualisierungsrate</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (Verlängerung gewährt)</translation>
 <translation id="2961695502793809356">Klicken, um weiterzugehen. Gedrückt halten, um den Verlauf aufzurufen</translation>
-<translation id="29618148602069201">Thema</translation>
+<translation id="29618148602069201">Motiv</translation>
 <translation id="2963151496262057773">Das folgende Plug-in reagiert nicht: <ph name="PLUGIN_NAME" />. Möchtest du es anhalten?</translation>
 <translation id="2964193600955408481">WLAN deaktivieren</translation>
 <translation id="2964245677645334031">Nearby Share-Sichtbarkeit</translation>
@@ -3082,7 +3082,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3237871032310650497">Websitedaten für <ph name="SITE_NAME" /> löschen, die auf <ph name="PARTITION_SITE_NAME" /> partitioniert sind?</translation>
 <translation id="3238192140106069382">Verbindung wird hergestellt und geprüft</translation>
 <translation id="3239373508713281971">Zeitlimit entfernt für <ph name="APP_NAME" /></translation>
-<translation id="3240299564104448052">Du bis anscheinend offline.</translation>
+<translation id="3240299564104448052">Du bist anscheinend offline.</translation>
 <translation id="3240426699337459095">Link wurde kopiert.</translation>
 <translation id="3241638166094654466">Zellen in jeder Zeile:</translation>
 <translation id="3241680850019875542">Wähle das Stammverzeichnis der Erweiterung, die gepackt werden soll. Zur Aktualisierung einer Erweiterung wähle außerdem den privaten Schlüssel zur Wiederverwendung.</translation>
@@ -5906,7 +5906,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5355099869024327351">Zulassen, dass Assistant dir Benachrichtigungen anzeigt</translation>
 <translation id="5355191726083956201">Erweitertes Safe Browsing ist aktiviert</translation>
 <translation id="5355498626146154079">Du musst das Flag „Borealis enabled“ aktivieren</translation>
-<translation id="5355501370336370394">Enterprise-Gerät anmelden</translation>
+<translation id="5355501370336370394">Enterprise-Gerät registrieren</translation>
 <translation id="5356155057455921522">Durch dieses Update von deinem Administrator öffnen sich die Apps deiner Organisation schneller. Das kann einige Minuten dauern.</translation>
 <translation id="5357010010552553606">Nicht berechtigt, automatisch in den Vollbildmodus zu wechseln</translation>
 <translation id="5359910752122114278">1 Ergebnis</translation>
@@ -5952,7 +5952,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# Links}}</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">Standardschriftart</translation>
-<translation id="5397378439569041789">Kiosk- und Beschilderungsgeräte anmelden</translation>
+<translation id="5397378439569041789">Kiosk- und Beschilderungsgeräte registrieren</translation>
 <translation id="5397794290049113714">Ich</translation>
 <translation id="5398062879200420134">⌥+ Mauszeiger daraufbewegen</translation>
 <translation id="5398497406011404839">Ausgeblendete Lesezeichen</translation>
@@ -11191,7 +11191,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Kamera und Mikrofon zeichnen auf</translation>
 <translation id="984275831282074731">Zahlungsmethoden</translation>
 <translation id="984705303330760860">Sprachen für die Rechtschreibprüfung hinzufügen</translation>
-<translation id="98515147261107953">Querformat</translation>
+<translation id="98515147261107953">Landschaft</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Allgemein</translation>
 <translation id="987475089238841621">Sprachpakete werden für die Funktion „Automatische Untertitel“ verwendet und auf deinem Gerät gespeichert</translation>
