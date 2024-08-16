@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_data_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_map.h"
+#include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data_cache.h"
@@ -72,6 +73,7 @@
 namespace blink {
 
 const char kColorEmojiLocale[] = "und-Zsye";
+const char kMonoEmojiLocale[] = "und-Zsym";
 
 #if BUILDFLAG(IS_ANDROID)
 extern const char kNotoColorEmojiCompat[] = "Noto Color Emoji Compat";
@@ -370,8 +372,11 @@ FontCache::Bcp47Vector FontCache::GetBcp47LocaleForRequest(
   if (content_locale)
     result.push_back(content_locale->LocaleForSkFontMgr());
 
-  if (fallback_priority == FontFallbackPriority::kEmojiEmoji)
+  if (fallback_priority == FontFallbackPriority::kEmojiEmoji) {
     result.push_back(kColorEmojiLocale);
+  } else if (fallback_priority == FontFallbackPriority::kEmojiText) {
+    result.push_back(kMonoEmojiLocale);
+  }
   return result;
 }
 

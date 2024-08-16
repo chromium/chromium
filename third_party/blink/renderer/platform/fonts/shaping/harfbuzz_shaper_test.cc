@@ -11,23 +11,28 @@
 
 #include <unicode/uscript.h>
 
+#include "base/check.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
+#include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/font_test_utilities.h"
+#include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -128,9 +133,46 @@ class HarfBuzzShaperTest : public FontTestBase {
   Font CreateNotoColorEmoji() {
     return blink::test::CreateTestFont(
         AtomicString("NotoColorEmoji"),
-        blink::test::BlinkRootDir() +
-            "/web_tests/third_party/NotoColorEmoji/NotoColorEmoji.ttf",
+        blink::test::BlinkWebTestsDir() +
+            "/third_party/NotoColorEmoji/NotoColorEmoji.ttf",
         12);
+  }
+
+  Font CreateNotoEmoji() {
+    return blink::test::CreateTestFont(
+        AtomicString("NotoEmoji"),
+        blink::test::BlinkWebTestsDir() +
+            "/third_party/NotoEmoji/NotoEmoji-Regular.subset.ttf",
+        12);
+  }
+
+  // Hardcoded font names created with `CreateNotoEmoji` and
+  // `CreateNotoColorEmoji`.
+  const char* kNotoEmojiFontName = "Noto Emoji";
+  const char* kNotoColorEmojiFontName = "Noto Color Emoji (Fontations)";
+
+#if BUILDFLAG(IS_MAC)
+  const char* kSystemColorEmojiFont = "Apple Color Emoji";
+#elif BUILDFLAG(IS_ANDROID)
+  const char* kSystemColorEmojiFont = "Noto Color Emoji";
+#endif
+
+#if BUILDFLAG(IS_MAC)
+  const char* kSystemMonoEmojiFont = "Apple Symbols";
+#elif BUILDFLAG(IS_ANDROID)
+  const char* kSystemMonoEmojiFont = "Noto Sans Symbols";
+#endif
+
+  String GetShapedFontFamilyNameForEmojiVS(Font& font, String text) {
+    DCHECK(text.length() == 1 ||
+           (text.length() == 2 &&
+            (text.EndsWith(u"\ufe0e") || text.EndsWith(u"\ufe0f"))));
+    HeapVector<ShapeResult::RunFontData> run_font_data;
+    HarfBuzzShaper shaper(text);
+    const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
+    result->GetRunFontData(&run_font_data);
+    EXPECT_EQ(run_font_data.size(), 1u);
+    return run_font_data[0].font_data_->PlatformData().FontFamilyName();
   }
 
   const ShapeResult* SplitRun(ShapeResult* shape_result, unsigned offset) {
@@ -752,6 +794,52 @@ TEST_F(HarfBuzzShaperTest, IdeographicSpace) {
   result->GetRunFontData(&run_font_data);
   EXPECT_EQ(run_font_data.size(), 1u);
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+TEST_F(HarfBuzzShaperTest, SystemEmojiVS15) {
+  ScopedFontVariationSequencesForTest scoped_feature_vs(true);
+  ScopedSystemFallbackEmojiVSSupportForTest scoped_feature_system_emoji_vs(
+      true);
+
+  Font mono_font = CreateNotoEmoji();
+  Font color_font = CreateNotoColorEmoji();
+
+  String text_default(
+      u"\u2603"
+      u"\ufe0e");
+  String emoji_default(
+      u"\u2614"
+      u"\ufe0e");
+  for (String text : {text_default, emoji_default}) {
+    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(mono_font, text),
+              kNotoEmojiFontName);
+    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(color_font, text),
+              kSystemMonoEmojiFont);
+  }
+}
+
+TEST_F(HarfBuzzShaperTest, SystemEmojiVS16) {
+  ScopedFontVariationSequencesForTest scoped_feature_vs(true);
+  ScopedSystemFallbackEmojiVSSupportForTest scoped_feature_system_emoji_vs(
+      true);
+
+  Font mono_font = CreateNotoEmoji();
+  Font color_font = CreateNotoColorEmoji();
+
+  String text_default(
+      u"\u2603"
+      u"\ufe0f");
+  String emoji_default(
+      u"\u2614"
+      u"\ufe0f");
+  for (String text : {text_default, emoji_default}) {
+    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(mono_font, text),
+              kSystemColorEmojiFont);
+    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(color_font, text),
+              kNotoColorEmojiFontName);
+  }
+}
+#endif
 
 TEST_F(HarfBuzzShaperTest, NegativeLetterSpacing) {
   Font font(font_description);

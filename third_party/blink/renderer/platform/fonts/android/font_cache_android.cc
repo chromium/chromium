@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 
 #include "base/feature_list.h"
-
 #include "skia/ext/font_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
@@ -39,6 +38,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/language.h"
+#include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
@@ -145,6 +145,49 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   AtomicString family_name = GetFamilyNameForCharacter(
       fm.get(), c, font_description, generic_family_name, fallback_priority);
 
+  auto skia_fallback_is_noto_color_emoji = [&]() {
+    const FontPlatformData* skia_fallback_result = GetFontPlatformData(
+        font_description, FontFaceCreationParams(family_name));
+
+    // Determining the PostScript name is required as Skia on Android gives
+    // synthetic family names such as "91##fallback" to fallback fonts
+    // determined (Compare Skia's SkFontMgr_Android::addFamily). In order to
+    // identify if really the Emoji font was returned, compare by PostScript
+    // name rather than by family.
+    SkString fallback_postscript_name;
+    if (skia_fallback_result && skia_fallback_result->Typeface()) {
+      skia_fallback_result->Typeface()->getPostScriptName(
+          &fallback_postscript_name);
+    }
+    return fallback_postscript_name.equals(kNotoColorEmoji);
+  };
+
+  // If FontFallbackPriority is not kEmojiEmoji, emoji codepoints should be
+  // rendered in monochromatic (text) style. So, if the colored emoji font was
+  // selected for the codepoint, we will try to get a font with text style
+  // locale "Zsym", see https://unicode.org/reports/tr51/#Emoji_Script and
+  // replace colored emoji font with the found monochromatic one.
+  //
+  // On Android when we request font with specific emoji locale (i.e. "Zsym" or
+  // "Zsye"), Skia will first search for the font with the exact emoji locale,
+  // if it didn't succeed it will look at fonts with any emoji locales and only
+  // after look at the fonts without any emoji locale at all.
+  // The only font with "Zsym" locale on Android is
+  // "NotoSansSymbols-Regular-Subsetted2.ttf" font, but some text default emoji
+  // codepoints that are not present in this font, can be present in other
+  // monochromatic fonts without "Zsym" locale (for instance
+  // "NotoSansSymbols-Regular-Subsetted.ttf" is a font without emoji locales).
+  // So, in order not to override a monochromatic font font found with
+  // FontFallbackPriority::kText with colored one in such cases, we should
+  // not request the font with FontFallbackPriority::kEmojiText.
+  if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
+      fallback_priority != FontFallbackPriority::kEmojiEmoji &&
+      Character::IsEmoji(c) && skia_fallback_is_noto_color_emoji()) {
+    family_name = GetFamilyNameForCharacter(fm.get(), c, font_description,
+                                            generic_family_name,
+                                            FontFallbackPriority::kEmojiText);
+  }
+
   // Return the GMS Core emoji font if FontFallbackPriority is kEmojiEmoji and
   // a) no system fallback was found or b) the system fallback font's PostScript
   // name is "Noto Color Emoji" - then we override the system one with the newer
@@ -157,23 +200,6 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
 
   if (fallback_priority == FontFallbackPriority::kEmojiEmoji &&
       base::FeatureList::IsEnabled(features::kGMSCoreEmoji)) {
-    auto skia_fallback_is_noto_color_emoji = [&]() {
-      const FontPlatformData* skia_fallback_result = GetFontPlatformData(
-          font_description, FontFaceCreationParams(family_name));
-
-      // Determining the PostScript name is required as Skia on Android gives
-      // synthetic family names such as "91##fallback" to fallback fonts
-      // determined (Compare Skia's SkFontMgr_Android::addFamily). In order to
-      // identify if really the Emoji font was returned, compare by PostScript
-      // name rather than by family.
-      SkString fallback_postscript_name;
-      if (skia_fallback_result && skia_fallback_result->Typeface()) {
-        skia_fallback_result->Typeface()->getPostScriptName(
-            &fallback_postscript_name);
-      }
-      return fallback_postscript_name.equals(kNotoColorEmoji);
-    };
-
     if (family_name.empty() || skia_fallback_is_noto_color_emoji()) {
       const FontPlatformData* emoji_gms_core_font = GetFontPlatformData(
           font_description,
