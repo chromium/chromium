@@ -118,12 +118,6 @@ class NET_EXPORT HttpRequestHeaders {
     return FindHeader(key) != headers_.end();
   }
 
-  // Gets the first header that matches |key|.  If found, returns true and
-  // writes the value to |out|.
-  //
-  // Deprecated: This overload is being removed. Prefer the overload that
-  // returns a std::optional<std::string>.
-  bool GetHeader(std::string_view key, std::string* out) const;
   // Gets the first header that matches |key|, if one exists. If none exist,
   // returns std::nullopt.
   std::optional<std::string> GetHeader(std::string_view key) const;
