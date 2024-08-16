@@ -73,15 +73,7 @@ class UkmPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
   std::vector<int64_t> GetUkmMetricEntryValues(
       const std::string& entry_name,
       const std::string& metric_name) const {
-    const auto metric_entries =
-        ukm_recorder_->GetMetrics(entry_name, {metric_name});
-    std::vector<int64_t> metrics;
-    for (const auto& entry : metric_entries) {
-      auto it = entry.find(metric_name);
-      if (it != entry.end())
-        metrics.push_back(it->second);
-    }
-    return metrics;
+    return ukm_recorder_->GetMetricsEntryValues(entry_name, metric_name);
   }
 
   GURL GetOriginURL(const std::string& path) {

@@ -162,6 +162,20 @@ TestUkmRecorder::GetMetrics(
   return result;
 }
 
+std::vector<int64_t> TestUkmRecorder::GetMetricsEntryValues(
+    const std::string& entry_name,
+    const std::string& metric_name) const {
+  const auto metric_entries = GetMetrics(entry_name, {metric_name});
+  std::vector<int64_t> metric_values;
+  for (const auto& entry : metric_entries) {
+    auto it = entry.find(metric_name);
+    if (it != entry.end()) {
+      metric_values.push_back(it->second);
+    }
+  }
+  return metric_values;
+}
+
 std::vector<TestUkmRecorder::HumanReadableUkmEntry> TestUkmRecorder::GetEntries(
     std::string entry_name,
     const std::vector<std::string>& metric_names) const {
