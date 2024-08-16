@@ -207,6 +207,16 @@ bool PrerendererImpl::MaybePrerender(
     const PreloadingPredictor& enacting_predictor,
     PreloadingConfidence confidence) {
   CHECK_EQ(candidate->action, blink::mojom::SpeculationAction::kPrerender);
+
+  // Prerendering is not allowed in fenced frames.
+  if (render_frame_host_->IsNestedWithinFencedFrame()) {
+    render_frame_host_->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "The SpeculationRules API does not support prerendering in fenced "
+        "frames.");
+    return false;
+  }
+
   if (blocked_) {
     blocked_candidates_.emplace_back(candidate->Clone(), enacting_predictor,
                                      confidence);

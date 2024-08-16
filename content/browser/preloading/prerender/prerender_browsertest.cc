@@ -12590,12 +12590,84 @@ class PrerenderFencedFrameBrowserTest : public PrerenderBrowserTest {
   }
   ~PrerenderFencedFrameBrowserTest() override = default;
 
+  void SetUp() override {
+    ssl_server().RegisterRequestHandler(base::BindRepeating(
+        &net::test_server::HandlePrefixedRequest,
+        "/fenced-frame-with-speculation-rules",
+        base::BindRepeating(HandleFencedFrameWithSpeculationRulesRequest)));
+    ssl_server().RegisterRequestHandler(base::BindRepeating(
+        &net::test_server::HandlePrefixedRequest,
+        "/fenced-frame-with-speculation-rules-header",
+        base::BindRepeating(
+            HandleFencedFrameWithSpeculationRulesHeaderRequest)));
+    ssl_server().RegisterRequestHandler(base::BindRepeating(
+        &net::test_server::HandlePrefixedRequest, "/prerender.json",
+        base::BindRepeating(HandlePrerenderJsonRequest)));
+    PrerenderBrowserTest::SetUp();
+  }
+
+  static std::unique_ptr<net::test_server::HttpResponse>
+  HandleFencedFrameWithSpeculationRulesRequest(
+      const net::test_server::HttpRequest& request) {
+    constexpr char kSpeculationRule[] = R"({
+      <!doctype html>
+      <script type="speculationrules">
+      {
+        "prerender":[
+          {"source": "list", "urls": ["/empty.html"]}
+        ]
+      }
+      </script>
+    })";
+
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->AddCustomHeader("Supports-Loading-Mode", "fenced-frame");
+    http_response->set_content_type("text/html");
+    http_response->set_content(kSpeculationRule);
+    return http_response;
+  }
+
+  static std::unique_ptr<net::test_server::HttpResponse>
+  HandleFencedFrameWithSpeculationRulesHeaderRequest(
+      const net::test_server::HttpRequest& request) {
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->AddCustomHeader("Supports-Loading-Mode", "fenced-frame");
+    http_response->AddCustomHeader("Speculation-Rules", "\"/prerender.json\"");
+    http_response->set_content_type("text/html");
+    http_response->set_content("<!doctype html>nothing");
+    return http_response;
+  }
+
+  static std::unique_ptr<net::test_server::HttpResponse>
+  HandlePrerenderJsonRequest(const net::test_server::HttpRequest& request) {
+    constexpr char kSpeculationRule[] = R"(
+      {
+        "prerender":[
+          {"source": "list", "urls": ["/empty.html"]}
+        ]
+      }
+    )";
+
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content_type("application/speculationrules+json");
+    http_response->set_content(kSpeculationRule);
+    return http_response;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Test that creating a fenced frame in a prerendered page is deferred until
+// activation.
 IN_PROC_BROWSER_TEST_F(PrerenderFencedFrameBrowserTest,
-                       PrerenderFencedFrameBrowserTest) {
+                       CreateFencedFrameInPrerenderedPage) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
   const GURL kFencedFrameUrl = GetUrl("/title1.html");
@@ -12629,6 +12701,71 @@ IN_PROC_BROWSER_TEST_F(PrerenderFencedFrameBrowserTest,
   EXPECT_EQ(kPrerenderingUrl, nav_observer.last_navigation_url());
   nav_observer.Wait();
   EXPECT_EQ(kFencedFrameUrl, nav_observer.last_navigation_url());
+}
+
+// Test that prerendering triggered by fenced frames with speculation rules is
+// blocked.
+IN_PROC_BROWSER_TEST_F(PrerenderFencedFrameBrowserTest,
+                       PrerenderFromFencedFrame_SpeculationRules) {
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL fenced_frame_url = GetUrl("/fenced-frame-with-speculation-rules");
+  constexpr char kAddFencedFrameScript[] = R"({
+    const fenced_frame = document.createElement('fencedframe');
+    fenced_frame.config = new FencedFrameConfig($1);
+    document.body.appendChild(fenced_frame);
+  })";
+
+  // Prerendering triggered by fenced frames will be blocked. To detect it, we
+  // need to wait its failure by monitoring a console error.
+  const char* console_pattern =
+      "The SpeculationRules API does not support prerendering in fenced "
+      "frames.";
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(console_pattern);
+
+  // Start prerendering from fenced frames.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  RenderFrameHostImpl* primary_rfh = web_contents_impl()->GetPrimaryMainFrame();
+  EXPECT_TRUE(
+      ExecJs(primary_rfh, JsReplace(kAddFencedFrameScript, fenced_frame_url)));
+
+  ASSERT_TRUE(console_observer.Wait());
+
+  histogram_tester().ExpectTotalCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule", 0);
+}
+
+// Test that prerendering triggered by fenced frames with speculation rules
+// header is blocked.
+IN_PROC_BROWSER_TEST_F(PrerenderFencedFrameBrowserTest,
+                       PrerenderFromFencedFrame_LinkSpeculationRules) {
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL fenced_frame_url =
+      GetUrl("/fenced-frame-with-speculation-rules-header");
+  constexpr char kAddFencedFrameScript[] = R"({
+    const fenced_frame = document.createElement('fencedframe');
+    fenced_frame.config = new FencedFrameConfig($1);
+    document.body.appendChild(fenced_frame);
+  })";
+
+  // Prerendering triggered by fenced frames will be blocked. To detect it, we
+  // need to wait its failure by monitoring a console error.
+  const char* console_pattern =
+      "The SpeculationRules API does not support prerendering in fenced "
+      "frames.";
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(console_pattern);
+
+  // Start prerendering from fenced frames.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  RenderFrameHostImpl* primary_rfh = web_contents_impl()->GetPrimaryMainFrame();
+  EXPECT_TRUE(
+      ExecJs(primary_rfh, JsReplace(kAddFencedFrameScript, fenced_frame_url)));
+
+  ASSERT_TRUE(console_observer.Wait());
+
+  histogram_tester().ExpectTotalCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule", 0);
 }
 
 namespace {
