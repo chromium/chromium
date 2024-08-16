@@ -108,7 +108,6 @@
 /node/node_modules/
 /node/win
 /nss
-/objenesis/lib/
 /omaha/src/omaha
 /pdfsqueeze
 /pefile

@@ -2231,16 +2231,6 @@ deps = {
     'condition': 'non_git_source',
     'dep_type': 'cipd',
   },
-  'src/third_party/objenesis': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/objenesis',
-              'version': 'tknDblENYi8IaJYyD6tUahUyHYZlzJ_Y74_QZSz4DpIC',
-          },
-      ],
-      'condition': 'checkout_android',
-      'dep_type': 'cipd',
-  },
 
   'src/third_party/openh264/src':
     Var('chromium_git') + '/external/github.com/cisco/openh264' + '@' + '478e5ab3eca30e600006d5a0a08b176fd34d3bd1',
