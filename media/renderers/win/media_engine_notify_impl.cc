@@ -109,6 +109,7 @@ HRESULT MediaEngineNotifyImpl::RuntimeClassInitialize(
     LoadedDataCB loaded_data_cb,
     CanPlayThroughCB can_play_through_cb,
     PlayingCB playing_cb,
+    FirstFrameReadyCB first_frame_ready_cb,
     WaitingCB waiting_cb,
     FrameStepCompletedCB frame_step_completed_cb,
     TimeUpdateCB time_update_cb) {
@@ -120,6 +121,7 @@ HRESULT MediaEngineNotifyImpl::RuntimeClassInitialize(
   loaded_data_cb_ = std::move(loaded_data_cb);
   can_play_through_cb_ = std::move(can_play_through_cb);
   playing_cb_ = std::move(playing_cb);
+  first_frame_ready_cb_ = std::move(first_frame_ready_cb);
   waiting_cb_ = std::move(waiting_cb);
   frame_step_completed_cb_ = std::move(frame_step_completed_cb);
   time_update_cb_ = std::move(time_update_cb);
@@ -171,6 +173,9 @@ HRESULT MediaEngineNotifyImpl::EventNotify(DWORD event_code,
       break;
     case MF_MEDIA_ENGINE_EVENT_PLAYING:
       playing_cb_.Run();
+      break;
+    case MF_MEDIA_ENGINE_EVENT_FIRSTFRAMEREADY:
+      first_frame_ready_cb_.Run();
       break;
     case MF_MEDIA_ENGINE_EVENT_WAITING:
       waiting_cb_.Run();

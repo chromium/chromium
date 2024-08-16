@@ -179,11 +179,16 @@ void MediaFoundationRenderer::Initialize(MediaResource* media_resource,
           ? MediaFoundationRenderingMode::DirectComposition
           : MediaFoundationRenderingMode::FrameServer;
   for (DemuxerStream* stream : media_resource->GetAllStreams()) {
-    if (stream->type() == DemuxerStream::Type::VIDEO &&
-        stream->video_decoder_config().is_encrypted()) {
-      // This is protected content which only supports Direct Composition mode,
-      // update 'rendering_mode_' accordingly.
-      rendering_mode_ = MediaFoundationRenderingMode::DirectComposition;
+    if (stream->type() == DemuxerStream::Type::VIDEO) {
+      // Report BUFFERING_HAVE_ENOUGH only after first frame event is received.
+      // MF_MEDIA_ENGINE_EVENT_FIRSTFRAMEREADY event is sent only if video
+      // stream is present.
+      has_video_ = true;
+      if (stream->video_decoder_config().is_encrypted()) {
+        // This is protected content which only supports Direct Composition
+        // mode, update 'rendering_mode_' accordingly.
+        rendering_mode_ = MediaFoundationRenderingMode::DirectComposition;
+      }
     }
   }
 
@@ -253,6 +258,8 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
           &MediaFoundationRenderer::OnCanPlayThrough, weak_this)),
       base::BindPostTaskToCurrentDefault(
           base::BindRepeating(&MediaFoundationRenderer::OnPlaying, weak_this)),
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &MediaFoundationRenderer::OnFirstFrameReady, weak_this)),
       base::BindPostTaskToCurrentDefault(
           base::BindRepeating(&MediaFoundationRenderer::OnWaiting, weak_this)),
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
@@ -283,10 +290,8 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
     // use the on-screen video window size and not the native video size.
     if (rendering_mode_ == MediaFoundationRenderingMode::FrameServer) {
       gfx::Size max_video_size;
-      bool has_video = false;
       for (media::DemuxerStream* stream : media_resource->GetAllStreams()) {
         if (stream->type() == media::DemuxerStream::VIDEO) {
-          has_video = true;
           gfx::Size video_size = stream->video_decoder_config().natural_size();
           if (video_size.height() > max_video_size.height()) {
             max_video_size.set_height(video_size.height());
@@ -298,7 +303,7 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
         }
       }
 
-      if (has_video) {
+      if (has_video_) {
         RETURN_IF_FAILED(InitializeTexturePool(max_video_size));
       }
     }
@@ -710,6 +715,10 @@ void MediaFoundationRenderer::SetVideoStreamEnabled(bool enabled) {
   if (!mf_source_)
     return;
 
+  // If video is disabled, the samples will not be sent, thus should ignore
+  // waiting for first frame.
+  has_video_ = enabled;
+
   const bool needs_restart = mf_source_->SetVideoStreamEnabled(enabled);
   if (needs_restart) {
     // If the media source indicates that we need to restart playback (e.g due
@@ -964,12 +973,17 @@ void MediaFoundationRenderer::OnCanPlayThrough() {
     }
   }
 
-  // According to HTML5 <video> spec, on "canplaythrough", the video could be
-  // rendered at the current playback rate all the way to its end, and it's
-  // the time to report BUFFERING_HAVE_ENOUGH.
-  OnBufferingStateChange(
-      BufferingState::BUFFERING_HAVE_ENOUGH,
-      BufferingStateChangeReason::BUFFERING_CHANGE_REASON_UNKNOWN);
+  // For First frame do not send have enough until first frame notification
+  // is received. Only apply to media with Video, audio only media will use
+  // MF_MEDIA_ENGINE_EVENT_CANPLAYTHROUGH.
+  if (!has_video_ || received_first_video_frame_) {
+    // According to HTML5 <video> spec, on "canplaythrough", the video could be
+    // rendered at the current playback rate all the way to its end, and it's
+    // the time to report BUFFERING_HAVE_ENOUGH.
+    OnBufferingStateChange(
+        BufferingState::BUFFERING_HAVE_ENOUGH,
+        BufferingStateChangeReason::BUFFERING_CHANGE_REASON_UNKNOWN);
+  }
 }
 
 void MediaFoundationRenderer::OnPlaying() {
@@ -977,9 +991,13 @@ void MediaFoundationRenderer::OnPlaying() {
 
   has_reported_playing_ = true;
 
-  OnBufferingStateChange(
-      BufferingState::BUFFERING_HAVE_ENOUGH,
-      BufferingStateChangeReason::BUFFERING_CHANGE_REASON_UNKNOWN);
+  // For First frame do not send have enough until first frame notification
+  // is received. Only apply to media with Video.
+  if (!has_video_ || received_first_video_frame_) {
+    OnBufferingStateChange(
+        BufferingState::BUFFERING_HAVE_ENOUGH,
+        BufferingStateChangeReason::BUFFERING_CHANGE_REASON_UNKNOWN);
+  }
 
   // Earliest time to request first frame to screen
   RequestNextFrame();
@@ -990,6 +1008,22 @@ void MediaFoundationRenderer::OnPlaying() {
   // media engine, which would have reset the engine's statistics, will have
   // been completed.
   StartSendingStatistics();
+}
+
+void MediaFoundationRenderer::OnFirstFrameReady() {
+  DVLOG_FUNC(2);
+  DCHECK(has_video_);
+
+  // MF_MEDIA_ENGINE_EVENT_FIRSTFRAMEREADY can only occur a second time if
+  // part of the MF pipeline was destroyed and re-created. This should never
+  // happen in the current implementation. Only apply to media with Video.
+  // Audio only media will not send MF_MEDIA_ENGINE_EVENT_FIRSTFRAMEREADY.
+  if (!received_first_video_frame_) {
+    received_first_video_frame_ = true;
+    OnBufferingStateChange(
+        BufferingState::BUFFERING_HAVE_ENOUGH,
+        BufferingStateChangeReason::BUFFERING_CHANGE_REASON_UNKNOWN);
+  }
 }
 
 void MediaFoundationRenderer::OnWaiting() {

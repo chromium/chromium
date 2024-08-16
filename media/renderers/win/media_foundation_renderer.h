@@ -132,6 +132,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   void OnLoadedData();
   void OnCanPlayThrough();
   void OnPlaying();
+  void OnFirstFrameReady();
   void OnWaiting();
   void OnFrameStepCompleted();
   void OnTimeUpdate();
@@ -206,6 +207,9 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // Current playback rate.
   double playback_rate_ = 0.0;
 
+  // Current media having video stream.
+  bool has_video_ = false;
+
   // Used for RendererClient::OnBufferingStateChange().
   BufferingState max_buffering_state_ = BufferingState::BUFFERING_HAVE_NOTHING;
 
@@ -245,6 +249,16 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // IMFMediaEngine::SetSource call so we aren't able to change real-time mode
   // dynamically in MFR use cases.
   std::optional<base::TimeDelta> latency_hint_;
+
+  // When there is video playback, MF_MEDIA_ENGINE_EVENT_FIRSTFRAMEREADY can be
+  // used to report BUFFERING_HAVE_ENOUGH event as it is more accurate and
+  // also include buffering in Media Foundation pipeline up to the video
+  // renderer.
+  // When there is initial start of video playback,
+  // MF_MEDIA_ENGINE_EVENT_FIRSTFRAMEREADY can be used to report
+  // BUFFERING_HAVE_ENOUGH event as it is more accurate and also include
+  // buffering in Media Foundation pipeline up to the video renderer.
+  bool received_first_video_frame_ = false;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaFoundationRenderer> weak_factory_{this};
