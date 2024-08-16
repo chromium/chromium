@@ -44,7 +44,6 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
 
       samples: {
         type: Array,
-        value: SEA_PEN_SAMPLES,
       },
 
       thumbnailResponseStatusCode_: {
@@ -127,8 +126,8 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
     // Run shuffle (5 times at most) until the shuffled samples are
     // different from current, which is highly likely to happen the first time.
     for (let i = 0; i < 5; i++) {
-      const newSamples = shuffle(this.samples);
-      if (!isArrayEqual(newSamples, this.samples)) {
+      const newSamples = shuffle(SEA_PEN_SAMPLES).slice(0, 6);
+      if (!this.samples || !isArrayEqual(newSamples, this.samples)) {
         this.samples = newSamples;
         break;
       }
