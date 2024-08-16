@@ -136,7 +136,6 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
   progress_indicator->SetProperty(views::kElementIdentifierKey,
                                   kProgressIndicatorElementId);
   progress_indicator_ = AddChildView(std::move(progress_indicator));
-  SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));
 }
 
 BubbleFrameView::~BubbleFrameView() = default;
@@ -524,13 +523,7 @@ gfx::Size BubbleFrameView::GetMaximumSize() const {
 #endif
 }
 
-ProposedLayout BubbleFrameView::CalculateProposedLayout(
-    const SizeBounds& size_bounds) const {
-  ProposedLayout layout;
-  DCHECK(size_bounds.is_fully_bounded());
-  layout.host_size =
-      gfx::Size(size_bounds.width().value(), size_bounds.height().value());
-
+void BubbleFrameView::Layout(PassKey) {
   // The title margins may not be set, but make sure that's only the case when
   // there's no title.
   DCHECK(!title_margins_.IsEmpty() ||
@@ -539,10 +532,9 @@ ProposedLayout BubbleFrameView::CalculateProposedLayout(
   const gfx::Rect contents_bounds = GetContentsBounds();
 
   // Lay out the progress bar.
-  layout.child_layouts.emplace_back(
-      progress_indicator_.get(), progress_indicator_->GetVisible(),
-      gfx::Rect(contents_bounds.x(), contents_bounds.y(),
-                contents_bounds.width(), kProgressIndicatorHeight));
+  progress_indicator_->SetBounds(contents_bounds.x(), contents_bounds.y(),
+                                 contents_bounds.width(),
+                                 kProgressIndicatorHeight);
 
   gfx::Rect bounds = contents_bounds;
   bounds.Inset(title_margins_);
@@ -561,12 +553,9 @@ ProposedLayout BubbleFrameView::CalculateProposedLayout(
                                  DISTANCE_RELATED_BUTTON_HORIZONTAL),
                              0, 0));
     }
-    const gfx::Rect button_bounds(button_area_rect.x() - button->width(),
-                                  button_area_rect.y(), button->width(),
-                                  button->height());
-    layout.child_layouts.emplace_back(button, button->GetVisible(),
-                                      button_bounds);
-    button_area_rect.Union(button_bounds);
+    button->SetPosition(gfx::Point(button_area_rect.x() - button->width(),
+                                   button_area_rect.y()));
+    button_area_rect.Union(button->bounds());
   }
 
   // Add spacing between the title and buttons.
@@ -584,8 +573,7 @@ ProposedLayout BubbleFrameView::CalculateProposedLayout(
   gfx::Rect header_rect = contents_bounds;
   header_rect.set_height(GetHeaderHeightForFrameWidth(contents_bounds.width()));
   if (header_rect.height() > 0) {
-    layout.child_layouts.emplace_back(header_view_.get(),
-                                      header_view_->GetVisible(), header_rect);
+    header_view_->SetBoundsRect(header_rect);
     bounds.Inset(gfx::Insets::TLBR(header_rect.height(), 0, 0, 0));
   }
 
@@ -609,8 +597,7 @@ ProposedLayout BubbleFrameView::CalculateProposedLayout(
     const gfx::Insets title_insets =
         GetTitleLabelInsetsFromFrame() + GetInsets();
     DCHECK_EQ(title_insets.left(), title_label_x);
-    DCHECK_EQ(title_insets.right(),
-              layout.host_size.width() - title_label_right);
+    DCHECK_EQ(title_insets.right(), width() - title_label_right);
   }
 
   const int title_available_width =
@@ -620,21 +607,15 @@ ProposedLayout BubbleFrameView::CalculateProposedLayout(
   const int title_height =
       std::max(title_icon_pref_size.height(), title_preferred_height);
 
-  layout.child_layouts.emplace_back(
-      title_container_.get(), title_container_->GetVisible(),
-      gfx::Rect(title_label_x,
-                bounds.y() + (title_height - title_preferred_height) / 2,
-                title_available_width, title_preferred_height));
+  title_container_->SetBounds(
+      title_label_x, bounds.y() + (title_height - title_preferred_height) / 2,
+      title_available_width, title_preferred_height);
 
-  layout.child_layouts.emplace_back(
-      title_icon_.get(), title_icon_->GetVisible(),
-      gfx::Rect(bounds.x(), bounds.y(), title_icon_pref_size.width(),
-                title_height));
+  title_icon_->SetBounds(bounds.x(), bounds.y(), title_icon_pref_size.width(),
+                         title_height);
 
-  const gfx::Size preferred_size = main_image_->GetPreferredSize({});
-  layout.child_layouts.emplace_back(
-      main_image_.get(), main_image_->GetVisible(),
-      gfx::Rect(0, 0, preferred_size.width(), preferred_size.height()));
+  main_image_->SetBounds(0, 0, main_image_->GetPreferredSize({}).width(),
+                         main_image_->GetPreferredSize({}).height());
 
   // Lay out the footnote.
   // Only account for footnote_container_'s height if it's visible, because
@@ -642,13 +623,12 @@ ProposedLayout BubbleFrameView::CalculateProposedLayout(
   if (footnote_container_ && footnote_container_->GetVisible()) {
     const int width = contents_bounds.width();
     const int height = footnote_container_->GetHeightForWidth(width);
-    layout.child_layouts.emplace_back(
-        footnote_container_.get(), footnote_container_->GetVisible(),
-        gfx::Rect(contents_bounds.x(), contents_bounds.bottom() - height, width,
-                  height));
+    footnote_container_->SetBounds(
+        contents_bounds.x(), contents_bounds.bottom() - height, width, height);
   }
 
-  return layout;
+  // Lay out the client view.
+  LayoutSuperclass<NonClientFrameView>(this);
 }
 
 void BubbleFrameView::OnThemeChanged() {
