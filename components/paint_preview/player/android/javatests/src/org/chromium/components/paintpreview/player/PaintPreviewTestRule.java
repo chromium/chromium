@@ -29,11 +29,7 @@ public class PaintPreviewTestRule implements TestRule {
             @Override
             public void evaluate() throws Throwable {
                 setUp();
-                try {
-                    base.evaluate();
-                } finally {
-                    AccountManagerFacadeProvider.resetInstanceForTests();
-                }
+                base.evaluate();
             }
         };
     }
