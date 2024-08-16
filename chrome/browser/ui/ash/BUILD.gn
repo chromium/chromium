@@ -475,7 +475,6 @@ source_set("browser_tests") {
     "float_controller_browsertest.cc",
     "google_one_offer_iph_tab_helper_browsertest.cc",
     "screen_orientation_delegate_chromeos_browsertest.cc",
-    "shelf_browsertest.cc",
     "snap_group_browsertest.cc",
     "system_tray_client_impl_browsertest.cc",
     "system_tray_tray_cast_browsertest_media_router_chromeos.cc",

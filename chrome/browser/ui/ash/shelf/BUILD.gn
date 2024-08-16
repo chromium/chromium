@@ -275,6 +275,7 @@ source_set("browser_tests") {
     "browser_shortcut_shelf_item_controller_browsertest.cc",
     "chrome_shelf_controller_browsertest.cc",
     "extension_shelf_context_menu_browsertest.cc",
+    "shelf_browsertest.cc",
   ]
 
   deps = [
