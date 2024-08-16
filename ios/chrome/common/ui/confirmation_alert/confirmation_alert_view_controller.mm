@@ -382,6 +382,19 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
     self.imageViewAspectRatioConstraint.active = YES;
   }
   [self updateButtonState];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = @[
+      UITraitPreferredContentSizeCategory.self, UITraitHorizontalSizeClass.self,
+      UITraitVerticalSizeClass.self
+    ];
+    auto* __weak weakSelf = self;
+    id handler = ^(id<UITraitEnvironment> traitEnvironment,
+                   UITraitCollection* previousCollection) {
+      [weakSelf updateRegisteredTraits:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
+  }
 }
 
 - (void)setIsLoading:(BOOL)isLoading {
@@ -405,38 +418,16 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   [self.scrollView flashScrollIndicators];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-
-  // Update fonts for specific content sizes.
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    SetConfigurationFont(self.primaryActionButton,
-                         PreferredFontForTextStyleWithMaxCategory(
-                             UIFontTextStyleHeadline,
-                             self.traitCollection.preferredContentSizeCategory,
-                             UIContentSizeCategoryExtraExtraExtraLarge));
-
-    UIFont* newFont = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-    if (self.secondaryActionString) {
-      SetConfigurationFont(self.secondaryActionButton, newFont);
-    }
-    if (self.tertiaryActionString) {
-      SetConfigurationFont(self.tertiaryActionButton, newFont);
-    }
+  if (@available(iOS 17, *)) {
+    return;
   }
 
-  // Update constraints for different size classes.
-  BOOL hasNewHorizontalSizeClass =
-      previousTraitCollection.horizontalSizeClass !=
-      self.traitCollection.horizontalSizeClass;
-  BOOL hasNewVerticalSizeClass = previousTraitCollection.verticalSizeClass !=
-                                 self.traitCollection.verticalSizeClass;
-
-  if (hasNewHorizontalSizeClass || hasNewVerticalSizeClass) {
-    [self.view setNeedsUpdateConstraints];
-  }
+  [self updateRegisteredTraits:previousTraitCollection];
 }
+#endif
 
 - (void)viewSafeAreaInsetsDidChange {
   [super viewSafeAreaInsetsDidChange];
@@ -992,6 +983,39 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
 
   _secondaryActionButton.enabled = !showingProgressState;
   _tertiaryActionButton.enabled = !showingProgressState;
+}
+
+// Checks which trait has been changed and adapts the UI to reflect this new
+// environment.
+- (void)updateRegisteredTraits:(UITraitCollection*)previousTraitCollection {
+  // Update fonts for specific content sizes.
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    SetConfigurationFont(self.primaryActionButton,
+                         PreferredFontForTextStyleWithMaxCategory(
+                             UIFontTextStyleHeadline,
+                             self.traitCollection.preferredContentSizeCategory,
+                             UIContentSizeCategoryExtraExtraExtraLarge));
+
+    UIFont* newFont = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    if (self.secondaryActionString) {
+      SetConfigurationFont(self.secondaryActionButton, newFont);
+    }
+    if (self.tertiaryActionString) {
+      SetConfigurationFont(self.tertiaryActionButton, newFont);
+    }
+  }
+
+  // Update constraints for different size classes.
+  BOOL hasNewHorizontalSizeClass =
+      previousTraitCollection.horizontalSizeClass !=
+      self.traitCollection.horizontalSizeClass;
+  BOOL hasNewVerticalSizeClass = previousTraitCollection.verticalSizeClass !=
+                                 self.traitCollection.verticalSizeClass;
+
+  if (hasNewHorizontalSizeClass || hasNewVerticalSizeClass) {
+    [self.view setNeedsUpdateConstraints];
+  }
 }
 
 @end
