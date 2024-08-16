@@ -511,6 +511,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   base::TimeTicks dns_resolution_start_time_override_;
   base::TimeTicks dns_resolution_end_time_override_;
 
+  base::TimeTicks blocked_initialize_stream_start_time_;
+
   // The number of bytes of the body received from network.
   int64_t received_body_bytes_ = 0;
 };

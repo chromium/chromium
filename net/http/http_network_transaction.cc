@@ -165,6 +165,21 @@ void RecordWebSocketFallbackResult(int result,
                                        connection_info));
 }
 
+const std::string_view NegotiatedProtocolToHistogramSuffix(
+    const HttpResponseInfo& response) {
+  NextProto next_proto = NextProtoFromString(response.alpn_negotiated_protocol);
+  switch (next_proto) {
+    case kProtoHTTP11:
+      return "H1";
+    case kProtoHTTP2:
+      return "H2";
+    case kProtoQUIC:
+      return "H3";
+    case kProtoUnknown:
+      return "Unknown";
+  }
+}
+
 }  // namespace
 
 const int HttpNetworkTransaction::kDrainBodyBufferSize;
@@ -975,11 +990,35 @@ int HttpNetworkTransaction::DoInitStream() {
   DCHECK(stream_.get());
   next_state_ = STATE_INIT_STREAM_COMPLETE;
 
-  return stream_->InitializeStream(can_send_early_data_, priority_, net_log_,
-                                   io_callback_);
+  base::TimeTicks now = base::TimeTicks::Now();
+  int rv = stream_->InitializeStream(can_send_early_data_, priority_, net_log_,
+                                     io_callback_);
+
+  // TODO(crbug.com/359404121): Remove this histogram after the investigation
+  // completes.
+  bool blocked = rv == ERR_IO_PENDING;
+  if (blocked) {
+    blocked_initialize_stream_start_time_ = now;
+  }
+  base::UmaHistogramBoolean(
+      base::StrCat({"Net.NetworkTransaction.InitializeStreamBlocked",
+                    IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
+                    NegotiatedProtocolToHistogramSuffix(response_)}),
+      blocked);
+  return rv;
 }
 
 int HttpNetworkTransaction::DoInitStreamComplete(int result) {
+  // TODO(crbug.com/359404121): Remove this histogram after the investigation
+  // completes.
+  if (!blocked_initialize_stream_start_time_.is_null()) {
+    base::UmaHistogramTimes(
+        base::StrCat({"Net.NetworkTransaction.InitializeStreamBlockTime",
+                      IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
+                      NegotiatedProtocolToHistogramSuffix(response_)}),
+        base::TimeTicks::Now() - blocked_initialize_stream_start_time_);
+  }
+
   if (result != OK) {
     if (result < 0)
       result = HandleIOError(result);

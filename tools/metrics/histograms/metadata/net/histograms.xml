@@ -2221,6 +2221,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Net.NetworkTransaction.InitializeStreamBlocked{HostType}.{Protocol}"
+    enum="Boolean" expires_after="2024-11-13">
+  <owner>bashi@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records whether HTTP stream initialization is blocked or not. Recorded every
+    time HttpStream::InitializeStream() is called.
+  </summary>
+  <token key="HostType">
+    <variant name=""/>
+    <variant name="GoogleHost"/>
+  </token>
+  <token key="Protocol">
+    <variant name="H1"/>
+    <variant name="H2"/>
+    <variant name="H3"/>
+    <variant name="Unknown"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Net.NetworkTransaction.InitializeStreamBlockTime{HostType}.{Protocol}"
+    units="ms" expires_after="2024-11-13">
+  <owner>bashi@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    The time taken for HTTP stream initialization to finish if the
+    initialization was blocked. Recorded in
+    HttpNetworkTransaction::DoInitStreamComplete when the stream initialization
+    is complete.
+  </summary>
+  <token key="HostType">
+    <variant name=""/>
+    <variant name="GoogleHost"/>
+  </token>
+  <token key="Protocol">
+    <variant name="H1"/>
+    <variant name="H2"/>
+    <variant name="H3"/>
+    <variant name="Unknown"/>
+  </token>
+</histogram>
+
 <histogram name="Net.NetworkTransaction{HostType}.RetryReason"
     enum="HttpNetworkTransactionRetryReason" expires_after="2024-12-15">
   <owner>horo@chromium.org</owner>
