@@ -59,11 +59,11 @@ bool ShouldExemptNonUniqueHostnames(
     const security_interstitials::https_only_mode::HttpInterstitialState&
         state);
 
-// Returns true if the given hostname should be excluded from interstitials in
-// the current HFM mode. Does NOT mean that an upgrade shouldn't be attempted.
-bool ShouldExcludeHostnameFromInterstitial(
+// Returns true if the given URL should be excluded from interstitials in the
+// current HFM mode. Does NOT mean that an upgrade shouldn't be attempted.
+bool ShouldExcludeUrlFromInterstitial(
     const security_interstitials::https_only_mode::HttpInterstitialState& state,
-    const std::string& hostname);
+    const GURL& url);
 
 // An instance of this class adds `hostnames` to the HttpAllowlist enterprise
 // policy for testing and clears the allowlist when it goes out of scope.

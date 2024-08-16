@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -163,11 +164,14 @@ bool ShouldExemptNonUniqueHostnames(const HttpInterstitialState& state) {
   return true;
 }
 
-bool ShouldExcludeHostnameFromInterstitial(const HttpInterstitialState& state,
-                                           const std::string& hostname) {
-  // Exclude single-label domains in balanced mode.
+bool ShouldExcludeUrlFromInterstitial(const HttpInterstitialState& state,
+                                      const GURL& url) {
+  // In balanced mode, single-label hostnames and URLs with non-default ports
+  // are excluded from interstitials.
   return IsBalancedModeUniquelyEnabled(state) &&
-         net::GetSuperdomain(hostname).empty();
+         (net::GetSuperdomain(url.host()).empty() ||
+          (url.has_port() &&
+           url.IntPort() != HttpsUpgradesInterceptor::GetHttpPortForTesting()));
 }
 
 ScopedAllowHttpForHostnamesForTesting::ScopedAllowHttpForHostnamesForTesting(

@@ -732,6 +732,64 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, NonUniqueHost_RecordsMetrics) {
       NavigationRequestSecurityLevel::kNonUniqueHostname, 2);
 }
 
+// Test that non-default ports (e.g. not HTTP80) are upgraded in all
+// modes, but warnings are only shown in strict and incognito modes.
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+                       NonDefaultPorts_NoWarnInBalancedMode) {
+  // Disable the testing port configuration, as this test doesn't use the
+  // EmbeddedTestServer.
+  HttpsUpgradesInterceptor::SetHttpsPortForTesting(0);
+  HttpsUpgradesInterceptor::SetHttpPortForTesting(0);
+
+  // Set up an interceptor so we can test non-default (and non-testing) ports.
+  GURL non_default_http_url = GURL("http://example.com:8080/simple.html");
+  auto url_loader_interceptor =
+      content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
+          GetChromeTestDataDir().MaybeAsASCII(),
+          non_default_http_url.GetWithEmptyPath());
+
+  auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
+
+  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+    // HFM should attempt the upgrade, fail, and fallback to the interstitial.
+    EXPECT_FALSE(content::NavigateToURL(contents, non_default_http_url));
+    EXPECT_TRUE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+    histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 2);
+  } else {
+    // Otherwise, the request should attempt the upgrade, fail, and fallback to
+    // HTTP _without_ an interstitial.
+    NavigateAndWaitForFallback(contents, non_default_http_url);
+    EXPECT_EQ(non_default_http_url, contents->GetLastCommittedURL());
+    EXPECT_FALSE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+    histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                    NavigationRequestSecurityLevel::kInsecure,
+                                    1);
+    histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 3);
+  }
+
+  // Verify that upgrade events were recorded because an upgrade was attempted
+  // and failed no matter what.
+  histograms()->ExpectTotalCount(kEventHistogram, 3);
+  histograms()->ExpectBucketCount(
+      kEventHistogram,
+      security_interstitials::https_only_mode::Event::kUpgradeAttempted, 1);
+  histograms()->ExpectBucketCount(
+      kEventHistogram,
+      security_interstitials::https_only_mode::Event::kUpgradeFailed, 1);
+  histograms()->ExpectBucketCount(
+      kEventHistogram,
+      security_interstitials::https_only_mode::Event::kUpgradeNetError, 1);
+
+  histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                  NavigationRequestSecurityLevel::kUpgraded, 1);
+  histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                  NavigationRequestSecurityLevel::kSecure, 1);
+}
+
 // If the user navigates to an HTTPS URL, the navigation should end up on that
 // exact URL, even if the site has an SSL error.
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
@@ -1096,7 +1154,8 @@ IN_PROC_BROWSER_TEST_P(
   NavigateAndWaitForFallback(contents, navigated_url);
   EXPECT_EQ(navigated_url, contents->GetLastCommittedURL());
 
-  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
+  // Balanced Mode also exempts non-default ports.
+  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
     EXPECT_EQ(HFMInterstitialType::kStandard,
               chrome_browser_interstitials::GetHFMInterstitialType(contents));
   } else {
@@ -1964,6 +2023,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
         return response;
       }));
   ASSERT_TRUE(downgrading_server.Start());
+  HttpsUpgradesInterceptor::SetHttpPortForTesting(downgrading_server.port());
   HttpsUpgradesInterceptor::SetHttpsPortForTesting(downgrading_server.port());
 
   GURL url = downgrading_server.GetURL("foo.com", "/");
@@ -2072,8 +2132,8 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                 "/simple.html");
         return response;
       }));
-  HttpsUpgradesInterceptor::SetHttpPortForTesting(upgrading_server.port());
   ASSERT_TRUE(upgrading_server.Start());
+  HttpsUpgradesInterceptor::SetHttpPortForTesting(upgrading_server.port());
 
   GURL http_url = upgrading_server.GetURL("bad-https.com", "/simple.html");
   // HTTPS server will have a cert error.
@@ -2506,6 +2566,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
         return response;
       }));
   ASSERT_TRUE(downgrading_server.Start());
+  HttpsUpgradesInterceptor::SetHttpPortForTesting(downgrading_server.port());
   HttpsUpgradesInterceptor::SetHttpsPortForTesting(downgrading_server.port());
 
   GURL downgrading_https_url = downgrading_server.GetURL("site2.com", "/");
