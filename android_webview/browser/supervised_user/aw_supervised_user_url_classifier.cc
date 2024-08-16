@@ -8,6 +8,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -63,8 +64,14 @@ void AwSupervisedUserUrlClassifier::ShouldBlockUrl(
 void AwSupervisedUserUrlClassifier::SetUserRequiresUrlChecks(
     bool user_requires_url_checks) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  bool old_value =
+      local_state_->GetBoolean(prefs::kShouldBlockRestrictedContent);
   local_state_->SetBoolean(prefs::kShouldBlockRestrictedContent,
                            user_requires_url_checks);
+  bool value_matches = old_value == user_requires_url_checks;
+  base::UmaHistogramBoolean(
+      "Android.WebView.RestrictedContentBlocking.ApiCallMatchesDiskCache",
+      value_matches);
 }
 
 static void JNI_AwSupervisedUserUrlClassifier_OnShouldBlockUrlResult(

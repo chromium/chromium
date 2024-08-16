@@ -6547,6 +6547,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Android.WebView.RestrictedContentBlocking.ApiCallMatchesDiskCache"
+    enum="BooleanMatched" expires_after="2025-08-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether the SafeBrowsingClient.getSupportedThreatTypes API call
+    returns a result which matches our disk cache. This does not record the
+    actual value of that call: a log of &quot;true&quot; means that the return
+    value matches the disk cache and a log of &quot;false&quot; means that the
+    disk cache didn't match.
+
+    This histogram is recorded when the task completes, which can be on either
+    success, failure, or timeout.
+  </summary>
+</histogram>
+
+<histogram
     name="Android.WebView.RestrictedContentBlocking.GetSupportedThreatTypes.CallDuration"
     units="ms" expires_after="2025-08-01">
   <owner>pbirk@chromium.org</owner>
