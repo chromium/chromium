@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] autonomous: exception thrown in constructor is reported to definition's global
+  assert_equals: error event should target definition's global but instead targets test harness global expected object "[object Window]" but got object "[object Window]"
+[FAIL] autonomous: exception thrown by spec due to invalid element state is reported to definition's global
+  assert_equals: error event should target definition's global but instead targets test harness global expected object "[object Window]" but got object "[object Window]"
+[FAIL] customized built-in: exception thrown by spec due to not returning the same value is reported to definition's global
+  assert_equals: error event should target definition's global but instead targets test harness global expected object "[object Window]" but got object "[object Window]"
+Harness: the test ran to completion.
+
