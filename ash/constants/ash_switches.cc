@@ -1478,19 +1478,23 @@ bool IsModifierSplitSecretKeyMatched() {
     return true;
   }
 
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --modifier-split-feature-key="INSERT KEY HERE"
-  //  --enable-features=ModifierSplit
-  const std::string provided_key_hash = base::SHA1HashString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kModifierSplitFeatureKey));
+  static const bool modifier_split_key_matched = []() {
+    // Commandline looks like:
+    //  out/Default/chrome --user-data-dir=/tmp/tmp123
+    //  --modifier-split-feature-key="INSERT KEY HERE"
+    //  --enable-features=ModifierSplit
+    const std::string provided_key_hash = base::SHA1HashString(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            kModifierSplitFeatureKey));
 
-  bool modifier_split_key_matched =
-      (provided_key_hash == kModifierSplitHashKey);
-  if (!modifier_split_key_matched) {
-    LOG(ERROR) << "Provided secret key does not match with the expected one.";
-  }
+    const bool modifier_split_key_matched =
+        (provided_key_hash == kModifierSplitHashKey);
+    if (!modifier_split_key_matched) {
+      LOG(ERROR) << "Provided secret key does not match with the expected one.";
+    }
+
+    return modifier_split_key_matched;
+  }();
 
   return modifier_split_key_matched;
 }
