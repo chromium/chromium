@@ -76,10 +76,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   static LayoutText* CreateEmptyAnonymous(Document&, const ComputedStyle*);
 
-  static LayoutText* CreateAnonymousForFormattedText(Document&,
-                                                     const ComputedStyle*,
-                                                     String);
-
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutText";

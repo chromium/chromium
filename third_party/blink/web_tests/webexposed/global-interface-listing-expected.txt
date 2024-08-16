@@ -1378,7 +1378,6 @@ interface CanvasRenderingContext2D
     method createPattern
     method createRadialGradient
     method drawFocusIfNeeded
-    method drawFormattedText
     method drawImage
     method drawMesh
     method ellipse
@@ -3151,10 +3150,6 @@ interface FormData
 interface FormDataEvent : Event
     attribute @@toStringTag
     getter formData
-    method constructor
-interface FormattedText
-    static method format
-    attribute @@toStringTag
     method constructor
 interface FragmentDirective
     attribute @@toStringTag

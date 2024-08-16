@@ -2120,10 +2120,6 @@
       status: {"ChromeOS_Ash": "stable", "ChromeOS_Lacros": "stable"},
     },
     {
-      name: "FormattedText",
-      status: "experimental",
-    },
-    {
       // TODO(crbug.com/1419161): Remove this feature after M113 has been stable
       // for a few weeks or more. This is a kill switch that, when enabled, goes
       // back to the old behavior, which was to restore the state for <input>

@@ -2849,7 +2849,6 @@ void StyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(selector_filter_);
   visitor->Trace(document_);
   visitor->Trace(tracker_);
-  visitor->Trace(formatted_text_element_);
 }
 
 bool StyleResolver::IsForcedColorsModeEnabled() const {
@@ -3190,69 +3189,6 @@ void StyleResolver::PropagateStyleToViewport() {
 #undef PROPAGATE_VALUE
 #undef PROPAGATE_FROM
 
-const ComputedStyle* StyleResolver::StyleForFormattedText(
-    bool is_text_run,
-    const FontDescription& default_font,
-    const CSSPropertyValueSet* css_property_value_set) {
-  return StyleForFormattedText(is_text_run, &default_font,
-                               /*parent_style*/ nullptr,
-                               css_property_value_set);
-}
-
-const ComputedStyle* StyleResolver::StyleForFormattedText(
-    bool is_text_run,
-    const ComputedStyle& parent_style,
-    const CSSPropertyValueSet* css_property_value_set) {
-  return StyleForFormattedText(is_text_run, /*default_font*/ nullptr,
-                               &parent_style, css_property_value_set);
-}
-
-const ComputedStyle* StyleResolver::StyleForFormattedText(
-    bool is_text_run,
-    const FontDescription* default_font,
-    const ComputedStyle* parent_style,
-    const CSSPropertyValueSet* css_property_value_set) {
-  DCHECK_NE(!!parent_style, !!default_font)
-      << "only one of `default_font` or `parent_style` should be specified";
-
-  // Set up our initial style properties based on either the `default_font` or
-  // `parent_style`.
-  ComputedStyleBuilder builder =
-      default_font ? CreateComputedStyleBuilder()
-                   : CreateComputedStyleBuilderInheritingFrom(*parent_style);
-  if (default_font) {
-    builder.SetFontDescription(*default_font);
-  }
-  builder.SetDisplay(is_text_run ? EDisplay::kInline : EDisplay::kBlock);
-
-  if (!css_property_value_set) {
-    return builder.TakeStyle();
-  }
-
-  // Apply any properties in the `css_property_value_set`.
-
-  // Use a dummy/disconnected element when resolving the styles so that we
-  // don't inherit anything from existing elements.
-  StyleResolverState state(
-      GetDocument(), EnsureElementForFormattedText(),
-      nullptr /* StyleRecalcContext */,
-      StyleRequest{parent_style ? parent_style : &InitialStyle()});
-  state.SetStyle(*builder.TakeStyle());
-
-  // Use StyleCascade to apply inheritance in the correct order.
-  STACK_UNINITIALIZED StyleCascade cascade(state);
-  cascade.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(
-      GetDocument());
-  cascade.MutableMatchResult().AddMatchedProperties(css_property_value_set,
-                                                    CascadeOrigin::kAuthor,
-                                                    {.is_inline_style = true});
-  cascade.Apply();
-
-  StyleAdjuster::AdjustComputedStyle(state, nullptr);
-
-  return state.TakeStyle();
-}
-
 static Font ComputeInitialLetterFont(const ComputedStyle& style,
                                      const ComputedStyle& paragraph_style) {
   const StyleInitialLetter& initial_letter = style.InitialLetter();
@@ -3311,14 +3247,6 @@ const ComputedStyle* StyleResolver::StyleForInitialLetterText(
   builder.SetLineHeight(Length::Fixed(builder.FontHeight()));
   builder.SetVerticalAlign(EVerticalAlign::kBaseline);
   return builder.TakeStyle();
-}
-
-Element& StyleResolver::EnsureElementForFormattedText() {
-  if (!formatted_text_element_) {
-    formatted_text_element_ =
-        MakeGarbageCollected<Element>(html_names::kSpanTag, &GetDocument());
-  }
-  return *formatted_text_element_;
 }
 
 StyleRulePositionTry* StyleResolver::ResolvePositionTryRule(

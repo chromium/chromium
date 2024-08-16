@@ -85,7 +85,6 @@ class Element;
 class ExceptionState;
 class ExecutionContext;
 class FontSelector;
-class FormattedText;
 class ImageData;
 class ImageDataSettings;
 class MemoryManagedPaintRecorder;
@@ -146,11 +145,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void Reset() override;
 
   void setFontForTesting(const String& new_font) override;
-
-  void drawFormattedText(FormattedText* formatted_text,
-                         double x,
-                         double y,
-                         ExceptionState&);
 
   CanvasRenderingContext2DSettings* getContextAttributes() const;
 

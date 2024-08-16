@@ -782,26 +782,6 @@
       valid_type: "bool",
     },
 
-    // - valid_for_formatted_text: true
-    //
-    // Whether the property can be used to style the top-level container
-    // (similar to display:block, but supporting fewer properties), in the
-    // experimental API to bring multiline text rendering to HTML canvas.
-    // https://github.com/WICG/canvas-formatted-text/
-    valid_for_formatted_text: {
-      default: false,
-      valid_type: "bool",
-    },
-
-    // - valid_for_formatted_text_run: true
-    //
-    // Whether the property can be used to style individual text runs, in the
-    // experimental API to bring multiline text rendering to HTML canvas.
-    valid_for_formatted_text_run: {
-      default: false,
-      valid_type: "bool",
-    },
-
     // - valid_for_keyframe: true
     //
     // Whether the property can be used in @keyframes.
@@ -1169,8 +1149,6 @@
       valid_for_marker: true,
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       is_highlight_colors: true,
       supports_incremental_style: true,
       valid_for_permission_element: true,
@@ -1191,8 +1169,6 @@
       style_builder_custom_functions: ["value"],
       priority: 1,
       valid_for_marker: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       valid_for_page_context: true,
       invalidate: ["reshape"],
     },
@@ -1211,8 +1187,6 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       valid_for_page_context: true,
       // See comment on font.
       supports_incremental_style: false,
@@ -1231,8 +1205,6 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       // See comment on font.
       supports_incremental_style: false,
       valid_for_permission_element: true,
@@ -1291,8 +1263,6 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       // See comment on font.
       supports_incremental_style: false,
       valid_for_permission_element: true,
@@ -1336,8 +1306,6 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       // See comment on font.
       supports_incremental_style: false,
       valid_for_permission_element: true,
@@ -1359,8 +1327,6 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       // See comment on font.
       supports_incremental_style: false,
       valid_for_permission_element: true,
@@ -1385,8 +1351,6 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       // See comment on font.
       supports_incremental_style: false,
     },
@@ -1406,8 +1370,6 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       // See comment on font.
       supports_incremental_style: false,
     },
@@ -1427,8 +1389,6 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       // See comment on font.
       supports_incremental_style: false,
     },
@@ -1449,8 +1409,6 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       // See comment on font.
       supports_incremental_style: false,
     },
@@ -1470,8 +1428,6 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       // See comment on font.
       supports_incremental_style: false,
     },
@@ -1491,8 +1447,6 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       // See comment on font.
       supports_incremental_style: false,
       valid_for_permission_element: true,
@@ -1564,8 +1518,6 @@
       valid_for_first_line: true,
       valid_for_marker: true,
       computable: false,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       // See comment on font.
       supports_incremental_style: false,
       valid_for_permission_element: true,
@@ -1586,8 +1538,6 @@
       valid_for_cue: true,
       valid_for_marker: true,
       computable: false,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       // See comment on font.
       supports_incremental_style: false,
     },
@@ -1698,7 +1648,6 @@
       style_builder_custom_functions: ["initial", "inherit", "value"],
       priority: 1,
       computable: false,
-      valid_for_formatted_text: true,
       invalidate: ["layout", "paint"],
     },
     {
@@ -1722,7 +1671,6 @@
       type_name: "WritingMode",
       style_builder_custom_functions: ["initial", "inherit", "value"],
       priority: 1,
-      valid_for_formatted_text: true,
       valid_for_page_context: true,
       // Incremental code does not call DidChangeWritingMode(), which influences
       // the font.
@@ -3385,7 +3333,6 @@
         resolver: "vertical",
       },
       supports_incremental_style: true,
-      valid_for_formatted_text: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
@@ -5441,7 +5388,6 @@
       default_value: "start",
       getter: "GetTextAlign",
       style_builder_custom_functions: ["value"],
-      valid_for_formatted_text: true,
       valid_for_page_context: true,
       invalidate: ["layout", "paint"],
     },
@@ -5523,7 +5469,6 @@
       name_for_methods: "TextCombine",
       valid_for_marker: true,
       computable: false,
-      valid_for_formatted_text: true,
       invalidate: ["layout", "paint"],
     },
     {
@@ -5546,8 +5491,6 @@
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       supports_incremental_style: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       valid_for_page_context: true,
       invalidate: ["color"],
     },
@@ -5566,8 +5509,6 @@
       valid_for_cue: true,
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       valid_for_page_context: true,
       invalidate: ["text-decoration"],
     },
@@ -5586,8 +5527,6 @@
       valid_for_marker: true,
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       valid_for_page_context: true,
       invalidate: ["text-decoration"],
     },
@@ -5604,8 +5543,6 @@
       valid_for_cue: true,
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       valid_for_page_context: true,
       invalidate: ["text-decoration"],
     },
@@ -5626,8 +5563,6 @@
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       computable: false,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       valid_for_page_context: true,
       invalidate: ["text-decoration"],
     },
@@ -5653,7 +5588,6 @@
       keywords: ["clip", "ellipsis"],
       typedom_types: ["Keyword"],
       default_value: "clip",
-      valid_for_formatted_text: true,
       valid_for_page_context: true,
       invalidate: ["layout", "paint"],
     },
@@ -5677,8 +5611,6 @@
       valid_for_marker: true,
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       valid_for_page_context: true,
       invalidate: ["layout", "paint"],
       affected_by_zoom: true,
@@ -5739,8 +5671,6 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       valid_for_page_context: true,
       invalidate: ["reshape"],
     },
@@ -5759,8 +5689,6 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       computable: false,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       valid_for_highlight: true,
       valid_for_page_context: true,
       invalidate: ["text-decoration"],
@@ -5781,8 +5709,6 @@
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
-      valid_for_formatted_text: true,
-      valid_for_formatted_text_run: true,
       valid_for_page_context: true,
       invalidate: ["text-decoration"],
     },
@@ -6382,7 +6308,6 @@
       keywords: ["auto", "loose", "normal", "strict", "after-white-space", "anywhere"],
       default_value: "auto",
       type_name: "LineBreak",
-      valid_for_formatted_text: true,
       invalidate: ["layout", "paint"],
     },
     {
@@ -6393,7 +6318,6 @@
       keywords: ["auto", "loose", "normal", "strict", "anywhere"],
       typedom_types: ["Keyword"],
       valid_for_marker: true,
-      valid_for_formatted_text: true,
       surrogate_for: "-webkit-line-break",
     },
     {
@@ -6903,7 +6827,6 @@
         resolver: "horizontal",
       },
       supports_incremental_style: true,
-      valid_for_formatted_text: true,
       valid_for_position_try: true,
       affected_by_zoom: true,
       valid_for_permission_element: true,

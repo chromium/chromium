@@ -84,7 +84,6 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
-#include "third_party/blink/renderer/modules/formatted_text/formatted_text.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
@@ -690,35 +689,6 @@ Color CanvasRenderingContext2D::GetCurrentColor() const {
   CSSParser::ParseColor(
       color, element->InlineStyle()->GetPropertyValue(CSSPropertyID::kColor));
   return color;
-}
-
-void CanvasRenderingContext2D::drawFormattedText(
-    FormattedText* formatted_text,
-    double x,
-    double y,
-    ExceptionState& exception_state) {
-  if (!formatted_text)
-    return;
-  // TODO(crbug.com/1234113): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
-
-  if (!GetState().HasRealizedFont())
-    setFont(font());
-
-  gfx::RectF bounds;
-  PaintRecord recording = formatted_text->PaintFormattedText(
-      canvas()->GetDocument(), GetState().GetFontDescription(), x, y, bounds,
-      exception_state);
-  if (recording.size()) {
-    Draw<OverdrawOp::kNone>(
-        [&recording](cc::PaintCanvas* c,
-                     const cc::PaintFlags* flags)  // draw lambda
-        { c->drawPicture(recording); },
-        [](const SkIRect& rect) { return false; }, bounds,
-        CanvasRenderingContext2DState::PaintType::kFillPaintType,
-        CanvasRenderingContext2DState::kNoImage,
-        CanvasPerformanceMonitor::DrawType::kText);
-  }
 }
 
 void CanvasRenderingContext2D::PageVisibilityChanged() {

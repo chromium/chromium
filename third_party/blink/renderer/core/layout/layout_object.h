@@ -3354,8 +3354,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // Return true if the layout object isn't part of the DOM tree. Such layout
   // objects either have no parent (even if it isn't a LayoutView), or is a
   // descendant of such an object, and are managed by something else than the
-  // regular layout object tree builder. One example of this is formatted text
-  // inside a CANVAS element. Another example is @page margin boxes.
+  // regular layout object tree builder. One example of this is @page margin
+  // boxes.
   bool IsInDetachedNonDomTree() const {
     NOT_DESTROYED();
     return is_in_detached_non_dom_tree_;
