@@ -131,6 +131,7 @@ public class KeyboardShortcuts {
             case CTRL | KeyEvent.KEYCODE_R:
             case SHIFT | KeyEvent.KEYCODE_F5:
             case KeyEvent.KEYCODE_F5:
+            case KeyEvent.KEYCODE_REFRESH:
                 return KeyboardShortcutsSemanticMeaning.RELOAD_TAB;
             case CTRL | KeyEvent.KEYCODE_W:
             case CTRL | KeyEvent.KEYCODE_F4:
@@ -491,7 +492,8 @@ public class KeyboardShortcuts {
                 && keyCode != KeyEvent.KEYCODE_F3
                 && keyCode != KeyEvent.KEYCODE_F5
                 && keyCode != KeyEvent.KEYCODE_F10
-                && keyCode != KeyEvent.KEYCODE_FORWARD) {
+                && keyCode != KeyEvent.KEYCODE_FORWARD
+                && keyCode != KeyEvent.KEYCODE_REFRESH) {
             return false;
         }
 
