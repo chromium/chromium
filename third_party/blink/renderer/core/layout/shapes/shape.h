@@ -87,6 +87,7 @@ class CORE_EXPORT Shape {
       float threshold,
       const DeprecatedLayoutRect& image_rect,
       const DeprecatedLayoutRect& margin_rect,
+      const gfx::Rect& margin_physical_rect,
       WritingMode,
       float margin,
       RespectImageOrientationEnum);

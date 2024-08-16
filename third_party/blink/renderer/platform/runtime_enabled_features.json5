@@ -3858,6 +3858,11 @@
       status: "test",
     },
     {
+      // crbug.com/359616076 and crbug.com/360158400
+      name: "ShapeOutsideWritingModeFix",
+      status: "stable",
+    },
+    {
       // crbug.com/329677645
       name: "ShapeResultCachedPreviousSafeToBreakOffset",
       status: "stable",

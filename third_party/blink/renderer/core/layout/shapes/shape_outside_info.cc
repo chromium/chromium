@@ -147,6 +147,18 @@ static bool CheckShapeImageOrigin(Document& document,
   return false;
 }
 
+static PhysicalRect GetShapeImagePhysicalMarginRect(
+    const LayoutBox& layout_box,
+    const PhysicalSize& reference_physical_size) {
+  PhysicalBoxStrut margin_border_padding = layout_box.MarginBoxOutsets() +
+                                           layout_box.BorderOutsets() +
+                                           layout_box.PaddingOutsets();
+  return PhysicalRect(
+      -margin_border_padding.left, -margin_border_padding.top,
+      margin_border_padding.HorizontalSum() + reference_physical_size.width,
+      margin_border_padding.VerticalSum() + reference_physical_size.height);
+}
+
 static LogicalRect GetShapeImageMarginRect(
     const LayoutBox& layout_box,
     const LogicalSize& reference_box_logical_size) {
@@ -164,6 +176,12 @@ static LogicalRect GetShapeImageMarginRect(
   return LogicalRect(margin_box_origin, margin_rect_size);
 }
 
+PhysicalSize ShapeOutsideInfo::ReferenceBoxPhysicalSize() const {
+  return ToPhysicalSize(
+      reference_box_logical_size_,
+      layout_box_->ContainingBlock()->Style()->GetWritingMode());
+}
+
 std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
     StyleImage* style_image,
     float shape_image_threshold,
@@ -171,6 +189,7 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
     float margin) const {
   DCHECK(!style_image->IsPendingImage());
 
+  PhysicalSize reference_physical_size = ReferenceBoxPhysicalSize();
   RespectImageOrientationEnum respect_orientation =
       style_image->ForceOrientationIfNecessary(
           layout_box_->StyleRef().ImageOrientation());
@@ -178,12 +197,16 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
   const DeprecatedLayoutSize& image_size =
       RoundedLayoutSize(style_image->ImageSize(
           layout_box_->StyleRef().EffectiveZoom(),
-          gfx::SizeF(reference_box_logical_size_.inline_size.ToFloat(),
-                     reference_box_logical_size_.block_size.ToFloat()),
+          RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()
+              ? gfx::SizeF(reference_physical_size)
+              : gfx::SizeF(reference_box_logical_size_.inline_size.ToFloat(),
+                           reference_box_logical_size_.block_size.ToFloat()),
           respect_orientation));
 
   const LogicalRect& margin_rect =
       GetShapeImageMarginRect(*layout_box_, reference_box_logical_size_);
+  const PhysicalRect margin_physical_rect =
+      GetShapeImagePhysicalMarginRect(*layout_box_, reference_physical_size);
   const DeprecatedLayoutRect& image_rect =
       (layout_box_->IsLayoutImage())
           ? To<LayoutImage>(layout_box_.Get())
@@ -197,6 +220,7 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
 
   return Shape::CreateRasterShape(image.get(), shape_image_threshold,
                                   image_rect, margin_rect.ToLayoutRect(),
+                                  ToPixelSnappedRect(margin_physical_rect),
                                   writing_mode, margin, respect_orientation);
 }
 
