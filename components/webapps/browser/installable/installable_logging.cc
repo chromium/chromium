@@ -52,10 +52,6 @@ static const char kUrlNotSupportedForWebApkMessage[] =
     "A URL in the manifest contains a username, password, or port";
 static const char kInIncognitoMessage[] =
     "Page is loaded in an incognito window";
-static const char kNotOfflineCapable[] = "Page does not work offline";
-static const char kNoUrlForServiceWorker[] =
-    "Could not check service worker without a 'start_url' field in the "
-    "manifest";
 static const char kPreferRelatedApplications[] =
     "Manifest specifies prefer_related_applications: true";
 static const char kPreferRelatedApplicationsSupportedOnlyBetaStable[] =
@@ -92,8 +88,6 @@ static const char kAlreadyInstalledId[] = "already-installed";
 static const char kUrlNotSupportedForWebApkId[] =
     "url-not-supported-for-webapk";
 static const char kInIncognitoId[] = "in-incognito";
-static const char kNotOfflineCapableId[] = "not-offline-capable";
-static const char kNoUrlForServiceWorkerId[] = "no-url-for-service-worker";
 static const char kPreferRelatedApplicationsId[] =
     "prefer-related-applications";
 static const char kPreferRelatedApplicationsSupportedOnlyBetaStableId[] =
@@ -119,7 +113,6 @@ std::string GetErrorMessage(InstallableStatusCode code) {
     case webapps::InstallableStatusCode::RENDERER_EXITING:
     case webapps::InstallableStatusCode::RENDERER_CANCELLED:
     case webapps::InstallableStatusCode::USER_NAVIGATED:
-    case webapps::InstallableStatusCode::NO_MATCHING_SERVICE_WORKER:
     case webapps::InstallableStatusCode::INSUFFICIENT_ENGAGEMENT:
     case webapps::InstallableStatusCode::PACKAGE_NAME_OR_START_URL_EMPTY:
     case webapps::InstallableStatusCode::PREVIOUSLY_BLOCKED:
@@ -187,12 +180,6 @@ std::string GetErrorMessage(InstallableStatusCode code) {
     case webapps::InstallableStatusCode::IN_INCOGNITO:
       message = kInIncognitoMessage;
       break;
-    case webapps::InstallableStatusCode::NOT_OFFLINE_CAPABLE:
-      message = kNotOfflineCapable;
-      break;
-    case webapps::InstallableStatusCode::NO_URL_FOR_SERVICE_WORKER:
-      message = kNoUrlForServiceWorker;
-      break;
     case webapps::InstallableStatusCode::PREFER_RELATED_APPLICATIONS:
       message = kPreferRelatedApplications;
       break;
@@ -226,7 +213,6 @@ content::InstallabilityError GetInstallabilityError(
     case webapps::InstallableStatusCode::RENDERER_EXITING:
     case webapps::InstallableStatusCode::RENDERER_CANCELLED:
     case webapps::InstallableStatusCode::USER_NAVIGATED:
-    case webapps::InstallableStatusCode::NO_MATCHING_SERVICE_WORKER:
     case webapps::InstallableStatusCode::INSUFFICIENT_ENGAGEMENT:
     case webapps::InstallableStatusCode::PACKAGE_NAME_OR_START_URL_EMPTY:
     case webapps::InstallableStatusCode::PREVIOUSLY_BLOCKED:
@@ -295,12 +281,6 @@ content::InstallabilityError GetInstallabilityError(
       break;
     case webapps::InstallableStatusCode::IN_INCOGNITO:
       error_id = kInIncognitoId;
-      break;
-    case webapps::InstallableStatusCode::NOT_OFFLINE_CAPABLE:
-      error_id = kNotOfflineCapableId;
-      break;
-    case webapps::InstallableStatusCode::NO_URL_FOR_SERVICE_WORKER:
-      error_id = kNoUrlForServiceWorkerId;
       break;
     case webapps::InstallableStatusCode::PREFER_RELATED_APPLICATIONS:
       error_id = kPreferRelatedApplicationsId;

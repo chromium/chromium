@@ -20,25 +20,8 @@ void InstallableTaskQueue::Add(std::unique_ptr<InstallableTask> task) {
   tasks_.push_back(std::move(task));
 }
 
-void InstallableTaskQueue::PauseCurrent() {
-  DCHECK(HasCurrent());
-  paused_tasks_.push_back(std::move(tasks_.front()));
-  Next();
-}
-
-void InstallableTaskQueue::UnpauseAll() {
-  while (!paused_tasks_.empty()) {
-    Add(std::move(paused_tasks_.front()));
-    paused_tasks_.pop_front();
-  }
-}
-
 bool InstallableTaskQueue::HasCurrent() const {
   return !tasks_.empty();
-}
-
-bool InstallableTaskQueue::HasPaused() const {
-  return !paused_tasks_.empty();
 }
 
 InstallableTask& InstallableTaskQueue::Current() {
@@ -53,11 +36,7 @@ void InstallableTaskQueue::Next() {
 
 void InstallableTaskQueue::ResetWithError(InstallableStatusCode code) {
   auto tasks = std::move(tasks_);
-  auto paused_tasks = std::move(paused_tasks_);
   for (auto& task : tasks) {
-    task->ResetWithError(code);
-  }
-  for (auto& task : paused_tasks) {
     task->ResetWithError(code);
   }
 }

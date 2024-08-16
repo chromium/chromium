@@ -31,7 +31,6 @@
 #include "components/webapps/browser/installable/installable_icon_fetcher.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "components/webapps/browser/test/service_worker_registration_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -70,9 +69,7 @@ InstallableParams GetManifestParams() {
 InstallableParams GetWebAppParams() {
   InstallableParams params = GetManifestParams();
   params.installable_criteria = InstallableCriteria::kValidManifestWithIcons;
-  params.has_worker = true;
   params.valid_primary_icon = true;
-  params.wait_for_worker = true;
   return params;
 }
 
@@ -90,27 +87,6 @@ InstallableParams GetPrimaryIconPreferMaskableParams() {
 }
 
 }  // anonymous namespace
-
-// Used only for testing pages with no service workers. This class will dispatch
-// a RunLoop::QuitClosure when it begins waiting for a service worker to be
-// registered.
-class LazyWorkerInstallableManager : public InstallableManager {
- public:
-  LazyWorkerInstallableManager(content::WebContents* web_contents,
-                               base::OnceClosure quit_closure)
-      : InstallableManager(web_contents),
-        quit_closure_(std::move(quit_closure)) {}
-  ~LazyWorkerInstallableManager() override = default;
-
- protected:
-  void OnTaskPaused() override {
-    std::move(quit_closure_).Run();
-    InstallableManager::OnTaskPaused();
-  }
-
- private:
-  base::OnceClosure quit_closure_;
-};
 
 // Used only for testing pages where the manifest URL is changed. This class
 // will dispatch a RunLoop::QuitClosure when internal state is reset.
@@ -261,10 +237,9 @@ class InstallableManagerBrowserTest : public PlatformBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  // Returns a test server URL to a page controlled by a service worker with
-  // |manifest_url| injected as the manifest tag.
-  std::string GetURLOfPageWithServiceWorkerAndManifest(
-      const std::string& manifest_url) {
+  // Returns a test server URL to a page controlled by a |manifest_url| injected
+  // as the manifest tag.
+  std::string GetURLOfPageWithManifest(const std::string& manifest_url) {
     return "/banners/manifest_test_page.html?manifest=" +
            embedded_test_server()->GetURL(manifest_url).spec();
   }
@@ -287,31 +262,22 @@ class InstallableManagerBrowserTest : public PlatformBrowserTest {
     return GetUrlOfPageWithTags(test_url, tags);
   }
 
-  void NavigateAndMaybeWaitForWorker(const std::string& path,
-                                     bool wait_for_worker = true) {
+  void NavigateToPath(const std::string& path) {
     GURL test_url = embedded_test_server()->GetURL(path);
-    if (wait_for_worker) {
-      web_app::ServiceWorkerRegistrationWaiter registration_waiter(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-          test_url);
-      ASSERT_TRUE(content::NavigateToURL(web_contents(), test_url));
-      registration_waiter.AwaitRegistration();
-    } else {
-      ASSERT_TRUE(content::NavigateToURL(web_contents(), test_url));
-    }
+    ASSERT_TRUE(content::NavigateToURL(web_contents(), test_url));
+    content::RunAllTasksUntilIdle();
   }
 
   void NavigateAndRunInstallableManager(CallbackTester* tester,
                                         const InstallableParams& params,
-                                        const std::string& url,
-                                        bool wait_for_worker = true) {
-    NavigateAndMaybeWaitForWorker(url, wait_for_worker);
+                                        const std::string& url) {
+    NavigateToPath(url);
     RunInstallableManager(tester, params);
   }
 
   std::vector<content::InstallabilityError>
   NavigateAndGetAllInstallabilityErrors(const std::string& url) {
-    NavigateAndMaybeWaitForWorker(url);
+    NavigateToPath(url);
     return GetAllInstallabilityErrors();
   }
 
@@ -366,11 +332,9 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   EXPECT_TRUE(blink::IsEmptyManifest(manager->manifest()));
   EXPECT_TRUE(manager->manifest_url().is_empty());
   EXPECT_FALSE(manager->page_data_->primary_icon_fetched());
-  EXPECT_FALSE(manager->has_worker());
 
   EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED,
             manager->manifest_error());
-  EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED, manager->worker_error());
   EXPECT_TRUE(!manager->task_queue_.HasCurrent());
 }
 
@@ -389,13 +353,10 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, ManagerInIncognito) {
   std::unique_ptr<CallbackTester> tester(
       new CallbackTester(run_loop.QuitClosure()));
 
-  // NavigateAndMaybeWaitForWorker
+  // NavigateToPath
   GURL test_url =
       embedded_test_server()->GetURL("/banners/manifest_test_page.html");
-  web_app::ServiceWorkerRegistrationWaiter registration_waiter(
-      incognito_browser->profile(), test_url);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, test_url));
-  registration_waiter.AwaitRegistration();
 
   manager->GetData(GetManifestParams(),
                    base::BindOnce(&CallbackTester::OnDidFinishInstallableCheck,
@@ -405,14 +366,12 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, ManagerInIncognito) {
   EXPECT_TRUE(blink::IsEmptyManifest(manager->manifest()));
   EXPECT_TRUE(manager->manifest_url().is_empty());
   EXPECT_FALSE(manager->page_data_->primary_icon_fetched());
-  EXPECT_FALSE(manager->has_worker());
 
   EXPECT_EQ(
       std::vector<InstallableStatusCode>{InstallableStatusCode::IN_INCOGNITO},
       tester->errors());
   EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED,
             manager->manifest_error());
-  EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED, manager->worker_error());
   EXPECT_TRUE(!manager->task_queue_.HasCurrent());
 }
 #endif
@@ -448,8 +407,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckManifest404) {
   std::unique_ptr<CallbackTester> tester(
       new CallbackTester(run_loop.QuitClosure()));
 
-  std::string path = GetURLOfPageWithServiceWorkerAndManifest(
-      "/banners/manifest_missing.json");
+  std::string path = GetURLOfPageWithManifest("/banners/manifest_missing.json");
   NavigateAndRunInstallableManager(tester.get(), GetManifestParams(), path);
   run_loop.Run();
 
@@ -634,8 +592,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
     NavigateAndRunInstallableManager(
         tester.get(), GetPrimaryIconParams(),
-        GetURLOfPageWithServiceWorkerAndManifest(
-            "/banners/manifest_too_small_icon.json"));
+        GetURLOfPageWithManifest("/banners/manifest_too_small_icon.json"));
     run_loop.Run();
 
     EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
@@ -683,9 +640,9 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
     std::unique_ptr<CallbackTester> tester(
         new CallbackTester(run_loop.QuitClosure()));
 
-    NavigateAndRunInstallableManager(tester.get(), GetManifestParams(),
-                                     GetURLOfPageWithServiceWorkerAndManifest(
-                                         "/banners/play_app_manifest.json"));
+    NavigateAndRunInstallableManager(
+        tester.get(), GetManifestParams(),
+        GetURLOfPageWithManifest("/banners/play_app_manifest.json"));
     run_loop.Run();
 
     EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
@@ -802,7 +759,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckManifestAndIcon) {
         new CallbackTester(run_loop.QuitClosure()));
     NavigateAndRunInstallableManager(
         tester.get(), GetPrimaryIconPreferMaskableParams(),
-        GetURLOfPageWithServiceWorkerAndManifest(
+        GetURLOfPageWithManifest(
             "/banners/manifest_bad_non_maskable_icon.json"));
     run_loop.Run();
     EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
@@ -825,7 +782,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckWebapp) {
         new CallbackTester(run_loop.QuitClosure()));
 
     // Navigating resets histogram state, so do it before recording a histogram.
-    NavigateAndMaybeWaitForWorker("/banners/manifest_test_page.html");
+    NavigateToPath("/banners/manifest_test_page.html");
     RunInstallableManager(tester.get(), GetWebAppParams());
     run_loop.Run();
 
@@ -849,9 +806,6 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckWebapp) {
     EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED,
               (manager->icon_error()));
     EXPECT_TRUE(!manager->task_queue_.HasCurrent());
-    EXPECT_TRUE(manager->has_worker());
-    EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED,
-              manager->worker_error());
   }
 
   // Request everything again without navigating away. This should work fine.
@@ -885,9 +839,6 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckWebapp) {
     EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED,
               (manager->icon_error()));
     EXPECT_TRUE(!manager->task_queue_.HasCurrent());
-    EXPECT_TRUE(manager->has_worker());
-    EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED,
-              manager->worker_error());
   }
 
   {
@@ -897,12 +848,9 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckWebapp) {
 
     EXPECT_TRUE(blink::IsEmptyManifest(manager->manifest()));
     EXPECT_TRUE(manager->manifest_url().is_empty());
-    EXPECT_FALSE(manager->has_worker());
     EXPECT_FALSE(manager->page_data_->primary_icon_fetched());
     EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED,
               manager->manifest_error());
-    EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED,
-              manager->worker_error());
     EXPECT_TRUE(!manager->task_queue_.HasCurrent());
   }
 }
@@ -917,10 +865,9 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckMaskableIcon) {
     std::unique_ptr<CallbackTester> tester(
         new CallbackTester(run_loop.QuitClosure()));
 
-    NavigateAndRunInstallableManager(tester.get(),
-                                     GetPrimaryIconPreferMaskableParams(),
-                                     GetURLOfPageWithServiceWorkerAndManifest(
-                                         "/banners/manifest_maskable.json"));
+    NavigateAndRunInstallableManager(
+        tester.get(), GetPrimaryIconPreferMaskableParams(),
+        GetURLOfPageWithManifest("/banners/manifest_maskable.json"));
 
     run_loop.Run();
 
@@ -942,9 +889,9 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckMaskableIcon) {
     std::unique_ptr<CallbackTester> tester(
         new CallbackTester(run_loop.QuitClosure()));
 
-    NavigateAndRunInstallableManager(tester.get(), GetPrimaryIconParams(),
-                                     GetURLOfPageWithServiceWorkerAndManifest(
-                                         "/banners/manifest_maskable.json"));
+    NavigateAndRunInstallableManager(
+        tester.get(), GetPrimaryIconParams(),
+        GetURLOfPageWithManifest("/banners/manifest_maskable.json"));
 
     run_loop.Run();
 
@@ -992,8 +939,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckMaskableIcon) {
 
     NavigateAndRunInstallableManager(
         tester.get(), GetPrimaryIconPreferMaskableParams(),
-        GetURLOfPageWithServiceWorkerAndManifest(
-            "/banners/manifest_bad_maskable.json"));
+        GetURLOfPageWithManifest("/banners/manifest_bad_maskable.json"));
 
     run_loop.Run();
 
@@ -1124,7 +1070,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
     // Expect the call to ManifestAndIconTimeout to kick off an installable
     // check and pass it on an installable page.
     base::HistogramTester histograms;
-    NavigateAndMaybeWaitForWorker("/banners/manifest_test_page.html");
+    NavigateToPath("/banners/manifest_test_page.html");
 
     InstallableManager* manager = GetManager();
 
@@ -1169,299 +1115,15 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckWebappInIframe) {
       tester->errors());
 }
 
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
-                       CheckPageWithManifestAndNoServiceWorker) {
-  // Just fetch the manifest. This should have no error.
-  {
-    base::RunLoop run_loop;
-    std::unique_ptr<CallbackTester> tester(
-        new CallbackTester(run_loop.QuitClosure()));
-
-    NavigateAndRunInstallableManager(tester.get(), GetManifestParams(),
-                                     "/banners/manifest_no_service_worker.html",
-                                     /*wait_for_worker=*/false);
-    run_loop.Run();
-
-    EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
-    EXPECT_FALSE(tester->manifest_url().is_empty());
-
-    EXPECT_TRUE(tester->primary_icon_url().is_empty());
-    EXPECT_EQ(nullptr, tester->primary_icon());
-    EXPECT_FALSE(tester->installable_check_passed());
-    EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
-  }
-
-  // Fetching the full criteria should fail if we don't wait for the worker.
-  {
-    base::RunLoop run_loop;
-    std::unique_ptr<CallbackTester> tester(
-        new CallbackTester(run_loop.QuitClosure()));
-
-    InstallableParams params = GetWebAppParams();
-    params.wait_for_worker = false;
-    RunInstallableManager(tester.get(), params);
-    run_loop.Run();
-
-    EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
-    EXPECT_FALSE(tester->manifest_url().is_empty());
-
-    EXPECT_FALSE(tester->primary_icon_url().is_empty());
-    EXPECT_NE(nullptr, tester->primary_icon());
-    EXPECT_TRUE(tester->installable_check_passed());
-    EXPECT_EQ(
-        std::vector<InstallableStatusCode>{
-            InstallableStatusCode::NO_MATCHING_SERVICE_WORKER},
-        tester->errors());
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
-                       CheckLazyServiceWorkerPassesWhenWaiting) {
-  base::RunLoop tester_run_loop, sw_run_loop;
-  std::unique_ptr<CallbackTester> tester(
-      new CallbackTester(tester_run_loop.QuitClosure()));
-
-  auto manager = std::make_unique<LazyWorkerInstallableManager>(
-      web_contents(), sw_run_loop.QuitClosure());
-
-  {
-    // Load a URL with no service worker.
-    GURL test_url = embedded_test_server()->GetURL(
-        "/banners/manifest_no_service_worker.html");
-    ASSERT_TRUE(content::NavigateToURL(web_contents(), test_url));
-
-    // Kick off fetching the data. This should block on waiting for a worker.
-    manager->GetData(
-        GetWebAppParams(),
-        base::BindOnce(&CallbackTester::OnDidFinishInstallableCheck,
-                       base::Unretained(tester.get())));
-    sw_run_loop.Run();
-  }
-
-  // We should now be waiting for the service worker.
-  EXPECT_TRUE(blink::IsEmptyManifest(tester->manifest()));
-  EXPECT_FALSE(blink::IsEmptyManifest(manager->manifest()));
-  EXPECT_FALSE(manager->manifest_url().is_empty());
-  EXPECT_FALSE(manager->has_worker());
-  EXPECT_TRUE(manager->page_data_->primary_icon_fetched());
-  EXPECT_FALSE((manager->icon_url().is_empty()));
-  EXPECT_NE(nullptr, (manager->icon()));
-  EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED,
-            manager->manifest_error());
-  EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED, manager->worker_error());
-  EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED, (manager->icon_error()));
-  EXPECT_TRUE(!manager->task_queue_.HasCurrent());
-  EXPECT_TRUE(!manager->task_queue_.paused_tasks_.empty());
-
-  {
-    // Fetching just the manifest and icons should not hang while the other call
-    // is waiting for a worker.
-    base::RunLoop run_loop;
-    std::unique_ptr<CallbackTester> nested_tester(
-        new CallbackTester(run_loop.QuitClosure()));
-    manager->GetData(
-        GetPrimaryIconParams(),
-        base::BindOnce(&CallbackTester::OnDidFinishInstallableCheck,
-                       base::Unretained(nested_tester.get())));
-    run_loop.Run();
-
-    EXPECT_FALSE(blink::IsEmptyManifest(nested_tester->manifest()));
-    EXPECT_FALSE(nested_tester->manifest_url().is_empty());
-    EXPECT_FALSE(nested_tester->primary_icon_url().is_empty());
-    EXPECT_NE(nullptr, nested_tester->primary_icon());
-    EXPECT_FALSE(nested_tester->installable_check_passed());
-    EXPECT_EQ(std::vector<InstallableStatusCode>{}, nested_tester->errors());
-  }
-
-  // Load the service worker.
-    EXPECT_TRUE(content::ExecJs(
-        web_contents(),
-        "navigator.serviceWorker.register('service_worker.js');",
-        content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
-
-  tester_run_loop.Run();
-
-  // We should have passed now.
-  EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
-  EXPECT_FALSE(tester->manifest_url().is_empty());
-  EXPECT_FALSE(tester->primary_icon_url().is_empty());
-  EXPECT_NE(nullptr, tester->primary_icon());
-  EXPECT_TRUE(tester->installable_check_passed());
-  EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
-
-  // Verify internal state.
-  EXPECT_FALSE(blink::IsEmptyManifest(manager->manifest()));
-  EXPECT_FALSE(manager->manifest_url().is_empty());
-  EXPECT_TRUE(manager->page_data_->primary_icon_fetched());
-  EXPECT_FALSE((manager->icon_url().is_empty()));
-  EXPECT_NE(nullptr, (manager->icon()));
-  EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED,
-            manager->manifest_error());
-  EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED, (manager->icon_error()));
-  EXPECT_TRUE(!manager->task_queue_.HasCurrent());
-  EXPECT_FALSE(!manager->task_queue_.paused_tasks_.empty());
-  EXPECT_TRUE(manager->has_worker());
-  EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED, manager->worker_error());
-}
-
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
-                       CheckLazyServiceWorkerNoFetchHandlerFails) {
-  base::RunLoop tester_run_loop, sw_run_loop;
-  std::unique_ptr<CallbackTester> tester(
-      new CallbackTester(tester_run_loop.QuitClosure()));
-
-  auto manager = std::make_unique<LazyWorkerInstallableManager>(
-      web_contents(), sw_run_loop.QuitClosure());
-
-  // Load a URL with no service worker.
-  GURL test_url = embedded_test_server()->GetURL(
-      "/banners/manifest_no_service_worker.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), test_url));
-
-  // Kick off fetching the data. This should block on waiting for a worker.
-  manager->GetData(GetWebAppParams(),
-                   base::BindOnce(&CallbackTester::OnDidFinishInstallableCheck,
-                                  base::Unretained(tester.get())));
-  sw_run_loop.Run();
-
-  // We should now be waiting for the service worker.
-  EXPECT_TRUE(!manager->task_queue_.HasCurrent());
-  EXPECT_TRUE(!manager->task_queue_.paused_tasks_.empty());
-
-  // Load the service worker with no fetch handler.
-  EXPECT_TRUE(content::ExecJs(web_contents(),
-                              "navigator.serviceWorker.register('"
-                              "service_worker_no_fetch_handler.js');",
-                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
-  tester_run_loop.Run();
-
-  // We should fail the check.
-  EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
-  EXPECT_FALSE(tester->manifest_url().is_empty());
-  EXPECT_FALSE(tester->primary_icon_url().is_empty());
-  EXPECT_NE(nullptr, tester->primary_icon());
-  EXPECT_TRUE(tester->installable_check_passed());
-  EXPECT_EQ(
-      std::vector<InstallableStatusCode>{
-          InstallableStatusCode::NOT_OFFLINE_CAPABLE},
-      tester->errors());
-}
-
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
-                       CheckServiceWorkerErrorIsNotCached) {
-  base::RunLoop sw_run_loop;
-  auto manager = std::make_unique<LazyWorkerInstallableManager>(
-      web_contents(), sw_run_loop.QuitClosure());
-
-  // Load a URL with no service worker.
-  GURL test_url = embedded_test_server()->GetURL(
-      "/banners/manifest_no_service_worker.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), test_url));
-
-  {
-    base::RunLoop tester_run_loop;
-    std::unique_ptr<CallbackTester> tester(
-        new CallbackTester(tester_run_loop.QuitClosure()));
-
-    InstallableParams params = GetWebAppParams();
-    params.wait_for_worker = false;
-    manager->GetData(
-        params, base::BindOnce(&CallbackTester::OnDidFinishInstallableCheck,
-                               base::Unretained(tester.get())));
-    tester_run_loop.Run();
-
-    // We should have returned with an error.
-    EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
-    EXPECT_TRUE(tester->installable_check_passed());
-    EXPECT_EQ(
-        std::vector<InstallableStatusCode>{
-            InstallableStatusCode::NO_MATCHING_SERVICE_WORKER},
-        tester->errors());
-  }
-
-  {
-    base::RunLoop tester_run_loop;
-    std::unique_ptr<CallbackTester> tester(
-        new CallbackTester(tester_run_loop.QuitClosure()));
-
-    InstallableParams params = GetWebAppParams();
-    manager->GetData(
-        params, base::BindOnce(&CallbackTester::OnDidFinishInstallableCheck,
-                               base::Unretained(tester.get())));
-    sw_run_loop.Run();
-
-    EXPECT_TRUE(content::ExecJs(
-        web_contents(),
-        "navigator.serviceWorker.register('service_worker.js');",
-        content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
-
-    tester_run_loop.Run();
-
-    // The callback result will depend on the state of offline support.
-    EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
-    EXPECT_TRUE(tester->installable_check_passed());
-    EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
-                       CheckPageWithNoServiceWorkerFetchHandler) {
-  base::RunLoop run_loop;
-  std::unique_ptr<CallbackTester> tester(
-      new CallbackTester(run_loop.QuitClosure()));
-
-  NavigateAndRunInstallableManager(
-      tester.get(), GetWebAppParams(),
-      "/banners/no_sw_fetch_handler_test_page.html");
-
-  // RunInstallableManager(tester.get(), GetWebAppParams());
-  run_loop.Run();
-
-  EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
-  EXPECT_FALSE(tester->manifest_url().is_empty());
-
-  EXPECT_FALSE(tester->primary_icon_url().is_empty());
-  EXPECT_NE(nullptr, tester->primary_icon());
-  EXPECT_TRUE(tester->installable_check_passed());
-  EXPECT_EQ(
-      std::vector<InstallableStatusCode>{
-          InstallableStatusCode::NOT_OFFLINE_CAPABLE},
-      tester->errors());
-}
-
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
-                       CheckPageWithNestedServiceWorkerCanBeInstalled) {
-  base::RunLoop run_loop;
-  std::unique_ptr<CallbackTester> tester(
-      new CallbackTester(run_loop.QuitClosure()));
-
-  NavigateAndRunInstallableManager(tester.get(), GetWebAppParams(),
-                                   "/banners/nested_sw_test_page.html");
-
-  auto params = GetWebAppParams();
-  // Make sure installable_check_passed check is run.
-  params.is_debug_mode = true;
-  RunInstallableManager(tester.get(), params);
-  run_loop.Run();
-
-  EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
-  EXPECT_FALSE(tester->manifest_url().is_empty());
-
-  EXPECT_FALSE(tester->primary_icon_url().is_empty());
-  EXPECT_NE(nullptr, tester->primary_icon());
-  EXPECT_TRUE(tester->installable_check_passed());
-  EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
-}
-
 IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckDataUrlIcon) {
   // Verify that InstallableManager can handle data URL icons.
   base::RunLoop run_loop;
   std::unique_ptr<CallbackTester> tester(
       new CallbackTester(run_loop.QuitClosure()));
 
-  NavigateAndRunInstallableManager(tester.get(), GetWebAppParams(),
-                                   GetURLOfPageWithServiceWorkerAndManifest(
-                                       "/banners/manifest_data_url_icon.json"));
+  NavigateAndRunInstallableManager(
+      tester.get(), GetWebAppParams(),
+      GetURLOfPageWithManifest("/banners/manifest_data_url_icon.json"));
   run_loop.Run();
 
   EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
@@ -1482,9 +1144,9 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   std::unique_ptr<CallbackTester> tester(
       new CallbackTester(run_loop.QuitClosure()));
 
-  NavigateAndRunInstallableManager(tester.get(), GetPrimaryIconParams(),
-                                   GetURLOfPageWithServiceWorkerAndManifest(
-                                       "/banners/manifest_bad_icon.json"));
+  NavigateAndRunInstallableManager(
+      tester.get(), GetPrimaryIconParams(),
+      GetURLOfPageWithManifest("/banners/manifest_bad_icon.json"));
   run_loop.Run();
 
   EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
@@ -1674,9 +1336,9 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
   InstallableParams params = GetWebAppParams();
   params.is_debug_mode = true;
-  NavigateAndRunInstallableManager(tester.get(), params,
-                                   GetURLOfPageWithServiceWorkerAndManifest(
-                                       "/banners/play_app_manifest.json"));
+  NavigateAndRunInstallableManager(
+      tester.get(), params,
+      GetURLOfPageWithManifest("/banners/play_app_manifest.json"));
   run_loop.Run();
 
   EXPECT_THAT(tester->errors(),
@@ -1699,8 +1361,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
   NavigateAndRunInstallableManager(
       tester.get(), params,
-      GetURLOfPageWithServiceWorkerAndManifest(
-          "/banners/manifest_one_bad_maskable.json"));
+      GetURLOfPageWithManifest("/banners/manifest_one_bad_maskable.json"));
 
   run_loop.Run();
 
@@ -1753,9 +1414,9 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
            InstallableStatusCode::MANIFEST_MISSING_SUITABLE_ICON)});
   errors.push_back(
       GetInstallabilityError(InstallableStatusCode::NO_ACCEPTABLE_ICON));
-  EXPECT_EQ(errors, NavigateAndGetAllInstallabilityErrors(
-                        GetURLOfPageWithServiceWorkerAndManifest(
-                            "/banners/play_app_manifest.json")));
+  EXPECT_EQ(errors,
+            NavigateAndGetAllInstallabilityErrors(
+                GetURLOfPageWithManifest("/banners/play_app_manifest.json")));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1781,23 +1442,6 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerAllowlistOriginBrowserTest,
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, NarrowServiceWorker) {
-  NavigateAndMaybeWaitForWorker("/banners/scope_c/scope_c.html");
-  base::RunLoop run_loop;
-  std::unique_ptr<CallbackTester> tester(
-      new CallbackTester(run_loop.QuitClosure()));
-
-  InstallableParams params = GetWebAppParams();
-  params.wait_for_worker = false;
-
-  RunInstallableManager(tester.get(), params);
-  run_loop.Run();
-
-  EXPECT_EQ(std::vector<InstallableStatusCode>(
-                {InstallableStatusCode::NO_MATCHING_SERVICE_WORKER}),
-            tester->errors());
-}
-
 IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckScreenshots) {
   base::RunLoop run_loop;
   std::unique_ptr<CallbackTester> tester(
@@ -1808,8 +1452,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckScreenshots) {
 
   NavigateAndRunInstallableManager(
       tester.get(), params,
-      GetURLOfPageWithServiceWorkerAndManifest(
-          "/banners/manifest_with_screenshots.json"));
+      GetURLOfPageWithManifest("/banners/manifest_with_screenshots.json"));
 
   run_loop.Run();
 
@@ -1843,7 +1486,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 #if BUILDFLAG(IS_ANDROID)
   NavigateAndRunInstallableManager(
       tester.get(), params,
-      GetURLOfPageWithServiceWorkerAndManifest(
+      GetURLOfPageWithManifest(
           "/banners/manifest_with_narrow_screenshots.json"));
   // Screenshots with unspecified form_factor is not filtered out.
   num_of_screenshots = 2;
@@ -1851,8 +1494,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 #else
   NavigateAndRunInstallableManager(
       tester.get(), params,
-      GetURLOfPageWithServiceWorkerAndManifest(
-          "/banners/manifest_with_wide_screenshots.json"));
+      GetURLOfPageWithManifest("/banners/manifest_with_wide_screenshots.json"));
   // Screenshots with unspecified form_factor is filtered out.
   num_of_screenshots = 1;
 #endif
@@ -1876,7 +1518,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckScreenshotsNumber) {
 
   NavigateAndRunInstallableManager(
       tester.get(), params,
-      GetURLOfPageWithServiceWorkerAndManifest(
+      GetURLOfPageWithManifest(
           "/banners/manifest_with_too_many_screenshots.json"));
 
   run_loop.Run();
@@ -1900,8 +1542,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
   NavigateAndRunInstallableManager(
       tester.get(), params,
-      GetURLOfPageWithServiceWorkerAndManifest(
-          "/banners/manifest_large_screenshot.json"));
+      GetURLOfPageWithManifest("/banners/manifest_large_screenshot.json"));
 
   run_loop.Run();
 
@@ -1953,8 +1594,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
   NavigateAndRunInstallableManager(
       tester.get(), GetManifestParams(),
-      GetURLOfPageWithServiceWorkerAndManifest(
-          "/banners/manifest_display_override.json"));
+      GetURLOfPageWithManifest("/banners/manifest_display_override.json"));
   run_loop.Run();
 
   EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
@@ -1980,7 +1620,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
   NavigateAndRunInstallableManager(
       tester.get(), GetWebAppParams(),
-      GetURLOfPageWithServiceWorkerAndManifest(
+      GetURLOfPageWithManifest(
           "/banners/manifest_display_override_contains_browser.json"));
   run_loop.Run();
 
@@ -2007,7 +1647,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
   NavigateAndRunInstallableManager(
       tester.get(), GetWebAppParams(),
-      GetURLOfPageWithServiceWorkerAndManifest(
+      GetURLOfPageWithManifest(
           "/banners/manifest_display_override_display_is_browser.json"));
   run_loop.Run();
 
@@ -2082,7 +1722,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerInPrerenderingBrowserTest,
     // reset.
     base::RunLoop run_loop;
     manager->SetQuitClosure(run_loop.QuitClosure());
-    NavigateAndMaybeWaitForWorker(path);
+    NavigateToPath(path);
     run_loop.Run();
     EXPECT_TRUE(blink::IsEmptyManifest(manager->manifest()));
     EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED,

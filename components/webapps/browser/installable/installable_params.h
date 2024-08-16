@@ -62,18 +62,6 @@ struct InstallableParams {
   // Whether to fetch the screenshots listed in the manifest.
   bool fetch_screenshots = false;
 
-  // Check whether the site has a service worker controlling the manifest start
-  // URL and the current URL. A value of true also indicates that the current
-  // WebContents is a top-level frame.
-  bool has_worker = false;
-
-  // Whether or not to wait indefinitely for a service worker. If this is set to
-  // false, the worker status will not be cached and will be re-checked if
-  // GetData() is called again for the current page. Setting this to true means
-  // that the callback will not be called for any site that does not install a
-  // service worker.
-  bool wait_for_worker = false;
-
   // True if the check should not short-circuit exit on errors, but continue
   // and accumulate all possible errors.
   bool is_debug_mode = false;
