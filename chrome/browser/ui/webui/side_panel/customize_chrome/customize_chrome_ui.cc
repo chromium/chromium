@@ -230,6 +230,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"webstoreProductivityCategoryLabel",
        IDS_NTP_WEBSTORE_PRODUCTIVITY_CATEOGRY_LABEL},
       // Customize Toolbar strings.
+      {"toolbarButtonA11yLabel", IDS_NTP_CUSTOMIZE_TOOLBAR_BUTTON_A11Y_LABEL},
       {"chooseToolbarIconsLabel", IDS_NTP_CUSTOMIZE_TOOLBAR_CHOOSE_ICONS_LABEL},
       {"resetToDefaultButtonLabel",
        IDS_NTP_CUSTOMIZE_TOOLBAR_RESET_TO_DEFAULT_BUTTON_LABEL},
