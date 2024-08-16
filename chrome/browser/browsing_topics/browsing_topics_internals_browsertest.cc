@@ -432,8 +432,7 @@ class BrowsingTopicsInternalsBrowserTest
          {features::kPrivacySandboxAdsAPIsOverride, {}},
          {privacy_sandbox::kPrivacySandboxSettings4,
           {{"consent-required", "true"}}}},
-        /*disabled_features=*/{
-            privacy_sandbox::kPrivacySandboxLocalNoticeConfirmation});
+        /*disabled_features=*/{});
   }
 
   // BrowserTestBase::SetUpInProcessBrowserTestFixture

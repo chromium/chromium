@@ -228,15 +228,6 @@ BASE_FEATURE(kPrivacySandboxPrivacyGuideAdTopics,
              "PrivacySandboxPrivacyGuideAdTopics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivacySandboxLocalNoticeConfirmation,
-             "PrivacySandboxLocalNoticeConfirmation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool>
-    kPrivacySandboxLocalNoticeConfirmationDefaultToOSCountry{
-        &kPrivacySandboxLocalNoticeConfirmation, "default-to-os-country",
-        false};
-
 BASE_FEATURE(kPrivacySandboxMigratePrefsToNoticeConsentDataModel,
              "PrivacySandboxMigratePrefsToNoticeConsentDataModel",
              base::FEATURE_ENABLED_BY_DEFAULT);

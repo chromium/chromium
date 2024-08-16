@@ -9,7 +9,6 @@
 #include "chrome/browser/browser_process.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/variations/service/variations_service.h"
-#include "components/variations/service/variations_service_utils.h"
 
 namespace {
 
@@ -17,21 +16,14 @@ namespace {
  * Retrieves the user's country code.
  *
  * Prioritizes the country code from the variations service if available.
- * If the kPrivacySandboxLocalNoticeConfirmationDefaultToOSCountry feature
- * parameter is enabled and the variations service is unavailable, falls back
- * to the OS country code. Otherwise returns an empty string.
+ * Otherwise returns an empty string.
  *
  */
 std::string GetCountry(variations::VariationsService* variations_service) {
-  if (privacy_sandbox::kPrivacySandboxLocalNoticeConfirmationDefaultToOSCountry
-          .Get()) {
-    return base::ToLowerASCII(GetCurrentCountryCode(variations_service));
-  } else {
-    if (!variations_service) {
-      return "";
-    }
-    return variations_service->GetStoredPermanentCountry();
+  if (!variations_service) {
+    return "";
   }
+  return variations_service->GetStoredPermanentCountry();
 }
 
 constexpr auto kPrivacySandboxConsentCountries =
