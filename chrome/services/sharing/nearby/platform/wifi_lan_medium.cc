@@ -654,7 +654,6 @@ void WifiLanMedium::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
   socket_factory_.reset();
   cros_network_config_.reset();
   firewall_hole_factory_.reset();
-  mdns_manager_.reset();
   discovery_callbacks_.clear();
 
   // Cancel all pending connect/listen calls. This is thread safe because all
