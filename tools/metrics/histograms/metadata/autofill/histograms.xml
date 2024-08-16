@@ -4022,6 +4022,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Autofill.PaymentsNetworkInterface.RequestLatency.GetCardUploadDetails{Result}"
+    units="ms" expires_after="2025-01-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Logs the roundtrip latency of a GetCardUploadDetailsRequest in the
+    PaymentsNetworkInterface. This is recorded when the response is received
+    (right before the callback is called).
+  </summary>
+  <token key="Result">
+    <variant name="" summary="Includes all result types."/>
+    <variant name=".Failure" summary="Failed to get the card upload details."/>
+    <variant name=".Success"
+        summary="Successfully got the card upload details."/>
+  </token>
+</histogram>
+
+<histogram
     name="Autofill.PaymentsNetworkInterface.{PaymentsRequestType}.ClientSideTimedOut"
     enum="Boolean" expires_after="2025-07-01">
   <owner>smcgruer@google.com</owner>

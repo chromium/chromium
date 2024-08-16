@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_card_upload_details_request.h"
@@ -316,18 +317,30 @@ void PaymentsNetworkInterface::GetCardUploadDetails(
     const int detected_values,
     const std::vector<ClientBehaviorConstants>& client_behavior_signals,
     const std::string& app_locale,
-    base::OnceCallback<void(PaymentsRpcResult,
-                            const std::u16string&,
-                            std::unique_ptr<base::Value::Dict>,
-                            std::vector<std::pair<int, int>>)> callback,
+    GetCardUploadDetailsCallback callback,
     const int billable_service_number,
     const int64_t billing_customer_number,
     UploadCardSource upload_card_source) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  GetCardUploadDetailsCallback callback_with_latency_metrics = base::BindOnce(
+      [](GetCardUploadDetailsCallback callback, base::TimeTicks start_time,
+         PaymentsRpcResult result, const std::u16string& context_token,
+         std::unique_ptr<base::Value::Dict> legal_message,
+         std::vector<std::pair<int, int>> supported_card_bin_ranges) {
+        autofill_metrics::LogGetCardUploadDetailsRequestLatencyMetric(
+            base::TimeTicks::Now() - start_time,
+            result == PaymentsRpcResult::kSuccess);
+        std::move(callback).Run(std::move(result), context_token,
+                                std::move(legal_message),
+                                std::move(supported_card_bin_ranges));
+      },
+      std::move(callback), start_time);
+
   IssueRequest(std::make_unique<GetCardUploadDetailsRequest>(
       addresses, detected_values, client_behavior_signals,
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
-      app_locale, std::move(callback), billable_service_number,
-      billing_customer_number, upload_card_source));
+      app_locale, std::move(callback_with_latency_metrics),
+      billable_service_number, billing_customer_number, upload_card_source));
 }
 
 void PaymentsNetworkInterface::UploadCard(

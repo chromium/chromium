@@ -936,6 +936,42 @@ TEST_F(PaymentsNetworkInterfaceTest, GetDetailsSuccess) {
   EXPECT_NE(nullptr, legal_message_.get());
 }
 
+TEST_F(PaymentsNetworkInterfaceTest, GetDetailsSuccessRequestLatencyMetric) {
+  base::HistogramTester histogram_tester;
+
+  StartGettingUploadDetails();
+  IssueOAuthToken();
+  ReturnResponse(
+      payments_network_interface_.get(), net::HTTP_OK,
+      "{ \"context_token\": \"some_token\", \"legal_message\": {} }");
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.PaymentsNetworkInterface.RequestLatency.GetCardUploadDetails",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.PaymentsNetworkInterface.RequestLatency.GetCardUploadDetails."
+      "Success",
+      1);
+}
+
+TEST_F(PaymentsNetworkInterfaceTest, GetDetailsFailureRequestLatencyMetric) {
+  base::HistogramTester histogram_tester;
+
+  StartGettingUploadDetails();
+  IssueOAuthToken();
+  ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                 "{ \"error\": { \"code\": \"INTERNAL\" }, \"context_token\": "
+                 "\"some_token\", \"legal_message\": {} }");
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.PaymentsNetworkInterface.RequestLatency.GetCardUploadDetails",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.PaymentsNetworkInterface.RequestLatency.GetCardUploadDetails."
+      "Failure",
+      1);
+}
+
 TEST_F(PaymentsNetworkInterfaceTest, GetUploadDetailsVariationsTest) {
   // Register a trial and variation id, so that there is data in variations
   // headers.
