@@ -1341,6 +1341,9 @@ BASE_FEATURE(kGesturePropertiesDBusService,
 // native screen capture tool.
 BASE_FEATURE(kGifRecording, "GifRecording", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the Graduation app for EDU users if the Graduation policy allows it.
+BASE_FEATURE(kGraduation, "Graduation", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables a Files banner about Google One offer. This flag is used by Gamgee
 // nudge to conditionally disable the G1 file banner for CBX boards via finch.
 BASE_FEATURE(kGoogleOneOfferFilesBanner,
@@ -3901,6 +3904,10 @@ bool IsGifRecordingEnabled() {
       base::FeatureList::IsEnabled(kSysUiShouldHoldbackGifRecording);
   return !device_enrolled_in_holdback &&
          base::FeatureList::IsEnabled(kGifRecording);
+}
+
+bool IsGraduationEnabled() {
+  return base::FeatureList::IsEnabled(kGraduation);
 }
 
 bool IsFeatureManagementGrowthFrameworkEnabled() {

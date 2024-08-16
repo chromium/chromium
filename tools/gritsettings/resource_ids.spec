@@ -846,6 +846,10 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [6080],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/graduation/resources/resources.grd": {
+    "META": {"sizes": {"includes": [20],}},
+    "includes": [6090],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/recorder_app_ui/resources/resources.grd": {
     "META": {"sizes": {"includes": [200],}},
     "includes": [6100],

@@ -41,6 +41,7 @@ message SystemWebAppDataProto {
     MALL = 28;
     OS_SANITIZE = 29;
     RECORDER = 30;
+    GRADUATION = 31;
   };
 
   optional SystemWebAppType system_app_type = 1;

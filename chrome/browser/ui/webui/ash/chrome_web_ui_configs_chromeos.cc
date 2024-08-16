@@ -31,6 +31,7 @@
 #include "ash/webui/files_internals/files_internals_ui.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
 #include "ash/webui/focus_mode/focus_mode_ui.h"
+#include "ash/webui/graduation/graduation_ui.h"
 #include "ash/webui/help_app_ui/help_app_ui.h"
 #include "ash/webui/mall/mall_ui.h"
 #include "ash/webui/media_app_ui/media_app_ui.h"
@@ -286,6 +287,7 @@ void RegisterAshChromeWebUIConfigs() {
                                       ChromeFileManagerUIDelegate>());
   map.AddWebUIConfig(std::make_unique<FirmwareUpdateAppUIConfig>());
   map.AddWebUIConfig(std::make_unique<FocusModeUIConfig>());
+  map.AddWebUIConfig(std::make_unique<graduation::GraduationUIConfig>());
   map.AddWebUIConfig(std::make_unique<HealthdInternalsUIConfig>());
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<HelpAppUIConfig, HelpAppUI,

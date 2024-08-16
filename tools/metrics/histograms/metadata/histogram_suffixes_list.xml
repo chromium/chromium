@@ -2062,11 +2062,11 @@ chromium-metrics-reviews@google.com.
   <suffix name="drive" label="Module ID for Google Drive module"/>
   <suffix name="dummy" label="Module ID for a dummy module"/>
   <suffix name="dummy2" label="Module ID for another dummy module"/>
+  <suffix name="google_calendar" label="Module ID for Google Calendar"/>
   <suffix name="history_clusters"
       label="Module ID for History Clusters module"/>
   <suffix name="shopping_tasks" label="Module ID for Shopping Tasks"/>
   <suffix name="tab_resumption" label="Module ID for Tab Resumption"/>
-  <suffix name="google_calendar" label="Module ID for Google Calendar"/>
   <affected-histogram name="NewTabPage.Modules.Dismissed"/>
   <affected-histogram name="NewTabPage.Modules.EnabledOnNTPLoad"/>
   <affected-histogram name="NewTabPage.Modules.Impression"/>
@@ -4427,6 +4427,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="Eche" label="Eche"/>
   <suffix name="FaceML" label="Face ML (Deprecated)"/>
   <suffix name="FirmwareUpdate" label="FirmwareUpdate"/>
+  <suffix name="Graduation" label="Graduation"/>
   <suffix name="Help" label="Help"/>
   <suffix name="Mall" label="App Mall"/>
   <suffix name="Media" label="Media"/>
