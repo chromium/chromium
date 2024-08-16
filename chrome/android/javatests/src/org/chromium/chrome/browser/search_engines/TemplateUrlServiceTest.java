@@ -256,16 +256,17 @@ public class TemplateUrlServiceTest {
     public void testSetPlayAPISearchEngine_UpdatePrepopulated() {
         waitForTemplateUrlServiceToLoad();
 
-        TemplateUrl defaultSearchEngine = getDefaultSearchEngine(mTemplateUrlService);
-        String originalKeyword = defaultSearchEngine.getKeyword();
-        Assert.assertTrue(defaultSearchEngine.getIsPrepopulated());
+        TemplateUrl originalSearchEngine = getDefaultSearchEngine(mTemplateUrlService);
+        String originalKeyword = originalSearchEngine.getKeyword();
+        Assert.assertTrue(originalSearchEngine.getIsPrepopulated());
         int searchEnginesCountBefore = getSearchEngineCount(mTemplateUrlService);
 
         // Adding Play API search engine with the same keyword should succeed.
         Assert.assertTrue(
                 setPlayAPISearchEngine(
                         mTemplateUrlService,
-                        defaultSearchEngine.getShortName(),
+                        originalSearchEngine.getShortName(),
+                        // Note: matching keyword should trigger reconciliation.
                         originalKeyword,
                         PLAY_API_SEARCH_URL,
                         PLAY_API_SUGGEST_URL,
@@ -277,11 +278,12 @@ public class TemplateUrlServiceTest {
                         null,
                         null));
 
-        defaultSearchEngine = getDefaultSearchEngine(mTemplateUrlService);
-        Assert.assertEquals(originalKeyword, defaultSearchEngine.getKeyword());
-        Assert.assertEquals(PLAY_API_SEARCH_URL, defaultSearchEngine.getURL());
+        TemplateUrl updatedSearchEngine = getDefaultSearchEngine(mTemplateUrlService);
+        Assert.assertEquals(originalKeyword, updatedSearchEngine.getKeyword());
+        // Chrome should promote built-in definitions.
+        Assert.assertEquals(originalSearchEngine.getURL(), updatedSearchEngine.getURL());
         // Still appears as prepopulated.
-        Assert.assertTrue(defaultSearchEngine.getIsPrepopulated());
+        Assert.assertTrue(updatedSearchEngine.getIsPrepopulated());
 
         // We need to ensure that from perspective of Java, the number of search engines is the same
         // even though the update didn't happen in place.
