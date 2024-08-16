@@ -91,8 +91,8 @@ public class TabListItemAnimator extends SimpleItemAnimator {
             for (var entry : mPendingAnimators.entrySet()) {
                 Animator animator = entry.getValue();
                 animator.setStartDelay(delay);
-                animator.start();
                 mRunningAnimators.put(entry.getKey(), animator);
+                animator.start();
             }
             mPendingAnimators.clear();
         }
@@ -105,8 +105,8 @@ public class TabListItemAnimator extends SimpleItemAnimator {
             Animator animator = mPendingAnimators.get(holder);
             mPendingAnimators.remove(holder);
             if (animator != null) {
-                animator.start();
                 mRunningAnimators.put(holder, animator);
+                animator.start();
                 // This call should remove the animator for mRunningAnimators.
                 animator.end();
             }

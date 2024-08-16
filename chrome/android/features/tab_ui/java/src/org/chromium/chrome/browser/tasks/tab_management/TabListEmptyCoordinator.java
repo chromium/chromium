@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
@@ -28,12 +29,15 @@ class TabListEmptyCoordinator {
     private Context mContext;
     private TabListModel mModel;
     private ListObserver<Void> mListObserver;
+    private Callback<Runnable> mRunOnItemAnimatorFinished;
     private boolean mIsTabSwitcherShowing;
     private boolean mIsListObserverAttached;
 
-    public TabListEmptyCoordinator(ViewGroup rootView, TabListModel model) {
+    public TabListEmptyCoordinator(
+            ViewGroup rootView, TabListModel model, Callback<Runnable> runOnItemAnimatorFinished) {
         mRootView = rootView;
         mContext = rootView.getContext();
+        mRunOnItemAnimatorFinished = runOnItemAnimatorFinished;
 
         // Observe TabListModel to determine when to add / remove empty state view.
         mModel = model;
@@ -80,13 +84,24 @@ class TabListEmptyCoordinator {
         mImageView.setImageResource(imageResId);
     }
 
-    private void updateEmptyView() {
-        boolean isInEmptyState = mModel.size() == 0 && mIsTabSwitcherShowing;
-        boolean isEmptyViewAttached = mEmptyView != null && mEmptyView.getParent() != null;
+    private boolean isEmptyViewAttached() {
+        return mEmptyView != null && mEmptyView.getParent() != null;
+    }
 
-        if (isEmptyViewAttached) {
-            if (isInEmptyState) {
-                setEmptyViewVisibility(View.VISIBLE);
+    private boolean isInEmptyState() {
+        return mModel.size() == 0 && mIsTabSwitcherShowing;
+    }
+
+    private void updateEmptyView() {
+        if (isEmptyViewAttached()) {
+            if (isInEmptyState()) {
+                mRunOnItemAnimatorFinished.onResult(
+                        () -> {
+                            // Re-check requirements since this is now async.
+                            if (isEmptyViewAttached() && isInEmptyState()) {
+                                setEmptyViewVisibility(View.VISIBLE);
+                            }
+                        });
             } else {
                 setEmptyViewVisibility(View.GONE);
             }

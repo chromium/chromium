@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ImageView;
 
 import androidx.annotation.IntDef;
@@ -24,6 +25,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemAnimator.ItemAnimatorFinishedListener;
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 
 import org.chromium.base.Callback;
@@ -396,7 +398,9 @@ public class TabListCoordinator
 
         mHasEmptyView = hasEmptyView;
         if (mHasEmptyView) {
-            mTabListEmptyCoordinator = new TabListEmptyCoordinator(parentView, mModel);
+            mTabListEmptyCoordinator =
+                    new TabListEmptyCoordinator(
+                            parentView, mModel, this::runOnItemAnimatorFinished);
             mEmptyStateHeadingResId = emptyHeadingStringResId;
             mEmptyStateSubheadingResId = emptySubheadingStringResId;
             mEmptyStateImageResId = emptyImageResId;
@@ -477,7 +481,7 @@ public class TabListCoordinator
         }
         mAwaitingLayoutRunnable = r;
         mAwaitingTabId = mModel.get(index).model.get(TabProperties.TAB_ID);
-        runAnimationOnNextLayout(this::checkAwaitingLayout);
+        mRecyclerView.runOnNextLayout(this::checkAwaitingLayout);
     }
 
     @NonNull
@@ -821,10 +825,6 @@ public class TabListCoordinator
         return mMediator.indexOfTabCardsOrInvalid(index);
     }
 
-    void runAnimationOnNextLayout(Runnable runnable) {
-        mRecyclerView.runAnimationOnNextLayout(runnable);
-    }
-
     int getTabListModelSize() {
         return mModel.size();
     }
@@ -874,5 +874,65 @@ public class TabListCoordinator
     void showCloseAllTabsAnimation(Runnable onAnimationEnd) {
         assert mMode == TabListMode.GRID : "Can only run animation in GRID mode.";
         mMediator.showCloseAllTabsAnimation(onAnimationEnd, mRecyclerView);
+    }
+
+    /** Runs a runnable after the item animator has finished its animations. */
+    void runOnItemAnimatorFinished(Runnable r) {
+        Runnable attachListener =
+                () -> {
+                    // The item animator sometimes gets removed. If this happens run immediately.
+                    @Nullable var itemAnimator = mRecyclerView.getItemAnimator();
+                    if (itemAnimator == null) {
+                        r.run();
+                        return;
+                    }
+                    // Create a listener that is executed once the item animator is done all its
+                    // animations.
+                    var listener =
+                            new ItemAnimatorFinishedListener() {
+                                @Override
+                                public void onAnimationsFinished() {
+                                    r.run();
+                                }
+                            };
+                    itemAnimator.isRunning(listener);
+                };
+        // Delay attaching the listener in two ways:
+        // 1) Post so that the current model updates in the current task complete before we attempt
+        //    anything.
+        // 2) Attach the listener only after the adapter has flushed any pending updates so
+        //    animations have actually started.
+        mRecyclerView.post(() -> runAfterAdapterUpdates(attachListener));
+    }
+
+    /**
+     * Runs a runnable after the recycler view adapter has flushed any pending updates and started
+     * animations for them.
+     */
+    private void runAfterAdapterUpdates(Runnable r) {
+        if (!mRecyclerView.hasPendingAdapterUpdates()) {
+            r.run();
+            return;
+        }
+
+        // It is unfortunate that a global layout listener is required, but we need to wait for
+        // views to be added/removed/rearranged as there is no other signal that pending updates
+        // were applied.
+        mRecyclerView
+                .getViewTreeObserver()
+                .addOnGlobalLayoutListener(
+                        new OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
+                                // Keep waiting until all updates are applied.
+                                if (mRecyclerView.hasPendingAdapterUpdates()) {
+                                    return;
+                                }
+                                mRecyclerView
+                                        .getViewTreeObserver()
+                                        .removeOnGlobalLayoutListener(this);
+                                r.run();
+                            }
+                        });
     }
 }
