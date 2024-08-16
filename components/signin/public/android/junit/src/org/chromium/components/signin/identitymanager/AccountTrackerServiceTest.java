@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 
 import android.accounts.Account;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -87,6 +88,11 @@ public class AccountTrackerServiceTest {
         mCoreAccountInfo =
                 CoreAccountInfo.createFromEmailAndGaiaId(
                         ACCOUNT_EMAIL, mFakeAccountManagerFacade.getAccountGaiaId(ACCOUNT_EMAIL));
+    }
+
+    @After
+    public void tearDown() {
+        AccountManagerFacadeProvider.resetInstanceForTests();
     }
 
     @Test
