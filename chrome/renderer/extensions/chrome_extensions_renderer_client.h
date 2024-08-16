@@ -9,24 +9,16 @@
 #include <string>
 
 #include "extensions/renderer/extensions_renderer_client.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
 #include "ui/base/page_transition_types.h"
-#include "v8/include/v8-local-handle.h"
 
 class GURL;
 
 namespace blink {
-enum class ProtocolHandlerSecurityLevel;
-class WebElement;
-class WebFrame;
 class WebLocalFrame;
-struct WebPluginParams;
 class WebURL;
-class WebView;
 }
 
 namespace content {
-class RenderFrame;
 struct WebPluginInfo;
 }
 
@@ -39,18 +31,9 @@ namespace net {
 class SiteForCookies;
 }
 
-namespace url {
-class Origin;
-}
-
 namespace ukm {
 class MojoUkmRecorder;
 }
-
-namespace v8 {
-class Isolate;
-class Object;
-}  // namespace v8
 
 class ChromeExtensionsRendererClient
     : public extensions::ExtensionsRendererClient {
@@ -76,14 +59,6 @@ class ChromeExtensionsRendererClient
       const extensions::ExtensionId& extension_id) override;
 
   // See ChromeContentRendererClient methods with the same names.
-  void WebViewCreated(blink::WebView* web_view,
-                      const url::Origin* outermost_origin);
-  void RenderFrameCreated(content::RenderFrame* render_frame,
-                          service_manager::BinderRegistry* registry);
-  bool OverrideCreatePlugin(content::RenderFrame* render_frame,
-                            const blink::WebPluginParams& params);
-  bool AllowPopup();
-  blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel();
   void WillSendRequest(blink::WebLocalFrame* frame,
                        ui::PageTransition transition_type,
                        const blink::WebURL& upstream_url,
@@ -91,9 +66,6 @@ class ChromeExtensionsRendererClient
                        const net::SiteForCookies& site_for_cookies,
                        const url::Origin* initiator_origin,
                        GURL* new_url);
-  v8::Local<v8::Object> GetScriptableObject(
-      const blink::WebElement& plugin_element,
-      v8::Isolate* isolate);
 
   static void DidBlockMimeHandlerViewForDisallowedPlugin(
       const blink::WebElement& plugin_element);
@@ -102,12 +74,6 @@ class ChromeExtensionsRendererClient
       const GURL& resource_url,
       const std::string& mime_type,
       const content::WebPluginInfo& plugin_info);
-  static blink::WebFrame* FindFrame(blink::WebLocalFrame* relative_to_frame,
-                                    const std::string& name);
-
-  void RunScriptsAtDocumentStart(content::RenderFrame* render_frame);
-  void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame);
-  void RunScriptsAtDocumentIdle(content::RenderFrame* render_frame);
 
  private:
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;

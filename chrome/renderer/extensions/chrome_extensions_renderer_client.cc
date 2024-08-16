@@ -4,44 +4,25 @@
 
 #include "chrome/renderer/extensions/chrome_extensions_renderer_client.h"
 
-#include <memory>
-#include <optional>
 #include <utility>
 
-#include "base/command_line.h"
-#include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
-#include "chrome/common/chrome_switches.h"
-#include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
 #include "chrome/renderer/extensions/renderer_permissions_policy_delegate.h"
 #include "chrome/renderer/extensions/resource_request_policy.h"
-#include "content/public/common/content_constants.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_set.h"
-#include "extensions/common/mojom/context_type.mojom.h"
-#include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/switches.h"
 #include "extensions/renderer/dispatcher.h"
-#include "extensions/renderer/extension_frame_helper.h"
-#include "extensions/renderer/extension_web_view_helper.h"
-#include "extensions/renderer/extensions_render_frame_observer.h"
-#include "extensions/renderer/extensions_renderer_api_provider.h"
-#include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
 #include "extensions/renderer/renderer_extension_registry.h"
-#include "extensions/renderer/script_context.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -51,14 +32,6 @@
 using extensions::Extension;
 
 namespace {
-
-void IsGuestViewApiAvailableToScriptContext(
-    bool* api_is_available,
-    extensions::ScriptContext* context) {
-  if (context->GetAvailability("guestViewInternal").is_available()) {
-    *api_is_available = true;
-  }
-}
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -117,85 +90,6 @@ void ChromeExtensionsRendererClient::RenderThreadStarted() {
       std::make_unique<extensions::ResourceRequestPolicy>(dispatcher());
 
   thread->AddObserver(dispatcher());
-}
-
-void ChromeExtensionsRendererClient::WebViewCreated(
-    blink::WebView* web_view,
-    const url::Origin* outermost_origin) {
-  new extensions::ExtensionWebViewHelper(web_view, outermost_origin);
-}
-
-void ChromeExtensionsRendererClient::RenderFrameCreated(
-    content::RenderFrame* render_frame,
-    service_manager::BinderRegistry* registry) {
-  new extensions::ExtensionsRenderFrameObserver(render_frame, registry);
-  new extensions::ExtensionFrameHelper(render_frame, dispatcher());
-  dispatcher()->OnRenderFrameCreated(render_frame);
-}
-
-bool ChromeExtensionsRendererClient::OverrideCreatePlugin(
-    content::RenderFrame* render_frame,
-    const blink::WebPluginParams& params) {
-  if (params.mime_type.Utf8() != content::kBrowserPluginMimeType)
-    return true;
-
-  bool guest_view_api_available = false;
-  dispatcher()->script_context_set_iterator()->ForEach(
-      render_frame, base::BindRepeating(&IsGuestViewApiAvailableToScriptContext,
-                                        &guest_view_api_available));
-  return !guest_view_api_available;
-}
-
-bool ChromeExtensionsRendererClient::AllowPopup() {
-  extensions::ScriptContext* current_context =
-      dispatcher()->script_context_set().GetCurrent();
-  if (!current_context || !current_context->extension())
-    return false;
-
-  // See http://crbug.com/117446 for the subtlety of this check.
-  switch (current_context->context_type()) {
-    case extensions::mojom::ContextType::kUnspecified:
-    case extensions::mojom::ContextType::kWebPage:
-    case extensions::mojom::ContextType::kUnprivilegedExtension:
-    case extensions::mojom::ContextType::kWebUi:
-    case extensions::mojom::ContextType::kUntrustedWebUi:
-    case extensions::mojom::ContextType::kOffscreenExtension:
-    case extensions::mojom::ContextType::kUserScript:
-    case extensions::mojom::ContextType::kLockscreenExtension:
-      return false;
-    case extensions::mojom::ContextType::kPrivilegedExtension:
-      return !current_context->IsForServiceWorker();
-    case extensions::mojom::ContextType::kContentScript:
-      return true;
-    case extensions::mojom::ContextType::kPrivilegedWebPage:
-      return current_context->web_frame()->IsOutermostMainFrame();
-  }
-}
-
-blink::ProtocolHandlerSecurityLevel
-ChromeExtensionsRendererClient::GetProtocolHandlerSecurityLevel() {
-  // WARNING: This must match the logic of
-  // Browser::GetProtocolHandlerSecurityLevel().
-  extensions::ScriptContext* current_context =
-      dispatcher()->script_context_set().GetCurrent();
-  if (!current_context || !current_context->extension())
-    return blink::ProtocolHandlerSecurityLevel::kStrict;
-
-  switch (current_context->context_type()) {
-    case extensions::mojom::ContextType::kPrivilegedWebPage:
-    case extensions::mojom::ContextType::kContentScript:
-    case extensions::mojom::ContextType::kLockscreenExtension:
-    case extensions::mojom::ContextType::kOffscreenExtension:
-    case extensions::mojom::ContextType::kUnprivilegedExtension:
-    case extensions::mojom::ContextType::kUnspecified:
-    case extensions::mojom::ContextType::kUserScript:
-    case extensions::mojom::ContextType::kWebUi:
-    case extensions::mojom::ContextType::kUntrustedWebUi:
-    case extensions::mojom::ContextType::kWebPage:
-      return blink::ProtocolHandlerSecurityLevel::kStrict;
-    case extensions::mojom::ContextType::kPrivilegedExtension:
-      return blink::ProtocolHandlerSecurityLevel::kExtensionFeatures;
-  }
 }
 
 void ChromeExtensionsRendererClient::WillSendRequest(
@@ -296,43 +190,4 @@ bool ChromeExtensionsRendererClient::MaybeCreateMimeHandlerView(
              true /* create_if_does_not_exist */)
       ->CreateFrameContainer(plugin_element, resource_url, mime_type,
                              plugin_info);
-}
-
-v8::Local<v8::Object> ChromeExtensionsRendererClient::GetScriptableObject(
-    const blink::WebElement& plugin_element,
-    v8::Isolate* isolate) {
-  // If there is a MimeHandlerView that can provide the scriptable object then
-  // MaybeCreateMimeHandlerView must have been called before and a container
-  // manager should exist.
-  auto* container_manager = extensions::MimeHandlerViewContainerManager::Get(
-      content::RenderFrame::FromWebFrame(
-          plugin_element.GetDocument().GetFrame()),
-      false /* create_if_does_not_exist */);
-  if (container_manager)
-    return container_manager->GetScriptableObject(plugin_element, isolate);
-  return v8::Local<v8::Object>();
-}
-
-// static
-blink::WebFrame* ChromeExtensionsRendererClient::FindFrame(
-    blink::WebLocalFrame* relative_to_frame,
-    const std::string& name) {
-  content::RenderFrame* result = extensions::ExtensionFrameHelper::FindFrame(
-      content::RenderFrame::FromWebFrame(relative_to_frame), name);
-  return result ? result->GetWebFrame() : nullptr;
-}
-
-void ChromeExtensionsRendererClient::RunScriptsAtDocumentStart(
-    content::RenderFrame* render_frame) {
-  dispatcher()->RunScriptsAtDocumentStart(render_frame);
-}
-
-void ChromeExtensionsRendererClient::RunScriptsAtDocumentEnd(
-    content::RenderFrame* render_frame) {
-  dispatcher()->RunScriptsAtDocumentEnd(render_frame);
-}
-
-void ChromeExtensionsRendererClient::RunScriptsAtDocumentIdle(
-    content::RenderFrame* render_frame) {
-  dispatcher()->RunScriptsAtDocumentIdle(render_frame);
 }
