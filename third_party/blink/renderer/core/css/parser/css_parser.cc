@@ -357,13 +357,15 @@ bool CSSParser::ParseColor(Color& color, const String& string, bool strict) {
 bool CSSParser::ParseSystemColor(Color& color,
                                  const String& color_string,
                                  mojom::blink::ColorScheme color_scheme,
-                                 const ui::ColorProvider* color_provider) {
+                                 const ui::ColorProvider* color_provider,
+                                 bool is_in_web_app_scope) {
   CSSValueID id = CssValueKeywordID(color_string);
   if (!StyleColor::IsSystemColorIncludingDeprecated(id)) {
     return false;
   }
 
-  color = LayoutTheme::GetTheme().SystemColor(id, color_scheme, color_provider);
+  color = LayoutTheme::GetTheme().SystemColor(id, color_scheme, color_provider,
+                                              is_in_web_app_scope);
   return true;
 }
 

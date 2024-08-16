@@ -65,8 +65,11 @@ static ColorParseResult ParseColor(Color& parsed_color,
   const bool kUseStrictParsing = true;
   if (CSSParser::ParseColor(parsed_color, color_string, kUseStrictParsing))
     return ColorParseResult::kColor;
+  // TODO(crbug.com/40229450): Pass down `is_in_web_app_scope` to know if System
+  // AccentColor keyword should be resolved to the OS-defined AccentColor.
   if (CSSParser::ParseSystemColor(parsed_color, color_string, color_scheme,
-                                  color_provider)) {
+                                  color_provider,
+                                  /*is_in_web_app_scope=*/false)) {
     return ColorParseResult::kColor;
   }
   if (auto* color_mix_value =

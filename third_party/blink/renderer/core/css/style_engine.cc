@@ -4214,7 +4214,8 @@ void StyleEngine::UpdateForcedBackgroundColor() {
   forced_background_color_ = LayoutTheme::GetTheme().SystemColor(
       CSSValueID::kCanvas, color_scheme,
       GetDocument().GetPage()->GetColorProviderForPainting(
-          color_scheme, forced_colors_ != ForcedColors::kNone));
+          color_scheme, forced_colors_ != ForcedColors::kNone),
+      GetDocument().IsInWebAppScope());
 }
 
 Color StyleEngine::ColorAdjustBackgroundColor() const {

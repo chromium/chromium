@@ -533,18 +533,20 @@ base::TimeDelta LayoutTheme::CaretBlinkInterval() const {
 
 Color LayoutTheme::SystemColor(CSSValueID css_value_id,
                                mojom::blink::ColorScheme color_scheme,
-                               const ui::ColorProvider* color_provider) const {
+                               const ui::ColorProvider* color_provider,
+                               bool is_in_web_app_scope) const {
   if (color_provider && !WebTestSupport::IsRunningWebTest()) {
     return SystemColorFromColorProvider(css_value_id, color_scheme,
-                                        color_provider);
+                                        color_provider, is_in_web_app_scope);
   }
-  return DefaultSystemColor(css_value_id, color_scheme, color_provider);
+  return DefaultSystemColor(css_value_id, color_scheme, color_provider,
+                            is_in_web_app_scope);
 }
 
-Color LayoutTheme::DefaultSystemColor(
-    CSSValueID css_value_id,
-    mojom::blink::ColorScheme color_scheme,
-    const ui::ColorProvider* color_provider) const {
+Color LayoutTheme::DefaultSystemColor(CSSValueID css_value_id,
+                                      mojom::blink::ColorScheme color_scheme,
+                                      const ui::ColorProvider* color_provider,
+                                      bool is_in_web_app_scope) const {
   // The source for the deprecations commented on below is
   // https://www.w3.org/TR/css-color-4/#deprecated-system-colors.
 
@@ -655,19 +657,21 @@ Color LayoutTheme::DefaultSystemColor(
     case CSSValueID::kInternalSearchColor:
       return PlatformTextSearchHighlightColor(/* active_match */ false,
                                               /* in_forced_colors */ false,
-                                              color_scheme, color_provider);
+                                              color_scheme, color_provider,
+                                              is_in_web_app_scope);
     case CSSValueID::kInternalSearchTextColor:
       return PlatformTextSearchColor(/* active_match */ false,
                                      /* in_forced_colors */ false, color_scheme,
-                                     color_provider);
+                                     color_provider, is_in_web_app_scope);
     case CSSValueID::kInternalCurrentSearchColor:
       return PlatformTextSearchHighlightColor(/* active_match */ true,
                                               /* in_forced_colors */ false,
-                                              color_scheme, color_provider);
+                                              color_scheme, color_provider,
+                                              is_in_web_app_scope);
     case CSSValueID::kInternalCurrentSearchTextColor:
       return PlatformTextSearchColor(/* active_match */ true,
                                      /* in_forced_colors */ false, color_scheme,
-                                     color_provider);
+                                     color_provider, is_in_web_app_scope);
     default:
       break;
   }
@@ -679,7 +683,8 @@ Color LayoutTheme::DefaultSystemColor(
 Color LayoutTheme::SystemColorFromColorProvider(
     CSSValueID css_value_id,
     mojom::blink::ColorScheme color_scheme,
-    const ui::ColorProvider* color_provider) const {
+    const ui::ColorProvider* color_provider,
+    bool is_in_web_app_scope) const {
   SkColor system_theme_color;
   switch (css_value_id) {
     case CSSValueID::kActivetext:
@@ -740,7 +745,8 @@ Color LayoutTheme::SystemColorFromColorProvider(
           color_provider->GetColor(ui::kColorCssSystemWindowText);
       break;
     default:
-      return DefaultSystemColor(css_value_id, color_scheme, color_provider);
+      return DefaultSystemColor(css_value_id, color_scheme, color_provider,
+                                is_in_web_app_scope);
   }
 
   return Color::FromSkColor(system_theme_color);
@@ -758,11 +764,12 @@ Color LayoutTheme::PlatformTextSearchHighlightColor(
     bool active_match,
     bool in_forced_colors,
     mojom::blink::ColorScheme color_scheme,
-    const ui::ColorProvider* color_provider) const {
+    const ui::ColorProvider* color_provider,
+    bool is_in_web_app_scope) const {
   if (active_match) {
     if (in_forced_colors) {
       return GetTheme().SystemColor(CSSValueID::kHighlight, color_scheme,
-                                    color_provider);
+                                    color_provider, is_in_web_app_scope);
     }
     return Color(255, 150, 50);  // Orange.
   }
@@ -773,10 +780,11 @@ Color LayoutTheme::PlatformTextSearchColor(
     bool active_match,
     bool in_forced_colors,
     mojom::blink::ColorScheme color_scheme,
-    const ui::ColorProvider* color_provider) const {
+    const ui::ColorProvider* color_provider,
+    bool is_in_web_app_scope) const {
   if (in_forced_colors && active_match) {
     return GetTheme().SystemColor(CSSValueID::kHighlighttext, color_scheme,
-                                  color_provider);
+                                  color_provider, is_in_web_app_scope);
   }
   return Color::kBlack;
 }

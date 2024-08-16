@@ -2914,7 +2914,8 @@ TEST_F(StyleEngineTest, ColorSchemeBaseBackgroundChange) {
   mojom::blink::ColorScheme color_scheme = mojom::blink::ColorScheme::kLight;
   Color system_background_color = LayoutTheme::GetTheme().SystemColor(
       CSSValueID::kCanvas, color_scheme,
-      GetDocument().GetColorProviderForPainting(color_scheme));
+      GetDocument().GetColorProviderForPainting(color_scheme),
+      GetDocument().IsInWebAppScope());
 
   EXPECT_EQ(system_background_color,
             GetDocument().View()->BaseBackgroundColor());

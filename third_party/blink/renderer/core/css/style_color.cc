@@ -155,10 +155,9 @@ Color StyleColor::ColorFromKeyword(CSSValueID keyword,
       return Color::FromRGBA32(named_color->argb_value);
     }
   }
-  // TODO(crbug.com/40229450): Pass down `is_in_web_app_scope` to know if system
-  // AccentColor keyword should be resolved to the OS-defined AccentColor.
-  return LayoutTheme::GetTheme().SystemColor(keyword, color_scheme,
-                                             color_provider);
+
+  return LayoutTheme::GetTheme().SystemColor(
+      keyword, color_scheme, color_provider, is_in_web_app_scope);
 }
 
 bool StyleColor::IsColorKeyword(CSSValueID id) {

@@ -121,11 +121,13 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
       bool active_match,
       bool in_forced_colors,
       mojom::blink::ColorScheme color_scheme,
-      const ui::ColorProvider* color_provider) const;
+      const ui::ColorProvider* color_provider,
+      bool is_in_web_app_scope) const;
   Color PlatformTextSearchColor(bool active_match,
                                 bool in_forced_colors,
                                 mojom::blink::ColorScheme color_scheme,
-                                const ui::ColorProvider* color_provider) const;
+                                const ui::ColorProvider* color_provider,
+                                bool is_in_web_app_scope) const;
 
   virtual Color FocusRingColor(mojom::blink::ColorScheme color_scheme) const;
   virtual Color PlatformFocusRingColor() const { return Color(0, 0, 0); }
@@ -148,7 +150,8 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // System colors for CSS.
   virtual Color SystemColor(CSSValueID,
                             mojom::blink::ColorScheme color_scheme,
-                            const ui::ColorProvider* color_provider) const;
+                            const ui::ColorProvider* color_provider,
+                            bool is_in_web_app_scope) const;
 
   virtual void AdjustSliderThumbSize(ComputedStyleBuilder&) const;
 
@@ -243,11 +246,12 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
 
   Color DefaultSystemColor(CSSValueID,
                            mojom::blink::ColorScheme color_scheme,
-                           const ui::ColorProvider* color_provider) const;
-  Color SystemColorFromColorProvider(
-      CSSValueID,
-      mojom::blink::ColorScheme color_scheme,
-      const ui::ColorProvider* color_provider) const;
+                           const ui::ColorProvider* color_provider,
+                           bool is_in_web_app_scope) const;
+  Color SystemColorFromColorProvider(CSSValueID,
+                                     mojom::blink::ColorScheme color_scheme,
+                                     const ui::ColorProvider* color_provider,
+                                     bool is_in_web_app_scope) const;
 
  private:
   // This function is to be implemented in your platform-specific theme
