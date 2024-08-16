@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenActionName, SeaPenInputQueryElement, SeaPenRouterElement, SeaPenSampleSelectedEvent, SeaPenSuggestionsElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenActionName, SeaPenInputQueryElement, SeaPenRecentImageDeleteEvent, SeaPenRouterElement, SeaPenSampleSelectedEvent, SeaPenSuggestionsElement} from 'chrome://personalization/js/personalization_app.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrTextareaElement} from 'chrome://resources/ash/common/cr_elements/cr_textarea/cr_textarea.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -14,7 +14,7 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPersonalizationStore} from 'test_personalization_store.js';
 import {TestSeaPenProvider} from 'test_sea_pen_interface_provider.js';
 
-import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
+import {baseSetup, getActiveElement, initElement, teardownElement} from './personalization_app_test_utils.js';
 
 suite('SeaPenInputQueryElementTest', function() {
   let seaPenInputQueryElement: SeaPenInputQueryElement|null;
@@ -525,5 +525,23 @@ suite('SeaPenInputQueryElementTest', function() {
         seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
             SeaPenSuggestionsElement.is);
     assertFalse(!!seaPenSuggestions, 'suggestions element should be hidden');
+  });
+
+  test('focus on input after a RecentImageDelete event', async () => {
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    await waitAfterNextRender(seaPenInputQueryElement);
+    const searchButton =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            '#searchButton');
+    searchButton?.focus();
+
+    seaPenInputQueryElement.dispatchEvent(new SeaPenRecentImageDeleteEvent());
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    const inputElement =
+        seaPenInputQueryElement.shadowRoot?.querySelector<HTMLElement>(
+            '#queryInput');
+    assertTrue(!!inputElement);
+    assertEquals(getActiveElement(seaPenInputQueryElement), inputElement);
   });
 });

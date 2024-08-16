@@ -35,6 +35,7 @@ import {getSeaPenThumbnails} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_input_query_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {logGenerateSeaPenWallpaper, logNumWordsInTextQuery} from './sea_pen_metrics_logger.js';
+import {SeaPenRecentImageDeleteEvent} from './sea_pen_recent_wallpapers_element.js';
 import {SeaPenSampleSelectedEvent} from './sea_pen_samples_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {SeaPenSuggestionSelectedEvent} from './sea_pen_suggestions_element.js';
@@ -128,11 +129,15 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
         'seaPenQuery_', state => state.currentSeaPenQuery);
     this.updateFromStore();
 
+    // TODO(b/360434347): Fix event listener leak.
     document.body.addEventListener(
         SeaPenSampleSelectedEvent.EVENT_NAME,
         this.onSampleSelected_.bind(this));
+    // TODO(b/360434347): Fix event listener leak.
+    document.body.addEventListener(
+        SeaPenRecentImageDeleteEvent.EVENT_NAME, this.focusInput_.bind(this));
 
-    this.$.queryInput.focusInput();
+    this.focusInput_();
 
     this.resizeObserver_ =
         new ResizeObserver(() => this.animateContainerHeight());
@@ -160,6 +165,10 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   private onSampleSelected_(e: SeaPenSampleSelectedEvent) {
     this.textValue_ = e.detail;
     this.showCreateButton_();
+  }
+
+  private focusInput_() {
+    this.$.queryInput.focusInput();
   }
 
   // Called when there is a custom dom-change event dispatched from
