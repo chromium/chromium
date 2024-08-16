@@ -558,9 +558,20 @@ void WindowTreeHostManager::UpdateMouseLocationAfterDisplayChange() {
         Shell::Get()->cursor_manager()->SetDisplay(target_display);
       }
     }
+    return;
+  }
 
-  } else if (target_location_in_screen !=
-             cursor_location_in_screen_coords_for_restore_) {
+  // Convert the screen coords restore location to native, rather than comparing
+  // screen locations directly. Converting back and forth causes floating point
+  // values to be floored at each step, so the conversions must be performed
+  // equally.
+  gfx::Point restore_location_in_native =
+      cursor_location_in_screen_coords_for_restore_;
+  ::wm::ConvertPointFromScreen(dst_root_window, &restore_location_in_native);
+  dst_root_window->GetHost()->ConvertDIPToScreenInPixels(
+      &restore_location_in_native);
+
+  if (target_location_in_native != restore_location_in_native) {
     // The cursor's native position did not change but its screen position did
     // change. This occurs when the scale factor or the rotation of the display
     // that the cursor is on changes.
