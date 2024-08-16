@@ -218,7 +218,10 @@ struct VectorTypeOperations {
                         reinterpret_cast<const char*>(src_end) -
                             reinterpret_cast<const char*>(src));
       if (origin != VectorOperationOrigin::kConstruction) {
-        ConstructTraits::NotifyNewElements(dst, src_end - src);
+        // SAFETY: TODO(359904345): VectorTypeOperations should operate on spans.
+        base::span<T> UNSAFE_BUFFERS(
+            elements(dst, static_cast<size_t>(src_end - src)));
+        ConstructTraits::NotifyNewElements(elements);
       }
     } else {
       static_assert(VectorTraits<T>::kCanMoveWithMemcpy);
@@ -267,7 +270,10 @@ struct VectorTypeOperations {
           AtomicWriteMemcpy<sizeof(T), alignof(T)>(d, s);
       }
       if (origin != VectorOperationOrigin::kConstruction) {
-        ConstructTraits::NotifyNewElements(dst, src_end - src);
+        // SAFETY: TODO(359904345): VectorTypeOperations should operate on spans.
+        base::span<T> UNSAFE_BUFFERS(
+            elements(dst, static_cast<size_t>(src_end - src)));
+        ConstructTraits::NotifyNewElements(elements);
       }
     } else {
       static_assert(VectorTraits<T>::kCanMoveWithMemcpy);
@@ -297,9 +303,13 @@ struct VectorTypeOperations {
       }
       const size_t len = src_end - src;
       if (src_origin != VectorOperationOrigin::kConstruction) {
-        ConstructTraits::NotifyNewElements(src, len);
+        // SAFETY: TODO(359904345): VectorTypeOperations should operate on spans.
+        base::span<T> UNSAFE_BUFFERS(elements(src, len));
+        ConstructTraits::NotifyNewElements(elements);
       }
-      ConstructTraits::NotifyNewElements(dst, len);
+      // SAFETY: TODO(359904345): VectorTypeOperations should operate on spans.
+      base::span<T> UNSAFE_BUFFERS(elements(dst, len));
+      ConstructTraits::NotifyNewElements(elements);
     } else {
       static_assert(VectorTraits<T>::kCanMoveWithMemcpy);
       std::swap_ranges(reinterpret_cast<char*>(src),
@@ -321,7 +331,10 @@ struct VectorTypeOperations {
                         reinterpret_cast<const char*>(src_end) -
                             reinterpret_cast<const char*>(src));
       if (origin != VectorOperationOrigin::kConstruction) {
-        ConstructTraits::NotifyNewElements(dst, src_end - src);
+        // SAFETY: TODO(359904345): VectorTypeOperations should operate on spans.
+        base::span<T> UNSAFE_BUFFERS(
+            elements(dst, static_cast<size_t>(src_end - src)));
+        ConstructTraits::NotifyNewElements(elements);
       }
     } else {
       static_assert(VectorTraits<T>::kCanCopyWithMemcpy);

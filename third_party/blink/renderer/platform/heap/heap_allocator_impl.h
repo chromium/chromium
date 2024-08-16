@@ -199,7 +199,9 @@ class PLATFORM_EXPORT HeapAllocator {
   }
 
   template <typename T, typename Traits>
-  static void NotifyNewObjects(T* first_element, size_t length) {
+  static void NotifyNewObjects(base::span<T> objects) {
+    T* first_element = &objects.front();
+    size_t length = objects.size();
     HeapConsistency::WriteBarrierParams params;
     // `first_element` points into a backing store and T is not necessarily a
     // garbage collected type but may be kept inline.
