@@ -58,7 +58,12 @@ export class WebSocketServer {
     this.#port = port;
     this.#verbose = verbose;
 
-    this.#server = http.createServer(this.#onRequest.bind(this));
+    this.#server = http.createServer((request, response) => {
+      return this.#onRequest(request, response).catch((e) => {
+        debugInfo('Error while processing request', e);
+        response.writeHead(500, String(e));
+      });
+    });
     this.#wsServer = new websocket.server({
       httpServer: this.#server,
       autoAcceptConnections: false,
@@ -107,7 +112,7 @@ export class WebSocketServer {
       )} request for ${JSON.stringify(request.url)}`
     );
     if (!request.url) {
-      return response.end(404);
+      throw new Error('Request URL is empty.');
     }
 
     // https://w3c.github.io/webdriver-bidi/#transport, step 2.
@@ -184,14 +189,11 @@ export class WebSocketServer {
       return response.end();
     }
 
-    debugInternal(
-      `Unknown ${request.method} request for ${JSON.stringify(
+    throw new Error(
+      `Unknown "${request.method}" request for "${JSON.stringify(
         request.url
-      )} with payload ${await this.#getHttpRequestPayload(
-        request
-      )}. 404 returned.`
+      )}" with payload "${await this.#getHttpRequestPayload(request)}".`
     );
-    return response.end(404);
   }
 
   #onWsRequest(request: websocket.request) {
