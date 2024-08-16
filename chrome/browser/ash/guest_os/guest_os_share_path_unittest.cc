@@ -558,6 +558,27 @@ TEST_F(GuestOsSharePathTest, SuccessGuestOs) {
   run_loop()->Run();
 }
 
+TEST_F(GuestOsSharePathTest, SuccessFusebox) {
+  guest_os_share_path_->SharePath(
+      "vm-running", 0, base::FilePath("/media/fuse/fusebox/subdir"),
+      base::BindOnce(&GuestOsSharePathTest::SharePathCallback,
+                     base::Unretained(this), "vm-running",
+                     SeneschalClientCalled::YES,
+                     &vm_tools::seneschal::SharePathRequest::FUSEBOX, "subdir",
+                     Success::YES, ""));
+  run_loop()->Run();
+}
+
+TEST_F(GuestOsSharePathTest, FailFuseboxRoot) {
+  guest_os_share_path_->SharePath(
+      "vm-running", 0, base::FilePath("/media/fuse/fusebox"),
+      base::BindOnce(&GuestOsSharePathTest::SharePathCallback,
+                     base::Unretained(this), "vm-running",
+                     SeneschalClientCalled::NO, nullptr, "", Success::NO,
+                     "Path is not allowed"));
+  run_loop()->Run();
+}
+
 TEST_F(GuestOsSharePathTest, SharePathErrorSeneschal) {
   features_.InitWithFeatures({features::kCrostini}, {});
   GetFakeUserManager()->LoginUser(account_id_);
