@@ -25,6 +25,8 @@ export const PerksDiscoveryElementBase = OobeDialogHostMixin(
 const GENERATE_WEB_VIEW_CSS = () => {
   return {
     code: `svg {
+          width: 100%;
+          height: 100%;
           background-color: ` +
         getComputedStyle(document.body)
             .getPropertyValue('--cros-sys-app_base_shaded') +
