@@ -355,6 +355,9 @@ void Compositor::SetLayerTreeFrameSink(
                                                   vsync_interval_);
     }
     display_private_->SetMaxVSyncAndVrr(max_vsync_interval_, vrr_state_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    display_private_->SetSupportedRefreshRates(seamless_refresh_rates_);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   MaybeUpdateObserveBeginFrame();
@@ -1015,5 +1018,22 @@ void Compositor::MaybeUpdateObserveBeginFrame() {
   display_private_->SetStandaloneBeginFrameObserver(
       host_begin_frame_observer_->GetBoundRemote());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void Compositor::SetSeamlessRefreshRates(
+    const std::vector<float>& seamless_refresh_rates) {
+  seamless_refresh_rates_ = seamless_refresh_rates;
+
+  if (display_private_) {
+    display_private_->SetSupportedRefreshRates(seamless_refresh_rates);
+  }
+}
+
+void Compositor::OnSetPreferredRefreshRate(float refresh_rate) {
+  for (auto& observer : observer_list_) {
+    observer.OnSetPreferredRefreshRate(this, refresh_rate);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace ui

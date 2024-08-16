@@ -13,6 +13,7 @@
 #include "ash/accessibility/magnifier/partial_magnifier_controller.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/mirror_window_controller.h"
+#include "ash/display/refresh_rate_controller.h"
 #include "ash/display/root_window_transformers.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/host/ash_window_tree_host.h"
@@ -510,7 +511,7 @@ void WindowTreeHostManager::UpdateMouseLocationAfterDisplayChange() {
       break;
     }
     gfx::Point center = display.bounds().CenterPoint();
-    // Use the distance squared from the center of the dislay. This is not
+    // Use the distance squared from the center of the display. This is not
     // exactly "closest" display, but good enough to pick one
     // appropriate (and there are at most two displays).
     // We don't care about actual distance, only relative to other displays, so
@@ -593,7 +594,7 @@ bool WindowTreeHostManager::UpdateWorkAreaOfDisplayNearestWindow(
     const gfx::Insets& insets) {
   const aura::Window* root_window = window->GetRootWindow();
   int64_t id = GetRootWindowSettings(root_window)->display_id;
-  // if id is |kInvaildDisplayID|, it's being deleted.
+  // if id is |kInvalidDisplayID|, it's being deleted.
   DCHECK(id != display::kInvalidDisplayId);
   return GetDisplayManager()->UpdateWorkAreaOfDisplay(id, insets);
 }
@@ -1077,6 +1078,7 @@ AshWindowTreeHost* WindowTreeHostManager::AddWindowTreeHostForDisplay(
       AshWindowTreeHost::Create(params_with_bounds).release();
   aura::WindowTreeHost* host = ash_host->AsWindowTreeHost();
   Shell::Get()->frame_throttling_controller()->OnWindowTreeHostCreated(host);
+  Shell::Get()->refresh_rate_controller()->OnWindowTreeHostCreated(host);
   DCHECK(!host->has_input_method());
   if (!input_method_) {  // Singleton input method instance for Ash.
     input_method_ = ui::CreateInputMethod(this, host->GetAcceleratedWidget());

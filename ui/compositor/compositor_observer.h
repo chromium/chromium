@@ -94,6 +94,10 @@ class COMPOSITOR_EXPORT CompositorObserver {
   // Called when the compositor visibility has changed.
   virtual void OnCompositorVisibilityChanged(Compositor* compositor,
                                              bool visible) {}
+
+  // Called when the compositor receives a new refresh rate preference.
+  virtual void OnSetPreferredRefreshRate(Compositor* compositor,
+                                         float refresh_rate) {}
 };
 
 }  // namespace ui
