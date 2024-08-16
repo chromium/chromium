@@ -30,11 +30,16 @@
 
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
+#include <stddef.h>
+
 #include <memory>
+#include <type_traits>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/wtf/container_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace WTF {
 
@@ -76,5 +81,10 @@ ASSERT_SIZE(Vector<INLINE_CAPACITY_PARAMS(2)>,
             SameSizeAsVectorWithInlineCapacity<INLINE_CAPACITY_PARAMS(2)>);
 ASSERT_SIZE(Vector<INLINE_CAPACITY_PARAMS(3)>,
             SameSizeAsVectorWithInlineCapacity<INLINE_CAPACITY_PARAMS(3)>);
+
+// Check that the properties documented for wtf_size_t to size_t conversions
+// are met.
+static_assert(sizeof(wtf_size_t) <= sizeof(size_t));
+static_assert(std::is_signed_v<wtf_size_t> == std::is_signed_v<size_t>);
 
 }  // namespace WTF
