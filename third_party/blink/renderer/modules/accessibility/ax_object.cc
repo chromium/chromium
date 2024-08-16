@@ -6271,7 +6271,13 @@ void AXObject::DetachFromParent() {
   CHECK(!AXObjectCache().IsFrozen())
       << "Do not detach parent while tree is frozen: " << this;
   if (ShouldDestroyWhenDetachingFromParent()) {
-    AXObjectCache().RemoveIncludedSubtree(this, /* remove_root */ true);
+    if (GetNode()) {
+      AXObjectCache().RemoveSubtree(GetNode());
+    } else {
+      // This is rare, but technically a pseudo element descendant can have a
+      // subtree, and they do not have nodes.
+      AXObjectCache().RemoveIncludedSubtree(this, /* remove_root */ true);
+    }
   }
   parent_ = nullptr;
 }
