@@ -50,6 +50,7 @@ namespace {
 // Note that the non-touchable icon size is larger than the default to make the
 // management icon easier to read.
 constexpr int kIconSizeForNonTouchUi = 22;
+constexpr int kButtonMaxWidth = 180;
 
 bool CanShowManagementToolbarButton(Profile* profile) {
   const auto* pref_service = profile->GetPrefs();
@@ -131,6 +132,8 @@ ManagementToolbarButton::ManagementToolbarButton(BrowserView* browser_view,
       base::BindRepeating(&ManagementToolbarButton::UpdateManagementInfo,
                           base::Unretained(this)));
   SetVisible(false);
+  SetMaxSize(gfx::Size(kButtonMaxWidth, 0));
+  SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
   UpdateManagementInfo();
 }
 
