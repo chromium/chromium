@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.password_manager.settings;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -27,8 +26,6 @@ public class PasswordAccessLossExportDialogFragment extends DialogFragment {
         void onDocumentCreated(Uri uri);
 
         void onResume();
-
-        void onDismissed();
     }
 
     private View mDialogView;
@@ -75,12 +72,5 @@ public class PasswordAccessLossExportDialogFragment extends DialogFragment {
         super.onResume();
         if (mDelegate == null) return;
         mDelegate.onResume();
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
-        if (mDelegate == null) return;
-        mDelegate.onDismissed();
     }
 }

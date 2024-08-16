@@ -63,7 +63,7 @@ public class PasswordAccessLossExportDialogCoordinator {
                         .with(
                                 EXPORT_AND_DELETE_BUTTON_CALLBACK,
                                 mMediator::handlePositiveButtonClicked)
-                        .with(CLOSE_BUTTON_CALLBACK, mMediator::handleNegativeButtonClicked)
+                        .with(CLOSE_BUTTON_CALLBACK, mMediator::onExportFlowCanceled)
                         .build();
 
         PropertyModelChangeProcessor.create(

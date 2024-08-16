@@ -193,4 +193,34 @@ public class PasswordAccessLossExportDialogTest {
         verify(mInputStream, times(2)).read(any(byte[].class));
         verify(mOutputStream).write(any(byte[].class), anyInt(), anyInt());
     }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
+    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
+    public void testDialogIsDismissedWhenExportFails() {
+        mCoordinator.showExportDialog();
+        setUpPasswordManagerHandler();
+        setUpReauthenticationManager();
+        mActivity.getSupportFragmentManager().executePendingTransactions();
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        dialog.findViewById(R.id.positive_button).performClick();
+
+        // Check that passwords are serialized.
+        assertEquals(1, mPasswordManagerHandler.getSerializationInvocationCount());
+        // Pretend password manager handler to encounter an error when serializing passwords.
+        mPasswordManagerHandler.getExportErrorCallback().onResult("Test error");
+
+        // Biometric re-auth should have been triggered. Need to fake successful authentication to
+        // proceed.
+        ReauthenticationManager.recordLastReauth(
+                System.currentTimeMillis(), ReauthenticationManager.ReauthScope.BULK);
+        // Simulates the `onResume` call after re-authentication.
+        mFragment.onResume();
+        Robolectric.flushForegroundThreadScheduler();
+
+        // Dialog is expected to be dismissed now.
+        assertFalse(dialog.isShowing());
+    }
 }

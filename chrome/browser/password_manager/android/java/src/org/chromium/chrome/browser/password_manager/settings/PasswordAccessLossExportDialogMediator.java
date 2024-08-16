@@ -48,10 +48,6 @@ class PasswordAccessLossExportDialogMediator
         mExportFlow.startExporting();
     }
 
-    public void handleNegativeButtonClicked() {
-        mExportDialogFragment.dismiss();
-    }
-
     // Implementation of ExportFlowInterface.Delegate.
     @Override
     public Activity getActivity() {
@@ -78,6 +74,7 @@ class PasswordAccessLossExportDialogMediator
     @Override
     public void onExportFlowSucceeded() {
         // TODO(crbug.com/356850960): Remove passwords here.
+        destroy();
     }
 
     @Override
@@ -113,8 +110,20 @@ class PasswordAccessLossExportDialogMediator
     }
 
     @Override
-    public void onDismissed() {
-        PasswordManagerHandlerProvider.getForProfile(mProfile).removeObserver(this);
+    public void onExportFlowFailed() {
+        mExportDialogFragment.dismiss();
+    }
+
+    @Override
+    public void onExportFlowCanceled() {
+        destroy();
+    }
+
+    private void destroy() {
+        if (mExportDialogFragment.getShowsDialog()) {
+            mExportDialogFragment.dismiss();
+        }
         mExportFlow = null;
+        PasswordManagerHandlerProvider.getForProfile(mProfile).removeObserver(this);
     }
 }

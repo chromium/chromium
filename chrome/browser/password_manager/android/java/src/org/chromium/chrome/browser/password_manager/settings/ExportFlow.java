@@ -348,8 +348,7 @@ public class ExportFlow implements ExportFlowInterface {
         // - Exporting should be immediately started after reauthentication.
         if (ChromeFeatureList.isEnabled(
                 UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
-            mExportState = ExportState.CONFIRMED;
-            tryExporting();
+            onExportConfirmed();
             return;
         }
 
@@ -366,18 +365,7 @@ public class ExportFlow implements ExportFlowInterface {
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == AlertDialog.BUTTON_POSITIVE) {
                             mConfirmed = true;
-                            RecordHistogram.recordEnumeratedHistogram(
-                                    getExportEventHistogramName(),
-                                    PasswordExportEvent.EXPORT_CONFIRMED,
-                                    PasswordExportEvent.COUNT);
-                            mExportState = ExportState.CONFIRMED;
-                            // If the error dialog has been waiting, display it now, otherwise
-                            // continue the export flow.
-                            if (mErrorDialogParams != null) {
-                                showExportErrorDialogFragment();
-                            } else {
-                                tryExporting();
-                            }
+                            onExportConfirmed();
                         }
                     }
 
@@ -411,14 +399,29 @@ public class ExportFlow implements ExportFlowInterface {
         mExportWarningDialogFragment.show(mDelegate.getFragmentManager(), null);
     }
 
+    private void onExportConfirmed() {
+        RecordHistogram.recordEnumeratedHistogram(
+                getExportEventHistogramName(),
+                PasswordExportEvent.EXPORT_CONFIRMED,
+                PasswordExportEvent.COUNT);
+        mExportState = ExportState.CONFIRMED;
+        // If the error dialog has been waiting (e. g. because password serialization failed while
+        // the user was authenticating), display it now, otherwise continue the export flow.
+        if (mErrorDialogParams != null) {
+            showExportErrorDialogFragment();
+        } else {
+            tryExporting();
+        }
+    }
+
     /**
      * Starts the exporting intent if both blocking events are completed: serializing and the
-     * confirmation flow.
-     * At this point, the user the user has tapped the menu item for export and passed
+     * confirmation flow. At this point, the user has tapped the menu item for export and passed
      * reauthentication. Upon calling this method, the user has either also confirmed the export, or
      * the exported data have been prepared. The method is called twice, once for each of those
      * events. The next step after both the export is confirmed and the data is ready is to offer
-     * the user an intent chooser for sharing the exported passwords.
+     * the user an intent chooser for sharing the exported passwords or a create document intent if
+     * UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING feature is on.
      */
     private void tryExporting() {
         if (mExportState != ExportState.CONFIRMED) return;
@@ -461,6 +464,7 @@ public class ExportFlow implements ExportFlowInterface {
             int positiveButtonLabelId,
             @HistogramExportResult int histogramExportResult) {
         assert mErrorDialogParams == null;
+        mDelegate.onExportFlowFailed();
         mProgressBarManager.hide(
                 () -> {
                     showExportErrorAndAbortImmediately(
@@ -531,6 +535,7 @@ public class ExportFlow implements ExportFlowInterface {
                             }
                         } else if (which == AlertDialog.BUTTON_NEGATIVE) {
                             // Re-enable exporting, the current one was just cancelled.
+                            mDelegate.onExportFlowCanceled();
                             mExportState = ExportState.INACTIVE;
                             mExportFileUri = null;
                         }
@@ -547,7 +552,7 @@ public class ExportFlow implements ExportFlowInterface {
         assert mExportState == ExportState.CONFIRMED;
         mExportState = ExportState.INACTIVE;
 
-        if (mExportFileUri.equals(Uri.EMPTY)) return;
+        if (mExportFileUri != null && mExportFileUri.equals(Uri.EMPTY)) return;
 
         // With UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING feature on, offer to save the
         // exported passwords on disk. Otherwise offer to share the passwords with a chosen Android

@@ -45,6 +45,12 @@ public interface ExportFlowInterface {
          */
         default void onExportFlowSucceeded() {}
 
+        /** Performs the actions that should happen after the export flow has failed. */
+        default void onExportFlowFailed() {}
+
+        /** Notifies about that export flow has been canceled. */
+        default void onExportFlowCanceled() {}
+
         /** Return the {@link Profile} associated with the passwords. */
         Profile getProfile();
     }
