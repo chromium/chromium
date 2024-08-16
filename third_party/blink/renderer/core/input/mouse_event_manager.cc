@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
@@ -538,12 +539,21 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   // crbug.com/657237 for details.
   if (element &&
       frame_->Selection().ComputeVisibleSelectionInDOMTree().IsRange()) {
-    const EphemeralRange& range = frame_->Selection()
-                                      .ComputeVisibleSelectionInDOMTree()
-                                      .ToNormalizedEphemeralRange();
-    if (IsNodeFullyContained(range, *element) &&
-        element->IsDescendantOf(frame_->GetDocument()->FocusedElement()))
-      return WebInputEventResult::kNotHandled;
+    // Don't check for scroll controls pseudo elements, since they can't
+    // be in selection, until we support selecting their content.
+    // Just clear the selection, since it won't be cleared otherwise.
+    if (RuntimeEnabledFeatures::PseudoElementsFocusableEnabled() &&
+        element->IsScrollControlPseudoElement()) {
+      frame_->Selection().Clear();
+    } else {
+      const EphemeralRange& range = frame_->Selection()
+                                        .ComputeVisibleSelectionInDOMTree()
+                                        .ToNormalizedEphemeralRange();
+      if (IsNodeFullyContained(range, *element) &&
+          element->IsDescendantOf(frame_->GetDocument()->FocusedElement())) {
+        return WebInputEventResult::kNotHandled;
+      }
+    }
   }
 
   // Only change the focus when clicking scrollbars if it can transfered to a

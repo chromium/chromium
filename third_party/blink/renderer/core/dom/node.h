@@ -404,6 +404,7 @@ class CORE_EXPORT Node : public EventTarget {
   virtual bool IsMediaRemotingInterstitial() const { return false; }
   virtual bool IsPictureInPictureInterstitial() const { return false; }
 
+  // Either ::scroll-marker or ::scroll-*-button pseudo element.
   bool IsScrollControlPseudoElement() const {
     return IsScrollMarkerPseudoElement() || IsScrollButtonPseudoElement();
   }
