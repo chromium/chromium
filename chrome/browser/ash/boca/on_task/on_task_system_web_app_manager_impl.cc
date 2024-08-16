@@ -8,6 +8,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
+#include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -60,6 +63,11 @@ void OnTaskSystemWebAppManagerImpl::CloseSystemWebAppWindow(
     SessionID window_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   Browser* const browser = GetBrowserWindowWithID(window_id);
+  LockedSessionWindowTracker* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile_);
+  if (window_tracker) {
+    window_tracker->InitializeBrowserInfoForTracking(nullptr);
+  }
   if (browser) {
     browser->TryToCloseWindow(/*skip_beforeunload=*/true, base::DoNothing());
   }
@@ -99,6 +107,20 @@ void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
     UnpinWindow(native_window);
     browser->command_controller()->LockedFullscreenStateChanged();
   }
+}
+
+void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForSystemWebAppWindow(
+    SessionID window_id) {
+  Browser* const browser = GetBrowserWindowWithID(window_id);
+  if (!browser) {
+    return;
+  }
+  LockedSessionWindowTracker* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile_);
+  if (!window_tracker) {
+    return;
+  }
+  window_tracker->InitializeBrowserInfoForTracking(browser);
 }
 
 }  // namespace ash::boca

@@ -36,6 +36,10 @@ class OnTaskSystemWebAppManager {
   virtual void SetPinStateForSystemWebAppWindow(bool pinned,
                                                 SessionID window_id) = 0;
 
+  // Set the window tracker to track the browser browser window with specified
+  // id.
+  virtual void SetWindowTrackerForSystemWebAppWindow(SessionID window_id) = 0;
+
  protected:
   OnTaskSystemWebAppManager() = default;
 };

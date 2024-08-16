@@ -63,6 +63,7 @@ void OnTaskSessionManager::OnBocaSWALaunched(bool success) {
   if (const SessionID window_id =
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
+    system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(window_id);
     system_web_app_manager_->SetPinStateForSystemWebAppWindow(
         /*pinned=*/true, window_id);
     system_web_app_manager_->SetPinStateForSystemWebAppWindow(

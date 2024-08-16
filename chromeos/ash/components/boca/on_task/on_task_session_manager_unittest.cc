@@ -36,6 +36,10 @@ class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
               SetPinStateForSystemWebAppWindow,
               (bool pinned, SessionID window_id),
               (override));
+  MOCK_METHOD(void,
+              SetWindowTrackerForSystemWebAppWindow,
+              (SessionID window_id),
+              (override));
 };
 
 class OnTaskSessionManagerTest : public ::testing::Test {
@@ -70,6 +74,9 @@ TEST_F(OnTaskSessionManagerTest, ShouldPrepareBocaSWAOnLaunch) {
       .WillOnce(
           Return(SessionID::InvalidValue()))  // Initial check before launch.
       .WillOnce(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              SetWindowTrackerForSystemWebAppWindow(kWindowId))
+      .Times(1);
   EXPECT_CALL(*system_web_app_manager_ptr_,
               SetPinStateForSystemWebAppWindow(true, kWindowId))
       .Times(1);

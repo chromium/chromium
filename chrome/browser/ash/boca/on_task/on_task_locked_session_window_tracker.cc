@@ -28,8 +28,10 @@ LockedSessionWindowTracker::~LockedSessionWindowTracker() {
 
 void LockedSessionWindowTracker::InitializeBrowserInfoForTracking(
     Browser* browser) {
-  if (!browser) {
+  if (browser_ && browser_ != browser) {
     CleanupWindowTracker();
+  }
+  if (!browser) {
     return;
   }
   browser_ = browser;

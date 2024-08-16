@@ -31,6 +31,7 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
   SessionID GetActiveSystemWebAppWindowID() override;
   void SetPinStateForSystemWebAppWindow(bool pinned,
                                         SessionID window_id) override;
+  void SetWindowTrackerForSystemWebAppWindow(SessionID window_id) override;
 
  private:
   raw_ptr<Profile> profile_;
