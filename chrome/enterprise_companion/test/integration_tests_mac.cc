@@ -47,10 +47,12 @@ class InstallerPkgTest : public ::testing::Test {
   // `should_succeed`.
   void InstallFakeKSAdmin(bool should_succeed) {
     base::FilePath ksadmin_path = GetKSAdminPath();
-    base::WriteFile(ksadmin_path, base::StrCat({"#!/bin/bash\nexit ",
-                                                should_succeed ? "0" : "1"}));
-    base::SetPosixFilePermissions(ksadmin_path,
-                                  base::FILE_PERMISSION_USER_MASK);
+    ASSERT_TRUE(base::CreateDirectory(ksadmin_path.DirName()));
+    ASSERT_TRUE(base::WriteFile(
+        ksadmin_path,
+        base::StrCat({"#!/bin/bash\nexit ", should_succeed ? "0" : "1"})));
+    ASSERT_TRUE(base::SetPosixFilePermissions(ksadmin_path,
+                                              base::FILE_PERMISSION_USER_MASK));
   }
 
   // Deletes ksadmin, if it exists.
