@@ -119,6 +119,7 @@ ManagementToolbarButton::ManagementToolbarButton(BrowserView* browser_view,
   // We need to have the icon on the left and the (potential) management
   // label on the right.
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  SetLabelStyle(views::style::STYLE_BODY_4_MEDIUM);
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
@@ -267,11 +268,13 @@ void ManagementToolbarButton::SetManagementLabel(
     const std::string& management_label) {
   management_label_ = base::UTF8ToUTF16(management_label);
   UpdateText();
+  UpdateIcon();
 }
 
 void ManagementToolbarButton::SetManagementIcon(
     const gfx::Image& management_icon) {
   management_icon_ = management_icon;
+  UpdateText();
   UpdateIcon();
 }
 

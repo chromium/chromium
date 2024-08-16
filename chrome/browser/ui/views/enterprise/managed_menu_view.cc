@@ -128,6 +128,7 @@ ManagedMenuView::~ManagedMenuView() = default;
 
 void ManagedMenuView::Init() {
   UpdateBrowserManagementIcon();
+  UpdateProfileManagementIcon();
 }
 
 Profile* ManagedMenuView::GetProfile() const {
@@ -326,7 +327,7 @@ void ManagedMenuView::BuildView() {
           .SetText(l10n_util::GetStringUTF16(
               IDS_MANAGEMENT_DIALOG_THINGS_TO_CONSIDER_SUBTITLE))
           .SetTextContext(views::style::CONTEXT_LABEL)
-          .SetTextStyle(views::style::STYLE_BODY_4_BOLD)
+          .SetTextStyle(views::style::STYLE_BODY_4_MEDIUM)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetBorder(
               views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, kContentGap, 0)))
