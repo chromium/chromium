@@ -4909,6 +4909,12 @@ No devices connected.
       <message name="IDS_ASH_LOGIN_POD_PASSWORD_PIN_INPUT_ACCESSIBLE_NAME" desc="The accessible name of the pin input field used for PIN Auto-submit">
         Enter your PIN
       </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_DIALOG_ACCESSIBLE_NAME" desc="The accessible name of the in session auth dialog">
+        Verify your identity 
+      </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_DIALOG_ACCESSIBLE_DESCRIPTION" desc="The accessible name of the in session auth dialog">
+        Press escape to close 
+      </message>
       <message name="IDS_ASH_LOGIN_PIN_INPUT_DIGITS_REMAINING" desc="Screen reader message telling the user how many digits are remaining for the PIN input field. [ICU Syntax]">
         {NUM_DIGITS, plural,
          =1 {One digit remaining}

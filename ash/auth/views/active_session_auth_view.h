@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "components/account_id/account_id.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -31,7 +32,8 @@ namespace ash {
 // user avatar, title and description. Below the header view it also shows the
 // authtentication container.
 class ASH_EXPORT ActiveSessionAuthView : public views::View,
-                                         public AuthContainerView::Observer {
+                                         public AuthContainerView::Observer,
+                                         public AuthHeaderView::Observer {
   METADATA_HEADER(ActiveSessionAuthView, views::View)
  public:
   // Observer Interface: Notifies about events within the ActiveSessionAuthView
@@ -75,7 +77,6 @@ class ASH_EXPORT ActiveSessionAuthView : public views::View,
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void ChildPreferredSizeChanged(views::View* child) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::string GetObjectName() const override;
   void RequestFocus() override;
 
@@ -107,6 +108,8 @@ class ASH_EXPORT ActiveSessionAuthView : public views::View,
   // Reset the input fields text and visibility.
   void ResetInputfields();
 
+  void OnTitleChanged(const std::u16string& error_str) override;
+
  private:
   // Internal methods for managing views.
   void AddHeaderAndCloseButton(const std::u16string& title,
@@ -122,6 +125,9 @@ class ASH_EXPORT ActiveSessionAuthView : public views::View,
   const AccountId account_id_;
 
   base::ObserverList<Observer> observers_;
+
+  base::ScopedObservation<AuthHeaderView, AuthHeaderView::Observer>
+      header_observation_{this};
 
   base::WeakPtrFactory<ActiveSessionAuthView> weak_ptr_factory_{this};
 };
