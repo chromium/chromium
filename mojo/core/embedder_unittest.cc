@@ -23,6 +23,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -30,10 +31,9 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "mojo/core/core.h"
+#include "mojo/buildflags.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/ipcz_driver/shared_buffer.h"
-#include "mojo/core/shared_buffer_dispatcher.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/c/system/core.h"
 #include "mojo/public/cpp/system/handle.h"
@@ -42,8 +42,12 @@
 #include "mojo/public/cpp/system/wait.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace mojo {
-namespace core {
+#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
+#include "mojo/core/core.h"
+#include "mojo/core/shared_buffer_dispatcher.h"
+#endif
+
+namespace mojo::core {
 namespace {
 
 template <typename T>
@@ -54,6 +58,7 @@ MojoResult CreateSharedBufferFromRegion(T&& region, MojoHandle* handle) {
     return MOJO_RESULT_OK;
   }
 
+#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
   scoped_refptr<SharedBufferDispatcher> buffer;
   MojoResult result =
       SharedBufferDispatcher::CreateFromPlatformSharedMemoryRegion(
@@ -63,6 +68,9 @@ MojoResult CreateSharedBufferFromRegion(T&& region, MojoHandle* handle) {
 
   *handle = Core::Get()->AddDispatcher(std::move(buffer));
   return MOJO_RESULT_OK;
+#else
+  NOTREACHED_NORETURN();
+#endif
 }
 
 template <typename T>
@@ -72,6 +80,7 @@ MojoResult ExtractRegionFromSharedBuffer(MojoHandle handle, T* region) {
     platform_region =
         std::move(ipcz_driver::SharedBuffer::Unbox(handle)->region());
   } else {
+#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
     scoped_refptr<Dispatcher> dispatcher =
         Core::Get()->GetAndRemoveDispatcher(handle);
     if (!dispatcher || dispatcher->GetType() != Dispatcher::Type::SHARED_BUFFER)
@@ -79,6 +88,9 @@ MojoResult ExtractRegionFromSharedBuffer(MojoHandle handle, T* region) {
 
     auto* buffer = static_cast<SharedBufferDispatcher*>(dispatcher.get());
     platform_region = buffer->PassPlatformSharedMemoryRegion();
+#else
+    NOTREACHED_NORETURN();
+#endif
   }
 
   *region = T::Deserialize(std::move(platform_region));
@@ -446,5 +458,4 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessMixMachAndFdsClient,
 #endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
-}  // namespace core
-}  // namespace mojo
+}  // namespace mojo::core
