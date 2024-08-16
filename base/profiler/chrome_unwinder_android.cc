@@ -275,7 +275,7 @@ UnwindInstructionResult ExecuteUnwindInstruction(
       return UnwindInstructionResult::kAborted;
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return UnwindInstructionResult::kInstructionPending;
 }
@@ -302,8 +302,7 @@ uintptr_t GetFirstUnwindInstructionIndexFromFunctionOffsetTableEntry(
 
   } while (true);
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 const std::optional<FunctionOffsetTableIndex>

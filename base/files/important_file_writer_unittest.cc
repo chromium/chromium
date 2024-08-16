@@ -32,7 +32,7 @@ namespace {
 std::string GetFileContent(const FilePath& path) {
   std::string content;
   if (!ReadFileToString(path, &content)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return content;
 }

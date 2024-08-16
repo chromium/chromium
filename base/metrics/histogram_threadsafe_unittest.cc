@@ -122,7 +122,7 @@ class SnapshotDeltaThread : public SimpleThread {
       case BOOLEAN_HISTOGRAM:
       case CUSTOM_HISTOGRAM:
       case DUMMY_HISTOGRAM:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

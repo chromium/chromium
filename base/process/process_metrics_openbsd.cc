@@ -64,8 +64,7 @@ ProcessMetrics::GetPlatformIndependentCPUUsage() {
 
 base::expected<TimeDelta, ProcessCPUUsageError>
 ProcessMetrics::GetCumulativeCPUUsage() {
-  NOTREACHED_IN_MIGRATION();
-  return base::unexpected(ProcessCPUUsageError::kNotImplemented);
+  NOTREACHED();
 }
 
 ProcessMetrics::ProcessMetrics(ProcessHandle process)

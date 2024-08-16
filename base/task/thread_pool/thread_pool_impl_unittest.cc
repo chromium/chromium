@@ -949,8 +949,7 @@ TEST_P(ThreadPoolImplTest, FileDescriptorWatcherNoOpsAfterShutdown) {
           [](int read_fd) {
             std::unique_ptr<FileDescriptorWatcher::Controller> controller =
                 FileDescriptorWatcher::WatchReadable(
-                    read_fd,
-                    BindRepeating([]() { NOTREACHED_IN_MIGRATION(); }));
+                    read_fd, BindRepeating([]() { NOTREACHED(); }));
 
             // This test is for components that intentionally leak their
             // watchers at shutdown. We can't clean |controller| up because its

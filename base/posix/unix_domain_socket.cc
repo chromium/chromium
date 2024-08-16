@@ -279,8 +279,7 @@ ssize_t UnixDomainSocket::SendRecvMsgWithFlags(int fd,
   // If we received more file descriptors than caller expected, then we treat
   // that as an error.
   if (recv_fds.size() > (result_fd != nullptr ? 1 : 0)) {
-    NOTREACHED_IN_MIGRATION();
-    return -1;
+    NOTREACHED();
   }
 
   if (result_fd)

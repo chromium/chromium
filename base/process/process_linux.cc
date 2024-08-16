@@ -287,8 +287,7 @@ Process::Priority GetProcessPriorityCGroup(std::string_view cgroup_contents) {
     std::vector<std::string_view> fields =
         SplitStringPiece(line, ":", TRIM_WHITESPACE, SPLIT_WANT_ALL);
     if (fields.size() != 3U) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     if (fields[2] == kBackground)
       return Process::Priority::kBestEffort;
@@ -319,8 +318,7 @@ ProcessId Process::GetPidInNamespace() const {
       int value;
       // The last value in the list is the PID in the namespace.
       if (!StringToInt(split_value_str.back(), &value)) {
-        NOTREACHED_IN_MIGRATION();
-        return kNullProcessId;
+        NOTREACHED();
       }
       return value;
     }

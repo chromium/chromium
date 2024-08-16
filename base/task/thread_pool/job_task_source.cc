@@ -402,8 +402,7 @@ TimeTicks JobTaskSource::GetDelayedSortKey() const {
 // This function isn't expected to be called since a job is never delayed.
 // However, the class still needs to provide an override.
 bool JobTaskSource::HasReadyTasks(TimeTicks now) const {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 std::optional<Task> JobTaskSource::Clear(TaskSource::Transaction* transaction) {

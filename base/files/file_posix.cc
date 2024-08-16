@@ -118,7 +118,7 @@ short FcntlFlockType(std::optional<File::LockMode> mode) {
     case File::LockMode::kExclusive:
       return F_WRLCK;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 File::Error CallFcntlFlock(PlatformFile file,
@@ -548,10 +548,7 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
   }
 
   if (!open_flags && !(flags & FLAG_OPEN) && !(flags & FLAG_OPEN_ALWAYS)) {
-    NOTREACHED_IN_MIGRATION();
-    errno = EOPNOTSUPP;
-    error_details_ = FILE_ERROR_FAILED;
-    return;
+    NOTREACHED();
   }
 
   if (flags & FLAG_WRITE && flags & FLAG_READ) {
@@ -563,7 +560,7 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
     // Note: For FLAG_WRITE_ATTRIBUTES and no other read/write flags, we'll
     // open the file in O_RDONLY mode (== 0, see static_assert below), so that
     // we get a fd that can be used for SetTimes().
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   if (flags & FLAG_TERMINAL_DEVICE)

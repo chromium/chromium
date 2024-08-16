@@ -17,8 +17,7 @@ bool GetResourceFromModule(HMODULE module,
     return false;
 
   if (!IS_INTRESOURCE(resource_id)) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   HRSRC hres_info =

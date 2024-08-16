@@ -85,8 +85,7 @@ id Iterator::GetNext() {
 }
 
 - (id)init {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (id)initWithProtocol:(Protocol*)protocol {

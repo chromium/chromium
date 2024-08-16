@@ -194,8 +194,7 @@ void PersistentMemoryAllocator::Iterator::Reset(Reference starting_after) {
   const volatile BlockHeader* block =
       allocator_->GetBlock(starting_after, 0, 0, false, false);
   if (!block || block->next.load(std::memory_order_relaxed) == 0) {
-    NOTREACHED_IN_MIGRATION();
-    last_record_.store(kReferenceQueue, std::memory_order_release);
+    NOTREACHED();
   }
 }
 
@@ -482,9 +481,7 @@ const char* PersistentMemoryAllocator::Name() const {
 
   size_t name_length = GetAllocSize(name_ref);
   if (name_cstr[name_length - 1] != '\0') {
-    NOTREACHED_IN_MIGRATION();
-    SetCorrupt();
-    return "";
+    NOTREACHED();
   }
 
   return name_cstr;
@@ -662,8 +659,7 @@ PersistentMemoryAllocator::Reference PersistentMemoryAllocator::AllocateImpl(
 
   // Validate req_size to ensure it won't overflow when used as 32-bit value.
   if (req_size > kSegmentMaxSize - sizeof(BlockHeader)) {
-    NOTREACHED_IN_MIGRATION();
-    return kReferenceNull;
+    NOTREACHED();
   }
 
   // Round up the requested size, plus header, to the next allocation alignment.

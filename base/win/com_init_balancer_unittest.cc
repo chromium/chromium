@@ -32,7 +32,7 @@ TEST(TestComInitBalancer, BalancedPairsWithComBalancerEnabled) {
   }
 
   // ScopedCOMInitializer has gone out of scope and COM has been uninitialized.
-  EXPECT_DCHECK_DEATH(AssertComInitialized());
+  EXPECT_NOTREACHED_DEATH(AssertComInitialized());
 }
 
 TEST(TestComInitBalancer, UnbalancedPairsWithComBalancerEnabled) {
@@ -57,7 +57,7 @@ TEST(TestComInitBalancer, UnbalancedPairsWithComBalancerEnabled) {
   }
 
   // ScopedCOMInitializer has gone out of scope and COM has been uninitialized.
-  EXPECT_DCHECK_DEATH(AssertComInitialized());
+  EXPECT_NOTREACHED_DEATH(AssertComInitialized());
 }
 
 TEST(TestComInitBalancer, BalancedPairsWithComBalancerDisabled) {
@@ -75,7 +75,7 @@ TEST(TestComInitBalancer, BalancedPairsWithComBalancerDisabled) {
   }
 
   // ScopedCOMInitializer has gone out of scope and COM has been uninitialized.
-  EXPECT_DCHECK_DEATH(AssertComInitialized());
+  EXPECT_NOTREACHED_DEATH(AssertComInitialized());
 }
 
 TEST(TestComInitBalancer, UnbalancedPairsWithComBalancerDisabled) {
@@ -89,7 +89,7 @@ TEST(TestComInitBalancer, UnbalancedPairsWithComBalancerDisabled) {
   ::CoUninitialize();
 
   // Assert COM is not initialized.
-  EXPECT_DCHECK_DEATH(AssertComInitialized());
+  EXPECT_NOTREACHED_DEATH(AssertComInitialized());
 
   // Create COM object unsuccessfully.
   ComPtr<IUnknown> shell_link;

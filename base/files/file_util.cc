@@ -224,8 +224,7 @@ bool CopyFileContents(File& infile, File& outfile) {
     } while (bytes_written_per_read < bytes_read);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool ContentsEqual(const FilePath& filename1, const FilePath& filename2) {

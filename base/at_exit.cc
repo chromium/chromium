@@ -36,9 +36,7 @@ AtExitManager::AtExitManager() : next_manager_(g_top_manager) {
 
 AtExitManager::~AtExitManager() {
   if (!g_top_manager) {
-    NOTREACHED_IN_MIGRATION()
-        << "Tried to ~AtExitManager without an AtExitManager";
-    return;
+    NOTREACHED() << "Tried to ~AtExitManager without an AtExitManager";
   }
   DCHECK_EQ(this, g_top_manager);
 
@@ -56,9 +54,7 @@ void AtExitManager::RegisterCallback(AtExitCallbackType func, void* param) {
 // static
 void AtExitManager::RegisterTask(base::OnceClosure task) {
   if (!g_top_manager) {
-    NOTREACHED_IN_MIGRATION()
-        << "Tried to RegisterCallback without an AtExitManager";
-    return;
+    NOTREACHED() << "Tried to RegisterCallback without an AtExitManager";
   }
 
   AutoLock lock(g_top_manager->lock_);
@@ -71,9 +67,7 @@ void AtExitManager::RegisterTask(base::OnceClosure task) {
 // static
 void AtExitManager::ProcessCallbacksNow() {
   if (!g_top_manager) {
-    NOTREACHED_IN_MIGRATION()
-        << "Tried to ProcessCallbacksNow without an AtExitManager";
-    return;
+    NOTREACHED() << "Tried to ProcessCallbacksNow without an AtExitManager";
   }
 
   // Callbacks may try to add new callbacks, so run them without holding

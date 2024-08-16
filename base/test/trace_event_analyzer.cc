@@ -388,8 +388,7 @@ bool Query::Evaluate(const TraceEvent& event) const {
     case OP_NOT:
       return !left().Evaluate(event);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -417,8 +416,7 @@ bool Query::CompareAsDouble(const TraceEvent& event, bool* result) const {
       *result = (lhs >= rhs);
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -456,8 +454,7 @@ bool Query::CompareAsString(const TraceEvent& event, bool* result) const {
       *result = (lhs >= rhs);
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -494,8 +491,7 @@ bool Query::EvaluateArithmeticOperator(const TraceEvent& event,
       *num = -lhs;
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 

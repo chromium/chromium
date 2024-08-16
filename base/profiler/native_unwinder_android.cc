@@ -84,8 +84,7 @@ std::unique_ptr<unwindstack::Regs> CreateFromRegisterContext(
   return WrapUnique<unwindstack::Regs>(unwindstack::RegsArm64::Read(
       reinterpret_cast<void*>(&thread_context->regs[0])));
 #else   // #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif  // #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
 }
 
@@ -98,7 +97,7 @@ void CopyToRegisterContext(unwindstack::Regs* regs,
   memcpy(reinterpret_cast<void*>(&thread_context->regs[0]), regs->RawData(),
          unwindstack::ARM64_REG_LAST * sizeof(uintptr_t));
 #else   // #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif  // #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
 }
 
