@@ -6,8 +6,10 @@
 #define UI_OZONE_PLATFORM_DRM_GPU_HARDWARE_DISPLAY_PLANE_MANAGER_ATOMIC_H_
 
 #include <stdint.h>
+
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
 
@@ -51,9 +53,8 @@ class HardwareDisplayPlaneManagerAtomic : public HardwareDisplayPlaneManager {
   bool InitializePlanes() override;
   std::unique_ptr<HardwareDisplayPlane> CreatePlane(uint32_t plane_id) override;
   void SetAtomicPropsForCommit(
+      const base::flat_set<HardwareDisplayPlaneList*>& plane_lists,
       drmModeAtomicReq* atomic_request,
-      HardwareDisplayPlaneList* plane_list,
-      const std::vector<uint32_t>& crtcs,
       std::vector<ScopedDrmPropertyBlob>& pending_blobs,
       bool test_only);
 
