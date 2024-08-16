@@ -56,6 +56,58 @@ void RecordDeleteAndStartOverResult(DeleteAndStartOverResult result) {
       "ServiceWorker.Storage.DeleteAndStartOverResult", result);
 }
 
+BASE_FEATURE(kServiceWorkerStorageSuppressPostTask,
+             "ServiceWorkerStorageSuppressPostTask",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsServiceWorkerStorageSuppressPostTaskEnabled() {
+  static const bool enabled = base::FeatureList::IsEnabled(
+      storage::kServiceWorkerStorageSuppressPostTask);
+  return enabled;
+}
+
+void MaybePostTask(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                   const base::Location& from_here,
+                   base::OnceClosure task) {
+  CHECK_EQ(task_runner.get(),
+           base::SequencedTaskRunner::GetCurrentDefault().get());
+  if (IsServiceWorkerStorageSuppressPostTaskEnabled()) {
+    std::move(task).Run();
+  } else {
+    task_runner->PostTask(from_here, std::move(task));
+  }
+}
+
+template <class Task, class Reply>
+void MaybePostTaskAndReplyWithResult(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    const base::Location& from_here,
+    Task task,
+    Reply reply) {
+  CHECK_EQ(task_runner.get(),
+           base::SequencedTaskRunner::GetCurrentDefault().get());
+  if (IsServiceWorkerStorageSuppressPostTaskEnabled()) {
+    std::move(reply).Run(std::move(task).Run());
+  } else {
+    task_runner->PostTaskAndReplyWithResult(from_here, std::move(task),
+                                            std::move(reply));
+  }
+}
+
+void MaybePostTaskAndReply(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                           const base::Location& from_here,
+                           base::OnceClosure task,
+                           base::OnceClosure reply) {
+  CHECK_EQ(task_runner.get(),
+           base::SequencedTaskRunner::GetCurrentDefault().get());
+  if (IsServiceWorkerStorageSuppressPostTaskEnabled()) {
+    std::move(task).Run();
+    std::move(reply).Run();
+  } else {
+    task_runner->PostTaskAndReply(from_here, std::move(task), std::move(reply));
+  }
+}
+
 }  // namespace
 
 // When this is enabled, The ServiceWorker's scope URLs are cached on the UI
@@ -128,6 +180,8 @@ void ServiceWorkerStorage::FindRegistrationForClientUrl(
     const GURL& client_url,
     const blink::StorageKey& key,
     FindRegistrationForClientUrlDataCallback callback) {
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerStorage::FindRegistrationForClientUrl");
   DCHECK(!client_url.has_ref());
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -163,16 +217,18 @@ void ServiceWorkerStorage::FindRegistrationForClientUrl(
     return;
   }
 
-  database_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&FindForClientUrlInDB, database_.get(),
-                                base::SequencedTaskRunner::GetCurrentDefault(),
-                                client_url, key, std::move(callback)));
+  MaybePostTask(database_task_runner_, FROM_HERE,
+                base::BindOnce(&FindForClientUrlInDB, database_.get(),
+                               base::SequencedTaskRunner::GetCurrentDefault(),
+                               client_url, key, std::move(callback)));
 }
 
 void ServiceWorkerStorage::FindRegistrationForScope(
     const GURL& scope,
     const blink::StorageKey& key,
     FindRegistrationDataCallback callback) {
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerStorage::FindRegistrationForScope");
   switch (state_) {
     case STORAGE_STATE_DISABLED:
       RunSoon(FROM_HERE,
@@ -200,10 +256,10 @@ void ServiceWorkerStorage::FindRegistrationForScope(
     return;
   }
 
-  database_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&FindForScopeInDB, database_.get(),
-                                base::SequencedTaskRunner::GetCurrentDefault(),
-                                scope, key, std::move(callback)));
+  MaybePostTask(database_task_runner_, FROM_HERE,
+                base::BindOnce(&FindForScopeInDB, database_.get(),
+                               base::SequencedTaskRunner::GetCurrentDefault(),
+                               scope, key, std::move(callback)));
 }
 
 void ServiceWorkerStorage::FindRegistrationForId(
@@ -236,10 +292,10 @@ void ServiceWorkerStorage::FindRegistrationForId(
     return;
   }
 
-  database_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&FindForIdInDB, database_.get(),
-                                base::SequencedTaskRunner::GetCurrentDefault(),
-                                registration_id, key, std::move(callback)));
+  MaybePostTask(database_task_runner_, FROM_HERE,
+                base::BindOnce(&FindForIdInDB, database_.get(),
+                               base::SequencedTaskRunner::GetCurrentDefault(),
+                               registration_id, key, std::move(callback)));
 }
 
 void ServiceWorkerStorage::FindRegistrationForIdOnly(
@@ -262,10 +318,10 @@ void ServiceWorkerStorage::FindRegistrationForIdOnly(
       break;
   }
 
-  database_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&FindForIdOnlyInDB, database_.get(),
-                                base::SequencedTaskRunner::GetCurrentDefault(),
-                                registration_id, std::move(callback)));
+  MaybePostTask(database_task_runner_, FROM_HERE,
+                base::BindOnce(&FindForIdOnlyInDB, database_.get(),
+                               base::SequencedTaskRunner::GetCurrentDefault(),
+                               registration_id, std::move(callback)));
 }
 
 void ServiceWorkerStorage::GetRegistrationsForStorageKey(
@@ -295,8 +351,8 @@ void ServiceWorkerStorage::GetRegistrationsForStorageKey(
   RegistrationList* registrations_ptr = registrations.get();
   std::vector<ResourceList>* resource_lists_ptr = resource_lists.get();
 
-  database_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  MaybePostTaskAndReplyWithResult(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::GetRegistrationsForStorageKey,
                      base::Unretained(database_.get()), key, registrations_ptr,
                      resource_lists_ptr),
@@ -326,12 +382,11 @@ void ServiceWorkerStorage::GetUsageForStorageKey(
       break;
   }
 
-  database_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ServiceWorkerStorage::GetUsageForStorageKeyInDB,
-                     database_.get(),
-                     base::SequencedTaskRunner::GetCurrentDefault(), key,
-                     std::move(callback)));
+  MaybePostTask(database_task_runner_, FROM_HERE,
+                base::BindOnce(&ServiceWorkerStorage::GetUsageForStorageKeyInDB,
+                               database_.get(),
+                               base::SequencedTaskRunner::GetCurrentDefault(),
+                               key, std::move(callback)));
 }
 
 void ServiceWorkerStorage::GetAllRegistrations(
@@ -357,8 +412,8 @@ void ServiceWorkerStorage::GetAllRegistrations(
   auto registrations = std::make_unique<RegistrationList>();
   RegistrationList* registrations_ptr = registrations.get();
 
-  database_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  MaybePostTaskAndReplyWithResult(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::GetAllRegistrations,
                      base::Unretained(database_.get()), registrations_ptr),
       base::BindOnce(&ServiceWorkerStorage::DidGetAllRegistrations,
@@ -395,8 +450,8 @@ void ServiceWorkerStorage::StoreRegistrationData(
 
   uint64_t resources_total_size_bytes =
       registration_data->resources_total_size_bytes;
-  database_task_runner_->PostTask(
-      FROM_HERE,
+  MaybePostTask(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(
           &WriteRegistrationInDB, database_.get(),
           base::SequencedTaskRunner::GetCurrentDefault(),
@@ -425,8 +480,8 @@ void ServiceWorkerStorage::UpdateToActiveState(
       break;
   }
 
-  database_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  MaybePostTaskAndReplyWithResult(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::UpdateVersionToActive,
                      base::Unretained(database_.get()), registration_id, key),
       std::move(callback));
@@ -453,8 +508,8 @@ void ServiceWorkerStorage::UpdateLastUpdateCheckTime(
       break;
   }
 
-  database_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  MaybePostTaskAndReplyWithResult(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::UpdateLastCheckTime,
                      base::Unretained(database_.get()), registration_id, key,
                      last_update_check_time),
@@ -482,8 +537,8 @@ void ServiceWorkerStorage::UpdateNavigationPreloadEnabled(
       break;
   }
 
-  database_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  MaybePostTaskAndReplyWithResult(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::UpdateNavigationPreloadEnabled,
                      base::Unretained(database_.get()), registration_id, key,
                      enable),
@@ -511,8 +566,8 @@ void ServiceWorkerStorage::UpdateNavigationPreloadHeader(
       break;
   }
 
-  database_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  MaybePostTaskAndReplyWithResult(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::UpdateNavigationPreloadHeader,
                      base::Unretained(database_.get()), registration_id, key,
                      value),
@@ -540,8 +595,8 @@ void ServiceWorkerStorage::UpdateFetchHandlerType(
       break;
   }
 
-  database_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  MaybePostTaskAndReplyWithResult(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::UpdateFetchHandlerType,
                      base::Unretained(database_.get()), registration_id, key,
                      type),
@@ -567,8 +622,8 @@ void ServiceWorkerStorage::UpdateResourceSha256Checksums(
     case STORAGE_STATE_INITIALIZED:
       break;
   }
-  database_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  MaybePostTaskAndReplyWithResult(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::UpdateResourceSha256Checksums,
                      base::Unretained(database_.get()), registration_id, key,
                      updated_sha256_checksums),
@@ -605,8 +660,8 @@ void ServiceWorkerStorage::DeleteRegistration(
   auto params = std::make_unique<DidDeleteRegistrationParams>(
       registration_id, key, std::move(callback));
 
-  database_task_runner_->PostTask(
-      FROM_HERE,
+  MaybePostTask(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(
           &DeleteRegistrationFromDB, database_.get(),
           base::SequencedTaskRunner::GetCurrentDefault(), registration_id, key,
@@ -633,8 +688,9 @@ void ServiceWorkerStorage::PerformStorageCleanup(base::OnceClosure callback) {
   if (!has_checked_for_stale_resources_)
     DeleteStaleResources();
 
-  database_task_runner_->PostTaskAndReply(
-      FROM_HERE, base::BindOnce(&PerformStorageCleanupInDB, database_.get()),
+  MaybePostTaskAndReply(
+      database_task_runner_, FROM_HERE,
+      base::BindOnce(&PerformStorageCleanupInDB, database_.get()),
       std::move(callback));
 }
 
@@ -741,8 +797,8 @@ void ServiceWorkerStorage::StoreUncommittedResourceId(
     DeleteStaleResources();
 
   std::vector<int64_t> resource_ids = {resource_id};
-  database_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  MaybePostTaskAndReplyWithResult(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::WriteUncommittedResourceIds,
                      base::Unretained(database_.get()), resource_ids),
       std::move(callback));
@@ -766,8 +822,8 @@ void ServiceWorkerStorage::DoomUncommittedResources(
       break;
   }
 
-  database_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  MaybePostTaskAndReplyWithResult(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::PurgeUncommittedResourceIds,
                      base::Unretained(database_.get()), resource_ids),
       base::BindOnce(&ServiceWorkerStorage::DidDoomUncommittedResourceIds,
@@ -814,8 +870,8 @@ void ServiceWorkerStorage::StoreUserData(
     }
   }
 
-  database_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  MaybePostTaskAndReplyWithResult(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::WriteUserData,
                      base::Unretained(database_.get()), registration_id, key,
                      std::move(user_data)),
@@ -862,8 +918,8 @@ void ServiceWorkerStorage::GetUserData(int64_t registration_id,
     }
   }
 
-  database_task_runner_->PostTask(
-      FROM_HERE,
+  MaybePostTask(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&ServiceWorkerStorage::GetUserDataInDB, database_.get(),
                      base::SequencedTaskRunner::GetCurrentDefault(),
                      registration_id, keys, std::move(callback)));
@@ -901,8 +957,8 @@ void ServiceWorkerStorage::GetUserDataByKeyPrefix(
     return;
   }
 
-  database_task_runner_->PostTask(
-      FROM_HERE,
+  MaybePostTask(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&ServiceWorkerStorage::GetUserDataByKeyPrefixInDB,
                      database_.get(),
                      base::SequencedTaskRunner::GetCurrentDefault(),
@@ -941,8 +997,8 @@ void ServiceWorkerStorage::GetUserKeysAndDataByKeyPrefix(
     return;
   }
 
-  database_task_runner_->PostTask(
-      FROM_HERE,
+  MaybePostTask(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&ServiceWorkerStorage::GetUserKeysAndDataByKeyPrefixInDB,
                      database_.get(),
                      base::SequencedTaskRunner::GetCurrentDefault(),
@@ -986,8 +1042,8 @@ void ServiceWorkerStorage::ClearUserData(int64_t registration_id,
     }
   }
 
-  database_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  MaybePostTaskAndReplyWithResult(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::DeleteUserData,
                      base::Unretained(database_.get()), registration_id, keys),
       std::move(callback));
@@ -1032,8 +1088,8 @@ void ServiceWorkerStorage::ClearUserDataByKeyPrefixes(
     }
   }
 
-  database_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  MaybePostTaskAndReplyWithResult(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::DeleteUserDataByKeyPrefixes,
                      base::Unretained(database_.get()), registration_id,
                      key_prefixes),
@@ -1069,8 +1125,8 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrations(
     return;
   }
 
-  database_task_runner_->PostTask(
-      FROM_HERE,
+  MaybePostTask(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&ServiceWorkerStorage::GetUserDataForAllRegistrationsInDB,
                      database_.get(),
                      base::SequencedTaskRunner::GetCurrentDefault(), key,
@@ -1106,8 +1162,8 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrationsByKeyPrefix(
     return;
   }
 
-  database_task_runner_->PostTask(
-      FROM_HERE,
+  MaybePostTask(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(
           &ServiceWorkerStorage::GetUserDataForAllRegistrationsByKeyPrefixInDB,
           database_.get(), base::SequencedTaskRunner::GetCurrentDefault(),
@@ -1141,8 +1197,8 @@ void ServiceWorkerStorage::ClearUserDataForAllRegistrationsByKeyPrefix(
     return;
   }
 
-  database_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  MaybePostTaskAndReplyWithResult(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(
           &ServiceWorkerDatabase::DeleteUserDataForAllRegistrationsByKeyPrefix,
           base::Unretained(database_.get()), key_prefix),
@@ -1164,8 +1220,8 @@ void ServiceWorkerStorage::DiskCacheImplDoneWithDisk() {
   expecting_done_with_disk_on_disable_ = false;
   if (!delete_and_start_over_callback_.is_null()) {
     // Delete the database on the database thread.
-    database_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
+    MaybePostTaskAndReplyWithResult(
+        database_task_runner_, FROM_HERE,
         base::BindOnce(&ServiceWorkerDatabase::DestroyDatabase,
                        base::Unretained(database_.get())),
         base::BindOnce(&ServiceWorkerStorage::DidDeleteDatabase,
@@ -1298,6 +1354,9 @@ ServiceWorkerStorage::ServiceWorkerStorage(
       is_purge_pending_(false),
       has_checked_for_stale_resources_(false) {
   database_ = std::make_unique<ServiceWorkerDatabase>(GetDatabasePath());
+  // Confirms that this is running on `database_task_runner_`.
+  CHECK_EQ(database_task_runner_.get(),
+           base::SequencedTaskRunner::GetCurrentDefault().get());
 }
 
 base::FilePath ServiceWorkerStorage::GetDatabasePath() {
@@ -1339,22 +1398,23 @@ void ServiceWorkerStorage::GetPurgingResourceIdsForTest(
 
 void ServiceWorkerStorage::GetPurgeableResourceIdsForTest(
     ResourceIdsCallback callback) {
-  database_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&GetPurgeableResourceIdsFromDB, database_.get(),
-                                base::SequencedTaskRunner::GetCurrentDefault(),
-                                std::move(callback)));
+  MaybePostTask(database_task_runner_, FROM_HERE,
+                base::BindOnce(&GetPurgeableResourceIdsFromDB, database_.get(),
+                               base::SequencedTaskRunner::GetCurrentDefault(),
+                               std::move(callback)));
 }
 
 void ServiceWorkerStorage::GetUncommittedResourceIdsForTest(
     ResourceIdsCallback callback) {
-  database_task_runner_->PostTask(
-      FROM_HERE,
+  MaybePostTask(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&GetUncommittedResourceIdsFromDB, database_.get(),
                      base::SequencedTaskRunner::GetCurrentDefault(),
                      std::move(callback)));
 }
 
 void ServiceWorkerStorage::LazyInitialize(base::OnceClosure callback) {
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerStorage::LazyInitialize");
   DCHECK(state_ == STORAGE_STATE_UNINITIALIZED ||
          state_ == STORAGE_STATE_INITIALIZING)
       << state_;
@@ -1364,8 +1424,8 @@ void ServiceWorkerStorage::LazyInitialize(base::OnceClosure callback) {
   }
 
   state_ = STORAGE_STATE_INITIALIZING;
-  database_task_runner_->PostTask(
-      FROM_HERE,
+  MaybePostTask(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(&ReadInitialDataFromDB, database_.get(),
                      base::SequencedTaskRunner::GetCurrentDefault(),
                      base::BindOnce(&ServiceWorkerStorage::DidReadInitialData,
@@ -1564,8 +1624,8 @@ void ServiceWorkerStorage::OnResourcePurged(int64_t id, int rv) {
   // failure? The disk cache entry might still remain and once we remove its
   // purgeable id, we will never retry deleting it.
   std::vector<int64_t> ids = {id};
-  database_task_runner_->PostTask(
-      FROM_HERE,
+  MaybePostTask(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(
           base::IgnoreResult(&ServiceWorkerDatabase::ClearPurgeableResourceIds),
           base::Unretained(database_.get()), ids));
@@ -1577,8 +1637,8 @@ void ServiceWorkerStorage::OnResourcePurged(int64_t id, int rv) {
 void ServiceWorkerStorage::DeleteStaleResources() {
   DCHECK(!has_checked_for_stale_resources_);
   has_checked_for_stale_resources_ = true;
-  database_task_runner_->PostTask(
-      FROM_HERE,
+  MaybePostTask(
+      database_task_runner_, FROM_HERE,
       base::BindOnce(
           &ServiceWorkerStorage::CollectStaleResourcesFromDB, database_.get(),
           base::SequencedTaskRunner::GetCurrentDefault(),
@@ -1599,8 +1659,8 @@ void ServiceWorkerStorage::DidCollectStaleResources(
 
 void ServiceWorkerStorage::ClearSessionOnlyOrigins() {
   if (!origins_to_purge_on_shutdown_.empty()) {
-    database_task_runner_->PostTask(
-        FROM_HERE,
+    MaybePostTask(
+        database_task_runner_, FROM_HERE,
         base::BindOnce(&DeleteAllDataForOriginsFromDB, database_.get(),
                        origins_to_purge_on_shutdown_));
   }
@@ -1633,8 +1693,8 @@ void ServiceWorkerStorage::CollectStaleResourcesFromDB(
   ServiceWorkerDatabase::Status status =
       database->GetUncommittedResourceIds(&ids);
   if (status != ServiceWorkerDatabase::Status::kOk) {
-    original_task_runner->PostTask(
-        FROM_HERE,
+    MaybePostTask(
+        original_task_runner, FROM_HERE,
         base::BindOnce(std::move(callback),
                        std::vector<int64_t>(ids.begin(), ids.end()), status));
     return;
@@ -1642,8 +1702,8 @@ void ServiceWorkerStorage::CollectStaleResourcesFromDB(
 
   status = database->PurgeUncommittedResourceIds(ids);
   if (status != ServiceWorkerDatabase::Status::kOk) {
-    original_task_runner->PostTask(
-        FROM_HERE,
+    MaybePostTask(
+        original_task_runner, FROM_HERE,
         base::BindOnce(std::move(callback),
                        std::vector<int64_t>(ids.begin(), ids.end()), status));
     return;
@@ -1651,8 +1711,8 @@ void ServiceWorkerStorage::CollectStaleResourcesFromDB(
 
   ids.clear();
   status = database->GetPurgeableResourceIds(&ids);
-  original_task_runner->PostTask(
-      FROM_HERE,
+  MaybePostTask(
+      original_task_runner, FROM_HERE,
       base::BindOnce(std::move(callback),
                      std::vector<int64_t>(ids.begin(), ids.end()), status));
 }
@@ -1662,6 +1722,7 @@ void ServiceWorkerStorage::ReadInitialDataFromDB(
     ServiceWorkerDatabase* database,
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     InitializeCallback callback) {
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerStorage::ReadInitialDataFromDB");
   base::TimeTicks now = base::TimeTicks::Now();
 
   DCHECK(database);
@@ -1672,22 +1733,20 @@ void ServiceWorkerStorage::ReadInitialDataFromDB(
       &data->next_registration_id, &data->next_version_id,
       &data->next_resource_id);
   if (status != ServiceWorkerDatabase::Status::kOk) {
-    original_task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::move(data), status));
+    MaybePostTask(original_task_runner, FROM_HERE,
+                  base::BindOnce(std::move(callback), std::move(data), status));
     return;
   }
 
   status = database->GetStorageKeysWithRegistrations(&data->keys);
   if (status != ServiceWorkerDatabase::Status::kOk) {
-    original_task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::move(data), status));
+    MaybePostTask(original_task_runner, FROM_HERE,
+                  base::BindOnce(std::move(callback), std::move(data), status));
     return;
   }
 
-  original_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(data), status));
+  MaybePostTask(original_task_runner, FROM_HERE,
+                base::BindOnce(std::move(callback), std::move(data), status));
 
   base::UmaHistogramMediumTimes(
       "ServiceWorker.Storage.ReadInitialDataFromDB.Time",
@@ -1706,9 +1765,9 @@ void ServiceWorkerStorage::DeleteRegistrationFromDB(
   ServiceWorkerDatabase::Status status =
       database->DeleteRegistration(registration_id, key, &deleted_version);
   if (status != ServiceWorkerDatabase::Status::kOk) {
-    original_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), StorageKeyState::kKeep,
-                                  deleted_version, status));
+    MaybePostTask(original_task_runner, FROM_HERE,
+                  base::BindOnce(std::move(callback), StorageKeyState::kKeep,
+                                 deleted_version, status));
     return;
   }
 
@@ -1718,17 +1777,17 @@ void ServiceWorkerStorage::DeleteRegistrationFromDB(
   status =
       database->GetRegistrationsForStorageKey(key, &registrations, nullptr);
   if (status != ServiceWorkerDatabase::Status::kOk) {
-    original_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), StorageKeyState::kKeep,
-                                  deleted_version, status));
+    MaybePostTask(original_task_runner, FROM_HERE,
+                  base::BindOnce(std::move(callback), StorageKeyState::kKeep,
+                                 deleted_version, status));
     return;
   }
 
   StorageKeyState storage_key_state =
       registrations.empty() ? StorageKeyState::kDelete : StorageKeyState::kKeep;
-  original_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), storage_key_state,
-                                deleted_version, status));
+  MaybePostTask(original_task_runner, FROM_HERE,
+                base::BindOnce(std::move(callback), storage_key_state,
+                               deleted_version, status));
 }
 
 void ServiceWorkerStorage::WriteRegistrationInDB(
@@ -1741,9 +1800,9 @@ void ServiceWorkerStorage::WriteRegistrationInDB(
   ServiceWorkerDatabase::DeletedVersion deleted_version;
   ServiceWorkerDatabase::Status status =
       database->WriteRegistration(*registration, resources, &deleted_version);
-  original_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), registration->key,
-                                deleted_version, status));
+  MaybePostTask(original_task_runner, FROM_HERE,
+                base::BindOnce(std::move(callback), registration->key,
+                               deleted_version, status));
 }
 
 // static
@@ -1762,11 +1821,11 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
       database->GetRegistrationsForStorageKey(key, &registration_data_list,
                                               nullptr);
   if (status != ServiceWorkerDatabase::Status::kOk) {
-    original_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  /*data=*/nullptr,
-                                  /*resources=*/nullptr,
-                                  /*scopes=*/std::nullopt, status));
+    MaybePostTask(original_task_runner, FROM_HERE,
+                  base::BindOnce(std::move(callback),
+                                 /*data=*/nullptr,
+                                 /*resources=*/nullptr,
+                                 /*scopes=*/std::nullopt, status));
     return;
   }
 
@@ -1805,9 +1864,9 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
   if (match != blink::mojom::kInvalidServiceWorkerRegistrationId)
     status = database->ReadRegistration(match, key, &data, resources.get());
 
-  original_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(data),
-                                std::move(resources), scopes, status));
+  MaybePostTask(original_task_runner, FROM_HERE,
+                base::BindOnce(std::move(callback), std::move(data),
+                               std::move(resources), scopes, status));
 
   base::UmaHistogramMediumTimes(
       "ServiceWorker.Storage.FindForClientUrlInDB.Time",
@@ -1826,10 +1885,10 @@ void ServiceWorkerStorage::FindForScopeInDB(
       database->GetRegistrationsForStorageKey(key, &registration_data_list,
                                               nullptr);
   if (status != ServiceWorkerDatabase::Status::kOk) {
-    original_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  /*data=*/nullptr,
-                                  /*resources=*/nullptr, status));
+    MaybePostTask(original_task_runner, FROM_HERE,
+                  base::BindOnce(std::move(callback),
+                                 /*data=*/nullptr,
+                                 /*resources=*/nullptr, status));
     return;
   }
 
@@ -1845,9 +1904,9 @@ void ServiceWorkerStorage::FindForScopeInDB(
     break;  // We're done looping.
   }
 
-  original_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(data),
-                                std::move(resources), status));
+  MaybePostTask(original_task_runner, FROM_HERE,
+                base::BindOnce(std::move(callback), std::move(data),
+                               std::move(resources), status));
 }
 
 // static
@@ -1861,9 +1920,9 @@ void ServiceWorkerStorage::FindForIdInDB(
   auto resources = std::make_unique<ResourceList>();
   ServiceWorkerDatabase::Status status =
       database->ReadRegistration(registration_id, key, &data, resources.get());
-  original_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(data),
-                                std::move(resources), status));
+  MaybePostTask(original_task_runner, FROM_HERE,
+                base::BindOnce(std::move(callback), std::move(data),
+                               std::move(resources), status));
 }
 
 // static
@@ -1876,10 +1935,10 @@ void ServiceWorkerStorage::FindForIdOnlyInDB(
   ServiceWorkerDatabase::Status status =
       database->ReadRegistrationStorageKey(registration_id, &key);
   if (status != ServiceWorkerDatabase::Status::kOk) {
-    original_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  /*data=*/nullptr,
-                                  /*resources=*/nullptr, status));
+    MaybePostTask(original_task_runner, FROM_HERE,
+                  base::BindOnce(std::move(callback),
+                                 /*data=*/nullptr,
+                                 /*resources=*/nullptr, status));
     return;
   }
   FindForIdInDB(database, original_task_runner, registration_id, key,
@@ -1895,8 +1954,8 @@ void ServiceWorkerStorage::GetUsageForStorageKeyInDB(
   int64_t usage = 0;
   ServiceWorkerDatabase::Status status =
       database->GetUsageForStorageKey(key, usage);
-  original_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), status, usage));
+  MaybePostTask(original_task_runner, FROM_HERE,
+                base::BindOnce(std::move(callback), status, usage));
 }
 
 void ServiceWorkerStorage::GetUserDataInDB(
@@ -1908,8 +1967,8 @@ void ServiceWorkerStorage::GetUserDataInDB(
   std::vector<std::string> values;
   ServiceWorkerDatabase::Status status =
       database->ReadUserData(registration_id, keys, &values);
-  original_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), status, values));
+  MaybePostTask(original_task_runner, FROM_HERE,
+                base::BindOnce(std::move(callback), status, values));
 }
 
 void ServiceWorkerStorage::GetUserDataByKeyPrefixInDB(
@@ -1921,8 +1980,8 @@ void ServiceWorkerStorage::GetUserDataByKeyPrefixInDB(
   std::vector<std::string> values;
   ServiceWorkerDatabase::Status status =
       database->ReadUserDataByKeyPrefix(registration_id, key_prefix, &values);
-  original_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), status, values));
+  MaybePostTask(original_task_runner, FROM_HERE,
+                base::BindOnce(std::move(callback), status, values));
 }
 
 void ServiceWorkerStorage::GetUserKeysAndDataByKeyPrefixInDB(
@@ -1935,8 +1994,8 @@ void ServiceWorkerStorage::GetUserKeysAndDataByKeyPrefixInDB(
   ServiceWorkerDatabase::Status status =
       database->ReadUserKeysAndDataByKeyPrefix(registration_id, key_prefix,
                                                &data_map);
-  original_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), status, data_map));
+  MaybePostTask(original_task_runner, FROM_HERE,
+                base::BindOnce(std::move(callback), status, data_map));
 }
 
 void ServiceWorkerStorage::GetUserDataForAllRegistrationsInDB(
@@ -1947,8 +2006,8 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrationsInDB(
   std::vector<mojom::ServiceWorkerUserDataPtr> user_data;
   ServiceWorkerDatabase::Status status =
       database->ReadUserDataForAllRegistrations(key, &user_data);
-  original_task_runner->PostTask(
-      FROM_HERE,
+  MaybePostTask(
+      original_task_runner, FROM_HERE,
       base::BindOnce(std::move(callback), status, std::move(user_data)));
 }
 
@@ -1961,8 +2020,8 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrationsByKeyPrefixInDB(
   ServiceWorkerDatabase::Status status =
       database->ReadUserDataForAllRegistrationsByKeyPrefix(key_prefix,
                                                            &user_data);
-  original_task_runner->PostTask(
-      FROM_HERE,
+  MaybePostTask(
+      original_task_runner, FROM_HERE,
       base::BindOnce(std::move(callback), status, std::move(user_data)));
 }
 
@@ -1989,8 +2048,8 @@ void ServiceWorkerStorage::GetPurgeableResourceIdsFromDB(
   std::vector<int64_t> resource_ids;
   ServiceWorkerDatabase::Status status =
       database->GetPurgeableResourceIds(&resource_ids);
-  original_task_runner->PostTask(
-      FROM_HERE,
+  MaybePostTask(
+      original_task_runner, FROM_HERE,
       base::BindOnce(std::move(callback), status, std::move(resource_ids)));
 }
 
@@ -2002,8 +2061,8 @@ void ServiceWorkerStorage::GetUncommittedResourceIdsFromDB(
   std::vector<int64_t> resource_ids;
   ServiceWorkerDatabase::Status status =
       database->GetUncommittedResourceIds(&resource_ids);
-  original_task_runner->PostTask(
-      FROM_HERE,
+  MaybePostTask(
+      original_task_runner, FROM_HERE,
       base::BindOnce(std::move(callback), status, std::move(resource_ids)));
 }
 
