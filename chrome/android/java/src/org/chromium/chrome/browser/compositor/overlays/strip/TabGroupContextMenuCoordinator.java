@@ -11,6 +11,7 @@ import android.widget.EditText;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.supplier.Supplier;
@@ -147,7 +148,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         mContentView = contentView;
         mContext = contentView.getContext();
 
-        buildTitleEditor();
+        buildTitleEditor(isIncognito);
 
         buildColorEditor(isIncognito);
     }
@@ -254,13 +255,22 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
 
     // TODO(crbug.com/358689769): Enable live editing and updating of the group title by
     // implementing a `TextWatcher`.
-    private void buildTitleEditor() {
-        // TODO:(crbug.com/359622287): Set incognito color with ColorStateList for title editor.
+    private void buildTitleEditor(boolean isIncognito) {
         mGroupTitleEditText = mContentView.findViewById(R.id.tab_group_title);
-        String curGroupTitle = mTabGroupModelFilter.getTabGroupTitle(mGroupRootId);
+
+        // Set incognito style.
+        if (isIncognito) {
+            mGroupTitleEditText.setBackgroundTintList(
+                    AppCompatResources.getColorStateList(
+                            mContext,
+                            org.chromium.chrome.R.color.menu_edit_text_bg_tint_list_baseline));
+            mGroupTitleEditText.setTextAppearance(
+                    R.style.TextAppearance_TextLarge_Primary_Baseline_Light);
+        }
 
         // Set the initial text to the existing group title, defaulting to "N tabs" if no title name
         // is set.
+        String curGroupTitle = mTabGroupModelFilter.getTabGroupTitle(mGroupRootId);
         if (curGroupTitle == null || curGroupTitle.isEmpty()) {
             setEditTextToDefaultGroupTitle();
         } else {
