@@ -1465,8 +1465,7 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
   CHECK(context_state);
-  CHECK(context_state->graphite_context());
-  if (context_state->gr_context_type() == GrContextType::kGraphiteDawn) {
+  if (context_state->IsGraphiteDawn()) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     auto device = context_state->dawn_context_provider()->GetDevice();
     auto backend_type = context_state->dawn_context_provider()->backend_type();
@@ -1486,7 +1485,7 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
     NOTREACHED();
 #endif
   } else {
-    CHECK_EQ(context_state->gr_context_type(), GrContextType::kGraphiteMetal);
+    CHECK(context_state->IsGraphiteMetal());
 #if BUILDFLAG(SKIA_USE_METAL)
     std::vector<base::apple::scoped_nsprotocol<id<MTLTexture>>> mtl_textures;
     mtl_textures.reserve(format().NumberOfPlanes());

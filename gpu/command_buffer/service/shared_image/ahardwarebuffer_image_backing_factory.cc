@@ -466,8 +466,7 @@ AHardwareBufferImageBacking::ProduceSkiaGraphite(
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
   CHECK(context_state);
-  CHECK(context_state->graphite_context());
-  CHECK(context_state->gr_context_type() == GrContextType::kGraphiteDawn);
+  CHECK(context_state->IsGraphiteDawn());
 #if BUILDFLAG(SKIA_USE_DAWN)
   auto device = context_state->dawn_context_provider()->GetDevice();
   auto backend_type = context_state->dawn_context_provider()->backend_type();

@@ -130,11 +130,8 @@
 #include "components/viz/service/display_embedder/skia_output_device_x11.h"
 #endif
 
-#if BUILDFLAG(SKIA_USE_DAWN)
-#include "gpu/command_buffer/service/dawn_context_provider.h"
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(SKIA_USE_DAWN) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
 #include "components/viz/service/display_embedder/skia_output_device_dawn.h"
-#endif
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -332,7 +329,6 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
               dependency_,
               shared_gpu_deps_->memory_tracker())),
       vulkan_context_provider_(dependency_->GetVulkanContextProvider()),
-      dawn_context_provider_(dependency_->GetDawnContextProvider()),
       renderer_settings_(renderer_settings),
       did_swap_buffer_complete_callback_(
           std::move(did_swap_buffer_complete_callback)),
@@ -581,7 +577,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     }
 
     gfx::GpuFenceHandle release_fence;
-    if (!return_release_fence_cb.is_null() && is_using_gl()) {
+    if (!return_release_fence_cb.is_null() && context_state_->IsUsingGL()) {
       DCHECK(release_fence.is_null());
       release_fence = CreateReleaseFenceForGL();
     }
@@ -788,7 +784,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
 
   // If GL is used, create the release fence after flush.
   gfx::GpuFenceHandle release_fence;
-  if (!return_release_fence_cb.is_null() && is_using_gl()) {
+  if (!return_release_fence_cb.is_null() && context_state_->IsUsingGL()) {
     DCHECK(release_fence.is_null());
     release_fence = CreateReleaseFenceForGL();
   }
@@ -1915,11 +1911,11 @@ bool SkiaOutputSurfaceImplOnGpu::Initialize() {
     if (!InitializeForVulkan()) {
       return false;
     }
-  } else if (is_using_graphite_dawn()) {
+  } else if (context_state_->IsGraphiteDawn()) {
     if (!InitializeForDawn()) {
       return false;
     }
-  } else if (is_using_graphite_metal()) {
+  } else if (context_state_->IsGraphiteMetal()) {
     if (!InitializeForMetal()) {
       return false;
     }
