@@ -48,6 +48,24 @@ suite('SeaPenInputQueryElementTest', function() {
     });
   }
 
+  /** Returns the text of the clicked button. */
+  async function clickSuggestionButton(): Promise<string> {
+    const seaPenSuggestions =
+        seaPenInputQueryElement!.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenSuggestionsElement.is);
+    assertTrue(!!seaPenSuggestions, 'suggestions should exist');
+    const seaPenSuggestionButton =
+        seaPenSuggestions.shadowRoot!.querySelector<CrButtonElement>(
+            '.suggestion');
+    assertTrue(!!seaPenSuggestionButton, 'suggestion buttons should exist');
+    const suggestionButtonText = seaPenSuggestionButton.textContent!.trim()!;
+
+    seaPenSuggestionButton.click();
+    await waitAfterNextRender(seaPenInputQueryElement as HTMLElement);
+
+    return suggestionButtonText;
+  }
+
   function suggestionExists(suggestion: string): boolean {
     const suggestionArray = getSuggestions();
     return suggestionArray.includes(suggestion);
@@ -269,18 +287,8 @@ suite('SeaPenInputQueryElementTest', function() {
             '#queryInput');
     assertEquals(textValue, inputElement!.value, 'input should show text');
 
-    const seaPenSuggestions =
-        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
-            SeaPenSuggestionsElement.is);
-    assertTrue(!!seaPenSuggestions);
-    const seaPenSuggestionButton =
-        seaPenSuggestions.shadowRoot!.querySelector<CrButtonElement>(
-            '.suggestion');
-    assertTrue(!!seaPenSuggestionButton);
-    const suggestionButtonText = seaPenSuggestionButton.textContent?.trim();
+    const suggestionButtonText = await clickSuggestionButton()!;
 
-    seaPenSuggestionButton.click();
-    await waitAfterNextRender(seaPenInputQueryElement);
 
     assertEquals(inputElement?.value, suggestionButtonText);
   });
@@ -294,23 +302,32 @@ suite('SeaPenInputQueryElementTest', function() {
     const textValue = 'Brevity is the soul of wit';
     await setTextInputValue(textValue);
 
-    const seaPenSuggestions =
-        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
-            SeaPenSuggestionsElement.is);
-    assertTrue(!!seaPenSuggestions, 'suggestions should exist');
-    const seaPenSuggestionButton =
-        seaPenSuggestions.shadowRoot!.querySelector<CrButtonElement>(
-            '.suggestion');
-    assertTrue(!!seaPenSuggestionButton, 'suggestion buttons should exist');
-    const suggestionButtonText = seaPenSuggestionButton.textContent?.trim();
+    const suggestionButtonText = await clickSuggestionButton()!;
 
-    seaPenSuggestionButton.click();
-    await waitAfterNextRender(seaPenInputQueryElement);
 
     assertEquals(
         `${textValue}, ${suggestionButtonText}`, inputElement!.value,
         'suggestion text should be added at the end of the text input');
   });
+
+  test(
+      'clicking the third-to-last suggestion resets the suggestion list',
+      async () => {
+        seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+        await waitAfterNextRender(seaPenInputQueryElement);
+        const textValue = 'Brevity is the soul of wit';
+        await setTextInputValue(textValue);
+
+        while (getSuggestions().length > 3) {
+          await clickSuggestionButton();
+        }
+        assertEquals(3, getSuggestions().length, 'there are 3 suggestions');
+
+        // Click one more time.
+        await clickSuggestionButton();
+
+        assertTrue(getSuggestions().length > 3, 'length of suggestions resets');
+      });
 
   test('clicking suggestion does nothing if over the max length', async () => {
     seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
@@ -322,17 +339,7 @@ suite('SeaPenInputQueryElementTest', function() {
     const textValue = 'a'.repeat(999);
     await setTextInputValue(textValue);
 
-    const seaPenSuggestions =
-        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
-            SeaPenSuggestionsElement.is);
-    assertTrue(!!seaPenSuggestions, 'suggestions should exist');
-    const seaPenSuggestionButton =
-        seaPenSuggestions.shadowRoot!.querySelector<CrButtonElement>(
-            '.suggestion');
-    assertTrue(!!seaPenSuggestionButton, 'suggestion buttons should exist');
-
-    seaPenSuggestionButton.click();
-    await waitAfterNextRender(seaPenInputQueryElement);
+    await clickSuggestionButton();
 
     assertEquals(
         `${textValue}`, inputElement!.value,
@@ -343,40 +350,25 @@ suite('SeaPenInputQueryElementTest', function() {
     seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
     await waitAfterNextRender(seaPenInputQueryElement);
     await setTextInputValue('abc');
-    const seaPenSuggestions =
-        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
-            SeaPenSuggestionsElement.is)!;
-    const seaPenSuggestionButton =
-        seaPenSuggestions.shadowRoot!.querySelector<CrButtonElement>(
-            '.suggestion')!;
-    const suggestionButtonText = seaPenSuggestionButton.textContent?.trim()!;
 
-    seaPenSuggestionButton.click();
-    await waitAfterNextRender(seaPenInputQueryElement);
+    const suggestionButtonText = await clickSuggestionButton();
 
     assertFalse(
         suggestionExists(suggestionButtonText),
         'clicked suggestion should be removed');
   });
 
-  test('reset suggestion button list if the length is 3 or less', async () => {
+  test('shuffling resets suggestion button list the length is 3', async () => {
     seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
     await waitAfterNextRender(seaPenInputQueryElement);
     await setTextInputValue('abc');
     const seaPenSuggestions =
         seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
             SeaPenSuggestionsElement.is)!;
-    let suggestionButtons =
-        seaPenSuggestions.shadowRoot!.querySelectorAll<CrButtonElement>(
-            '.suggestion')!;
 
     // Click all but 3 suggestion buttons.
     while (getSuggestions().length > 3) {
-      const suggestionButton =
-          seaPenSuggestions.shadowRoot!.querySelector<CrButtonElement>(
-              '.suggestion')!;
-      suggestionButton.click();
-      await waitAfterNextRender(seaPenInputQueryElement);
+      await clickSuggestionButton();
     }
 
     const shuffleButton =
@@ -384,12 +376,9 @@ suite('SeaPenInputQueryElementTest', function() {
     shuffleButton.click();
     await waitAfterNextRender(seaPenInputQueryElement);
 
-    suggestionButtons =
-        seaPenSuggestions.shadowRoot!.querySelectorAll<CrButtonElement>(
-            '.suggestion')!;
     assertTrue(
-        suggestionButtons.length > 3,
-        'selectable suggestion button list should reset if shuffling with very few items');
+        getSuggestions().length > 3,
+        'suggestion button list should reset if shuffling with very few items');
   });
 
   test('thumbnails shuffle when they are shown again', async () => {

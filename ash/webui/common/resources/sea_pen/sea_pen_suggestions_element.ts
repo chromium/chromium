@@ -131,11 +131,18 @@ export class SeaPenSuggestionsElement extends PolymerElement {
     const suggestion = target.textContent?.trim();
     assert(suggestion);
     this.dispatchEvent(new SeaPenSuggestionSelectedEvent(suggestion));
-    this.hiddenSuggestions_.add(suggestion);
-    this.splice('suggestions_', event.model.index, 1);
-    // Manually calls observer since splicing doesn't trigger it.
-    this.onSuggestionsChanged_();
     logSuggestionClicked();
+
+    // If there are fewer than 4 suggestions, shuffle them all instead of
+    // removing one.
+    if (SEA_PEN_SUGGESTIONS.length - this.hiddenSuggestions_.size < 4) {
+      this.shuffleSuggestions_();
+    } else {
+      this.hiddenSuggestions_.add(suggestion);
+      this.splice('suggestions_', event.model.index, 1);
+      // Manually calls observer since splicing doesn't trigger it.
+      this.onSuggestionsChanged_();
+    }
   }
 
   private onShuffleClicked_() {
