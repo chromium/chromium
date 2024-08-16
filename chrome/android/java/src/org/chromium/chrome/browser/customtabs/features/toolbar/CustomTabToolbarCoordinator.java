@@ -159,20 +159,19 @@ public class CustomTabToolbarCoordinator {
         Tab tab = mTabProvider.getTab();
         if (tab == null) return;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_CUSTOM_ACTIONS_IN_CCT)) {
-            // The share button from CCT should have custom actions, however if the
-            // ShareDelegateSupplier is null, we should fallback to the default share action without
-            // custom buttons.
-            Supplier<ShareDelegate> supplier = ShareDelegateSupplier.from(mWindowAndroid);
-            if (params.getType() == CustomButtonParams.ButtonType.CCT_SHARE_BUTTON
-                    && supplier != null
-                    && supplier.get() != null) {
-                supplier.get()
-                        .share(
-                                tab,
-                                /* shareDirectly= */ false,
-                                ShareDelegate.ShareOrigin.CUSTOM_TAB_SHARE_BUTTON);
-            }
+        // The share button from CCT should have custom actions, however if the
+        // ShareDelegateSupplier is null, we should fallback to the default share action without
+        // custom buttons.
+        Supplier<ShareDelegate> supplier = ShareDelegateSupplier.from(mWindowAndroid);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_CUSTOM_ACTIONS_IN_CCT)
+                && params.getType() == CustomButtonParams.ButtonType.CCT_SHARE_BUTTON
+                && supplier != null
+                && supplier.get() != null) {
+            supplier.get()
+                    .share(
+                            tab,
+                            /* shareDirectly= */ false,
+                            ShareDelegate.ShareOrigin.CUSTOM_TAB_SHARE_BUTTON);
         } else {
             sendButtonPendingIntentWithUrlAndTitle(params, tab.getOriginalUrl(), tab.getTitle());
         }

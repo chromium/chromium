@@ -5,15 +5,18 @@
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.isNull;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.SHARE_CUSTOM_ACTIONS_IN_CCT;
 
 import android.app.Activity;
-
-import androidx.test.filters.SmallTest;
+import android.app.PendingIntent;
+import android.content.Intent;
 
 import dagger.Lazy;
 
@@ -27,8 +30,10 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
 import org.chromium.chrome.browser.customtabs.CustomButtonParamsImpl;
 import org.chromium.chrome.browser.customtabs.CustomTabCompositorContentInitializer;
@@ -39,6 +44,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.url.GURL;
 
 /** Tests for {@link CustomTabToolbarCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -58,6 +64,8 @@ public class CustomTabToolbarCoordinatorUnitTest {
     @Mock private CustomTabCompositorContentInitializer mCompositorContentInitializer;
     @Mock private CustomTabToolbarColorController mToolbarColorController;
     @Mock private Tab mTab;
+    @Mock private CustomButtonParams mCustomButtonParams;
+    @Mock private PendingIntent mPendingIntent;
 
     private Activity mActivity;
     private CustomTabActivityTabController mTabController;
@@ -88,8 +96,11 @@ public class CustomTabToolbarCoordinatorUnitTest {
 
         ShareDelegateSupplier.setInstanceForTesting(mShareDelegateSupplier);
         when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
-
         when(mTabProvider.getTab()).thenReturn(mTab);
+        when(mTab.getOriginalUrl()).thenReturn(GURL.emptyGURL());
+        when(mTab.getTitle()).thenReturn("");
+        when(mCustomButtonParams.getDescription()).thenReturn("");
+        when(mCustomButtonParams.getPendingIntent()).thenReturn(mPendingIntent);
     }
 
     @After
@@ -97,13 +108,55 @@ public class CustomTabToolbarCoordinatorUnitTest {
         mActivity.finish();
     }
 
+    private void clickButtonAndVerifyPendingIntent() {
+        try {
+            mCoordinator.onCustomButtonClick(mCustomButtonParams);
+            verify(mShareDelegate, never()).share(any(Tab.class), eq(false), anyInt());
+            verify(mPendingIntent)
+                    .send(
+                            eq(mActivity),
+                            eq(0),
+                            any(Intent.class),
+                            any(),
+                            isNull(),
+                            isNull(),
+                            any());
+        } catch (PendingIntent.CanceledException e) {
+            assert false;
+        }
+    }
+
     @Test
-    @SmallTest
-    public void testShareButtonWithCustomActions() {
+    public void testCreateShareButtonWithCustomActions() {
         int testColor = 0x99aabbcc;
         mCoordinator.onCustomButtonClick(
                 CustomButtonParamsImpl.createShareButton(mActivity, testColor));
         verify(mShareDelegate)
                 .share(any(), eq(false), eq(ShareDelegate.ShareOrigin.CUSTOM_TAB_SHARE_BUTTON));
+    }
+
+    @Test
+    public void testCustomButtonClicked() {
+        when(mCustomButtonParams.getType()).thenReturn(CustomButtonParams.ButtonType.OTHER);
+        clickButtonAndVerifyPendingIntent();
+    }
+
+    @Test
+    public void testNullSupplierShareButtonClick() {
+        when(mCustomButtonParams.getType())
+                .thenReturn(CustomButtonParams.ButtonType.CCT_SHARE_BUTTON);
+
+        // Test null supplier.
+        when(mShareDelegateSupplier.get()).thenReturn(null);
+        clickButtonAndVerifyPendingIntent();
+    }
+
+    @Test
+    @DisableFeatures({SHARE_CUSTOM_ACTIONS_IN_CCT})
+    public void testShareWithoutCustomActions() {
+        when(mCustomButtonParams.getType())
+                .thenReturn(CustomButtonParams.ButtonType.CCT_SHARE_BUTTON);
+
+        clickButtonAndVerifyPendingIntent();
     }
 }
