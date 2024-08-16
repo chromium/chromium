@@ -716,6 +716,18 @@ public class NotificationPlatformBridge {
                         silent,
                         actions);
 
+        // Work around the following bug in Android: if setTimeoutAfter() is called on a Builder,
+        // then the corresponding notification shown, then cancelled, and then later another
+        // notification is shown with the same ID/tag without specify any timeout, the new
+        // notification will still "inherit" the original timeout. There is no way to specify "no
+        // timeout" other than specifying a sufficiently long timeout instead (e.g. one week).
+        //
+        // TODO(crbug.com/41494406): Find a more elegant solution to this problem.
+        if (mNotificationIdsWithStaleTimeouts.contains(identifyingAttributes.notificationId)) {
+            notificationBuilder.setTimeoutAfter(/* ms= */ 1000 * 3600 * 24 * 7);
+            mNotificationIdsWithStaleTimeouts.remove(identifyingAttributes.notificationId);
+        }
+
         notificationBuilder.setContentIntent(
                 makePendingIntent(
                         identifyingAttributes,
@@ -875,18 +887,6 @@ public class NotificationPlatformBridge {
             // passed through to here with other notification parameters.
             String channelId = SiteChannelsManager.getInstance().getChannelIdForOrigin(origin);
             notificationBuilder.setChannelId(channelId);
-        }
-
-        // Work around the following bug in Android: if setTimeoutAfter() is called on a Builder,
-        // then the corresponding notification shown, then cancelled, and then later another
-        // notification is shown with the same ID/tag without specify any timeout, the new
-        // notification will still "inherit" the original timeout. There is no way to specify "no
-        // timeout" other than specifying a sufficiently long timeout instead (e.g. one week).
-        //
-        // TODO(crbug.com/41494406): Find a more elegant solution to this problem.
-        if (mNotificationIdsWithStaleTimeouts.contains(identifyingAttributes.notificationId)) {
-            notificationBuilder.setTimeoutAfter(/* ms= */ 1000 * 3600 * 24 * 7);
-            mNotificationIdsWithStaleTimeouts.remove(identifyingAttributes.notificationId);
         }
 
         for (int actionIndex = 0; actionIndex < actions.length; actionIndex++) {
