@@ -471,8 +471,11 @@ class WaylandConnection {
 
   uint32_t compositor_version_ = 0;
   wl::Object<wl_display> display_;
-  wl::Object<wl_proxy> wrapped_display_;
+  // `event_queue_` must be declared before `wrapped_display_`, so that the
+  // latter is destroyed first. This prevents libwayland warnings about the
+  // queue being destroyed while the proxy is still attached.
   wl::Object<wl_event_queue> event_queue_;
+  wl::Object<wl_proxy> wrapped_display_;
   wl::Object<wl_registry> registry_;
   wl::Object<wl_compositor> compositor_;
   wl::Object<wl_subcompositor> subcompositor_;

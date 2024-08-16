@@ -814,7 +814,11 @@ TEST_P(WaylandInputMethodContextTest,
             gfx::Range(4500));
 }
 
-TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongRange) {
+// TODO(crbug.com/354862211): This test is Lacros-specific and should be
+// removed. It fails without Lacros-specific patches to libwayland, which
+// shouldn't be applied when updating to a new Wayland of version as Lacros is
+// being sunset.
+TEST_P(WaylandInputMethodContextTest, DISABLED_SetSurroundingTextForLongRange) {
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range range(1000, 4000);
 
