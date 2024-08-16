@@ -383,6 +383,16 @@ notes = "No `unsafe`"
 
 [[audits.clap]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "4.5.15"
+notes = '''
+Grepped for `-i cipher`, `-i crypto`, `'\bfs\b'`, `'\bnet\b'`, `'\bunsafe\b'`
+and there were no hits, except for `std::net::IpAddr` usage in
+`examples/typed-derive.rs`.
+'''
+
+[[audits.clap]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "4.4.8 -> 4.4.14"
 
@@ -443,6 +453,15 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "ub-risk-0"
 version = "4.5.0"
 notes = "No `unsafe`"
+
+[[audits.clap_builder]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "4.5.15"
+notes = '''
+Grepped for `-i cipher`, `-i crypto`, `'\bfs\b'`, `'\bnet\b'`, `'\bunsafe\b'`
+and there were no hits.
+'''
 
 [[audits.clap_builder]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
