@@ -98,7 +98,7 @@ export class InjectedScriptLoader {
     await new Promise(
       resolve => chrome.tabs.executeScript(
         tab.id, { code, allFrames: true }, resolve));
-    if (chrome.extension.lastError) {
+    if (chrome.runtime.lastError) {
       console.error('Could not inject into tab', tab);
     }
   }
