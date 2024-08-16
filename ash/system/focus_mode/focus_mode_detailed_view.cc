@@ -578,7 +578,7 @@ void FocusModeDetailedView::CreateTimerView() {
   timer_view_header->SetText(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_SUBHEADER));
   timer_view_header->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+      gfx::HorizontalAlignment::ALIGN_LEFT);
   timer_view_header->SetBorder(
       views::CreateEmptyBorder(kTimerViewHeaderInsets));
   timer_view_header->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
@@ -652,8 +652,7 @@ void FocusModeDetailedView::CreateTimerView() {
       std::make_unique<views::Label>(l10n_util::GetPluralStringFUTF16(
           IDS_ASH_STATUS_TRAY_FOCUS_MODE_MINUTES_LABEL,
           controller->session_duration().InMinutes())));
-  minutes_label_->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  minutes_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosDisplay6Regular,
                                         *minutes_label_);
   timer_setting_view_->SetFlexForView(end_time_container, 1);
@@ -666,8 +665,7 @@ void FocusModeDetailedView::CreateTimerView() {
 
   end_time_label_ =
       end_time_container->AddChildView(std::make_unique<views::Label>());
-  end_time_label_->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  end_time_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
                                         *end_time_label_);
   end_time_label_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
@@ -753,8 +751,7 @@ void FocusModeDetailedView::CreateTaskView(bool is_network_connected) {
       task_view_container_->AddChildView(std::make_unique<views::Label>());
   task_view_header->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_SUBHEADER));
-  task_view_header->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  task_view_header->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   task_view_header->SetBorder(views::CreateEmptyBorder(kTaskViewHeaderInsets));
   task_view_header->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,

@@ -62,6 +62,7 @@ std::unique_ptr<FeatureTile> FocusModeFeaturePodController::CreateTile(
                           weak_factory_.GetWeakPtr()));
   tile_->CreateDecorativeDrillInArrow();
   tile_->SetVectorIcon(kFocusModeLampIcon);
+  tile_->icon_button()->SetFlipCanvasOnPaintForRTLUI(false);
   auto* controller = FocusModeController::Get();
   tile_->SetToggled(controller->in_focus_session());
   UpdateUI(controller->GetSnapshot(base::Time::Now()));

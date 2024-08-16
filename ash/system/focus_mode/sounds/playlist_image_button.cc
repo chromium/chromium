@@ -8,6 +8,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/rounded_rect_cutout_path_builder.h"
+#include "base/i18n/rtl.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -74,17 +75,23 @@ views::ProposedLayout PlaylistImageButton::CalculateProposedLayout(
   layouts.child_layouts.emplace_back(image_view_.get(),
                                      image_view_->GetVisible(), bounds);
 
+  // The cutout on `image_view_` isn't flipped in RTL, so we need to make sure
+  // that the animation and icon are flipped to the correct side.
   layouts.child_layouts.emplace_back(
       lottie_animation_view_.get(), lottie_animation_view_->GetVisible(),
-      gfx::Rect(bounds.right() - kIconSize - kMediaActionIconSpacing,
+      gfx::Rect(base::i18n::IsRTL()
+                    ? kMediaActionIconSpacing
+                    : bounds.right() - kIconSize - kMediaActionIconSpacing,
                 bounds.bottom() - kIconSize - kMediaActionIconSpacing,
                 kIconSize, kIconSize));
 
   layouts.child_layouts.emplace_back(
       selected_curvycutout_icon_.get(),
       selected_curvycutout_icon_->GetVisible(),
-      gfx::Rect(kSelectedCurvycutoutSpacing, kSelectedCurvycutoutSpacing,
-                kIconSize, kIconSize));
+      gfx::Rect(base::i18n::IsRTL()
+                    ? bounds.right() - kIconSize - kSelectedCurvycutoutSpacing
+                    : kSelectedCurvycutoutSpacing,
+                kSelectedCurvycutoutSpacing, kIconSize, kIconSize));
   layouts.host_size =
       gfx::Size(size_bounds.width().value(), size_bounds.height().value());
   return layouts;

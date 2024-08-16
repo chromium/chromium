@@ -249,6 +249,7 @@ FocusModeTaskView::FocusModeTaskView(bool is_network_connected)
                                          ? cros_tokens::kCrosSysSecondary
                                          : cros_tokens::kCrosSysDisabled,
                                      kIconSize));
+  add_task_button_->SetFlipCanvasOnPaintForRTLUI(false);
   add_task_button_->SetFocusBehavior(View::FocusBehavior::NEVER);
   // Ignore `add_task_button_`for accessibility purposes.
   add_task_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kNone);

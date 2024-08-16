@@ -300,7 +300,7 @@ void FocusModeSoundsView::CreateHeader(
     focus_sounds_label->SetText(l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_SOUNDSCAPE_BUTTON));
     focus_sounds_label->SetHorizontalAlignment(
-        gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+        gfx::HorizontalAlignment::ALIGN_LEFT);
     focus_sounds_label->SetEnabledColorId(
         cros_tokens::kCrosSysOnSurfaceVariant);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
