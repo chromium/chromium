@@ -844,11 +844,12 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
   auto container = std::make_unique<views::View>();
   container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  if (starts_with_scroller) {
-    container->AddChildView(std::make_unique<views::Separator>());
-  } else {
-    AddChildView(std::make_unique<views::Separator>());
+  auto separator = std::make_unique<views::Separator>();
+  if (!starts_with_scroller) {
+    separator->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0, 0, kTopBottomPadding, 0)));
   }
+  container->AddChildView(std::move(separator));
   container->AddChildView(std::move(account_scroll_view));
   // If there are both accounts and mismatches, add a separator.
   if (num_account_rows > 0 && num_mismatch_rows > 0) {
