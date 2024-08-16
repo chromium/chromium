@@ -716,6 +716,7 @@ suite('sea pen', () => {
     test(`creates images with inspire ${useInspire}`, async () => {
       const seaPenRouter = await getSeaPenRouter();
       const seaPenTemplateQuery = await getSeaPenTemplateQuery(6);
+
       {
         // Creates images.
         assertTrue(!!seaPenTemplateQuery, 'Characters template should show up');
@@ -782,6 +783,12 @@ suite('sea pen', () => {
                           'sea-pen-recent-wallpapers'),
             'waiting for sea-pen-recent-wallpapers');
         assertTrue(!!recentImages, 'recent images should exist');
+
+        const selectedRecentImage =
+            recentImages.shadowRoot?.querySelector<WallpaperGridItemElement>(
+                'wallpaper-grid-item[aria-selected=true]');
+        assertTrue(
+            !!selectedRecentImage, 'the new recent image should be selected');
 
         const menuButton = recentImages.shadowRoot?.querySelector<
             CrIconButtonElement>(

@@ -163,12 +163,12 @@ suite('SeaPen reducers', () => {
         {image: {url: ''}, id: 456}, seaPenProvider, seaPenStore);
 
     assertDeepEquals(
-        {image: false, attribution: false},
+        {image: true, attribution: true},
         personalizationStore.data.wallpaper.loading.selected,
-        'image and attribution are not loading');
-    assertFalse(
+        'image and attribution are loading');
+    assertTrue(
         personalizationStore.data.wallpaper.seaPen.loading.currentSelected,
-        'seaPen.loading.currentSelected is false');
+        'seaPen.loading.currentSelected is true');
 
     await promise;
 
@@ -273,9 +273,8 @@ suite('SeaPen reducers', () => {
     const promise =
         selectSeaPenThumbnail(thumbnail, seaPenProvider, seaPenStore);
 
-    assertEquals(
-        loadTimeData.getString('seaPenErrorGeneric'),
-        personalizationStore.data.wallpaper.seaPen.error);
+    // Error reset to null while attempting to select again.
+    assertEquals(null, personalizationStore.data.wallpaper.seaPen.error);
 
     await promise;
 

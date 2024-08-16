@@ -271,7 +271,12 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
 
     if (pendingSelected !== null) {
       // User just clicked on a recent image.
-      return id === pendingSelected;
+      if (isSeaPenImageId(pendingSelected)) {
+        return id === pendingSelected;
+      } else {
+        // |pendingSelected| is a SeaPenThumbnail.
+        return id === pendingSelected.id;
+      }
     }
 
     return id === currentSelected;
