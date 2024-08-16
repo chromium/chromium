@@ -739,6 +739,7 @@ class EditorStateMetricsSegmentedByLanguage
   void EnableEnglishFlagsOnly() {
     feature_list_.InitWithFeatures(/*enabled_features=*/{},
                                    /*disabled_features=*/{
+                                       features::kOrcaAfrikaans,
                                        features::kOrcaDanish,
                                        features::kOrcaDutch,
                                        features::kOrcaFinnish,
@@ -747,6 +748,7 @@ class EditorStateMetricsSegmentedByLanguage
                                        features::kOrcaItalian,
                                        features::kOrcaJapanese,
                                        features::kOrcaNorwegian,
+                                       features::kOrcaPolish,
                                        features::kOrcaPortugese,
                                        features::kOrcaSpanish,
                                        features::kOrcaSwedish,
@@ -806,6 +808,8 @@ INSTANTIATE_TEST_SUITE_P(
         {"xkb:it::ita", "InputMethod.Manta.Orca.Italian.States."},
         // Norwegian
         {"xkb:no::nob", "InputMethod.Manta.Orca.Norwegian.States."},
+        // Polish
+        {"xkb:pl::pol", "InputMethod.Manta.Orca.Polish.States."},
         // Portugese
         {"xkb:br::por", "InputMethod.Manta.Orca.Portugese.States."},
         {"xkb:pt::por", "InputMethod.Manta.Orca.Portugese.States."},
@@ -894,6 +898,7 @@ class EditorAuxiliaryMetricsSegmentedByEnglishAndOther
   void EnableEnglishFlagsOnly() {
     feature_list_.InitWithFeatures(/*enabled_features=*/{},
                                    /*disabled_features=*/{
+                                       features::kOrcaAfrikaans,
                                        features::kOrcaDanish,
                                        features::kOrcaDutch,
                                        features::kOrcaFinnish,
@@ -902,6 +907,7 @@ class EditorAuxiliaryMetricsSegmentedByEnglishAndOther
                                        features::kOrcaItalian,
                                        features::kOrcaJapanese,
                                        features::kOrcaNorwegian,
+                                       features::kOrcaPolish,
                                        features::kOrcaPortugese,
                                        features::kOrcaSpanish,
                                        features::kOrcaSwedish,
@@ -965,6 +971,8 @@ INSTANTIATE_TEST_SUITE_P(
         {"xkb:it::ita", "InputMethod.Manta.Orca.Other."},
         // Norwegian
         {"xkb:no::nob", "InputMethod.Manta.Orca.Other."},
+        // Polish
+        {"xkb:pl::pol", "InputMethod.Manta.Orca.Other."},
         // Portugese
         {"xkb:br::por", "InputMethod.Manta.Orca.Other."},
         {"xkb:pt::por", "InputMethod.Manta.Orca.Other."},

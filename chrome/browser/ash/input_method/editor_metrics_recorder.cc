@@ -85,6 +85,8 @@ std::string_view AsString(const EditorOpportunityMode& mode) {
 
 std::string_view AsString(const LanguageCategory& category) {
   switch (category) {
+    case LanguageCategory::kAfrikaans:
+      return "Afrikaans";
     case LanguageCategory::kDanish:
       return "Danish";
     case LanguageCategory::kDutch:
@@ -103,6 +105,8 @@ std::string_view AsString(const LanguageCategory& category) {
       return "Japanese";
     case LanguageCategory::kNorwegian:
       return "Norwegian";
+    case LanguageCategory::kPolish:
+      return "Polish";
     case LanguageCategory::kPortugese:
       return "Portugese";
     case LanguageCategory::kSpanish:
@@ -139,7 +143,8 @@ std::string_view AsEnglishOrOther(const LanguageCategory& category) {
 }
 
 bool IsInternationalizedPathEnabled() {
-  return base::FeatureList::IsEnabled(features::kOrcaDanish) ||
+  return base::FeatureList::IsEnabled(features::kOrcaAfrikaans) ||
+         base::FeatureList::IsEnabled(features::kOrcaDanish) ||
          base::FeatureList::IsEnabled(features::kOrcaDutch) ||
          base::FeatureList::IsEnabled(features::kOrcaFinnish) ||
          base::FeatureList::IsEnabled(features::kOrcaFrench) ||
@@ -147,6 +152,7 @@ bool IsInternationalizedPathEnabled() {
          base::FeatureList::IsEnabled(features::kOrcaItalian) ||
          base::FeatureList::IsEnabled(features::kOrcaJapanese) ||
          base::FeatureList::IsEnabled(features::kOrcaNorwegian) ||
+         base::FeatureList::IsEnabled(features::kOrcaPolish) ||
          base::FeatureList::IsEnabled(features::kOrcaPortugese) ||
          base::FeatureList::IsEnabled(features::kOrcaSpanish) ||
          base::FeatureList::IsEnabled(features::kOrcaSwedish);

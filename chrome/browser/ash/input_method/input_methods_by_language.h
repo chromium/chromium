@@ -11,6 +11,7 @@
 namespace ash::input_method {
 
 enum class LanguageCategory {
+  kAfrikaans,
   kDanish,
   kDutch,
   kFinnish,
@@ -20,11 +21,14 @@ enum class LanguageCategory {
   kItalian,
   kJapanese,
   kNorwegian,
+  kPolish,
   kPortugese,
   kSpanish,
   kSwedish,
   kOther,
 };
+
+const std::vector<std::string>& AfrikaansInputMethods();
 
 const std::vector<std::string>& DanishInputMethods();
 
@@ -43,6 +47,8 @@ const std::vector<std::string>& ItalianInputMethods();
 const std::vector<std::string>& JapaneseInputMethods();
 
 const std::vector<std::string>& NorwegianInputMethods();
+
+const std::vector<std::string>& PolishInputMethods();
 
 const std::vector<std::string>& PortugeseInputMethods();
 

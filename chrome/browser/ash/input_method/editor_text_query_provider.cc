@@ -27,7 +27,8 @@ namespace ash::input_method {
 namespace {
 
 bool IsInternationalizeEnabled() {
-  return base::FeatureList::IsEnabled(features::kOrcaDanish) ||
+  return base::FeatureList::IsEnabled(features::kOrcaAfrikaans) ||
+         base::FeatureList::IsEnabled(features::kOrcaDanish) ||
          base::FeatureList::IsEnabled(features::kOrcaDutch) ||
          base::FeatureList::IsEnabled(features::kOrcaFinnish) ||
          base::FeatureList::IsEnabled(features::kOrcaFrench) ||
@@ -35,6 +36,7 @@ bool IsInternationalizeEnabled() {
          base::FeatureList::IsEnabled(features::kOrcaItalian) ||
          base::FeatureList::IsEnabled(features::kOrcaJapanese) ||
          base::FeatureList::IsEnabled(features::kOrcaNorwegian) ||
+         base::FeatureList::IsEnabled(features::kOrcaPolish) ||
          base::FeatureList::IsEnabled(features::kOrcaPortugese) ||
          base::FeatureList::IsEnabled(features::kOrcaSpanish) ||
          base::FeatureList::IsEnabled(features::kOrcaSwedish);

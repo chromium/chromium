@@ -714,6 +714,8 @@ INSTANTIATE_TEST_SUITE_P(EditorSwitchDefaultFlags,
                              {"xkb:it::ita", EditorMode::kWrite},
                              // Norwegian
                              {"xkb:no::nob", EditorMode::kWrite},
+                             // Polish
+                             {"xkb:pl::pol", EditorMode::kWrite},
                              // Portugese
                              {"xkb:br::por", EditorMode::kWrite},
                              {"xkb:pt::por", EditorMode::kWrite},
@@ -802,6 +804,8 @@ INSTANTIATE_TEST_SUITE_P(EditorSwitchAllFlagsEnabled,
                              {"xkb:it::ita", EditorMode::kWrite},
                              // Norwegian
                              {"xkb:no::nob", EditorMode::kWrite},
+                             // Polish
+                             {"xkb:pl::pol", EditorMode::kWrite},
                              // Portugese
                              {"xkb:br::por", EditorMode::kWrite},
                              {"xkb:pt::por", EditorMode::kWrite},

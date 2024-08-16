@@ -1515,6 +1515,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Write" summary="The editor is in freeform write mode"/>
   </token>
   <token key="Language">
+    <variant name="Afrikaans" summary="Afrikaans input method is enabled"/>
     <variant name="Danish" summary="Danish input method is enabled"/>
     <variant name="Dutch" summary="Dutch input method is enabled"/>
     <variant name="English" summary="English input method is enabled"/>
@@ -1525,6 +1526,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Japanese" summary="Japanese input method is enabled"/>
     <variant name="Norwegian" summary="Norwegian input method is enabled"/>
     <variant name="Other" summary="Other input method is enabled"/>
+    <variant name="Polish" summary="Polish input method is enabled"/>
     <variant name="Portugese" summary="Portugese input method is enabled"/>
     <variant name="Spanish" summary="Spanish input method is enabled"/>
     <variant name="Swedish" summary="Swedish input method is enabled"/>

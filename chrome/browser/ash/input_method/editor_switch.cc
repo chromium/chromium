@@ -54,6 +54,9 @@ constexpr char kImeAllowlistLabel[] = "ime_allowlist";
 std::vector<std::string> AllowedInputMethods() {
   std::vector<std::string> input_methods = EnglishInputMethods();
 
+  if (base::FeatureList::IsEnabled(features::kOrcaAfrikaans)) {
+    base::Extend(input_methods, AfrikaansInputMethods());
+  }
   if (base::FeatureList::IsEnabled(features::kOrcaDanish)) {
     base::Extend(input_methods, DanishInputMethods());
   }
@@ -77,6 +80,9 @@ std::vector<std::string> AllowedInputMethods() {
   }
   if (base::FeatureList::IsEnabled(features::kOrcaNorwegian)) {
     base::Extend(input_methods, NorwegianInputMethods());
+  }
+  if (base::FeatureList::IsEnabled(features::kOrcaPolish)) {
+    base::Extend(input_methods, PolishInputMethods());
   }
   if (base::FeatureList::IsEnabled(features::kOrcaPortugese)) {
     base::Extend(input_methods, PortugeseInputMethods());

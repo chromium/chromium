@@ -2260,6 +2260,9 @@ BASE_FEATURE(kOrcaInternationalizeShorten,
              "OrcaInternationalizeShorten",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables Africaans support for Orca.
+BASE_FEATURE(kOrcaAfrikaans, "OrcaAfrikaans", base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables or disables Danish support for Orca.
 BASE_FEATURE(kOrcaDanish, "OrcaDanish", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2283,6 +2286,9 @@ BASE_FEATURE(kOrcaJapanese, "OrcaJapanese", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Norwegian support for Orca.
 BASE_FEATURE(kOrcaNorwegian, "OrcaNorwegian", base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables or disables Polish support for Orca.
+BASE_FEATURE(kOrcaPolish, "OrcaPolish", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Portugese support for Orca.
 BASE_FEATURE(kOrcaPortugese, "OrcaPortugese", base::FEATURE_ENABLED_BY_DEFAULT);
