@@ -1921,6 +1921,11 @@ targets.legacy_basic_suite(
                 "updater-default-pool",
             ],
         ),
+        "enterprise_companion_integration_tests": targets.legacy_test_config(
+            mixins = [
+                "updater-default-pool",
+            ],
+        ),
     },
 )
 
@@ -1932,6 +1937,11 @@ targets.legacy_basic_suite(
                 "updater-mac-pool",
             ],
         ),
+        "enterprise_companion_integration_tests": targets.legacy_test_config(
+            mixins = [
+                "updater-mac-pool",
+            ],
+        ),
     },
 )
 
@@ -1939,6 +1949,12 @@ targets.legacy_basic_suite(
     name = "enterprise_companion_gtests_win",
     tests = {
         "enterprise_companion_tests": targets.legacy_test_config(
+            mixins = [
+                "integrity_high",
+                "updater-default-pool",
+            ],
+        ),
+        "enterprise_companion_integration_tests": targets.legacy_test_config(
             mixins = [
                 "integrity_high",
                 "updater-default-pool",

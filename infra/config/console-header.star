@@ -181,6 +181,11 @@ HEADER = headers.header(
                     alt = "Chromium Dawn console",
                 ),
                 headers.link(
+                    text = "enterprise companion",
+                    url = "/p/{}/g/chromium.enterprise_companion".format(settings.project),
+                    alt = "Chromium Enterprise Companion App console",
+                ),
+                headers.link(
                     text = "flakiness",
                     url = "/p/{}/g/chromium.flakiness".format(settings.project),
                     alt = "Chromium Flakiness console",

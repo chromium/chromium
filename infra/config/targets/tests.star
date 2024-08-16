@@ -808,6 +808,10 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "enterprise_companion_integration_tests",
+)
+
+targets.tests.gtest_test(
     name = "enterprise_companion_tests",
 )
 

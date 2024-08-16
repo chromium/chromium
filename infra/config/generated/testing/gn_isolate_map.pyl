@@ -735,6 +735,13 @@
     "label": "//testing:empty_main",
     "type": "additional_compile_target",
   },
+  "enterprise_companion_integration_tests": {
+    "label": "//chrome/enterprise_companion:enterprise_companion_integration_tests",
+    "type": "console_test_launcher",
+    "args": [
+      "--gtest_shuffle",
+    ],
+  },
   "enterprise_companion_tests": {
     "label": "//chrome/enterprise_companion:enterprise_companion_tests",
     "type": "console_test_launcher",

@@ -590,6 +590,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "enterprise_companion",
+    args = {
+        "enable_enterprise_companion": True,
+    },
+)
+
+gn_args.config(
     name = "extended_tracing",
     args = {
         "extended_tracing_enabled": True,
