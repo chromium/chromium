@@ -72,9 +72,10 @@ void EmptyTrashIOTask::Execute(IOTask::ProgressCallback /*progress_callback*/,
     VLOG(1) << "Removing " << entry.url.path();
 
     // Double-check the path to delete.
-    CHECK(dir.IsAbsolute()) << dir;
-    CHECK(!dir.ReferencesParent()) << dir;
-    CHECK_EQ(dir.BaseName().value(), trash::kTrashFolderName) << dir;
+    CHECK(dir.IsAbsolute()) << " for " << dir;
+    CHECK(!dir.ReferencesParent()) << " for " << dir;
+    CHECK(dir.BaseName().value().starts_with(trash::kTrashFolderName))
+        << " for " << dir;
 
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
