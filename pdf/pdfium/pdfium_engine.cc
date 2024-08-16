@@ -1018,18 +1018,19 @@ void PDFiumEngine::PrintBegin() {
 }
 
 std::vector<uint8_t> PDFiumEngine::PrintPages(
-    const std::vector<int>& page_numbers,
+    const std::vector<int>& page_indices,
     const blink::WebPrintParams& print_params) {
-  if (page_numbers.empty())
+  if (page_indices.empty()) {
     return std::vector<uint8_t>();
+  }
 
   return print_params.rasterize_pdf
-             ? PrintPagesAsRasterPdf(page_numbers, print_params)
-             : PrintPagesAsPdf(page_numbers, print_params);
+             ? PrintPagesAsRasterPdf(page_indices, print_params)
+             : PrintPagesAsPdf(page_indices, print_params);
 }
 
 std::vector<uint8_t> PDFiumEngine::PrintPagesAsRasterPdf(
-    const std::vector<int>& page_numbers,
+    const std::vector<int>& page_indices,
     const blink::WebPrintParams& print_params) {
   DCHECK(HasPermission(DocumentPermission::kPrintLowQuality));
 
@@ -1039,24 +1040,25 @@ std::vector<uint8_t> PDFiumEngine::PrintPagesAsRasterPdf(
 
   KillFormFocus();
 
-  return print_.PrintPagesAsPdf(page_numbers, print_params);
+  return print_.PrintPagesAsPdf(page_indices, print_params);
 }
 
 std::vector<uint8_t> PDFiumEngine::PrintPagesAsPdf(
-    const std::vector<int>& page_numbers,
+    const std::vector<int>& page_indices,
     const blink::WebPrintParams& print_params) {
   DCHECK(HasPermission(DocumentPermission::kPrintHighQuality));
   DCHECK(doc());
 
   KillFormFocus();
 
-  for (int page_number : page_numbers) {
-    pages_[page_number]->GetPage();
-    if (!IsPageVisible(page_number))
-      pages_[page_number]->Unload();
+  for (int page_index : page_indices) {
+    pages_[page_index]->GetPage();
+    if (!IsPageVisible(page_index)) {
+      pages_[page_index]->Unload();
+    }
   }
 
-  return print_.PrintPagesAsPdf(page_numbers, print_params);
+  return print_.PrintPagesAsPdf(page_indices, print_params);
 }
 
 void PDFiumEngine::KillFormFocus() {

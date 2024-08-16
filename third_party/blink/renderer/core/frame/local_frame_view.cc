@@ -3941,11 +3941,11 @@ void LocalFrameView::PaintFrame(GraphicsContext& context,
 }
 
 void LocalFrameView::PrintPage(GraphicsContext& context,
-                               wtf_size_t page_number,
+                               wtf_size_t page_index,
                                const CullRect& cull_rect) {
   DCHECK(GetFrame().GetDocument()->Printing());
   if (pagination_state_) {
-    pagination_state_->SetCurrentPageNumber(page_number);
+    pagination_state_->SetCurrentPageIndex(page_index);
   }
   const PaintFlags flags =
       PaintFlag::kOmitCompositingInfo | PaintFlag::kAddUrlMetadata;

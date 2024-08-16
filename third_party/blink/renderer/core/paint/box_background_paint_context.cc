@@ -110,10 +110,10 @@ BoxBackgroundPaintContext::BoxBackgroundPaintContext(
     positioning_size_override_ = view->RootBox().Size();
 
     // Calculate the offset into the background image for the current page.
-    wtf_size_t page_number =
-        view->GetFrameView()->GetPaginationState()->CurrentPageNumber();
+    wtf_size_t page_index =
+        view->GetFrameView()->GetPaginationState()->CurrentPageIndex();
     element_positioning_area_offset_ =
-        StitchedPageContentRect(*view, page_number).offset;
+        StitchedPageContentRect(*view, page_index).offset;
   } else if (fragment.IsTable()) {
     auto stitched_background_rect = ComputeStitchedTableGridRect(fragment);
     positioning_size_override_ = stitched_background_rect.size;

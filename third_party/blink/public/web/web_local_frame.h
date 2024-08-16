@@ -788,7 +788,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual bool WillPrintSoon() = 0;
 
   // Prints one page.
-  virtual void PrintPage(uint32_t page_to_print, cc::PaintCanvas*) = 0;
+  virtual void PrintPage(uint32_t page_index, cc::PaintCanvas*) = 0;
 
   // Reformats the WebFrame for screen display.
   virtual void PrintEnd() = 0;

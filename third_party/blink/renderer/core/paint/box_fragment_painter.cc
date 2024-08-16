@@ -827,8 +827,8 @@ void BoxFragmentPainter::PaintBlockChildren(const PaintInfo& paint_info,
   if (box_fragment_.IsPaginatedRoot()) {
     const PaginationState* pagination_state =
         box_fragment_.GetDocument().View()->GetPaginationState();
-    wtf_size_t page_number = pagination_state->CurrentPageNumber();
-    const auto& page_box = box_fragment_.Children()[page_number];
+    wtf_size_t page_index = pagination_state->CurrentPageIndex();
+    const auto& page_box = box_fragment_.Children()[page_index];
 
     // The correct page box fragment for the given page has been selected, and
     // that's all that's going to be painted now. The cull rect used during

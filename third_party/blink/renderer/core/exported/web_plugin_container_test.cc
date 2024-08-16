@@ -154,7 +154,7 @@ class TestPlugin : public FakeWebPlugin {
   bool CanCopy() const override;
   bool SupportsPaginatedPrint() override { return true; }
   int PrintBegin(const WebPrintParams& print_params) override { return 1; }
-  void PrintPage(int page_number, cc::PaintCanvas*) override;
+  void PrintPage(int page_index, cc::PaintCanvas* canvas) override;
 
  private:
   ~TestPlugin() override = default;
@@ -253,7 +253,7 @@ bool TestPlugin::CanCopy() const {
   return test_client_->CanCopy();
 }
 
-void TestPlugin::PrintPage(int page_number, cc::PaintCanvas* canvas) {
+void TestPlugin::PrintPage(int page_index, cc::PaintCanvas* canvas) {
   DCHECK(test_client_);
   test_client_->OnPrintPage();
 }

@@ -649,7 +649,7 @@ int PdfViewWebPlugin::PrintBegin(const blink::WebPrintParams& print_params) {
   return ret;
 }
 
-void PdfViewWebPlugin::PrintPage(int page_number, cc::PaintCanvas* canvas) {
+void PdfViewWebPlugin::PrintPage(int page_index, cc::PaintCanvas* canvas) {
   // The entire document goes into one metafile. However, it is impossible to
   // know if a call to `PrintPage()` is the last call. Thus, `PrintPage()` just
   // stores the pages to print and the metafile. Eventually, the printed output
@@ -668,7 +668,7 @@ void PdfViewWebPlugin::PrintPage(int page_number, cc::PaintCanvas* canvas) {
   if (!printing_metafile_)
     printing_metafile_ = metafile;
 
-  pages_to_print_.push_back(page_number);
+  pages_to_print_.push_back(page_index);
 }
 
 void PdfViewWebPlugin::PrintEnd() {

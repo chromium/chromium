@@ -73,10 +73,10 @@ wtf_size_t PrintContext::PageCount() const {
   return ::blink::PageCount(*frame_->GetDocument()->GetLayoutView());
 }
 
-gfx::Rect PrintContext::PageRect(wtf_size_t page_number) const {
+gfx::Rect PrintContext::PageRect(wtf_size_t page_index) const {
   CHECK(IsFrameValid());
   DCHECK(is_printing_);
-  DCHECK_LT(page_number, PageCount());
+  DCHECK_LT(page_index, PageCount());
   const LayoutView& layout_view = *frame_->GetDocument()->GetLayoutView();
 
   if (!use_paginated_layout_) {
@@ -85,8 +85,7 @@ gfx::Rect PrintContext::PageRect(wtf_size_t page_number) const {
     return ToPixelSnappedRect(layout_view.DocumentRect());
   }
 
-  PhysicalRect physical_rect =
-      StitchedPageContentRect(layout_view, page_number);
+  PhysicalRect physical_rect = StitchedPageContentRect(layout_view, page_index);
   gfx::Rect page_rect = ToEnclosingRect(physical_rect);
 
   // There's code to avoid fractional page sizes, so we shouldn't have to worry

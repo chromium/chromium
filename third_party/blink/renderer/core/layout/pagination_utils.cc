@@ -290,15 +290,15 @@ wtf_size_t PageCount(const LayoutView& view) {
 }
 
 const PhysicalBoxFragment* GetPageContainer(const LayoutView& view,
-                                            wtf_size_t page_number) {
+                                            wtf_size_t page_index) {
   if (!view.PhysicalFragmentCount()) {
     return nullptr;
   }
   const auto& pages = view.GetPhysicalFragment(0)->Children();
-  if (page_number >= pages.size()) {
+  if (page_index >= pages.size()) {
     return nullptr;
   }
-  const auto* child = To<PhysicalBoxFragment>(pages[page_number].get());
+  const auto* child = To<PhysicalBoxFragment>(pages[page_index].get());
   if (child->GetBoxType() != PhysicalFragment::kPageContainer) {
     // Not paginated, at least not yet.
     return nullptr;
@@ -307,8 +307,8 @@ const PhysicalBoxFragment* GetPageContainer(const LayoutView& view,
 }
 
 const PhysicalBoxFragment* GetPageArea(const LayoutView& view,
-                                       wtf_size_t page_number) {
-  const auto* page_container = GetPageContainer(view, page_number);
+                                       wtf_size_t page_index) {
+  const auto* page_container = GetPageContainer(view, page_index);
   if (!page_container) {
     return nullptr;
   }
@@ -343,8 +343,8 @@ const PhysicalBoxFragment& GetPageArea(
 }
 
 PhysicalRect StitchedPageContentRect(const LayoutView& layout_view,
-                                     wtf_size_t page_number) {
-  return StitchedPageContentRect(*GetPageContainer(layout_view, page_number));
+                                     wtf_size_t page_index) {
+  return StitchedPageContentRect(*GetPageContainer(layout_view, page_index));
 }
 
 PhysicalRect StitchedPageContentRect(

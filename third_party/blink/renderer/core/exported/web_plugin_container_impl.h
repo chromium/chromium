@@ -160,10 +160,9 @@ class CORE_EXPORT WebPluginContainerImpl final
   bool GetPrintPresetOptionsFromDocument(WebPrintPresetOptions*) const;
   // Sets up printing at the specified WebPrintParams. Returns the number of
   // pages to be printed at these settings.
-  int PrintBegin(const WebPrintParams&) const;
-  // Prints the page specified by pageNumber (0-based index) into the supplied
-  // canvas.
-  void PrintPage(int page_number, GraphicsContext&);
+  int PrintBegin(const WebPrintParams& print_params) const;
+  // Prints the page specified by `page_index`  into the supplied canvas.
+  void PrintPage(int page_index, GraphicsContext& gc);
   // Ends the print operation.
   void PrintEnd();
 

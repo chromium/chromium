@@ -155,9 +155,9 @@ class WebPlugin {
   // A returned value of 0 indicates failure.
   virtual int PrintBegin(const WebPrintParams& print_params) { return 0; }
 
-  // Prints the page specified by `page_number`, using the parameters passed to
+  // Prints the page specified by `page_index`, using the parameters passed to
   // `PrintBegin()`, into `canvas`.
-  virtual void PrintPage(int page_number, cc::PaintCanvas* canvas) {}
+  virtual void PrintPage(int page_index, cc::PaintCanvas* canvas) {}
 
   // Ends the print session. Further calls to `PrintPages()` will fail.
   virtual void PrintEnd() {}

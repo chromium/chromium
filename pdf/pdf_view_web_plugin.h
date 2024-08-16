@@ -270,7 +270,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   bool GetPrintPresetOptionsFromDocument(
       blink::WebPrintPresetOptions* print_preset_options) override;
   int PrintBegin(const blink::WebPrintParams& print_params) override;
-  void PrintPage(int page_number, cc::PaintCanvas* canvas) override;
+  void PrintPage(int page_index, cc::PaintCanvas* canvas) override;
   void PrintEnd() override;
   bool HasSelection() const override;
   blink::WebString SelectionAsText() const override;
