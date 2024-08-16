@@ -2174,6 +2174,11 @@ BASE_FEATURE(kFeatureManagementOobeAiIntro,
              "FeatureManagementOobeAiIntro",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables OOBE gemini intro feature for testing.
+BASE_FEATURE(kOobeGeminiIntroForTesting,
+             "OobeGeminiIntroForTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables OOBE gemini intro feature.
 BASE_FEATURE(kFeatureManagementOobeGeminiIntro,
              "FeatureManagementOobeGeminiIntro",
@@ -4306,7 +4311,8 @@ bool IsOobeAiIntroEnabled() {
 }
 
 bool IsOobeGeminiIntroEnabled() {
-  return base::FeatureList::IsEnabled(kFeatureManagementOobeGeminiIntro);
+  return base::FeatureList::IsEnabled(kOobeGeminiIntroForTesting) ||
+         base::FeatureList::IsEnabled(kFeatureManagementOobeGeminiIntro);
 }
 
 bool IsOobeJellyModalEnabled() {
