@@ -467,11 +467,16 @@ void FilePathWatcherFSEvents::DispatchEvents(
       continue;
     }
 
-    // The `kFSEventStreamEventFlagItemInodeMetaMod` flag is the only signal
-    // we currently have for a given batch of event flags to determine if the
-    // contents of a file have been modified. This flag does not appear in the
-    // scenario of a new file write, which is reported as 'created'.
-    if (event_flags & kFSEventStreamEventFlagItemInodeMetaMod) {
+    // When both the `kFSEventStreamEventFlagItemInodeMetaMod` and
+    // `kFSEventStreamEventFlagItemModified` flags are present, this is a signal
+    // that the contents of a file have been modified. This takes precedence
+    // over reporting a 'create' event, given that it's possible for the
+    // `kFSEventStreamEventFlagItemCreated` flag to be reported in the same
+    // `event_flags` batch as both of the
+    // `kFSEventStreamEventFlagItemInodeMetaMod` and
+    // `kFSEventStreamEventFlagItemModified` flags.
+    if ((event_flags & kFSEventStreamEventFlagItemInodeMetaMod) &&
+        (event_flags & kFSEventStreamEventFlagItemModified)) {
       FilePathWatcher::ChangeInfo change_info = {
           file_path_type, FilePathWatcher::ChangeType::kModified, event_path};
       callback_.Run(std::move(change_info),
@@ -480,6 +485,12 @@ void FilePathWatcherFSEvents::DispatchEvents(
       continue;
     }
 
+    // The `kFSEventStreamEventFlagItemCreated` flag signals a create event.
+    // The `kFSEventStreamEventFlagItemCreated` flag takes precedence over the
+    // `kFSEventStreamEventFlagItemModified` flag, in the scenario that both the
+    // `kFSEventStreamEventFlagItemCreated` and the
+    // `kFSEventStreamEventFlagItemModified` flag are present in the same batch
+    // of `event_flags`.
     if (event_flags & kFSEventStreamEventFlagItemCreated) {
       FilePathWatcher::ChangeInfo change_info = {
           file_path_type, FilePathWatcher::ChangeType::kCreated, event_path};
@@ -489,6 +500,8 @@ void FilePathWatcherFSEvents::DispatchEvents(
       continue;
     }
 
+    // Otherwise, if the `kFSEventStreamEventFlagItemModified` flag is present,
+    // report a 'modified' event.
     if (event_flags & kFSEventStreamEventFlagItemModified) {
       FilePathWatcher::ChangeInfo change_info = {
           file_path_type, FilePathWatcher::ChangeType::kModified, event_path};
