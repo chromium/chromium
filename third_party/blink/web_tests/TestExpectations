@@ -8031,3 +8031,6 @@ crbug.com/359519774 [ Debug Linux ] external/wpt/webdriver/tests/bidi/input/perf
 crbug.com/359628062 [ Mac12 ] virtual/view-transition-on-navigation/external/wpt/css/css-view-transitions/navigation/mismatched-snapshot-containing-block-size-skips.html [ Failure Pass ]
 crbug.com/359824074 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/parallel-dispatch.https.any.html?gpu [ Failure Pass ]
 crbug.com/359824074 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/parallel-dispatch.https.any.worker.html?gpu [ Failure Pass ]
+
+# Gardener 2024-08-15
+crbug.com/360163253 [ Debug Linux ] virtual/threaded/wpt_internal/scheduler/integration_tests/prioritize-rendering-after-input-click.html [ Failure ]
