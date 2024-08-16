@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.password_manager.settings;
+package org.chromium.chrome.browser.password_manager;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,6 +11,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
+import org.chromium.chrome.browser.password_manager.settings.PasswordListObserver;
+import org.chromium.chrome.browser.password_manager.settings.PasswordManagerHandler;
+import org.chromium.chrome.browser.password_manager.settings.SavedPasswordEntry;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.util.ArrayList;
@@ -42,7 +45,7 @@ public final class FakePasswordManagerHandler implements PasswordManagerHandler 
         mSavedPasswords = savedPasswords;
     }
 
-    void setSavedPasswordExceptions(ArrayList<String> savedPasswordExceptions) {
+    public void setSavedPasswordExceptions(ArrayList<String> savedPasswordExceptions) {
         mSavedPasswordExeptions = savedPasswordExceptions;
     }
 
@@ -50,15 +53,15 @@ public final class FakePasswordManagerHandler implements PasswordManagerHandler 
         return mExportSuccessCallback;
     }
 
-    Callback<String> getExportErrorCallback() {
+    public Callback<String> getExportErrorCallback() {
         return mExportErrorCallback;
     }
 
-    String getExportTargetPath() {
+    public String getExportTargetPath() {
         return mExportTargetPath;
     }
 
-    boolean wasShowWarningCalled() {
+    public boolean wasShowWarningCalled() {
         return mShowWarningWasCalled;
     }
 

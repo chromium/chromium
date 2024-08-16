@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING;
 import static org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.logPasswordsExportResult;
 
@@ -23,10 +24,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.chrome.browser.password_manager.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.HistogramExportResult;
+import org.chromium.chrome.browser.password_manager.R;
 import org.chromium.ui.widget.Toast;
 
 import java.io.File;
@@ -335,12 +336,23 @@ public class ExportFlow implements ExportFlowInterface {
     }
 
     /**
-     * Continues with the password export flow after the user successfully reauthenticated.
-     * Current state of export flow: the user tapped the menu item for export and passed
-     * reauthentication. The next steps are: confirming the export, waiting for exported data (if
-     * needed) and choosing a consumer app for the data.
+     * Continues with the password export flow after the user successfully reauthenticated. Current
+     * state of export flow: the user tapped the menu item for export and passed reauthentication.
+     * The next steps are: confirming the export, waiting for exported data (if needed) and choosing
+     * a consumer app for the data.
      */
     private void exportAfterReauth() {
+        // Don't show the export warning here in the access loss exporting flow because it's
+        // slightly different from others:
+        // - The dialog proposing to export is shown before the start of export flow.
+        // - Exporting should be immediately started after reauthentication.
+        if (ChromeFeatureList.isEnabled(
+                UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
+            mExportState = ExportState.CONFIRMED;
+            tryExporting();
+            return;
+        }
+
         assert mExportWarningDialogFragment == null;
         mExportWarningDialogFragment = new ExportWarningDialogFragment();
         mExportWarningDialogFragment.setExportWarningHandler(
@@ -436,10 +448,11 @@ public class ExportFlow implements ExportFlowInterface {
 
     /**
      * Call this to abort the export UI flow and display an error description to the user.
+     *
      * @param descriptionId The resource ID of a string with a brief explanation of the error.
      * @param detailedDescription An optional string with more technical details about the error.
      * @param positiveButtonLabelId The resource ID of the label of the positive button in the error
-     * dialog.
+     *     dialog.
      */
     @VisibleForTesting
     void showExportErrorAndAbort(
@@ -539,7 +552,9 @@ public class ExportFlow implements ExportFlowInterface {
         // With UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING feature on, offer to save the
         // exported passwords on disk. Otherwise offer to share the passwords with a chosen Android
         // app.
-        if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)) {
+        if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
+                || ChromeFeatureList.isEnabled(
+                        UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
             runCreateFileOnDiskIntent();
         } else {
             runSharePasswordsIntent();

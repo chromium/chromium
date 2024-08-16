@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
-import org.chromium.chrome.browser.password_manager.settings.PasswordAccessLossExportDialogFragment;
+import org.chromium.chrome.browser.password_manager.settings.PasswordAccessLossExportDialogCoordinator;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
@@ -462,9 +462,7 @@ public class PasswordManagerHelper {
         FragmentActivity activity = (FragmentActivity) ContextUtils.activityFromContext(context);
         assert activity != null : "Context is expected to be a fragment activity";
 
-        PasswordAccessLossExportDialogFragment fragment =
-                new PasswordAccessLossExportDialogFragment();
-        fragment.show(activity.getSupportFragmentManager(), null);
+        new PasswordAccessLossExportDialogCoordinator(activity, mProfile).showExportDialog();
     }
 
     @VisibleForTesting

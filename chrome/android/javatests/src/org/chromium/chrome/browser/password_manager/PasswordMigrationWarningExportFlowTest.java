@@ -57,7 +57,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.HistogramExportResult;
 import org.chromium.chrome.browser.password_manager.settings.ExportFlow;
-import org.chromium.chrome.browser.password_manager.settings.FakePasswordManagerHandler;
 import org.chromium.chrome.browser.password_manager.settings.ManualCallbackDelayer;
 import org.chromium.chrome.browser.password_manager.settings.PasswordListObserver;
 import org.chromium.chrome.browser.password_manager.settings.PasswordManagerHandlerProvider;
