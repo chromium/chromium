@@ -101,6 +101,10 @@ class CaptureModeBehavior {
   virtual std::vector<message_center::ButtonInfo> GetNotificationButtonsInfo(
       bool for_video) const;
 
+  // Returns the text to be shown by the capture label during waiting to select
+  // a capture region phase.
+  virtual const std::u16string GetCaptureLabelRegionText() const;
+
   // Creates the capture mode bar view, which might look different depending on
   // the actual type of the behavior.
   virtual std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView();

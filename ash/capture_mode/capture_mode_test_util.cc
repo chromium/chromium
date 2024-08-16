@@ -42,6 +42,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -407,6 +408,24 @@ size_t WaitForCameraAvailabilityWithTimeout(base::TimeDelta time_out) {
       }));
   run_loop.Run();
   return available_camera_num;
+}
+
+void SelectCaptureModeRegion(ui::test::EventGenerator* event_generator,
+                             const gfx::Rect& region_in_screen,
+                             bool release_mouse) {
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller->IsActive());
+  ASSERT_EQ(CaptureModeSource::kRegion, controller->source());
+  event_generator->set_current_screen_location(region_in_screen.origin());
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(region_in_screen.bottom_right());
+  if (release_mouse) {
+    event_generator->ReleaseLeftButton();
+  }
+  auto capture_region_in_root = region_in_screen;
+  wm::ConvertRectFromScreen(controller->capture_mode_session()->current_root(),
+                            &capture_region_in_root);
+  EXPECT_EQ(capture_region_in_root, controller->user_capture_region());
 }
 
 // -----------------------------------------------------------------------------

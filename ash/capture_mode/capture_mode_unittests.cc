@@ -284,20 +284,8 @@ class CaptureModeTest : public AshTestBase {
   // Select a region by pressing and dragging the mouse.
   void SelectRegion(const gfx::Rect& region_in_screen,
                     bool release_mouse = true) {
-    auto* controller = CaptureModeController::Get();
-    ASSERT_TRUE(controller->IsActive());
-    ASSERT_EQ(CaptureModeSource::kRegion, controller->source());
-    auto* event_generator = GetEventGenerator();
-    event_generator->set_current_screen_location(region_in_screen.origin());
-    event_generator->PressLeftButton();
-    event_generator->MoveMouseTo(region_in_screen.bottom_right());
-    if (release_mouse)
-      event_generator->ReleaseLeftButton();
-    auto capture_region_in_root = region_in_screen;
-    wm::ConvertRectFromScreen(
-        controller->capture_mode_session()->current_root(),
-        &capture_region_in_root);
-    EXPECT_EQ(capture_region_in_root, controller->user_capture_region());
+    SelectCaptureModeRegion(GetEventGenerator(), region_in_screen,
+                            release_mouse);
   }
 
   void WaitForSessionToEnd() {

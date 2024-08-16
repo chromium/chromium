@@ -314,6 +314,11 @@ class SunfishBehavior : public CaptureModeBehavior {
   SunfishBehavior(const SunfishBehavior&) = delete;
   SunfishBehavior& operator=(const SunfishBehavior&) = delete;
   ~SunfishBehavior() override = default;
+
+  // CaptureModeBehavior:
+  const std::u16string GetCaptureLabelRegionText() const override {
+    return l10n_util::GetStringUTF16(IDS_ASH_SUNFISH_CAPTURE_LABEL);
+  }
 };
 
 }  // namespace
@@ -457,6 +462,15 @@ CaptureModeBehavior::GetNotificationButtonsInfo(bool for_video) const {
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE));
 
   return buttons_info;
+}
+
+const std::u16string CaptureModeBehavior::GetCaptureLabelRegionText() const {
+  CaptureModeController* controller = CaptureModeController::Get();
+  DCHECK(controller->user_capture_region().IsEmpty());
+  return l10n_util::GetStringUTF16(
+      controller->type() == CaptureModeType::kImage
+          ? IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_IMAGE_CAPTURE
+          : IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_VIDEO_RECORD);
 }
 
 std::unique_ptr<CaptureModeBarView>
