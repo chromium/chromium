@@ -68,7 +68,7 @@ struct TrashLocation {
 
   // For some trash directories, the restore path requires a prefix to ensure
   // restoration is done correctly. This is used in Crostini to denote the
-  // user's local directory and in Downloads to prefix the reestoration path
+  // user's local directory and in Downloads to prefix the restoration path
   // with /Downloads as MyFiles and Downloads share the same mount point. This
   // prefix is prepended to the restore path when creating out the .trashinfo
   // file.
