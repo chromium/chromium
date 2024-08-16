@@ -4621,7 +4621,7 @@ deps = {
 
   'src/components/accessibility/internal': {
       'url': Var('chrome_git') + '/chrome-accessibility.git' + '@' +
-        'f9ed9282b0483b118c2d4b25bcb9290b3414321a',
+        'ecd750e333640c29bc0228ea55a9234693e327c6',
       'condition': 'checkout_src_internal',
   },
 
