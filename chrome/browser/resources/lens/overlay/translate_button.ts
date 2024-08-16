@@ -59,15 +59,15 @@ export class TranslateButtonElement extends PolymerElement {
       },
       shouldShowStarsIcon: {
         type: Boolean,
-        computed: 'computeShouldShowStarsIcon(sourceLanguageDisplayName)',
+        computed: 'computeShouldShowStarsIcon(sourceLanguage)',
         reflectToAttribute: true,
       },
-      sourceLanguageDisplayName: String,
+      sourceLanguage: Object,
       sourceLanguageMenuVisible: {
         type: Boolean,
         reflectToAttribute: true,
       },
-      targetLanguageDisplayName: String,
+      targetLanguage: Object,
       targetLanguageMenuVisible: {
         type: Boolean,
         reflectToAttribute: true,
@@ -79,15 +79,15 @@ export class TranslateButtonElement extends PolymerElement {
   private isTranslateModeEnabled: boolean = false;
   // Whether the stars icon is visible on the source language button.
   private shouldShowStarsIcon: boolean;
-  // The display name of the source translate language.
-  private sourceLanguageDisplayName: string =
-      loadTimeData.getString('autoDetect');
+  // The currently selected source language to translate to. If null, we should
+  // auto detect the language.
+  private sourceLanguage: chrome.languageSettingsPrivate.Language|null = null;
+  // The currently selected target language to translate to.
+  private targetLanguage: chrome.languageSettingsPrivate.Language;
   // Whether the source language menu picker is visible.
   private sourceLanguageMenuVisible: boolean = false;
   // Whether the target language menu picker is visible.
   private targetLanguageMenuVisible: boolean = false;
-  // The display name of the target translate language.
-  private targetLanguageDisplayName: string = '';
   // The list of target languages provided by the chrome API.
   private translateLanguageList: chrome.languageSettingsPrivate.Language[];
   private languageBrowserProxy: LanguageBrowserProxy =
@@ -116,11 +116,11 @@ export class TranslateButtonElement extends PolymerElement {
     const defaultLanguage = this.translateLanguageList.find(
         language => language.code === languageCode);
     assert(defaultLanguage);
-    this.targetLanguageDisplayName = defaultLanguage.displayName;
+    this.targetLanguage = defaultLanguage;
   }
 
   private onAutoDetectMenuItemClick() {
-    this.sourceLanguageDisplayName = loadTimeData.getString('autoDetect');
+    this.sourceLanguage = null;
     this.hideLanguagePickerMenus();
   }
 
@@ -138,7 +138,7 @@ export class TranslateButtonElement extends PolymerElement {
     assertInstanceof(event.target, HTMLElement);
     const newSourceLanguage =
         this.$.sourceLanguagePickerContainer.itemForElement(event.target);
-    this.sourceLanguageDisplayName = newSourceLanguage.displayName;
+    this.sourceLanguage = newSourceLanguage;
     this.hideLanguagePickerMenus();
   }
 
@@ -146,7 +146,7 @@ export class TranslateButtonElement extends PolymerElement {
     assertInstanceof(event.target, HTMLElement);
     const newTargetLanguage =
         this.$.targetLanguagePickerContainer.itemForElement(event.target);
-    this.targetLanguageDisplayName = newTargetLanguage.displayName;
+    this.targetLanguage = newTargetLanguage;
     this.hideLanguagePickerMenus();
   }
 
@@ -160,9 +160,16 @@ export class TranslateButtonElement extends PolymerElement {
     this.sourceLanguageMenuVisible = false;
   }
 
+  private getSourceLanguageDisplayName(): string {
+    if (this.sourceLanguage) {
+      return this.sourceLanguage.displayName;
+    }
+
+    return loadTimeData.getString('autoDetect');
+  }
+
   private computeShouldShowStarsIcon(): boolean {
-    return this.sourceLanguageDisplayName ===
-        loadTimeData.getString('autoDetect');
+    return this.sourceLanguage === null;
   }
 }
 

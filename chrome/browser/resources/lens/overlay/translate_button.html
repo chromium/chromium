@@ -173,7 +173,8 @@
       on-click="onSourceLanguageButtonClick">
       <span id="starsIcon" slot="prefix-icon"></span>
       <span id="sourceLanguageLabel"
-        class="button-label language-picker-label">[[sourceLanguageDisplayName]]
+        class="button-label language-picker-label">
+        [[getSourceLanguageDisplayName(sourceLanguage)]]
       </span>
     </cr-button>
     <div id="sourceLanguagePickerMenu" class="language-picker-menu" role="menu"
@@ -195,7 +196,7 @@
     <cr-button id="targetLanguageButton" class="button language-picker-button"
       on-click="onTargetLanguageButtonClick">
       <span id="targetLanguageLabel" class="button-label language-picker-label">
-        [[targetLanguageDisplayName]]
+        [[targetLanguage.displayName]]
       </span>
     </cr-button>
     <div id="targetLanguagePickerMenu" class="language-picker-menu" role="menu"
