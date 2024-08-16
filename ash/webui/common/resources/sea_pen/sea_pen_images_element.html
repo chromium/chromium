@@ -141,6 +141,7 @@
   }
 
   #historyTooltip {
+    --iron-icon-fill-color: var(--cros-sys-secondary);
     --iron-icon-stroke-color: var(--cros-sys-secondary);
     --iron-icon-width: 16px;
     height: 24px;
@@ -149,6 +150,9 @@
 
   .query-history.wallpaper-collections-heading {
     height: auto;
+    margin: 6px 10px;
+    overflow: hidden;
+    padding: 0;
   }
 </style>
 <template is="dom-if" if="[[showError_]]" restamp>
