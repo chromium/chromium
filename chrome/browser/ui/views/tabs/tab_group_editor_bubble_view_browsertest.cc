@@ -26,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/test/button_test_api.h"
 
 class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
@@ -134,9 +135,21 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest, Ungroup) {
   histogram_tester.ExpectTotalCount("TabGroups.TabGroupBubble.TabCount", 0);
 }
 
+class TabGroupEditorBubbleViewDialogV2DisabledBrowserTest
+    : public TabGroupEditorBubbleViewDialogBrowserTest {
+ public:
+  TabGroupEditorBubbleViewDialogV2DisabledBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {tab_groups::kTabGroupsSaveUIUpdate, tab_groups::kTabGroupsSaveV2});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Verify that when a group that holds all of the tabs in a window is closing
 // does not close the browser. Instead it should create a new tab.
-IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogV2DisabledBrowserTest,
                        ClosingLastGroupInBrowserSpawnsNewTab) {
   ShowUi("SetUp");
 
@@ -225,7 +238,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
       views::Button::AsButton(editor_bubble->GetContentsView()->GetViewByID(
           TabGroupEditorBubbleView::
               TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW));
-  EXPECT_EQ(nullptr, move_group_button);
+  EXPECT_NE(nullptr, move_group_button);
+  EXPECT_FALSE(move_group_button->GetVisible());
 }
 
 class TabGroupEditorBubbleViewDialogBrowserTestWithFreezingEnabled
