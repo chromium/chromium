@@ -886,8 +886,16 @@ class SnapshotBuild(ArchiveBuildWithCommitPosition):
     return self._get_listing_url()
 
   def get_download_url(self, revision):
+    archive_name = self.archive_name
+    # `archive_name` was changed for chromeos, win and win64 at revision 591483
+    # This is patched for backward compatibility.
+    if revision < 591483:
+      if self.platform == 'chromeos':
+        archive_name = 'chrome-linux.zip'
+      elif self.platform in ('win', 'win64'):
+        archive_name = 'chrome-win32.zip'
     return '%s/%s%s/%s' % (self.base_url, self.listing_platform_dir, revision,
-                           self.archive_name)
+                           archive_name)
 
 
 class ASANBuild(SnapshotBuild):
