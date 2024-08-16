@@ -235,6 +235,7 @@ void AutocompleteMatch::UpdateJavaAnswer() {
           env, *java_match_,
           answer ? answer->CreateJavaObject(answer_type) : nullptr);
     }
+    Java_AutocompleteMatch_setAnswerType(env, *java_match_, answer_type);
   }
 }
 
