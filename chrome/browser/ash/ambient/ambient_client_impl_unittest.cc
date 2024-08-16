@@ -127,9 +127,9 @@ TEST_F(AmbientClientImplTest, DownloadImage) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(image_downloader().last_request_headers().IsEmpty());
-  std::string out;
-  image_downloader().last_request_headers().GetHeader("Authorization", &out);
-  EXPECT_EQ("Bearer access_token", out);
+  EXPECT_EQ(
+      "Bearer access_token",
+      image_downloader().last_request_headers().GetHeader("Authorization"));
 }
 
 TEST_F(AmbientClientImplTest, DownloadImageMultipleTimes) {
