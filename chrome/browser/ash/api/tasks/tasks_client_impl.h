@@ -222,9 +222,11 @@ class TasksClientImpl : public TasksClient {
 
   // To be called when requests to get user's task lists complete.
   // It sets the task lists fetch status to `final_fetch_status`, and runs all
-  // pending callbacks in `task_lists_fetch_state_`.
+  // pending callbacks in `task_lists_fetch_state_`. `http_error` will have a
+  // value from the Google Tasks API request.
   void RunGetTaskListsCallbacks(
       FetchStatus final_fetch_status,
+      std::optional<google_apis::ApiErrorCode> http_error,
       std::vector<std::unique_ptr<google_apis::tasks::TaskList>>
           accumulated_raw_task_lists);
 
@@ -235,6 +237,7 @@ class TasksClientImpl : public TasksClient {
   void RunGetTasksCallbacks(
       const std::string& task_list_id,
       FetchStatus final_fetch_status,
+      std::optional<google_apis::ApiErrorCode> http_error,
       std::vector<std::unique_ptr<google_apis::tasks::Task>>
           accumulated_raw_tasks);
 

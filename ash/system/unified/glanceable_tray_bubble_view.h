@@ -11,6 +11,7 @@
 #include "ash/system/screen_layout_observer.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "base/memory/weak_ptr.h"
+#include "google_apis/common/api_error_codes.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/layout_types.h"
 
@@ -83,6 +84,7 @@ class ASH_EXPORT GlanceableTrayBubbleView
   void AddClassroomBubbleStudentViewIfNeeded(bool is_role_active);
   void AddTaskBubbleViewIfNeeded(
       bool fetch_success,
+      std::optional<google_apis::ApiErrorCode> http_error,
       const ui::ListModel<api::TaskList>* task_lists);
 
   // Sets the initial expand states of the child bubbles, which are Tasks and
@@ -91,6 +93,7 @@ class ASH_EXPORT GlanceableTrayBubbleView
 
   // Updates the cached task lists to `task_lists`.
   void UpdateTaskLists(bool fetch_success,
+                       std::optional<google_apis::ApiErrorCode> http_error,
                        const ui::ListModel<api::TaskList>* task_lists);
 
   // Adjusts the order of the views in the focus list under

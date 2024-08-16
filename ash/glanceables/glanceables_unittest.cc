@@ -95,6 +95,7 @@ class GlanceablesBaseTest : public AshTestBase {
     classroom_client_ = std::make_unique<FakeGlanceablesClassroomClient>();
     tasks_client_ = glanceables_tasks_test_util::InitializeFakeTasksClient(
         base::Time::Now());
+    tasks_client_->set_http_error(google_apis::ApiErrorCode::HTTP_SUCCESS);
     Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
         account_id, GlanceablesController::ClientsRegistration{
                         .classroom_client = classroom_client_.get(),

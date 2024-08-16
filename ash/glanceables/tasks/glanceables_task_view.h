@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "google_apis/common/api_error_codes.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_observer.h"
@@ -121,7 +122,7 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView,
 
   // Handles completion of running `save_callback_` callback.
   // `task` - newly created or updated task.
-  void OnSaved(const api::Task* task);
+  void OnSaved(google_apis::ApiErrorCode http_error, const api::Task* task);
 
   // Owned by views hierarchy.
   raw_ptr<CheckButton> check_button_ = nullptr;

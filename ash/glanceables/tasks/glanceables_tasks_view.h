@@ -16,6 +16,7 @@
 #include "ash/glanceables/tasks/glanceables_tasks_error_type.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "google_apis/common/api_error_codes.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/list_model.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -91,11 +92,13 @@ class ASH_EXPORT GlanceablesTasksView
   // Handles switching between tasks lists.
   void ScheduleUpdateTasks(ListShownContext context);
   void RetryUpdateTasks(ListShownContext context);
-  void UpdateTasksInTaskList(const std::string& task_list_id,
-                             const std::string& task_list_title,
-                             ListShownContext context,
-                             bool fetch_success,
-                             const ui::ListModel<api::Task>* tasks);
+  void UpdateTasksInTaskList(
+      const std::string& task_list_id,
+      const std::string& task_list_title,
+      ListShownContext context,
+      bool fetch_success,
+      std::optional<google_apis::ApiErrorCode> http_error,
+      const ui::ListModel<api::Task>* tasks);
 
   // Called as a `state_change_callback` when a task view state changes between
   // "view" and "edit" state, which causes changes in the task view preferred
@@ -129,6 +132,7 @@ class ASH_EXPORT GlanceablesTasksView
   void OnTaskSaved(base::WeakPtr<GlanceablesTaskView> view,
                    const std::string& task_id,
                    api::TasksClient::OnTaskSavedCallback callback,
+                   google_apis::ApiErrorCode http_error,
                    const api::Task* task);
 
   // Returns the current showing task list.

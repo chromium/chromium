@@ -207,7 +207,9 @@ const ui::ListModel<api::TaskList>* TasksClientImpl::GetCachedTaskLists() {
 void TasksClientImpl::GetTaskLists(bool force_fetch,
                                    TasksClient::GetTaskListsCallback callback) {
   if (task_lists_fetch_state_.status == FetchStatus::kFresh && !force_fetch) {
-    std::move(callback).Run(/*success=*/true, &task_lists_);
+    // The http error code should be null here since we use the cached fresh
+    // data instead of fetching from the Google Task API.
+    std::move(callback).Run(/*success=*/true, std::nullopt, &task_lists_);
     return;
   }
 
@@ -252,7 +254,9 @@ void TasksClientImpl::GetTasks(const std::string& task_list_id,
   }
   TasksFetchState& fetch_state = *status_it->second;
   if (fetch_state.status == FetchStatus::kFresh && !force_fetch) {
-    std::move(callback).Run(/*success=*/true, &iter->second);
+    // The http error code should be null here since we use the cached fresh
+    // data instead of fetching from the Google Task API.
+    std::move(callback).Run(/*success=*/true, std::nullopt, &iter->second);
     return;
   }
 
@@ -329,6 +333,7 @@ void TasksClientImpl::InvalidateCache() {
   for (auto& task_list_state : tasks_fetch_state_) {
     if (task_list_state.second->status == FetchStatus::kRefreshing) {
       RunGetTasksCallbacks(task_list_state.first, FetchStatus::kNotFresh,
+                           std::nullopt,
                            /*accumulated_raw_tasks=*/{});
     } else {
       task_list_state.second->status = FetchStatus::kNotFresh;
@@ -336,7 +341,7 @@ void TasksClientImpl::InvalidateCache() {
   }
 
   if (task_lists_fetch_state_.status == FetchStatus::kRefreshing) {
-    RunGetTaskListsCallbacks(FetchStatus::kNotFresh,
+    RunGetTaskListsCallbacks(FetchStatus::kNotFresh, std::nullopt,
                              /*accumulated_raw_task_lists=*/{});
   } else {
     task_lists_fetch_state_.status = FetchStatus::kNotFresh;
@@ -411,7 +416,7 @@ void TasksClientImpl::OnTaskListsPageFetched(
                            result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   if (!result.has_value()) {
-    RunGetTaskListsCallbacks(FetchStatus::kNotFresh,
+    RunGetTaskListsCallbacks(FetchStatus::kNotFresh, result.error(),
                              /*accumulated_raw_task_lists=*/{});
     return;
   }
@@ -427,7 +432,8 @@ void TasksClientImpl::OnTaskListsPageFetched(
         "Ash.Glanceables.Api.Tasks.GetTaskLists.PagesCount", page_number);
     base::UmaHistogramCounts100("Ash.Glanceables.Api.Tasks.TaskListsCount",
                                 accumulated_raw_task_lists.size());
-    RunGetTaskListsCallbacks(FetchStatus::kFresh,
+    // Get the fresh data from the Google Task API request successfully.
+    RunGetTaskListsCallbacks(FetchStatus::kFresh, ApiErrorCode::HTTP_SUCCESS,
                              std::move(accumulated_raw_task_lists));
   } else {
     FetchTaskListsPage(result.value()->next_page_token(), page_number + 1,
@@ -470,7 +476,7 @@ void TasksClientImpl::OnTasksPageFetched(
                            result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   if (!result.has_value()) {
-    RunGetTasksCallbacks(task_list_id, FetchStatus::kNotFresh,
+    RunGetTasksCallbacks(task_list_id, FetchStatus::kNotFresh, result.error(),
                          /*accumulated_raw_tasks=*/{});
     return;
   }
@@ -486,7 +492,9 @@ void TasksClientImpl::OnTasksPageFetched(
                                 page_number);
     base::UmaHistogramCounts100("Ash.Glanceables.Api.Tasks.RawTasksCount",
                                 accumulated_raw_tasks.size());
+    // Get the fresh data from the Google Task API request successfully.
     RunGetTasksCallbacks(task_list_id, FetchStatus::kFresh,
+                         ApiErrorCode::HTTP_SUCCESS,
                          std::move(accumulated_raw_tasks));
   } else {
     FetchTasksPage(task_list_id, result.value()->next_page_token(),
@@ -496,6 +504,7 @@ void TasksClientImpl::OnTasksPageFetched(
 
 void TasksClientImpl::RunGetTaskListsCallbacks(
     FetchStatus final_fetch_status,
+    std::optional<google_apis::ApiErrorCode> http_error,
     std::vector<std::unique_ptr<google_apis::tasks::TaskList>>
         accumulated_raw_task_lists) {
   task_lists_fetch_state_.status = final_fetch_status;
@@ -529,13 +538,15 @@ void TasksClientImpl::RunGetTaskListsCallbacks(
 
   for (auto& callback : callbacks) {
     std::move(callback).Run(
-        /*success=*/final_fetch_status == FetchStatus::kFresh, &task_lists_);
+        /*success=*/final_fetch_status == FetchStatus::kFresh, http_error,
+        &task_lists_);
   }
 }
 
 void TasksClientImpl::RunGetTasksCallbacks(
     const std::string& task_list_id,
     FetchStatus final_fetch_status,
+    std::optional<google_apis::ApiErrorCode> http_error,
     std::vector<std::unique_ptr<google_apis::tasks::Task>>
         accumulated_raw_tasks) {
   auto fetch_state_it = tasks_fetch_state_.find(task_list_id);
@@ -569,7 +580,8 @@ void TasksClientImpl::RunGetTasksCallbacks(
       iter != tasks_in_task_lists_.end() ? &iter->second : &stub_task_list_;
   for (auto& callback : callbacks) {
     std::move(callback).Run(
-        /*success=*/final_fetch_status == FetchStatus::kFresh, task_list);
+        /*success=*/final_fetch_status == FetchStatus::kFresh, http_error,
+        task_list);
   }
 }
 
@@ -599,13 +611,14 @@ void TasksClientImpl::OnTaskAdded(
                            result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   if (!result.has_value()) {
-    std::move(callback).Run(/*task=*/nullptr);
+    std::move(callback).Run(/*http_error=*/result.error(), /*task=*/nullptr);
     return;
   }
 
   const auto iter = tasks_in_task_lists_.find(task_list_id);
   if (iter == tasks_in_task_lists_.end()) {
-    std::move(callback).Run(/*task=*/nullptr);
+    std::move(callback).Run(/*http_error=*/ApiErrorCode::HTTP_SUCCESS,
+                            /*task=*/nullptr);
     return;
   }
 
@@ -618,7 +631,8 @@ void TasksClientImpl::OnTaskAdded(
                              result.value()->updated(),
                              result.value()->web_view_link(),
                              Task::OriginSurfaceType::kRegular));
-  std::move(callback).Run(/*task=*/task);
+  std::move(callback).Run(/*http_error=*/ApiErrorCode::HTTP_SUCCESS,
+                          /*task=*/task);
 }
 
 void TasksClientImpl::OnTaskUpdated(
@@ -634,13 +648,14 @@ void TasksClientImpl::OnTaskUpdated(
                            result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   if (!result.has_value()) {
-    std::move(callback).Run(/*task=*/nullptr);
+    std::move(callback).Run(/*http_error=*/result.error(), /*task=*/nullptr);
     return;
   }
 
   const auto tasks_iter = tasks_in_task_lists_.find(task_list_id);
   if (tasks_iter == tasks_in_task_lists_.end()) {
-    std::move(callback).Run(/*task=*/nullptr);
+    std::move(callback).Run(/*http_error=*/ApiErrorCode::HTTP_SUCCESS,
+                            /*task=*/nullptr);
     return;
   }
 
@@ -651,7 +666,8 @@ void TasksClientImpl::OnTaskUpdated(
                      return task->id == result_data->id();
                    });
   if (task_iter == tasks_iter->second.end()) {
-    std::move(callback).Run(/*task=*/nullptr);
+    std::move(callback).Run(/*http_error=*/ApiErrorCode::HTTP_SUCCESS,
+                            /*task=*/nullptr);
     return;
   }
 
@@ -659,7 +675,8 @@ void TasksClientImpl::OnTaskUpdated(
   task->title = result_data->title();
   task->completed = result_data->status() == TaskStatus::kCompleted;
   task->updated = result_data->updated();
-  std::move(callback).Run(/*task=*/task);
+  std::move(callback).Run(/*http_error=*/ApiErrorCode::HTTP_SUCCESS,
+                          /*task=*/task);
 }
 
 google_apis::RequestSender* TasksClientImpl::GetRequestSender() {

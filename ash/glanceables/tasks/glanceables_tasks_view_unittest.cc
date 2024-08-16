@@ -62,6 +62,8 @@ class GlanceablesTasksViewTest : public AshTestBase {
     fake_glanceables_tasks_client_ =
         glanceables_tasks_test_util::InitializeFakeTasksClient(
             base::Time::Now());
+    fake_glanceables_tasks_client_->set_http_error(
+        google_apis::ApiErrorCode::HTTP_SUCCESS);
     Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
         account_id_, GlanceablesController::ClientsRegistration{
                          .tasks_client = fake_glanceables_tasks_client_.get()});
@@ -582,7 +584,8 @@ TEST_F(GlanceablesTasksViewTest, OpenBrowserWithEmptyNewTaskDoesntCrash) {
 
 TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterAdding) {
   tasks_client()->set_paused(true);
-  tasks_client()->set_update_errors(true);
+  tasks_client()->set_http_error(
+      google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR);
 
   const auto* const task_items_container_view = GetTaskItemsContainerView();
   ASSERT_TRUE(task_items_container_view);
@@ -609,7 +612,8 @@ TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterAdding) {
 
 TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterEditing) {
   tasks_client()->set_paused(true);
-  tasks_client()->set_update_errors(true);
+  tasks_client()->set_http_error(
+      google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR);
 
   const auto* const task_items_container_view = GetTaskItemsContainerView();
   ASSERT_TRUE(task_items_container_view);

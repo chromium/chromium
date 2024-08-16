@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "google_apis/common/api_error_codes.h"
 #include "ui/base/models/list_model.h"
 
 namespace ash {
@@ -120,15 +121,18 @@ class ASH_EXPORT FocusModeTasksProvider {
 
  private:
   void OnTasksFetched();
-  void OnTasksFetchedForTask(const std::string& task_list_id,
-                             const std::string& task_id,
-                             OnGetTaskCallback callback,
-                             bool success,
-                             const ui::ListModel<api::Task>* api_tasks);
+  void OnTasksFetchedForTask(
+      const std::string& task_list_id,
+      const std::string& task_id,
+      OnGetTaskCallback callback,
+      bool success,
+      std::optional<google_apis::ApiErrorCode> http_error,
+      const ui::ListModel<api::Task>* api_tasks);
   void OnTaskSaved(const std::string& task_list_id,
                    const std::string& task_id,
                    bool completed,
                    OnTaskSavedCallback callback,
+                   google_apis::ApiErrorCode http_error,
                    const api::Task* api_task);
 
   // Returns cached tasks according to this sort order:

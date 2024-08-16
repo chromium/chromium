@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/api/tasks/fake_tasks_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
@@ -369,6 +370,7 @@ TEST_F(FocusModeControllerMultiUserTest, TasksFlow) {
   const std::string title = "Focus Task";
 
   auto& tasks_client = CreateFakeTasksClient(GetUser1AccountId());
+  tasks_client.set_http_error(google_apis::ApiErrorCode::HTTP_SUCCESS);
   AddFakeTaskList(tasks_client, task_list_id);
   AddFakeTask(tasks_client, task_list_id, task_id, title);
 
@@ -830,6 +832,7 @@ TEST_F(FocusModeControllerMultiUserTest, CheckTasksCompletedHistogram) {
   // 1. Select a new task before a session starts, which will not be recorded
   // into the histogram.
   auto& tasks_client = CreateFakeTasksClient(GetUser1AccountId());
+  tasks_client.set_http_error(google_apis::ApiErrorCode::HTTP_SUCCESS);
 
   FocusModeTask task;
   task.task_id = {.list_id = "list0", .id = "task0"};

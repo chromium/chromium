@@ -5,6 +5,7 @@
 #include "ash/system/focus_mode/focus_mode_tray.h"
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/api/tasks/fake_tasks_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_util.h"
 #include "ash/root_window_controller.h"
@@ -60,6 +61,7 @@ class FocusModeTrayTest : public AshTestBase {
 
     auto& tasks_client =
         CreateFakeTasksClient(AccountId::FromUserEmail("user0@tray"));
+    tasks_client.set_http_error(google_apis::ApiErrorCode::HTTP_SUCCESS);
     AddFakeTaskList(tasks_client, "default");
     AddFakeTask(tasks_client, "default", "task1", "Task 1");
 

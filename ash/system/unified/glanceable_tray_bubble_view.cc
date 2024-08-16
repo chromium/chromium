@@ -232,7 +232,9 @@ void GlanceableTrayBubbleView::InitializeContents() {
           base::BindOnce(&GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded,
                          weak_ptr_factory_.GetWeakPtr()));
     } else {
-      AddTaskBubbleViewIfNeeded(/*fetch_success=*/true, cached_list);
+      AddTaskBubbleViewIfNeeded(/*fetch_success=*/true,
+                                google_apis::ApiErrorCode::HTTP_SUCCESS,
+                                cached_list);
       tasks_client->GetTaskLists(
           /*force_fetch=*/true,
           base::BindOnce(&GlanceableTrayBubbleView::UpdateTaskLists,
@@ -359,6 +361,7 @@ void GlanceableTrayBubbleView::AddClassroomBubbleStudentViewIfNeeded(
 
 void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
     bool fetch_success,
+    std::optional<google_apis::ApiErrorCode> http_error,
     const ui::ListModel<api::TaskList>* task_lists) {
   if (!fetch_success || task_lists->item_count() == 0) {
     return;
@@ -397,6 +400,7 @@ void GlanceableTrayBubbleView::UpdateChildBubblesInitialExpandState() {
 
 void GlanceableTrayBubbleView::UpdateTaskLists(
     bool fetch_success,
+    std::optional<google_apis::ApiErrorCode> http_error,
     const ui::ListModel<api::TaskList>* task_lists) {
   if (fetch_success &&
       features::IsGlanceablesTimeManagementTasksViewEnabled()) {

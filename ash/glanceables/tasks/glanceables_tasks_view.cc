@@ -179,7 +179,7 @@ GlanceablesTasksView::GlanceablesTasksView(
   if (tasks) {
     UpdateTasksInTaskList(active_task_list->id, active_task_list->title,
                           ListShownContext::kCachedList, /*fetch_success=*/true,
-                          tasks);
+                          std::nullopt, tasks);
   } else {
     ScheduleUpdateTasks(ListShownContext::kInitialList);
   }
@@ -439,6 +439,7 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
     const std::string& task_list_title,
     ListShownContext context,
     bool fetch_success,
+    std::optional<google_apis::ApiErrorCode> http_error,
     const ui::ListModel<api::Task>* tasks) {
   const gfx::Size old_preferred_size = GetPreferredSize();
   SetIsLoading(false);
@@ -698,6 +699,7 @@ void GlanceablesTasksView::OnTaskSaved(
     base::WeakPtr<GlanceablesTaskView> view,
     const std::string& task_id,
     api::TasksClient::OnTaskSavedCallback callback,
+    google_apis::ApiErrorCode http_error,
     const api::Task* task) {
   if (!task) {
     ShowErrorMessageWithType(
@@ -713,7 +715,7 @@ void GlanceablesTasksView::OnTaskSaved(
     RemoveTaskView(view);
   }
   SetIsLoading(false);
-  std::move(callback).Run(task);
+  std::move(callback).Run(http_error, task);
 
   const size_t tasks_count = items_container_view()->children().size();
   items_container_view()->SetVisible(tasks_count > 0);

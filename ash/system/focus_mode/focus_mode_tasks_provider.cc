@@ -122,6 +122,7 @@ class TaskFetcher {
 
  private:
   void OnGetTaskLists(bool sucess,
+                      std::optional<google_apis::ApiErrorCode> http_error,
                       const ui::ListModel<api::TaskList>* api_task_lists) {
     if (!api_task_lists) {
       error_ = true;
@@ -180,6 +181,7 @@ class TaskFetcher {
   void OnGetTasks(const std::string& list_id,
                   base::RepeatingClosure barrier,
                   bool success,
+                  std::optional<google_apis::ApiErrorCode> http_error,
                   const ui::ListModel<api::Task>* api_tasks) {
     // NOTE: Completed tasks will not show up in `api_tasks`.
     if (success && api_tasks) {
@@ -319,6 +321,7 @@ void FocusModeTasksProvider::OnTasksFetchedForTask(
     const std::string& task_id,
     OnGetTaskCallback callback,
     bool success,
+    std::optional<google_apis::ApiErrorCode> http_error,
     const ui::ListModel<api::Task>* api_tasks) {
   FocusModeTask task;
 
@@ -347,6 +350,7 @@ void FocusModeTasksProvider::OnTaskSaved(const std::string& task_list_id,
                                          const std::string& task_id,
                                          bool completed,
                                          OnTaskSavedCallback callback,
+                                         google_apis::ApiErrorCode http_error,
                                          const api::Task* api_task) {
   if (!api_task || api_task->title.empty()) {
     // If there's an error, we clear the cache.
