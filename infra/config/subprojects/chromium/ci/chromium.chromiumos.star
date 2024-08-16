@@ -1010,7 +1010,7 @@ ci.builder(
 
 ci.thin_tester(
     name = "linux-lacros-tester-rel",
-    branch_selector = branches.selector.CROS_BRANCHES,
+    branch_selector = branches.selector.MAIN,
     triggered_by = ["linux-lacros-builder-rel"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,

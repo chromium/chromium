@@ -498,7 +498,6 @@ try_.orchestrator_builder(
     branch_selector = branches.selector.CROS_BRANCHES,
     mirrors = [
         "ci/linux-lacros-builder-rel",
-        "ci/linux-lacros-tester-rel",
     ],
     gn_args = gn_args.config(
         configs = [
