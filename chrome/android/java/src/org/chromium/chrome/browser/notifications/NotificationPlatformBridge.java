@@ -397,15 +397,15 @@ public class NotificationPlatformBridge {
     }
 
     /**
-     * Returns a bogus Uri used to make each intent unique according to Intent#filterEquals.
-     * Without this, the pending intents derived from the intent may be reused, because extras are
-     * not taken into account for the filterEquals comparison.
+     * Returns a bogus Uri used to make each intent unique according to Intent#filterEquals. Without
+     * this, the pending intents derived from the intent may be reused, because extras are not taken
+     * into account for the filterEquals comparison.
      *
      * @param notificationId The id of the notification.
      * @param origin The origin to whom the notification belongs.
      * @param actionIndex The zero-based index of the action button, or -1 if not applicable.
      */
-    private Uri makeIntentData(String notificationId, String origin, int actionIndex) {
+    private static Uri makeIntentData(String notificationId, String origin, int actionIndex) {
         return Uri.parse(origin).buildUpon().fragment(notificationId + "," + actionIndex).build();
     }
 
@@ -422,13 +422,19 @@ public class NotificationPlatformBridge {
      * @param mutable Whether the pending intent is mutable, see {@link
      *     PendingIntent#FLAG_IMMUTABLE}.
      */
-    private PendingIntentProvider makePendingIntent(
+    private static PendingIntentProvider makePendingIntent(
             NotificationIdentifyingAttributes attributes,
             String action,
             int actionIndex,
             boolean mutable) {
         Context context = ContextUtils.getApplicationContext();
         Uri intentData = makeIntentData(attributes.notificationId, attributes.origin, actionIndex);
+        // TODO(crbug.com/359909538): Telemetry shows that startService-type intents are even more
+        // unreliable than broadcasts. Furthermore, checking the feature state is currently the only
+        // place in this method that in theory requires native startup. In practice, we will only
+        // ever get called with ACTION_PRE_UNSUBSCRIBE when displaying a web notification, which
+        // implies native is running, making this a non-issue. Neverthelerss, removing support for
+        // startService-type intents would be the cleanest solution here.
         boolean useServiceIntent =
                 NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(action)
                         && NotificationIntentInterceptor
@@ -848,7 +854,7 @@ public class NotificationPlatformBridge {
                 .storeNotificationResourcesIfSuspended(notification);
     }
 
-    private NotificationBuilderBase prepareNotificationBuilder(
+    private static NotificationBuilderBase prepareNotificationBuilder(
             NotificationIdentifyingAttributes identifyingAttributes,
             boolean vibrateEnabled,
             String title,
@@ -1061,7 +1067,7 @@ public class NotificationPlatformBridge {
                 NotificationUmaTracker.ActionType.PRE_UNSUBSCRIBE);
     }
 
-    private void addProvisionallyUnsubscribedNotificationAction(
+    private static void addProvisionallyUnsubscribedNotificationAction(
             NotificationBuilderBase notificationBuilder,
             NotificationIdentifyingAttributes identifyingAttributes,
             String action,
@@ -1073,7 +1079,7 @@ public class NotificationPlatformBridge {
                 /* iconId= */ 0, actionLabel, intentProvider, umaActionType);
     }
 
-    private NotificationWrapper buildNotificationWrapper(
+    private static NotificationWrapper buildNotificationWrapper(
             NotificationBuilderBase notificationBuilder, String notificationId) {
         return notificationBuilder.build(
                 new NotificationMetadata(
@@ -1083,7 +1089,7 @@ public class NotificationPlatformBridge {
     }
 
     /** Returns whether to set a channel id when building a notification. */
-    private boolean shouldSetChannelId(boolean forWebApk) {
+    private static boolean shouldSetChannelId(boolean forWebApk) {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !forWebApk;
     }
 
@@ -1095,7 +1101,7 @@ public class NotificationPlatformBridge {
      * @param body Textual contents of the notification.
      * @return A character sequence containing the ticker's text.
      */
-    private CharSequence createTickerText(String title, String body) {
+    private static CharSequence createTickerText(String title, String body) {
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
 
         spannableStringBuilder.append(title);
