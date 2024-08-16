@@ -20,44 +20,46 @@ namespace {
 class OnDeviceModelInternalImpl final
     : public on_device_model::OnDeviceModelShim {
  public:
-  explicit OnDeviceModelInternalImpl(GpuBlocklist gpu_blocklist);
+  explicit OnDeviceModelInternalImpl(const ChromeML* chrome_ml,
+                                     GpuBlocklist gpu_blocklist);
   ~OnDeviceModelInternalImpl() override;
 
   base::expected<std::unique_ptr<on_device_model::OnDeviceModel>,
                  on_device_model::mojom::LoadModelResult>
   CreateModel(on_device_model::mojom::LoadModelParamsPtr params,
               base::OnceClosure on_complete) const override {
-    auto* chrome_ml = ml::ChromeML::Get();
-    if (!chrome_ml) {
+    if (!chrome_ml_) {
       return base::unexpected(
           on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary);
     }
-    if (gpu_blocklist_.IsGpuBlocked(chrome_ml->api())) {
+    if (gpu_blocklist_.IsGpuBlocked(chrome_ml_->api())) {
       return base::unexpected(
           on_device_model::mojom::LoadModelResult::kGpuBlocked);
     }
 
     return ml::OnDeviceModelExecutor::CreateWithResult(
-        *chrome_ml, std::move(params), std::move(on_complete));
+        *chrome_ml_, std::move(params), std::move(on_complete));
   }
 
   on_device_model::mojom::PerformanceClass GetEstimatedPerformanceClass()
       const override {
-    auto* chrome_ml = ml::ChromeML::Get();
-    if (!chrome_ml) {
+    if (!chrome_ml_) {
       return on_device_model::mojom::PerformanceClass::kFailedToLoadLibrary;
     }
-    if (gpu_blocklist_.IsGpuBlocked(chrome_ml->api())) {
+    if (gpu_blocklist_.IsGpuBlocked(chrome_ml_->api())) {
       return on_device_model::mojom::PerformanceClass::kGpuBlocked;
     }
-    return ml::GetEstimatedPerformanceClass(*chrome_ml);
+    return ml::GetEstimatedPerformanceClass(*chrome_ml_);
   }
 
+  const raw_ptr<const ChromeML> chrome_ml_;
   GpuBlocklist gpu_blocklist_;
 };
 
-OnDeviceModelInternalImpl::OnDeviceModelInternalImpl(GpuBlocklist gpu_blocklist)
-    : gpu_blocklist_(gpu_blocklist) {}
+OnDeviceModelInternalImpl::OnDeviceModelInternalImpl(const ChromeML* chrome_ml,
+                                                     GpuBlocklist gpu_blocklist)
+    : chrome_ml_(chrome_ml), gpu_blocklist_(gpu_blocklist) {}
+
 OnDeviceModelInternalImpl::~OnDeviceModelInternalImpl() = default;
 
 }  // namespace
@@ -65,16 +67,17 @@ OnDeviceModelInternalImpl::~OnDeviceModelInternalImpl() = default;
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
 const on_device_model::OnDeviceModelShim* GetOnDeviceModelInternalImpl() {
   static const base::NoDestructor<OnDeviceModelInternalImpl> impl(
-      GpuBlocklist{});
+      ::ml::ChromeML::Get(), GpuBlocklist{});
   return impl.get();
 }
 
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
 const on_device_model::OnDeviceModelShim*
 GetOnDeviceModelInternalImplWithoutGpuBlocklistForTesting() {
-  static const base::NoDestructor<OnDeviceModelInternalImpl> impl(GpuBlocklist{
-      .skip_for_testing = true,
-  });
+  static const base::NoDestructor<OnDeviceModelInternalImpl> impl(
+      ::ml::ChromeML::Get(), GpuBlocklist{
+                                 .skip_for_testing = true,
+                             });
   return impl.get();
 }
 

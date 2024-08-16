@@ -358,8 +358,8 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
 };
 
 DISABLE_CFI_DLSYM
-void DestroyModel(ChromeMLModel model) {
-  ChromeML::Get()->api().DestroyModel(model);
+void DestroyModel(const ChromeML* chrome_ml, ChromeMLModel model) {
+  chrome_ml->api().DestroyModel(model);
 }
 
 }  // namespace
@@ -374,8 +374,8 @@ OnDeviceModelExecutor::OnDeviceModelExecutor(
 
 OnDeviceModelExecutor::~OnDeviceModelExecutor() {
   if (model_ != 0) {
-    model_task_runner_->PostTask(FROM_HERE,
-                                 base::BindOnce(&DestroyModel, model_));
+    model_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&DestroyModel, &chrome_ml_.get(), model_));
   }
 }
 
@@ -438,8 +438,8 @@ base::expected<uint32_t, LoadModelResult> OnDeviceModelExecutor::LoadAdaptation(
   on_device_model::AdaptationAssets assets = std::move(params->assets);
   static uint32_t next_id = 0;
   base_sessions_.insert(
-      {next_id, SessionAccessor::Create(model_task_runner_, model_,
-                                        std::move(assets.weights))});
+      {next_id, SessionAccessor::Create(chrome_ml_.get(), model_task_runner_,
+                                        model_, std::move(assets.weights))});
   model_task_runner_->PostTask(FROM_HERE, std::move(on_complete));
   return base::ok(next_id++);
 }
@@ -488,7 +488,8 @@ LoadModelResult OnDeviceModelExecutor::Init(
       OnDeviceModelExecutor::Schedule);
   if (model_) {
     base_sessions_.insert(
-        {std::nullopt, SessionAccessor::Create(model_task_runner_, model_)});
+        {std::nullopt, SessionAccessor::Create(chrome_ml_.get(),
+                                               model_task_runner_, model_)});
   }
   model_task_runner_->PostTask(FROM_HERE, std::move(on_complete));
   return (model_ != 0) ? LoadModelResult::kSuccess

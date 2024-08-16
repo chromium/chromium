@@ -13,10 +13,12 @@ namespace ml {
 class SessionAccessor::Canceler : public base::RefCountedThreadSafe<Canceler> {
  public:
   DISABLE_CFI_DLSYM
-  Canceler() { cancel_ = ChromeML::Get()->api().CreateCancel(); }
+  explicit Canceler(const ChromeML& chrome_ml) : chrome_ml_(chrome_ml) {
+    cancel_ = chrome_ml_->api().CreateCancel();
+  }
 
   DISABLE_CFI_DLSYM
-  void Cancel() { ChromeML::Get()->api().CancelExecuteModel(cancel_); }
+  void Cancel() { chrome_ml_->api().CancelExecuteModel(cancel_); }
 
   ChromeMLCancel get() const { return cancel_; }
 
@@ -24,17 +26,19 @@ class SessionAccessor::Canceler : public base::RefCountedThreadSafe<Canceler> {
   friend class base::RefCountedThreadSafe<Canceler>;
 
   DISABLE_CFI_DLSYM
-  virtual ~Canceler() { ChromeML::Get()->api().DestroyCancel(cancel_); }
+  virtual ~Canceler() { chrome_ml_->api().DestroyCancel(cancel_); }
 
+  const raw_ref<const ChromeML> chrome_ml_;
   ChromeMLCancel cancel_;
 };
 
 // static
 SessionAccessor::Ptr SessionAccessor::Create(
+    const ChromeML& chrome_ml,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     ChromeMLModel model,
     base::File adaptation_data) {
-  Ptr handle(new SessionAccessor(task_runner, model),
+  Ptr handle(new SessionAccessor(chrome_ml, task_runner, model),
              base::OnTaskRunnerDeleter(task_runner));
   // SessionAccessor is deleted on `task_runner_` so base::Unretained is safe.
   task_runner->PostTask(FROM_HERE,
@@ -47,16 +51,19 @@ SessionAccessor::Ptr SessionAccessor::Create(
 DISABLE_CFI_DLSYM
 SessionAccessor::~SessionAccessor() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  ChromeML::Get()->api().DestroySession(session_);
+  chrome_ml_->api().DestroySession(session_);
 }
 
 SessionAccessor::SessionAccessor(
+    const ChromeML& chrome_ml,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     ChromeMLModel model)
-    : task_runner_(std::move(task_runner)), model_(model) {}
+    : chrome_ml_(chrome_ml),
+      task_runner_(std::move(task_runner)),
+      model_(model) {}
 
 SessionAccessor::Ptr SessionAccessor::Clone() {
-  Ptr handle(new SessionAccessor(task_runner_, model_),
+  Ptr handle(new SessionAccessor(chrome_ml_.get(), task_runner_, model_),
              base::OnTaskRunnerDeleter(task_runner_));
   // SessionAccessor is deleted on `task_runner_` so base::Unretained is safe.
   task_runner_->PostTask(
@@ -70,7 +77,7 @@ ChromeMLCancelFn SessionAccessor::Execute(
     on_device_model::mojom::InputOptionsPtr input,
     ChromeMLExecutionOutputFn output_fn,
     ChromeMLContextSavedFn context_saved_fn) {
-  auto canceler = base::MakeRefCounted<Canceler>();
+  auto canceler = base::MakeRefCounted<Canceler>(chrome_ml_.get());
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SessionAccessor::ExecuteInternal, base::Unretained(this),
@@ -97,7 +104,7 @@ void SessionAccessor::SizeInTokens(const std::string& text,
 DISABLE_CFI_DLSYM
 void SessionAccessor::CloneFrom(SessionAccessor* other) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  session_ = ChromeML::Get()->api().CloneSession(other->session_);
+  session_ = chrome_ml_->api().CloneSession(other->session_);
 }
 
 DISABLE_CFI_DLSYM
@@ -110,9 +117,9 @@ void SessionAccessor::CreateInternal(base::File adaptation_data) {
     ChromeMLAdaptationDescriptor descriptor = {
         .model_data = &data,
     };
-    session_ = ChromeML::Get()->api().CreateSession(model_, &descriptor);
+    session_ = chrome_ml_->api().CreateSession(model_, &descriptor);
   } else {
-    session_ = ChromeML::Get()->api().CreateSession(model_, nullptr);
+    session_ = chrome_ml_->api().CreateSession(model_, nullptr);
   }
 }
 
@@ -138,15 +145,15 @@ void SessionAccessor::ExecuteInternal(
   if (output_fn) {
     options.execution_output_fn = &output_fn;
   }
-  ChromeML::Get()->api().SessionExecuteModel(session_, model_, &options,
-                                             canceler->get());
+  chrome_ml_->api().SessionExecuteModel(session_, model_, &options,
+                                        canceler->get());
 }
 
 DISABLE_CFI_DLSYM
 void SessionAccessor::ScoreInternal(const std::string& text,
                                     ChromeMLScoreFn score_fn) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  ChromeML::Get()->api().SessionScore(session_, text, score_fn);
+  chrome_ml_->api().SessionScore(session_, text, score_fn);
 }
 
 DISABLE_CFI_DLSYM
@@ -154,7 +161,7 @@ void SessionAccessor::SizeInTokensInternal(
     const std::string& text,
     ChromeMLSizeInTokensFn size_in_tokens_fn) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  ChromeML::Get()->api().SessionSizeInTokens(session_, text, size_in_tokens_fn);
+  chrome_ml_->api().SessionSizeInTokens(session_, text, size_in_tokens_fn);
 }
 
 }  // namespace ml
