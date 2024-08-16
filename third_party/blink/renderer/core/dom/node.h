@@ -392,6 +392,7 @@ class CORE_EXPORT Node : public EventTarget {
   virtual bool IsPseudoElement() const { return false; }
   virtual bool IsScrollMarkerPseudoElement() const { return false; }
   virtual bool IsScrollMarkerGroupPseudoElement() const { return false; }
+  virtual bool IsScrollButtonPseudoElement() const { return false; }
   virtual bool IsMediaControlElement() const { return false; }
   virtual bool IsMediaControls() const { return false; }
   virtual bool IsMediaElement() const { return false; }
@@ -402,6 +403,10 @@ class CORE_EXPORT Node : public EventTarget {
   virtual bool IsFrameOwnerElement() const { return false; }
   virtual bool IsMediaRemotingInterstitial() const { return false; }
   virtual bool IsPictureInPictureInterstitial() const { return false; }
+
+  bool IsScrollControlPseudoElement() const {
+    return IsScrollMarkerPseudoElement() || IsScrollButtonPseudoElement();
+  }
 
   // Traverses the ancestors of this node and returns true if any of them are
   // either a MediaControlElement or MediaControls.

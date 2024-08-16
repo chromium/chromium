@@ -33,11 +33,17 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement {
   }
   void SetSelected(ScrollMarkerPseudoElement& scroll_marker);
   ScrollMarkerPseudoElement* Selected() { return selected_marker_; }
+  void ActivateNextScrollMarker();
+  void ActivatePrevScrollMarker();
 
   void Dispose() final;
   void Trace(Visitor* v) const final;
 
  private:
+  void ActivateScrollMarker(ScrollMarkerPseudoElement* (
+      ScrollMarkerGroupPseudoElement::*find_scroll_marker_func)(
+      const Element&));
+
   // TODO(332396355): Add spec link, once it's created.
   HeapVector<Member<ScrollMarkerPseudoElement>> focus_group_;
   Member<ScrollMarkerPseudoElement> selected_marker_ = nullptr;

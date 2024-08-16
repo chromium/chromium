@@ -39,7 +39,7 @@ namespace blink {
 
 EventTarget& EventPath::EventTargetRespectingTargetRules(Node& reference_node) {
   if (reference_node.IsPseudoElement() &&
-      !reference_node.IsScrollMarkerPseudoElement()) {
+      !reference_node.IsScrollControlPseudoElement()) {
     DCHECK(reference_node.parentNode());
     return *reference_node.parentNode();
   }
@@ -72,6 +72,10 @@ static inline bool EventPathShouldBeEmptyFor(Node& node) {
   // Event path should be empty for orphaned pseudo elements, and nodes
   // whose document is stopped. In corner cases (crbug.com/1210480), the node
   // document can get detached before we can remove event listeners.
+  if (RuntimeEnabledFeatures::PseudoElementsFocusableEnabled() &&
+      node.IsScrollControlPseudoElement()) {
+    return false;
+  }
   return (node.IsPseudoElement() && !node.parentElement()) ||
          node.GetDocument().IsStopped();
 }

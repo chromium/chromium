@@ -237,6 +237,8 @@ blink_core_sources_dom = [
   "scriptable_document_parser.h",
   "scripted_animation_controller.cc",
   "scripted_animation_controller.h",
+  "scroll_button_pseudo_element.cc",
+  "scroll_button_pseudo_element.h",
   "scroll_marker_group_pseudo_element.cc",
   "scroll_marker_group_pseudo_element.h",
   "scroll_marker_pseudo_element.cc",

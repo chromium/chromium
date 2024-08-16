@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -91,11 +92,12 @@ PseudoElement* PseudoElement::Create(Element* parent,
                                                                 pseudo_id);
   } else if (pseudo_id == kPseudoIdScrollMarker) {
     return MakeGarbageCollected<ScrollMarkerPseudoElement>(parent);
+  } else if (pseudo_id == kPseudoIdScrollNextButton ||
+             pseudo_id == kPseudoIdScrollPrevButton) {
+    return MakeGarbageCollected<ScrollButtonPseudoElement>(parent, pseudo_id);
   }
   DCHECK(pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdBefore ||
-         pseudo_id == kPseudoIdBackdrop || pseudo_id == kPseudoIdMarker ||
-         pseudo_id == kPseudoIdScrollNextButton ||
-         pseudo_id == kPseudoIdScrollPrevButton);
+         pseudo_id == kPseudoIdBackdrop || pseudo_id == kPseudoIdMarker);
   return MakeGarbageCollected<PseudoElement>(parent, pseudo_id,
                                              view_transition_name);
 }
