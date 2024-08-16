@@ -69,6 +69,7 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/commit_message_delayer.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -1050,6 +1051,121 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   EXPECT_EQ(expected_overrides,
             actual_document_data->runtime_feature_state_read_context()
                 .GetFeatureOverrides());
+}
+
+// Tests that the frame's RuntimeFeatureStateDocumentData is in a valid
+// state when
+// * The frame has crashed
+// * It is reloaded
+// * The renderer attempts to apply a header OT token before the frame has been
+// finished committing. (While header OT tokens aren't supported by
+// RuntimeFeatureState, we still shouldn't crash if someone tries to use one.)
+//
+// Also tests that even if a dummy RuntimeFeatureStateDocumentData is created,
+// the NavigationRequest's RuntimeFeatureStateContext will overwrite it.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplWithTokensBrowserTest,
+    ReloadedCrashedFrameWithHeaderOriginTrialShouldHaveValidRuntimeFeatureStateDocumentData) {
+  // Generated with:
+  // tools/origin_trials/generate_token.py https://127.0.0.1:44440
+  // DisableThirdPartyStoragePartitioning2
+  // --expire-timestamp=2000000000
+  const char kValidFirstPartyTokenForEmptyUrl[] =
+      "A68fOEp2t0jAR/ewxM8TMwuZRCCCqT5+w/"
+      "lmt6pgABRYKg+"
+      "3Ix7S3pe5kqXLTdRgCKKQUeXdGL24tSeDb5cFbwUAAABveyJvcmlnaW4iOiAiaHR0cHM6Ly8"
+      "xMjcuMC4wLjE6NDQ0NDAiLCAiZmVhdHVyZSI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2V"
+      "QYXJ0aXRpb25pbmcyIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
+
+  SetOriginTrialToken(kValidFirstPartyTokenForEmptyUrl);
+  EXPECT_TRUE(NavigateToURL(shell(), empty_page_url()));
+
+  // Crash the frame.
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* rfh = web_contents->GetPrimaryMainFrame();
+  RenderProcessHost* process = rfh->GetProcess();
+  {
+    RenderProcessHostWatcher crash_observer(
+        process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    process->Shutdown(0);
+    crash_observer.Wait();
+  }
+  ASSERT_FALSE(rfh->IsRenderFrameLive());
+
+  // Create an observer that will set the state of
+  // DisableThirdPartyStoragePartitioning2 to true once the navigation begins to
+  // commit.
+  class ReadyToCommitObserver : public WebContentsObserver {
+   public:
+    explicit ReadyToCommitObserver(WebContentsImpl* web_contents)
+        : WebContentsObserver(web_contents) {}
+
+    // WebContentsObserver:
+    void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
+      navigation_handle->GetMutableRuntimeFeatureStateContext()
+          .SetDisableThirdPartyStoragePartitioning2Enabled(true);
+    }
+  };
+  ReadyToCommitObserver commit_observer(web_contents);
+
+  // Create a message delayer that will mock a header OT token being applied
+  // before the navigation finishes committing.
+  auto did_commit_callback =
+      base::BindLambdaForTesting([&](RenderFrameHost* rfh) {
+        // Create a test remote to initiate the IPC.
+        mojo::Remote<blink::mojom::OriginTrialStateHost>
+            origin_trial_state_host_remote;
+        OriginTrialStateHostImpl::Create(
+            web_contents->GetPrimaryMainFrame(),
+            origin_trial_state_host_remote.BindNewPipeAndPassReceiver());
+        ASSERT_TRUE(origin_trial_state_host_remote.is_connected());
+
+        auto overrides_with_tokens =
+            base::flat_map<blink::mojom::RuntimeFeature,
+                           blink::mojom::OriginTrialFeatureStatePtr>();
+        std::string raw_token(kValidFirstPartyTokenForEmptyUrl);
+        std::vector<std::string> raw_tokens_vector{raw_token};
+        overrides_with_tokens[blink::mojom::RuntimeFeature::
+                                  kDisableThirdPartyStoragePartitioning2] =
+            blink::mojom::OriginTrialFeatureState::New(true, raw_tokens_vector);
+        origin_trial_state_host_remote.get()->ApplyFeatureDiffForOriginTrial(
+            std::move(overrides_with_tokens));
+
+        origin_trial_state_host_remote.FlushForTesting();
+
+        RuntimeFeatureStateDocumentData* document_data =
+            RuntimeFeatureStateDocumentData::GetForCurrentDocument(
+                web_contents->GetPrimaryMainFrame());
+
+        ASSERT_TRUE(document_data);
+        // Confirm that attempting to check if the feature is enabled doesn't
+        // result in a crash.
+        //
+        // The feature should still be disabled. This is because even though we
+        // sent an, otherwise, valid token we're unable to verify it against
+        // the expected url since the frame has a last committed origin of null
+        // at this point in time.
+        // Additionally, the RuntimeFeatureStateContext in the navigation
+        // request hasn't yet been saved into the DocumentData.
+        EXPECT_FALSE(document_data->runtime_feature_state_read_context()
+                         .IsDisableThirdPartyStoragePartitioning2Enabled());
+      });
+  CommitMessageDelayer commit_delayer(web_contents,
+                                      empty_page_url() /* deferred_url */,
+                                      std::move(did_commit_callback));
+  shell()->Reload();
+  commit_delayer.Wait();
+
+  RuntimeFeatureStateDocumentData* document_data =
+      RuntimeFeatureStateDocumentData::GetForCurrentDocument(
+          web_contents->GetPrimaryMainFrame());
+
+  ASSERT_TRUE(document_data);
+  // Now that the navigation has finished committing, the DocumentData should
+  // contain the "true" set by the observer.
+  EXPECT_TRUE(document_data->runtime_feature_state_read_context()
+                  .IsDisableThirdPartyStoragePartitioning2Enabled());
 }
 
 // Check that the RuntimeFeatureStateDocumentData is not altered when we receive

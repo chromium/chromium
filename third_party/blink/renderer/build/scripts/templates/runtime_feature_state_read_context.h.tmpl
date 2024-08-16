@@ -63,7 +63,7 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
       return override_it->second;
 
     auto initial_it = initial_values_.find(feature);
-    DCHECK(initial_it != initial_values_.end());
+    CHECK(initial_it != initial_values_.end());
     return initial_it->second;
   }
 
