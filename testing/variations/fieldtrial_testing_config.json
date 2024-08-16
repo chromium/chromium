@@ -7386,6 +7386,29 @@
             ]
         }
     ],
+    "DeferRendererTasksAfterInput": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_AllDeferrableTypes",
+                    "params": {
+                        "policy": "all-deferrable-types"
+                    },
+                    "enable_features": [
+                        "DeferRendererTasksAfterInput"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeferSpeculativeRFHCreation": [
         {
             "platforms": [
