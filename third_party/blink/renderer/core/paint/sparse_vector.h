@@ -5,92 +5,150 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_SPARSE_VECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_SPARSE_VECTOR_H_
 
-#include <stdint.h>
-
 #include <limits>
 #include <type_traits>
 
-#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-// This class stores lazily-initialized FieldType instances, identified by the
-// FieldId enum. Since storing pointers to all of these classes would take up
-// a lot of memory, we use a Vector and only include the types that have
-// actually been requested. In order to determine which index into the vector
-// each type has, an additional bitfield is used to indicate which types are
-// currently included in the vector.
-//
-// Based heavily on the ElementRareDataVector class, however the implementation
-// is separate because that class requires garbage collection, whereas the
-// paint properties this class is used for were ref-counted.
-// TODO(crbug.com/358331314): Now both classes manage GC pointers. Consider
-// consolidating them.
-//
-// Template type expectations:
-//   FieldId: must be a scoped enum (enforced below) and have a kNumFields entry
-//            with value equal to the number of entries in the enum.
-//   FieldType: the intention is that it can be an arbitrary type, typically
-//              either an class or a managed pointer to a class.
-//
-// For usage, see the associated tests in `sparse_vector_test.cc`.
-template <typename FieldId, typename FieldType>
-  requires(std::is_enum_v<FieldId>)
-class CORE_EXPORT SparseVector {
+namespace internal {
+
+template <typename VectorType>
+class NonTraceableSparseVectorFields {
+  DISALLOW_NEW();
+
+ protected:
+  VectorType fields_;
+};
+
+template <typename VectorType>
+class TraceableSparseVectorFields {
   DISALLOW_NEW();
 
  public:
-  SparseVector() = default;
-  SparseVector(SparseVector&&) = default;
-  SparseVector(const SparseVector&) = delete;
-  SparseVector& operator=(SparseVector&&) = default;
-  SparseVector& operator=(const SparseVector&) = delete;
-  ~SparseVector() = default;
-
   void Trace(Visitor* visitor) const { visitor->Trace(fields_); }
 
-  // Common vector methods for checking state.
-  wtf_size_t capacity() const { return fields_.capacity(); }
-  wtf_size_t size() const { return fields_.size(); }
-  bool empty() const { return fields_.empty(); }
+ protected:
+  VectorType fields_;
+};
 
-  // Field accessors.
+}  // namespace internal
+
+// This class is logically like an array of FieldType instances, indexed by the
+// FieldId enum, but is optimized to save memory when only a small number of
+// the possible fields are being used.
+//
+// This class is implemented using a vector containing the FieldType instances
+// that are being used, and a bitfield to indicate which fields are being used.
+// The popcount cpu instruction is critical for the O(1) lookup performance, as
+// and allows us to determine the vector index of a field using the bitfield.
+// For example:
+// enum class FieldId {
+//   kFirst = 0, ... kMiddle = 7, ... kLast = 15, kNumFields = kLast + 1,
+// }
+// SparseVector<FieldId, int> sparse_vector;
+// A sparse vector with kFirst, kMiddle, and kLast populated will have:
+// fields_bitfield_: 0b00000000000000001000000100000001
+// Vector: [int for kFirst, int for kMiddle, int for kLast]
+//
+// Template parameters:
+//   FieldId: must be an enum type (enforced below) and have a kNumFields entry
+//            with value equal to 1 + maximum value in the enum.
+//   FieldType: the intention is that it can be an arbitrary type, typically
+//              either an class or a managed pointer to a class.
+//   inline_capacity (optional): size of the inline buffer.
+//   VectorType (optional): The type of the internal vector.
+//   BitfieldType (optional): The type of the internal bitfield. Must be big
+//                            enough to contain FieldId::kNumFields bits.
+//
+// Time complexity:
+//   Query: O(1)
+//   Modify existing field: O(1)
+//   Add/erase: O(1) (at the end of the vector) to O(N) (N = number of
+//              existing fields)
+// It's efficient when the number of existing fields is much smaller than
+// FieldId::kNumFields, add/erase operations mostly happen at the end of the
+// vector, and the set of existing fields seldom changes.
+template <typename FieldId,
+          typename FieldType,
+          wtf_size_t inline_capacity = 0,
+          typename VectorType =
+              std::conditional_t<WTF::IsMemberType<FieldType>::value ||
+                                     WTF::IsTraceable<FieldType>::value,
+                                 HeapVector<FieldType, inline_capacity>,
+                                 Vector<FieldType, inline_capacity>>,
+          typename BitfieldType =
+              std::conditional_t<static_cast<unsigned>(FieldId::kNumFields) <=
+                                     std::numeric_limits<uint32_t>::digits,
+                                 uint32_t,
+                                 uint64_t>>
+class SparseVector :
+    // The conditional inheritance approach prevents types like
+    // SparseVector<Enum, int> from being treated as traceable by the blinkgc
+    // clang plugin. `requires` clause on the `Trace` method doesn't work.
+    public std::conditional_t<
+        WTF::IsTraceable<VectorType>::value,
+        internal::TraceableSparseVectorFields<VectorType>,
+        internal::NonTraceableSparseVectorFields<VectorType>> {
+  static_assert(std::is_enum_v<FieldId>);
+  static_assert(std::is_unsigned_v<BitfieldType>);
+  static_assert(std::numeric_limits<BitfieldType>::digits >=
+                    static_cast<unsigned>(FieldId::kNumFields),
+                "BitfieldType must be big enough to have a bit for each "
+                "field in FieldId.");
+  static_assert(inline_capacity <= static_cast<unsigned>(FieldId::kNumFields));
+
+ public:
+  wtf_size_t capacity() const { return this->fields_.capacity(); }
+  wtf_size_t size() const { return this->fields_.size(); }
+  bool empty() const { return this->fields_.empty(); }
+
+  void reserve(wtf_size_t capacity) {
+    CHECK_LT(capacity, static_cast<wtf_size_t>(FieldId::kNumFields));
+    this->fields_.reserve(capacity);
+  }
+
+  void clear() {
+    this->fields_.clear();
+    fields_bitfield_ = 0;
+  }
+
+  // Returns whether the field exists. Time complexity is O(1).
   bool HasField(FieldId field_id) const {
     return fields_bitfield_ & FieldIdMask(field_id);
   }
 
+  // Returns the value of existing field. Time complexity is O(1).
   const FieldType& GetField(FieldId field_id) const {
-    CHECK(HasField(field_id));
-    return fields_[GetFieldIndex(field_id)];
+    DCHECK(HasField(field_id));
+    return this->fields_[GetFieldIndex(field_id)];
   }
   FieldType& GetField(FieldId field_id) {
-    CHECK(HasField(field_id));
-    return fields_[GetFieldIndex(field_id)];
+    DCHECK(HasField(field_id));
+    return this->fields_[GetFieldIndex(field_id)];
   }
 
-  void SetField(FieldId field_id, FieldType field) {
+  // Adds a field if it's not existing (time complexity is O(1) (if the new
+  // field is at the end) to O(N) (N = number of existing fields)), or modifies
+  // the existing field (time complexity is O(1)).
+  void SetField(FieldId field_id, FieldType&& field) {
     if (HasField(field_id)) {
-      fields_[GetFieldIndex(field_id)] = std::move(field);
+      this->fields_[GetFieldIndex(field_id)] = std::forward<FieldType>(field);
     } else {
-      // We want to be a little more aggressive with saving memory than the
-      // WTF::Vector default of allocating four the first time a value is
-      // inserted.
-      constexpr int kFirstCapacityToReserve = 2;
-      if (fields_.empty()) {
-        fields_.reserve(kFirstCapacityToReserve);
-      }
       fields_bitfield_ = fields_bitfield_ | FieldIdMask(field_id);
-      fields_.insert(GetFieldIndex(field_id), std::move(field));
+      this->fields_.insert(GetFieldIndex(field_id),
+                           std::forward<FieldType>(field));
     }
   }
 
-  // Returns `true` if the field was actually erased (instead of not being
-  // present).
-  bool ClearField(FieldId field_id) {
+  // Erases a field. Returns `true` if the field was previously existing and
+  // is actually erased. Time complexity is O(1) (if the field doesn't exist
+  // or the erased field is at the end) to O(N) (N = number of existing fields).
+  bool EraseField(FieldId field_id) {
     if (HasField(field_id)) {
-      fields_.EraseAt(GetFieldIndex(field_id));
+      this->fields_.EraseAt(GetFieldIndex(field_id));
       fields_bitfield_ = fields_bitfield_ & ~FieldIdMask(field_id);
       return true;
     }
@@ -98,15 +156,13 @@ class CORE_EXPORT SparseVector {
   }
 
  private:
-  using BitfieldType = uint64_t;
-
   static BitfieldType FieldIdMask(FieldId field_id) {
     return static_cast<BitfieldType>(1) << static_cast<unsigned>(field_id);
   }
 
-  // GetFieldIndex returns the index in |fields_| that |field_id| is stored in.
-  // If |fields_| isn't storing a field for |field_id|, then this returns the
-  // index which the data for |field_id| should be inserted into.
+  // Returns the index in `fields_` that `field_id` is stored in. If `fields_`
+  // isn't storing a field for `field_id`, then this returns the index which
+  // the data for `field_id` should be inserted into.
   wtf_size_t GetFieldIndex(FieldId field_id) const {
     // First, create a mask that has entries only for field IDs lower than
     // the field ID we are looking for.
@@ -119,13 +175,7 @@ class CORE_EXPORT SparseVector {
     return __builtin_popcountll(fields_bitfield_ & mask);
   }
 
-  HeapVector<FieldType> fields_;
-
-  BitfieldType fields_bitfield_ = {};
-  static_assert(sizeof(fields_bitfield_) * CHAR_BIT >=
-                    static_cast<unsigned>(FieldId::kNumFields),
-                "field_bitfield_ must be big enough to have a bit for each "
-                "field in FieldId.");
+  BitfieldType fields_bitfield_ = 0;
 };
 
 }  // namespace blink

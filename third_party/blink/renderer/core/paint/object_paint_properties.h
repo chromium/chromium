@@ -82,7 +82,7 @@ class CORE_EXPORT ObjectPaintProperties
         field_id, parent, std::move(state), animation_state);               \
   }                                                                         \
                                                                             \
-  bool Clear##function() { return nodes_.ClearField(field_id); }            \
+  bool Clear##function() { return nodes_.EraseField(field_id); }            \
   // (End of ADD_NODE definition)
 
 #define ADD_ALIAS_NODE(type, function, field_id)                        \
@@ -99,7 +99,7 @@ class CORE_EXPORT ObjectPaintProperties
     return UpdateAlias<type##PaintPropertyNodeAlias>(field_id, parent); \
   }                                                                     \
                                                                         \
-  bool Clear##function() { return nodes_.ClearField(field_id); }        \
+  bool Clear##function() { return nodes_.EraseField(field_id); }        \
   // (End of ADD_ALIAS_NODE definition)
 
 #define ADD_TRANSFORM(function, field_id) \
@@ -450,7 +450,7 @@ class CORE_EXPORT ObjectPaintProperties
   }
 
  private:
-  using NodeList = SparseVector<NodeId, Member<PaintPropertyNode>>;
+  using NodeList = SparseVector<NodeId, Member<PaintPropertyNode>, 2>;
 
   template <typename NodeType, typename ParentType>
   PaintPropertyChangeType Update(

@@ -9,179 +9,239 @@
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
 namespace blink {
+namespace {
 
-class TestDataField {
- public:
-  explicit TestDataField(int value) : value_(value) {}
-
-  bool operator==(const TestDataField& other) const {
-    return value_ == other.value_;
-  }
-
-  void set_value(int value) { value_ = value; }
-  int value() const { return value_; }
-
- private:
-  int value_;
-};
-
-enum class TestFieldId : unsigned {
-  kFoo = 0,
-  kBar = 1,
-  kBaz = 2,
+enum class FieldId {
+  kFirst = 0,
+  kFoo = 1,
+  kBar = 2,
   kFive = 5,
   kBang = 20,
-  kBoom = 31,
+  kLast = 31,
 
-  kNumFields = kBoom + 1
+  kNumFields = kLast + 1
 };
 
-// It's Garbage collected to allow Persistent<TestSparseVector> in the
-// non-GC-managed SparseVectorTest.
-class TestSparseVector
-    : public GarbageCollected<TestSparseVector>,
-      public SparseVector<TestFieldId, std::unique_ptr<TestDataField>> {};
+struct IntFieldTest {
+  SparseVector<FieldId, int> sparse_vector;
 
-class SparseVectorTest : public testing::Test {
+  using Handle = std::unique_ptr<IntFieldTest>;
+  static Handle MakeTest() { return std::make_unique<IntFieldTest>(); }
+
+  static int CreateField(int value) { return value; }
+  static int GetValue(int field) { return field; }
+};
+
+struct UniquePtrFieldTest {
  public:
-  void SetField(unsigned field_id, std::unique_ptr<TestDataField> field) {
-    sparse_vector_->SetField(static_cast<TestFieldId>(field_id),
-                             std::move(field));
+  SparseVector<FieldId, std::unique_ptr<int>> sparse_vector;
+
+  using Handle = std::unique_ptr<UniquePtrFieldTest>;
+  static Handle MakeTest() { return std::make_unique<UniquePtrFieldTest>(); }
+
+  static std::unique_ptr<int> CreateField(int value) {
+    return std::make_unique<int>(value);
   }
-
-  bool HasField(unsigned field_id) {
-    return sparse_vector_->HasField(static_cast<TestFieldId>(field_id));
-  }
-
-  TestDataField& GetField(unsigned field_id) {
-    // Ensure that const and non-const accessors always agree.
-    const auto fid = static_cast<TestFieldId>(field_id);
-    EXPECT_EQ(
-        (*sparse_vector_->GetField(fid)),
-        *(const_cast<TestSparseVector*>(sparse_vector_.Get())->GetField(fid)));
-
-    return *(sparse_vector_->GetField(fid));
-  }
-
-  bool ClearField(unsigned field_id) {
-    return sparse_vector_->ClearField(static_cast<TestFieldId>(field_id));
-  }
-
-  const TestSparseVector& sparse_vector() { return *sparse_vector_; }
-
-  test::TaskEnvironment task_environment_;
-  Persistent<TestSparseVector> sparse_vector_{
-      MakeGarbageCollected<TestSparseVector>()};
+  static int GetValue(const std::unique_ptr<int>& field) { return *field; }
 };
 
-TEST_F(SparseVectorTest, Basic) {
-  SetField(1, std::make_unique<TestDataField>(101));
-  EXPECT_TRUE(HasField(1));
-  EXPECT_FALSE(HasField(2));
-  EXPECT_EQ(GetField(1).value(), 101);
+struct TraceableFieldTest : GarbageCollected<TraceableFieldTest> {
+ public:
+  struct Traceable {
+    int value;
+    void Trace(Visitor*) const {}
+    DISALLOW_NEW();
+  };
+  SparseVector<FieldId, Traceable> sparse_vector;
+  void Trace(Visitor* visitor) const { visitor->Trace(sparse_vector); }
 
-  SetField(2, std::make_unique<TestDataField>(202));
-  EXPECT_TRUE(HasField(1));
-  EXPECT_EQ(GetField(1).value(), 101);
-  EXPECT_TRUE(HasField(2));
-  EXPECT_EQ(GetField(2).value(), 202);
+  using Handle = Persistent<TraceableFieldTest>;
+  static TraceableFieldTest* MakeTest() {
+    return MakeGarbageCollected<TraceableFieldTest>();
+  }
+
+  static Traceable CreateField(int value) { return Traceable{value}; }
+  static int GetValue(const Traceable& field) { return field.value; }
+};
+
+struct MemberFieldTest : GarbageCollected<MemberFieldTest> {
+ public:
+  struct GCObject : public GarbageCollected<GCObject> {
+    explicit GCObject(int value) : value(value) {}
+    int value;
+    void Trace(Visitor*) const {}
+  };
+  SparseVector<FieldId, Member<GCObject>> sparse_vector;
+  void Trace(Visitor* visitor) const { visitor->Trace(sparse_vector); }
+
+  using Handle = Persistent<MemberFieldTest>;
+  static MemberFieldTest* MakeTest() {
+    return MakeGarbageCollected<MemberFieldTest>();
+  }
+
+  static GCObject* CreateField(int value) {
+    return MakeGarbageCollected<GCObject>(value);
+  }
+  static int GetValue(const Member<GCObject>& field) { return field->value; }
+};
+
+template <typename TestType>
+class SparseVectorTest : public testing::Test {
+ protected:
+  void SetField(FieldId field_id, int value) {
+    sparse_vector().SetField(field_id, TestType::CreateField(value));
+  }
+
+  int GetField(FieldId field_id) {
+    return TestType::GetValue(sparse_vector().GetField(field_id));
+  }
+
+  bool EraseField(FieldId field_id) {
+    return sparse_vector().EraseField(field_id);
+  }
+
+  void CheckHasFields(std::initializer_list<FieldId> field_ids) {
+    for (auto id = FieldId::kFirst; id <= FieldId::kLast;
+         id = static_cast<FieldId>(static_cast<unsigned>(id) + 1)) {
+      EXPECT_EQ(std::count(field_ids.begin(), field_ids.end(), id),
+                sparse_vector().HasField(id))
+          << static_cast<unsigned>(id);
+    }
+  }
+
+  auto& sparse_vector() { return test_->sparse_vector; }
+
+ private:
+  test::TaskEnvironment task_environment_;
+  typename TestType::Handle test_ = TestType::MakeTest();
+};
+
+using TestTypes = ::testing::Types<IntFieldTest,
+                                   UniquePtrFieldTest,
+                                   TraceableFieldTest,
+                                   MemberFieldTest>;
+TYPED_TEST_SUITE(SparseVectorTest, TestTypes);
+
+TYPED_TEST(SparseVectorTest, Basic) {
+  this->CheckHasFields({});
+
+  this->SetField(FieldId::kFoo, 101);
+  this->CheckHasFields({FieldId::kFoo});
+  EXPECT_EQ(101, this->GetField(FieldId::kFoo));
+
+  this->SetField(FieldId::kBar, 202);
+  this->CheckHasFields({FieldId::kFoo, FieldId::kBar});
+  EXPECT_EQ(202, this->GetField(FieldId::kBar));
+
+  this->sparse_vector().clear();
+  this->CheckHasFields({});
 }
 
-TEST_F(SparseVectorTest, MemoryUsage) {
+TYPED_TEST(SparseVectorTest, MemoryUsage) {
   // An empty vector should not use any memory.
-  EXPECT_TRUE(sparse_vector().empty());
-  EXPECT_EQ(0u, sparse_vector().size());
-  EXPECT_EQ(0u, sparse_vector().capacity());
+  EXPECT_TRUE(this->sparse_vector().empty());
+  EXPECT_EQ(0u, this->sparse_vector().size());
+  EXPECT_EQ(0u, this->sparse_vector().capacity());
 
-  // We should reserve less than the 4 entries that WTF::Vector does by default.
-  // NOTE: this may be 2 or 3 depending on the platform implementation. See
-  // https://crbug.com/1477466 for more information.
-  SetField(20, std::make_unique<TestDataField>(101));
-  EXPECT_FALSE(sparse_vector().empty());
-  EXPECT_EQ(1u, sparse_vector().size());
-  EXPECT_LT(sparse_vector().capacity(), 4u);
+  this->SetField(FieldId::kBang, 101);
+  EXPECT_FALSE(this->sparse_vector().empty());
+  EXPECT_EQ(1u, this->sparse_vector().size());
+  EXPECT_GE(this->sparse_vector().capacity(), 1u);
 
-  SetField(31, std::make_unique<TestDataField>(202));
-  EXPECT_FALSE(sparse_vector().empty());
-  EXPECT_EQ(2u, sparse_vector().size());
-  EXPECT_LT(sparse_vector().capacity(), 4u);
+  this->SetField(FieldId::kLast, 202);
+  EXPECT_FALSE(this->sparse_vector().empty());
+  EXPECT_EQ(2u, this->sparse_vector().size());
+  EXPECT_GE(this->sparse_vector().capacity(), 2u);
+
+  this->sparse_vector().reserve(10);
+  EXPECT_FALSE(this->sparse_vector().empty());
+  EXPECT_EQ(2u, this->sparse_vector().size());
+  EXPECT_GE(this->sparse_vector().capacity(), 10u);
 }
 
-TEST_F(SparseVectorTest, SupportsLargerValues) {
-  SetField(20, std::make_unique<TestDataField>(101));
-  EXPECT_TRUE(HasField(20));
-  EXPECT_FALSE(HasField(31));
-  EXPECT_EQ(GetField(20).value(), 101);
+TYPED_TEST(SparseVectorTest, FirstAndLastValues) {
+  this->SetField(FieldId::kBang, 101);
+  this->CheckHasFields({FieldId::kBang});
+  EXPECT_EQ(101, this->GetField(FieldId::kBang));
 
-  SetField(31, std::make_unique<TestDataField>(202));
-  EXPECT_TRUE(HasField(20));
-  EXPECT_EQ(GetField(20).value(), 101);
-  EXPECT_TRUE(HasField(31));
-  EXPECT_EQ(GetField(31).value(), 202);
+  this->SetField(FieldId::kFirst, 99);
+  this->SetField(FieldId::kLast, 202);
+  this->CheckHasFields({FieldId::kFirst, FieldId::kBang, FieldId::kLast});
+  EXPECT_EQ(99, this->GetField(FieldId::kFirst));
+  EXPECT_EQ(101, this->GetField(FieldId::kBang));
+  EXPECT_EQ(202, this->GetField(FieldId::kLast));
 }
 
-TEST_F(SparseVectorTest, MutateValue) {
-  SetField(1, std::make_unique<TestDataField>(101));
-  EXPECT_EQ(GetField(1).value(), 101);
-  SetField(1, std::make_unique<TestDataField>(202));
-  EXPECT_EQ(GetField(1).value(), 202);
+TYPED_TEST(SparseVectorTest, MutateValue) {
+  this->SetField(FieldId::kFoo, 101);
+  EXPECT_EQ(101, this->GetField(FieldId::kFoo));
+  this->SetField(FieldId::kFoo, 202);
+  EXPECT_EQ(202, this->GetField(FieldId::kFoo));
 }
 
-TEST_F(SparseVectorTest, ClearField) {
-  SetField(1, std::make_unique<TestDataField>(101));
-  SetField(2, std::make_unique<TestDataField>(202));
-  EXPECT_EQ(GetField(1).value(), 101);
-  EXPECT_EQ(GetField(2).value(), 202);
+TYPED_TEST(SparseVectorTest, EraseField) {
+  this->SetField(FieldId::kFoo, 101);
+  this->SetField(FieldId::kBar, 202);
+  EXPECT_EQ(101, this->GetField(FieldId::kFoo));
+  EXPECT_EQ(202, this->GetField(FieldId::kBar));
 
   // Should successfully remove the field.
-  EXPECT_TRUE(ClearField(2));
+  EXPECT_TRUE(this->EraseField(FieldId::kBar));
+  this->CheckHasFields({FieldId::kFoo});
+  EXPECT_EQ(101, this->GetField(FieldId::kFoo));
 
   // Multiple clears should return false since the value is already empty.
-  EXPECT_FALSE(ClearField(2));
+  EXPECT_FALSE(this->EraseField(FieldId::kBar));
+  this->CheckHasFields({FieldId::kFoo});
+  EXPECT_EQ(101, this->GetField(FieldId::kFoo));
 
-  // The second field should be removed now.
-  EXPECT_FALSE(HasField(2));
-
-  // The other field should be unaffected.
-  EXPECT_TRUE(HasField(1));
-  EXPECT_EQ(GetField(1).value(), 101);
+  EXPECT_TRUE(this->EraseField(FieldId::kFoo));
+  this->CheckHasFields({});
 }
 
-TEST_F(SparseVectorTest, SettingToNullptrMaintainsField) {
-  EXPECT_FALSE(HasField(1));
-
-  // In this context nullptr is not a special type, unfortunately.
-  SetField(1, nullptr);
-  EXPECT_TRUE(HasField(1));
-
-  SetField(1, std::make_unique<TestDataField>(101));
-  EXPECT_EQ(GetField(1).value(), 101);
-  EXPECT_TRUE(HasField(1));
-
-  // Since not all types representable as the field type of SparseVector are
-  // convertible to falsy, setting to nullptr should keep the field alive. This
-  // could be fixed by passing a predicate to the template or constructor for
-  // SparseVector, however at this time it's overkill.
-  SetField(1, nullptr);
-  EXPECT_TRUE(HasField(1));
-
-  // Should still be clearable.
-  EXPECT_TRUE(ClearField(1));
-  EXPECT_FALSE(HasField(1));
+TYPED_TEST(SparseVectorTest, DoesNotOverwriteFieldsWithSmallerIndices) {
+  this->SetField(FieldId::kFive, 42);
+  this->SetField(FieldId::kBar, 29);
+  EXPECT_EQ(42, this->GetField(FieldId::kFive));
+  EXPECT_EQ(29, this->GetField(FieldId::kBar));
 }
 
-TEST_F(SparseVectorTest, DoesNotOverwriteFieldsWithSmallerIndices) {
-  SetField(5, std::make_unique<TestDataField>(42));
-  SetField(2, std::make_unique<TestDataField>(29));
-  EXPECT_EQ(GetField(5).value(), 42);
-  EXPECT_EQ(GetField(2).value(), 29);
+TYPED_TEST(SparseVectorTest, DoesNotOverwriteFieldsWithLargerIndices) {
+  this->SetField(FieldId::kBar, 29);
+  this->SetField(FieldId::kFive, 42);
+  EXPECT_EQ(42, this->GetField(FieldId::kFive));
+  EXPECT_EQ(29, this->GetField(FieldId::kBar));
 }
 
-TEST_F(SparseVectorTest, DoesNotOverwriteFieldsWithLargerIndices) {
-  SetField(2, std::make_unique<TestDataField>(29));
-  SetField(5, std::make_unique<TestDataField>(42));
-  EXPECT_EQ(GetField(5).value(), 42);
-  EXPECT_EQ(GetField(2).value(), 29);
+TEST(SparseVectorPtrTest, SettingToNullptrMaintainsField) {
+  SparseVector<FieldId, std::unique_ptr<int>> sparse_vector;
+  EXPECT_FALSE(sparse_vector.HasField(FieldId::kFoo));
+
+  sparse_vector.SetField(FieldId::kFoo, nullptr);
+  EXPECT_TRUE(sparse_vector.HasField(FieldId::kFoo));
+  EXPECT_EQ(nullptr, sparse_vector.GetField(FieldId::kFoo));
+
+  sparse_vector.SetField(FieldId::kFoo, std::make_unique<int>(101));
+  EXPECT_EQ(101, *sparse_vector.GetField(FieldId::kFoo));
+  EXPECT_TRUE(sparse_vector.HasField(FieldId::kFoo));
+
+  sparse_vector.SetField(FieldId::kFoo, nullptr);
+  EXPECT_TRUE(sparse_vector.HasField(FieldId::kFoo));
+  EXPECT_EQ(nullptr, sparse_vector.GetField(FieldId::kFoo));
+
+  EXPECT_TRUE(sparse_vector.EraseField(FieldId::kFoo));
+  EXPECT_FALSE(sparse_vector.HasField(FieldId::kFoo));
 }
 
+// WTF::Vector always uses 0 inline capacity when ANNOTATE_CONTIGUOUS_CONTAINER
+// is defined.
+#ifndef ANNOTATE_CONTIGUOUS_CONTAINER
+TEST(SparseVectorInlineCapacityTest, Basic) {
+  SparseVector<FieldId, int, 16> sparse_vector;
+  EXPECT_EQ(16u, sparse_vector.capacity());
+  EXPECT_GT(sizeof(sparse_vector), sizeof(int) * 16);
+}
+#endif
+
+}  // namespace
 }  // namespace blink
