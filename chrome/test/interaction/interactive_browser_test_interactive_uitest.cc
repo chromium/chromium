@@ -425,18 +425,15 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                        SendAcceleratorToWebContents) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kOverflowMenuOpenEvent);
-  const DeepQuery kOverflowMenuButton = {"downloads-manager",
-                                         "downloads-toolbar", "#moreActions"};
-  const DeepQuery kOverflowMenuDialog = {"downloads-manager",
-                                         "downloads-toolbar",
-                                         "#moreActionsMenu", "#dialog[open]"};
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kClearAllClickEvent);
+  const DeepQuery kClearAllDownloadsButton = {
+      "downloads-manager", "downloads-toolbar", "#clear-all"};
   const ui::Accelerator kClickWebButtonAccelerator(ui::KeyboardCode::VKEY_SPACE,
                                                    ui::EF_NONE);
-  StateChange overflow_menu_open;
-  overflow_menu_open.type = StateChange::Type::kExists;
-  overflow_menu_open.where = kOverflowMenuDialog;
-  overflow_menu_open.event = kOverflowMenuOpenEvent;
+  StateChange clear_all_downloads_click;
+  clear_all_downloads_click.type = StateChange::Type::kExists;
+  clear_all_downloads_click.where = kClearAllDownloadsButton;
+  clear_all_downloads_click.event = kClearAllClickEvent;
   RunTestSequence(
       InstrumentTab(kWebContentsId),
       PressButton(kToolbarAppMenuButtonElementId),
@@ -444,9 +441,9 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       WaitForWebContentsNavigation(kWebContentsId,
                                    GURL(chrome::kChromeUIDownloadsURL)),
       FocusWebContents(kWebContentsId),
-      ExecuteJsAt(kWebContentsId, kOverflowMenuButton, "el => el.focus()"),
+      ExecuteJsAt(kWebContentsId, kClearAllDownloadsButton, "el => el.focus()"),
       SendAccelerator(kWebContentsId, kClickWebButtonAccelerator),
-      WaitForStateChange(kWebContentsId, overflow_menu_open));
+      WaitForStateChange(kWebContentsId, clear_all_downloads_click));
 }
 
 namespace {

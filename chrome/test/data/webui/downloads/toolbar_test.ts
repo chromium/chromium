@@ -27,14 +27,6 @@ suite('toolbar tests', function() {
     document.body.appendChild(toastManager);
   });
 
-  test('resize closes more options menu', function() {
-    toolbar.$.moreActions.click();
-    assertTrue(toolbar.$.moreActionsMenu.open);
-
-    window.dispatchEvent(new CustomEvent('resize'));
-    assertFalse(toolbar.$.moreActionsMenu.open);
-  });
-
   test('search starts spinner', function() {
     toolbar.$.toolbar.dispatchEvent(new CustomEvent(
         'search-changed', {composed: true, bubbles: true, detail: 'a'}));
@@ -49,8 +41,8 @@ suite('toolbar tests', function() {
   });
 
   test('clear all shown/hidden', () => {
-    const clearAll = toolbar.shadowRoot!.querySelector<HTMLElement>(
-        '#moreActionsMenu button')!;
+    const clearAll =
+        toolbar.shadowRoot!.querySelector<HTMLButtonElement>('#clear-all')!;
     assertTrue(clearAll.hidden);
     toolbar.hasClearableDownloads = true;
     assertFalse(clearAll.hidden);
@@ -62,8 +54,7 @@ suite('toolbar tests', function() {
     assertFalse(toastManager.isToastOpen);
     assertFalse(toastManager.slottedHidden);
     toolbar.hasClearableDownloads = true;
-    toolbar.shadowRoot!.querySelector<HTMLElement>(
-                           '#moreActionsMenu button')!.click();
+    toolbar.shadowRoot!.querySelector<HTMLButtonElement>('#clear-all')!.click();
     assertTrue(toastManager.isToastOpen);
     assertTrue(toastManager.slottedHidden);
   });
@@ -76,8 +67,7 @@ suite('toolbar tests', function() {
     toastManager.show('', /* hideSlotted= */ false);
     assertFalse(toastManager.slottedHidden);
     toolbar.hasClearableDownloads = true;
-    toolbar.shadowRoot!.querySelector<HTMLElement>(
-                           '#moreActionsMenu button')!.click();
+    toolbar.shadowRoot!.querySelector<HTMLButtonElement>('#clear-all')!.click();
     assertTrue(toastManager.isToastOpen);
     assertTrue(toastManager.slottedHidden);
   });
@@ -91,8 +81,7 @@ suite('toolbar tests', function() {
     toastManager.show('', /* hideSlotted= */ true);
     assertTrue(toastManager.slottedHidden);
     toolbar.hasClearableDownloads = true;
-    toolbar.shadowRoot!.querySelector<HTMLElement>(
-                           '#moreActionsMenu button')!.click();
+    toolbar.shadowRoot!.querySelector<HTMLButtonElement>('#clear-all')!.click();
     assertTrue(toastManager.isToastOpen);
     assertFalse(toastManager.slottedHidden);
   });

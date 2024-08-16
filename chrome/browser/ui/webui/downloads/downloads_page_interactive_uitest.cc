@@ -133,7 +133,7 @@ class DownloadsPageInteractiveUitest
     const DeepQuery kPathToClearAllButton{
         "downloads-manager",
         "downloads-toolbar",
-        ".clear-all",
+        "#clear-all",
     };
     return ExecuteJsAt(kDownloadsPageTabId, kPathToClearAllButton, kClickFn);
   }
