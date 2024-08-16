@@ -123,9 +123,8 @@ DarkModeImagePolicy GetImagePolicy(const SwitchParams& switch_params) {
 }
 
 int GetForegroundBrightnessThreshold(const SwitchParams& switch_params) {
-  const int flag_value = base::GetFieldTrialParamByFeatureAsInt(
-      features::kForceWebContentsDarkMode,
-      features::kForceDarkForegroundLightnessThresholdParam.name, -1);
+  const int flag_value =
+      features::kForceDarkForegroundLightnessThresholdParam.Get();
   return flag_value >= 0 ? flag_value
                          : GetIntegerSwitchParamValue<int>(
                                switch_params, "ForegroundBrightnessThreshold",
@@ -133,9 +132,8 @@ int GetForegroundBrightnessThreshold(const SwitchParams& switch_params) {
 }
 
 int GetBackgroundBrightnessThreshold(const SwitchParams& switch_params) {
-  const int flag_value = base::GetFieldTrialParamByFeatureAsInt(
-      features::kForceWebContentsDarkMode,
-      features::kForceDarkBackgroundLightnessThresholdParam.name, -1);
+  const int flag_value =
+      features::kForceDarkBackgroundLightnessThresholdParam.Get();
   return flag_value >= 0 ? flag_value
                          : GetIntegerSwitchParamValue<int>(
                                switch_params, "BackgroundBrightnessThreshold",
