@@ -98,6 +98,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/http/http_status_code.h"
+#include "pdf/buildflags.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
@@ -109,6 +110,10 @@
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "url/origin.h"
 #include "url/url_util.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 using content::BrowserContext;
 using extensions::Extension;
@@ -297,7 +302,20 @@ void GetSecurityPolicyForURL(const network::ResourceRequest& request,
   *cross_origin_opener_policy =
       CrossOriginIsolationHeader::GetCrossOriginOpenerPolicy(extension);
 
-  if (WebAccessibleResourcesInfo::IsResourceWebAccessible(
+  bool should_pdf_resource_send_cors_header = false;
+#if BUILDFLAG(ENABLE_PDF)
+  // The CORS headers are needed in the OOPIF PDF extension's index.html if the
+  // original PDF has a COEP: require-corp header.
+  const auto origin = extension.origin();
+  should_pdf_resource_send_cors_header =
+      chrome_pdf::features::IsOopifPdfEnabled() &&
+      origin.scheme() == extensions::kExtensionScheme &&
+      origin.host() == extension_misc::kPdfExtensionId &&
+      resource_path == "/index.html";
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+  if (should_pdf_resource_send_cors_header ||
+      WebAccessibleResourcesInfo::IsResourceWebAccessible(
           &extension, resource_path,
           base::OptionalToPtr(request.request_initiator))) {
     *send_cors_header = true;

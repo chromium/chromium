@@ -2948,6 +2948,29 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DISABLED_TabInAndOutOfPDFPlugin) {
   EXPECT_EQ("\"zoom-out-button\"", press_tab_and_wait_for_message(true));
 }
 
+// Test that a PDF with COEP: require-corp header can load successfully.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
+                       CrossOriginEmbedderPolicyRequireCorpPdf) {
+  EXPECT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test-coep.pdf")));
+}
+
+// Test that a PDF without the COEP: require-corp header fails to load when
+// embedded in a page that has the header.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
+                       CrossOriginEmbedderPolicyRequireCorpIframe) {
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/test-coep-iframe.html")));
+
+  // The PDF failed to load if there aren't any PDF extension hosts or PDF
+  // plugin frames.
+  WebContents* web_contents = GetActiveWebContents();
+  EXPECT_TRUE(
+      pdf_extension_test_util::GetPdfExtensionHosts(web_contents).empty());
+  EXPECT_TRUE(
+      pdf_extension_test_util::GetPdfPluginFrames(web_contents).empty());
+  EXPECT_EQ(0u, pdf_extension_test_util::CountPdfPluginProcesses(browser()));
+}
+
 class PDFExtensionPrerenderTest : public PDFExtensionTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
