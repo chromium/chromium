@@ -215,6 +215,10 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
                 item_view->SetPrimaryImage(*data.display_image,
                                            available_width);
                 break;
+              case PickerSearchResult::ClipboardData::DisplayFormat::kUrl:
+                icon = &vector_icons::kLinkIcon;
+                item_view->SetPrimaryText(data.display_text);
+                break;
               case PickerSearchResult::ClipboardData::DisplayFormat::kHtml:
                 NOTREACHED();
             }

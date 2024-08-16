@@ -78,6 +78,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
       kText,
       kImage,
       kHtml,
+      kUrl,
     };
 
     // Unique ID that specifies which item in the clipboard this refers to.

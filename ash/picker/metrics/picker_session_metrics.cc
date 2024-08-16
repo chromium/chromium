@@ -212,6 +212,7 @@ cros_events::PickerResultType GetResultType(
               case PickerSearchResult::ClipboardData::DisplayFormat::kFile:
                 return cros_events::PickerResultType::CLIPBOARD_FILE;
               case PickerSearchResult::ClipboardData::DisplayFormat::kText:
+              case PickerSearchResult::ClipboardData::DisplayFormat::kUrl:
                 return cros_events::PickerResultType::CLIPBOARD_TEXT;
               case PickerSearchResult::ClipboardData::DisplayFormat::kImage:
                 return cros_events::PickerResultType::CLIPBOARD_IMAGE;
