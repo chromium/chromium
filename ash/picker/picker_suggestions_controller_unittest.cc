@@ -204,9 +204,9 @@ TEST_F(PickerSuggestionsControllerTest,
 }
 
 TEST_F(PickerSuggestionsControllerTest,
-       GetSuggestionsReturnsOneSuggestionPerCategory) {
+       GetSuggestionsRequestsAndReturnsOneSuggestionPerCategory) {
   NiceMock<MockPickerClient> client;
-  EXPECT_CALL(client, GetSuggestedLinkResults)
+  EXPECT_CALL(client, GetSuggestedLinkResults(1, _))
       .WillRepeatedly(
           WithArg<1>(RunCallbackArgWith(std::vector<PickerSearchResult>{
               PickerSearchResult::BrowsingHistory(GURL("a.com"), u"a",
@@ -222,7 +222,7 @@ TEST_F(PickerSuggestionsControllerTest,
               PickerSearchResult::DriveFile(/*id=*/{}, u"b", GURL("b.com"),
                                             /*file_path=*/{}),
           })));
-  EXPECT_CALL(client, GetRecentLocalFileResults)
+  EXPECT_CALL(client, GetRecentLocalFileResults(1, _))
       .WillRepeatedly(
           WithArg<1>(RunCallbackArgWith(std::vector<PickerSearchResult>{
               PickerSearchResult::LocalFile(u"a", /*file_path=*/{}),

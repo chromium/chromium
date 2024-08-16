@@ -74,8 +74,26 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
 
   // TODO: b/344685737 - Rank and collect suggestions in a more intelligent way.
   for (PickerCategory category : model.GetRecentResultsCategories()) {
-    GetSuggestionsForCategory(
-        category, base::BindRepeating(&GetMostRecentResult).Then(callback));
+    // Special case certain categories where we can save computation by only
+    // asking for 1 result.
+    // TODO: b/357740941: Request only one Drive file once directory filtering
+    // is implemented inside DriveFS.
+    switch (category) {
+      case PickerCategory::kLinks:
+        client_->GetSuggestedLinkResults(
+            /*max_results=*/1,
+            base::BindRepeating(&GetMostRecentResult).Then(callback));
+        break;
+      case PickerCategory::kLocalFiles:
+        client_->GetRecentLocalFileResults(
+            /*max_results=*/1,
+            base::BindRepeating(&GetMostRecentResult).Then(callback));
+        break;
+      default:
+        GetSuggestionsForCategory(
+            category, base::BindRepeating(&GetMostRecentResult).Then(callback));
+        break;
+    }
   }
 }
 
