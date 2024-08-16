@@ -141,6 +141,8 @@ public class SafetyHubMagicStackMediatorTest {
         onClickListener.onClick(mView);
         verify(mSettingsLauncher)
                 .launchSettingsActivity(eq(mContext), eq(SafeBrowsingSettingsFragment.class));
+        verify(mModuleDelegate, times(1)).removeModule(ModuleType.SAFETY_HUB);
+        verify(mMagicStackBridge, times(1)).dismissSafeBrowsingModule();
     }
 
     @Test
@@ -214,6 +216,8 @@ public class SafetyHubMagicStackMediatorTest {
                 mModel.get(SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER);
         onClickListener.onClick(mView);
         verify(mPasswordCheckIntentForAccountCheckup, times(1)).send();
+        verify(mModuleDelegate, times(1)).removeModule(ModuleType.SAFETY_HUB);
+        verify(mMagicStackBridge, times(1)).dismissCompromisedPasswordsModule();
     }
 
     @Test

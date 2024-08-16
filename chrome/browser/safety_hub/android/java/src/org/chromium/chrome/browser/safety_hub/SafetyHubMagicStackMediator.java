@@ -235,6 +235,8 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                             .launchSettingsActivity(mContext, SafeBrowsingSettingsFragment.class);
                     recordExternalInteractions(
                             ExternalInteractions.OPEN_SAFE_BROWSING_FROM_MAGIC_STACK);
+                    mMagicStackBridge.dismissSafeBrowsingModule();
+                    dismissModule();
                 });
     }
 
@@ -263,6 +265,8 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                     SafetyHubUtils.showPasswordCheckUI(
                             mContext, mProfile, mModalDialogManagerSupplier);
                     recordExternalInteractions(ExternalInteractions.OPEN_GPM_FROM_MAGIC_STACK);
+                    mMagicStackBridge.dismissCompromisedPasswordsModule();
+                    dismissModule();
                 });
     }
 }
