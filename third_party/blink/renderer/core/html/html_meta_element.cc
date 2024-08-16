@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -533,6 +534,15 @@ void HTMLMetaElement::ProcessViewportContentAttribute(
           GetDocument().GetSettings()->GetViewportMetaZeroValuesQuirk());
 
   viewport_data.SetViewportDescription(description_from_legacy_tag);
+
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "ParseMetaViewport",
+      "data", [&](perfetto::TracedValue context) {
+        auto dict = std::move(context).WriteDictionary();
+        dict.Add("frame", GetDocument().GetFrame()->GetFrameIdForTracing());
+        dict.Add("node_id", GetDomNodeId());
+        dict.Add("content", content);
+      });
 }
 
 void HTMLMetaElement::NameRemoved(const AtomicString& name_value) {
