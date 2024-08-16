@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "chrome/browser/ui/ash/ash_util.h"
+#include "ash/utility/wm_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"

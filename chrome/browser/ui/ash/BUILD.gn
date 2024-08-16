@@ -22,8 +22,6 @@ static_library("ash") {
     "arc_vm_data_migration_confirmation_dialog.h",
     "ash_shell_init.cc",
     "ash_shell_init.h",
-    "ash_util.cc",
-    "ash_util.h",
     "ash_web_view_factory_impl.cc",
     "ash_web_view_factory_impl.h",
     "ash_web_view_impl.cc",

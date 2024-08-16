@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/shelf/browser_app_shelf_item_controller.h"
 
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/wm/window_animations.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/browser_instance/browser_app_instance_registry.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
@@ -148,7 +148,7 @@ void BrowserAppShelfItemController::ItemSelected(
               registry_->GetAppInstanceById(target_id);
           window = instance->window;
         }
-        ash_util::BounceWindow(window);
+        ash::BounceWindow(window);
         return;
       }
       // If however the single instance is not active, the code will fall

@@ -3,17 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
-#include "base/memory/raw_ptr.h"
 
 #include <iterator>
 #include <utility>
 
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/wm/window_animations.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
@@ -55,7 +55,7 @@ ash::ShelfAction ActivateOrAdvanceToNextAppWindow(
   if (window_to_show->IsActive()) {
     // Coming here, only a single window is active. For keyboard activations
     // the window gets animated.
-    ash_util::BounceWindow(window_to_show->GetNativeWindow());
+    ash::BounceWindow(window_to_show->GetNativeWindow());
   } else {
     return ShowAndActivateOrMinimize(window_to_show, windows.size() == 1);
   }

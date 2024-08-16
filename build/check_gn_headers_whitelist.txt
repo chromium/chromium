@@ -3,6 +3,7 @@
 
 ash/accelerators/accelerator_table.h
 ash/ash_export.h
+ash/ash_util.h
 ash/constants/ash_switches.h
 ash/metrics/task_switch_metrics_recorder.h
 ash/metrics/task_switch_source.h
@@ -42,7 +43,6 @@ chrome/browser/media_galleries/media_file_system_context.h
 chrome/browser/notifications/displayed_notifications_dispatch_callback.h
 chrome/browser/ui/app_icon_loader_delegate.h
 chrome/browser/ash/app_list/app_list_syncable_service_factory.h
-chrome/browser/ui/ash/ash_util.h
 chrome/browser/ui/ash/multi_user/multi_user_util.h
 chrome/browser/ui/network_profile_bubble.h
 chrome/browser/ui/views/frame/browser_frame_header_ash.h

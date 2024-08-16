@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/ash_util.h"
+#include "ash/utility/wm_util.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "components/session_manager/core/session_manager.h"
-#include "ui/wm/core/shadow_types.h"
-#include "ui/wm/core/window_animations.h"
+#include "components/session_manager/session_manager_types.h"
 
 namespace ash_util {
 
@@ -32,14 +31,10 @@ void SetupWidgetInitParamsForContainerInPrimary(
 }
 
 int GetSystemModalDialogContainerId() {
-  return session_manager::SessionManager::Get()->session_state() ==
+  return ash::Shell::Get()->session_controller()->GetSessionState() ==
                  session_manager::SessionState::ACTIVE
              ? ash::kShellWindowId_SystemModalContainer
              : ash::kShellWindowId_LockSystemModalContainer;
-}
-
-void BounceWindow(aura::Window* window) {
-  wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
 }
 
 }  // namespace ash_util
