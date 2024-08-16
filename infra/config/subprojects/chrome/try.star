@@ -85,6 +85,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "android-internal-dbg",
+)
+
+chrome_internal_verifier(
     builder = "android-internal-rel",
 )
 
