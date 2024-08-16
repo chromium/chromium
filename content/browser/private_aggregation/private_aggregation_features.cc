@@ -14,6 +14,6 @@ BASE_FEATURE(kPrivateAggregationApiDebugModeRequires3pcEligibility,
 
 BASE_FEATURE(kPrivateAggregationApiContributionMerging,
              "PrivateAggregationApiContributionMerging",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace content
