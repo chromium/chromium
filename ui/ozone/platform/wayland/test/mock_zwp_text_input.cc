@@ -75,7 +75,7 @@ void TextInputV3SetSurroundingText(struct wl_client* client,
                                    int32_t cursor,
                                    int32_t anchor) {
   GetUserDataAs<MockZwpTextInputV3>(resource)->SetSurroundingText(
-      text, gfx::Range(cursor, anchor));
+      text, gfx::Range(anchor, cursor));
 }
 
 void TextInputV3SetTextChangeCause(struct wl_client* client,

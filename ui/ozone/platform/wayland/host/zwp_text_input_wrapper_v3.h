@@ -63,7 +63,17 @@ class ZWPTextInputWrapperV3 : public ZWPTextInputWrapper {
     uint32_t content_hint = ZWP_TEXT_INPUT_V3_CONTENT_HINT_NONE;
     uint32_t content_purpose = ZWP_TEXT_INPUT_V3_CONTENT_PURPOSE_NORMAL;
   };
-
+  struct SetSurroundingTextData {
+    constexpr SetSurroundingTextData() = default;
+    constexpr SetSurroundingTextData(std::string text,
+                                     int32_t cursor,
+                                     int32_t anchor)
+        : text(std::move(text)), cursor(cursor), anchor(anchor) {}
+    bool operator==(const SetSurroundingTextData&) const = default;
+    std::string text;
+    int32_t cursor = 0;
+    int32_t anchor = 0;
+  };
   struct PreeditData {
     constexpr PreeditData() = default;
     constexpr PreeditData(std::string text,
@@ -79,6 +89,7 @@ class ZWPTextInputWrapperV3 : public ZWPTextInputWrapper {
 
   void SendCursorRect(const gfx::Rect& rect);
   void SendContentType(const ContentType& content_type);
+  void SendSurroundingText(const SetSurroundingTextData& data);
   void ApplyPendingSetRequests();
   void ResetPendingSetRequests();
   void ResetLastSentValues();
@@ -121,10 +132,12 @@ class ZWPTextInputWrapperV3 : public ZWPTextInputWrapper {
   // Pending set requests to be sent to compositor
   std::optional<gfx::Rect> pending_set_cursor_rect_;
   std::optional<ContentType> pending_set_content_type_;
+  std::optional<SetSurroundingTextData> pending_set_surrounding_text_;
 
   // last sent values
-  gfx::Rect last_sent_cursor_rect_;
-  ContentType last_sent_content_type_;
+  std::optional<gfx::Rect> last_sent_cursor_rect_;
+  std::optional<ContentType> last_sent_content_type_;
+  std::optional<SetSurroundingTextData> last_sent_surrounding_text_data_;
 };
 
 }  // namespace ui
