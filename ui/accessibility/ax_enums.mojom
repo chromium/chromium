@@ -216,7 +216,7 @@ enum Role {
   kFigcaption = 83,
   kFigure = 84,
   kFooter = 85,
-  kFooterAsNonLandmark = 86,
+  kSectionFooter = 86, // Previously kFooterAsNonLandmark.
   kForm = 87,
   kGenericContainer = 88,
   // --------------------------------------------------------------
@@ -231,7 +231,7 @@ enum Role {
   [MinVersion=7] kGridCell = 212,
   kGroup = 93,
   kHeader = 94,
-  kHeaderAsNonLandmark = 95,
+  kSectionHeader = 95, // Previously kHeaderAsNonLandmark.
   kHeading = 96,
   kIframe = 97,
   kIframePresentational = 98,

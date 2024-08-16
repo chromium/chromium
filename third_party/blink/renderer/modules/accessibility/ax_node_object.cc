@@ -1211,7 +1211,8 @@ std::optional<String> AXNodeObject::GetCSSAltText(const Element* element) {
 
 // The following lists are for deciding whether the tags aside,
 // header and footer can be interpreted as roles complementary, banner and
-// contentInfo or if they should be interpreted as generic.
+// contentInfo or if they should be interpreted as generic, sectionheader, or
+// sectionfooter.
 // This function only handles the complementary, banner, and contentInfo roles,
 // which belong to the landmark roles set.
 static HashSet<ax::mojom::blink::Role>& GetLandmarkIsNotAllowedAncestorRoles(

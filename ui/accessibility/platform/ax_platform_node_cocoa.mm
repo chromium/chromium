@@ -109,6 +109,8 @@ RoleMap BuildSubroleMap() {
       {ax::mojom::Role::kRegion, @"AXLandmarkRegion"},
       {ax::mojom::Role::kSearch, @"AXLandmarkSearch"},
       {ax::mojom::Role::kSearchBox, @"AXSearchField"},
+      {ax::mojom::Role::kSectionFooter, @"AXSectionFooter"},
+      {ax::mojom::Role::kSectionHeader, @"AXSectionHeader"},
       {ax::mojom::Role::kStatus, @"AXApplicationStatus"},
       {ax::mojom::Role::kStrong, @"AXStrongStyleGroup"},
       {ax::mojom::Role::kSubscript, @"AXSubscriptStyleGroup"},
@@ -446,14 +448,12 @@ void CollectAncestorRoles(
     case ax::mojom::Role::kFigcaption:
     case ax::mojom::Role::kFigure:
     case ax::mojom::Role::kFooter:
-    case ax::mojom::Role::kFooterAsNonLandmark:
     case ax::mojom::Role::kForm:
     case ax::mojom::Role::kGenericContainer:
     case ax::mojom::Role::kGraphicsDocument:
     case ax::mojom::Role::kGraphicsObject:
     case ax::mojom::Role::kGroup:
     case ax::mojom::Role::kHeader:
-    case ax::mojom::Role::kHeaderAsNonLandmark:
     case ax::mojom::Role::kIframe:
     case ax::mojom::Role::kIframePresentational:
     case ax::mojom::Role::kLabelText:
@@ -502,6 +502,8 @@ void CollectAncestorRoles(
     case ax::mojom::Role::kRuby:
     case ax::mojom::Role::kSearch:
     case ax::mojom::Role::kSection:
+    case ax::mojom::Role::kSectionFooter:
+    case ax::mojom::Role::kSectionHeader:
     case ax::mojom::Role::kSectionWithoutName:
     case ax::mojom::Role::kStatus:
     case ax::mojom::Role::kSubscript:
@@ -2350,8 +2352,6 @@ void CollectAncestorRoles(
   NSString* role = [self accessibilityRole];
   switch ([self internalRole]) {
     case ax::mojom::Role::kColorWell:            // Use platform's "color well"
-    case ax::mojom::Role::kFooterAsNonLandmark:  // Default: IDS_AX_ROLE_FOOTER
-    case ax::mojom::Role::kHeaderAsNonLandmark:  // Default: IDS_AX_ROLE_HEADER
     case ax::mojom::Role::kImage:                // Default: IDS_AX_ROLE_GRAPHIC
     case ax::mojom::Role::kInputTime:            // Use platform's "time field"
     case ax::mojom::Role::kMeter:        // Use platform's "level indicator"

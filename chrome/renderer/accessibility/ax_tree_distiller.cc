@@ -39,15 +39,11 @@ static const ax::mojom::Role kContentRoles[]{
 
 // TODO: Consider moving this to AXNodeProperties.
 static const ax::mojom::Role kRolesToSkip[]{
-    ax::mojom::Role::kAudio,
-    ax::mojom::Role::kBanner,
-    ax::mojom::Role::kButton,
-    ax::mojom::Role::kComplementary,
-    ax::mojom::Role::kContentInfo,
-    ax::mojom::Role::kFooter,
-    ax::mojom::Role::kFooterAsNonLandmark,
-    ax::mojom::Role::kLabelText,
-    ax::mojom::Role::kNavigation,
+    ax::mojom::Role::kAudio,         ax::mojom::Role::kBanner,
+    ax::mojom::Role::kButton,        ax::mojom::Role::kComplementary,
+    ax::mojom::Role::kContentInfo,   ax::mojom::Role::kFooter,
+    ax::mojom::Role::kLabelText,     ax::mojom::Role::kNavigation,
+    ax::mojom::Role::kSectionFooter,
 };
 
 // Find all of the main and article nodes. Also, include unignored heading nodes

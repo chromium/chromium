@@ -419,6 +419,8 @@ const RoleEntry kAriaRoles[] = {
     {"scrollbar", ax::mojom::blink::Role::kScrollBar},
     {"search", ax::mojom::blink::Role::kSearch},
     {"searchbox", ax::mojom::blink::Role::kSearchBox},
+    {"sectionfooter", ax::mojom::blink::Role::kSectionFooter},
+    {"sectionheader", ax::mojom::blink::Role::kSectionHeader},
     {"separator", ax::mojom::blink::Role::kSplitter},
     {"slider", ax::mojom::blink::Role::kSlider},
     {"spinbutton", ax::mojom::blink::Role::kSpinButton},
@@ -448,14 +450,12 @@ const RoleEntry kAriaRoles[] = {
 // role name, since that is the publicly visible concept.
 const RoleEntry kReverseRoles[] = {
     {"banner", ax::mojom::blink::Role::kHeader},
-    {"generic", ax::mojom::blink::Role::kHeaderAsNonLandmark},
     {"button", ax::mojom::blink::Role::kToggleButton},
     {"button", ax::mojom::blink::Role::kPopUpButton},
     {"contentinfo", ax::mojom::blink::Role::kFooter},
     {"option", ax::mojom::blink::Role::kMenuListOption},
     {"option", ax::mojom::blink::Role::kListBoxOption},
     {"group", ax::mojom::blink::Role::kDetails},
-    {"generic", ax::mojom::blink::Role::kFooterAsNonLandmark},
     {"generic", ax::mojom::blink::Role::kSectionWithoutName},
     {"combobox", ax::mojom::blink::Role::kComboBoxMenuButton},
     {"combobox", ax::mojom::blink::Role::kComboBoxSelect},
@@ -2705,13 +2705,13 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
 
   if (role_ == ax::mojom::blink::Role::kHeader) {
     if (IsDescendantOfLandmarkDisallowedElement()) {
-      return ax::mojom::blink::Role::kHeaderAsNonLandmark;
+      return ax::mojom::blink::Role::kSectionHeader;
     }
   }
 
   if (role_ == ax::mojom::blink::Role::kFooter) {
     if (IsDescendantOfLandmarkDisallowedElement()) {
-      return ax::mojom::blink::Role::kFooterAsNonLandmark;
+      return ax::mojom::blink::Role::kSectionFooter;
     }
   }
 
@@ -7674,6 +7674,8 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kScrollView:
     case ax::mojom::blink::Role::kSearch:
     case ax::mojom::blink::Role::kSearchBox:
+    case ax::mojom::blink::Role::kSectionFooter:
+    case ax::mojom::blink::Role::kSectionHeader:
     case ax::mojom::blink::Role::kSplitter:
     case ax::mojom::blink::Role::kSlider:
     case ax::mojom::blink::Role::kSpinButton:
@@ -7750,8 +7752,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kEmphasis:
     case ax::mojom::blink::Role::kFigcaption:
     case ax::mojom::blink::Role::kFooter:
-    case ax::mojom::blink::Role::kFooterAsNonLandmark:
-    case ax::mojom::blink::Role::kHeaderAsNonLandmark:
     case ax::mojom::blink::Role::kInlineTextBox:
     case ax::mojom::blink::Role::kLabelText:
     case ax::mojom::blink::Role::kLayoutTable:

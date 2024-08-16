@@ -1655,15 +1655,11 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
       return GetLocalizedString(IDS_AX_ROLE_FIGURE);
     case ax::mojom::Role::kFooter:
       return GetLocalizedString(IDS_AX_ROLE_FOOTER);
-    case ax::mojom::Role::kFooterAsNonLandmark:
-      return GetLocalizedString(IDS_AX_ROLE_FOOTER);
     case ax::mojom::Role::kForm:
       return GetLocalizedString(IDS_AX_ROLE_FORM);
     case ax::mojom::Role::kGrid:
       return GetLocalizedString(IDS_AX_ROLE_TABLE);
     case ax::mojom::Role::kHeader:
-      return GetLocalizedString(IDS_AX_ROLE_HEADER);
-    case ax::mojom::Role::kHeaderAsNonLandmark:
       return GetLocalizedString(IDS_AX_ROLE_HEADER);
     case ax::mojom::Role::kHeading:
       return GetLocalizedString(IDS_AX_ROLE_HEADING);
@@ -1734,6 +1730,10 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
     case ax::mojom::Role::kSectionWithoutName:
       // While there is an IDS_AX_ROLE_SECTION, no one seems to be using it.
       return {};
+    case ax::mojom::Role::kSectionFooter:
+      return GetLocalizedString(IDS_AX_ROLE_SECTIONFOOTER);
+    case ax::mojom::Role::kSectionHeader:
+      return GetLocalizedString(IDS_AX_ROLE_SECTIONHEADER);
     case ax::mojom::Role::kSlider:
       return GetLocalizedString(IDS_AX_ROLE_SLIDER);
     case ax::mojom::Role::kSpinButton:

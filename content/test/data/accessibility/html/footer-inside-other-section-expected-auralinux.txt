@@ -1,13 +1,13 @@
 [document web]
 ++[article]
-++++[section]
+++++[footer]
 ++++++[paragraph]
 ++++++++[static] name='footer inside article.'
 ++[section]
-++++[section]
+++++[footer]
 ++++++[paragraph]
 ++++++++[static] name='footer inside section.'
 ++[landmark] xml-roles:main
-++++[section]
+++++[footer]
 ++++++[paragraph]
 ++++++++[static] name='footer inside main.'

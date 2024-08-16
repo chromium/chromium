@@ -1011,11 +1011,6 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
       return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
               L"group"};
 
-    case ax::mojom::Role::kFooterAsNonLandmark:
-    case ax::mojom::Role::kHeaderAsNonLandmark:
-      return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
-              L"group"};
-
     case ax::mojom::Role::kForm:
       return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
               L"form"};
@@ -1293,6 +1288,8 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
               L"description"};
 
     case ax::mojom::Role::kSection:
+    case ax::mojom::Role::kSectionFooter:
+    case ax::mojom::Role::kSectionHeader:
     case ax::mojom::Role::kSectionWithoutName:
       return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
               L"group"};
@@ -6550,10 +6547,6 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kFeed:
       return ROLE_SYSTEM_GROUPING;
 
-    case ax::mojom::Role::kFooterAsNonLandmark:
-    case ax::mojom::Role::kHeaderAsNonLandmark:
-      return ROLE_SYSTEM_GROUPING;
-
     case ax::mojom::Role::kForm:
       return ROLE_SYSTEM_GROUPING;
 
@@ -6756,6 +6749,8 @@ int AXPlatformNodeWin::MSAARole() {
       return ROLE_SYSTEM_STATICTEXT;
 
     case ax::mojom::Role::kSection:
+    case ax::mojom::Role::kSectionFooter:
+    case ax::mojom::Role::kSectionHeader:
     case ax::mojom::Role::kSectionWithoutName:
       return ROLE_SYSTEM_GROUPING;
 
@@ -7075,10 +7070,6 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
       break;
     case ax::mojom::Role::kFigcaption:
       ia2_role = IA2_ROLE_CAPTION;
-      break;
-    case ax::mojom::Role::kFooterAsNonLandmark:
-    case ax::mojom::Role::kHeaderAsNonLandmark:
-      ia2_role = IA2_ROLE_SECTION;
       break;
     case ax::mojom::Role::kForm:
       ia2_role = IA2_ROLE_FORM;
@@ -7527,10 +7518,8 @@ bool AXPlatformNodeWin::IsUIAControl() const {
       case ax::mojom::Role::kDetails:
       case ax::mojom::Role::kFigure:
       case ax::mojom::Role::kFooter:
-      case ax::mojom::Role::kFooterAsNonLandmark:
       case ax::mojom::Role::kGridCell:
       case ax::mojom::Role::kHeader:
-      case ax::mojom::Role::kHeaderAsNonLandmark:
       case ax::mojom::Role::kListBoxOption:
       case ax::mojom::Role::kListItem:
       // Treat the root of a MathML tree as content/control so that it is seen
@@ -7541,6 +7530,8 @@ bool AXPlatformNodeWin::IsUIAControl() const {
       case ax::mojom::Role::kProgressIndicator:
       case ax::mojom::Role::kRow:
       case ax::mojom::Role::kSection:
+      case ax::mojom::Role::kSectionFooter:
+      case ax::mojom::Role::kSectionHeader:
       case ax::mojom::Role::kSplitter:
       case ax::mojom::Role::kStatus:
       case ax::mojom::Role::kTime:

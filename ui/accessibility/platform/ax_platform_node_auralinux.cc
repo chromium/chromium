@@ -2773,8 +2773,6 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
     case ax::mojom::Role::kFeed:
       return ATK_ROLE_PANEL;
     case ax::mojom::Role::kGenericContainer:
-    case ax::mojom::Role::kFooterAsNonLandmark:
-    case ax::mojom::Role::kHeaderAsNonLandmark:
     case ax::mojom::Role::kRuby:
     case ax::mojom::Role::kSectionWithoutName:
       return ATK_ROLE_SECTION;
@@ -2956,6 +2954,10 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
       return kStaticRole;
     case ax::mojom::Role::kSection:
       return ATK_ROLE_SECTION;
+    case ax::mojom::Role::kSectionFooter:
+      return ATK_ROLE_FOOTER;
+    case ax::mojom::Role::kSectionHeader:
+      return ATK_ROLE_HEADER;
     case ax::mojom::Role::kScrollBar:
       return ATK_ROLE_SCROLL_BAR;
     case ax::mojom::Role::kSearch:

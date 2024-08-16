@@ -774,11 +774,9 @@ std::u16string TestAXNodeWrapper::GetLocalizedStringForRoleDescription() const {
       return u"figure";
 
     case ax::mojom::Role::kFooter:
-    case ax::mojom::Role::kFooterAsNonLandmark:
       return u"footer";
 
     case ax::mojom::Role::kHeader:
-    case ax::mojom::Role::kHeaderAsNonLandmark:
       return u"header";
 
     case ax::mojom::Role::kMark:
@@ -796,6 +794,12 @@ std::u16string TestAXNodeWrapper::GetLocalizedStringForRoleDescription() const {
 
       return {};
     }
+
+    case ax::mojom::Role::kSectionFooter:
+      return u"sectionfooter";
+
+    case ax::mojom::Role::kSectionHeader:
+      return u"searchheader";
 
     case ax::mojom::Role::kStatus:
       return u"output";
