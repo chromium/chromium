@@ -16545,38 +16545,6 @@
             ]
         }
     ],
-    "PdfOcrChromeOS": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PdfOcr"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PdfOcrDesktop": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PdfOcr"
-                    ]
-                }
-            ]
-        }
-    ],
     "PdfOutOfProcessIframe": [
         {
             "platforms": [

@@ -324,14 +324,8 @@ bool IsMainNodeAnnotationsEnabled() {
   return base::FeatureList::IsEnabled(::features::kMainNodeAnnotations);
 }
 
-BASE_FEATURE(kPdfOcr,
-             "PdfOcr",
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_CHROMEOS)
-);
+// This feature has a 10% holdback to measure memory impact.
+BASE_FEATURE(kPdfOcr, "PdfOcr", base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsPdfOcrEnabled() {
   return base::FeatureList::IsEnabled(::features::kPdfOcr);
