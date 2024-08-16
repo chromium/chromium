@@ -50,6 +50,7 @@ component("config_provider") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//components/feature_engagement/public",
   ]

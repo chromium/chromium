@@ -724,6 +724,11 @@ const char kFormFactor[] = "form-factor";
 // Specifies campaigns to override for testing.
 const char kGrowthCampaigns[] = "growth-campaigns";
 
+// Clear all growth framework Feature Engagement events at session start for
+// testing.
+const char kGrowthCampaignsClearEventsAtSessionStart[] =
+    "growth-campaigns-clear-events-at-session-start";
+
 // Path for which to load growth campaigns file for testing (instead of
 // downloading from Omaha).
 const char kGrowthCampaignsPath[] = "growth-campaigns-path";
