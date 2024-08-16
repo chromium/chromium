@@ -155,12 +155,16 @@ class HarfBuzzShaperTest : public FontTestBase {
   const char* kSystemColorEmojiFont = "Apple Color Emoji";
 #elif BUILDFLAG(IS_ANDROID)
   const char* kSystemColorEmojiFont = "Noto Color Emoji";
+#elif BUILDFLAG(IS_WIN)
+  const char* kSystemColorEmojiFont = "Segoe UI Emoji";
 #endif
 
 #if BUILDFLAG(IS_MAC)
   const char* kSystemMonoEmojiFont = "Apple Symbols";
 #elif BUILDFLAG(IS_ANDROID)
   const char* kSystemMonoEmojiFont = "Noto Sans Symbols";
+#elif BUILDFLAG(IS_WIN)
+  const char* kSystemMonoEmojiFont = "Segoe UI Symbol";
 #endif
 
   String GetShapedFontFamilyNameForEmojiVS(Font& font, String text) {
@@ -795,7 +799,7 @@ TEST_F(HarfBuzzShaperTest, IdeographicSpace) {
   EXPECT_EQ(run_font_data.size(), 1u);
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 TEST_F(HarfBuzzShaperTest, SystemEmojiVS15) {
   ScopedFontVariationSequencesForTest scoped_feature_vs(true);
   ScopedSystemFallbackEmojiVSSupportForTest scoped_feature_system_emoji_vs(

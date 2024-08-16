@@ -56,7 +56,9 @@
 #include "third_party/blink/renderer/platform/fonts/win/font_fallback_win.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -96,8 +98,12 @@ const LayoutLocale* FallbackLocaleForCharacter(
     const FontDescription& font_description,
     const FontFallbackPriority& fallback_priority,
     const UChar32 codepoint) {
-  if (fallback_priority == FontFallbackPriority::kEmojiEmoji)
+  if (fallback_priority == FontFallbackPriority::kEmojiEmoji) {
     return LayoutLocale::Get(AtomicString(kColorEmojiLocale));
+  } else if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
+             Character::IsEmoji(codepoint)) {
+    return LayoutLocale::Get(AtomicString(kMonoEmojiLocale));
+  }
 
   UErrorCode error_code = U_ZERO_ERROR;
   const UScriptCode char_script = uscript_getScript(codepoint, &error_code);

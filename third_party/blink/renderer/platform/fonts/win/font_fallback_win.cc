@@ -400,9 +400,22 @@ UScriptCode GetScript(int ucs4) {
   return script;
 }
 
-const char* FirstAvailableEmojiFont(const SkFontMgr& font_manager) {
+const char* AvailableColorEmojiFont(const SkFontMgr& font_manager) {
   static const char* const kEmojiFonts[] = {"Segoe UI Emoji",
                                             "Segoe UI Symbol"};
+  static const char* emoji_font = nullptr;
+  // `std::once()` may cause hangs. crbug.com/349456407
+  static bool initialized = false;
+  if (!initialized) {
+    emoji_font = FirstAvailableFont(kEmojiFonts, font_manager);
+    initialized = true;
+  }
+  return emoji_font;
+}
+
+const char* AvailableMonoEmojiFont(const SkFontMgr& font_manager) {
+  static const char* const kEmojiFonts[] = {"Segoe UI Symbol",
+                                            "Segoe UI Emoji"};
   static const char* emoji_font = nullptr;
   // `std::once()` may cause hangs. crbug.com/349456407
   static bool initialized = false;
@@ -426,12 +439,23 @@ const char* FirstAvailableMathFont(const SkFontMgr& font_manager) {
   return math_font;
 }
 
-const AtomicString& GetEmojiFont(const SkFontMgr& font_manager) {
-  // Calling `FirstAvailableEmojiFont()` from `DEFINE_THREAD_SAFE_STATIC_LOCAL`
+const AtomicString& GetColorEmojiFont(const SkFontMgr& font_manager) {
+  // Calling `AvailableColorEmojiFont()` from `DEFINE_THREAD_SAFE_STATIC_LOCAL`
   // may cause hangs. crbug.com/349456407
   DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, emoji_font, (g_empty_atom));
   if (emoji_font.empty() && !emoji_font.IsNull()) {
-    emoji_font = AtomicString(FirstAvailableEmojiFont(font_manager));
+    emoji_font = AtomicString(AvailableColorEmojiFont(font_manager));
+    CHECK(!emoji_font.empty() || emoji_font.IsNull());
+  }
+  return emoji_font;
+}
+
+const AtomicString& GetMonoEmojiFont(const SkFontMgr& font_manager) {
+  // Calling `AvailableMonoEmojiFont()` from `DEFINE_THREAD_SAFE_STATIC_LOCAL`
+  // may cause hangs. crbug.com/349456407
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, emoji_font, (g_empty_atom));
+  if (emoji_font.empty() && !emoji_font.IsNull()) {
+    emoji_font = AtomicString(AvailableMonoEmojiFont(font_manager));
     CHECK(!emoji_font.empty() || emoji_font.IsNull());
   }
   return emoji_font;
@@ -442,7 +466,9 @@ const AtomicString& GetFontBasedOnUnicodeBlock(UBlockCode block_code,
   switch (block_code) {
     case UBLOCK_EMOTICONS:
     case UBLOCK_ENCLOSED_ALPHANUMERIC_SUPPLEMENT:
-      return GetEmojiFont(font_manager);
+      // We call this function only when FallbackPriority is not kEmojiEmoji,
+      // so we need a text presentation of emoji.
+      return GetMonoEmojiFont(font_manager);
     case UBLOCK_PLAYING_CARDS:
     case UBLOCK_MISCELLANEOUS_SYMBOLS:
     case UBLOCK_MISCELLANEOUS_SYMBOLS_AND_ARROWS:
@@ -542,7 +568,7 @@ const AtomicString& GetFallbackFamily(
     UScriptCode& script_out) {
   DCHECK(character);
   if (fallback_priority == FontFallbackPriority::kEmojiEmoji) [[unlikely]] {
-    if (const AtomicString& family = GetEmojiFont(font_manager)) {
+    if (const AtomicString& family = GetColorEmojiFont(font_manager)) {
       script_out = USCRIPT_INVALID_CODE;
       return family;
     }

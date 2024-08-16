@@ -196,10 +196,9 @@ crbug.com/1004945 [ Win ] fast/text/mac-aat-morx-kern.html [ Skip ]
 [ Mac ] virtual/text-antialias/mixed-direction-bidi-wrap.html [ Skip ]
 
 # Test for emoji variation sequence support in system fallback, it s only
-# supported on Mac for now.
+# supported on Mac, Android and Windows.
 [ Linux ] virtual/text-antialias/emoji-vs-system-fallback.html [ Skip ]
 [ Fuchsia ] virtual/text-antialias/emoji-vs-system-fallback.html [ Skip ]
-[ Win ] virtual/text-antialias/emoji-vs-system-fallback.html [ Skip ]
 
 # These two printing tests fail with the threaded compositor but they
 # aren't critical to run in this mode.
