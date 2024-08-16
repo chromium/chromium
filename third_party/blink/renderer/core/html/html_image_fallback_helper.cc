@@ -267,7 +267,7 @@ void HTMLImageFallbackHelper::AdjustHostStyle(HTMLElement& element,
   builder.SetUAShadowHostData(std::make_unique<StyleUAShadowHostData>(
       builder.Width(), builder.Height(), builder.AspectRatio(),
       element.AltText(), element.getAttribute(html_names::kAltAttr),
-      element.getAttribute(html_names::kSrcAttr)));
+      element.getAttribute(html_names::kSrcAttr), /* has_appearance */ false));
 
   if (!TreatImageAsReplaced(element.GetDocument(),
                             *builder.UAShadowHostData())) {
