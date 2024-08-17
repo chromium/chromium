@@ -24,7 +24,6 @@ struct WebPluginInfo;
 
 namespace extensions {
 class RendererPermissionsPolicyDelegate;
-class ResourceRequestPolicy;
 }
 
 namespace net {
@@ -53,9 +52,6 @@ class ChromeExtensionsRendererClient
   // extensions::ExtensionsRendererClient implementation.
   bool IsIncognitoProcess() const override;
   int GetLowestIsolatedWorldId() const override;
-  void OnExtensionLoaded(const extensions::Extension& extension) override;
-  void OnExtensionUnloaded(
-      const extensions::ExtensionId& extension_id) override;
 
   // See ChromeContentRendererClient methods with the same names.
   void WillSendRequest(blink::WebLocalFrame* frame,
@@ -77,11 +73,12 @@ class ChromeExtensionsRendererClient
  private:
   // extensions::ExtensionsRendererClient implementation.
   void FinishInitialization() override;
+  std::unique_ptr<extensions::ResourceRequestPolicy::Delegate>
+  CreateResourceRequestPolicyDelegate() override;
 
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
   std::unique_ptr<extensions::RendererPermissionsPolicyDelegate>
       permissions_policy_delegate_;
-  std::unique_ptr<extensions::ResourceRequestPolicy> resource_request_policy_;
 };
 
 #endif  // CHROME_RENDERER_EXTENSIONS_CHROME_EXTENSIONS_RENDERER_CLIENT_H_

@@ -10,8 +10,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
+#include "chrome/renderer/extensions/chrome_resource_request_policy_delegate.h"
 #include "chrome/renderer/extensions/renderer_permissions_policy_delegate.h"
-#include "chrome/renderer/extensions/resource_request_policy.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/constants.h"
@@ -19,6 +19,7 @@
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
 #include "extensions/renderer/renderer_extension_registry.h"
+#include "extensions/renderer/resource_request_policy.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
@@ -64,22 +65,15 @@ int ChromeExtensionsRendererClient::GetLowestIsolatedWorldId() const {
   return ISOLATED_WORLD_ID_EXTENSIONS;
 }
 
-void ChromeExtensionsRendererClient::OnExtensionLoaded(
-    const extensions::Extension& extension) {
-  resource_request_policy_->OnExtensionLoaded(extension);
-}
-
-void ChromeExtensionsRendererClient::OnExtensionUnloaded(
-    const extensions::ExtensionId& extension_id) {
-  resource_request_policy_->OnExtensionUnloaded(extension_id);
-}
-
 void ChromeExtensionsRendererClient::FinishInitialization() {
   permissions_policy_delegate_ =
       std::make_unique<extensions::RendererPermissionsPolicyDelegate>(
           dispatcher());
-  resource_request_policy_ =
-      std::make_unique<extensions::ResourceRequestPolicy>(dispatcher());
+}
+
+std::unique_ptr<extensions::ResourceRequestPolicy::Delegate>
+ChromeExtensionsRendererClient::CreateResourceRequestPolicyDelegate() {
+  return std::make_unique<extensions::ChromeResourceRequestPolicyDelegate>();
 }
 
 void ChromeExtensionsRendererClient::WillSendRequest(
@@ -119,7 +113,7 @@ void ChromeExtensionsRendererClient::WillSendRequest(
   }
 
   if (target_url.ProtocolIs(extensions::kExtensionScheme) &&
-      !resource_request_policy_->CanRequestResource(
+      !resource_request_policy()->CanRequestResource(
           upstream_url, target_url, frame, transition_type, initiator_origin)) {
     *new_url = GURL(extensions::kExtensionInvalidRequestURL);
   }

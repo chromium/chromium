@@ -27,6 +27,7 @@
 #include "extensions/renderer/extension_web_view_helper.h"
 #include "extensions/renderer/extensions_render_frame_observer.h"
 #include "extensions/renderer/renderer_extension_registry.h"
+#include "extensions/renderer/resource_request_policy.h"
 #include "extensions/renderer/script_context.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -67,6 +68,15 @@ void ExtensionsRendererClient::Set(ExtensionsRendererClient* client) {
   g_client = client;
 }
 
+void ExtensionsRendererClient::OnExtensionLoaded(const Extension& extension) {
+  resource_request_policy_->OnExtensionLoaded(extension);
+}
+
+void ExtensionsRendererClient::OnExtensionUnloaded(
+    const ExtensionId& extension_id) {
+  resource_request_policy_->OnExtensionUnloaded(extension_id);
+}
+
 void ExtensionsRendererClient::AddAPIProvider(
     std::unique_ptr<ExtensionsRendererAPIProvider> api_provider) {
   CHECK(!dispatcher_)
@@ -83,6 +93,9 @@ void ExtensionsRendererClient::RenderThreadStarted() {
   content::RenderThread* thread = content::RenderThread::Get();
   dispatcher()->OnRenderThreadStarted(thread);
   thread->AddObserver(dispatcher());
+
+  resource_request_policy_ = std::make_unique<ResourceRequestPolicy>(
+      dispatcher(), CreateResourceRequestPolicyDelegate());
 
   FinishInitialization();
 }
@@ -218,6 +231,11 @@ void ExtensionsRendererClient::RunScriptsAtDocumentIdle(
 void ExtensionsRendererClient::SetDispatcherForTesting(
     std::unique_ptr<Dispatcher> dispatcher) {
   dispatcher_ = std::move(dispatcher);
+}
+
+std::unique_ptr<ResourceRequestPolicy::Delegate>
+ExtensionsRendererClient::CreateResourceRequestPolicyDelegate() {
+  return nullptr;
 }
 
 }  // namespace extensions

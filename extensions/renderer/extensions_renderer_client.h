@@ -10,6 +10,7 @@
 
 #include "extensions/common/extension_id.h"
 #include "extensions/renderer/extensions_renderer_api_provider.h"
+#include "extensions/renderer/resource_request_policy.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "v8/include/v8-local-handle.h"
 
@@ -61,8 +62,8 @@ class ExtensionsRendererClient {
 
   // Notifies the client when an extension is added or removed.
   // TODO(devlin): Make a RendererExtensionRegistryObserver?
-  virtual void OnExtensionLoaded(const Extension& extension) {}
-  virtual void OnExtensionUnloaded(const ExtensionId& extension) {}
+  void OnExtensionLoaded(const Extension& extension);
+  void OnExtensionUnloaded(const ExtensionId& extension);
 
   // Adds an API provider that can extend the behavior of extension's renderer
   // side. API providers need to be added before |Dispatcher| is created.
@@ -96,6 +97,11 @@ class ExtensionsRendererClient {
   static void Set(ExtensionsRendererClient* client);
 
   Dispatcher* dispatcher() { return dispatcher_.get(); }
+  // TODO(https://crbug.com/359904696): Remove this accessor when the handling
+  // is moved to this class.
+  ResourceRequestPolicy* resource_request_policy() {
+    return resource_request_policy_.get();
+  }
 
   void SetDispatcherForTesting(std::unique_ptr<Dispatcher> dispatcher);
 
@@ -104,10 +110,16 @@ class ExtensionsRendererClient {
   // RenderThreadStarted().
   virtual void FinishInitialization() {}
 
+  // Allows embedders to create a delegate for the ResourceRequestPolicy.
+  // By default, returns null.
+  virtual std::unique_ptr<ResourceRequestPolicy::Delegate>
+  CreateResourceRequestPolicyDelegate();
+
   std::vector<std::unique_ptr<const ExtensionsRendererAPIProvider>>
       api_providers_;
 
   std::unique_ptr<Dispatcher> dispatcher_;
+  std::unique_ptr<ResourceRequestPolicy> resource_request_policy_;
 };
 
 }  // namespace extensions

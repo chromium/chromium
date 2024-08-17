@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/extensions/resource_request_policy.h"
+#include "extensions/renderer/resource_request_policy.h"
 
 #include <string_view>
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/optional_util.h"
-#include "chrome/common/extensions/chrome_manifest_url_handlers.h"
-#include "chrome/common/url_constants.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
@@ -18,7 +17,6 @@
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/manifest_handlers/webview_info.h"
 #include "extensions/renderer/dispatcher.h"
-#include "extensions/renderer/renderer_extension_registry.h"
 #include "pdf/buildflags.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -32,8 +30,9 @@
 
 namespace extensions {
 
-ResourceRequestPolicy::ResourceRequestPolicy(Dispatcher* dispatcher)
-    : dispatcher_(dispatcher) {}
+ResourceRequestPolicy::ResourceRequestPolicy(Dispatcher* dispatcher,
+                                             std::unique_ptr<Delegate> delegate)
+    : dispatcher_(dispatcher), delegate_(std::move(delegate)) {}
 ResourceRequestPolicy::~ResourceRequestPolicy() = default;
 
 void ResourceRequestPolicy::OnExtensionLoaded(const Extension& extension) {
@@ -55,8 +54,9 @@ bool ResourceRequestPolicy::IsWebAccessibleHost(const std::string& host) {
     return true;
   }
   for (const auto& [id, guid] : web_accessible_resources_map_) {
-    if (host == guid)
+    if (host == guid) {
       return true;
+    }
   }
   return false;
 }
@@ -84,13 +84,16 @@ bool ResourceRequestPolicy::CanRequestResource(
   GURL frame_url = frame->GetDocument().Url();
   url::Origin frame_origin = frame->GetDocument().GetSecurityOrigin();
 
-  // Navigations from chrome://, devtools:// or chrome-search:// pages need to
-  // be allowed, even if the target |url| is not web-accessible.  See also:
+  // Navigations from chrome://, devtools://, or embedder-specified pages need
+  // to be allowed, even if the target |url| is not web-accessible.  See also:
   // - https://crbug.com/662602
   // - similar scheme checks in ExtensionNavigationThrottle
   if (frame_origin.scheme() == content::kChromeUIScheme ||
-      frame_origin.scheme() == content::kChromeDevToolsScheme ||
-      frame_origin.scheme() == chrome::kChromeSearchScheme) {
+      frame_origin.scheme() == content::kChromeDevToolsScheme) {
+    return true;
+  }
+  if (delegate_ &&
+      delegate_->ShouldAlwaysAllowRequestForFrameOrigin(frame_origin)) {
     return true;
   }
 
@@ -105,8 +108,9 @@ bool ResourceRequestPolicy::CanRequestResource(
   // resources:
 
   // Empty urls (needed for some edge cases when we have empty urls).
-  if (frame_url.is_empty())
+  if (frame_url.is_empty()) {
     return true;
+  }
 
   // Extensions requesting their own resources (frame_url check is for images,
   // page_url check is for iframes).
@@ -120,13 +124,15 @@ bool ResourceRequestPolicy::CanRequestResource(
     return true;
   }
 
-  if (!ui::PageTransitionIsWebTriggerable(transition_type))
+  if (!ui::PageTransitionIsWebTriggerable(transition_type)) {
     return true;
+  }
 
   // Unreachable web page error page (to allow showing the icon of the
   // unreachable app on this page).
-  if (frame_url == content::kUnreachableWebDataURL)
+  if (frame_url == content::kUnreachableWebDataURL) {
     return true;
+  }
 
 #if BUILDFLAG(ENABLE_PDF)
   // Handle specific cases for the PDF viewer.
@@ -147,7 +153,11 @@ bool ResourceRequestPolicy::CanRequestResource(
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-  bool is_dev_tools = page_origin.SchemeIs(content::kChromeDevToolsScheme);
+  if (delegate_ &&
+      delegate_->AllowLoadForDevToolsPage(page_origin, target_url)) {
+    return true;
+  }
+
   // Note: we check |web_accessible_ids_| (rather than first looking up the
   // extension in the registry and checking that) to be more resistant against
   // timing attacks. This way, determining access for an extension that isn't
@@ -155,26 +165,13 @@ bool ResourceRequestPolicy::CanRequestResource(
   // extension with no web accessible resources. We aren't worried about any
   // extensions with web accessible resources, since those are inherently
   // identifiable.
-  if (!is_dev_tools && !IsWebAccessibleHost(extension_origin.host())) {
+  if (!IsWebAccessibleHost(extension_origin.host())) {
     return false;
   }
 
   const Extension* extension =
       RendererExtensionRegistry::Get()->GetExtensionOrAppByURL(
           target_url, true /*include_guid*/);
-  if (is_dev_tools) {
-    // Allow the load in the case of a non-existent extension. We'll just get a
-    // 404 from the browser process.
-    // TODO(devlin): Can this happen? Does devtools potentially make requests
-    // to non-existent extensions?
-    if (!extension)
-      return true;
-    // Devtools (chrome-extension:// URLs are loaded into frames of devtools to
-    // support the devtools extension APIs).
-    if (!chrome_manifest_urls::GetDevToolsPage(extension).is_empty())
-      return true;
-  }
-
   DCHECK(extension);
 
   // Disallow loading of packaged resources for hosted apps. We don't allow
@@ -185,8 +182,8 @@ bool ResourceRequestPolicy::CanRequestResource(
       target_url.path_piece().empty() ? std::string_view()
                                       : target_url.path_piece().substr(1);
   if (extension->is_hosted_app() &&
-      !IconsInfo::GetIcons(extension)
-          .ContainsPath(resource_root_relative_path)) {
+      !IconsInfo::GetIcons(extension).ContainsPath(
+          resource_root_relative_path)) {
     LOG(ERROR) << "Denying load of " << target_url.spec() << " from "
                << "hosted app.";
     return false;

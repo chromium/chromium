@@ -341,10 +341,10 @@ static_library("renderer") {
       "extensions/api/tabs_hooks_delegate.h",
       "extensions/chrome_extensions_renderer_client.cc",
       "extensions/chrome_extensions_renderer_client.h",
+      "extensions/chrome_resource_request_policy_delegate.cc",
+      "extensions/chrome_resource_request_policy_delegate.h",
       "extensions/renderer_permissions_policy_delegate.cc",
       "extensions/renderer_permissions_policy_delegate.h",
-      "extensions/resource_request_policy.cc",
-      "extensions/resource_request_policy.h",
     ]
     deps += [
       "//chrome/common/extensions/api",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_EXTENSIONS_RESOURCE_REQUEST_POLICY_H_
-#define CHROME_RENDERER_EXTENSIONS_RESOURCE_REQUEST_POLICY_H_
+#ifndef EXTENSIONS_RENDERER_RESOURCE_REQUEST_POLICY_H_
+#define EXTENSIONS_RENDERER_RESOURCE_REQUEST_POLICY_H_
 
 #include <map>
 
@@ -26,7 +26,23 @@ class Extension;
 // Encapsulates the policy for when chrome-extension:// URLs can be requested.
 class ResourceRequestPolicy {
  public:
-  explicit ResourceRequestPolicy(Dispatcher* dispatcher);
+  class Delegate {
+   public:
+    virtual ~Delegate() {}
+
+    // Returns true if `origin` is a special origin from which requests should
+    // always be allowed.
+    virtual bool ShouldAlwaysAllowRequestForFrameOrigin(
+        const url::Origin& frame_origin) = 0;
+
+    // Returns true if a page with the given `page_origin` should be allowed to
+    // load the resource at `target_url` because it is a devtools page.
+    virtual bool AllowLoadForDevToolsPage(const GURL& page_origin,
+                                          const GURL& target_url) = 0;
+  };
+
+  ResourceRequestPolicy(Dispatcher* dispatcher,
+                        std::unique_ptr<Delegate> delegate);
 
   ResourceRequestPolicy(const ResourceRequestPolicy&) = delete;
   ResourceRequestPolicy& operator=(const ResourceRequestPolicy&) = delete;
@@ -52,6 +68,8 @@ class ResourceRequestPolicy {
 
   raw_ptr<Dispatcher> dispatcher_;
 
+  std::unique_ptr<Delegate> delegate_;
+
   // 1:1 mapping of extension IDs with any potentially web- or webview-
   // accessible resources to their corresponding GUIDs.
   using WebAccessibleHostMap = std::map<ExtensionId, ExtensionGuid>;
@@ -60,4 +78,4 @@ class ResourceRequestPolicy {
 
 }  // namespace extensions
 
-#endif  // CHROME_RENDERER_EXTENSIONS_RESOURCE_REQUEST_POLICY_H_
+#endif  // EXTENSIONS_RENDERER_RESOURCE_REQUEST_POLICY_H_
