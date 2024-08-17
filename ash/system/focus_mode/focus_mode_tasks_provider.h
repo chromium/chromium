@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/system/focus_mode/focus_mode_retry_util.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
@@ -167,6 +168,8 @@ class ASH_EXPORT FocusModeTasksProvider {
 
   // The timestamp of the last task fetch.
   base::Time task_fetch_time_;
+
+  FocusModeRetryState get_task_retry_state_;
 
   base::WeakPtrFactory<FocusModeTasksProvider> weak_factory_{this};
 };

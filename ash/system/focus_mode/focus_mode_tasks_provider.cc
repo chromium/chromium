@@ -10,12 +10,16 @@
 #include "ash/api/tasks/tasks_controller.h"
 #include "ash/api/tasks/tasks_delegate.h"
 #include "ash/api/tasks/tasks_types.h"
+#include "ash/system/focus_mode/focus_mode_retry_util.h"
 #include "base/barrier_closure.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/ranges/algorithm.h"
 #include "base/ranges/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "google_apis/common/api_error_codes.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -107,9 +111,7 @@ class TaskFetcher {
  public:
   void Start(base::OnceClosure done) {
     done_ = std::move(done);
-    api::TasksController::Get()->tasks_delegate()->GetTaskLists(
-        /*force_fetch=*/true, base::BindOnce(&TaskFetcher::OnGetTaskLists,
-                                             weak_factory_.GetWeakPtr()));
+    GetTaskListsInternal();
   }
 
   std::string GetMostRecentlyUpdatedTaskList() const {
@@ -121,15 +123,85 @@ class TaskFetcher {
   bool error() const { return error_; }
 
  private:
-  void OnGetTaskLists(bool sucess,
+  // Invokes API request to get the task lists. It may be retried for certain
+  // HTTP errors.
+  void GetTaskListsInternal() {
+    if (api::TasksDelegate* delegate =
+            api::TasksController::Get()->tasks_delegate()) {
+      delegate->GetTaskLists(
+          /*force_fetch=*/true, base::BindOnce(&TaskFetcher::OnGetTaskLists,
+                                               weak_factory_.GetWeakPtr()));
+    }
+  }
+
+  void GetTasksInternal(const std::string& list_id,
+                        base::RepeatingClosure barrier) {
+    if (api::TasksDelegate* delegate =
+            api::TasksController::Get()->tasks_delegate()) {
+      delegate->GetTasks(
+          list_id,
+          /*force_fetch=*/true,
+          base::BindOnce(&TaskFetcher::OnGetTasks, weak_factory_.GetWeakPtr(),
+                         list_id, barrier));
+    }
+  }
+
+  void OnGetTaskLists(bool success,
                       std::optional<google_apis::ApiErrorCode> http_error,
                       const ui::ListModel<api::TaskList>* api_task_lists) {
-    if (!api_task_lists) {
+    // Handle HTTP errors and apply retires.
+    if (http_error.has_value() &&
+        http_error.value() != google_apis::HTTP_SUCCESS) {
+      // Handle too many request error.
+      if (http_error == 429) {
+        // Retry if needed.
+        if (get_task_lists_retry_state_.retry_index <
+            kMaxRetryTooManyRequests) {
+          get_task_lists_retry_state_.retry_index++;
+          get_task_lists_retry_state_.timer.Start(
+              FROM_HERE, kWaitTimeTooManyRequests,
+              base::BindOnce(&TaskFetcher::GetTaskListsInternal,
+                             weak_factory_.GetWeakPtr()));
+          return;
+        }
+
+        // Max number of retries reached. Bail gracefully.
+        error_ = true;
+        get_task_lists_retry_state_.Reset();
+        std::move(done_).Run();
+        return;
+      }
+
+      // Handle general HTTP errors.
+      if (ShouldRetryHttpError(http_error.value())) {
+        // Retry if needed.
+        if (get_task_lists_retry_state_.retry_index < kMaxRetryOverall) {
+          get_task_lists_retry_state_.retry_index++;
+          get_task_lists_retry_state_.timer.Start(
+              FROM_HERE,
+              GetExponentialBackoffRetryWaitTime(
+                  get_task_lists_retry_state_.retry_index),
+              base::BindOnce(&TaskFetcher::GetTaskListsInternal,
+                             weak_factory_.GetWeakPtr()));
+          return;
+        }
+
+        // Max number of retries reached. Bail gracefully.
+        error_ = true;
+        get_task_lists_retry_state_.Reset();
+        std::move(done_).Run();
+        return;
+      }
+
+      // Other unhandled HTTP errors. Bail gracefully.
       error_ = true;
+      get_task_lists_retry_state_.Reset();
       std::move(done_).Run();
       return;
     }
-    if (api_task_lists->item_count() == 0) {
+
+    if (!api_task_lists || api_task_lists->item_count() == 0) {
+      get_task_lists_retry_state_.Reset();
       std::move(done_).Run();
       return;
     }
@@ -167,14 +239,9 @@ class TaskFetcher {
     auto next_task_list_index = task_list_fetch_index_;
     task_list_fetch_index_ += batch_size;
 
-    auto* delegate = api::TasksController::Get()->tasks_delegate();
     for (size_t i = 0; i != batch_size; ++i) {
       const std::string& list_id = task_lists_[next_task_list_index++].first;
-      delegate->GetTasks(
-          list_id,
-          /*force_fetch=*/true,
-          base::BindOnce(&TaskFetcher::OnGetTasks, weak_factory_.GetWeakPtr(),
-                         list_id, barrier));
+      GetTasksInternal(list_id, barrier);
     }
   }
 
@@ -183,6 +250,53 @@ class TaskFetcher {
                   bool success,
                   std::optional<google_apis::ApiErrorCode> http_error,
                   const ui::ListModel<api::Task>* api_tasks) {
+    // Handle HTTP errors and apply retires.
+    if (http_error.has_value() &&
+        http_error.value() != google_apis::HTTP_SUCCESS) {
+      // Handle too many request error.
+      if (http_error == 429) {
+        // Retry if needed.
+        if (get_tasks_retry_state_.retry_index < kMaxRetryTooManyRequests) {
+          get_tasks_retry_state_.retry_index++;
+          get_tasks_retry_state_.timer.Start(
+              FROM_HERE, kWaitTimeTooManyRequests,
+              base::BindOnce(&TaskFetcher::GetTasksInternal,
+                             weak_factory_.GetWeakPtr(), list_id, barrier));
+          return;
+        }
+
+        // Max number of retries reached. Bail gracefully.
+        get_tasks_retry_state_.Reset();
+        std::move(barrier).Run();
+        return;
+      }
+
+      // Handle general HTTP errors.
+      if (ShouldRetryHttpError(http_error.value())) {
+        // Retry if needed.
+        if (get_tasks_retry_state_.retry_index < kMaxRetryOverall) {
+          get_tasks_retry_state_.retry_index++;
+          get_tasks_retry_state_.timer.Start(
+              FROM_HERE,
+              GetExponentialBackoffRetryWaitTime(
+                  get_tasks_retry_state_.retry_index),
+              base::BindOnce(&TaskFetcher::GetTasksInternal,
+                             weak_factory_.GetWeakPtr(), list_id, barrier));
+          return;
+        }
+
+        // Max number of retries reached. Bail gracefully.
+        get_tasks_retry_state_.Reset();
+        std::move(barrier).Run();
+        return;
+      }
+
+      // Other unhandled HTTP errors. Bail gracefully.
+      get_tasks_retry_state_.Reset();
+      std::move(barrier).Run();
+      return;
+    }
+
     // NOTE: Completed tasks will not show up in `api_tasks`.
     if (success && api_tasks) {
       for (const auto& api_task : *api_tasks) {
@@ -203,6 +317,7 @@ class TaskFetcher {
     std::move(barrier).Run();
   }
 
+  // This will only be set after retries if retries are conducted.
   bool error_ = false;
 
   // Task list IDs, sorted by creation time.
@@ -216,6 +331,9 @@ class TaskFetcher {
 
   // Invoked when the fetcher is complete.
   base::OnceClosure done_;
+
+  FocusModeRetryState get_task_lists_retry_state_;
+  FocusModeRetryState get_tasks_retry_state_;
 
   base::WeakPtrFactory<TaskFetcher> weak_factory_{this};
 };
@@ -249,11 +367,14 @@ void FocusModeTasksProvider::GetTask(const std::string& task_list_id,
   CHECK(!task_list_id.empty());
   CHECK(!task_id.empty());
 
-  api::TasksController::Get()->tasks_delegate()->GetTasks(
-      task_list_id, /*force_fetch=*/true,
-      base::BindOnce(&FocusModeTasksProvider::OnTasksFetchedForTask,
-                     weak_factory_.GetWeakPtr(), task_list_id, task_id,
-                     std::move(callback)));
+  if (api::TasksDelegate* delegate =
+          api::TasksController::Get()->tasks_delegate()) {
+    delegate->GetTasks(
+        task_list_id, /*force_fetch=*/true,
+        base::BindOnce(&FocusModeTasksProvider::OnTasksFetchedForTask,
+                       weak_factory_.GetWeakPtr(), task_list_id, task_id,
+                       std::move(callback)));
+  }
 }
 
 void FocusModeTasksProvider::AddTask(const std::string& title,
@@ -325,7 +446,55 @@ void FocusModeTasksProvider::OnTasksFetchedForTask(
     const ui::ListModel<api::Task>* api_tasks) {
   FocusModeTask task;
 
-  if (success) {
+  // Handle HTTP errors and apply retires.
+  if (http_error.has_value() &&
+      http_error.value() != google_apis::HTTP_SUCCESS) {
+    // Handle too many request error.
+    if (http_error == 429) {
+      // Retry if needed.
+      if (get_task_retry_state_.retry_index < kMaxRetryTooManyRequests) {
+        get_task_retry_state_.retry_index++;
+        get_task_retry_state_.timer.Start(
+            FROM_HERE, kWaitTimeTooManyRequests,
+            base::BindOnce(&FocusModeTasksProvider::GetTask,
+                           weak_factory_.GetWeakPtr(), task_list_id, task_id,
+                           std::move(callback)));
+        return;
+      }
+
+      // Max number of retries reached. Bail gracefully.
+      std::move(callback).Run(task);
+      get_task_retry_state_.Reset();
+      return;
+    }
+
+    // Handle general HTTP errors.
+    if (ShouldRetryHttpError(http_error.value())) {
+      // Retry if needed.
+      if (get_task_retry_state_.retry_index < kMaxRetryOverall) {
+        get_task_retry_state_.retry_index++;
+        get_task_retry_state_.timer.Start(
+            FROM_HERE,
+            GetExponentialBackoffRetryWaitTime(
+                get_task_retry_state_.retry_index),
+            base::BindOnce(&FocusModeTasksProvider::GetTask,
+                           weak_factory_.GetWeakPtr(), task_list_id, task_id,
+                           std::move(callback)));
+        return;
+      }
+
+      // Max number of retries reached. Bail gracefully.
+      std::move(callback).Run(task);
+      get_task_retry_state_.Reset();
+      return;
+    }
+
+    // Other unhandled HTTP errors. Bail gracefully.
+    std::move(callback).Run(task);
+    get_task_retry_state_.Reset();
+    return;
+  }
+
     // NOTE: Completed tasks will not show up in `api_tasks`, so we first assume
     // it's completed and update the state if the task is found in `api_tasks`.
     // TODO: Can we actually verify that the task is complete instead of making
@@ -333,17 +502,19 @@ void FocusModeTasksProvider::OnTasksFetchedForTask(
     task.task_id = {.list_id = task_list_id, .id = task_id};
     task.completed = true;
 
-    for (const auto& api_task : *api_tasks) {
-      if (api_task->id == task_id) {
-        task.title = api_task->title;
-        task.updated = api_task->updated;
-        task.completed = api_task->completed;
-        break;
+    if (success && api_tasks) {
+      for (const auto& api_task : *api_tasks) {
+        if (api_task->id == task_id) {
+          task.title = api_task->title;
+          task.updated = api_task->updated;
+          task.completed = api_task->completed;
+          break;
+        }
       }
     }
-  }
 
   std::move(callback).Run(task);
+  get_task_retry_state_.Reset();
 }
 
 void FocusModeTasksProvider::OnTaskSaved(const std::string& task_list_id,
