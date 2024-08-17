@@ -914,13 +914,6 @@ bool TabStripModel::IsTabSelected(int index) const {
   return selection_model_.IsSelected(index);
 }
 
-std::optional<base::Time> TabStripModel::GetLastAccessed(int index) const {
-  if (ContainsIndex(index)) {
-    return selection_model_.GetLastAccessed(index);
-  }
-  return std::nullopt;
-}
-
 void TabStripModel::SetSelectionFromModel(ui::ListSelectionModel source) {
   CHECK(source.active().has_value());
   SetSelection(std::move(source), TabStripModelObserver::CHANGE_REASON_NONE,

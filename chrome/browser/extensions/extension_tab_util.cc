@@ -449,6 +449,8 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
   tab_object.index = tab_index;
   tab_object.window_id = GetWindowIdOfTab(contents);
   tab_object.status = GetLoadingStatus(contents);
+  tab_object.last_accessed =
+      contents->GetLastActiveTime().InMillisecondsFSinceUnixEpoch();
   tab_object.active = tab_strip && tab_index == tab_strip->active_index();
   tab_object.selected = tab_strip && tab_index == tab_strip->active_index();
   tab_object.highlighted = tab_strip && tab_strip->IsTabSelected(tab_index);
@@ -460,13 +462,6 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
         tab_strip->GetTabGroupForTab(tab_index);
     if (group.has_value()) {
       tab_object.group_id = tab_groups_util::GetGroupId(group.value());
-    }
-
-    std::optional<base::Time> last_accessed =
-        tab_strip->GetLastAccessed(tab_index);
-
-    if (last_accessed.has_value()) {
-      tab_object.last_accessed = last_accessed->InMillisecondsFSinceUnixEpoch();
     }
   }
 
