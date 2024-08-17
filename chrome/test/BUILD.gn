@@ -5346,8 +5346,6 @@ if (is_chromeos_lacros) {
       "../browser/chromeos/extensions/wm/wm_desks_private_apitest_lacros.cc",
       "../browser/chromeos/policy/dlp/dlp_files_controller_lacros_browsertest.cc",
       "../browser/chromeos/printing/print_preview/print_preview_webcontents_manager_browsertest.cc",
-      "../browser/chromeos/reporting/websites/website_events_observer_lacros_browsertest.cc",
-      "../browser/chromeos/reporting/websites/website_usage_telemetry_sampler_lacros_browsertest.cc",
       "../browser/chromeos/video_conference/video_conference_manager_client_browsertest.cc",
       "../browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_lacros_apitest.cc",
       "../browser/extensions/api/networking_private/networking_private_chromeos_apitest.cc",
@@ -8339,6 +8337,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos:test_support",
+      "//chrome/browser/chromeos/reporting",
       "//chrome/browser/smart_card:unit_tests",
       "//chrome/browser/ui/chromeos/read_write_cards",
       "//chromeos/components/disks:prefs",

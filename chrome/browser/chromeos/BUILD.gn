@@ -126,18 +126,6 @@ source_set("chromeos") {
     "printing/print_preview/print_view_manager_cros_basic.h",
     "printing/print_preview/printing_init_cros.cc",
     "printing/print_preview/printing_init_cros.h",
-    "reporting/local_state_reporting_settings.cc",
-    "reporting/local_state_reporting_settings.h",
-    "reporting/metric_default_utils.cc",
-    "reporting/metric_default_utils.h",
-    "reporting/metric_reporting_manager_delegate_base.cc",
-    "reporting/metric_reporting_manager_delegate_base.h",
-    "reporting/metric_reporting_prefs.cc",
-    "reporting/metric_reporting_prefs.h",
-    "reporting/usage_telemetry_periodic_collector_base.cc",
-    "reporting/usage_telemetry_periodic_collector_base.h",
-    "reporting/user_reporting_settings.cc",
-    "reporting/user_reporting_settings.h",
 
     # Extension API implementations.
     "extensions/desk_api/desk_api_extension_manager.cc",
@@ -439,14 +427,6 @@ source_set("chromeos") {
       "policy/dlp/dlp_content_manager_lacros.h",
       "policy/dlp/dlp_files_controller_lacros.cc",
       "policy/dlp/dlp_files_controller_lacros.h",
-      "reporting/device_reporting_settings_lacros.cc",
-      "reporting/device_reporting_settings_lacros.h",
-      "reporting/metric_reporting_manager_lacros.cc",
-      "reporting/metric_reporting_manager_lacros.h",
-      "reporting/metric_reporting_manager_lacros_factory.cc",
-      "reporting/metric_reporting_manager_lacros_factory.h",
-      "reporting/metric_reporting_manager_lacros_shutdown_notifier_factory.cc",
-      "reporting/metric_reporting_manager_lacros_shutdown_notifier_factory.h",
     ]
     public_deps += [
       "//chromeos/lacros",
@@ -562,10 +542,6 @@ source_set("unit_tests") {
     "policy/dlp/dlp_scoped_file_access_delegate_unittest.cc",
     "printing/print_preview/print_settings_converter_unittest.cc",
     "printing/print_preview/print_view_manager_unittest.cc",
-    "reporting/local_state_reporting_settings_unittest.cc",
-    "reporting/metric_reporting_prefs_unittest.cc",
-    "reporting/usage_telemetry_periodic_collector_base_unittest.cc",
-    "reporting/user_reporting_settings_unittest.cc",
 
     # TODO(zturner): Enable this on Windows. See
     # BrowserWithTestWindowTest::SetUp() for a comment explaining why this is
@@ -653,6 +629,7 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/launcher_search:unit_tests",
     "//chrome/browser/chromeos/mahi:unit_tests",
     "//chrome/browser/chromeos/office_web_app:unit_tests",
+    "//chrome/browser/chromeos/reporting:unit_tests",
     "//chrome/browser/chromeos/reporting/network:unit_tests",
     "//chrome/browser/chromeos/reporting/websites:unit_tests",
     "//chrome/browser/chromeos/tast_support:unit_tests",
@@ -717,13 +694,7 @@ source_set("unit_tests") {
   }
 
   if (is_chromeos_lacros) {
-    sources += [
-      "policy/dlp/dlp_files_controller_lacros_unittest.cc",
-      "reporting/device_reporting_settings_lacros_unittest.cc",
-      "reporting/metric_reporting_manager_lacros_factory_unittest.cc",
-      "reporting/metric_reporting_manager_lacros_shutdown_notifier_factory_unittest.cc",
-      "reporting/metric_reporting_manager_lacros_unittest.cc",
-    ]
+    sources += [ "policy/dlp/dlp_files_controller_lacros_unittest.cc" ]
 
     deps += [
       "//chromeos/lacros",

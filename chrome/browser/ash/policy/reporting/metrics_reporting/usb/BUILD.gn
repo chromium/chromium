@@ -52,6 +52,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos/reporting",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
