@@ -2212,8 +2212,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             moduleRegistry.registerModule(ModuleType.TAB_RESUMPTION, tabResumptionModuleBuilder);
         }
 
-        if (ChromeFeatureList.sSafetyHub.isEnabled()
-                && ChromeFeatureList.sSafetyHubMagicStack.isEnabled()) {
+        if (ChromeFeatureList.sSafetyHubMagicStack.isEnabled()) {
             SafetyHubMagicStackBuilder safetyHubMagicStackBuilder =
                     new SafetyHubMagicStackBuilder(
                             this,
