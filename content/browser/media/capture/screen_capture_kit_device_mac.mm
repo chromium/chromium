@@ -175,49 +175,61 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
       return;
     }
 
-    SCContentFilter* filter = filter_;
-    if (!filter) {
-      switch (source_.type) {
-        case DesktopMediaID::TYPE_SCREEN:
-          for (SCDisplay* display in content.displays) {
-            // There's currently no support for stitching desktops together as
-            // requested by kFullDesktopScreenId. Capture the first display as a
-            // fallback. See https://crbug.com/325530044.
-            if (source_.id == display.displayID ||
-                source_.id == webrtc::kFullDesktopScreenId) {
-              filter = [[SCContentFilter alloc] initWithDisplay:display
-                                               excludingWindows:@[]];
-              stream_config_content_size_ =
-                  gfx::Size(display.width, display.height);
-              break;
+    SCContentFilter* filter;
+    switch (source_.type) {
+      case DesktopMediaID::TYPE_SCREEN:
+        for (SCDisplay* display in content.displays) {
+          // There's currently no support for stitching desktops together as
+          // requested by kFullDesktopScreenId. Capture the first display as a
+          // fallback. See https://crbug.com/325530044.
+          if (source_.id == display.displayID ||
+              source_.id == webrtc::kFullDesktopScreenId) {
+            filter = [[SCContentFilter alloc] initWithDisplay:display
+                                             excludingWindows:@[]];
+            stream_config_content_size_ =
+                gfx::Size(display.width, display.height);
+            break;
+          }
+        }
+        break;
+      case DesktopMediaID::TYPE_WINDOW:
+        for (SCWindow* window in content.windows) {
+          if (source_.id == window.windowID) {
+            filter = [[SCContentFilter alloc]
+                initWithDesktopIndependentWindow:window];
+            CGRect frame = window.frame;
+            stream_config_content_size_ = gfx::Size(frame.size);
+            if (!fullscreen_module_) {
+              fullscreen_module_ = MaybeCreateScreenCaptureKitFullscreenModule(
+                  device_task_runner_, *this, window);
             }
           }
-          break;
-        case DesktopMediaID::TYPE_WINDOW:
-          for (SCWindow* window in content.windows) {
-            if (source_.id == window.windowID) {
-              filter = [[SCContentFilter alloc]
-                  initWithDesktopIndependentWindow:window];
-              CGRect frame = window.frame;
-              stream_config_content_size_ = gfx::Size(frame.size);
-              if (!fullscreen_module_) {
-                fullscreen_module_ =
-                    MaybeCreateScreenCaptureKitFullscreenModule(
-                        device_task_runner_, *this, window);
-              }
-            }
-          }
-          break;
-        default:
-          NOTREACHED_IN_MIGRATION();
-          break;
-      }
+        }
+        break;
+      default:
+        NOTREACHED_IN_MIGRATION();
+        break;
     }
+
+    CreateStream(filter);
+  }
+
+  void CreateStream(SCContentFilter* filter) {
+    DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
     if (!filter) {
       client()->OnError(
           media::VideoCaptureError::kScreenCaptureKitFailedToFindSCDisplay,
           FROM_HERE, "Failed to find SCDisplay");
       return;
+    }
+
+    if (@available(macOS 14.0, *)) {
+      // Update the content size. This step is neccessary when used together
+      // with SCContentSharingPicker. If the Chrome picker is used, it will
+      // change to retina resolution if applicable.
+      stream_config_content_size_ =
+          gfx::Size(filter.contentRect.size.width * filter.pointPixelScale,
+                    filter.contentRect.size.height * filter.pointPixelScale);
     }
 
     gfx::RectF dest_rect_in_frame;
@@ -399,16 +411,21 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
   // IOSurfaceCaptureDeviceBase:
   void OnStart() override {
     DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
-
-    auto content_callback = base::BindPostTask(
-        device_task_runner_,
-        base::BindRepeating(
-            &ScreenCaptureKitDeviceMac::OnShareableContentCreated,
-            weak_factory_.GetWeakPtr()));
-    auto handler = ^(SCShareableContent* content, NSError* error) {
-      content_callback.Run(content);
-    };
-    [SCShareableContent getShareableContentWithCompletionHandler:handler];
+    if (filter_) {
+      // SCContentSharingPicker is used where filter_ is set on creation.
+      CreateStream(filter_);
+    } else {
+      // Chrome picker is used.
+      auto content_callback = base::BindPostTask(
+          device_task_runner_,
+          base::BindRepeating(
+              &ScreenCaptureKitDeviceMac::OnShareableContentCreated,
+              weak_factory_.GetWeakPtr()));
+      auto handler = ^(SCShareableContent* content, NSError* error) {
+        content_callback.Run(content);
+      };
+      [SCShareableContent getShareableContentWithCompletionHandler:handler];
+    }
   }
   void OnStop() override {
     DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
