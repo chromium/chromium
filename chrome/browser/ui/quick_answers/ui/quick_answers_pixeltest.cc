@@ -200,7 +200,8 @@ class QuickAnswersPixelTestBase
         QuickAnswersVisibility::kQuickAnswersVisible);
   }
 
-  void CreateAndShowUserConsentView() {
+  void CreateAndShowUserConsentView(IntentType intent_type,
+                                    bool use_refreshed_design) {
     QuickAnswersUiController* quick_answers_ui_controller =
         GetQuickAnswersUiController();
     ASSERT_TRUE(quick_answers_ui_controller);
@@ -211,10 +212,8 @@ class QuickAnswersPixelTestBase
         QuickAnswersController::Get();
     ASSERT_TRUE(quick_answers_controller);
     quick_answers_controller->SetVisibility(QuickAnswersVisibility::kPending);
-    quick_answers_ui_controller->CreateUserConsentView(
-        GetContextMenuRect(),
-        l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_DEFINITION_INTENT),
-        u"Test");
+    quick_answers_ui_controller->CreateUserConsentViewForPixelTest(
+        GetContextMenuRect(), intent_type, u"Test", use_refreshed_design);
     read_write_cards_ui_controller.SetContextMenuBounds(GetContextMenuRect());
     ASSERT_TRUE(read_write_cards_ui_controller.widget_for_test())
         << "A widget must be created to show a UI.";
@@ -248,6 +247,7 @@ class QuickAnswersPixelTestBase
 using QuickAnswersPixelTest = QuickAnswersPixelTestBase;
 using QuickAnswersPixelTestInternal = QuickAnswersPixelTestBase;
 using QuickAnswersPixelTestResultView = QuickAnswersPixelTestBase;
+using QuickAnswersPixelTestUserConsentView = QuickAnswersPixelTestBase;
 
 INSTANTIATE_TEST_SUITE_P(
     PixelTest,
@@ -284,6 +284,19 @@ INSTANTIATE_TEST_SUITE_P(
                      /*is_rtl=*/testing::Values(false),
                      /*is_narrow=*/testing::Bool(),
                      testing::Values(Design::kRefresh),
+                     /*is_internal=*/testing::Values(false)),
+    &GenerateParamName);
+
+// `QuickAnswersPixelTestUserConsentView` is for testing a ui text variant of
+// `UserConsentView`. More specifically, this is for testing
+// `IntentType::kUnknown`, which is used for Linux-ChromeOS.
+INSTANTIATE_TEST_SUITE_P(
+    PixelTest,
+    QuickAnswersPixelTestUserConsentView,
+    testing::Combine(/*is_dark_mode=*/testing::Values(false),
+                     /*is_rtl=*/testing::Values(false),
+                     /*is_narrow=*/testing::Values(false),
+                     testing::Values(Design::kCurrent, Design::kRefresh),
                      /*is_internal=*/testing::Values(false)),
     &GenerateParamName);
 
@@ -333,16 +346,26 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, UserConsent) {
     GTEST_SKIP()
         << "User consent is handled by MagicBoost UI if MagicBoost is on";
   }
-  if (design == Design::kRefresh) {
-    GTEST_SKIP() << "TODO(b/340628664): Implement kRefreshed UserConsentView.";
-  }
 
-  CreateAndShowUserConsentView();
+  CreateAndShowUserConsentView(
+      IntentType::kDictionary,
+      /*use_refreshed_design=*/design == Design::kRefresh);
 
   // For Narrow layout, we intentionally let it overflow in x-axis. See comments
   // in user_consent_view.cc.
   EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
       GetScreenshotName("UserConsent", GetParam()),
+      GetWidget()->GetContentsView()));
+}
+
+IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestUserConsentView, Unknown) {
+  Design design = GetDesign(GetParam());
+  CreateAndShowUserConsentView(
+      IntentType::kUnknown,
+      /*use_refreshed_design=*/design == Design::kRefresh);
+
+  EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
+      GetScreenshotName("UserConsentIntentUnknown", GetParam()),
       GetWidget()->GetContentsView()));
 }
 

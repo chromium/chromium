@@ -87,8 +87,12 @@ class QuickAnswersUiController {
   // Creates a view for asking the user for consent about the Quick Answers
   // feature vertically aligned to the anchor.
   void CreateUserConsentView(const gfx::Rect& anchor_bounds,
-                             const std::u16string& intent_type,
+                             quick_answers::IntentType intent_type,
                              const std::u16string& intent_text);
+  void CreateUserConsentViewForPixelTest(const gfx::Rect& anchor_bounds,
+                                         quick_answers::IntentType intent_type,
+                                         const std::u16string& intent_text,
+                                         bool use_refreshed_design);
 
   // Closes the user consent view.
   void CloseUserConsentView();
@@ -143,11 +147,17 @@ class QuickAnswersUiController {
   void OpenSettings();
   void OpenFeedbackPage(const std::string& feedback_template);
   void OpenWebUrl(const GURL& url);
+  void OnUserConsentNoThanksPressed();
+  void OnUserConsentAllowPressed();
 
   void CreateQuickAnswersViewInternal(
       Profile* profile,
       const std::string& query,
       quick_answers::QuickAnswersView::Params params);
+  void CreateUserConsentViewInternal(const gfx::Rect& anchor_bounds,
+                                     quick_answers::IntentType intent_type,
+                                     const std::u16string& intent_text,
+                                     bool use_refreshed_design);
 
   // Constructs/resets the Quick Answers rich card view.
   void CreateRichAnswersView();

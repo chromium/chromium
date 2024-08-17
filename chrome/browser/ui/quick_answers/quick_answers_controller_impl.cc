@@ -47,20 +47,6 @@ constexpr char kQuickAnswersConsentImpression[] =
 constexpr char kQuickAnswersConsentDuration[] =
     "QuickAnswers.V2.Consent.Duration";
 
-std::u16string IntentTypeToString(IntentType intent_type) {
-  switch (intent_type) {
-    case IntentType::kUnit:
-      return l10n_util::GetStringUTF16(
-          IDS_QUICK_ANSWERS_UNIT_CONVERSION_INTENT);
-    case IntentType::kDictionary:
-      return l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_DEFINITION_INTENT);
-    case IntentType::kTranslation:
-      return l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_TRANSLATION_INTENT);
-    case IntentType::kUnknown:
-      return std::u16string();
-  }
-}
-
 std::string ConsentResultTypeToString(ConsentResultType type) {
   switch (type) {
     case ConsentResultType::kAllow:
@@ -204,9 +190,9 @@ class PerformOnConsentAccepted : public QuickAnswersStateObserver {
 
 QuickAnswersControllerImpl::QuickAnswersControllerImpl(
     chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller)
-    : quick_answers_ui_controller_(
-          std::make_unique<QuickAnswersUiController>(this)),
-      read_write_cards_ui_controller_(read_write_cards_ui_controller) {
+    : read_write_cards_ui_controller_(read_write_cards_ui_controller),
+      quick_answers_ui_controller_(
+          std::make_unique<QuickAnswersUiController>(this)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   quick_answers_state_ = std::make_unique<QuickAnswersStateAsh>();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -367,8 +353,7 @@ void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
       return;
     case quick_answers::prefs::ConsentStatus::kUnknown:
       MaybeShowUserConsent(
-          IntentTypeToString(
-              request.preprocessed_output.intent_info.intent_type),
+          request.preprocessed_output.intent_info.intent_type,
           base::UTF8ToUTF16(
               request.preprocessed_output.intent_info.intent_text));
       return;
@@ -580,7 +565,7 @@ QuickAnswersControllerImpl::GetWeakPtr() {
 }
 
 bool QuickAnswersControllerImpl::MaybeShowUserConsent(
-    const std::u16string& intent_type,
+    IntentType intent_type,
     const std::u16string& intent_text) {
   // For non-QuickAnswers case (i.e., HMR), user consent is handled outside of
   // QuickAnswers code.

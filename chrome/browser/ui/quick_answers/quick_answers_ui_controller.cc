@@ -19,12 +19,14 @@
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_translation_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_unit_conversion_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
+#include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -79,7 +81,13 @@ QuickAnswersUiController::QuickAnswersUiController(
     QuickAnswersControllerImpl* controller)
     : controller_(controller) {}
 
-QuickAnswersUiController::~QuickAnswersUiController() = default;
+QuickAnswersUiController::~QuickAnswersUiController() {
+  // Created Quick Answers UIs (e.g., `UserConsentView`) can have dependency to
+  // `QuickAnswersUiController`. Destruct those UIs before destructing a UI
+  // controller. Note that `RemoveQuickAnswersUi` is no-op if no Quick Answers
+  // UI is currently shown.
+  GetReadWriteCardsUiController().RemoveQuickAnswersUi();
+}
 
 void QuickAnswersUiController::CreateQuickAnswersView(Profile* profile,
                                                       const std::string& title,
@@ -234,14 +242,46 @@ void QuickAnswersUiController::ShowRetry() {
 
 void QuickAnswersUiController::CreateUserConsentView(
     const gfx::Rect& anchor_bounds,
-    const std::u16string& intent_type,
+    quick_answers::IntentType intent_type,
     const std::u16string& intent_text) {
+  CreateUserConsentViewInternal(anchor_bounds, intent_type, intent_text,
+                                /*use_refreshed_design=*/false);
+}
+
+void QuickAnswersUiController::CreateUserConsentViewForPixelTest(
+    const gfx::Rect& anchor_bounds,
+    quick_answers::IntentType intent_type,
+    const std::u16string& intent_text,
+    bool use_refreshed_design) {
+  CHECK_IS_TEST();
+  CreateUserConsentViewInternal(anchor_bounds, intent_type, intent_text,
+                                use_refreshed_design);
+}
+
+void QuickAnswersUiController::CreateUserConsentViewInternal(
+    const gfx::Rect& anchor_bounds,
+    quick_answers::IntentType intent_type,
+    const std::u16string& intent_text,
+    bool use_refreshed_design) {
   CHECK_EQ(controller_->GetQuickAnswersVisibility(),
            QuickAnswersVisibility::kPending);
 
   auto* view = GetReadWriteCardsUiController().SetQuickAnswersUi(
-      std::make_unique<quick_answers::UserConsentView>(
-          intent_type, intent_text, weak_factory_.GetWeakPtr()));
+      views::Builder<quick_answers::UserConsentView>(
+          std::make_unique<quick_answers::UserConsentView>(
+              use_refreshed_design, GetReadWriteCardsUiController()))
+          .SetIntentType(intent_type)
+          .SetIntentText(intent_text)
+          // It is safe to do `base::Unretained(this)`. UIs are destructed
+          // before a UI controller gets destructed. See
+          // `~QuickAnswersUiController`.
+          .SetNoThanksButtonPressed(base::BindRepeating(
+              &QuickAnswersUiController::OnUserConsentNoThanksPressed,
+              base::Unretained(this)))
+          .SetAllowButtonPressed(base::BindRepeating(
+              &QuickAnswersUiController::OnUserConsentAllowPressed,
+              base::Unretained(this)))
+          .Build());
   user_consent_view_.SetView(view);
 }
 
@@ -343,6 +383,20 @@ void QuickAnswersUiController::OpenWebUrl(const GURL& url) {
   }
 
   OpenUrl(profile_, url);
+}
+
+void QuickAnswersUiController::OnUserConsentNoThanksPressed() {
+  OnUserConsentResult(false);
+}
+
+void QuickAnswersUiController::OnUserConsentAllowPressed() {
+  // When user consent is accepted, `QuickAnswersView` will be displayed instead
+  // of dismissing the menu.
+  GetReadWriteCardsUiController()
+      .pre_target_handler()
+      .set_dismiss_anchor_menu_on_view_closed(false);
+
+  OnUserConsentResult(true);
 }
 
 void QuickAnswersUiController::OnUserConsentResult(bool consented) {

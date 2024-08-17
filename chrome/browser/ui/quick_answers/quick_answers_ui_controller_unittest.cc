@@ -37,7 +37,7 @@ class QuickAnswersUiControllerTest : public ChromeQuickAnswersTestBase {
 
   bool MaybeShowConsentView() {
     return GetQuickAnswersController()->MaybeShowUserConsent(
-        /*intent_type=*/u"",
+        quick_answers::IntentType::kUnknown,
         /*intent_text=*/u"");
   }
 

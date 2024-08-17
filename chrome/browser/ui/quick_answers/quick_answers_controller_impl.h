@@ -115,7 +115,7 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
 
   // Returns true if a consent view has shown by a call. Otherwise returns
   // false.
-  bool MaybeShowUserConsent(const std::u16string& intent_type,
+  bool MaybeShowUserConsent(quick_answers::IntentType intent_type,
                             const std::u16string& intent_text);
   void OnUserConsent(ConsentResultType consent_result_type);
 
@@ -151,13 +151,16 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
 
   std::unique_ptr<QuickAnswersState> quick_answers_state_;
 
-  std::unique_ptr<QuickAnswersUiController> quick_answers_ui_controller_;
-
   // The last received `QuickAnswersSession` from client.
   std::unique_ptr<quick_answers::QuickAnswersSession> quick_answers_session_;
 
   const raw_ref<chromeos::ReadWriteCardsUiController>
       read_write_cards_ui_controller_;
+
+  // `quick_answers_ui_controller_` depends on `read_write_cards_ui_controller_`
+  // via this controller. This has to be constructed-after and destructed-before
+  // `read_write_cards_ui_controller_`.
+  std::unique_ptr<QuickAnswersUiController> quick_answers_ui_controller_;
 
   QuickAnswersVisibility visibility_ = QuickAnswersVisibility::kClosed;
 
