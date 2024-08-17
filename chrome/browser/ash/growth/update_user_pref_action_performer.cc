@@ -28,7 +28,12 @@ enum class UpdateType {
   kMaxUpdateType = kRemove,
 };
 
-PrefService* GetPrefService() {
+// Return nullptr if the pref service is not available or the pref is invalid or
+// the pref type is invalid.
+// Use type NONE as target type to skip type checking.
+PrefService* GetPrefServiceAndCheckUserPrefType(
+    const std::string& pref_name,
+    const base::Value::Type& target_type) {
   PrefService* pref_service =
       ProfileManager::GetActiveUserProfile()->GetPrefs();
   if (!pref_service) {
@@ -37,19 +42,13 @@ PrefService* GetPrefService() {
     LOG(ERROR) << "User pref service not available.";
     return nullptr;
   }
-  return pref_service;
-}
 
-// Use type NONE as target type to skip type checking.
-bool IsTargetUserPrefWithTypeExist(const PrefService& pref_service,
-                                   const std::string& pref_name,
-                                   const base::Value::Type& target_type) {
-  const PrefService::Preference* pref = pref_service.FindPreference(pref_name);
+  const PrefService::Preference* pref = pref_service->FindPreference(pref_name);
   if (!pref) {
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kUserPrefNotFound);
     LOG(ERROR) << "User pref action: " << pref_name << " not found";
-    return false;
+    return nullptr;
   }
 
   // Skip type checking if the target_type is type::NONE.
@@ -58,42 +57,26 @@ bool IsTargetUserPrefWithTypeExist(const PrefService& pref_service,
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kUserPrefValueTypeMismatch);
     LOG(ERROR) << "User pref action: " << pref_name << " type mismatched";
-    return false;
+    return nullptr;
   }
-  return true;
-}
-
-bool IsValueInUserPref(const PrefService& pref_service,
-                       const std::string& pref_name,
-                       const base::Value* value) {
-  if (!IsTargetUserPrefWithTypeExist(pref_service, pref_name,
-                                     base::Value::Type::LIST)) {
-    return false;
-  }
-  return base::Contains(pref_service.GetList(pref_name), *value);
+  return pref_service;
 }
 
 bool SetUserPrefValue(const std::string& pref_name, const base::Value* value) {
-  PrefService* pref_service = GetPrefService();
+  PrefService* pref_service =
+      GetPrefServiceAndCheckUserPrefType(pref_name, value->type());
   if (!pref_service) {
     return false;
   }
 
-  if (!IsTargetUserPrefWithTypeExist(*pref_service, pref_name, value->type())) {
-    return false;
-  }
   pref_service->Set(pref_name, *value);
   return true;
 }
 
 bool ClearUserPrefValue(const std::string& pref_name) {
-  PrefService* pref_service = GetPrefService();
+  PrefService* pref_service =
+      GetPrefServiceAndCheckUserPrefType(pref_name, base::Value::Type::NONE);
   if (!pref_service) {
-    return false;
-  }
-
-  if (!IsTargetUserPrefWithTypeExist(*pref_service, pref_name,
-                                     base::Value::Type::NONE)) {
     return false;
   }
   pref_service->ClearPref(pref_name);
@@ -102,12 +85,13 @@ bool ClearUserPrefValue(const std::string& pref_name) {
 
 bool AppendValueToUserPref(const std::string& pref_name,
                            const base::Value* value) {
-  PrefService* pref_service = GetPrefService();
+  PrefService* pref_service =
+      GetPrefServiceAndCheckUserPrefType(pref_name, base::Value::Type::LIST);
   if (!pref_service) {
     return false;
   }
 
-  if (IsValueInUserPref(*pref_service, pref_name, value)) {
+  if (base::Contains(pref_service->GetList(pref_name), *value)) {
     LOG(ERROR) << "Pref value is already in the list.";
     return false;
   }
@@ -121,12 +105,13 @@ bool AppendValueToUserPref(const std::string& pref_name,
 
 bool RemoveValueFromUserPref(const std::string& pref_name,
                              const base::Value* value) {
-  PrefService* pref_service = GetPrefService();
+  PrefService* pref_service =
+      GetPrefServiceAndCheckUserPrefType(pref_name, base::Value::Type::LIST);
   if (!pref_service) {
     return false;
   }
 
-  if (!IsValueInUserPref(*pref_service, pref_name, value)) {
+  if (!base::Contains(pref_service->GetList(pref_name), *value)) {
     LOG(ERROR) << "Unable to remove: Pref value not in user preference.";
     return false;
   }
@@ -197,19 +182,19 @@ void UpdateUserPrefActionPerformer::Run(
   auto update_type = static_cast<UpdateType>(type.value());
   auto* value = params->Find(kValue);
 
-  // Value is required for all the actions except remove action.
-  if (update_type != UpdateType::kRemove && !value) {
+  // Value is required for all the actions except clear action.
+  if (update_type != UpdateType::kClear && !value) {
     std::move(callback).Run(growth::ActionResult::kFailure,
                             growth::ActionResultReason::kParsingActionFailed);
-    LOG(ERROR) << kValue << "parameter not found.";
+    LOG(ERROR) << kValue << " parameter not found.";
     return;
   }
 
   if (!UpdateUserPrefValue(*pref_name, update_type, value)) {
     std::move(callback).Run(growth::ActionResult::kFailure,
                             growth::ActionResultReason::kUpdateUserPrefFailed);
+    return;
   }
-
   std::move(callback).Run(growth::ActionResult::kSuccess,
                           /*action_result_reason=*/std::nullopt);
 }

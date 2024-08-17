@@ -79,6 +79,7 @@ source_set("unit_tests") {
     "open_url_action_performer_unittest.cc",
     "show_notification_action_performer_unittest.cc",
     "show_nudge_action_performer_unittest.cc",
+    "update_user_pref_action_performer_unittest.cc",
   ]
 
   deps = [
