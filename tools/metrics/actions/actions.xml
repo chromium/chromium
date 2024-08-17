@@ -25838,6 +25838,72 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarTabGroupMenu.CloseGroup">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User closed tab group via tab group menu on tab strip on Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabGroupMenu.ColorChanged">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User updated tab group color via tab group menu on tab strip on Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabGroupMenu.DeleteGroup">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User deleted tab group via tab group menu on tab strip on Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabGroupMenu.NewTabInGroup">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User opened new tab in tab group via tab group menu on tab strip on Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabGroupMenu.Shown">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User opened tab group menu via long-press on group title on tab strip on
+    Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabGroupMenu.TitleChanged">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User updated tab group title via tab group menu on tab strip on Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabGroupMenu.TitleReset">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User reset tab group title to default via tab group menu on tab strip on
+    Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabGroupMenu.Ungroup">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User ungrouped tab group via tab group menu on tab strip on Android.
+  </description>
+</action>
+
 <action name="MobileToolbarToggleBookmark">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

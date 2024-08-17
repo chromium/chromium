@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.EditText;
@@ -14,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -46,6 +48,7 @@ import org.chromium.ui.widget.RectProvider;
  * responsible for creating a list of menu items, setting up the menu and displaying the menu.
  */
 public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordinator {
+    private static final String MENU_USER_ACTION_PREFIX = "MobileToolbarTabGroupMenu.";
     private View mContentView;
     private EditText mGroupTitleEditText;
     private ColorPickerCoordinator mColorPickerCoordinator;
@@ -102,6 +105,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         actionConfirmationManager,
                         tabId,
                         isTabGroupSyncEnabled);
+                recordUserAction("Ungroup");
             } else if (menuId == org.chromium.chrome.R.id.close_tab) {
                 TabUiUtils.closeTabGroup(
                         tabGroupModelFilter,
@@ -110,6 +114,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         /* hideTabGroups= */ true,
                         isTabGroupSyncEnabled,
                         /* didCloseCallback= */ null);
+                recordUserAction("CloseGroup");
             } else if (menuId == org.chromium.chrome.R.id.delete_tab) {
                 TabUiUtils.closeTabGroup(
                         tabGroupModelFilter,
@@ -118,9 +123,11 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         /* hideTabGroups= */ false,
                         isTabGroupSyncEnabled,
                         /* didCloseCallback= */ null);
+                recordUserAction("DeleteGroup");
             } else if (menuId == org.chromium.chrome.R.id.open_new_tab_in_group) {
                 TabUiUtils.openNtpInGroup(
                         tabGroupModelFilter, tabCreator, tabId, TabLaunchType.FROM_TAB_GROUP_UI);
+                recordUserAction("NewTabInGroup");
             }
         };
     }
@@ -141,6 +148,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 /* verticalOverlapAnchor= */ false,
                 /* animStyle= */ ResourcesCompat.ID_NULL,
                 mWindowAndroid.getActivity().get());
+        recordUserAction("Shown");
     }
 
     @Override
@@ -221,6 +229,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
 
     @Override
     protected void onMenuDismissed() {
+        // TODO(Crbug.com/360044398) Record user action dismiss without any action taken.
         updateTabGroupTitle();
         mWindowAndroid
                 .getKeyboardDelegate()
@@ -234,15 +243,20 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
 
     private void updateTabGroupColor() {
         @TabGroupColorId int newColor = mColorPickerCoordinator.getSelectedColorSupplier().get();
-        TabUiUtils.updateTabGroupColor(mTabGroupModelFilter, mGroupRootId, newColor);
+        if (TabUiUtils.updateTabGroupColor(mTabGroupModelFilter, mGroupRootId, newColor)) {
+            recordUserAction("ColorChanged");
+        }
     }
 
     @VisibleForTesting
     void updateTabGroupTitle() {
         String newTitle = mGroupTitleEditText.getText().toString();
-        TabUiUtils.updateTabGroupTitle(mTabGroupModelFilter, mGroupRootId, newTitle);
-        if (mTabGroupModelFilter.getTabGroupTitle(mGroupRootId) == null) {
+        if (newTitle == null || TextUtils.isEmpty(newTitle)) {
+            mTabGroupModelFilter.deleteTabGroupTitle(mGroupRootId);
+            recordUserAction("TitleReset");
             setEditTextToDefaultGroupTitle();
+        } else if (TabUiUtils.updateTabGroupTitle(mTabGroupModelFilter, mGroupRootId, newTitle)) {
+            recordUserAction("TitleChanged");
         }
     }
 
@@ -310,6 +324,10 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         @TabGroupColorId
         int curGroupColor = mTabGroupModelFilter.getTabGroupColorWithFallback(mGroupRootId);
         mColorPickerCoordinator.setSelectedColorItem(curGroupColor);
+    }
+
+    private static void recordUserAction(String action) {
+        RecordUserAction.record(MENU_USER_ACTION_PREFIX + action);
     }
 
     EditText getGroupTitleEditTextForTesting() {

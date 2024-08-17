@@ -147,13 +147,16 @@ public class TabUiUtils {
      * @param filter The {@link TabGroupModelFilter} to act on.
      * @param rootId The root id of the interacting tab group.
      * @param newGroupColor The new group color being assigned to the tab group.
+     * @return Whether the tab group color is updated.
      */
-    public static void updateTabGroupColor(
+    public static boolean updateTabGroupColor(
             TabGroupModelFilter filter, int rootId, @TabGroupColorId int newGroupColor) {
         int curGroupColor = filter.getTabGroupColor(rootId);
         if (curGroupColor != newGroupColor) {
             filter.setTabGroupColor(rootId, newGroupColor);
+            return true;
         }
+        return false;
     }
 
     /**
@@ -162,17 +165,17 @@ public class TabUiUtils {
      * @param filter The {@link TabGroupModelFilter} to act on.
      * @param rootId The root id of the interacting tab group.
      * @param newGroupTitle The new group title being assigned to the tab group.
+     * @return Whether the tab group title is updated.
      */
-    public static void updateTabGroupTitle(
+    public static boolean updateTabGroupTitle(
             TabGroupModelFilter filter, int rootId, String newGroupTitle) {
-        if (newGroupTitle == null || newGroupTitle.isEmpty()) {
-            filter.deleteTabGroupTitle(rootId);
-            return;
-        }
+        assert newGroupTitle != null && !newGroupTitle.isEmpty();
         String curGroupTitle = filter.getTabGroupTitle(rootId);
         if (!newGroupTitle.equals(curGroupTitle)) {
             filter.setTabGroupTitle(rootId, newGroupTitle);
+            return true;
         }
+        return false;
     }
 
     /**
