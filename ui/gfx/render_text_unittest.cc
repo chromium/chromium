@@ -52,6 +52,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/decorated_text.h"
 #include "ui/gfx/font.h"
+#include "ui/gfx/font_fallback.h"
 #include "ui/gfx/font_names_testing.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -1660,6 +1661,9 @@ class RenderTextTestWithRunListCase
 TEST_P(RenderTextTestWithRunListCase, ItemizeTextToRuns) {
   RunListCase param = GetParam();
   RenderTextHarfBuzz* render_text = GetRenderText();
+
+  // Disable breaking on missing glyphs.
+  render_text->ignore_missing_glyph_breaks_for_test(true);
   render_text->SetMultiline(param.multiline);
   render_text->SetText(param.text);
   EXPECT_EQ(param.expected, GetRunListStructureString());
@@ -2114,7 +2118,6 @@ const ElideTextCase kElideHeadTextCases[] = {
     // 𝄞 (U+1D11E, MUSICAL SYMBOL G CLEF) should be fully elided.
     {"emoji1", u"012\U0001D11Ex", u"…\U0001D11Ex"},
     {"emoji2", u"012\U0001D11Ex", u"…x"},
-
     // Whitespace elision tests.
     {"empty_no_elision", u"", u"", 0, kForceNoWhitespaceElision},
     {"empty_elision", u"", u"", 0, kForceWhitespaceElision},
@@ -2139,6 +2142,11 @@ const ElideTextCase kElideHeadTextCases[] = {
      u"…\U0001F321\uFE0E  ", 6, kForceWhitespaceElision},
     {"graphemes_elision7", u"  \U0001F601  \U0001F321\uFE0E  ",
      u"…\U0001F601  \U0001F321\uFE0E  ", 7, kForceWhitespaceElision},
+    // Elision with broken runs based on font fallback.
+    {"runbreak1", u"ꟺＭx", u"…x"},
+    {"runbreak2", u"ꟺꟺꟺＭＭＭx", u"…x"},
+    {"runbreak3", u"㐇𠁠㐇�x", u"…x"},
+
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2214,6 +2222,10 @@ const ElideTextCase kElideTailTextCases[] = {
      u"  \U0001F601…", 6, kForceWhitespaceElision},
     {"graphemes_elision7", u"  \U0001F601  \U0001F321\uFE0E  ",
      u"  \U0001F601  \U0001F321\uFE0E…", 7, kForceWhitespaceElision},
+    // Elision with broken runs based on font fallback.
+    {"runbreak1", u"xꟺＭ", u"x…"},
+    {"runbreak2", u"xꟺꟺꟺＭＭＭ", u"x…"},
+    {"runbreak3", u"x㐇𠁠㐇�", u"x…"},
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2603,6 +2615,21 @@ TEST_F(RenderTextTest, DISABLED_MultilineElideWrapStressWithStyle) {
       EXPECT_LE(render_text->GetNumLines(), 3U);
     }
   }
+}
+
+TEST_F(RenderTextTest, ElidedFallbackFonts) {
+  RenderText* render_text = GetRenderText();
+  SetGlyphWidth(5);
+
+  std::u16string input_text(u"ꟺＭꟺＭꟺＭꟺＭꟺＭ");
+  render_text->SetText(input_text);
+  render_text->SetCursorEnabled(false);
+  render_text->SetElideBehavior(ELIDE_TAIL);
+  render_text->SetDisplayRect(Rect(45, 0));
+  render_text->GetStringSize();
+
+  EXPECT_EQ(render_text->GetDisplayText(),
+            input_text.substr(0, 8) + std::u16string(kEllipsisUTF16));
 }
 
 TEST_F(RenderTextTest, MultilineElideRTL) {
@@ -6970,6 +6997,118 @@ TEST_F(RenderTextTest, HarfBuzz_TrailingVariationSelector) {
   CheckBoundsForCursorPositions();
 }
 
+TEST_F(RenderTextTest, HarfBuzz_SplitRunsWithMissingGlyphCJK) {
+  RenderTextHarfBuzz* render_text = GetRenderText();
+  render_text->SetText(u"㐇𠁠㐇𠁠");
+
+#if BUILDFLAG(IS_WIN)
+  // "㐇" and "𠁠" are in separate fonts on Windows.
+  EXPECT_EQ(std::vector<std::u16string>({u"㐇", u"𠁠", u"㐇", u"𠁠"}),
+            GetRunListStrings());
+  EXPECT_EQ("[0][1->2][3][4->5]", GetRunListStructureString());
+#else
+  EXPECT_EQ(std::vector<std::u16string>({u"㐇𠁠㐇𠁠"}), GetRunListStrings());
+  EXPECT_EQ("[0->5]", GetRunListStructureString());
+#endif  // BUILDFLAG(IS_WIN)
+  CheckBoundsForCursorPositions();
+}
+
+TEST_F(RenderTextTest, HarfBuzz_SplitRunsWithMissingGlyphSmallCaps) {
+  RenderTextHarfBuzz* render_text = GetRenderText();
+  render_text->SetText(u"ꟺＭ");
+
+#if BUILDFLAG(IS_ANDROID)
+  // Android doesn't support either glyph, so they are both missing glyphs in
+  // the same run.
+  EXPECT_EQ(std::vector<std::u16string>({u"ꟺＭ"}), GetRunListStrings());
+  EXPECT_EQ("[0->1]", GetRunListStructureString());
+#else
+  EXPECT_EQ(std::vector<std::u16string>({u"ꟺ", u"Ｍ"}), GetRunListStrings());
+  EXPECT_EQ("[0][1]", GetRunListStructureString());
+#endif  // BUILDFLAG(IS_ANDROID)
+  CheckBoundsForCursorPositions();
+}
+
+TEST_F(RenderTextTest, HarfBuzz_SplitRunsWithMissingGlyphSmallCapsAdjacent) {
+  RenderTextHarfBuzz* render_text = GetRenderText();
+
+  // "ꟺ" and "Ｍ" are in the same script, but all OS's split them between
+  // different fonts. This test ensures that each glyph is not in its own
+  // run, but rather that the final rendered runs place adjacent runs with the
+  // same final fallback font in the same run.
+  render_text->SetText(u"ꟺꟺꟺＭＭＭ");
+
+  // This test requires both glyphs to render for merging to occur. If there
+  // are still missing glyphs (this happens on some versions of Android),
+  // return early.
+  if (GetHarfBuzzRunList()->HasMissingGlyphs()) {
+    return;
+  }
+  EXPECT_EQ(std::vector<std::u16string>({u"ꟺꟺꟺ", u"ＭＭＭ"}),
+            GetRunListStrings());
+  EXPECT_EQ("[0->2][3->5]", GetRunListStructureString());
+  CheckBoundsForCursorPositions();
+}
+
+TEST_F(RenderTextTest, HarfBuzz_SplitRunsWithMissingGlyphDiacDev) {
+  RenderTextHarfBuzz* render_text = GetRenderText();
+  render_text->SetText(u"क\u0308f");
+
+  EXPECT_EQ(std::vector<std::u16string>({u"\x915\x308", u"f"}),
+            GetRunListStrings());
+  EXPECT_EQ("[0->1][2]", GetRunListStructureString());
+  CheckBoundsForCursorPositions();
+}
+
+TEST_F(RenderTextTest, HarfBuzz_SplitRunsInFontCJKAndLatin) {
+  RenderTextHarfBuzz* render_text = GetRenderText();
+  render_text->SetText(u"㐇𠁠abc㐇𠁠");
+
+#if BUILDFLAG(IS_WIN)
+  // "㐇" and "𠁠" are in separate fonts on Windows.
+  EXPECT_EQ(std::vector<std::u16string>({u"㐇", u"𠁠", u"abc", u"㐇", u"𠁠"}),
+            GetRunListStrings());
+  EXPECT_EQ("[0][1->2][3->5][6][7->8]", GetRunListStructureString());
+#else
+  EXPECT_EQ(std::vector<std::u16string>({u"㐇𠁠", u"abc", u"㐇𠁠"}),
+            GetRunListStrings());
+  EXPECT_EQ("[0->2][3->5][6->8]", GetRunListStructureString());
+#endif  // BUILDFLAG(IS_WIN)
+
+  CheckBoundsForCursorPositions();
+}
+
+TEST_F(RenderTextTest, HarfBuzz_SplitRunsInFontCJKAndLatinWithEliding) {
+  RenderTextHarfBuzz* render_text = GetRenderText();
+  render_text->SetText(u"aaaaaaaaaaaaaaaaaaaa㐇𠁠ꟺ");
+
+#if BUILDFLAG(IS_WIN)
+  // "㐇", "𠁠", and "ꟺ" are in separate fonts on Windows.
+  EXPECT_EQ("[0->19][20][21->22][23]", GetRunListStructureString());
+#else
+  EXPECT_EQ("[0->19][20->22][23]", GetRunListStructureString());
+#endif  // BUILDFLAG(IS_WIN)
+  EXPECT_EQ(u"aaaaaaaaaaaaaaaaaaaa㐇𠁠ꟺ", test_api()->GetLayoutText());
+
+  // This is equivalent to "a...aaaa㐇𠁠ꟺ".
+  render_text->ApplyEliding(true, gfx::Range(1, 15));
+
+#if BUILDFLAG(IS_WIN)
+  // "㐇", "𠁠", and "ꟺ" are in separate fonts on Windows.
+  EXPECT_EQ("[0][1][2->6][7][8->9][10]", GetRunListStructureString());
+#else
+  EXPECT_EQ("[0][1][2->6][7->9][10]", GetRunListStructureString());
+#endif  // BUILDFLAG(IS_WIN)
+  EXPECT_EQ(u"a…aaaaa㐇𠁠ꟺ", test_api()->GetLayoutText());
+
+  // Now clear the previous eliding and set a new eliding at the end.
+  render_text->SetEliding(false);
+  render_text->ApplyEliding(true, gfx::Range(20, 24));
+
+  EXPECT_EQ("[0->19][20]", GetRunListStructureString());
+  EXPECT_EQ(u"aaaaaaaaaaaaaaaaaaaa…", test_api()->GetLayoutText());
+}
+
 TEST_F(RenderTextTest, HarfBuzz_MultipleVariationSelectorEmoji) {
   RenderTextHarfBuzz* render_text = GetRenderText();
 
@@ -7514,6 +7653,7 @@ TEST_F(RenderTextTest, SameFontAccrossIgnorableCodepoints) {
   RenderText* render_text = GetRenderText();
 
   render_text->SetText(u"\u060F");
+  render_text->ignore_missing_glyph_breaks_for_test(true);
   const std::vector<FontSpan> spans1 = GetFontSpans();
   ASSERT_EQ(1u, spans1.size());
   Font font1 = spans1[0].first;
@@ -7526,6 +7666,16 @@ TEST_F(RenderTextTest, SameFontAccrossIgnorableCodepoints) {
   // Ensures the same font is used with or without the joiners
   // (see http://crbug.com/1036652).
   EXPECT_EQ(font1.GetFontName(), font2.GetFontName());
+
+  render_text->SetText(u"\u060F\u200C\u200C\u060F");
+  const std::vector<FontSpan> spans3 = GetFontSpans();
+  ASSERT_EQ(1u, spans3.size());
+
+  Font font3 = spans3[0].first;
+
+  // Ensures the same font is used with or without the joiners
+  // (see http://crbug.com/1036652).
+  EXPECT_EQ(font1.GetFontName(), font3.GetFontName());
 }
 
 TEST_F(RenderTextTest, ZeroWidthCharacters) {
@@ -8578,7 +8728,6 @@ TEST_F(RenderTextTest, MissingFlagEmoji) {
   std::u16string text(u"🇽🇽🇽🇽");
   // Each flag is 4 UTF16 characters (2 surrogate pair code points).
   EXPECT_EQ(8u, text.length());
-
   render_text->SetText(text);
 
   const int whole_width = render_text->GetStringSize().width();
