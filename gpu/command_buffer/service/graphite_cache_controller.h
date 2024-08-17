@@ -22,17 +22,21 @@ class Context;
 class Recorder;
 }  // namespace skgpu::graphite
 
-namespace gpu::raster {
-
+namespace gpu {
+class DawnContextProvider;
+namespace raster {
 // GraphiteCacheController is not thread-safe; it can be created on any thread,
 // but it must be destroyed on the same thread that ScheduleCleanup is called.
 class GPU_GLES2_EXPORT GraphiteCacheController final
     : public base::RefCounted<GraphiteCacheController> {
  public:
-  // |context| is optional e.g. Viz thread GraphiteCacheController won't cleanup
-  // the Graphite context which lives on GPU main thread.
-  explicit GraphiteCacheController(skgpu::graphite::Recorder* recorder,
-                                   skgpu::graphite::Context* context = nullptr);
+  // |context| and |dawn_context_provider| are optional e.g. Viz thread
+  // GraphiteCacheController won't cleanup the Graphite context or
+  // DawnContextProvider which live on GPU main thread.
+  explicit GraphiteCacheController(
+      skgpu::graphite::Recorder* recorder,
+      skgpu::graphite::Context* context = nullptr,
+      DawnContextProvider* dawn_context_provider = nullptr);
 
   GraphiteCacheController(const GraphiteCacheController&) = delete;
   GraphiteCacheController& operator=(const GraphiteCacheController&) = delete;
@@ -57,6 +61,7 @@ class GPU_GLES2_EXPORT GraphiteCacheController final
 
   const raw_ptr<skgpu::graphite::Recorder> recorder_;
   const raw_ptr<skgpu::graphite::Context> context_;
+  const raw_ptr<DawnContextProvider> dawn_context_provider_;
   std::unique_ptr<base::RetainingOneShotTimer> timer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -64,6 +69,7 @@ class GPU_GLES2_EXPORT GraphiteCacheController final
   base::WeakPtrFactory<GraphiteCacheController> weak_ptr_factory_{this};
 };
 
-}  // namespace gpu::raster
+}  // namespace raster
+}  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_GRAPHITE_CACHE_CONTROLLER_H_

@@ -582,7 +582,8 @@ bool SharedContextState::InitializeGraphite(
       MakeGraphiteRecorderWithImageProvider(graphite_context_);
   gpu_main_graphite_cache_controller_ =
       base::MakeRefCounted<raster::GraphiteCacheController>(
-          gpu_main_graphite_recorder_.get(), graphite_context_.get());
+          gpu_main_graphite_recorder_.get(), graphite_context_.get(),
+          dawn_context_provider_);
 
   viz_compositor_graphite_recorder_ =
       MakeGraphiteRecorderWithImageProvider(graphite_context_);
