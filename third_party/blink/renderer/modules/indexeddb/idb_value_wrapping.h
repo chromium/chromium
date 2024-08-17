@@ -172,7 +172,14 @@ class MODULES_EXPORT IDBValueWrapper {
     wrapping_threshold_override_ = threshold;
   }
 
+  void set_compression_threshold_for_test(size_t threshold) {
+    compression_threshold_override_ = threshold;
+  }
+
  private:
+  // Evaluates if the specified uncompressed length merits a compression
+  // attempt.
+  bool ShouldCompress(size_t uncompressed_length) const;
   // Tries to compress `wire_bytes_` via Snappy, storing the output in
   // `wire_data_buffer_`. If the compression effect is small, the compression
   // will be discarded and an uncompressed value will be stored in
@@ -199,6 +206,7 @@ class MODULES_EXPORT IDBValueWrapper {
   size_t original_data_length_ = 0;
 
   std::optional<unsigned> wrapping_threshold_override_;
+  std::optional<size_t> compression_threshold_override_;
 
 #if DCHECK_IS_ON()
   // Accounting for lifecycle stages.

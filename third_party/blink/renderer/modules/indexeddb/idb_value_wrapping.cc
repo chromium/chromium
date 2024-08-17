@@ -15,6 +15,7 @@
 
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
@@ -171,6 +172,17 @@ void IDBValueWrapper::DoneCloning() {
   MaybeStoreInBlob();
 }
 
+bool IDBValueWrapper::ShouldCompress(size_t uncompressed_length) const {
+  static int field_trial_threshold =
+      features::kIndexedDBCompressValuesWithSnappyCompressionThreshold.Get();
+  return base::FeatureList::IsEnabled(
+             features::kIndexedDBCompressValuesWithSnappy) &&
+         uncompressed_length >=
+             compression_threshold_override_.value_or(static_cast<size_t>(
+                 field_trial_threshold < 0 ? mojom::blink::kIDBWrapThreshold
+                                           : field_trial_threshold));
+}
+
 void IDBValueWrapper::MaybeCompress() {
   if (!base::FeatureList::IsEnabled(
           features::kIndexedDBCompressValuesWithSnappy)) {
@@ -179,6 +191,11 @@ void IDBValueWrapper::MaybeCompress() {
 
   DCHECK(wire_data_buffer_.empty());
   const size_t wire_data_size = wire_data_.size();
+
+  if (!ShouldCompress(wire_data_size)) {
+    return;
+  }
+
   wire_data_buffer_.resize(
       kHeaderSize +
       static_cast<wtf_size_t>(snappy::MaxCompressedLength(wire_data_size)));
@@ -221,8 +238,7 @@ void IDBValueWrapper::MaybeStoreInBlob() {
   wrapper_blob_data->SetContentType(String(kWrapMimeType));
 
   if (wire_data_buffer_.empty()) {
-    DCHECK(!base::FeatureList::IsEnabled(
-        features::kIndexedDBCompressValuesWithSnappy));
+    DCHECK(!ShouldCompress(wire_data_.size()));
     wrapper_blob_data->AppendBytes(wire_data_);
   } else {
     scoped_refptr<RawData> raw_data = RawData::Create();
@@ -258,8 +274,7 @@ Vector<char> IDBValueWrapper::TakeWireBytes() {
 #endif  // DCHECK_IS_ON()
 
   if (wire_data_buffer_.empty()) {
-    DCHECK(!base::FeatureList::IsEnabled(
-        features::kIndexedDBCompressValuesWithSnappy));
+    DCHECK(!ShouldCompress(wire_data_.size()));
     // The wire bytes are coming directly from the SSV's GetWireData() call.
     DCHECK_EQ(wire_data_.data(), serialized_value_->GetWireData().data());
     DCHECK_EQ(wire_data_.size(), serialized_value_->GetWireData().size());
