@@ -1142,10 +1142,18 @@ bool IsPseudoClassValidAfterPseudoElement(
       return pseudo_class == CSSSelector::kPseudoWindowInactive;
     case CSSSelector::kPseudoPart:
     // TODO(crbug.com/1511354): Add tests for the PseudoSelect cases here
+    case CSSSelector::kPseudoSelectFallbackDatalist:
+      // TODO(crbug.com/1511354): This separate case is only here to support
+      // kPseudoPopoverOpen. As part of the part-like pseudo-elements feature,
+      // kPseudoPopoverOpen may be supported by kPseudoPart, in which case this
+      // case could be combined with kPseudoPart.
+      if (pseudo_class == CSSSelector::kPseudoPopoverOpen) {
+        return true;
+      }
+      [[fallthrough]];
     case CSSSelector::kPseudoSelectFallbackButton:
     case CSSSelector::kPseudoSelectFallbackButtonIcon:
     case CSSSelector::kPseudoSelectFallbackButtonText:
-    case CSSSelector::kPseudoSelectFallbackDatalist:
       return IsUserActionPseudoClass(pseudo_class) ||
              pseudo_class == CSSSelector::kPseudoState ||
              pseudo_class == CSSSelector::kPseudoStateDeprecatedSyntax;

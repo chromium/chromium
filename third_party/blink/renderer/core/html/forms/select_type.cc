@@ -530,7 +530,14 @@ void MenuListSelectType::ManuallyAssignSlots() {
     CHECK(datalist_slot_);
     button_slot_->Assign(first_button);
     datalist_slot_->Assign(first_datalist);
-    if (default_datalist_->popoverOpen()) {
+    // The IsInTopLayer check here is needed in order to support the case that a
+    // top layer exit animation is running, in which case popoverOpen() will
+    // return false but the popover is still being rendered.
+    // TODO(crbug.com/1511354): It would be a good idea to invalidate slot
+    // assignment after being removed from the top layer, but this is an edge
+    // case which would require switching appearance values after the user has
+    // opened the select.
+    if (default_datalist_->IsInTopLayer()) {
       default_datalist_options_slot_->Assign(
           all_children_except_button_and_datalist);
       option_slot_->Assign(nullptr);
