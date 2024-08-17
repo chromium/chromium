@@ -1125,6 +1125,7 @@ source_set("extensions") {
       "//chrome/browser/chromeos/drivefs",
       "//chrome/browser/chromeos/drivefs:native_message_host_origins",
       "//chrome/browser/chromeos/extensions:constants",
+      "//chrome/browser/chromeos/extensions/file_system_provider",
       "//chrome/browser/chromeos/extensions/smart_card_provider_private:smart_card_provider_private",
 
       # TODO(crbug.com/40230380): Find an appropriate spot for vpn_provider.
@@ -1149,6 +1150,7 @@ source_set("extensions") {
       "//chrome/browser/chromeos/drivefs",
       "//chrome/browser/chromeos/extensions/contact_center_insights",
       "//chrome/browser/chromeos/extensions/desk_api",
+      "//chrome/browser/chromeos/extensions/file_system_provider",
     ]
   } else {
     sources += [

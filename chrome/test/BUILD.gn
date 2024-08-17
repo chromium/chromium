@@ -4224,7 +4224,6 @@ if (!is_android) {
         sources += [
           "../browser/apps/platform_apps/api/arc_apps_private/arc_apps_private_apitest.cc",
           "../browser/apps/platform_apps/api/enterprise_remote_apps/enterprise_remote_apps_apitest.cc",
-          "../browser/chromeos/extensions/file_system_provider/file_system_provider_apitest.cc",
           "../browser/chromeos/extensions/info_private_apitest.cc",
           "../browser/chromeos/extensions/login_screen/login/cleanup/browser_cleanup_handler_browsertest.cc",
           "../browser/chromeos/extensions/login_screen/login/cleanup/extension_cleanup_handler_browsertest.cc",
