@@ -2997,6 +2997,7 @@ test("content_unittests") {
     "//base/allocator:buildflags",
     "//base/test:proto_test_support",
     "//base/test:test_support",
+    "//build:android_buildflags",
     "//build:buildflag_header_h",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",

@@ -21,6 +21,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/fake_video_capture_provider.h"
 #include "content/browser/renderer_host/media/in_process_video_capture_provider.h"
@@ -395,7 +396,7 @@ class VideoCaptureManagerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
   void ApplicationStateChange(base::android::ApplicationState state) {
     vcm_->OnApplicationStateChange(state);
   }
@@ -925,7 +926,7 @@ TEST_F(VideoCaptureManagerTest, PauseAndResumeClient) {
   vcm_->UnregisterListener(listener_.get());
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
 // Try to open, start, pause and resume a device.
 TEST_F(VideoCaptureManagerTest, PauseAndResumeDevice) {
   InSequence s;
@@ -958,7 +959,7 @@ TEST_F(VideoCaptureManagerTest, PauseAndResumeDevice) {
   base::RunLoop().RunUntilIdle();
   vcm_->UnregisterListener(listener_.get());
 }
-#else
+#elif !BUILDFLAG(IS_DESKTOP_ANDROID)
 TEST_F(VideoCaptureManagerTest, PauseAndResumeDeviceOnScreenLock) {
   vcm_->set_idle_close_timeout_for_testing(base::TimeDelta());
 
