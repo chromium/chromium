@@ -56,6 +56,7 @@ LIBRARY_FILTER = {
     "librt.so",
     "libsmime3.so",
     "libstdc++.so",
+    "libudev.so",
     "libuuid.so",
     "libxcb-dri3.so.0",
     "libxcb.so",

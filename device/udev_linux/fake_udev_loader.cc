@@ -125,10 +125,6 @@ void FakeUdevLoader::Reset() {
   devices_.clear();
 }
 
-bool FakeUdevLoader::Init() {
-  return true;
-}
-
 const char* FakeUdevLoader::udev_device_get_action(udev_device* device) {
   DCHECK(device);
   return nullptr;

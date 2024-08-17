@@ -191,7 +191,6 @@ src:*media/gpu/vaapi/va_stubs.cc
 
 # Calls to auto-generated stubs by generate_library_loader.py
 src:*content/browser/speech/tts_linux.cc
-src:*device/udev_linux/udev1_loader.cc
 
 # Calls to auto-generated stubs by ui/gl/generate_bindings.py
 src:*ui/gl/gl_bindings_autogen_*

@@ -49,6 +49,7 @@ PACKAGE_FILTER = {
     "libpango-1.0-0",
     "libpangocairo-1.0-0",
     "libstdc++6",
+    "libudev1",
     "libuuid1",
     "libx11-6",
     "libx11-xcb1",

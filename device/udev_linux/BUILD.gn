@@ -3,8 +3,13 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//build/config/linux/pkg_config.gni")
 
 if (use_udev) {
+  pkg_config("udev") {
+    packages = [ "libudev" ]
+  }
+
   component("udev_linux") {
     sources = [
       "scoped_udev.h",
@@ -20,10 +25,9 @@ if (use_udev) {
 
     defines = [ "IS_DEVICE_UDEV_LINUX_IMPL" ]
 
-    deps = [
-      "//base",
-      "//build/linux/libudev",
-    ]
+    deps = [ "//base" ]
+
+    configs += [ ":udev" ]
   }
 
   source_set("test_support") {
@@ -34,9 +38,6 @@ if (use_udev) {
       "fake_udev_loader.h",
     ]
 
-    deps = [
-      "//base",
-      "//build/linux/libudev",
-    ]
+    deps = [ "//base" ]
   }
 }
