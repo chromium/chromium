@@ -922,8 +922,9 @@ void BaseRenderingContext2D::setStrokeStyle(v8::Isolate* isolate,
 ColorParseResult BaseRenderingContext2D::ParseColorOrCurrentColor(
     const String& color_string,
     Color& color) const {
-  const ColorParseResult parse_result = ParseCanvasColorString(
-      color_string, color_scheme_, color, GetColorProvider());
+  const ColorParseResult parse_result =
+      ParseCanvasColorString(color_string, color_scheme_, color,
+                             GetColorProvider(), IsInWebAppScope());
   if (parse_result == ColorParseResult::kCurrentColor) {
     color = GetCurrentColor();
   }
@@ -938,11 +939,9 @@ ColorParseResult BaseRenderingContext2D::ParseColorOrCurrentColor(
     const TextLinkColors& text_link_colors =
         window ? window->document()->GetTextLinkColors()
                : kDefaultTextLinkColors;
-    auto* document = window ? window->document() : nullptr;
-    bool is_in_web_app_scope = document && document->IsInWebAppScope();
     const StyleColor style_color =
         ResolveColorValue(*color_mix_value, text_link_colors, color_scheme_,
-                          GetColorProvider(), is_in_web_app_scope);
+                          GetColorProvider(), IsInWebAppScope());
     color = style_color.Resolve(GetCurrentColor(), color_scheme_);
     return ColorParseResult::kColor;
   }
@@ -955,6 +954,13 @@ const ui::ColorProvider* BaseRenderingContext2D::GetColorProvider() const {
   }
 
   return nullptr;
+}
+
+bool BaseRenderingContext2D::IsInWebAppScope() const {
+  if (HTMLCanvasElement* canvas = HostAsHTMLCanvasElement()) {
+    return canvas->GetDocument().IsInWebAppScope();
+  }
+  return false;
 }
 
 v8::Local<v8::Value> BaseRenderingContext2D::fillStyle(

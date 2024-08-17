@@ -682,6 +682,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // Returns the color provider stored in the Page via the Document.
   const ui::ColorProvider* GetColorProvider() const;
 
+  // Returns if the current Document is within installed WebApp scope.
+  bool IsInWebAppScope() const;
+
   bool context_restorable_{true};
   CanvasRenderingContext::LostContextMode context_lost_mode_{
       CanvasRenderingContext::kNotLostContext};
