@@ -138,13 +138,6 @@ source_set("chromeos") {
     "reporting/usage_telemetry_periodic_collector_base.h",
     "reporting/user_reporting_settings.cc",
     "reporting/user_reporting_settings.h",
-    "reporting/websites/website_events_observer.cc",
-    "reporting/websites/website_events_observer.h",
-    "reporting/websites/website_metrics_retriever_interface.h",
-    "reporting/websites/website_usage_observer.cc",
-    "reporting/websites/website_usage_observer.h",
-    "reporting/websites/website_usage_telemetry_sampler.cc",
-    "reporting/websites/website_usage_telemetry_sampler.h",
 
     # Extension API implementations.
     "extensions/desk_api/desk_api_extension_manager.cc",
@@ -164,6 +157,7 @@ source_set("chromeos") {
   allow_circular_includes_from = [
     "//chrome/browser/apps/app_service",
     "//chrome/browser/chromeos/enterprise/cloud_storage",
+    "//chrome/browser/chromeos/reporting/websites",
     "//chrome/browser/extensions",
     "//chrome/browser/media/webrtc",
   ]
@@ -235,6 +229,7 @@ source_set("chromeos") {
     "//chrome/browser/chromeos/enterprise",
     "//chrome/browser/chromeos/enterprise/cloud_storage",
     "//chrome/browser/chromeos/full_restore",
+    "//chrome/browser/chromeos/reporting/websites",
     "//chrome/browser/chromeos/smart_reader",
     "//chrome/browser/chromeos/tablet_mode",
     "//chrome/browser/chromeos/tast_support",
@@ -331,10 +326,6 @@ source_set("chromeos") {
       "extensions/login_screen/login/login_api_lock_handler.h",
       "extensions/login_screen/login/shared_session_handler.cc",
       "extensions/login_screen/login/shared_session_handler.h",
-      "reporting/websites/website_metrics_retriever_ash.cc",
-      "reporting/websites/website_metrics_retriever_ash.h",
-      "reporting/websites/website_usage_telemetry_periodic_collector_ash.cc",
-      "reporting/websites/website_usage_telemetry_periodic_collector_ash.h",
     ]
     allow_circular_includes_from += [
       "//chrome/browser/ash/app_restore",
@@ -456,10 +447,6 @@ source_set("chromeos") {
       "reporting/metric_reporting_manager_lacros_factory.h",
       "reporting/metric_reporting_manager_lacros_shutdown_notifier_factory.cc",
       "reporting/metric_reporting_manager_lacros_shutdown_notifier_factory.h",
-      "reporting/websites/website_metrics_retriever_lacros.cc",
-      "reporting/websites/website_metrics_retriever_lacros.h",
-      "reporting/websites/website_usage_telemetry_periodic_collector_lacros.cc",
-      "reporting/websites/website_usage_telemetry_periodic_collector_lacros.h",
     ]
     public_deps += [
       "//chromeos/lacros",
@@ -579,9 +566,6 @@ source_set("unit_tests") {
     "reporting/metric_reporting_prefs_unittest.cc",
     "reporting/usage_telemetry_periodic_collector_base_unittest.cc",
     "reporting/user_reporting_settings_unittest.cc",
-    "reporting/websites/website_events_observer_unittest.cc",
-    "reporting/websites/website_usage_observer_unittest.cc",
-    "reporting/websites/website_usage_telemetry_sampler_unittest.cc",
 
     # TODO(zturner): Enable this on Windows. See
     # BrowserWithTestWindowTest::SetUp() for a comment explaining why this is
@@ -670,6 +654,7 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/mahi:unit_tests",
     "//chrome/browser/chromeos/office_web_app:unit_tests",
     "//chrome/browser/chromeos/reporting/network:unit_tests",
+    "//chrome/browser/chromeos/reporting/websites:unit_tests",
     "//chrome/browser/chromeos/tast_support:unit_tests",
     "//chrome/browser/chromeos/video_conference:unit_tests",
   ]
@@ -683,8 +668,6 @@ source_set("unit_tests") {
       "extensions/login_screen/login/login_api_ash_unittest.cc",
       "extensions/login_screen/login_screen_storage/login_screen_storage_api_ash_unittest.cc",
       "extensions/login_screen/login_state/session_state_changed_event_dispatcher_ash_unittest.cc",
-      "reporting/websites/website_metrics_retriever_ash_unittest.cc",
-      "reporting/websites/website_usage_telemetry_periodic_collector_ash_unittest.cc",
     ]
 
     deps += [
@@ -740,8 +723,6 @@ source_set("unit_tests") {
       "reporting/metric_reporting_manager_lacros_factory_unittest.cc",
       "reporting/metric_reporting_manager_lacros_shutdown_notifier_factory_unittest.cc",
       "reporting/metric_reporting_manager_lacros_unittest.cc",
-      "reporting/websites/website_metrics_retriever_lacros_unittest.cc",
-      "reporting/websites/website_usage_telemetry_periodic_collector_lacros_unittest.cc",
     ]
 
     deps += [
@@ -770,6 +751,7 @@ group("browser_tests") {
       "//chrome/browser/chromeos/mahi:browser_tests",
       "//chrome/browser/chromeos/network:browser_tests",
       "//chrome/browser/chromeos/reporting/network:browser_tests",
+      "//chrome/browser/chromeos/reporting/websites:browser_tests",
       "//chrome/browser/chromeos/smart_reader:browser_tests",
       "//chrome/browser/chromeos/video_conference:browser_tests",
     ]
