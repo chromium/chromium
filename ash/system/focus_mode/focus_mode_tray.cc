@@ -406,6 +406,7 @@ void FocusModeTray::OnAnimationEnded() {
 void FocusModeTray::OnFocusModeChanged(bool in_focus_session) {
   UpdateProgressRing();
   show_progress_ring_after_animation_ = false;
+  progress_ring_update_threshold_ = 0.0;
 
   auto* focus_mode_controller = FocusModeController::Get();
   auto current_session = focus_mode_controller->current_session();
@@ -433,7 +434,18 @@ void FocusModeTray::OnTimerTick(
   image_view_->SetTooltipText(GetAccessibleTrayName(
       session_snapshot_.value(),
       FocusModeController::Get()->congratulatory_index()));
-  UpdateProgressRing();
+
+  // We only paint the progress ring if it has reached the next threshold of
+  // progress. This is to try and decrease power usage of Focus mode when the
+  // user is idling and there are no required paints in the display.
+  if (session_snapshot_->progress >= progress_ring_update_threshold_) {
+    UpdateProgressRing();
+    // Change the next progress step into a percentage threshold.
+    progress_ring_update_threshold_ =
+        (double)focus_mode_util::GetNextProgressStep(
+            session_snapshot_->progress) /
+        focus_mode_util::kProgressIndicatorSteps;
+  }
   MaybeUpdateCountdownViewUI(session_snapshot);
 }
 
@@ -444,6 +456,7 @@ void FocusModeTray::OnActiveSessionDurationChanged(
       session_snapshot_.value(),
       FocusModeController::Get()->congratulatory_index()));
   UpdateProgressRing();
+  progress_ring_update_threshold_ = 0.0;
   MaybeUpdateCountdownViewUI(session_snapshot);
 }
 

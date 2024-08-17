@@ -59,6 +59,9 @@ constexpr base::TimeDelta kMinimumDuration = base::Minutes(1);
 constexpr base::TimeDelta kMaximumDuration = base::Minutes(300);
 constexpr base::TimeDelta kEndingMomentDuration = base::Seconds(9);
 
+// Number of steps we break the tray circular progress indicator into.
+constexpr int kProgressIndicatorSteps = 120;
+
 // The amount of time to extend the focus session duration by during a currently
 // active focus session.
 constexpr base::TimeDelta kExtendDuration = base::Minutes(10);
@@ -115,6 +118,12 @@ ASH_EXPORT std::u16string GetCongratulatoryEmoji(const size_t index);
 
 // Returns a congratulatory text followed by an emoji during the ending moment.
 ASH_EXPORT std::u16string GetCongratulatoryTextAndEmoji(const size_t index);
+
+// Returns the next progress ring step the progress ring needs to equal or
+// exceed to trigger a paint. This threshold is calculated by breaking down the
+// entire progress into equal parts (`kProgressIndicatorSteps`), then returning
+// the threshold required to hit the next step.
+ASH_EXPORT int GetNextProgressStep(double current_progress);
 
 }  // namespace focus_mode_util
 
