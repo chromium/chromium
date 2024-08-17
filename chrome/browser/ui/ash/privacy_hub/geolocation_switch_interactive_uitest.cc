@@ -89,7 +89,7 @@ class GeolocationSwitchInteractiveTest : public InteractiveBrowserTest {
           // `view_` variable in PermissionRequestManager is not yet
           // initialized.
           ,
-          FlushEvents(),
+
           PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
           WaitForHide(PermissionPromptBubbleBaseView::kMainViewId));
     } else {

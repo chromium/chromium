@@ -94,20 +94,20 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
                     side_panel_ = AsView(el);
                     ASSERT_TRUE(side_panel_);
                   }),
-        WaitForShow(kReadLaterSidePanelWebViewElementId), FlushEvents(),
+        WaitForShow(kReadLaterSidePanelWebViewElementId),
         // Ensure that the Reading List side panel loads properly.
         InstrumentNonTabWebView(kReadLaterWebContentsElementId,
                                 kReadLaterSidePanelWebViewElementId),
         ObserveState(kSidePanelSize, std::ref(side_panel_)),
-        WaitForState(kSidePanelSize, testing::Ne(gfx::Size())), FlushEvents());
+        WaitForState(kSidePanelSize, testing::Ne(gfx::Size())));
   }
 
   auto OpenBookmarksSidePanel() {
-      return Steps(
-          PressButton(kToolbarAppMenuButtonElementId),
-          SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
-          SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkSidePanelItem),
-          WaitForShow(kSidePanelElementId), FlushEvents());
+    return Steps(
+        PressButton(kToolbarAppMenuButtonElementId),
+        SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
+        SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkSidePanelItem),
+        WaitForShow(kSidePanelElementId));
   }
 
   auto ShowHelpBubble(ElementSpecifier element) {
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
 
       ExecuteJsAt(kBrowserTabId, kPathToHelpBubbleCloseButton,
                   "el => el.click()"),
-      WaitForStateChange(kBrowserTabId, bubble_hidden), FlushEvents(),
+      WaitForStateChange(kBrowserTabId, bubble_hidden),
 
       // Verify that the handler no longer believes that the anchor has a help
       // bubble.
@@ -325,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRtlWebUIInteractiveUiTest,
                     [](ui::InteractionSequence* seq, ui::TrackedElement* el) {
                       seq->NameElement(el, kSidePanelElementName);
                     })),
-      ShowHelpBubble(kSidePanelElementName), FlushEvents(),
+      ShowHelpBubble(kSidePanelElementName),
       WithView(kSidePanelElementId,
                [](SidePanel* side_panel) {
                  side_panel->OnResize(-50, true);

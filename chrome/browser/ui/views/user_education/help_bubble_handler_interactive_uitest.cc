@@ -51,7 +51,7 @@ class HelpBubbleHandlerInteractiveUiTest : public InteractiveBrowserTest {
         SelectMenuItem(BookmarkSubMenuModel::kReadingListMenuItem),
         SelectMenuItem(ReadingListSubMenuModel::kReadingListMenuShowUI),
         WaitForShow(kSidePanelElementId),
-        WaitForShow(kReadLaterSidePanelWebViewElementId), FlushEvents(),
+        WaitForShow(kReadLaterSidePanelWebViewElementId),
         // Ensure that the Reading List side panel loads properly.
         InstrumentNonTabWebView(kReadLaterWebContentsElementId,
                                 kReadLaterSidePanelWebViewElementId));
@@ -62,7 +62,7 @@ class HelpBubbleHandlerInteractiveUiTest : public InteractiveBrowserTest {
         PressButton(kToolbarAppMenuButtonElementId),
         SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
         SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkSidePanelItem),
-        WaitForShow(kSidePanelElementId), FlushEvents());
+        WaitForShow(kSidePanelElementId));
   }
 
   auto CloseSidePanel() {

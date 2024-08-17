@@ -646,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
       CheckHovercardIsClosed(),
       // Check that the discarded tab should update its contents to show discard
       // status
-      TryDiscardTab(0), FlushEvents(), HoverTabAt(0),
+      TryDiscardTab(0), HoverTabAt(0),
       WaitForShow(FooterView::kHoverCardFooterElementId),
       CheckAlertRowLabel(u"Inactive tab", true), UnhoverTab(),
       CheckHovercardIsClosed(),
@@ -671,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
       InstrumentTab(kFirstTabContents, 0), UnhoverTab(), HoverTabAt(0),
       CheckHovercardIsOpen(),
       WaitForShow(FooterView::kHoverCardFooterElementId), UnhoverTab(),
-      CheckHovercardIsClosed(), FlushEvents(),
+      CheckHovercardIsClosed(),
       NavigateWebContents(kFirstTabContents, GetURL("a.com")), HoverTabAt(0),
       CheckHovercardIsOpen(),
       CheckView(

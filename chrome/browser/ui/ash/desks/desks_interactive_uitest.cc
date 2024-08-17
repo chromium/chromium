@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(DesksInteractiveUiTest, DesksBasic) {
 
       // Note: FlushEvents is needed here. Without it, the desk
       // name text field does not gain focus
-      Log("Wait for the overview desk bar to show"), FlushEvents(),
+      Log("Wait for the overview desk bar to show"),
       AfterShow(kOverviewDeskBarElementId,
                 [&desk_bar_view](ui::TrackedElement* el) {
                   desk_bar_view = AsView<DeskBarViewBase>(el);
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(DesksInteractiveUiTest, DesksBasic) {
 
       // Press the new desk button.
       PressButton(kOverviewDeskBarNewDeskButtonElementId),
-      WaitForState(kDeskBarExpandedState, true), FlushEvents(),
+      WaitForState(kDeskBarExpandedState, true),
 
       // We should now have two mini views.
       CheckView(
@@ -184,7 +184,6 @@ IN_PROC_BROWSER_TEST_F(DesksInteractiveUiTest, DesksBasic) {
                                   /*control=*/true, /*shift=*/false,
                                   /*alt=*/false, /*command=*/false);
       }),
-      FlushEvents(),
 
       // Verify that the desks have been swapped.
       CheckResult(
@@ -200,7 +199,6 @@ IN_PROC_BROWSER_TEST_F(DesksInteractiveUiTest, DesksBasic) {
                                   /*control=*/false, /*shift=*/true,
                                   /*alt=*/false, /*command=*/true);
       }),
-      FlushEvents(),
 
       // Verify that the two browsers now live on different desks.
       Check([&] {

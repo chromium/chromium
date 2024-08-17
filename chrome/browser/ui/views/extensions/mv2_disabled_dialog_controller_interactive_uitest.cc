@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
       WaitForShow(kExtensionsMv2DisabledDialogRemoveButtonElementId),
       PressButton(kExtensionsMv2DisabledDialogRemoveButtonElementId),
       WaitForHide(kExtensionsMv2DisabledDialogRemoveButtonElementId),
-      FlushEvents(),
+
       // Clicking the remove button uninstalls the extension.
       CheckResult(
           [&]() {
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
       // Select remove option.
       PressButton(kExtensionsMv2DisabledDialogRemoveButtonElementId),
       WaitForHide(kExtensionsMv2DisabledDialogRemoveButtonElementId),
-      FlushEvents(),
+
       // Internal extension is uninstalled but policy extension remains
       // installed.
       CheckResult(

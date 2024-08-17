@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, CrashEscHandlers) {
       // Open tab B and show the Find bar.
       AddInstrumentedTab(kTabBId, page_b), ShowFindBar(),
       // Select tab A.
-      SelectTab(kTabStripElementId, 0), FlushEvents(),
+      SelectTab(kTabStripElementId, 0),
       // Close tab B.
       Do([this]() {
         browser()->tab_strip_model()->CloseWebContentsAt(

@@ -271,8 +271,8 @@ TEST_F(InteractiveTestTest, FlushInAnyContext) {
   e2.Show();
 
   RunTestSequenceInContext(
-      kTestContext1, InAnyContext(Steps(WaitForShow(kTestId1), FlushEvents(),
-                                        WaitForShow(kTestId2))));
+      kTestContext1,
+      InAnyContext(Steps(WaitForShow(kTestId1), WaitForShow(kTestId2))));
 }
 
 TEST_F(InteractiveTestTest, InteractionVerbs) {

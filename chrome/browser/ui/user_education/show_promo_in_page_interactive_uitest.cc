@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, FocusesBrowserTabAndAnchor) {
       Log("If the CheckViewProperty() step below fails intermittently, then  "
           "there is a race condition and we should change it to a "
           "StateObserver."),
-      FlushEvents(),
+
       CheckViewProperty(ContentsWebView::kContentsWebViewElementId,
                         &views::View::HasFocus, true),
       CheckJsResultAt(kTabId, kPathToAnchor, kExpectActiveJs, ""));

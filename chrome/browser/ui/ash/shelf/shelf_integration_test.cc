@@ -107,7 +107,6 @@ IN_PROC_BROWSER_TEST_F(ShelfIntegrationTest, OpenCloseSwitchApps) {
       WaitForState(kFilesAppTitleObserver, true),
 
       // Wait for files app to move to foreground.
-      FlushEvents(),
 
       Log("Clicking the chrome shelf button again"),
       MoveMouseTo(chrome_button->GetBoundsInScreen().CenterPoint()),
@@ -138,7 +137,6 @@ IN_PROC_BROWSER_TEST_F(ShelfIntegrationTest, OpenCloseSwitchApps) {
       Log("Closing Chrome via right-click menu"),
       MoveMouseTo(chrome_button->GetBoundsInScreen().CenterPoint()),
       ClickMouse(ui_controls::RIGHT), SelectMenuItem(kShelfCloseMenuItem),
-      FlushEvents(),
 
       Log("Verifying the browser window is gone"), Check([&]() {
         return !aura::test::FindWindowWithTitle(env, kBrowserWindowTitle);
@@ -147,7 +145,6 @@ IN_PROC_BROWSER_TEST_F(ShelfIntegrationTest, OpenCloseSwitchApps) {
       Log("Closing files app via right-click menu"),
       MoveMouseTo(files_app_button->GetBoundsInScreen().CenterPoint()),
       ClickMouse(ui_controls::RIGHT), SelectMenuItem(kShelfCloseMenuItem),
-      FlushEvents(),
 
       Log("Verifying the files app window is gone"),
       Check([&]() { return !aura::test::FindWindowWithTitle(env, u"Files"); }),

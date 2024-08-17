@@ -566,7 +566,6 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
       // Select the first tab. Bubble should be hidden by tab swap.
       SelectTab(kTabStripElementId, 0),
       WaitForHide(CookieControlsBubbleView::kCookieControlsBubble),
-      FlushEvents(),
 
       // Re-open then cookie bubble on the first tab.
       PressButton(kCookieControlsIconElementId),
@@ -609,7 +608,6 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
       // Select the first tab. Bubble should be hidden by tab swap.
       SelectTab(kTabStripElementId, 0),
       WaitForHide(CookieControlsBubbleView::kCookieControlsBubble),
-      FlushEvents(),
 
       // Re-open then cookie bubble on the first tab.
       PressButton(kCookieControlsIconElementId),
@@ -655,7 +653,6 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTest,
       // Select the first tab. Bubble should be hidden by tab swap.
       SelectTab(kTabStripElementId, 0),
       WaitForHide(CookieControlsBubbleView::kCookieControlsBubble),
-      FlushEvents(),
 
       // Re-open then cookie bubble on the first tab, where cookies are
       // disallowed.

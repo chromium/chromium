@@ -261,10 +261,10 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
                    chrome::ExecuteCommand(browser(),
                                           IDC_SHOW_BOOKMARK_SIDE_PANEL);
                  }),
-                 WaitForShow(kSidePanelElementId), FlushEvents(),
+                 WaitForShow(kSidePanelElementId),
                  PressButton(kSidePanelPinButtonElementId),
                  PressButton(kSidePanelCloseButtonElementId),
-                 WaitForHide(kSidePanelElementId), FlushEvents());
+                 WaitForHide(kSidePanelElementId));
   }
 
   auto PinReadingModeToToolbar() {
@@ -272,10 +272,10 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
                    chrome::ExecuteCommand(browser(),
                                           IDC_SHOW_READING_MODE_SIDE_PANEL);
                  }),
-                 WaitForShow(kSidePanelElementId), FlushEvents(),
+                 WaitForShow(kSidePanelElementId),
                  PressButton(kSidePanelPinButtonElementId),
                  PressButton(kSidePanelCloseButtonElementId),
-                 WaitForHide(kSidePanelElementId), FlushEvents());
+                 WaitForHide(kSidePanelElementId));
   }
 
   auto SetBrowserSuperWide() {
@@ -548,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
       // Check bookmark menu item is activated correctly.
       ActivateMenuItemWithElementId(
           ChromeActionIds::kActionSidePanelShowBookmarks),
-      WaitForShow(kSidePanelElementId), FlushEvents(), Check([this]() {
+      WaitForShow(kSidePanelElementId), Check([this]() {
         auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
         return coordinator->IsSidePanelEntryShowing(
             SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
@@ -567,8 +567,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
       Do([=, this]() {
         chrome::ExecuteCommand(browser(), IDC_SHOW_BOOKMARK_SIDE_PANEL);
       }),
-      WaitForShow(kSidePanelElementId), FlushEvents(),
-      ForceForwardButtonOverflow(),
+      WaitForShow(kSidePanelElementId), ForceForwardButtonOverflow(),
 
       // Activated bookmark button is still visible because side panel is open
       // even though it should overflow earlier than forward button.
@@ -594,11 +593,11 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                   PressButton(kToolbarOverflowButtonElementId),
                   ActivateMenuItemWithElementId(
                       ChromeActionIds::kActionSidePanelShowBookmarks),
-                  WaitForShow(kSidePanelElementId), FlushEvents(),
+                  WaitForShow(kSidePanelElementId),
 
                   // Close bookmark side panel.
                   PressButton(kSidePanelCloseButtonElementId),
-                  WaitForHide(kSidePanelElementId), FlushEvents(),
+                  WaitForHide(kSidePanelElementId),
 
                   // Pinned button overflows after side panel is closed.
                   CheckActionItemOverflowed(

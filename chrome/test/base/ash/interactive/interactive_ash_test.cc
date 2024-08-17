@@ -774,8 +774,7 @@ InteractiveAshTest::NavigateQuickSettingsToPage(
   // This function assumes that the drill-in arrow is or will become visible
   // without any action.
   return Steps(WaitForShow(ash::kQuickSettingsViewElementId),
-               WaitForShow(element_id), MoveMouseTo(element_id), ClickMouse(),
-               FlushEvents());
+               WaitForShow(element_id), MoveMouseTo(element_id), ClickMouse());
 }
 
 const std::string InteractiveAshTest::ClickElementWithSiblingContainsText(

@@ -130,10 +130,9 @@ class InteractionTestUtilMouse::DragEnder
                "on  ChromeOS-on-Linux.\n"
             << "This is not necessarily a serious error if the test functions "
                "normally; however, if you see this too often or your test "
-               "flakes as a result of the cancel you may need to  insert "
-               "additional FlushEvents() steps into your test, or restructure "
-               "it so that you can be sure the drag has started before "
-               "attempting to invoke  ReleaseMouse().";
+               "flakes as a result of the cancel you may need to restructure "
+               "the test so that you can be sure the drag has started before "
+               "attempting to invoke ReleaseMouse().";
         client->DragCancel();
         return true;
       }

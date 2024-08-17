@@ -243,7 +243,7 @@ class FirstRunInteractiveUiTestBase
 
         // Note: The widget/view is destroyed asynchronously, we need to flush
         // the message loops to be able to reliably check the global state.
-        FlushEvents(), CheckResult(&ProfilePicker::IsOpen, testing::IsFalse()));
+        CheckResult(&ProfilePicker::IsOpen, testing::IsFalse()));
   }
 
   auto PressJsButton(const ui::ElementIdentifier web_contents_id,

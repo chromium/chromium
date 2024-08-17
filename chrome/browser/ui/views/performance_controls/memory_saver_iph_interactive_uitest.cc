@@ -58,8 +58,7 @@ class MemorySaverIphUiTest : public InteractiveFeaturePromoTest {
           }
         }),
         WaitForShow(
-            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-        FlushEvents());
+            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
     AddDescription(steps, "TriggerMemorySaverPromo( %s )");
     return steps;
   }

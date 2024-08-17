@@ -187,7 +187,7 @@ class FeaturePromoLifecycleUiTest : public TestBase {
         PressButton(user_education::HelpBubbleView::kCloseButtonIdForTesting),
         WaitForHide(
             user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-        FlushEvents(), CheckBrowser(base::BindOnce([](Browser* browser) {
+        CheckBrowser(base::BindOnce([](Browser* browser) {
           auto* const promo = GetPromoController(browser)->current_promo_.get();
           return !promo || (!promo->is_promo_active() && !promo->help_bubble());
         })));
@@ -496,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
                }),
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      FlushEvents(),
+
       CheckMessageActionHistogram(
           kFeaturePromoLifecycleTestPromo,
           FeaturePromoClosedReason::kAbortedByBubbleDestroyed));
@@ -592,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForAppThenBlocked) {
       app_browser->window()->GetElementContext(),
       WaitForShow(kToolbarAppMenuButtonElementId),
       MaybeShowPromo({kFeaturePromoLifecycleTestPromo, app1_id_}), DismissIPH(),
-      FlushEvents(),
+
       MaybeShowPromo({kFeaturePromoLifecycleTestPromo, app1_id_},
                      FeaturePromoResult::kPermanentlyDismissed));
 }
@@ -612,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForTwoApps) {
   RunTestSequenceInContext(
       app_browser->window()->GetElementContext(),
       MaybeShowPromo({kFeaturePromoLifecycleTestPromo, app1_id_}),
-      WaitForShow(kToolbarAppMenuButtonElementId), DismissIPH(), FlushEvents(),
+      WaitForShow(kToolbarAppMenuButtonElementId), DismissIPH(),
       InContext(
           app_browser2->window()->GetElementContext(),
           Steps(WaitForShow(kToolbarAppMenuButtonElementId),
@@ -692,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest, ShowCriticalPromo) {
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest,
                        CannotRepeatDismissedPromo) {
   RunTestSequence(MaybeShowPromo(kFeaturePromoLifecycleTestPromo), DismissIPH(),
-                  FlushEvents(),
+
                   MaybeShowPromo(kFeaturePromoLifecycleTestPromo,
                                  FeaturePromoResult::kPermanentlyDismissed));
 }
@@ -754,7 +754,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest,
                   MaybeShowPromo(kFeaturePromoLifecycleTestPromo), DismissIPH(),
                   CheckDismissed(true, &kFeaturePromoLifecycleTestPromo),
                   CheckDismissed(false, &kFeaturePromoLifecycleTestPromo3),
-                  FlushEvents(),
+
                   CheckMessageActionHistogram(
                       kFeaturePromoLifecycleTestPromo3,
                       FeaturePromoClosedReason::kOverrideForPrecedence));
@@ -766,7 +766,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleCriticalUiTest,
                   MaybeShowPromo(kFeaturePromoLifecycleTestAlert), DismissIPH(),
                   CheckDismissed(true, &kFeaturePromoLifecycleTestAlert),
                   CheckDismissed(false, &kFeaturePromoLifecycleTestPromo3),
-                  FlushEvents(),
+
                   CheckMessageActionHistogram(
                       kFeaturePromoLifecycleTestPromo3,
                       FeaturePromoClosedReason::kOverrideForPrecedence));

@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
       // Flush remaining instructions to ensure that all metrics are
       // recorded.
-      FlushEvents(), Check([&] {
+      Check([&] {
         return future_.IsReady() && future_.Get() == kFakePlusAddress;
       }),
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/1,
@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
       // Flush remaining instructions to ensure that all metrics are
       // recorded.
-      FlushEvents(), Check([&] {
+      Check([&] {
         return future_.IsReady() && future_.Get() == kFakePlusAddress;
       }),
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/1,
@@ -430,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
       // Flush remaining instructions to ensure that all metrics are
       // recorded.
-      FlushEvents(),
+
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/0,
                                       /*canceled=*/1),
       CheckModalOutcomeHistograms(
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
       // Flush remaining instructions to ensure that all metrics are
       // recorded.
-      FlushEvents(),
+
       CheckHistogramUniqueSample(
           FormatHistogramNameFor(PlusAddressNetworkRequestType::kReserve),
           net::HttpStatusCode::HTTP_OK, 1),
@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
               PlusAddressCreationView::kPlusAddressErrorTextElementId))),
       // Flush remaining instructions to ensure that all metrics are
       // recorded.
-      FlushEvents(),
+
       CheckHistogramUniqueSample(
           FormatHistogramNameFor(PlusAddressNetworkRequestType::kReserve),
           net::HttpStatusCode::HTTP_OK, 1),
@@ -593,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
               PlusAddressCreationView::kPlusAddressCancelButtonElementId))),
       // Flush remaining instructions to ensure that all metrics are
       // recorded.
-      FlushEvents(),
+
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/0,
                                       /*canceled=*/1),
       CheckHistogramTotalCount(
@@ -658,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest, DoubleInit) {
               PlusAddressCreationView::kPlusAddressConfirmButtonElementId),
           WaitForHide(
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
-      FlushEvents(),
+
       // The second callback should not be run on confirmation on
       // the modal.
       Check([&] { return !double_init_future.IsReady(); }), Check([&] {
@@ -729,7 +729,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
               PlusAddressCreationView::kPlusAddressCancelButtonElementId),
           WaitForHide(
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
-      FlushEvents(),
+
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/0,
                                       /*canceled=*/1));
 }
@@ -769,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
               PlusAddressCreationView::kPlusAddressConfirmButtonElementId),
           WaitForHide(
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
-      FlushEvents(),
+
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/1,
                                       /*canceled=*/0));
 }
@@ -799,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
               PlusAddressCreationView::kPlusAddressConfirmButtonElementId),
           WaitForHide(
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
-      FlushEvents(),
+
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/1,
                                       /*canceled=*/0));
 }

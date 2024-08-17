@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(DiscountsBubbleDialogInteractiveTest,
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(), PressButton(kDiscountsChipElementId),
+      PressButton(kDiscountsChipElementId),
       WaitForShow(kDiscountsBubbleDialogId),
       WithElement(kDiscountsBubbleTermsAndConditionLabelId,
                   [](ui::TrackedElement* el) {

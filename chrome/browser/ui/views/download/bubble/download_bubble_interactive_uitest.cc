@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
       WaitForShow(kToolbarDownloadButtonElementId),
       Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
       // Click outside (at the center point of the browser) to close the bubble.
-      MoveMouseTo(kBrowserViewElementId), ClickMouse(), FlushEvents(),
+      MoveMouseTo(kBrowserViewElementId), ClickMouse(),
       EnsureNotPresent(kToolbarDownloadBubbleElementId),
       Check(DownloadBubbleIsShowingDetails(false),
             "Bubble is closed after clicking outside of it."),
@@ -470,10 +470,10 @@ IN_PROC_BROWSER_TEST_F(
             "Exclusive access bubble is displayed after starting a download"),
       Check(IsExclusiveAccessBubbleForDownload(true),
             "Exclusive access bubble is for a download"),
-      FlushEvents(),
+
       // Now exit fullscreen, and the partial view, if enabled, should be shown.
       SendAccelerator(kBrowserViewElementId, fullscreen_accelerator),
-      FlushEvents(),
+
       If([&]() { return IsPartialViewEnabled(); },
          Steps(Do(WaitForDownloadBubbleShow(dialog_waiter)),
                Check(DownloadBubbleIsShowingDetails(true),
@@ -503,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
          Steps(Check(DownloadBubbleIsActive(false),
                      "Partial view, if enabled, is inactive."))),
       // Click outside (at the center point of the browser) to close the bubble.
-      MoveMouseTo(kBrowserViewElementId), ClickMouse(), FlushEvents(),
+      MoveMouseTo(kBrowserViewElementId), ClickMouse(),
       EnsureNotPresent(kToolbarDownloadBubbleElementId),
       Check(DownloadBubbleIsShowingDetails(false),
             "Bubble is closed after clicking outside of it."),

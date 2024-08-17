@@ -186,7 +186,7 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
                 service->StartTutorial(
                     kTestTutorialId, browser()->window()->GetElementContext());
               }),
-              WaitForStateChange(page_id, help_bubble_shown), FlushEvents());
+              WaitForStateChange(page_id, help_bubble_shown));
     AddDescription(steps, "StartTutorial( %s )");
     return steps;
   }
@@ -198,12 +198,11 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
     help_bubble_hidden.where = {"ntp-app", "help-bubble"};
     help_bubble_hidden.event = kHelpBubbleHiddenEvent;
 
-    auto steps =
-        Steps(Do([this]() {
-                auto* const service = GetTutorialService();
-                service->CancelTutorialIfRunning(kTestTutorialId);
-              }),
-              WaitForStateChange(page_id, help_bubble_hidden), FlushEvents());
+    auto steps = Steps(Do([this]() {
+                         auto* const service = GetTutorialService();
+                         service->CancelTutorialIfRunning(kTestTutorialId);
+                       }),
+                       WaitForStateChange(page_id, help_bubble_hidden));
     AddDescription(steps, "CancelTutorial( %s )");
     return steps;
   }

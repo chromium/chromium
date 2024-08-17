@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest, WelcomeTour) {
                 CheckDialogTitle(ash::features::IsWelcomeTourV2Enabled()
                                      ? IDS_ASH_WELCOME_TOUR_DIALOG_TITLE_TEXT_V2
                                      : IDS_ASH_WELCOME_TOUR_DIALOG_TITLE_TEXT),
-                PressDialogAcceptButton(), FlushEvents())),
+                PressDialogAcceptButton())),
 
       // Step 1: Shelf.
       InAnyContext(WaitForHelpBubble()),
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest, WelcomeTour) {
                     IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT)),
                 CheckHelpBubbleDefaultButtonFocus(true),
                 CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-                PressHelpBubbleDefaultButton(), FlushEvents())),
+                PressHelpBubbleDefaultButton())),
 
       // Step 2: Status area.
       InAnyContext(WaitForHelpBubble()),
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest, WelcomeTour) {
                     IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT)),
                 CheckHelpBubbleDefaultButtonFocus(true),
                 CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-                PressHelpBubbleDefaultButton(), FlushEvents())),
+                PressHelpBubbleDefaultButton())),
 
       // Step 3: Home button.
       InAnyContext(WaitForHelpBubble()),
@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest, WelcomeTour) {
               product_name)),
           CheckHelpBubbleDefaultButtonFocus(true),
           CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-          PressHelpBubbleDefaultButton(), FlushEvents())),
+          PressHelpBubbleDefaultButton())),
 
       // Step 4: Search box.
       InAnyContext(WaitForHelpBubble()),
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest, WelcomeTour) {
               IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT, product_name)),
           CheckHelpBubbleDefaultButtonFocus(true),
           CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-          PressHelpBubbleDefaultButton(), FlushEvents())),
+          PressHelpBubbleDefaultButton())),
 
       // Step 5 in V2: Files app.
       If([&] { return ash::features::IsWelcomeTourV2Enabled(); },
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest, WelcomeTour) {
                        IDS_ASH_WELCOME_TOUR_FILES_APP_BUBBLE_BODY_TEXT)),
                    CheckHelpBubbleDefaultButtonFocus(true),
                    CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-                   PressHelpBubbleDefaultButton(), FlushEvents()))),
+                   PressHelpBubbleDefaultButton()))),
 
       // Step 5 in V1 and step 6 in V2: Settings app.
       InAnyContext(WaitForHelpBubble()),
@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest, WelcomeTour) {
                     product_name)),
                 CheckHelpBubbleDefaultButtonFocus(true),
                 CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-                PressHelpBubbleDefaultButton(), FlushEvents())),
+                PressHelpBubbleDefaultButton())),
 
       // Step 6 in V1 and step 7 in V2: Explore app.
       InAnyContext(WaitForHelpBubble()),
@@ -407,7 +407,7 @@ IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest, WelcomeTour) {
           CheckHelpBubbleDefaultButtonFocus(true),
           CheckHelpBubbleDefaultButtonText(
               IDS_ASH_WELCOME_TOUR_COMPLETE_BUTTON_TEXT),
-          PressHelpBubbleDefaultButton(), FlushEvents())),
+          PressHelpBubbleDefaultButton())),
 
       // Step 7 in V1 and step 8 in V2: Explore app window.
       InAnyContext(WaitForBrowser()),

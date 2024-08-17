@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,
           Screenshot(EditAddressProfileView::kTopViewId,
                      /*screenshot_name=*/"editor", /*baseline_cl=*/"4846629"),
           PressButton(views::DialogClientView::kOkButtonElementId),
-          WaitForHide(EditAddressProfileView::kTopViewId), FlushEvents())),
+          WaitForHide(EditAddressProfileView::kTopViewId))),
       EnsureClosedWithDecisionAndProfile(
           AutofillClient::AddressPromptUserDecision::kEditAccepted,
           local_profile()));

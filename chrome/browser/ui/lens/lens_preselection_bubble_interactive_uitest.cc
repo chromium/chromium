@@ -77,7 +77,7 @@ class LensPreselectionBubbleInteractiveUiTest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(LensPreselectionBubbleInteractiveUiTest,
                        PermissionBubbleOffline) {
   RunTestSequence(EnsureNotPresent(kLensPreselectionBubbleExitButtonElementId),
-                  SetConnectionOffline(), CreateAndShowBubble(), FlushEvents(),
+                  SetConnectionOffline(), CreateAndShowBubble(),
                   WaitForShow(kLensPreselectionBubbleExitButtonElementId),
                   PressButton(kLensPreselectionBubbleExitButtonElementId),
                   CheckExitButtonResults());

@@ -2530,7 +2530,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveTest,
   RunTestSequence(InstrumentTab(kWebContentsElementId),
                   NavigateWebContents(kWebContentsElementId, url1),
                   AddInstrumentedTab(kWebContentsElementId2, url2),
-                  SelectTab(kTabStripElementId, 1), FlushEvents(),
+                  SelectTab(kTabStripElementId, 1),
                   // This has to be done on a fresh message loop.
                   Do(base::BindLambdaForTesting([&]() {
                     // Discard the first tab. This triggers a replacement. Note
@@ -2540,7 +2540,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveTest,
                     g_browser_process->GetTabManager()->DiscardTab(
                         mojom::LifecycleUnitDiscardReason::EXTERNAL);
                   })),
-                  WaitForHide(kWebContentsElementId), FlushEvents(),
+                  WaitForHide(kWebContentsElementId),
                   // This has to be done on a fresh message loop.
                   // For some reason, this does not reliably trigger page
                   // reload on Mac (see crbug.com/1447298).

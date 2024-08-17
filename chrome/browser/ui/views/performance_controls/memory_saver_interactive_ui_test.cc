@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
                                             .host();
         EXPECT_TRUE(discard_exception.contains(current_site_host));
       })),
-      FlushEvents(),
+
       // Dialog's cancel button should now allow users to navigate to the
       // performance settings page
       PressButton(kMemorySaverChipElementId),
@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       // Add site to the exceptions list
       PressButton(MemorySaverBubbleView::kMemorySaverDialogCancelButton),
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
-      FlushEvents(),
+
       // Check that the cancel button can go to settings page
       PressButton(kMemorySaverChipElementId),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
@@ -625,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverImprovedFaviconTreatmentTest,
       NameView(kFirstTabFavicon, base::BindLambdaForTesting([&]() {
                  return views::AsViewClass<views::View>(GetTabIcon(0));
                })),
-      WaitForEvent(kFirstTabFavicon, kDiscardAnimationFinishes), FlushEvents(),
+      WaitForEvent(kFirstTabFavicon, kDiscardAnimationFinishes),
       Screenshot(kFirstTabFavicon,
                  /*screenshot_name=*/"NoFadeSlightlySmallerFaviconOnDiscard",
                  /*baseline_cl=*/"5493847"));

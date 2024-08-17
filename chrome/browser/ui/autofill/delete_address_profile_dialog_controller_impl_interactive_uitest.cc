@@ -170,14 +170,13 @@ IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
 
 IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
                        DialogAccepted) {
-  RunTestSequence(
-      ConfigureAddressSync(/*enable_address_sync=*/false),
-      ShowDialog(/*is_account_address_profile=*/false),
-      InAnyContext(Steps(
-          WaitForShow(views::DialogClientView::kTopViewId),
-          PressButton(views::DialogClientView::kOkButtonElementId),
-          WaitForHide(views::DialogClientView::kTopViewId), FlushEvents())),
-      EnsureClosedWithUserDecision(/*user_accepted_delete=*/true));
+  RunTestSequence(ConfigureAddressSync(/*enable_address_sync=*/false),
+                  ShowDialog(/*is_account_address_profile=*/false),
+                  InAnyContext(Steps(
+                      WaitForShow(views::DialogClientView::kTopViewId),
+                      PressButton(views::DialogClientView::kOkButtonElementId),
+                      WaitForHide(views::DialogClientView::kTopViewId))),
+                  EnsureClosedWithUserDecision(/*user_accepted_delete=*/true));
 }
 
 IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
@@ -185,10 +184,10 @@ IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
   RunTestSequence(
       ConfigureAddressSync(/*enable_address_sync=*/false),
       ShowDialog(/*is_account_address_profile=*/false),
-      InAnyContext(Steps(
-          WaitForShow(views::DialogClientView::kTopViewId),
-          PressButton(views::DialogClientView::kCancelButtonElementId),
-          WaitForHide(views::DialogClientView::kTopViewId), FlushEvents())),
+      InAnyContext(
+          Steps(WaitForShow(views::DialogClientView::kTopViewId),
+                PressButton(views::DialogClientView::kCancelButtonElementId),
+                WaitForHide(views::DialogClientView::kTopViewId))),
       EnsureClosedWithUserDecision(/*user_accepted_delete=*/false));
 }
 

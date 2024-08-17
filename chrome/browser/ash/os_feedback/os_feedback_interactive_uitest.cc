@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest,
       InstrumentNextTab(kOsFeedbackWebContentsId, AnyBrowser()),
       Log("Pressing Alt+Shift+I"),
       SendAccelerator(kNewTabWebContentsId, open_feedback_accelerator),
-      FlushEvents(), WaitForFeedbackSWAReady(kOsFeedbackWebContentsId));
+      WaitForFeedbackSWAReady(kOsFeedbackWebContentsId));
 }
 
 // crbug.com/1517839
@@ -155,21 +155,18 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest,
       Log("Entering fake description"),
       ExecuteJsAt(kOsFeedbackWebContentsId, kDescriptionTextQuery,
                   " el => el.value = 'Testing only - please ignore'"),
-      FlushEvents(),
 
       Log("Clicking the continue button"),
       WaitForElementToRender(kOsFeedbackWebContentsId, kContinueButtonQuery),
       ClickElement(kOsFeedbackWebContentsId, kContinueButtonQuery),
-      FlushEvents(),
 
       Log("Clicking the send button"),
       WaitForElementToRender(kOsFeedbackWebContentsId, kSendReportButtonQuery),
       ClickElement(kOsFeedbackWebContentsId, kSendReportButtonQuery),
-      FlushEvents(),
 
       Log("Clicking the done button"),
       WaitForElementToRender(kOsFeedbackWebContentsId, kDoneButtonQuery),
-      ClickElement(kOsFeedbackWebContentsId, kDoneButtonQuery), FlushEvents(),
+      ClickElement(kOsFeedbackWebContentsId, kDoneButtonQuery),
 
       Log("Waiting for the feedback app to exit"),
       WaitForHide(kOsFeedbackWebContentsId));
@@ -192,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest, OpenFromAboutChromeOsPage) {
       InstrumentNextTab(kOsFeedbackWebContentsId, AnyBrowser()),
       Log("Clicking the send feedback link"),
       ClickElement(kAboutChromeOsWebContentsId, kReportIssueMenuItemQuery),
-      FlushEvents(), WaitForFeedbackSWAReady(kOsFeedbackWebContentsId));
+      WaitForFeedbackSWAReady(kOsFeedbackWebContentsId));
 }
 
 IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest, OpenFromSetingsSearch) {
@@ -222,20 +219,18 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest, OpenFromSetingsSearch) {
       Log("Searching for \"send feedback\""),
       ExecuteJsAt(kOsSettingsWebContentsId, kSearchInputElementQuery,
                   " el => el.focus()"),
-      EnterLowerCaseText("send feedback"), FlushEvents(),
+      EnterLowerCaseText("send feedback"),
 
       Log("Clicking the selected search result"),
       WaitForElementExists(kOsSettingsWebContentsId,
                            kSelectedSearchResultRowQuery),
       ClickElement(kOsSettingsWebContentsId, kSelectedSearchResultRowQuery),
-      FlushEvents(),
 
       Log("Waiting for the send feedback link ready"),
       WaitForElementExists(kOsSettingsWebContentsId, kReportIssueMenuItemQuery),
 
       Log("Clicking the send feedback link"),
       ClickElement(kOsSettingsWebContentsId, kReportIssueMenuItemQuery),
-      FlushEvents(),
 
       InstrumentNextTab(kOsFeedbackWebContentsId, AnyBrowser()),
       WaitForFeedbackSWAReady(kOsFeedbackWebContentsId));

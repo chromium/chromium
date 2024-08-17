@@ -285,11 +285,6 @@ InteractionSequence::StepBuilder InteractiveTestApi::NameElement(
 }
 
 // static
-InteractiveTestApi::MultiStep InteractiveTestApi::FlushEvents() {
-  return Steps();
-}
-
-// static
 InteractiveTestApi::MultiStep InteractiveTestApi::InAnyContext(
     MultiStep steps) {
   for (auto& step : steps) {

@@ -66,8 +66,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewInteractiveTest, NewBookmark) {
       PressButton(kBookmarkStarViewElementId),
       WaitForShow(kBookmarkNameFieldId),
       CheckViewProperty(kBookmarkNameFieldId, &views::View::HasFocus, true),
-      EnsurePresent(kBookmarkFolderFieldId),
-      FlushEvents());
+      EnsurePresent(kBookmarkFolderFieldId));
 }
 
 class BookmarkBubbleViewIPHInteractiveTest
@@ -137,9 +136,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewIPHInteractiveTest,
   RunTestSequence(PressButton(kBookmarkStarViewElementId),
                   WaitForShow(commerce::kShoppingCollectionIPHViewId),
                   PressButton(kBookmarkBubbleOkButtonId),
-                  WaitForHide(commerce::kShoppingCollectionIPHViewId),
-
-                  FlushEvents());
+                  WaitForHide(commerce::kShoppingCollectionIPHViewId));
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewIPHInteractiveTest,
@@ -164,7 +161,5 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewIPHInteractiveTest,
   commerce::AddProductInfoToExistingBookmark(model, node, u"Product", 12345L);
 
   RunTestSequence(PressButton(kBookmarkStarViewElementId),
-                  EnsureNotPresent(commerce::kShoppingCollectionIPHViewId),
-
-                  FlushEvents());
+                  EnsureNotPresent(commerce::kShoppingCollectionIPHViewId));
 }

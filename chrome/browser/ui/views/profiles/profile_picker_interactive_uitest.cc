@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
       // Note: The widget/view is destroyed asynchronously, we need to flush the
       // message loops to be able to reliably check the global state.
-      FlushEvents(), CheckResult(&ProfilePicker::IsOpen, testing::IsFalse()));
+      CheckResult(&ProfilePicker::IsOpen, testing::IsFalse()));
 }
 
 // Checks that both the signin web view and the main picker view are able to

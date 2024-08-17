@@ -155,24 +155,23 @@ IN_PROC_BROWSER_TEST_F(MultiPageScanIntegrationTest, MultiPageScan) {
       ExecuteJsAt(kScanAppWebContentsId, kMultiPageCheckboxQuery, kClickFn),
       Log("Clicking scan button"),
       ExecuteJsAt(kScanAppWebContentsId, kScanButtonQuery, kClickFn),
-      FlushEvents(), Log("Verifying that multi page scan UI is shown"),
+      Log("Verifying that multi page scan UI is shown"),
       WaitForElementExists(kScanAppWebContentsId,
                            kMultiPageScanningElementQuery),
       Log("Verifying that no file has been created yet"),
-      Check([this]() { return GetScannedFiles().size() == 0u; }), FlushEvents(),
+      Check([this]() { return GetScannedFiles().size() == 0u; }),
       Log("Clicking scan next page button"),
       ExecuteJsAt(kScanAppWebContentsId, kScanNextPageButtonQuery, kClickFn),
-      FlushEvents(), Log("Clicking save button"),
+      Log("Clicking save button"),
       ExecuteJsAt(kScanAppWebContentsId, kMultiPageScanSaveButtonQuery,
                   kClickFn),
-      FlushEvents(), Check([this]() {
+      Check([this]() {
         const auto files = GetScannedFiles();
         // PDFs do not have stable contents (e.g. metadata changes), so do not
         // compare to a golden file. If the file was written, we assume its
         // contents are valid.
         return files.size() == 1u && base::PathExists(files.front());
-      }),
-      FlushEvents());
+      }));
 }
 
 }  // namespace

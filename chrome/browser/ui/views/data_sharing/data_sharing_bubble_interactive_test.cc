@@ -66,7 +66,7 @@ class DataSharingBubbleInteractiveUiTest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(DataSharingBubbleInteractiveUiTest,
                        MAYBE_BubbleCanShowAndClose) {
   RunTestSequence(EnsureNotPresent(kDataSharingBubbleElementId), ShowBubble(),
-                  WaitForShow(kDataSharingBubbleElementId), FlushEvents(),
-                  CloseBubble(), WaitForHide(kDataSharingBubbleElementId));
+                  WaitForShow(kDataSharingBubbleElementId), CloseBubble(),
+                  WaitForHide(kDataSharingBubbleElementId));
 }
 }  // namespace

@@ -156,13 +156,13 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       InContext(incognito->window()->GetElementContext(),
                 WaitForShow(kBrowserViewElementId)),
       InSameContext(Steps(
-          ActivateSurface(kBrowserViewElementId), FlushEvents(),
+          ActivateSurface(kBrowserViewElementId),
           MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
           SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
           WaitForHide(AppMenuModel::kDownloadsMenuItem),
           // These two types of actions use PostTask() internally and bounce off
           // the pivot element. Make sure they still work in a "InSameContext".
-          FlushEvents(), EnsureNotPresent(AppMenuModel::kDownloadsMenuItem),
+          EnsureNotPresent(AppMenuModel::kDownloadsMenuItem),
           // Make sure this picks up the correct button, since it was after a
           // string of non-element-specific actions.
           WithElement(kToolbarAppMenuButtonElementId,
@@ -179,14 +179,14 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
 
   RunTestSequence(InContext(
       incognito->window()->GetElementContext(),
-      Steps(ActivateSurface(kBrowserViewElementId), FlushEvents(),
+      Steps(ActivateSurface(kBrowserViewElementId),
             MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
             SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
             WaitForHide(AppMenuModel::kDownloadsMenuItem),
             // These two types of actions use PostTask() internally and
             // bounce off the pivot element. Make sure they still work in a
             // "InSameContext".
-            FlushEvents(), EnsureNotPresent(AppMenuModel::kDownloadsMenuItem),
+            EnsureNotPresent(AppMenuModel::kDownloadsMenuItem),
             // Make sure this picks up the correct button, since it was
             // after a string of non-element-specific actions.
             WithElement(kToolbarAppMenuButtonElementId,
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, ActivateMultipleSurfaces) {
                       MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
                       SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
                       WaitForHide(AppMenuModel::kDownloadsMenuItem))),
-      FlushEvents(), ActivateSurface(kBrowserViewElementId),
+      ActivateSurface(kBrowserViewElementId),
       MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
       WaitForShow(AppMenuModel::kDownloadsMenuItem));
 }
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                       MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
                       SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
                       WaitForHide(AppMenuModel::kDownloadsMenuItem))),
-      FlushEvents(), ActivateSurface(kBrowserViewElementId),
+      ActivateSurface(kBrowserViewElementId),
       WaitForState(views::test::kCurrentWidgetFocus, [this]() {
         return BrowserView::GetBrowserViewForBrowser(browser())
             ->GetWidget()
@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                       MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
                       SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
                       WaitForHide(AppMenuModel::kDownloadsMenuItem))),
-      FlushEvents(), InstrumentTab(kWebContentsElementId),
+      InstrumentTab(kWebContentsElementId),
       ActivateSurface(kWebContentsElementId),
       WaitForState(views::test::kCurrentWidgetFocus, [this]() {
         return BrowserView::GetBrowserViewForBrowser(browser())
@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                       MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
                       SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
                       WaitForHide(AppMenuModel::kDownloadsMenuItem))),
-      FlushEvents(), PressButton(kTabSearchButtonElementId),
+      PressButton(kTabSearchButtonElementId),
       WaitForShow(kTabSearchBubbleElementId),
       NameDescendantViewByType<views::WebView>(kTabSearchBubbleElementId,
                                                kWebViewName),
@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                   // Need to flush here because we're still responding to the
                   // original WebContents being shown, so we can't destroy the
                   // WebContents until the call resolves.
-                  FlushEvents(), Do([&]() { bubble->SwapWebContents(url2); }),
+                  Do([&]() { bubble->SwapWebContents(url2); }),
                   WaitForWebContentsNavigation(kWebContentsId, url2));
 
   bubble->GetWidget()->CloseNow();

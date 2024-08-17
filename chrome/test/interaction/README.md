@@ -198,8 +198,11 @@ Verbs fall into a number of different categories:
    - `PollView()` [Views]
    - `StopObservingState()`
 - **Utility** verbs modify how the test sequence is executed.
-   - `FlushEvents()` ensures that the next step happens on a fresh
-     message loop rather than being able to chain successive steps.
+   - `WithoutDelay()` prevents step start callback and the trigger for the next
+     step being evaluated on a new call stack, after all pending events.
+     Instead, these will be evaluated as soon as possible, possibly all on the 
+     same call stack. This can be used to perform checks before an object is
+     destroyed or a resource is freed.
    - `SetOnIncompatibleAction()` changes what the sequence will do when faced
      with an action that cannot be executed on the current
      build, environment, or platform. See

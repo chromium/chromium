@@ -65,7 +65,7 @@ InteractiveFeaturePromoTestApi::WaitForFeatureEngagementReady() {
                }),
       ObserveState(kFeatureEngagementInitializedState,
                    [browser]() { return browser->data; }),
-      WaitForState(kFeatureEngagementInitializedState, true), FlushEvents(),
+      WaitForState(kFeatureEngagementInitializedState, true),
       StopObservingState(kFeatureEngagementInitializedState));
   AddDescription(steps, "WaitForFeatureEngagementReady() - %s");
   return steps;
@@ -149,7 +149,7 @@ InteractiveFeaturePromoTestApi::WaitForPromo(const base::Feature& iph_feature) {
   auto steps = Steps(
       WaitForShow(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      FlushEvents(),
+
       CheckView(
           kBrowserViewElementId, [&iph_feature](BrowserView* browser_view) {
             return browser_view->GetFeaturePromoController()->IsPromoActive(
@@ -176,8 +176,7 @@ InteractiveFeaturePromoTestApi::AbortPromo(const base::Feature& iph_feature,
     steps = Steps(
         std::move(steps),
         WaitForHide(
-            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-        FlushEvents());
+            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
   }
 
   std::ostringstream desc;
@@ -192,8 +191,7 @@ InteractiveFeaturePromoTestApi::PressClosePromoButton() {
   auto steps = Steps(
       PressButton(user_education::HelpBubbleView::kCloseButtonIdForTesting),
       WaitForHide(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      FlushEvents());
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
   AddDescription(steps, "PressClosePromoButton() - %s");
   return steps;
 }
@@ -203,8 +201,7 @@ InteractiveFeaturePromoTestApi::PressDefaultPromoButton() {
   auto steps = Steps(
       PressButton(user_education::HelpBubbleView::kDefaultButtonIdForTesting),
       WaitForHide(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      FlushEvents());
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
   AddDescription(steps, "PressDefaultPromoButton() - %s");
   return steps;
 }
@@ -215,8 +212,7 @@ InteractiveFeaturePromoTestApi::PressNonDefaultPromoButton() {
       PressButton(
           user_education::HelpBubbleView::kFirstNonDefaultButtonIdForTesting),
       WaitForHide(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      FlushEvents());
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
   AddDescription(steps, "PressNonDefaultPromoButton() - %s");
   return steps;
 }
