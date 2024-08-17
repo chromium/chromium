@@ -200,6 +200,15 @@ void FileSystemAccessWatcherManager::OnRawChange(
         observation.scope() != scope) {
       continue;
     }
+
+    // On both Local and Bucket File Systems, errors shouldn't be sent to
+    // observations based on their scope but based on the source the
+    // observations are tied to.
+    if (error) {
+      observation.NotifyOfChanges(
+          changes_or_error, base::PassKey<FileSystemAccessWatcherManager>());
+      continue;
+    }
     bool modified_url_in_scope = observation.scope().Contains(changed_url);
     bool moved_from_url_in_scope =
         is_move_event && observation.scope().Contains(moved_from_url.value());
