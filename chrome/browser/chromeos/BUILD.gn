@@ -18,8 +18,6 @@ source_set("chromeos") {
   sources = [
     "extensions/accessibility_service_private.cc",
     "extensions/accessibility_service_private.h",
-    "extensions/contact_center_insights/contact_center_insights_extension_manager.cc",
-    "extensions/contact_center_insights/contact_center_insights_extension_manager.h",
     "extensions/device_local_account_external_policy_loader.cc",
     "extensions/device_local_account_external_policy_loader.h",
     "extensions/file_system_provider/service_worker_lifetime_manager.cc",
@@ -499,7 +497,6 @@ source_set("unit_tests") {
 
   sources = [
     "../ui/views/frame/immersive_mode_controller_chromeos_unittest.cc",
-    "extensions/contact_center_insights/contact_center_insights_extension_manager_unittest.cc",
     "extensions/desk_api/desk_api_extension_manager_unittest.cc",
     "extensions/file_system_provider/service_worker_lifetime_manager_unittest.cc",
     "extensions/login_screen/login/cleanup/cleanup_manager_unittest.cc",
@@ -603,6 +600,7 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/arc:unit_tests",
     "//chrome/browser/chromeos/container_app:unit_tests",
     "//chrome/browser/chromeos/drivefs:unit_tests",
+    "//chrome/browser/chromeos/extensions/contact_center_insights:unit_tests",
     "//chrome/browser/chromeos/extensions/telemetry:unit_tests",
     "//chrome/browser/chromeos/launcher_search:unit_tests",
     "//chrome/browser/chromeos/mahi:unit_tests",
@@ -698,6 +696,7 @@ group("browser_tests") {
     deps += [
       # Browser tests from subdirectories.
       "//chrome/browser/chromeos/extensions/action_handlers:browser_tests",
+      "//chrome/browser/chromeos/extensions/contact_center_insights:browser_tests",
       "//chrome/browser/chromeos/mahi:browser_tests",
       "//chrome/browser/chromeos/network:browser_tests",
       "//chrome/browser/chromeos/printing/print_preview:browser_tests",
@@ -715,6 +714,7 @@ if (is_chromeos_lacros) {
 
     deps = [
       # Browser tests from subdirectories.
+      "//chrome/browser/chromeos/extensions/contact_center_insights:lacros_chrome_browsertests",
       "//chrome/browser/chromeos/kcer:lacros_chrome_browsertests",
       "//chrome/browser/chromeos/network:lacros_chrome_browsertests",
       "//chrome/browser/chromeos/printing/print_preview:lacros_chrome_browsertests",
