@@ -18,6 +18,7 @@
 #include "build/config/compiler/compiler_buildflags.h"
 #include "content/child/child_thread_impl.h"
 #include "content/common/process_visibility_tracker.h"
+#include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
@@ -50,6 +51,8 @@ class ChildIOThread : public base::Thread {
   ChildIOThread& operator=(ChildIOThread&&) = delete;
 
   void Run(base::RunLoop* run_loop) override {
+    mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics(
+        "ChildIOThread");
     base::ScopedClosureRunner unregister_thread_closure;
     if (base::HangWatcher::IsIOThreadHangWatchingEnabled()) {
       unregister_thread_closure = base::HangWatcher::RegisterThread(

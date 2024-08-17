@@ -12,8 +12,13 @@ namespace internal {
 
 namespace {
 
-size_t ComputeHeaderSize(uint32_t flags, size_t payload_interface_id_count) {
-  if (payload_interface_id_count > 0) {
+size_t ComputeHeaderSize(uint32_t flags,
+                         size_t payload_interface_id_count,
+                         int64_t creation_timeticks_us) {
+  if (creation_timeticks_us > 0) {
+    // Version 3
+    return sizeof(MessageHeaderV3);
+  } else if (payload_interface_id_count > 0) {
     // Version 2
     return sizeof(MessageHeaderV2);
   } else if (flags &
@@ -30,9 +35,10 @@ size_t ComputeHeaderSize(uint32_t flags, size_t payload_interface_id_count) {
 
 size_t ComputeSerializedMessageSize(uint32_t flags,
                                     size_t payload_size,
-                                    size_t payload_interface_id_count) {
-  const size_t header_size =
-      ComputeHeaderSize(flags, payload_interface_id_count);
+                                    size_t payload_interface_id_count,
+                                    int64_t creation_timeticks_us) {
+  const size_t header_size = ComputeHeaderSize(
+      flags, payload_interface_id_count, creation_timeticks_us);
   if (payload_interface_id_count > 0) {
     return Align(header_size + Align(payload_size) +
                  ArrayDataTraits<uint32_t>::GetStorageSize(

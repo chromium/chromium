@@ -43,6 +43,7 @@
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/renderer_main_platform_delegate.h"
 #include "media/media_buildflags.h"
+#include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/mojo_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
@@ -207,6 +208,7 @@ int RendererMain(MainFunctionParams parameters) {
   RendererMainPlatformDelegate platform(parameters);
 
   base::PlatformThread::SetName("CrRendererMain");
+  mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics("RendererMain");
 
   // Force main thread initialization. When the implementation is based on a
   // better means of determining which is the main thread, remove.

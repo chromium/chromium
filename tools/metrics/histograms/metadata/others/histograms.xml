@@ -6026,6 +6026,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mojo.EndToEndLatencyUs.{ThreadName}" units="microseconds"
+    expires_after="2025-08-01">
+  <owner>lizeb@chromium.org</owner>
+  <owner>rockot@google.com</owner>
+  <owner>mthiesse@chromium.org</owner>
+  <summary>
+    Measures the time taken from the sender calling a mojo interface function to
+    the receiver's implementation getting invoked.
+
+    Sub-sampled to 1/1000 calls to reduce measurement overhead.
+
+    Metric is split by receiving thread for some important threads. All other
+    threads are grouped under 'Default'.
+
+    This is only recorded on clients with high-resolution clocks.
+  </summary>
+  <token key="ThreadName">
+    <variant name="BrowserIO"/>
+    <variant name="BrowserMain"/>
+    <variant name="ChildIOThread"/>
+    <variant name="Compositor"/>
+    <variant name="Default"/>
+    <variant name="GpuMain"/>
+    <variant name="NetworkService"/>
+    <variant name="RendererMain"/>
+  </token>
+</histogram>
+
 <histogram name="Mojo.InvalidUTF8String" enum="BooleanValid"
     expires_after="2025-02-10">
   <owner>ellyjones@chromium.org</owner>
