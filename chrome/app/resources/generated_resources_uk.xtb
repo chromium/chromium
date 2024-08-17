@@ -4833,7 +4833,7 @@
 <translation id="4549791035683739768">На ключі безпеки немає збережених відбитків</translation>
 <translation id="4550737096585299960">Спробуйте за кілька хвилин.</translation>
 <translation id="4550926046134589611">Деякі підтримувані посилання все ще відкриватимуться в додатку <ph name="APP_NAME" />.</translation>
-<translation id="4551379727767354516">Ваші нещодавні теми, створені за допомогою ШІ</translation>
+<translation id="4551379727767354516">Ваші нещодавні теми, створені ШІ</translation>
 <translation id="4551763574344810652">Щоб відмінити, натисніть <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
 <translation id="4553526521109675518">Щоб змінити мову пристрою, потрібно перезапустити Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">Зовнішнє розширення має таку саму або нижчу версію порівняно з наявним.</translation>
@@ -6350,7 +6350,7 @@
 <translation id="572328651809341494">Останні вкладки</translation>
 <translation id="5723508132121499792">Не запущено жодну фонову програму</translation>
 <translation id="5723967018671998714">Сторонні файли cookie блокуються в режимі анонімного перегляду</translation>
-<translation id="5725112283692663422">Надіслати відгук про функцію "Створити тему за допомогою ШІ"</translation>
+<translation id="5725112283692663422">Надішліть відгук про функцію "Створити тему за допомогою ШІ"</translation>
 <translation id="5727728807527375859">Розширення, служби та теми можуть зашкодити вашому комп'ютеру. Дійсно продовжити?</translation>
 <translation id="5728072125198221967">Пов’язані сервіси Google</translation>
 <translation id="5728290366864286776">Це розширення може переглядати й змінювати інформацію про сайт або працювати у фоновому режимі</translation>
@@ -11114,7 +11114,7 @@
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – записування з камери й мікрофона</translation>
 <translation id="984275831282074731">Способи оплати</translation>
 <translation id="984705303330760860">Додайте мови, для яких потрібно перевіряти орфографію</translation>
-<translation id="98515147261107953">Горизонтальна</translation>
+<translation id="98515147261107953">Пейзаж</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Загальне</translation>
 <translation id="987475089238841621">Для живих субтитрів використовуються мовні пакети, які зберігаються на вашому пристрої</translation>

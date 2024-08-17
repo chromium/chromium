@@ -371,7 +371,7 @@
 <translation id="1261380933454402672">మధ్యస్థం</translation>
 <translation id="126156426083987769">డెమో మోడ్ పరికర లైసెన్స్‌లకు సంబంధించి ఒక సమస్య ఏర్పడింది.</translation>
 <translation id="1261885284931493480">ట్యాబ్(ల)ను తీసివేసి, గ్రూప్‌ను తొలగించాలా?</translation>
-<translation id="1263231323834454256">పఠన లిస్ట్‌</translation>
+<translation id="1263231323834454256">రీడింగ్ లిస్ట్</translation>
 <translation id="1263733306853729545">అభ్యర్థి లిస్ట్‌ను పేజీ చేయడానికి <ph name="MINUS" />, <ph name="EQUAL" /> కీలను ఉపయోగించండి</translation>
 <translation id="126387934568812801">ఈ స్క్రీన్‌షాట్‌ను, తెరిచి ఉన్న ట్యాబ్‌ల శీర్షికలను చేర్చడం</translation>
 <translation id="1264083566674525434">సైట్ అనుమతులను ఎడిట్ చేయండి</translation>
@@ -3820,7 +3820,7 @@
 <translation id="3787434344076711519">అనువాదం కోసం వేచి ఉంది</translation>
 <translation id="3788301286821743879">కియోస్క్ యాప్‌ను ప్రారంభించడం సాధ్యపడలేదు.</translation>
 <translation id="3788401245189148511">ఇది వీటిని చేయాలనుకుంటోంది:</translation>
-<translation id="3789841737615482174">ఇన్‌స్టాల్ చేయి</translation>
+<translation id="3789841737615482174">ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="3790417903123637354">ఏదో తప్పు జరిగింది. తర్వాత మళ్లీ ట్రై చేయండి</translation>
 <translation id="379082410132524484">మీ కార్డ్ గడువు ముగిసింది</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> ఎక్స్‌టెన్షన్‌లు</translation>
@@ -4058,7 +4058,7 @@
 <translation id="3957079323242030166">బ్యాకప్ డేటా, మీ డిస్క్ స్టోరేజ్ కోటాలో లెక్కించబడదు.</translation>
 <translation id="3957663711862465084">USB సెట్టింగ్‌లు</translation>
 <translation id="3957844511978444971">ఈ Google సేవల సెట్టింగ్‌ల విషయంలో మీ ఎంపికను మీరు నిర్ధారిస్తున్నట్లు తెలియజేయడానికి “ఆమోదించు” నొక్కండి.</translation>
-<translation id="3958088479270651626">బుక్‌మార్క్‌లను మరియు సెట్టింగ్‌లను దిగుమతి చేయండి</translation>
+<translation id="3958088479270651626">బుక్‌మార్క్‌లను, సెట్టింగ్‌లను దిగుమతి చేయండి</translation>
 <translation id="3958110062351175311">టూల్‌బార్‌లో రిక్వెస్ట్‌లను చూపించడానికి అనుమతించబడుతుంది</translation>
 <translation id="3958821725268247062"><ph name="APP_NAME" /> ఇప్పటికే ఇన్‌స్టాల్ అయ్యింది</translation>
 <translation id="3959747296451923142">సబ్‌స్క్రిప్షన్‌ను తీసివేస్తున్నట్లు నిర్ధారించండి</translation>
@@ -8876,7 +8876,7 @@
 <translation id="7663774460282684730">కీబోర్డ్ షార్ట్‌కట్ అందుబాటులో ఉంది</translation>
 <translation id="7663859337051362114">eSIM ప్రొఫైల్‌ను జోడించండి</translation>
 <translation id="76641554187607347">కీబోర్డ్ ఏదీ కనెక్ట్ అయి లేదు</translation>
-<translation id="7665082356120621510">పరిమాణాన్ని రిజర్వ్ చేయి</translation>
+<translation id="7665082356120621510">పరిమాణాన్ని రిజర్వ్ చేయండి</translation>
 <translation id="7665369617277396874">ఖాతాను జోడించండి</translation>
 <translation id="7665445336029073980">పూర్తి డౌన్‌లోడ్ హిస్టరీ</translation>
 <translation id="766560638707011986">డొమైన్‌లను చూపించండి</translation>
@@ -9514,7 +9514,7 @@
 <translation id="8110489095782891123">కాంటాక్ట్ లిస్ట్‌ను డౌన్‌లోడ్ చేస్తోంది...</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> మైక్రోఫోన్ అనుమతులు</translation>
 <translation id="8115139559594092084">మీ Google Drive నుండి</translation>
-<translation id="8116972784401310538">&amp;బుక్‌మార్క్ నిర్వాహకుడు</translation>
+<translation id="8116972784401310538">&amp;బుక్‌మార్క్ మేనేజర్</translation>
 <translation id="8118276691321086429">మీరు ఎలా సైన్ ఇన్ చేశారు అనే దానిని <ph name="PASSWORD_MANAGER_BRAND" /> గుర్తుంచుకొని, వీలయినప్పుడు ఆటోమేటిక్‌గా మిమ్మల్ని సైన్ ఇన్ చేస్తుంది. ఇది ఆఫ్‌లో ఉన్నప్పుడు, ప్రతిసారి ధృవీకరించమని మిమ్మల్ని అడుగుతుంది.</translation>
 <translation id="8118331347066725040">Lensతో సెర్చ్ చేయడం కోసం ఫీడ్‌బ్యాక్‌ను పంపండి</translation>
 <translation id="8118362518458010043">Chrome నిలిపివేసింది. ఈ ఎక్స్‌టెన్షన్‌ సురక్షితం కాకపోవచ్చు.</translation>

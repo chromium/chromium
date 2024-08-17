@@ -1949,7 +1949,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2413009156320833859">Přizpůsobte si prohlížeč ještě více pomocí rozšíření z <ph name="BEGIN_LINK1" />Internetového obchodu Chrome<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Vrátit se k procházení položek <ph name="MODULE_TITLE" /></translation>
-<translation id="2414886740292270097">Tmavé</translation>
+<translation id="2414886740292270097">Tmavá</translation>
 <translation id="2415117815770324983">Budete odhlášeni z většiny webů. Zůstanete přihlášeni ke svému účtu Google.</translation>
 <translation id="2416435988630956212">Funkční klávesy</translation>
 <translation id="2418307627282545839">Ať je vše světlé a vzdušné</translation>
@@ -4815,7 +4815,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4549791035683739768">V bezpečnostním klíči nejsou uloženy žádné otisky</translation>
 <translation id="4550737096585299960">Zkuste to znovu za několik minut.</translation>
 <translation id="4550926046134589611">Některé podporované odkazy se budou nadále otevírat v aplikaci <ph name="APP_NAME" />.</translation>
-<translation id="4551379727767354516">Vaše nedávné motivy vygenerované umělou inteligencí</translation>
+<translation id="4551379727767354516">Vaše nedávné motivy vygenerované AI</translation>
 <translation id="4551763574344810652">Stisknutím <ph name="MODIFIER_KEY_DESCRIPTION" /> vrátíte provedenou akci zpět</translation>
 <translation id="4553526521109675518">Pokud chcete změnit jazyk Chromebooku, musíte ho restartovat. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">Externí rozšíření má stejnou nebo nižší verzi než stávající.</translation>
@@ -6332,7 +6332,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="572328651809341494">Nedávno použité karty</translation>
 <translation id="5723508132121499792">Na pozadí nejsou spuštěny žádné aplikace</translation>
 <translation id="5723967018671998714">Soubory cookie třetích stran jsou v anonymním režimu blokovány</translation>
-<translation id="5725112283692663422">Odeslat zpětnou vazbu k vytváření motiů pomocí umělé inteligence</translation>
+<translation id="5725112283692663422">Odeslat zpětnou vazbu k vytváření motivů pomocí umělé inteligence</translation>
 <translation id="5727728807527375859">Rozšíření, aplikace nebo motivy mohou poškodit váš počítač. Chcete pokračovat?</translation>
 <translation id="5728072125198221967">Propojené služby Google</translation>
 <translation id="5728290366864286776">Toto rozšíření může číst a měnit informace webů nebo běžet na pozadí</translation>
@@ -11092,7 +11092,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – zaznamenávání kamery a mikrofonu</translation>
 <translation id="984275831282074731">Platební metody</translation>
 <translation id="984705303330760860">Přidání jazyků kontroly pravopisu</translation>
-<translation id="98515147261107953">Na šířku</translation>
+<translation id="98515147261107953">Krajina</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Všeobecné</translation>
 <translation id="987475089238841621">Jazykové balíčky se používají pro okamžité titulky a jsou uloženy ve vašem zařízení</translation>

@@ -4635,7 +4635,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4411344321892622527">No es permet desplaçar-se ni fer zoom a les pestanyes compartides</translation>
 <translation id="4411578466613447185">Signant del codi</translation>
 <translation id="4411719918614785832">Aquestes claus d'accés es desen a Windows Hello en aquest ordinador, i no al teu Compte de Google.</translation>
-<translation id="4412544493002546580">Torna-ho a provar o selecciona una de les inspiracions més avall.</translation>
+<translation id="4412544493002546580">Torna-ho a provar o selecciona una de les inspiracions de més avall.</translation>
 <translation id="4412547955014928315">Vols suprimir les dades i els permisos del lloc web <ph name="SITE_NAME" /> i tots els llocs web que conté?</translation>
 <translation id="4412632005703201014">Les aplicacions de Chrome s'estan migrant a aplicacions web progressives. La teva organització ha instal·lat aquesta aplicació de Chrome al navegador. Per obrir l'aplicació web progressiva a la llista d'aplicacions, primer contacta amb l'administrador i demana-li que desinstal·li l'aplicació Chrome. Mentrestant, pots visitar <ph name="EXTENSION_LAUNCH_URL" /> per obrir <ph name="EXTENSION_NAME" /> al web.</translation>
 <translation id="4412698727486357573">Centre d'ajuda</translation>
@@ -11089,7 +11089,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" />: la càmera i el micròfon estan gravant</translation>
 <translation id="984275831282074731">Formes de pagament</translation>
 <translation id="984705303330760860">Afegeix idiomes al corrector ortogràfic</translation>
-<translation id="98515147261107953">Horitzontal</translation>
+<translation id="98515147261107953">Paisatge</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">General</translation>
 <translation id="987475089238841621">Els paquets d'idioma s'utilitzen per a la funció Subtítols instantanis i s'emmagatzemen al teu dispositiu</translation>

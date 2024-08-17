@@ -6630,7 +6630,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="5939518447894949180">Tyhjennä</translation>
 <translation id="5939719276406088041">Pikakuvaketta ei voi luoda</translation>
 <translation id="594048410531370124">Tuntematon näppäin. <ph name="RESPONSE" /> painamalla mitä tahansa näppäintä.</translation>
-<translation id="5941153596444580863">Lisää henkilö…</translation>
+<translation id="5941153596444580863">Lisää käyttäjä…</translation>
 <translation id="5941343993301164315">Kirjaudu sisään palveluun <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Pienennä</translation>
 <translation id="594221546068848596">Hae sivua tällä: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -7721,7 +7721,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6789834167207639931">Viimeistele palautus lisäämällä Google-tilisi salasana uudelleen seuraavalla näytöllä</translation>
 <translation id="6790428901817661496">Toista</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> lisättiin etäyhteyden kautta</translation>
-<translation id="6790820461102226165">Lisää henkilö…</translation>
+<translation id="6790820461102226165">Lisää käyttäjä…</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">Jos avainkoodi (<ph name="APP_NAME" />) on USB-suojausavaimessa, käytä sitä nyt.</translation>
 <translation id="679486139907144816">Jos haluat kirjautua tälle sivustolle avainkoodin avulla, laita Windows Hello päälle asetuksista. Palaa sitten tälle sivustolle ja yritä uudelleen.</translation>

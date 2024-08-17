@@ -5613,7 +5613,7 @@
 <translation id="5177549709747445269">您正在使用移动数据网络</translation>
 <translation id="5178667623289523808">查找上一个</translation>
 <translation id="5181140330217080051">正在下载</translation>
-<translation id="5181172023548002891">保存到 <ph name="ACCOUNT" /> 的 Google 密码管理器</translation>
+<translation id="5181172023548002891">保存到 <ph name="ACCOUNT" /> 的 Google 密码管理工具</translation>
 <translation id="5181551096188687373">这个密码仅会保存到此设备上。如果想在您的其他设备上使用它，请将它保存到您的 Google 账号 <ph name="USER_EMAIL" /> 中。</translation>
 <translation id="5183344263225877832">重置所有 HID 设备权限？</translation>
 <translation id="5184063094292164363">JavaScript 控制台(&amp;J)</translation>
@@ -7347,7 +7347,7 @@
         <ph name="FILE_INFO" />
         <ph name="EVENT_NAME" /></translation>
 <translation id="6519689855001245063">正在检查资格</translation>
-<translation id="6520087076882753524">您可在 Google 密码管理器中查看和管理已保存的密码</translation>
+<translation id="6520087076882753524">您可在 Google 密码管理工具中查看和管理已保存的密码</translation>
 <translation id="6520876759015997832">第 <ph name="LIST_POSITION" /> 条搜索结果（共 <ph name="LIST_SIZE" /> 条）：<ph name="SEARCH_RESULT_TEXT" />。按 Enter 键即可转到相应部分。</translation>
 <translation id="6521214596282732365">网站通常会使用您的字体，以便您能够利用在线设计和制图工具创作高保真内容</translation>
 <translation id="6523574494641144162">Google 密码管理工具无法将这些密码保存到您的 Google 账号中。您可以将这些密码保存到此设备上。</translation>
@@ -8858,7 +8858,7 @@
 <translation id="7666531788977935712">已启用“继续”按钮</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{请在 {NUM_WEEKS} 周内退还 <ph name="DEVICE_TYPE" />}other{请在 {NUM_WEEKS} 周内退还 <ph name="DEVICE_TYPE" />}}</translation>
 <translation id="7668205084604701639">Office 文件设置</translation>
-<translation id="7668423670802040666">在 <ph name="ACCOUNT" /> 的 Google 密码管理器中</translation>
+<translation id="7668423670802040666">在 <ph name="ACCOUNT" /> 的 Google 密码管理工具中</translation>
 <translation id="7668648754769651616">无障碍功能可让设备更易于使用。如果您想查看“快捷设置”，请选择屏幕底部的时间。</translation>
 <translation id="7669620291129890197">向您的设备显示</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{PIN 码不正确。您还剩 1 次尝试机会。}other{PIN 码不正确。您还剩 # 次尝试机会。}}</translation>
@@ -9385,7 +9385,7 @@
 <translation id="8041089156583427627">发送反馈</translation>
 <translation id="8041267120753677077">流式传输手机上的应用</translation>
 <translation id="8042142357103597104">文字不透明度</translation>
-<translation id="8042331986490021244">系统会先在设备上对您的密码进行加密，然后再将其保存到 Google 密码管理器中</translation>
+<translation id="8042331986490021244">系统会先在设备上对您的密码进行加密，然后再将其保存到 Google 密码管理工具中</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> 无响应。</translation>
 <translation id="8044899503464538266">慢</translation>
 <translation id="8045253504249021590">已通过 Google 信息中心阻止同步。</translation>

@@ -746,7 +746,7 @@
 <translation id="1552752544932680961">Управление на разширението</translation>
 <translation id="1553538517812678578">неограничено</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /> за Microsoft 365 на вашия Chromebook.</translation>
-<translation id="1555130319947370107">синьо</translation>
+<translation id="1555130319947370107">Синьо</translation>
 <translation id="1556127816860282890">Активността на заден план и някои визуални ефекти, като гладкото превъртане, може да са ограничени</translation>
 <translation id="1556537182262721003">Не можа да се премести директорията на разширението в потребителския профил.</translation>
 <translation id="1557939148300698553">Създаване на потребителски профил</translation>
@@ -6583,7 +6583,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5901069264981746702">Данните за отпечатъка ви се съхраняват надеждно и никога не напускат устройството ви <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="5901089233978050985">Превключване към записващия раздел</translation>
 <translation id="5901494423252125310">Вратичката на принтера е отворена</translation>
-<translation id="5901630391730855834">жълто</translation>
+<translation id="5901630391730855834">Жълто</translation>
 <translation id="5902892210366342391">Показване на предупреждения преди отваряне на незащитени сайтове в режим „инкогнито“</translation>
 <translation id="5904614460720589786">Настройването на <ph name="APP_NAME" /> не бе успешно поради проблем с конфигурирането. Моля, обърнете се към администратора си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Актуализирането почти завърши! Остава само да рестартирате устройството си.</translation>
@@ -6731,7 +6731,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6016178549409952427">Преминаване към допълнително съдържание <ph name="CURRENT_ELEMENT" /> от <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Потвърждаване на извършването на Powerwash и връщането към предишната версия</translation>
 <translation id="6016972670657536680">Бутон за избиране на език и клавиатура. Понастоящем езикът е <ph name="LANGUAGE" />.</translation>
-<translation id="6017514345406065928">зелено</translation>
+<translation id="6017514345406065928">Зелено</translation>
 <translation id="6019169947004469866">Подрязване</translation>
 <translation id="6019851026059441029">Отлично – HD</translation>
 <translation id="6020431688553761150">Сървърът не ви упълномощи за достъп до този ресурс.</translation>
@@ -8747,7 +8747,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7566969018588966785">Създаване на клавишна комбинация</translation>
 <translation id="756876171895853918">Персонализиране на аватара</translation>
 <translation id="7568790562536448087">Актуализира се</translation>
-<translation id="7569983096843329377">черно</translation>
+<translation id="7569983096843329377">Черно</translation>
 <translation id="7571643774869182231">Мястото в хранилището не е достатъчно за актуализацията</translation>
 <translation id="7573172247376861652">Заряд на батерията</translation>
 <translation id="7573594921350120855">Сайтовете обикновено използват видеокамерата ви, за да осигуряват функции за комуникация, като например видеочат</translation>
@@ -9269,7 +9269,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7940087892955752820">Прекратяването на споделянето не бе успешно, защото тази папка се използва от приложение. Споделянето ѝ ще бъде прекратено при следващото изключване на <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Сортиране по: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Готовност за тетъринг:</translation>
-<translation id="7942349550061667556">червено</translation>
+<translation id="7942349550061667556">Червено</translation>
 <translation id="7942846369224063421">Предварително зареден процес за рендериране на ПИ</translation>
 <translation id="7943349879009553083">Не е налице в режим на гост</translation>
 <translation id="7943368935008348579">Изтегляне на PDF файловете</translation>

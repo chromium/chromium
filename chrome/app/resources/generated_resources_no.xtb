@@ -4727,7 +4727,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4477015793815781985">Inkluder Ctrl, Alt eller ⌘</translation>
 <translation id="4478161224666880173">Du kan bruke <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-kontoen din på dette nettstedet. For å fortsette, logg på <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4478664379124702289">Lagre lin&amp;ken som</translation>
-<translation id="4479424953165245642">Administrer kiosk-apper</translation>
+<translation id="4479424953165245642">Administrer kioskapper</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4479877282574735775">Konfigurerer den virtuelle maskinen. Dette kan ta noen minutter.</translation>
 <translation id="4481448477173043917"><ph name="DEVICE_TYPE" /> startet på nytt uventet</translation>
@@ -6374,7 +6374,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5756163054456765343">&amp;Brukerstøtte</translation>
 <translation id="5757187557809630523">neste spor</translation>
 <translation id="5758631781033351321">Her finner du leselisten din</translation>
-<translation id="5759397201362801675">Velg et humør</translation>
+<translation id="5759397201362801675">Velg en stemning</translation>
 <translation id="5759728514498647443">Dokumenter du sender til utskrift via <ph name="APP_NAME" />, kan leses av <ph name="APP_NAME" />.</translation>
 <translation id="5760318332127300368">Slett også nettlesingsdata (<ph name="URL" />), noe som kan medføre at du blir logget av Google.com. <ph name="LEARN_MORE" /></translation>
 <translation id="5762787084360227629">Oppgi Google-kontoinformasjon</translation>

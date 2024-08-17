@@ -2711,7 +2711,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2960942820860729477">Taxa de atualização</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (extensão fornecida)</translation>
 <translation id="2961695502793809356">Clique para avançar, mantenha pressionado para ver o histórico</translation>
-<translation id="29618148602069201">Assunto</translation>
+<translation id="29618148602069201">Tema</translation>
 <translation id="2963151496262057773">O seguinte plug-in está sem resposta: <ph name="PLUGIN_NAME" />
 Quer pará-lo?</translation>
 <translation id="2964193600955408481">Desativar Wi-Fi</translation>
@@ -6799,7 +6799,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6077189836672154517">Sugestões e atualizações sobre o <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Falar para escrever</translation>
 <translation id="6078121669093215958">{0,plural, =1{Convidado}other{# janelas de convidado abertas}}</translation>
-<translation id="6078323886959318429">Adicionar atalho</translation>
+<translation id="6078323886959318429">Atalho</translation>
 <translation id="6078752646384677957">Verifique o microfone e os níveis de áudio.</translation>
 <translation id="608029822688206592">Nenhuma rede encontrada. Introduza o SIM e tente novamente.</translation>
 <translation id="6080689532560039067">Rever a hora do sistema</translation>
@@ -10882,7 +10882,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9114663181201435112">Iniciar sessão facilmente</translation>
 <translation id="9115675100829699941">&amp;Marcadores</translation>
 <translation id="9115932142612197835">Esta definição não altera a disponibilidade do Google Tradutor nem do Lens</translation>
-<translation id="9116366756388192417">Escolher assunto</translation>
+<translation id="9116366756388192417">Escolher tema</translation>
 <translation id="9116799625073598554">Aplicação para tirar notas</translation>
 <translation id="9117030152748022724">Gerir as suas apps</translation>
 <translation id="9119587891086680311">Estas funcionalidades usam IA, estão em desenvolvimento inicial e nem sempre estão certas.</translation>
@@ -10994,7 +10994,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" adicionada</translation>
 <translation id="9215742531438648683">Desinstalar Google Play Store</translation>
-<translation id="9218430445555521422">Definir como predefinição</translation>
+<translation id="9218430445555521422">Predefinir</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (app não suportada)</translation>
 <translation id="9219582468404818260">Ajude-nos a criar uma Web melhor</translation>
 <translation id="9219741625496141320">Os dados de navegação foram eliminados automaticamente</translation>
