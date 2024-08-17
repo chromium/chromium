@@ -3991,17 +3991,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "linux_chromeos_browser_tests_require_lacros",
-    tests = {
-        "browser_tests_require_lacros": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 8,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "linux_chromeos_lacros_gtests",
     tests = {
         # Chrome OS (Ash) and Lacros only.

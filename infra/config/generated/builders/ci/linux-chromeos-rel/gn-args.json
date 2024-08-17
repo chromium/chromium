@@ -1,6 +1,5 @@
 {
   "gn_args": {
-    "also_build_lacros_chrome": true,
     "dcheck_always_on": false,
     "ffmpeg_branding": "ChromeOS",
     "is_component_build": false,

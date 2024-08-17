@@ -1178,11 +1178,9 @@ targets.legacy_compound_suite(
     ],
 )
 
-# This is:
-#   linux_chromeos_gtests
-#   + 'linux_chromeos_browser_tests_require_lacros'
+# This is for linux-chromeos-rel CQ builder.
 targets.legacy_compound_suite(
-    name = "linux_chromeos_specific_and_lacros_dependent_gtests",
+    name = "linux_chromeos_rel_cq",
     basic_suites = [
         "aura_gtests",
         "chromium_gtests",
@@ -1191,7 +1189,6 @@ targets.legacy_compound_suite(
         "chromium_gtests_for_win_and_linux_only",
         "linux_chromeos_lacros_gtests",
         "linux_chromeos_specific_gtests",
-        "linux_chromeos_browser_tests_require_lacros",
         "linux_flavor_specific_chromium_gtests",
         "non_android_chromium_gtests",
         "pixel_experimental_browser_tests_gtests",

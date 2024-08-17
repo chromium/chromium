@@ -948,7 +948,6 @@ ci.builder(
             "release_builder",
             "remoteexec",
             "use_cups",
-            "also_build_lacros_chrome",
             "x64",
         ],
     ),
