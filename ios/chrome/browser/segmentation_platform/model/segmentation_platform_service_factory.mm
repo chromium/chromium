@@ -15,6 +15,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
+#import "components/segmentation_platform/embedder/input_delegate/shopping_service_input_delegate.h"
 #import "components/segmentation_platform/embedder/input_delegate/tab_rank_dispatcher.h"
 #import "components/segmentation_platform/embedder/input_delegate/tab_session_source.h"
 #import "components/segmentation_platform/embedder/model_provider_factory_impl.h"
@@ -25,6 +26,7 @@
 #import "components/segmentation_platform/public/config.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/sync_device_info/device_info_sync_service.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -142,6 +144,26 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
           ->GetDeviceInfoTracker();
   params->input_delegate_holder = SetUpInputDelegates(
       params->configs, session_sync_service, tab_fetcher.get());
+
+  // Set up Shopping Service input delegate.
+  auto shopping_service_callback = base::BindRepeating(
+      [](base::WeakPtr<ChromeBrowserState> chrome_browser_state)
+          -> ShoppingService* {
+        ChromeBrowserState* chrome_browser_state_ptr =
+            chrome_browser_state.get();
+        if (!chrome_browser_state_ptr) {
+          return nullptr;
+        }
+        return commerce::ShoppingServiceFactory::GetForBrowserStateIfExists(
+            chrome_browser_state_ptr);
+      },
+      chrome_browser_state->AsWeakPtr());
+
+  params->input_delegate_holder->SetDelegate(
+      proto::CustomInput::FILL_FROM_SHOPPING_SERVICE,
+      std::make_unique<ShoppingServiceInputDelegate>(
+          shopping_service_callback));
+
   auto service =
       std::make_unique<SegmentationPlatformServiceImpl>(std::move(params));
 

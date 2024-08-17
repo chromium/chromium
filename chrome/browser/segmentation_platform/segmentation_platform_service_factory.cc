@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+
 #include <memory>
 
 #include "base/containers/span.h"
@@ -13,6 +14,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
+#include "components/segmentation_platform/embedder/input_delegate/shopping_service_input_delegate.h"
 #include "components/segmentation_platform/embedder/input_delegate/tab_rank_dispatcher.h"
 #include "components/segmentation_platform/embedder/input_delegate/tab_session_source.h"
 #include "components/segmentation_platform/embedder/model_provider_factory_impl.h"
@@ -187,6 +190,24 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   params->device_info_tracker =
       DeviceInfoSyncServiceFactory::GetForProfile(profile)
           ->GetDeviceInfoTracker();
+
+  // Set up Shopping Service input delegate.
+  auto shopping_service_callback = base::BindRepeating(
+      [](base::WeakPtr<content::BrowserContext> context) -> ShoppingService* {
+        content::BrowserContext* context_ptr = context.get();
+        if (!context_ptr) {
+          return nullptr;
+        }
+        return commerce::ShoppingServiceFactory::GetForBrowserContextIfExists(
+            context_ptr);
+      },
+      context->GetWeakPtr());
+
+  params->input_delegate_holder->SetDelegate(
+      proto::CustomInput::FILL_FROM_SHOPPING_SERVICE,
+      std::make_unique<ShoppingServiceInputDelegate>(
+          shopping_service_callback));
+
   auto* service = new SegmentationPlatformServiceImpl(std::move(params));
 
   // Profile manager can be null in unit tests.

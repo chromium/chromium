@@ -29,6 +29,7 @@ source_set("model") {
     "//components/sync_device_info",
     "//components/ukm",
     "//components/variations",
+    "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/metrics/model:accessor",
     "//ios/chrome/browser/optimization_guide/model",
