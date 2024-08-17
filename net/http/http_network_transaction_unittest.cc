@@ -21984,6 +21984,12 @@ TEST_P(HttpNetworkTransactionTest, CloseIdleSpdySessionToOpenNewOne) {
   session_deps_.host_resolver->rules()->AddRule("www.a.com", "10.0.0.1");
   session_deps_.host_resolver->rules()->AddRule("www.b.com", "10.0.0.2");
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    session->http_stream_pool()->set_max_stream_sockets_per_group_for_testing(
+        1u);
+    session->http_stream_pool()->set_max_stream_sockets_per_pool_for_testing(
+        1u);
+  }
 
   SSLSocketDataProvider ssl1(ASYNC, OK);
   ssl1.next_proto = kProtoHTTP2;

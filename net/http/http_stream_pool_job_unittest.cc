@@ -1812,6 +1812,45 @@ TEST_F(HttpStreamPoolJobTest, DoNotUseSpdySessionForHttpRequest) {
   EXPECT_NE(requester_http.negotiated_protocol(), NextProto::kProtoHTTP2);
 }
 
+TEST_F(HttpStreamPoolJobTest, CloseIdleSpdySessionWhenPoolStalled) {
+  pool().set_max_stream_sockets_per_group_for_testing(1u);
+  pool().set_max_stream_sockets_per_pool_for_testing(1u);
+
+  constexpr std::string_view kDestinationA = "https://a.test";
+  constexpr std::string_view kDestinationB = "https://b.test";
+
+  // Create an idle SPDY session for `kDestinationA`. This session should be
+  // closed when a request is created for `kDestinationB`.
+  const HttpStreamKey stream_key_a =
+      StreamKeyBuilder().set_destination(kDestinationA).Build();
+  CreateFakeSpdySession(stream_key_a);
+  ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
+      stream_key_a.ToSpdySessionKey(), /*is_websocket=*/false));
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  auto data = std::make_unique<SequencedSocketData>(reads, writes);
+  socket_factory()->AddSocketDataProvider(data.get());
+  auto ssl = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  ssl->next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(ssl.get());
+
+  StreamRequester requester_b;
+  requester_b.set_destination(kDestinationB).RequestStream(pool());
+  RunUntilIdle();
+  EXPECT_THAT(requester_b.result(), Optional(IsOk()));
+  EXPECT_EQ(requester_b.negotiated_protocol(), NextProto::kProtoHTTP2);
+  ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
+      requester_b.GetStreamKey().ToSpdySessionKey(), /*is_websocket=*/false));
+  ASSERT_FALSE(spdy_session_pool()->HasAvailableSession(
+      stream_key_a.ToSpdySessionKey(), /*is_websocket=*/false));
+}
+
 TEST_F(HttpStreamPoolJobTest, PreconnectRequireHttp11AfterSpdySessionCreated) {
   const MockWrite writes[] = {MockWrite(ASYNC, OK, 1)};
   const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
@@ -1864,21 +1903,41 @@ TEST_F(HttpStreamPoolJobTest, SpdyReachedPoolLimit) {
   pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
   pool().set_max_stream_sockets_per_pool_for_testing(kMaxPerPool);
 
-  // Create SPDY sessions up to the pool limit.
+  // Create SPDY sessions up to the pool limit. Initialize streams to make
+  // SPDY sessions active.
   StreamRequester requester_a;
   requester_a.set_destination("https://a.test");
-  base::WeakPtr<SpdySession> spdy_session_a =
-      CreateFakeSpdySession(requester_a.GetStreamKey());
+  base::WeakPtr<SpdySession> spdy_session_a = CreateFakeSpdySession(
+      requester_a.GetStreamKey(), MakeIPEndPoint("192.0.2.1"));
   requester_a.RequestStream(pool());
   RunUntilIdle();
   EXPECT_THAT(requester_a.result(), Optional(IsOk()));
 
+  std::unique_ptr<HttpStream> stream_a = requester_a.ReleaseStream();
+  HttpRequestInfo request_info_a;
+  request_info_a.url = GURL("https://a.test");
+  request_info_a.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream_a->RegisterRequest(&request_info_a);
+  stream_a->InitializeStream(/*can_send_early=*/false, DEFAULT_PRIORITY,
+                             NetLogWithSource(), base::DoNothing());
+
   StreamRequester requester_b;
   requester_b.set_destination("https://b.test");
-  CreateFakeSpdySession(requester_b.GetStreamKey());
+  CreateFakeSpdySession(requester_b.GetStreamKey(),
+                        MakeIPEndPoint("192.0.2.2"));
   requester_b.RequestStream(pool());
   RunUntilIdle();
   EXPECT_THAT(requester_b.result(), Optional(IsOk()));
+
+  std::unique_ptr<HttpStream> stream_b = requester_b.ReleaseStream();
+  HttpRequestInfo request_info_b;
+  request_info_b.url = GURL("https://b.test");
+  request_info_b.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream_b->RegisterRequest(&request_info_b);
+  stream_b->InitializeStream(/*can_send_early=*/false, DEFAULT_PRIORITY,
+                             NetLogWithSource(), base::DoNothing());
 
   ASSERT_TRUE(pool().ReachedMaxStreamLimit());
   ASSERT_FALSE(pool().IsPoolStalled());
@@ -1914,6 +1973,13 @@ TEST_F(HttpStreamPoolJobTest, SpdyReachedPoolLimit) {
   EXPECT_THAT(requester_c.result(), Optional(IsOk()));
   ASSERT_TRUE(pool().ReachedMaxStreamLimit());
   ASSERT_FALSE(pool().IsPoolStalled());
+
+  // Need to close HttpStreams before finishing this test due to the DCHECK in
+  // the destructor of SpdyHttpStream.
+  // TODO(crbug.com/346835898): Figure out a way not to rely on this behavior,
+  // or fix SpdySessionStream somehow.
+  stream_a->Close(/*not_reusable=*/true);
+  stream_b->Close(/*not_reusable=*/true);
 }
 
 // In the following SPDY IP-based pooling tests, we use spdy_pooling.pem that

@@ -757,6 +757,9 @@ bool HttpStreamPool::Job::IsConnectionAttemptReady() {
       // If we can't attempt connection due to the pool's limit, try to close an
       // idle stream in the pool.
       if (!pool()->CloseOneIdleStreamSocket()) {
+        // Try to close idle SPDY sessions. SPDY sessions never release the
+        // underlying sockets immediately on close, so return false anyway.
+        spdy_session_pool()->CloseCurrentIdleSessions("Closing idle sessions");
         // TODO(crbug.com/346835898): Better to handle cases where we partially
         // attempted some connections.
         NotifyPreconnectsComplete(ERR_PRECONNECT_MAX_SOCKET_LIMIT);
