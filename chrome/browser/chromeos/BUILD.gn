@@ -110,8 +110,6 @@ source_set("chromeos") {
     "policy/dlp/dlp_scoped_file_access_delegate.h",
 
     # Extension API implementations.
-    "extensions/desk_api/desk_api_extension_manager.cc",
-    "extensions/desk_api/desk_api_extension_manager.h",
     "extensions/echo_private/echo_private_api.cc",
     "extensions/echo_private/echo_private_api.h",
     "extensions/file_system_provider/file_system_provider_api.cc",
@@ -497,7 +495,6 @@ source_set("unit_tests") {
 
   sources = [
     "../ui/views/frame/immersive_mode_controller_chromeos_unittest.cc",
-    "extensions/desk_api/desk_api_extension_manager_unittest.cc",
     "extensions/file_system_provider/service_worker_lifetime_manager_unittest.cc",
     "extensions/login_screen/login/cleanup/cleanup_manager_unittest.cc",
     "extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_unittest.cc",
@@ -601,6 +598,7 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/container_app:unit_tests",
     "//chrome/browser/chromeos/drivefs:unit_tests",
     "//chrome/browser/chromeos/extensions/contact_center_insights:unit_tests",
+    "//chrome/browser/chromeos/extensions/desk_api:unit_tests",
     "//chrome/browser/chromeos/extensions/telemetry:unit_tests",
     "//chrome/browser/chromeos/launcher_search:unit_tests",
     "//chrome/browser/chromeos/mahi:unit_tests",

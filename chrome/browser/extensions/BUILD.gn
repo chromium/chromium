@@ -1093,6 +1093,7 @@ source_set("extensions") {
       "system_display/display_info_provider_utils.h",
     ]
     deps += [
+      "//chrome/browser/chromeos/extensions/desk_api",
       "//chrome/browser/chromeos/platform_keys",
       "//chrome/browser/chromeos/upload_office_to_cloud",
       "//chrome/browser/ui/chromeos",
@@ -1147,6 +1148,7 @@ source_set("extensions") {
       "//chrome/browser/chromeos/app_mode",
       "//chrome/browser/chromeos/drivefs",
       "//chrome/browser/chromeos/extensions/contact_center_insights",
+      "//chrome/browser/chromeos/extensions/desk_api",
     ]
   } else {
     sources += [
