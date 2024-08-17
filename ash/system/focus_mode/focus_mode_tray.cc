@@ -595,7 +595,7 @@ void FocusModeTray::MaybeUpdateCountdownViewUI(
 void FocusModeTray::MaybeUpdateEndingMomentViewUI(
     const FocusModeSession::Snapshot& session_snapshot) {
   if (ending_moment_view_ && ending_moment_view_->GetVisible()) {
-    ending_moment_view_->ShowEndingMomentContents(
+    ending_moment_view_->SetExtendButtonEnabled(
         FocusModeController::CanExtendSessionDuration(session_snapshot));
   }
 }
