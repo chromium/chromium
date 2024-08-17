@@ -45,6 +45,7 @@
 #include "ash/wm/desks/templates/saved_desk_animations.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
+#include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
@@ -2355,8 +2356,7 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // overview grid changes, i.e. switches between active desks and/or the
   // saved desk grid. This will be needed when we make it so that switching
   // desks keeps us in overview mode.
-  if (!saved_desk_util::ShouldShowSavedDesksOptions() ||
-      features::IsSavedDeskUiRevampEnabled()) {
+  if (!saved_desk_util::ShouldShowSavedDesksOptions()) {
     return;
   }
 
@@ -2382,6 +2382,24 @@ void OverviewGrid::UpdateSaveDeskButtons() {
 
   const bool visibility_changed =
       target_visible != IsSaveDeskButtonContainerVisible();
+
+  // If the saved desk options (either the buttons or the menu options) are
+  // viable to be shown, then we want to record a histogram for holdback
+  // purposes.
+  if (target_visible && visibility_changed) {
+    if (features::IsSavedDeskUiRevampEnabled()) {
+      base::UmaHistogramBoolean(kShowSavedDeskButtonsRevampEnabledHistogramName,
+                                true);
+    } else {
+      base::UmaHistogramBoolean(
+          kShowSavedDeskButtonsRevampDisabledHistogramName, true);
+    }
+  }
+
+  // If the UI revamp is enabled, we return as the buttons will not be shown.
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    return;
+  }
 
   // Adds or removes the widget from the accessibility focus order when exiting
   // the scope. Skip the update if the widget's visibility hasn't changed.
