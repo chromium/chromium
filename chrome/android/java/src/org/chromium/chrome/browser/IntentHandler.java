@@ -1075,6 +1075,7 @@ public class IntentHandler {
         String url = getUrlFromVoiceSearchResult(intent);
         if (url == null) url = getUrlForCustomTab(intent);
         if (url == null) url = getUrlForWebapp(intent);
+        if (url == null) url = getUrlFromShareIntent(intent);
         if (url == null) url = intent.getDataString();
         if (url == null) return null;
         url = url.trim();
@@ -1105,14 +1106,20 @@ public class IntentHandler {
     }
 
     /**
-     * Extract a raw URL from the Share intent text, without further processing. In the case of
-     * multiple URLs being present, picks the last one. Only considers http/https URLs.
+     * Extract a raw URL from the Share intent text.
+     *
+     * <p>This first try to extract raw http/https URLs. In the case of multiple URLs being present,
+     * picks the last one. If no explicit URLs are found, try using autocomplete to resembles the
+     * URL. If not, it will construct a search query with the default search engine.
+     *
      * @param intent Intent to examine.
-     * @return Raw URL from the intent, or null if no URL could be found.
+     * @return URL from the intent, or null if no URL could be found.
      */
     public static @Nullable String getUrlFromShareIntent(Intent intent) {
-        assert Intent.ACTION_SEND.equals(intent.getAction());
-        if (!"text/plain".equals(intent.getType())) return null;
+        if (!Intent.ACTION_SEND.equals(intent.getAction())
+                || !"text/plain".equals(intent.getType())) {
+            return null;
+        }
 
         String text = IntentUtils.safeGetStringExtra(intent, Intent.EXTRA_TEXT);
         List<String> urls = new ArrayList<>();
@@ -1125,10 +1132,22 @@ public class IntentHandler {
         // larger counts would be interesting.
         RecordHistogram.recordExactLinearHistogram(SHARE_INTENT_HISTOGRAM, urls.size(), 5);
 
-        if (urls.isEmpty()) return null;
-        // If multiple URLs are present, somewhat arbitrarily pick the last one (preferring https) -
-        // share actions seem to usually put the URL at the end.
-        return urls.get(urls.size() - 1);
+        if (!urls.isEmpty()) {
+            // If multiple URLs are present, somewhat arbitrarily pick the last one (preferring
+            // https) - share actions seem to usually put the URL at the end.
+            return urls.get(urls.size() - 1);
+        }
+
+        if (TextUtils.isEmpty(text)
+                || !BrowserStartupController.getInstance().isFullBrowserStarted()) {
+            return null;
+        }
+
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
+        AutocompleteMatch match = AutocompleteCoordinator.classify(profile, text);
+        if (match != null) return match.getUrl().getSpec();
+
+        return TemplateUrlServiceFactory.getForProfile(profile).getUrlForSearchQuery(text);
     }
 
     private static String getUrlForCustomTab(Intent intent) {
