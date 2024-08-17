@@ -1,0 +1,149 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("print_preview") {
+  sources = [
+    "print_preview_ui_wrapper.cc",
+    "print_preview_ui_wrapper.h",
+    "print_preview_webcontents_manager.cc",
+    "print_preview_webcontents_manager.h",
+    "print_settings_converter.cc",
+    "print_settings_converter.h",
+    "print_view_manager_common.cc",
+    "print_view_manager_common.h",
+    "print_view_manager_cros.cc",
+    "print_view_manager_cros.h",
+    "print_view_manager_cros_base.cc",
+    "print_view_manager_cros_base.h",
+    "print_view_manager_cros_basic.cc",
+    "print_view_manager_cros_basic.h",
+    "printing_init_cros.cc",
+    "printing_init_cros.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/common:chrome_features",
+    "//chromeos/crosapi/mojom",
+    "//components/device_event_log",
+    "//components/printing/browser",
+    "//components/printing/common",
+    "//components/printing/common:mojo_interfaces",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/bindings:bindings_base",
+    "//printing",
+    "//printing:printing_base",
+    "//printing:settings",
+    "//printing/buildflags",
+    "//printing/mojom",
+    "//third_party/blink/public/common:headers",
+    "//ui/accessibility:ax_base",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/printing/print_preview",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "print_settings_converter_unittest.cc",
+    "print_view_manager_unittest.cc",
+  ]
+
+  deps = [
+    ":print_preview",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ui",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//chromeos/crosapi/mojom",
+    "//components/printing/common:mojo_interfaces",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//printing",
+    "//printing:printing_base",
+    "//printing/mojom",
+    "//testing/gtest",
+    "//ui/events:dom_keycode_converter",
+    "//ui/events:events_base",
+    "//url",
+  ]
+}
+
+if (is_chromeos_ash) {
+  source_set("browser_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "print_preview_webcontents_manager_browsertest.cc" ]
+
+    deps = [
+      ":print_preview",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/chromeos/printing/print_preview/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/common:chrome_features",
+      "//chrome/test:test_support_ui",
+      "//chromeos/crosapi/mojom",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//mojo/public/cpp/bindings",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/base",
+      "//url",
+    ]
+  }
+}
+
+if (is_chromeos_lacros) {
+  source_set("lacros_chrome_browsertests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "print_preview_webcontents_manager_browsertest.cc" ]
+
+    deps = [
+      ":print_preview",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/chromeos/printing/print_preview/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/common:chrome_features",
+      "//chrome/test:test_support_ui",
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//mojo/public/cpp/bindings",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/base",
+      "//url",
+    ]
+  }
+}

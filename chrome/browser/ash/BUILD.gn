@@ -952,6 +952,7 @@ static_library("ash") {
     "//chrome/browser/chromeos/kcer",
     "//chrome/browser/chromeos/mahi",
     "//chrome/browser/chromeos/platform_keys",
+    "//chrome/browser/chromeos/printing/print_preview",
     "//chrome/browser/chromeos/video_conference",
     "//chrome/browser/crash_upload_list",
     "//chrome/browser/devtools",

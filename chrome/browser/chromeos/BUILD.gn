@@ -110,22 +110,6 @@ source_set("chromeos") {
     "policy/dlp/dlp_rules_manager_impl.h",
     "policy/dlp/dlp_scoped_file_access_delegate.cc",
     "policy/dlp/dlp_scoped_file_access_delegate.h",
-    "printing/print_preview/print_preview_ui_wrapper.cc",
-    "printing/print_preview/print_preview_ui_wrapper.h",
-    "printing/print_preview/print_preview_webcontents_manager.cc",
-    "printing/print_preview/print_preview_webcontents_manager.h",
-    "printing/print_preview/print_settings_converter.cc",
-    "printing/print_preview/print_settings_converter.h",
-    "printing/print_preview/print_view_manager_common.cc",
-    "printing/print_preview/print_view_manager_common.h",
-    "printing/print_preview/print_view_manager_cros.cc",
-    "printing/print_preview/print_view_manager_cros.h",
-    "printing/print_preview/print_view_manager_cros_base.cc",
-    "printing/print_preview/print_view_manager_cros_base.h",
-    "printing/print_preview/print_view_manager_cros_basic.cc",
-    "printing/print_preview/print_view_manager_cros_basic.h",
-    "printing/print_preview/printing_init_cros.cc",
-    "printing/print_preview/printing_init_cros.h",
 
     # Extension API implementations.
     "extensions/desk_api/desk_api_extension_manager.cc",
@@ -478,10 +462,6 @@ static_library("test_support") {
     "policy/dlp/test/mock_dlp_crosapi.h",
     "policy/dlp/test/mock_dlp_rules_manager.cc",
     "policy/dlp/test/mock_dlp_rules_manager.h",
-    "printing/print_preview/test/mock_print_preview_crosapi.cc",
-    "printing/print_preview/test/mock_print_preview_crosapi.h",
-    "printing/print_preview/test/scoped_print_preview_webcontents_manager_for_testing.cc",
-    "printing/print_preview/test/scoped_print_preview_webcontents_manager_for_testing.h",
   ]
 
   public_deps = [
@@ -540,8 +520,6 @@ source_set("unit_tests") {
     "policy/dlp/dlp_files_utils_unittest.cc",
     "policy/dlp/dlp_rules_manager_impl_unittest.cc",
     "policy/dlp/dlp_scoped_file_access_delegate_unittest.cc",
-    "printing/print_preview/print_settings_converter_unittest.cc",
-    "printing/print_preview/print_view_manager_unittest.cc",
 
     # TODO(zturner): Enable this on Windows. See
     # BrowserWithTestWindowTest::SetUp() for a comment explaining why this is
@@ -629,6 +607,7 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/launcher_search:unit_tests",
     "//chrome/browser/chromeos/mahi:unit_tests",
     "//chrome/browser/chromeos/office_web_app:unit_tests",
+    "//chrome/browser/chromeos/printing/print_preview:unit_tests",
     "//chrome/browser/chromeos/reporting:unit_tests",
     "//chrome/browser/chromeos/reporting/network:unit_tests",
     "//chrome/browser/chromeos/reporting/websites:unit_tests",
@@ -721,6 +700,7 @@ group("browser_tests") {
       "//chrome/browser/chromeos/extensions/action_handlers:browser_tests",
       "//chrome/browser/chromeos/mahi:browser_tests",
       "//chrome/browser/chromeos/network:browser_tests",
+      "//chrome/browser/chromeos/printing/print_preview:browser_tests",
       "//chrome/browser/chromeos/reporting/network:browser_tests",
       "//chrome/browser/chromeos/reporting/websites:browser_tests",
       "//chrome/browser/chromeos/smart_reader:browser_tests",
@@ -737,6 +717,7 @@ if (is_chromeos_lacros) {
       # Browser tests from subdirectories.
       "//chrome/browser/chromeos/kcer:lacros_chrome_browsertests",
       "//chrome/browser/chromeos/network:lacros_chrome_browsertests",
+      "//chrome/browser/chromeos/printing/print_preview:lacros_chrome_browsertests",
       "//chrome/browser/chromeos/reporting/network:lacros_chrome_browsertests",
       "//chrome/browser/chromeos/tablet_mode:lacros_chrome_browsertests",
     ]
