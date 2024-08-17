@@ -374,7 +374,10 @@ void DisplaySettingsProvider::SetShinyPerformance(bool enabled) {
 void DisplaySettingsProvider::ScreenBrightnessChanged(
     const power_manager::BacklightBrightnessChange& change) {
   for (auto& observer : display_brightness_settings_observers_) {
-    observer->OnDisplayBrightnessChanged(change.percent());
+    bool triggered_by_als =
+        change.cause() ==
+        power_manager::BacklightBrightnessChange_Cause_AMBIENT_LIGHT_CHANGED;
+    observer->OnDisplayBrightnessChanged(change.percent(), triggered_by_als);
   }
 }
 

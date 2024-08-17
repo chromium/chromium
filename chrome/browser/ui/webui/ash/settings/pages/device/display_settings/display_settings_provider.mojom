@@ -98,8 +98,10 @@ interface DisplayConfigurationObserver {
 // settings change.
 interface DisplayBrightnessSettingsObserver {
   // OnDisplayBrightnessChanged calls are triggered when the display brightness
-  // of the internal screen has changed.
-  OnDisplayBrightnessChanged(double brightness_percent);
+  // of the internal screen has changed. `brightness_percent` is the new
+  // brightness level, and `triggered_by_als` is true if the change was caused
+  // by the Ambient Light Sensor (ALS).
+  OnDisplayBrightnessChanged(double brightness_percent, bool triggered_by_als);
 };
 
 // Implemented by clients that wish to be notified when the status of the

@@ -1053,7 +1053,7 @@ suite('<settings-display>', () => {
 
         const initialBrightness = 22.2;
         displaySettingsProvider.setBrightnessPercentForTesting(
-            initialBrightness);
+            initialBrightness, /*triggeredByAls=*/ false);
         await flushTasks();
 
         // Before changing the screen brightness, the slider value should be
@@ -1067,7 +1067,7 @@ suite('<settings-display>', () => {
         // Change the screen brightness.
         let adjustedBrightness = 99.0;
         displaySettingsProvider.setBrightnessPercentForTesting(
-            adjustedBrightness);
+            adjustedBrightness, /*triggeredByAls=*/ false);
         await flushTasks();
 
         // The slider should update to the new brightness.
@@ -1076,11 +1076,22 @@ suite('<settings-display>', () => {
         // Change the screen brightness again.
         adjustedBrightness = 5.5;
         displaySettingsProvider.setBrightnessPercentForTesting(
-            adjustedBrightness);
+            adjustedBrightness, /*triggeredByAls=*/ false);
         await flushTasks();
 
         // The slider should update to the new brightness.
         assertEquals(displayBrightnessSlider.value, adjustedBrightness);
+
+        // Change the brightness to 5.5 again, but this time, it is triggered by
+        // ambient light sensor.
+        const minVisiblePercent = 10;
+        adjustedBrightness = 5.5;
+        displaySettingsProvider.setBrightnessPercentForTesting(
+            adjustedBrightness, /*triggeredByAls=*/ true);
+        await flushTasks();
+
+        // The slider should update to the minVisiblePercent
+        assertEquals(displayBrightnessSlider.value, minVisiblePercent);
       });
 
   test(
