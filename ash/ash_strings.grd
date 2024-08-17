@@ -666,6 +666,12 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_TOOLTIP" desc="The tooltip text to notify that bluetooth is unavailable.">
         Bluetooth is unavailable
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_STATE_TITLE" desc="The main label for the Bluetooth Quick Settings detailed view when Bluetooth is unavailable.">
+        Bluetooth unavailable
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_STATE_SUBTITLE" desc="The secondary label for the Bluetooth Quick Settings detailed view when Bluetooth is unavailable.">
+        Try shutting down your device.
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_TOOLTIP_LEGACY" desc="The tooltip text to notify that multiple bluetooth devices are connected. [ICU Syntax]">
         {NUM_DEVICES, plural,
          =1 {Connected to a device}

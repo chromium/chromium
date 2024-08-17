@@ -21,6 +21,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
@@ -84,7 +85,12 @@ std::u16string BluetoothDetailedViewController::GetAccessibleName() const {
 
 void BluetoothDetailedViewController::OnPropertiesUpdated(
     bluetooth_config::mojom::BluetoothSystemPropertiesPtr properties) {
-  if (properties->system_state == BluetoothSystemState::kUnavailable) {
+  // The tray controller should only be transitioning to the main view when this
+  // feature is disabled since the detailed tray view and the Bluetooth Pod in
+  // QS would be hidden. However, when the feature is enabled, the Bluetooth Pod
+  // is visible and the user should be able to see the detailed tray view.
+  if (!chromeos::features::IsBluetoothWifiQSPodRefreshEnabled() &&
+      properties->system_state == BluetoothSystemState::kUnavailable) {
     tray_controller_->TransitionToMainView(
         /*restore_focus=*/true);  // Deletes |this|.
     return;
