@@ -957,11 +957,7 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
   }
 
   if (!features::IsWelcomeExperienceEnabled()) {
-    pref_service->ClearPref(prefs::kMiceWelcomeNotificationSeen);
-    pref_service->ClearPref(prefs::kGraphicsTabletsWelcomeNotificationSeen);
-    pref_service->ClearPref(prefs::kKeyboardsWelcomeNotificationSeen);
-    pref_service->ClearPref(prefs::kTouchpadsWelcomeNotificationSeen);
-    pref_service->ClearPref(prefs::kPointingSticksWelcomeNotificationSeen);
+    pref_service->ClearPref(prefs::kWelcomeExperienceNotificationSeen);
     if (local_state_) {
       local_state_->ClearPref(prefs::kDeviceImagesDictPref);
     }

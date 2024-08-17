@@ -97,6 +97,10 @@ void DeviceImageDownloader::DownloadImage(
     DeviceImageDestination destination,
     base::OnceCallback<void(const DeviceImage& image)> callback) {
   const auto url = GetResourceUrlFromDeviceKey(device_key, destination);
+  if (!ImageDownloader::Get()) {
+    std::move(callback).Run(DeviceImage());
+    return;
+  }
   ImageDownloader::Get()->Download(
       url, kTrafficAnnotation, account_id,
       base::BindOnce(&DeviceImageDownloader::OnImageDownloaded,
