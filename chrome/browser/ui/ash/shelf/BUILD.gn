@@ -118,6 +118,7 @@ static_library("shelf") {
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
     "//chrome/browser/image_decoder",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/scalable_iph:scalable_iph_factory",
@@ -164,6 +165,7 @@ static_library("shelf") {
     "//chrome/browser/ash/extensions/autotest_private",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/shelf/app_service",
   ]

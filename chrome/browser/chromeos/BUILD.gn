@@ -22,15 +22,6 @@ source_set("chromeos") {
     "extensions/device_local_account_external_policy_loader.h",
     "extensions/info_private_api.cc",
     "extensions/info_private_api.h",
-    "extensions/login_screen/login/cleanup/browser_cleanup_handler.cc",
-    "extensions/login_screen/login/cleanup/browser_cleanup_handler.h",
-    "extensions/login_screen/login/cleanup/cleanup_handler.h",
-    "extensions/login_screen/login/cleanup/cleanup_manager.cc",
-    "extensions/login_screen/login/cleanup/cleanup_manager.h",
-    "extensions/login_screen/login/cleanup/extension_cleanup_handler.cc",
-    "extensions/login_screen/login/cleanup/extension_cleanup_handler.h",
-    "extensions/login_screen/login/cleanup/web_app_cleanup_handler.cc",
-    "extensions/login_screen/login/cleanup/web_app_cleanup_handler.h",
     "extensions/login_screen/login/external_logout_request/external_logout_request_event_handler.cc",
     "extensions/login_screen/login/external_logout_request/external_logout_request_event_handler.h",
     "extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_factory.cc",
@@ -188,6 +179,7 @@ source_set("chromeos") {
     "//chrome/browser/chromeos/echo",
     "//chrome/browser/chromeos/enterprise",
     "//chrome/browser/chromeos/enterprise/cloud_storage",
+    "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
     "//chrome/browser/chromeos/full_restore",
     "//chrome/browser/chromeos/reporting/websites",
     "//chrome/browser/chromeos/smart_reader",
@@ -266,18 +258,6 @@ source_set("chromeos") {
 
   if (is_chromeos_ash) {
     sources += [
-      "extensions/login_screen/login/cleanup/cleanup_manager_ash.cc",
-      "extensions/login_screen/login/cleanup/cleanup_manager_ash.h",
-      "extensions/login_screen/login/cleanup/clipboard_cleanup_handler.cc",
-      "extensions/login_screen/login/cleanup/clipboard_cleanup_handler.h",
-      "extensions/login_screen/login/cleanup/files_cleanup_handler.cc",
-      "extensions/login_screen/login/cleanup/files_cleanup_handler.h",
-      "extensions/login_screen/login/cleanup/lacros_cleanup_handler.cc",
-      "extensions/login_screen/login/cleanup/lacros_cleanup_handler.h",
-      "extensions/login_screen/login/cleanup/pinned_apps_cleanup_handler.cc",
-      "extensions/login_screen/login/cleanup/pinned_apps_cleanup_handler.h",
-      "extensions/login_screen/login/cleanup/print_jobs_cleanup_handler.cc",
-      "extensions/login_screen/login/cleanup/print_jobs_cleanup_handler.h",
       "extensions/login_screen/login/external_logout_done/external_logout_done_event_handler.cc",
       "extensions/login_screen/login/external_logout_done/external_logout_done_event_handler.h",
       "extensions/login_screen/login/external_logout_done/external_logout_done_event_handler_factory.cc",
@@ -389,10 +369,6 @@ source_set("chromeos") {
 
   if (is_chromeos_lacros) {
     sources += [
-      "extensions/login_screen/login/cleanup/cleanup_manager_lacros.cc",
-      "extensions/login_screen/login/cleanup/cleanup_manager_lacros.h",
-      "extensions/login_screen/login/cleanup/cleanup_manager_lacros_factory.cc",
-      "extensions/login_screen/login/cleanup/cleanup_manager_lacros_factory.h",
       "policy/dlp/dlp_browser_helper_lacros.cc",
       "policy/dlp/dlp_browser_helper_lacros.h",
       "policy/dlp/dlp_content_manager_lacros.cc",
@@ -432,8 +408,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "extensions/login_screen/login/cleanup/mock_cleanup_handler.cc",
-    "extensions/login_screen/login/cleanup/mock_cleanup_handler.h",
     "policy/dlp/dialogs/mock_dlp_warn_notifier.cc",
     "policy/dlp/dialogs/mock_dlp_warn_notifier.h",
     "policy/dlp/test/dlp_content_manager_test_helper.cc",
@@ -487,7 +461,6 @@ source_set("unit_tests") {
 
   sources = [
     "../ui/views/frame/immersive_mode_controller_chromeos_unittest.cc",
-    "extensions/login_screen/login/cleanup/cleanup_manager_unittest.cc",
     "extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_unittest.cc",
     "extensions/login_screen/login_state/login_state_api_unittest.cc",
     "extensions/odfs_config_private/odfs_config_private_api_unittest.cc",
@@ -525,6 +498,8 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
+    "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:test_support",
     "//chrome/browser/enterprise/data_controls",
     "//chrome/browser/enterprise/data_controls:test_support",
     "//chrome/browser/extensions",
@@ -605,9 +580,6 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     sources += [
-      "extensions/login_screen/login/cleanup/extension_cleanup_handler_unittest.cc",
-      "extensions/login_screen/login/cleanup/lacros_cleanup_handler_unittest.cc",
-      "extensions/login_screen/login/cleanup/print_jobs_cleanup_handler_unittest.cc",
       "extensions/login_screen/login/external_logout_done/external_logout_done_event_handler_unittest.cc",
       "extensions/login_screen/login/login_api_ash_unittest.cc",
       "extensions/login_screen/login_screen_storage/login_screen_storage_api_ash_unittest.cc",
@@ -626,6 +598,7 @@ source_set("unit_tests") {
       "//chrome/browser/ash/printing/history:test_support",
       "//chrome/browser/ash/printing/print_management",
       "//chrome/browser/ash/system_web_apps/test_support:test_support",
+      "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:unit_tests",
       "//chrome/browser/chromeos/tablet_mode:unit_tests",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/ui/ash/system_web_apps:system_web_apps",
@@ -689,6 +662,7 @@ group("browser_tests") {
       "//chrome/browser/chromeos/extensions/contact_center_insights:browser_tests",
       "//chrome/browser/chromeos/extensions/echo_private:browser_tests",
       "//chrome/browser/chromeos/extensions/file_system_provider:browser_tests",
+      "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:browser_tests",
       "//chrome/browser/chromeos/mahi:browser_tests",
       "//chrome/browser/chromeos/network:browser_tests",
       "//chrome/browser/chromeos/printing/print_preview:browser_tests",

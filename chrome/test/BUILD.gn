@@ -4201,7 +4201,6 @@ if (!is_android) {
       if (is_chromeos) {
         sources += [
           "../browser/chromeos/extensions/info_private_browser_apitest.cc",
-          "../browser/chromeos/extensions/login_screen/login/cleanup/web_app_cleanup_handler_browsertest.cc",
           "../browser/chromeos/extensions/login_screen/login_state/login_state_apitest.cc",
           "../browser/chromeos/extensions/system_log/system_log_apitest.cc",
           "../browser/extensions/api/certificate_provider/certificate_provider_apitest.cc",
@@ -4225,9 +4224,6 @@ if (!is_android) {
           "../browser/apps/platform_apps/api/arc_apps_private/arc_apps_private_apitest.cc",
           "../browser/apps/platform_apps/api/enterprise_remote_apps/enterprise_remote_apps_apitest.cc",
           "../browser/chromeos/extensions/info_private_apitest.cc",
-          "../browser/chromeos/extensions/login_screen/login/cleanup/browser_cleanup_handler_browsertest.cc",
-          "../browser/chromeos/extensions/login_screen/login/cleanup/extension_cleanup_handler_browsertest.cc",
-          "../browser/chromeos/extensions/login_screen/login/cleanup/pinned_apps_cleanup_handler_browsertest.cc",
           "../browser/chromeos/extensions/login_screen/login/login_apitest.cc",
           "../browser/chromeos/extensions/login_screen/login_screen_i18n_apitest.cc",
           "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_apitest.cc",

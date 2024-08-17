@@ -49,6 +49,7 @@ static_library("skyvault") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/skyvault",
     "//chrome/common:chrome_features",
