@@ -281417,6 +281417,58 @@
        ]
       },
       "the-meter-element": {
+       "meter-appearance-none-even-less-good-value-rendering.html": [
+        "07c0b89a067107bcd423e36de5dcde05795ceec3",
+        [
+         null,
+         [
+          [
+           "/html/semantics/forms/the-meter-element/reference/meter-appearance-auto-even-less-good-value-rendering.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "meter-appearance-none-optimum-value-rendering.html": [
+        "7ed863d6085ce4c1b33f4b1351284909390525ca",
+        [
+         null,
+         [
+          [
+           "/html/semantics/forms/the-meter-element/reference/meter-appearance-auto-optimum-value-rendering.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "meter-appearance-none-rendering.html": [
+        "2b0227892abdbfbd6e7833c5511d5986cf53ff02",
+        [
+         null,
+         [
+          [
+           "/html/semantics/forms/the-meter-element/reference/meter-appearance-auto-rendering-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "meter-appearance-none-suboptimum-value-rendering.html": [
+        "80cefe102701098bb6471455a7a2de424c7dbb7e",
+        [
+         null,
+         [
+          [
+           "/html/semantics/forms/the-meter-element/reference/meter-appearance-auto-suboptimum-value-rendering-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
        "meter-min-rendering.html": [
         "ca83fc9565bc2245f9525ce78d48496022bc51e5",
         [
@@ -298433,7 +298485,7 @@
       []
      ],
      "support.js": [
-      "5036e50466578be3ec9e4f9596cb4146cf481cf8",
+      "1d5d8df5ca3a0d3f3a7b93408c83eba47aa4e046",
       []
      ]
     },
@@ -333690,6 +333742,12 @@
        []
       ]
      }
+    },
+    "css-masonry": {
+     "WEB_FEATURES.yml": [
+      "30261400cebef7dec6e367919ed9f7c7421885a3",
+      []
+     ]
     },
     "css-multicol": {
      "DIR_METADATA": [
@@ -380507,7 +380565,25 @@
        "meter-min-rendering-ref.html": [
         "f253945968e49902d1f2c2d60d9d8cd230166c6b",
         []
-       ]
+       ],
+       "reference": {
+        "meter-appearance-auto-even-less-good-value-rendering.html": [
+         "854ec5d5e750d84b5fcf29e74be482e986e9cce2",
+         []
+        ],
+        "meter-appearance-auto-optimum-value-rendering.html": [
+         "4b0b819f95b6324cdf9114f34db95dc348da6388",
+         []
+        ],
+        "meter-appearance-auto-rendering-ref.html": [
+         "44e80ae81506a27b26899964165cfa6809fadec6",
+         []
+        ],
+        "meter-appearance-auto-suboptimum-value-rendering-ref.html": [
+         "bbffd4cf3aca01f67d5fc2c07360117fff04ad89",
+         []
+        ]
+       }
       },
       "the-optgroup-element": {
        "DIR_METADATA": [
@@ -405292,7 +405368,7 @@
        []
       ],
       "property-list.js": [
-       "1d3239a8de283a7e65f15cc8f01c16716052597d",
+       "ee791e884c57a4b9bf95359da174c1f675c1b21d",
        []
       ],
       "property-types.js": [
@@ -408524,7 +408600,7 @@
      []
     ],
     "RTCRtpParameters-encodings-expected.txt": [
-     "368a0f20da02717224ebc623d7c5c533e78c6c19",
+     "764c1dfc0749c1d7fe5b532c643662b8ec59cb8f",
      []
     ],
     "RTCRtpParameters-helper.js": [
@@ -415032,7 +415108,7 @@
      ]
     ],
     "back-forward-cache-open-connection.window.js": [
-     "db51daa121c0b3f9271ce2439a6c545870d0b99e",
+     "d3355f2a733ee213f11c4368b1f027b97b19e37a",
      [
       "IndexedDB/back-forward-cache-open-connection.window.html",
       {
@@ -415071,7 +415147,7 @@
      ]
     ],
     "back-forward-cache-open-transaction.window.js": [
-     "50d3c1f0d121d75604deb12433b28525679aa64f",
+     "fca9cb2fb7895d4f363150af8bf64269023ba3ce",
      [
       "IndexedDB/back-forward-cache-open-transaction.window.html",
       {
@@ -465808,41 +465884,6 @@
           null,
           {}
          ]
-        ],
-        "masonry-template-tracks-invalid.html": [
-         "df690851b1456a9b41be1b82295c7c8ea0c25a57",
-         [
-          null,
-          {}
-         ]
-        ],
-        "masonry-template-tracks-valid.html": [
-         "7397760e7beee1e2ee5d152268242139244549b9",
-         [
-          null,
-          {}
-         ]
-        ],
-        "masonry-track-computed.html": [
-         "21665d2041ed1958deebdc0102f2562d09011e4e",
-         [
-          null,
-          {}
-         ]
-        ],
-        "masonry-track-invalid.html": [
-         "589b837ce685723a4a42763a6ad08f66580463d0",
-         [
-          null,
-          {}
-         ]
-        ],
-        "masonry-track-valid.html": [
-         "a049ccccc1184137acf39c77e4ff8c6896c1f1fc",
-         [
-          null,
-          {}
-         ]
         ]
        }
       }
@@ -468343,6 +468384,47 @@
         {}
        ]
       ]
+     }
+    },
+    "css-masonry": {
+     "tentative": {
+      "parsing": {
+       "masonry-template-tracks-invalid.html": [
+        "df690851b1456a9b41be1b82295c7c8ea0c25a57",
+        [
+         null,
+         {}
+        ]
+       ],
+       "masonry-template-tracks-valid.html": [
+        "7397760e7beee1e2ee5d152268242139244549b9",
+        [
+         null,
+         {}
+        ]
+       ],
+       "masonry-track-computed.html": [
+        "a2d6e54dcce53415b17fa47ae8adbda80bef16de",
+        [
+         null,
+         {}
+        ]
+       ],
+       "masonry-track-invalid.html": [
+        "589b837ce685723a4a42763a6ad08f66580463d0",
+        [
+         null,
+         {}
+        ]
+       ],
+       "masonry-track-valid.html": [
+        "edf94c285f374a2c4e293f25f65f33f1a7f51162",
+        [
+         null,
+         {}
+        ]
+       ]
+      }
      }
     },
     "css-multicol": {

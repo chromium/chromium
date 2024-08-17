@@ -2651,6 +2651,8 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win11-arm64 ] virtual/threaded/external/wpt/permissions-policy/experimental-features/unload-allowed-by-default.tentative.window.html [ Skip Timeout ]
+[ Win10.20h2 ] virtual/threaded/external/wpt/permissions-policy/experimental-features/unload-allowed-by-default.tentative.window.html [ Skip Timeout ]
 crbug.com/360246809 [ Mac15 ] external/wpt/fs/FileSystemFileHandle-sync-access-handle-back-forward-cache.https.tentative.window.html [ Skip Timeout ]
 crbug.com/360246809 [ Linux ] external/wpt/fs/FileSystemFileHandle-sync-access-handle-back-forward-cache.https.tentative.window.html [ Skip Timeout ]
 crbug.com/360232040 [ Win11-arm64 ] virtual/threaded/external/wpt/css/css-view-transitions/nested/nested-exit.tentative.html?vtmode=crossdoc [ Failure ]
