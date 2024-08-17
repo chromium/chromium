@@ -128,17 +128,20 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
    * Updates UI to the newly received KeyEvent.
    */
   onShortcutInputEventPressed(
-      prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent): void {
-    this.pendingKeyEvent = keyEvent;
-    this.pendingPrerewrittenKeyEvent = prerewrittenKeyEvent;
+      prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent|null): void {
+    if (keyEvent === null) {
+      if (this.displayPrerewrittenKeyEvents) {
+        this.pendingKeyEvent = prerewrittenKeyEvent;
+        this.pendingPrerewrittenKeyEvent = prerewrittenKeyEvent;
+      } else {
+        return;
+      }
+    } else {
+      this.pendingKeyEvent = keyEvent;
+      this.pendingPrerewrittenKeyEvent = prerewrittenKeyEvent;
+    }
 
     if (this.updateOnKeyPress) {
-      // TODO(jimmyxgong): Should be able to do this unconditionally, but for
-      // now the modifiers trigger observable events that may unintentionally
-      // update the UI.
-      this.pendingKeyEvent.modifiers = keyEvent.modifiers;
-      this.pendingPrerewrittenKeyEvent.modifiers =
-          prerewrittenKeyEvent.modifiers;
       this.dispatchEvent(new CustomEvent('shortcut-input-event', {
         bubbles: true,
         composed: true,
@@ -154,9 +157,17 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
    * parent elements.
    */
   onShortcutInputEventReleased(
-      prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent): void {
+      prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent|null): void {
     if (this.shouldIgnoreKeyRelease) {
       return;
+    }
+
+    if (keyEvent === null) {
+      if (this.displayPrerewrittenKeyEvents) {
+        keyEvent = prerewrittenKeyEvent;
+      } else {
+        return;
+      }
     }
 
     // Ignore the release event if no key was pressed before. This is to
