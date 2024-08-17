@@ -37,6 +37,7 @@ static_library("metrics_reporting") {
     "//chrome/browser/ash/policy/status_collector",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/chromeos/reporting/network",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/kiosk/vision:vision_prefs",
     "//chromeos/ash/components/settings",

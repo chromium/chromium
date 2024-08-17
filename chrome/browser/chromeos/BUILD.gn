@@ -134,8 +134,6 @@ source_set("chromeos") {
     "reporting/metric_reporting_manager_delegate_base.h",
     "reporting/metric_reporting_prefs.cc",
     "reporting/metric_reporting_prefs.h",
-    "reporting/network/network_bandwidth_sampler.cc",
-    "reporting/network/network_bandwidth_sampler.h",
     "reporting/usage_telemetry_periodic_collector_base.cc",
     "reporting/usage_telemetry_periodic_collector_base.h",
     "reporting/user_reporting_settings.cc",
@@ -468,6 +466,7 @@ source_set("chromeos") {
       "//ui/aura",
     ]
     deps += [
+      "//chrome/browser/chromeos/reporting/network",
       "//chromeos/startup",
       "//ui/platform_window",
     ]
@@ -578,7 +577,6 @@ source_set("unit_tests") {
     "printing/print_preview/print_view_manager_unittest.cc",
     "reporting/local_state_reporting_settings_unittest.cc",
     "reporting/metric_reporting_prefs_unittest.cc",
-    "reporting/network/network_bandwidth_sampler_unittest.cc",
     "reporting/usage_telemetry_periodic_collector_base_unittest.cc",
     "reporting/user_reporting_settings_unittest.cc",
     "reporting/websites/website_events_observer_unittest.cc",
@@ -671,6 +669,7 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/launcher_search:unit_tests",
     "//chrome/browser/chromeos/mahi:unit_tests",
     "//chrome/browser/chromeos/office_web_app:unit_tests",
+    "//chrome/browser/chromeos/reporting/network:unit_tests",
     "//chrome/browser/chromeos/tast_support:unit_tests",
     "//chrome/browser/chromeos/video_conference:unit_tests",
   ]
@@ -770,6 +769,7 @@ group("browser_tests") {
       "//chrome/browser/chromeos/extensions/action_handlers:browser_tests",
       "//chrome/browser/chromeos/mahi:browser_tests",
       "//chrome/browser/chromeos/network:browser_tests",
+      "//chrome/browser/chromeos/reporting/network:browser_tests",
       "//chrome/browser/chromeos/smart_reader:browser_tests",
       "//chrome/browser/chromeos/video_conference:browser_tests",
     ]
@@ -784,6 +784,7 @@ if (is_chromeos_lacros) {
       # Browser tests from subdirectories.
       "//chrome/browser/chromeos/kcer:lacros_chrome_browsertests",
       "//chrome/browser/chromeos/network:lacros_chrome_browsertests",
+      "//chrome/browser/chromeos/reporting/network:lacros_chrome_browsertests",
       "//chrome/browser/chromeos/tablet_mode:lacros_chrome_browsertests",
     ]
   }
