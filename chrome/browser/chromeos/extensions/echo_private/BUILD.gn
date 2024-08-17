@@ -1,0 +1,70 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("echo_private") {
+  sources = [
+    "echo_private_api.cc",
+    "echo_private_api.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//build:chromeos_buildflags",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/chromeos/echo",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chrome/common/extensions/api:api",
+    "//chromeos/crosapi/mojom",
+    "//components/prefs",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+    "//extensions/common:mojom",
+    "//third_party/icu",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/crosapi" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
+}
+
+if (is_chromeos_ash) {
+  source_set("browser_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "echo_private_apitest.cc" ]
+
+    deps = [
+      ":echo_private",
+      "//base",
+      "//chrome/browser/ash/notifications",
+      "//chrome/browser/ash/settings",
+      "//chrome/browser/ash/settings:test_support",
+      "//chrome/browser/extensions",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//chromeos/ash/components/settings",
+      "//chromeos/ash/components/system",
+      "//content/test:test_support",
+      "//extensions:test_support",
+      "//testing/gtest",
+    ]
+  }
+}

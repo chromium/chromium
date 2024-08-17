@@ -110,8 +110,6 @@ source_set("chromeos") {
     "policy/dlp/dlp_scoped_file_access_delegate.h",
 
     # Extension API implementations.
-    "extensions/echo_private/echo_private_api.cc",
-    "extensions/echo_private/echo_private_api.h",
     "extensions/file_system_provider/file_system_provider_api.cc",
     "extensions/file_system_provider/file_system_provider_api.h",
     "extensions/file_system_provider/provider_function.cc",
@@ -695,6 +693,7 @@ group("browser_tests") {
       # Browser tests from subdirectories.
       "//chrome/browser/chromeos/extensions/action_handlers:browser_tests",
       "//chrome/browser/chromeos/extensions/contact_center_insights:browser_tests",
+      "//chrome/browser/chromeos/extensions/echo_private:browser_tests",
       "//chrome/browser/chromeos/mahi:browser_tests",
       "//chrome/browser/chromeos/network:browser_tests",
       "//chrome/browser/chromeos/printing/print_preview:browser_tests",
