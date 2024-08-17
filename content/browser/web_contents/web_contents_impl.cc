@@ -808,8 +808,8 @@ bool WebContentsImpl::IsPopup() const {
   return is_popup_;
 }
 
-bool WebContentsImpl::IsPartitionedPopin() const {
-  return is_partitioned_popin_;
+RenderFrameHostImpl* WebContentsImpl::PartitionedPopinOpener() const {
+  return partitioned_popin_opener_.get();
 }
 
 void WebContents::SetScreenOrientationDelegate(
@@ -4664,8 +4664,9 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     }
     web_contents_impl->is_popup_ =
         params.disposition == WindowOpenDisposition::NEW_POPUP;
-    web_contents_impl->is_partitioned_popin_ =
-        params.features->is_partitioned_popin && web_contents_impl->is_popup_;
+    if (params.features->is_partitioned_popin && web_contents_impl->is_popup_) {
+      web_contents_impl->partitioned_popin_opener_ = opener->GetWeakPtr();
+    }
     return &web_contents_impl->GetPrimaryFrameTree();
   }
 
@@ -4751,8 +4752,9 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   auto* new_contents_impl = new_contents.get();
   new_contents_impl->is_popup_ =
       params.disposition == WindowOpenDisposition::NEW_POPUP;
-  new_contents_impl->is_partitioned_popin_ =
-      params.features->is_partitioned_popin && new_contents_impl->is_popup_;
+  if (params.features->is_partitioned_popin && new_contents_impl->is_popup_) {
+    new_contents_impl->partitioned_popin_opener_ = opener->GetWeakPtr();
+  }
 
   // If the new frame has a name, make sure any SiteInstances that can find
   // this named frame have proxies for it.  Must be called after

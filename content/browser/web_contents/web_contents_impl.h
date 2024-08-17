@@ -1483,7 +1483,7 @@ class CONTENT_EXPORT WebContentsImpl
 
   bool IsPopup() const override;
 
-  bool IsPartitionedPopin() const override;
+  RenderFrameHostImpl* PartitionedPopinOpener() const override;
 
  private:
   using FrameTreeIterationCallback = base::RepeatingCallback<void(FrameTree&)>;
@@ -2557,10 +2557,10 @@ class CONTENT_EXPORT WebContentsImpl
   // Whether this contents represents a window initially opened as a new popup.
   bool is_popup_{false};
 
-  // Whether this contents represents a window initially opened as a new
-  // partitioned popin. Should only be true if `is_popup_` is true. See:
-  // https://explainers-by-googlers.github.io/partitioned-popins/
-  bool is_partitioned_popin_{false};
+  // If this window was opened as a new partitioned popin this will be the
+  // frame of the opener. This will only have a value if `is_popup_` is true.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  base::WeakPtr<RenderFrameHostImpl> partitioned_popin_opener_;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

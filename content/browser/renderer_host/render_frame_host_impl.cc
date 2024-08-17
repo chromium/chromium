@@ -1357,12 +1357,11 @@ enum class WindowProxyFrameContext {
 };
 
 WindowProxyFrameContext GetWindowProxyFrameContext(RenderFrameHostImpl* frame) {
-  if (frame->GetStorageKey().IsFirstPartyContext()) {
-    if (frame == frame->GetOutermostMainFrame()) {
-      return WindowProxyFrameContext::kTopFrame;
-    } else {
-      return WindowProxyFrameContext::kSubFrameSameSite;
-    }
+  if (frame == frame->GetOutermostMainFrame()) {
+    return WindowProxyFrameContext::kTopFrame;
+  } else if (frame->GetStorageKey() ==
+             frame->GetOutermostMainFrame()->GetStorageKey()) {
+    return WindowProxyFrameContext::kSubFrameSameSite;
   } else {
     return WindowProxyFrameContext::kSubFrameCrossSite;
   }
@@ -1377,7 +1376,7 @@ enum class WindowProxyPageContext {
 };
 
 WindowProxyPageContext GetWindowProxyPageContext(RenderFrameHostImpl* frame) {
-  if (frame->delegate()->IsPartitionedPopin()) {
+  if (frame->delegate()->PartitionedPopinOpener()) {
     return WindowProxyPageContext::kPartitionedPopin;
   } else if (frame->delegate()->IsPopup()) {
     return WindowProxyPageContext::kPopup;
@@ -4512,6 +4511,15 @@ void RenderFrameHostImpl::SetLastCommittedOriginForTesting(
 
 const url::Origin& RenderFrameHostImpl::ComputeTopFrameOrigin(
     const url::Origin& frame_origin) const {
+  // If this frame is in a partitioned popin, we consider the opener's top-frame
+  // to be this frame's top-frame as long as we aren't in a fenced-frame.
+  // See: https://explainers-by-googlers.github.io/partitioned-popins/
+  RenderFrameHostImpl* partitioned_popin_opener =
+      delegate_->PartitionedPopinOpener();
+  if (partitioned_popin_opener && !IsNestedWithinFencedFrame()) {
+    return partitioned_popin_opener->GetMainFrame()->GetLastCommittedOrigin();
+  }
+
   if (is_main_frame()) {
     return frame_origin;
   }
@@ -4543,9 +4551,15 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoForNavigation(
     const GURL& destination,
     bool is_credentialless,
     std::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation) {
+  // This is a main frame request if it's from the main frame and we're not in a
+  // partitioned popin (or if we are in a partitioned popin we are also within a
+  // fenced frame). Otherwise this is a sub frame request.
+  // See: https://explainers-by-googlers.github.io/partitioned-popins/
   net::IsolationInfo::RequestType request_type =
-      is_main_frame() ? net::IsolationInfo::RequestType::kMainFrame
-                      : net::IsolationInfo::RequestType::kSubFrame;
+      (is_main_frame() &&
+       (!delegate()->PartitionedPopinOpener() || IsNestedWithinFencedFrame()))
+          ? net::IsolationInfo::RequestType::kMainFrame
+          : net::IsolationInfo::RequestType::kSubFrame;
   return ComputeIsolationInfoInternal(url::Origin::Create(destination),
                                       request_type, is_credentialless,
                                       fenced_frame_nonce_for_navigation);
@@ -4695,6 +4709,19 @@ RenderFrameHostImpl::GetAncestorChainForStorageKeyCalculation(
   while (current) {
     ancestor_chain.push_back(current);
     current = current->parent_;
+  }
+
+  // If this frame is in a partitioned popin, we consider the opener's top-frame
+  // to be this frame's top-frame as long as we aren't in a fenced-frame. We
+  // must add all intermediate frames to ensure proper StorageKey calculation.
+  // See: https://explainers-by-googlers.github.io/partitioned-popins/
+  RenderFrameHostImpl* partitioned_popin_opener =
+      delegate()->PartitionedPopinOpener();
+  if (partitioned_popin_opener && !IsNestedWithinFencedFrame()) {
+    while (partitioned_popin_opener) {
+      ancestor_chain.push_back(partitioned_popin_opener);
+      partitioned_popin_opener = partitioned_popin_opener->parent_;
+    }
   }
 
   // Make sure to always use the `new_rfh_origin` when referring to the current

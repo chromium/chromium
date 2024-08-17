@@ -2283,7 +2283,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     test_ukm_recorder->ExpectEntryMetric(entry, "RemoteUserActivationState",
                                          1 /*HasBeenActive*/);
     test_ukm_recorder->ExpectEntryMetric(entry, "StorageKeyComparison",
-                                         3 /*CrossKey*/);
+                                         1 /*SameTopSiteCrossOrigin*/);
   }
 }
 
