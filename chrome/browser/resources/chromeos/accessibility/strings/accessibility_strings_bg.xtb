@@ -95,7 +95,7 @@
 <translation id="1542513807034338907">Превъртане към предишната страница</translation>
 <translation id="1546370775711804143">Лента за превъртане</translation>
 <translation id="1551572888042734032">Лято</translation>
-<translation id="1555130319947370107">синьо</translation>
+<translation id="1555130319947370107">Синьо</translation>
 <translation id="1559739829547075274">Навигация назад</translation>
 <translation id="1565432156062359693">Няма следващ списък</translation>
 <translation id="1571643229714746283">ChromeVox е в готовност</translation>
@@ -730,7 +730,7 @@
 <translation id="588108970619830498">Възстановяване на настройките по подразбиране за синтезиран говор</translation>
 <translation id="5891934789323004067">Таблица</translation>
 <translation id="5899860758576822363">Възпроизвеждане с по-ниска сила на звука, когато ChromeVox говори</translation>
-<translation id="5901630391730855834">жълто</translation>
+<translation id="5901630391730855834">Жълто</translation>
 <translation id="5906974869830879618">Моля, въведете ПИН код</translation>
 <translation id="5921587111466148855">Глава</translation>
 <translation id="5923780477617566089">Текуща дата</translation>
@@ -749,7 +749,7 @@
 <translation id="6006050241733874051">Формуляр</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{обратна наклонена черта}other{# обратни наклонени черти}}</translation>
 <translation id="6010616110396250088">Сортиране по низходящ ред</translation>
-<translation id="6017514345406065928">зелено</translation>
+<translation id="6017514345406065928">Зелено</translation>
 <translation id="602001110135236999">Превъртане наляво</translation>
 <translation id="6034000775414344507">светлосиво</translation>
 <translation id="6036135911048686884">Изследване с докосване</translation>
@@ -943,7 +943,7 @@
 <translation id="7543255924852002459">Отхвърляне на етикета</translation>
 <translation id="7552432549459840808">Полезни клавишни комбинации в Chrome</translation>
 <translation id="7553679324939294712">вмъкване на <ph name="INSERT_PHRASE" /> преди <ph name="BEFORE_PHRASE" /></translation>
-<translation id="7569983096843329377">черно</translation>
+<translation id="7569983096843329377">Черно</translation>
 <translation id="7579911500627256166">точка <ph name="DOT" /></translation>
 <translation id="7592060599656252486">Някои</translation>
 <translation id="7595446402663080101">Няма предишна таблица</translation>
@@ -995,7 +995,7 @@
 <translation id="7935627501098484003">Контрола за дата и час</translation>
 <translation id="7939428177581522200">добавени към открояването</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{знак @}other{# знака @}}</translation>
-<translation id="7942349550061667556">червено</translation>
+<translation id="7942349550061667556">Червено</translation>
 <translation id="7948364528129376623">Няма следваща посетена връзка</translation>
 <translation id="7952460583030260752">Указания за командите</translation>
 <translation id="7965147473449754028">менюто е затворено</translation>
