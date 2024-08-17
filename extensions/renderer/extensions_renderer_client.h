@@ -12,6 +12,7 @@
 #include "extensions/renderer/extensions_renderer_api_provider.h"
 #include "extensions/renderer/resource_request_policy.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
+#include "ui/base/page_transition_types.h"
 #include "v8/include/v8-local-handle.h"
 
 namespace content {
@@ -24,8 +25,13 @@ class WebElement;
 class WebFrame;
 class WebLocalFrame;
 struct WebPluginParams;
+class WebURL;
 class WebView;
 }  // namespace blink
+
+namespace net {
+class SiteForCookies;
+}
 
 namespace url {
 class Origin;
@@ -89,6 +95,13 @@ class ExtensionsRendererClient {
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame);
   void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame);
   void RunScriptsAtDocumentIdle(content::RenderFrame* render_frame);
+  void WillSendRequest(blink::WebLocalFrame* frame,
+                       ui::PageTransition transition_type,
+                       const blink::WebURL& upstream_url,
+                       const blink::WebURL& target_url,
+                       const net::SiteForCookies& site_for_cookies,
+                       const url::Origin* initiator_origin,
+                       GURL* new_url);
 
   // Returns the single instance of |this|.
   static ExtensionsRendererClient* Get();
@@ -97,11 +110,6 @@ class ExtensionsRendererClient {
   static void Set(ExtensionsRendererClient* client);
 
   Dispatcher* dispatcher() { return dispatcher_.get(); }
-  // TODO(https://crbug.com/359904696): Remove this accessor when the handling
-  // is moved to this class.
-  ResourceRequestPolicy* resource_request_policy() {
-    return resource_request_policy_.get();
-  }
 
   void SetDispatcherForTesting(std::unique_ptr<Dispatcher> dispatcher);
 
@@ -114,6 +122,11 @@ class ExtensionsRendererClient {
   // By default, returns null.
   virtual std::unique_ptr<ResourceRequestPolicy::Delegate>
   CreateResourceRequestPolicyDelegate();
+
+  // Allows embedders to record metrics when a request is being sent to
+  // `target_url`.
+  virtual void RecordMetricsForURLRequest(blink::WebLocalFrame* frame,
+                                          const blink::WebURL& target_url) {}
 
   std::vector<std::unique_ptr<const ExtensionsRendererAPIProvider>>
       api_providers_;

@@ -228,6 +228,51 @@ void ExtensionsRendererClient::RunScriptsAtDocumentIdle(
   dispatcher_->RunScriptsAtDocumentIdle(render_frame);
 }
 
+void ExtensionsRendererClient::WillSendRequest(
+    blink::WebLocalFrame* frame,
+    ui::PageTransition transition_type,
+    const blink::WebURL& upstream_url,
+    const blink::WebURL& target_url,
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin* initiator_origin,
+    GURL* new_url) {
+  std::string extension_id;
+  if (initiator_origin &&
+      initiator_origin->scheme() == extensions::kExtensionScheme) {
+    extension_id = initiator_origin->host();
+  } else {
+    if (site_for_cookies.scheme() == extensions::kExtensionScheme) {
+      extension_id = site_for_cookies.registrable_domain();
+    }
+  }
+
+  if (!extension_id.empty()) {
+    const extensions::RendererExtensionRegistry* extension_registry =
+        extensions::RendererExtensionRegistry::Get();
+    const Extension* extension = extension_registry->GetByID(extension_id);
+    if (!extension) {
+      // If there is no extension installed for the origin, it may be from a
+      // recently uninstalled extension.  The tabs of such extensions are
+      // automatically closed, but subframes and content scripts may stick
+      // around. Fail such requests without killing the process.
+      *new_url = GURL(kExtensionInvalidRequestURL);
+    }
+  }
+
+  // The rest of this method is only concerned with extensions URLs.
+  if (!target_url.ProtocolIs(extensions::kExtensionScheme)) {
+    return;
+  }
+
+  if (target_url.ProtocolIs(extensions::kExtensionScheme) &&
+      !resource_request_policy_->CanRequestResource(
+          upstream_url, target_url, frame, transition_type, initiator_origin)) {
+    *new_url = GURL(kExtensionInvalidRequestURL);
+  }
+
+  RecordMetricsForURLRequest(frame, target_url);
+}
+
 void ExtensionsRendererClient::SetDispatcherForTesting(
     std::unique_ptr<Dispatcher> dispatcher) {
   dispatcher_ = std::move(dispatcher);

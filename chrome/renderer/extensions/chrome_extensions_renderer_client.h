@@ -9,12 +9,10 @@
 #include <string>
 
 #include "extensions/renderer/extensions_renderer_client.h"
-#include "ui/base/page_transition_types.h"
 
 class GURL;
 
 namespace blink {
-class WebLocalFrame;
 class WebURL;
 }
 
@@ -24,10 +22,6 @@ struct WebPluginInfo;
 
 namespace extensions {
 class RendererPermissionsPolicyDelegate;
-}
-
-namespace net {
-class SiteForCookies;
 }
 
 namespace ukm {
@@ -53,15 +47,6 @@ class ChromeExtensionsRendererClient
   bool IsIncognitoProcess() const override;
   int GetLowestIsolatedWorldId() const override;
 
-  // See ChromeContentRendererClient methods with the same names.
-  void WillSendRequest(blink::WebLocalFrame* frame,
-                       ui::PageTransition transition_type,
-                       const blink::WebURL& upstream_url,
-                       const blink::WebURL& target_url,
-                       const net::SiteForCookies& site_for_cookies,
-                       const url::Origin* initiator_origin,
-                       GURL* new_url);
-
   static void DidBlockMimeHandlerViewForDisallowedPlugin(
       const blink::WebElement& plugin_element);
   static bool MaybeCreateMimeHandlerView(
@@ -75,6 +60,8 @@ class ChromeExtensionsRendererClient
   void FinishInitialization() override;
   std::unique_ptr<extensions::ResourceRequestPolicy::Delegate>
   CreateResourceRequestPolicyDelegate() override;
+  void RecordMetricsForURLRequest(blink::WebLocalFrame* frame,
+                                  const blink::WebURL& target_url) override;
 
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
   std::unique_ptr<extensions::RendererPermissionsPolicyDelegate>

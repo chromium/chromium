@@ -19,7 +19,6 @@
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
 #include "extensions/renderer/renderer_extension_registry.h"
-#include "extensions/renderer/resource_request_policy.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
@@ -76,48 +75,9 @@ ChromeExtensionsRendererClient::CreateResourceRequestPolicyDelegate() {
   return std::make_unique<extensions::ChromeResourceRequestPolicyDelegate>();
 }
 
-void ChromeExtensionsRendererClient::WillSendRequest(
+void ChromeExtensionsRendererClient::RecordMetricsForURLRequest(
     blink::WebLocalFrame* frame,
-    ui::PageTransition transition_type,
-    const blink::WebURL& upstream_url,
-    const blink::WebURL& target_url,
-    const net::SiteForCookies& site_for_cookies,
-    const url::Origin* initiator_origin,
-    GURL* new_url) {
-  std::string extension_id;
-  if (initiator_origin &&
-      initiator_origin->scheme() == extensions::kExtensionScheme) {
-    extension_id = initiator_origin->host();
-  } else {
-    if (site_for_cookies.scheme() == extensions::kExtensionScheme) {
-      extension_id = site_for_cookies.registrable_domain();
-    }
-  }
-
-  if (!extension_id.empty()) {
-    const extensions::RendererExtensionRegistry* extension_registry =
-        extensions::RendererExtensionRegistry::Get();
-    const Extension* extension = extension_registry->GetByID(extension_id);
-    if (!extension) {
-      // If there is no extension installed for the origin, it may be from a
-      // recently uninstalled extension.  The tabs of such extensions are
-      // automatically closed, but subframes and content scripts may stick
-      // around. Fail such requests without killing the process.
-      *new_url = GURL(extensions::kExtensionInvalidRequestURL);
-    }
-  }
-
-  // The rest of this method is only concerned with extensions URLs.
-  if (!target_url.ProtocolIs(extensions::kExtensionScheme)) {
-    return;
-  }
-
-  if (target_url.ProtocolIs(extensions::kExtensionScheme) &&
-      !resource_request_policy()->CanRequestResource(
-          upstream_url, target_url, frame, transition_type, initiator_origin)) {
-    *new_url = GURL(extensions::kExtensionInvalidRequestURL);
-  }
-
+    const blink::WebURL& target_url) {
   // TODO(crbug.com/41240557): Remove metrics after bug is fixed.
   GURL request_url(target_url);
   if (target_url.ProtocolIs(extensions::kExtensionScheme) &&
