@@ -13,8 +13,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/segmentation_platform/ukm_data_manager_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/commerce/core/mock_shopping_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_observer.h"
@@ -312,7 +314,15 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
   struct ProfileData {
     explicit ProfileData(UkmDataManagerTestUtils* test_utils,
                          const std::string& result_pref)
-        : test_utils(test_utils), profile(TestingProfile::Builder().Build()) {
+        : test_utils(test_utils) {
+      TestingProfile::Builder profile_builder;
+      profile_builder.AddTestingFactory(
+          commerce::ShoppingServiceFactory::GetInstance(),
+          base::BindRepeating([](content::BrowserContext* context) {
+            return commerce::MockShoppingService::Build();
+          }));
+      profile = profile_builder.Build();
+
       profile->GetPrefs()->SetString(kSegmentationClientResultPrefs,
                                      result_pref);
       test_utils->SetupForProfile(profile.get());
