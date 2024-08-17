@@ -2512,6 +2512,10 @@
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
+      name: "LayoutJustifySelfForBlocks",
+      status: "test",
+    },
+    {
       name: "LayoutNGShapeCache",
       status: "test",
       base_feature: "LayoutNGShapeCache",

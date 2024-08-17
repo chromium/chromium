@@ -220,9 +220,24 @@ LogicalOffset LogicalFromBfcOffsets(const BfcOffset& child_bfc_offset,
           child_bfc_offset.block_offset - parent_bfc_offset.block_offset};
 }
 
-// Handle -webkit- values for text-align.
+ItemPosition WebkitTextToItemPosition(ETextAlign text_align) {
+  switch (text_align) {
+    case ETextAlign::kWebkitLeft:
+      return ItemPosition::kLeft;
+    case ETextAlign::kWebkitCenter:
+      return ItemPosition::kCenter;
+    case ETextAlign::kWebkitRight:
+      return ItemPosition::kRight;
+    default:
+      // Ignore non -webkit- values.
+      return ItemPosition::kNormal;
+  }
+}
+
+// Handle text-align:-webkit-* and justify-self.
 template <typename ChildInlineSizeFunc>
-LayoutUnit WebkitTextAlignOffset(
+LayoutUnit WebkitTextAlignAndJustifySelfOffset(
+    const ComputedStyle& child_style,
     const ComputedStyle& style,
     LayoutUnit available_space,
     const BoxStrut& margins,
@@ -231,17 +246,33 @@ LayoutUnit WebkitTextAlignOffset(
     return (available_space - child_inline_size_func() - margins.InlineSum())
         .ClampNegativeToZero();
   };
+  DCHECK(!child_style.MarginInlineStartUsing(style).IsAuto());
+  DCHECK(!child_style.MarginInlineEndUsing(style).IsAuto());
+
+  ItemPosition justify_self =
+      child_style.ResolvedJustifySelf(ItemPosition::kNormal, &style)
+          .GetPosition();
+  if (!RuntimeEnabledFeatures::LayoutJustifySelfForBlocksEnabled() ||
+      justify_self == ItemPosition::kNormal) {
+    justify_self = WebkitTextToItemPosition(style.GetTextAlign());
+  }
 
   bool is_rtl = IsRtl(style.Direction());
-  switch (style.GetTextAlign()) {
-    case ETextAlign::kWebkitLeft:
+  // TODO(crbug.com/355683658): self-*, safe
+  switch (justify_self) {
+    case ItemPosition::kLeft:
       return is_rtl ? FreeSpace() : LayoutUnit();
-    case ETextAlign::kWebkitCenter:
+    case ItemPosition::kCenter:
       return FreeSpace() / 2;
-    case ETextAlign::kWebkitRight:
+    case ItemPosition::kRight:
       return is_rtl ? LayoutUnit() : FreeSpace();
+    case ItemPosition::kFlexStart:
+    case ItemPosition::kStart:
+      return LayoutUnit();
+    case ItemPosition::kFlexEnd:
+    case ItemPosition::kEnd:
+      return FreeSpace();
     default:
-      // Ignore non -webkit- values.
       return LayoutUnit();
   }
 }
@@ -1955,9 +1986,9 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutNewFormattingContext(
                                  fragment.InlineSize(), &auto_margins);
       } else {
         // Handle -webkit- values for text-align.
-        text_align_offset = WebkitTextAlignOffset(
-            style, opportunity.rect.InlineSize(), child_data.margins,
-            [&]() { return fragment.InlineSize(); });
+        text_align_offset = WebkitTextAlignAndJustifySelfOffset(
+            child_style, style, opportunity.rect.InlineSize(),
+            child_data.margins, [&]() { return fragment.InlineSize(); });
       }
     }
 
@@ -2988,7 +3019,28 @@ BoxStrut BlockLayoutAlgorithm::CalculateMargins(
                                      /* is_new_fc */ false);
       builder.SetAvailableSize(ChildAvailableSize());
       builder.SetPercentageResolutionSize(child_percentage_size_);
-      builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
+
+      const bool has_auto_margins =
+          child_style.MarginInlineStartUsing(Style()).IsAuto() ||
+          child_style.MarginInlineEndUsing(Style()).IsAuto();
+
+      const bool justify_self_affects_sizing =
+          RuntimeEnabledFeatures::LayoutJustifySelfForBlocksEnabled() &&
+          !has_auto_margins;
+
+      const ItemPosition justify_self =
+          child_style.ResolvedJustifySelf(ItemPosition::kNormal, &Style())
+              .GetPosition();
+
+      if (justify_self_affects_sizing &&
+          justify_self == ItemPosition::kStretch) {
+        builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
+      } else if (justify_self_affects_sizing &&
+                 justify_self != ItemPosition::kNormal) {
+        builder.SetInlineAutoBehavior(AutoSizeBehavior::kFitContent);
+      } else {
+        builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
+      }
       ConstraintSpace space = builder.ToConstraintSpace();
 
       const auto block_child = To<BlockNode>(child);
@@ -3012,8 +3064,8 @@ BoxStrut BlockLayoutAlgorithm::CalculateMargins(
                              ChildInlineSize(), &margins);
   } else {
     // Handle -webkit- values for text-align.
-    text_align_offset =
-        WebkitTextAlignOffset(style, available_space, margins, ChildInlineSize);
+    text_align_offset = WebkitTextAlignAndJustifySelfOffset(
+        child_style, style, available_space, margins, ChildInlineSize);
   }
 
   if (is_rtl) {
@@ -3042,12 +3094,34 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
   ConstraintSpaceBuilder builder(constraint_space, child_writing_direction,
                                  is_new_fc);
 
-  if (!IsParallelWritingMode(constraint_space.GetWritingMode(),
-                             child_writing_direction.GetWritingMode()))
-      [[unlikely]] {
+  const bool is_in_parallel_flow =
+      IsParallelWritingMode(constraint_space.GetWritingMode(),
+                            child_writing_direction.GetWritingMode());
+  if (!is_in_parallel_flow) [[unlikely]] {
     SetOrthogonalFallbackInlineSize(Style(), child, &builder);
-  } else if (child.IsInline() || ShouldBlockContainerChildStretchAutoInlineSize(
-                                     To<BlockNode>(child))) {
+  }
+
+  const bool has_auto_margins =
+      child_style.MarginInlineStartUsing(Style()).IsAuto() ||
+      child_style.MarginInlineEndUsing(Style()).IsAuto();
+
+  const bool justify_self_affects_sizing =
+      RuntimeEnabledFeatures::LayoutJustifySelfForBlocksEnabled() &&
+      !has_auto_margins;
+
+  const ItemPosition justify_self =
+      child_style.ResolvedJustifySelf(ItemPosition::kNormal, &Style())
+          .GetPosition();
+
+  if (justify_self_affects_sizing && justify_self == ItemPosition::kStretch) {
+    builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
+  } else if (justify_self_affects_sizing &&
+             justify_self != ItemPosition::kNormal) {
+    builder.SetInlineAutoBehavior(AutoSizeBehavior::kFitContent);
+  } else if (is_in_parallel_flow &&
+             (child.IsInline() ||
+              ShouldBlockContainerChildStretchAutoInlineSize(
+                  To<BlockNode>(child)))) {
     builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
   }
 

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] .item 5
+  assert_equals: \n<div class="container">\n  <div class="item" style="justify-self: self-end;" data-expected-width="20" data-offset-x="20"></div>\n</div>\noffsetLeft expected 20 but got 0
+[FAIL] .item 13
+  assert_equals: \n<div class="container">\n  <div class="item rtl" style="justify-self: self-end;" data-expected-width="20" data-offset-x="20"></div>\n</div>\noffsetLeft expected 20 but got 0
+Harness: the test ran to completion.
+
