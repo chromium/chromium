@@ -718,7 +718,7 @@ void ExternalProviderImpl::CreateExternalProviders(
 
   // Load the KioskAppExternalProvider when running in the Chrome App kiosk
   // mode.
-  if (chrome::IsRunningInForcedAppMode()) {
+  if (IsRunningInForcedAppMode()) {
 #if BUILDFLAG(IS_CHROMEOS)
     if (profiles::IsChromeAppKioskSession()) {
       ManifestLocation location = ManifestLocation::kExternalPolicy;

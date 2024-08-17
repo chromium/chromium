@@ -3066,7 +3066,7 @@ void Browser::RemoveScheduledUpdatesFor(WebContents* contents) {
 
 StatusBubble* Browser::GetStatusBubble() {
   // For kiosk and exclusive app mode we want to always hide the status bubble.
-  if (chrome::IsRunningInAppMode()) {
+  if (IsRunningInAppMode()) {
     return nullptr;
   }
 

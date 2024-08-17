@@ -459,7 +459,7 @@ bool WidgetHasChildModalDialog(views::Widget* parent_widget) {
 // for tab-fullscreen and not for app/popup type windows).
 bool ShouldUseImmersiveFullscreenForUrl(const GURL& url) {
   // Kiosk mode needs the whole screen.
-  if (chrome::IsRunningInAppMode()) {
+  if (IsRunningInAppMode()) {
     return false;
   }
   // An empty URL signifies browser fullscreen. Immersive is used for browser
@@ -869,7 +869,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
   // In forced app mode, all size controls are always disabled. Otherwise, use
   // `create_params` to enable/disable specific size controls.
-  if (chrome::IsRunningInForcedAppMode()) {
+  if (IsRunningInForcedAppMode()) {
     SetHasWindowSizeControls(false);
   } else if (GetIsPictureInPictureType()) {
     // Picture in picture windows must always have a title, can never minimize,
@@ -4944,7 +4944,7 @@ void BrowserView::LoadAccelerators() {
   DCHECK(focus_manager);
 
   // Let's fill our own accelerator table.
-  const bool is_app_mode = chrome::IsRunningInForcedAppMode();
+  const bool is_app_mode = IsRunningInForcedAppMode();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool is_lacros_only = !crosapi::browser_util::IsAshWebBrowserEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -4957,9 +4957,10 @@ void BrowserView::LoadAccelerators() {
   for (const auto& entry : accelerator_list) {
     // In app mode, only allow accelerators of white listed commands to pass
     // through.
-    if (is_app_mode && !chrome::IsCommandAllowedInAppMode(
-                           entry.command_id, browser()->is_type_popup()))
+    if (is_app_mode && !IsCommandAllowedInAppMode(entry.command_id,
+                                                  browser()->is_type_popup())) {
       continue;
+    }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // When Lacros is the only browser, disable some browser commands in Ash so

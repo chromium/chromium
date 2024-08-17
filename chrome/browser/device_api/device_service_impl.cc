@@ -127,12 +127,12 @@ bool IsTrustedContext(content::RenderFrameHost& host,
     return false;
   }
 
-  if (chrome::IsRunningInAppMode()) {
+  if (IsRunningInAppMode()) {
     if (base::FeatureList::IsEnabled(
             permissions::features::
                 kAllowMultipleOriginsForWebKioskPermissions)) {
       return IsEqualToKioskOrigin(origin) ||
-             chrome::IsWebKioskOriginAllowed(GetPrefs(host), origin.GetURL());
+             IsWebKioskOriginAllowed(GetPrefs(host), origin.GetURL());
     }
 
     return IsEqualToKioskOrigin(origin);

@@ -2476,7 +2476,7 @@ void RenderViewContextMenu::AppendSearchProvider() {
 }
 
 void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
-  const bool use_spelling = !chrome::IsRunningInForcedAppMode();
+  const bool use_spelling = !IsRunningInForcedAppMode();
   if (use_spelling) {
     AppendSpellingSuggestionItems();
   }
@@ -2607,7 +2607,7 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
 }
 
 void RenderViewContextMenu::AppendLanguageSettings() {
-  const bool use_spelling = !chrome::IsRunningInForcedAppMode();
+  const bool use_spelling = !IsRunningInForcedAppMode();
   if (!use_spelling) {
     return;
   }

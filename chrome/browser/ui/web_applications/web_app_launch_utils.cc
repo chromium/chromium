@@ -556,7 +556,7 @@ Browser::CreateParams CreateParamsForApp(const webapps::AppId& app_id,
                 app_name, trusted_source, window_bounds, profile, user_gesture)
           : Browser::CreateParams::CreateForApp(
                 app_name, trusted_source, window_bounds, profile, user_gesture);
-  params.initial_show_state = chrome::IsRunningInForcedAppMode()
+  params.initial_show_state = IsRunningInForcedAppMode()
                                   ? ui::SHOW_STATE_FULLSCREEN
                                   : ui::SHOW_STATE_DEFAULT;
   return params;

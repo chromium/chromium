@@ -169,7 +169,7 @@ std::unique_ptr<content::WebUIConfig> MakeConnectivityDiagnosticsUIConfig() {
                 &chrome::ShowFeedbackDialogForWebUI,
                 chrome::WebUIFeedbackSource::kConnectivityDiagnostics),
             /*show_feedback_button=*/
-            !chrome::IsRunningInAppMode());
+            !IsRunningInAppMode());
       });
 
   return std::make_unique<ConnectivityDiagnosticsUIConfig>(

@@ -8514,7 +8514,7 @@ bool ChromeContentBrowserClient::
   }
 #endif
 
-  if (chrome::IsRunningInAppMode()) {
+  if (IsRunningInAppMode()) {
     return false;
   }
 

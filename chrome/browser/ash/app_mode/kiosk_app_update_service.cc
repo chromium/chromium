@@ -173,8 +173,8 @@ KioskAppUpdateServiceFactory::~KioskAppUpdateServiceFactory() = default;
 KioskAppUpdateService* KioskAppUpdateServiceFactory::GetForProfile(
     Profile* profile) {
   // This should never be called unless we are running in forced app mode.
-  DCHECK(chrome::IsRunningInForcedAppMode());
-  if (!chrome::IsRunningInForcedAppMode()) {
+  DCHECK(IsRunningInForcedAppMode());
+  if (!IsRunningInForcedAppMode()) {
     return nullptr;
   }
 

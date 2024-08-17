@@ -171,7 +171,7 @@ void ExtensionSystemImpl::Shared::InitInstallGates() {
       ExtensionPrefs::DelayReason::kWaitForImports,
       extension_service_->shared_module_service());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chrome::IsRunningInForcedAppMode()) {
+  if (IsRunningInForcedAppMode()) {
     kiosk_app_update_install_gate_ =
         std::make_unique<ash::KioskAppUpdateInstallGate>(profile_);
     extension_service_->RegisterInstallGate(
@@ -257,7 +257,7 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
   // to a user session.
   skip_session_extensions = !ash::LoginState::Get()->IsUserLoggedIn() ||
                             !ash::ProfileHelper::IsUserProfile(profile_);
-  if (chrome::IsRunningInForcedAppMode()) {
+  if (IsRunningInForcedAppMode()) {
     extension_service_->component_loader()
         ->AddDefaultComponentExtensionsForKioskMode(skip_session_extensions);
   } else {

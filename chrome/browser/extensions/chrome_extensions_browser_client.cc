@@ -513,12 +513,12 @@ bool ChromeExtensionsBrowserClient::IsScreensaverInDemoMode(
 }
 
 bool ChromeExtensionsBrowserClient::IsRunningInForcedAppMode() {
-  return chrome::IsRunningInForcedAppMode();
+  return ::IsRunningInForcedAppMode();
 }
 
 bool ChromeExtensionsBrowserClient::IsAppModeForcedForApp(
     const ExtensionId& extension_id) {
-  return chrome::IsRunningInForcedAppModeForApp(extension_id);
+  return IsRunningInForcedAppModeForApp(extension_id);
 }
 
 bool ChromeExtensionsBrowserClient::IsLoggedInAsPublicAccount() {

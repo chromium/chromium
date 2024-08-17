@@ -67,9 +67,8 @@ bool g_offline_login_per_user_allowed_ = true;
 // Returns the current running kiosk app profile in a kiosk session. Otherwise,
 // returns nullptr.
 Profile* GetAppProfile() {
-  return chrome::IsRunningInForcedAppMode()
-             ? ProfileManager::GetActiveUserProfile()
-             : nullptr;
+  return IsRunningInForcedAppMode() ? ProfileManager::GetActiveUserProfile()
+                                    : nullptr;
 }
 
 }  // namespace

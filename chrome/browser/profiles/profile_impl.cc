@@ -1134,7 +1134,7 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // If this is a kiosk profile, reset some of its prefs which should not
   // persist between sessions.
-  if (chrome::IsRunningInForcedAppMode()) {
+  if (IsRunningInForcedAppMode()) {
     ash::ResetEphemeralKioskPreferences(prefs_.get());
   }
 #endif

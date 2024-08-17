@@ -65,7 +65,7 @@ bool SettingsWindowManager::UseDeprecatedSettingsWindow(Profile* profile) {
   }
 
   // Use deprecated settings window in Kiosk session only if SWA is disabled.
-  if (chrome::IsRunningInForcedAppMode() &&
+  if (IsRunningInForcedAppMode() &&
       !base::FeatureList::IsEnabled(ash::features::kKioskEnableSystemWebApps)) {
     return true;
   }

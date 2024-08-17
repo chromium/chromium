@@ -1031,7 +1031,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   if (command_line.HasSwitch(ash::switches::kLoginManager))
     silent_launch = true;
 
-  if (chrome::IsRunningInForcedAppMode()) {
+  if (IsRunningInForcedAppMode()) {
     // If we are here, it means the Chrome browser crashed/restarted while in
     // Kiosk mode, since the 'force app mode' switch is only added to the
     // commandline while in a kiosk session.

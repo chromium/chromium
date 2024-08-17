@@ -232,8 +232,9 @@ const struct {
     {kPropertySendFunctionsKeys, ash::prefs::kSendFunctionKeys}};
 
 bool IsEnterpriseKiosk() {
-  if (!chrome::IsRunningInForcedAppMode())
+  if (!IsRunningInForcedAppMode()) {
     return false;
+  }
 
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();

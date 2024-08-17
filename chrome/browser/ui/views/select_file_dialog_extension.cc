@@ -160,8 +160,9 @@ void FindRuntimeContext(gfx::NativeWindow owner_window,
   // In ChromeOS kiosk launch mode, we can still show file picker for
   // certificate manager dialog. There are no browser or webapp window
   // instances present in this case.
-  if (chrome::IsRunningInForcedAppMode() && !(*web_contents))
+  if (IsRunningInForcedAppMode() && !(*web_contents)) {
     *web_contents = ash::LoginWebDialog::GetCurrentWebContents();
+  }
 
   // Check for a WebContents used for the Chrome OS WebUI login flow.
   if (!*web_contents)

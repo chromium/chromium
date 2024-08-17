@@ -433,7 +433,7 @@ void FullscreenController::WindowFullscreenStateChanged() {
     NotifyTabExclusiveAccessLost();
   } else {
     toggled_into_fullscreen_ = true;
-    if (!chrome::IsRunningInAppMode()) {
+    if (!IsRunningInAppMode()) {
       exclusive_access_manager()->UpdateBubble(base::NullCallback(),
                                                /*force_update=*/true);
     }
@@ -633,8 +633,9 @@ void FullscreenController::EnterFullscreenModeInternal(
 
 void FullscreenController::ExitFullscreenModeInternal() {
   // In kiosk mode, we always want to be fullscreen.
-  if (chrome::IsRunningInAppMode())
+  if (IsRunningInAppMode()) {
     return;
+  }
 
   // `fullscreen_start_time_` is null if a fullscreen tab moves to a new window.
   if (fullscreen_start_time_ && exclusive_access_tab()) {
