@@ -237,9 +237,11 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
     CheckTurnLimit();
 
     // If the latest action is not the final action from the server, then an
-    // additional request is made to the server.
+    // additional request is made to the server. The last action must be of type
+    // kAllDone to prevent an additional call.
     if (!latest_turn->actions.empty() &&
-        !latest_turn->actions.back().all_done) {
+        (latest_turn->actions.back().type != manta::ActionType::kAllDone ||
+         !latest_turn->actions.back().all_done)) {
       sparky_provider_->QuestionAndAnswer(
           std::move(sparky_context),
           base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
