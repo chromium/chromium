@@ -353,10 +353,21 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   void SchedulePolicyApplication(const std::string& userhash);
   void StartPolicyApplication(const std::string& userhash);
 
+  // Based on the admin policy to allow usage of custom APNs, this method sets
+  // or clears custom apn list in shill properties.
+  void ModifyCustomAPNs();
+
   void set_ui_proxy_config_service(
       UIProxyConfigService* ui_proxy_config_service);
 
   void set_user_prefs(PrefService* user_prefs);
+
+  NetworkMetadataStore* GetNetworkMetadataStore();
+
+  void set_network_metadata_store_for_testing(
+      NetworkMetadataStore* network_metadata_store_for_testing) {
+    network_metadata_store_for_testing_ = network_metadata_store_for_testing;
+  }
 
   // Returns the device policy GlobalNetworkConfiguration boolean value under
   // `key` or `std::nullopt` if such a value doesn't exist or is not of type
@@ -389,6 +400,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   raw_ptr<UIProxyConfigService, DanglingUntriaged> ui_proxy_config_service_ =
       nullptr;
   raw_ptr<HotspotController, DanglingUntriaged> hotspot_controller_ = nullptr;
+  raw_ptr<NetworkMetadataStore> network_metadata_store_for_testing_ = nullptr;
 
   // Initialized to null and set once SetUserPrefs() is called.
   raw_ptr<PrefService> user_prefs_ = nullptr;

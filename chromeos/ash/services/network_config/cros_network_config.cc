@@ -2721,9 +2721,15 @@ void CrosNetworkConfig::SetPropertiesInternal(const std::string& guid,
   NET_LOG(DEBUG) << "Configuring properties for " << guid << ": " << onc;
 
   if (features::IsApnRevampAndAllowApnModificationPolicyEnabled()) {
-    if (const base::Value::List* existing_custom_apn_list =
-            NetworkHandler::Get()->network_metadata_store()->GetCustomApnList(
-                guid)) {
+    const base::Value::Dict* global_policy_dict =
+        network_configuration_handler_->GetGlobalConfigFromPolicy(
+            /*userhash=*/std::string());
+    bool allow_apn_modification = GetBoolean(
+        global_policy_dict, ::onc::global_network_config::kAllowAPNModification,
+        /*value_if_key_missing_from_dict=*/true);
+    const base::Value::List* existing_custom_apn_list =
+        NetworkHandler::Get()->network_metadata_store()->GetCustomApnList(guid);
+    if (allow_apn_modification && existing_custom_apn_list) {
       chromeos::onc::FillInCellularCustomAPNListFieldsInOncObject(
           chromeos::onc::kNetworkConfigurationSignature, onc,
           existing_custom_apn_list);
