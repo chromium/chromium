@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -35,6 +36,14 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::DevToolsAgentHost;
+
+namespace {
+
+BASE_FEATURE(kExtensionUpdatesImmediatelyUnregisterWorker,
+             "ExtensionUpdatesImmediatelyUnregisterWorker",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
 
 namespace extensions {
 
@@ -528,11 +537,20 @@ void ExtensionRegistrar::UnregisterServiceWorkerWithRootScope(
   // Even though the unregistration process for a service worker is
   // asynchronous, we begin the process before the new extension is added, so
   // the old worker will be unregistered before the new one is registered.
-  context->UnregisterServiceWorker(
-      new_extension->url(),
-      blink::StorageKey::CreateFirstParty(new_extension->origin()),
-      base::BindOnce(&ExtensionRegistrar::NotifyServiceWorkerUnregistered,
-                     weak_factory_.GetWeakPtr(), new_extension->id()));
+  if (base::FeatureList::IsEnabled(
+          kExtensionUpdatesImmediatelyUnregisterWorker)) {
+    context->UnregisterServiceWorkerImmediately(
+        new_extension->url(),
+        blink::StorageKey::CreateFirstParty(new_extension->origin()),
+        base::BindOnce(&ExtensionRegistrar::NotifyServiceWorkerUnregistered,
+                       weak_factory_.GetWeakPtr(), new_extension->id()));
+  } else {
+    context->UnregisterServiceWorker(
+        new_extension->url(),
+        blink::StorageKey::CreateFirstParty(new_extension->origin()),
+        base::BindOnce(&ExtensionRegistrar::NotifyServiceWorkerUnregistered,
+                       weak_factory_.GetWeakPtr(), new_extension->id()));
+  }
 }
 
 void ExtensionRegistrar::NotifyServiceWorkerUnregistered(
