@@ -36,6 +36,7 @@ class CONTENT_EXPORT AuctionDownloader {
   // Mime type to use for Accept header. Any response without a matching
   // Content-Type header is rejected.
   enum class MimeType {
+    kAdAuctionTrustedSignals,
     kJavascript,
     kJson,
     kWebAssembly,
@@ -82,6 +83,10 @@ class CONTENT_EXPORT AuctionDownloader {
 
   // Starts loading `source_url` on construction.
   //
+  // The post_body and content_type fields are optional and used for POST
+  // requests. While the content_type header is not mandatory for POST requests,
+  // it should be set to indicate the content type of the request.
+  //
   // `response_started_callback` is optional, and will be invoked once the
   // response headers have been received if they are for a 2xx with an
   // appropriate Ad-Auction-Allowed header.
@@ -108,6 +113,7 @@ class CONTENT_EXPORT AuctionDownloader {
       DownloadMode download_mode,
       MimeType mime_type,
       std::optional<std::string> post_body,
+      std::optional<std::string> content_type,
       ResponseStartedCallback response_started_callback,
       AuctionDownloaderCallback auction_downloader_callback,
       std::unique_ptr<NetworkEventsDelegate> network_events_delegate);

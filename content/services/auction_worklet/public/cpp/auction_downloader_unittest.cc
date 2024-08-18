@@ -86,12 +86,14 @@ class AuctionDownloaderTest
   };
 
   std::unique_ptr<std::string> RunRequest(
-      std::optional<std::string> post_body = std::nullopt) {
+      std::optional<std::string> post_body = std::nullopt,
+      std::optional<std::string> content_type = std::nullopt) {
     DCHECK(!run_loop_);
 
     // reset values
     observed_request_id_ = std::nullopt;
     observed_request_url_ = std::nullopt;
+    observed_request_content_type_ = std::nullopt;
     observed_response_url_ = std::nullopt;
     observed_completion_status_ =
         network::URLLoaderCompletionStatus(net::Error());
@@ -105,12 +107,15 @@ class AuctionDownloaderTest
         [this](const network::ResourceRequest& request) {
           EXPECT_TRUE(request.devtools_request_id);
           observed_request_post_body_ = request.request_body;
+          observed_request_content_type_ =
+              request.headers.GetHeader(net::HttpRequestHeaders::kContentType);
           observed_request_method_ = request.method;
         }));
 
     AuctionDownloader downloader(
         &url_loader_factory_, url_, download_mode(), mime_type_,
-        std::move(post_body), response_started_callback_,
+        std::move(post_body), std::move(content_type),
+        response_started_callback_,
         base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
                        base::Unretained(this)),
         std::move(test_network_events_delegate));
@@ -165,6 +170,7 @@ class AuctionDownloaderTest
   std::optional<GURL> observed_request_url_;
   std::optional<std::string> observed_request_id_;
   scoped_refptr<network::ResourceRequestBody> observed_request_post_body_;
+  std::optional<std::string> observed_request_content_type_;
   std::optional<std::string> observed_request_method_;
   std::optional<GURL> observed_response_url_;
   std::optional<network::mojom::URLResponseHeadPtr> observed_response_head_;
@@ -449,7 +455,9 @@ TEST_P(AuctionDownloaderTest, SuccessWithPostBody) {
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody);
   const std::string kPostBody = "TEST BODY";
-  std::unique_ptr<std::string> body = RunRequest(kPostBody);
+  const std::string kContentType = "text/javascript";
+  std::unique_ptr<std::string> body =
+      RunRequest(std::move(kPostBody), std::move(kContentType));
   ASSERT_TRUE(body);
   ASSERT_TRUE(observed_request_post_body_);
   ASSERT_EQ(1u, observed_request_post_body_->elements()->size());
@@ -460,6 +468,7 @@ TEST_P(AuctionDownloaderTest, SuccessWithPostBody) {
       elem.As<network::DataElementBytes>();
   EXPECT_EQ(kPostBody, byte_elem.AsStringPiece());
   EXPECT_EQ(observed_request_method_, "POST");
+  EXPECT_EQ(observed_request_content_type_, kContentType);
   EXPECT_EQ(EmptyIfSimulated(kAsciiResponseBody), *body);
 }
 
@@ -607,6 +616,44 @@ TEST_P(AuctionDownloaderTest, MimeTypeWasm) {
       "Rejecting load of https://url.test/script.js due to unexpected MIME "
       "type.",
       last_error_msg());
+}
+
+TEST_P(AuctionDownloaderTest, MimeTypeTrustedSignals) {
+  mime_type_ = AuctionDownloader::MimeType::kAdAuctionTrustedSignals;
+
+  // AdAuctionTrustedSignals request, Javascript response type.
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody);
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
+
+  // AdAuctionTrustedSignals request, no response type.
+  AddResponse(&url_loader_factory_, url_, /*mime_type=*/std::nullopt,
+              /*charset=*/std::nullopt, kAsciiResponseBody);
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
+
+  // AdAuctionTrustedSignals request, JSON response type.
+  AddResponse(&url_loader_factory_, url_, kJsonMimeType, kUtf8Charset,
+              kAsciiResponseBody);
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
+
+  // AdAuctionTrustedSignals request, AdAuctionTrustedSignals response type.
+  AddResponse(&url_loader_factory_, url_, kAdAuctionTrustedSignalsMimeType,
+              /*charset=*/std::nullopt, kUtf8ResponseBody);
+  std::unique_ptr<std::string> body = RunRequest();
+  ASSERT_TRUE(body);
+  EXPECT_EQ(EmptyIfSimulated(kUtf8ResponseBody), *body);
 }
 
 // Test all Javascript and JSON MIME type strings.

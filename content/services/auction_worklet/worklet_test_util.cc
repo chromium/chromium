@@ -28,6 +28,8 @@ namespace auction_worklet {
 const char kJavascriptMimeType[] = "application/javascript";
 const char kJsonMimeType[] = "application/json";
 const char kWasmMimeType[] = "application/wasm";
+const char kAdAuctionTrustedSignalsMimeType[] =
+    "message/ad-auction-trusted-signals-response";
 
 const char kAllowFledgeHeader[] = "Ad-Auction-Allowed: true";
 
