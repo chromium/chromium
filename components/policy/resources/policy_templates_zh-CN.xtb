@@ -869,6 +869,7 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="165769015320654523">自动授权这些网站连接到具有给定供应商 ID 和产品 ID 的 HID 设备。</translation>
 <translation id="1659406551862245683">更改默认的虚拟键盘调整大小行为，以调整布局视口的大小</translation>
 <translation id="166427968280387991">代理服务器</translation>
+<translation id="1666001345366986837">生成式 AI VC 背景功能的设置</translation>
 <translation id="1670638264428789878">启用 Related Website Sets</translation>
 <translation id="1671405606278443620">AI 赋能的历史记录搜索功能的设置</translation>
 <translation id="1673097259557436886">始终告诉网站，没有任何已保存的付款方式</translation>
@@ -3486,6 +3487,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
           这是一项暂时性政策，我们计划在 <ph name="PRODUCT_NAME" /> 107 中将其移除。若有很多企业需要此政策，这个期限可能会延长。
           </translation>
+<translation id="3677660004554019617">不允许使用生成式 AI VC 背景</translation>
 <translation id="3678069907945250643">允许通过个性化设置应用访问 Google 相册</translation>
 <translation id="3680529017993214255">启用此功能并发送数据来帮助训练 AI 模型</translation>
 <translation id="3685979383016152590">通过设置此政策，您可以指定对批量打印机配置应用哪项访问政策，并控制用户可以使用 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 中的哪些打印机。
@@ -3666,6 +3668,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       用户无法卸载由政策注册的协议处理程序，但可通过安装新的默认处理程序来更改由政策安装的协议处理程序。</translation>
 <translation id="3842619997238271109">禁止远程访问主机在接受客户端连接时使用 PIN 码和配对身份验证方法</translation>
+<translation id="3845318141474759319">允许使用生成式 AI 壁纸，但不改进 AI 模型</translation>
 <translation id="3851443303439635700">控制嵌套阈值，以指定何时开始将 JavaScript setTimeout() 函数强制设为下限值</translation>
 <translation id="3858658082795336534">默认使用双面打印模式</translation>
 <translation id="3859780406608282662">在提取 <ph name="PRODUCT_OS_NAME" /> 中的变体种子的方法中添加参数。
@@ -6843,6 +6846,14 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="632248221998836641">覆盖 IPv6 可达性检查。始终查询 AAAA 记录以进行主机名解析。</translation>
 <translation id="6324274808543634377">F11/F12 设置使用包含 Alt 辅助键的快捷键</translation>
 <translation id="6327643515544933974">网络 USB 设置</translation>
+<translation id="6328272502368270191">此政策用于为 <ph name="PRODUCT_OS_NAME" /> 启用或停用生成式 AI 壁纸功能。
+1 是默认值。
+
+1 表示允许使用生成式 AI 壁纸，但不改进 AI 模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> 管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
+
+2 表示不允许使用生成式 AI 壁纸。
+
+如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="6330882599388782338">允许网站使用传感器</translation>
 <translation id="6331167725613770725">请注意，此政策已被弃用，并将在 <ph name="PRODUCT_OS_NAME" />版本 85 中移除。请改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 
@@ -7249,6 +7260,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果未设置此政策，则用户可以使用系统中安装的任何插件，经过硬编码且不兼容、已过期或危险的插件除外。</translation>
 <translation id="6571055160227165318">允许通过 Chrome flag 启用 WebSQL。</translation>
+<translation id="6574216414580419109">生成式 AI 壁纸功能的设置</translation>
 <translation id="6574903167639386816">当用户会话结束时清除磁盘上的个人资料数据</translation>
 <translation id="6575403002861093126">通过设置此政策，您可以指定群组政策对象 (GPO) 缓存期限（以小时为单位），即 GPO 在不必重新下载的情况下可被重复使用的时长上限。只要 GPO 的版本未变，系统便会重复使用已缓存的 GPO，而不是在每次提取政策时都重新下载 GPO。
 
@@ -8425,6 +8437,14 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="748292668225669178">配置 <ph name="MICROSOFT_ONE_DRIVE_NAME" /> 的装载方式</translation>
 <translation id="7485481791539008776">默认打印机选择规则</translation>
 <translation id="7486205887492534734">当登录屏幕上有多份证书匹配时，提示用户做出选择</translation>
+<translation id="7487148156560435405">此政策用于为 <ph name="PRODUCT_OS_NAME" /> 启用或停用生成式 AI VC 背景功能。
+1 是默认值。
+
+1 表示允许使用生成式 AI VC 背景，但不改进 AI 模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> 管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
+
+2 表示不允许使用生成式 AI VC 背景。
+
+如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="748873163367340515">在搜索中仅使用必需 Cookie 和数据。</translation>
 <translation id="7489169777107143496">停用安全浏览功能的下载内容深度扫描服务</translation>
 <translation id="7489661071474025727">指定是否为使用 <ph name="PRODUCT_OS_NAME" /> 设备的用户启用账号恢复服务。
@@ -8551,6 +8571,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果此政策已启用或未设置，系统将启用快速解答单位换算功能。
       如果此政策已停用，系统将停用快速解答单位换算功能。</translation>
+<translation id="7584363090329234690">允许使用生成式 AI VC 背景，但不改进 AI 模型</translation>
 <translation id="7585312329612243723">以列表形式为一系列网址启用受管理浏览器的 <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> 认证流程</translation>
 <translation id="7587345076013230465">当登录屏幕上有多份客户端证书与自动选择政策匹配时，提示用户做出选择</translation>
 <translation id="7587921466180902617">为 Family Link 用户启用“屏幕录制”功能 dogfood</translation>
@@ -9103,6 +9124,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> 图片的 SHA-256 哈希值。</translation>
 <translation id="8028814157747157754">启用默认搜索服务提供商并允许用户修改搜索服务提供商列表</translation>
 <translation id="8029201909194194377">远程访问连接可达到的会话时长上限</translation>
+<translation id="8031651557770840616">不允许使用生成式 AI 壁纸</translation>
 <translation id="8033450879690820321">此政策针对新的键盘可聚焦滚动条行为提供了一项临时的选择停用机制。
 
 如果此政策已启用或未设置，默认情况下，没有可聚焦子项的滚动条可通过键盘聚焦。此外，默认情况下，滚动条可点击聚焦和程序化地聚焦。

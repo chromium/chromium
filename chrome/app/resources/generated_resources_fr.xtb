@@ -5084,7 +5084,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4660476621274971848">Version <ph name="NEW_ID" /> reçue au lieu de la version <ph name="EXPECTED_VERSION" /> attendue</translation>
 <translation id="4660540330091848931">Redimensionnement…</translation>
 <translation id="4661407454952063730">Les données de l'application peuvent désigner toutes les données enregistrées par une application (en fonction des paramètres définis par le développeur), y compris celles comme les contacts, les messages et les photos.</translation>
-<translation id="4662208278924489774">Avertissement de téléchargement</translation>
+<translation id="4662208278924489774">Avertissement sur le téléchargement</translation>
 <translation id="4662373422909645029">Le pseudo ne doit pas contenir de chiffres</translation>
 <translation id="4662788913887017617">Partager ce favori avec votre iPhone</translation>
 <translation id="4663373278480897665">Caméra autorisée</translation>
@@ -5588,7 +5588,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5049614114599109018">Utiliser l'historique de saisie</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{Ce site a récemment envoyé beaucoup de notifications. Vous pouvez l'empêcher d'en envoyer à l'avenir.}one{Ce site a récemment envoyé beaucoup de notifications. Vous pouvez l'empêcher d'en envoyer à l'avenir.}other{Ces sites ont récemment envoyé beaucoup de notifications. Vous pouvez les empêcher d'en envoyer à l'avenir.}}</translation>
 <translation id="5050330054928994520">Synthèse vocale</translation>
-<translation id="5051461727068120271">Télécharger le fichier non validé</translation>
+<translation id="5051461727068120271">Télécharger le fichier non vérifié</translation>
 <translation id="5051836348807686060">La vérification orthographique n'est pas disponible pour les langues que vous avez sélectionnées</translation>
 <translation id="5052499409147950210">Modifier le site</translation>
 <translation id="5052853071318006357">Effectuez un clic droit sur un onglet et sélectionnez "Ajouter l'onglet à un nouveau groupe"</translation>
