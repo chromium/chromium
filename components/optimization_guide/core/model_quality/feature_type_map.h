@@ -9,6 +9,8 @@
 
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/features/default.pb.h"
+#include "components/optimization_guide/proto/features/forms_annotations.pb.h"
+#include "components/optimization_guide/proto/features/forms_predictions.pb.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
 #include "components/optimization_guide/proto/features/history_query.pb.h"
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
@@ -112,6 +114,28 @@ class ProductSpecificationsFeatureTypeMap {
   }
 
   static std::string_view ToString() { return "ProductSpecifications"; }
+};
+
+class FormsAnnotationsFeatureTypeMap {
+ public:
+  using LoggingData = proto::FormsAnnotationsLoggingData;
+
+  static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
+    return ai_data_request.mutable_forms_annotations();
+  }
+
+  static std::string_view ToString() { return "FormsAnnotations"; }
+};
+
+class FormsPredictionsFeatureTypeMap {
+ public:
+  using LoggingData = proto::FormsPredictionsLoggingData;
+
+  static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
+    return ai_data_request.mutable_forms_predictions();
+  }
+
+  static std::string_view ToString() { return "FormsPredcitions"; }
 };
 
 }  // namespace optimization_guide

@@ -19,6 +19,8 @@ import "components/optimization_guide/proto/features/history_query.proto";
 import "components/optimization_guide/proto/features/product_specifications.proto";
 import "components/optimization_guide/proto/features/tab_organization.proto";
 import "components/optimization_guide/proto/features/wallpaper_search.proto";
+import "components/optimization_guide/proto/features/forms_annotations.proto";
+import "components/optimization_guide/proto/features/forms_predictions.proto";
 
 // A request to send AI data logs to the model quality server. Data logging for
 // an AI feature with metadata specific to the logging.
@@ -42,6 +44,10 @@ message LogAiDataRequest {
     HistoryAnswerLoggingData history_answer = 8;
 
     ProductSpecificationsLoggingData product_specifications = 9;
+
+    FormsAnnotationsLoggingData forms_annotations = 10;
+
+    FormsPredictionsLoggingData forms_predictions = 11;
 
     DefaultLoggingData default = 1000;
   }
