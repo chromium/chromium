@@ -74,8 +74,14 @@ class ASH_EXPORT QuickSettingsSlider : public views::Slider {
   gfx::Rect GetInactiveRadioSliderRect();
   int GetInactiveRadioSliderRoundedCornerRadius();
 
+  void set_is_toggleable_volume_slider(bool is_toggleable_volume_slider) {
+    is_toggleable_volume_slider_ = is_toggleable_volume_slider;
+  }
+  bool is_toggleable_volume_slider() { return is_toggleable_volume_slider_; }
+
  private:
   // views::Slider:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   SkColor GetThumbColor() const override;
   SkColor GetTroughColor() const override;
 
@@ -83,7 +89,13 @@ class ASH_EXPORT QuickSettingsSlider : public views::Slider {
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
+  // The style of the slider.
   Style slider_style_;
+
+  // Indicates if the slider can be toggled to mute/unmute volume. Used for
+  // additional accessibility warnings to make sure a user cannot accidentally
+  // turn off volume.
+  bool is_toggleable_volume_slider_ = false;
 };
 
 // A slider that ignores inputs. This will be used in the

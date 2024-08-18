@@ -4,10 +4,12 @@
 
 #include "ash/system/unified/quick_settings_slider.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "base/notreached.h"
 #include "cc/paint/paint_flags.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -108,6 +110,28 @@ gfx::Rect QuickSettingsSlider::GetInactiveRadioSliderRect() {
 
 int QuickSettingsSlider::GetInactiveRadioSliderRoundedCornerRadius() {
   return kInactiveRadioSliderRoundedRadius + kFocusOffset;
+}
+
+void QuickSettingsSlider::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  View::GetAccessibleNodeData(node_data);
+  node_data->role = ax::mojom::Role::kSlider;
+  std::u16string volume_level = base::UTF8ToUTF16(
+      base::StringPrintf("%d%%", static_cast<int>(GetValue() * 100 + 0.5)));
+
+  if (is_toggleable_volume_slider_) {
+    std::u16string message = l10n_util::GetStringFUTF16(
+        slider_style_ == Style::kDefaultMuted
+            ? IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_MUTED_ACCESSIBILITY_ANNOUNCEMENT
+            : IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_ACCESSIBILITY_ANNOUNCEMENT,
+        volume_level);
+
+    node_data->SetValue(message);
+  } else {
+    node_data->SetValue(volume_level);
+  }
+
+  node_data->AddAction(ax::mojom::Action::kIncrement);
+  node_data->AddAction(ax::mojom::Action::kDecrement);
 }
 
 SkColor QuickSettingsSlider::GetThumbColor() const {

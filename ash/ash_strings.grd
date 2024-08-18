@@ -1118,7 +1118,11 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_LABEL" desc="The accessible text for the volume slider in the tray.">
         Volume
       </message>
-
+      <message name="IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibile text for the slider when it is focused and not muted.">
+      <ph name="VOLUME_LEVEL">$1<ex>55</ex></ph>, Hitting enter will mute audio. 
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_MUTED_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessible text for the slider when it is muted.">
+      <ph name="VOLUME_LEVEL">$1<ex>55</ex></ph>, Muted </message>
       <message name="IDS_ASH_ACCESSIBILITY_FEATURE_SHORTCUT_DISABLED_TITLE"
                desc="Title to indicate that the shortcut for an accessibility feature has been disabled.">
         Shortcut turned off
