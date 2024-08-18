@@ -1,5 +1,8 @@
 # This OWNERS list is a last resort. Please prefer to use more specific OWNERS
 # where possible.
+# Anyone can apply to join //chrome/OWNERS. We expect:
+#   * Landed >300 CLs and reviewed >500 CLs spanning many directories in //chrome
+# Please email current OWNERS.
 
 set noparent
 
