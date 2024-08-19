@@ -9,6 +9,7 @@
 
 #import <set>
 
+#import "base/memory/weak_ptr.h"
 #import "components/saved_tab_groups/types.h"
 
 class TabGroup;
@@ -68,14 +69,16 @@ class WebStateID;
 
 // Tells the receiver to delete the `group`. `sourceView` is the view that the
 // delete action originated from.
-- (void)deleteTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView;
+- (void)deleteTabGroup:(base::WeakPtr<const TabGroup>)group
+            sourceView:(UIView*)sourceView;
 
 // Tells the receiver to close the `group`.
-- (void)closeTabGroup:(const TabGroup*)group;
+- (void)closeTabGroup:(base::WeakPtr<const TabGroup>)group;
 
 // Tells the receiver to ungroup the `group`. `sourceView` is the view that the
 // ungroup action originated from.
-- (void)ungroupTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView;
+- (void)ungroupTabGroup:(base::WeakPtr<const TabGroup>)group
+             sourceView:(UIView*)sourceView;
 
 // Tells the receiver to pin or unpin the tab with identifier `itemID`.
 - (void)setPinState:(BOOL)pinState forItemWithID:(web::WebStateID)itemID;

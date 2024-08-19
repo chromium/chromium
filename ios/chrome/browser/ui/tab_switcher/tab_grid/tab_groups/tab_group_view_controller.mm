@@ -433,7 +433,7 @@ constexpr CGFloat kSpace = 8;
   if (IsTabGroupSyncEnabled()) {
     [_handler
         showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
-                                    group:_tabGroup
+                                    group:_tabGroup->GetWeakPtr()
                          sourceButtonItem:_navigationBar.topItem
                                               .rightBarButtonItems[0]];
     return;
@@ -456,7 +456,7 @@ constexpr CGFloat kSpace = 8;
     // close the view. Do nothing when a user cancels the action.
     [_handler
         showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
-                                    group:_tabGroup
+                                    group:_tabGroup->GetWeakPtr()
                          sourceButtonItem:_navigationBar.topItem
                                               .rightBarButtonItems[0]];
     return;

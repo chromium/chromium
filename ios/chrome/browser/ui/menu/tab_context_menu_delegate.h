@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/ui/sharing/sharing_scenario.h"
 
 class GURL;
@@ -66,7 +67,8 @@ class WebStateID;
 
 // Tells the delegate to display the group edition view of the group of the
 // given identifier.
-- (void)editTabGroup:(const TabGroup*)group incognito:(BOOL)incognito;
+- (void)editTabGroup:(base::WeakPtr<const TabGroup>)group
+           incognito:(BOOL)incognito;
 
 // Tells the delegate to close the tab with the item identifier `identifier`.
 // `incognito` tracks the incognito state of the tab.
@@ -76,18 +78,19 @@ class WebStateID;
 // Tells the delegate to delete the group. `incognito` tracks the incognito
 // state of the group. `sourceView` is the view that the delete action
 // originated from.
-- (void)deleteTabGroup:(const TabGroup*)group
+- (void)deleteTabGroup:(base::WeakPtr<const TabGroup>)group
              incognito:(BOOL)incognito
             sourceView:(UIView*)sourceView;
 
 // Tells the delegate to close the group. `incognito` tracks the incognito state
 // of the group.
-- (void)closeTabGroup:(const TabGroup*)group incognito:(BOOL)incognito;
+- (void)closeTabGroup:(base::WeakPtr<const TabGroup>)group
+            incognito:(BOOL)incognito;
 
 // Tells the delegate to ungroup the `group`. `incognito` tracks the incognito
 // state of the group. `sourceView` is the view that the delete action
 // originated from.
-- (void)ungroupTabGroup:(const TabGroup*)group
+- (void)ungroupTabGroup:(base::WeakPtr<const TabGroup>)group
               incognito:(BOOL)incognito
              sourceView:(UIView*)sourceView;
 

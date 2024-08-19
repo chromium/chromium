@@ -431,6 +431,9 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)closeTabGroup:(const TabGroup*)group andDeleteGroup:(BOOL)deleteGroup {
+  if (!group) {
+    return;
+  }
   [self.tabGridIdleStatusHandler
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
 
@@ -469,6 +472,9 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)ungroupTabGroup:(const TabGroup*)group {
+  if (!group) {
+    return;
+  }
   [self.tabGridIdleStatusHandler
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
 
@@ -1134,7 +1140,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   }
 }
 
-- (void)deleteTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView {
+- (void)deleteTabGroup:(base::WeakPtr<const TabGroup>)group
+            sourceView:(UIView*)sourceView {
   if (IsTabGroupSyncEnabled()) {
     [self.tabGroupsHandler
         showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
@@ -1144,14 +1151,15 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   }
 
   DCHECK(!IsTabGroupSyncEnabled());
-  [self closeTabGroup:group andDeleteGroup:YES];
+  [self closeTabGroup:group.get() andDeleteGroup:YES];
 }
 
-- (void)closeTabGroup:(const TabGroup*)group {
-  [self closeTabGroup:group andDeleteGroup:NO];
+- (void)closeTabGroup:(base::WeakPtr<const TabGroup>)group {
+  [self closeTabGroup:group.get() andDeleteGroup:NO];
 }
 
-- (void)ungroupTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView {
+- (void)ungroupTabGroup:(base::WeakPtr<const TabGroup>)group
+             sourceView:(UIView*)sourceView {
   if (IsTabGroupSyncEnabled()) {
     [self.tabGroupsHandler
         showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
@@ -1161,7 +1169,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   }
 
   DCHECK(!IsTabGroupSyncEnabled());
-  [self ungroupTabGroup:group];
+  [self ungroupTabGroup:group.get()];
 }
 
 - (void)closeAllItems {

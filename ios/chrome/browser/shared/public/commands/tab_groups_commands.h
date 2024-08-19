@@ -7,6 +7,8 @@
 
 #import <set>
 
+#import "base/memory/weak_ptr.h"
+
 class TabGroup;
 enum class TabGroupActionType;
 namespace web {
@@ -38,14 +40,16 @@ class WebStateID;
 // bottom on iPhone to confirm that selected `group` is going to take an
 // `actionType`.
 - (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
-                                    group:(const TabGroup*)tabGroup
+                                    group:
+                                        (base::WeakPtr<const TabGroup>)tabGroup
                                sourceView:(UIView*)sourceView;
 
 // Displays a confirmation dialog anchoring to `sourceButtonItem` on iPad or at
 // the bottom on iPhone to confirm that selected `group` is going to take an
 // `actionType`.
 - (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
-                                    group:(const TabGroup*)tabGroup
+                                    group:
+                                        (base::WeakPtr<const TabGroup>)tabGroup
                          sourceButtonItem:(UIBarButtonItem*)sourceButtonItem;
 
 // Displays a snackbar after closing tab groups locally.

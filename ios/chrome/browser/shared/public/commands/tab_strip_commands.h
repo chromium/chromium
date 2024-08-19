@@ -9,6 +9,8 @@
 
 #import <set>
 
+#import "base/memory/weak_ptr.h"
+
 class TabGroup;
 enum class TabGroupActionType;
 @class TabGroupItem;
@@ -30,7 +32,8 @@ class WebStateID;
     (const std::set<web::WebStateID>&)identifiers;
 
 // Shows tab group editing view.
-- (void)showTabStripGroupEditionForGroup:(const TabGroup*)tabGroup;
+- (void)showTabStripGroupEditionForGroup:
+    (base::WeakPtr<const TabGroup>)tabGroup;
 
 // Hides the tab group creation view.
 - (void)hideTabStripGroupCreation;

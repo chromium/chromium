@@ -284,17 +284,17 @@
 }
 
 - (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
-                                    group:(const TabGroup*)tabGroup
+                                    group:
+                                        (base::WeakPtr<const TabGroup>)tabGroup
                                sourceView:(UIView*)sourceView {
   _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                       actionType:actionType
                       sourceView:sourceView];
-  base::WeakPtr<const TabGroup> weakGroup = tabGroup->GetWeakPtr();
   __weak BaseGridCoordinator* weakSelf = self;
   _tabGroupConfirmationCoordinator.action = ^{
-    [weakSelf takeActionForActionType:actionType weakGroup:weakGroup];
+    [weakSelf takeActionForActionType:actionType weakGroup:tabGroup];
   };
   [_tabGroupConfirmationCoordinator start];
   self.gridViewController.tabGroupConfirmationHandler =
@@ -302,17 +302,17 @@
 }
 
 - (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
-                                    group:(const TabGroup*)tabGroup
+                                    group:
+                                        (base::WeakPtr<const TabGroup>)tabGroup
                          sourceButtonItem:(UIBarButtonItem*)sourceButtonItem {
   _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                       actionType:actionType
                 sourceButtonItem:sourceButtonItem];
-  base::WeakPtr<const TabGroup> weakGroup = tabGroup->GetWeakPtr();
   __weak BaseGridCoordinator* weakSelf = self;
   _tabGroupConfirmationCoordinator.action = ^{
-    [weakSelf takeActionForActionType:actionType weakGroup:weakGroup];
+    [weakSelf takeActionForActionType:actionType weakGroup:tabGroup];
   };
   [_tabGroupConfirmationCoordinator start];
   self.gridViewController.tabGroupConfirmationHandler =

@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -186,10 +187,12 @@ UIContextMenuConfiguration* CreateUIContextMenuConfiguration(
   // Add menu to edit group e.g. rename it, add a new tab to it or ungroup it.
   NSMutableArray<UIMenuElement*>* editGroupMenuElements =
       [[NSMutableArray alloc] init];
+
+  base::WeakPtr<const TabGroup> tabGroup = tabGroupItem.tabGroup->GetWeakPtr();
+
   [editGroupMenuElements
       addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
-        [weakSelf.handler
-            showTabStripGroupEditionForGroup:tabGroupItem.tabGroup];
+        [weakSelf.handler showTabStripGroupEditionForGroup:tabGroup];
       }]];
   [editGroupMenuElements
       addObject:[actionFactory actionToAddNewTabInGroupWithBlock:^{

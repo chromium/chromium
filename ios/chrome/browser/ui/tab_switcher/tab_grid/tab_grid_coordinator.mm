@@ -1473,7 +1473,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   }
 }
 
-- (void)editTabGroup:(const TabGroup*)group incognito:(BOOL)incognito {
+- (void)editTabGroup:(base::WeakPtr<const TabGroup>)group
+           incognito:(BOOL)incognito {
+  if (!group) {
+    return;
+  }
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to edit a tab group outside the Tab Groups "
          "experiment.";
@@ -1484,7 +1488,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   } else {
     coordinator = _regularGridCoordinator;
   }
-  [coordinator showTabGroupEditionForGroup:group];
+  [coordinator showTabGroupEditionForGroup:group.get()];
 }
 
 - (void)closeTabWithIdentifier:(web::WebStateID)identifier
@@ -1497,7 +1501,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.regularTabsMediator closeItemWithID:identifier];
 }
 
-- (void)deleteTabGroup:(const TabGroup*)group
+- (void)deleteTabGroup:(base::WeakPtr<const TabGroup>)group
              incognito:(BOOL)incognito
             sourceView:(UIView*)sourceView {
   CHECK(IsTabGroupInGridEnabled())
@@ -1512,7 +1516,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.regularTabsMediator deleteTabGroup:group sourceView:sourceView];
 }
 
-- (void)closeTabGroup:(const TabGroup*)group incognito:(BOOL)incognito {
+- (void)closeTabGroup:(base::WeakPtr<const TabGroup>)group
+            incognito:(BOOL)incognito {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to close a tab group outside the Tab Groups "
          "experiment.";
@@ -1524,7 +1529,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.regularTabsMediator closeTabGroup:group];
 }
 
-- (void)ungroupTabGroup:(const TabGroup*)group
+- (void)ungroupTabGroup:(base::WeakPtr<const TabGroup>)group
               incognito:(BOOL)incognito
              sourceView:(UIView*)sourceView {
   CHECK(IsTabGroupInGridEnabled())

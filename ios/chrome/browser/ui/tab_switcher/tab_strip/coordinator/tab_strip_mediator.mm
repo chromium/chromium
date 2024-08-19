@@ -312,7 +312,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 }
 
 - (void)ungroupGroup:(TabGroupItem*)tabGroupItem {
-  if (!self.webStateList) {
+  if (!self.webStateList || !tabGroupItem.tabGroup) {
     return;
   }
   base::RecordAction(base::UserMetricsAction("MobileTabStripUngroupTabs"));
@@ -320,7 +320,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 }
 
 - (void)deleteGroup:(TabGroupItem*)tabGroupItem {
-  if (!self.webStateList) {
+  if (!self.webStateList || !tabGroupItem.tabGroup) {
     return;
   }
   base::RecordAction(base::UserMetricsAction("MobileTabStripDeleteGroup"));
@@ -787,7 +787,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     return;
   }
   base::RecordAction(base::UserMetricsAction("MobileTabStripRenameGroup"));
-  [_tabStripHandler showTabStripGroupEditionForGroup:tabGroupItem.tabGroup];
+  [_tabStripHandler
+      showTabStripGroupEditionForGroup:tabGroupItem.tabGroup->GetWeakPtr()];
 }
 
 - (void)addNewTabInGroup:(TabGroupItem*)tabGroupItem {
@@ -830,7 +831,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 }
 
 - (void)closeGroup:(TabGroupItem*)tabGroupItem {
-  if (!self.webStateList) {
+  if (!self.webStateList || !tabGroupItem.tabGroup) {
     return;
   }
 

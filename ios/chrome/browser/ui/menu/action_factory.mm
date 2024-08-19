@@ -645,9 +645,10 @@
       [circleImage imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
   for (const TabGroup* group : groups) {
     NSString* title = group->GetTitle();
+    base::WeakPtr<const TabGroup> weakGroup = group->GetWeakPtr();
     ProceduralBlock actionBlock = ^{
       if (block) {
-        block(group);
+        block(weakGroup.get());
       }
     };
 

@@ -153,12 +153,16 @@
   [_createTabGroupCoordinator start];
 }
 
-- (void)showTabStripGroupEditionForGroup:(const TabGroup*)tabGroup {
+- (void)showTabStripGroupEditionForGroup:
+    (base::WeakPtr<const TabGroup>)tabGroup {
+  if (!tabGroup) {
+    return;
+  }
   [self hideTabStripGroupCreation];
   _createTabGroupCoordinator = [[CreateTabGroupCoordinator alloc]
       initTabGroupEditionWithBaseViewController:self.baseViewController
                                         browser:self.browser
-                                       tabGroup:tabGroup];
+                                       tabGroup:tabGroup.get()];
   _createTabGroupCoordinator.delegate = self;
   [_createTabGroupCoordinator start];
 }
