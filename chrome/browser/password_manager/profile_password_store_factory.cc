@@ -63,19 +63,6 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
   scoped_refptr<PasswordStore> ps;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_OZONE)
-  // Since SyncService has dependency on PasswordStore keyed service, there
-  // are no guarantees that during the construction of the password store
-  // about the sync service existence. And hence we cannot directly query the
-  // status of password syncing. However, status of password syncing is
-  // relevant for migrating passwords from the built-in backend to the Android
-  // backend. Since migration does *not* start immediately after start up,
-  // SyncService will be propagated to PasswordStoreBackend after the backend
-  // creation once SyncService is initialized. Assumption is by the time the
-  // migration starts, the sync service will have been created. As a safety
-  // mechanism, if the sync service isn't created yet, we proceed as if the
-  // user isn't syncing which forces moving the passwords to the Android backend
-  // to avoid data loss.
-
   os_crypt_async::OSCryptAsync* os_crypt_async =
       base::FeatureList::IsEnabled(
           password_manager::features::kUseAsyncOsCryptInLoginDatabase)
