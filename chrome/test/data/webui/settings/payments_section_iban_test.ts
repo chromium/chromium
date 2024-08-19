@@ -11,7 +11,7 @@ import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import type {CrButtonElement} from 'chrome://settings/settings.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
 import type {TestPaymentsManager} from './autofill_fake_data.js';
 import {createIbanEntry} from './autofill_fake_data.js';
@@ -24,12 +24,21 @@ import {createPaymentsSection, getDefaultExpectations} from './payments_section_
  */
 async function updateIbanTextboxValue(
     valueInput: CrInputElement, value: string): Promise<void> {
+  valueInput.focus();
   valueInput.value = value;
   await valueInput.updateComplete;
   valueInput.dispatchEvent(
       new CustomEvent('input', {bubbles: true, composed: true}));
 }
 
+/**
+ * Helper function to wait for IBAN validation to complete and any associated UI
+ * to be updated.
+ */
+async function ibanValidated(paymentsManager: TestPaymentsManager) {
+  await paymentsManager.whenCalled('isValidIban');
+  await microtasksFinished();
+}
 
 suite('PaymentsSectionIban', function() {
   setup(function() {
@@ -171,6 +180,63 @@ suite('PaymentsSectionIban', function() {
     expectations.isValidIban = 2;
     expectations.listeningCreditCards = 0;
     paymentsManager.assertExpectations(expectations);
+  });
+
+  test('verifyIBANErrorMessage', async function() {
+    // All IBANs in this test are invalid, but since we're using
+    // TestPaymentsManager we have to set that explicitly.
+    const paymentsManager =
+        PaymentsManagerImpl.getInstance() as TestPaymentsManager;
+    paymentsManager.setIsValidIban(false);
+
+    // Creates an IBAN with empty value and nickname.
+    const iban = createIbanEntry('', '');
+    const ibanDialog = createIbanDialog(iban);
+
+    await whenAttributeIs(ibanDialog.$.dialog, 'open', '');
+
+    // With an empty IBAN, the save button should be disabled but no error
+    // should be shown.
+    const saveButton = ibanDialog.$.saveButton;
+    assertTrue(!!saveButton, 'Save button should be disabled for empty IBAN');
+    const valueInput = ibanDialog.$.valueInput;
+    assertFalse(
+        valueInput.invalid, 'No error message should be shown for empty IBAN');
+
+    // This invalid IBAN is of sufficient length that an error should be shown.
+    await updateIbanTextboxValue(valueInput, 'IT60X0542811101000000123450');
+    await ibanValidated(paymentsManager);
+
+    assertTrue(
+        !!saveButton,
+        'Save button should be disabled for invalid IBAN >= 24 characters ' +
+            'in length');
+    assertTrue(
+        valueInput.invalid,
+        'Error message should be shown for invalid IBAN >= 24 characters ' +
+            'in length');
+
+    // This invalid IBAN is less than 24 characters. The save button should
+    // remain disabled, but no error should be shown.
+    await updateIbanTextboxValue(valueInput, 'FI1410093000123458');
+    await ibanValidated(paymentsManager);
+
+    assertTrue(
+        !!saveButton,
+        'Save button should be disabled for shorter invalid IBAN');
+    assertFalse(
+        valueInput.invalid,
+        'No error message should be shown for shorter invalid IBAN while ' +
+            'editing');
+
+    // Now un-focus the field - this should trigger the error to show.
+    valueInput.blur();
+    await ibanValidated(paymentsManager);
+
+    assertTrue(
+        valueInput.invalid,
+        'After unfocusing, an error message should be shown for shorter ' +
+            'invalid IBAN');
   });
 
   test('verifyIbanEntryIsNotEditedAfterCancel', async function() {

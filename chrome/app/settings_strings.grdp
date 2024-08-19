@@ -673,6 +673,9 @@
   <message name="IDS_SETTINGS_IBAN_SAVED_TO_THIS_DEVICE_ONLY" desc="Shown in the payments section of settings. Descriptive text to inform the user that this IBAN (International Bank Account Number) will be saved to local device only.">
    This IBAN will be saved to this device only
   </message>
+  <message name="IDS_SETTINGS_IBAN_INVALID_VALIDATION_MESSAGE" desc="The text that informs the user that the IBAN (International Bank Account Number) they have entered is not valid.">
+    IBAN is invalid
+  </message>
   <message name="IDS_IBAN_NICKNAME" desc="Label for the field containing the nickname of the IBAN (International Bank Account Number) to be saved.">
     Nickname
   </message>

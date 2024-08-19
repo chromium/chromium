@@ -35,7 +35,9 @@
   <div slot="title">[[title_]]</div>
   <div slot="body">
     <cr-input id="valueInput" label="$i18n{addPaymentMethodIban}"
-        on-input="updateSaveIbanButtonEnablement_"
+        on-blur="onIbanInputBlurred_"
+        invalid="[[showErrorForIban_(ibanValidationState_)]]"
+        error-message="$i18n{ibanInvalid}"
         value="{{value_}}" autofocus>
     </cr-input>
     <cr-input id="nicknameInput" label="$i18n{ibanNickname}"
