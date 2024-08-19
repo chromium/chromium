@@ -161,6 +161,7 @@ source_set("browser_tests") {
     "//ui/gfx:test_support",
     "//ui/views",
     "//ui/wm/public",
+    "//ui/wm/public:test_support",
   ]
 }
 

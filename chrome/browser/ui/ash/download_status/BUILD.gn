@@ -103,5 +103,6 @@ source_set("browser_tests") {
     "//ui/message_center",
     "//ui/message_center/public/cpp",
     "//ui/views",
+    "//ui/wm/public:test_support",
   ]
 }

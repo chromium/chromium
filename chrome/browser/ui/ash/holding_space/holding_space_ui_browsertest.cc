@@ -65,7 +65,6 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_test_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
-#include "chrome/browser/ui/ash/mock_activation_change_observer.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -102,6 +101,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/public/activation_client.h"
+#include "ui/wm/public/mock_activation_change_observer.h"
 
 namespace ash {
 namespace {

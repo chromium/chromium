@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_MOCK_ACTIVATION_CHANGE_OBSERVER_H_
-#define CHROME_BROWSER_UI_ASH_MOCK_ACTIVATION_CHANGE_OBSERVER_H_
+#ifndef UI_WM_PUBLIC_MOCK_ACTIVATION_CHANGE_OBSERVER_H_
+#define UI_WM_PUBLIC_MOCK_ACTIVATION_CHANGE_OBSERVER_H_
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -11,8 +11,6 @@
 namespace aura {
 class Window;
 }  // namespace aura
-
-namespace ash {
 
 // A mock activation change observer for testing.
 class MockActivationChangeObserver : public wm::ActivationChangeObserver {
@@ -41,6 +39,4 @@ class MockActivationChangeObserver : public wm::ActivationChangeObserver {
               (override));
 };
 
-}  // namespace ash
-
-#endif  // CHROME_BROWSER_UI_ASH_MOCK_ACTIVATION_CHANGE_OBSERVER_H_
+#endif  // UI_WM_PUBLIC_MOCK_ACTIVATION_CHANGE_OBSERVER_H_

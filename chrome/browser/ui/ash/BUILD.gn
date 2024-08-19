@@ -339,8 +339,6 @@ static_library("test_support") {
   sources = [
     "clipboard_history_test_util.cc",
     "clipboard_history_test_util.h",
-    "mock_activation_change_observer.cc",
-    "mock_activation_change_observer.h",
     "test_login_screen.cc",
     "test_login_screen.h",
     "test_login_screen_model.cc",
