@@ -641,6 +641,29 @@ bool ShouldSuppressSuggestions(SuppressReason suppress_reason,
   }
 }
 
+void MaybeAddAddressSuggestionStrikes(AutofillClient& client,
+                                      const FormStructure& form) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  for (const auto& field : form) {
+    if (field->autocomplete_attribute() == "off" &&
+        field->did_trigger_suggestions() && !field->is_autofilled() &&
+        !field->previously_autofilled() &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillSuggestionNStrikeModel)) {
+      // This means that the user triggered suggestions and ignored them. In
+      // that case we record a strike for this specific field. Multiple strikes
+      // will lead to automatic address suggestions to be suppressed.
+      // Currently, this is only done for autocomplete=off fields.
+      client.GetPersonalDataManager()
+          ->address_data_manager()
+          .AddStrikeToBlockAddressSuggestions(form.form_signature(),
+                                              field->GetFieldSignature(),
+                                              form.source_url());
+    }
+  }
+#endif
+}
+
 }  // namespace
 
 BrowserAutofillManager::MetricsState::MetricsState(
@@ -841,156 +864,34 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   // Always let the value patterns metric upload data.
   LogValuePatternsMetric(form);
 
-  // Note that `ValidateSubmittedForm()` returns nullptr in incognito mode.
-  // Consequently, in incognito mode Autofill doesn't:
-  // - Import
-  // - Vote
-  // - Collect any key metrics (since they are conditioned form submission - see
-  //  `FormEventLoggerBase::OnWillSubmitForm()`)
-  // - Collect profile token quality observations
   std::unique_ptr<FormStructure> submitted_form = ValidateSubmittedForm(form);
   CHECK(!client().IsOffTheRecord() || !submitted_form);
+  MaybeImportFromSubmittedForm(form, submitted_form.get());
   if (!submitted_form) {
-    // We always give Autocomplete a chance to save the data.
-    // TODO(crbug.com/40276862): Verify frequency of plus address (or the other
-    // type(s) checked for below, for that matter) slipping through in this code
-    // path.
-    single_field_form_fill_router_->OnWillSubmitForm(
-        form, submitted_form.get(), client().IsAutocompleteEnabled());
     return;
   }
-
-  metrics_->form_submitted_timestamp = form_submitted_timestamp;
-
-  // Log metrics about the autocomplete attribute usage in the submitted form.
-  LogAutocompletePredictionCollisionTypeMetrics(*submitted_form);
-
-  // Log interaction time metrics for the ablation study.
-  if (!metrics_->initial_interaction_timestamp.is_null()) {
-    base::TimeDelta time_from_interaction_to_submission =
-        base::TimeTicks::Now() - metrics_->initial_interaction_timestamp;
-    DenseSet<FormType> form_types = submitted_form->GetFormTypes();
-    bool card_form = base::Contains(form_types, FormType::kCreditCardForm);
-    bool address_form = base::Contains(form_types, FormType::kAddressForm);
-    if (card_form) {
-      metrics_->credit_card_form_event_logger
-          .SetTimeFromInteractionToSubmission(
-              time_from_interaction_to_submission);
-    }
-    if (address_form) {
-      metrics_->address_form_event_logger.SetTimeFromInteractionToSubmission(
-          time_from_interaction_to_submission);
-    }
-  }
-
-  AutofillPlusAddressDelegate* plus_address_delegate =
-      client().GetPlusAddressDelegate();
-
-  std::vector<FormFieldData> fields_for_autocomplete;
-  fields_for_autocomplete.reserve(submitted_form->fields().size());
-  for (const auto& autofill_field : submitted_form->fields()) {
-    fields_for_autocomplete.push_back(*autofill_field);
-    if (autofill_field->Type().GetStorableType() ==
-        CREDIT_CARD_VERIFICATION_CODE) {
-      // However, if Autofill has recognized a field as CVC, that shouldn't be
-      // saved.
-      fields_for_autocomplete.back().set_should_autocomplete(false);
-    }
-    if (plus_address_delegate &&
-        plus_address_delegate->IsPlusAddress(
-            base::UTF16ToUTF8(autofill_field->value()))) {
-      // Similarly to CVC, any plus addresses needn't be saved to autocomplete.
-      // Note that the feature is experimental, and `plus_address_delegate`
-      // will be null if the feature is not enabled (it's disabled by default).
-      fields_for_autocomplete.back().set_should_autocomplete(false);
-    }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    if (autofill_field->autocomplete_attribute() == "off" &&
-        autofill_field->did_trigger_suggestions() &&
-        !autofill_field->is_autofilled() &&
-        !autofill_field->previously_autofilled() &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillSuggestionNStrikeModel)) {
-      // This means that the user triggered suggestions and ignored them. In
-      // that case we record a strike for this specific field. Multiple strikes
-      // will lead to automatic address suggestions to be suppressed.
-      // Currently, this is only done for autocomplete=off fields.
-      client()
-          .GetPersonalDataManager()
-          ->address_data_manager()
-          .AddStrikeToBlockAddressSuggestions(
-              submitted_form->form_signature(),
-              autofill_field->GetFieldSignature(),
-              submitted_form->source_url());
-    }
-#endif
-  }
-
-  // TODO crbug.com/40100455 - Eliminate `form_for_autocomplete`.
-  FormData form_for_autocomplete = submitted_form->ToFormData();
-  form_for_autocomplete.set_fields(std::move(fields_for_autocomplete));
-  single_field_form_fill_router_->OnWillSubmitForm(
-      form_for_autocomplete, submitted_form.get(),
-      client().IsAutocompleteEnabled());
-
-  if (IsAutofillProfileEnabled()) {
-    metrics_->address_form_event_logger.OnWillSubmitForm(*submitted_form);
-  }
-  if (IsAutofillPaymentMethodsEnabled()) {
-    metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
-        metrics_->signin_state_for_metrics);
-    metrics_->credit_card_form_event_logger.OnWillSubmitForm(*submitted_form);
-  }
-
   submitted_form->set_submission_source(source);
-
-  // Update Personal Data with the form's submitted data.
-  // Also triggers offering local/upload credit card save, if applicable.
   if (submitted_form->IsAutofillable()) {
-    FormDataImporter* form_data_importer = client().GetFormDataImporter();
-    form_data_importer->ImportAndProcessFormData(
-        *submitted_form, IsAutofillProfileEnabled(),
-        IsAutofillPaymentMethodsEnabled());
     // Associate the form signatures of recently submitted address/credit card
     // forms to `submitted_form`, if it is an address/credit card form itself.
     // This information is attached to the vote.
     if (base::FeatureList::IsEnabled(features::kAutofillAssociateForms)) {
       if (std::optional<FormStructure::FormAssociations> associations =
-              form_data_importer->GetFormAssociations(
+              client().GetFormDataImporter()->GetFormAssociations(
                   submitted_form->form_signature())) {
         submitted_form->set_form_associations(*associations);
       }
     }
   }
 
-  MaybeStartVoteUploadProcess(std::move(submitted_form),
-                              /*observed_submission=*/true);
-
-  // TODO(crbug.com/41365645): Add FormStructure::Clone() method.
-  // Create another FormStructure instance.
-  submitted_form = ValidateSubmittedForm(form);
-  DCHECK(submitted_form);
-  if (!submitted_form) {
-    return;
-  }
-
-  submitted_form->set_submission_source(source);
-
-  if (IsAutofillProfileEnabled()) {
-    metrics_->address_form_event_logger.OnFormSubmitted(*submitted_form);
-  }
-  if (IsAutofillPaymentMethodsEnabled()) {
-    metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
-        metrics_->signin_state_for_metrics);
-    metrics_->credit_card_form_event_logger.OnFormSubmitted(*submitted_form);
-    if (touch_to_fill_delegate_) {
-      touch_to_fill_delegate_->LogMetricsAfterSubmission(*submitted_form);
-    }
-  }
+  LogSubmissionMetrics(submitted_form.get(), form_submitted_timestamp);
 
   ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
       *submitted_form, form, *client().GetPersonalDataManager());
+
+  MaybeAddAddressSuggestionStrikes(client(), *submitted_form);
+  MaybeStartVoteUploadProcess(std::move(submitted_form),
+                              /*observed_submission=*/true);
 }
 
 bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
@@ -1119,6 +1020,103 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
 
   MaybeStartVoteUploadProcess(std::move(upload_form),
                               /*observed_submission=*/false);
+}
+
+void BrowserAutofillManager::MaybeImportFromSubmittedForm(
+    const FormData& form,
+    const FormStructure* const form_structure) {
+  if (!form_structure) {
+    // We always give Autocomplete a chance to save the data.
+    // TODO(crbug.com/40276862): Verify frequency of plus address (or the other
+    // type(s) checked for below, for that matter) slipping through in this code
+    // path.
+    single_field_form_fill_router_->OnWillSubmitForm(
+        form, nullptr, client().IsAutocompleteEnabled());
+    return;
+  }
+  if (form_structure->IsAutofillable()) {
+    // Update Personal Data with the form's submitted data.
+    client().GetFormDataImporter()->ImportAndProcessFormData(
+        *form_structure, IsAutofillProfileEnabled(),
+        IsAutofillPaymentMethodsEnabled());
+  }
+
+  AutofillPlusAddressDelegate* plus_address_delegate =
+      client().GetPlusAddressDelegate();
+
+  std::vector<FormFieldData> fields_for_autocomplete;
+  fields_for_autocomplete.reserve(form.fields().size());
+  for (const auto& autofill_field : *form_structure) {
+    fields_for_autocomplete.push_back(*autofill_field);
+    if (autofill_field->Type().GetStorableType() ==
+        CREDIT_CARD_VERIFICATION_CODE) {
+      // However, if Autofill has recognized a field as CVC, that shouldn't be
+      // saved.
+      fields_for_autocomplete.back().set_should_autocomplete(false);
+    }
+    if (plus_address_delegate &&
+        plus_address_delegate->IsPlusAddress(
+            base::UTF16ToUTF8(autofill_field->value()))) {
+      // Similarly to CVC, any plus addresses needn't be saved to autocomplete.
+      // Note that the feature is experimental, and `plus_address_delegate`
+      // will be null if the feature is not enabled (it's disabled by default).
+      fields_for_autocomplete.back().set_should_autocomplete(false);
+    }
+  }
+
+  // TODO crbug.com/40100455 - Eliminate `form_for_autocomplete`.
+  FormData form_for_autocomplete = form_structure->ToFormData();
+  form_for_autocomplete.set_fields(std::move(fields_for_autocomplete));
+  single_field_form_fill_router_->OnWillSubmitForm(
+      form_for_autocomplete, form_structure, client().IsAutocompleteEnabled());
+}
+
+void BrowserAutofillManager::LogSubmissionMetrics(
+    const FormStructure* submitted_form,
+    const base::TimeTicks& form_submitted_timestamp) {
+  metrics_->form_submitted_timestamp = form_submitted_timestamp;
+
+  // Log metrics about the autocomplete attribute usage in the submitted form.
+  LogAutocompletePredictionCollisionTypeMetrics(*submitted_form);
+
+  // Log interaction time metrics for the ablation study.
+  if (!metrics_->initial_interaction_timestamp.is_null()) {
+    base::TimeDelta time_from_interaction_to_submission =
+        base::TimeTicks::Now() - metrics_->initial_interaction_timestamp;
+    DenseSet<FormType> form_types = submitted_form->GetFormTypes();
+    bool card_form = base::Contains(form_types, FormType::kCreditCardForm);
+    bool address_form = base::Contains(form_types, FormType::kAddressForm);
+    if (card_form) {
+      metrics_->credit_card_form_event_logger
+          .SetTimeFromInteractionToSubmission(
+              time_from_interaction_to_submission);
+    }
+    if (address_form) {
+      metrics_->address_form_event_logger.SetTimeFromInteractionToSubmission(
+          time_from_interaction_to_submission);
+    }
+  }
+
+  if (IsAutofillProfileEnabled()) {
+    metrics_->address_form_event_logger.OnWillSubmitForm(*submitted_form);
+  }
+  if (IsAutofillPaymentMethodsEnabled()) {
+    metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
+        metrics_->signin_state_for_metrics);
+    metrics_->credit_card_form_event_logger.OnWillSubmitForm(*submitted_form);
+  }
+
+  if (IsAutofillProfileEnabled()) {
+    metrics_->address_form_event_logger.OnFormSubmitted(*submitted_form);
+  }
+  if (IsAutofillPaymentMethodsEnabled()) {
+    metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
+        metrics_->signin_state_for_metrics);
+    metrics_->credit_card_form_event_logger.OnFormSubmitted(*submitted_form);
+    if (touch_to_fill_delegate_) {
+      touch_to_fill_delegate_->LogMetricsAfterSubmission(*submitted_form);
+    }
+  }
 }
 
 void BrowserAutofillManager::OnTextFieldDidChangeImpl(
