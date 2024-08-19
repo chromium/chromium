@@ -9,7 +9,7 @@ desc: |-
 
          Setting the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy accepts the following fields:
            * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD">ProxyMode</ph>, which lets you specify the proxy server Chrome uses and prevents users from changing proxy settings
-           * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD">ProxyPacUrl</ph>, a URL to a proxy .pac file
+           * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD">ProxyPacUrl</ph>, a URL to a proxy .pac file, or a PAC script encoded as a data URL with MIME type application/x-ns-proxy-autoconfig
            * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD">ProxyPacMandatory</ph>, which prevents the network stack from falling back to direct connections with invalid or unavailable PAC script
            * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD">ProxyServer</ph>, a URL of the proxy server
            * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD">ProxyBypassList</ph>, a list of hosts for which the proxy will be bypassed
