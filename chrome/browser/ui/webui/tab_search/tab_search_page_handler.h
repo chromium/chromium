@@ -79,6 +79,8 @@ class TabSearchPageHandler
   void GetProfileData(GetProfileDataCallback callback) override;
   void GetTabOrganizationSession(
       GetTabOrganizationSessionCallback callback) override;
+  void GetTabOrganizationModelStrategy(
+      GetTabOrganizationModelStrategyCallback callback) override;
   void SwitchToTab(
       tab_search::mojom::SwitchToTabInfoPtr switch_to_tab_info) override;
   void OpenRecentlyClosedEntry(int32_t session_id) override;
@@ -94,6 +96,8 @@ class TabSearchPageHandler
   void TriggerFeedback(int32_t session_id) override;
   void TriggerSignIn() override;
   void OpenHelpPage() override;
+  void SetTabOrganizationModelStrategy(
+      tab_search::mojom::TabOrganizationModelStrategy strategy) override;
   void SetUserFeedback(int32_t session_id,
                        int32_t organization_id,
                        tab_search::mojom::UserFeedback feedback) override;

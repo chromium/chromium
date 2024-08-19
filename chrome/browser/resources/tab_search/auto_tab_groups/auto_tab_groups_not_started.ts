@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
+import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import '../strings.m.js';
 import './auto_tab_groups_not_started_image.js';
 
@@ -10,10 +12,12 @@ import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_liste
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './auto_tab_groups_not_started.css.js';
-import {getHtml} from './auto_tab_groups_not_started.html.js';
+import {TabOrganizationModelStrategy} from '../tab_search.mojom-webui.js';
 import type {TabSearchSyncBrowserProxy} from '../tab_search_sync_browser_proxy.js';
 import {TabSearchSyncBrowserProxyImpl} from '../tab_search_sync_browser_proxy.js';
+
+import {getCss} from './auto_tab_groups_not_started.css.js';
+import {getHtml} from './auto_tab_groups_not_started.html.js';
 
 const AutoTabGroupsNotStartedElementBase = WebUiListenerMixinLit(CrLitElement);
 
@@ -33,12 +37,18 @@ export class AutoTabGroupsNotStartedElement extends
   static override get properties() {
     return {
       showFre: {type: Boolean},
+      modelStrategy: {type: Number},
       signedIn_: {type: Boolean},
+      tabOrganizationModelStrategyEnabled_: {type: Boolean},
     };
   }
 
   showFre: boolean = false;
+  modelStrategy: TabOrganizationModelStrategy =
+      TabOrganizationModelStrategy.kTopic;
 
+  protected tabOrganizationModelStrategyEnabled_: boolean =
+      loadTimeData.getBoolean('tabOrganizationModelStrategyEnabled');
   private signedIn_: boolean = false;
   private syncBrowserProxy_: TabSearchSyncBrowserProxy =
       TabSearchSyncBrowserProxyImpl.getInstance();
@@ -112,6 +122,14 @@ export class AutoTabGroupsNotStartedElement extends
 
   protected onLearnMoreClick_() {
     this.fire('learn-more-click');
+  }
+
+  protected onModelStrategyChange_(
+      e: CustomEvent<{value: TabOrganizationModelStrategy}>) {
+    const modelStrategy = e.detail.value;
+    if (Number(modelStrategy) !== Number(this.modelStrategy)) {
+      this.fire('model-strategy-change', {value: modelStrategy});
+    }
   }
 }
 

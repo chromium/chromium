@@ -19,6 +19,8 @@ extern const char kTabSearchTabIndex[];
 
 extern const char kTabOrganizationShowFRE[];
 
+extern const char kTabOrganizationModelStrategy[];
+
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 }  // namespace tab_search_prefs

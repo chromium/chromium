@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {PageRemote, ProfileData, SwitchToTabInfo, Tab, TabOrganizationSession, TabSearchApiProxy, UserFeedback} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {PageCallbackRouter} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {PageCallbackRouter, TabOrganizationModelStrategy} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestTabSearchApiProxy extends TestBrowserProxy implements
@@ -20,6 +20,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'rejectTabOrganization',
       'getProfileData',
       'getTabOrganizationSession',
+      'getTabOrganizationModelStrategy',
       'openRecentlyClosedEntry',
       'requestTabOrganization',
       'removeTabFromOrganization',
@@ -32,6 +33,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'triggerFeedback',
       'triggerSignIn',
       'openHelpPage',
+      'setTabOrganizationModelStrategy',
       'setUserFeedback',
       'notifyOrganizationUiReadyToShow',
       'notifySearchUiReadyToShow',
@@ -65,6 +67,11 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
   getTabOrganizationSession() {
     this.methodCalled('getTabOrganizationSession');
     return Promise.resolve({session: this.tabOrganizationSession_!});
+  }
+
+  getTabOrganizationModelStrategy() {
+    this.methodCalled('getTabOrganizationModelStrategy');
+    return Promise.resolve({strategy: TabOrganizationModelStrategy.kTopic});
   }
 
   openRecentlyClosedEntry(
@@ -118,6 +125,10 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
 
   openHelpPage() {
     this.methodCalled('openHelpPage');
+  }
+
+  setTabOrganizationModelStrategy(strategy: TabOrganizationModelStrategy) {
+    this.methodCalled('setTabOrganizationModelStrategy', [strategy]);
   }
 
   setUserFeedback(feedback: UserFeedback) {

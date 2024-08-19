@@ -13,6 +13,8 @@ export function getHtml(this: AutoTabGroupsPageElement) {
   <div id="body">
     <auto-tab-groups-not-started id="notStarted"
         ?shown="${this.isState_(TabOrganizationState.kNotStarted)}"
+        model-strategy="${this.modelStrategy_}"
+        @model-strategy-change="${this.onModelStrategyChange_}"
         @sign-in-click="${this.onSignInClick_}"
         @organize-tabs-click="${this.onOrganizeTabsClick_}"
         @learn-more-click="${this.onLearnMoreClick_}"

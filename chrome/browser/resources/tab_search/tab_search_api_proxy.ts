@@ -4,7 +4,7 @@
 
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 
-import type {ProfileData, SwitchToTabInfo, Tab, TabOrganizationSession, UserFeedback} from './tab_search.mojom-webui.js';
+import type {ProfileData, SwitchToTabInfo, Tab, TabOrganizationModelStrategy, TabOrganizationSession, UserFeedback} from './tab_search.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './tab_search.mojom-webui.js';
 
 /**
@@ -28,6 +28,9 @@ export interface TabSearchApiProxy {
   getProfileData(): Promise<{profileData: ProfileData}>;
 
   getTabOrganizationSession(): Promise<{session: TabOrganizationSession}>;
+
+  getTabOrganizationModelStrategy():
+      Promise<{strategy: TabOrganizationModelStrategy}>;
 
   openRecentlyClosedEntry(
       id: number, withSearch: boolean, isTab: boolean, index: number): void;
@@ -56,6 +59,8 @@ export interface TabSearchApiProxy {
   triggerSignIn(): void;
 
   openHelpPage(): void;
+
+  setTabOrganizationModelStrategy(strategy: TabOrganizationModelStrategy): void;
 
   setUserFeedback(
       sessionId: number, organizationId: number, feedback: UserFeedback): void;
@@ -96,6 +101,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   getTabOrganizationSession() {
     return this.handler.getTabOrganizationSession();
+  }
+
+  getTabOrganizationModelStrategy() {
+    return this.handler.getTabOrganizationModelStrategy();
   }
 
   openRecentlyClosedEntry(
@@ -161,6 +170,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   openHelpPage() {
     this.handler.openHelpPage();
+  }
+
+  setTabOrganizationModelStrategy(strategy: TabOrganizationModelStrategy) {
+    this.handler.setTabOrganizationModelStrategy(strategy);
   }
 
   setUserFeedback(

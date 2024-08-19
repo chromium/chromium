@@ -327,6 +327,10 @@ BASE_FEATURE(kTabReorganizationDivider,
              "TabReorganizationDivider",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabOrganizationModelStrategy,
+             "TabOrganizationModelStrategy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<base::TimeDelta> kTabOrganizationTriggerPeriod{
     &kTabOrganization, "trigger_period", base::Hours(6)};
 

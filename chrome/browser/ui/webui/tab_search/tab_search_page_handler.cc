@@ -390,6 +390,17 @@ TabSearchPageHandler::GetTabDetails(int32_t tab_id) {
   return std::nullopt;
 }
 
+void TabSearchPageHandler::GetTabOrganizationModelStrategy(
+    GetTabOrganizationModelStrategyCallback callback) {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  const int32_t strategy_int = profile->GetPrefs()->GetInteger(
+      tab_search_prefs::kTabOrganizationModelStrategy);
+  const auto strategy =
+      static_cast<tab_search::mojom::TabOrganizationModelStrategy>(
+          strategy_int);
+  std::move(callback).Run(std::move(strategy));
+}
+
 void TabSearchPageHandler::SwitchToTab(
     tab_search::mojom::SwitchToTabInfoPtr switch_to_tab_info) {
   std::optional<TabDetails> optional_details =
@@ -628,6 +639,15 @@ void TabSearchPageHandler::OpenHelpPage() {
                         ui::PageTransition::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
+}
+
+void TabSearchPageHandler::SetTabOrganizationModelStrategy(
+    tab_search::mojom::TabOrganizationModelStrategy strategy) {
+  const auto strategy_int = static_cast<int32_t>(strategy);
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  profile->GetPrefs()->SetInteger(
+      tab_search_prefs::kTabOrganizationModelStrategy, strategy_int);
+  page_->TabOrganizationModelStrategyUpdated(std::move(strategy));
 }
 
 void TabSearchPageHandler::SetUserFeedback(

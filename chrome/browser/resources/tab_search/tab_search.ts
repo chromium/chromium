@@ -12,7 +12,7 @@ export {InfiniteList} from './infinite_list.js';
 export {search, SearchOptions} from './search.js';
 export {getHostname, getTabGroupTitle, getTitle, ItemData, TabData, TabItemType} from './tab_data.js';
 export {Color as TabGroupColor} from './tab_group_types.mojom-webui.js';
-export {PageCallbackRouter, PageRemote, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, SwitchToTabInfo, Tab, TabGroup, TabOrganizationError, TabOrganizationSession, TabOrganizationState, TabsRemovedInfo, TabUpdateInfo, UserFeedback, Window} from './tab_search.mojom-webui.js';
+export {PageCallbackRouter, PageRemote, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, SwitchToTabInfo, Tab, TabGroup, TabOrganizationError, TabOrganizationModelStrategy, TabOrganizationSession, TabOrganizationState, TabsRemovedInfo, TabUpdateInfo, UserFeedback, Window} from './tab_search.mojom-webui.js';
 export {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 export {TabSearchGroupItemElement} from './tab_search_group_item.js';
 export {TabSearchItemElement} from './tab_search_item.js';

@@ -175,6 +175,9 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   source->AddBoolean(
       "tabReorganizationDividerEnabled",
       base::FeatureList::IsEnabled(features::kTabReorganizationDivider));
+  source->AddBoolean(
+      "tabOrganizationModelStrategyEnabled",
+      base::FeatureList::IsEnabled(features::kTabOrganizationModelStrategy));
 
   source->AddInteger("tabIndex", TabIndex());
   source->AddBoolean("showTabOrganizationFRE", ShowTabOrganizationFRE());

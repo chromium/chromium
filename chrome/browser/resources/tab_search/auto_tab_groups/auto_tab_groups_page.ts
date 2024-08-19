@@ -15,16 +15,17 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import type {Tab, TabOrganization, TabOrganizationSession} from '../tab_search.mojom-webui.js';
+import {TabOrganizationError, TabOrganizationModelStrategy, TabOrganizationState, UserFeedback} from '../tab_search.mojom-webui.js';
+import type {TabSearchApiProxy} from '../tab_search_api_proxy.js';
+import {TabSearchApiProxyImpl} from '../tab_search_api_proxy.js';
+
 import type {AutoTabGroupsFailureElement} from './auto_tab_groups_failure.js';
 import type {AutoTabGroupsInProgressElement} from './auto_tab_groups_in_progress.js';
 import type {AutoTabGroupsNotStartedElement} from './auto_tab_groups_not_started.js';
 import {getCss} from './auto_tab_groups_page.css.js';
 import {getHtml} from './auto_tab_groups_page.html.js';
 import type {AutoTabGroupsResultsElement} from './auto_tab_groups_results.js';
-import type {Tab, TabOrganization, TabOrganizationSession} from '../tab_search.mojom-webui.js';
-import {TabOrganizationError, TabOrganizationState, UserFeedback} from '../tab_search.mojom-webui.js';
-import type {TabSearchApiProxy} from '../tab_search_api_proxy.js';
-import {TabSearchApiProxyImpl} from '../tab_search_api_proxy.js';
 
 const MIN_LOADING_ANIMATION_MS: number = 500;
 
@@ -49,6 +50,7 @@ export class AutoTabGroupsPageElement extends CrLitElement {
       availableHeight_: {type: Number},
       showFRE_: {type: Boolean},
       multiTabOrganization_: {type: Boolean},
+      modelStrategy_: {type: Number, notify: true},
     };
   }
 
@@ -61,6 +63,8 @@ export class AutoTabGroupsPageElement extends CrLitElement {
       loadTimeData.getBoolean('showTabOrganizationFRE');
   protected multiTabOrganization_: boolean =
       loadTimeData.getBoolean('multiTabOrganizationEnabled');
+  protected modelStrategy_: TabOrganizationModelStrategy =
+      TabOrganizationModelStrategy.kTopic;
   private documentVisibilityChangedListener_: () => void;
   private futureState_: TabOrganizationState|null = null;
 
@@ -85,10 +89,15 @@ export class AutoTabGroupsPageElement extends CrLitElement {
     super.connectedCallback();
     this.apiProxy_.getTabOrganizationSession().then(
         ({session}) => this.setSession_(session));
+    this.apiProxy_.getTabOrganizationModelStrategy().then(
+        ({strategy}) => this.setModelStrategy_(strategy));
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_.push(
         callbackRouter.tabOrganizationSessionUpdated.addListener(
             this.setSession_.bind(this)));
+    this.listenerIds_.push(
+        callbackRouter.tabOrganizationModelStrategyUpdated.addListener(
+            this.setModelStrategy_.bind(this)));
     this.listenerIds_.push(
         callbackRouter.showFREChanged.addListener(this.setShowFre_.bind(this)));
     if (document.visibilityState === 'visible') {
@@ -155,6 +164,10 @@ export class AutoTabGroupsPageElement extends CrLitElement {
   private setSession_(session: TabOrganizationSession) {
     this.session_ = session;
     this.maybeSetState_(session.state);
+  }
+
+  private setModelStrategy_(modelStrategy: TabOrganizationModelStrategy) {
+    this.modelStrategy_ = modelStrategy;
   }
 
   private maybeSetState_(state: TabOrganizationState) {
@@ -308,6 +321,11 @@ export class AutoTabGroupsPageElement extends CrLitElement {
       // Show feedback dialog
       this.apiProxy_.triggerFeedback(this.session_.sessionId);
     }
+  }
+
+  protected onModelStrategyChange_(
+      event: CustomEvent<{value: TabOrganizationModelStrategy}>) {
+    this.apiProxy_.setTabOrganizationModelStrategy(event.detail.value);
   }
 
   protected getSessionError_(): TabOrganizationError {

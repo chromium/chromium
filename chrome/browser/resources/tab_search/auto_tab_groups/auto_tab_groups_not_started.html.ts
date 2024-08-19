@@ -4,6 +4,8 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {TabOrganizationModelStrategy} from '../tab_search.mojom-webui.js';
+
 import type {AutoTabGroupsNotStartedElement} from './auto_tab_groups_not_started.js';
 
 export function getHtml(this: AutoTabGroupsNotStartedElement) {
@@ -50,6 +52,22 @@ export function getHtml(this: AutoTabGroupsNotStartedElement) {
       ` : ''}
     </div>
   </div>
+  ${this.tabOrganizationModelStrategyEnabled_ ? html`
+    <div class="auto-tab-groups-header">Update model strategy preference</div>
+    <cr-radio-group
+        selected="${this.modelStrategy}"
+        @selected-changed="${this.onModelStrategyChange_}">
+      <cr-radio-button
+          name="${TabOrganizationModelStrategy.kTopic}"
+          label="Topic/Theme"></cr-radio-button>
+      <cr-radio-button
+          name="${TabOrganizationModelStrategy.kTask}"
+          label="Task"></cr-radio-button>
+      <cr-radio-button
+          name="${TabOrganizationModelStrategy.kDomain}"
+          label="Domain/Subdomain"></cr-radio-button>
+    </cr-radio-group>
+  ` : ''}
   <cr-button class="action-button"
       aria-label="${this.getActionButtonAriaLabel_()}"
       @click="${this.onButtonClick_}">

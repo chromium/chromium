@@ -25,6 +25,12 @@ enum TabOrganizationError {
   kGeneric,
 };
 
+enum TabOrganizationModelStrategy {
+  kTopic,
+  kTask,
+  kDomain,
+};
+
 //TODO(b/311697865) move this to a common location.
 enum UserFeedback {
   kUserFeedBackUnspecified,
@@ -220,6 +226,9 @@ interface PageHandler {
   // Get the current tab organization session info.
   GetTabOrganizationSession() => (TabOrganizationSession session);
 
+  // Get the current tab organization model strategy.
+  GetTabOrganizationModelStrategy() => (TabOrganizationModelStrategy strategy);
+
   // Switch to a specific tab.
   SwitchToTab(SwitchToTabInfo switch_to_tab_info);
 
@@ -258,6 +267,9 @@ interface PageHandler {
   // Open the help page associated with tab organization.
   OpenHelpPage();
 
+  // Store the tab organization model strategy supplied by the user.
+  SetTabOrganizationModelStrategy(TabOrganizationModelStrategy strategy);
+
   // Store the user feedback supplied by the user.
   SetUserFeedback(int32 session_id,
                   int32 organization_id,
@@ -276,6 +288,9 @@ interface PageHandler {
 interface Page {
   // Called when the tab organization session state changes.
   TabOrganizationSessionUpdated(TabOrganizationSession session);
+
+  // Called when the tab organization model strategy changes.
+  TabOrganizationModelStrategyUpdated(TabOrganizationModelStrategy strategy);
 
   // Called when we require a full refresh of the JS's tab list data structures.
   // Typically used when tabs in the current profile are deleted, inserted,
