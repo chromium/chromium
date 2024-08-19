@@ -391,6 +391,10 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // 1.
   GroupRange GetGroupRange(size_t model_index) const;
 
+  // Updates the accessible name for the table's views from `start_view_index`
+  // up to `start_view_index` + `length`.
+  void UpdateAccessibleNameForIndex(size_t start_view_index, size_t length);
+
   // Updates a set of accessibility views that expose the visible table contents
   // to assistive software.
   void RebuildVirtualAccessibilityChildren();

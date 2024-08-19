@@ -810,18 +810,25 @@ TEST_P(TableViewTest, ChangingCellFiresAccessibilityEvent) {
               ++text_changed_count;
           }));
 
-  // A kTextChanged event is fired when a cell's data is accessed and
-  // its computed accessible text isn't the same as the previously cached
-  // value. Ensure that the cached value is correctly updated so that
-  // retrieving the data multiple times doesn't result in firing additional
-  // kTextChanged events.
+  // First we make sure that simply accessing the data will not fire the event.
   const AXVirtualView* cell = helper_->GetVirtualAccessibilityCell(0, 0);
   ASSERT_TRUE(cell);
   ui::AXNodeData cell_data;
   for (int i = 0; i < 100; ++i)
     cell_data = cell->GetData();
+  EXPECT_EQ(0, text_changed_count);
 
+  // A kTextChanged event is fired when a cell's data is changed and
+  // its computed accessible text isn't the same as the previously cached
+  // value.
+  // Change the [3, 0] cell to [-1, 0].
+  model_->ChangeRow(3, -1, 0);
   EXPECT_EQ(1, text_changed_count);
+  text_changed_count = 0;
+
+  // Ensure that "changing" the cell to the same value doesn't fire the event.
+  model_->ChangeRow(3, -1, 0);
+  EXPECT_EQ(0, text_changed_count);
 }
 
 // Verifies SetColumnVisibility().
