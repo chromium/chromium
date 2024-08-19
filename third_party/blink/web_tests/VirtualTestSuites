@@ -609,6 +609,7 @@
   },
   {
     "prefix": "direct-sockets",
+    "owners": ["greengrape@google.com"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/direct-sockets"],
     "exclusive_tests": "ALL",
