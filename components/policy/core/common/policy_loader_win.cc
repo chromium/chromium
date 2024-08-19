@@ -22,7 +22,6 @@
 
 #include "base/check.h"
 #include "base/enterprise_util.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -74,11 +73,6 @@ enum WindowsProfileType {
 const char kKeyMandatory[] = "policy";
 const char kKeyRecommended[] = "recommended";
 const char kKeyThirdParty[] = "3rdparty";
-
-// Kill switcher for critical policy section API usage.
-BASE_FEATURE(kCriticalPolicySection,
-             "CriticalPolicySection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Parses |gpo_dict| according to |schema| and writes the resulting policy
 // settings to |policy| for the given |scope| and |level|.
@@ -352,11 +346,6 @@ PolicyBundle PolicyLoaderWin::Load() {
 }
 
 void PolicyLoaderWin::Reload(bool force) {
-  if (!base::FeatureList::IsEnabled(kCriticalPolicySection)) {
-    AsyncPolicyLoader::Reload(force);
-    return;
-  }
-
   // If we need to get management bit first, no need to enter the critical
   // section as we won't actual read the policy.
   if (NeedManagementBitBeforeLoad()) {
