@@ -430,7 +430,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.COOKIES,
       id: Id.COOKIES,
       label: 'thirdPartyCookiesLinkRowLabel',
-      icon: 'settings:cookie',
+      icon: 'privacy:cookie',
       enabledLabel: 'trackingProtectionLinkRowSubLabel',
       disabledLabel: 'trackingProtectionLinkRowSubLabel',
     });

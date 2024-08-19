@@ -43,7 +43,7 @@
             on-click="onClearBrowsingDataClick_"></cr-link-row>
         <template is="dom-if" if="[[isPrivacyGuideAvailable]]">
           <cr-link-row id="privacyGuideLinkRow" class="hr"
-              start-icon="settings20:wind-rose"
+              start-icon="privacy20:signpost"
               label="$i18n{privacyGuideLabel}"
               sub-label="$i18n{privacyGuideSublabel}"
               on-click="onPrivacyGuideClick_"
@@ -61,7 +61,7 @@
         </template>
         <template is="dom-if" if="[[!is3pcdRedesignEnabled_]]">
           <cr-link-row id="thirdPartyCookiesLinkRow"
-              start-icon="settings:cookie"
+              start-icon="privacy:cookie"
               class="hr" label="$i18n{thirdPartyCookiesLinkRowLabel}"
               sub-label="[[computeThirdPartyCookiesSublabel_(
                   prefs.profile.cookie_controls_mode.*)]]"
@@ -74,7 +74,7 @@
                 isPrivacySandboxRestricted_,
                 isPrivacySandboxRestrictedNoticeEnabled_)]]">
           <cr-link-row id="privacySandboxLinkRow"
-              start-icon="settings20:ads-click"
+              start-icon="privacy20:ads-click"
               class="hr"
               label="$i18n{adPrivacyLinkRowLabel}"
               sub-label="[[computeAdPrivacySublabel_(
@@ -84,12 +84,12 @@
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
         </template>
-        <cr-link-row id="securityLinkRow" start-icon="settings:lock-outline"
+        <cr-link-row id="securityLinkRow" start-icon="privacy:lock"
             class="hr" label="$i18n{securityPageTitle}"
             sub-label="$i18n{securityPageDescription}"
             on-click="onSecurityPageClick_"
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-        <cr-link-row id="permissionsLinkRow" start-icon="settings:permissions"
+        <cr-link-row id="permissionsLinkRow" start-icon="privacy:page-info"
             class="hr" label="$i18n{siteSettings}"
             sub-label="$i18n{permissionsPageDescription}"
             on-click="onPermissionsPageClick_"
