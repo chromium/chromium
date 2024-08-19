@@ -85,6 +85,7 @@ class CORE_EXPORT Shape {
   static std::unique_ptr<Shape> CreateRasterShape(
       Image*,
       float threshold,
+      int content_block_size,
       const gfx::Rect& image_rect,
       const DeprecatedLayoutRect& margin_rect,
       const gfx::Rect& margin_physical_rect,

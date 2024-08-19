@@ -10,8 +10,6 @@ The shape-outside is clipped to the image-shape's margin-box, which means that m
     width: 100px;
     height: 200px;
     object-fit: cover;
-    margin-top: 50px;
-    margin-bottom: 50px;
 }
 
 #content {
@@ -20,10 +18,11 @@ The shape-outside is clipped to the image-shape's margin-box, which means that m
 }
 </style>
 <div id="content">
+  X<br>
   <img id="image-shape"
     src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10px' height='100px'><rect width='10' height='100' fill='blue'/></svg>">
   </img>
-  X<br>X<br>X<br>X<br>X<br>X<br>X
+  X<br>X<br>X<br>X<br>X<br>X
 </div>
 </body>
 </html>

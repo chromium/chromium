@@ -3858,6 +3858,11 @@
       status: "test",
     },
     {
+      // crbug.com/360716751
+      name: "ShapeOutsideClippedImageFix",
+      status: "stable",
+    },
+    {
       // crbug.com/359616076 and crbug.com/360158400
       name: "ShapeOutsideWritingModeFix",
       status: "experimental",

@@ -294,6 +294,7 @@ static bool ExtractImageData(Image* image,
 static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
     ArrayBufferContents& contents,
     float threshold,
+    int content_block_size,
     const gfx::Rect& image_rect,
     const gfx::Rect& margin_rect,
     const gfx::Rect& margin_physical_rect) {
@@ -307,6 +308,8 @@ static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
 
   // TODO(crbug.com/359616076): These three values should take into account
   // of writing-mode.
+  const int image_block_start = image_rect.y();
+  const int image_block_end = image_rect.bottom();
   const int margin_box_block_size =
       RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()
           ? std::max(margin_physical_rect.height(), 0)
@@ -320,6 +323,13 @@ static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
   int min_buffer_y = std::max(0, margin_block_start - image_rect.y());
   int max_buffer_y =
       std::min(image_rect.height(), margin_block_end - image_rect.y());
+  const bool fix_clipped =
+      RuntimeEnabledFeatures::ShapeOutsideClippedImageFixEnabled();
+  if (fix_clipped) {
+    min_buffer_y = std::max({0, margin_block_start, image_block_start});
+    max_buffer_y =
+        std::min({content_block_size, image_block_end, margin_block_end});
+  }
 
   std::unique_ptr<RasterShapeIntervals> intervals =
       std::make_unique<RasterShapeIntervals>(margin_box_block_size,
@@ -327,6 +337,9 @@ static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
 
   LogicalPixelScanner scanner(*pixel_array, image_rect.size(),
                               WritingMode::kHorizontalTb);
+  for (int y = image_block_start; fix_clipped && y < min_buffer_y; ++y) {
+    scanner.NextLine();
+  }
   for (int y = min_buffer_y; y < max_buffer_y; ++y, scanner.NextLine()) {
     int start_x = -1;
     for (int x = 0; x < image_rect.width(); ++x, scanner.Next()) {
@@ -337,7 +350,7 @@ static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
       } else if (start_x != -1 &&
                  (!alpha_above_threshold || x == image_rect.width() - 1)) {
         int end_x = alpha_above_threshold ? x + 1 : x;
-        intervals->IntervalAt(y + image_rect.y())
+        intervals->IntervalAt(fix_clipped ? y : (y + image_rect.y()))
             .Unite(IntShapeInterval(start_x + image_rect.x(),
                                     end_x + image_rect.x()));
         start_x = -1;
@@ -358,6 +371,7 @@ static bool IsValidRasterShapeSize(const gfx::Size& size) {
 std::unique_ptr<Shape> Shape::CreateRasterShape(
     Image* image,
     float threshold,
+    int content_block_size,
     const gfx::Rect& image_rect,
     const DeprecatedLayoutRect& margin_r,
     const gfx::Rect& margin_physical_rect,
@@ -381,8 +395,9 @@ std::unique_ptr<Shape> Shape::CreateRasterShape(
   }
 
   std::unique_ptr<RasterShapeIntervals> intervals =
-      ExtractIntervalsFromImageData(contents, threshold, image_rect,
-                                    margin_rect, margin_physical_rect);
+      ExtractIntervalsFromImageData(contents, threshold, content_block_size,
+                                    image_rect, margin_rect,
+                                    margin_physical_rect);
   std::unique_ptr<RasterShape> raster_shape =
       std::make_unique<RasterShape>(std::move(intervals), margin_box_size);
   raster_shape->writing_mode_ = writing_mode;

@@ -215,10 +215,11 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
       style_image->GetImage(*layout_box_, layout_box_->GetDocument(),
                             layout_box_->StyleRef(), image_size);
 
-  return Shape::CreateRasterShape(image.get(), shape_image_threshold,
-                                  image_rect, margin_rect.ToLayoutRect(),
-                                  ToPixelSnappedRect(margin_physical_rect),
-                                  writing_mode, margin, respect_orientation);
+  return Shape::CreateRasterShape(
+      image.get(), shape_image_threshold,
+      reference_box_logical_size_.block_size.Floor(), image_rect,
+      margin_rect.ToLayoutRect(), ToPixelSnappedRect(margin_physical_rect),
+      writing_mode, margin, respect_orientation);
 }
 
 const Shape& ShapeOutsideInfo::ComputedShape() const {
