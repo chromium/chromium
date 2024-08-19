@@ -537,10 +537,6 @@ bool IsNonModalDefaultBrowserPromoCooldownRefactorEnabled() {
       kNonModalDefaultBrowserPromoCooldownRefactor);
 }
 
-bool IsDefaultBrowserVideoInSettingsEnabled() {
-  return base::FeatureList::IsEnabled(kDefaultBrowserVideoInSettings);
-}
-
 bool HasUserInteractedWithFullscreenPromoBefore() {
   if (base::FeatureList::IsEnabled(
           feature_engagement::kDefaultBrowserEligibilitySlidingWindow)) {

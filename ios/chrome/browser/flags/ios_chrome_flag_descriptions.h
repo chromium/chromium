@@ -273,10 +273,6 @@ extern const char kEnableFamilyLinkControlsDescription[];
 extern const char kCredentialProviderExtensionPromoName[];
 extern const char kCredentialProviderExtensionPromoDescription[];
 
-// Title and description for default browser video in settings experiment.
-extern const char kDefaultBrowserVideoInSettingsName[];
-extern const char kDefaultBrowserVideoInSettingsDescription[];
-
 // Title and description for the flag to show the default browser tutorial from
 // an external app.
 extern const char kDefaultBrowserIntentsShowSettingsName[];

@@ -4507,9 +4507,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SETTINGS_EXPORT_PASSWORDS_SET_UP_SCREENLOCK_CONTENT" desc="Message informing the user that in order to export the passwords, a screen lock needs to be set up on the device. This is shown as an alert message after the user tries to view or copy the password from a settings page. [Length: about two lines]">
         To export passwords, you must first set a passcode on your device.
       </message>
-      <message name="IDS_IOS_SETTINGS_FOLLOW_STEPS_BELOW_TEXT" desc="The prompt under the Default Browser Settings page's header text.">
-        Follow the steps below:
-      </message>
       <message name="IDS_IOS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION" desc="Description text of HTTPS-Only Mode in  settings">
         Use HTTPS whenever possible and get warned before loading sites that don’t support it.
       </message>
@@ -4692,9 +4689,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SETTINGS_SWIPE_DOWN_MESSAGE" desc="Message displayed whenever a user tries to dismiss a Settings screen which is being edited, or information is being added to it.">
         Are you sure you want to discard your changes?
-      </message>
-      <message name="IDS_IOS_SETTINGS_TAP_DEFAULT_BROWSER_APP_STEP" desc="Text of the row indicating the second step of setting the default browser.">
-        2. Tap Default Browser App
       </message>
       <message name="IDS_IOS_SETTINGS_TITLE" desc="Title for the settings panel [iOS].">
         Settings

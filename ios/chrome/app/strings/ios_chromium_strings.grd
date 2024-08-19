@@ -829,15 +829,6 @@ For more settings that use data to improve your Chromium experience, go to <ph n
       <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED" desc="Disclaimer telling users what will happen to their passwords">
         Your password will be saved to Password Manager for <ph name="EMAIL">$1<ex>example@gmail.com</ex></ph>.
       </message>
-      <message name="IDS_IOS_SETTINGS_HEADER_TEXT" desc="Header of the Default Browser Settings page explaining the default browser feature's utility.">
-        You can open links in Chromium automatically by making it your Default Browser App.
-      </message>
-      <message name="IDS_IOS_SETTINGS_OPEN_CHROME_SETTINGS_BUTTON_TEXT" desc="Label of the button that opens the Chrome panel in Settings.app">
-          Open Chromium Settings
-      </message>
-      <message name="IDS_IOS_SETTINGS_OPEN_SETTINGS_STEP" desc="Text of the row indicating the first step of setting the default browser.">
-        1. Open Chromium Settings
-      </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2" desc="Text of the row indicating the second step of shortened instruction of turning on iOS auto-fill from Chrome password manager [iOS only]">
         Select Chromium
       </message>
@@ -888,9 +879,6 @@ For more settings that use data to improve your Chromium experience, go to <ph n
       </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_UP_TO_DATE_DESC" desc="Description text for when Chromium is up to date">
         Chromium is up to date
-      </message>
-      <message name="IDS_IOS_SETTINGS_SELECT_CHROME_STEP" desc="Text of the row indicating the third step of setting the default browser.">
-        3. Select Chromium
       </message>
       <message name="IDS_IOS_SETTINGS_SIGNIN_DISABLED_POPOVER_TEXT" desc="This text is shown when sign-in is disabled by policy and the user taps on the info pop-over of the 'Sign in to Chromium' button in the settings. [iOS only]">
         Your organization requires you to stay signed out of Chromium.
