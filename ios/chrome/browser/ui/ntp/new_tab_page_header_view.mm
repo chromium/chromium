@@ -698,7 +698,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   _accountDiscParticleBadgeImageView.tintColor =
       [UIColor colorNamed:kRed500Color];
   _accountDiscParticleBadgeImageView.backgroundColor =
-      [UIColor colorNamed:kSolidWhiteColor];
+      [UIColor colorNamed:@"ntp_background_color"];
   _accountDiscParticleBadgeImageView.layer.cornerRadius =
       _accountDiscParticleBadgeImageView.frame.size.width / 2;
   _accountDiscParticleBadgeImageView.clipsToBounds = YES;
