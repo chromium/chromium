@@ -187,6 +187,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".RTTUnkown" summary="RTT unkown"/>
 </variants>
 
+<variants name="TabInitializationStatus">
+  <variant name="" summary="any"/>
+  <variant name=".IsNewTab" summary="navigation directly after a new tab"/>
+</variants>
+
 <!-- LINT.IfChange(TopChromeWebUIName) -->
 
 <variants name="WebUIName">
@@ -1167,35 +1172,45 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.DomainLookupTiming.NavigationToDomainLookupEnd"
+    name="PageLoad.Clients.GoogleSearch.DomainLookupTiming.NavigationToDomainLookupEnd2.{NavigationCountType}{BrowserInitializationStatus}{TabInitializationStatus}"
     units="ms" expires_after="2025-08-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
-    domain lookup ended, for Google Search page loads. Only recorded for Search
-    navigations that start in the foreground and stay in the foreground until
-    domain lookup end.
+    domain lookup ended of {NavigationCountType} ({BrowserInitializationStatus},
+    {TabInitializationStatus}), for Google Search page loads. Only recorded for
+    Search navigations that start in the foreground and stay in the foreground
+    until domain lookup end.
 
     In cases where navigation start occurs after connect start (e.g. pre-fetch,
     pre-connect), this metric will contain zero.
   </summary>
+  <token key="NavigationCountType" variants="NavigationCountType"/>
+  <token key="BrowserInitializationStatus"
+      variants="BrowserInitializationStatus"/>
+  <token key="TabInitializationStatus" variants="TabInitializationStatus"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.DomainLookupTiming.NavigationToDomainLookupStart"
+    name="PageLoad.Clients.GoogleSearch.DomainLookupTiming.NavigationToDomainLookupStart2.{NavigationCountType}{BrowserInitializationStatus}{TabInitializationStatus}"
     units="ms" expires_after="2025-08-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
-    domain lookup started, for Google Search page loads. Only recorded for
-    Search navigations that start in the foreground and stay in the foreground
-    until domain lookup start.
+    domain lookup started of {NavigationCountType}
+    ({BrowserInitializationStatus}, {TabInitializationStatus}), for Google
+    Search page loads. Only recorded for Search navigations that start in the
+    foreground and stay in the foreground until domain lookup start.
 
     In cases where navigation start occurs after connect start (e.g. pre-fetch,
     pre-connect), this metric will contain zero.
   </summary>
+  <token key="NavigationCountType" variants="NavigationCountType"/>
+  <token key="BrowserInitializationStatus"
+      variants="BrowserInitializationStatus"/>
+  <token key="TabInitializationStatus" variants="TabInitializationStatus"/>
 </histogram>
 
 <histogram
@@ -1295,19 +1310,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationToConnectStart"
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationToConnectStart2.{NavigationCountType}{BrowserInitializationStatus}{TabInitializationStatus}"
     units="ms" expires_after="2025-08-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
-    navigation start, for Google Search page loads. Only recorded for Search
-    navigations that start in the foreground and stay in the foreground until
-    connect start.
+    navigation start of {NavigationCountType} ({BrowserInitializationStatus},
+    {TabInitializationStatus}), for Google Search page loads. Only recorded for
+    Search navigations that start in the foreground and stay in the foreground
+    until connect start.
 
     In cases where navigation start occurs after connect start (e.g. pre-fetch,
     pre-connect), this metric will contain zero.
   </summary>
+  <token key="NavigationCountType" variants="NavigationCountType"/>
+  <token key="BrowserInitializationStatus"
+      variants="BrowserInitializationStatus"/>
+  <token key="TabInitializationStatus" variants="TabInitializationStatus"/>
 </histogram>
 
 <histogram

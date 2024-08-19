@@ -15,10 +15,6 @@ extern const char kHistogramGWSHpConnectStart[];
 extern const char kHistogramGWSHpDomainLookupStart[];
 extern const char kHistogramGWSHpDomainLookupEnd[];
 
-extern const char kSuffixFirstNavigation[];
-extern const char kSuffixSubsequentNavigation[];
-
-extern const char kSuffixIsBrowserStarting[];
 }  // namespace internal
 
 class GWSHpPageLoadMetricsObserver

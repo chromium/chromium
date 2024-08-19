@@ -10,6 +10,7 @@
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
+#include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"

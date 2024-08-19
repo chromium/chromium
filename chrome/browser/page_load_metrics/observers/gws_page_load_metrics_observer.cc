@@ -12,7 +12,10 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/named_trigger.h"
+#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
+#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
@@ -72,21 +75,34 @@ const char kHistogramGWSLargestContentfulPaint[] =
 const char kHistogramGWSParseStart[] =
     HISTOGRAM_PREFIX "ParseTiming.NavigationToParseStart";
 const char kHistogramGWSConnectStart[] =
-    HISTOGRAM_PREFIX "NavigationTiming.NavigationToConnectStart";
+    HISTOGRAM_PREFIX "NavigationTiming.NavigationToConnectStart2";
 const char kHistogramGWSDomainLookupStart[] =
-    HISTOGRAM_PREFIX "DomainLookupTiming.NavigationToDomainLookupStart";
+    HISTOGRAM_PREFIX "DomainLookupTiming.NavigationToDomainLookupStart2";
 const char kHistogramGWSDomainLookupEnd[] =
-    HISTOGRAM_PREFIX "DomainLookupTiming.NavigationToDomainLookupEnd";
+    HISTOGRAM_PREFIX "DomainLookupTiming.NavigationToDomainLookupEnd2";
 
 }  // namespace internal
 
-GWSPageLoadMetricsObserver::GWSPageLoadMetricsObserver() = default;
+GWSPageLoadMetricsObserver::GWSPageLoadMetricsObserver() {
+  static bool is_first_navigation = true;
+  is_first_navigation_ = is_first_navigation;
+  is_first_navigation = false;
+}
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 GWSPageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
+  auto* navigation_userdata =
+      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
+          *navigation_handle);
+  if (navigation_userdata && navigation_userdata->navigation_type() ==
+                                 page_load_metrics::NavigationHandleUserData::
+                                     InitiatorLocation::kNewTabPage) {
+    is_new_tab_page_ = true;
+  }
+
   if (page_load_metrics::IsGoogleSearchResultUrl(navigation_handle->GetURL())) {
     // Emit a trigger to allow trace collection tied to gws navigations.
     base::trace_event::EmitNamedTrigger("gws-navigation-start");
@@ -152,7 +168,7 @@ void GWSPageLoadMetricsObserver::OnConnectStart(
           timing.connect_start, GetDelegate())) {
     return;
   }
-  PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSConnectStart,
+  PAGE_LOAD_HISTOGRAM(AddHistogramSuffix(internal::kHistogramGWSConnectStart),
                       timing.connect_start.value());
 }
 
@@ -162,8 +178,9 @@ void GWSPageLoadMetricsObserver::OnDomainLookupStart(
           timing.domain_lookup_timing->domain_lookup_start, GetDelegate())) {
     return;
   }
-  PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSDomainLookupStart,
-                      timing.domain_lookup_timing->domain_lookup_start.value());
+  PAGE_LOAD_HISTOGRAM(
+      AddHistogramSuffix(internal::kHistogramGWSDomainLookupStart),
+      timing.domain_lookup_timing->domain_lookup_start.value());
 }
 
 void GWSPageLoadMetricsObserver::OnDomainLookupEnd(
@@ -172,8 +189,9 @@ void GWSPageLoadMetricsObserver::OnDomainLookupEnd(
           timing.domain_lookup_timing->domain_lookup_end, GetDelegate())) {
     return;
   }
-  PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSDomainLookupEnd,
-                      timing.domain_lookup_timing->domain_lookup_end.value());
+  PAGE_LOAD_HISTOGRAM(
+      AddHistogramSuffix(internal::kHistogramGWSDomainLookupEnd),
+      timing.domain_lookup_timing->domain_lookup_end.value());
 }
 
 void GWSPageLoadMetricsObserver::OnComplete(
@@ -324,4 +342,20 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
       "loading", "GWSFinalResponseStartToFinalLoaderCallback",
       TRACE_ID_LOCAL(this), timing.final_loader_callback_time);
+}
+
+std::string GWSPageLoadMetricsObserver::AddHistogramSuffix(
+    const std::string histogram_name) {
+  std::string suffix =
+      (is_first_navigation_ ? internal::kSuffixFirstNavigation
+                            : internal::kSuffixSubsequentNavigation);
+  if (!AfterStartupTaskUtils::IsBrowserStartupComplete()) {
+    suffix += internal::kSuffixIsBrowserStarting;
+  }
+
+  if (is_new_tab_page_) {
+    suffix += internal::kSuffixIsNewTab;
+  }
+
+  return histogram_name + suffix;
 }

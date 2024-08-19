@@ -23,6 +23,12 @@ extern const char kHistogramParseBlockedOnScriptLoadSuffix[];
 extern const char kHistogramParseDurationSuffix[];
 extern const char kHistogramParseStartSuffix[];
 
+extern const char kSuffixFirstNavigation[];
+extern const char kSuffixSubsequentNavigation[];
+extern const char kSuffixIsNewTab[];
+
+extern const char kSuffixIsBrowserStarting[];
+
 }  // namespace internal
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_HISTOGRAM_SUFFIXES_H_
