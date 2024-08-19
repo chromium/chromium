@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_SAVED_PASSWORDS_PRESENTER_FACTORY_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_SAVED_PASSWORDS_PRESENTER_FACTORY_H_
 
-class ChromeBrowserState;
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace password_manager {
 class SavedPasswordsPresenter;

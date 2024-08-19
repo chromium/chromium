@@ -83,6 +83,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
@@ -153,6 +154,7 @@ source_set("store_factory") {
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model/glue",
     "//ios/chrome/browser/webdata_services/model",
@@ -228,6 +230,7 @@ source_set("sharing_factory") {
     "//components/sync/base",
     "//components/sync/model",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/sync/model:data_type_store_service_factory",
     "//ios/chrome/common",
   ]
