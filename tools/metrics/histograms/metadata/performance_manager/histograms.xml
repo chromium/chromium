@@ -303,17 +303,6 @@ each histogram.
   </token>
 </histogram>
 
-<histogram name="PerformanceManager.SiteDB.OnDiskSize" units="KB"
-    expires_after="2023-12-28">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The size of the Local Site Characteristics database on disk. Recorded at
-    startup when the database gets opened, if it already existed from a previous
-    run.
-  </summary>
-</histogram>
-
 <histogram name="PerformanceManager.SiteDB.ReadHasCompletedBeforeQuery"
     enum="Boolean" expires_after="2023-12-28">
   <owner>joenotcharles@google.com</owner>
