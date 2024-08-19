@@ -1111,16 +1111,6 @@ if (use_blink && !is_cronet_build) {
     ]
   }
 
-  # Web tests runner
-  # third_party/blink/tools/run_web_tests.py
-  group("run_web_tests") {
-    testonly = true
-    deps = [
-      ":blink_web_tests",
-      ":blink_wpt_tests",
-    ]
-  }
-
   if (!is_chromeos_ash && !is_ios && !is_fuchsia && !is_android && !is_castos) {
     out_dir = get_path_info(root_build_dir, "name")
     script_test("chrome_wpt_tests") {
