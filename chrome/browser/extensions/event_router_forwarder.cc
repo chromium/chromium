@@ -34,33 +34,12 @@ void EventRouterForwarder::BroadcastEventToRenderers(
     const std::string& event_name,
     base::Value::List event_args,
     bool dispatch_to_off_the_record_profiles) {
-  HandleEvent(histogram_value, event_name, std::move(event_args),
-              /*profile=*/nullptr, dispatch_to_off_the_record_profiles);
-}
-
-void EventRouterForwarder::DispatchEventToRenderers(
-    events::HistogramValue histogram_value,
-    const std::string& event_name,
-    base::Value::List event_args,
-    void* profile) {
-  if (!profile)
-    return;
-  HandleEvent(histogram_value, event_name, std::move(event_args), profile,
-              /*dispatch_to_off_the_record_profiles=*/false);
-}
-
-void EventRouterForwarder::HandleEvent(
-    events::HistogramValue histogram_value,
-    const std::string& event_name,
-    base::Value::List event_args,
-    void* profile_ptr,
-    bool dispatch_to_off_the_record_profiles) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&EventRouterForwarder::HandleEvent, this,
+        base::BindOnce(&EventRouterForwarder::BroadcastEventToRenderers, this,
                        histogram_value, event_name, std::move(event_args),
-                       profile_ptr, dispatch_to_off_the_record_profiles));
+                       dispatch_to_off_the_record_profiles));
     return;
   }
 
@@ -68,21 +47,11 @@ void EventRouterForwarder::HandleEvent(
     return;
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile = nullptr;
-  if (profile_ptr) {
-    if (!profile_manager->IsValidProfile(profile_ptr))
-      return;
-    profile = reinterpret_cast<Profile*>(profile_ptr);
-  }
   std::set<Profile*> profiles_to_dispatch_to;
-  if (profile) {
-    profiles_to_dispatch_to.insert(profile);
-  } else {
-    std::vector<Profile*> on_the_record_profiles =
-        profile_manager->GetLoadedProfiles();
-    profiles_to_dispatch_to.insert(on_the_record_profiles.begin(),
-                                   on_the_record_profiles.end());
-  }
+  std::vector<Profile*> on_the_record_profiles =
+      profile_manager->GetLoadedProfiles();
+  profiles_to_dispatch_to.insert(on_the_record_profiles.begin(),
+                                 on_the_record_profiles.end());
 
   if (dispatch_to_off_the_record_profiles) {
     for (Profile* profile_to_dispatch_to : profiles_to_dispatch_to) {

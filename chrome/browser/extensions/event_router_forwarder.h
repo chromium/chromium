@@ -38,23 +38,9 @@ class EventRouterForwarder
                                  base::Value::List event_args,
                                  bool dispatch_to_off_the_record_profiles);
 
-  // Dispatches an event to the EventRouter associated with the given `profile`.
-  // Safe to call on any thread.
-  void DispatchEventToRenderers(events::HistogramValue histogram_value,
-                                const std::string& event_name,
-                                base::Value::List event_args,
-                                void* profile);
-
  protected:
   // Protected for testing.
   virtual ~EventRouterForwarder();
-
-  // Common handler for dispatching the event.
-  void HandleEvent(events::HistogramValue histogram_value,
-                   const std::string& event_name,
-                   base::Value::List event_args,
-                   void* profile,
-                   bool dispatch_to_off_the_record_profiles);
 
   // Broadcasts the event to listeners associated with `profile`'s EventRouter.
   // Virtual for testing.
