@@ -1168,7 +1168,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.DomainLookupTiming.NavigationToDomainLookupEnd"
-    units="ms" expires_after="2024-10-01">
+    units="ms" expires_after="2025-08-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1184,7 +1184,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.DomainLookupTiming.NavigationToDomainLookupStart"
-    units="ms" expires_after="2024-10-01">
+    units="ms" expires_after="2025-08-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1296,7 +1296,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationToConnectStart"
-    units="ms" expires_after="2024-10-01">
+    units="ms" expires_after="2025-08-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1342,7 +1342,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.GoogleSearch.PaintTiming.{MileStone}"
-    units="ms" expires_after="2024-12-30">
+    units="ms" expires_after="2025-08-01">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1361,7 +1361,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.ParseTiming.NavigationToParseStart"
-    units="ms" expires_after="2024-10-01">
+    units="ms" expires_after="2025-08-01">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
