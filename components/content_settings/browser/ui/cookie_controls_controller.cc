@@ -244,9 +244,10 @@ bool CookieControlsController::ShowIpProtection() const {
 }
 
 bool CookieControlsController::ShowFingerprintingProtection() const {
+  // Note: this is an interim check and will have to be updated for incognito
+  // FPP.
   return base::FeatureList::IsEnabled(
-             privacy_sandbox::kFingerprintingProtectionUserBypass) &&
-         tracking_protection_settings_->IsFingerprintingProtectionEnabled();
+      privacy_sandbox::kFingerprintingProtectionUserBypass);
 }
 
 bool CookieControlsController::ShowActFeatures() {

@@ -1614,13 +1614,12 @@ TEST_F(CookieControlsUserBypassTest,
 
 class CookieControlsUserBypassTrackingProtectionUiTest
     : public CookieControlsUserBypassTest,
-      public testing::WithParamInterface<testing::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<testing::tuple<bool, bool>> {
  public:
   CookieControlsUserBypassTrackingProtectionUiTest() {
     feature_list_.InitWithFeatures(
         {
             privacy_sandbox::kFingerprintingProtectionUserBypass,
-            privacy_sandbox::kFingerprintingProtectionSetting,
             privacy_sandbox::kIpProtectionUserBypass,
             privacy_sandbox::kIpProtectionV1,
         },
@@ -1642,12 +1641,10 @@ class CookieControlsUserBypassTrackingProtectionUiTest
                                protections_on ? BlockingStatus::kHidden
                                               : BlockingStatus::kVisible});
     }
-    if (tracking_protection_settings()->IsFingerprintingProtectionEnabled()) {
-      features_list.push_back({FeatureType::kFingerprintingProtection,
-                               CookieControlsEnforcement::kNoEnforcement,
-                               protections_on ? BlockingStatus::kLimited
-                                              : BlockingStatus::kAllowed});
-    }
+    features_list.push_back(
+        {FeatureType::kFingerprintingProtection,
+         CookieControlsEnforcement::kNoEnforcement,
+         protections_on ? BlockingStatus::kLimited : BlockingStatus::kAllowed});
     return features_list;
   }
 
@@ -1667,10 +1664,8 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
     cookie_settings()->SetThirdPartyCookieSetting(
         GURL("https://example.com"), ContentSetting::CONTENT_SETTING_ALLOW);
   }
-  profile()->GetPrefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled,
-                                    std::get<1>(GetParam()));
   profile()->GetPrefs()->SetBoolean(prefs::kIpProtectionEnabled,
-                                    std::get<2>(GetParam()));
+                                    std::get<1>(GetParam()));
 
   NavigateAndCommit(GURL("https://example.com"));
   EXPECT_CALL(*mock(),
@@ -1689,5 +1684,4 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     CookieControlsUserBypassTrackingProtectionUiTest,
     testing::Combine(/*protections_on*/ testing::Bool(),
-                     /*kFingerprintingProtectionEnabled*/ testing::Bool(),
                      /*kIpProtectionEnabled*/ testing::Bool()));

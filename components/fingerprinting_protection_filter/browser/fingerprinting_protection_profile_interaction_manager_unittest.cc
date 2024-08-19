@@ -60,20 +60,19 @@ class ProfileInteractionManagerTest
     RenderViewHostTestHarness::TearDown();
   }
 
-  void SetFingerprintingProtectionSettingEnabled(
+  void SetFingerprintingProtectionFeatureEnabled(
       bool is_enabled,
       bool is_on_3pc_blocked_enabled) {
     if (is_enabled) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {{features::kEnableFingerprintingProtectionFilter,
             {{"enable_on_3pc_blocked",
-              is_on_3pc_blocked_enabled ? "true" : "false"}}},
-           {privacy_sandbox::kFingerprintingProtectionSetting, {}}},
+              is_on_3pc_blocked_enabled ? "true" : "false"}}}},
           {});
     } else {
       EXPECT_FALSE(is_on_3pc_blocked_enabled);
       scoped_feature_list_.InitAndDisableFeature(
-          privacy_sandbox::kFingerprintingProtectionSetting);
+          features::kEnableFingerprintingProtectionFilter);
     }
   }
 
@@ -85,80 +84,39 @@ class ProfileInteractionManagerTest
 
 const OnPageActivationComputedTestCase kTestCases[] = {
     {
-        .test_name = "FPFEnabled_UserOptIn_NoException",
-        .expected_level_output = ActivationLevel::kEnabled,
-        .expected_decision = ActivationDecision::ACTIVATED,
-    },
-    {
-        .test_name = "FPFEnabled_UserOptIn_Exception",
-        .site_has_tp_exception = true,
-        .expected_level_output = ActivationLevel::kDisabled,
-        .expected_decision = ActivationDecision::URL_ALLOWLISTED,
-    },
-    {
-        .test_name = "FPFEnabled_UserOptOut_NoException",
-        .is_fp_user_pref_enabled = false,
-        .expected_level_output = ActivationLevel::kEnabled,
-        .expected_decision = ActivationDecision::ACTIVATED,
-    },
-    {
-        .test_name = "FPFEnabled_UserOptOut_Exception",
-        .is_fp_user_pref_enabled = false,
-        .site_has_tp_exception = true,
-        .expected_level_output = ActivationLevel::kDisabled,
-        .expected_decision = ActivationDecision::URL_ALLOWLISTED,
-    },
-    {
-        .test_name = "FPFDisabled_UserOptOut_NoException",
-        .is_fp_feature_enabled = false,
-        .is_fp_user_pref_enabled = false,
-        .expected_level_output = ActivationLevel::kDisabled,
-        .expected_decision = ActivationDecision::ACTIVATION_CONDITIONS_NOT_MET,
-    },
-    {
-        .test_name = "FPFDisabled_UserOptIn_NoException",
+        .test_name = "FPFDisabled_NoException",
         .is_fp_feature_enabled = false,
         .expected_level_output = ActivationLevel::kDisabled,
         .expected_decision = ActivationDecision::ACTIVATION_CONDITIONS_NOT_MET,
     },
     {
-        .test_name = "FPFDisabled_UserOptIn_Exception",
+        .test_name = "FPFDisabled_Exception",
         .is_fp_feature_enabled = false,
         .site_has_tp_exception = true,
         .expected_level_output = ActivationLevel::kDisabled,
         .expected_decision = ActivationDecision::ACTIVATION_CONDITIONS_NOT_MET,
     },
     {
-        .test_name = "FPFDisabled_UserOptOut_Exception",
-        .is_fp_feature_enabled = false,
-        .is_fp_user_pref_enabled = false,
-        .site_has_tp_exception = true,
-        .expected_level_output = ActivationLevel::kDisabled,
-        .expected_decision = ActivationDecision::ACTIVATION_CONDITIONS_NOT_MET,
-    },
-    {
-        .test_name = "FPFEnabled_UserOptIn_NoException_InitiallyDisabled",
+        .test_name = "FPFEnabled_NoException_InitiallyDisabled",
         .initial_decision = ActivationDecision::ACTIVATION_DISABLED,
         .initial_level = ActivationLevel::kDisabled,
         .expected_level_output = ActivationLevel::kDisabled,
         .expected_decision = ActivationDecision::ACTIVATION_DISABLED,
     },
     {
-        .test_name = "FPFEnabled_UserOptIn_NoException_UnknownConfig",
+        .test_name = "FPFEnabled_NoException_UnknownConfig",
         .initial_decision = ActivationDecision::UNKNOWN,
         .expected_level_output = ActivationLevel::kDisabled,
         .expected_decision = ActivationDecision::UNKNOWN,
     },
     {
-        .test_name =
-            "FPFEnabled_UserOptIn_NoException_EnableOn3pcBlocked_3pcBlocked",
+        .test_name = "FPFEnabled_NoException_EnableOn3pcBlocked_3pcBlocked",
         .is_on_3pc_blocked_enabled = true,
         .expected_level_output = ActivationLevel::kEnabled,
         .expected_decision = ActivationDecision::ACTIVATED,
     },
     {
-        .test_name =
-            "FPFEnabled_UserOptIn_NoException_EnableOn3pcBlocked_3pcAllowed",
+        .test_name = "FPFEnabled_NoException_EnableOn3pcBlocked_3pcAllowed",
         .is_on_3pc_blocked_enabled = true,
         .cookie_controls_mode = content_settings::CookieControlsMode::kOff,
         .expected_level_output = ActivationLevel::kDisabled,
@@ -177,13 +135,10 @@ TEST_P(ProfileInteractionManagerTest,
   const OnPageActivationComputedTestCase& test_case = GetParam();
 
   // Initialize whether the feature is enabled.
-  SetFingerprintingProtectionSettingEnabled(
+  SetFingerprintingProtectionFeatureEnabled(
       test_case.is_fp_feature_enabled, test_case.is_on_3pc_blocked_enabled);
   // Navigate to the test url.
   mock_nav_handle_->set_url(GetTestUrl());
-  // Initialize the tracking_protection_settings_ for test.
-  test_support_.prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled,
-                                    test_case.is_fp_user_pref_enabled);
   test_support_.prefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(test_case.cookie_controls_mode));

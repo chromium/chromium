@@ -159,9 +159,7 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   // Enable the feature with default params, i.e. activation_level = enabled.
   scoped_feature_list_.InitWithFeatures(
-      {features::kEnableFingerprintingProtectionFilter,
-       privacy_sandbox::kFingerprintingProtectionSetting},
-      {});
+      {features::kEnableFingerprintingProtectionFilter}, {});
 
   // Use a mock throttle to test GetActivationDecision() by making EXPECT_CALL
   // on public function.
@@ -216,8 +214,7 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
   // Enable the feature with dry_run params: activation_level = dry_run.
   scoped_feature_list_.InitWithFeaturesAndParameters(
       {{features::kEnableFingerprintingProtectionFilter,
-        {{"activation_level", "dry_run"}}},
-       {privacy_sandbox::kFingerprintingProtectionSetting, {}}},
+        {{"activation_level", "dry_run"}}}},
       {});
 
   // Use a mock throttle to test GetActivationDecision() by making EXPECT_CALL
@@ -273,8 +270,7 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
   // Enable the feature with disabling params, i.e. activation_level = disabled.
   scoped_feature_list_.InitWithFeaturesAndParameters(
       {{features::kEnableFingerprintingProtectionFilter,
-        {{"activation_level", "disabled"}}},
-       {privacy_sandbox::kFingerprintingProtectionSetting, {}}},
+        {{"activation_level", "disabled"}}}},
       {});
 
   // Use a mock throttle to test GetActivationDecision() by making EXPECT_CALL

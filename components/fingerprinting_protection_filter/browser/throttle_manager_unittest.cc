@@ -199,22 +199,18 @@ class ThrottleManagerTest
     if (is_enabled && !is_dry_run) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
           /*enabled_features=*/
-          {{privacy_sandbox::kFingerprintingProtectionSetting, {}},
-           {features::kEnableFingerprintingProtectionFilter,
+          {{features::kEnableFingerprintingProtectionFilter,
             {{"activation_level", "enabled"}}}},
           /*disabled_features=*/{});
     } else if (is_enabled && is_dry_run) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
           /*enabled_features=*/
-          {{privacy_sandbox::kFingerprintingProtectionSetting, {}},
-           {features::kEnableFingerprintingProtectionFilter,
+          {{features::kEnableFingerprintingProtectionFilter,
             {{"activation_level", "dry_run"}}}},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/{{privacy_sandbox::
-                                     kFingerprintingProtectionSetting,
-                                 {}}},
+          /*enabled_features=*/{},
           /*disabled_features=*/{
               features::kEnableFingerprintingProtectionFilter});
     }

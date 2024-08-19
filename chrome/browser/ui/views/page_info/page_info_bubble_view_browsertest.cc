@@ -1578,8 +1578,7 @@ class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
   PageInfoBubbleViewBrowserTestTrackingProtectionSubpage() {
     std::vector<base::test::FeatureRef>
         enabled_features =
-            {privacy_sandbox::kFingerprintingProtectionSetting,
-             privacy_sandbox::kFingerprintingProtectionUserBypass},
+            {privacy_sandbox::kFingerprintingProtectionUserBypass},
         disabled_features = {};
     if (GetParam()) {
       enabled_features.push_back(
