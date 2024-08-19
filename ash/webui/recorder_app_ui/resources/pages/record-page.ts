@@ -293,11 +293,13 @@ export class RecordPage extends ReactiveLitElement {
       }
     }
 
-    #exit-dialog div[slot="actions"] cra-button:first-child {
-      align-self: flex-start;
+    #exit-dialog {
+      width: 440px;
 
-      /* There's a 8px gap. */
-      margin-right: 72px;
+      & div[slot="actions"] cra-button:first-child {
+        align-self: flex-start;
+        margin-right: auto;
+      }
     }
   `;
 

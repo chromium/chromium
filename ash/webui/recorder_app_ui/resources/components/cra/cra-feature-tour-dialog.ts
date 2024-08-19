@@ -29,6 +29,14 @@ export class CraFeatureTourDialog extends ReactiveLitElement {
 
     cra-dialog {
       height: inherit;
+
+      /* Want at least 80px left/right margin. */
+      max-width: min(512px, 100vw - 160px);
+
+      /* From CrOS dialog style. Min width for Recorder App is 480px. */
+      @media (width < 520px) {
+        width: 360px;
+      }
     }
 
     #header {
