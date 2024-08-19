@@ -147,7 +147,6 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
       cflags = [ "-mssse3" ]
     }
     sources = aom_av1_common_intrin_ssse3
-    sources += aom_av1_encoder_intrin_ssse3
     sources += aom_dsp_common_intrin_ssse3
     sources += aom_dsp_encoder_intrin_ssse3
     if (current_cpu == "x86") {

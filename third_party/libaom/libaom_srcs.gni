@@ -243,10 +243,6 @@ aom_av1_encoder_intrin_sse4_1 = [
 aom_av1_encoder_intrin_sse4_2 =
     [ "//third_party/libaom/source/libaom/av1/encoder/x86/hash_sse42.c" ]
 
-aom_av1_encoder_intrin_ssse3 = [
-  "//third_party/libaom/source/libaom/av1/encoder/x86/reconinter_enc_ssse3.c",
-]
-
 aom_av1_encoder_intrin_sve = [
   "//third_party/libaom/source/libaom/av1/encoder/arm/av1_error_sve.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/pickrst_sve.c",
@@ -572,7 +568,6 @@ aom_dsp_encoder_intrin_neon = [
   "//third_party/libaom/source/libaom/aom_dsp/arm/sadxd_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/sad_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/masked_sad_neon.c",
-  "//third_party/libaom/source/libaom/aom_dsp/arm/masked_sad4d_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/subpel_variance_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/variance_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/hadamard_neon.c",
@@ -613,7 +608,6 @@ aom_dsp_encoder_intrin_sse4_1 = [
 aom_dsp_encoder_intrin_ssse3 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/masked_sad_intrin_ssse3.h",
   "//third_party/libaom/source/libaom/aom_dsp/x86/masked_sad_intrin_ssse3.c",
-  "//third_party/libaom/source/libaom/aom_dsp/x86/masked_sad4d_ssse3.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/masked_variance_intrin_ssse3.h",
   "//third_party/libaom/source/libaom/aom_dsp/x86/masked_variance_intrin_ssse3.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/quantize_ssse3.c",
@@ -713,9 +707,6 @@ aom_rtcd_sources = [
 ]
 
 aom_scale_sources = [
-  "//third_party/libaom/source/libaom/aom_scale/aom_scale.h",
-  "//third_party/libaom/source/libaom/aom_scale/generic/aom_scale.c",
-  "//third_party/libaom/source/libaom/aom_scale/generic/gen_scalers.c",
   "//third_party/libaom/source/libaom/aom_scale/generic/yv12config.c",
   "//third_party/libaom/source/libaom/aom_scale/generic/yv12extend.c",
   "//third_party/libaom/source/libaom/aom_scale/yv12config.h",

@@ -68,9 +68,6 @@ void aom_comp_mask_pred_ssse3(uint8_t *comp_pred, const uint8_t *pred, int width
 void aom_comp_mask_pred_avx2(uint8_t *comp_pred, const uint8_t *pred, int width, int height, const uint8_t *ref, int ref_stride, const uint8_t *mask, int mask_stride, int invert_mask);
 RTCD_EXTERN void (*aom_comp_mask_pred)(uint8_t *comp_pred, const uint8_t *pred, int width, int height, const uint8_t *ref, int ref_stride, const uint8_t *mask, int mask_stride, int invert_mask);
 
-void aom_convolve8_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const InterpKernel *filter, int x0_q4, int x_step_q4, int y0_q4, int y_step_q4, int w, int h);
-#define aom_convolve8 aom_convolve8_c
-
 void aom_convolve8_horiz_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const int16_t *filter_x, int x_step_q4, const int16_t *filter_y, int y_step_q4, int w, int h);
 void aom_convolve8_horiz_ssse3(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const int16_t *filter_x, int x_step_q4, const int16_t *filter_y, int y_step_q4, int w, int h);
 void aom_convolve8_horiz_avx2(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const int16_t *filter_x, int x_step_q4, const int16_t *filter_y, int y_step_q4, int w, int h);
@@ -846,144 +843,80 @@ unsigned int aom_masked_sad128x128_ssse3(const uint8_t *src, int src_stride, con
 unsigned int aom_masked_sad128x128_avx2(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 RTCD_EXTERN unsigned int (*aom_masked_sad128x128)(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 
-void aom_masked_sad128x128x4d_c(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-void aom_masked_sad128x128x4d_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-RTCD_EXTERN void (*aom_masked_sad128x128x4d)(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-
 unsigned int aom_masked_sad128x64_c(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad128x64_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad128x64_avx2(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 RTCD_EXTERN unsigned int (*aom_masked_sad128x64)(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
-
-void aom_masked_sad128x64x4d_c(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-void aom_masked_sad128x64x4d_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-RTCD_EXTERN void (*aom_masked_sad128x64x4d)(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
 
 unsigned int aom_masked_sad16x16_c(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad16x16_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad16x16_avx2(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 RTCD_EXTERN unsigned int (*aom_masked_sad16x16)(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 
-void aom_masked_sad16x16x4d_c(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-void aom_masked_sad16x16x4d_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-RTCD_EXTERN void (*aom_masked_sad16x16x4d)(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-
 unsigned int aom_masked_sad16x32_c(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad16x32_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad16x32_avx2(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 RTCD_EXTERN unsigned int (*aom_masked_sad16x32)(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
-
-void aom_masked_sad16x32x4d_c(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-void aom_masked_sad16x32x4d_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-RTCD_EXTERN void (*aom_masked_sad16x32x4d)(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
 
 unsigned int aom_masked_sad16x8_c(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad16x8_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad16x8_avx2(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 RTCD_EXTERN unsigned int (*aom_masked_sad16x8)(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 
-void aom_masked_sad16x8x4d_c(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-void aom_masked_sad16x8x4d_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-RTCD_EXTERN void (*aom_masked_sad16x8x4d)(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-
 unsigned int aom_masked_sad32x16_c(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad32x16_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad32x16_avx2(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 RTCD_EXTERN unsigned int (*aom_masked_sad32x16)(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
-
-void aom_masked_sad32x16x4d_c(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-void aom_masked_sad32x16x4d_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-RTCD_EXTERN void (*aom_masked_sad32x16x4d)(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
 
 unsigned int aom_masked_sad32x32_c(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad32x32_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad32x32_avx2(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 RTCD_EXTERN unsigned int (*aom_masked_sad32x32)(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 
-void aom_masked_sad32x32x4d_c(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-void aom_masked_sad32x32x4d_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-RTCD_EXTERN void (*aom_masked_sad32x32x4d)(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-
 unsigned int aom_masked_sad32x64_c(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad32x64_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad32x64_avx2(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 RTCD_EXTERN unsigned int (*aom_masked_sad32x64)(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
-
-void aom_masked_sad32x64x4d_c(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-void aom_masked_sad32x64x4d_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-RTCD_EXTERN void (*aom_masked_sad32x64x4d)(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
 
 unsigned int aom_masked_sad4x4_c(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad4x4_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad4x4_avx2(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 RTCD_EXTERN unsigned int (*aom_masked_sad4x4)(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 
-void aom_masked_sad4x4x4d_c(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-void aom_masked_sad4x4x4d_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-RTCD_EXTERN void (*aom_masked_sad4x4x4d)(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-
 unsigned int aom_masked_sad4x8_c(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad4x8_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad4x8_avx2(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 RTCD_EXTERN unsigned int (*aom_masked_sad4x8)(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
-
-void aom_masked_sad4x8x4d_c(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-void aom_masked_sad4x8x4d_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-RTCD_EXTERN void (*aom_masked_sad4x8x4d)(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
 
 unsigned int aom_masked_sad64x128_c(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad64x128_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad64x128_avx2(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 RTCD_EXTERN unsigned int (*aom_masked_sad64x128)(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 
-void aom_masked_sad64x128x4d_c(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-void aom_masked_sad64x128x4d_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-RTCD_EXTERN void (*aom_masked_sad64x128x4d)(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-
 unsigned int aom_masked_sad64x32_c(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad64x32_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad64x32_avx2(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 RTCD_EXTERN unsigned int (*aom_masked_sad64x32)(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
-
-void aom_masked_sad64x32x4d_c(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-void aom_masked_sad64x32x4d_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-RTCD_EXTERN void (*aom_masked_sad64x32x4d)(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
 
 unsigned int aom_masked_sad64x64_c(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad64x64_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad64x64_avx2(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 RTCD_EXTERN unsigned int (*aom_masked_sad64x64)(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 
-void aom_masked_sad64x64x4d_c(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-void aom_masked_sad64x64x4d_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-RTCD_EXTERN void (*aom_masked_sad64x64x4d)(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-
 unsigned int aom_masked_sad8x16_c(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad8x16_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad8x16_avx2(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 RTCD_EXTERN unsigned int (*aom_masked_sad8x16)(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
-
-void aom_masked_sad8x16x4d_c(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-void aom_masked_sad8x16x4d_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-RTCD_EXTERN void (*aom_masked_sad8x16x4d)(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
 
 unsigned int aom_masked_sad8x4_c(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad8x4_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad8x4_avx2(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 RTCD_EXTERN unsigned int (*aom_masked_sad8x4)(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 
-void aom_masked_sad8x4x4d_c(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-void aom_masked_sad8x4x4d_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-RTCD_EXTERN void (*aom_masked_sad8x4x4d)(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-
 unsigned int aom_masked_sad8x8_c(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad8x8_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 unsigned int aom_masked_sad8x8_avx2(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
 RTCD_EXTERN unsigned int (*aom_masked_sad8x8)(const uint8_t *src, int src_stride, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask);
-
-void aom_masked_sad8x8x4d_c(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-void aom_masked_sad8x8x4d_ssse3(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
-RTCD_EXTERN void (*aom_masked_sad8x8x4d)(const uint8_t *src, int src_stride, const uint8_t *ref[4], int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned sads[4]);
 
 unsigned int aom_masked_sub_pixel_variance128x128_c(const uint8_t *src, int src_stride, int xoffset, int yoffset, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned int *sse);
 unsigned int aom_masked_sub_pixel_variance128x128_ssse3(const uint8_t *src, int src_stride, int xoffset, int yoffset, const uint8_t *ref, int ref_stride, const uint8_t *second_pred, const uint8_t *msk, int msk_stride, int invert_mask, unsigned int *sse);
@@ -2351,83 +2284,51 @@ static void setup_rtcd_internal(void)
     aom_masked_sad128x128 = aom_masked_sad128x128_c;
     if (flags & HAS_SSSE3) aom_masked_sad128x128 = aom_masked_sad128x128_ssse3;
     if (flags & HAS_AVX2) aom_masked_sad128x128 = aom_masked_sad128x128_avx2;
-    aom_masked_sad128x128x4d = aom_masked_sad128x128x4d_c;
-    if (flags & HAS_SSSE3) aom_masked_sad128x128x4d = aom_masked_sad128x128x4d_ssse3;
     aom_masked_sad128x64 = aom_masked_sad128x64_c;
     if (flags & HAS_SSSE3) aom_masked_sad128x64 = aom_masked_sad128x64_ssse3;
     if (flags & HAS_AVX2) aom_masked_sad128x64 = aom_masked_sad128x64_avx2;
-    aom_masked_sad128x64x4d = aom_masked_sad128x64x4d_c;
-    if (flags & HAS_SSSE3) aom_masked_sad128x64x4d = aom_masked_sad128x64x4d_ssse3;
     aom_masked_sad16x16 = aom_masked_sad16x16_c;
     if (flags & HAS_SSSE3) aom_masked_sad16x16 = aom_masked_sad16x16_ssse3;
     if (flags & HAS_AVX2) aom_masked_sad16x16 = aom_masked_sad16x16_avx2;
-    aom_masked_sad16x16x4d = aom_masked_sad16x16x4d_c;
-    if (flags & HAS_SSSE3) aom_masked_sad16x16x4d = aom_masked_sad16x16x4d_ssse3;
     aom_masked_sad16x32 = aom_masked_sad16x32_c;
     if (flags & HAS_SSSE3) aom_masked_sad16x32 = aom_masked_sad16x32_ssse3;
     if (flags & HAS_AVX2) aom_masked_sad16x32 = aom_masked_sad16x32_avx2;
-    aom_masked_sad16x32x4d = aom_masked_sad16x32x4d_c;
-    if (flags & HAS_SSSE3) aom_masked_sad16x32x4d = aom_masked_sad16x32x4d_ssse3;
     aom_masked_sad16x8 = aom_masked_sad16x8_c;
     if (flags & HAS_SSSE3) aom_masked_sad16x8 = aom_masked_sad16x8_ssse3;
     if (flags & HAS_AVX2) aom_masked_sad16x8 = aom_masked_sad16x8_avx2;
-    aom_masked_sad16x8x4d = aom_masked_sad16x8x4d_c;
-    if (flags & HAS_SSSE3) aom_masked_sad16x8x4d = aom_masked_sad16x8x4d_ssse3;
     aom_masked_sad32x16 = aom_masked_sad32x16_c;
     if (flags & HAS_SSSE3) aom_masked_sad32x16 = aom_masked_sad32x16_ssse3;
     if (flags & HAS_AVX2) aom_masked_sad32x16 = aom_masked_sad32x16_avx2;
-    aom_masked_sad32x16x4d = aom_masked_sad32x16x4d_c;
-    if (flags & HAS_SSSE3) aom_masked_sad32x16x4d = aom_masked_sad32x16x4d_ssse3;
     aom_masked_sad32x32 = aom_masked_sad32x32_c;
     if (flags & HAS_SSSE3) aom_masked_sad32x32 = aom_masked_sad32x32_ssse3;
     if (flags & HAS_AVX2) aom_masked_sad32x32 = aom_masked_sad32x32_avx2;
-    aom_masked_sad32x32x4d = aom_masked_sad32x32x4d_c;
-    if (flags & HAS_SSSE3) aom_masked_sad32x32x4d = aom_masked_sad32x32x4d_ssse3;
     aom_masked_sad32x64 = aom_masked_sad32x64_c;
     if (flags & HAS_SSSE3) aom_masked_sad32x64 = aom_masked_sad32x64_ssse3;
     if (flags & HAS_AVX2) aom_masked_sad32x64 = aom_masked_sad32x64_avx2;
-    aom_masked_sad32x64x4d = aom_masked_sad32x64x4d_c;
-    if (flags & HAS_SSSE3) aom_masked_sad32x64x4d = aom_masked_sad32x64x4d_ssse3;
     aom_masked_sad4x4 = aom_masked_sad4x4_c;
     if (flags & HAS_SSSE3) aom_masked_sad4x4 = aom_masked_sad4x4_ssse3;
     if (flags & HAS_AVX2) aom_masked_sad4x4 = aom_masked_sad4x4_avx2;
-    aom_masked_sad4x4x4d = aom_masked_sad4x4x4d_c;
-    if (flags & HAS_SSSE3) aom_masked_sad4x4x4d = aom_masked_sad4x4x4d_ssse3;
     aom_masked_sad4x8 = aom_masked_sad4x8_c;
     if (flags & HAS_SSSE3) aom_masked_sad4x8 = aom_masked_sad4x8_ssse3;
     if (flags & HAS_AVX2) aom_masked_sad4x8 = aom_masked_sad4x8_avx2;
-    aom_masked_sad4x8x4d = aom_masked_sad4x8x4d_c;
-    if (flags & HAS_SSSE3) aom_masked_sad4x8x4d = aom_masked_sad4x8x4d_ssse3;
     aom_masked_sad64x128 = aom_masked_sad64x128_c;
     if (flags & HAS_SSSE3) aom_masked_sad64x128 = aom_masked_sad64x128_ssse3;
     if (flags & HAS_AVX2) aom_masked_sad64x128 = aom_masked_sad64x128_avx2;
-    aom_masked_sad64x128x4d = aom_masked_sad64x128x4d_c;
-    if (flags & HAS_SSSE3) aom_masked_sad64x128x4d = aom_masked_sad64x128x4d_ssse3;
     aom_masked_sad64x32 = aom_masked_sad64x32_c;
     if (flags & HAS_SSSE3) aom_masked_sad64x32 = aom_masked_sad64x32_ssse3;
     if (flags & HAS_AVX2) aom_masked_sad64x32 = aom_masked_sad64x32_avx2;
-    aom_masked_sad64x32x4d = aom_masked_sad64x32x4d_c;
-    if (flags & HAS_SSSE3) aom_masked_sad64x32x4d = aom_masked_sad64x32x4d_ssse3;
     aom_masked_sad64x64 = aom_masked_sad64x64_c;
     if (flags & HAS_SSSE3) aom_masked_sad64x64 = aom_masked_sad64x64_ssse3;
     if (flags & HAS_AVX2) aom_masked_sad64x64 = aom_masked_sad64x64_avx2;
-    aom_masked_sad64x64x4d = aom_masked_sad64x64x4d_c;
-    if (flags & HAS_SSSE3) aom_masked_sad64x64x4d = aom_masked_sad64x64x4d_ssse3;
     aom_masked_sad8x16 = aom_masked_sad8x16_c;
     if (flags & HAS_SSSE3) aom_masked_sad8x16 = aom_masked_sad8x16_ssse3;
     if (flags & HAS_AVX2) aom_masked_sad8x16 = aom_masked_sad8x16_avx2;
-    aom_masked_sad8x16x4d = aom_masked_sad8x16x4d_c;
-    if (flags & HAS_SSSE3) aom_masked_sad8x16x4d = aom_masked_sad8x16x4d_ssse3;
     aom_masked_sad8x4 = aom_masked_sad8x4_c;
     if (flags & HAS_SSSE3) aom_masked_sad8x4 = aom_masked_sad8x4_ssse3;
     if (flags & HAS_AVX2) aom_masked_sad8x4 = aom_masked_sad8x4_avx2;
-    aom_masked_sad8x4x4d = aom_masked_sad8x4x4d_c;
-    if (flags & HAS_SSSE3) aom_masked_sad8x4x4d = aom_masked_sad8x4x4d_ssse3;
     aom_masked_sad8x8 = aom_masked_sad8x8_c;
     if (flags & HAS_SSSE3) aom_masked_sad8x8 = aom_masked_sad8x8_ssse3;
     if (flags & HAS_AVX2) aom_masked_sad8x8 = aom_masked_sad8x8_avx2;
-    aom_masked_sad8x8x4d = aom_masked_sad8x8x4d_c;
-    if (flags & HAS_SSSE3) aom_masked_sad8x8x4d = aom_masked_sad8x8x4d_ssse3;
     aom_masked_sub_pixel_variance128x128 = aom_masked_sub_pixel_variance128x128_c;
     if (flags & HAS_SSSE3) aom_masked_sub_pixel_variance128x128 = aom_masked_sub_pixel_variance128x128_ssse3;
     aom_masked_sub_pixel_variance128x64 = aom_masked_sub_pixel_variance128x64_c;

@@ -100,19 +100,6 @@ RTCD_EXTERN void (*aom_comp_avg_upsampled_pred)(MACROBLOCKD *xd, const struct AV
                                                    int height, int subpel_x_q3, int subpel_y_q3, const uint8_t *ref,
                                                    int ref_stride, int subpel_search);
 
-void aom_dist_wtd_comp_avg_upsampled_pred_c(MACROBLOCKD *xd, const struct AV1Common *const cm, int mi_row, int mi_col,
-                                                       const MV *const mv, uint8_t *comp_pred, const uint8_t *pred, int width,
-                                                       int height, int subpel_x_q3, int subpel_y_q3, const uint8_t *ref,
-                                                       int ref_stride, const DIST_WTD_COMP_PARAMS *jcp_param, int subpel_search);
-void aom_dist_wtd_comp_avg_upsampled_pred_neon(MACROBLOCKD *xd, const struct AV1Common *const cm, int mi_row, int mi_col,
-                                                       const MV *const mv, uint8_t *comp_pred, const uint8_t *pred, int width,
-                                                       int height, int subpel_x_q3, int subpel_y_q3, const uint8_t *ref,
-                                                       int ref_stride, const DIST_WTD_COMP_PARAMS *jcp_param, int subpel_search);
-RTCD_EXTERN void (*aom_dist_wtd_comp_avg_upsampled_pred)(MACROBLOCKD *xd, const struct AV1Common *const cm, int mi_row, int mi_col,
-                                                       const MV *const mv, uint8_t *comp_pred, const uint8_t *pred, int width,
-                                                       int height, int subpel_x_q3, int subpel_y_q3, const uint8_t *ref,
-                                                       int ref_stride, const DIST_WTD_COMP_PARAMS *jcp_param, int subpel_search);
-
 void aom_quantize_b_helper_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan, const qm_val_t *qm_ptr, const qm_val_t *iqm_ptr, const int log_scale);
 void aom_quantize_b_helper_neon(const tran_low_t *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan, const qm_val_t *qm_ptr, const qm_val_t *iqm_ptr, const int log_scale);
 RTCD_EXTERN void (*aom_quantize_b_helper)(const tran_low_t *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan, const qm_val_t *qm_ptr, const qm_val_t *iqm_ptr, const int log_scale);
@@ -277,6 +264,12 @@ RTCD_EXTERN void (*av1_dr_prediction_z2)(uint8_t* dst,
 void av1_dr_prediction_z3_c(uint8_t *dst, ptrdiff_t stride, int bw, int bh, const uint8_t *above, const uint8_t *left, int upsample_left, int dx, int dy);
 void av1_dr_prediction_z3_neon(uint8_t *dst, ptrdiff_t stride, int bw, int bh, const uint8_t *above, const uint8_t *left, int upsample_left, int dx, int dy);
 RTCD_EXTERN void (*av1_dr_prediction_z3)(uint8_t *dst, ptrdiff_t stride, int bw, int bh, const uint8_t *above, const uint8_t *left, int upsample_left, int dx, int dy);
+
+void av1_fdwt8x8_uint8_input_c(const uint8_t* input,
+                               tran_low_t* output,
+                               int stride,
+                               int hbd);
+#define av1_fdwt8x8_uint8_input av1_fdwt8x8_uint8_input_c
 
 void av1_filter_intra_edge_c(uint8_t *p, int sz, int strength);
 void av1_filter_intra_edge_neon(uint8_t *p, int sz, int strength);
@@ -620,8 +613,6 @@ static void setup_rtcd_internal(void)
 
     aom_comp_avg_upsampled_pred = aom_comp_avg_upsampled_pred_c;
     if (flags & HAS_NEON) aom_comp_avg_upsampled_pred = aom_comp_avg_upsampled_pred_neon;
-    aom_dist_wtd_comp_avg_upsampled_pred = aom_dist_wtd_comp_avg_upsampled_pred_c;
-    if (flags & HAS_NEON) aom_dist_wtd_comp_avg_upsampled_pred = aom_dist_wtd_comp_avg_upsampled_pred_neon;
     aom_quantize_b_helper = aom_quantize_b_helper_c;
     if (flags & HAS_NEON) aom_quantize_b_helper = aom_quantize_b_helper_neon;
     aom_upsampled_pred = aom_upsampled_pred_c;
