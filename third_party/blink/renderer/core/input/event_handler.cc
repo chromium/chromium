@@ -2647,4 +2647,12 @@ base::debug::CrashKeyString* EventHandler::CrashKeyForBug1519197() const {
   return scroll_corner_crash_key;
 }
 
+void EventHandler::ResetLastMousePositionForWebTest() {
+  // When starting a new web test, forget the mouse position, which may have
+  // been affected by the previous test.
+  // TODO(crbug.com/40946696): This code is temporary and can be removed once
+  // we replace the RenderFrameHost; see TODO in WebFrameTestProxy::Reset.
+  mouse_event_manager_->SetLastMousePositionAsUnknown();
+}
+
 }  // namespace blink
