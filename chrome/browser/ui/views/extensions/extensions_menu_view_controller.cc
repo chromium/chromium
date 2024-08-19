@@ -592,14 +592,14 @@ void ExtensionsMenuViewController::UpdateMainPage(
     content::WebContents* web_contents) {
   CHECK(web_contents);
 
-  // Update subheader.
+  // Update site settings.
   std::u16string current_site = GetCurrentHost(web_contents);
   bool is_site_settings_toggle_visible =
       IsSiteSettingsToggleVisible(*toolbar_model_, web_contents);
   bool is_site_settings_toggle_on =
       IsSiteSettingsToggleOn(browser_, web_contents);
-  main_page->UpdateSubheader(current_site, is_site_settings_toggle_visible,
-                             is_site_settings_toggle_on);
+  main_page->UpdateSiteSettings(current_site, is_site_settings_toggle_visible,
+                                is_site_settings_toggle_on);
 
   // Update message section.
   ExtensionsMenuMainPageView::MessageSectionState message_section_state =

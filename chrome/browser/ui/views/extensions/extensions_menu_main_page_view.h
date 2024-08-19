@@ -79,11 +79,10 @@ class ExtensionsMenuMainPageView : public views::View {
   // Returns the menu items.
   std::vector<ExtensionMenuItemView*> GetMenuItems() const;
 
-  // Updates the subheader with the given parameters. Does not update the menu
-  // items (menu item updates are handled directly in such view).
-  void UpdateSubheader(const std::u16string& current_site,
-                       bool is_site_settings_toggle_visible,
-                       bool is_site_settings_toggle_on);
+  // Updates the site settings views with the given parameters.
+  void UpdateSiteSettings(const std::u16string& current_site,
+                          bool is_site_settings_toggle_visible,
+                          bool is_site_settings_toggle_on);
 
   // Updates the message section given `state` and `has_enterprise_extensions`.
   void UpdateMessageSection(MessageSectionState state,
@@ -108,6 +107,8 @@ class ExtensionsMenuMainPageView : public views::View {
 
   // Accessors used by tests:
   // Returns the currently-showing menu items.
+  // TODO(crbug.com/40879945): rename to GetSiteSettingLabelForTesting() after
+  // updating the label text as needed.
   const std::u16string& GetSubheaderSubtitleTextForTesting() const;
   views::ToggleButton* GetSiteSettingsToggleForTesting() {
     return site_settings_toggle_;
@@ -126,14 +127,12 @@ class ExtensionsMenuMainPageView : public views::View {
   const raw_ptr<Browser> browser_;
   const raw_ptr<ExtensionsMenuHandler> menu_handler_;
 
-  // Subheader section.
-  raw_ptr<views::Label> subheader_subtitle_;
+  // Site settings views.
+  raw_ptr<views::Label> site_settings_label_;
   raw_ptr<views::ToggleButton> site_settings_toggle_;
 
-  // Message section.
+  // Contents views.
   raw_ptr<MessageSection> message_section_;
-
-  // Menu items section.
   // The view containing the menu items. This is separated for easy insertion
   // and iteration of menu items. The children are guaranteed to only be
   // ExtensionMenuItemViews.
