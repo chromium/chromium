@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/account_id",
   "+ios/chrome/browser/enterprise/model/idle",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/ui/scoped_ui_blocker",
