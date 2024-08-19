@@ -486,7 +486,16 @@ class InfiniteResponse : public BasicHttpResponse {
 
  private:
   void SendInfinite(base::WeakPtr<HttpResponseDelegate> delegate) {
-    delegate->SendContents("echo", base::DoNothing());
+    if (!delegate) {
+      return;
+    }
+
+    delegate->SendContents(
+        "echo", base::BindOnce(&InfiniteResponse::OnSendDone,
+                               weak_ptr_factory_.GetWeakPtr(), delegate));
+  }
+
+  void OnSendDone(base::WeakPtr<HttpResponseDelegate> delegate) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&InfiniteResponse::SendInfinite,
                                   weak_ptr_factory_.GetWeakPtr(), delegate));
