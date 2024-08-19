@@ -89,14 +89,18 @@ class MODULES_EXPORT SpeechRecognition final
   }
   bool allowCloudFallback() const { return allow_cloud_fallback_; }
 
-  // Callable by the user.
+  // Callable by the user. Methods may be called after the execution context is
+  // destroyed.
   void start(ExceptionState&);
   void start(MediaStreamTrack*, ExceptionState&);
   void stopFunction();
   void abort();
   ScriptPromise<IDLBoolean> onDeviceWebSpeechAvailable(ScriptState*,
-                                                       String lang,
+                                                       const String& lang,
                                                        ExceptionState&);
+  ScriptPromise<IDLBoolean> installOnDeviceSpeechRecognition(ScriptState*,
+                                                             const String& lang,
+                                                             ExceptionState&);
 
   // media::mojom::blink::SpeechRecognitionSessionClient
   void ResultRetrieved(

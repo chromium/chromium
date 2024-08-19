@@ -32,6 +32,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/speech/on_device_speech_recognition_impl.h"
 #include "chrome/browser/translate/translate_frame_binder.h"
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -824,6 +825,14 @@ void BindMediaFoundationRendererNotifierHandler(
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 
+void BindOnDeviceSpeechRecognitionHandler(
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<media::mojom::OnDeviceSpeechRecognition> receiver) {
+  speech::OnDeviceSpeechRecognitionImpl::GetOrCreateForCurrentDocument(
+      frame_host)
+      ->Bind(std::move(receiver));
+}
+
 #if BUILDFLAG(IS_WIN)
 void BindMediaFoundationPreferences(
     content::RenderFrameHost* frame_host,
@@ -1037,6 +1046,8 @@ void PopulateChromeFrameBinders(
 
   map->Add<network_hints::mojom::NetworkHintsHandler>(
       base::BindRepeating(&BindNetworkHintsHandler));
+  map->Add<media::mojom::OnDeviceSpeechRecognition>(
+      base::BindRepeating(&BindOnDeviceSpeechRecognitionHandler));
 
 #if BUILDFLAG(ENABLE_SPEECH_SERVICE)
   map->Add<media::mojom::SpeechRecognitionContext>(

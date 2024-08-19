@@ -141,6 +141,10 @@ bool SodaInstaller::IsSodaInstalled(LanguageCode language_code) const {
   return (soda_binary_installed_ && IsLanguageInstalled(language_code));
 }
 
+bool SodaInstaller::IsSodaBinaryInstalled() const {
+  return soda_binary_installed_;
+}
+
 const std::set<LanguageCode> SodaInstaller::InstalledLanguages() const {
   return installed_languages_;
 }

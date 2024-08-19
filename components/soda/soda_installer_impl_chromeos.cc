@@ -255,13 +255,14 @@ base::FilePath SodaInstallerImplChromeOS::GetLanguagePath(
 }
 
 void SodaInstallerImplChromeOS::InstallSoda(PrefService* global_prefs) {
-  if (never_download_soda_for_testing_)
+  if (soda_binary_installed_ || never_download_soda_for_testing_) {
     return;
+  }
+
   // Clear cached path in case this is a reinstallation (path could
   // change).
   SetSodaBinaryPath(base::FilePath());
 
-  soda_binary_installed_ = false;
   is_soda_downloading_ = true;
   soda_progress_ = 0.0;
 

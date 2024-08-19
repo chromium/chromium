@@ -30,10 +30,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
-#include "components/soda/soda_util.h"
-#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
-
 namespace content {
 
 SpeechRecognitionDispatcherHost::SpeechRecognitionDispatcherHost(
@@ -85,18 +81,6 @@ void SpeechRecognitionDispatcherHost::Start(
       base::BindOnce(&SpeechRecognitionDispatcherHost::StartRequestOnUI,
                      AsWeakPtr(), render_process_id_, render_frame_id_,
                      std::move(params)));
-}
-
-void SpeechRecognitionDispatcherHost::OnDeviceWebSpeechAvailable(
-    const std::string& language,
-    SpeechRecognitionDispatcherHost::OnDeviceWebSpeechAvailableCallback
-        callback) {
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
-  std::move(callback).Run(false);
-#else
-  std::move(callback).Run(
-      speech::IsOnDeviceSpeechRecognitionAvailable(language));
-#endif  // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
 }
 
 // static

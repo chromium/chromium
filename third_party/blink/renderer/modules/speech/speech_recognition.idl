@@ -52,6 +52,11 @@
         RaisesException,
         RuntimeEnabled=OnDeviceWebSpeechAvailable
     ] Promise<boolean> onDeviceWebSpeechAvailable(DOMString lang);
+    [
+        CallWith=ScriptState,
+        RaisesException,
+        RuntimeEnabled=InstallOnDeviceSpeechRecognition
+    ] Promise<boolean> installOnDeviceSpeechRecognition(DOMString lang);
 
     // event methods
     attribute EventHandler onaudiostart;

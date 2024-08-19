@@ -76,8 +76,11 @@ class SpeechRecognitionController final
           audio_forwarder = mojo::NullReceiver(),
       std::optional<media::AudioParameters> audio_parameters = std::nullopt);
 
-  void OnDeviceWebSpeechAvailable(String language,
+  void OnDeviceWebSpeechAvailable(const String& language,
                                   base::OnceCallback<void(bool)> callback);
+  void InstallOnDeviceSpeechRecognition(
+      const String& language,
+      base::OnceCallback<void(bool)> callback);
 
   static SpeechRecognitionController* From(LocalDOMWindow&);
 
@@ -85,8 +88,12 @@ class SpeechRecognitionController final
 
  private:
   media::mojom::blink::SpeechRecognizer* GetSpeechRecognizer();
+  media::mojom::blink::OnDeviceSpeechRecognition*
+  GetOnDeviceSpeechRecognition();
 
   HeapMojoRemote<media::mojom::blink::SpeechRecognizer> speech_recognizer_;
+  HeapMojoRemote<media::mojom::blink::OnDeviceSpeechRecognition>
+      on_device_speech_recognition_;
 };
 
 }  // namespace blink

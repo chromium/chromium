@@ -2411,6 +2411,9 @@
       base_feature: "none",
     },
     {
+      name: "InstallOnDeviceSpeechRecognition",
+    },
+    {
       name: "InteroperablePrivateAttribution",
       status: "experimental",
     },
