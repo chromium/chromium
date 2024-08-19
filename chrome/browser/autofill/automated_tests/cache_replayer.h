@@ -26,15 +26,10 @@ std::pair<std::string, std::string> SplitHTTP(const std::string& http_text);
 // Streams in text format. For consistency, taken from anonymous namespace in
 // components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.cc
 std::ostream& operator<<(std::ostream& out,
-                         const autofill::AutofillQueryContents& query);
-std::ostream& operator<<(std::ostream& out,
                          const autofill::AutofillPageQueryRequest& query);
 
 // Streams in text format. For consistency, taken from anonymous namespace in
 // components/autofill/core/browser/form_structure.cc
-std::ostream& operator<<(
-    std::ostream& out,
-    const autofill::AutofillQueryResponseContents& response);
 std::ostream& operator<<(std::ostream& out,
                          const autofill::AutofillQueryResponse& response);
 enum class RequestType {
