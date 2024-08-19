@@ -7,12 +7,14 @@
 #include <string>
 #include <utility>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 namespace {
@@ -33,6 +35,7 @@ PickerSymbolItemView::PickerSymbolItemView(
     : PickerItemView(std::move(select_item_callback)) {
   SetUseDefaultFillLayout(true);
   SetCornerRadius(kPickerSymbolItemCornerRadius);
+  SetProperty(views::kElementIdentifierKey, kPickerEmojiItemElementId);
 
   symbol_label_ =
       AddChildView(views::Builder<views::Label>()
@@ -44,6 +47,10 @@ PickerSymbolItemView::PickerSymbolItemView(
 }
 
 PickerSymbolItemView::~PickerSymbolItemView() = default;
+
+std::u16string_view PickerSymbolItemView::GetTextForTesting() const {
+  return symbol_label_->GetText();
+}
 
 BEGIN_METADATA(PickerSymbolItemView)
 END_METADATA

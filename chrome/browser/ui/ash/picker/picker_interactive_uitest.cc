@@ -8,7 +8,9 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/picker/picker_controller.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
+#include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
+#include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/shell.h"
 #include "base/strings/string_util.h"
 #include "base/time/time_override.h"
@@ -146,6 +148,88 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertEmoji) {
       PressButton(kFirstEmojiResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context,
                 WaitForWebInputFieldValue(kExpectedFirstEmoji)));
+}
+
+// Searches for 'greek letter alpha', checks the top emoji result is 'α'; and
+// inserts it into a web input field.
+IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertSymbol) {
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
+  constexpr std::string_view kFirstSymbolResultName = "FirstSymbolResult";
+  constexpr std::u16string_view kExpectedFirstSymbol = u"α";
+  views::Textfield* picker_search_field = nullptr;
+
+  RunTestSequence(
+      InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
+                                       WaitForWebInputFieldFocus())),
+      Do([]() { TogglePickerByAccelerator(); }),
+      AfterShow(ash::kPickerSearchFieldTextfieldElementId,
+                [&picker_search_field](ui::TrackedElement* el) {
+                  picker_search_field = AsView<views::Textfield>(el);
+                }),
+      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      WaitForState(kSearchFieldFocusedState, true),
+      EnterText(ash::kPickerSearchFieldTextfieldElementId,
+                u"greek letter alpha"),
+      WaitForShow(ash::kPickerEmojiItemElementId,
+                  /*transition_only_on_event=*/true),
+      NameDescendantView(
+          ash::kPickerEmojiBarElementId, kFirstSymbolResultName,
+          base::BindLambdaForTesting(
+              [kExpectedFirstSymbol](const views::View* view) {
+                if (const auto* symbol_item_view =
+                        views::AsViewClass<ash::PickerSymbolItemView>(view)) {
+                  return symbol_item_view->GetTextForTesting() ==
+                         kExpectedFirstSymbol;
+                }
+                return false;
+              })),
+      PressButton(kFirstSymbolResultName), WaitForHide(ash::kPickerElementId),
+      InContext(browser_context,
+                WaitForWebInputFieldValue(kExpectedFirstSymbol)));
+}
+
+// Searches for 'denko of disapproval', checks the top emoji result is 'ಠωಠ';
+// and inserts it into a web input field.
+IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertEmoticon) {
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
+  constexpr std::string_view kFirstEmoticonResultName = "FirstEmoticonResult";
+  constexpr std::u16string_view kExpectedFirstEmoticon = u"ಠωಠ";
+  views::Textfield* picker_search_field = nullptr;
+
+  RunTestSequence(
+      InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
+                                       WaitForWebInputFieldFocus())),
+      Do([]() { TogglePickerByAccelerator(); }),
+      AfterShow(ash::kPickerSearchFieldTextfieldElementId,
+                [&picker_search_field](ui::TrackedElement* el) {
+                  picker_search_field = AsView<views::Textfield>(el);
+                }),
+      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      WaitForState(kSearchFieldFocusedState, true),
+      EnterText(ash::kPickerSearchFieldTextfieldElementId,
+                u"denko of disapproval"),
+      WaitForShow(ash::kPickerEmojiItemElementId,
+                  /*transition_only_on_event=*/true),
+      NameDescendantView(
+          ash::kPickerEmojiBarElementId, kFirstEmoticonResultName,
+          base::BindLambdaForTesting(
+              [kExpectedFirstEmoticon](const views::View* view) {
+                if (const auto* emoticon_item_view =
+                        views::AsViewClass<ash::PickerEmoticonItemView>(view)) {
+                  return emoticon_item_view->GetTextForTesting() ==
+                         kExpectedFirstEmoticon;
+                }
+                return false;
+              })),
+      PressButton(kFirstEmoticonResultName), WaitForHide(ash::kPickerElementId),
+      InContext(browser_context,
+                WaitForWebInputFieldValue(kExpectedFirstEmoticon)));
 }
 
 // Searches for 'today', checks the top result is the date, and inserts it

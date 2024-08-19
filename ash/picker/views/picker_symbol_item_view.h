@@ -29,6 +29,8 @@ class ASH_EXPORT PickerSymbolItemView : public PickerItemView {
   PickerSymbolItemView& operator=(const PickerSymbolItemView&) = delete;
   ~PickerSymbolItemView() override;
 
+  std::u16string_view GetTextForTesting() const;
+
  private:
   raw_ptr<views::Label> symbol_label_ = nullptr;
 };

@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -15,6 +16,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 namespace {
@@ -37,6 +39,7 @@ PickerEmoticonItemView::PickerEmoticonItemView(
     : PickerItemView(std::move(select_item_callback)) {
   SetUseDefaultFillLayout(true);
   SetCornerRadius(kPickerEmoticonItemCornerRadius);
+  SetProperty(views::kElementIdentifierKey, kPickerEmojiItemElementId);
 
   emoticon_label_ = AddChildView(
       views::Builder<views::Label>()
@@ -49,6 +52,10 @@ PickerEmoticonItemView::PickerEmoticonItemView(
 }
 
 PickerEmoticonItemView::~PickerEmoticonItemView() = default;
+
+std::u16string_view PickerEmoticonItemView::GetTextForTesting() const {
+  return emoticon_label_->GetText();
+}
 
 BEGIN_METADATA(PickerEmoticonItemView)
 END_METADATA
