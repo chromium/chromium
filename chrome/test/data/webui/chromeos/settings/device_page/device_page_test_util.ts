@@ -57,6 +57,8 @@ export function getFakePrefs() {
         geolocation_access_level: {
           key: 'ash.user.geolocation_access_level',
           type: GeolocationAccessLevel,
+          enforcement:
+              undefined as chrome.settingsPrivate.Enforcement | undefined,
           value: GeolocationAccessLevel.ALLOWED,
         },
       },

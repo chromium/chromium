@@ -36,7 +36,7 @@ import {getDisplaySettingsProvider} from './display_settings_mojo_interface_prov
  * The types of Night Light automatic schedule. The values of the enum values
  * are synced with the pref "prefs.ash.night_light.schedule_type".
  */
-enum NightLightScheduleType {
+export enum NightLightScheduleType {
   NEVER = 0,
   SUNSET_TO_SUNRISE = 1,
   CUSTOM = 2,
@@ -130,7 +130,7 @@ export class SettingsDisplayNightLightElement extends
       geolocationWarningText_: {
         type: String,
         computed: 'computeGeolocationWarningText_(' +
-            'prefs.ash.user.geolocation_access_level.value,' +
+            'prefs.ash.user.geolocation_access_level.*,' +
             'sunriseTime_, sunsetTime_)',
 
       },
@@ -261,9 +261,20 @@ export class SettingsDisplayNightLightElement extends
   }
 
   private computeGeolocationWarningText_(): string {
-    return loadTimeData.getStringF(
-        'displayNightLightGeolocationWarningText', this.sunriseTime_,
-        this.sunsetTime_);
+    if (!this.prefs) {
+      return '';
+    }
+
+    if (this.prefs.ash.user.geolocation_access_level.enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED) {
+      return loadTimeData.getStringF(
+          'displayNightLightGeolocationManagedWarningText', this.sunriseTime_,
+          this.sunsetTime_);
+    } else {
+      return loadTimeData.getStringF(
+          'displayNightLightGeolocationWarningText', this.sunriseTime_,
+          this.sunsetTime_);
+    }
   }
 
   private openGeolocationDialog_(): void {

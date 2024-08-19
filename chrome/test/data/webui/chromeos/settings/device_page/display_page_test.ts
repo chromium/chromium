@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrA11yAnnouncerElement, CrLinkRowElement, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, DisplayLayoutElement, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrA11yAnnouncerElement, CrLinkRowElement, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, DisplayLayoutElement, displaySettingsProviderMojom, GeolocationAccessLevel, NightLightScheduleType, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -909,6 +909,52 @@ suite('<settings-display>', () => {
     // // Night Light is on, so temperature is visible.
     assertFalse(temperature.hidden);
     assertFalse(schedule.hidden);
+  });
+
+  test('night light displays geolocation warning', async () => {
+    await initPage();
+
+    // Check consumer flow.
+    let newPrefs = getFakePrefs();
+    newPrefs.ash.user.geolocation_access_level.value =
+        GeolocationAccessLevel.DISALLOWED;
+    newPrefs.ash.night_light.schedule_type.value =
+        NightLightScheduleType.SUNSET_TO_SUNRISE;
+    displayPage.prefs = newPrefs;
+    flush();
+
+    let displayNightLight = strictQuery(
+        'settings-display-night-light', displayPage.shadowRoot, HTMLElement);
+    assert(displayNightLight);
+
+    let warningText = strictQuery(
+        'settings-privacy-hub-geolocation-warning-text',
+        displayNightLight.shadowRoot, HTMLElement);
+    assert(warningText);
+    assertTrue(warningText.getAttribute('warning-text-with-anchor')!.includes(
+        '<a href="#">'));
+
+    // Check managed flow, when Geolocation pref is enforced.
+    newPrefs = getFakePrefs();
+    newPrefs.ash.user.geolocation_access_level.value =
+        GeolocationAccessLevel.DISALLOWED;
+    newPrefs.ash.user.geolocation_access_level.enforcement =
+        chrome.settingsPrivate.Enforcement.ENFORCED;
+    newPrefs.ash.night_light.schedule_type.value =
+        NightLightScheduleType.SUNSET_TO_SUNRISE;
+    displayPage.prefs = newPrefs;
+    flush();
+
+    displayNightLight = strictQuery(
+        'settings-display-night-light', displayPage.shadowRoot, HTMLElement);
+    assert(displayNightLight);
+
+    warningText = strictQuery(
+        'settings-privacy-hub-geolocation-warning-text',
+        displayNightLight.shadowRoot, HTMLElement);
+    assert(warningText);
+    assertFalse(warningText.getAttribute('warning-text-with-anchor')!.includes(
+        '<a href="#">'));
   });
 
   test('Display Performance', async () => {
