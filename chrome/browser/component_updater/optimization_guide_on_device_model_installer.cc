@@ -53,7 +53,6 @@ OptimizationGuideOnDeviceModelInstallerPolicy::
 bool OptimizationGuideOnDeviceModelInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return state_manager_->VerifyInstallation(install_dir, manifest);
 }
 
@@ -77,18 +76,13 @@ OptimizationGuideOnDeviceModelInstallerPolicy::OnCustomInstall(
 }
 
 void OptimizationGuideOnDeviceModelInstallerPolicy::OnCustomUninstall() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&OnDeviceModelComponentStateManager::UninstallComplete,
-                     state_manager_->GetWeakPtr()));
+  state_manager_->UninstallComplete();
 }
 
 void OptimizationGuideOnDeviceModelInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::Value::Dict manifest) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_manager_->SetReady(version, install_dir, manifest);
 }
 

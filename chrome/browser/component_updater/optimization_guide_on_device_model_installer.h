@@ -43,9 +43,7 @@ class OptimizationGuideOnDeviceModelInstallerPolicy
 
  private:
   scoped_refptr<optimization_guide::OnDeviceModelComponentStateManager>
-      state_manager_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  SEQUENCE_CHECKER(sequence_checker_);
+      state_manager_;
 };
 
 void RegisterOptimizationGuideOnDeviceModelComponent(
