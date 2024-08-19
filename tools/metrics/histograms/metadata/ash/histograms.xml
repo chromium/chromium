@@ -8804,27 +8804,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitView.SwapWindowCount" units="count"
-    expires_after="2024-10-01">
+    expires_after="2025-08-19">
   <owner>xdai@chromium.org</owner>
-  <owner>zxdan@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
-  <owner>fanafan@chromium.org</owner>
+  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted at the end of split view mode to report the number of swap window
     operations in split view mode session.
-  </summary>
-</histogram>
-
-<histogram name="Ash.SplitView.SwapWindowSource"
-    enum="SplitViewSwapWindowsSource" expires_after="2024-10-01">
-  <owner>michelefan@chromium.org</owner>
-  <owner>xdai@chromium.org</owner>
-  <summary>
-    Recorded whenever two windows in split view are swapped. The recorded enum
-    indicates where the swap operation is triggered, which can either be from
-    double tap or swap button on the snap group expanded menu.
-
-    Deprecated Nov 2023 as the swap entry point is deprecated.
   </summary>
 </histogram>
 
@@ -8937,11 +8924,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.SplitViewResize.PresentationTime.MaxLatency{SplitViewResizeModes}"
-    units="ms" expires_after="2024-09-01">
+    units="ms" expires_after="2025-08-19">
   <owner>xdai@chromium.org</owner>
-  <owner>omrilio@chromium.org</owner>
-  <owner>oshima@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Maximum latency of the presentation time while resizing one or two split
     view windows. {SplitViewResizeModes}
@@ -8950,11 +8937,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitViewResize.PresentationTime{SplitViewResizeModes}"
-    units="ms" expires_after="2025-01-26">
+    units="ms" expires_after="2025-08-19">
   <owner>xdai@chromium.org</owner>
-  <owner>omrilio@chromium.org</owner>
-  <owner>oshima@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
+  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Presentation time while resizing one or two split view windows.
     {SplitViewResizeModes}
