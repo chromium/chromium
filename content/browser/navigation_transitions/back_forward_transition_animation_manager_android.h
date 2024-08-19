@@ -88,6 +88,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
+  SkBitmap MaybeCopyContentAreaAsBitmapSync();
+
   // This is called before the `old_host` is swapped out and before the
   // `new_host` is swapped in.
   //

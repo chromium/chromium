@@ -476,6 +476,24 @@ bool WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmap(
   return false;
 }
 
+SkBitmap WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmapSync() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return SkBitmap();
+  }
+  ScopedJavaLocalRef<jobject> bitmap =
+      Java_WebContentsDelegateAndroid_maybeCopyContentAreaAsBitmapSync(env,
+                                                                       obj);
+  if (bitmap.is_null()) {
+    return SkBitmap();
+  }
+  gfx::JavaBitmap java_bitmap_lock(bitmap);
+  SkBitmap skbitmap = gfx::CreateSkBitmapFromJavaBitmap(java_bitmap_lock);
+  skbitmap.setImmutable();
+  return skbitmap;
+}
+
 void WebContentsDelegateAndroid::DidBackForwardTransitionAnimationChange() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);

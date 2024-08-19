@@ -236,6 +236,14 @@ void BackForwardTransitionAnimationManagerAndroid::OnAnimationStageChanged() {
       ->DidBackForwardTransitionAnimationChange();
 }
 
+SkBitmap BackForwardTransitionAnimationManagerAndroid::
+    MaybeCopyContentAreaAsBitmapSync() {
+  return web_contents_view_android()
+      ->web_contents()
+      ->GetDelegate()
+      ->MaybeCopyContentAreaAsBitmapSync();
+}
+
 void BackForwardTransitionAnimationManagerAndroid::MaybeDestroyAnimator() {
   CHECK(animator_);
   if (animator_->IsTerminalState()) {

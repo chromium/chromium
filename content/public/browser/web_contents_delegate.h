@@ -808,6 +808,10 @@ class CONTENT_EXPORT WebContentsDelegate {
       base::OnceCallback<void(const SkBitmap&)> callback);
 
 #if BUILDFLAG(IS_ANDROID)
+  // Synchronous version of |MaybeCopyContentAreaAsBitmap|. Return an
+  // empty bitmap if embedder is not showing any custom view.
+  virtual SkBitmap MaybeCopyContentAreaAsBitmapSync();
+
   // Notifies the delegate that the back forward transition animation state
   // has changed. If necessary, the delegate should use this notification to
   // hold on its animation until the back forward transition has completed.

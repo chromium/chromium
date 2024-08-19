@@ -416,6 +416,10 @@ bool WebContentsDelegate::MaybeCopyContentAreaAsBitmap(
 }
 
 #if BUILDFLAG(IS_ANDROID)
+SkBitmap WebContentsDelegate::MaybeCopyContentAreaAsBitmapSync() {
+  return SkBitmap();
+}
+
 BackForwardTransitionAnimationManager::FallbackUXConfig
 WebContentsDelegate::GetBackForwardTransitionFallbackUXConfig() {
   return BackForwardTransitionAnimationManager::FallbackUXConfig();

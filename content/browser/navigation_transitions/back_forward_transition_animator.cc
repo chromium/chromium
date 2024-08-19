@@ -190,7 +190,11 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
     screenshot_layer_.reset();
   }
 
-  if (old_surface_clone_) {
+  if (embedder_live_content_clone_) {
+    CHECK(!old_surface_clone_);
+    embedder_live_content_clone_->RemoveFromParent();
+    embedder_live_content_clone_.reset();
+  } else if (old_surface_clone_) {
     old_surface_clone_->RemoveFromParent();
     old_surface_clone_.reset();
   }
@@ -570,7 +574,7 @@ void BackForwardTransitionAnimator::ReadyToCommitNavigation(
   if (navigation_request->early_render_frame_host_swap_type() ==
           NavigationRequest::EarlyRenderFrameHostSwapType::kNone &&
       old_rfh == new_rfh) {
-    CloneOldSurfaceLayer(old_rfh->GetView());
+    MaybeCloneOldSurfaceLayer(old_rfh->GetView());
   }
 }
 
@@ -715,7 +719,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
         // This is done sooner (in ReadyToCommit) for same-RFH navigations
         // since the SurfaceID changes before DidCommit for these navigations.
         if (old_host != new_host) {
-          CloneOldSurfaceLayer(old_host->GetView());
+          MaybeCloneOldSurfaceLayer(old_host->GetView());
         }
       } else {
         // Our navigation has already committed while a second navigation
@@ -1135,6 +1139,8 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview() {
   screenshot_layer_->AddChild(screenshot_scrim_);
   screenshot_scrim_->SetContentsOpaque(false);
 
+  MaybeCopyContentAreaAsBitmap();
+
   // This inserts the screenshot layer into the layer tree.
   InsertLayersInOrder();
 
@@ -1234,7 +1240,8 @@ void BackForwardTransitionAnimator::TrackRequest(
       // message. Once the browser receives the renderer's "DidCommitNavigation"
       // message, it is too late to make a clone or subscribe to the widget
       // host.
-      CloneOldSurfaceLayer(created_request->GetRenderFrameHost()->GetView());
+      MaybeCloneOldSurfaceLayer(
+          created_request->GetRenderFrameHost()->GetView());
       SubscribeToNewRenderWidgetHost(created_request.get());
     }
   } else {
@@ -1328,26 +1335,29 @@ bool BackForwardTransitionAnimator::SetLayerTransformationAndTickEffect(
         << ToString(navigation_state_);
     CHECK_EQ(state_, State::kDisplayingInvokeAnimation);
     old_surface_clone_->SetTransform(live_page_transform);
+  } else if (embedder_live_content_clone_) {
+    embedder_live_content_clone_->SetTransform(live_page_transform);
   }
 
   effect_.Tick(GetFittedTimeTicksForForegroundProgress(values.progress));
   return result.done && effect_.keyframe_models().empty();
 }
 
-// TODO(crbug.com/40283503): The Clank's interstitial page isn't
-// drawn by `old_view`. We need to address as part of "navigating from NTP"
-// animation.
-void BackForwardTransitionAnimator::CloneOldSurfaceLayer(
+void BackForwardTransitionAnimator::MaybeCloneOldSurfaceLayer(
     RenderWidgetHostViewBase* old_main_frame_view) {
   // The old View must be still alive (and its renderer).
   CHECK(old_main_frame_view);
 
   CHECK(!old_surface_clone_);
 
-  old_surface_clone_ = cc::slim::SurfaceLayer::Create();
+  if (embedder_live_content_clone_) {
+    return;
+  }
+
   const auto* old_surface_layer =
       static_cast<RenderWidgetHostViewAndroid*>(old_main_frame_view)
           ->GetSurfaceLayer();
+  old_surface_clone_ = cc::slim::SurfaceLayer::Create();
   // Use a zero deadline because this is a copy of a surface being actively
   // shown. The surface textures are ready (i.e. won't be GC'ed) because
   // `old_surface_clone_` references to them.
@@ -1360,6 +1370,21 @@ void BackForwardTransitionAnimator::CloneOldSurfaceLayer(
 
   // Inserts the clone layer into the layer tree.
   InsertLayersInOrder();
+}
+
+void BackForwardTransitionAnimator::MaybeCopyContentAreaAsBitmap() {
+  SkBitmap bitmap = animation_manager_->MaybeCopyContentAreaAsBitmapSync();
+  if (bitmap.empty()) {
+    return;
+  }
+  embedder_live_content_clone_ = cc::slim::UIResourceLayer::Create();
+  embedder_live_content_clone_->SetBitmap(bitmap);
+  embedder_live_content_clone_->SetIsDrawable(true);
+  embedder_live_content_clone_->SetPosition(gfx::PointF(0.f, 0.f));
+  embedder_live_content_clone_->SetBounds(
+      animation_manager_->web_contents_view_android()
+          ->GetNativeView()
+          ->GetPhysicalBackingSize());
 }
 
 // TODO(crbug.com/350750205): Refactor this function and
@@ -1433,7 +1458,9 @@ void BackForwardTransitionAnimator::InsertLayersInOrder() {
   // z-order):
   //
   //   WebContentsViewAndroid::view_->GetLayer()
-  //      |- old_surface_clone_ (only set during the invoke animation).
+  //      |- `embedder_live_content_clone_`
+  //      |- `old_surface_clone_` (only set during the invoke animation
+  //           and when `embedder_live_content_clone_` is not set).
   //      |- parent_for_web_page_widgets_ (RWHVAndroid, Overscroll etc).
   //      |-   progress_bar_ (child of screenshot_layer_,
   //                          only during invoke animation)
@@ -1467,10 +1494,10 @@ void BackForwardTransitionAnimator::InsertLayersInOrder() {
   if (screenshot_layer_->parent()) {
     screenshot_layer_->RemoveFromParent();
   }
-  if (old_surface_clone_) {
-    if (old_surface_clone_->parent()) {
-      old_surface_clone_->RemoveFromParent();
-    }
+  if (embedder_live_content_clone_) {
+    embedder_live_content_clone_->RemoveFromParent();
+  } else if (old_surface_clone_) {
+    old_surface_clone_->RemoveFromParent();
   }
 
   cc::slim::Layer* parent_layer =
@@ -1498,9 +1525,15 @@ void BackForwardTransitionAnimator::InsertLayersInOrder() {
     ++web_page_widgets_index;
   }
 
-  // The old page clone is used only when the old live page is swapped out so
-  // may be null at other times.
-  if (old_surface_clone_) {
+  if (embedder_live_content_clone_) {
+    // The embedder live content clone is used only when there is a visible
+    // native view corresponding to the currently committed navigation entry.
+    parent_layer->InsertChild(embedder_live_content_clone_.get(),
+                              web_page_widgets_index + 1);
+  } else if (old_surface_clone_) {
+    // The old page clone is used only when the old live page is swapped out so
+    // may be null at other times.
+
     // The clone is no longer needed when cross-fading - the screenshot layer
     // must always be on top at this time.
     CHECK_NE(state_, State::kDisplayingCrossFadeAnimation);

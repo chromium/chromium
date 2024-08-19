@@ -22,6 +22,7 @@ namespace cc::slim {
 class Layer;
 class SolidColorLayer;
 class SurfaceLayer;
+class UIResourceLayer;
 }
 
 namespace content {
@@ -306,7 +307,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   [[nodiscard]] bool SetLayerTransformationAndTickEffect(
       const PhysicsModel::Result& result);
 
-  void CloneOldSurfaceLayer(RenderWidgetHostViewBase* old_main_frame_view);
+  void MaybeCloneOldSurfaceLayer(RenderWidgetHostViewBase* old_main_frame_view);
+
+  void MaybeCopyContentAreaAsBitmap();
 
   // Called when the navigation is ready to be committed in the renderer.
   void SubscribeToNewRenderWidgetHost(NavigationRequest* navigation_request);
@@ -365,6 +368,10 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // - For same-RFH and same-doc navigations, it is cloned immediately after we
   //   tell the renderer to commit the navigation.
   scoped_refptr<cc::slim::SurfaceLayer> old_surface_clone_;
+
+  // A copy of the embedder content to show the content from the embedder side.
+  // Only one of old_surface_clone_ or embedder_live_content_clone_ will be set.
+  scoped_refptr<cc::slim::UIResourceLayer> embedder_live_content_clone_;
 
   // The pre-captured screenshot used for previewing. The ownership of the
   // screenshot is transferred from the cache to this manager when the gesture
