@@ -239,6 +239,10 @@ void DumpAccessibilityTestBase::ChooseFeatures(
   // prunes redundant text for inline text boxes.
   enabled_features->emplace_back(
       features::kAccessibilityPruneRedundantInlineText);
+  // For improved test coverage ahead of a finch trial, enable the feature that
+  // prunes redundant (next|previous) on line IDs.
+  enabled_features->emplace_back(
+      features::kAccessibilityPruneRedundantInlineConnectivity);
 }
 
 std::string DumpAccessibilityTestBase::DumpTreeAsString() const {
