@@ -74,13 +74,17 @@ class PlusAddressPreallocator : public PlusAddressAllocator {
   void PrunePreallocatedPlusAddresses();
 
   // Requests new pre-allocated plus addresses if
-  // - the global feature toggle for plus addresses is on, and
-  // - there are less than `kPlusAddressPreallocationMinimumSize` pre-allocated
+  // 1) `IsEnabled()` is true,
+  // 2) there are less than `kPlusAddressPreallocationMinimumSize` pre-allocated
   //   addresses left,
-  // - there is no ongoing pre-allocation request,
-  // - we are not in a cool-off period due to repeated, timed-out requests. If
+  // 3) there is no ongoing pre-allocation request,
+  // 4) we are not in a cool-off period due to repeated, timed-out requests. If
   //   `is_user_triggered` is `true`, the cool-off period is ignored.
   void MaybeRequestNewPreallocatedPlusAddresses(bool is_user_triggered);
+
+  // Returns whether the global feature toggle for plus addresses is on and
+  // `IsEnabledCheck` returns `true`.
+  bool IsEnabled() const;
 
   // Schedules a server request to pre-allocate more addresses in `time_delta`.
   // Overrides any previously scheduled requests.

@@ -78,6 +78,10 @@ base::RepeatingCallback<bool()> AlwaysEnabled() {
   return base::BindRepeating([]() { return true; });
 }
 
+base::RepeatingCallback<bool()> NeverEnabled() {
+  return base::BindRepeating([]() { return false; });
+}
+
 }  // namespace
 
 class PlusAddressPreallocatorTest : public ::testing::Test {
@@ -253,9 +257,9 @@ TEST_F(PlusAddressPreallocatorTest,
 
   EXPECT_CALL(http_client(), PreallocatePlusAddresses).Times(0);
 
-  PlusAddressPreallocator allocator(
-      &pref_service(), &setting_service(), &http_client(),
-      /*is_enabled_check*/ base::BindRepeating([]() { return false; }));
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(),
+                                    /*is_enabled_check=*/NeverEnabled());
   task_environment().FastForwardBy(
       PlusAddressPreallocator::kDelayUntilServerRequestAfterStartup);
 }
@@ -456,6 +460,35 @@ TEST_F(PlusAddressPreallocatorTest, AllocatePlusAddressForOpaqueOrigin) {
               Run(PlusProfileOrError(base::unexpected(PlusAddressRequestError(
                   PlusAddressRequestErrorType::kInvalidOrigin)))));
   allocator.AllocatePlusAddress(url::Origin(),
+                                PlusAddressAllocator::AllocationMode::kAny,
+                                callback.Get());
+}
+
+// Tests that trying to allocate a plus address while the global toggle is off
+// results in an error.
+TEST_F(PlusAddressPreallocatorTest, AllocatePlusAddressWithToggleOff) {
+  setting_service().set_is_plus_addresses_enabled(false);
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), AlwaysEnabled());
+  base::MockCallback<PlusAddressRequestCallback> callback;
+  EXPECT_CALL(callback,
+              Run(PlusProfileOrError(base::unexpected(PlusAddressRequestError(
+                  PlusAddressRequestErrorType::kUserSignedOut)))));
+  allocator.AllocatePlusAddress(url::Origin::Create(GURL("https://foo.com")),
+                                PlusAddressAllocator::AllocationMode::kAny,
+                                callback.Get());
+}
+
+// Tests that trying to allocate a plus address while the `IsEnabledCheck` is
+// false results in an error.
+TEST_F(PlusAddressPreallocatorTest, AllocatePlusAddressWithServiceDisabled) {
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), NeverEnabled());
+  base::MockCallback<PlusAddressRequestCallback> callback;
+  EXPECT_CALL(callback,
+              Run(PlusProfileOrError(base::unexpected(PlusAddressRequestError(
+                  PlusAddressRequestErrorType::kUserSignedOut)))));
+  allocator.AllocatePlusAddress(url::Origin::Create(GURL("https://foo.com")),
                                 PlusAddressAllocator::AllocationMode::kAny,
                                 callback.Get());
 }

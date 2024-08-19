@@ -176,6 +176,10 @@ void PlusAddressPreallocator::PrunePreallocatedPlusAddresses() {
 
 void PlusAddressPreallocator::MaybeRequestNewPreallocatedPlusAddresses(
     bool is_user_triggered) {
+  if (!IsEnabled()) {
+    return;
+  }
+
   if (is_server_request_ongoing_) {
     return;
   }
@@ -184,23 +188,23 @@ void PlusAddressPreallocator::MaybeRequestNewPreallocatedPlusAddresses(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) &&
-      !settings_->GetIsPlusAddressesEnabled()) {
-    return;
-  }
-
   if (static_cast<int>(GetPreallocatedAddresses().size()) >=
       features::kPlusAddressPreallocationMinimumSize.Get()) {
-    return;
-  }
-
-  if (!is_enabled_check_.Run()) {
     return;
   }
 
   SendRequestWithDelay(is_user_triggered
                            ? base::TimeDelta()
                            : backoff_entry_.GetTimeUntilRelease());
+}
+
+bool PlusAddressPreallocator::IsEnabled() const {
+  if (base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) &&
+      !settings_->GetIsPlusAddressesEnabled()) {
+    return false;
+  }
+
+  return is_enabled_check_.Run();
 }
 
 void PlusAddressPreallocator::SendRequestWithDelay(base::TimeDelta delay) {
@@ -242,6 +246,20 @@ void PlusAddressPreallocator::OnReceivePreallocatedPlusAddresses(
 
 void PlusAddressPreallocator::ProcessAllocationRequests(
     bool is_user_triggered) {
+  if (!IsEnabled()) {
+    while (!requests_.empty()) {
+      Request request = std::move(requests_.front());
+      requests_.pop();
+      // TODO: crbug.com/324559503 - distinguish between the signout case other
+      // reasons for errors by making `IsEnabled` return an error code. That
+      // will likely also require changing the `IsEnabledCheck`'s return type.
+      std::move(request.callback)
+          .Run(base::unexpected(PlusAddressRequestError(
+              PlusAddressRequestErrorType::kUserSignedOut)));
+    }
+    return;
+  }
+
   while (!requests_.empty()) {
     std::optional<PlusAddress> next_address = GetNextPreallocatedPlusAddress();
     if (!next_address) {
@@ -258,8 +276,6 @@ void PlusAddressPreallocator::ProcessAllocationRequests(
   // We may have dipped below the minimum size of the pre-allocated plus address
   // pool that we want to keep around. If so, request new ones.
   MaybeRequestNewPreallocatedPlusAddresses(is_user_triggered);
-  // TODO: crbug.com/324559503 - Send errors to existing requests if no
-  // additional pre-allocation call was made.
 }
 
 std::optional<PlusAddress>
