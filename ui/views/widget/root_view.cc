@@ -688,7 +688,12 @@ void RootView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       static_cast<ax::mojom::NameFrom>(
           node_data->GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)) !=
           ax::mojom::NameFrom::kAttributeExplicitlyEmpty) {
-    node_data->SetName(widget_delegate->GetAccessibleWindowTitle());
+    std::u16string name = widget_delegate->GetAccessibleWindowTitle();
+    if (name.empty()) {
+      node_data->SetNameExplicitlyEmpty();
+    } else {
+      node_data->SetNameChecked(name);
+    }
   }
 }
 
