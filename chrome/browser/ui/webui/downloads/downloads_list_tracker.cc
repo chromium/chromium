@@ -371,8 +371,10 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_value->file_name = base::UTF16ToUTF8(file_name);
   FillUrlFields(download_item->GetURL(), file_value->url,
                 file_value->display_url);
-  FillUrlFields(download_item->GetReferrerUrl(), file_value->referrer_url,
-                file_value->display_referrer_url);
+  if (download_item->HasUserGesture()) {
+    FillUrlFields(download_item->GetReferrerUrl(), file_value->referrer_url,
+                  file_value->display_referrer_url);
+  }
   file_value->total = download_item->GetTotalBytes();
   file_value->file_externally_removed =
       download_item->GetFileExternallyRemoved();
