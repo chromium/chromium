@@ -8,6 +8,7 @@
 [Exposed=DedicatedWorker, RuntimeEnabled=RTCRtpScriptTransform]
 interface RTCRtpScriptTransformer : EventTarget {
     readonly attribute ReadableStream readable;
+    [CallWith=ScriptState] Promise<undefined> sendKeyFrameRequest();
     readonly attribute WritableStream writable;
     // Additional context added by the application to configure its transform.
     [CachedAttribute=IsOptionsDirty, CallWith=ScriptState] readonly attribute any options;

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transform.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8-primitive.h"
@@ -27,8 +28,9 @@ TEST(RTCRtpScriptTransformerTest, OptionsAsBoolean) {
   CustomEventMessage options;
   options.message = serialized_script_value;
   RTCRtpScriptTransformer* transformer =
-      MakeGarbageCollected<RTCRtpScriptTransformer>(script_state,
-                                                    std::move(options));
+      MakeGarbageCollected<RTCRtpScriptTransformer>(
+          script_state, std::move(options), /*transform_task_runner=*/nullptr,
+          CrossThreadWeakHandle<RTCRtpScriptTransform>(nullptr));
   EXPECT_EQ(transformer->options(script_state).V8Value(), v8_original_true);
 }
 
@@ -46,8 +48,9 @@ TEST(RTCRtpScriptTransformerTest, OptionsAsNumber) {
   CustomEventMessage options;
   options.message = serialized_script_value;
   RTCRtpScriptTransformer* transformer =
-      MakeGarbageCollected<RTCRtpScriptTransformer>(script_state,
-                                                    std::move(options));
+      MakeGarbageCollected<RTCRtpScriptTransformer>(
+          script_state, std::move(options), /*transform_task_runner=*/nullptr,
+          CrossThreadWeakHandle<RTCRtpScriptTransform>(nullptr));
   EXPECT_EQ(
       transformer->options(script_state).V8Value().As<v8::Number>()->Value(),
       kNumber);
@@ -65,8 +68,9 @@ TEST(RTCRtpScriptTransformerTest, OptionsAsNull) {
   CustomEventMessage options;
   options.message = std::move(serialized_script_value);
   RTCRtpScriptTransformer* transformer =
-      MakeGarbageCollected<RTCRtpScriptTransformer>(script_state,
-                                                    std::move(options));
+      MakeGarbageCollected<RTCRtpScriptTransformer>(
+          script_state, std::move(options), /*transform_task_runner=*/nullptr,
+          CrossThreadWeakHandle<RTCRtpScriptTransform>(nullptr));
   EXPECT_EQ(transformer->options(script_state).V8Value(), v8_null);
 }
 

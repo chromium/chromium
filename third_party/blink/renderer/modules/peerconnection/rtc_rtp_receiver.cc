@@ -234,6 +234,18 @@ void RTCRtpReceiver::set_transport(RTCDtlsTransport* transport) {
   transport_ = transport;
 }
 
+String RTCRtpReceiver::TransceiverDirection() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // `transceiver_` is always initialized to a valid value.
+  return transceiver_->direction();
+}
+
+String RTCRtpReceiver::TransceiverCurrentDirection() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // `transceiver_` is always initialized to a valid value.
+  return transceiver_->currentDirection();
+}
+
 void RTCRtpReceiver::ContextDestroyed() {
   {
     base::AutoLock locker(audio_underlying_source_lock_);
@@ -511,7 +523,7 @@ void RTCRtpReceiver::setTransform(RTCRtpScriptTransform* transform,
     return;
   }
   transform_ = transform;
-  transform_->Attach();
+  transform_->AttachToReceiver(this);
 
   if (kind() == MediaKind::kAudio) {
     transform_->CreateAudioUnderlyingSourceAndSink(

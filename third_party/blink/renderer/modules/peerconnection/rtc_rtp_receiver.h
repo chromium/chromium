@@ -95,6 +95,9 @@ class RTCRtpReceiver final : public ScriptWrappable,
   void set_transceiver(RTCRtpTransceiver*);
   void set_transport(RTCDtlsTransport*);
 
+  String TransceiverDirection();
+  String TransceiverCurrentDirection();
+
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
 
