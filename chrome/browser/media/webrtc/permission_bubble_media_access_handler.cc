@@ -332,7 +332,7 @@ void PermissionBubbleMediaAccessHandler::OnMediaStreamRequestResponse(
 }
 
 void PermissionBubbleMediaAccessHandler::OnAccessRequestResponseForBinding(
-    content::WebContents* web_contents,
+    MayBeDangling<content::WebContents> web_contents,
     int64_t request_id,
     blink::mojom::StreamDevicesSetPtr stream_devices_set,
     blink::mojom::MediaStreamRequestResult result,
@@ -386,7 +386,8 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
         system_media_permissions::RequestSystemAudioCapturePermission(
             base::BindOnce(&PermissionBubbleMediaAccessHandler::
                                OnAccessRequestResponseForBinding,
-                           weak_factory_.GetWeakPtr(), web_contents, request_id,
+                           weak_factory_.GetWeakPtr(),
+                           base::UnsafeDangling(web_contents), request_id,
                            stream_devices_set.Clone(), result, std::move(ui)));
         return;
       } else if (system_audio_permission == SystemPermission::kRestricted ||
@@ -413,7 +414,8 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
         system_media_permissions::RequestSystemVideoCapturePermission(
             base::BindOnce(&PermissionBubbleMediaAccessHandler::
                                OnAccessRequestResponseForBinding,
-                           weak_factory_.GetWeakPtr(), web_contents, request_id,
+                           weak_factory_.GetWeakPtr(),
+                           base::UnsafeDangling(web_contents), request_id,
                            stream_devices_set.Clone(), result, std::move(ui)));
         return;
       } else if (system_video_permission == SystemPermission::kRestricted ||
