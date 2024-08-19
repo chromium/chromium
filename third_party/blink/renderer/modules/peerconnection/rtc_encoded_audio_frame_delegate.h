@@ -48,8 +48,8 @@ class RTCEncodedAudioFrameDelegate
   mutable base::Lock lock_;
   std::unique_ptr<webrtc::TransformableAudioFrameInterface> webrtc_frame_
       GUARDED_BY(lock_);
-  Vector<uint32_t> contributing_sources_ GUARDED_BY(lock_);
-  std::optional<uint16_t> sequence_number_ GUARDED_BY(lock_);
+  const Vector<uint32_t> contributing_sources_;
+  const std::optional<uint16_t> sequence_number_;
 };
 
 class MODULES_EXPORT RTCEncodedAudioFramesAttachment

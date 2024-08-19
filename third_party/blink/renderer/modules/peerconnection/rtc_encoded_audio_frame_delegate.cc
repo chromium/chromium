@@ -19,9 +19,8 @@ RTCEncodedAudioFrameDelegate::RTCEncodedAudioFrameDelegate(
     rtc::ArrayView<const unsigned int> contributing_sources,
     std::optional<uint16_t> sequence_number)
     : webrtc_frame_(std::move(webrtc_frame)),
-      sequence_number_(sequence_number) {
-  contributing_sources_.assign(contributing_sources);
-}
+      contributing_sources_(contributing_sources),
+      sequence_number_(sequence_number) {}
 
 uint32_t RTCEncodedAudioFrameDelegate::RtpTimestamp() const {
   base::AutoLock lock(lock_);
@@ -85,12 +84,10 @@ std::optional<std::string> RTCEncodedAudioFrameDelegate::MimeType() const {
 }
 
 std::optional<uint16_t> RTCEncodedAudioFrameDelegate::SequenceNumber() const {
-  base::AutoLock lock(lock_);
   return sequence_number_;
 }
 
 Vector<uint32_t> RTCEncodedAudioFrameDelegate::ContributingSources() const {
-  base::AutoLock lock(lock_);
   return contributing_sources_;
 }
 
