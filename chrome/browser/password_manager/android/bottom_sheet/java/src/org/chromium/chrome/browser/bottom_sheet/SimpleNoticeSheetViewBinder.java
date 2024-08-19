@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.bottom_sheet;
 
+import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.BUTTON_TITLE;
+import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TEXT;
+import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TITLE;
+
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -21,8 +25,15 @@ class SimpleNoticeSheetViewBinder {
      */
     static void bindSimpleNoticeSheetView(
             PropertyModel model, SimpleNoticeSheetView view, PropertyKey propertyKey) {
-        // TODO: crbug.com/353283268 - Add properties.
-        assert false : "Unhandled update to property:" + propertyKey;
+        if (propertyKey == SHEET_TITLE) {
+            view.setTitle(model.get(SHEET_TITLE));
+        } else if (propertyKey == SHEET_TEXT) {
+            view.setText(model.get(SHEET_TEXT));
+        } else if (propertyKey == BUTTON_TITLE) {
+            view.setButtonText(model.get(BUTTON_TITLE));
+        } else {
+            assert false : "Unhandled update to property:" + propertyKey;
+        }
     }
 
     private SimpleNoticeSheetViewBinder() {}

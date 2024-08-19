@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link TouchToFillPasswordGenerationBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -40,6 +41,9 @@ public class SimpleNoticeSheetCoordinatorRobolectricTest {
     private SimpleNoticeSheetCoordinator mCoordinator;
     private final ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor =
             ArgumentCaptor.forClass(BottomSheetObserver.class);
+    private static final String sTitle = "Simple notice sheet title";
+    private static final String sText = "The text about the simple notice sheet";
+    private static final String sButtonText = "Button";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
     @Mock private BottomSheetController mBottomSheetController;
@@ -47,8 +51,6 @@ public class SimpleNoticeSheetCoordinatorRobolectricTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-
-        setUpBottomSheetController();
 
         mCoordinator =
                 new SimpleNoticeSheetCoordinator(
@@ -62,7 +64,15 @@ public class SimpleNoticeSheetCoordinatorRobolectricTest {
 
     @Test
     public void showsAndHidesBottomSheet() {
-        mCoordinator.showSheet();
+        setUpBottomSheetController();
+
+        PropertyModel model =
+                new PropertyModel.Builder(SimpleNoticeSheetProperties.ALL_KEYS)
+                        .with(SimpleNoticeSheetProperties.SHEET_TITLE, sTitle)
+                        .with(SimpleNoticeSheetProperties.SHEET_TEXT, sText)
+                        .with(SimpleNoticeSheetProperties.BUTTON_TITLE, sButtonText)
+                        .build();
+        mCoordinator.showSheet(model);
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
         verify(mBottomSheetController).addObserver(any());
 
