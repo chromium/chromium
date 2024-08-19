@@ -6336,6 +6336,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAuxiliarySearchThridPartyName,
      flag_descriptions::kAuxiliarySearchThridPartyDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAuxiliarySearchThirdParty)},
+
+    {"disable-instance-limit", flag_descriptions::kDisableInstanceLimitName,
+     flag_descriptions::kDisableInstanceLimitDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDisableInstanceLimit)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"omnibox-local-history-zero-suggest-beyond-ntp",

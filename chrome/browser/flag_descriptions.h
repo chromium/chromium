@@ -201,6 +201,11 @@ extern const char kDirectSocketsWebApiName[];
 extern const char kDirectSocketsWebApiDescription[];
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kDisableInstanceLimitName[];
+extern const char kDisableInstanceLimitDescription[];
+#endif
+
 extern const char kDownloadWarningImprovementsName[];
 extern const char kDownloadWarningImprovementsDescription[];
 

@@ -220,6 +220,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTRevampedBranding,
     &kCCTTabModalDialog,
     &kDefaultBrowserPromoAndroid,
+    &kDisableInstanceLimit,
     &kDontAutoHideBrowserControls,
     &kCacheDeprecatedSystemLocationSetting,
     &kChromeSharePageInfo,
@@ -608,6 +609,10 @@ BASE_FEATURE(kCCTRevampedBranding,
 BASE_FEATURE(kCCTTabModalDialog,
              "CCTTabModalDialog",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDisableInstanceLimit,
+             "DisableInstanceLimit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDontAutoHideBrowserControls,
              "DontAutoHideBrowserControls",

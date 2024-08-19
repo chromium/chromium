@@ -2118,6 +2118,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "disable-instance-limit",
+    "owners": [ "asriniva@google.com", "clank-large-form-factors@google.com"],
+    "expiry_milestone": 137
+  },
+  {
     "name": "disable-javascript-harmony-shipping",
     "owners": [ "adamk@chromium.org", "syg@chromium.org" ],
     // This flag is used for field debugging along with
