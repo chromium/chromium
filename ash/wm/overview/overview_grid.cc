@@ -1093,7 +1093,14 @@ void OverviewGrid::RemoveAllItemsForSavedDeskLaunch() {
       item->RestoreWindow(/*reset_transform=*/true, /*animate=*/false);
     }
   }
-  item_list_.clear();
+  // Destroying OverviewItemBase can call back into `this` and try to use
+  // `item_list_`; since the standard provides no guarantees about the
+  // internal state of a vector being cleared, swap it with an empty vector on
+  // the stack so that the destroyed items consistently see an empty vector.
+  {
+    decltype(item_list_) item_list;
+    item_list_.swap(item_list);
+  }
   num_incognito_windows_ = 0;
   num_unsupported_windows_ = 0;
   EnableSaveDeskButtonContainer();
