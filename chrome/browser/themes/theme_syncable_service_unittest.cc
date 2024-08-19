@@ -28,8 +28,10 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/extensions/extension_test_util.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/features.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
 #include "components/sync/test/fake_sync_change_processor.h"
@@ -869,6 +871,24 @@ TEST_F(ThemeSyncableServiceTest, SystemThemeSameAsDefaultTheme) {
       changes[0].sync_data().GetSpecifics().theme();
   EXPECT_FALSE(change_specifics.use_custom_theme());
   EXPECT_TRUE(change_specifics.use_system_theme_by_default());
+}
+
+TEST_F(ThemeSyncableServiceTest, GetThemePrefNameInMigrationIfFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(syncer::kMoveThemePrefsToSpecifics);
+
+  // The syncing pref name is returned.
+  EXPECT_EQ(GetThemePrefNameInMigration(ThemePrefInMigration::kUserColor),
+            prefs::kUserColorDoNotUse);
+}
+
+TEST_F(ThemeSyncableServiceTest, GetThemePrefNameInMigrationIfFlagEnabled) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kMoveThemePrefsToSpecifics);
+
+  // The new non-syncing pref is returned.
+  EXPECT_EQ(GetThemePrefNameInMigration(ThemePrefInMigration::kUserColor),
+            prefs::kNonSyncingUserColorDoNotUse);
 }
 
 // PolicyInstalledThemeTest ----------------------------------------------------

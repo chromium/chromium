@@ -6,16 +6,19 @@
 
 #include <optional>
 
+#include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 bool CurrentThemeIsGrayscale(const PrefService* pref_service) {
-  return pref_service->GetBoolean(prefs::kGrayscaleThemeEnabled);
+  return pref_service->GetBoolean(GetThemePrefNameInMigration(
+      ThemePrefInMigration::kGrayscaleThemeEnabled));
 }
 
 std::optional<SkColor> CurrentThemeUserColor(const PrefService* pref_service) {
-  const SkColor user_color = pref_service->GetInteger(prefs::kUserColor);
+  const SkColor user_color = pref_service->GetInteger(
+      GetThemePrefNameInMigration(ThemePrefInMigration::kUserColor));
   return user_color == SK_ColorTRANSPARENT ? std::nullopt
                                            : std::make_optional(user_color);
 }

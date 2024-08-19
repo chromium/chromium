@@ -299,20 +299,21 @@ void ThemeService::Init() {
       base::BindRepeating(&ThemeService::HandlePolicyColorUpdate,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kBrowserColorScheme,
+      GetThemePrefNameInMigration(ThemePrefInMigration::kBrowserColorScheme),
       base::BindRepeating(&ThemeService::NotifyThemeChanged,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kBrowserColorVariant,
+      GetThemePrefNameInMigration(ThemePrefInMigration::kBrowserColorVariant),
       base::BindRepeating(&ThemeService::NotifyThemeChanged,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kGrayscaleThemeEnabled,
+      GetThemePrefNameInMigration(ThemePrefInMigration::kGrayscaleThemeEnabled),
       base::BindRepeating(&ThemeService::NotifyThemeChanged,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kUserColor, base::BindRepeating(&ThemeService::NotifyThemeChanged,
-                                             base::Unretained(this)));
+      GetThemePrefNameInMigration(ThemePrefInMigration::kUserColor),
+      base::BindRepeating(&ThemeService::NotifyThemeChanged,
+                          base::Unretained(this)));
 }
 
 void ThemeService::Shutdown() {
@@ -559,23 +560,25 @@ void ThemeService::SetBrowserColorScheme(
     ThemeService::BrowserColorScheme color_scheme) {
   {
     base::AutoReset<bool> resetter(&should_suppress_theme_updates_, true);
-    profile_->GetPrefs()->SetInteger(prefs::kBrowserColorScheme,
-                                     static_cast<int>(color_scheme));
+    profile_->GetPrefs()->SetInteger(
+        GetThemePrefNameInMigration(ThemePrefInMigration::kBrowserColorScheme),
+        static_cast<int>(color_scheme));
   }
   NotifyThemeChanged();
 }
 
 ThemeService::BrowserColorScheme ThemeService::GetBrowserColorScheme() const {
-  return static_cast<BrowserColorScheme>(
-      profile_->GetPrefs()->GetInteger(prefs::kBrowserColorScheme));
+  return static_cast<BrowserColorScheme>(profile_->GetPrefs()->GetInteger(
+      GetThemePrefNameInMigration(ThemePrefInMigration::kBrowserColorScheme)));
 }
 
 void ThemeService::SetUserColor(std::optional<SkColor> user_color) {
   {
     base::AutoReset<bool> resetter(&should_suppress_theme_updates_, true);
     ClearThemeData(/*clear_ntp_background=*/false);
-    profile_->GetPrefs()->SetInteger(prefs::kUserColor,
-                                     user_color.value_or(SK_ColorTRANSPARENT));
+    profile_->GetPrefs()->SetInteger(
+        GetThemePrefNameInMigration(ThemePrefInMigration::kUserColor),
+        user_color.value_or(SK_ColorTRANSPARENT));
     profile_->GetPrefs()->SetString(prefs::kCurrentThemeID, kUserColorThemeID);
   }
   NotifyThemeChanged();
@@ -589,15 +592,17 @@ void ThemeService::SetBrowserColorVariant(
     ui::mojom::BrowserColorVariant color_variant) {
   {
     base::AutoReset<bool> resetter(&should_suppress_theme_updates_, true);
-    profile_->GetPrefs()->SetInteger(prefs::kBrowserColorVariant,
-                                     static_cast<int>(color_variant));
+    profile_->GetPrefs()->SetInteger(
+        GetThemePrefNameInMigration(ThemePrefInMigration::kBrowserColorVariant),
+        static_cast<int>(color_variant));
   }
   NotifyThemeChanged();
 }
 
 ui::mojom::BrowserColorVariant ThemeService::GetBrowserColorVariant() const {
   return static_cast<ui::mojom::BrowserColorVariant>(
-      profile_->GetPrefs()->GetInteger(prefs::kBrowserColorVariant));
+      profile_->GetPrefs()->GetInteger(GetThemePrefNameInMigration(
+          ThemePrefInMigration::kBrowserColorVariant)));
 }
 
 void ThemeService::SetUserColorAndBrowserColorVariant(
@@ -606,10 +611,13 @@ void ThemeService::SetUserColorAndBrowserColorVariant(
   {
     base::AutoReset<bool> resetter(&should_suppress_theme_updates_, true);
     ClearThemeData(/*clear_ntp_background=*/false);
-    profile_->GetPrefs()->SetInteger(prefs::kUserColor, user_color);
+    profile_->GetPrefs()->SetInteger(
+        GetThemePrefNameInMigration(ThemePrefInMigration::kUserColor),
+        user_color);
     profile_->GetPrefs()->SetString(prefs::kCurrentThemeID, kUserColorThemeID);
-    profile_->GetPrefs()->SetInteger(prefs::kBrowserColorVariant,
-                                     static_cast<int>(color_variant));
+    profile_->GetPrefs()->SetInteger(
+        GetThemePrefNameInMigration(ThemePrefInMigration::kBrowserColorVariant),
+        static_cast<int>(color_variant));
   }
   NotifyThemeChanged();
 }
@@ -618,8 +626,10 @@ void ThemeService::SetIsGrayscale(bool is_grayscale) {
   {
     base::AutoReset<bool> resetter(&should_suppress_theme_updates_, true);
     ClearThemeData(/*clear_ntp_background=*/false);
-    profile_->GetPrefs()->SetBoolean(prefs::kGrayscaleThemeEnabled,
-                                     is_grayscale);
+    profile_->GetPrefs()->SetBoolean(
+        GetThemePrefNameInMigration(
+            ThemePrefInMigration::kGrayscaleThemeEnabled),
+        is_grayscale);
   }
   NotifyThemeChanged();
 }
@@ -944,9 +954,12 @@ void ThemeService::HandlePolicyColorUpdate() {
 void ThemeService::ClearThemePrefs() {
   profile_->GetPrefs()->ClearPref(prefs::kCurrentThemePackFilename);
   profile_->GetPrefs()->ClearPref(prefs::kAutogeneratedThemeColor);
-  profile_->GetPrefs()->ClearPref(prefs::kUserColor);
-  profile_->GetPrefs()->ClearPref(prefs::kGrayscaleThemeEnabled);
-  profile_->GetPrefs()->ClearPref(prefs::kBrowserColorVariant);
+  profile_->GetPrefs()->ClearPref(
+      GetThemePrefNameInMigration(ThemePrefInMigration::kUserColor));
+  profile_->GetPrefs()->ClearPref(GetThemePrefNameInMigration(
+      ThemePrefInMigration::kGrayscaleThemeEnabled));
+  profile_->GetPrefs()->ClearPref(
+      GetThemePrefNameInMigration(ThemePrefInMigration::kBrowserColorVariant));
   profile_->GetPrefs()->SetString(prefs::kCurrentThemeID,
                                   ThemeHelper::kDefaultThemeID);
 }

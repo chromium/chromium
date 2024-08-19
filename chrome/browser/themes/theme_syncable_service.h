@@ -26,6 +26,17 @@ namespace sync_pb {
 class ThemeSpecifics;
 }
 
+enum class ThemePrefInMigration {
+  kBrowserColorScheme,
+  kUserColor,
+  kBrowserColorVariant,
+  kGrayscaleThemeEnabled,
+  kNtpCustomBackgroundDict,
+  kLastEntry = kNtpCustomBackgroundDict
+};
+
+std::string_view GetThemePrefNameInMigration(ThemePrefInMigration theme_pref);
+
 class ThemeSyncableService final : public syncer::SyncableService,
                                    public ThemeServiceObserver {
  public:

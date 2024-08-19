@@ -10,6 +10,8 @@
 #include <utility>
 
 #include "base/containers/adapters.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"
 #include "base/strings/stringprintf.h"
@@ -18,6 +20,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/common/extensions/sync_helper.h"
+#include "chrome/common/pref_names.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
@@ -31,6 +35,30 @@ using std::string;
 
 namespace {
 
+constexpr auto kThemePrefsInMigration =
+    base::MakeFixedFlatMap<ThemePrefInMigration,
+                           std::array<std::string_view, 2>>({
+        {ThemePrefInMigration::kBrowserColorScheme,
+         {prefs::kBrowserColorSchemeDoNotUse,
+          prefs::kNonSyncingBrowserColorSchemeDoNotUse}},
+        {ThemePrefInMigration::kUserColor,
+         {prefs::kUserColorDoNotUse, prefs::kNonSyncingUserColorDoNotUse}},
+        {ThemePrefInMigration::kBrowserColorVariant,
+         {prefs::kBrowserColorVariantDoNotUse,
+          prefs::kNonSyncingBrowserColorVariantDoNotUse}},
+        {ThemePrefInMigration::kGrayscaleThemeEnabled,
+         {prefs::kGrayscaleThemeEnabledDoNotUse,
+          prefs::kNonSyncingGrayscaleThemeEnabledDoNotUse}},
+        {ThemePrefInMigration::kNtpCustomBackgroundDict,
+         {prefs::kNtpCustomBackgroundDictDoNotUse,
+          prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse}},
+    });
+
+static_assert(
+    kThemePrefsInMigration.size() ==
+        static_cast<size_t>(ThemePrefInMigration::kLastEntry) + 1,
+    "ThemePrefInMigration entry missing from kThemePrefsInMigration map.");
+
 bool IsTheme(const extensions::Extension* extension,
              content::BrowserContext* context) {
   return extension->is_theme();
@@ -41,6 +69,11 @@ bool IsTheme(const extensions::Extension* extension,
 // "Current" is part of the name for historical reasons, shouldn't be changed.
 const char ThemeSyncableService::kSyncEntityClientTag[] = "current_theme";
 const char ThemeSyncableService::kSyncEntityTitle[] = "Current Theme";
+
+std::string_view GetThemePrefNameInMigration(ThemePrefInMigration theme_pref) {
+  return kThemePrefsInMigration.at(theme_pref)[static_cast<int>(
+      base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics))];
+}
 
 ThemeSyncableService::ThemeSyncableService(Profile* profile,
                                            ThemeService* theme_service)
