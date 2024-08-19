@@ -256,6 +256,10 @@ GlanceablesTimeManagementBubbleView::~GlanceablesTimeManagementBubbleView() =
 
 void GlanceablesTimeManagementBubbleView::ChildPreferredSizeChanged(
     View* child) {
+  if (child->GetProperty(views::kViewIgnoredByLayoutKey)) {
+    return;
+  }
+
   PreferredSizeChanged();
 }
 
