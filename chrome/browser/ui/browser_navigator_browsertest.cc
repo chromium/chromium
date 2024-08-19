@@ -2110,16 +2110,12 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Popin) {
   content::WebContents* popin_web_contents = new_tab_observer.GetWebContents();
   BrowserWindow* popin_browser_window =
       BrowserWindow::FindBrowserWindowWithWebContents(popin_web_contents);
+  EXPECT_NE(popin_browser_window, browser()->window());
   EXPECT_TRUE(popin_browser_window->IsVisible());
 
   // Focus new tab and verify popin is hidden.
   browser()->tab_strip_model()->ActivateTabAt(1);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/340606651): This should work on ChromeOS too.
-  EXPECT_TRUE(popin_browser_window->IsVisible());
-#else
   EXPECT_FALSE(popin_browser_window->IsVisible());
-#endif
 
   // Switch back to original tab and verify popin is visible.
   browser()->tab_strip_model()->ActivateTabAt(0);
