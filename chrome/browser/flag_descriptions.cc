@@ -5267,6 +5267,12 @@ const char kReadAnythingDocsIntegrationName[] =
 const char kReadAnythingDocsIntegrationDescription[] =
     "Allows Reading Mode to work on Google Docs.";
 
+const char kReadAnythingDocsLoadMoreButtonName[] =
+    "Reading Mode Google Docs Load More Button";
+const char kReadAnythingDocsLoadMoreButtonDescription[] =
+    "Adds a button to the end of the Reading Mode UI. When clicked, "
+    "the main page scrolls to show the next page's content.";
+
 const char kGlobalMediaControlsCastStartStopName[] =
     "Global media controls control Cast start/stop";
 const char kGlobalMediaControlsCastStartStopDescription[] =

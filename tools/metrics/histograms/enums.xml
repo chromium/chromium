@@ -23075,6 +23075,7 @@ from previous Chrome versions.
       label="DawnSIRepsUseClientProvidedInternalUsages:disabled"/>
   <int value="1097339521"
       label="UserDisplayModeSyncStandaloneMitigation:disabled"/>
+  <int value="1097764935" label="ReadAnythingDocsLoadMoreButton:disabled"/>
   <int value="1097935876" label="CrostiniShowMicSetting:enabled"/>
   <int value="1097981222" label="OneGoogleBarModalOverlays:disabled"/>
   <int value="1098461149" label="AppToAppLinkCapturing:disabled"/>
@@ -23756,6 +23757,7 @@ from previous Chrome versions.
   <int value="1379571437" label="ExoPointerLock:disabled"/>
   <int value="1379944457" label="EnableMessagesWebPush:disabled"/>
   <int value="1380367827" label="AllowDisableTouchpadHapticFeedback:enabled"/>
+  <int value="1381011105" label="ReadAnythingDocsLoadMoreButton:enabled"/>
   <int value="1381559497" label="ComposeUiRefinement:disabled"/>
   <int value="1381746642" label="enable-automatic-password-saving"/>
   <int value="1381817717" label="EduCoexistence:enabled"/>

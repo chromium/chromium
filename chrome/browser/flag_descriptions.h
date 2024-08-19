@@ -3047,6 +3047,9 @@ extern const char kReadAloudLanguagePackDownloadingDescription[];
 extern const char kReadAnythingDocsIntegrationName[];
 extern const char kReadAnythingDocsIntegrationDescription[];
 
+extern const char kReadAnythingDocsLoadMoreButtonName[];
+extern const char kReadAnythingDocsLoadMoreButtonDescription[];
+
 extern const char kGlobalMediaControlsCastStartStopName[];
 extern const char kGlobalMediaControlsCastStartStopDescription[];
 

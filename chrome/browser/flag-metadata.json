@@ -7698,6 +7698,11 @@
     "expiry_milestone": 133
   },
   {
+    "name": "read-anything-docs-load-more-button",
+    "owners": [ "sophiatran@google.com", "xiangxiao@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 133
+  },
+  {
     "name": "read-anything-images-via-algorithm",
     "owners": [ "abigailbklein@google.com", "francisjp@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 132

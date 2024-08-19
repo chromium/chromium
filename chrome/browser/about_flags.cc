@@ -7613,6 +7613,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadAnythingDocsIntegrationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kReadAnythingDocsIntegration)},
 
+    {"read-anything-docs-load-more-button",
+     flag_descriptions::kReadAnythingDocsLoadMoreButtonName,
+     flag_descriptions::kReadAnythingDocsLoadMoreButtonDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kReadAnythingDocsLoadMoreButton)},
+
     {"support-tool", flag_descriptions::kSupportTool,
      flag_descriptions::kSupportToolDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSupportTool)},

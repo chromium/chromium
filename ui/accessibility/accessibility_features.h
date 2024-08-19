@@ -284,6 +284,11 @@ AX_BASE_EXPORT bool IsReadAnythingImagesViaAlgorithmEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingDocsIntegration);
 AX_BASE_EXPORT bool IsReadAnythingDocsIntegrationEnabled();
 
+// Enable "load more" button to show at the end of Reading Mode panel.
+// Should be disabled by default.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingDocsLoadMoreButton);
+AX_BASE_EXPORT bool IsReadAnythingDocsLoadMoreButtonEnabled();
+
 // Write some ScreenAI library debug data in /tmp.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kScreenAIDebugMode);
 AX_BASE_EXPORT bool IsScreenAIDebugModeEnabled();
