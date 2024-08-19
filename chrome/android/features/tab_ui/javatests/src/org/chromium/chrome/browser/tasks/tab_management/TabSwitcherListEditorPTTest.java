@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -121,6 +122,7 @@ public class TabSwitcherListEditorPTTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    @DisabledTest(message = "crbug.com/360800262")
     public void testCreateTabGroupOf2_parity() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
