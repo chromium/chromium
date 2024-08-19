@@ -122,6 +122,14 @@ class ExtensionsBrowserClient {
   /////////////////////////////////////////////////////////////////////////////
   // Virtual Methods
 
+  // Alerts the ExtensionsBrowserClient that the browser is shutting down,
+  // indicating that we should perform any teardown necessary before being
+  // destroyed (e.g. unsubscribing observers, or any other pre-emptive freeing
+  // of resources. Note that we may still receive calls from other shutting
+  // down objects after this call, so this should primarily be used for things
+  // that may need to be cleaned up before other parts of the browser).
+  virtual void StartTearDown();
+
   // Returns true if the embedder has started shutting down.
   virtual bool IsShuttingDown() = 0;
 

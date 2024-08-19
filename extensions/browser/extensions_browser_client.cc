@@ -53,6 +53,8 @@ void ExtensionsBrowserClient::AddAPIProvider(
   providers_.push_back(std::move(provider));
 }
 
+void ExtensionsBrowserClient::StartTearDown() {}
+
 scoped_refptr<update_client::UpdateClient>
 ExtensionsBrowserClient::CreateUpdateClient(content::BrowserContext* context) {
   return scoped_refptr<update_client::UpdateClient>(nullptr);

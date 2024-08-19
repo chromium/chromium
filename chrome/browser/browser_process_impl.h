@@ -67,7 +67,7 @@ class OriginTrialsSettingsStorage;
 }  // namespace embedder_support
 
 namespace extensions {
-class ChromeExtensionsBrowserClient;
+class ExtensionsBrowserClient;
 }
 
 namespace gcm {
@@ -323,7 +323,7 @@ class BrowserProcessImpl : public BrowserProcess,
   std::unique_ptr<GpuModeManager> gpu_mode_manager_;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  std::unique_ptr<extensions::ChromeExtensionsBrowserClient>
+  std::unique_ptr<extensions::ExtensionsBrowserClient>
       extensions_browser_client_;
 
   scoped_refptr<extensions::EventRouterForwarder>
