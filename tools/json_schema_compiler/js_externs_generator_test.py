@@ -12,6 +12,7 @@ import sys
 import unittest
 
 # The contents of a fake idl file.
+# pylint: disable=line-too-long
 fake_idl = """
 // Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
@@ -47,23 +48,11 @@ namespace fakeApi {
     ArrayBuffer arrayBuff;
   };
 
-  dictionary Qux {
-    long notOptionalLong;
-    long? optionalLong;
-
-    // A map from string to number.
-    // <jsexterns>@type {Object<string, number>}</jsexterns>
-    object dict;
-
-    static void go();
-    static void stop();
-  };
-
   callback VoidCallback = void();
 
   callback BazGreekCallback = void(Baz baz, Greek greek);
 
-  callback OptionalParamCallback = void(optional Qux qux);
+  callback OptionalParamCallback = void(optional Baz baz);
 
   interface Properties {
     static DOMString lastError();
@@ -176,43 +165,6 @@ chrome.fakeApi.Bar;
 chrome.fakeApi.Baz;
 
 /**
- * @constructor
- * @private
- * @see https://developer.chrome.com/extensions/fakeApi#type-Qux
- */
-chrome.fakeApi.Qux = function() {};
-
-/**
- * @type {number}
- * @see https://developer.chrome.com/extensions/fakeApi#type-notOptionalLong
- */
-chrome.fakeApi.Qux.prototype.notOptionalLong;
-
-/**
- * @type {(number|undefined)}
- * @see https://developer.chrome.com/extensions/fakeApi#type-optionalLong
- */
-chrome.fakeApi.Qux.prototype.optionalLong;
-
-/**
- * A map from string to number.
- * @type {Object<string, number>}
- * @see https://developer.chrome.com/extensions/fakeApi#type-dict
- */
-chrome.fakeApi.Qux.prototype.dict;
-
-/**
- * @see https://developer.chrome.com/extensions/fakeApi#method-go
- */
-chrome.fakeApi.Qux.prototype.go = function() {};
-
-/**
- * @see https://developer.chrome.com/extensions/fakeApi#method-stop
- */
-chrome.fakeApi.Qux.prototype.stop = function() {};
-
-
-/**
  * @type {string}
  * @see https://developer.chrome.com/extensions/fakeApi#type-lastError
  */
@@ -255,7 +207,7 @@ chrome.fakeApi.instanceOfObjectParam = function(obj) {};
 chrome.fakeApi.instanceOfBarObjectParam = function(barObj) {};
 
 /**
- * @param {function((!chrome.fakeApi.Qux|undefined)): void=} callback
+ * @param {function((!chrome.fakeApi.Baz|undefined)): void=} callback
  * @see https://developer.chrome.com/extensions/fakeApi#method-optionalParam
  */
 chrome.fakeApi.optionalParam = function(callback) {};
@@ -540,6 +492,7 @@ chrome.fakeJson.funcWithInlineObj = function(inlineObj, callback) {};
  */
 chrome.fakeJson.funcWithReturnsAsync = function(someNumber, callback) {};""" % (
     datetime.now().year)
+# pylint: enable=line-too-long
 
 
 class JsExternGeneratorTest(unittest.TestCase):

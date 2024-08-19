@@ -116,17 +116,13 @@ class _Generator(object):
       for line in js_type.description.splitlines():
         c.Comment(line, comment_prefix='')
 
-    if js_type.jsexterns:
-      for line in js_type.jsexterns.splitlines():
-        c.Append(line)
-
     is_constructor = self._IsTypeConstructor(js_type)
     if js_type.property_type is not PropertyType.OBJECT:
       self._js_util.AppendTypeJsDoc(c, self._namespace.name, js_type, optional)
     elif is_constructor:
       c.Comment('@constructor', comment_prefix = '', wrap_indent=4)
       c.Comment('@private', comment_prefix = '', wrap_indent=4)
-    elif js_type.jsexterns is None:
+    else:
       self._AppendTypedef(c, js_type.properties)
 
     self._js_util.AppendSeeLink(c, self._namespace.name, 'type',

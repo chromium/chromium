@@ -215,7 +215,6 @@ class Type(object):
     self.simple_name = _StripNamespace(self.name, namespace)
     self.unix_name = UnixName(self.name)
     self.description = json.get('description', None)
-    self.jsexterns = json.get('jsexterns', None)
     self.nodoc = json.get('nodoc', False)
 
     # Copy the Origin and override the |from_manifest_keys| value as necessary.

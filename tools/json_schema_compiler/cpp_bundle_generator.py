@@ -38,7 +38,6 @@ def _RemoveUnneededFields(schema):
   _RemoveKey(ret, 'nodoc', bool)
   _RemoveKey(ret, 'nocompile', bool)
   _RemoveKey(ret, 'noinline_doc', bool)
-  _RemoveKey(ret, 'jsexterns', object)
   _RemoveKey(ret, 'manifest_keys', object)
   return ret
 

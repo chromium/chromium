@@ -72,8 +72,7 @@ class IdlSchemaTest(unittest.TestCase):
   def testProperties(self):
     self.assertEqual({
         'x': {'name': 'x', 'type': 'integer',
-              'description': 'This comment tests "double-quotes".',
-              'jsexterns': None},
+              'description': 'This comment tests "double-quotes".'},
         'y': {'name': 'y', 'type': 'string'},
         'z': {'name': 'z', 'type': 'string'},
         'a': {'name': 'a', 'type': 'string'},
@@ -488,25 +487,21 @@ class IdlSchemaTest(unittest.TestCase):
     self.assertEqual(OrderedDict([
       ('first', OrderedDict([
         ('description', 'Integer property.'),
-        ('jsexterns', None),
         ('type', 'integer'),
         ('value', 42),
       ])),
       ('second', OrderedDict([
         ('description', 'Double property.'),
-        ('jsexterns', None),
         ('type', 'number'),
         ('value', 42.1),
       ])),
       ('third', OrderedDict([
         ('description', 'String property.'),
-        ('jsexterns', None),
         ('type', 'string'),
         ('value', 'hello world'),
       ])),
       ('fourth', OrderedDict([
         ('description', 'Unvalued property.'),
-        ('jsexterns', None),
         ('type', 'integer'),
       ])),
     ]), schema.get('properties'))
@@ -519,7 +514,7 @@ class IdlSchemaTest(unittest.TestCase):
     manifest_keys = schema.get('manifest_keys')
     self.assertEqual(manifest_keys['key_str'],
                      OrderedDict([('description', 'String manifest key.'),
-                                  ('jsexterns', None), ('name', 'key_str'),
+                                  ('name', 'key_str'),
                                   ('type', 'string')]))
     self.assertEqual(manifest_keys['key_ref'],
                       OrderedDict([('name', 'key_ref'),
