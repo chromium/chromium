@@ -58,6 +58,72 @@
 
 namespace blink {
 
+namespace {
+
+// This helps to scan pixel data in a logical direction.
+class LogicalPixelScanner {
+  STACK_ALLOCATED();
+
+ public:
+  // Initialize the instance, and move to the logical origin.
+  LogicalPixelScanner(const DOMUint8ClampedArray& pixel_array,
+                      const gfx::Size& size,
+                      WritingMode writing_mode)
+      : pixel_array_(pixel_array), size_(size), writing_mode_(writing_mode) {}
+
+  // Move to the inline-end direction by one pixel.
+  void Next() { ++inline_offset_; }
+
+  // Move to the block-end direction by one pixel, and move to the
+  // inline-start position.
+  void NextLine() {
+    ++block_offset_;
+    inline_offset_ = 0;
+  }
+
+  // Get the alpha channel value of the current pixel.
+  uint8_t GetAlpha() const {
+    return pixel_array_.Item(PixelOffset() + kAlphaOffsetInPixel);
+  }
+
+ private:
+  // Each pixel is four bytes: RGBA.
+  static constexpr uint32_t kBytesPerPixel = 4;
+  static constexpr uint32_t kAlphaOffsetInPixel = 3;
+
+  uint32_t PixelOffset() const {
+    uint32_t x, y;
+    switch (writing_mode_) {
+      case WritingMode::kHorizontalTb:
+        x = inline_offset_;
+        y = block_offset_;
+        break;
+      case WritingMode::kVerticalRl:
+      case WritingMode::kSidewaysRl:
+        x = size_.width() - block_offset_ - 1;
+        y = inline_offset_;
+        break;
+      case WritingMode::kVerticalLr:
+        x = block_offset_;
+        y = inline_offset_;
+        break;
+      case WritingMode::kSidewaysLr:
+        x = block_offset_;
+        y = size_.height() - inline_offset_ - 1;
+        break;
+    }
+    return (y * size_.width() + x) * kBytesPerPixel;
+  }
+
+  const DOMUint8ClampedArray& pixel_array_;
+  const gfx::Size size_;
+  const WritingMode writing_mode_;
+  uint32_t inline_offset_ = 0;
+  uint32_t block_offset_ = 0;
+};
+
+}  // namespace
+
 static std::unique_ptr<Shape> CreateInsetShape(const FloatRoundedRect& bounds) {
   DCHECK_GE(bounds.Rect().width(), 0);
   DCHECK_GE(bounds.Rect().height(), 0);
@@ -235,7 +301,6 @@ static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
   DOMUint8ClampedArray* pixel_array =
       DOMUint8ClampedArray::Create(array_buffer, 0, array_buffer->ByteLength());
 
-  unsigned pixel_array_offset = 3;  // Each pixel is four bytes: RGBA.
   uint8_t alpha_pixel_threshold = threshold * 255;
 
   DCHECK_EQ(image_rect.size().Area64() * 4, pixel_array->length());
@@ -260,10 +325,12 @@ static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
       std::make_unique<RasterShapeIntervals>(margin_box_block_size,
                                              -margin_block_start);
 
-  for (int y = min_buffer_y; y < max_buffer_y; ++y) {
+  LogicalPixelScanner scanner(*pixel_array, image_rect.size(),
+                              WritingMode::kHorizontalTb);
+  for (int y = min_buffer_y; y < max_buffer_y; ++y, scanner.NextLine()) {
     int start_x = -1;
-    for (int x = 0; x < image_rect.width(); ++x, pixel_array_offset += 4) {
-      uint8_t alpha = pixel_array->Item(pixel_array_offset);
+    for (int x = 0; x < image_rect.width(); ++x, scanner.Next()) {
+      uint8_t alpha = scanner.GetAlpha();
       bool alpha_above_threshold = alpha > alpha_pixel_threshold;
       if (start_x == -1 && alpha_above_threshold) {
         start_x = x;
