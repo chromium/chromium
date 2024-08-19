@@ -47,6 +47,14 @@ class NET_EXPORT_PRIVATE HttpStreamPool
       "Idle time limit expired";
   static constexpr std::string_view kSwitchingToHttp2 = "Switching to HTTP/2";
   static constexpr std::string_view kSwitchingToHttp3 = "Switching to HTTP/3";
+  static constexpr std::string_view kRemoteSideClosedConnection =
+      "Remote side closed connection";
+  static constexpr std::string_view kDataReceivedUnexpectedly =
+      "Data received unexpectedly";
+  static constexpr std::string_view kClosedConnectionReturnedToPool =
+      "Connection was closed when it was returned to the pool";
+  static constexpr std::string_view kSocketGenerationOutOfDate =
+      "Socket generation out of date";
 
   // The maximum number of sockets per pool. The same as
   // ClientSocketPoolManager::max_sockets_per_pool().

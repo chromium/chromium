@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
 #include "net/http/http_stream_key.h"
@@ -171,6 +172,9 @@ class HttpStreamPool::Group {
     // Clean up all idle streams.
     kForce,
   };
+
+  static base::expected<void, std::string_view> IsIdleStreamSocketUsable(
+      const IdleStreamSocket& idle);
 
   void CleanupIdleStreamSockets(CleanupMode mode,
                                 std::string_view net_log_close_reason_utf8);

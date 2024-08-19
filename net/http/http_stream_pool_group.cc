@@ -4,6 +4,7 @@
 
 #include "net/http/http_stream_pool_group.h"
 
+#include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
@@ -25,28 +26,41 @@ bool IsNegotiatedProtocolTextBased(NextProto next_proto) {
   return next_proto == kProtoUnknown || next_proto == kProtoHTTP11;
 }
 
-enum class StreamSocketUsableState {
-  kUsable,
-  kRemoteSideClosed,
-  kDataReceivedUnexpectedly,
-};
-
-StreamSocketUsableState CalculateStreamSocketUsableState(
-    const StreamSocket& socket) {
-  if (socket.WasEverUsed()) {
-    if (socket.IsConnectedAndIdle()) {
-      return StreamSocketUsableState::kUsable;
-    }
-    return socket.IsConnected()
-               ? StreamSocketUsableState::kDataReceivedUnexpectedly
-               : StreamSocketUsableState::kRemoteSideClosed;
-  }
-
-  return socket.IsConnected() ? StreamSocketUsableState::kUsable
-                              : StreamSocketUsableState::kRemoteSideClosed;
+void RecordNetLogClosingSocket(const StreamSocket& stream_socket,
+                               std::string_view reason) {
+  stream_socket.NetLog().AddEventWithStringParams(
+      NetLogEventType::HTTP_STREAM_POOL_CLOSING_SOCKET, "reason", reason);
 }
 
 }  // namespace
+
+// static
+base::expected<void, std::string_view>
+HttpStreamPool::Group::IsIdleStreamSocketUsable(const IdleStreamSocket& idle) {
+  base::TimeDelta timeout = idle.stream_socket->WasEverUsed()
+                                ? kUsedIdleStreamSocketTimeout
+                                : kUnusedIdleStreamSocketTimeout;
+  if (base::TimeTicks::Now() - idle.time_became_idle >= timeout) {
+    return base::unexpected(kIdleTimeLimitExpired);
+  }
+
+  if (idle.stream_socket->WasEverUsed()) {
+    if (idle.stream_socket->IsConnectedAndIdle()) {
+      return base::ok();
+    }
+    if (idle.stream_socket->IsConnected()) {
+      return base::unexpected(kDataReceivedUnexpectedly);
+    } else {
+      return base::unexpected(kRemoteSideClosedConnection);
+    }
+  }
+
+  if (idle.stream_socket->IsConnected()) {
+    return base::ok();
+  }
+
+  return base::unexpected(kRemoteSideClosedConnection);
+}
 
 HttpStreamPool::Group::IdleStreamSocket::IdleStreamSocket(
     std::unique_ptr<StreamSocket> stream_socket,
@@ -156,11 +170,23 @@ void HttpStreamPool::Group::ReleaseStreamSocket(
   --handed_out_stream_count_;
   pool_->DecrementTotalHandedOutStreamCount();
 
-  bool can_reuse = generation == generation_ && socket->IsConnectedAndIdle();
-  if (can_reuse) {
+  bool reusable = false;
+  std::string_view not_reusable_reason;
+  if (!socket->IsConnectedAndIdle()) {
+    not_reusable_reason = socket->IsConnected()
+                              ? kDataReceivedUnexpectedly
+                              : kClosedConnectionReturnedToPool;
+  } else if (generation != generation_) {
+    not_reusable_reason = kSocketGenerationOutOfDate;
+  } else {
+    reusable = true;
+  }
+
+  if (reusable) {
     AddIdleStreamSocket(std::move(socket));
     ProcessPendingRequest();
   } else {
+    RecordNetLogClosingSocket(*socket, not_reusable_reason);
     socket.reset();
   }
 
@@ -179,23 +205,27 @@ void HttpStreamPool::Group::AddIdleStreamSocket(
 }
 
 std::unique_ptr<StreamSocket> HttpStreamPool::Group::GetIdleStreamSocket() {
-  CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, kIdleTimeLimitExpired);
-
-  if (idle_stream_sockets_.empty()) {
-    return nullptr;
-  }
-
   // Iterate through the idle streams from oldtest to newest and try to find a
   // used idle stream. Prefer the newest used idle stream.
   auto idle_it = idle_stream_sockets_.end();
   for (auto it = idle_stream_sockets_.begin();
        it != idle_stream_sockets_.end();) {
-    CHECK_EQ(CalculateStreamSocketUsableState(*it->stream_socket),
-             StreamSocketUsableState::kUsable);
+    const base::expected<void, std::string_view> usable_result =
+        IsIdleStreamSocketUsable(*it);
+    if (!usable_result.has_value()) {
+      RecordNetLogClosingSocket(*it->stream_socket, usable_result.error());
+      it = idle_stream_sockets_.erase(it);
+      pool_->DecrementTotalIdleStreamCount();
+      continue;
+    }
     if (it->stream_socket->WasEverUsed()) {
       idle_it = it;
     }
     ++it;
+  }
+
+  if (idle_stream_sockets_.empty()) {
+    return nullptr;
   }
 
   if (idle_it == idle_stream_sockets_.end()) {
@@ -290,27 +320,18 @@ void HttpStreamPool::Group::CleanupTimedoutIdleStreamSocketsForTesting() {
 void HttpStreamPool::Group::CleanupIdleStreamSockets(
     CleanupMode mode,
     std::string_view net_log_close_reason_utf8) {
-  const base::TimeTicks now = base::TimeTicks::Now();
-
   // Iterate though the idle sockets to delete any disconnected ones.
   for (auto it = idle_stream_sockets_.begin();
        it != idle_stream_sockets_.end();) {
     bool should_delete = mode == CleanupMode::kForce;
-    base::TimeDelta timeout = it->stream_socket->WasEverUsed()
-                                  ? kUsedIdleStreamSocketTimeout
-                                  : kUnusedIdleStreamSocketTimeout;
-    StreamSocketUsableState state =
-        CalculateStreamSocketUsableState(*it->stream_socket);
-    if (state != StreamSocketUsableState::kUsable) {
-      should_delete = true;
-    } else if (now - it->time_became_idle >= timeout) {
+    const base::expected<void, std::string_view> usable_result =
+        IsIdleStreamSocketUsable(*it);
+    if (!usable_result.has_value()) {
       should_delete = true;
     }
 
     if (should_delete) {
-      it->stream_socket->NetLog().AddEventWithStringParams(
-          NetLogEventType::HTTP_STREAM_POOL_CLOSING_SOCKET, "reason",
-          net_log_close_reason_utf8);
+      RecordNetLogClosingSocket(*it->stream_socket, net_log_close_reason_utf8);
       it = idle_stream_sockets_.erase(it);
       pool_->DecrementTotalIdleStreamCount();
     } else {
