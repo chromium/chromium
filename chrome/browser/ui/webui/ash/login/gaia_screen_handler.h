@@ -350,9 +350,11 @@ class GaiaScreenHandler final
   // Gaia sign-in page.
   bool IsGaiaHiddenByError();
 
-  // After proxy auth information has been supplied, this function re-enables
-  // responding to network state notifications.
-  void ReenableNetworkStateUpdatesAfterProxyAuth();
+  // After proxy auth is cancelled or information has been supplied, this
+  // function re-enables responding to network state notifications, and
+  // reactivates the authentication flow autoreload functionality (if enabled by
+  // policy).
+  void OnProxyAuthDone();
 
   // Error screen hide callback which records error screen metrics and shows
   // GAIA.

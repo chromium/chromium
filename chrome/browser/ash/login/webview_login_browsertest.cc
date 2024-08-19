@@ -917,6 +917,7 @@ IN_PROC_BROWSER_TEST_F(WebviewDeviceOwnedLoginTest, AllowNewUser) {
   test::OobeJS().ExpectTrue(frame_url + ".search('flow=nosignup') != -1");
 }
 
+// TODO(b/360829605) Add browser tests for case where proxy auth is required.
 // Class for testing `DeviceAuthenticationFlowAutoReloadInterval` policy cases.
 class AutoReloadWebviewLoginTest : public WebviewLoginTest {
  public:

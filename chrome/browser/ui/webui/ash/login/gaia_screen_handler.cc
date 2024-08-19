@@ -1622,12 +1622,13 @@ void GaiaScreenHandler::HttpAuthDialogShown(
     content::WebContents* web_contents) {
   network_state_ignored_until_proxy_auth_ = true;
   update_state_callback_.Cancel();
+  auth_flow_auto_reload_manager_.Terminate();
 }
 
 void GaiaScreenHandler::HttpAuthDialogCancelled(
     content::WebContents* web_contents) {
   update_state_callback_.Cancel();
-  ReenableNetworkStateUpdatesAfterProxyAuth();
+  OnProxyAuthDone();
 }
 
 void GaiaScreenHandler::HttpAuthDialogSupplied(
@@ -1636,7 +1637,7 @@ void GaiaScreenHandler::HttpAuthDialogSupplied(
     // Start listening to network state notifications immediately, hoping
     // that the network will switch to ONLINE soon.
     update_state_callback_.Cancel();
-    ReenableNetworkStateUpdatesAfterProxyAuth();
+    OnProxyAuthDone();
   } else {
     // Gaia is not hidden behind an error yet. Discard last cached network
     // state notification and wait for `kProxyAuthTimeout` before
@@ -1645,15 +1646,18 @@ void GaiaScreenHandler::HttpAuthDialogSupplied(
     update_state_callback_.Cancel();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(
-            &GaiaScreenHandler::ReenableNetworkStateUpdatesAfterProxyAuth,
-            weak_factory_.GetWeakPtr()),
+        base::BindOnce(&GaiaScreenHandler::OnProxyAuthDone,
+                       weak_factory_.GetWeakPtr()),
         kProxyAuthTimeout);
   }
 }
 
-void GaiaScreenHandler::ReenableNetworkStateUpdatesAfterProxyAuth() {
+void GaiaScreenHandler::OnProxyAuthDone() {
   network_state_ignored_until_proxy_auth_ = false;
+
+  auth_flow_auto_reload_manager_.Activate(
+      base::BindOnce(&GaiaScreenHandler::ReloadGaia, weak_factory_.GetWeakPtr(),
+                     /*force_reload=*/true));
 }
 
 void GaiaScreenHandler::OnErrorScreenHide() {

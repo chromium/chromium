@@ -60,7 +60,6 @@ void AuthenticationFlowAutoReloadManager::Activate(base::OnceClosure callback) {
 
 void AuthenticationFlowAutoReloadManager::ReloadAuthenticationFlow() {
   // TODO(b/352023469): postpone reload if user started typing
-  // TODO(b/352023931): handle window popups when auto reload is enabled
   ++auto_reload_attempts_;
   std::move(callback_).Run();
 }
