@@ -89,6 +89,7 @@ class HistoryClustersSidePanelUI : public TopChromeWebUIController,
   // WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
 
   static constexpr std::string GetWebUIName() {
     return "HistoryClustersSidePanel";

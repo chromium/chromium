@@ -240,7 +240,7 @@ class TestTopChromeWebUIConfig
 
 }  // namespace
 
-class WebUIContentsPreoloadManagerPageLoadMetricsTest
+class WebUIContentsPreloadManagerPageLoadMetricsTest
     : public WebUIContentsPreloadManagerBrowserTestBase {
  public:
   void SetUpFeature() override {
@@ -274,7 +274,7 @@ class WebUIContentsPreoloadManagerPageLoadMetricsTest
 #endif
 // Tests that the time from the WebUI is requested to when First Contentful
 // Paint (FCP) is recorded.
-IN_PROC_BROWSER_TEST_F(WebUIContentsPreoloadManagerPageLoadMetricsTest,
+IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerPageLoadMetricsTest,
                        MAYBE_RequestToFCP) {
   // Serves the test origin with files from the test data folder.
   auto url_loader_interceptor =
@@ -319,4 +319,56 @@ IN_PROC_BROWSER_TEST_F(WebUIContentsPreoloadManagerPageLoadMetricsTest,
       chrome::kNonTabWebUIRequestToFCPHistogramName, 1);
 
   widget->CloseNow();
+}
+
+class WebUIContentsPreloadManagerHistoryClusterMetricTest
+    : public WebUIContentsPreloadManagerBrowserTestBase {
+ public:
+  void SetUpFeature() override {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        features::kPreloadTopChromeWebUI,
+        {{features::kPreloadTopChromeWebUISmartPreloadName, "true"}});
+  }
+  void SetUpPreloadURL() override {
+    ON_CALL(*mock_preload_candidate_selector(), GetURLToPreload(_))
+        .WillByDefault(
+            Return(GURL(chrome::kChromeUIHistoryClustersSidePanelURL)));
+  }
+};
+
+// Tests that history cluster metrics are NOT recorded for a preloaded History
+// Clusters UI that is never shown.
+IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerHistoryClusterMetricTest,
+                       PreloadButNeverShow) {
+  base::HistogramTester histogram_tester;
+  test_api().MaybePreloadForBrowserContext(browser()->profile());
+  navigation_waiter()->Wait();
+  ASSERT_EQ(test_api().GetPreloadedURL(),
+            GURL(chrome::kChromeUIHistoryClustersSidePanelURL));
+
+  // History Cluster metrics, if any, are recorded on WebUI destruction.
+  test_api().SetPreloadedContents(nullptr);
+  // The metrics are not recorded because the WebUI is never shown.
+  histogram_tester.ExpectTotalCount("History.Clusters.Actions.InitialState", 0);
+}
+
+// Tests that history cluster metrics are recorded for a preloaded History
+// Clusters UI that is shown.
+IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerHistoryClusterMetricTest,
+                       PreloadAndShow) {
+  base::HistogramTester histogram_tester;
+  test_api().MaybePreloadForBrowserContext(browser()->profile());
+  navigation_waiter()->Wait();
+  ASSERT_EQ(test_api().GetPreloadedURL(),
+            GURL(chrome::kChromeUIHistoryClustersSidePanelURL));
+
+  std::unique_ptr<content::WebContents> web_contents = std::move(
+      preload_manager()
+          ->Request(GURL(chrome::kChromeUIHistoryClustersSidePanelURL),
+                    browser()->profile())
+          .web_contents);
+  web_contents->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  // History Cluster metrics are recorded on WebUI destruction.
+  web_contents.reset();
+  histogram_tester.ExpectTotalCount("History.Clusters.Actions.InitialState", 1);
 }

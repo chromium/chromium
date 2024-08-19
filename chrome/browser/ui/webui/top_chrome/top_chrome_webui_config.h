@@ -45,8 +45,11 @@ class TopChromeWebUIConfig : public content::WebUIConfig {
   // Returns true if the host should automatically resize to fit the page size.
   virtual bool ShouldAutoResizeHost() = 0;
 
-  // Returns true to allow preloading. Some considerations:
-  // * Preloaded might happen during startup when some data is not available
+  // Returns true to allow preloading. Preloading could affect business logics
+  // or metrics logging. Some considerations:
+  // * For usage statistics, observe the web contents for OnVisibilityChanged()
+  //   to become visible.
+  // * Preloading might happen during startup when some data is not available
   //   (e.g. bookmark). Preloadable WebUIs must be resilient to that.
   // * GetCommandIdForTesting() must return a non-null command id. This is used
   //   in tests to trigger preloaded WebUIs and ensure they don't crash.

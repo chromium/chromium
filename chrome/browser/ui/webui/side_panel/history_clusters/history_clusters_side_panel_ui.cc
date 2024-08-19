@@ -154,3 +154,13 @@ void HistoryClustersSidePanelUI::DidFinishNavigation(
   logger->set_navigation_id(navigation_handle->GetNavigationId());
   logger->set_initial_state(metrics_initial_state_);
 }
+
+void HistoryClustersSidePanelUI::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (visibility != content::Visibility::VISIBLE) {
+    return;
+  }
+  history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
+      web_ui()->GetWebContents()->GetPrimaryPage())
+      ->WasShown();
+}
