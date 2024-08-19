@@ -20,6 +20,8 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
@@ -34,6 +36,7 @@ namespace {
 using ::testing::IsEmpty;
 using ::testing::Property;
 using ::testing::SizeIs;
+using ::testing::StrEq;
 
 constexpr int kDefaultSectionWidth = 320;
 
@@ -190,6 +193,70 @@ TEST_F(PickerSectionViewTest,
   ASSERT_TRUE(list_item);
   EXPECT_EQ(list_item->GetPrimaryTextForTesting(), u"example.com/foo");
   EXPECT_EQ(list_item->GetSecondaryTextForTesting(), u"example.com/foo");
+}
+
+TEST_F(PickerSectionViewTest,
+       SingleFileClipboardHistoryResultsUseIconForFiletype) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerPreviewBubbleController preview_controller;
+  PickerSubmenuController submenu_controller;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                 &submenu_controller);
+
+  section_view.AddResult(
+      PickerSearchResult::Clipboard(
+          base::UnguessableToken(),
+          PickerSearchResult::ClipboardData::DisplayFormat::kFile,
+          /*file_count=*/1,
+          /*display_text=*/u"image.png",
+          /*display_image=*/{},
+          /*is_recent=*/false),
+      &preview_controller, base::DoNothing());
+
+  base::span<const raw_ptr<PickerItemView>> items =
+      section_view.item_views_for_testing();
+  ASSERT_THAT(items, SizeIs(1));
+  auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
+  ASSERT_NE(list_item, nullptr);
+  const gfx::VectorIcon* vector_icon =
+      list_item->leading_icon_view_for_testing()
+          .GetImageModel()
+          .GetVectorIcon()
+          .vector_icon();
+  ASSERT_NE(vector_icon, nullptr);
+  EXPECT_THAT(vector_icon->name, StrEq(chromeos::kFiletypeImageIcon.name));
+}
+
+TEST_F(PickerSectionViewTest,
+       MultipleFileClipboardHistoryResultsUseIconForFiletype) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerPreviewBubbleController preview_controller;
+  PickerSubmenuController submenu_controller;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                 &submenu_controller);
+
+  section_view.AddResult(
+      PickerSearchResult::Clipboard(
+          base::UnguessableToken(),
+          PickerSearchResult::ClipboardData::DisplayFormat::kFile,
+          /*file_count=*/2,
+          /*display_text=*/u"2 files",
+          /*display_image=*/{},
+          /*is_recent=*/false),
+      &preview_controller, base::DoNothing());
+
+  base::span<const raw_ptr<PickerItemView>> items =
+      section_view.item_views_for_testing();
+  ASSERT_THAT(items, SizeIs(1));
+  auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
+  ASSERT_NE(list_item, nullptr);
+  const gfx::VectorIcon* vector_icon =
+      list_item->leading_icon_view_for_testing()
+          .GetImageModel()
+          .GetVectorIcon()
+          .vector_icon();
+  ASSERT_NE(vector_icon, nullptr);
+  EXPECT_THAT(vector_icon->name, StrEq(vector_icons::kContentCopyIcon.name));
 }
 
 TEST_F(PickerSectionViewTest, CapsLockResultShowsShortcutHint) {

@@ -84,7 +84,8 @@ void PickerClipboardHistoryProvider::OnFetchHistory(
             display_format = GetDisplayFormat(item);
         display_format.has_value()) {
       results.push_back(PickerSearchResult::Clipboard(
-          item.id(), *display_format, item.display_text(), item.display_image(),
+          item.id(), *display_format, item.file_count(), item.display_text(),
+          item.display_image(),
           (clock_->Now() - item.time_copied()) < kRecencyThreshold));
     }
   }

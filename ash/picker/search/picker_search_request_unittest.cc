@@ -1025,7 +1025,7 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromClipboardSearch) {
                "data", &PickerSearchResult::data,
                VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
                    _, PickerSearchResult::ClipboardData::DisplayFormat::kText,
-                   u"cat", std::nullopt, true)))),
+                   /*file_count=*/0, u"cat", std::nullopt, true)))),
            /*has_more_results=*/false))
       .Times(1);
 

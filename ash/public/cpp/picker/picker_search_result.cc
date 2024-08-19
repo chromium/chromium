@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/picker/picker_search_result.h"
 
+#include <cstddef>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -43,11 +44,13 @@ bool PickerSearchResult::EmojiData::operator==(
 PickerSearchResult::ClipboardData::ClipboardData(
     base::UnguessableToken item_id,
     DisplayFormat display_format,
+    size_t file_count,
     std::u16string display_text,
     std::optional<ui::ImageModel> display_image,
     bool is_recent)
     : item_id(item_id),
       display_format(display_format),
+      file_count(file_count),
       display_text(std::move(display_text)),
       display_image(std::move(display_image)),
       is_recent(is_recent) {}
@@ -204,10 +207,11 @@ PickerSearchResult PickerSearchResult::Emoticon(std::u16string_view emoticon,
 PickerSearchResult PickerSearchResult::Clipboard(
     base::UnguessableToken item_id,
     ClipboardData::DisplayFormat display_format,
+    size_t file_count,
     std::u16string display_text,
     std::optional<ui::ImageModel> display_image,
     bool is_recent) {
-  return PickerSearchResult(ClipboardData(item_id, display_format,
+  return PickerSearchResult(ClipboardData(item_id, display_format, file_count,
                                           std::move(display_text),
                                           std::move(display_image), is_recent));
 }

@@ -353,7 +353,7 @@ TEST_F(PickerSuggestionsControllerTest, GetSuggestionsForClipboardCategory) {
       ElementsAre(Property(
           "data", &PickerSearchResult::data,
           VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
-              _, PickerSearchResult::ClipboardData::DisplayFormat::kText,
+              _, PickerSearchResult::ClipboardData::DisplayFormat::kText, _,
               u"abc", _, _)))));
 }
 

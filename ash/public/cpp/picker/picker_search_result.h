@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_PICKER_PICKER_SEARCH_RESULT_H_
 #define ASH_PUBLIC_CPP_PICKER_PICKER_SEARCH_RESULT_H_
 
+#include <cstddef>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -84,12 +85,15 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     // Unique ID that specifies which item in the clipboard this refers to.
     base::UnguessableToken item_id;
     DisplayFormat display_format;
+    // If this is 1, `display_text` should be the filename of the file.
+    size_t file_count;
     std::u16string display_text;
     std::optional<ui::ImageModel> display_image;
     bool is_recent;
 
     ClipboardData(base::UnguessableToken item_id,
                   DisplayFormat display_format,
+                  size_t file_count,
                   std::u16string display_text,
                   std::optional<ui::ImageModel> display_image,
                   bool is_recent);
@@ -251,6 +255,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   static PickerSearchResult Clipboard(
       base::UnguessableToken item_id,
       ClipboardData::DisplayFormat display_format,
+      size_t file_count,
       std::u16string display_text,
       std::optional<ui::ImageModel> display_image,
       bool is_recent);

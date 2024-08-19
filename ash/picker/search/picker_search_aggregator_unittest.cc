@@ -567,8 +567,8 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
       PickerSearchSource::kClipboard,
       {PickerSearchResult::Clipboard(
           base::UnguessableToken::Create(),
-          PickerSearchResult::ClipboardData::DisplayFormat::kText, u"clipboard",
-          std::nullopt,
+          PickerSearchResult::ClipboardData::DisplayFormat::kText,
+          /*file_count=*/0, u"clipboard", std::nullopt,
           /*is_recent=*/false)},
       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDate,
@@ -654,8 +654,8 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
       PickerSearchSource::kClipboard,
       {PickerSearchResult::Clipboard(
           base::UnguessableToken::Create(),
-          PickerSearchResult::ClipboardData::DisplayFormat::kText, u"clipboard",
-          std::nullopt,
+          PickerSearchResult::ClipboardData::DisplayFormat::kText,
+          /*file_count=*/0, u"clipboard", std::nullopt,
           /*is_recent=*/false)},
       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(
@@ -726,8 +726,8 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
       PickerSearchSource::kClipboard,
       {PickerSearchResult::Clipboard(
           base::UnguessableToken::Create(),
-          PickerSearchResult::ClipboardData::DisplayFormat::kText, u"clipboard",
-          std::nullopt,
+          PickerSearchResult::ClipboardData::DisplayFormat::kText,
+          /*file_count=*/0, u"clipboard", std::nullopt,
           /*is_recent=*/true)},
       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(

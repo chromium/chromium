@@ -27,6 +27,7 @@
 #include "ash/style/typography.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chromeos/components/editor_menu/public/cpp/icon.h"
 #include "chromeos/ui/base/file_icon_util.h"
@@ -157,7 +158,9 @@ const gfx::VectorIcon& GetIconForClipboardData(
     case PickerSearchResult::ClipboardData::DisplayFormat::kImage:
       return chromeos::kFiletypeImageIcon;
     case PickerSearchResult::ClipboardData::DisplayFormat::kFile:
-      return vector_icons::kContentCopyIcon;
+      return data.file_count == 1 ? chromeos::GetIconForPath(base::FilePath(
+                                        base::UTF16ToUTF8(data.display_text)))
+                                  : vector_icons::kContentCopyIcon;
     case PickerSearchResult::ClipboardData::DisplayFormat::kHtml:
       NOTREACHED();
   }

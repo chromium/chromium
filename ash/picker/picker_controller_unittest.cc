@@ -593,6 +593,7 @@ TEST_F(PickerControllerTest,
       PickerSearchResult::Clipboard(
           *clipboard_item_id,
           PickerSearchResult::ClipboardData::DisplayFormat::kText,
+          /*file_count=*/0,
           /*display_text=*/u"", /*display_image=*/{}, /*is_recent=*/false));
   views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
       controller().widget_for_testing());
@@ -1225,6 +1226,7 @@ INSTANTIATE_TEST_SUITE_P(
             .result = PickerSearchResult::Clipboard(
                 base::UnguessableToken::Create(),
                 PickerSearchResult::ClipboardData::DisplayFormat::kFile,
+                0,
                 u"",
                 {},
                 false),
