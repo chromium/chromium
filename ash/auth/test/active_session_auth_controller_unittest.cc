@@ -34,16 +34,14 @@ class ActiveSessionAuthControllerTest : public NoSessionAshTestBase {
   using OnAuthComplete =
       base::test::TestFuture<bool, const ash::AuthProofToken&, base::TimeDelta>;
 
-  ActiveSessionAuthControllerTest() {
+  void SetUp() override {
     InitializeUserManager();
     AddUserToUserManager();
     SystemSaltGetter::Initialize();
     CryptohomeMiscClient::InitializeFake();
     UserDataAuthClient::InitializeFake();
     auth_parts_ = AuthParts::Create(&local_state_);
-  }
 
-  void SetUp() override {
     AshTestBase::SetUp();
 
     GetSessionControllerClient()->DisableAutomaticallyProvideSigninPref();
@@ -59,6 +57,7 @@ class ActiveSessionAuthControllerTest : public NoSessionAshTestBase {
 
     auth_parts_.reset();
     user_manager_->Destroy();
+    user_manager_.reset();
     SystemSaltGetter::Shutdown();
     CryptohomeMiscClient::Shutdown();
     UserDataAuthClient::Shutdown();

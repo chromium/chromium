@@ -71,6 +71,8 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
+#include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -107,19 +109,23 @@ constexpr float kCapsLockRatioThresholdForTop = 0.8;
 constexpr float kCapsLockRatioThresholdForBottom = 0.2;
 
 PickerFeatureKeyType MatchPickerFeatureKeyHash() {
-  // Command line looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --picker-feature-key="INSERT KEY HERE" --enable-features=PickerFeature
-  const std::string provided_key_hash = base::SHA1HashString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kPickerFeatureKey));
-  if (provided_key_hash == kPickerFeatureDevKeyHash) {
-    return PickerFeatureKeyType::kDev;
-  }
-  if (provided_key_hash == kPickerFeatureTestKeyHash) {
-    return PickerFeatureKeyType::kTest;
-  }
-  return PickerFeatureKeyType::kNone;
+  static const PickerFeatureKeyType key_type = []() {
+    // Command line looks like:
+    //  out/Default/chrome --user-data-dir=/tmp/tmp123
+    //  --picker-feature-key="INSERT KEY HERE" --enable-features=PickerFeature
+    const std::string provided_key_hash = base::SHA1HashString(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            switches::kPickerFeatureKey));
+    if (provided_key_hash == kPickerFeatureDevKeyHash) {
+      return PickerFeatureKeyType::kDev;
+    }
+    if (provided_key_hash == kPickerFeatureTestKeyHash) {
+      return PickerFeatureKeyType::kTest;
+    }
+    return PickerFeatureKeyType::kNone;
+  }();
+
+  return key_type;
 }
 
 ui::TextInputClient* GetFocusedTextInputClient() {
@@ -297,14 +303,17 @@ PickerController::~PickerController() {
   CloseCapsLockStateView();
 }
 
-bool PickerController::IsFeatureKeyMatched() {
+bool PickerController::IsFeatureEnabled() {
+  if (!features::IsPickerUpdateEnabled()) {
+    return false;
+  }
+
   if (!g_should_check_key) {
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(ash::features::kPickerDogfood)) {
-    // This flag allows PickerController to be created, but ToggleWidget will
-    // still check if the feature is allowed by the client.
+  if (base::FeatureList::IsEnabled(ash::features::kPickerDogfood) &&
+      client_->IsFeatureAllowedForDogfood()) {
     return true;
   }
 
@@ -316,8 +325,7 @@ bool PickerController::IsFeatureKeyMatched() {
   return true;
 }
 
-void PickerController::DisableFeatureKeyCheckForTesting() {
-  CHECK_IS_TEST();
+void PickerController::DisableFeatureKeyCheck() {
   g_should_check_key = false;
 }
 
@@ -351,10 +359,7 @@ void PickerController::OnClientProfileSet() {
 
 void PickerController::ToggleWidget(
     const base::TimeTicks trigger_event_timestamp) {
-  CHECK(client_);
-  if (base::FeatureList::IsEnabled(ash::features::kPickerDogfood) &&
-      !client_->IsFeatureAllowedForDogfood()) {
-    LOG(ERROR) << "Picker feature is blocked";
+  if (!IsFeatureEnabled()) {
     return;
   }
 

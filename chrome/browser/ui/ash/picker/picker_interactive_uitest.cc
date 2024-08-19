@@ -72,7 +72,7 @@ class PickerInteractiveUiTest : public InteractiveAshTest {
   };
 
   PickerInteractiveUiTest() {
-    ash::PickerController::DisableFeatureKeyCheckForTesting();
+    ash::PickerController::DisableFeatureKeyCheck();
     ash::PickerController::DisableFeatureTourForTesting();
   }
 

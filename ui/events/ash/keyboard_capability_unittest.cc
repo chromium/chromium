@@ -171,7 +171,7 @@ class FakeDeviceManager {
   FakeDeviceManager() = default;
   FakeDeviceManager(const FakeDeviceManager&) = delete;
   FakeDeviceManager& operator=(const FakeDeviceManager&) = delete;
-  ~FakeDeviceManager() = default;
+  ~FakeDeviceManager() { RemoveAllDevices(); }
 
   // Add a fake keyboard to DeviceDataManagerTestApi and provide layout info to
   // fake udev.

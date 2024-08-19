@@ -614,8 +614,7 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateSixPackAliases(
     return std::vector<ui::Accelerator>();
   }
 
-  if (features::IsModifierSplitEnabled() &&
-      IsSplitModifierKeyboard(device_id.value())) {
+  if (device_id.has_value() && IsSplitModifierKeyboard(device_id.value())) {
     const auto iter = ui::kSixPackKeyToFnKeyMap.find(accelerator.key_code());
     // [Insert] is technically a six pack key but has no Fn based rewrite. Need
     // to make sure we return no aliased accelerator for this case.

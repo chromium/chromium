@@ -301,7 +301,7 @@ bool CanHandleLockButton(const ui::Accelerator& accelerator) {
   if (accelerator.key_code() == ui::VKEY_F13 &&
       Shell::Get()->keyboard_capability()->HasFunctionKey(
           accelerator.source_device_id())) {
-    CHECK(features::IsModifierSplitEnabled());
+    CHECK(Shell::Get()->keyboard_capability()->IsModifierSplitEnabled());
     return false;
   }
   return true;
@@ -324,7 +324,7 @@ bool CanHandleToggleCapsLock(
       // Check if from modifier split keyboard. if not, show notification.
       if (Shell::Get()->keyboard_capability()->HasFunctionKey(
               accelerator.source_device_id())) {
-        CHECK(features::IsModifierSplitEnabled());
+        CHECK(Shell::Get()->keyboard_capability()->IsModifierSplitEnabled());
         notification_controller->ShowCapsLockRewritingNudge();
         return false;
       }

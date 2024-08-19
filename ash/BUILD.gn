@@ -1917,6 +1917,8 @@ component("ash") {
     "system/input_device_settings/input_device_tracker.h",
     "system/input_device_settings/keyboard_modifier_metrics_recorder.cc",
     "system/input_device_settings/keyboard_modifier_metrics_recorder.h",
+    "system/input_device_settings/modifier_split_bypass_checker.cc",
+    "system/input_device_settings/modifier_split_bypass_checker.h",
     "system/input_device_settings/pref_handlers/graphics_tablet_pref_handler.h",
     "system/input_device_settings/pref_handlers/graphics_tablet_pref_handler_impl.cc",
     "system/input_device_settings/pref_handlers/graphics_tablet_pref_handler_impl.h",

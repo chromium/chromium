@@ -749,6 +749,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
                        InsertingAnnouncesInsertionBeforeTextfieldRefocus) {
   ash::PickerController controller;
+  controller.DisableFeatureKeyCheck();
   PickerClientImpl client(&controller, user_manager::UserManager::Get());
   std::unique_ptr<views::Widget> textfield_widget =
       ash::TestWidgetBuilder()

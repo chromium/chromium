@@ -174,9 +174,9 @@ class TestPickerClient : public MockPickerClient {
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_ = nullptr;
 };
 
-class PickerControllerTest : public AshTestBase {
+class PickerControllerTestBase : public AshTestBase {
  public:
-  PickerControllerTest()
+  PickerControllerTestBase()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     auto delegate = std::make_unique<MockNewWindowDelegate>();
     new_window_delegate_ = delegate.get();
@@ -227,6 +227,13 @@ class PickerControllerTest : public AshTestBase {
   std::unique_ptr<NiceMock<TestPickerClient>> client_;
   std::unique_ptr<metrics::structured::TestStructuredMetricsRecorder>
       metrics_recorder_;
+};
+
+class PickerControllerTest : public PickerControllerTestBase {
+  void SetUp() override {
+    PickerControllerTestBase::SetUp();
+    PickerController::DisableFeatureKeyCheck();
+  }
 };
 
 TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfClosed) {
@@ -516,28 +523,6 @@ TEST_F(PickerControllerTest, ToggleWidgetOpensUrlAfterLearnMore) {
   ASSERT_NE(button, nullptr);
   LeftClickOn(button);
   views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
-
-  EXPECT_FALSE(controller().widget_for_testing());
-}
-
-TEST_F(PickerControllerTest,
-       ToggleWidgetShowsWidgetForDogfoodWhenClientAllowed) {
-  base::test::ScopedFeatureList features(ash::features::kPickerDogfood);
-
-  EXPECT_CALL(client(), IsFeatureAllowedForDogfood).WillOnce(Return(true));
-
-  controller().ToggleWidget();
-
-  EXPECT_TRUE(controller().widget_for_testing());
-}
-
-TEST_F(PickerControllerTest,
-       ToggleWidgetDoesNotShowWidgetWhenClientDisallowsDogfood) {
-  base::test::ScopedFeatureList features(ash::features::kPickerDogfood);
-
-  EXPECT_CALL(client(), IsFeatureAllowedForDogfood).WillOnce(Return(false));
-
-  controller().ToggleWidget();
 
   EXPECT_FALSE(controller().widget_for_testing());
 }
@@ -1137,6 +1122,30 @@ TEST_F(PickerControllerTest,
   prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 0);
   EXPECT_EQ(controller().GetCapsLockPosition(),
             PickerCapsLockPosition::kBottom);
+}
+
+class PickerControllerKeyEnabledTest : public PickerControllerTestBase {};
+
+TEST_F(PickerControllerKeyEnabledTest,
+       ToggleWidgetShowsWidgetForDogfoodWhenClientAllowed) {
+  base::test::ScopedFeatureList features(ash::features::kPickerDogfood);
+
+  EXPECT_CALL(client(), IsFeatureAllowedForDogfood).WillOnce(Return(true));
+
+  controller().ToggleWidget();
+
+  EXPECT_TRUE(controller().widget_for_testing());
+}
+
+TEST_F(PickerControllerKeyEnabledTest,
+       ToggleWidgetDoesNotShowWidgetWhenClientDisallowsDogfood) {
+  base::test::ScopedFeatureList features(ash::features::kPickerDogfood);
+
+  EXPECT_CALL(client(), IsFeatureAllowedForDogfood).WillOnce(Return(false));
+
+  controller().ToggleWidget();
+
+  EXPECT_FALSE(controller().widget_for_testing());
 }
 
 struct ActionTestCase {

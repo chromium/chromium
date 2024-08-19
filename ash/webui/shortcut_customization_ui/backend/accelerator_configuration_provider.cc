@@ -616,7 +616,7 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     if (layout_id == AcceleratorAction::kTogglePicker &&
-        features::IsModifierSplitEnabled()) {
+        Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
       layout->description_string_id = IDS_ASH_ACCELERATOR_DESCRIPTION_RIGHT_ALT;
     }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

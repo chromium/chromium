@@ -710,7 +710,8 @@ bool CanToggleOverview() {
 
 bool CanTogglePicker() {
   CHECK(Shell::HasInstance());
-  return features::IsPickerUpdateEnabled() && Shell::Get()->picker_controller();
+  return features::IsPickerUpdateEnabled() &&
+         Shell::Get()->picker_controller()->IsFeatureEnabled();
 }
 
 bool CanTogglePrivacyScreen() {

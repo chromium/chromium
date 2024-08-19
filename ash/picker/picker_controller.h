@@ -26,6 +26,8 @@
 #include "base/timer/timer.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
+#include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/input_device_event_observer.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -53,9 +55,6 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   PickerController& operator=(const PickerController&) = delete;
   ~PickerController() override;
 
-  // Whether the provided feature key for Picker can enable the feature.
-  static bool IsFeatureKeyMatched();
-
   // Maximum time to wait for focus to be regained after completing the feature
   // tour. If this timeout is reached, we stop waiting for focus and show the
   // Picker widget regardless of the focus state.
@@ -68,6 +67,13 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   // Time from when a search starts to when the first set of results are
   // published.
   static constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(200);
+
+  // Disables the feature key checking.
+  static void DisableFeatureKeyCheck();
+
+  // Whether the feature is currently enabled or not based on the secret key and
+  // other factors.
+  bool IsFeatureEnabled();
 
   // Sets the `client` used by this class and the widget to communicate with the
   // browser. `client` may be set to null, which will close the Widget if it's
@@ -137,8 +143,6 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   void OnCapsLockChanged(bool enabled) override;
   void OnLayoutChanging(const std::string& layout_name) override;
 
-  // Disables the feature key checking. Only works in tests.
-  static void DisableFeatureKeyCheckForTesting();
   // Disables the feature tour. Only works in tests.
   static void DisableFeatureTourForTesting();
 

@@ -1944,6 +1944,12 @@ BASE_FEATURE(kMojoDBusRelay,
 // Enables to split left and right modifiers in settings.
 BASE_FEATURE(kModifierSplit, "ModifierSplit", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the ability to potentially override the secret key based on some
+// factors.
+BASE_FEATURE(kModifierSplitDeviceEnabled,
+             "ModifierSplitDeviceEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables to split left and right modifiers in settings for dogfood.
 BASE_FEATURE(kModifierSplitDogfood,
              "ModifierSplitDogfood",
@@ -2506,7 +2512,7 @@ BASE_FEATURE(kPhoneHubShortQuickActionPodsTitles,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the new picker feature.
-BASE_FEATURE(kPicker, "Picker", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPicker, "Picker", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Always show the feature tour for Picker for debugging purposes.
 BASE_FEATURE(kPickerAlwaysShowFeatureTour,
@@ -4300,9 +4306,7 @@ bool IsOobeJellyEnabled() {
 
 bool IsModifierSplitEnabled() {
   return IsInputDeviceSettingsSplitEnabled() &&
-         base::FeatureList::IsEnabled(kModifierSplit) &&
-         (IsModifierSplitDogfoodEnabled() ||
-          switches::IsModifierSplitSecretKeyMatched());
+         base::FeatureList::IsEnabled(kModifierSplit);
 }
 
 bool IsModifierSplitDogfoodEnabled() {

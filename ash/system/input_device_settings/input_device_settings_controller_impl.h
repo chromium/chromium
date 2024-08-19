@@ -22,6 +22,7 @@
 #include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 #include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
 #include "ash/system/input_device_settings/input_device_settings_policy_handler.h"
+#include "ash/system/input_device_settings/modifier_split_bypass_checker.h"
 #include "ash/system/input_device_settings/pref_handlers/graphics_tablet_pref_handler.h"
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler.h"
 #include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler.h"
@@ -70,6 +71,10 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   ~InputDeviceSettingsControllerImpl() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* pref_registry);
+
+  // Refreshes keyboard info and settings. To be used when the feature is first
+  // forcibly enabled.
+  void ForceKeyboardSettingRefreshWhenFeatureEnabled();
 
   // InputDeviceSettingsController:
   std::vector<mojom::KeyboardPtr> GetConnectedKeyboards() override;
@@ -297,9 +302,9 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   // current input method.
   void RefreshKeyDisplay();
 
-  // Refresh modifier keys when they potentially changed due to flags being
-  // enabled.
-  void RefreshModifierKeys();
+  // Refresh meta and modifier keys when they potentially changed due to flags
+  // being enabled.
+  void RefreshMetaAndModifierKeys();
 
   // Get the mouse button config based on the mouse metadata. Return
   // kDefault by default if there is no mouse metadata.
@@ -350,6 +355,8 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   std::unique_ptr<InputDeviceSettingsPolicyHandler> policy_handler_;
 
   raw_ptr<PrefService> local_state_ = nullptr;  // Not owned.
+
+  std::unique_ptr<ModifierSplitBypassChecker> modifier_split_bypass_checker_;
 
   std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler_;
   std::unique_ptr<TouchpadPrefHandler> touchpad_pref_handler_;
