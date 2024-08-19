@@ -213,7 +213,6 @@ void FidoRequestHandlerBase::InitDiscoveries(
     transport_availability_callback_readiness_->win_is_uvpaa_check_pending =
         true;
     WinWebAuthnApiAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
-        transport_availability_info_.is_off_the_record_context,
         device::WinWebAuthnApi::GetDefault(),
         base::BindOnce(&FidoRequestHandlerBase::OnWinIsUvpaa,
                        weak_factory_.GetWeakPtr()));

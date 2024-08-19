@@ -1686,7 +1686,7 @@ TEST_F(AuthenticatorImplTest, GetAssertionResponseWithAttestedCredentialData) {
 }
 
 #if BUILDFLAG(IS_WIN)
-TEST_F(AuthenticatorImplTest, IsUVPAA) {
+TEST_F(AuthenticatorImplTest, Win_IsUVPAA) {
   virtual_device_factory_->set_discover_win_webauthn_api_authenticator(true);
   NavigateAndCommit(GURL(kTestOrigin1));
   mojo::Remote<blink::mojom::Authenticator> authenticator =
@@ -1697,11 +1697,14 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
                                          : "!enable_win_webauthn_api");
     for (const bool is_uvpaa : {false, true}) {
       SCOPED_TRACE(is_uvpaa ? "is_uvpaa" : "!is_uvpaa");
-
-      fake_win_webauthn_api_.set_available(enable_win_webauthn_api);
-      fake_win_webauthn_api_.set_is_uvpaa(is_uvpaa);
-
-      EXPECT_EQ(AuthenticatorIsUvpaa(), enable_win_webauthn_api && is_uvpaa);
+      for (bool is_off_the_record : {true, false}) {
+        SCOPED_TRACE(is_off_the_record ? "off the record" : "on the record");
+        static_cast<TestBrowserContext*>(GetBrowserContext())
+            ->set_is_off_the_record(is_off_the_record);
+        fake_win_webauthn_api_.set_available(enable_win_webauthn_api);
+        fake_win_webauthn_api_.set_is_uvpaa(is_uvpaa);
+        EXPECT_EQ(AuthenticatorIsUvpaa(), enable_win_webauthn_api && is_uvpaa);
+      }
     }
   }
 }
@@ -1713,36 +1716,6 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
   EXPECT_FALSE(AuthenticatorIsUvpaa());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_WIN)
-class OffTheRecordAuthenticatorImplTest : public AuthenticatorImplTest {
- protected:
-  std::unique_ptr<BrowserContext> CreateBrowserContext() override {
-    auto browser_context = std::make_unique<TestBrowserContext>();
-    browser_context->set_is_off_the_record(true);
-    return browser_context;
-  }
-};
-
-// Tests that IsUVPAA returns true if the version of Windows supports an
-// appropriate warning.
-TEST_F(OffTheRecordAuthenticatorImplTest, WinIsUVPAAIncognito) {
-  virtual_device_factory_->set_discover_win_webauthn_api_authenticator(true);
-  NavigateAndCommit(GURL(kTestOrigin1));
-  fake_win_webauthn_api_.set_available(true);
-  fake_win_webauthn_api_.set_is_uvpaa(true);
-
-  for (bool win_api_supports_incognito_warning : {false, true}) {
-    SCOPED_TRACE(win_api_supports_incognito_warning
-                     ? "supports incognito"
-                     : "does not support incognito");
-    fake_win_webauthn_api_.set_version(win_api_supports_incognito_warning
-                                           ? WEBAUTHN_API_VERSION_4
-                                           : WEBAUTHN_API_VERSION_3);
-    EXPECT_EQ(AuthenticatorIsUvpaa(), win_api_supports_incognito_warning);
-  }
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 // TestWebAuthenticationRequestProxy is a test fake implementation of the
 // WebAuthenticationRequestProxy embedder interface.

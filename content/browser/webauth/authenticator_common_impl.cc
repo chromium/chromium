@@ -1618,10 +1618,7 @@ void AuthenticatorCommonImpl::ContinueIsUvpaaAfterOverrideCheck(
 #if BUILDFLAG(IS_MAC)
   IsUVPlatformAuthenticatorAvailable(GetBrowserContext(),
                                      std::move(uma_decorated_callback));
-#elif BUILDFLAG(IS_WIN)
-  IsUVPlatformAuthenticatorAvailable(GetBrowserContext()->IsOffTheRecord(),
-                                     std::move(uma_decorated_callback));
-#elif BUILDFLAG(IS_CHROMEOS)
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   IsUVPlatformAuthenticatorAvailable(std::move(uma_decorated_callback));
 #else
   std::move(uma_decorated_callback).Run(false);
