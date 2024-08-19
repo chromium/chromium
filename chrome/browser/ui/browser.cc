@@ -1168,6 +1168,10 @@ BrowserActions* Browser::GetActions() {
   return browser_actions();
 }
 
+BrowserWindowInterface::Type Browser::GetType() const {
+  return type_;
+}
+
 void Browser::DidBecomeActive() {
   BrowserList::SetLastActive(this);
   did_become_active_callback_list_.Notify(this);

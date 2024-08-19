@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_
 
 #include "base/callback_list.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -95,6 +96,48 @@ class BrowserWindowInterface : public content::PageNavigator {
   // This class manages actions that a user can take that are scoped to a
   // browser window (e.g. most of the 3-dot menu actions).
   virtual BrowserActions* GetActions() = 0;
+
+  // SessionService::WindowType mirrors these values.  If you add to this
+  // enum, look at SessionService::WindowType to see if it needs to be
+  // updated.
+  // TODO(https://crbug.com/331031753): Several of these existing Window Types
+  // likely should not have been using Browser as a base to begin with and
+  // should be migrated. Please refrain from adding new types.
+  enum Type {
+    // Normal tabbed non-app browser (previously TYPE_TABBED).
+    TYPE_NORMAL,
+    // Popup browser.
+    TYPE_POPUP,
+    // App browser. Specifically, one of these:
+    // * Web app; comes in different flavors but is backed by the same code:
+    //   - Progressive Web App (PWA)
+    //   - Shortcut app (from 3-dot menu > More tools > Create shortcut)
+    //   - System web app (Chrome OS only)
+    // * Legacy packaged app ("v1 packaged app")
+    // * Hosted app (e.g. the Web Store "app" preinstalled on Chromebooks)
+    TYPE_APP,
+    // Devtools browser.
+    TYPE_DEVTOOLS,
+    // App popup browser. It behaves like an app browser (e.g. it should have an
+    // AppBrowserController) but looks like a popup (e.g. it never has a tab
+    // strip).
+    TYPE_APP_POPUP,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Browser for ARC++ Chrome custom tabs.
+    // It's an enhanced version of TYPE_POPUP, and is used to show the Chrome
+    // Custom Tab toolbar for ARC++ apps. It has UI customizations like using
+    // the Android app's theme color, and the three dot menu in
+    // CustomTabToolbarview.
+    TYPE_CUSTOM_TAB,
+#endif
+    // Document picture-in-picture browser.  It's mostly the same as a
+    // TYPE_POPUP, except that it floats above other windows.  It also has some
+    // additional restrictions, like it cannot navigated, to prevent misuse.
+    TYPE_PICTURE_IN_PICTURE,
+    // If you add a new type, consider updating the test
+    // BrowserTest.StartMaximized.
+  };
+  virtual Type GetType() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_
