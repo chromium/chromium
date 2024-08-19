@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/policy/ui_bundled/user_policy/user_policy_prompt_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
-class ChromeBrowserState;
 
 namespace {
 constexpr CGFloat kHalfSheetCornerRadius = 20;
