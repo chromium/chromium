@@ -1251,6 +1251,7 @@ void AppsGridView::OnDragEntered(const ui::DropTargetEvent& event) {
   reorder_placeholder_ =
       drag_view_ ? drag_view_init_index_
                  : GetGridIndexFromIndexInViewModel(view_model()->view_size());
+  UpdatePaging();
 
   // When reparenting drag, the preferred grid size may change if there are no
   // extra slots on the grid for the placeholder item.
@@ -2191,6 +2192,7 @@ void AppsGridView::HandleKeyboardFoldering(ui::KeyboardCode key_code) {
     // `DeprecatedLayoutImmediately()` needs to be called after
     // `SetOpenFolderInfo()`.
     DeprecatedLayoutImmediately();
+    UpdatePaging();
   }
 }
 
