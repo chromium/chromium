@@ -5758,23 +5758,6 @@
             ]
         }
     ],
-    "ComposeEnableNudgeForUnspecifiedHint": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "ComposeEnableNudgeForUnspecifiedHint"
-                    ]
-                }
-            ]
-        }
-    ],
     "ComposeModelQualityLogging": [
         {
             "platforms": [
@@ -5829,12 +5812,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_CursorNudge",
+                    "name": "Enabled_CursorNudgeModel",
                     "params": {
                         "proactive_nudge_compact_ui": "true",
                         "proactive_nudge_delay_milliseconds": "1000",
-                        "proactive_nudge_force_show_probability": "0.02",
-                        "proactive_nudge_show_probability": "0.0"
+                        "proactive_nudge_force_show_probability": "0.00",
+                        "proactive_nudge_show_probability": "0.02"
                     },
                     "enable_features": [
                         "AutofillCaretExtraction",
@@ -5843,17 +5826,16 @@
                     ]
                 },
                 {
-                    "name": "Enabled_FieldNudge",
+                    "name": "Enabled_CursorNudgeRandom",
                     "params": {
+                        "proactive_nudge_compact_ui": "true",
                         "proactive_nudge_delay_milliseconds": "1000",
                         "proactive_nudge_force_show_probability": "0.02",
-                        "proactive_nudge_show_probability": "0.0"
+                        "proactive_nudge_show_probability": "0.02"
                     },
                     "enable_features": [
-                        "ComposeProactiveNudge"
-                    ],
-                    "disable_features": [
                         "AutofillCaretExtraction",
+                        "ComposeProactiveNudge",
                         "EnableComposeNudgeAtCursor"
                     ]
                 }
