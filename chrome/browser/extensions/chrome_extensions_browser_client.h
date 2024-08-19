@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -39,10 +39,10 @@ class Origin;
 }  // namespace url
 
 namespace extensions {
-
 class ChromeComponentExtensionResourceManager;
 class ChromeExtensionsAPIClient;
 class ChromeProcessManagerDelegate;
+class EventRouterForwarder;
 class ScopedExtensionUpdaterKeepAlive;
 
 // Implementation of BrowserClient for Chrome, which includes
@@ -287,6 +287,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   std::unique_ptr<KioskDelegate> kiosk_delegate_;
 
   UserScriptListener user_script_listener_;
+
+  scoped_refptr<EventRouterForwarder> event_router_forwarder_;
 };
 
 }  // namespace extensions

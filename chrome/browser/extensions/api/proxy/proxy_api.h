@@ -17,7 +17,6 @@
 #include "components/proxy_config/proxy_prefs.h"
 
 namespace extensions {
-class EventRouterForwarder;
 
 // Class to convert between the representation of proxy settings used
 // in the Proxy Settings API and the representation used in the PrefStores.
@@ -51,12 +50,9 @@ class ProxyEventRouter {
 
   static ProxyEventRouter* GetInstance();
 
-  void OnProxyError(EventRouterForwarder* event_router,
-                    void* profile,
-                    int error_code);
+  void OnProxyError(void* profile, int error_code);
 
-  void OnPACScriptError(EventRouterForwarder* event_router,
-                        void* profile,
+  void OnPACScriptError(void* profile,
                         int line_number,
                         const std::u16string& error);
 

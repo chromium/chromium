@@ -201,7 +201,6 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/apps/platform_apps/chrome_apps_browser_api_provider.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_client.h"
-#include "chrome/browser/extensions/event_router_forwarder.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/ui/apps/chrome_app_window_client.h"
 #include "chrome/common/extensions/chrome_extensions_client.h"
@@ -311,9 +310,6 @@ void BrowserProcessImpl::Init() {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::AppWindowClient::Set(ChromeAppWindowClient::GetInstance());
-
-  extension_event_router_forwarder_ =
-      base::MakeRefCounted<extensions::EventRouterForwarder>();
 
   EnsureExtensionsClientInitialized();
 
@@ -841,15 +837,6 @@ variations::VariationsService* BrowserProcessImpl::variations_service() {
 
 BrowserProcessPlatformPart* BrowserProcessImpl::platform_part() {
   return platform_part_.get();
-}
-
-extensions::EventRouterForwarder*
-BrowserProcessImpl::extension_event_router_forwarder() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  return extension_event_router_forwarder_.get();
-#else
-  return NULL;
-#endif
 }
 
 NotificationUIManager* BrowserProcessImpl::notification_ui_manager() {

@@ -214,7 +214,8 @@ bool RegisterTransformers() {
 
 }  // namespace
 
-ChromeExtensionsBrowserClient::ChromeExtensionsBrowserClient() {
+ChromeExtensionsBrowserClient::ChromeExtensionsBrowserClient()
+    : event_router_forwarder_(base::MakeRefCounted<EventRouterForwarder>()) {
   AddAPIProvider(std::make_unique<CoreExtensionsBrowserAPIProvider>());
   AddAPIProvider(std::make_unique<ChromeExtensionsBrowserAPIProvider>());
   // This ensures transformers are only registered once. This is required
@@ -560,9 +561,9 @@ void ChromeExtensionsBrowserClient::BroadcastEventToRenderers(
     const std::string& event_name,
     base::Value::List args,
     bool dispatch_to_off_the_record_profiles) {
-  g_browser_process->extension_event_router_forwarder()
-      ->BroadcastEventToRenderers(histogram_value, event_name, std::move(args),
-                                  dispatch_to_off_the_record_profiles);
+  event_router_forwarder_->BroadcastEventToRenderers(
+      histogram_value, event_name, std::move(args),
+      dispatch_to_off_the_record_profiles);
 }
 
 ExtensionCache* ChromeExtensionsBrowserClient::GetExtensionCache() {

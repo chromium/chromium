@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "net/base/net_errors.h"
 
 namespace extensions {
@@ -73,7 +74,6 @@ ProxyEventRouter::~ProxyEventRouter() {
 }
 
 void ProxyEventRouter::OnProxyError(
-    EventRouterForwarder* event_router,
     void* profile,
     int error_code) {
   base::Value::List args;
@@ -87,14 +87,13 @@ void ProxyEventRouter::OnProxyError(
     DispatchEventToProfile(profile, events::PROXY_ON_PROXY_ERROR,
                            kProxyEventOnProxyError, std::move(args));
   } else {
-    event_router->BroadcastEventToRenderers(events::PROXY_ON_PROXY_ERROR,
-                                            kProxyEventOnProxyError,
-                                            std::move(args), false);
+    ExtensionsBrowserClient::Get()->BroadcastEventToRenderers(
+        events::PROXY_ON_PROXY_ERROR, kProxyEventOnProxyError, std::move(args),
+        /*dispatch_to_off_the_record_profiles=*/false);
   }
 }
 
-void ProxyEventRouter::OnPACScriptError(EventRouterForwarder* event_router,
-                                        void* profile,
+void ProxyEventRouter::OnPACScriptError(void* profile,
                                         int line_number,
                                         const std::u16string& error) {
   base::Value::List args;
@@ -113,9 +112,9 @@ void ProxyEventRouter::OnPACScriptError(EventRouterForwarder* event_router,
     DispatchEventToProfile(profile, events::PROXY_ON_PROXY_ERROR,
                            kProxyEventOnProxyError, std::move(args));
   } else {
-    event_router->BroadcastEventToRenderers(events::PROXY_ON_PROXY_ERROR,
-                                            kProxyEventOnProxyError,
-                                            std::move(args), false);
+    ExtensionsBrowserClient::Get()->BroadcastEventToRenderers(
+        events::PROXY_ON_PROXY_ERROR, kProxyEventOnProxyError, std::move(args),
+        /*dispatch_to_off_the_record_profiles=*/false);
   }
 }
 
