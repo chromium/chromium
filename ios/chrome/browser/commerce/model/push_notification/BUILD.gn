@@ -26,6 +26,7 @@ source_set("push_notification") {
     "//ios/chrome/browser/push_notification/model:push_notification_client",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//url:url",
   ]
 
