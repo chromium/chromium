@@ -569,30 +569,6 @@ const FeatureEntry::FeatureVariation
         {"Use Denylist", kCCTResizablePolicyParamUseDenylist,
          std::size(kCCTResizablePolicyParamUseDenylist), nullptr}};
 
-const FeatureEntry::FeatureParam kCCTPageInsightsHubFastPeekTriggerParam = {
-    "page_insights_peek_delay", "1000"};  // 1s
-const FeatureEntry::FeatureParam kCCTPageInsightsHubShorterPeekSizeParam = {
-    "page_insights_peek_height_ratio", "0.13"};
-const FeatureEntry::FeatureParam
-    kCCTPageInsightsHubShorterPeekWithPrivacySizeParam = {
-        "page_insights_peek_with_privacy_height_ratio", "0.2"};
-const FeatureEntry::FeatureParam kCCTPageInsightsHubFastPeekTriggerParams[] = {
-    kCCTPageInsightsHubFastPeekTriggerParam};
-const FeatureEntry::FeatureParam kCCTPageInsightsHubShorterSheetParams[] = {
-    kCCTPageInsightsHubShorterPeekSizeParam,
-    kCCTPageInsightsHubShorterPeekWithPrivacySizeParam};
-const FeatureEntry::FeatureParam kCCTPageInsightsHubBothParams[] = {
-    kCCTPageInsightsHubFastPeekTriggerParam,
-    kCCTPageInsightsHubShorterPeekSizeParam,
-    kCCTPageInsightsHubShorterPeekWithPrivacySizeParam};
-const FeatureEntry::FeatureVariation kCCTPageInsightsHubPeekVariations[] = {
-    {"with fast peek trigger", kCCTPageInsightsHubFastPeekTriggerParams,
-     std::size(kCCTPageInsightsHubFastPeekTriggerParams), nullptr},
-    {"with shorter sheet", kCCTPageInsightsHubShorterSheetParams,
-     std::size(kCCTPageInsightsHubShorterSheetParams), nullptr},
-    {"with both", kCCTPageInsightsHubBothParams,
-     std::size(kCCTPageInsightsHubBothParams), nullptr}};
-
 const FeatureEntry::FeatureParam kCCTBottomBarButtonBalancedWithHomeParam[] = {
     {"google_bottom_bar_button_list", "0,10,3,2"}};
 const FeatureEntry::FeatureParam kCCTBottomBarButtonsBalancedWithCustomParam[] =
@@ -7716,19 +7692,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"cct-page-insights-hub", flag_descriptions::kCCTPageInsightsHubName,
-     flag_descriptions::kCCTPageInsightsHubDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCCTPageInsightsHub)},
-    {"cct-page-insights-hub-peek",
-     flag_descriptions::kCCTPageInsightsHubPeekName,
-     flag_descriptions::kCCTPageInsightsHubPeekDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kCCTPageInsightsHubPeek,
-                                    kCCTPageInsightsHubPeekVariations,
-                                    "CCTPageInsightsHubPeekVariations")},
-    {"cct-page-insights-hub-better-scroll",
-     flag_descriptions::kCCTPageInsightsHubBetterScrollName,
-     flag_descriptions::kCCTPageInsightsHubBetterScrollDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCCTPageInsightsHubBetterScroll)},
     {"cct-resizable-for-third-parties",
      flag_descriptions::kCCTResizableForThirdPartiesName,
      flag_descriptions::kCCTResizableForThirdPartiesDescription, kOsAndroid,

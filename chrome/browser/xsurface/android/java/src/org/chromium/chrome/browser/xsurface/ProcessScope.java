@@ -8,15 +8,13 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScopeDependencyProvider;
-import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceScope;
-import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceScopeDependencyProvider;
 
 /**
  * Implemented internally.
  *
- * Used to initialize singleton-level dependencies for xsurface. Also provides surface-level
+ * <p>Used to initialize singleton-level dependencies for xsurface. Also provides surface-level
  * dependencies that depend on the singleton dependencies.
- **/
+ */
 public interface ProcessScope {
     /**
      * To be called after a login state change event, will cause the next SurfaceScope to use fresh
@@ -44,16 +42,6 @@ public interface ProcessScope {
      **/
     default @Nullable FeedSurfaceScope obtainFeedSurfaceScope(
             FeedSurfaceScopeDependencyProvider dependencyProvider) {
-        return null;
-    }
-
-    /**
-     * Returns PageInsightsSurfaceScope, for use in the Page Insights feature.
-     *
-     * @param dependencyProvider Provider for activity-scoped dependencies.
-     */
-    default @Nullable PageInsightsSurfaceScope obtainPageInsightsSurfaceScope(
-            PageInsightsSurfaceScopeDependencyProvider dependencyProvider) {
         return null;
     }
 

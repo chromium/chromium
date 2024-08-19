@@ -255,7 +255,7 @@ public class GoogleBottomBarActionsHandlerTest {
         BottomBarConfig.ButtonConfig buttonConfig =
                 new BottomBarConfig.ButtonConfig(
                         PIH_BASIC,
-                        context.getDrawable(R.drawable.page_insights_icon),
+                        context.getDrawable(R.drawable.bottom_bar_page_insights_icon),
                         context.getString(
                                 R.string.google_bottom_bar_page_insights_button_description),
                         pendingIntent);
@@ -279,7 +279,7 @@ public class GoogleBottomBarActionsHandlerTest {
         BottomBarConfig.ButtonConfig buttonConfig =
                 new BottomBarConfig.ButtonConfig(
                         PIH_BASIC,
-                        context.getDrawable(R.drawable.page_insights_icon),
+                        context.getDrawable(R.drawable.bottom_bar_page_insights_icon),
                         context.getString(
                                 R.string.google_bottom_bar_page_insights_button_description),
                         /* pendingIntent= */ null);

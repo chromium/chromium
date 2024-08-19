@@ -4223,9 +4223,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_FIND_IN_PAGE" desc="Menu item allowing users to find text within the current page. [CHAR_LIMIT=27]">
         Find in page
       </message>
-      <message name="IDS_MENU_PAGE_INSIGHTS" desc="Menu item showing Page Insights hub. [CHAR_LIMIT=27]">
-        View Page Insights
-      </message>
       <message name="IDS_MENU_FOLLOW" desc="Menu item allowing users to follow the current website. [CHAR_LIMIT=27]">
         Follow
       </message>
@@ -5046,35 +5043,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_FEED_CARD_MENU_CLOSED" desc="Accessibility string read when the feed card menu bottom sheet is closed.">
         Feed card menu is closed
-      </message>
-
-      <!-- PageInsights Hub -->
-      <message name="IDS_PAGE_INSIGHTS_SHEET_DESCRIPTION" desc="The content description of the page insights sheet.">
-        Page insights bottom sheet
-      </message>
-      <message name="IDS_PAGE_INSIGHTS_SHEET_OPENED_FULL" desc="Accessibility string read when the page insights sheet is opened at full height. The sheet will occupy up to the full screen.">
-        Page insights bottom sheet is opened
-      </message>
-      <message name="IDS_PAGE_INSIGHTS_SHEET_CLOSED" desc="Accessibility string read when the page insights sheet is closed.">
-        Page insights bottom sheet is closed
-      </message>
-      <message name="IDS_PAGE_INSIGHTS_HUB_TITLE_TEXT" desc="The title of Page Insights Sheet.">
-        Page Insights
-      </message>
-      <message name="IDS_PAGE_INSIGHTS_BACK_BUTTON_DESCRIPTION" desc="The content description of back button in page insights sheet.">
-        Page insights back button
-      </message>
-      <message name="IDS_PAGE_INSIGHTS_LOADING_INDICATOR_DESCRIPTION" desc="The loading indicator for Page Insights Hub while the related content is being fetched from server.">
-        Page insights Loading Indicator
-      </message>
-      <message name="IDS_PAGE_INSIGHTS_HUB_PRIVACY_NOTICE" desc="Text that displays privacy notice for page insights hub">
-        Your activity in Page Insights is saved in your Google Account. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn how to manage this<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
-      <message name="IDS_PAGE_INSIGHTS_HUB_MY_ACTIVITY_LOGO" desc="Logo of privacy notice for page insights hub">
-	Logo of privacy notice for page insights hub which redirects to my activity page.
-      </message>
-      <message name="IDS_PAGE_INSIGHTS_HUB_PRIVACY_NOTICE_CLOSE" desc="Close button for closing privacy notice of page insights hub">
-	Close button to close privacy notice of page insights hub.
       </message>
 
       <!-- GoogleBottomBar -->

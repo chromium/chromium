@@ -1115,9 +1115,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (IntentUtils.safeHasExtra(intent, EXTRA_ACTIVITY_SIDE_SHEET_POSITION)) {
             featureUsage.log(CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_POSITION);
         }
-        if (CustomTabsConnection.getInstance().shouldEnablePageInsightsForIntent(this)) {
-            featureUsage.log(CustomTabsFeature.EXTRA_ENABLE_PAGE_INSIGHTS_HUB);
-        }
         if (CustomTabsConnection.getInstance().shouldEnableGoogleBottomBarForIntent(this)) {
             featureUsage.log(CustomTabsFeature.EXTRA_ENABLE_GOOGLE_BOTTOM_BAR);
         }

@@ -66,9 +66,6 @@ public class BackPressManager implements Destroyable {
         map.put(Type.FIND_TOOLBAR, 16);
         map.put(Type.LOCATION_BAR, 17);
         map.put(Type.XR_DELEGATE, 18);
-        // TODO(b/307046796): Remove this once we have found better way to integrate with back
-        // handling logic.
-        map.put(Type.PAGE_INSIGHTS_BOTTOM_SHEET, 19);
         map.put(Type.BOTTOM_CONTROLS, 20);
         map.put(Type.HUB, 21);
         map.put(Type.ARCHIVED_TABS_DIALOG, 22);

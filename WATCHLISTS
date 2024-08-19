@@ -1747,10 +1747,6 @@
                   '|components/page_info_strings.grdp'\
                   '|ios/chrome/browser/ui/page_info/'
     },
-    'page_insights' : {
-      'filepath': 'chrome/browser/ui/android/page_insights/'\
-                  '|chrome/browser/xsurface/android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/'
-    },
     'page_load_metrics' : {
       'filepath': '/page_load_metrics/'
     },
@@ -3109,7 +3105,6 @@
                       'rjkroege@chromium.org',
                       'spang+watch@chromium.org'],
     'page_info' : ['permissions-reviews@chromium.org'],
-    'page_insights' : ['gbb-cct-eng+cls@google.com'],
     'page_load_metrics' : ['bmcquade+watch@chromium.org',
                            'csharrison+watch@chromium.org',
                            'loading-reviews+metrics@chromium.org',
