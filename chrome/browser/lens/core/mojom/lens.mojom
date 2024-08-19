@@ -126,6 +126,14 @@ interface LensPageHandler {
                                  int32 selection_start_index,
                                  int32 selection_end_index);
 
+  // When this method is called, the C++ coordinator issues another full image
+  // request with appropriate parameters to return a response with text on the
+  // screenshot translated from `source_language` to `target_language`. This
+  // differs from IssueTranslateSelectionRequest() as this is a request to
+  // translate the entire screenshot, rather than a translation of selected
+  // text.
+  IssueTranslateFullPageRequest(string source_language, string target_language);
+
   // When called, the C++ coordinator closes the lens search bubble. When the
   // user selects text or thumbnail on the WebUI overlay, the search bubble
   // must close.

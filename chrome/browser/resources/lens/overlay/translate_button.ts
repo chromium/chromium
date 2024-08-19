@@ -10,6 +10,8 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {BrowserProxy} from './browser_proxy.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
 import {LanguageBrowserProxyImpl} from './language_browser_proxy.js';
 import type {LanguageBrowserProxy} from './language_browser_proxy.js';
 import {getTemplate} from './translate_button.html.js';
@@ -90,6 +92,9 @@ export class TranslateButtonElement extends PolymerElement {
   private targetLanguageMenuVisible: boolean = false;
   // The list of target languages provided by the chrome API.
   private translateLanguageList: chrome.languageSettingsPrivate.Language[];
+  // A browser proxy for communicating with the C++ Lens overlay controller.
+  private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
+  // A browser proxy for fetching the language settings from the Chrome API.
   private languageBrowserProxy: LanguageBrowserProxy =
       LanguageBrowserProxyImpl.getInstance();
 
@@ -153,6 +158,12 @@ export class TranslateButtonElement extends PolymerElement {
   private onTranslateButtonClick() {
     // Toggle translate mode on button click.
     this.isTranslateModeEnabled = !this.isTranslateModeEnabled;
+
+    if (this.isTranslateModeEnabled) {
+      this.browserProxy.handler.issueTranslateFullPageRequest(
+          this.sourceLanguage ? this.sourceLanguage.code : 'auto',
+          this.targetLanguage.code);
+    }
   }
 
   private hideLanguagePickerMenus() {

@@ -864,6 +864,13 @@ void LensOverlayController::IssueTranslateSelectionRequestForTesting(
                                  selection_start_index, selection_end_index);
 }
 
+void LensOverlayController::IssueTranslateFullPageRequest(
+    const std::string& source_language,
+    const std::string& target_language) {
+  lens_overlay_query_controller_->SendFullPageTranslateQuery(source_language,
+                                                             target_language);
+}
+
 void LensOverlayController::CopyText(const std::string& text) {
   ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
   clipboard_writer.WriteText(base::UTF8ToUTF16(text));

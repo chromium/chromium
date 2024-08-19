@@ -84,6 +84,10 @@ class LensOverlayQueryController {
   // Clears the state and resets stored values.
   void EndQuery();
 
+  // Sends a full image request to translate the page.
+  void SendFullPageTranslateQuery(const std::string& source_language,
+                                  const std::string& target_language);
+
   // Sends a region search interaction. Expected to be called multiple times. If
   // region_bytes are included, those will be sent to Lens instead of cropping
   // the region out of the screenshot. This should be used to provide a higher
@@ -284,6 +288,16 @@ class LensOverlayQueryController {
 
   // The page title, if it is allowed to be shared.
   std::optional<std::string> page_title_;
+
+  // Options needed to send a translate request with the proper parameters.
+  struct TranslateOptions {
+    std::string source_language;
+    std::string target_language;
+
+    TranslateOptions(const std::string& source, const std::string& target)
+        : source_language(source), target_language(target) {}
+  };
+  std::optional<TranslateOptions> translate_options_;
 
   // Bounding boxes for significant regions identified in the original
   // screenshot image.

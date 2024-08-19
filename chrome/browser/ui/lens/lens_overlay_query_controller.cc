@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 
+#include <optional>
+
 #include "base/base64url.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
@@ -226,6 +228,9 @@ void LensOverlayQueryController::StartQueryFlow(
   ui_scale_factor_ = ui_scale_factor;
   gen204_id_ = base::RandUint64();
 
+  // Reset translation languages in case they were set in a previous request.
+  translate_options_.reset();
+
   PrepareAndFetchFullImageRequest();
 }
 
@@ -275,6 +280,19 @@ LensOverlayQueryController::CreateClientContext() {
   context.mutable_locale_context()->set_region(
       icu::Locale(g_browser_process->GetApplicationLocale().c_str())
           .getCountry());
+
+  // Add the appropriate context filters. If source and target languages have
+  // been set, this should add translate.
+  if (translate_options_.has_value()) {
+    lens::AppliedFilter* translate_filter =
+        context.mutable_client_filters()->add_filter();
+    translate_filter->set_filter_type(lens::TRANSLATE);
+    translate_filter->mutable_translate()->set_source_language(
+        translate_options_->source_language);
+    translate_filter->mutable_translate()->set_target_language(
+        translate_options_->target_language);
+  }
+
   std::unique_ptr<icu::TimeZone> zone(icu::TimeZone::createDefault());
   icu::UnicodeString time_zone_id, time_zone_canonical_id;
   zone->getID(time_zone_id);
@@ -499,9 +517,21 @@ void LensOverlayQueryController::EndQuery() {
   access_token_fetcher_.reset();
   page_url_.reset();
   page_title_.reset();
+  translate_options_.reset();
   cluster_info_.reset();
   encoding_task_tracker_->TryCancelAll();
   query_controller_state_ = QueryControllerState::kOff;
+}
+
+void LensOverlayQueryController::SendFullPageTranslateQuery(
+    const std::string& source_language,
+    const std::string& target_language) {
+  translate_options_ = TranslateOptions(source_language, target_language);
+
+  // Send a normal full image request. The parameters to make it a translate
+  // request will be set when the actual request is sent based on the instance
+  // variables.
+  PrepareAndFetchFullImageRequest();
 }
 
 void LensOverlayQueryController::SendRegionSearch(

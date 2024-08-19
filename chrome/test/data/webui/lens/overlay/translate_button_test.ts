@@ -4,6 +4,7 @@
 
 import 'chrome-untrusted://lens/translate_button.js';
 
+import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import {LanguageBrowserProxyImpl} from 'chrome-untrusted://lens/language_browser_proxy.js';
 import type {TranslateButtonElement} from 'chrome-untrusted://lens/translate_button.js';
 import type {CrButtonElement} from 'chrome-untrusted://resources/cr_elements/cr_button/cr_button.js';
@@ -13,10 +14,12 @@ import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {TestLanguageBrowserProxy} from './test_language_browser_proxy.js';
+import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
 suite('OverlayTranslateButton', function() {
   let overlayTranslateButtonElement: TranslateButtonElement;
-  let testBrowserProxy: TestLanguageBrowserProxy;
+  let testBrowserProxy: TestLensOverlayBrowserProxy;
+  let testLanguageBrowserProxy: TestLanguageBrowserProxy;
 
   setup(async () => {
     // Resetting the HTML needs to be the first thing we do in setup to
@@ -24,26 +27,46 @@ suite('OverlayTranslateButton', function() {
     // attached to the DOM.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    testBrowserProxy = new TestLensOverlayBrowserProxy();
+    BrowserProxyImpl.setInstance(testBrowserProxy);
+
     // Set a test browser proxy so we can mock out the language setting calls.
-    testBrowserProxy = new TestLanguageBrowserProxy();
-    LanguageBrowserProxyImpl.setInstance(testBrowserProxy);
+    testLanguageBrowserProxy = new TestLanguageBrowserProxy();
+    LanguageBrowserProxyImpl.setInstance(testLanguageBrowserProxy);
 
     overlayTranslateButtonElement = document.createElement('translate-button');
     document.body.appendChild(overlayTranslateButtonElement);
     await flushTasks();
   });
 
-  test('LanguagePickerIsVisible', () => {
+  test('TranslateButtonClick', async () => {
     assertFalse(isVisible(overlayTranslateButtonElement.$.languagePicker));
 
     // Click the translate button to show the language picker.
     overlayTranslateButtonElement.$.translateButton.click();
 
+    // By default, we should send a translation request for source "auto" and
+    // target language as defined by the proxy.
+    const args = await testBrowserProxy.handler.whenCalled(
+        'issueTranslateFullPageRequest');
+    const sourceLanguage = args[0];
+    const targetLanguage = args[1];
+    const expectedTargetLanguage =
+        await testLanguageBrowserProxy.getTranslateTargetLanguage();
+    assertEquals(sourceLanguage, 'auto');
+    assertEquals(targetLanguage, expectedTargetLanguage);
+
+    // Language picker should now be visible.
     assertTrue(isVisible(overlayTranslateButtonElement.$.languagePicker));
 
-    // Clicking again should toggle the language picker.
+    // Clicking again should toggle the language picker but not send another
+    // request.
     overlayTranslateButtonElement.$.translateButton.click();
+    assertEquals(
+        1,
+        testBrowserProxy.handler.getCallCount('issueTranslateFullPageRequest'));
 
+    // Language picker should be hidden again.
     assertFalse(isVisible(overlayTranslateButtonElement.$.languagePicker));
   });
 

@@ -30,6 +30,7 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
       'issueLensObjectRequest',
       'issueTextSelectionRequest',
       'issueTranslateSelectionRequest',
+      'issueTranslateFullPageRequest',
       'copyText',
       'recordUkmAndTaskCompletionForLensOverlayInteraction',
     ]);
@@ -86,6 +87,12 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
 
   issueTranslateSelectionRequest(query: string) {
     this.methodCalled('issueTranslateSelectionRequest', query);
+  }
+
+  issueTranslateFullPageRequest(
+      sourceLanguage: string, targetLanguage: string) {
+    this.methodCalled(
+        'issueTranslateFullPageRequest', sourceLanguage, targetLanguage);
   }
 
   copyText(text: string) {
