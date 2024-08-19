@@ -325,6 +325,13 @@ public class StaticLayout extends Layout {
                     public void onDidChangeThemeColor(Tab tab, int color) {
                         updateStaticTab(tab, /* skipUpdateVisibleIds= */ false);
                     }
+
+                    @Override
+                    public void didBackForwardTransitionAnimationChange() {
+                        updateStaticTab(
+                                tabModelSelector.getCurrentTab(),
+                                /* skipUpdateVisibleIds= */ false);
+                    }
                 };
     }
 
