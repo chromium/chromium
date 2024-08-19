@@ -432,9 +432,13 @@ void LensOverlayController::CloseUISync(
 // static
 LensOverlayController* LensOverlayController::GetController(
     content::WebUI* web_ui) {
-  return lens::LensOverlayControllerGlue::FromWebContents(
-             web_ui->GetWebContents())
-      ->controller();
+  // Overlay glue is set by the embedder and may not be set in all contexts
+  // (loading in a tab for e.g.).
+  // TODO(crbug.com/360724768): Clean this up once we improve how embedder WebUI
+  // context is handled.
+  content::WebContents* webui_contents = web_ui->GetWebContents();
+  auto* glue = lens::LensOverlayControllerGlue::FromWebContents(webui_contents);
+  return glue ? glue->controller() : nullptr;
 }
 
 // static

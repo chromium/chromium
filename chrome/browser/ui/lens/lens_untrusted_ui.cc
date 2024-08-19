@@ -220,6 +220,13 @@ void LensUntrustedUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
   LensOverlayController* controller =
       LensOverlayController::GetController(web_ui());
+  // TODO(crbug.com/360724768): This should not need to be null-checked and
+  // exists here as a temporary solution to handle situations where lens may be
+  // loaded in an unsupported context (e.g. browser tab). Remove this once work
+  // to restrict WebUI loading to relevant contexts has landed.
+  if (!controller) {
+    return;
+  }
   auto handler = std::make_unique<RealboxHandler>(
       std::move(receiver), Profile::FromWebUI(web_ui()),
       web_ui()->GetWebContents(),
@@ -237,19 +244,35 @@ void LensUntrustedUI::BindInterface(
 void LensUntrustedUI::CreatePageHandler(
     mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
     mojo::PendingRemote<lens::mojom::LensPage> page) {
+  LensOverlayController* controller =
+      LensOverlayController::GetController(web_ui());
+  // TODO(crbug.com/360724768): This should not need to be null-checked and
+  // exists here as a temporary solution to handle situations where lens may be
+  // loaded in an unsupported context (e.g. browser tab). Remove this once work
+  // to restrict WebUI loading to relevant contexts has landed.
+  if (!controller) {
+    return;
+  }
   // Once the interface is bound, we want to connect this instance with the
   // appropriate instance of LensOverlayController.
-  LensOverlayController::GetController(web_ui())->BindOverlay(
-      std::move(receiver), std::move(page));
+  controller->BindOverlay(std::move(receiver), std::move(page));
 }
 
 void LensUntrustedUI::CreateSidePanelPageHandler(
     mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
     mojo::PendingRemote<lens::mojom::LensSidePanelPage> page) {
+  LensOverlayController* controller =
+      LensOverlayController::GetController(web_ui());
+  // TODO(crbug.com/360724768): This should not need to be null-checked and
+  // exists here as a temporary solution to handle situations where lens may be
+  // loaded in an unsupported context (e.g. browser tab). Remove this once work
+  // to restrict WebUI loading to relevant contexts has landed.
+  if (!controller) {
+    return;
+  }
   // Once the interface is bound, we want to connect this instance with the
   // appropriate instance of LensOverlayController.
-  LensOverlayController::GetController(web_ui())->BindSidePanel(
-      std::move(receiver), std::move(page));
+  controller->BindSidePanel(std::move(receiver), std::move(page));
 }
 
 LensUntrustedUI::~LensUntrustedUI() = default;
