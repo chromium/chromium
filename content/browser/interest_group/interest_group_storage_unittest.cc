@@ -1764,6 +1764,8 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
   StoresAllFieldsTest();
 }
 
+#if !BUILDFLAG(IS_IOS)
+// std::system is not available on iOS.
 TEST_F(InterestGroupStorageTest, DumpAllIgFields) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch("dump-all-ig-fields")) {
     // This is not part of the proper test, but rather serves as a utility run
@@ -1800,6 +1802,7 @@ TEST_F(InterestGroupStorageTest, DumpAllIgFields) {
     }
   }
 }
+#endif
 
 TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
   const url::Origin owner_originA =
