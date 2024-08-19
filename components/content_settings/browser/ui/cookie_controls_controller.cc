@@ -334,10 +334,10 @@ CookieControlsController::GetEnforcementForThirdPartyCookieBlocking(
 
 bool CookieControlsController::HasOriginSandboxedTopLevelDocument() const {
   content::RenderFrameHost* rfh = GetWebContents()->GetPrimaryMainFrame();
-  // If the WebContents has not committed any document yet, we can't
-  // tell if is sandboxed or not.
-  if (!rfh || rfh->GetLifecycleState() !=
-                  content::RenderFrameHost::LifecycleState::kActive) {
+  // If the WebContents has not fully initialized the RenderFrameHost yet.
+  // TODO(crbug.com/346386726): Remove the HasPolicyContainerHost() call once
+  //   RenderFrameHost initialization order is fixed.
+  if (!rfh || !rfh->HasPolicyContainerHost()) {
     // In that case, we fall back on assuming it is not sandboxed.
     // Since this is only for determining whether to render the User Bypass
     // icon this fallback is acceptable.

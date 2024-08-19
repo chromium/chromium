@@ -567,6 +567,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool IsClipboardOwner(ui::ClipboardSequenceNumberToken seqno) const override;
   void MarkClipboardOwner(ui::ClipboardSequenceNumberToken seqno) override;
   bool IsUntrustedNetworkDisabled() const override;
+  bool HasPolicyContainerHost() const override;
 
   // Additional non-override const version of GetMainFrame.
   const RenderFrameHostImpl* GetMainFrame() const;

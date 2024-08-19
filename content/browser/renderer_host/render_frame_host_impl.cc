@@ -17287,6 +17287,10 @@ void RenderFrameHostImpl::MarkClipboardOwner(
   SetLastClipboardWrite(*this, seqno);
 }
 
+bool RenderFrameHostImpl::HasPolicyContainerHost() const {
+  return policy_container_host_ != nullptr;
+}
+
 void RenderFrameHostImpl::GetBoundInterfacesForTesting(
     std::vector<std::string>& out) {
   broker_.GetBinderMapInterfacesForTesting(out);  // IN-TEST
