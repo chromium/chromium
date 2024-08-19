@@ -240,6 +240,7 @@ void TreeView::CommitEdit() {
   model_->SetTitle(GetSelectedNode(), editor_->GetText());
   editor_->GetViewAccessibility().SetName(
       GetSelectedNode()->GetAccessibleTitle());
+  selected_node_->UpdateAccessibleName();
   CancelEdit();
   if (editor_has_focus)
     RequestFocus();
@@ -607,6 +608,8 @@ void TreeView::TreeNodeChanged(TreeModel* model, TreeModelNode* model_node) {
         ax::mojom::Event::kLocationChanged);
     DrawnNodesChanged();
   }
+
+  node->UpdateAccessibleName();
 }
 
 void TreeView::ContentsChanged(Textfield* sender,
@@ -914,6 +917,7 @@ std::unique_ptr<AXVirtualView> TreeView::CreateAndSetAccessibilityView(
                           base::Unretained(this), node);
   ax_view->SetPopulateDataCallback(std::move(selected_callback));
   node->set_accessibility_view(ax_view.get());
+  node->UpdateAccessibleName();
   return ax_view;
 }
 
@@ -923,7 +927,6 @@ void TreeView::PopulateAccessibilityData(InternalNode* node,
 
   DCHECK(node->model_node()) << "InternalNode must be initialized. Did you "
                                 "forget to call ConfigureInternalNode(node)?";
-  data->SetName(node->model_node()->GetTitle());
 
   // "AXVirtualView" will by default add the "invisible" state to any
   // virtual views that are not attached to a parent view.
@@ -1506,6 +1509,20 @@ size_t TreeView::InternalNode::NumExpandedNodes() const {
   for (const auto& child : children())
     result += child->NumExpandedNodes();
   return result;
+}
+
+void TreeView::InternalNode::UpdateAccessibleName() {
+  if (!accessibility_view_) {
+    return;
+  }
+
+  std::u16string name = model_node()->GetTitle();
+  ui::AXNodeData& node_data = accessibility_view_->GetCustomData();
+  if (name.empty()) {
+    node_data.SetNameExplicitlyEmpty();
+  } else {
+    node_data.SetNameChecked(name);
+  }
 }
 
 int TreeView::InternalNode::GetMaxWidth(TreeView* tree, int indent, int depth) {

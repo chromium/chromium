@@ -275,6 +275,8 @@ class VIEWS_EXPORT TreeView : public View,
     // Returns the total number of descendants (including this node).
     size_t NumExpandedNodes() const;
 
+    void UpdateAccessibleName();
+
     // Returns the max width of all descendants (including this node). |indent|
     // is how many pixels each child is indented and |depth| is the depth of
     // this node from its parent. The tree this node is being placed inside is
