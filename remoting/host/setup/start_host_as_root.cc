@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/process/launch.h"
+#include "base/strings/string_split.h"
 
 namespace remoting {
 
@@ -72,18 +73,24 @@ int StartHostAsRoot(int argc, char** argv) {
   DCHECK(getuid() == 0);
 
   base::CommandLine command_line(argc, argv);
-  std::string user_email;
   std::string user_name;
   if (command_line.HasSwitch("corp-user")) {
-    user_email = command_line.GetSwitchValueASCII("corp-user");
+    // For compat reasons, we support either email or username for this param.
+    // TODO: joedow - Remove support for the email param around M135 or so.
+    std::string arg_value = command_line.GetSwitchValueASCII("corp-user");
+    auto parts = base::SplitStringOnce(arg_value, '@');
+    if (!parts) {
+      user_name = std::move(arg_value);
+    } else {
+      user_name = std::move(parts->first);
+    }
   } else if (command_line.HasSwitch("cloud-user")) {
-    user_email = command_line.GetSwitchValueASCII("cloud-user");
-  }
-
-  if (!user_email.empty()) {
-    size_t at_symbol_pos = user_email.find("@");
-    if (at_symbol_pos != std::string::npos) {
-      user_name = user_email.substr(0, at_symbol_pos);
+    auto parts = base::SplitStringOnce(
+        command_line.GetSwitchValueASCII("cloud-user"), '@');
+    if (parts) {
+      user_name = std::move(parts->first);
+    } else {
+      fprintf(stderr, "The --cloud-user flag requires an email address.\n");
     }
   } else if (command_line.HasSwitch("user-name")) {
     user_name = command_line.GetSwitchValueASCII("user-name");
@@ -91,8 +98,9 @@ int StartHostAsRoot(int argc, char** argv) {
 
   if (user_name.empty()) {
     fprintf(stderr,
-            "Must specify of the following arguments when running as root:\n"
-            "  --user-name\n  --corp-user\n  --cloud-user\n");
+            "Must specify one of the following arguments when running as root:"
+            "\n  --user-name=<username>\n  --corp-user=<username>"
+            "\n  --cloud-user=<email>\n");
     return 1;
   }
 

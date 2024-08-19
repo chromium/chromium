@@ -41,19 +41,27 @@ class HostStarter {
     // URL used to retrieve an OAuth2 access using |auth_code|.
     std::string redirect_url;
 
-    // Specifies the account owner for the new remote access host instance.
+    // |owner_email| and |username| are used to associate the new remote access
+    // host instance with a specific user account. In some cases, they are also
+    // used to perform access permission checks. Note that these flags are
+    // mutually exclusive, only one is set depending on the flags passed in to
+    // configure the host.
     //
-    // There are two methods for running this tool based on the flags passed in,
-    // and |owner_email| is used differently in each context:
-    //   - Passing an authorization code via the auth-code flag means that
-    //     |owner_email| is an optional field which is used to verify that the
-    //     |auth_code| was generated for that account.
+    // The three configuration workflows are:
+    //   Gaia account via OAuth:
+    //   - Caller provides an authorization code via |auth_code|. |owner_email|
+    //     is an optional field which, if set, is used to ensure the |auth_code|
+    //     was generated for the expected user account.
     //
-    //   - Providing a corp user email address via the corp-user flag means that
-    //     |owner_email| is required and will be used to verify the account has
-    //     access permissions and the value provided is also the account which
-    //     the host will be associated with in the Directory.
+    //   Corp user account:
+    //   - Caller provides a Corp username via the corp-user flag. This means
+    //     |username| will be populated and |owner_email| should be empty.
+    //
+    //   Cloud user account:
+    //   - Caller provides an email address via the cloud-user flag which is set
+    //     in the |owner_email| field.
     std::string owner_email;
+    std::string username;
 
     // Optional parameter used to indicate whether or not to enable crash
     // reporting. The default is true and can be opted-out via a command line

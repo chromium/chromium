@@ -13,6 +13,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
@@ -60,9 +61,12 @@ constexpr char kRedirectUrlSwitchName[] = "redirect-url";
 // who generated the OAuth authorization code.
 constexpr char kHostOwnerSwitchName[] = "host-owner";
 
-// Specifies the account email to be used when configuring a machine using the
-// Corp or Cloud registration process.
+// Specifies the username for the account to associate with this instance when
+// using the Corp registration process.
 constexpr char kCorpUserSwitchName[] = "corp-user";
+
+// Specifies the account email to be used when configuring a machine using the
+// Cloud registration process.
 constexpr char kCloudUserSwitchName[] = "cloud-user";
 
 // TODO: joedow - switch to using `display-name` for consistency. Remove `name`
@@ -99,9 +103,9 @@ void PrintDefaultHelpMessage(const char* process_name) {
 
 void PrintCorpUserHelpMessage(const char* process_name) {
   fprintf(stdout,
-          "Setting up a machine for a corp user requires the email address of "
-          "that user and an optional display name.\n\nExample usage:\n"
-          "%s --%s=<user_email_address> [--%s=corp-machine-name]\n",
+          "Setting up a machine for a corp user requires the username of that "
+          "user and an optional display name.\n\nExample usage:\n"
+          "%s --%s=<username> [--%s=corp-machine-name]\n",
           process_name, kCorpUserSwitchName, kDisplayNameSwitchName);
 }
 
@@ -267,8 +271,19 @@ bool InitializeCorpMachineParams(HostStarter::Params& params,
   // Count the number of args provided so we can show a helpful error message
   // if the user provides an unexpected value.
   size_t corp_arg_count = 1;
-  params.owner_email = base::ToLowerASCII(
+
+  // Some legacy scripts may still provide an email domain for this parameter
+  // however the username is the preferred value when calling the Directory
+  // service. If we are given an email, strip the domain and treat it like a
+  // username.
+  std::string corp_user_value = base::ToLowerASCII(
       command_line->GetSwitchValueASCII(kCorpUserSwitchName));
+  auto parts = base::SplitStringOnce(corp_user_value, '@');
+  if (!parts) {
+    params.username = std::move(corp_user_value);
+  } else {
+    params.username = std::move(parts->first);
+  }
 
   // Allow user to specify a display name.
   if (command_line->HasSwitch(kDisplayNameSwitchName)) {

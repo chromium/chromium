@@ -76,7 +76,7 @@ void CorpHostStarter::RegisterNewHost(const std::string& access_token,
   DCHECK(!public_key.empty());
 
   corp_service_client_->ProvisionCorpMachine(
-      params().owner_email, params().name, public_key, existing_host_id(),
+      params().username, params().name, public_key, existing_host_id(),
       base::BindOnce(&CorpHostStarter::OnProvisionCorpMachineResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }

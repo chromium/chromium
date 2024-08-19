@@ -234,6 +234,9 @@ void HostStarterBase::GenerateConfigFile() {
     config.Set(kHostSecretHashConfigPath, host_secret_hash);
   }
 
+  // TODO: joedow - add a flag to allow for storing crash reporting in the
+  // config file along with API the host should heartbeat to when it starts up.
+
   daemon_controller_->SetConfigAndStart(
       std::move(config), start_host_params_.enable_crash_reporting,
       base::BindOnce(&HostStarterBase::OnNewHostStarted,
