@@ -12,6 +12,8 @@ namespace ash::babelorca {
 inline constexpr char kTachyonAppName[] = "IntegTest";
 inline constexpr char kSigninGaiaUrl[] =
     "https://instantmessaging-pa.googleapis.com/v1/registration:signingaia";
+inline constexpr char kSendMessageUrl[] =
+    "https://instantmessaging-pa.googleapis.com/v1/message:send";
 
 }  // namespace ash::babelorca
 
