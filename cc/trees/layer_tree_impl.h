@@ -58,6 +58,7 @@ enum class ActivelyScrollingType;
 class DebugRectHistory;
 class ViewTransitionRequest;
 class DroppedFrameCounter;
+class GlobalStateThatImpactsTilePriority;
 class HeadsUpDisplayLayerImpl;
 class ImageDecodeCache;
 class LayerTreeDebugState;
@@ -143,6 +144,9 @@ class CC_EXPORT LayerTreeImpl {
   DroppedFrameCounter* dropped_frame_counter() const;
   MemoryHistory* memory_history() const;
   DebugRectHistory* debug_rect_history() const;
+  const GlobalStateThatImpactsTilePriority& global_tile_state() const {
+    return host_impl_->global_tile_state();
+  }
   bool IsActiveTree() const;
   bool IsPendingTree() const;
   bool IsRecycleTree() const;

@@ -27,6 +27,7 @@
 #include "cc/tiles/picture_layer_tiling.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
 #include "cc/tiles/tile_index.h"
+#include "cc/tiles/tile_priority.h"
 #include "cc/tiles/tiling_set_eviction_queue.h"
 #include "cc/trees/image_animation_controller.h"
 
@@ -88,6 +89,7 @@ class CC_EXPORT PictureLayerImpl
   std::vector<const DrawImage*> GetDiscardableImagesInRect(
       const gfx::Rect& rect) const override;
   ScrollOffsetMap GetRasterInducingScrollOffsets() const override;
+  const GlobalStateThatImpactsTilePriority& global_tile_state() const override;
 
   // ImageAnimationController::AnimationDriver overrides.
   bool ShouldAnimate(PaintImage::Id paint_image_id) const override;
@@ -103,7 +105,7 @@ class CC_EXPORT PictureLayerImpl
   void UpdateRasterSource(scoped_refptr<RasterSource> raster_source,
                           Region* new_invalidation);
   void RegenerateDiscardableImageMapIfNeeded();
-  bool UpdateTiles(TileMemoryLimitPolicy memory_limit_policy);
+  bool UpdateTiles();
 
   // Mask-related functions.
   void GetContentsResourceId(viz::ResourceId* resource_id,

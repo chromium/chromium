@@ -602,7 +602,7 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   SanityCheckTilingState();
 }
 
-bool PictureLayerImpl::UpdateTiles(TileMemoryLimitPolicy memory_limit_policy) {
+bool PictureLayerImpl::UpdateTiles() {
   if (!CanHaveTilings()) {
     ideal_page_scale_ = 0.f;
     ideal_device_scale_ = 0.f;
@@ -678,8 +678,7 @@ bool PictureLayerImpl::UpdateTiles(TileMemoryLimitPolicy memory_limit_policy) {
   bool updated = tilings_->UpdateTilePriorities(
       viewport_rect_for_tile_priority_in_content_space_,
       ideal_contents_scale_key(), current_frame_time_in_seconds,
-      occlusion_in_content_space, can_require_tiles_for_activation,
-      memory_limit_policy);
+      occlusion_in_content_space, can_require_tiles_for_activation);
   DCHECK_GT(tilings_->num_tilings(), 0u);
   SanityCheckTilingState();
   return updated;
@@ -1088,6 +1087,11 @@ ScrollOffsetMap PictureLayerImpl::GetRasterInducingScrollOffsets() const {
     }
   }
   return map;
+}
+
+const GlobalStateThatImpactsTilePriority& PictureLayerImpl::global_tile_state()
+    const {
+  return layer_tree_impl()->global_tile_state();
 }
 
 gfx::Rect PictureLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {

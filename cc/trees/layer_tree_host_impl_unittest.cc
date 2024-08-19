@@ -15639,8 +15639,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
       TileResolution::HIGH_RESOLUTION);
   layer->tilings()->tiling_at(0)->CreateAllTilesForTesting();
   layer->tilings()->UpdateTilePriorities(gfx::Rect(gfx::Size(10, 10)), 1, 1.0,
-                                         Occlusion(), true,
-                                         TileMemoryLimitPolicy::ALLOW_ANYTHING);
+                                         Occlusion(), true);
 
   layer->set_has_valid_tile_priorities(true);
   std::unique_ptr<RasterTilePriorityQueue> non_empty_raster_priority_queue_all =

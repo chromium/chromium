@@ -40,6 +40,7 @@ class TracedValue;
 namespace cc {
 
 class DrawImage;
+class GlobalStateThatImpactsTilePriority;
 class PictureLayerTiling;
 class PrioritizedTile;
 
@@ -61,6 +62,8 @@ class CC_EXPORT PictureLayerTilingClient {
   virtual std::vector<const DrawImage*> GetDiscardableImagesInRect(
       const gfx::Rect& rect) const = 0;
   virtual ScrollOffsetMap GetRasterInducingScrollOffsets() const = 0;
+  virtual const GlobalStateThatImpactsTilePriority& global_tile_state()
+      const = 0;
 
  protected:
   virtual ~PictureLayerTilingClient() {}
@@ -254,8 +257,7 @@ class CC_EXPORT PictureLayerTiling {
       const gfx::Rect& soon_border_rect_in_layer_space,
       const gfx::Rect& eventually_rect_in_layer_space,
       float ideal_contents_scale,
-      const Occlusion& occlusion_in_layer_space,
-      TileMemoryLimitPolicy memory_limit_policy);
+      const Occlusion& occlusion_in_layer_space);
 
   void GetAllPrioritizedTilesForTracing(
       std::vector<PrioritizedTile>* prioritized_tiles) const;

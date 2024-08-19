@@ -750,14 +750,13 @@ TEST_F(PictureLayerTilingIteratorTest, TilesExist) {
       gfx::Rect(layer_bounds),  // soon border rect
       gfx::Rect(layer_bounds),  // eventually rect
       1.f,                      // current contents scale
-      Occlusion(), TileMemoryLimitPolicy::ALLOW_ANYTHING);
+      Occlusion());
   VerifyTiles(1.f, gfx::Rect(layer_bounds),
               base::BindRepeating(&TileExists, true));
 
   // Make the viewport rect empty. All tiles are killed and become zombies.
   tiling_->ComputeTilePriorityRects(gfx::Rect(), gfx::Rect(), gfx::Rect(),
-                                    gfx::Rect(), 1.f, Occlusion(),
-                                    TileMemoryLimitPolicy::ALLOW_ANYTHING);
+                                    gfx::Rect(), 1.f, Occlusion());
   VerifyTiles(1.f, gfx::Rect(layer_bounds),
               base::BindRepeating(&TileExists, false));
 }
@@ -777,14 +776,13 @@ TEST_F(PictureLayerTilingIteratorTest, TilesExistGiantViewport) {
       gfx::Rect(layer_bounds),  // soon border rect
       gfx::Rect(layer_bounds),  // eventually rect
       1.f,                      // current contents scale
-      Occlusion(), TileMemoryLimitPolicy::ALLOW_ANYTHING);
+      Occlusion());
   VerifyTiles(1.f, gfx::Rect(layer_bounds),
               base::BindRepeating(&TileExists, true));
 
   // If the visible content rect is huge, we should still have live tiles.
   tiling_->ComputeTilePriorityRects(giant_rect, giant_rect, giant_rect,
-                                    giant_rect, 1.f, Occlusion(),
-                                    TileMemoryLimitPolicy::ALLOW_ANYTHING);
+                                    giant_rect, 1.f, Occlusion());
   VerifyTiles(1.f, gfx::Rect(layer_bounds),
               base::BindRepeating(&TileExists, true));
 }
@@ -805,8 +803,7 @@ TEST_F(PictureLayerTilingIteratorTest, TilesExistOutsideViewport) {
   gfx::Rect eventually_rect = viewport_rect;
   eventually_rect.Inset(-settings.tiling_interest_area_padding);
   tiling_->ComputeTilePriorityRects(viewport_rect, viewport_rect, viewport_rect,
-                                    eventually_rect, 1.f, Occlusion(),
-                                    TileMemoryLimitPolicy::ALLOW_ANYTHING);
+                                    eventually_rect, 1.f, Occlusion());
   VerifyTiles(1.f, gfx::Rect(layer_bounds),
               base::BindRepeating(&TileExists, true));
 }
@@ -845,8 +842,7 @@ TEST_F(PictureLayerTilingIteratorTest,
                                     visible_rect,  // soon border rect
                                     visible_rect,  // eventually rect
                                     1.f,           // current contents scale
-                                    Occlusion(),
-                                    TileMemoryLimitPolicy::ALLOW_ANYTHING);
+                                    Occlusion());
   VerifyTiles(
       1.f, gfx::Rect(layer_bounds),
       base::BindRepeating(&TilesIntersectingRectExist, visible_rect, true));
@@ -880,8 +876,7 @@ TEST(ComputeTilePriorityRectsTest, VisibleTiles) {
   eventually_rect.Inset(-settings.tiling_interest_area_padding);
   tiling->ComputeTilePriorityRects(
       viewport_in_layer_space, viewport_in_layer_space, viewport_in_layer_space,
-      eventually_rect, current_layer_contents_scale, Occlusion(),
-      TileMemoryLimitPolicy::ALLOW_ANYTHING);
+      eventually_rect, current_layer_contents_scale, Occlusion());
   auto prioritized_tiles = tiling->UpdateAndGetAllPrioritizedTilesForTesting();
 
   ASSERT_TRUE(tiling->TileAt(0, 0));
@@ -938,8 +933,7 @@ TEST(ComputeTilePriorityRectsTest, OffscreenTiles) {
   eventually_rect.Inset(-settings.tiling_interest_area_padding);
   tiling->ComputeTilePriorityRects(
       viewport_in_layer_space, viewport_in_layer_space, viewport_in_layer_space,
-      eventually_rect, current_layer_contents_scale, Occlusion(),
-      TileMemoryLimitPolicy::ALLOW_ANYTHING);
+      eventually_rect, current_layer_contents_scale, Occlusion());
   auto prioritized_tiles = tiling->UpdateAndGetAllPrioritizedTilesForTesting();
 
   ASSERT_TRUE(tiling->TileAt(0, 0));
@@ -1006,8 +1000,7 @@ TEST(ComputeTilePriorityRectsTest, PartiallyOffscreenLayer) {
   eventually_rect.Inset(-settings.tiling_interest_area_padding);
   tiling->ComputeTilePriorityRects(
       viewport_in_layer_space, viewport_in_layer_space, viewport_in_layer_space,
-      eventually_rect, current_layer_contents_scale, Occlusion(),
-      TileMemoryLimitPolicy::ALLOW_ANYTHING);
+      eventually_rect, current_layer_contents_scale, Occlusion());
   auto prioritized_tiles = tiling->UpdateAndGetAllPrioritizedTilesForTesting();
 
   ASSERT_TRUE(tiling->TileAt(0, 0));
@@ -1046,8 +1039,7 @@ TEST(PictureLayerTilingTest, RecycledTilesClearedOnReset) {
   // Create all tiles on this tiling.
   gfx::Rect visible_rect = gfx::Rect(0, 0, 100, 100);
   active_tiling->ComputeTilePriorityRects(
-      visible_rect, visible_rect, visible_rect, visible_rect, 1.f, Occlusion(),
-      TileMemoryLimitPolicy::ALLOW_ANYTHING);
+      visible_rect, visible_rect, visible_rect, visible_rect, 1.f, Occlusion());
 
   FakePictureLayerTilingClient recycle_client;
   recycle_client.SetTileSize(gfx::Size(100, 100));
@@ -1063,9 +1055,9 @@ TEST(PictureLayerTilingTest, RecycledTilesClearedOnReset) {
   recycle_tiling->set_resolution(HIGH_RESOLUTION);
 
   // Create all tiles on the recycle tiling.
-  recycle_tiling->ComputeTilePriorityRects(
-      visible_rect, visible_rect, visible_rect, visible_rect, 1.0f, Occlusion(),
-      TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  recycle_tiling->ComputeTilePriorityRects(visible_rect, visible_rect,
+                                           visible_rect, visible_rect, 1.0f,
+                                           Occlusion());
 
   // Set the second tiling as recycled.
   active_client.set_twin_tiling(nullptr);
@@ -1097,9 +1089,9 @@ TEST(PictureLayerTilingTest, EdgeCaseTileNowAndRequired) {
   // intersecting it.
   gfx::Rect visible_rect = gfx::Rect(0, 0, 99, 99);
   gfx::Rect eventually_rect = gfx::Rect(0, 0, 500, 500);
-  pending_tiling->ComputeTilePriorityRects(
-      visible_rect, visible_rect, visible_rect, eventually_rect, 1.f,
-      Occlusion(), TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_tiling->ComputeTilePriorityRects(visible_rect, visible_rect,
+                                           visible_rect, eventually_rect, 1.f,
+                                           Occlusion());
 
   Tile* tile = pending_tiling->TileAt(1, 0);
   EXPECT_NE(pending_tiling->visible_rect_type(),
@@ -1112,9 +1104,9 @@ TEST(PictureLayerTilingTest, EdgeCaseTileNowAndRequired) {
 
   // Now the tile at (1, 0) should be intersecting the visible rect.
   visible_rect = gfx::Rect(0, 0, 100, 100);
-  pending_tiling->ComputeTilePriorityRects(
-      visible_rect, visible_rect, visible_rect, eventually_rect, 1.f,
-      Occlusion(), TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  pending_tiling->ComputeTilePriorityRects(visible_rect, visible_rect,
+                                           visible_rect, eventually_rect, 1.f,
+                                           Occlusion());
   EXPECT_EQ(pending_tiling->visible_rect_type(),
             pending_tiling->ComputePriorityRectTypeForTile(tile));
   EXPECT_TRUE(pending_tiling->IsTileRequiredForActivation(tile));
@@ -1454,7 +1446,7 @@ TEST_F(PictureLayerTilingIteratorTest, TilingSizeChange) {
       gfx::Rect(soon_border_rect),  // soon border rect
       gfx::Rect(eventually_rect),   // eventually rect
       1.f,                          // current contents scale
-      Occlusion(), TileMemoryLimitPolicy::ALLOW_ANYTHING);
+      Occlusion());
 
   EXPECT_FALSE(tiling_->has_visible_rect_tiles());
   EXPECT_FALSE(tiling_->has_skewport_rect_tiles());
