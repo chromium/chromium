@@ -444,11 +444,15 @@
 #pragma mark - Public methods
 
 - (void)refresh {
+  [_magicStackCollectionView reset];
   // Refresh in case there are new MVT to show.
   [_mostVisitedTilesMediator refreshMostVisitedTiles];
   [_safetyCheckMediator reset];
   [_parcelTrackingMediator reset];
   [_magicStackRankingModel fetchLatestMagicStackRanking];
+  // Fetch after resetting ranking since parcels could be returned
+  // synchronously.
+  [_parcelTrackingMediator fetchTrackedParcels];
 }
 
 #pragma mark - ContentSuggestionsCommands

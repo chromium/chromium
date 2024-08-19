@@ -78,10 +78,21 @@
 
 - (void)reset {
   _parcelTrackingItems = nil;
-  if (IsIOSParcelTrackingEnabled() &&
-      _shoppingService->IsParcelTrackingEligible()) {
-    [self fetchTrackedParcels];
-  }
+}
+
+- (void)fetchTrackedParcels {
+  _parcelFetchTimeoutClosure.Cancel();
+  __weak ParcelTrackingMediator* weakSelf = self;
+  _parcelFetchTimeoutClosure.Reset(base::BindOnce(
+      ^(bool success,
+        std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>> parcels) {
+        ParcelTrackingMediator* strongSelf = weakSelf;
+        if (!strongSelf || !success || !strongSelf.delegate) {
+          return;
+        }
+        [strongSelf parcelStatusesSuccessfullyReceived:std::move(parcels)];
+      }));
+  _shoppingService->GetAllParcelStatuses(_parcelFetchTimeoutClosure.callback());
 }
 
 #pragma mark - Public
@@ -164,21 +175,6 @@
 }
 
 #pragma mark - Private
-
-- (void)fetchTrackedParcels {
-  _parcelFetchTimeoutClosure.Cancel();
-  __weak ParcelTrackingMediator* weakSelf = self;
-  _parcelFetchTimeoutClosure.Reset(base::BindOnce(
-      ^(bool success,
-        std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>> parcels) {
-        ParcelTrackingMediator* strongSelf = weakSelf;
-        if (!strongSelf || !success || !strongSelf.delegate) {
-          return;
-        }
-        [strongSelf parcelStatusesSuccessfullyReceived:std::move(parcels)];
-      }));
-  _shoppingService->GetAllParcelStatuses(_parcelFetchTimeoutClosure.callback());
-}
 
 // Handles a parcel tracking status fetch result from the
 // commerce::ShoppingService.

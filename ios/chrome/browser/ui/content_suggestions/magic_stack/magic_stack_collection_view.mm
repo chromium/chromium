@@ -91,6 +91,10 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   }
 }
 
+- (void)reset {
+  [self populateWithPlaceholders];
+}
+
 #pragma mark - MagicStackConsumer
 
 - (void)populateItems:(NSArray<MagicStackModule*>*)items {

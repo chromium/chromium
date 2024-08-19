@@ -127,7 +127,10 @@
 #pragma mark - Public
 
 - (void)fetchLatestMagicStackRanking {
-    [self fetchMagicStackModuleRankingFromSegmentationPlatform];
+  _magicStackOrderFromSegmentationReceived = NO;
+  _magicStackOrderFromSegmentation = nil;
+  _latestMagicStackConfigOrder = nil;
+  [self fetchMagicStackModuleRankingFromSegmentationPlatform];
 }
 
 - (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type {
@@ -199,6 +202,9 @@
   MagicStackModule* item = _parcelTrackingMediator.parcelTrackingItemToShow;
   NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
   NSUInteger index = [rank indexOfObject:item];
+  if (index == NSNotFound) {
+    return;
+  }
   [self.delegate magicStackRankingModel:self didInsertItem:item atIndex:index];
 }
 
@@ -347,7 +353,6 @@
     options.on_demand_execution = true;
   }
   ranking_fetch_start_time_ = base::TimeTicks::Now();
-  _magicStackOrderFromSegmentationReceived = NO;
   _segmentationService->GetClassificationResult(
       segmentation_platform::kIosModuleRankerKey, options, inputContext,
       base::BindOnce(

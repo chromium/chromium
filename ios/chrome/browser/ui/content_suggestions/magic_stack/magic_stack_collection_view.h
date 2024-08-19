@@ -27,6 +27,9 @@ typedef UICollectionViewDiffableDataSource<NSString*, MagicStackModule*>
 // Called when the module width has changed.
 - (void)moduleWidthDidUpdate;
 
+// Resets the Magic Stack.
+- (void)reset;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_COLLECTION_VIEW_H_

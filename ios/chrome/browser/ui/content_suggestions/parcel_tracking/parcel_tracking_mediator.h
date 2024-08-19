@@ -59,6 +59,9 @@ class PrefService;
 // Resets the latest fetched tracked packages and re-fecthes if applicable.
 - (void)reset;
 
+// Fetches the latest tracked parcels.
+- (void)fetchTrackedParcels;
+
 // Returns the parcel tracking items to show.
 - (ParcelTrackingItem*)parcelTrackingItemToShow;
 
