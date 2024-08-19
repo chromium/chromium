@@ -2405,7 +2405,8 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   auto form3 =
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
-  NiceMock<base::MockRepeatingClosure> on_undecryptable_passwords_removed;
+  NiceMock<base::MockCallback<LoginDatabase::OnUndecryptablePasswordsRemoved>>
+      on_undecryptable_passwords_removed;
 
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init(on_undecryptable_passwords_removed.Get(), nullptr));
@@ -2442,7 +2443,8 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
 
-  NiceMock<base::MockRepeatingClosure> on_undecryptable_passwords_removed;
+  NiceMock<base::MockCallback<LoginDatabase::OnUndecryptablePasswordsRemoved>>
+      on_undecryptable_passwords_removed;
 
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init(on_undecryptable_passwords_removed.Get(), nullptr));
@@ -2477,7 +2479,8 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   auto form3 =
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
-  NiceMock<base::MockRepeatingClosure> on_undecryptable_passwords_removed;
+  NiceMock<base::MockCallback<LoginDatabase::OnUndecryptablePasswordsRemoved>>
+      on_undecryptable_passwords_removed;
 
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init(on_undecryptable_passwords_removed.Get(), nullptr));
@@ -2515,7 +2518,8 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   auto form3 =
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
-  NiceMock<base::MockRepeatingClosure> on_undecryptable_passwords_removed;
+  NiceMock<base::MockCallback<LoginDatabase::OnUndecryptablePasswordsRemoved>>
+      on_undecryptable_passwords_removed;
 
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init(on_undecryptable_passwords_removed.Get(), nullptr));
@@ -2548,7 +2552,8 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   auto form3 =
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
-  NiceMock<base::MockRepeatingClosure> on_undecryptable_passwords_removed;
+  NiceMock<base::MockCallback<LoginDatabase::OnUndecryptablePasswordsRemoved>>
+      on_undecryptable_passwords_removed;
 
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init(on_undecryptable_passwords_removed.Get(), nullptr));
@@ -2671,13 +2676,14 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutoSignInLogins) {
   auto form3 =
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
-  NiceMock<base::MockRepeatingClosure> on_undecryptable_passwords_removed;
+  NiceMock<base::MockCallback<LoginDatabase::OnUndecryptablePasswordsRemoved>>
+      on_undecryptable_passwords_removed;
 
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init(on_undecryptable_passwords_removed.Get(), nullptr));
 
   if (base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords)) {
-    EXPECT_CALL(on_undecryptable_passwords_removed, Run);
+    EXPECT_CALL(on_undecryptable_passwords_removed, Run(IsAccountStore(false)));
     EXPECT_TRUE(db.GetAutoSignInLogins(&forms));
     EXPECT_THAT(forms, UnorderedElementsAre(HasPrimaryKeyAndEquals(form1),
                                             HasPrimaryKeyAndEquals(form3)));
@@ -2690,14 +2696,16 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutoSignInLogins) {
         1);
   } else {
     if (base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {
-      EXPECT_CALL(on_undecryptable_passwords_removed, Run);
+      EXPECT_CALL(on_undecryptable_passwords_removed,
+                  Run(IsAccountStore(false)));
       EXPECT_TRUE(db.GetAutoSignInLogins(&forms));
       EXPECT_THAT(forms, UnorderedElementsAre(HasPrimaryKeyAndEquals(form1),
                                               HasPrimaryKeyAndEquals(form3)));
       histogram_tester.ExpectTotalCount(
           "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
     } else {
-      EXPECT_CALL(on_undecryptable_passwords_removed, Run);
+      EXPECT_CALL(on_undecryptable_passwords_removed,
+                  Run(IsAccountStore(false)));
       EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
       histogram_tester.ExpectTotalCount(
           "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
@@ -2714,7 +2722,8 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetLogins) {
   auto form2 =
       AddDummyLogin("user2", GURL("http://www.google.com/"),
                     /*should_be_corrupted=*/true, /*blocklisted=*/false);
-  NiceMock<base::MockRepeatingClosure> on_undecryptable_passwords_removed;
+  NiceMock<base::MockCallback<LoginDatabase::OnUndecryptablePasswordsRemoved>>
+      on_undecryptable_passwords_removed;
 
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init(on_undecryptable_passwords_removed.Get(), nullptr));
@@ -2765,7 +2774,8 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutofillableLogins) {
   auto form3 =
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/true);
-  NiceMock<base::MockRepeatingClosure> on_undecryptable_passwords_removed;
+  NiceMock<base::MockCallback<LoginDatabase::OnUndecryptablePasswordsRemoved>>
+      on_undecryptable_passwords_removed;
 
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init(on_undecryptable_passwords_removed.Get(), nullptr));

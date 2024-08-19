@@ -719,10 +719,11 @@ enum class TouchToFillPasswordGenerationTriggerOutcome {
 // numeric values should never be reused.
 enum class PasswordManagerCredentialRemovalReason {
   // TODO(crbug.com/342519805): Add reasons.
-  kSettings = 0,           // Stored as (1<<0) in the bit vector.
-  kClearBrowsingData = 1,  // Stored as (1<<1) in the bit vector.
-  kSync = 2,               // Stored as (1<<2) in the bit vector.
-  kMaxValue = kSync,
+  kSettings = 0,                        // Stored as (1<<0) in the bit vector.
+  kClearBrowsingData = 1,               // Stored as (1<<1) in the bit vector.
+  kSync = 2,                            // Stored as (1<<2) in the bit vector.
+  kDeletingUndecryptablePasswords = 3,  // Stored as (1<<3) in the bit vector.
+  kMaxValue = kDeletingUndecryptablePasswords,
 };
 
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(

@@ -67,6 +67,8 @@ class LoginDatabase : public EncryptDecryptInterface {
       base::RepeatingCallback<void(LoginDatabaseEmptinessState)>;
   using DeletingUndecryptablePasswordsEnabled =
       base::StrongAlias<class DeletingUndecryptablePasswordsEnabledTag, bool>;
+  using OnUndecryptablePasswordsRemoved =
+      base::RepeatingCallback<void(password_manager::IsAccountStore)>;
 
   LoginDatabase(const base::FilePath& db_path,
                 IsAccountStore is_account_store,
@@ -86,8 +88,9 @@ class LoginDatabase : public EncryptDecryptInterface {
 
   // Actually creates/opens the database. If false is returned, no other method
   // should be called.
-  virtual bool Init(base::RepeatingClosure on_undecryptable_passwords_removed,
-                    std::unique_ptr<os_crypt_async::Encryptor> encryptor);
+  virtual bool Init(
+      OnUndecryptablePasswordsRemoved on_undecryptable_passwords_removed,
+      std::unique_ptr<os_crypt_async::Encryptor> encryptor);
 
   // Reports metrics regarding inaccessible passwords and bubble usages to UMA.
   void ReportMetrics();
@@ -382,7 +385,7 @@ class LoginDatabase : public EncryptDecryptInterface {
   // to ensure that experiment groups stay balanced. This callback will be
   // deleted after a successful rollout.
   // TODO(b/40286735): Remove after this feature is launched.
-  base::RepeatingClosure on_undecryptable_passwords_removed_ =
+  OnUndecryptablePasswordsRemoved on_undecryptable_passwords_removed_ =
       base::NullCallback();
 
   mutable sql::Database db_;
