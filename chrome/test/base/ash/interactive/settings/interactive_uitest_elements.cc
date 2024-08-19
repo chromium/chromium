@@ -484,6 +484,26 @@ KnownNetworksSubpagePasspointSubsciptions() {
   return KnownNetworksSubpage() + "div#passpointSubscriptionList";
 }
 
+WebContentsInteractionTestUtil::DeepQuery
+KnownNetworksSubpagePasspointSubscriptionItem() {
+  return KnownNetworksSubpage() + "cr-link-row#subscriptionItem" + "div#label";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+KnownNetworksSubpagePasspointMoreButton() {
+  return KnownNetworksSubpage() + "cr-icon-button#subscriptionMoreButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+KnownNetworksSubpagePasspointDotsMenu() {
+  return KnownNetworksSubpage() + "cr-action-menu#subscriptionDotsMenu";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+KnownNetworksSubpagePasspointSubscriptionForget() {
+  return KnownNetworksSubpage() + "button#subscriptionForget";
+}
+
 WebContentsInteractionTestUtil::DeepQuery PasspointSubpageExpirationDate() {
   return InternetPage() + "settings-passpoint-subpage" +
          "div#passpointExpirationDate";
@@ -511,6 +531,22 @@ WebContentsInteractionTestUtil::DeepQuery PasspointSubpageDomainList() {
 
 WebContentsInteractionTestUtil::DeepQuery PasspointSubpageDomainListItem() {
   return InternetPage() + "settings-passpoint-subpage" + "div#domainName";
+}
+
+WebContentsInteractionTestUtil::DeepQuery PasspointSubpageRemoveButton() {
+  return InternetPage() + "settings-passpoint-subpage" +
+         "cr-button#removeButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery PasspointSubpageRemoveDialog() {
+  return InternetPage() + "settings-passpoint-subpage" +
+         "cr-dialog#removalDialog";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+PasspointSubpageRemoveDialogConfirmButton() {
+  return InternetPage() + "settings-passpoint-subpage" +
+         "cr-button#removalConfirmButton";
 }
 
 }  // namespace wifi

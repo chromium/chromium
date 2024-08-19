@@ -43,6 +43,7 @@ class PasspointUiInteractiveUiTest : public InteractiveAshTest {
       connectivity::FakePasspointService::Initialize();
     }
 
+    connectivity::FakePasspointService::Get()->ClearAll();
     connectivity::FakePasspointService::Get()->AddFakePasspointSubscription(
         connectivity::FakePasspointSubscription(
             kPasspointId, kPasspointFriendlyName, kPasspointProvisioningSource,
@@ -119,6 +120,98 @@ IN_PROC_BROWSER_TEST_F(PasspointUiInteractiveUiTest,
           settings::wifi::PasspointSubpageAssociatedNetworksListItem()),
       WaitForElementTextContains(
           kOSSettingsId, settings::InternetSettingsSubpageTitle(), wifiName()),
+
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(PasspointUiInteractiveUiTest,
+                       RemovePasspointFromKnownNetworkSubpage) {
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequenceInContext(
+      context,
+
+      Log("Navigate to for Known Networks subpage"),
+
+      NavigateToKnownNetworksPage(kOSSettingsId),
+
+      Log("Check the subscription appear in the passpoint list"),
+
+      WaitForElementTextContains(
+          kOSSettingsId,
+          settings::wifi::KnownNetworksSubpagePasspointSubscriptionItem(),
+          kPasspointFriendlyName),
+
+      Log("Open drop down menu"),
+
+      WaitForElementEnabled(
+          kOSSettingsId,
+          settings::wifi::KnownNetworksSubpagePasspointMoreButton()),
+      ClickElement(kOSSettingsId,
+                   settings::wifi::KnownNetworksSubpagePasspointMoreButton()),
+      WaitForElementOpened(
+          kOSSettingsId,
+          settings::wifi::KnownNetworksSubpagePasspointDotsMenu()),
+
+      Log("Click on Forget button"),
+
+      WaitForElementExists(
+          kOSSettingsId,
+          settings::wifi::KnownNetworksSubpagePasspointSubscriptionForget()),
+      ClickElement(
+          kOSSettingsId,
+          settings::wifi::KnownNetworksSubpagePasspointSubscriptionForget()),
+
+      Log("Verify the passpoint subscription section not shown"),
+
+      WaitForElementDisplayNone(
+          kOSSettingsId,
+          settings::wifi::KnownNetworksSubpagePasspointSubsciptions()),
+
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(PasspointUiInteractiveUiTest,
+                       RemovePasspointFromPasspointSubpage) {
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequenceInContext(
+      context,
+
+      Log("Navigate to for passpoint subscriptions subpage"),
+
+      NavigateToPasspointSubscriptionSubpage(kOSSettingsId,
+                                             kPasspointFriendlyName),
+
+      Log("Click on Remove button and pop up remove dialog"),
+
+      WaitForElementEnabled(kOSSettingsId,
+                            settings::wifi::PasspointSubpageRemoveButton()),
+      ClickElement(kOSSettingsId,
+                   settings::wifi::PasspointSubpageRemoveButton()),
+      WaitForElementExists(kOSSettingsId,
+                           settings::wifi::PasspointSubpageRemoveDialog()),
+
+      Log("Click on confirm button"),
+
+      WaitForElementEnabled(
+          kOSSettingsId,
+          settings::wifi::PasspointSubpageRemoveDialogConfirmButton()),
+      ClickElement(kOSSettingsId,
+                   settings::wifi::PasspointSubpageRemoveDialogConfirmButton()),
+
+      Log("Verify it goes back to Known Networks subpage and the passpoint "
+          "subscription section disappear"),
+
+      WaitForElementExists(kOSSettingsId,
+                           settings::wifi::KnownNetworksSubpage()),
+      WaitForElementDisplayNone(
+          kOSSettingsId,
+          settings::wifi::KnownNetworksSubpagePasspointSubsciptions()),
 
       Log("Test complete"));
 }
