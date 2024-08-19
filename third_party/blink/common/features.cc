@@ -2283,6 +2283,13 @@ const base::FeatureParam<bool>
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnIdleTimeout{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_idle_timeout", true};
 
+// If enabled, ServiceWorkerStorage suppresses posting tasks when it is
+// possible. This behavior is expected to improve performance by getting rid of
+// redundant posting tasks.
+BASE_FEATURE(kServiceWorkerStorageSuppressPostTask,
+             "ServiceWorkerStorageSuppressPostTask",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, force renderer process foregrounded from CommitNavigation to
 // DOMContentLoad (crbug/351953350).
 BASE_FEATURE(kBoostRenderProcessForLoading,
