@@ -973,14 +973,13 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
     bool is_document_element =
         element && element->GetDocument().documentElement() == element;
-    // Per the spec, position 'static' and 'relative' in the top layer compute
-    // to 'absolute'. Root elements that are in the top layer should just
-    // be left alone because the fullscreen.css doesn't apply any style to
-    // them.
+    // https://drafts.csswg.org/css-position-4/#top-styling
+    // Elements in the top layer must be out-of-flow positioned.
+    // Root elements that are in the top layer should just be left alone
+    // because the fullscreen.css doesn't apply any style to them.
     if ((builder.Overlay() == EOverlay::kAuto && !is_document_element) ||
         builder.StyleType() == kPseudoIdBackdrop) {
-      if (builder.GetPosition() == EPosition::kStatic ||
-          builder.GetPosition() == EPosition::kRelative) {
+      if (!builder.HasOutOfFlowPosition()) {
         builder.SetPosition(EPosition::kAbsolute);
       }
       if (builder.Display() == EDisplay::kContents) {
