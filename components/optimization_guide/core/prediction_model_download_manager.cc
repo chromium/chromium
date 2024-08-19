@@ -7,6 +7,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
@@ -336,6 +337,8 @@ void PredictionModelDownloadManager::StartUnzipping(
 #endif
   unzip::Unzip(
       std::move(unzipper), download_file_path, base_model_dir,
+      unzip::mojom::UnzipOptions::New(), unzip::AllContents(),
+      base::DoNothing(),
       base::BindOnce(&PredictionModelDownloadManager::OnDownloadUnzipped,
                      ui_weak_ptr_factory_.GetWeakPtr(), optimization_target,
                      download_file_path, base_model_dir));

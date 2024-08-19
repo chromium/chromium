@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/prediction_model_override.h"
 
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -105,6 +106,8 @@ void OnModelOverrideVerified(proto::OptimizationTarget optimization_target,
   auto unzipper = unzip::LaunchUnzipper();
 #endif
   unzip::Unzip(std::move(unzipper), passed_crx_file_path, base_model_dir,
+               unzip::mojom::UnzipOptions::New(), unzip::AllContents(),
+               base::DoNothing(),
                base::BindOnce(&OnModelOverrideUnzipped, optimization_target,
                               base_model_dir, std::move(callback)));
 }
