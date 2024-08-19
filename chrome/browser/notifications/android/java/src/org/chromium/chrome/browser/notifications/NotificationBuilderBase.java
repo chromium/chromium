@@ -15,6 +15,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Icon;
+import android.os.Bundle;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -138,6 +139,7 @@ public abstract class NotificationBuilderBase {
     protected int mSmallIconId;
     @Nullable protected Bitmap mSmallIconBitmapForStatusBar;
     @Nullable protected Bitmap mSmallIconBitmapForContent;
+    @Nullable protected Bundle mExtras;
 
     protected PendingIntentProvider mContentIntent;
     protected PendingIntentProvider mDeleteIntent;
@@ -244,6 +246,11 @@ public abstract class NotificationBuilderBase {
      */
     public NotificationBuilderBase setSmallIconForContent(@Nullable Bitmap iconBitmap) {
         mSmallIconBitmapForContent = applyWhiteOverlay(iconBitmap);
+        return this;
+    }
+
+    public NotificationBuilderBase setExtras(Bundle extras) {
+        mExtras = extras;
         return this;
     }
 

@@ -44,6 +44,15 @@ public class NotificationServiceImpl extends NotificationService.Impl {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "Received a notification intent in the NotificationService's receiver.");
+
+            // For certain critical notification actions, we might want to perform some processing
+            // immediately to reassure the user that the interaction has been acknowledged, without
+            // potentially incurring the native startup and job scheduling delay. In some cases,
+            // this returns false indicating no further processing necessary.
+            if (!NotificationPlatformBridge.dispatchNotificationEventPreNative(intent)) {
+                return;
+            }
+
             // Android encourages us not to start services directly on N+, so instead we
             // schedule a job to handle the notification intent. We use the Android JobScheduler
             // rather than GcmNetworkManager or FirebaseJobDispatcher since the JobScheduler
