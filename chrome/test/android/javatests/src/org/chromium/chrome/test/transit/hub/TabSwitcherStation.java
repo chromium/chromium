@@ -106,7 +106,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
     /**
      * @param index The tab index to select.
      * @param destinationBuilder Builder for the specific type of PageStation expected to appear.
-     * @return the {@link PageStation} for the tab that was selected.
+     * @return Builder of the {@link PageStation} for the tab that was selected.
      */
     public <T extends PageStation> T selectTabAtIndex(
             int index, PageStation.Builder<T> destinationBuilder) {

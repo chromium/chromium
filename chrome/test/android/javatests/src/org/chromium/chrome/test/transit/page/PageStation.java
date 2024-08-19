@@ -191,16 +191,6 @@ public class PageStation extends Station {
         }
     }
 
-    /**
-     * Get a new Builder for the base PageStation class.
-     *
-     * @deprecated get a new Builder from DerivedPageStation#newBuilder() instead.
-     */
-    @Deprecated
-    public static Builder<PageStation> newPageStationBuilder() {
-        return new Builder<>(PageStation::new);
-    }
-
     @Override
     public void declareElements(Elements.Builder elements) {
         mActivityElement = elements.declareActivity(ChromeTabbedActivity.class);

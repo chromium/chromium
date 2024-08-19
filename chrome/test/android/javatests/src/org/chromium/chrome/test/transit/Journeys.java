@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 
 /* Helper class for extended multi-stage Trips. */
@@ -23,10 +24,10 @@ public class Journeys {
      * @param numTabs The number of regular tabs.
      * @param numIncognitoTabs The number of incognito tabs.
      * @param url The URL to load.
-     * @return the last opened tab PageStation (regular if numIncognitoTabs = 0, otherwise
+     * @return the last opened tab WebPageStation (regular if numIncognitoTabs = 0, otherwise
      *     incognito).
      */
-    public static PageStation prepareTabs(
+    public static WebPageStation prepareTabs(
             PageStation startingStation, int numTabs, int numIncognitoTabs, String url) {
         assert numTabs >= 1;
         assert url != null;
@@ -37,8 +38,8 @@ public class Journeys {
         int currentIncognitoTabCount = tabModelSelector.getModel(/* incognito= */ true).getCount();
         assert currentTabCount == 1;
         assert currentIncognitoTabCount == 0;
-        PageStation station =
-                startingStation.loadPageProgrammatically(url, PageStation.newPageStationBuilder());
+        WebPageStation station =
+                startingStation.loadPageProgrammatically(url, WebPageStation.newBuilder());
         // One tab already exists.
         station = createTabs(station, numTabs - 1, url, /* isIncognito= */ false);
         if (numIncognitoTabs > 0) {
@@ -54,14 +55,16 @@ public class Journeys {
      * @param numTabs The number of tabs to create.
      * @param url The URL to load.
      * @param isIncognito Whether to open an incognito tab.
-     * @return the last opened tab PageStation (regular unless {@code isIncognito}).
+     * @return the last opened tab WebPageStation (regular unless {@code isIncognito}).
      */
-    public static PageStation createTabs(
+    public static WebPageStation createTabs(
             PageStation startingStation, int numTabs, String url, boolean isIncognito) {
+        assert numTabs > 0;
+        WebPageStation destination = null;
         for (int i = 0; i < numTabs; i++) {
             final ChromeTabbedActivity activity = startingStation.getActivity();
-            PageStation pageStation =
-                    PageStation.newPageStationBuilder()
+            destination =
+                    WebPageStation.newBuilder()
                             .withIsOpeningTabs(1)
                             .withIsSelectingTabs(1)
                             .withIncognito(isIncognito)
@@ -69,7 +72,7 @@ public class Journeys {
                             .build();
             startingStation =
                     startingStation.travelToSync(
-                            pageStation,
+                            destination,
                             () -> {
                                 ChromeTabUtils.fullyLoadUrlInNewTab(
                                         InstrumentationRegistry.getInstrumentation(),
@@ -78,6 +81,6 @@ public class Journeys {
                                         isIncognito);
                             });
         }
-        return startingStation;
+        return destination;
     }
 }
