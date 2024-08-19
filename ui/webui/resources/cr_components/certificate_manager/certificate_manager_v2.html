@@ -153,7 +153,7 @@
             on-click="onClientPlatformCertsLinkRowClick_">
         </cr-link-row>
         <if expr="is_win or is_macosx">
-          <cr-link-row external id="manageOsImportedClientCerts"
+          <cr-link-row external id="manageOsImportedClientCerts" class="hr"
               label="[[i18n('certificateManagerV2PlatformCertsManageLink')]]"
               button-aria-description="[[i18n('certificateManagerV2PlatformCertsManageLinkAriaDescription')]]"
               on-click="onManageCertsExternal_">
@@ -191,13 +191,13 @@
           </cr-icon>
         </div>
 
-        <cr-link-row id="viewOsImportedCerts"
+        <cr-link-row id="viewOsImportedCerts" class="hr"
             label="[[i18n('certificateManagerV2PlatformCertsViewLink')]]"
             on-click="onPlatformCertsLinkRowClick_"
             hidden="[[!importOsCertsEnabled_]]">
         </cr-link-row>
         <if expr="is_win or is_macosx">
-          <cr-link-row external id="manageOsImportedCerts"
+          <cr-link-row external id="manageOsImportedCerts" class="hr"
               label="[[i18n('certificateManagerV2PlatformCertsManageLink')]]"
               on-click="onManageCertsExternal_"
               button-aria-description="[[i18n('certificateManagerV2PlatformCertsManageLinkAriaDescription')]]"
