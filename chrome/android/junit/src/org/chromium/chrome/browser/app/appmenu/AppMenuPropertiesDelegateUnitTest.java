@@ -52,11 +52,13 @@ import org.robolectric.shadows.ShadowPackageManager;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
@@ -246,6 +248,8 @@ public class AppMenuPropertiesDelegateUnitTest {
                                 mReadAloudControllerSupplier));
 
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
+        BuildConfig.IS_DESKTOP_ANDROID = false;
+        ResettersForTesting.register(() -> BuildConfig.IS_DESKTOP_ANDROID = false);
     }
 
     @After
@@ -579,6 +583,46 @@ public class AppMenuPropertiesDelegateUnitTest {
             R.id.help_id,
             R.id.managed_by_divider_line_id,
             R.id.managed_by_menu_id
+        };
+        assertMenuItemsAreEqual(menu, expectedItems);
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    public void testPageMenuItems_DesktopAndroid() {
+        BuildConfig.IS_DESKTOP_ANDROID = true;
+        setUpMocksForPageMenu();
+        setMenuOptions(
+                new MenuOptions()
+                        .withShowTranslate()
+                        .withShowAddToHomeScreen()
+                        .withAutoDarkEnabled());
+
+        Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        Integer[] expectedItems = {
+            R.id.icon_row_menu_id,
+            R.id.new_tab_menu_id,
+            R.id.new_incognito_tab_menu_id,
+            R.id.divider_line_id,
+            R.id.open_history_menu_id,
+            R.id.quick_delete_menu_id,
+            R.id.quick_delete_divider_line_id,
+            R.id.downloads_menu_id,
+            R.id.all_bookmarks_menu_id,
+            R.id.recent_tabs_menu_id,
+            R.id.divider_line_id,
+            R.id.share_row_menu_id,
+            R.id.find_in_page_id,
+            R.id.translate_id,
+            R.id.add_to_homescreen_id,
+            // Request desktop site is hidden.
+            R.id.auto_dark_web_contents_row_menu_id,
+            R.id.divider_line_id,
+            R.id.preferences_id,
+            R.id.help_id
         };
         assertMenuItemsAreEqual(menu, expectedItems);
     }

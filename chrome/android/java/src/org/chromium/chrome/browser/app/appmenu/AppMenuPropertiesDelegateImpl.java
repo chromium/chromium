@@ -35,6 +35,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -1292,13 +1293,15 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         MenuItem requestMenuLabel = menu.findItem(R.id.request_desktop_site_id);
         MenuItem requestMenuCheck = menu.findItem(R.id.request_desktop_site_check_id);
 
-        // Hide request desktop site on all native pages.
+        // Hide request desktop site on all native pages. Also hide it for desktop Android, which
+        // always requests desktop sites.
         boolean itemVisible =
                 currentTab != null
                         && canShowRequestDesktopSite
                         && !isNativePage
                         && !shouldShowReaderModePrefs(currentTab)
-                        && currentTab.getWebContents() != null;
+                        && currentTab.getWebContents() != null
+                        && !BuildConfig.IS_DESKTOP_ANDROID;
 
         requestMenuRow.setVisible(itemVisible);
         if (!itemVisible) return;

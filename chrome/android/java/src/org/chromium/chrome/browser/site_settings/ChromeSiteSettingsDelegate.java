@@ -18,6 +18,7 @@ import androidx.preference.Preference;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
@@ -151,6 +152,9 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                 return ContentFeatureMap.isEnabled(ContentFeatures.FED_CM);
             case SiteSettingsCategory.Type.NFC:
                 return ContentFeatureMap.isEnabled(ContentFeatureList.WEB_NFC);
+            case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
+                // Desktop Android always requests desktop sites, so hide the category.
+                return !BuildConfig.IS_DESKTOP_ANDROID;
             case SiteSettingsCategory.Type.ZOOM:
                 return ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)
                         && ContentFeatureMap.isEnabled(
