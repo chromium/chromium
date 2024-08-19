@@ -63,6 +63,7 @@ export class MouseController {
   private landmarkWeights_: Map<string, number>;
   private paused_ = false;
 
+  private useGravity_ = false;
   // Vector fields to track how the cursor should be adjusted toward controls.
   private gravityField_: FloatingPoint2D[] = [];
   // Timer to refresh the gravity field.
@@ -102,10 +103,7 @@ export class MouseController {
     this.onMouseMovedHandler_.start();
     this.onMouseDraggedHandler_.setNodes(desktop);
     this.onMouseDraggedHandler_.start();
-
-    if (MouseController.USE_GRAVITY) {
-      this.desktop_ = desktop;
-    }
+    this.desktop_ = desktop;
   }
 
   async start(): Promise<void> {
@@ -133,11 +131,18 @@ export class MouseController {
       this.resetLocation();
     }
 
-    if (MouseController.USE_GRAVITY) {
-      this.resetGravity_();
-      this.refreshGravityInterval_ = setInterval(
-          () => this.refreshGravity_(), MouseController.GRAVITY_INTERVAL_MS);
-    }
+    chrome.accessibilityPrivate.isFeatureEnabled(
+        chrome.accessibilityPrivate.AccessibilityFeature
+            .FACE_GAZE_GRAVITY_WELLS,
+        enabled => {
+          this.useGravity_ = enabled;
+          if (this.useGravity_) {
+            this.resetGravity_();
+            this.refreshGravityInterval_ = setInterval(
+                () => this.refreshGravity_(),
+                MouseController.GRAVITY_INTERVAL_MS);
+          }
+        });
 
     // Start the logic to move the mouse.
     this.mouseInterval_ = setInterval(
@@ -273,7 +278,7 @@ export class MouseController {
     if (new Date().getTime() - this.lastMouseMovedTime_ >
         MouseController.IGNORE_UPDATES_AFTER_MOUSE_MOVE_MS) {
       let mappedLocation = this.mouseLocation_;
-      if (MouseController.USE_GRAVITY) {
+      if (this.useGravity_) {
         // If gravity is enabled, adjust the cursor position.
         mappedLocation = this.mapPoint_(mappedLocation);
       }
@@ -312,7 +317,7 @@ export class MouseController {
    * Reset the Gravity field to zero vectors and remove cached nodes.
    */
   private resetGravity_(): void {
-    if (!MouseController.USE_GRAVITY || !this.screenBounds_) {
+    if (!this.useGravity_ || !this.screenBounds_) {
       return;
     }
     this.gravityField_ =
@@ -667,7 +672,6 @@ export namespace MouseController {
   export const DEFAULT_USE_MOUSE_ACCELERATION = true;
   export const DEFAULT_BUFFER_SIZE = 6;
 
-  export const USE_GRAVITY = false;
   export const GRAVITY_INTERVAL_MS = 500;
   // How far the gravity reaches, relative to the size of the control.
   export const GRAVITY_SCALE = 4;

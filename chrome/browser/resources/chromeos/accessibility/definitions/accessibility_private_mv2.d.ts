@@ -213,6 +213,7 @@ declare global {
         DICTATION_CONTEXT_CHECKING = 'dictationContextChecking',
         FACE_GAZE = 'faceGaze',
         GOOGLE_TTS_HIGH_QUALITY_VOICES = 'googleTtsHighQualityVoices',
+        FACE_GAZE_GRAVITY_WELLS = 'faceGazeGravityWells',
       }
 
       export enum SelectToSpeakPanelAction {

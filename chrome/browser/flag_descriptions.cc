@@ -1267,6 +1267,11 @@ const char kAccessibilityFaceGazeName[] = "Experimental FaceGaze integration";
 const char kAccessibilityFaceGazeDescription[] =
     "This option enables the experimental FaceGaze ChromeOS integration";
 
+const char kAccessibilityFaceGazeGravityWellsName[] =
+    "Experimental FaceGaze gravity wells";
+const char kAccessibilityFaceGazeGravityWellsDescription[] =
+    "This option enables the experimental gravity wells behavior for FaceGaze";
+
 const char kAccessibilityMagnifierFollowsChromeVoxName[] =
     "Magnifier follows ChromeVox focus";
 const char kAccessibilityMagnifierFollowsChromeVoxDescription[] =

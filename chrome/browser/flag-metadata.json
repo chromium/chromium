@@ -2433,7 +2433,12 @@
   },
   {
     "name": "enable-accessibility-facegaze",
-    "owners": [ "bkersting@chromium.org", "eariassoto@chromium.org", "//ash/accessibility/OWNERS" ],
+    "owners": [ "akihiroota@chromium.org", "//ash/accessibility/OWNERS" ],
+    "expiry_milestone": 140
+  },
+  {
+    "name": "enable-accessibility-facegaze-gravity-wells",
+    "owners": [ "akihiroota@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 140
   },
   {
