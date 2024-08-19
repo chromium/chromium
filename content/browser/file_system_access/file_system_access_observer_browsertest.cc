@@ -730,8 +730,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
 #endif  // !BUILDFLAG(IS_MAC)
 
 // TODO(crbug.com/343961295): Windows reports two events when a swap file
-// is closed: a "disappear" for the target file being overwritten, and a "move"
-// for the swap file being moved to the target file.
+// is closed: a "disappeared" for the target file being overwritten, and a
+// "appeared" for the swap file being moved to the target file.
 //
 // TODO(crbug.com/357134621): Like on Windows, FSEvents (Mac) also reports two
 // events when the swap file is closed. This test fails due to a "disappear"
@@ -754,8 +754,16 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
   // TODO(crbug.com/321980270): Support change types for the local file system
   // on more platforms.
+  //
+  // TODO(crbug.com/340584120): On Local FS, when writable close() causes the
+  // swap file to override the file that is being observed, it reports
+  // "appeared" when watching a file. (Note that this does not happen when
+  // watching a directory and its descendent file gets written via writable).
+  // On Bucket FS, it correctly reports as "modified".
   const std::string expected_change_type =
-      SupportsChangeInfo() ? "appeared" : "unknown";
+      GetTestFileSystemType() == TestFileSystemType::kBucket
+          ? "modified"
+          : (SupportsChangeInfo() ? "appeared" : "unknown");
   EXPECT_THAT(*records.GetList().front().GetDict().FindString("type"),
               testing::StrEq(expected_change_type));
 }
@@ -1108,11 +1116,15 @@ IN_PROC_BROWSER_TEST_P(
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
+// TODO(crbug.com/343961295): Windows reports two events when a swap file
+// is closed: a "disappeared" for the target file being overwritten, and a
+// "appeared" for the swap file being moved to the target file.
+//
 // TODO(b/321980270): Filter out changes to swap files reported by FSEvents,
 // and re-enable this test on Mac.
-#if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
-                       IgnoreSwapFileChanges) {
+                       WritableReportsSingleModifiedEventOnClose) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
 
   // Set up the directory structure.
@@ -1137,27 +1149,28 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
+
+  // Expect one modified event upon closing the writable.
   auto records = EvalJs(shell(), script).ExtractList();
-  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  EXPECT_THAT(records.GetList(), testing::SizeIs(1));
+  // TODO(b/350790385): On inotify, coalescing move events are not always
+  // guaranteed, and when it fails to coalesce, it results in "appeared" event
+  // on the new path. In the case of swap file, this unfortunately means it
+  // cannot be converted to "modified". Consider improving coalescing
+  // implementation and/or have `FileSystemAccessWatcherManager` convert
+  // "moved" to "appeard" or "disappeared" instead of `FilePathWatcher` being
+  // responsible for the conversion on inotify-based platforms.
+  auto& record_dict = records.GetList().front().GetDict();
+  EXPECT_THAT(
+      *record_dict.FindString("type"),
+      testing::AnyOf(testing::StrEq("modified"), testing::StrEq("appeared")));
   const auto relative_path_component_matcher = testing::Conditional(
       SupportsReportingModifiedPath(), testing::ElementsAre("file.txt"),
       testing::IsEmpty());
-  EXPECT_THAT(
-      *records.GetList().front().GetDict().FindList("relativePathComponents"),
-      relative_path_component_matcher);
-
-  // Check that none of the events are for swap files.
-  const auto relative_path_component_matcher_for_swap_file =
-      testing::Conditional(
-          SupportsReportingModifiedPath(),
-          testing::ElementsAre(testing::Not("file.txt.crswap")),
-          testing::IsEmpty());
-  for (const auto& record : records.GetList()) {
-    EXPECT_THAT(*record.GetDict().FindList("relativePathComponents"),
-                relative_path_component_matcher_for_swap_file);
-  }
+  EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+              relative_path_component_matcher);
 }
-#endif  // !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
