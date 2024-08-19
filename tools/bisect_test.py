@@ -5,9 +5,10 @@
 import functools
 import io
 import json
-import optparse
 import os
+import re
 import subprocess
+import sys
 import unittest
 from unittest.mock import ANY, Mock, MagicMock, mock_open, patch
 
@@ -39,7 +40,29 @@ else:
                                          new_callable=WrappedMock)
 
 
-class BisectTest(unittest.TestCase):
+class BisectTestCase(unittest.TestCase):
+
+  @classmethod
+  def setUpClass(cls):
+    if sys.version_info[:2] <= (3, 8):
+      return
+    # Patch the name pattern for pkgutil to accept "bisect-builds" as module
+    # name.
+    dotted_words = r'(?!\d)([\w-]+)(\.(?!\d)(\w+))*'
+    name_pattern = re.compile(
+        f'^(?P<pkg>{dotted_words})'
+        f'(?P<cln>:(?P<obj>{dotted_words})?)?$', re.UNICODE)
+    cls.name_pattern_patcher = patch('pkgutil._NAME_PATTERN', name_pattern)
+    cls.name_pattern_patcher.start()
+
+  @classmethod
+  def tearDownClass(cls):
+    if sys.version_info[:2] <= (3, 8):
+      return
+    cls.name_pattern_patcher.stop()
+
+
+class BisectTest(BisectTestCase):
 
   max_rev = 10000
 
@@ -66,7 +89,7 @@ class BisectTest(unittest.TestCase):
     self.assertEqual(self.bisect(200, 2000, lambda *args: 'g'), (1999, 2000))
 
 
-class DownloadJobTest(unittest.TestCase):
+class DownloadJobTest(BisectTestCase):
 
   @patch('bisect-builds.gsutil_download')
   def test_fetch_gsutil(self, mock_gsutil_download):
@@ -104,7 +127,7 @@ class DownloadJobTest(unittest.TestCase):
     fetch.stop()
 
 
-class ArchiveBuildTest(unittest.TestCase):
+class ArchiveBuildTest(BisectTestCase):
 
   def setUp(self):
     self.patcher = patch.multiple(
@@ -247,7 +270,7 @@ class ArchiveBuildTest(unittest.TestCase):
         stderr=ANY)
 
 
-class ReleaseBuildTest(unittest.TestCase):
+class ReleaseBuildTest(BisectTestCase):
 
   def test_should_look_up_path_context(self):
     options, args = bisect_builds.ParseCommandLine(
@@ -321,7 +344,7 @@ class ReleaseBuildTest(unittest.TestCase):
         ignore_fail=True)
 
 
-class ArchiveBuildWithCommitPositionTest(unittest.TestCase):
+class ArchiveBuildWithCommitPositionTest(BisectTestCase):
 
   def setUp(self):
     patch.multiple(bisect_builds.ArchiveBuildWithCommitPosition,
@@ -341,7 +364,7 @@ class ArchiveBuildWithCommitPositionTest(unittest.TestCase):
     mock_GetChromiumRevision.assert_called()
 
 
-class OfficialBuildTest(unittest.TestCase):
+class OfficialBuildTest(BisectTestCase):
 
   def test_should_lookup_path_context(self):
     options, args = bisect_builds.ParseCommandLine(
@@ -369,7 +392,7 @@ class OfficialBuildTest(unittest.TestCase):
         'gs://chrome-test-builds/official-by-commit/linux-builder-perf/')
 
 
-class SnapshotBuildTest(unittest.TestCase):
+class SnapshotBuildTest(BisectTestCase):
 
   def test_should_lookup_path_context(self):
     options, args = bisect_builds.ParseCommandLine(
@@ -451,7 +474,8 @@ class SnapshotBuildTest(unittest.TestCase):
         'http://commondatastorage.googleapis.com/chromium-browser-snapshots/'
         '?delimiter=/&prefix=Linux_x64/')
 
-class ASANBuildTest(unittest.TestCase):
+
+class ASANBuildTest(BisectTestCase):
 
   CommonDataXMLContent = '''<?xml version='1.0' encoding='UTF-8'?>
     <ListBucketResult xmlns='http://doc.s3.amazonaws.com/2006-03-01'>
@@ -490,20 +514,28 @@ class ASANBuildTest(unittest.TestCase):
     self.assertEqual(rev_list, [1313186, 1313195, 1313210])
 
 
-class AndroidBuildTest(unittest.TestCase):
+class AndroidBuildTest(BisectTestCase):
 
   def setUp(self):
     # patch for devil_imports
-    self.mock_flag_changer = maybe_patch('bisect-builds.flag_changer',
-                                         create=True).start()
-    self.mock_chrome = maybe_patch('bisect-builds.chrome', create=True).start()
-    self.mock_version_codes = maybe_patch('bisect-builds.version_codes',
-                                          create=True).start()
+    self.patchers = []
+    flag_changer_patcher = maybe_patch('bisect-builds.flag_changer',
+                                       create=True)
+    self.patchers.append(flag_changer_patcher)
+    self.mock_flag_changer = flag_changer_patcher.start()
+    chrome_patcher = maybe_patch('bisect-builds.chrome', create=True)
+    self.patchers.append(chrome_patcher)
+    self.mock_chrome = chrome_patcher.start()
+    version_codes_patcher = maybe_patch('bisect-builds.version_codes',
+                                        create=True)
+    self.patchers.append(version_codes_patcher)
+    self.mock_version_codes = version_codes_patcher.start()
     self.mock_version_codes.LOLLIPOP = 21
     self.mock_version_codes.NOUGAT = 24
 
   def tearDown(self):
-    patch.stopall()
+    for patcher in self.patchers:
+      patcher.stop()
 
   @maybe_patch(
       'bisect-builds.GsutilList',
@@ -584,7 +616,7 @@ class AndroidBuildTest(unittest.TestCase):
         mock_InitializeAndroidDevice.return_value, 'chrome.apk')
 
 
-class LinuxReleaseBuildTest(unittest.TestCase):
+class LinuxReleaseBuildTest(BisectTestCase):
 
   @patch('subprocess.Popen', spec=subprocess.Popen)
   def test_launch_revision_should_has_no_sandbox(self, mock_Popen):
