@@ -19,7 +19,6 @@ VIZ_COMMON_EXPORT extern const char kDeadlineToSynchronizeSurfaces[];
 VIZ_COMMON_EXPORT extern const char kDisableAdpf[];
 VIZ_COMMON_EXPORT extern const char kDisableFrameRateLimit[];
 VIZ_COMMON_EXPORT extern const char kDoubleBufferCompositing[];
-VIZ_COMMON_EXPORT extern const char kDrawQuadSplitLimit[];
 VIZ_COMMON_EXPORT extern const char kEnableHardwareOverlays[];
 VIZ_COMMON_EXPORT extern const char kRunAllCompositorStagesBeforeDraw[];
 VIZ_COMMON_EXPORT extern const char kShowAggregatedDamage[];

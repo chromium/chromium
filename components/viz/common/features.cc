@@ -4,6 +4,7 @@
 
 #include "components/viz/common/features.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/command_line.h"
@@ -75,6 +76,16 @@ BASE_FEATURE(kDelegatedCompositing,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kDrawQuadSplit[] = "num_of_splits";
+
+// If enabled, overrides the maximum number (exclusive) of quads one draw quad
+// can be split into during occlusion culling.
+BASE_FEATURE(kDrawQuadSplitLimit,
+             "DrawQuadSplitLimit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 constexpr base::FeatureParam<DelegatedCompositingMode>::Option
     kDelegatedCompositingModeOption[] = {
@@ -440,6 +451,17 @@ BASE_FEATURE(kVizNullHypothesis,
 BASE_FEATURE(kCrosContentAdjustedRefreshRate,
              "CrosContentAdjustedRefreshRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+int DrawQuadSplitLimit() {
+  constexpr int kDefaultDrawQuadSplitLimit = 5;
+  constexpr int kMinDrawQuadSplitLimit = 1;
+  constexpr int kMaxDrawQuadSplitLimit = 15;
+
+  const int split_limit = base::GetFieldTrialParamByFeatureAsInt(
+      kDrawQuadSplitLimit, kDrawQuadSplit, kDefaultDrawQuadSplitLimit);
+  return std::clamp(split_limit, kMinDrawQuadSplitLimit,
+                    kMaxDrawQuadSplitLimit);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool IsDelegatedCompositingEnabled() {

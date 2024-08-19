@@ -33,10 +33,6 @@ const char kDisableFrameRateLimit[] = "disable-frame-rate-limit";
 // Sets the number of max pending frames in the GL buffer queue to 1.
 const char kDoubleBufferCompositing[] = "double-buffer-compositing";
 
-// Sets the maximum number (exclusive) of quads one draw quad can be split into
-// during occlusion culling.
-const char kDrawQuadSplitLimit[] = "draw-quad-split-limit";
-
 // Enable compositing individual elements via hardware overlays when
 // permitted by device.
 // Setting the flag to "single-fullscreen" will try to promote a single

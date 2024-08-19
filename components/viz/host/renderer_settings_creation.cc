@@ -70,14 +70,8 @@ RendererSettings CreateRendererSettings() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  constexpr int kMinDrawQuadSplitLimit = 1;
-  constexpr int kMaxDrawQuadSplitLimit = 15;
-  if (command_line->HasSwitch(switches::kDrawQuadSplitLimit)) {
-    GetSwitchValueAsInt(
-        command_line, switches::kDrawQuadSplitLimit, kMinDrawQuadSplitLimit,
-        kMaxDrawQuadSplitLimit,
-        &renderer_settings.occlusion_culler_settings.quad_split_limit);
-  }
+  renderer_settings.occlusion_culler_settings.quad_split_limit =
+      features::DrawQuadSplitLimit();
 #endif
 
 #if BUILDFLAG(IS_OZONE)

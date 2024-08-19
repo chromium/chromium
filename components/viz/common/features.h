@@ -25,6 +25,12 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidBcivWithSuppression);
 #endif  // BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackdropFilterMirrorEdgeMode);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelegatedCompositing);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+VIZ_COMMON_EXPORT extern const char kDrawQuadSplit[];
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDrawQuadSplitLimit);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 enum class DelegatedCompositingMode {
   // Enable delegated compositing.
   kFull,
@@ -130,6 +136,9 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kBatchResourceRelease);
 #if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT bool IsDynamicColorGamutEnabled();
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+VIZ_COMMON_EXPORT int DrawQuadSplitLimit();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 VIZ_COMMON_EXPORT bool IsDelegatedCompositingEnabled();
 VIZ_COMMON_EXPORT bool IsUsingVizFrameSubmissionForWebView();
 VIZ_COMMON_EXPORT bool IsUsingPreferredIntervalForVideo();
