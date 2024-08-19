@@ -895,15 +895,9 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
 
   if (result < 0) {
     if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
-      // TODO(https://crbug.com/332234173): Assuming this isn't hit, remove the
-      // SchemeIsCryptographic() check.
-      DUMP_WILL_BE_CHECK(url_.SchemeIsCryptographic());
-      if (url_.SchemeIsCryptographic()) {
-        response_->cert_request_info =
-            base::MakeRefCounted<SSLCertRequestInfo>();
-        stream_socket_->GetSSLCertRequestInfo(
-            response_->cert_request_info.get());
-      }
+      CHECK(url_.SchemeIsCryptographic());
+      response_->cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
+      stream_socket_->GetSSLCertRequestInfo(response_->cert_request_info.get());
     }
     io_state_ = STATE_DONE;
     return result;

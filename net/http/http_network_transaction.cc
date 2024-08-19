@@ -1324,15 +1324,9 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
   if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     DCHECK(stream_.get());
     DCHECK(IsSecureRequest());
-    // Unclear if this is needed. Copied behavior from an earlier version of
-    // Chrome.
-    //
-    // TODO(https://crbug.com/332234173): Assuming this isn't hit, replace with
-    // a CHECK.
-    if (!response_.cert_request_info) {
-      DUMP_WILL_BE_NOTREACHED();
-      response_.cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
-    }
+    // Should only reach this code when there's a certificate request.
+    CHECK(response_.cert_request_info);
+
     total_received_bytes_ += stream_->GetTotalReceivedBytes();
     total_sent_bytes_ += stream_->GetTotalSentBytes();
     stream_->Close(true);
