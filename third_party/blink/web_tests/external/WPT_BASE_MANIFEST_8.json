@@ -292136,6 +292136,19 @@
         {}
        ]
       ],
+      "non-scaling-stroke-004.html": [
+       "32c745a4e2ecff16d94161539c1f88daba1f6102",
+       [
+        null,
+        [
+         [
+          "/svg/painting/reftests/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "paint-context-001.svg": [
        "7be33cb20fb257496cb1357a5481edecf364bc59",
        [
@@ -390773,7 +390786,7 @@
    },
    "mimesniff": {
     "META.yml": [
-     "fd41c87fad8ebd7d86c6f5d8be47eaa61953a777",
+     "739628b80458dd0b869a2a62165df7b60ebc3e81",
      []
     ],
     "README.md": [
@@ -404409,7 +404422,7 @@
      []
     ],
     "META.yml": [
-     "094b266b64b61b97966f2fa88d78dfdf5a00b573",
+     "415bd0f094c6b9f3348e0320e2644bf94f98fadd",
      []
     ],
     "README.md": [
