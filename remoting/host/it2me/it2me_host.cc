@@ -6,11 +6,13 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -22,6 +24,7 @@
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/rsa_key_pair.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromoting_host.h"
 #include "remoting/host/chromoting_host_context.h"
@@ -34,6 +37,7 @@
 #include "remoting/host/it2me/it2me_helpers.h"
 #include "remoting/host/it2me_desktop_environment.h"
 #include "remoting/host/passthrough_register_support_host_request.h"
+#include "remoting/host/session_policies_from_dict.h"
 #include "remoting/proto/ftl/v1/chromoting_message.pb.h"
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
@@ -371,6 +375,7 @@ void It2MeHost::ConnectOnNetworkThread(
       desktop_environment_factory_.get(), std::move(session_manager),
       transport_context, host_context_->audio_task_runner(),
       host_context_->video_encode_task_runner(), options);
+  host_->SetLocalSessionPolicies(local_session_policies_);
   host_->status_monitor()->AddStatusObserver(this);
   host_status_logger_ = std::make_unique<HostStatusLogger>(
       host_->status_monitor(), log_to_server_.get());
@@ -527,6 +532,8 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
       max_clipboard_size_ = max_clipboard_size.value();
     }
   }
+
+  UpdateSessionPolicies(policies);
 }
 
 void It2MeHost::UpdateNatPolicies(bool nat_policy_value,
@@ -598,6 +605,31 @@ void It2MeHost::UpdateHostUdpPortRangePolicy(
   if (!PortRange::Parse(port_range_string, &udp_port_range_)) {
     // PolicyWatcher verifies that the value is formatted correctly.
     LOG(FATAL) << "Invalid port range: " << port_range_string;
+  }
+}
+
+void It2MeHost::UpdateSessionPolicies(
+    const base::Value::Dict& platform_policies) {
+  std::optional<SessionPolicies> local_session_policies =
+      SessionPoliciesFromDict(platform_policies);
+  if (!local_session_policies.has_value()) {
+    LOG(FATAL) << "Failed to parse local session policies.";
+  }
+
+  local_session_policies_ = *local_session_policies;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+  if (chrome_os_enterprise_params_.has_value()) {
+    local_session_policies_.curtain_required =
+        chrome_os_enterprise_params_->curtain_local_user_session;
+    local_session_policies_.allow_file_transfer =
+        chrome_os_enterprise_params_->allow_file_transfer &&
+        enterprise_file_transfer_allowed_;
+  }
+#endif
+
+  if (host_) {
+    host_->SetLocalSessionPolicies(local_session_policies_);
   }
 }
 

@@ -19,9 +19,11 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/codec/video_encoder_verbatim.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/fake_desktop_environment.h"
@@ -68,6 +70,9 @@ constexpr char kTestDataChannelCallbackName[] = "test_channel_name";
 // Use large fake screen-ids on 64-bit systems, to detect errors caused by
 // inadvertent casts to 32-bits.
 constexpr bool kUse64BitDisplayId = (sizeof(webrtc::ScreenId) >= 8);
+
+const SessionPolicies kInitialLocalPolicies = {.maximum_session_duration =
+                                                   base::Hours(10)};
 
 // Matches a |protocol::Capabilities| argument against a list of capabilities
 // formatted as a space-separated string.
@@ -269,7 +274,7 @@ void ClientSessionTest::CreateClientSession(
   client_session_ = std::make_unique<ClientSession>(
       &session_event_handler_, std::move(connection),
       desktop_environment_factory_.get(), desktop_environment_options_,
-      base::TimeDelta(), nullptr, extensions_);
+      base::TimeDelta(), nullptr, extensions_, kInitialLocalPolicies);
 }
 
 void ClientSessionTest::CreateClientSession() {
@@ -458,6 +463,27 @@ void ClientSessionTest::MultiMon_SelectDisplay(std::string display_id) {
 
 webrtc::ScreenId ClientSessionTest::GetSelectedSourceDisplayId() {
   return connection_->last_video_stream()->selected_source();
+}
+
+TEST_F(ClientSessionTest,
+       OnLocalPoliciesChanged_DoesNotDisconnectIfEffectivePoliciesNotChanged) {
+  CreateClientSession();
+  ConnectClientSession();
+
+  EXPECT_TRUE(connection_->is_connected());
+  client_session_->OnLocalPoliciesChanged(kInitialLocalPolicies);
+  EXPECT_TRUE(connection_->is_connected());
+}
+
+TEST_F(ClientSessionTest,
+       OnLocalPoliciesChanged_DisconnectsIfEffectivePoliciesChanged) {
+  CreateClientSession();
+  ConnectClientSession();
+
+  EXPECT_TRUE(connection_->is_connected());
+  client_session_->OnLocalPoliciesChanged(
+      {.maximum_session_duration = base::Hours(23)});
+  EXPECT_FALSE(connection_->is_connected());
 }
 
 TEST_F(ClientSessionTest, MultiMonMouseMove) {

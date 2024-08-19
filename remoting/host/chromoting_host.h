@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/base/backoff_entry.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/client_session.h"
 #include "remoting/host/host_extension.h"
@@ -130,6 +131,8 @@ class ChromotingHost : public ClientSession::EventHandler,
   // maximum duration.
   void SetMaximumSessionDuration(const base::TimeDelta& max_session_duration);
 
+  void SetLocalSessionPolicies(const SessionPolicies& policies);
+
   ////////////////////////////////////////////////////////////////////////////
   // ClientSession::EventHandler implementation.
   void OnSessionAuthenticating(ClientSession* client) override;
@@ -196,6 +199,8 @@ class ChromotingHost : public ClientSession::EventHandler,
 
   // Options to initialize a DesktopEnvironment.
   const DesktopEnvironmentOptions desktop_environment_options_;
+
+  SessionPolicies local_session_policies_;
 
   // The maximum duration of any session.
   base::TimeDelta max_session_duration_;

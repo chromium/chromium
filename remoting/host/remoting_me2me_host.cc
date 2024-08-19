@@ -61,6 +61,7 @@
 #include "remoting/base/port_range.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/base/service_urls.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/base/util.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/host_exit_codes.h"
@@ -95,6 +96,7 @@
 #include "remoting/host/policy_watcher.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/host/security_key/security_key_extension.h"
+#include "remoting/host/session_policies_from_dict.h"
 #include "remoting/host/shutdown_watchdog.h"
 #include "remoting/host/test_echo_extension.h"
 #include "remoting/host/usage_stats_consent.h"
@@ -438,6 +440,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   std::optional<bool> allow_pin_auth_;
   bool is_corp_user_ = false;
   bool require_session_authorization_ = false;
+  SessionPolicies local_session_policies_;
 
   DesktopEnvironmentOptions desktop_environment_options_;
   bool security_key_auth_policy_enabled_ = false;
@@ -1258,6 +1261,16 @@ void HostProcess::OnPolicyUpdate(base::Value::Dict policies) {
     return;
   }
 
+  // Use the platform policies instead of `policies`, since the latter only has
+  // incremental changes.
+  std::optional<SessionPolicies> local_session_policies =
+      SessionPoliciesFromDict(policy_watcher_->GetPlatformPolicies());
+  if (!local_session_policies.has_value()) {
+    OnPolicyError();
+    return;
+  }
+  local_session_policies_ = *local_session_policies;
+
   bool restart_required = false;
   restart_required |= OnClientDomainListPolicyUpdate(policies);
   restart_required |= OnHostDomainListPolicyUpdate(policies);
@@ -1280,10 +1293,13 @@ void HostProcess::OnPolicyUpdate(base::Value::Dict policies) {
   policy_state_ = POLICY_LOADED;
 
   if (state_ == HOST_STARTING) {
+    DCHECK(!host_);
     StartHostIfReady();
   } else if (state_ == HOST_STARTED) {
     if (restart_required) {
       RestartHost(kHostOfflineReasonPolicyChangeRequiresRestart);
+    } else {
+      host_->SetLocalSessionPolicies(local_session_policies_);
     }
   }
 }
@@ -1910,6 +1926,7 @@ void HostProcess::StartHost() {
       desktop_environment_factory_.get(), std::move(session_manager),
       transport_context, context_->audio_task_runner(),
       context_->video_encode_task_runner(), desktop_environment_options_);
+  host_->SetLocalSessionPolicies(local_session_policies_);
 
   if (security_key_auth_policy_enabled_ && security_key_extension_supported_) {
     host_->AddExtension(

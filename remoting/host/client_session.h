@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_details.h"
@@ -119,14 +120,15 @@ class ClientSession : public protocol::HostStub,
 
   // |event_handler| and |desktop_environment_factory| must outlive |this|.
   // All |HostExtension|s in |extensions| must outlive |this|.
-  ClientSession(EventHandler* event_handler,
-                std::unique_ptr<protocol::ConnectionToClient> connection,
-                DesktopEnvironmentFactory* desktop_environment_factory,
-                const DesktopEnvironmentOptions& desktop_environment_options,
-                const base::TimeDelta& max_duration,
-                scoped_refptr<protocol::PairingRegistry> pairing_registry,
-                const std::vector<raw_ptr<HostExtension, VectorExperimental>>&
-                    extensions);
+  ClientSession(
+      EventHandler* event_handler,
+      std::unique_ptr<protocol::ConnectionToClient> connection,
+      DesktopEnvironmentFactory* desktop_environment_factory,
+      const DesktopEnvironmentOptions& desktop_environment_options,
+      const base::TimeDelta& max_duration,
+      scoped_refptr<protocol::PairingRegistry> pairing_registry,
+      const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions,
+      const SessionPolicies& local_policies);
 
   ClientSession(const ClientSession&) = delete;
   ClientSession& operator=(const ClientSession&) = delete;
@@ -223,6 +225,12 @@ class ClientSession : public protocol::HostStub,
 
   // Public for tests.
   void UpdateMouseClampingFilterOffset();
+
+  void OnLocalPoliciesChanged(const SessionPolicies& policies);
+
+  const SessionPolicies& effective_policies_for_tests() const {
+    return effective_policies_;
+  }
 
  private:
   // Creates a proxy for sending clipboard events to the client.
@@ -435,6 +443,15 @@ class ClientSession : public protocol::HostStub,
       session_services_receivers_;
 
   std::unique_ptr<ActiveDisplayMonitor> active_display_monitor_;
+
+  SessionPolicies effective_policies_;
+
+  // False indicates that `effective_policies_` comes from the local policies.
+  // True indicates that it has been overridden by another source of session
+  // policies.
+  // TODO: crbug.com/359977809 - implement session policies overriding with the
+  // policies provided by the authenticator.
+  bool local_session_policies_overridden_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -163,6 +163,13 @@ void ChromotingHost::SetMaximumSessionDuration(
   max_session_duration_ = max_session_duration;
 }
 
+void ChromotingHost::SetLocalSessionPolicies(const SessionPolicies& policies) {
+  local_session_policies_ = policies;
+  for (auto& client : clients_) {
+    client->OnLocalPoliciesChanged(policies);
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////
 // protocol::ClientSession::EventHandler implementation.
 void ChromotingHost::OnSessionAuthenticating(ClientSession* client) {
@@ -320,7 +327,7 @@ void ChromotingHost::OnIncomingSession(
   clients_.push_back(std::make_unique<ClientSession>(
       this, std::move(connection), desktop_environment_factory_,
       desktop_environment_options_, max_session_duration_, pairing_registry_,
-      extension_ptrs));
+      extension_ptrs, local_session_policies_));
 }
 
 ClientSession* ChromotingHost::GetConnectedClientSession() const {

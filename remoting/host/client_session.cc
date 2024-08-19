@@ -84,7 +84,8 @@ ClientSession::ClientSession(
     const DesktopEnvironmentOptions& desktop_environment_options,
     const base::TimeDelta& max_duration,
     scoped_refptr<protocol::PairingRegistry> pairing_registry,
-    const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions)
+    const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions,
+    const SessionPolicies& local_policies)
     : event_handler_(event_handler),
       desktop_environment_factory_(desktop_environment_factory),
       desktop_environment_options_(desktop_environment_options),
@@ -100,7 +101,8 @@ ClientSession::ClientSession(
       max_duration_(max_duration),
       pairing_registry_(pairing_registry),
       connection_(std::move(connection)),
-      client_jid_(connection_->session()->jid()) {
+      client_jid_(connection_->session()->jid()),
+      effective_policies_(local_policies) {
   connection_->session()->AddPlugin(&host_experiment_session_plugin_);
   connection_->SetEventHandler(this);
 
@@ -505,6 +507,9 @@ void ClientSession::OnConnectionAuthenticated() {
   is_authenticated_ = true;
 
   desktop_display_info_.Reset();
+
+  HOST_LOG << "Connection authenticated with session policies: "
+           << effective_policies_;
 
   if (max_duration_.is_positive()) {
     max_duration_timer_.Start(
@@ -976,6 +981,22 @@ void ClientSession::UpdateMouseClampingFilterOffset() {
   webrtc::DesktopVector origin;
   origin = desktop_display_info_.CalcDisplayOffset(selected_display_index_);
   mouse_clamping_filter_.set_output_offset(origin);
+}
+
+void ClientSession::OnLocalPoliciesChanged(const SessionPolicies& policies) {
+  // TODO: crbug.com/359977809 - add a test for overridden local policies.
+  if (local_session_policies_overridden_) {
+    return;
+  }
+  if (policies != effective_policies_) {
+    // Update `effective_policies_` anyway so that tests can check the latest
+    // known policies.
+    effective_policies_ = policies;
+    HOST_LOG << "Effective policies have changed. Terminating session.";
+    // TODO: crbug.com/359977809 - create a new error code for session policy
+    // changed.
+    DisconnectSession(ErrorCode::HOST_CONFIGURATION_ERROR);
+  }
 }
 
 void ClientSession::OnVideoSizeChanged(protocol::VideoStream* video_stream,
