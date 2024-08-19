@@ -14,6 +14,7 @@ import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 
 /** Regular tab switcher pane station. */
 public class RegularTabSwitcherStation extends TabSwitcherStation {
@@ -49,5 +50,18 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
         if (!mRegularTabsExist) {
             elements.declareView(EMPTY_STATE_TEXT);
         }
+    }
+
+    /** Open a new tab using the New Tab action button. */
+    public RegularNewTabPageStation openNewTab() {
+        recheckActiveConditions();
+
+        RegularNewTabPageStation page =
+                RegularNewTabPageStation.newBuilder()
+                        .withIsOpeningTabs(1)
+                        .withIsSelectingTabs(1)
+                        .build();
+
+        return travelToSync(page, getNewTabButtonViewSpec()::click);
     }
 }

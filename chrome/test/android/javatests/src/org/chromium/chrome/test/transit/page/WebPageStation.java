@@ -32,7 +32,7 @@ public class WebPageStation extends PageStation {
         super(builder);
     }
 
-    public static Builder<WebPageStation> newWebPageStationBuilder() {
+    public static Builder<WebPageStation> newBuilder() {
         return new Builder<>(WebPageStation::new);
     }
 

@@ -28,9 +28,10 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
-import org.chromium.chrome.test.transit.page.PageAppMenuFacility;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.TabSwitcherActionMenuFacility;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 
 /**
  * Instrumentation tests for tab switcher long-press menu popup.
@@ -43,11 +44,12 @@ import org.chromium.chrome.test.transit.page.TabSwitcherActionMenuFacility;
 public class TabSwitcherActionMenuBatchedPTTest {
 
     @Rule
-    public BatchedPublicTransitRule<PageStation> mBatchedRule =
-            new BatchedPublicTransitRule<>(PageStation.class, /* expectResetByTest= */ true);
+    public BatchedPublicTransitRule<WebPageStation> mBatchedRule =
+            new BatchedPublicTransitRule<>(WebPageStation.class, /* expectResetByTest= */ true);
 
     @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule = new ChromeTabbedActivityTestRule();
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
     ChromeTabbedActivityPublicTransitEntryPoints mTransitEntryPoints =
             new ChromeTabbedActivityPublicTransitEntryPoints(sActivityTestRule);
@@ -55,65 +57,63 @@ public class TabSwitcherActionMenuBatchedPTTest {
     @Test
     @LargeTest
     public void testCloseTab() {
-        PageStation page = mTransitEntryPoints.startOnBlankPage(mBatchedRule);
+        WebPageStation blankPage = mTransitEntryPoints.startOnBlankPage(mBatchedRule);
 
         // Closing the only tab should lead to the Tab Switcher.
-        TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
+        TabSwitcherActionMenuFacility actionMenu = blankPage.openTabSwitcherActionMenu();
         RegularTabSwitcherStation tabSwitcher = actionMenu.selectCloseTabAndDisplayTabSwitcher();
 
         assertEquals(0, getCurrentTabModel().getCount());
 
-        page = tabSwitcher.openNewTab();
-        assertFinalDestination(page);
+        blankPage = tabSwitcher.openNewTab().loadAboutBlank();
+        assertFinalDestination(blankPage);
     }
 
     @Test
     @LargeTest
     public void testOpenNewTab() {
-        PageStation page = mTransitEntryPoints.startOnBlankPage(mBatchedRule);
+        WebPageStation blankPage = mTransitEntryPoints.startOnBlankPage(mBatchedRule);
 
         // Opening a new tab should display it on the screen.
-        TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
-        page = actionMenu.selectNewTab();
+        TabSwitcherActionMenuFacility actionMenu = blankPage.openTabSwitcherActionMenu();
+        RegularNewTabPageStation ntp = actionMenu.selectNewTab();
 
         assertFalse(getTabModelSelector().isIncognitoSelected());
         assertEquals(2, getCurrentTabModel().getCount());
 
         // Return to one non-incognito blank tab
-        actionMenu = page.openTabSwitcherActionMenu();
-        page = actionMenu.selectCloseTabAndDisplayAnotherTab();
-        assertFinalDestination(page);
+        actionMenu = ntp.openTabSwitcherActionMenu();
+        blankPage = actionMenu.selectCloseTabAndDisplayAnotherTab(WebPageStation.newBuilder());
+        assertFinalDestination(blankPage);
     }
 
     @Test
     @LargeTest
     public void testOpenNewIncognitoTab() {
-        PageStation page = mTransitEntryPoints.startOnBlankPage(mBatchedRule);
+        WebPageStation blankPage = mTransitEntryPoints.startOnBlankPage(mBatchedRule);
 
         // Opening a new incognito tab should display it on the screen.
-        TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
-        page = actionMenu.selectNewIncognitoTab();
+        TabSwitcherActionMenuFacility actionMenu = blankPage.openTabSwitcherActionMenu();
+        IncognitoNewTabPageStation incognitoNtp = actionMenu.selectNewIncognitoTab();
 
         assertTrue(getTabModelSelector().isIncognitoSelected());
         assertEquals(1, getCurrentTabModel().getCount());
 
         // Return to one non-incognito blank tab
-        actionMenu = page.openTabSwitcherActionMenu();
-        page = actionMenu.selectCloseTabAndDisplayRegularTab();
-        assertFinalDestination(page);
+        actionMenu = incognitoNtp.openTabSwitcherActionMenu();
+        blankPage = actionMenu.selectCloseTabAndDisplayRegularTab(WebPageStation.newBuilder());
+        assertFinalDestination(blankPage);
     }
 
     /** Regression test for crbug.com/1448791 */
     @Test
     @LargeTest
     public void testClosingAllRegularTabs_DoNotFinishActivity() {
-        PageStation page = mTransitEntryPoints.startOnBlankPage(mBatchedRule);
+        WebPageStation blankPage = mTransitEntryPoints.startOnBlankPage(mBatchedRule);
 
-        PageAppMenuFacility appMenu = page.openGenericAppMenu();
-        page = appMenu.openNewIncognitoTab();
-
-        appMenu = page.openGenericAppMenu();
-        page = appMenu.openNewTab();
+        IncognitoNewTabPageStation incognitoNtp =
+                blankPage.openRegularTabAppMenu().openNewIncognitoTab();
+        RegularNewTabPageStation ntp = incognitoNtp.openAppMenu().openNewTab();
 
         TabModel regularTabModel = getTabModelSelector().getModel(/* incognito= */ false);
         TabModel incognitoTabModel = getTabModelSelector().getModel(/* incognito= */ true);
@@ -121,11 +121,11 @@ public class TabSwitcherActionMenuBatchedPTTest {
         assertEquals(1, incognitoTabModel.getCount());
 
         // Close second regular tab opened.
-        TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
-        page = actionMenu.selectCloseTabAndDisplayAnotherTab();
+        TabSwitcherActionMenuFacility actionMenu = ntp.openTabSwitcherActionMenu();
+        blankPage = actionMenu.selectCloseTabAndDisplayAnotherTab(WebPageStation.newBuilder());
 
         // Close first regular tab opened.
-        actionMenu = page.openTabSwitcherActionMenu();
+        actionMenu = blankPage.openTabSwitcherActionMenu();
         RegularTabSwitcherStation regularTabSwitcher =
                 actionMenu.selectCloseTabAndDisplayTabSwitcher();
 
@@ -138,8 +138,8 @@ public class TabSwitcherActionMenuBatchedPTTest {
                 regularTabSwitcher.selectIncognitoTabList();
         regularTabSwitcher =
                 incognitoTabSwitcher.closeTabAtIndex(0, RegularTabSwitcherStation.class);
-        page = regularTabSwitcher.openNewTab();
-        assertFinalDestination(page);
+        blankPage = regularTabSwitcher.openNewTab().loadAboutBlank();
+        assertFinalDestination(blankPage);
     }
 
     private TabModelSelector getTabModelSelector() {

@@ -27,7 +27,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
 import org.chromium.chrome.test.transit.edge_to_edge.ViewportFitCoverPageStation;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -52,8 +52,8 @@ public class EdgeToEdgePTTest {
             new ChromeTabbedActivityTestRule();
 
     @Rule
-    public BatchedPublicTransitRule<PageStation> mBatchedRule =
-            new BatchedPublicTransitRule<>(PageStation.class, /* expectResetByTest= */ false);
+    public BatchedPublicTransitRule<WebPageStation> mBatchedRule =
+            new BatchedPublicTransitRule<>(WebPageStation.class, /* expectResetByTest= */ false);
 
     ChromeTabbedActivityPublicTransitEntryPoints mEntryPoints =
             new ChromeTabbedActivityPublicTransitEntryPoints(sActivityTestRule);
@@ -61,7 +61,7 @@ public class EdgeToEdgePTTest {
     @Test
     @SmallTest
     public void loadViewportFitCover() {
-        PageStation blankPage = mEntryPoints.startOnBlankPage(mBatchedRule);
+        WebPageStation blankPage = mEntryPoints.startOnBlankPage(mBatchedRule);
         ViewportFitCoverPageStation e2ePage =
                 loadViewportFitCoverPage(sActivityTestRule, blankPage);
         TransitAsserts.assertFinalDestination(e2ePage);
