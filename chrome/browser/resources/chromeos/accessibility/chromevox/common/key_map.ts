@@ -100,7 +100,6 @@ export class KeyMap {
     if (KeyMap.instance) {
       return KeyMap.instance;
     }
-
     const keyBindings = CommandStore.getKeyBindings();
     KeyMap.instance = new KeyMap(keyBindings);
     return KeyMap.instance;
