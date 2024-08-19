@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 import type {CrIconButtonElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 function createToolbar() {
   document.body.innerHTML = '';
@@ -71,7 +70,7 @@ const tests = [
     toolbar.rotated = false;
     toolbar.twoUpViewEnabled = false;
 
-    await waitBeforeNextRender(toolbar);
+    await microtasksFinished();
     chrome.test.assertFalse(toolbar.annotationMode);
 
     // If rotation is enabled clicking the button shows the dialog.
