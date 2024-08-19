@@ -173,13 +173,19 @@ public class PasswordManagerHelper {
 
         @PasswordAccessLossWarningType int warningType = getAccessLossWarningType(prefService);
         if (warningType != PasswordAccessLossWarningType.NONE) {
+            // Always start export flow from Chrome main settings. If this is already being called
+            // from main settings, then launch export flow right away.
+            Callback<Context> startExportFlow =
+                    referrer == ManagePasswordsReferrer.CHROME_SETTINGS
+                            ? this::launchExportFlow
+                            : PasswordManagerHelper::showMainSettingsAndStartExport;
             new PasswordAccessLossDialogSettingsCoordinator()
                     .showPasswordAccessLossDialog(
                             context,
                             modalDialogManagerSupplier.get(),
                             warningType,
                             PasswordManagerHelper::launchGmsUpdate,
-                            PasswordManagerHelper::showMainSettingsAndStartExport);
+                            startExportFlow);
             return;
         }
 
