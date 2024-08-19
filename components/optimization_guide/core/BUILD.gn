@@ -228,6 +228,8 @@ static_library("core") {
   ]
   if (!is_fuchsia || !optimize_for_size) {
     sources += [
+      "model_execution/aqa_response_parser.cc",
+      "model_execution/aqa_response_parser.h",
       "model_execution/json_response_parser.cc",
       "model_execution/json_response_parser.h",
       "model_execution/model_execution_features.cc",
@@ -493,6 +495,7 @@ source_set("unit_tests") {
 
   if (!is_fuchsia || !optimize_for_size) {
     sources += [
+      "model_execution/aqa_response_parser_unittest.cc",
       "model_execution/json_response_parser_unittest.cc",
       "model_execution/model_execution_features_controller_unittest.cc",
       "model_execution/model_execution_features_unittest.cc",

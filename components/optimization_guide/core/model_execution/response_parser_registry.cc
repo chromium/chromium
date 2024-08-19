@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
+#include "components/optimization_guide/core/model_execution/aqa_response_parser.h"
 #include "components/optimization_guide/core/model_execution/json_response_parser.h"
 #include "components/optimization_guide/core/model_execution/simple_response_parser.h"
 
@@ -20,6 +21,8 @@ ResponseParserRegistry::ResponseParserRegistry() {
                      std::make_unique<SimpleResponseParserFactory>());
   factories_.emplace(proto::PARSER_KIND_JSON,
                      std::make_unique<JsonResponseParserFactory>());
+  factories_.emplace(proto::PARSER_KIND_AQA,
+                     std::make_unique<AqaResponseParserFactory>());
 }
 ResponseParserRegistry::~ResponseParserRegistry() = default;
 
