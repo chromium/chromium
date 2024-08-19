@@ -1198,12 +1198,22 @@ void ChromeFileSystemAccessPermissionContext::RevokeAllActiveGrants() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (auto& [origin, origin_state] : active_permissions_map_) {
-    for (auto& [_, grant] : origin_state.read_grants) {
+    for (auto grant_iter = origin_state.read_grants.begin(),
+              grant_end = origin_state.read_grants.end();
+         grant_iter != grant_end;) {
+      // The grant may be removed from `read_grants`, so increase the iterator
+      // before continuing.
+      auto& [_, grant] = *(grant_iter++);
       grant->SetStatus(
           PermissionStatus::ASK,
           PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
     }
-    for (auto& [_, grant] : origin_state.write_grants) {
+    for (auto grant_iter = origin_state.write_grants.begin(),
+              grant_end = origin_state.write_grants.end();
+         grant_iter != grant_end;) {
+      // The grant may be removed from `write_grants`, so increase the iterator
+      // before continuing.
+      auto& [_, grant] = *(grant_iter++);
       grant->SetStatus(
           PermissionStatus::ASK,
           PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
