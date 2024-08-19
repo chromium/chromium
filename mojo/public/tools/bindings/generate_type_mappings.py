@@ -155,10 +155,11 @@ def main():
   if params.ts_config_path:
     ts_typemaps = LoadTsTypemapConfig(params.ts_config_path)
 
-  WriteFile(json.dumps({
-      'c++': cpp_typemaps,
-      'ts': ts_typemaps
-  }, indent=2), params.output)
+  WriteFile(
+      json.dumps({
+          'c++': cpp_typemaps,
+          'typescript': ts_typemaps
+      }, indent=2), params.output)
 
 
 if __name__ == '__main__':

@@ -274,6 +274,10 @@ class Generator(generator.Generator):
     }
     return ts_filters
 
+  @UseJinja("converter_interface_declarations.tmpl")
+  def _GenerateConverterInterfaces(self):
+    return self._GetParameters()
+
   @UseJinja("module_definition.tmpl")
   def _GenerateWebUiModule(self):
     return self._GetParameters()
@@ -284,14 +288,17 @@ class Generator(generator.Generator):
 
     self.module.Stylize(TypeScriptStylizer())
 
-    # TODO(crbug.com/41361453): Change the media router extension to not mess with
-    # the mojo namespace, so that namespaces such as "mojo.common.mojom" are not
-    # affected and we can remove this method.
+    # TODO(crbug.com/41361453): Change the media router extension to not mess
+    # with the mojo namespace, so that namespaces such as "mojo.common.mojom"
+    # are not affected and we can remove this method.
     self._SetUniqueNameForImports()
 
     assert(_GetWebUiModulePath(self.module) is not None)
     self.WriteWithComment(self._GenerateWebUiModule(),
                           "%s-webui.ts" % self.module.path)
+    self.WriteWithComment(self._GenerateConverterInterfaces(),
+                          "%s-converters.ts" % self.module.path)
+
 
   def _GetBindingsLibraryPath(self):
     return "//resources/mojo/mojo/public/js/bindings.js"
