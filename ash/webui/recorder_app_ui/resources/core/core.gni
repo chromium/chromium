@@ -24,6 +24,7 @@ core_files = [
   "soda/types.ts",
   "state/route.ts",
   "state/settings.ts",
+  "test_helper.ts",
   "utils/assert.ts",
   "utils/async_job_queue.ts",
   "utils/datetime.ts",

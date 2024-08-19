@@ -80,6 +80,9 @@ export class RecorderApp extends ReactiveLitElement {
     if (path === '/dev') {
       return html`<dev-page></dev-page>`;
     }
+    if (path === '/test') {
+      return '';
+    }
 
     return this.render404();
   }
