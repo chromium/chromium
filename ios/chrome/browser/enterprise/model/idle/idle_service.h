@@ -13,8 +13,7 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/enterprise/model/idle/action_runner_impl.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_timeout_policy_utils.h"
-
-class ChromeBrowserState;
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace enterprise_idle {
 

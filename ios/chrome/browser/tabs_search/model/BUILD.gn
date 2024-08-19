@@ -40,6 +40,7 @@ source_set("model_factory") {
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
   ]

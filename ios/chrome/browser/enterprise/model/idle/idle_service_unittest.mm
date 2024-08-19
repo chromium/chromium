@@ -28,7 +28,6 @@ using ::testing::_;
 
 namespace enterprise_idle {
 
-class ChromeBrowserState;
 class ActionRunner;
 
 // Tests that the idle service schedules tasks and runs actions as expected when

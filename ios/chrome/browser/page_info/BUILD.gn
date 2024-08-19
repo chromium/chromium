@@ -19,6 +19,7 @@ source_set("model") {
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state:browser_state",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }
 

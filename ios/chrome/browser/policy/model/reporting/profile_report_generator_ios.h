@@ -5,13 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_MODEL_REPORTING_PROFILE_REPORT_GENERATOR_IOS_H_
 #define IOS_CHROME_BROWSER_POLICY_MODEL_REPORTING_PROFILE_REPORT_GENERATOR_IOS_H_
 
-#include "components/enterprise/browser/reporting/profile_report_generator.h"
-
-#include <memory>
+#import <memory>
 
 #import "base/memory/raw_ptr.h"
-#include "components/policy/core/browser/policy_conversions_client.h"
-#include "components/policy/proto/device_management_backend.pb.h"
+#import "components/enterprise/browser/reporting/profile_report_generator.h"
+#import "components/policy/core/browser/policy_conversions_client.h"
+#import "components/policy/proto/device_management_backend.pb.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace base {
 class FilePath;
@@ -21,7 +21,6 @@ namespace policy {
 class CloudPolicyManager;
 }
 
-class ChromeBrowserState;
 
 namespace enterprise_reporting {
 

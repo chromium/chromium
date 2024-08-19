@@ -27,6 +27,7 @@ source_set("unit_conversion_factory") {
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/public/provider/chrome/browser/unit_conversion:unit_conversion_api",
   ]
 }

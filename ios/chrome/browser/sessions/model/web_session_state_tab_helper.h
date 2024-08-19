@@ -8,14 +8,14 @@
 #import <Foundation/Foundation.h>
 
 #import "base/memory/raw_ptr.h"
-#include "base/sequence_checker.h"
+#import "base/sequence_checker.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
-#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 @protocol CRWWebViewScrollViewProxyObserver;
 
-class ChromeBrowserState;
 
 namespace web {
 class WebState;

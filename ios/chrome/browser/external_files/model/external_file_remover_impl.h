@@ -5,17 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_EXTERNAL_FILES_MODEL_EXTERNAL_FILE_REMOVER_IMPL_H_
 #define IOS_CHROME_BROWSER_EXTERNAL_FILES_MODEL_EXTERNAL_FILE_REMOVER_IMPL_H_
 
-#include <vector>
+#import <vector>
 
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
-#include "components/sessions/core/tab_restore_service_observer.h"
+#import "base/memory/weak_ptr.h"
+#import "base/time/time.h"
+#import "components/sessions/core/tab_restore_service_observer.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover.h"
-
-class ChromeBrowserState;
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace sessions {
 class TabRestoreService;

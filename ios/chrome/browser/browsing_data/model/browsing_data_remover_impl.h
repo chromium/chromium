@@ -5,20 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_IMPL_H_
 #define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_IMPL_H_
 
-#include "base/containers/queue.h"
-#include "base/functional/callback.h"
+#import "base/containers/queue.h"
+#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
-#include "base/task/cancelable_task_tracker.h"
-#include "base/time/time.h"
-#include "components/browsing_data/core/browsing_data_utils.h"
-#include "components/prefs/pref_member.h"
-#include "components/search_engines/template_url_service.h"
-#include "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
-#include "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
+#import "base/memory/weak_ptr.h"
+#import "base/sequence_checker.h"
+#import "base/task/cancelable_task_tracker.h"
+#import "base/time/time.h"
+#import "components/browsing_data/core/browsing_data_utils.h"
+#import "components/prefs/pref_member.h"
+#import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 @class WKWebView;
 
 namespace net {
