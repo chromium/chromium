@@ -22,10 +22,10 @@ private_aggregation_promise_test(async () => {
 
   const report = JSON.parse(reports[0]);
   verifyReport(
-      report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
+      report, /*api=*/ 'shared-storage',
+      /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
-      /*expected_contribution_payload_components=*/
-      ONE_CONTRIBUTION_EXAMPLE_COMPONENTS);
+      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE);
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -52,8 +52,7 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
-      /*expected_contribution_payload_components=*/
-      MULTIPLE_CONTRIBUTIONS_EXAMPLE_COMPONENTS);
+      /*expected_payload=*/ MULTIPLE_CONTRIBUTIONS_EXAMPLE);
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -81,8 +80,7 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ '1234',
-      /*expected_contribution_payload_components=*/
-      ONE_CONTRIBUTION_EXAMPLE_COMPONENTS);
+      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE);
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -111,8 +109,7 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ '1234',
-      /*expected_contribution_payload_components=*/
-      MULTIPLE_CONTRIBUTIONS_EXAMPLE_COMPONENTS);
+      /*expected_payload=*/ MULTIPLE_CONTRIBUTIONS_EXAMPLE);
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -141,7 +138,7 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ false,
       /*debug_key=*/ undefined,
-      /*expected_contribution_payload_components=*/ undefined);
+      /*expected_payload=*/ undefined);
 
   // We use a short timeout as the previous poll should've waited long enough.
   const debug_reports = await pollReports(
@@ -169,8 +166,7 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ '1234',
-      /*expected_contribution_payload_components=*/
-      ONE_CONTRIBUTION_EXAMPLE_COMPONENTS);
+      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE);
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -199,7 +195,7 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ false,
       /*debug_key=*/ undefined,
-      /*expected_contribution_payload_components=*/ undefined);
+      /*expected_payload=*/ undefined);
 
   // We use a short timeout as the previous poll should've waited long enough.
   const debug_reports = await pollReports(
@@ -256,8 +252,7 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
-      /*expected_contribution_payload_components=*/
-      MULTIPLE_CONTRIBUTIONS_EXAMPLE_COMPONENTS);
+      /*expected_payload=*/ MULTIPLE_CONTRIBUTIONS_EXAMPLE);
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -284,8 +279,7 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
-      /*expected_contribution_payload_components=*/
-      MULTIPLE_CONTRIBUTIONS_EXAMPLE_COMPONENTS);
+      /*expected_payload=*/ MULTIPLE_CONTRIBUTIONS_EXAMPLE);
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -313,8 +307,7 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
-      /*expected_contribution_payload_components=*/
-      CONTRIBUTIONS_UP_TO_LIMIT_EXAMPLE_COMPONENTS);
+      /*expected_payload=*/ CONTRIBUTIONS_UP_TO_LIMIT_EXAMPLE);
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -342,8 +335,7 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
-      /*expected_contribution_payload_components=*/
-      ONE_CONTRIBUTION_HIGHER_VALUE_EXAMPLE_COMPONENTS);
+      /*expected_payload=*/ ONE_CONTRIBUTION_HIGHER_VALUE_EXAMPLE);
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')

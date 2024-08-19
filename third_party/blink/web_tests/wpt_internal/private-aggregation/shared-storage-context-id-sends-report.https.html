@@ -29,8 +29,7 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
-      /*expected_contribution_payload_components=*/
-      ONE_CONTRIBUTION_EXAMPLE_COMPONENTS,
+      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE,
       /*expected_context_id=*/ 'example-context-id');
 
   const debug_reports = await pollReports(
@@ -62,7 +61,7 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ false,
       /*debug_key=*/ undefined,
-      /*expected_contribution_payload_components=*/ undefined,
+      /*expected_payload=*/ undefined,
       /*expected_context_id=*/ 'example-context-id');
 
   // We use a short timeout as the previous poll should've waited long enough.
@@ -91,7 +90,7 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ false,
       /*debug_key=*/ undefined,
-      /*expected_contribution_payload_components=*/ undefined,
+      /*expected_payload=*/ undefined,
       /*expected_context_id=*/ 'example-context-id');
 
   // We use a short timeout as the previous poll should've waited long enough.
