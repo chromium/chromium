@@ -479,6 +479,11 @@ bool PopupRowView::HandleKeyPressEvent(
   }
 }
 
+bool PopupRowView::IsSelectable() const {
+  return controller_ && line_number_ < controller_->GetLineCount() &&
+         !controller_->GetSuggestionAt(line_number_).apply_deactivated_style;
+}
+
 void PopupRowView::UpdateUI() {
   UpdateBackground();
   UpdateOpenSubPopupIconVisibility();

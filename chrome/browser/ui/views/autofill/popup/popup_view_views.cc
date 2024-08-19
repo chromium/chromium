@@ -265,8 +265,16 @@ bool PopupViewViews::Show(
   }
 
   if (autoselect_first_suggestion) {
-    SetSelectedCell(CellIndex{0u, PopupRowView::CellType::kContent},
-                    PopupCellSelectionSource::kNonUserInput);
+    // Selecting first selectable row.
+    // TODO(crbug.com/327931044): Remove the if condition and make the else as
+    // the default as part of cleanup.
+    if (!controller_->GetSuggestionAt(0).apply_deactivated_style) {
+      SetSelectedCell(CellIndex{0u, PopupRowView::CellType::kContent},
+                      PopupCellSelectionSource::kNonUserInput);
+    } else {
+      SetSelectedCell(std::nullopt, PopupCellSelectionSource::kNonUserInput);
+      SelectNextRow(PopupCellSelectionSource::kNonUserInput);
+    }
   }
 
   // Check for the special "warning bubble" mode: single warning suggestion
@@ -337,7 +345,7 @@ std::optional<PopupViewViews::CellIndex> PopupViewViews::GetSelectedCell()
   // current selection. Therefore some validity checks need to be performed
   // here.
   if (!row_with_selected_cell_ ||
-      !HasPopupRowViewAt(*row_with_selected_cell_)) {
+      !HasSelectablePopupRowViewAt(*row_with_selected_cell_)) {
     return std::nullopt;
   }
 
@@ -364,8 +372,9 @@ bool PopupViewViews::HandleKeyPressEvent(
         (event.windows_key_code == ui::VKEY_RIGHT && !base::i18n::IsRTL()) ||
         (event.windows_key_code == ui::VKEY_LEFT && base::i18n::IsRTL());
     if (capture_keyboard_focus) {
-      SetSelectedCell(CellIndex{0u, PopupRowView::CellType::kContent},
-                      PopupCellSelectionSource::kKeyboard);
+      // Select first row.
+      SetSelectedCell(std::nullopt, PopupCellSelectionSource::kNonUserInput);
+      SelectNextRow(PopupCellSelectionSource::kNonUserInput);
       return true;
     }
     return false;
@@ -394,7 +403,7 @@ bool PopupViewViews::HandleKeyPressEvent(
       SelectPreviousRow();
       return true;
     case ui::VKEY_DOWN:
-      SelectNextRow();
+      SelectNextRow(PopupCellSelectionSource::kKeyboard);
       return true;
     case ui::VKEY_LEFT:
       // `base::i18n::IsRTL` is used here instead of the controller's method
@@ -422,7 +431,7 @@ bool PopupViewViews::HandleKeyPressEvent(
       // Set no line and then select the next line in case the first line is not
       // selectable.
       SetSelectedCell(std::nullopt, PopupCellSelectionSource::kKeyboard);
-      SelectNextRow();
+      SelectNextRow(PopupCellSelectionSource::kKeyboard);
       return true;
     case ui::VKEY_NEXT:  // Page down.
       SetSelectedCell(std::nullopt, PopupCellSelectionSource::kKeyboard);
@@ -473,7 +482,7 @@ bool PopupViewViews::HandleKeyPressEventForCompose(
       return false;
     case ui::VKEY_DOWN:
       if (GetSelectedCell()) {
-        SelectNextRow();
+        SelectNextRow(PopupCellSelectionSource::kKeyboard);
         return true;
       }
       return false;
@@ -566,57 +575,55 @@ bool PopupViewViews::HandleKeyPressEventForCompose(
 void PopupViewViews::SelectPreviousRow() {
   DCHECK(!rows_.empty());
   std::optional<CellIndex> old_index = GetSelectedCell();
-
   // Temporarily use an int to avoid underflows.
   int new_row = old_index ? static_cast<int>(old_index->first) - 1 : -1;
-  while (new_row >= 0 && !HasPopupRowViewAt(new_row)) {
+  for (size_t i = 0; i < rows_.size() && !HasSelectablePopupRowViewAt(new_row);
+       i++) {
     --new_row;
+    if (new_row < 0) {
+      new_row = static_cast<int>(rows_.size()) - 1;
+    }
   }
 
-  if (new_row < 0) {
-    new_row = static_cast<int>(rows_.size()) - 1;
-  }
-
-  // `kControl` is used to show a sub-popup with child suggestions. It can only
-  // be selected on a new row if the corresponding suggestion has children.
+  // `kControl` is used to show a sub-popup with child suggestions. It can
+  // only be selected on a new row if the corresponding suggestion has
+  // children.
   const PopupRowView::CellType kNewCellType =
       (old_index && old_index->second == PopupRowView::CellType::kControl &&
        GetPopupRowViewAt(new_row).GetExpandChildSuggestionsView())
           ? PopupRowView::CellType::kControl
           : PopupRowView::CellType::kContent;
-
   SetSelectedCell(CellIndex{new_row, kNewCellType},
                   PopupCellSelectionSource::kKeyboard);
 }
 
-void PopupViewViews::SelectNextRow() {
+void PopupViewViews::SelectNextRow(PopupCellSelectionSource source) {
   DCHECK(!rows_.empty());
   std::optional<CellIndex> old_index = GetSelectedCell();
 
   size_t new_row = old_index ? old_index->first + 1u : 0u;
-  while (new_row < rows_.size() && !HasPopupRowViewAt(new_row)) {
+  for (size_t i = 0; i < rows_.size() && !HasSelectablePopupRowViewAt(new_row);
+       i++) {
     ++new_row;
+    if (new_row >= rows_.size()) {
+      new_row = 0u;
+    }
   }
 
-  if (new_row >= rows_.size()) {
-    new_row = 0u;
-  }
-
-  // `kControl` is used to show a sub-popup with child suggestions. It can only
-  // be selected on a new row if the corresponding suggestion has children.
+  // `kControl` is used to show a sub-popup with child suggestions. It can
+  // only be selected on a new row if the corresponding suggestion has
+  // children.
   const PopupRowView::CellType kNewCellType =
       (old_index && old_index->second == PopupRowView::CellType::kControl &&
        GetPopupRowViewAt(new_row).GetExpandChildSuggestionsView())
           ? PopupRowView::CellType::kControl
           : PopupRowView::CellType::kContent;
-
-  SetSelectedCell(CellIndex{new_row, kNewCellType},
-                  PopupCellSelectionSource::kKeyboard);
+  SetSelectedCell(CellIndex{new_row, kNewCellType}, source);
 }
 
 bool PopupViewViews::SelectNextHorizontalCell() {
   std::optional<CellIndex> selected_cell = GetSelectedCell();
-  if (selected_cell && HasPopupRowViewAt(selected_cell->first)) {
+  if (selected_cell && HasSelectablePopupRowViewAt(selected_cell->first)) {
     PopupRowView& row = GetPopupRowViewAt(selected_cell->first);
     if (selected_cell->second == PopupRowView::CellType::kContent &&
         row.GetExpandChildSuggestionsView()) {
@@ -633,7 +640,7 @@ bool PopupViewViews::SelectPreviousHorizontalCell() {
   std::optional<CellIndex> selected_cell = GetSelectedCell();
   if (selected_cell &&
       selected_cell->second == PopupRowView::CellType::kControl &&
-      HasPopupRowViewAt(selected_cell->first)) {
+      HasSelectablePopupRowViewAt(selected_cell->first)) {
     SetSelectedCell(
         CellIndex{selected_cell->first, PopupRowView::CellType::kContent},
         PopupCellSelectionSource::kKeyboard);
@@ -860,7 +867,7 @@ void PopupViewViews::SetSelectedCell(
   // New selected cell invalidates this scheduling (if it's running), cancel it.
   open_sub_popup_timer_.Stop();
 
-  if (cell_index && HasPopupRowViewAt(cell_index->first)) {
+  if (cell_index && HasSelectablePopupRowViewAt(cell_index->first)) {
     has_keyboard_focus_ = true;
     // The sub-popup hiding is canceled because the newly selected cell will
     // rule the sub-pupop visibility from now.
@@ -909,9 +916,10 @@ void PopupViewViews::UpdateExpandedCollapsedAccessibleState() const {
   }
 }
 
-bool PopupViewViews::HasPopupRowViewAt(size_t index) const {
+bool PopupViewViews::HasSelectablePopupRowViewAt(size_t index) const {
   return index < rows_.size() &&
-         absl::holds_alternative<PopupRowView*>(rows_[index]);
+         absl::holds_alternative<PopupRowView*>(rows_[index]) &&
+         GetPopupRowViewAt(index).IsSelectable();
 }
 
 void PopupViewViews::InitViews() {
@@ -1339,7 +1347,7 @@ void PopupViewViews::SetRowWithOpenSubPopup(
 
   // Close previously open sub-popup if any.
   if (row_with_open_sub_popup_ &&
-      HasPopupRowViewAt(*row_with_open_sub_popup_)) {
+      HasSelectablePopupRowViewAt(*row_with_open_sub_popup_)) {
     controller_->HideSubPopup();
     GetPopupRowViewAt(*row_with_open_sub_popup_)
         .SetChildSuggestionsDisplayed(false);
@@ -1347,7 +1355,7 @@ void PopupViewViews::SetRowWithOpenSubPopup(
   }
 
   // Open a sub-popup on the new cell if provided.
-  if (row_index && HasPopupRowViewAt(*row_index)) {
+  if (row_index && HasSelectablePopupRowViewAt(*row_index)) {
     const Suggestion& suggestion = controller_->GetSuggestionAt(*row_index);
 
     CHECK(!suggestion.children.empty());

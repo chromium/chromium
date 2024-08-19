@@ -116,6 +116,9 @@ class PopupRowView : public views::View, public views::ViewObserver {
   // parent no longer needs to handle it).
   virtual bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event);
 
+  // Returns if the popup row is available for selection.
+  virtual bool IsSelectable() const;
+
   // Returns the view representing the content area of the row.
   PopupRowContentView& GetContentView() { return *content_view_; }
 
