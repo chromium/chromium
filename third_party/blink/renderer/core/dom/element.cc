@@ -4691,6 +4691,27 @@ std::optional<TextDirection> Element::ResolveAutoDirectionality(
     return BidiParagraph::BaseDirectionForStringOrLtr(text_element->Value());
   }
 
+  auto include_in_traversal = [](Element* element) -> bool {
+    // Skip bdi, script, style and text form controls.
+    if (element->HasTagName(html_names::kBdiTag) ||
+        IsA<HTMLScriptElement>(*element) || IsA<HTMLStyleElement>(*element) ||
+        element->IsTextControl() ||
+        element->ShadowPseudoId() ==
+            shadow_element_names::kPseudoInputPlaceholder) {
+      return false;
+    }
+
+    // Skip elements with valid dir attribute
+    if (element->IsHTMLElement()) {
+      AtomicString dir_attribute_value =
+          element->FastGetAttribute(html_names::kDirAttr);
+      if (HTMLElement::IsValidDirAttribute(dir_attribute_value)) {
+        return false;
+      }
+    }
+    return true;
+  };
+
   if (const HTMLSlotElement* slot_this =
           ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
     auto& assigned_nodes = slot_this->AssignedNodes();
@@ -4706,10 +4727,13 @@ std::optional<TextDirection> Element::ResolveAutoDirectionality(
           }
         } else if (Element* slotted_element =
                        DynamicTo<Element>(slotted_node)) {
-          std::optional<TextDirection> slotted_child_result =
-              slotted_element->ResolveAutoDirectionality(is_deferred);
-          if (slotted_child_result) {
-            return slotted_child_result;
+          if (include_in_traversal(slotted_element) ||
+              !RuntimeEnabledFeatures::DirAutoFixSlotExclusionsEnabled()) {
+            std::optional<TextDirection> slotted_child_result =
+                slotted_element->ResolveAutoDirectionality(is_deferred);
+            if (slotted_child_result) {
+              return slotted_child_result;
+            }
           }
         }
       }
@@ -4719,22 +4743,8 @@ std::optional<TextDirection> Element::ResolveAutoDirectionality(
 
   Node* node = NodeTraversal::FirstChild(*this);
   while (node) {
-    // Skip bdi, script, style and text form controls.
-    auto* element = DynamicTo<Element>(node);
-    if (EqualIgnoringASCIICase(node->nodeName(), "bdi") ||
-        IsA<HTMLScriptElement>(*node) || IsA<HTMLStyleElement>(*node) ||
-        (element && element->IsTextControl()) ||
-        (element && element->ShadowPseudoId() ==
-                        shadow_element_names::kPseudoInputPlaceholder)) {
-      node = NodeTraversal::NextSkippingChildren(*node, this);
-      continue;
-    }
-
-    // Skip elements with valid dir attribute
-    if (element && element->IsHTMLElement()) {
-      AtomicString dir_attribute_value =
-          element->FastGetAttribute(html_names::kDirAttr);
-      if (HTMLElement::IsValidDirAttribute(dir_attribute_value)) {
+    if (auto* element = DynamicTo<Element>(node)) {
+      if (!include_in_traversal(element)) {
         node = NodeTraversal::NextSkippingChildren(*node, this);
         continue;
       }

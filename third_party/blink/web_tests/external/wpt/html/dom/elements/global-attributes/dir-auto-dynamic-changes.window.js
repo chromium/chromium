@@ -371,12 +371,9 @@ test(() => {
     <slot dir=auto></slot>
   `);
   let slot = shadow.querySelector("slot");
-  assert_equals(html_direction(slot), "rtl");
-  let inp = tree.querySelector("input");
-  inp.value = "abc";
   assert_equals(html_direction(slot), "ltr");
   tree.remove();
-}, 'dir=auto slot is updated by text in value of input element children');
+}, 'dir=auto slot is not affected by text in value of input element children');
 
 test(() => {
   let [tree, shadow] = setup_tree(`
