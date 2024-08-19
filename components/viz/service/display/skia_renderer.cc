@@ -1385,6 +1385,9 @@ void SkiaRenderer::SwapBuffersComplete(
         resource_provider_.get(), /*allow_access_to_gpu_thread=*/true);
     committed_overlay_locks_.clear();
   }
+  if (delegated_ink_handler_ && UsingSkiaForDelegatedInk()) {
+    delegated_ink_handler_->GetInkRenderer()->ReportPointsDrawn();
+  }
   std::swap(committed_overlay_locks_, pending_overlay_locks_.front());
   pending_overlay_locks_.pop_front();
 }

@@ -4,6 +4,10 @@
 
 #include "components/viz/service/display/delegated_ink_point_renderer_base.h"
 
+#include <algorithm>
+
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/service/display/delegated_ink_trail_data.h"
 #include "ui/gfx/delegated_ink_metadata.h"
@@ -62,20 +66,28 @@ void DelegatedInkPointRendererBase::SetDelegatedInkMetadata(
   pointer_id_ = std::nullopt;
 }
 
+void DelegatedInkPointRendererBase::ResetPoints() {
+  CHECK(!metadata_);
+  pointer_ids_.clear();
+  pointer_id_.reset();
+}
+
 std::vector<gfx::DelegatedInkPoint>
 DelegatedInkPointRendererBase::FilterPoints() {
-  if (pointer_ids_.size() == 0)
+  if (pointer_ids_.empty()) {
     return {};
+  }
 
-  DCHECK(metadata_);
+  CHECK(metadata_);
 
   // Any stored point with a timestamp earlier than the metadata's has already
   // been drawn as part of the ink stroke and therefore should not be part of
   // the delegated ink trail. Do this before checking if |pointer_id_| is valid
   // because it helps manage the number of DelegatedInkPoints that are being
   // stored and isn't dependent on |pointer_id_| at all.
-  for (auto& it : pointer_ids_)
+  for (auto& it : pointer_ids_) {
     it.second.ErasePointsOlderThanMetadata(metadata_.get());
+  }
 
   // TODO(crbug.com/40118757): Add additional filtering to prevent points in
   // |points_| from having a timestamp that is far ahead of |metadata_|'s
@@ -95,8 +107,9 @@ DelegatedInkPointRendererBase::FilterPoints() {
   // pointer ID is in use, we can't know with any certainty what happened
   // between the metadata point and the earliest DelegatedInkPoint we have, so
   // we choose to just not draw anything.
-  if (!pointer_id_.has_value())
+  if (!pointer_id_.has_value()) {
     return {};
+  }
 
   DelegatedInkTrailData& trail_data = pointer_ids_[pointer_id_.value()];
 
@@ -115,7 +128,7 @@ DelegatedInkPointRendererBase::FilterPoints() {
                            TRACE_EVENT_FLAG_FLOW_IN, "point", point.ToString());
   }
 
-  DCHECK(points_to_draw.front().MatchesDelegatedInkMetadata(metadata_.get()));
+  CHECK(points_to_draw.front().MatchesDelegatedInkMetadata(metadata_.get()));
 
   return points_to_draw;
 }
@@ -138,6 +151,24 @@ void DelegatedInkPointRendererBase::ResetPrediction() {
   TRACE_EVENT_INSTANT0("delegated_ink_trails",
                        "Delegated ink prediction reset.",
                        TRACE_EVENT_SCOPE_THREAD);
+}
+
+void DelegatedInkPointRendererBase::ReportPointsDrawn() const {
+  if (!pointer_id_.has_value()) {
+    return;
+  }
+  CHECK(pointer_ids_.contains(pointer_id_.value()));
+  const auto& points_trail = pointer_ids_.at(pointer_id_.value()).GetPoints();
+  base::UmaHistogramCounts100(
+      "Renderer.DelegatedInkTrail.Skia.OutstandingPointsToDraw",
+      points_trail.size());
+
+  const base::TimeTicks now = base::TimeTicks::Now();
+  for (auto point_kv : points_trail) {
+    UMA_HISTOGRAM_TIMES(
+        "Renderer.DelegatedInkTrail.Skia.TimeToDrawPointsMillis",
+        now - point_kv.first);
+  }
 }
 
 void DelegatedInkPointRendererBase::StoreDelegatedInkPoint(

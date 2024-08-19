@@ -49,13 +49,22 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
   virtual void FinalizePathForDraw() = 0;
   virtual gfx::Rect GetDamageRect() = 0;
 
+  // This function is called after Delegated Ink's points are submitted to be
+  // drawn on screen, and fires a histogram with the time between points' event
+  // creation and the points' draw submission to the OS.
+  void ReportPointsDrawn() const;
+
  protected:
-  // |points_| is not emptied each time after the points are drawn, because one
-  // point in |points_| could potentially be drawn in more than one delegated
-  // ink trail. However, if a point has a timestamp that is earlier than the
-  // timestamp on the metadata, then the point has already been drawn, and
-  // therefore should be removed from |points_| before drawing.
+  // `pointer_ids_` is not emptied each time after the points are drawn, because
+  // one point in `pointer_ids_` could potentially be drawn in more than one
+  // delegated ink trail. However, if a point has a timestamp that is earlier
+  // than the timestamp on the metadata, then the point has already been drawn,
+  // and therefore should be removed from `pointer_ids_` before drawing.
   std::vector<gfx::DelegatedInkPoint> FilterPoints();
+
+  // Empties `pointer_ids_` and resets the pointer_id_` if there is no
+  // `metadata_` when `FinalizePathForDraw()` gets called.
+  void ResetPoints();
 
   void PredictPoints(std::vector<gfx::DelegatedInkPoint>* ink_points_to_draw);
   void ResetPrediction() override;
