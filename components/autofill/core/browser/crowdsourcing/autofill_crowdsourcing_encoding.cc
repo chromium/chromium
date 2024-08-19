@@ -573,16 +573,18 @@ GetSuggestionsMapFromResponse(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(
           features::test::kAutofillOverridePredictions)) {
-    InsertParsedOverrides(
-        ParseServerPredictionOverrides(
-            features::test::kAutofillOverridePredictionsSpecification.Get()),
-        fields_suggestions);
-    InsertParsedOverrides(
-        ParseServerPredictionOverrides(
-            features::test::
-                kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification
-                    .Get()),
-        fields_suggestions);
+    auto maybe_insert_overrides =
+        [&fields_suggestions](const base::FeatureParam<std::string>& param) {
+          if (std::string param_value = param.Get(); !param_value.empty()) {
+            InsertParsedOverrides(ParseServerPredictionOverrides(param_value),
+                                  fields_suggestions);
+          }
+        };
+    maybe_insert_overrides(
+        features::test::kAutofillOverridePredictionsSpecification);
+    maybe_insert_overrides(
+        features::test::
+            kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification);
   }
 #endif
   return fields_suggestions;
