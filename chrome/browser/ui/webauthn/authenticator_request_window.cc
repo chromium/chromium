@@ -212,9 +212,11 @@ class AuthenticatorRequestWindow
                                          /*user_gesture=*/true);
     browser_params.omit_from_session_restore = true;
     browser_params.should_trigger_session_restore = false;
-    // This is empirically a good size for the MagicArch UI.
-    constexpr int kWidth = 400;
-    constexpr int kHeight = 700;
+    // This is empirically a good size for the MagicArch UI. (Note that the UI
+    // is much larger when the user needs to enter an unlock pattern, so don't
+    // size this purely based on PIN entry.)
+    constexpr int kWidth = 900;
+    constexpr int kHeight = 750;
     browser_params.initial_bounds =
         gfx::Rect(caller_center.x() - kWidth / 2,
                   caller_center.y() - kHeight / 2, kWidth, kHeight);
