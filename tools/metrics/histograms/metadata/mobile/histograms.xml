@@ -648,6 +648,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.WasGlobalStatePreserved.{ForAction}"
+    enum="Boolean" expires_after="2025-01-26">
+  <owner>engedy@chromium.org</owner>
+  <summary>
+    Records whether the Java global state was preserved between the
+    `PRE_UNSUBSCRIBE` action, and the `COMMIT_UNSUBSCRIBE_*` or
+    `UNDO_UNSUBSCRIBE` actions.
+  </summary>
+  <token key="ForAction">
+    <variant name="Commit"
+        summary="Measure at the time a commit action is performed."/>
+    <variant name="Undo"
+        summary="Measure at the time an undo action is performed."/>
+  </token>
+</histogram>
+
 <histogram name="Mobile.SystemNotification.Permission.OSPromptResult"
     enum="BooleanEnabled" expires_after="2024-07-07">
   <owner>salg@google.com</owner>

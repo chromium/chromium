@@ -1386,6 +1386,10 @@ public class NotificationPlatformBridge {
             NotificationIdentifyingAttributes identifyingAttributes) {
         var otherNotificationsBackups =
                 sOriginsWithProvisionallyRevokedPermissions.remove(identifyingAttributes.origin);
+        NotificationUmaTracker.getInstance()
+                .recordWasGlobalStatePreserved(
+                        NotificationUmaTracker.GlobalStatePreservedActionSuffix.UNDO,
+                        otherNotificationsBackups != null);
 
         Predicate<BaseNotificationManagerProxy.StatusBarNotificationProxy> isTappedNotification =
                 (sbn -> {
@@ -1486,7 +1490,12 @@ public class NotificationPlatformBridge {
                         identifyingAttributes.origin,
                         identifyingAttributes.profileId,
                         identifyingAttributes.incognito);
-        sOriginsWithProvisionallyRevokedPermissions.remove(identifyingAttributes.origin);
+        var backups =
+                sOriginsWithProvisionallyRevokedPermissions.remove(identifyingAttributes.origin);
+        NotificationUmaTracker.getInstance()
+                .recordWasGlobalStatePreserved(
+                        NotificationUmaTracker.GlobalStatePreservedActionSuffix.COMMIT,
+                        backups != null);
     }
 
     private TrustedWebActivityClient getTwaClient() {
