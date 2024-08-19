@@ -396,6 +396,22 @@ AutofillType AutofillField::ComputedType() const {
           base::FeatureList::IsEnabled(
               features::kAutofillGivePrecedenceToNumericQuantities));
 
+    // Password Manager ignores the computed type - it looks at server
+    // predictions directly. Since many username fields also admit emails, we
+    // can thus give precedence to the EMAIL_ADDRESS classification. This will
+    // not affect Password Manager suggestions, but allow Autofill to provide
+    // email-related suggestions if Password Manager does not have any username
+    // suggestions to show.
+    // TODO: crbug.com/360791229 - Move into
+    // `kAutofillHeuristicsVsServerOverrides` once the feature is cleaned up.
+    const bool server_type_is_username_type =
+        server_type() == USERNAME || server_type() == SINGLE_USERNAME;
+    believe_server =
+        believe_server &&
+        !(heuristic_type() == EMAIL_ADDRESS && server_type_is_username_type &&
+          base::FeatureList::IsEnabled(
+              features::kAutofillGivePrecedenceToEmailOverUsername));
+
     if (believe_server)
       return AutofillType(server_type());
   }
