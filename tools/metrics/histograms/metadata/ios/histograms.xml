@@ -5084,6 +5084,40 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="ManualFallback.VisibleSuggestions.ExpandIcon.OpenAddresses"
+    units="Suggestions" expires_after="2025-04-15">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <summary>
+    [iOS Only] Tracks the number of autofill suggestions present when the user
+    taps on the expand button in the keyboard accessory to open the address
+    manual fallback menu.
+  </summary>
+</histogram>
+
+<histogram name="ManualFallback.VisibleSuggestions.ExpandIcon.OpenPasswords"
+    units="Suggestions" expires_after="2025-04-15">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <summary>
+    [iOS Only] Tracks the number of autofill suggestions present when the user
+    taps on the expand button in the keyboard accessory to open the password
+    manual fallback menu.
+  </summary>
+</histogram>
+
+<histogram
+    name="ManualFallback.VisibleSuggestions.ExpandIcon.OpenPaymentMethods"
+    units="Suggestions" expires_after="2025-04-15">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <summary>
+    [iOS Only] Tracks the number of autofill suggestions present when the user
+    taps on the expand button in the keyboard accessory to open the payment
+    method manual fallback menu.
+  </summary>
+</histogram>
+
 <histogram name="ManualFallback.VisibleSuggestions.OpenCreditCards"
     units="Suggestions" expires_after="2025-04-15">
   <owner>tmartino@chromium.org</owner>
@@ -5107,7 +5141,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="ManualFallback.VisibleSuggestions.OpenProfiles"
-    units="Suggestions" expires_after="2024-4-15">
+    units="Suggestions" expires_after="2025-04-15">
   <owner>tmartino@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>

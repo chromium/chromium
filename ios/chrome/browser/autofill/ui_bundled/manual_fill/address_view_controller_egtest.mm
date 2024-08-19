@@ -244,6 +244,18 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   // Open the address manual fill view and verify that the address table view
   // controller is visible.
   OpenAddressManualFillView();
+
+  // Verify that the number of visible suggestions in the keyboard accessory was
+  // correctly recorded.
+  NSString* histogram =
+      [AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]
+          ? @"ManualFallback.VisibleSuggestions.ExpandIcon.OpenAddresses"
+          : @"ManualFallback.VisibleSuggestions.OpenProfiles";
+  GREYAssertNil(
+      [MetricsAppInterface expectUniqueSampleWithCount:1
+                                             forBucket:1
+                                          forHistogram:histogram],
+      @"Unexpected histogram error for number of visible suggestions.");
 }
 
 // TODO(crbug.com/355146434): Remove FLAKY_ from this test.
@@ -464,6 +476,16 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
       l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_ADDRESSES));
   [[EarlGrey selectElementWithMatcher:noAddressesFoundMessage]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that the number of visible suggestions in the keyboard accessory was
+  // correctly recorded.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:0
+                         forHistogram:
+                             @"ManualFallback.VisibleSuggestions.OpenProfiles"],
+      @"Unexpected histogram error for number of visible suggestions.");
 }
 
 // Tests that tapping the "Autofill Form" button fills the address form with

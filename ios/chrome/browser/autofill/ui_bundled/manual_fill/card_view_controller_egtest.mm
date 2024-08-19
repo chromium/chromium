@@ -373,6 +373,18 @@ void DismissPaymentBottomSheet() {
   // Open the payment method manual fill view and verify that the card table
   // view controller is visible.
   OpenPaymentMethodManualFillView();
+
+  // Verify that the number of visible suggestions in the keyboard accessory was
+  // correctly recorded.
+  NSString* histogram =
+      [AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]
+          ? @"ManualFallback.VisibleSuggestions.ExpandIcon.OpenPaymentMethods"
+          : @"ManualFallback.VisibleSuggestions.OpenCreditCards";
+  GREYAssertNil(
+      [MetricsAppInterface expectUniqueSampleWithCount:1
+                                             forBucket:1
+                                          forHistogram:histogram],
+      @"Unexpected histogram error for number of visible suggestions.");
 }
 
 // Tests that the saved card chip buttons are all visible in the card
@@ -429,6 +441,16 @@ void DismissPaymentBottomSheet() {
       l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PAYMENT_METHODS));
   [[EarlGrey selectElementWithMatcher:noPaymentMethodsFoundMessage]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that the number of visible suggestions in the keyboard accessory was
+  // correctly recorded.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:0
+                         forHistogram:@"ManualFallback.VisibleSuggestions."
+                                      @"OpenCreditCards"],
+      @"Unexpected histogram error for number of visible suggestions.");
 }
 
 // Tests that the cards view controller contains the "Manage Payment
