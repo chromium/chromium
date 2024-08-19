@@ -33,6 +33,13 @@ async function requestCameraAndMicrophone() {
   }
 }
 
+async function requestLocation() {
+  try {
+    await navigator.geolocation.getCurrentPosition((position_) => {});
+  } catch (error) {
+  }
+}
+
 function stopCamera() {
   const track = cameraStream.getVideoTracks()[0];
   track.stop();

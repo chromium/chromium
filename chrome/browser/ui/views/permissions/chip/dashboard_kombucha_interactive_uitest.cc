@@ -33,8 +33,14 @@ class DashboardKombuchaInteractiveUITest : public InteractiveBrowserTest {
   DashboardKombuchaInteractiveUITest() {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
-    feature_list_.InitAndEnableFeature(
-        content_settings::features::kLeftHandSideActivityIndicators);
+    feature_list_.InitWithFeatures(
+        {content_settings::features::kLeftHandSideActivityIndicators
+#if BUILDFLAG(IS_CHROMEOS)
+         ,
+         content_settings::features::kCrosSystemLevelPermissionBlockedWarnings
+#endif
+        },
+        {});
   }
 
   ~DashboardKombuchaInteractiveUITest() override = default;
@@ -288,6 +294,67 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
 
   );
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest, LocationUsingTest) {
+  SetPermission(ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
+
+  system_permission_settings::ScopedSettingsForTesting scoped_system_permission(
+      ContentSettingsType::GEOLOCATION, false);
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      EnsureNotPresent(PermissionDashboardView::kDashboardElementId),
+      ExecuteJs(kWebContentsElementId, "requestLocation"),
+      // Request chip should be hidden.
+      PressButton(kLocationIconElementId),
+      WaitForShow(PageInfoMainView::kPermissionsElementId),
+      CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
+                        &PageInfoMainView::GetVisiblePermissionsCountForTesting,
+                        1),
+      // Set id to the first children of `kPermissionsElementId` -
+      // permissions view in PageInfo.
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kFirstPermissionRow, 0u),
+      // Verify the row label is Location
+      CheckViewProperty(
+          kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
+          l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_LOCATION)),
+      EnsureNotPresent(
+          PermissionToggleRowView::kPermissionDisabledAtSystemLevelElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
+                       LocationUsingTestWithSystemBlock) {
+  SetPermission(ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
+
+  system_permission_settings::ScopedSettingsForTesting scoped_system_permission(
+      ContentSettingsType::GEOLOCATION, true);
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      EnsureNotPresent(PermissionDashboardView::kDashboardElementId),
+      ExecuteJs(kWebContentsElementId, "requestLocation"),
+      // Request chip should be hidden.
+      PressButton(kLocationIconElementId),
+      WaitForShow(PageInfoMainView::kPermissionsElementId),
+      CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
+                        &PageInfoMainView::GetVisiblePermissionsCountForTesting,
+                        1),
+      // Set id to the first children of `kPermissionsElementId` -
+      // permissions view in PageInfo.
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kFirstPermissionRow, 0u),
+      // Verify the row label is Location
+      CheckViewProperty(
+          kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
+          l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_LOCATION)),
+      WaitForShow(
+          PermissionToggleRowView::kPermissionDisabledAtSystemLevelElementId));
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
                        CameraAndMicrophoneUsingTest) {
