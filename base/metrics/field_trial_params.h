@@ -156,19 +156,26 @@ struct FeatureParam {
 // string, then Get() will return the default value.
 template <>
 struct FeatureParam<std::string> {
-  constexpr FeatureParam(const Feature* feature,
-                         const char* name,
-                         const char* default_value)
-      : feature(feature), name(name), default_value(default_value) {}
+  constexpr FeatureParam(
+      const Feature* feature,
+      const char* name,
+      const char* default_value,
+      std::string (*cache_getter)(const FeatureParam<std::string>*) = nullptr)
+      : feature(feature),
+        name(name),
+        default_value(default_value),
+        cache_getter(cache_getter) {}
 
-  // Calling Get() will activate the field trial associated with |feature|. See
-  // GetFieldTrialParamValueByFeature() for more details.
+  // Calling Get() or GetWithoutCache() will activate the field trial associated
+  // with |feature|. See GetFieldTrialParamValueByFeature() for more details.
   BASE_EXPORT std::string Get() const;
+  BASE_EXPORT std::string GetWithoutCache() const;
 
   // RAW_PTR_EXCLUSION: #global-scope,
   RAW_PTR_EXCLUSION const Feature* const feature;
   const char* const name;
   const char* const default_value;
+  std::string (*const cache_getter)(const FeatureParam<std::string>*);
 };
 
 // Declares a double-valued parameter. Example:
@@ -180,19 +187,26 @@ struct FeatureParam<std::string> {
 // double value, then Get() will return the default value.
 template <>
 struct FeatureParam<double> {
-  constexpr FeatureParam(const Feature* feature,
-                         const char* name,
-                         double default_value)
-      : feature(feature), name(name), default_value(default_value) {}
+  constexpr FeatureParam(
+      const Feature* feature,
+      const char* name,
+      double default_value,
+      double (*cache_getter)(const FeatureParam<double>*) = nullptr)
+      : feature(feature),
+        name(name),
+        default_value(default_value),
+        cache_getter(cache_getter) {}
 
-  // Calling Get() will activate the field trial associated with |feature|. See
-  // GetFieldTrialParamValueByFeature() for more details.
+  // Calling Get() or GetWithoutCache() will activate the field trial associated
+  // with |feature|. See GetFieldTrialParamValueByFeature() for more details.
   BASE_EXPORT double Get() const;
+  BASE_EXPORT double GetWithoutCache() const;
 
   // RAW_PTR_EXCLUSION: #global-scope
   RAW_PTR_EXCLUSION const Feature* const feature;
   const char* const name;
   const double default_value;
+  double (*const cache_getter)(const FeatureParam<double>*);
 };
 
 // Declares an int-valued parameter. Example:
@@ -204,19 +218,26 @@ struct FeatureParam<double> {
 // int value, then Get() will return the default value.
 template <>
 struct FeatureParam<int> {
-  constexpr FeatureParam(const Feature* feature,
-                         const char* name,
-                         int default_value)
-      : feature(feature), name(name), default_value(default_value) {}
+  constexpr FeatureParam(
+      const Feature* feature,
+      const char* name,
+      int default_value,
+      int (*cache_getter)(const FeatureParam<int>*) = nullptr)
+      : feature(feature),
+        name(name),
+        default_value(default_value),
+        cache_getter(cache_getter) {}
 
-  // Calling Get() will activate the field trial associated with |feature|. See
-  // GetFieldTrialParamValueByFeature() for more details.
+  // Calling Get() or GetWithoutCache() will activate the field trial associated
+  // with |feature|. See GetFieldTrialParamValueByFeature() for more details.
   BASE_EXPORT int Get() const;
+  BASE_EXPORT int GetWithoutCache() const;
 
   // RAW_PTR_EXCLUSION: #global-scope
   RAW_PTR_EXCLUSION const Feature* const feature;
   const char* const name;
   const int default_value;
+  int (*const cache_getter)(const FeatureParam<int>*);
 };
 
 // Declares a bool-valued parameter. Example:
@@ -228,19 +249,26 @@ struct FeatureParam<int> {
 // other than "true" or "false", then Get() will return the default value.
 template <>
 struct FeatureParam<bool> {
-  constexpr FeatureParam(const Feature* feature,
-                         const char* name,
-                         bool default_value)
-      : feature(feature), name(name), default_value(default_value) {}
+  constexpr FeatureParam(
+      const Feature* feature,
+      const char* name,
+      bool default_value,
+      bool (*cache_getter)(const FeatureParam<bool>*) = nullptr)
+      : feature(feature),
+        name(name),
+        default_value(default_value),
+        cache_getter(cache_getter) {}
 
-  // Calling Get() will activate the field trial associated with |feature|. See
-  // GetFieldTrialParamValueByFeature() for more details.
+  // Calling Get() or GetWithoutCache() will activate the field trial associated
+  // with |feature|. See GetFieldTrialParamValueByFeature() for more details.
   BASE_EXPORT bool Get() const;
+  BASE_EXPORT bool GetWithoutCache() const;
 
   // RAW_PTR_EXCLUSION: #global-scope
   RAW_PTR_EXCLUSION const Feature* const feature;
   const char* const name;
   const bool default_value;
+  bool (*const cache_getter)(const FeatureParam<bool>*);
 };
 
 // Declares an TimeDelta-valued parameter. Example:
@@ -255,17 +283,24 @@ template <>
 struct FeatureParam<base::TimeDelta> {
   constexpr FeatureParam(const Feature* feature,
                          const char* name,
-                         base::TimeDelta default_value)
-      : feature(feature), name(name), default_value(default_value) {}
+                         base::TimeDelta default_value,
+                         base::TimeDelta (*cache_getter)(
+                             const FeatureParam<base::TimeDelta>*) = nullptr)
+      : feature(feature),
+        name(name),
+        default_value(default_value),
+        cache_getter(cache_getter) {}
 
-  // Calling Get() will activate the field trial associated with |feature|. See
-  // GetFieldTrialParamValueByFeature() for more details.
+  // Calling Get() or GetWithoutCache() will activate the field trial associated
+  // with |feature|. See GetFieldTrialParamValueByFeature() for more details.
   BASE_EXPORT base::TimeDelta Get() const;
+  BASE_EXPORT base::TimeDelta GetWithoutCache() const;
 
   // RAW_PTR_EXCLUSION: #global-scope
   RAW_PTR_EXCLUSION const Feature* const feature;
   const char* const name;
   const base::TimeDelta default_value;
+  base::TimeDelta (*const cache_getter)(const FeatureParam<base::TimeDelta>*);
 };
 
 BASE_EXPORT void LogInvalidEnumValue(const Feature& feature,

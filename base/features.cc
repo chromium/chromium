@@ -40,6 +40,12 @@ BASE_FEATURE(kEnforceNoExecutableFileHandles,
              "EnforceNoExecutableFileHandles",
              FEATURE_ENABLED_BY_DEFAULT);
 
+// Activate base::FeatureParamWithCache internal cache.
+// TODO(https://crbug.com/340824113): Remove the feature flag below.
+BASE_FEATURE(kFeatureParamWithCache,
+             "FeatureParamWithCache",
+             FEATURE_ENABLED_BY_DEFAULT);
+
 // Use non default low memory device threshold.
 // Value should be given via |LowMemoryDeviceThresholdMB|.
 #if BUILDFLAG(IS_IOS)

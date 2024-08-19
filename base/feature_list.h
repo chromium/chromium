@@ -46,7 +46,7 @@ enum FeatureState {
   FEATURE_ENABLED_BY_DEFAULT,
 };
 
-// Recommended macros for declaring and defining features:
+// Recommended macros for declaring and defining features and parameters:
 //
 // - `kFeature` is the C++ identifier that will be used for the `base::Feature`.
 // - `name` is the feature name, which must be globally unique. This name is
@@ -77,6 +77,51 @@ enum FeatureState {
 #define BASE_FEATURE(feature, name, default_state) \
   constinit const base::Feature feature(           \
       name, default_state, base::internal::FeatureMacroHandshake::kSecret)
+
+// Provides a forward declaration for `feature_object_name` in a header file,
+// e.g.
+//
+//   BASE_DECLARE_FEATURE_PARAM(kMyFeatureParam);
+//
+// If the feature needs to be marked as exported, i.e. it is referenced by
+// multiple components, then write:
+//
+//   COMPONENT_EXPORT(MY_COMPONENT) BASE_DECLARE_FEATURE_PARAM(kMyFeatureParam);
+//
+// This macro enables optimizations to make the second and later calls faster,
+// but requires additional memory uses. If you obtain the parameter only once,
+// you can instantiate base::FeatureParam directly, or can call
+// base::GetFieldTrialParamByFeatureAsInt or equivalent functions for other
+// types directly.
+#define BASE_DECLARE_FEATURE_PARAM(T, feature_object_name) \
+  extern constinit const base::FeatureParam<T> feature_object_name
+
+// Provides a definition for `feature_object_name` with `T`, `feature`, `name`
+// and `default_value`, with an internal parsed value cache, e.g.
+//
+//   BASE_FEATURE_PARAM(int, kMyFeatureParam, kMyFeature, "MyFeatureParam", 0);
+//
+// `T` is a parameter type, one of bool, int, double, std::string, and
+// base::TimeDelta. Enum types are not supported for now.
+//
+// For now, ScopedFeatureList doesn't work to change the value dynamically when
+// the cache is used with this macro.
+//
+// It should *not* be defined in header files; do not use this macro in header
+// files.
+#define BASE_FEATURE_PARAM(T, feature_object_name, feature, name, \
+                           default_value)                         \
+  namespace field_trial_params_internal {                         \
+  T GetFeatureParamWithCacheFor##feature_object_name(             \
+      const base::FeatureParam<T>* feature_param) {               \
+    static const T param = feature_param->GetWithoutCache();      \
+    return param;                                                 \
+  }                                                               \
+  } /* field_trial_params_internal */                             \
+  constinit const base::FeatureParam<T> feature_object_name(      \
+      feature, name, default_value,                               \
+      &field_trial_params_internal::                              \
+          GetFeatureParamWithCacheFor##feature_object_name)
 
 // Secret handshake to (try to) ensure all places that construct a base::Feature
 // go through the helper `BASE_FEATURE()` macro above.

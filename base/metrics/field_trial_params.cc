@@ -13,6 +13,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/histogram_functions.h"
@@ -25,6 +26,16 @@
 #include "base/time/time_delta_from_string.h"
 
 namespace base {
+
+namespace {
+
+bool IsCacheEnabled() {
+  static const bool enabled =
+      FeatureList::IsEnabled(features::kFeatureParamWithCache);
+  return enabled;
+}
+
+}  // namespace
 
 void LogInvalidValue(const Feature& feature,
                      const char* type,
@@ -226,6 +237,13 @@ base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
 }
 
 std::string FeatureParam<std::string>::Get() const {
+  if (IsCacheEnabled() && cache_getter) {
+    return cache_getter(this);
+  }
+  return GetWithoutCache();
+}
+
+std::string FeatureParam<std::string>::GetWithoutCache() const {
   // We don't use `GetFieldTrialParamValueByFeature()` to handle empty values in
   // the map.
   FieldTrialParams params;
@@ -239,18 +257,46 @@ std::string FeatureParam<std::string>::Get() const {
 }
 
 double FeatureParam<double>::Get() const {
+  if (IsCacheEnabled() && cache_getter) {
+    return cache_getter(this);
+  }
+  return GetWithoutCache();
+}
+
+double FeatureParam<double>::GetWithoutCache() const {
   return GetFieldTrialParamByFeatureAsDouble(*feature, name, default_value);
 }
 
 int FeatureParam<int>::Get() const {
+  if (IsCacheEnabled() && cache_getter) {
+    return cache_getter(this);
+  }
+  return GetWithoutCache();
+}
+
+int FeatureParam<int>::GetWithoutCache() const {
   return GetFieldTrialParamByFeatureAsInt(*feature, name, default_value);
 }
 
 bool FeatureParam<bool>::Get() const {
+  if (IsCacheEnabled() && cache_getter) {
+    return cache_getter(this);
+  }
+  return GetWithoutCache();
+}
+
+bool FeatureParam<bool>::GetWithoutCache() const {
   return GetFieldTrialParamByFeatureAsBool(*feature, name, default_value);
 }
 
 base::TimeDelta FeatureParam<base::TimeDelta>::Get() const {
+  if (IsCacheEnabled() && cache_getter) {
+    return cache_getter(this);
+  }
+  return GetWithoutCache();
+}
+
+base::TimeDelta FeatureParam<base::TimeDelta>::GetWithoutCache() const {
   return GetFieldTrialParamByFeatureAsTimeDelta(*feature, name, default_value);
 }
 
