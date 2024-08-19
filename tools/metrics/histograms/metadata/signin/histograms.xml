@@ -417,6 +417,23 @@ prefs when the profile is loaded.  -->
   </token>
 </histogram>
 
+<histogram
+    name="Signin.AddAccountToDevice.IsSubjectToEnterprisePoliciesFetchDuration.{Status}"
+    units="ms" expires_after="2025-08-19">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram records the time to load IsSubjectToEnterprisePolicies
+    account capability.
+
+    Recorded right after an account was added by the user action when {Status}.
+  </summary>
+  <token key="Status">
+    <variant name="Failed" summary="add account failed"/>
+    <variant name="Success" summary="add account succeeded"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.Android.FRESigninEvents" enum="FRESigninEvents"
     expires_after="2025-05-07">
   <owner>mthiesse@chromium.org</owner>
