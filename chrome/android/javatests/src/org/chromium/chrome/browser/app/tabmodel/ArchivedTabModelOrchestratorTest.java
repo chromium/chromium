@@ -211,7 +211,7 @@ public class ArchivedTabModelOrchestratorTest {
         // A task was scheduled to perform a scheduled declutter, get it and run it.
         runOnUiThreadBlocking(() -> mTaskRunner.mDelayedTasks.get(0).first.run());
 
-        assertEquals(1, mRegularTabModel.getCount());
+        CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
         // The new tab should be archived now.
         assertEquals(1, mArchivedTabModel.getCount());
 

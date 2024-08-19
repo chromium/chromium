@@ -420,11 +420,16 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
      * TabArchiveSettings#getDeclutterIntervalTimeDeltaHours} for details.
      */
     private void runDeclutterAndScheduleNext() {
+        ThreadUtils.assertOnUiThread();
         mTabArchiver.triggerScheduledDeclutter();
         mTaskRunner.postDelayedTask(
-                mCallbackController.makeCancelable(this::runDeclutterAndScheduleNext),
+                mCallbackController.makeCancelable(this::postDeclutterTaskToUiThread),
                 TimeUnit.HOURS.toMillis(mTabArchiveSettings.getDeclutterIntervalTimeDeltaHours()));
         saveState();
+    }
+
+    private void postDeclutterTaskToUiThread() {
+        ThreadUtils.postOnUiThread(this::runDeclutterAndScheduleNext);
     }
 
     // Testing-specific methods

@@ -69,6 +69,7 @@ public class TabArchiver implements TabWindowManager.Observer {
 
     /** Initialize the archiving process by observing TabWindowManager for new TabModelSelectors. */
     public void initDeclutter() {
+        ThreadUtils.assertOnUiThread();
         // Observe new TabModelSelectors being added so inactive tabs are archived automatically
         // as new selectors are activated.
         mTabWindowManager.addObserver(this);
@@ -81,6 +82,7 @@ public class TabArchiver implements TabWindowManager.Observer {
      * through all archived tabs, and automatically deletes those old enough.
      */
     public void triggerScheduledDeclutter() {
+        ThreadUtils.assertOnUiThread();
         assert mDeclutterInitCalled;
 
         // Trigger archival of inactive tabs for the current selectors.
@@ -97,6 +99,7 @@ public class TabArchiver implements TabWindowManager.Observer {
 
     /** Delete eligible archived tabs. */
     public void deleteEligibleArchivedTabs() {
+        ThreadUtils.assertOnUiThread();
         if (!mTabArchiveSettings.isAutoDeleteEnabled()) return;
 
         List<Tab> tabs = new ArrayList<>();
@@ -122,6 +125,7 @@ public class TabArchiver implements TabWindowManager.Observer {
      * is disabled, but there are still archived tabs.
      */
     public void rescueArchivedTabs(TabCreator regularTabCreator) {
+        ThreadUtils.assertOnUiThread();
         while (mArchivedTabModel.getCount() > 0) {
             Tab tab = mArchivedTabModel.getTabAt(0);
             unarchiveAndRestoreTab(regularTabCreator, tab);
@@ -176,6 +180,7 @@ public class TabArchiver implements TabWindowManager.Observer {
 
     @Override
     public void onTabModelSelectorAdded(TabModelSelector selector) {
+        ThreadUtils.assertOnUiThread();
         if (!mTabArchiveSettings.getArchiveEnabled()) return;
 
         TabModelUtils.runOnTabStateInitialized(
