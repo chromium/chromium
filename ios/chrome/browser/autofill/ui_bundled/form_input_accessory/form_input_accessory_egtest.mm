@@ -31,6 +31,8 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+using chrome_test_util::ManualFallbackFormSuggestionViewMatcher;
+
 namespace {
 
 constexpr char kFormUsername[] = "un";
@@ -363,11 +365,17 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 
   autofill::CreditCard card = autofill::test::GetCreditCard();
 
+  // Wait for the keyboard accessory to appear.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      ManualFallbackFormSuggestionViewMatcher()];
+
+  // Scroll to the right of the keyboard accessory so that the second card
+  // suggestion is visible.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
+
   id<GREYMatcher> cc_chip = grey_text(base::SysUTF16ToNSString(card.GetInfo(
       autofill::CREDIT_CARD_NAME_FULL, l10n_util::GetLocaleOverride())));
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cc_chip];
-
   [[EarlGrey selectElementWithMatcher:cc_chip] performAction:grey_tap()];
 
   // Verify that the page is filled properly.
