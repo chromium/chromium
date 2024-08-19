@@ -5,7 +5,7 @@ promise_test(async t => {
   const iframe = document.createElement('iframe');
   document.childNodes[document.childNodes.length - 1].appendChild(iframe);
 
-  const session = await iframe.contentWindow.ai.createTextSession();
+  const session = await iframe.contentWindow.ai.assistant.create();
   session.prompt('hello');
   // Detach the iframe.
   iframe.remove();

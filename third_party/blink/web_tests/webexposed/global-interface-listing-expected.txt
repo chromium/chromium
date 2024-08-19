@@ -5,13 +5,23 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 [INTERFACES]
 interface AI
     attribute @@toStringTag
+    getter assistant
     getter rewriter
     getter summarizer
     getter writer
-    method canCreateTextSession
     method constructor
-    method createTextSession
-    method textModelInfo
+interface AIAssistantCapabilities
+    attribute @@toStringTag
+    getter available
+    getter defaultTemperature
+    getter defaultTopK
+    getter maxTopK
+    method constructor
+interface AIAssistantFactory
+    attribute @@toStringTag
+    method capabilities
+    method constructor
+    method create
 interface AIRewriter
     attribute @@toStringTag
     getter length

@@ -22,6 +22,8 @@ class AIMetrics {
   // This class contains all the model execution API supported.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  // TODO(crbug.com/355967885): update the enums when adding metrics for
+  // assistant API.
   // LINT.IfChange(AIAPI)
   enum class AIAPI {
     kCanCreateSession = 0,

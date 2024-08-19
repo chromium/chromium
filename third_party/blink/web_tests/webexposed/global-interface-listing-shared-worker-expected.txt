@@ -6,13 +6,23 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] [INTERFACES]
 [Worker] interface AI
 [Worker]     attribute @@toStringTag
+[Worker]     getter assistant
 [Worker]     getter rewriter
 [Worker]     getter summarizer
 [Worker]     getter writer
-[Worker]     method canCreateTextSession
 [Worker]     method constructor
-[Worker]     method createTextSession
-[Worker]     method textModelInfo
+[Worker] interface AIAssistantCapabilities
+[Worker]     attribute @@toStringTag
+[Worker]     getter available
+[Worker]     getter defaultTemperature
+[Worker]     getter defaultTopK
+[Worker]     getter maxTopK
+[Worker]     method constructor
+[Worker] interface AIAssistantFactory
+[Worker]     attribute @@toStringTag
+[Worker]     method capabilities
+[Worker]     method constructor
+[Worker]     method create
 [Worker] interface AIRewriter
 [Worker]     attribute @@toStringTag
 [Worker]     getter length

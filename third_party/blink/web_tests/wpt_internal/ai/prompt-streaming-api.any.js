@@ -2,10 +2,11 @@ promise_test(async t => {
   // Make sure the prompt api is enabled.
   assert_true(!!ai);
   // Make sure the session could be created.
-  const status = await ai.canCreateTextSession();
+  const capabilities = await ai.assistant.capabilities();
+  const status = capabilities.available;
   assert_true(status === 'readily');
   // Start a new session.
-  const session = await ai.createTextSession();
+  const session = await ai.assistant.create();
   // Test the streaming prompt API.
   const streamingResponse = session.promptStreaming("What is 1+2?");
   assert_true(Object.prototype.toString.call(streamingResponse) === "[object ReadableStream]");

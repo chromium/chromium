@@ -4,10 +4,11 @@ promise_test(async () => {
   // Make sure the prompt api is enabled.
   assert_true(!!ai);
   // Make sure the session could be created.
-  const status = await ai.canCreateTextSession();
+  const capabilities = await ai.assistant.capabilities();
+  const status = capabilities.available;
   assert_true(status === 'readily');
   // Start a new session and test it.
-  const session = await ai.createTextSession();
+  const session = await ai.assistant.create();
   let result = await testSession(session);
   assert_true(result.success, result.error);
 

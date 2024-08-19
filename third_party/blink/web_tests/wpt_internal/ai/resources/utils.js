@@ -64,15 +64,16 @@ const testPromptAPI = async () => {
   }
 
   try {
-    const canCreate = await ai.canCreateTextSession();
-    if (canCreate !== "readily") {
+    const capabilities = await ai.assistant.capabilities();
+    const status = capabilities.available;
+    if (status !== "readily") {
       return {
         success: false,
         error: "cannot create text session"
       };
     }
 
-    const session = await ai.createTextSession({
+    const session = await ai.assistant.create({
       topK: 3,
       temperature: 0.8,
       systemPrompt: "Let's talk about Mauritius."

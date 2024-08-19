@@ -6,7 +6,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/types/pass_key.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom-forward.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom-blink.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_text_session.h"
