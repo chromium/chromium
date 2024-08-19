@@ -15,6 +15,7 @@ source_set("profile") {
   deps = [
     "//base",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }
 

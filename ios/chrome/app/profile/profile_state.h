@@ -8,8 +8,8 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 @protocol ProfileStateAgent;
 
 // Represents the state for a single Profile and responds to the state

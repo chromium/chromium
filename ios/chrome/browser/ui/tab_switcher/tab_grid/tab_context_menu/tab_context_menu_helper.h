@@ -7,9 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_provider.h"
 
-class ChromeBrowserState;
 @protocol TabContextMenuDelegate;
 
 //  TabContextMenuHelper controls the creation of context menus for tab items.
