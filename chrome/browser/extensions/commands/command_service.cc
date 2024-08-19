@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/commands/command_service.h"
+#include "chrome/browser/extensions/commands/command_service.h"
 
 #include <memory>
 #include <string_view>
@@ -16,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/api/commands/commands.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "chrome/browser/profiles/profile.h"
@@ -101,9 +100,6 @@ void CommandService::RegisterProfilePrefs(
 
 CommandService::CommandService(content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)) {
-  ExtensionFunctionRegistry::GetInstance()
-      .RegisterFunction<GetAllCommandsFunction>();
-
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
 }
 
