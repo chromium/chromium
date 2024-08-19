@@ -792,6 +792,81 @@ TEST(SpanTest, FromCString) {
   }
 }
 
+TEST(SpanTest, FromCStringEmpty) {
+  // No terminating null, size known at compile time.
+  {
+    auto s = base::span_from_cstring("");
+    static_assert(std::same_as<decltype(s), span<const char, 0u>>);
+    EXPECT_EQ(s.size(), 0u);
+  }
+  // No terminating null, size not known at compile time. string_view loses
+  // the size.
+  {
+    auto s = base::span(std::string_view(""));
+    static_assert(std::same_as<decltype(s), span<const char>>);
+    EXPECT_EQ(s.size(), 0u);
+  }
+  // Includes the terminating null, size known at compile time.
+  {
+    auto s = base::span_with_nul_from_cstring("");
+    static_assert(std::same_as<decltype(s), span<const char, 1u>>);
+    ASSERT_EQ(s.size(), 1u);
+    EXPECT_EQ(s[0u], '\0');
+  }
+  // No terminating null, size known at compile time. Converted to a span of
+  // uint8_t bytes.
+  {
+    auto s = base::byte_span_from_cstring("");
+    static_assert(std::same_as<decltype(s), span<const uint8_t, 0u>>);
+    ASSERT_EQ(s.size(), 0u);
+  }
+  // Includes the terminating null, size known at compile time. Converted to a
+  // span of uint8_t bytes.
+  {
+    auto s = base::byte_span_with_nul_from_cstring("");
+    static_assert(std::same_as<decltype(s), span<const uint8_t, 1u>>);
+    ASSERT_EQ(s.size(), 1u);
+    EXPECT_EQ(s[0u], '\0');
+  }
+}
+
+TEST(SpanTest, FromCStringEmbeddedNul) {
+  // No terminating null, size known at compile time.
+  {
+    auto s = base::span_from_cstring("h\0\0\0o");
+    static_assert(std::same_as<decltype(s), span<const char, 5u>>);
+    EXPECT_THAT(s, ElementsAre('h', '\0', '\0', '\0', 'o'));
+  }
+  // No terminating null, size not known at compile time. string_view loses
+  // the size, and stops at embedded NUL. Beware.
+  {
+    auto s = base::span(std::string_view("h\0\0\0o"));
+    static_assert(std::same_as<decltype(s), span<const char>>);
+    EXPECT_THAT(s, ElementsAre('h'));
+  }
+  // Includes the terminating null, size known at compile time.
+  {
+    auto s = base::span_with_nul_from_cstring("h\0\0\0o");
+    static_assert(std::same_as<decltype(s), span<const char, 6u>>);
+    EXPECT_THAT(s, ElementsAre('h', '\0', '\0', '\0', 'o', '\0'));
+  }
+
+  // No terminating null, size known at compile time. Converted to a span of
+  // uint8_t bytes.
+  {
+    auto s = base::byte_span_from_cstring("h\0\0\0o");
+    static_assert(std::same_as<decltype(s), span<const uint8_t, 5u>>);
+    EXPECT_THAT(s, ElementsAre('h', '\0', '\0', '\0', 'o'));
+  }
+  // Includes the terminating null, size known at compile time. Converted to a
+  // span of uint8_t bytes.
+  {
+    auto s = base::byte_span_with_nul_from_cstring("h\0\0\0o");
+    static_assert(std::same_as<decltype(s), span<const uint8_t, 6u>>);
+    EXPECT_THAT(s, ElementsAre('h', '\0', '\0', '\0', 'o', '\0'));
+  }
+}
+
 TEST(SpanTest, FromCStringOtherTypes) {
   {
     auto s = base::span_from_cstring("hello");
