@@ -23,6 +23,7 @@ source_set("model") {
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/components/security_interstitials",
     "//ios/components/security_interstitials/https_only_mode",
     "//ios/components/security_interstitials/https_only_mode:feature",
