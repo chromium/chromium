@@ -77,7 +77,7 @@ public final class IpProtectionAuthClient implements AutoCloseable {
 
     /** This class must be used exclusively from the main thread. */
     private static final class ConnectionSetup implements ServiceConnection {
-        private final IpProtectionAuthServiceCallback mCallback;
+        @Nullable private IpProtectionAuthServiceCallback mCallback;
         private final Context mContext;
         private IpProtectionAuthClient mIpProtectionClient;
         private boolean mBound;
@@ -94,10 +94,17 @@ public final class IpProtectionAuthClient implements AutoCloseable {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             try (TraceEvent event =
                     TraceEvent.scoped("IpProtectionAuthClient.Create.OnServiceConnected")) {
+                // In some odd cases (b/357770633), this lifecycle method is triggered even
+                // after the service is unbound. We ensure that the callback cannot be invoked more
+                // than once from this object if it so happens.
+                if (mCallback == null) {
+                    return;
+                }
                 mIpProtectionClient =
                         new IpProtectionAuthClient(
                                 this, IIpProtectionAuthService.Stub.asInterface(iBinder));
                 mCallback.onResult(mIpProtectionClient);
+                mCallback = null;
             }
         }
 
@@ -126,7 +133,12 @@ public final class IpProtectionAuthClient implements AutoCloseable {
             try (TraceEvent event =
                     TraceEvent.scoped("IpProtectionAuthClient.Create.OnNullBinding")) {
                 unbindIfBound();
+                // We ensure that the callback cannot be invoked more than once from this object.
+                if (mCallback == null) {
+                    return;
+                }
                 mCallback.onError("Service returned null from onBind()");
+                mCallback = null;
             }
         }
 
