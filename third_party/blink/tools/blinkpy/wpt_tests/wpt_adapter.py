@@ -163,6 +163,9 @@ class WPTAdapter:
                   port_name: Optional[str] = None):
         options, tests = parse_arguments(args)
         cls._ensure_value(options, 'wpt_only', True)
+        # only run virtual tests for headless shell
+        cls._ensure_value(options, 'no_virtual_tests', options.product
+                          not in ['headless_shell', 'chrome'])
 
         if options.product in cls.PORT_NAME_BY_PRODUCT:
             port_name = cls.PORT_NAME_BY_PRODUCT[options.product]
