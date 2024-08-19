@@ -2,6 +2,7 @@ set noparent
 
 # Primary
 bashi@chromium.org
+nidhijaju@chromium.org
 ricea@chromium.org
 
 # Secondary
@@ -16,5 +17,4 @@ nharper@chromium.org
 pauljensen@chromium.org
 rch@chromium.org
 
-per-file BUILD.gn=file://net/nqe/OWNERS
 per-file BUILD.gn=file://net/websockets/OWNERS
