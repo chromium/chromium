@@ -145,6 +145,12 @@ class FaceGazeTestSupport {
     this.getMouseController_().updateMouseLocation_();
     this.notifyCcTests_();
   }
+
+  assertScrollMode(active) {
+    if (active === this.getMouseController_().scrollModeController_.active()) {
+      this.notifyCcTests_();
+    }
+  }
 }
 
 globalThis.faceGazeTestSupport = new FaceGazeTestSupport();

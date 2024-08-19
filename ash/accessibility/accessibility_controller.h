@@ -676,6 +676,10 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   void SetVirtualKeyboardVisibleCallbackForTesting(
       base::RepeatingCallback<void()> callback);
 
+  // Scrolls at the target location in the specified direction.
+  void ScrollAtPoint(const gfx::Point& target,
+                     AccessibilityScrollDirection direction);
+
  private:
   // Populate |features_| with the feature of the correct type.
   void CreateAccessibilityFeatures();

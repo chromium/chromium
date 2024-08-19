@@ -327,6 +327,14 @@ declare global {
         wasm: ArrayBuffer;
       }
 
+      export enum ScrollDirection {
+        UP = 'up',
+        DOWN = 'down',
+        LEFT = 'left',
+        RIGHT = 'right',
+      }
+
+
       export function getDisplayNameForLocale(
           localeCodeToTranslate: string, displayLocaleCode: string): string;
 
@@ -443,6 +451,9 @@ declare global {
           callback: (screens: ScreenRect[]) => void): void;
 
       export function showToast(type: ToastType): void;
+
+      export function scrollAtPoint(
+          target: ScreenPoint, direction: ScrollDirection): void;
 
       export const onIntroduceChromeVox: ChromeEvent<() => void>;
 

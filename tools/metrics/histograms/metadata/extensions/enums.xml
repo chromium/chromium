@@ -2756,6 +2756,7 @@ Called by update_extension_histograms.py.-->
       label="DEVELOPERPRIVATE_DISMISSMV2DEPRECATIONNOTICEFOREXTENSION"/>
   <int value="1895" label="AUTOTESTPRIVATE_STARTOVERDRAWTRACKING"/>
   <int value="1896" label="AUTOTESTPRIVATE_STOPOVERDRAWTRACKING"/>
+  <int value="1897" label="ACCESSIBILITY_PRIVATE_SCROLLATPOINT"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

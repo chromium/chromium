@@ -14,6 +14,7 @@ import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
 import {FacialGesture} from './facial_gestures.js';
 import {GestureDetector} from './gesture_detector.js';
+import {MouseScrollMacro} from './macros/mouse_scroll_macro.js';
 import {ResetCursorMacro} from './macros/reset_cursor_macro.js';
 import {MouseController} from './mouse_controller.js';
 
@@ -247,6 +248,8 @@ export class GestureHandler {
           this.mouseController_.togglePaused();
           this.togglePaused();
         });
+      case MacroName.TOGGLE_SCROLL_MODE:
+        return new MouseScrollMacro(this.mouseController_);
       case MacroName.TOGGLE_VIRTUAL_KEYBOARD:
         return new CustomCallbackMacro(
             MacroName.TOGGLE_VIRTUAL_KEYBOARD, async () => {

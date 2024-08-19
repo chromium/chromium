@@ -174,6 +174,9 @@ export enum MacroName {
   // Generates a synthetic double left click event.
   MOUSE_CLICK_LEFT_DOUBLE = 49,
 
+  // Toggles scroll mode for FaceGaze.
+  TOGGLE_SCROLL_MODE = 50,
+
   // Any new actions should match with Voice Access's semantic tags where
   // possible.
 }

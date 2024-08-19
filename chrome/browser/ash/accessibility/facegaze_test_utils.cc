@@ -323,6 +323,12 @@ void FaceGazeTestUtils::AssertCursorAt(const gfx::Point& location) {
   ASSERT_EQ(location, display::Screen::GetScreen()->GetCursorScreenPoint());
 }
 
+void FaceGazeTestUtils::AssertScrollMode(bool active) {
+  std::string true_script = "faceGazeTestSupport.assertScrollMode(true);";
+  std::string false_script = "faceGazeTestSupport.assertScrollMode(false);";
+  ExecuteAccessibilityCommonScript(active ? true_script : false_script);
+}
+
 void FaceGazeTestUtils::ExecuteAccessibilityCommonScript(
     const std::string& script) {
   extensions::browsertest_util::ExecuteScriptInBackgroundPage(

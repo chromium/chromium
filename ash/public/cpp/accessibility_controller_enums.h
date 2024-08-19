@@ -270,6 +270,14 @@ enum class MouseKeysDominantHand {
   kMaxValue = kLeftHandDominant,
 };
 
+// The four directions for scrolling.
+enum class AccessibilityScrollDirection {
+  kUp,
+  kDown,
+  kLeft,
+  kRight,
+};
+
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_ACCESSIBILITY_CONTROLLER_ENUMS_H_

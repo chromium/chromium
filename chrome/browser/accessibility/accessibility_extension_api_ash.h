@@ -220,6 +220,14 @@ class AccessibilityPrivateSendSyntheticMouseEventFunction
                              ACCESSIBILITY_PRIVATE_SENDSYNTHETICMOUSEEVENT)
 };
 
+// API function that scrolls at a point in the specified direction.
+class AccessibilityPrivateScrollAtPointFunction : public ExtensionFunction {
+  ~AccessibilityPrivateScrollAtPointFunction() override {}
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.scrollAtPoint",
+                             ACCESSIBILITY_PRIVATE_SCROLLATPOINT)
+};
+
 // API function that sets the location of the accessibility focus ring.
 class AccessibilityPrivateSetFocusRingsFunction : public ExtensionFunction {
   ~AccessibilityPrivateSetFocusRingsFunction() override {}

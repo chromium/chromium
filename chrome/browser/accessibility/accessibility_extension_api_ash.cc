@@ -105,6 +105,22 @@ ash::DictationBubbleHintType ConvertDictationHintType(
   }
 }
 
+ash::AccessibilityScrollDirection ConvertScrollDirection(
+    accessibility_private::ScrollDirection direction) {
+  switch (direction) {
+    case accessibility_private::ScrollDirection::kUp:
+      return ash::AccessibilityScrollDirection::kUp;
+    case accessibility_private::ScrollDirection::kDown:
+      return ash::AccessibilityScrollDirection::kDown;
+    case accessibility_private::ScrollDirection::kLeft:
+      return ash::AccessibilityScrollDirection::kLeft;
+    case accessibility_private::ScrollDirection::kRight:
+      return ash::AccessibilityScrollDirection::kRight;
+    case accessibility_private::ScrollDirection::kNone:
+      NOTREACHED_NORETURN();
+  }
+}
+
 void DispatchAccessibilityFocusChangedEvent(
     extensions::events::HistogramValue histogram_value,
     extensions::api::accessibility_private::ScreenRect bounds) {
@@ -595,6 +611,17 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
   AccessibilityManager::Get()->SendSyntheticMouseEvent(
       type, flags, changed_button_flags, location_in_screen);
 
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateScrollAtPointFunction::Run() {
+  std::optional<accessibility_private::ScrollAtPoint::Params> params =
+      accessibility_private::ScrollAtPoint::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  gfx::Point point(params->target.x, params->target.y);
+  ash::AccessibilityController::Get()->ScrollAtPoint(
+      point, ConvertScrollDirection(params->direction));
   return RespondNow(NoArguments());
 }
 

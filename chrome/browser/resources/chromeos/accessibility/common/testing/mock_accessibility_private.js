@@ -71,6 +71,13 @@ class MockAccessibilityPrivate {
       COPY: 'copy',
     };
 
+    this.ScrollDirection = {
+      UP: 'up',
+      DOWN: 'down',
+      LEFT: 'left',
+      RIGHT: 'right',
+    };
+
     this.SelectToSpeakPanelAction = {
       PREVIOUS_PARAGRAPH: 'previousParagraph',
       PREVIOUS_SENTENCE: 'previousSentence',
@@ -169,6 +176,16 @@ class MockAccessibilityPrivate {
 
     /** @private {!Object<chrome.accessibilityPrivate.ToastType, number} */
     this.showToastData_ = {};
+
+    /**
+     * @type {!{count: number, target: ScreenPoint, direction: ScrollDirection}}
+     * @private
+     */
+    this.scrollAtPointData_ = {
+      count: 0,
+      target: undefined,
+      direction: undefined,
+    };
 
     /** @private {?chrome.accessibilityPrivate.ScreenPoint} */
     this.latestCursorPosition_ = null;
@@ -588,6 +605,18 @@ class MockAccessibilityPrivate {
     return this.latestCursorPosition_;
   }
 
+  getScrollAtPointCount() {
+    return this.scrollAtPointData_.count;
+  }
+
+  getScrollAtPointTarget() {
+    return this.scrollAtPointData_.target;
+  }
+
+  getScrollAtPointDirection() {
+    return this.scrollAtPointData_.direction;
+  }
+
   clearCursorPosition() {
     this.latestCursorPosition_ = null;
   }
@@ -696,4 +725,10 @@ class MockAccessibilityPrivate {
    * @param {function(boolean): void} callback
    */
   showConfirmationDialog(title, description, cancelName, callback) {}
+
+  scrollAtPoint(target, direction) {
+    this.scrollAtPointData_.count += 1;
+    this.scrollAtPointData_.target = target;
+    this.scrollAtPointData_.direction = direction;
+  }
 }

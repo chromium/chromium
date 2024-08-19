@@ -64,6 +64,7 @@
 #include "ash/system/power/scoped_backlights_forced_off.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
+#include "ash/wm/window_util.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -93,19 +94,25 @@
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/keyboard_device.h"
+#include "ui/events/event_sink.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_manager.h"
 
 using session_manager::SessionState;
 
 namespace ash {
 namespace {
+
+// How much distance to travel with each generated scroll event.
+const int kScrollDelta = 15;
 
 AccessibilityController* g_instance = nullptr;
 
@@ -3556,6 +3563,40 @@ bool AccessibilityController::VerifyFeaturesDataForTesting() {
 void AccessibilityController::SetVirtualKeyboardVisibleCallbackForTesting(
     base::RepeatingCallback<void()> callback) {
   set_virtual_keyboard_visible_callback_ = std::move(callback);
+}
+
+void AccessibilityController::ScrollAtPoint(
+    const gfx::Point& target,
+    AccessibilityScrollDirection direction) {
+  float scroll_x = 0.0f;
+  float scroll_y = 0.0f;
+  switch (direction) {
+    case AccessibilityScrollDirection::kUp:
+      scroll_y = kScrollDelta;
+      break;
+    case AccessibilityScrollDirection::kDown:
+      scroll_y = -kScrollDelta;
+      break;
+    case AccessibilityScrollDirection::kLeft:
+      scroll_x = kScrollDelta;
+      break;
+    case AccessibilityScrollDirection::kRight:
+      scroll_x = -kScrollDelta;
+  }
+
+  // Generate a scroll event at the target location.
+  aura::Window* root_window = window_util::GetRootWindowAt(target);
+  gfx::Point location_in_pixels(target);
+  ::wm::ConvertPointFromScreen(root_window, &location_in_pixels);
+  aura::WindowTreeHost* host = root_window->GetHost();
+  host->ConvertDIPToPixels(&location_in_pixels);
+  ui::ScrollEvent scroll(
+      ui::EventType::kScroll, gfx::PointF(location_in_pixels),
+      gfx::PointF(location_in_pixels), ui::EventTimeForNow(),
+      ui::EF_IS_SYNTHESIZED, scroll_x, scroll_y, 0 /* x_offset_ordinal */,
+      0 /* y_offset_ordinal */, 2 /* finger_count */);
+  ui::MouseWheelEvent wheel(scroll);
+  std::ignore = host->GetEventSink()->OnEventFromSource(&wheel);
 }
 
 }  // namespace ash

@@ -10,6 +10,8 @@ import {RectUtil} from '/common/rect_util.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
+import {ScrollModeController} from './scroll_mode_controller.js';
+
 import AutomationNode = chrome.automation.AutomationNode;
 import RoleType = chrome.automation.RoleType;
 import ScreenRect = chrome.accessibilityPrivate.ScreenRect;
@@ -70,6 +72,8 @@ export class MouseController {
   // Reference to the accessibility tree.
   private desktop_: AutomationNode|undefined;
 
+  private scrollModeController_: ScrollModeController;
+
   constructor() {
     this.onMouseMovedHandler_ = new EventHandler(
         [], chrome.automation.EventType.MOUSE_MOVED,
@@ -78,6 +82,8 @@ export class MouseController {
     this.onMouseDraggedHandler_ = new EventHandler(
         [], chrome.automation.EventType.MOUSE_DRAGGED,
         event => this.onMouseMovedOrDragged_(event));
+
+    this.scrollModeController_ = new ScrollModeController();
 
     this.calcSmoothKernel_();
     this.landmarkWeights_ = new Map();
@@ -256,6 +262,11 @@ export class MouseController {
           Math.min(this.screenBounds_.height, Math.round(newY)),
           this.screenBounds_.top),
     };
+
+    if (this.scrollModeController_.active()) {
+      this.scrollModeController_.scroll(this.mouseLocation_);
+      return;
+    }
 
     // Only update if it's been long enough since the last time the user
     // touched their physical mouse or trackpad.
@@ -439,9 +450,11 @@ export class MouseController {
   }
 
   resetLocation(): void {
-    if (this.paused_ || !this.screenBounds_) {
+    if (this.paused_ || !this.screenBounds_ ||
+        this.scrollModeController_.active()) {
       return;
     }
+
     const x =
         Math.round(this.screenBounds_.width / 2) + this.screenBounds_.left;
     const y =
@@ -483,6 +496,10 @@ export class MouseController {
     // will modify the pause value.
     newPaused ? this.stop() : this.start();
     this.paused_ = newPaused;
+  }
+
+  toggleScrollMode(): void {
+    this.scrollModeController_.toggle(this.mouseLocation_, this.screenBounds_);
   }
 
   /** Listener for when the mouse position changes. */

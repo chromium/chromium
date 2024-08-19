@@ -24,6 +24,7 @@ export const FaceGazeActions: MacroName[] = [
   MacroName.TOGGLE_DICTATION,
   MacroName.KEY_PRESS_TOGGLE_OVERVIEW,
   MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE,
+  MacroName.TOGGLE_SCROLL_MODE,
   MacroName.TOGGLE_VIRTUAL_KEYBOARD,
 ];
 
@@ -126,6 +127,8 @@ export class FaceGazeUtils {
         return 'Open overview of windows';
       case MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE:
         return 'Play or pause media';
+      case MacroName.TOGGLE_SCROLL_MODE:
+        return 'Toggle scroll mode';
       case MacroName.TOGGLE_VIRTUAL_KEYBOARD:
         return 'Show or hide the virtual keyboard';
       default:

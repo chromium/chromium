@@ -424,6 +424,16 @@ chrome.accessibilityPrivate.PumpkinData;
 chrome.accessibilityPrivate.FaceGazeAssets;
 
 /**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.ScrollDirection = {
+  UP: 'up',
+  DOWN: 'down',
+  LEFT: 'left',
+  RIGHT: 'right',
+};
+
+/**
  * Property to indicate whether event source should default to touch.
  * @type {number}
  */
@@ -750,6 +760,13 @@ chrome.accessibilityPrivate.isLacrosPrimary = function(callback) {};
  *     show.
  */
 chrome.accessibilityPrivate.showToast = function(type) {};
+
+/**
+ * Scrolls at the target location in the specified direction.
+ * @param {!chrome.accessibilityPrivate.ScreenPoint} target
+ * @param {!chrome.accessibilityPrivate.ScrollDirection} direction
+ */
+chrome.accessibilityPrivate.scrollAtPoint = function(target, direction) {};
 
 /**
  * Fired whenever ChromeVox should output introduction.
