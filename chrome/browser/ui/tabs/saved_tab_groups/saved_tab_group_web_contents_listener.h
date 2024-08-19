@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_WEB_CONTENTS_LISTENER_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_WEB_CONTENTS_LISTENER_H_
 
-#include <vector>
-
 #include "base/token.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "content/public/browser/navigation_entry.h"
@@ -75,11 +73,6 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
 
   // The service used to query and manage SavedTabGroups.
   const raw_ptr<TabGroupSyncService> service_ = nullptr;
-
-  // Holds the current redirect chain which is used for equality check for any
-  // incoming URL update. If any of the URLs in the chain matches with the new
-  // URL, we don't do a navigation.
-  std::vector<GURL> tab_redirect_chain_;
 
   // The NavigationHandle that resulted from the last sync update. Ignored by
   // `DidFinishNavigation` to prevent synclones.

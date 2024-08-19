@@ -99,9 +99,13 @@ void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
     return;
   }
 
+  std::optional<SavedTabGroup> group = saved_group();
+  SavedTabGroupTab* tab = group->GetTab(saved_tab_group_tab_id_);
+  CHECK(tab);
+
   // If the URL is inside current tab URL's redirect chain, there is no need to
   // navigate as the navigation will end up with the current tab URL.
-  if (IsURLInRedirectChain(url, tab_redirect_chain_)) {
+  if (IsURLInRedirectChain(url, tab->redirect_url_chain())) {
     return;
   }
 
@@ -170,10 +174,12 @@ void SavedTabGroupWebContentsListener::UpdateTabRedirectChain(
     return;
   }
 
-  tab_redirect_chain_.clear();
-  for (const auto& url : navigation_handle->GetRedirectChain()) {
-    tab_redirect_chain_.emplace_back(url);
-  }
+  std::optional<SavedTabGroup> group = saved_group();
+
+  SavedTabGroupTabBuilder tab_builder;
+  tab_builder.SetRedirectURLChain(navigation_handle->GetRedirectChain());
+  service_->UpdateTab(group->local_group_id().value(), saved_tab_group_tab_id_,
+                      std::move(tab_builder));
 }
 
 const SavedTabGroup SavedTabGroupWebContentsListener::saved_group() {

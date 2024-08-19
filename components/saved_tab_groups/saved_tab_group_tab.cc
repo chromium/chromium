@@ -30,7 +30,6 @@ SavedTabGroupTab::SavedTabGroupTab(
       position_(position),
       url_(url),
       title_(title),
-      favicon_(favicon),
       creator_cache_guid_(std::move(creator_cache_guid)),
       last_updater_cache_guid_(std::move(last_updater_cache_guid)),
       creation_time_windows_epoch_micros_(
@@ -40,7 +39,8 @@ SavedTabGroupTab::SavedTabGroupTab(
       update_time_windows_epoch_micros_(
           update_time_windows_epoch_micros.has_value()
               ? update_time_windows_epoch_micros.value()
-              : base::Time::Now()) {}
+              : base::Time::Now()),
+      favicon_(favicon) {}
 
 SavedTabGroupTab::SavedTabGroupTab(const SavedTabGroupTab& other) = default;
 SavedTabGroupTab& SavedTabGroupTab::operator=(const SavedTabGroupTab& other) =
@@ -104,6 +104,13 @@ SavedTabGroupTabBuilder& SavedTabGroupTabBuilder::SetPosition(size_t position) {
   return *this;
 }
 
+SavedTabGroupTabBuilder& SavedTabGroupTabBuilder::SetRedirectURLChain(
+    const std::vector<GURL>& redirect_url_chain) {
+  redirect_url_chain_ = redirect_url_chain;
+  has_redirect_url_chain_ = true;
+  return *this;
+}
+
 SavedTabGroupTab SavedTabGroupTabBuilder::Build(
     const SavedTabGroupTab& tab) const {
   SavedTabGroupTab updated_tab(tab);
@@ -117,6 +124,9 @@ SavedTabGroupTab SavedTabGroupTabBuilder::Build(
   }
   if (has_position_) {
     updated_tab.SetPosition(position_);
+  }
+  if (has_redirect_url_chain_) {
+    updated_tab.SetRedirectURLChain(redirect_url_chain_);
   }
 
   return updated_tab;
