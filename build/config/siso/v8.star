@@ -24,10 +24,6 @@ def __step_config(ctx, step_config):
             # This action may consume a lot of memory on sanitizer builders.
             # 49s on n2-custom-3840-2 -> 32s on n2-highmem-8
             "platform_ref": "large",
-            # TODO: crbug.com/330252330 - specify icudtl.dat to build config.
-            "inputs": [
-                "./icudtl.dat",
-            ],
         },
     ])
     return step_config
