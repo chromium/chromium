@@ -9,42 +9,38 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/structured_shared_memory.h"
 
 namespace mojo {
 
 SharedMemoryVersionController::SharedMemoryVersionController()
     : mapped_region_(
-          base::ReadOnlySharedMemoryRegion::Create(sizeof(SharedVersionType))) {
-  // Create a shared memory region and immediately populate it.
-  CHECK(mapped_region_.IsValid());
+          // Clients may use `kInvalidVersion` as a special value to indicate
+          // the version in the absence of shared memory communication. Make
+          // sure the version starts at `kInitialVersion` to avoid any
+          // confusion.
+          base::AtomicSharedMemory<VersionType>::Create(
+              shared_memory_version::kInitialVersion)
+              .value()) {}
 
-  // Clients may use `kInvalidVersion` as special value to indicate the version
-  // in the absence of shared memory communication. Make sure the version starts
-  // at `kInitialVersion` to avoid any confusion. Relaxed memory order because
-  // no other memory operation depends on the version
-  mapped_region_.mapping.GetMemoryAs<SharedVersionType>()->store(
-      shared_memory_version::kInitialVersion, std::memory_order_relaxed);
-}
+SharedMemoryVersionController::~SharedMemoryVersionController() = default;
 
 base::ReadOnlySharedMemoryRegion
 SharedMemoryVersionController::GetSharedMemoryRegion() const {
-  return mapped_region_.region.Duplicate();
+  return mapped_region_.DuplicateReadOnlyRegion();
 }
 
 VersionType SharedMemoryVersionController::GetSharedVersion() const {
   // Relaxed memory order because no other memory operation depends on the
   // version.
-  return mapped_region_.mapping.GetMemoryAs<SharedVersionType>()->load(
-      std::memory_order_relaxed);
+  return mapped_region_.WritableRef().load(std::memory_order_relaxed);
 }
 
 void SharedMemoryVersionController::Increment() {
   // Relaxed memory order because no other memory operation depends on the
   // version.
   const VersionType version =
-      mapped_region_.mapping.GetMemoryAs<SharedVersionType>()->fetch_add(
-          1, std::memory_order_relaxed);
+      mapped_region_.WritableRef().fetch_add(1, std::memory_order_relaxed);
 
   // The version wrapping around is not supported and should not happen.
   CHECK_LE(version, std::numeric_limits<VersionType>::max());
@@ -59,15 +55,17 @@ void SharedMemoryVersionController::SetVersion(VersionType version) {
 
   // Relaxed memory order because no other memory operation depends on the
   // version.
-  mapped_region_.mapping.GetMemoryAs<SharedVersionType>()->store(
-      version, std::memory_order_relaxed);
+  mapped_region_.WritableRef().store(version, std::memory_order_relaxed);
 }
 
 SharedMemoryVersionClient::SharedMemoryVersionClient(
     base::ReadOnlySharedMemoryRegion shared_region)
-    : read_only_mapping_(shared_region.Map()) {
-  CHECK(read_only_mapping_.IsValid());
-}
+    : read_only_mapping_(
+          base::AtomicSharedMemory<VersionType>::MapReadOnlyRegion(
+              std::move(shared_region))
+              .value()) {}
+
+SharedMemoryVersionClient::~SharedMemoryVersionClient() = default;
 
 bool SharedMemoryVersionClient::SharedVersionIsLessThan(
     VersionType version) const {
@@ -92,8 +90,7 @@ bool SharedMemoryVersionClient::SharedVersionIsGreaterThan(
 VersionType SharedMemoryVersionClient::GetSharedVersion() const {
   // Relaxed memory order because no other memory operation depends on the
   // version.
-  return read_only_mapping_.GetMemoryAs<SharedVersionType>()->load(
-      std::memory_order_relaxed);
+  return read_only_mapping_.ReadOnlyRef().load(std::memory_order_relaxed);
 }
 
 }  // namespace mojo

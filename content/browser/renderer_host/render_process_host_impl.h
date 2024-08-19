@@ -20,8 +20,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/safe_ref.h"
+#include "base/memory/structured_shared_memory.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
@@ -1469,12 +1469,13 @@ class CONTENT_EXPORT RenderProcessHostImpl
   mojo::Receiver<memory_instrumentation::mojom::CoordinatorConnector>
       coordinator_connector_receiver_{this};
 
-  // A shared memory version mapping of a std::atomic<TimeTicks> used to
-  // atomically communicate the last time the hosted renderer was foregrounded.
-  // This is preferable to IPC as it ensures the timing is visible immediately
-  // after recovering from a jank (e.g. important for metrics).
+  // A shared memory mapping of a std::atomic<TimeTicks> used to atomically
+  // communicate the last time the hosted renderer was foregrounded. This is
+  // preferable to IPC as it ensures the timing is visible immediately after
+  // recovering from a jank (e.g. important for metrics).
   // TODO(pmonette): Update this to support all process priority levels.
-  base::MappedReadOnlyRegion last_foreground_time_region_;
+  std::optional<base::AtomicSharedMemory<base::TimeTicks>>
+      last_foreground_time_region_;
 
   // Tracks active audio and video streams within the render process; used to
   // determine if if a process should be backgrounded.

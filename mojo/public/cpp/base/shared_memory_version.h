@@ -11,13 +11,13 @@
 
 #include "base/component_export.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/structured_shared_memory.h"
 
 namespace mojo {
 
 class SharedMemoryVersionClient;
 
 using VersionType = uint64_t;
-using SharedVersionType = std::atomic<VersionType>;
 
 // This file contains classes to share a version between processes through
 // shared memory. A version is a nonzero monotonically increasing integer. A
@@ -92,7 +92,7 @@ static constexpr VersionType kInitialVersion = 1ULL;
 class COMPONENT_EXPORT(MOJO_BASE) SharedMemoryVersionController {
  public:
   SharedMemoryVersionController();
-  ~SharedMemoryVersionController() = default;
+  ~SharedMemoryVersionController();
 
   // Not copyable or movable
   SharedMemoryVersionController(const SharedMemoryVersionController&) = delete;
@@ -115,7 +115,7 @@ class COMPONENT_EXPORT(MOJO_BASE) SharedMemoryVersionController {
   void SetVersion(VersionType version);
 
  private:
-  const base::MappedReadOnlyRegion mapped_region_;
+  const base::AtomicSharedMemory<VersionType> mapped_region_;
 };
 
 // Used to keep track of a remote version number and compare it to a
@@ -124,7 +124,7 @@ class COMPONENT_EXPORT(MOJO_BASE) SharedMemoryVersionClient {
  public:
   explicit SharedMemoryVersionClient(
       base::ReadOnlySharedMemoryRegion shared_region);
-  ~SharedMemoryVersionClient() = default;
+  ~SharedMemoryVersionClient();
 
   // Not copyable or movable
   SharedMemoryVersionClient(const SharedMemoryVersionClient&) = delete;
@@ -142,7 +142,8 @@ class COMPONENT_EXPORT(MOJO_BASE) SharedMemoryVersionClient {
   // Returns the current value in shared memory.
   VersionType GetSharedVersion() const;
 
-  const base::ReadOnlySharedMemoryMapping read_only_mapping_;
+  const base::AtomicSharedMemory<VersionType>::ReadOnlyMapping
+      read_only_mapping_;
 };
 
 }  // namespace mojo
