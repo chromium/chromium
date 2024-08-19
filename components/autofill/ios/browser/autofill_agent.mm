@@ -1318,6 +1318,10 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       frame, base::FeatureList::IsEnabled(
                  autofill::features::kAutofillEnableXHRSubmissionDetectionIOS));
 
+  FormUtilJavaScriptFeature::GetInstance()->SetAutofillIsolatedContentWorld(
+      frame,
+      base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos));
+
   if (frame->IsMainFrame()) {
     _suggestionDelegate.reset();
     _suggestionsAvailableCompletion = nil;

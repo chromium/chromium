@@ -26,6 +26,14 @@ let autofillAcrossIframes: boolean = false;
 let autofillXHRSubmissionDetection: boolean = true;
 // LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_xhr_submission_detection_ios)
 
+// LINT.IfChange(autofill_isolated_content_world)
+/**
+ Enables the logic necessary for Autofill to work from an isolated content world
+ without breaking the features that need to be in the page content world.
+ */
+let autofillIsolatedContentWorld: boolean = false;
+// LINT.ThenChange(//components/autofill/ios/common/features.cc:autofill_isolated_content_world)
+
 /**
  * @see autofillAcrossIframes
  */
@@ -54,6 +62,20 @@ function isAutofillXHRSubmissionDetectionEnabled(): boolean {
   return autofillXHRSubmissionDetection;
 }
 
+/**
+ * @see autofillIsolatedContentWorld
+ */
+function setAutofillIsolatedContentWorld(enabled: boolean): void {
+  autofillIsolatedContentWorld = enabled;
+}
+
+/**
+ * @see autofillIsolatedContentWorld
+ */
+function isAutofillIsolatedContentWorldEnabled(): boolean {
+  return autofillIsolatedContentWorld;
+}
+
 // Expose globally via `gCrWeb` instead of `export` to ensure state (feature
 // on/off) is maintained across imports.
 gCrWeb.autofill_form_features = {
@@ -61,4 +83,6 @@ gCrWeb.autofill_form_features = {
   isAutofillAcrossIframesEnabled,
   setAutofillXHRSubmissionDetection,
   isAutofillXHRSubmissionDetectionEnabled,
+  setAutofillIsolatedContentWorld,
+  isAutofillIsolatedContentWorldEnabled,
 };

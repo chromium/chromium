@@ -1954,6 +1954,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableTraitCollectionRegistrationName,
      flag_descriptions::kEnableTraitCollectionRegistrationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableTraitCollectionRegistration)},
+    {"autofill-isolated-world-ios",
+     flag_descriptions::kAutofillIsolatedWorldForJavascriptIOSName,
+     flag_descriptions::kAutofillIsolatedWorldForJavascriptIOSDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAutofillIsolatedWorldForJavascriptIos)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

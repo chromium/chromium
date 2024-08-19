@@ -129,6 +129,12 @@ extern const char kAutofillEnableVirtualCardsDescription[];
 extern const char kAutofillEnableXHRSubmissionDetectionIOSName[];
 extern const char kAutofillEnableXHRSubmissionDetectionIOSDescription[];
 
+// Title and description for the flag to control whether to use the
+// isolated content world instead of the page content world for the Autofill JS
+// feature scripts.
+extern const char kAutofillIsolatedWorldForJavascriptIOSName[];
+extern const char kAutofillIsolatedWorldForJavascriptIOSDescription[];
+
 // Title and description for the flag to parse standalone CVC fields for VCN
 // card on file in Autofill.
 extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[];

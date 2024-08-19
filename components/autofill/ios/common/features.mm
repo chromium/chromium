@@ -21,6 +21,7 @@ BASE_FEATURE(kAutofillDynamicallyLoadsFieldsForAddressInput,
              "AutofillDynamicallyLoadsFieldsForAddressInput",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// LINT.IfChange(autofill_isolated_content_world)
 // Controls whether to use the isolated content world instead of the page
 // content world for the Autofill JS feature scripts.
 // TODO(crbug.com/40747550) Remove once the isolated content world is launched
@@ -28,6 +29,7 @@ BASE_FEATURE(kAutofillDynamicallyLoadsFieldsForAddressInput,
 BASE_FEATURE(kAutofillIsolatedWorldForJavascriptIos,
              "AutofillIsolatedWorldForJavascriptIos",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// LINT.ThenChange(/components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_isolated_content_world)
 
 // Makes the autofill and password infobars sticky on iOS. The sticky infobar
 // sticks there until navigating from an explicit user gesture (e.g. reload or

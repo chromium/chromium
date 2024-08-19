@@ -834,6 +834,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "autofill-isolated-world-ios",
+    "owners": [ "eic@google.com", "bling-transactions@google.com" ],
+    "expiry_milestone": 134
+  },
+  {
     "name": "autofill-more-prominent-popup",
     "owners": [
       "vykochko@google.com",

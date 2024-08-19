@@ -161,6 +161,12 @@ const char kAutofillEnableXHRSubmissionDetectionIOSDescription[] =
     "When enabled, Chrome will detect forms submitted asynchronously (e.g. "
     "AJAX and XMLHttpRequest) for Autofill.";
 
+const char kAutofillIsolatedWorldForJavascriptIOSName[] =
+    "Isolated content world for Autofill";
+const char kAutofillIsolatedWorldForJavascriptIOSDescription[] =
+    "Use the isolated content world instead of the page content world "
+    "for the Autofill JS feature scripts.";
+
 const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[] =
     "Parse standalone CVC fields for VCN card on file in forms";
 const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[] =
