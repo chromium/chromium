@@ -79,8 +79,9 @@ bool g_check_tab_id_on_rule_match = true;
 // unknown tab ID.
 int GetTabIdForMatchedRule(content::BrowserContext* browser_context,
                            int request_tab_id) {
-  if (!g_check_tab_id_on_rule_match)
+  if (!g_check_tab_id_on_rule_match) {
     return request_tab_id;
+  }
 
   DCHECK(ExtensionsBrowserClient::Get());
   return ExtensionsBrowserClient::Get()->IsValidTabId(browser_context,
@@ -138,12 +139,14 @@ void ActionTracker::OnRuleMatched(const RequestAction& request_action,
   auto add_matched_rule_if_needed = [this, should_record_rule](
                                         TrackedInfo* tracked_info,
                                         const RequestAction& request_action) {
-    if (!should_record_rule)
+    if (!should_record_rule) {
       return;
+    }
 
     // Restart the timer if it is not running and a matched rule is being added.
-    if (!trim_rules_timer_->IsRunning())
+    if (!trim_rules_timer_->IsRunning()) {
       trim_rules_timer_->Reset();
+    }
 
     tracked_info->matched_rules.emplace_back(request_action.rule_id,
                                              request_action.ruleset_id);
@@ -161,16 +164,18 @@ void ActionTracker::OnRuleMatched(const RequestAction& request_action,
         extension_id, *request_info.navigation_id}];
     add_matched_rule_if_needed(&pending_info, request_action);
 
-    if (increment_action_count)
+    if (increment_action_count) {
       pending_info.action_count++;
+    }
     return;
   }
 
   TrackedInfo& tracked_info = rules_tracked_[{extension_id, tab_id}];
   add_matched_rule_if_needed(&tracked_info, request_action);
 
-  if (!increment_action_count)
+  if (!increment_action_count) {
     return;
+  }
 
   size_t action_count = ++tracked_info.action_count;
   if (!prefs_helper_.GetUseActionCountAsBadgeText(extension_id)) {
@@ -211,8 +216,9 @@ void ActionTracker::ClearExtensionData(const ExtensionId& extension_id) {
   std::erase_if(pending_navigation_actions_, compare_by_extension_id);
 
   // Stop the timer if there are no more matched rules or pending actions.
-  if (rules_tracked_.empty() && pending_navigation_actions_.empty())
+  if (rules_tracked_.empty() && pending_navigation_actions_.empty()) {
     trim_rules_timer_->Stop();
+  }
 }
 
 void ActionTracker::ClearTabData(int tab_id) {
@@ -300,9 +306,10 @@ std::vector<dnr_api::MatchedRuleInfo> ActionTracker::GetMatchedRules(
         for (const TrackedRule& tracked_rule : tracked_rules) {
           // Filter by the provided |min_time_stamp| for both active and
           // non-active tabs.
-          if (tracked_rule.time_stamp >= min_time_stamp)
+          if (tracked_rule.time_stamp >= min_time_stamp) {
             matched_rules.push_back(
                 CreateMatchedRuleInfo(extension, tracked_rule, tab_id));
+          }
         }
       };
 
@@ -310,19 +317,21 @@ std::vector<dnr_api::MatchedRuleInfo> ActionTracker::GetMatchedRules(
     ExtensionTabIdKey key(extension.id(), *tab_id);
 
     auto tracked_info = rules_tracked_.find(key);
-    if (tracked_info == rules_tracked_.end())
+    if (tracked_info == rules_tracked_.end()) {
       return matched_rules;
+    }
 
     add_to_matched_rules(tracked_info->second.matched_rules, *tab_id);
     return matched_rules;
   }
 
   // Iterate over all tabs if |tab_id| is not specified.
-  for (auto it = rules_tracked_.begin(); it != rules_tracked_.end(); ++it) {
-    if (it->first.extension_id != extension.id())
+  for (const auto& it : rules_tracked_) {
+    if (it.first.extension_id != extension.id()) {
       continue;
+    }
 
-    add_to_matched_rules(it->second.matched_rules, it->first.secondary_id);
+    add_to_matched_rules(it.second.matched_rules, it.first.secondary_id);
   }
 
   return matched_rules;
@@ -331,8 +340,9 @@ std::vector<dnr_api::MatchedRuleInfo> ActionTracker::GetMatchedRules(
 int ActionTracker::GetMatchedRuleCountForTest(const ExtensionId& extension_id,
                                               int tab_id,
                                               bool trim_non_active_rules) {
-  if (trim_non_active_rules)
+  if (trim_non_active_rules) {
     TrimRulesFromNonActiveTabs();
+  }
 
   ExtensionTabIdKey key(extension_id, tab_id);
   auto tracked_info = rules_tracked_.find(key);
@@ -359,8 +369,9 @@ void ActionTracker::IncrementActionCountForTab(const ExtensionId& extension_id,
   size_t new_action_count =
       std::max<int>(tracked_info.action_count + increment, 0);
 
-  if (tracked_info.action_count == new_action_count)
+  if (tracked_info.action_count == new_action_count) {
     return;
+  }
 
   DCHECK(ExtensionsAPIClient::Get());
   ExtensionsAPIClient::Get()->UpdateActionCount(browser_context_, extension_id,
@@ -416,8 +427,9 @@ void ActionTracker::DispatchOnRuleMatchedDebugIfNeeded(
       event_router &&
       event_router->ExtensionHasEventListener(
           extension_id, dnr_api::OnRuleMatchedDebug::kEventName);
-  if (!has_extension_registered_for_event)
+  if (!has_extension_registered_for_event) {
     return;
+  }
 
   DCHECK(Manifest::IsUnpackedLocation(extension->location()));
 
@@ -444,17 +456,16 @@ void ActionTracker::DispatchOnRuleMatchedDebugIfNeeded(
 void ActionTracker::TransferRulesOnTabInvalid(int tab_id) {
   DCHECK_NE(tab_id, extension_misc::kUnknownTabId);
 
-  for (auto it = rules_tracked_.begin(); it != rules_tracked_.end(); ++it) {
-    const ExtensionTabIdKey& key = it->first;
-    if (key.secondary_id != tab_id)
+  for (auto& [key, value] : rules_tracked_) {
+    if (key.secondary_id != tab_id) {
       continue;
+    }
 
     TrackedInfo& unknown_tab_info =
         rules_tracked_[{key.extension_id, extension_misc::kUnknownTabId}];
 
     // Transfer matched rules for this extension and |tab_id| into the matched
     // rule list for this extension and the unknown tab ID.
-    TrackedInfo& value = it->second;
     unknown_tab_info.matched_rules.splice(unknown_tab_info.matched_rules.end(),
                                           value.matched_rules);
   }
@@ -477,10 +488,11 @@ void ActionTracker::TrimRulesFromNonActiveTabs() {
     TrackedInfo& tracked_info = it->second;
     std::erase_if(tracked_info.matched_rules, older_than_lifespan);
 
-    if (tracked_info.matched_rules.empty())
+    if (tracked_info.matched_rules.empty()) {
       it = rules_tracked_.erase(it);
-    else
+    } else {
       ++it;
+    }
   }
 
   trim_rules_timer_->Reset();

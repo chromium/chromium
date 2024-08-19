@@ -91,8 +91,9 @@ TEST_F(IndexedRuleTest, IDParsing) {
         std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result);
-    if (result == ParseResult::SUCCESS)
+    if (result == ParseResult::SUCCESS) {
       EXPECT_EQ(base::checked_cast<uint32_t>(cases[i].id), indexed_rule.id);
+    }
   }
 }
 
@@ -137,10 +138,11 @@ TEST_F(IndexedRuleTest, PriorityParsing) {
         std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result);
-    if (result == ParseResult::SUCCESS)
+    if (result == ParseResult::SUCCESS) {
       EXPECT_EQ(ComputeIndexedRulePriority(cases[i].expected_priority,
                                            cases[i].action_type),
                 indexed_rule.priority);
+    }
   }
 }
 
@@ -239,8 +241,9 @@ TEST_F(IndexedRuleTest, ResourceTypesParsing) {
         std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result);
-    if (result == ParseResult::SUCCESS)
+    if (result == ParseResult::SUCCESS) {
       EXPECT_EQ(cases[i].expected_element_types, indexed_rule.element_types);
+    }
   }
 }
 
@@ -307,8 +310,9 @@ TEST_F(IndexedRuleTest, UrlFilterParsing) {
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
         std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
-    if (result != ParseResult::SUCCESS)
+    if (result != ParseResult::SUCCESS) {
       continue;
+    }
 
     EXPECT_EQ(cases[i].expected_result, result);
     EXPECT_EQ(cases[i].expected_url_pattern_type,
@@ -512,8 +516,9 @@ TEST_F(IndexedRuleTest, RedirectUrlParsing) {
         std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result) << static_cast<int>(result);
-    if (result == ParseResult::SUCCESS)
+    if (result == ParseResult::SUCCESS) {
       EXPECT_EQ(cases[i].expected_redirect_url, indexed_rule.redirect_url);
+    }
   }
 }
 
@@ -653,8 +658,9 @@ TEST_F(IndexedRuleTest, RedirectParsing) {
     ParseResult result = IndexedRule::CreateIndexedRule(
         std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
     EXPECT_EQ(cases[i].expected_result, result) << static_cast<int>(result);
-    if (result != ParseResult::SUCCESS)
+    if (result != ParseResult::SUCCESS) {
       continue;
+    }
 
     EXPECT_TRUE(indexed_rule.url_transform || indexed_rule.redirect_url);
     EXPECT_FALSE(indexed_rule.url_transform && indexed_rule.redirect_url);
@@ -836,8 +842,9 @@ TEST_F(IndexedRuleTest, InvalidAllowAllRequestsResourceType) {
         std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result);
-    if (result == ParseResult::SUCCESS)
+    if (result == ParseResult::SUCCESS) {
       EXPECT_EQ(cases[i].expected_element_types, indexed_rule.element_types);
+    }
   }
 }
 
@@ -959,8 +966,9 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
     ParseResult result = IndexedRule::CreateIndexedRule(
         std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
     EXPECT_EQ(cases[i].expected_result, result);
-    if (result != ParseResult::SUCCESS)
+    if (result != ParseResult::SUCCESS) {
       continue;
+    }
 
     EXPECT_EQ(dnr_api::RuleActionType::kModifyHeaders,
               indexed_rule.action_type);
@@ -1020,9 +1028,10 @@ TEST_F(IndexedRuleTest, RequestMethodsParsing) {
         std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result);
-    if (result == ParseResult::SUCCESS)
+    if (result == ParseResult::SUCCESS) {
       EXPECT_EQ(cases[i].expected_request_methods_mask,
                 indexed_rule.request_methods);
+    }
   }
 }
 

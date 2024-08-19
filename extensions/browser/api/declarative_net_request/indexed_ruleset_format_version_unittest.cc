@@ -114,8 +114,9 @@ std::string StripCommentsAndWhitespace(const std::string& input) {
                                       base::SPLIT_WANT_NONEMPTY)) {
     // Remove single line comments.
     size_t index = line.find(kSingleLineComment);
-    if (index != std::string::npos)
+    if (index != std::string::npos) {
       line.erase(index);
+    }
 
     // Remove any whitespace.
     std::string str;
@@ -126,13 +127,15 @@ std::string StripCommentsAndWhitespace(const std::string& input) {
   // Remove multi line comments.
   while (true) {
     size_t start = result.find(kMultiLineCommentStart);
-    if (start == std::string::npos)
+    if (start == std::string::npos) {
       break;
+    }
 
     size_t end = result.find(kMultiLineCommentEnd, start + 2);
     // No ending found for the comment.
-    if (end == std::string::npos)
+    if (end == std::string::npos) {
       break;
+    }
 
     size_t end_comment_index = end + 1;
     size_t comment_length = end_comment_index - start + 1;

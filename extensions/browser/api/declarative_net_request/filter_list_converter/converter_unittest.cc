@@ -33,8 +33,9 @@ void TestConversion(std::vector<std::string> filter_list_rules,
   CHECK(expected_json.has_value());
 
   base::FilePath output_path = temp_dir.GetPath();
-  if (write_type == WriteType::kJSONRuleset)
+  if (write_type == WriteType::kJSONRuleset) {
     output_path = output_path.AppendASCII("rules.json");
+  }
 
   ConvertRuleset({input_path}, output_path, write_type, true /* noisy */);
 

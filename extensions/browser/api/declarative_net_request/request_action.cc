@@ -41,8 +41,9 @@ RequestAction::HeaderInfo::HeaderInfo(std::string header,
 RequestAction::HeaderInfo::HeaderInfo(const flat::ModifyHeaderInfo& info)
     : header(CreateString<std::string>(*info.header())),
       operation(ConvertFlatHeaderOperation(info.operation())) {
-  if (info.value())
+  if (info.value()) {
     value = CreateString<std::string>(*info.value());
+  }
 }
 
 RequestAction::HeaderInfo::~HeaderInfo() = default;
@@ -88,10 +89,12 @@ bool operator>(const RequestAction& lhs, const RequestAction& rhs) {
 std::optional<RequestAction> GetMaxPriorityAction(
     std::optional<RequestAction> lhs,
     std::optional<RequestAction> rhs) {
-  if (!lhs)
+  if (!lhs) {
     return rhs;
-  if (!rhs)
+  }
+  if (!rhs) {
     return lhs;
+  }
   return lhs > rhs ? std::move(lhs) : std::move(rhs);
 }
 

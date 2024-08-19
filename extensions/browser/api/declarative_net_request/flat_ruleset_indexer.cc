@@ -51,14 +51,16 @@ FlatStringListOffset BuildVectorOfSharedStringsImpl(
     flatbuffers::FlatBufferBuilder* builder,
     const T& container,
     bool is_lower_case) {
-  if (container.empty())
+  if (container.empty()) {
     return FlatStringListOffset();
+  }
 
   std::vector<FlatStringOffset> offsets;
   offsets.reserve(container.size());
-  for (const std::string& str : container)
+  for (const std::string& str : container) {
     offsets.push_back(builder->CreateSharedString(
         is_lower_case ? base::ToLowerASCII(str) : str));
+  }
   return builder->CreateVector(offsets);
 }
 
@@ -85,8 +87,9 @@ FlatStringListOffset BuildVectorOfSharedLowercaseStrings(
 
 FlatIntListOffset BuildIntVector(flatbuffers::FlatBufferBuilder* builder,
                                  const base::flat_set<int>& input) {
-  if (input.empty())
+  if (input.empty()) {
     return FlatIntListOffset();
+  }
 
   return builder->CreateVector(
       std::vector<int32_t>(input.begin(), input.end()));
@@ -116,8 +119,9 @@ FlatOffset<flat::UrlTransform> BuildTransformOffset(
 
   auto skip_separator_and_create_string_offset =
       [builder](const std::optional<std::string>& str, char separator) {
-        if (!str)
+        if (!str) {
           return FlatStringOffset();
+        }
 
         DCHECK(!str->empty());
         DCHECK_EQ(separator, str->at(0));
@@ -336,8 +340,9 @@ void FlatRulesetIndexer::AddUrlRule(const IndexedRule& indexed_rule) {
       url_pattern_index::flat::UrlPatternType_REGEXP) {
     std::vector<UrlPatternIndexBuilder*> builders = GetBuilders(indexed_rule);
     CHECK(!builders.empty());
-    for (UrlPatternIndexBuilder* builder : builders)
+    for (UrlPatternIndexBuilder* builder : builders) {
       builder->IndexUrlRule(offset);
+    }
   } else {
     // A UrlPatternIndex is not built for regex rules. These are stored
     // separately as part of flat::ExtensionIndexedRuleset.

@@ -29,8 +29,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Make a random `Rule`.
   std::optional<base::Value> value =
       base::JSONReader::Read(provider.ConsumeRandomLengthString());
-  if (!value || !value->is_dict())
+  if (!value || !value->is_dict()) {
     return 0;
+  }
   base::expected<Rule, std::u16string> rule = Rule::FromValue(value->GetDict());
   if (!rule.has_value()) {
     return 0;
@@ -38,8 +39,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Make a random `GURL`.
   const GURL url(provider.ConsumeRandomLengthString());
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return 0;
+  }
 
   // Make a random `RulesetID`.
   const RulesetID ruleset_id(provider.ConsumeIntegralInRange<int>(-1, 100));

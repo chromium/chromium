@@ -50,8 +50,9 @@ bool DoesRuleMetadataMatchRequest(const flat_rule::UrlRule& rule,
   }
 
   // Compares included and excluded request domains.
-  if (!url_pattern_index::DoesURLMatchRequestDomainList(*params.url, rule))
+  if (!url_pattern_index::DoesURLMatchRequestDomainList(*params.url, rule)) {
     return false;
+  }
 
   // Compares included and excluded initiator domains.
   return url_pattern_index::DoesOriginMatchInitiatorDomainList(
@@ -163,8 +164,9 @@ std::optional<RequestAction> RegexRulesMatcher::GetAllowAllRequestsAction(
                    flat::ActionType_allow_all_requests &&
                re2::RE2::PartialMatch(params.url->spec(), *info.regex);
       });
-  if (info == potential_matches.end())
+  if (info == potential_matches.end()) {
     return std::nullopt;
+  }
 
   return CreateAllowAllRequestsAction(params, *info->regex_rule->url_rule());
 }
@@ -267,8 +269,9 @@ bool RegexRulesMatcher::MatchHelper::IsEmpty() const {
 }
 
 void RegexRulesMatcher::MatchHelper::InitializeMatcher() {
-  if (IsEmpty())
+  if (IsEmpty()) {
     return;
+  }
 
   for (const auto* regex_rule : *regex_list_) {
     const flat_rule::UrlRule* rule = regex_rule->url_rule();
@@ -292,8 +295,9 @@ void RegexRulesMatcher::MatchHelper::InitializeMatcher() {
     // possible where this may happen, for example, the library's implementation
     // may change etc.
     // TODO(crbug.com/40118204): Notify the extension about the same.
-    if (error_code != re2::RE2::NoError)
+    if (error_code != re2::RE2::NoError) {
       continue;
+    }
 
     const bool did_insert =
         re2_id_to_rules_map_.insert({re2_id, regex_rule}).second;
@@ -317,8 +321,9 @@ void RegexRulesMatcher::MatchHelper::InitializeMatcher() {
   std::vector<base::MatcherStringPattern> patterns;
   patterns.reserve(strings_to_match.size());
 
-  for (size_t i = 0; i < strings_to_match.size(); ++i)
+  for (size_t i = 0; i < strings_to_match.size(); ++i) {
     patterns.emplace_back(std::move(strings_to_match[i]), i);
+  }
 
   substring_matcher_ = std::make_unique<base::SubstringSetMatcher>();
 
@@ -388,8 +393,9 @@ RegexRulesMatcher::CreateRegexSubstitutionRedirectAction(
 
   // Redirects to JavaScript urls are not allowed.
   // TODO(crbug.com/40111509): this results in counterintuitive behavior.
-  if (redirect_url.SchemeIs(url::kJavaScriptScheme))
+  if (redirect_url.SchemeIs(url::kJavaScriptScheme)) {
     return std::nullopt;
+  }
 
   return CreateRedirectAction(params, *info.regex_rule->url_rule(),
                               std::move(redirect_url));

@@ -57,8 +57,9 @@ bool CanCallGetMatchedRules(content::BrowserContext* browser_context,
                             std::string* error) {
   bool can_call =
       declarative_net_request::HasDNRFeedbackPermission(extension, tab_id);
-  if (!can_call)
+  if (!can_call) {
     *error = declarative_net_request::kErrorGetMatchedRulesMissingPermissions;
+  }
 
   return can_call;
 }
@@ -118,16 +119,19 @@ DeclarativeNetRequestUpdateDynamicRulesFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
   std::vector<int> rule_ids_to_remove;
-  if (params->options.remove_rule_ids)
+  if (params->options.remove_rule_ids) {
     rule_ids_to_remove = std::move(*params->options.remove_rule_ids);
+  }
 
   std::vector<dnr_api::Rule> rules_to_add;
-  if (params->options.add_rules)
+  if (params->options.add_rules) {
     rules_to_add = std::move(*params->options.add_rules);
+  }
 
   // Early return if there is nothing to do.
-  if (rule_ids_to_remove.empty() && rules_to_add.empty())
+  if (rule_ids_to_remove.empty() && rules_to_add.empty()) {
     return RespondNow(NoArguments());
+  }
 
   // Collect rules to add in the Extension Telemetry Service.
   if (!rules_to_add.empty()) {
@@ -153,10 +157,11 @@ void DeclarativeNetRequestUpdateDynamicRulesFunction::OnDynamicRulesUpdated(
     std::optional<std::string> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (error)
+  if (error) {
     Respond(Error(std::move(*error)));
-  else
+  } else {
     Respond(NoArguments());
+  }
 }
 
 DeclarativeNetRequestGetDynamicRulesFunction::
@@ -226,16 +231,19 @@ DeclarativeNetRequestUpdateSessionRulesFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
   std::vector<int> rule_ids_to_remove;
-  if (params->options.remove_rule_ids)
+  if (params->options.remove_rule_ids) {
     rule_ids_to_remove = std::move(*params->options.remove_rule_ids);
+  }
 
   std::vector<dnr_api::Rule> rules_to_add;
-  if (params->options.add_rules)
+  if (params->options.add_rules) {
     rules_to_add = std::move(*params->options.add_rules);
+  }
 
   // Early return if there is nothing to do.
-  if (rule_ids_to_remove.empty() && rules_to_add.empty())
+  if (rule_ids_to_remove.empty() && rules_to_add.empty()) {
     return RespondNow(NoArguments());
+  }
 
   // Collect rules to add in the Extension Telemetry Service.
   if (!rules_to_add.empty()) {
@@ -258,10 +266,11 @@ void DeclarativeNetRequestUpdateSessionRulesFunction::OnSessionRulesUpdated(
     std::optional<std::string> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (error)
+  if (error) {
     Respond(Error(std::move(*error)));
-  else
+  } else {
     Respond(NoArguments());
+  }
 }
 
 DeclarativeNetRequestGetSessionRulesFunction::
@@ -335,15 +344,17 @@ DeclarativeNetRequestUpdateEnabledRulesetsFunction::Run() {
 
       // |ruleset_ids_to_enable| takes priority over |ruleset_ids_to_disable|.
       RulesetID id = it->second->id;
-      if (base::Contains(ids_to_enable, id))
+      if (base::Contains(ids_to_enable, id)) {
         continue;
+      }
 
       ids_to_disable.insert(id);
     }
   }
 
-  if (ids_to_enable.empty() && ids_to_disable.empty())
+  if (ids_to_enable.empty() && ids_to_disable.empty()) {
     return RespondNow(NoArguments());
+  }
 
   auto* rules_monitor_service =
       declarative_net_request::RulesMonitorService::Get(browser_context());
@@ -361,10 +372,11 @@ DeclarativeNetRequestUpdateEnabledRulesetsFunction::Run() {
 
 void DeclarativeNetRequestUpdateEnabledRulesetsFunction::
     OnEnabledStaticRulesetsUpdated(std::optional<std::string> error) {
-  if (error)
+  if (error) {
     Respond(Error(std::move(*error)));
-  else
+  } else {
     Respond(NoArguments());
+  }
 }
 
 DeclarativeNetRequestGetEnabledRulesetsFunction::
@@ -516,12 +528,14 @@ DeclarativeNetRequestGetMatchedRulesFunction::Run() {
   base::Time min_time_stamp = base::Time::Min();
 
   if (params->filter) {
-    if (params->filter->tab_id)
+    if (params->filter->tab_id) {
       tab_id = *params->filter->tab_id;
+    }
 
-    if (params->filter->min_time_stamp)
+    if (params->filter->min_time_stamp) {
       min_time_stamp = base::Time::FromMillisecondsSinceUnixEpoch(
           *params->filter->min_time_stamp);
+    }
   }
 
   // Return an error if an invalid tab ID is specified. The unknown tab ID is
@@ -608,9 +622,9 @@ DeclarativeNetRequestSetExtensionActionOptionsFunction::Run() {
     // with the number of actions matched for this extension. Otherwise, clear
     // the action count for the extension's icon and show the default badge
     // text if set.
-    if (use_action_count_as_badge_text)
+    if (use_action_count_as_badge_text) {
       action_tracker.OnActionCountAsBadgeTextPreferenceEnabled(extension_id());
-    else {
+    } else {
       DCHECK(ExtensionsAPIClient::Get());
       ExtensionsAPIClient::Get()->ClearActionCount(browser_context(),
                                                    *extension());

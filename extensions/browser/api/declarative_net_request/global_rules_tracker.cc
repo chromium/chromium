@@ -101,8 +101,9 @@ bool GlobalRulesTracker::OnExtensionRuleCountUpdated(
 
   if (new_rule_count <=
       static_cast<size_t>(GetStaticGuaranteedMinimumRuleCount())) {
-    if (!keep_excess_allocation)
+    if (!keep_excess_allocation) {
       ClearExtensionAllocation(extension_id);
+    }
 
     return true;
   }
@@ -113,8 +114,9 @@ bool GlobalRulesTracker::OnExtensionRuleCountUpdated(
   size_t new_allocated_rule_count =
       new_rule_count - GetStaticGuaranteedMinimumRuleCount();
 
-  if (new_allocated_rule_count == old_allocated_rule_count)
+  if (new_allocated_rule_count == old_allocated_rule_count) {
     return true;
+  }
 
   if (keep_excess_allocation &&
       old_allocated_rule_count > new_allocated_rule_count) {
@@ -128,8 +130,9 @@ bool GlobalRulesTracker::OnExtensionRuleCountUpdated(
 
   // If updating this extension's rule count would cause the global rule count
   // to be exceeded, don't commit the update and return false.
-  if (new_global_rule_count > static_cast<size_t>(GetGlobalStaticRuleLimit()))
+  if (new_global_rule_count > static_cast<size_t>(GetGlobalStaticRuleLimit())) {
     return false;
+  }
 
   if (keep_excess_allocation) {
     DCHECK_GT(new_allocated_rule_count, old_allocated_rule_count);

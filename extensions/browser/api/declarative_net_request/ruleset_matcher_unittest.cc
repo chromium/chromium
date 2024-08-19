@@ -858,10 +858,11 @@ TEST_F(RulesetMatcherTest, RegexAndFilterListRules_RedirectPriority) {
     rule.action->type = info.action_type;
 
     rule.condition->url_filter.reset();
-    if (info.is_regex_rule)
+    if (info.is_regex_rule) {
       rule.condition->regex_filter = info.filter;
-    else
+    } else {
       rule.condition->url_filter = info.filter;
+    }
 
     if (info.redirect_url) {
       rule.action->redirect.emplace();
@@ -1241,8 +1242,9 @@ TEST_F(RulesetMatcherTest, BreakTiesByActionPriority) {
     params.element_type = url_pattern_index::flat::ElementType_MAIN_FRAME;
 
     int expected_rule_id = test_case.expected_rule_id;
-    if (expected_rule_id == 0)
+    if (expected_rule_id == 0) {
       expected_rule_id = *rule.id;
+    }
     RequestAction expected_action = CreateRequestActionForTesting(
         test_case.expected_action, expected_rule_id);
     if (test_case.expected_action == RequestAction::Type::REDIRECT) {
@@ -1383,10 +1385,11 @@ TEST_F(AllowAllRequestsTest, GetBeforeRequestAction) {
     test_rule.priority = rule.priority;
     test_rule.action->type = rule.action_type;
     test_rule.condition->url_filter.reset();
-    if (rule.is_regex_rule)
+    if (rule.is_regex_rule) {
       test_rule.condition->regex_filter = rule.url_filter;
-    else
+    } else {
       test_rule.condition->url_filter = rule.url_filter;
+    }
     if (rule.action_type == "allowAllRequests") {
       test_rule.condition->resource_types =
           std::vector<std::string>({"main_frame", "sub_frame"});

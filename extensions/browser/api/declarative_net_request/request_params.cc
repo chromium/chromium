@@ -38,8 +38,9 @@ namespace flat_rule = url_pattern_index::flat;
 // Returns whether the request to `url` is third party to its `document_origin`.
 // TODO(crbug.com/40508457): Look into caching this.
 bool IsThirdPartyRequest(const GURL& url, const url::Origin& document_origin) {
-  if (document_origin.opaque())
+  if (document_origin.opaque()) {
     return true;
+  }
 
   return !net::registry_controlled_domains::SameDomainOrHost(
       url, document_origin,
@@ -48,8 +49,9 @@ bool IsThirdPartyRequest(const GURL& url, const url::Origin& document_origin) {
 
 bool IsThirdPartyRequest(const url::Origin& origin,
                          const url::Origin& document_origin) {
-  if (document_origin.opaque())
+  if (document_origin.opaque()) {
     return true;
+  }
 
   return !net::registry_controlled_domains::SameDomainOrHost(
       origin, document_origin,
@@ -58,8 +60,9 @@ bool IsThirdPartyRequest(const url::Origin& origin,
 
 content::GlobalRenderFrameHostId GetFrameRoutingId(
     content::RenderFrameHost* host) {
-  if (!host)
+  if (!host) {
     return content::GlobalRenderFrameHostId();
+  }
 
   return host->GetGlobalId();
 }
