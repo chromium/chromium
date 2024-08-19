@@ -357,6 +357,7 @@ void SharedWorkerHost::Start(
   factory_.Bind(std::move(factory));
   factory_->CreateSharedWorker(
       std::move(info), token_, instance_.storage_key(),
+      instance_.renderer_origin(),
       creator_policy_container_host_ &&
           creator_policy_container_host_->policies().is_web_secure_context,
       GetContentClient()->browser()->GetUserAgentBasedOnPolicy(

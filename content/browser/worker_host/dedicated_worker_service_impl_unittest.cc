@@ -71,7 +71,7 @@ class MockDedicatedWorker
           net::StorageAccessApiStatus::kNone);
     } else {
       factory_->CreateWorkerHost(
-          blink::DedicatedWorkerToken(), /*script_url=*/GURL(),
+          blink::DedicatedWorkerToken(), /*script_url=*/GURL(), origin,
           browser_interface_broker_.BindNewPipeAndPassReceiver(),
           remote_host_.BindNewPipeAndPassReceiver(), base::DoNothing());
     }
@@ -86,7 +86,8 @@ class MockDedicatedWorker
   void OnWorkerHostCreated(
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker,
-      mojo::PendingRemote<blink::mojom::DedicatedWorkerHost>) override {
+      mojo::PendingRemote<blink::mojom::DedicatedWorkerHost>,
+      const url::Origin&) override {
     browser_interface_broker_.Bind(std::move(browser_interface_broker));
   }
 

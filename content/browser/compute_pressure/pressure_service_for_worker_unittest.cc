@@ -144,11 +144,12 @@ class PressureServiceForDedicatedWorkerTest
     pressure_manager_.reset();
 
     auto* rfh = contents()->GetPrimaryMainFrame();
+    CHECK_EQ(rfh->GetLastCommittedOrigin(), rfh->GetStorageKey().origin());
     worker_host_ = std::make_unique<DedicatedWorkerHost>(
         &worker_service_, blink::DedicatedWorkerToken(), rfh->GetProcess(),
         rfh->GetGlobalId(), rfh->GetGlobalId(), rfh->GetStorageKey(),
-        rfh->GetIsolationInfoForSubresources(), rfh->BuildClientSecurityState(),
-        nullptr, nullptr,
+        rfh->GetStorageKey().origin(), rfh->GetIsolationInfoForSubresources(),
+        rfh->BuildClientSecurityState(), nullptr, nullptr,
         mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost>());
     mojo::Receiver<blink::mojom::BrowserInterfaceBroker>& bib =
         worker_host_->browser_interface_broker_receiver_for_testing();

@@ -51,6 +51,7 @@ class DedicatedWorkerHostFactoryClient final
   void CreateWorkerHostDeprecated(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
       const blink::WebURL& script_url,
+      const blink::WebSecurityOrigin& origin,
       CreateWorkerHostCallback callback) override;
   void CreateWorkerHost(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
@@ -78,7 +79,8 @@ class DedicatedWorkerHostFactoryClient final
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker,
       mojo::PendingRemote<blink::mojom::DedicatedWorkerHost>
-          dedicated_worker_host) override;
+          dedicated_worker_host,
+      const url::Origin& origin) override;
   void OnScriptLoadStarted(
       blink::mojom::ServiceWorkerContainerInfoForClientPtr
           service_worker_container_info,

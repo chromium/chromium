@@ -23,6 +23,9 @@ SharedWorkerInstance::SharedWorkerInstance(
       credentials_mode_(credentials_mode),
       name_(name),
       storage_key_(storage_key),
+      // See the comment on the member declaration on why this is this way.
+      renderer_origin_(url.SchemeIs(url::kDataScheme) ? url::Origin()
+                                                      : storage_key_.origin()),
       creation_context_type_(creation_context_type),
       same_site_cookies_(same_site_cookies) {
   // Ensure the same-origin policy is enforced correctly.

@@ -76,6 +76,7 @@ class BLINK_EXPORT WebSharedWorker {
       network::mojom::CredentialsMode,
       const WebString& name,
       WebSecurityOrigin constructor_origin,
+      WebSecurityOrigin origin_from_browser,
       bool is_constructor_secure_context,
       const WebString& user_agent,
       const UserAgentMetadata& ua_metadata,

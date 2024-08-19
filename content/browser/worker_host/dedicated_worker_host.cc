@@ -74,6 +74,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
     DedicatedWorkerCreator creator,
     GlobalRenderFrameHostId ancestor_render_frame_host_id,
     const blink::StorageKey& creator_storage_key,
+    const url::Origin& renderer_origin,
     const net::IsolationInfo& isolation_info,
     network::mojom::ClientSecurityStatePtr creator_client_security_state,
     base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
@@ -85,6 +86,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
       creator_(creator),
       ancestor_render_frame_host_id_(ancestor_render_frame_host_id),
       creator_origin_(creator_storage_key.origin()),
+      renderer_origin_(renderer_origin),
       // TODO(crbug.com/40051700): Calculate the worker origin based on
       // the worker script URL (the worker's storage key should have an opaque
       // origin if the worker script URL's scheme is data:).

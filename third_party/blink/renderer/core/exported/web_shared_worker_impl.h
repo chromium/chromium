@@ -102,6 +102,7 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
       network::mojom::CredentialsMode,
       const WebString& name,
       WebSecurityOrigin constructor_origin,
+      WebSecurityOrigin origin_from_browser,
       bool is_constructor_secure_context,
       const WebString& user_agent,
       const blink::UserAgentMetadata& ua_metadata,
