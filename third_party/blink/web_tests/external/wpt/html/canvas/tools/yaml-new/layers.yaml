@@ -18,9 +18,9 @@
     ctx.globalCompositeOperation = 'screen';
 
     ctx.fillStyle = 'rgba(255, 0, 0, 1)';
-    ctx.fillRect(10, 25, 40, 50);
+    ctx.fillRect(10, 25, 40, 45);
     ctx.fillStyle = 'rgba(0, 255, 0, 1)';
-    ctx.fillRect(30, 5, 50, 40);
+    ctx.fillRect(30, 5, 45, 40);
 
     ctx.endLayer();
   reference: |
@@ -38,9 +38,9 @@
 
     ctx2.globalCompositeOperation = 'screen';
     ctx2.fillStyle = 'rgba(255, 0, 0, 1)';
-    ctx2.fillRect(10, 25, 40, 50);
+    ctx2.fillRect(10, 25, 40, 45);
     ctx2.fillStyle = 'rgba(0, 255, 0, 1)';
-    ctx2.fillRect(30, 5, 50, 40);
+    ctx2.fillRect(30, 5, 45, 40);
 
     ctx.drawImage(canvas2, 0, 0);
   variants_layout: [single_file, single_file, single_file, multi_files]
@@ -90,14 +90,14 @@
 
     ctx.beginLayer({filter: [
         {name: 'dropShadow',
-            dx: 5, dy: 5, stdDeviation: 0, floodColor: '#00f'},
+            dx: 8, dy: 8, stdDeviation: 0, floodColor: '#00f'},
         {name: 'componentTransfer',
             funcA: {type: "table", tableValues: [0, 0.8]}}]});
 
     ctx.fillStyle = 'rgba(255, 0, 0, 1)';
-    ctx.fillRect(10, 25, 40, 50);
+    ctx.fillRect(10, 25, 40, 45);
     ctx.fillStyle = 'rgba(0, 255, 0, 1)';
-    ctx.fillRect(30, 5, 50, 40);
+    ctx.fillRect(30, 5, 45, 40);
 
     ctx.endLayer();
   reference: |
@@ -106,14 +106,14 @@
             width="{{ size[0] }}" height="{{ size[1] }}"
             color-interpolation-filters="sRGB">
         <filter id="filter" x="-100%" y="-100%" width="300%" height="300%">
-          <feDropShadow dx="5" dy="5" stdDeviation="0" flood-color="#00f" />
+          <feDropShadow dx="8" dy="8" stdDeviation="0" flood-color="#00f" />
           <feComponentTransfer>
             <feFuncA type="table" tableValues="0 0.8"></feFuncA>
           </feComponentTransfer>
         </filter>
         <g filter="url(#filter)">
-          <rect x="10" y="25" width="40" height="50" fill="rgba(255, 0, 0, 1)"/>
-          <rect x="30" y="5" width="50" height="40" fill="rgba(0, 255, 0, 1)"/>
+          <rect x="10" y="25" width="40" height="45" fill="rgba(255, 0, 0, 1)"/>
+          <rect x="30" y="5" width="45" height="40" fill="rgba(0, 255, 0, 1)"/>
         </g>
       </svg>`;
 
