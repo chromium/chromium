@@ -23,8 +23,15 @@ using SharedVersionType = std::atomic<VersionType>;
 // shared memory. A version is a nonzero monotonically increasing integer. A
 // controller has read and write access to the version and one or many clients
 // have read access only. Controllers should only be created in privileged
-// processes. Clients can avoid issuing IPCs depending on the version stored in
-// shared memory.
+// processes.
+//
+// Clients can avoid issuing IPCs depending on the version stored in shared
+// memory. However this should only be used as a hint to avoid redundant IPC's,
+// not to version other objects stored in shared memory: if the version
+// increases, the client's copy of an object is out of date and it must fetch a
+// fresh copy. But it couldn't use a copy of the object in shared memory and
+// assume that it matches the updated version, because writes to the object and
+// the version number can be reordered.
 //
 // Example:
 //
