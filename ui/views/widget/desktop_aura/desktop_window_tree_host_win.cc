@@ -828,21 +828,21 @@ bool DesktopWindowTreeHostWin::ShouldPaintAsActive() const {
 }
 
 bool DesktopWindowTreeHostWin::CanResize() const {
-  if (const Widget* widget = GetWidget(); widget->widget_delegate()) {
+  if (const Widget* widget = GetWidget(); widget && widget->widget_delegate()) {
     return widget->widget_delegate()->CanResize();
   }
   return false;
 }
 
 bool DesktopWindowTreeHostWin::CanMaximize() const {
-  if (const Widget* widget = GetWidget(); widget->widget_delegate()) {
+  if (const Widget* widget = GetWidget(); widget && widget->widget_delegate()) {
     return widget->widget_delegate()->CanMaximize();
   }
   return false;
 }
 
 bool DesktopWindowTreeHostWin::CanMinimize() const {
-  if (const Widget* widget = GetWidget(); widget->widget_delegate()) {
+  if (const Widget* widget = GetWidget(); widget && widget->widget_delegate()) {
     return widget->widget_delegate()->CanMinimize();
   }
   return false;
@@ -886,7 +886,7 @@ int DesktopWindowTreeHostWin::GetNonClientComponent(
 
 void DesktopWindowTreeHostWin::GetWindowMask(const gfx::Size& size,
                                              SkPath* path) {
-  if (Widget* widget = GetWidget(); widget->non_client_view()) {
+  if (Widget* widget = GetWidget(); widget && widget->non_client_view()) {
     widget->non_client_view()->GetWindowMask(
         display::win::ScreenWin::ScreenToDIPSize(GetHWND(), size), path);
     // Convert path in DIPs to pixels.
@@ -940,7 +940,7 @@ gfx::Size DesktopWindowTreeHostWin::DIPToScreenSize(
 }
 
 void DesktopWindowTreeHostWin::ResetWindowControls() {
-  if (Widget* widget = GetWidget(); widget->non_client_view()) {
+  if (Widget* widget = GetWidget(); widget && widget->non_client_view()) {
     widget->non_client_view()->ResetWindowControls();
   }
 }
@@ -966,7 +966,7 @@ void DesktopWindowTreeHostWin::HandleActivationChanged(bool active) {
 bool DesktopWindowTreeHostWin::HandleAppCommand(int command) {
   // We treat APPCOMMAND ids as an extension of our command namespace, and just
   // let the delegate figure out what to do...
-  if (Widget* widget = GetWidget(); widget->widget_delegate()) {
+  if (Widget* widget = GetWidget(); widget && widget->widget_delegate()) {
     return widget->widget_delegate()->ExecuteWindowsCommand(command);
   }
   return false;
@@ -987,7 +987,7 @@ void DesktopWindowTreeHostWin::HandleClose() {
 }
 
 bool DesktopWindowTreeHostWin::HandleCommand(int command) {
-  if (Widget* widget = GetWidget(); widget->widget_delegate()) {
+  if (Widget* widget = GetWidget(); widget && widget->widget_delegate()) {
     return widget->widget_delegate()->ExecuteWindowsCommand(command);
   }
   return false;
@@ -1027,7 +1027,7 @@ bool DesktopWindowTreeHostWin::HandleInitialFocus(
 }
 
 void DesktopWindowTreeHostWin::HandleDisplayChange() {
-  if (Widget* widget = GetWidget(); widget->widget_delegate()) {
+  if (Widget* widget = GetWidget(); widget && widget->widget_delegate()) {
     widget->widget_delegate()->OnDisplayChanged();
   }
 }
@@ -1055,7 +1055,7 @@ void DesktopWindowTreeHostWin::HandleMove() {
 
 void DesktopWindowTreeHostWin::HandleWorkAreaChanged() {
   CheckForMonitorChange();
-  if (Widget* widget = GetWidget(); widget->widget_delegate()) {
+  if (Widget* widget = GetWidget(); widget && widget->widget_delegate()) {
     widget->widget_delegate()->OnWorkAreaChanged();
   }
 }
@@ -1088,7 +1088,7 @@ void DesktopWindowTreeHostWin::HandleClientSizeChanged(
 
 void DesktopWindowTreeHostWin::HandleFrameChanged() {
   // Replace the frame and layout the contents.
-  if (Widget* widget = GetWidget(); widget->non_client_view()) {
+  if (Widget* widget = GetWidget(); widget && widget->non_client_view()) {
     widget->non_client_view()->UpdateFrame();
   }
 }
@@ -1119,7 +1119,7 @@ void DesktopWindowTreeHostWin::HandleKeyEvent(ui::KeyEvent* event) {
       (event->key_code() == ui::VKEY_SPACE) &&
       (event->flags() & ui::EF_ALT_DOWN) &&
       !(event->flags() & ui::EF_CONTROL_DOWN)) {
-    if (Widget* widget = GetWidget(); widget->non_client_view()) {
+    if (Widget* widget = GetWidget(); widget && widget->non_client_view()) {
       return;
     }
   }
@@ -1186,7 +1186,7 @@ bool DesktopWindowTreeHostWin::HandleIMEMessage(UINT message,
                                                 LRESULT* result) {
   // Show the system menu at an appropriate location on alt-space.
   if ((message == WM_SYSCHAR) && (w_param == VK_SPACE)) {
-    if (Widget* widget = GetWidget(); widget->non_client_view()) {
+    if (Widget* widget = GetWidget(); widget && widget->non_client_view()) {
       const auto* frame = GetWidget()->non_client_view()->frame_view();
       ShowSystemMenuAtScreenPixelLocation(
           GetHWND(), frame->GetSystemMenuScreenPixelLocation());
