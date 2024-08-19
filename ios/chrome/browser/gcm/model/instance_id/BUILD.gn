@@ -13,6 +13,7 @@ source_set("instance_id") {
     "//components/keyed_service/ios",
     "//ios/chrome/browser/gcm/model",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/web",
   ]
 }
