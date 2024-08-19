@@ -27,6 +27,7 @@
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_request.h"
 #include "net/log/net_log_with_source.h"
+#include "net/socket/connection_attempts.h"
 #include "net/socket/stream_attempt.h"
 #include "net/socket/stream_socket_handle.h"
 #include "net/socket/tls_stream_attempt.h"
@@ -376,6 +377,7 @@ class HttpStreamPool::Job
 
   NetErrorDetails net_error_details_;
   ResolveErrorInfo resolve_error_info_;
+  ConnectionAttempts connection_attempts_;
 
   // Set to an error from the latest stream attempt failure or network change
   // events. Used to notify delegates when all attempts failed.

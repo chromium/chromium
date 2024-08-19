@@ -316,6 +316,10 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     return request_->negotiated_protocol();
   }
 
+  const ConnectionAttempts& connection_attempts() const {
+    return request_->connection_attempts();
+  }
+
  private:
   StreamKeyBuilder key_builder_;
 
@@ -479,7 +483,7 @@ TEST_F(HttpStreamPoolJobTest, ResolveEndpointFailedSync) {
   endpoint_request->set_start_result(ERR_FAILED);
   StreamRequester requester;
   requester.RequestStream(pool());
-  EXPECT_THAT(*requester.result(), IsError(ERR_FAILED));
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_FAILED)));
 }
 
 TEST_F(HttpStreamPoolJobTest, ResolveEndpointFailedMultipleRequests) {
@@ -494,8 +498,8 @@ TEST_F(HttpStreamPoolJobTest, ResolveEndpointFailedMultipleRequests) {
   endpoint_request->CallOnServiceEndpointRequestFinished(ERR_FAILED);
   RunUntilIdle();
 
-  EXPECT_THAT(*requester1.result(), IsError(ERR_FAILED));
-  EXPECT_THAT(*requester2.result(), IsError(ERR_FAILED));
+  EXPECT_THAT(requester1.result(), Optional(IsError(ERR_FAILED)));
+  EXPECT_THAT(requester2.result(), Optional(IsError(ERR_FAILED)));
 }
 
 TEST_F(HttpStreamPoolJobTest, LoadState) {
@@ -507,7 +511,7 @@ TEST_F(HttpStreamPoolJobTest, LoadState) {
   ASSERT_EQ(request->GetLoadState(), LOAD_STATE_RESOLVING_HOST);
 
   endpoint_request->CallOnServiceEndpointRequestFinished(ERR_FAILED);
-  EXPECT_THAT(*requester.result(), IsError(ERR_FAILED));
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_FAILED)));
 
   RunUntilIdle();
   ASSERT_EQ(request->GetLoadState(), LOAD_STATE_IDLE);
@@ -524,8 +528,10 @@ TEST_F(HttpStreamPoolJobTest, ResolveErrorInfo) {
 
   endpoint_request->CallOnServiceEndpointRequestFinished(ERR_NAME_NOT_RESOLVED);
   RunUntilIdle();
-  EXPECT_THAT(*requester.result(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_NAME_NOT_RESOLVED)));
   ASSERT_EQ(requester.resolve_error_info(), resolve_error_info);
+  ASSERT_EQ(requester.connection_attempts().size(), 1u);
+  EXPECT_EQ(requester.connection_attempts()[0].result, ERR_NAME_NOT_RESOLVED);
 }
 
 TEST_F(HttpStreamPoolJobTest, DnsAliases) {
@@ -542,7 +548,7 @@ TEST_F(HttpStreamPoolJobTest, DnsAliases) {
   StreamRequester requester;
   requester.RequestStream(pool());
   RunUntilIdle();
-  EXPECT_THAT(*requester.result(), IsOk());
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
   std::unique_ptr<HttpStream> stream = requester.ReleaseStream();
   EXPECT_THAT(stream->GetDnsAliases(), kAliases);
 }
@@ -705,7 +711,9 @@ TEST_F(HttpStreamPoolJobTest, TcpFailSync) {
       ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
-  EXPECT_THAT(*requester.result(), IsError(ERR_FAILED));
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_FAILED)));
+  ASSERT_EQ(requester.connection_attempts().size(), 1u);
+  ASSERT_EQ(requester.connection_attempts()[0].result, ERR_FAILED);
 }
 
 TEST_F(HttpStreamPoolJobTest, TcpFailAsync) {
@@ -722,7 +730,9 @@ TEST_F(HttpStreamPoolJobTest, TcpFailAsync) {
       ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
-  EXPECT_THAT(*requester.result(), IsError(ERR_FAILED));
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_FAILED)));
+  ASSERT_EQ(requester.connection_attempts().size(), 1u);
+  ASSERT_EQ(requester.connection_attempts()[0].result, ERR_FAILED);
 }
 
 TEST_F(HttpStreamPoolJobTest, TlsOk) {
@@ -740,7 +750,7 @@ TEST_F(HttpStreamPoolJobTest, TlsOk) {
       ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
-  EXPECT_THAT(*requester.result(), IsOk());
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
 }
 
 TEST_F(HttpStreamPoolJobTest, TlsCryptoReadyDelayed) {
@@ -764,7 +774,7 @@ TEST_F(HttpStreamPoolJobTest, TlsCryptoReadyDelayed) {
 
   endpoint_request->set_crypto_ready(true).CallOnServiceEndpointsUpdated();
   RunUntilIdle();
-  EXPECT_THAT(*requester.result(), IsOk());
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
 }
 
 TEST_F(HttpStreamPoolJobTest, CertificateError) {
@@ -799,12 +809,17 @@ TEST_F(HttpStreamPoolJobTest, CertificateError) {
 
   endpoint_request->set_crypto_ready(true).CallOnServiceEndpointsUpdated();
   RunUntilIdle();
-  EXPECT_THAT(*requester1.result(), IsError(ERR_CERT_DATE_INVALID));
-  EXPECT_THAT(*requester2.result(), IsError(ERR_CERT_DATE_INVALID));
+  EXPECT_THAT(requester1.result(), Optional(IsError(ERR_CERT_DATE_INVALID)));
+  EXPECT_THAT(requester2.result(), Optional(IsError(ERR_CERT_DATE_INVALID)));
   ASSERT_TRUE(
       requester1.cert_error_ssl_info().cert->EqualsIncludingChain(kCert.get()));
+  ASSERT_EQ(requester1.connection_attempts().size(), 1u);
+  ASSERT_EQ(requester1.connection_attempts()[0].result, ERR_CERT_DATE_INVALID);
+
   ASSERT_TRUE(
       requester2.cert_error_ssl_info().cert->EqualsIncludingChain(kCert.get()));
+  ASSERT_EQ(requester2.connection_attempts().size(), 1u);
+  ASSERT_EQ(requester2.connection_attempts()[0].result, ERR_CERT_DATE_INVALID);
 }
 
 TEST_F(HttpStreamPoolJobTest, NeedsClientAuth) {
@@ -920,7 +935,7 @@ TEST_F(HttpStreamPoolJobTest, OneIPEndPointFailed) {
                                      .endpoint());
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
-  EXPECT_THAT(*requester.result(), IsOk());
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
 }
 
 TEST_F(HttpStreamPoolJobTest, IPEndPointTimedout) {
@@ -942,8 +957,7 @@ TEST_F(HttpStreamPoolJobTest, IPEndPointTimedout) {
   ASSERT_FALSE(requester.result().has_value());
 
   FastForwardBy(TcpStreamAttempt::kTcpHandshakeTimeout);
-  ASSERT_TRUE(requester.result().has_value());
-  EXPECT_THAT(*requester.result(), IsError(ERR_TIMED_OUT));
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_TIMED_OUT)));
 }
 
 TEST_F(HttpStreamPoolJobTest, IPEndPointsSlow) {
@@ -986,7 +1000,7 @@ TEST_F(HttpStreamPoolJobTest, IPEndPointsSlow) {
   // immediately.
   FastForwardBy(HttpStreamPool::kConnectionAttemptDelay);
   ASSERT_TRUE(request->completed());
-  EXPECT_THAT(*requester.result(), IsOk());
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
 }
 
 TEST_F(HttpStreamPoolJobTest, PauseSlowTimerAfterTcpHandshakeForTls) {
@@ -1480,8 +1494,8 @@ TEST_F(HttpStreamPoolJobTest, CancelAttemptAndRequestsOnIPAddressChange) {
   ASSERT_EQ(job1->InFlightAttemptCount(), 0u);
   ASSERT_EQ(job2->RequestCount(), 0u);
   ASSERT_EQ(job2->InFlightAttemptCount(), 0u);
-  EXPECT_THAT(*requester1.result(), IsError(ERR_NETWORK_CHANGED));
-  EXPECT_THAT(*requester2.result(), IsError(ERR_NETWORK_CHANGED));
+  EXPECT_THAT(requester1.result(), Optional(IsError(ERR_NETWORK_CHANGED)));
+  EXPECT_THAT(requester2.result(), Optional(IsError(ERR_NETWORK_CHANGED)));
 }
 
 // Tests that the network change error is reported even when a different error
@@ -1514,8 +1528,9 @@ TEST_F(HttpStreamPoolJobTest, IPAddressChangeAfterNeedsClientAuth) {
       .CallOnServiceEndpointsUpdated();
   NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
   RunUntilIdle();
-  EXPECT_THAT(*requester1.result(), IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED));
-  EXPECT_THAT(*requester2.result(), IsError(ERR_NETWORK_CHANGED));
+  EXPECT_THAT(requester1.result(),
+              Optional(IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED)));
+  EXPECT_THAT(requester2.result(), Optional(IsError(ERR_NETWORK_CHANGED)));
 }
 
 TEST_F(HttpStreamPoolJobTest, SSLConfigChangedCloseIdleStream) {
@@ -1638,7 +1653,7 @@ TEST_F(HttpStreamPoolJobTest, SpdyOk) {
 
   for (auto& requester : requesters) {
     ASSERT_TRUE(requester->result().has_value());
-    EXPECT_THAT(*requester->result(), IsOk());
+    EXPECT_THAT(requester->result(), Optional(IsOk()));
   }
   Group& group =
       pool().GetOrCreateGroupForTesting(requesters[0]->GetStreamKey());
@@ -2048,7 +2063,7 @@ TEST_F(HttpStreamPoolJobTest,
   CreateFakeSpdySession(requester_a.GetStreamKey(), kCommonEndPoint);
   requester_a.RequestStream(pool());
   RunUntilIdle();
-  EXPECT_THAT(*requester_a.result(), IsOk());
+  EXPECT_THAT(requester_a.result(), Optional(IsOk()));
 
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
   endpoint_request

@@ -28,6 +28,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_session_alias_key.h"
+#include "net/socket/connection_attempts.h"
 #include "net/socket/stream_attempt.h"
 #include "net/socket/stream_socket_handle.h"
 #include "net/socket/tcp_stream_attempt.h"
@@ -261,6 +262,9 @@ void HttpStreamPool::Job::OnServiceEndpointRequestFinished(int rv) {
 
   if (rv != OK) {
     error_to_notify_ = rv;
+    // If service endpoint resolution failed, record an empty endpoint and the
+    // result.
+    connection_attempts_.emplace_back(IPEndPoint(), rv);
     NotifyFailure();
     return;
   }
@@ -927,6 +931,8 @@ void HttpStreamPool::Job::NotifyStreamRequestOfFailure() {
       FROM_HERE, base::BindOnce(&Job::NotifyStreamRequestOfFailure,
                                 weak_ptr_factory_.GetWeakPtr()));
 
+  entry->request()->AddConnectionAttempts(connection_attempts_);
+
   FailureKind kind = DetermineFailureKind();
   switch (kind) {
     case FailureKind::kStreamFailed:
@@ -1128,6 +1134,8 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
   pool()->DecrementTotalConnectingStreamCount();
 
   if (rv != OK) {
+    connection_attempts_.emplace_back(in_flight_attempt->attempt->ip_endpoint(),
+                                      rv);
     HandleAttemptFailure(std::move(in_flight_attempt), rv);
     return;
   }
