@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "base/types/strong_alias.h"

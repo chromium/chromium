@@ -11,6 +11,7 @@
 #include <cmath>
 #include <deque>
 #include <optional>
+#include <unordered_map>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
