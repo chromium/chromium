@@ -440,8 +440,12 @@ bool SchedulerStateMachine::ShouldUpdateDisplayTree() const {
 
 bool SchedulerStateMachine::ShouldActivateSyncTree() const {
   // There is nothing to activate.
-  if (!has_pending_tree_)
+  if (!has_pending_tree_) {
+    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                         "Not activating sync tree due to no pending tree",
+                         TRACE_EVENT_SCOPE_THREAD);
     return false;
+  }
 
   // We should not activate a second tree before drawing the first one.
   // Even if we need to force activation of the pending tree, we should abort
@@ -450,6 +454,9 @@ bool SchedulerStateMachine::ShouldActivateSyncTree() const {
   // may lead to bad scheduling.
   if (!settings_.using_synchronous_renderer_compositor &&
       active_tree_needs_first_draw_) {
+    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                         "Not activating before drawing active first",
+                         TRACE_EVENT_SCOPE_THREAD);
     return false;
   }
 
@@ -459,19 +466,33 @@ bool SchedulerStateMachine::ShouldActivateSyncTree() const {
   //
   // Note that paint worklets continue to paint when the page is not visible, so
   // any abort will eventually happen when they complete.
-  if (processing_paint_worklets_for_pending_tree_)
+  if (processing_paint_worklets_for_pending_tree_) {
+    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                         "Not activating due to processing paint worklets",
+                         TRACE_EVENT_SCOPE_THREAD);
     return false;
+  }
 
   if (ShouldAbortCurrentFrame())
     return true;
 
   // Delay pending tree activation until animation worklets have completed
   // their asynchronous updates to pick up initial values.
-  if (processing_animation_worklets_for_pending_tree_)
+  if (processing_animation_worklets_for_pending_tree_) {
+    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                         "Not activating due to processing animation worklets",
+                         TRACE_EVENT_SCOPE_THREAD);
     return false;
+  }
 
   // At this point, only activate if we are ready to activate.
-  return pending_tree_is_ready_for_activation_;
+  if (!pending_tree_is_ready_for_activation_) {
+    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                         "Not activating because pending tree not ready",
+                         TRACE_EVENT_SCOPE_THREAD);
+    return false;
+  }
+  return true;
 }
 
 bool SchedulerStateMachine::ShouldNotifyBeginMainFrameNotExpectedUntil() const {
