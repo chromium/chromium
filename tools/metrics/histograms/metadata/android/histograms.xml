@@ -2980,13 +2980,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SetGeolocationHeadersTime" units="ms"
-    expires_after="2024-04-28">
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@google.com</owner>
+    expires_after="2025-08-28">
+  <owner>ender@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Records time spent setting geolocation headers when the user navigates via
     the Omnibox. This time blocks the start of the navigation and is included in
     InputToNavigationStart metrics, but not in NavigationTo* metrics.
+
+    NOTE: there's a possible gap in data between 2024-04-28 and 2024-08-16.
   </summary>
 </histogram>
 
@@ -3315,11 +3317,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.Omnibox.{AndroidSearchPrefetch}.GeoLocationHeaderTime.{AndroidNavigationOrSuggestionPrefetch}"
-    units="ms" expires_after="2024-11-15">
+    units="ms" expires_after="2025-08-28">
+  <owner>ender@google.com</owner>
   <owner>nhiroki@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
-  <owner>chrome-search@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
   <summary>
     {AndroidSearchPrefetch}
 
