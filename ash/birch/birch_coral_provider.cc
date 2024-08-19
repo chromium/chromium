@@ -8,6 +8,12 @@
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_item.h"
 #include "ash/shell.h"
 
+namespace {
+bool HasValidClusterCount(size_t num_clusters) {
+  return num_clusters <= 2;
+}
+}  // namespace
+
 namespace ash {
 
 BirchCoralProvider::BirchCoralProvider(BirchModel* birch_model)
@@ -16,6 +22,7 @@ BirchCoralProvider::BirchCoralProvider(BirchModel* birch_model)
     Shell::Get()->tab_cluster_ui_controller()->AddObserver(this);
   }
 }
+
 BirchCoralProvider::~BirchCoralProvider() {
   if (features::IsTabClusterUIEnabled()) {
     Shell::Get()->tab_cluster_ui_controller()->RemoveObserver(this);
@@ -60,11 +67,14 @@ void BirchCoralProvider::HandleInSessionDataRequest() {
         coral_util::TabData{.tab_title = tab->current_info().title,
                             .source = tab->current_info().source});
   }
-  active_tab_data_ = std::move(active_tab_data);
+  request_.set_tab_data(std::move(active_tab_data));
 }
 
-void BirchCoralProvider::HandleClusterData() {
+void BirchCoralProvider::HandleCoralResponse(
+    std::unique_ptr<coral_util::CoralResponse> response) {
   // TODO(yulunwu) update `birch_model_`
+  response_ = std::move(response);
+  CHECK(HasValidClusterCount(response_->clusters().size()));
 }
 
 }  // namespace ash
