@@ -730,7 +730,8 @@ Node* Node::moveBefore(Node* new_child,
   // to run during atomic moves.
   const bool perform_state_preserving_atomic_move =
       isConnected() && new_child->isConnected() && GetDocument().IsActive() &&
-      (GetTreeScope() == new_child->GetTreeScope());
+      (GetTreeScope() == new_child->GetTreeScope()) &&
+      new_child->IsElementNode();
 
   if (perform_state_preserving_atomic_move) {
     // When `moveBefore()` is called, AND we're actually performing a
@@ -2324,10 +2325,6 @@ Node::InsertionNotificationRequest Node::InsertedInto(
     cache->NodeIsConnected(this);
   }
 
-  if (GetDocument().StatePreservingAtomicMoveInProgress() &&
-      (IsElementNode() || IsTextNode())) {
-    FlatTreeParentChanged();
-  }
   return kInsertionDone;
 }
 

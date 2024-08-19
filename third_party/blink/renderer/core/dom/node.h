@@ -1045,7 +1045,10 @@ class CORE_EXPORT Node : public EventTarget {
                          mojom::blink::ConsoleMessageLevel level,
                          const String& message);
 
- private:
+  // Called when a node changes its flat tree parent, either because slot
+  // assignments changed, or the node got reparented by a moveBefore().
+  void FlatTreeParentChanged();
+
  private:
   enum NodeFlags : uint32_t {
     // getNodeType() is called extensively. As it's called quite a bit its
@@ -1213,10 +1216,6 @@ class CORE_EXPORT Node : public EventTarget {
   TransientMutationObserverRegistry();
 
   ShadowRoot* GetSlotAssignmentRoot() const;
-
-  // Called when a node changes its flat tree parent, either because slot
-  // assignments changed, or the node got reparented by a moveBefore().
-  void FlatTreeParentChanged();
 
   // EventTarget ends with a single 32-bit member, so put one 32-bit member
   // first to avoid padding on 64-bit.

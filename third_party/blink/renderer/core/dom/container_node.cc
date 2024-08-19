@@ -1217,6 +1217,10 @@ void ContainerNode::ChildrenChanged(const ChildrenChange& change) {
   if (!InActiveDocument())
     return;
   if (Element* element = DynamicTo<Element>(this)) {
+    if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+      CHECK(inserted_node->IsElementNode());
+      inserted_node->FlatTreeParentChanged();
+    }
     if (!element->GetComputedStyle()) {
       // There is no need to mark for style recalc if the parent element does
       // not already have a ComputedStyle. For instance if we insert nodes into
