@@ -134,7 +134,7 @@ public class TabResumptionTileView extends RelativeLayout {
             titleLayout.addRule(RelativeLayout.BELOW, chipView.getId());
         } else {
             titleLayout.removeRule(RelativeLayout.BELOW);
-            titleLayout.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+            titleLayout.addRule(RelativeLayout.BELOW, R.id.tile_pre_info_text);
         }
         findViewById(R.id.tile_pre_info_text).setVisibility(View.GONE);
         return label;

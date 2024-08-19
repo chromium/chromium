@@ -165,30 +165,34 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
                     nullptr, nullptr, j_suggestions_);
               },
               [&](const URLVisitAggregate::HistoryData& history_data) {
-                Java_VisitedUrlRankingBackend_addSuggestionEntry(
-                    env_, jobj_,
-                    JniIntWrapper(
-                        static_cast<int>(SuggestionEntryType::kHistory)),
-                    base::android::ConvertUTF8ToJavaString(env_, "?"),
-                    url::GURLAndroid::FromNativeGURL(
-                        env_, history_data.last_visited.url_row.url()),
-                    base::android::ConvertUTF16ToJavaString(
-                        env_, history_data.last_visited.url_row.title()),
-                    history_data.last_visited.visit_row.visit_time
-                        .InMillisecondsSinceUnixEpoch(),
-                    kInvalidTabId,
-                    base::android::ConvertUTF8ToJavaString(env_,
-                                                           aggregate.url_key),
-                    aggregate.request_id.is_null()
-                        ? -1LL
-                        : aggregate.request_id.GetUnsafeValue(),
-                    history_data.last_app_id
-                        ? base::android::ConvertUTF8ToJavaString(
-                              env_, *history_data.last_app_id)
-                        : nullptr,
-                    // TODO(b/358399176): Plumb the "reason" to show the Tab to
-                    // Java.
-                    nullptr, j_suggestions_);
+                if (history_data.last_visited.context_annotations.on_visit
+                        .browser_type ==
+                    history::VisitContextAnnotations::BrowserType::kCustomTab) {
+                  Java_VisitedUrlRankingBackend_addSuggestionEntry(
+                      env_, jobj_,
+                      JniIntWrapper(
+                          static_cast<int>(SuggestionEntryType::kHistory)),
+                      base::android::ConvertUTF8ToJavaString(env_, "?"),
+                      url::GURLAndroid::FromNativeGURL(
+                          env_, history_data.last_visited.url_row.url()),
+                      base::android::ConvertUTF16ToJavaString(
+                          env_, history_data.last_visited.url_row.title()),
+                      history_data.last_visited.visit_row.visit_time
+                          .InMillisecondsSinceUnixEpoch(),
+                      kInvalidTabId,
+                      base::android::ConvertUTF8ToJavaString(env_,
+                                                             aggregate.url_key),
+                      aggregate.request_id.is_null()
+                          ? -1LL
+                          : aggregate.request_id.GetUnsafeValue(),
+                      history_data.last_app_id
+                          ? base::android::ConvertUTF8ToJavaString(
+                                env_, *history_data.last_app_id)
+                          : nullptr,
+                      // TODO(b/358399176): Plumb the "reason" to show the Tab
+                      // to Java.
+                      nullptr, j_suggestions_);
+                }
               }},
           fetcher_entry.second);
     }
