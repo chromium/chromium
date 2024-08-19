@@ -280,7 +280,7 @@ constexpr CGFloat kSpace = 8;
                                         menu:[self configuredTabGroupMenu]];
   dotsItem.accessibilityIdentifier = kTabGroupOverflowMenuButtonIdentifier;
   dotsItem.accessibilityLabel = l10n_util::GetNSString(
-      IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
+      IDS_IOS_TAB_GROUP_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
 
   navigationItem.rightBarButtonItems = @[ dotsItem, plusItem ];
   return navigationItem;

@@ -5391,6 +5391,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_GROUP_CONFIRMATION_UNGROUP_MESSAGE_WITHOUT_EMAIL" desc="Message of the confirmation to delete a tab group in the action sheet. This text is displayed when a user is not signed in.">
         The tabs will remain open on this device but the group will be permanently deleted.
       </message>
+      <message name="IDS_IOS_TAB_GROUP_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility label for the 3-dot menu button displayed in the tab group view.">
+        More Options
+      </message>
       <message name="IDS_IOS_TAB_GROUP_CREATION_ACCESSIBILITY_COLOR_SELECTION" desc="Accessibility label, giving context to screen reader when users navigate the color list in the tab group creation screen. This is spoken by VoiceOver.">
           Tab group color <ph name="COLOR"><ex>yellow</ex>$1</ph>
       </message>
