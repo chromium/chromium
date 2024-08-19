@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 75 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 76 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] CSSRule interface: constant MARGIN_RULE on interface object
   assert_own_property: expected property "MARGIN_RULE" missing
 [FAIL] CSSRule interface: constant MARGIN_RULE on interface prototype object
@@ -48,7 +48,9 @@ Found 75 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
 [FAIL] CSSPageDescriptors interface: attribute size
   assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
-[FAIL] CSSPageDescriptors interface: attribute orientation
+[FAIL] CSSPageDescriptors interface: attribute pageOrientation
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface: attribute page-orientation
   assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
 [FAIL] CSSPageDescriptors interface: attribute marks
   assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
