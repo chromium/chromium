@@ -4746,6 +4746,8 @@ data/accessibility/html/select-follows-focus-multiselect.html
 data/accessibility/html/select-follows-focus.html
 data/accessibility/html/select-in-canvas-expected-blink.txt
 data/accessibility/html/select-in-canvas.html
+data/accessibility/html/select-open-expected-blink.txt
+data/accessibility/html/select-open.html
 data/accessibility/html/select.html
 data/accessibility/html/selection-container-expected-android-assist-data.txt
 data/accessibility/html/selection-container-expected-android-external.txt

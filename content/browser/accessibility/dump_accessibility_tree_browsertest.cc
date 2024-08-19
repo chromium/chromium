@@ -3262,6 +3262,17 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySelect) {
   RunHtmlTest(FILE_PATH_LITERAL("select.html"));
 }
 
+// The test times out on Mac because it cannot open the native select.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AccessibilitySelectOpen DISABLED_AccessibilitySelectOpen
+#else
+#define MAYBE_AccessibilitySelectOpen AccessibilitySelectOpen
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilitySelectOpen) {
+  RunHtmlTest(FILE_PATH_LITERAL("select-open.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySelectInCanvas) {
   RunHtmlTest(FILE_PATH_LITERAL("select-in-canvas.html"));
 }
