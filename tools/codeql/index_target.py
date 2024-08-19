@@ -28,45 +28,6 @@ def log_subprocess_output(output, logger=None):
     logger.info(output)
 
 
-def get_compilation_db(src_path, out_path):
-  root_command = os.path.join(src_path,
-                              'tools/clang/scripts/generate_compdb.py')
-  command = [root_command]
-  command.extend(['-p', out_path])
-  print(f"Compilation DB command: {command}")
-  output = subprocess.check_output(command, cwd=src_path)
-  return json.loads(output)
-
-
-def trace(processing_num, entry, *, codeql_binary_path, codeql_db_path,
-          successful_commands, failed_commands, logger):
-  directory = entry['directory']
-  command = entry['command']
-
-  command = command.replace('\\"', '"').replace('\\(',
-                                                '(').replace('\\)',
-                                                             ')').split(' ')
-  command[0] = os.path.abspath(os.path.join(directory, command[0]))
-
-  try:
-    subprocess.check_output([
-        codeql_binary_path, 'database', 'trace-command', codeql_db_path,
-        f'--working-dir={directory}', '--', *command
-    ],
-                            stderr=subprocess.STDOUT)
-    successful_commands.append(str(command))
-    logger.info("************ Upto " + str(processing_num))
-
-  except subprocess.CalledProcessError as e:
-    logger.info(
-        "FAILURE: a subprocess.CalledProcessError occurred while running %s" %
-        command)
-    logger.info(traceback.format_exc())
-    logger.info("Working directory was %s" % directory)
-    failed_commands[str(command)] = CommandOutput(e.output,
-                                                  traceback.format_exc())
-
-
 class CodeQLDatabase:
 
   def __init__(self, src_path, db_path, codeql_binary_path):
@@ -95,33 +56,19 @@ def index_one_target(target_name,
                      logger,
                      gn_path=None,
                      logfile=None):
-  target_shortname = target_name.split(":")[1]
-  db_path = os.path.join(db_path, target_shortname)
+  try:
+    process_stdout = subprocess.check_output(
+        [args.gn_path, 'clean', args.out_path])
+    log_subprocess_output(process_stdout)
+  except subprocess.CalledProcessError as e:
+    print("Failed to clean build directory between targets")
+    print("stdout: %s" % e.stdout)
+    print("stderr: %s" % e.stderr)
+    exit(1)
+  db_path = os.path.join(db_path, target_name)
   os.mkdir(os.path.join(db_path))
 
   start_time = time.time()
-  print("Generating compilation db.")
-  compilation_db = []
-
-  # TODO(flowerhack): For reasons as-yet-undetermined, this filtering logic
-  # leads to a database that is broken in surprising ways for the
-  # //chrome:chrome target.
-  # Temporarily use ONLY the compilation DB to unbreak this.
-  if target_name != "//chrome:chrome":
-    print("Fetching all transitive source dependencies for " + str(target_name))
-    gn_sources_dict = gn_sources_tools.dictionary_of_all_transitive_sources(
-        target_name, out_path, gn_path)
-    initial_compilation_db = get_compilation_db(src_path, out_path)
-    print('Filtering compilation DB to only include matches '
-          'from GN transitive dependencies.')
-    for entry in initial_compilation_db:
-      if entry['file'] in gn_sources_dict:
-        compilation_db.append(entry)
-  else:
-    initial_compilation_db = get_compilation_db(src_path, out_path)
-    for entry in initial_compilation_db:
-      if "-DLLVMFuzzerTestOneInput" not in entry['command']:
-        compilation_db.append(entry)
 
   print("Initializing codeql.")
   codeql_db = ""
@@ -129,33 +76,20 @@ def index_one_target(target_name,
     codeql_db = CodeQLDatabase(src_path, db_path, codeql_binary_path)
   except ValueError:
     print("Could not initialize CodeQL database at %s" % db_path)
-    exit()
+    exit(1)
 
   print("Tracing compilation.")
-  if (logfile):
-    print("Progress on trace compilation will be reported to %s" % logfile)
-  my_cpu_count = int(multiprocessing.cpu_count())
-  failed_commands = multiprocessing.Manager().dict()
-  successful_commands = multiprocessing.Manager().list()
-  with multiprocessing.Pool(my_cpu_count) as p:
-    results = p.starmap(
-        functools.partial(trace,
-                          codeql_binary_path=codeql_binary_path,
-                          codeql_db_path=codeql_db.db_path,
-                          successful_commands=successful_commands,
-                          failed_commands=failed_commands,
-                          logger=logger),
-        [(num, entry) for num, entry in enumerate(compilation_db)])
-
-  print("Successful commands: %s" % len(successful_commands))
-  print("Failed commands: %s" % len(failed_commands.keys()))
-  if failed_commands:
-    print("Failed commands were:")
-    for failed_command in failed_commands.keys():
-      print("%s\n" % failed_command)
-      print("Combined stdout/stderr: %s\n" %
-            failed_commands[failed_command].output)
-      print("Traceback: %s\n\n" % failed_commands[failed_command].traceback)
+  try:
+    process_stdout = subprocess.check_output([
+        codeql_binary_path, 'database', 'trace-command', db_path,
+        f'--working-dir={src_path}', '--', 'ninja', '-C', out_path, target_name
+    ])
+    log_subprocess_output(process_stdout)
+  except subprocess.CalledProcessError as e:
+    print("CodeQL trace-process failed with return code %s" % e.returncode)
+    print("stdout: %s" % e.stdout)
+    print("stderr: %s" % e.stderr)
+    exit(1)
 
   print("Finalizing codeql db.")
   try:
@@ -173,11 +107,6 @@ def index_one_target(target_name,
 
 
 def main():
-  print('BEFORE RUNNING THIS SCRIPT: Make sure you have done a *full build*'
-        'in your --out_dir.')
-  print('This script does not build anything itself, and will fail in strange '
-        'ways if there is an empty or incomplete build!"')
-
   logger = logging.getLogger('log')
   logger.setLevel(logging.INFO)
   actual_cwd = os.getcwd()
@@ -187,7 +116,7 @@ def main():
     print("Failure: Script must be executed from `chromium/src`. Exiting.")
     print(actual_cwd)
     print(src_path)
-    exit()
+    exit(1)
 
   print("Parsing command line arguments.")
   parser = argparse.ArgumentParser(
@@ -239,15 +168,14 @@ def main():
   src_path = os.path.abspath(os.path.expanduser(src_path))
   args.db_path = os.path.abspath(os.path.expanduser(args.db_path))
 
-  if args.gn_targets:
-    for target in args.gn_targets:
-      index_one_target(target, src_path, args.db_path, args.codeql_binary_path,
-                       args.out_path, logger, args.gn_path, args.logfile)
-    return
-
-  # If no args.gn_target given, default to indexing everything in
-  # targets_to_index.
-  for target in targets_to_index.full_targets:
+  # If an args.gn_target is given, index those targets.
+  # Otherwise, index the targets in targets_to_index.
+  actual_targets_to_index = []
+  if not args.gn_targets:
+    actual_targets_to_index = targets_to_index.full_targets
+  else:
+    actual_targets_to_index = args.gn_targets
+  for target in actual_targets_to_index:
     index_one_target(target, src_path, args.db_path, args.codeql_binary_path,
                      args.out_path, logger, args.gn_path, args.logfile)
 
