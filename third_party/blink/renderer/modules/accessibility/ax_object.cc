@@ -1319,6 +1319,11 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
 
   PreSerializationConsistencyCheck();
 
+  if (node_data->role == ax::mojom::blink::Role::kInlineTextBox) {
+    SerializeInlineTextBox(node_data);
+    return;
+  }
+
   // Serialize a few things that we need even for ignored nodes.
   if (CanSetFocusAttribute()) {
     node_data->AddState(ax::mojom::blink::State::kFocusable);
@@ -1614,9 +1619,15 @@ void AXObject::SerializeHTMLAttributes(ui::AXNodeData* node_data) const {
   }
 }
 
-void AXObject::SerializeInlineTextBoxAttributes(
-    ui::AXNodeData* node_data) const {
+void AXObject::SerializeInlineTextBox(ui::AXNodeData* node_data) const {
   DCHECK_EQ(ax::mojom::blink::Role::kInlineTextBox, node_data->role);
+
+  SerializeLineAttributes(node_data);
+  SerializeMarkerAttributes(node_data);
+  SerializeBoundingBoxAttributes(*node_data);
+  if (GetTextDirection() != ax::mojom::blink::WritingDirection::kNone) {
+    node_data->SetTextDirection(GetTextDirection());
+  }
 
   Vector<int> character_offsets;
   TextCharacterOffsets(character_offsets);
@@ -1633,6 +1644,39 @@ void AXObject::SerializeInlineTextBoxAttributes(
       ax::mojom::blink::IntListAttribute::kWordStarts, word_starts, node_data);
   AddIntListAttributeFromOffsetVector(
       ax::mojom::blink::IntListAttribute::kWordEnds, word_ends, node_data);
+
+  // TODO(accessibility) Only need these editable states on ChromeOS, which
+  // should be able to infer them from the static text parent.
+  if (IsEditable()) {
+    node_data->AddState(ax::mojom::blink::State::kEditable);
+    if (IsRichlyEditable()) {
+      node_data->AddState(ax::mojom::blink::State::kRichlyEditable);
+    }
+  }
+
+  ax::mojom::blink::NameFrom name_from;
+  AXObjectVector name_objects;
+  String name = GetName(name_from, &name_objects);
+  DCHECK_EQ(name_from, ax::mojom::blink::NameFrom::kContents);
+  node_data->SetNameFrom(ax::mojom::blink::NameFrom::kContents);
+
+  if (::features::IsAccessibilityPruneRedundantInlineTextEnabled()) {
+    DCHECK(parent_);
+    DCHECK(parent_->GetLayoutObject()->IsText());
+    if (IsOnlyChild()) {
+      auto* layout_text = To<LayoutText>(parent_->GetLayoutObject());
+      String visible_text = layout_text->PlainText();
+      if (name == visible_text) {
+        // The text of an only-child inline text box can be inferred directly
+        // from the parent. No need to serialize redundant data.
+        return;
+      }
+    }
+  }
+
+  TruncateAndAddStringAttribute(node_data,
+                                ax::mojom::blink::StringAttribute::kName, name,
+                                kMaxStringAttributeLength);
 }
 
 void AXObject::SerializeLangAttribute(ui::AXNodeData* node_data) const {
@@ -1643,6 +1687,21 @@ void AXObject::SerializeLangAttribute(ui::AXNodeData* node_data) const {
       TruncateAndAddStringAttribute(
           node_data, ax::mojom::blink::StringAttribute::kLanguage, Language());
     }
+  }
+}
+
+void AXObject::SerializeLineAttributes(ui::AXNodeData* node_data) const {
+  if (AXObject* next_on_line = NextOnLine()) {
+    CHECK(!next_on_line->IsDetached());
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kNextOnLineId,
+                               next_on_line->AXObjectID());
+  }
+
+  if (AXObject* prev_on_line = PreviousOnLine()) {
+    CHECK(!prev_on_line->IsDetached());
+    node_data->AddIntAttribute(
+        ax::mojom::blink::IntAttribute::kPreviousOnLineId,
+        prev_on_line->AXObjectID());
   }
 }
 
@@ -1707,20 +1766,6 @@ void AXObject::SerializeNameAndDescriptionAttributes(
   ax::mojom::blink::NameFrom name_from;
   AXObjectVector name_objects;
   String name = GetName(name_from, &name_objects);
-
-  if (::features::IsAccessibilityPruneRedundantInlineTextEnabled()) {
-    if (node_data->role == ax::mojom::blink::Role::kInlineTextBox &&
-        IsOnlyChild() && parent_ && parent_->GetLayoutObject()->IsText()) {
-      auto* layout_text = To<LayoutText>(parent_->GetLayoutObject());
-      String visible_text = layout_text->PlainText();
-      if (name == visible_text) {
-        // The text of an only-child inline text box can be inferred directly
-        // from the parent. No need to serialize redundant data.
-        node_data->SetNameFrom(ax::mojom::blink::NameFrom::kContents);
-        return;
-      }
-    }
-  }
 
   if (name_from == ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty) {
     node_data->AddStringAttribute(ax::mojom::blink::StringAttribute::kName,
@@ -1849,24 +1894,6 @@ void AXObject::SerializeOtherScreenReaderAttributes(
     ui::AXNodeData* node_data) const {
   DCHECK_NE(node_data->role, ax::mojom::blink::Role::kUnknown);
 
-  if (AXObject* next_on_line = NextOnLine()) {
-    CHECK(!next_on_line->IsDetached());
-    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kNextOnLineId,
-                               next_on_line->AXObjectID());
-  }
-
-  if (AXObject* prev_on_line = PreviousOnLine()) {
-    CHECK(!prev_on_line->IsDetached());
-    node_data->AddIntAttribute(
-        ax::mojom::blink::IntAttribute::kPreviousOnLineId,
-        prev_on_line->AXObjectID());
-  }
-
-  if (node_data->role == ax::mojom::blink::Role::kInlineTextBox) {
-    SerializeInlineTextBoxAttributes(node_data);
-    return;
-  }
-
   if (IsA<Document>(GetNode())) {
     // The busy attribute is only relevant for actual Documents, not popups.
     if (RoleValue() == ax::mojom::blink::Role::kRootWebArea && !IsLoaded()) {
@@ -1879,6 +1906,8 @@ void AXObject::SerializeOtherScreenReaderAttributes(
       node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kPopupForId,
                                  parent->AXObjectID());
     }
+  } else {
+    SerializeLineAttributes(node_data);
   }
 
   if (node_data->role == ax::mojom::blink::Role::kColorWell) {
@@ -2250,7 +2279,7 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
 
   // If text, return early as a performance tweak, as the rest of the properties
   // in this method do not apply to text.
-  if (IsTextObject()) {
+  if (RoleValue() == ax::mojom::blink::Role::kStaticText) {
     return;
   }
 
