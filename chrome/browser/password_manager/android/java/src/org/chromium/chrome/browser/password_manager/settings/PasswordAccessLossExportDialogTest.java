@@ -223,4 +223,19 @@ public class PasswordAccessLossExportDialogTest {
         // Dialog is expected to be dismissed now.
         assertFalse(dialog.isShowing());
     }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
+    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
+    public void testNegativeButtonClick() {
+        mCoordinator.showExportDialog();
+        mActivity.getSupportFragmentManager().executePendingTransactions();
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        dialog.findViewById(R.id.negative_button).performClick();
+
+        // Dialog is expected to be dismissed now.
+        assertFalse(dialog.isShowing());
+    }
 }

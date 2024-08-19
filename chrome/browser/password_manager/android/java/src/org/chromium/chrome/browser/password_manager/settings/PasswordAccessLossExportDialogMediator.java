@@ -124,6 +124,9 @@ class PasswordAccessLossExportDialogMediator
             mExportDialogFragment.dismiss();
         }
         mExportFlow = null;
-        PasswordManagerHandlerProvider.getForProfile(mProfile).removeObserver(this);
+        if (PasswordManagerHandlerProvider.getForProfile(mProfile).getPasswordManagerHandler()
+                != null) {
+            PasswordManagerHandlerProvider.getForProfile(mProfile).removeObserver(this);
+        }
     }
 }
