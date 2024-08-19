@@ -26,79 +26,47 @@ class InterceptingNetworkController
   explicit InterceptingNetworkController(
       std::unique_ptr<webrtc::NetworkControllerInterface> fallback_controller,
       CrossThreadWeakHandle<RTCRtpTransport> rtp_transport_handle,
-      scoped_refptr<base::SequencedTaskRunner> task_runner)
-      : fallback_controller_(std::move(fallback_controller)),
-        feedback_provider_(base::MakeRefCounted<FeedbackProviderImpl>()) {
-    PostCrossThreadTask(
-        *task_runner, FROM_HERE,
-        CrossThreadBindOnce(
-            &RTCRtpTransport::RegisterFeedbackProvider,
-            MakeUnwrappingCrossThreadWeakHandle(rtp_transport_handle),
-            feedback_provider_));
-  }
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  // Implementation of NetworkControllerInterface.
 
   // Called when network availability changes.
   webrtc::NetworkControlUpdate OnNetworkAvailability(
-      webrtc::NetworkAvailability na) override {
-    return fallback_controller_->OnNetworkAvailability(na);
-  }
+      webrtc::NetworkAvailability na) override;
   // Called when the receiving or sending endpoint changes address.
   webrtc::NetworkControlUpdate OnNetworkRouteChange(
-      webrtc::NetworkRouteChange nrc) override {
-    return fallback_controller_->OnNetworkRouteChange(nrc);
-  }
+      webrtc::NetworkRouteChange nrc) override;
   // Called periodically with a periodicy as specified by
   // NetworkControllerFactoryInterface::GetProcessInterval.
   webrtc::NetworkControlUpdate OnProcessInterval(
-      webrtc::ProcessInterval pi) override {
-    return fallback_controller_->OnProcessInterval(pi);
-  }
+      webrtc::ProcessInterval pi) override;
+
   // Called when remotely calculated bitrate is received.
   webrtc::NetworkControlUpdate OnRemoteBitrateReport(
-      webrtc::RemoteBitrateReport rbr) override {
-    return fallback_controller_->OnRemoteBitrateReport(rbr);
-  }
+      webrtc::RemoteBitrateReport rbr) override;
   // Called round trip time has been calculated by protocol specific mechanisms.
   webrtc::NetworkControlUpdate OnRoundTripTimeUpdate(
-      webrtc::RoundTripTimeUpdate rttu) override {
-    return fallback_controller_->OnRoundTripTimeUpdate(rttu);
-  }
+      webrtc::RoundTripTimeUpdate rttu) override;
   // Called when a packet is sent on the network.
-  webrtc::NetworkControlUpdate OnSentPacket(webrtc::SentPacket sp) override {
-    feedback_provider_->OnSentPacket(sp);
-    return fallback_controller_->OnSentPacket(sp);
-  }
+  webrtc::NetworkControlUpdate OnSentPacket(webrtc::SentPacket sp) override;
   // Called when a packet is received from the remote client.
   webrtc::NetworkControlUpdate OnReceivedPacket(
-      webrtc::ReceivedPacket rp) override {
-    return fallback_controller_->OnReceivedPacket(rp);
-  }
+      webrtc::ReceivedPacket rp) override;
   // Called when the stream specific configuration has been updated.
   webrtc::NetworkControlUpdate OnStreamsConfig(
-      webrtc::StreamsConfig sc) override {
-    return fallback_controller_->OnStreamsConfig(sc);
-  }
+      webrtc::StreamsConfig sc) override;
   // Called when target transfer rate constraints has been changed.
   webrtc::NetworkControlUpdate OnTargetRateConstraints(
-      webrtc::TargetRateConstraints trc) override {
-    return fallback_controller_->OnTargetRateConstraints(trc);
-  }
+      webrtc::TargetRateConstraints trc) override;
   // Called when a protocol specific calculation of packet loss has been made.
   webrtc::NetworkControlUpdate OnTransportLossReport(
-      webrtc::TransportLossReport tlr) override {
-    return fallback_controller_->OnTransportLossReport(tlr);
-  }
+      webrtc::TransportLossReport tlr) override;
   // Called with per packet feedback regarding receive time.
   webrtc::NetworkControlUpdate OnTransportPacketsFeedback(
-      webrtc::TransportPacketsFeedback tpf) override {
-    feedback_provider_->OnFeedback(tpf);
-    return fallback_controller_->OnTransportPacketsFeedback(tpf);
-  }
+      webrtc::TransportPacketsFeedback tpf) override;
   // Called with network state estimate updates.
   webrtc::NetworkControlUpdate OnNetworkStateEstimate(
-      webrtc::NetworkStateEstimate nse) override {
-    return fallback_controller_->OnNetworkStateEstimate(nse);
-  }
+      webrtc::NetworkStateEstimate nse) override;
 
  private:
   // Ref counted object which is given a reference to the
@@ -115,10 +83,21 @@ class InterceptingNetworkController
                           rtp_transport_processor_handle,
                       scoped_refptr<base::SequencedTaskRunner>
                           rtp_transport_processor_task_runner) override;
+    void SetCustomMaxBitrateBps(uint64_t custom_max_bitrate_bps) override {
+      // Called on the RTCRtpTransportProcessor's JS thread.
+      base::AutoLock mutex(custom_bitrate_lock_);
+      custom_max_bitrate_bps_ = custom_max_bitrate_bps;
+    }
 
     // Methods called by InterceptingNetworkController.
     void OnFeedback(webrtc::TransportPacketsFeedback feedback);
     void OnSentPacket(webrtc::SentPacket sp);
+
+    std::optional<uint64_t> CustomMaxBitrateBps() {
+      // Called on a WebRTC thread.
+      base::AutoLock mutex(custom_bitrate_lock_);
+      return custom_max_bitrate_bps_;
+    }
 
    private:
     void OnFeedbackOnDestinationTaskRunner(
@@ -136,6 +115,10 @@ class InterceptingNetworkController
         rtp_transport_processor_handle_ GUARDED_BY(processor_lock_);
     scoped_refptr<base::SequencedTaskRunner>
         rtp_transport_processor_task_runner_ GUARDED_BY(processor_lock_);
+
+    base::Lock custom_bitrate_lock_;
+    std::optional<uint64_t> custom_max_bitrate_bps_
+        GUARDED_BY(custom_bitrate_lock_);
   };
 
   const std::unique_ptr<webrtc::NetworkControllerInterface>

@@ -52,6 +52,7 @@ class FeedbackProvider : public WTF::ThreadSafeRefCounted<FeedbackProvider> {
       CrossThreadWeakHandle<RTCRtpTransportProcessor>
           rtp_transport_processor_handle,
       scoped_refptr<base::SequencedTaskRunner> task_runner) = 0;
+  virtual void SetCustomMaxBitrateBps(uint64_t custom_max_bitrate_bps) = 0;
 };
 
 class MODULES_EXPORT RTCRtpTransport : public ScriptWrappable,

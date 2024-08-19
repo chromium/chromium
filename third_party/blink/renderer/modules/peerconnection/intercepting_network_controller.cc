@@ -11,6 +11,126 @@
 
 namespace blink {
 
+namespace {
+
+webrtc::NetworkControlUpdate OverwriteTargetRate(
+    webrtc::NetworkControlUpdate fallback_update,
+    std::optional<uint64_t> custom_max_bitrate_bps) {
+  if (!fallback_update.target_rate || !custom_max_bitrate_bps) {
+    return fallback_update;
+  }
+  webrtc::TargetTransferRate target_transfer_rate = {
+      .at_time = fallback_update.target_rate->at_time,
+      .network_estimate = fallback_update.target_rate->network_estimate,
+      .target_rate = webrtc::DataRate::BitsPerSec(*custom_max_bitrate_bps)};
+
+  fallback_update.target_rate = target_transfer_rate;
+  return fallback_update;
+}
+
+}  // namespace
+
+InterceptingNetworkController::InterceptingNetworkController(
+    std::unique_ptr<webrtc::NetworkControllerInterface> fallback_controller,
+    CrossThreadWeakHandle<RTCRtpTransport> rtp_transport_handle,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : fallback_controller_(std::move(fallback_controller)),
+      feedback_provider_(base::MakeRefCounted<FeedbackProviderImpl>()) {
+  PostCrossThreadTask(
+      *task_runner, FROM_HERE,
+      CrossThreadBindOnce(
+          &RTCRtpTransport::RegisterFeedbackProvider,
+          MakeUnwrappingCrossThreadWeakHandle(rtp_transport_handle),
+          feedback_provider_));
+}
+
+webrtc::NetworkControlUpdate
+InterceptingNetworkController::OnNetworkAvailability(
+    webrtc::NetworkAvailability na) {
+  return OverwriteTargetRate(fallback_controller_->OnNetworkAvailability(na),
+                             feedback_provider_->CustomMaxBitrateBps());
+}
+
+webrtc::NetworkControlUpdate
+InterceptingNetworkController::OnNetworkRouteChange(
+    webrtc::NetworkRouteChange nrc) {
+  return OverwriteTargetRate(fallback_controller_->OnNetworkRouteChange(nrc),
+                             feedback_provider_->CustomMaxBitrateBps());
+}
+
+webrtc::NetworkControlUpdate InterceptingNetworkController::OnProcessInterval(
+    webrtc::ProcessInterval pi) {
+  auto fallback_update = fallback_controller_->OnProcessInterval(pi);
+  if (fallback_update.target_rate) {
+    fallback_update.target_rate->at_time = pi.at_time;
+  }
+  return OverwriteTargetRate(fallback_update,
+                             feedback_provider_->CustomMaxBitrateBps());
+}
+
+webrtc::NetworkControlUpdate
+InterceptingNetworkController::OnRemoteBitrateReport(
+    webrtc::RemoteBitrateReport rbr) {
+  return OverwriteTargetRate(fallback_controller_->OnRemoteBitrateReport(rbr),
+                             feedback_provider_->CustomMaxBitrateBps());
+}
+
+webrtc::NetworkControlUpdate
+InterceptingNetworkController::OnRoundTripTimeUpdate(
+    webrtc::RoundTripTimeUpdate rttu) {
+  return OverwriteTargetRate(fallback_controller_->OnRoundTripTimeUpdate(rttu),
+                             feedback_provider_->CustomMaxBitrateBps());
+}
+
+webrtc::NetworkControlUpdate InterceptingNetworkController::OnSentPacket(
+    webrtc::SentPacket sp) {
+  feedback_provider_->OnSentPacket(sp);
+  return OverwriteTargetRate(fallback_controller_->OnSentPacket(sp),
+                             feedback_provider_->CustomMaxBitrateBps());
+}
+
+webrtc::NetworkControlUpdate InterceptingNetworkController::OnReceivedPacket(
+    webrtc::ReceivedPacket rp) {
+  return OverwriteTargetRate(fallback_controller_->OnReceivedPacket(rp),
+                             feedback_provider_->CustomMaxBitrateBps());
+}
+
+webrtc::NetworkControlUpdate InterceptingNetworkController::OnStreamsConfig(
+    webrtc::StreamsConfig sc) {
+  return OverwriteTargetRate(fallback_controller_->OnStreamsConfig(sc),
+                             feedback_provider_->CustomMaxBitrateBps());
+}
+
+webrtc::NetworkControlUpdate
+InterceptingNetworkController::OnTargetRateConstraints(
+    webrtc::TargetRateConstraints trc) {
+  return OverwriteTargetRate(fallback_controller_->OnTargetRateConstraints(trc),
+                             feedback_provider_->CustomMaxBitrateBps());
+}
+
+webrtc::NetworkControlUpdate
+InterceptingNetworkController::OnTransportLossReport(
+    webrtc::TransportLossReport tlr) {
+  return OverwriteTargetRate(fallback_controller_->OnTransportLossReport(tlr),
+                             feedback_provider_->CustomMaxBitrateBps());
+}
+
+webrtc::NetworkControlUpdate
+InterceptingNetworkController::OnTransportPacketsFeedback(
+    webrtc::TransportPacketsFeedback tpf) {
+  feedback_provider_->OnFeedback(tpf);
+  return OverwriteTargetRate(
+      fallback_controller_->OnTransportPacketsFeedback(tpf),
+      feedback_provider_->CustomMaxBitrateBps());
+}
+
+webrtc::NetworkControlUpdate
+InterceptingNetworkController::OnNetworkStateEstimate(
+    webrtc::NetworkStateEstimate nse) {
+  return OverwriteTargetRate(fallback_controller_->OnNetworkStateEstimate(nse),
+                             feedback_provider_->CustomMaxBitrateBps());
+}
+
 void InterceptingNetworkController::FeedbackProviderImpl::OnFeedback(
     webrtc::TransportPacketsFeedback feedback) {
   // Called on a WebRTC thread.

@@ -16,28 +16,39 @@
 
 namespace blink {
 
+class FeedbackProvider;
+
 class MODULES_EXPORT RTCRtpTransportProcessor : public ScriptWrappable,
                                                 public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit RTCRtpTransportProcessor(ExecutionContext* context)
-      : ExecutionContextClient(context) {}
+  explicit RTCRtpTransportProcessor(ExecutionContext* context);
+  ~RTCRtpTransportProcessor() override;
 
   // Implementation of IDL type.
   HeapVector<Member<RTCRtpAcks>> readReceivedAcks(uint32_t maxCount);
   HeapVector<Member<RTCRtpSent>> readSentRtp(uint32_t maxCount);
+
+  uint64_t customMaxBandwidth() { return custom_max_bitrate_bps_; }
+  void setCustomMaxBandwidth(uint64_t custom_max_bitrate_bps);
 
   // Endpoints called on BWE events from libwebrtc.
   webrtc::NetworkControlUpdate OnFeedback(
       webrtc::TransportPacketsFeedback feedback);
   void OnSentPacket(webrtc::SentPacket sp);
 
+  void SetFeedbackProviders(
+      Vector<scoped_refptr<FeedbackProvider>> feedback_providers);
+
   void Trace(Visitor* visitor) const override;
 
  private:
   HeapDeque<Member<RTCRtpAcks>> acks_messages_;
   HeapDeque<Member<RTCRtpSent>> sents_;
+
+  Vector<scoped_refptr<FeedbackProvider>> feedback_providers_;
+  uint64_t custom_max_bitrate_bps_;
 };
 
 }  // namespace blink

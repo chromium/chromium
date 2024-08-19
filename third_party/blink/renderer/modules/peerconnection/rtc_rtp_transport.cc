@@ -11,7 +11,6 @@
 
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
-#include "third_party/blink/renderer/modules/peerconnection/intercepting_network_controller.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -96,6 +95,14 @@ void RTCRtpTransport::RegisterFeedbackProvider(
   }
 
   feedback_providers_.push_back(std::move(feedback_provider));
+
+  if (processor_) {
+    PostCrossThreadTask(
+        *processor_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&RTCRtpTransportProcessor ::SetFeedbackProviders,
+                            MakeUnwrappingCrossThreadWeakHandle(*processor_),
+                            feedback_providers_));
+  }
 }
 
 void RTCRtpTransport::SetProcessorHandle(
@@ -107,6 +114,12 @@ void RTCRtpTransport::SetProcessorHandle(
   for (auto& feedback_provider : feedback_providers_) {
     feedback_provider->SetProcessor(*processor_, processor_task_runner_);
   }
+
+  PostCrossThreadTask(
+      *processor_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&RTCRtpTransportProcessor ::SetFeedbackProviders,
+                          MakeUnwrappingCrossThreadWeakHandle(*processor_),
+                          feedback_providers_));
 }
 
 void RTCRtpTransport::Trace(Visitor* visitor) const {

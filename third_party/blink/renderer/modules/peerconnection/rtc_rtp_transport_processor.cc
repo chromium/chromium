@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
 #include "third_party/blink/renderer/modules/peerconnection/intercepting_network_controller.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_transport.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -15,6 +16,16 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
+
+RTCRtpTransportProcessor::RTCRtpTransportProcessor(ExecutionContext* context)
+    : ExecutionContextClient(context) {}
+
+RTCRtpTransportProcessor::~RTCRtpTransportProcessor() = default;
+
+void RTCRtpTransportProcessor::SetFeedbackProviders(
+    Vector<scoped_refptr<FeedbackProvider>> feedback_providers) {
+  feedback_providers_ = feedback_providers;
+}
 
 webrtc::NetworkControlUpdate RTCRtpTransportProcessor::OnFeedback(
     webrtc::TransportPacketsFeedback feedback) {
@@ -65,6 +76,15 @@ HeapVector<Member<RTCRtpSent>> RTCRtpTransportProcessor::readSentRtp(
     sents.push_back(sents_.TakeFirst());
   }
   return sents;
+}
+
+void RTCRtpTransportProcessor::setCustomMaxBandwidth(
+    uint64_t custom_max_bitrate_bps) {
+  custom_max_bitrate_bps_ = custom_max_bitrate_bps;
+
+  for (auto& feedback_provider : feedback_providers_) {
+    feedback_provider->SetCustomMaxBitrateBps(custom_max_bitrate_bps);
+  }
 }
 
 void RTCRtpTransportProcessor::Trace(Visitor* visitor) const {

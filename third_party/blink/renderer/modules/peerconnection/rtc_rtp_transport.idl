@@ -12,6 +12,8 @@ interface RTCRtpTransport {
 interface RTCRtpTransportProcessor {
   sequence<RTCRtpAcks> readReceivedAcks(long maxCount);
   sequence<RTCRtpSent> readSentRtp(long maxCount);
+
+  attribute unsigned long customMaxBandwidth;  // bps
 };
 
 [Exposed=DedicatedWorker, RuntimeEnabled=RTCRtpTransport]

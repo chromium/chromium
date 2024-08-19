@@ -24,6 +24,11 @@ class MockFeedbackProvider : public FeedbackProvider {
                    rtp_transport_processor_handle,
                scoped_refptr<base::SequencedTaskRunner> task_runner),
               (override));
+
+  MOCK_METHOD(void,
+              SetCustomMaxBitrateBps,
+              (uint64_t custom_max_bitrate_bps),
+              (override));
 };
 
 class RTCRtpTransportTest : public DedicatedWorkerTest {};

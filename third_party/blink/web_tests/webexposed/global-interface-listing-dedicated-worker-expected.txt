@@ -1803,9 +1803,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker] interface RTCRtpTransportProcessor
 [Worker]     attribute @@toStringTag
+[Worker]     getter customMaxBandwidth
 [Worker]     method constructor
 [Worker]     method readReceivedAcks
 [Worker]     method readSentRtp
+[Worker]     setter customMaxBandwidth
 [Worker] interface RTCRtpTransportProcessorEvent : Event
 [Worker]     attribute @@toStringTag
 [Worker]     getter processor
