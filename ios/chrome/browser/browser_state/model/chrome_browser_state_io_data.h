@@ -5,29 +5,29 @@
 #ifndef IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_IO_DATA_H_
 #define IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_IO_DATA_H_
 
-#include <map>
-#include <memory>
-#include <string>
-#include <vector>
+#import <map>
+#import <memory>
+#import <string>
+#import <vector>
 
-#include "base/files/file_path.h"
+#import "base/files/file_path.h"
 #import "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
-#include "components/content_settings/core/common/content_settings_types.h"
-#include "components/prefs/pref_member.h"
-#include "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
-#include "ios/chrome/browser/net/model/net_types.h"
-#include "net/cookies/cookie_monster.h"
-#include "net/http/http_cache.h"
-#include "net/http/http_network_session.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_interceptor.h"
-#include "net/url_request/url_request_job_factory.h"
+#import "base/memory/ref_counted.h"
+#import "base/memory/scoped_refptr.h"
+#import "base/memory/weak_ptr.h"
+#import "components/content_settings/core/common/content_settings_types.h"
+#import "components/prefs/pref_member.h"
+#import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
+#import "ios/chrome/browser/net/model/net_types.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "net/cookies/cookie_monster.h"
+#import "net/http/http_cache.h"
+#import "net/http/http_network_session.h"
+#import "net/url_request/url_request_context.h"
+#import "net/url_request/url_request_interceptor.h"
+#import "net/url_request/url_request_job_factory.h"
 
 class AcceptLanguagePrefWatcher;
-class ChromeBrowserState;
 enum class ChromeBrowserStateType;
 class HostContentSettingsMap;
 class IOSChromeHttpUserAgentSettings;

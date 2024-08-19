@@ -5,14 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_IMPL_IO_DATA_H_
 #define IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_IMPL_IO_DATA_H_
 
-#include "base/functional/callback_forward.h"
+#import "base/functional/callback_forward.h"
 #import "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
-#include "components/prefs/pref_store.h"
-#include "ios/chrome/browser/net/model/net_types.h"
-#include "ios/chrome/browser/profile/model/profile_ios_io_data.h"
+#import "base/memory/ref_counted.h"
+#import "components/prefs/pref_store.h"
+#import "ios/chrome/browser/net/model/net_types.h"
+#import "ios/chrome/browser/profile/model/profile_ios_io_data.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class JsonPrefStore;
 
 namespace net {

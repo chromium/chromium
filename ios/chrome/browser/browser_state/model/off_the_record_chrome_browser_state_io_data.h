@@ -5,16 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_OFF_THE_RECORD_CHROME_BROWSER_STATE_IO_DATA_H_
 #define IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_OFF_THE_RECORD_CHROME_BROWSER_STATE_IO_DATA_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/files/file_path.h"
-#include "base/functional/callback.h"
+#import "base/files/file_path.h"
+#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
-#include "ios/chrome/browser/net/model/net_types.h"
-#include "ios/chrome/browser/profile/model/profile_ios_io_data.h"
+#import "base/memory/ref_counted.h"
+#import "ios/chrome/browser/net/model/net_types.h"
+#import "ios/chrome/browser/profile/model/profile_ios_io_data.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class IOSChromeURLRequestContextGetter;
 
 // OffTheRecordChromeBrowserState owns a
