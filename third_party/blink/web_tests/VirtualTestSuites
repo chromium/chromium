@@ -763,6 +763,7 @@
   },
   {
     "prefix": "forced-high-contrast-colors",
+    "owners": ["almaher@microsoft.com"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/forced-colors-mode",
               "html/details_summary/color-scheme-validation",
