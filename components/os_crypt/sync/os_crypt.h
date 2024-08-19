@@ -18,10 +18,10 @@
 class KeyStorageLinux;
 #endif  // BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
 class PrefRegistrySimple;
 class PrefService;
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_APPLE)
 namespace crypto {
