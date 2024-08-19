@@ -95,8 +95,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                       prev_iterator.SourceForTesting()));
 
     // Ensure that the content associated with this item is NOT a substring of
-    // the updated iterator
-    if (content) {
+    // the updated iterator, if the content has any associated data.
+    if (content && content->Size()) {
       CHECK(!IsSubstring(content->Str(), iterator.SourceForTesting()));
     }
   }
