@@ -103,20 +103,19 @@ TEST(WaitableEventTest, WaitManyShortcut) {
   }
 
   ev[3]->Signal();
-  EXPECT_EQ(WaitableEvent::WaitMany(ev), 3u);
+  EXPECT_EQ(WaitableEvent::WaitMany(ev, 5), 3u);
 
   ev[3]->Signal();
-  EXPECT_EQ(WaitableEvent::WaitMany(ev), 3u);
+  EXPECT_EQ(WaitableEvent::WaitMany(ev, 5), 3u);
 
   ev[4]->Signal();
-  EXPECT_EQ(WaitableEvent::WaitMany(ev), 4u);
+  EXPECT_EQ(WaitableEvent::WaitMany(ev, 5), 4u);
 
   ev[0]->Signal();
-  EXPECT_EQ(WaitableEvent::WaitMany(ev), 0u);
+  EXPECT_EQ(WaitableEvent::WaitMany(ev, 5), 0u);
 
-  for (auto* i : ev) {
+  for (auto* i : ev)
     delete i;
-  }
 }
 
 TEST(WaitableEventTest, WaitManyLeftToRight) {
@@ -135,25 +134,24 @@ TEST(WaitableEventTest, WaitManyLeftToRight) {
   do {
     ev[0]->Signal();
     ev[1]->Signal();
-    EXPECT_EQ(0u, WaitableEvent::WaitMany(ev));
+    EXPECT_EQ(0u, WaitableEvent::WaitMany(ev, 5));
 
     ev[2]->Signal();
-    EXPECT_EQ(1u, WaitableEvent::WaitMany(ev));
-    EXPECT_EQ(2u, WaitableEvent::WaitMany(ev));
+    EXPECT_EQ(1u, WaitableEvent::WaitMany(ev, 5));
+    EXPECT_EQ(2u, WaitableEvent::WaitMany(ev, 5));
 
     ev[3]->Signal();
     ev[4]->Signal();
     ev[0]->Signal();
-    EXPECT_EQ(0u, WaitableEvent::WaitMany(ev));
-    EXPECT_EQ(3u, WaitableEvent::WaitMany(ev));
+    EXPECT_EQ(0u, WaitableEvent::WaitMany(ev, 5));
+    EXPECT_EQ(3u, WaitableEvent::WaitMany(ev, 5));
     ev[2]->Signal();
-    EXPECT_EQ(2u, WaitableEvent::WaitMany(ev));
-    EXPECT_EQ(4u, WaitableEvent::WaitMany(ev));
+    EXPECT_EQ(2u, WaitableEvent::WaitMany(ev, 5));
+    EXPECT_EQ(4u, WaitableEvent::WaitMany(ev, 5));
   } while (std::next_permutation(ev, ev + 5));
 
-  for (auto* i : ev) {
+  for (auto* i : ev)
     delete i;
-  }
 }
 
 class WaitableEventSignaler : public PlatformThread::Delegate {
@@ -206,7 +204,7 @@ TEST(WaitableEventTest, WaitMany) {
     // Signaler can't outlive event.
     WaitableEventSignaler signaler(Milliseconds(10), ev[2]);
     PlatformThread::Create(0, &signaler, &thread);
-    size_t index = WaitableEvent::WaitMany(ev);
+    size_t index = WaitableEvent::WaitMany(ev, 5);
     EXPECT_EQ(2u, index);
   }
 
