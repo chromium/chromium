@@ -286,6 +286,8 @@ target(link_target_type, "gles2_sources") {
     "shared_image/skia_gl_image_representation.h",
     "shared_image/wrapped_graphite_texture_backing.cc",
     "shared_image/wrapped_graphite_texture_backing.h",
+    "shared_image/wrapped_graphite_texture_holder.cc",
+    "shared_image/wrapped_graphite_texture_holder.h",
     "shared_image/wrapped_sk_image_backing.cc",
     "shared_image/wrapped_sk_image_backing.h",
     "shared_image/wrapped_sk_image_backing_factory.cc",
