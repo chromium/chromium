@@ -655,6 +655,15 @@ gfx::Rect LayerImpl::GetDamageRect() const {
   return gfx::Rect();
 }
 
+DamageReasonSet LayerImpl::GetDamageReasons() const {
+  DamageReasonSet reasons;
+  if (LayerPropertyChanged() || !update_rect_.IsEmpty() ||
+      !GetDamageRect().IsEmpty()) {
+    reasons.Put(DamageReason::kUntracked);
+  }
+  return reasons;
+}
+
 void LayerImpl::SetCurrentScrollOffset(const gfx::PointF& scroll_offset) {
   DCHECK(IsActive());
   if (GetScrollTree().SetScrollOffset(element_id(), scroll_offset))

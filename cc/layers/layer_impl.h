@@ -34,6 +34,7 @@
 #include "cc/mojom/layer_type.mojom.h"
 #include "cc/paint/element_id.h"
 #include "cc/tiles/tile_priority.h"
+#include "cc/trees/damage_reason.h"
 #include "cc/trees/target_property.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
@@ -348,6 +349,12 @@ class CC_EXPORT LayerImpl {
   // space. By default returns empty rect, but can be overridden by subclasses
   // as appropriate.
   virtual gfx::Rect GetDamageRect() const;
+
+  // Damage tracker will consider layer damaged if `LayerPropertyChanged` is
+  // true, or update_rect() or GetDamageRect() are non-empty. This method
+  // returns damage reasons for any and all of these cases. The default
+  // implementation adds kUntracked for all of these cases.
+  virtual DamageReasonSet GetDamageReasons() const;
 
   // This includes |layer_property_changed_not_from_property_trees_| and
   // property_trees changes.

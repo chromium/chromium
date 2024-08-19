@@ -13762,7 +13762,8 @@ TEST_P(FluentOverlayScrollbarOpacityLayerTreeHostImplTest,
        PaintedOverlayScrollbarTrackOpacityTest) {
   auto* scrollbar = CreateAndRegisterPaintedScrollbarLayer();
   // Make the scrollbar visible.
-  scrollbar->SetOverlayScrollbarLayerOpacityAnimated(1.f);
+  scrollbar->SetOverlayScrollbarLayerOpacityAnimated(
+      1.f, /*fade_out_animation=*/false);
   UpdateDrawProperties(host_impl_->active_tree());
 
   EXPECT_EQ(1.f, scrollbar->draw_properties().opacity);

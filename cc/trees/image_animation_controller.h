@@ -96,6 +96,7 @@ class CC_EXPORT ImageAnimationController {
                                AnimationDriver* driver);
   void UnregisterAnimationDriver(PaintImage::Id paint_image_id,
                                  AnimationDriver* driver);
+  bool IsRegistered(PaintImage::Id paint_image_id);
 
   // Called to advance the animations to the frame to be used on the sync tree.
   // This should be called only once for a sync tree and must be followed with

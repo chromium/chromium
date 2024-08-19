@@ -298,6 +298,22 @@ TEST_F(LayerImplTest, PerspectiveTransformHasReasonableScale) {
   }
 }
 
+TEST_F(LayerImplTest, GetDamageReasons) {
+  LayerImpl* root = root_layer();
+
+  root->layer_tree_impl()->ResetAllChangeTracking();
+  EXPECT_TRUE(root->GetDamageReasons().empty());
+  root->SetBounds(gfx::Size(10, 10));
+  EXPECT_EQ(root->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kUntracked});
+
+  root->layer_tree_impl()->ResetAllChangeTracking();
+  EXPECT_TRUE(root->GetDamageReasons().empty());
+  root->UnionUpdateRect(gfx::Rect(10, 10));
+  EXPECT_EQ(root->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kUntracked});
+}
+
 class LayerImplScrollTest : public LayerImplTest {
  public:
   LayerImplScrollTest()

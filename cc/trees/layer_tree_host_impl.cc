@@ -1304,6 +1304,8 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // the root damage rect. The root damage rect is then used to scissor each
   // surface.
   DamageTracker::UpdateDamageTracking(active_tree_.get());
+  frame->damage_reasons =
+      active_tree_->RootRenderSurface()->damage_tracker()->GetDamageReasons();
 
   if (HasDamage()) {
     consecutive_frame_with_damage_count_++;
@@ -2871,16 +2873,16 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
       frame_rate_estimator_.input_priority_mode();
 
   if (!frame->video_layer_preferred_intervals.empty() &&
-      frame->set_needs_redraw_reasons.Has(RedrawReason::kVideoLayer)) {
+      frame->damage_reasons.Has(DamageReason::kVideoLayer)) {
     for (auto& [video_interval, count] :
          frame->video_layer_preferred_intervals) {
       metadata.frame_interval_inputs.content_interval_info.push_back(
           {viz::ContentFrameIntervalType::kVideo, video_interval, count - 1u});
     }
-    frame->set_needs_redraw_reasons.Remove(RedrawReason::kVideoLayer);
+    frame->damage_reasons.Remove(DamageReason::kVideoLayer);
   }
 
-  if (frame->set_needs_redraw_reasons.Has(RedrawReason::kAnimatedImage)) {
+  if (frame->damage_reasons.Has(DamageReason::kAnimatedImage)) {
     std::optional<ImageAnimationController::ConsistentFrameDuration>
         animating_image_duration =
             image_animation_controller_.GetConsistentContentFrameDuration();
@@ -2889,25 +2891,23 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
           {viz::ContentFrameIntervalType::kAnimatingImage,
            animating_image_duration->frame_duration,
            animating_image_duration->num_images - 1u});
-      frame->set_needs_redraw_reasons.Remove(RedrawReason::kAnimatedImage);
+      frame->damage_reasons.Remove(DamageReason::kAnimatedImage);
     }
   }
 
-  if (frame->set_needs_redraw_reasons.Has(
-          RedrawReason::kScrollbarFadeOutAnimation)) {
+  if (frame->damage_reasons.Has(DamageReason::kScrollbarFadeOutAnimation)) {
     // Lower fade out animation to 20hz somewhat arbitrarily since it's small
     // and hard to notice a low frame rate.
     metadata.frame_interval_inputs.content_interval_info.push_back(
         {viz::ContentFrameIntervalType::kScrollBarFadeOutAnimation,
          base::Hertz(20)});
-    frame->set_needs_redraw_reasons.Remove(
-        RedrawReason::kScrollbarFadeOutAnimation);
+    frame->damage_reasons.Remove(DamageReason::kScrollbarFadeOutAnimation);
   }
 
   // If all RedrawReasons have been recorded in `content_interval_info` and
   // removed, then can set `has_only_content_frame_interval_updates`.
   metadata.frame_interval_inputs.has_only_content_frame_interval_updates =
-      frame->set_needs_redraw_reasons.empty();
+      frame->damage_reasons.empty();
 
   base::TimeDelta preferred_frame_interval;
   static const bool feature_allowed =

@@ -140,6 +140,10 @@ std::unique_ptr<LayerImpl> PictureLayerImpl::CreateLayerImpl(
 void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   PictureLayerImpl* layer_impl = static_cast<PictureLayerImpl*>(base_layer);
 
+  layer_impl->has_animated_image_update_rect_ = has_animated_image_update_rect_;
+  layer_impl->has_non_animated_image_update_rect_ =
+      has_non_animated_image_update_rect_;
+
   LayerImpl::PushPropertiesTo(base_layer);
 
   // Twin relationships should never change once established.
@@ -955,6 +959,8 @@ gfx::Rect PictureLayerImpl::GetDamageRect() const {
 void PictureLayerImpl::ResetChangeTracking() {
   LayerImpl::ResetChangeTracking();
   damage_rect_.SetRect(0, 0, 0, 0);
+  has_animated_image_update_rect_ = false;
+  has_non_animated_image_update_rect_ = false;
 }
 
 void PictureLayerImpl::DidBeginTracing() {
@@ -2078,8 +2084,11 @@ PictureLayerImpl::InvalidateRegionForImages(
     return ImageInvalidationResult::kNoImages;
   }
 
+  bool all_animated_image = true;
+  auto* controller = layer_tree_impl()->image_animation_controller();
   InvalidationRegion image_invalidation;
   for (auto image_id : images_to_invalidate) {
+    all_animated_image &= controller->IsRegistered(image_id);
     const auto& rects = discardable_image_map_->GetRectsForImage(image_id);
     for (const auto& r : rects) {
       image_invalidation.Union(r);
@@ -2094,6 +2103,11 @@ PictureLayerImpl::InvalidateRegionForImages(
   // Note: We can use a rect here since this is only used to track damage for a
   // frame and not raster invalidation.
   UnionUpdateRect(invalidation.bounds());
+  if (all_animated_image) {
+    has_animated_image_update_rect_ = true;
+  } else {
+    has_non_animated_image_update_rect_ = true;
+  }
 
   invalidation_.Union(invalidation);
   tilings_->Invalidate(invalidation);
@@ -2114,6 +2128,7 @@ void PictureLayerImpl::InvalidateRasterInducingScrolls(
     auto it = raster_inducing_scrolls.find(element_id);
     if (it != raster_inducing_scrolls.end()) {
       UnionUpdateRect(it->second.visual_rect);
+      has_non_animated_image_update_rect_ = true;
       invalidation.Union(it->second.visual_rect);
       needs_regenerate_discardable_image_map_ |=
           it->second.has_discardable_images;
@@ -2226,6 +2241,18 @@ gfx::ContentColorUsage PictureLayerImpl::GetContentColorUsage() const {
     return gfx::ContentColorUsage::kSRGB;
 
   return display_item_list->content_color_usage();
+}
+
+DamageReasonSet PictureLayerImpl::GetDamageReasons() const {
+  DamageReasonSet reasons;
+  if (has_animated_image_update_rect_) {
+    reasons.Put(DamageReason::kAnimatedImage);
+  }
+  if (LayerPropertyChanged() || has_non_animated_image_update_rect_ ||
+      !damage_rect_.IsEmpty()) {
+    reasons.Put(DamageReason::kUntracked);
+  }
+  return reasons;
 }
 
 }  // namespace cc

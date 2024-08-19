@@ -968,7 +968,8 @@ TEST_F(ScrollbarLayerTest, ScrollbarLayerOpacity) {
   ScrollbarLayerImplBase* scrollbar_layer_impl =
       static_cast<ScrollbarLayerImplBase*>(
           layer_tree_impl->LayerById(scrollbar_layer->id()));
-  scrollbar_layer_impl->SetOverlayScrollbarLayerOpacityAnimated(0.25f);
+  scrollbar_layer_impl->SetOverlayScrollbarLayerOpacityAnimated(
+      0.25f, /*fade_out_animation=*/false);
   host_impl->CreatePendingTree();
   layer_impl_tree_root = layer_tree_host_->CommitToPendingTree();
   layer_tree_impl = layer_impl_tree_root->layer_tree_impl();

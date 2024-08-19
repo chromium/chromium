@@ -480,5 +480,33 @@ TEST(VideoLayerImplTest, NativeARGBFrameGeneratesTextureQuad) {
   EXPECT_EQ(texture_draw_quad->resource_size_in_pixels(), resource_size);
 }
 
+TEST(VideoLayerImplTest, GetDamageReasons) {
+  gfx::Size layer_size(1000, 1000);
+
+  LayerTreeImplTestBase impl;
+  DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
+
+  scoped_refptr<media::VideoFrame> video_frame = media::VideoFrame::CreateFrame(
+      media::PIXEL_FORMAT_I420, gfx::Size(10, 10), gfx::Rect(10, 10),
+      gfx::Size(10, 10), base::TimeDelta());
+  FakeVideoFrameProvider provider;
+  provider.set_frame(video_frame);
+
+  VideoLayerImpl* video_layer_impl = impl.AddLayerInActiveTree<VideoLayerImpl>(
+      &provider, media::VIDEO_ROTATION_0);
+
+  video_layer_impl->layer_tree_impl()->ResetAllChangeTracking();
+  EXPECT_TRUE(video_layer_impl->GetDamageReasons().empty());
+  video_layer_impl->SetBounds(layer_size);
+  EXPECT_EQ(video_layer_impl->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kUntracked});
+
+  video_layer_impl->layer_tree_impl()->ResetAllChangeTracking();
+  EXPECT_TRUE(video_layer_impl->GetDamageReasons().empty());
+  video_layer_impl->SetNeedsRedraw();
+  EXPECT_EQ(video_layer_impl->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kVideoLayer});
+}
+
 }  // namespace
 }  // namespace cc

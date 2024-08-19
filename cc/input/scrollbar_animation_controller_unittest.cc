@@ -1580,7 +1580,8 @@ class VerticalScrollbarAnimationControllerAndroidTest
 };
 
 TEST_F(ScrollbarAnimationControllerAndroidTest, HiddenInBegin) {
-  scrollbar_layer_->SetOverlayScrollbarLayerOpacityAnimated(0.f);
+  scrollbar_layer_->SetOverlayScrollbarLayerOpacityAnimated(
+      0.f, /*fade_out_animation=*/false);
   bool fade_out_only = false;
   scrollbar_controller_->Animate(base::TimeTicks(), fade_out_only);
   EXPECT_FLOAT_EQ(0.0f, scrollbar_layer_->Opacity());
@@ -1588,7 +1589,8 @@ TEST_F(ScrollbarAnimationControllerAndroidTest, HiddenInBegin) {
 
 TEST_F(ScrollbarAnimationControllerAndroidTest,
        HiddenAfterNonScrollingGesture) {
-  scrollbar_layer_->SetOverlayScrollbarLayerOpacityAnimated(0.f);
+  scrollbar_layer_->SetOverlayScrollbarLayerOpacityAnimated(
+      0.f, /*fade_out_animation=*/false);
 
   base::TimeTicks time;
   time += base::Seconds(100);
@@ -1866,28 +1868,37 @@ TEST_F(ScrollbarAnimationControllerAndroidTest,
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(1.0f, scrollbar_layer_->Opacity());
 
+  scrollbar_layer_->ResetChangeTracking();
   time += base::Seconds(1);
   scrollbar_controller_->Animate(time, fade_out_only);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(2.0f / 3.0f, scrollbar_layer_->Opacity());
+  EXPECT_EQ(scrollbar_layer_->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kScrollbarFadeOutAnimation});
 
   EXPECT_FALSE(did_request_animate_);
   EXPECT_FLOAT_EQ(2.0f / 3.0f, scrollbar_layer_->Opacity());
 
+  scrollbar_layer_->ResetChangeTracking();
   time += base::Seconds(1);
   scrollbar_controller_->Animate(time, fade_out_only);
   EXPECT_TRUE(did_request_animate_);
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(1.0f / 3.0f, scrollbar_layer_->Opacity());
+  EXPECT_EQ(scrollbar_layer_->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kScrollbarFadeOutAnimation});
 
   EXPECT_FALSE(did_request_animate_);
   EXPECT_FLOAT_EQ(1.0f / 3.0f, scrollbar_layer_->Opacity());
 
+  scrollbar_layer_->ResetChangeTracking();
   time += base::Seconds(1);
   scrollbar_controller_->Animate(time, fade_out_only);
   EXPECT_FALSE(did_request_animate_);
   EXPECT_FLOAT_EQ(0.0f, scrollbar_layer_->Opacity());
+  EXPECT_EQ(scrollbar_layer_->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kScrollbarFadeOutAnimation});
 }
 
 TEST_F(ScrollbarAnimationControllerAndroidTest,

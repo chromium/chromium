@@ -51,6 +51,7 @@ class CC_EXPORT VideoLayerImpl : public LayerImpl {
   void DidBecomeActive() override;
   void ReleaseResources() override;
   gfx::ContentColorUsage GetContentColorUsage() const override;
+  DamageReasonSet GetDamageReasons() const override;
 
   void SetNeedsRedraw();
   std::optional<base::TimeDelta> GetPreferredRenderInterval();

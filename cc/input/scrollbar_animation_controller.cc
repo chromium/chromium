@@ -141,8 +141,10 @@ bool ScrollbarAnimationController::Animate(base::TimeTicks now,
   bool animated_fade = false;
 
   for (ScrollbarLayerImplBase* scrollbar : Scrollbars()) {
-    if (!scrollbar->CanScrollOrientation())
-      scrollbar->SetOverlayScrollbarLayerOpacityAnimated(0);
+    if (!scrollbar->CanScrollOrientation()) {
+      scrollbar->SetOverlayScrollbarLayerOpacityAnimated(
+          0, /*fade_out_animation=*/false);
+    }
   }
 
   if (is_animating_) {
@@ -395,7 +397,9 @@ bool ScrollbarAnimationController::ApplyOpacityToScrollbars(float opacity) {
   for (ScrollbarLayerImplBase* scrollbar : Scrollbars()) {
     DCHECK(scrollbar->is_overlay_scrollbar());
     float effective_opacity = scrollbar->CanScrollOrientation() ? opacity : 0;
-    scrollbar->SetOverlayScrollbarLayerOpacityAnimated(effective_opacity);
+    scrollbar->SetOverlayScrollbarLayerOpacityAnimated(
+        effective_opacity,
+        /*fade_out_animation=*/animation_change_ == AnimationChange::kFadeOut);
   }
 
   bool previously_visible_ = opacity_ > 0.0f;

@@ -2289,7 +2289,8 @@ void LayerTreeImpl::RegisterScrollbar(ScrollbarLayerImplBase* scrollbar_layer) {
     // Fluent overlay scrollbars are invisible until the DidRequestShow gets
     // called.
     if (scrollbar_layer->IsFluentOverlayScrollbarEnabled()) {
-      scrollbar_layer->SetOverlayScrollbarLayerOpacityAnimated(0.f);
+      scrollbar_layer->SetOverlayScrollbarLayerOpacityAnimated(
+          0.f, /*fade_out_animation=*/false);
     }
     host_impl_->RegisterScrollbarAnimationController(
         scroll_element_id, scrollbar_layer->Opacity());

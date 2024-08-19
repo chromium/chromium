@@ -424,7 +424,7 @@ void DamageTracker::AccumulateDamageFromLayer(
   }
 
   if (layer_is_new || layer->LayerPropertyChanged()) {
-    DamageReasonSet reasons;
+    DamageReasonSet reasons = layer->GetDamageReasons();
     if (layer_is_new) {
       reasons.Put(DamageReason::kUntracked);
     }
@@ -436,7 +436,7 @@ void DamageTracker::AccumulateDamageFromLayer(
     // Note old_visible_rect_in_target_space is already in target space.
     damage_for_this_update_.Union(old_visible_rect_in_target_space, {});
   } else {
-    DamageReasonSet reasons;
+    DamageReasonSet reasons = layer->GetDamageReasons();
     // If the layer properties haven't changed, then the the target surface is
     // only affected by the layer's damaged area, which could be empty.
     gfx::Rect damage_rect =

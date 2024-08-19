@@ -8456,12 +8456,16 @@ class LayerTreeHostTestImageAnimation : public LayerTreeHostTest {
         EXPECT_EQ(layer->update_rect(), image_rect);
         EXPECT_EQ(generator_->frames_decoded().size(), 2u);
         EXPECT_EQ(generator_->frames_decoded().count(1u), 1u);
+        EXPECT_EQ(layer->GetDamageReasons(),
+                  DamageReasonSet{DamageReason::kAnimatedImage});
         break;
       case 3:
         EXPECT_EQ(layer->InvalidationForTesting().bounds(), image_rect);
         EXPECT_EQ(layer->update_rect(), image_rect);
         EXPECT_EQ(generator_->frames_decoded().size(), 3u);
         EXPECT_EQ(generator_->frames_decoded().count(2u), 1u);
+        EXPECT_EQ(layer->GetDamageReasons(),
+                  DamageReasonSet{DamageReason::kAnimatedImage});
         break;
       default:
         // Only 3 draws should happen for 3 frames of the animate image.

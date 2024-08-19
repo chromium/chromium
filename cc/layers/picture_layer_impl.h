@@ -71,6 +71,7 @@ class CC_EXPORT PictureLayerImpl
   Region GetInvalidationRegionForDebugging() override;
   gfx::Rect GetEnclosingVisibleRectInTargetSpace() const override;
   gfx::ContentColorUsage GetContentColorUsage() const override;
+  DamageReasonSet GetDamageReasons() const override;
 
   // PictureLayerTilingClient overrides.
   std::unique_ptr<Tile> CreateTile(const Tile::CreateInfo& info) override;
@@ -174,6 +175,10 @@ class CC_EXPORT PictureLayerImpl
 
   void AddLastAppendQuadsTilingForTesting(PictureLayerTiling* tiling) {
     last_append_quads_tilings_.push_back(tiling);
+  }
+
+  void set_has_non_animated_image_update_rect() {
+    has_non_animated_image_update_rect_ = true;
   }
 
  protected:
@@ -304,6 +309,11 @@ class CC_EXPORT PictureLayerImpl
   bool directly_composited_image_default_raster_scale_changed_ : 1 = false;
 
   bool needs_regenerate_discardable_image_map_ : 1 = false;
+
+  // Keep track of if a non-empty update_rect is due to animated image or other
+  // reasons.
+  bool has_animated_image_update_rect_ : 1 = false;
+  bool has_non_animated_image_update_rect_ : 1 = false;
 
   LCDTextDisallowedReason lcd_text_disallowed_reason_ =
       LCDTextDisallowedReason::kNoText;

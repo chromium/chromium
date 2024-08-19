@@ -241,6 +241,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     // The original BeginFrameArgs that triggered the latest update from the
     // main thread.
     viz::BeginFrameArgs origin_begin_main_frame_args;
+    DamageReasonSet damage_reasons;
     RedrawReasonSet set_needs_redraw_reasons;
     // Preferred frame rate of VideoLayerImpl mapped to number of layers.
     base::flat_map<base::TimeDelta, uint32_t> video_layer_preferred_intervals;

@@ -52,6 +52,8 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   bool CanScrollOrientation() const;
 
   void PushPropertiesTo(LayerImpl* layer) override;
+  DamageReasonSet GetDamageReasons() const override;
+  void ResetChangeTracking() override;
 
   // Thumb quad rect in layer space.
   virtual gfx::Rect ComputeThumbQuadRect() const;
@@ -65,7 +67,8 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
 
   virtual int ThumbThickness() const = 0;
 
-  void SetOverlayScrollbarLayerOpacityAnimated(float opacity);
+  void SetOverlayScrollbarLayerOpacityAnimated(float opacity,
+                                               bool fade_out_animation);
 
   virtual LayerTreeSettings::ScrollbarAnimator GetScrollbarAnimator() const;
 
@@ -117,8 +120,13 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
       float thumb_thickness_scale_factor) const;
 
   ElementId scroll_element_id_;
-  bool is_overlay_scrollbar_;
-  bool is_web_test_ = false;
+  bool is_overlay_scrollbar_ : 1;
+  bool is_web_test_ : 1 = false;
+
+  // Keep track of if LayerPropertyChanged is due to fade out animation or other
+  // reasons.
+  bool opacity_changed_for_fade_out_animation_ : 1 = false;
+  bool property_changed_for_other_reasons_ : 1 = false;
 
   float thumb_thickness_scale_factor_;
   float current_pos_;

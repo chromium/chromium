@@ -221,6 +221,20 @@ void VideoLayerImpl::SetNeedsRedraw() {
   layer_tree_impl()->SetNeedsRedraw(RedrawReason::kVideoLayer);
 }
 
+DamageReasonSet VideoLayerImpl::GetDamageReasons() const {
+  // Treat all update_rect() as kVideoLayer updates. However keep
+  // LayerPropertyChanged() as kUntracked because it probably has nothing to do
+  // with the video itself.
+  DamageReasonSet reasons;
+  if (!update_rect().IsEmpty()) {
+    reasons.Put(DamageReason::kVideoLayer);
+  }
+  if (LayerPropertyChanged()) {
+    reasons.Put(DamageReason::kUntracked);
+  }
+  return reasons;
+}
+
 std::optional<base::TimeDelta> VideoLayerImpl::GetPreferredRenderInterval() {
   return provider_client_impl_->GetPreferredRenderInterval();
 }
