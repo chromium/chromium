@@ -8,9 +8,13 @@
 
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/webrtc/api/frame_transformer_factory.h"
 
 namespace blink {
+
+static constexpr char kRTCEncodedAudioFrameDetachKey[] = "RTCEncodedAudioFrame";
 
 const void* RTCEncodedAudioFramesAttachment::kAttachmentKey;
 
@@ -27,12 +31,21 @@ uint32_t RTCEncodedAudioFrameDelegate::RtpTimestamp() const {
   return webrtc_frame_ ? webrtc_frame_->GetTimestamp() : 0;
 }
 
-DOMArrayBuffer* RTCEncodedAudioFrameDelegate::CreateDataBuffer() const {
+DOMArrayBuffer* RTCEncodedAudioFrameDelegate::CreateDataBuffer(
+    v8::Isolate* isolate) const {
   ArrayBufferContents contents;
   {
     base::AutoLock lock(lock_);
     if (!webrtc_frame_) {
-      return nullptr;
+      // WebRTC frame already passed, return a detached ArrayBuffer.
+      DOMArrayBuffer* buffer = DOMArrayBuffer::Create(
+          /*num_elements=*/static_cast<size_t>(0), /*element_byte_size=*/1);
+      ArrayBufferContents contents_to_drop;
+      NonThrowableExceptionState exception_state;
+      buffer->Transfer(isolate,
+                       V8AtomicString(isolate, kRTCEncodedAudioFrameDetachKey),
+                       contents_to_drop, exception_state);
+      return buffer;
     }
 
     auto data = webrtc_frame_->GetData();

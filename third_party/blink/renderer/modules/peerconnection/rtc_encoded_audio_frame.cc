@@ -117,9 +117,9 @@ uint32_t RTCEncodedAudioFrame::timestamp() const {
   return delegate_->RtpTimestamp();
 }
 
-DOMArrayBuffer* RTCEncodedAudioFrame::data() const {
+DOMArrayBuffer* RTCEncodedAudioFrame::data(ExecutionContext* context) const {
   if (!frame_data_) {
-    frame_data_ = delegate_->CreateDataBuffer();
+    frame_data_ = delegate_->CreateDataBuffer(context->GetIsolate());
   }
   return frame_data_.Get();
 }
@@ -170,16 +170,16 @@ void RTCEncodedAudioFrame::setMetadata(RTCEncodedAudioFrameMetadata* metadata,
   }
 }
 
-void RTCEncodedAudioFrame::setData(DOMArrayBuffer* data) {
+void RTCEncodedAudioFrame::setData(ExecutionContext*, DOMArrayBuffer* data) {
   frame_data_ = data;
 }
 
-String RTCEncodedAudioFrame::toString() const {
+String RTCEncodedAudioFrame::toString(ExecutionContext* context) const {
   StringBuilder sb;
   sb.Append("RTCEncodedAudioFrame{rtpTimestamp: ");
   sb.AppendNumber(delegate_->RtpTimestamp());
   sb.Append(", size: ");
-  sb.AppendNumber(data() ? data()->ByteLength() : 0);
+  sb.AppendNumber(data(context) ? data(context)->ByteLength() : 0);
   sb.Append("}");
   return sb.ToString();
 }

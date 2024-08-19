@@ -32,7 +32,7 @@ class RTCEncodedAudioFrameDelegate
       std::optional<uint16_t> sequence_number);
 
   uint32_t RtpTimestamp() const;
-  DOMArrayBuffer* CreateDataBuffer() const;
+  DOMArrayBuffer* CreateDataBuffer(v8::Isolate* isolate) const;
   void SetData(const DOMArrayBuffer* data);
   base::expected<void, String> SetRtpTimestamp(uint32_t timestamp);
   std::optional<uint32_t> Ssrc() const;

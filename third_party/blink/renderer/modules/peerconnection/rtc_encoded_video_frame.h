@@ -11,6 +11,7 @@
 
 #include "base/types/expected.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -50,14 +51,14 @@ class MODULES_EXPORT RTCEncodedVideoFrame final : public ScriptWrappable {
   String type() const;
   // Returns the RTP Packet Timestamp for this frame.
   uint32_t timestamp() const;
-  DOMArrayBuffer* data() const;
+  DOMArrayBuffer* data(ExecutionContext* context) const;
   RTCEncodedVideoFrameMetadata* getMetadata() const;
   base::expected<void, String> SetMetadata(
       const RTCEncodedVideoFrameMetadata* metadata);
   void setMetadata(RTCEncodedVideoFrameMetadata* metadata,
                    ExceptionState& exception_state);
-  void setData(DOMArrayBuffer*);
-  String toString() const;
+  void setData(ExecutionContext*, DOMArrayBuffer*);
+  String toString(ExecutionContext* context) const;
 
   scoped_refptr<RTCEncodedVideoFrameDelegate> Delegate() const;
   void SyncDelegate() const;

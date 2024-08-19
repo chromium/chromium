@@ -142,9 +142,9 @@ uint32_t RTCEncodedVideoFrame::timestamp() const {
   return delegate_->RtpTimestamp();
 }
 
-DOMArrayBuffer* RTCEncodedVideoFrame::data() const {
+DOMArrayBuffer* RTCEncodedVideoFrame::data(ExecutionContext* context) const {
   if (!frame_data_) {
-    frame_data_ = delegate_->CreateDataBuffer();
+    frame_data_ = delegate_->CreateDataBuffer(context->GetIsolate());
   }
   return frame_data_.Get();
 }
@@ -263,11 +263,11 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
   }
 }
 
-void RTCEncodedVideoFrame::setData(DOMArrayBuffer* data) {
+void RTCEncodedVideoFrame::setData(ExecutionContext*, DOMArrayBuffer* data) {
   frame_data_ = data;
 }
 
-String RTCEncodedVideoFrame::toString() const {
+String RTCEncodedVideoFrame::toString(ExecutionContext* context) const {
   if (!delegate_) {
     return "empty";
   }
@@ -276,7 +276,7 @@ String RTCEncodedVideoFrame::toString() const {
   sb.Append("RTCEncodedVideoFrame{rtpTimestamp: ");
   sb.AppendNumber(timestamp());
   sb.Append(", size: ");
-  sb.AppendNumber(data()->ByteLength());
+  sb.AppendNumber(data(context)->ByteLength());
   sb.Append(" bytes, type: ");
   sb.Append(type());
   sb.Append("}");

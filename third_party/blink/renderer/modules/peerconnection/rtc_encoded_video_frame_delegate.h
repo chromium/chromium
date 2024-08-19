@@ -34,7 +34,7 @@ class RTCEncodedVideoFrameDelegate
   String Type() const;
   uint32_t RtpTimestamp() const;
   std::optional<webrtc::Timestamp> PresentationTimestamp() const;
-  DOMArrayBuffer* CreateDataBuffer() const;
+  DOMArrayBuffer* CreateDataBuffer(v8::Isolate* isolate) const;
   void SetData(const DOMArrayBuffer* data);
   std::optional<uint8_t> PayloadType() const;
   std::optional<std::string> MimeType() const;
