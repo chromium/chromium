@@ -543,19 +543,19 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
       base::BindOnce(&OidcAuthenticationSigninInterceptor::
                          OnPolicyFetchCompleteInNewProfile,
                      weak_factory_.GetWeakPtr()));
-}
 
-void OidcAuthenticationSigninInterceptor::OnPolicyFetchCompleteInNewProfile(
-    bool success) {
   if (user_choice_handling_done_callback_) {
     std::move(user_choice_handling_done_callback_)
-        .Run((success && !kOidcAuthForceTimeoutUi.Get())
-                 ? signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS
-                 : signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT);
+        .Run((kOidcAuthForceTimeoutUi.Get())
+                 ? signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT
+                 : signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS);
   } else {
     FinalizeSigninInterception();
   }
 }
+
+void OidcAuthenticationSigninInterceptor::OnPolicyFetchCompleteInNewProfile(
+    bool success) {}
 
 void OidcAuthenticationSigninInterceptor::FinalizeSigninInterception() {
   if (new_profile_) {
@@ -566,6 +566,11 @@ void OidcAuthenticationSigninInterceptor::FinalizeSigninInterception() {
     OidcAuthenticationSigninInterceptorFactory::GetForProfile(
         new_profile_.get())
         ->CreateBrowserAfterSigninInterception();
+    // Since user has been sent to the newly created profile, the old landing
+    // page is no longer relevant and can be closed.
+    if (web_contents_) {
+      web_contents_->Close();
+    }
   }
   Reset();
 }

@@ -202,8 +202,9 @@ bool UserAcceptedAccountManagement(Profile* profile) {
 
 bool ProfileCanBeManaged(Profile* profile) {
   // Some tests do not have a profile manager.
-  if (!g_browser_process->profile_manager())
+  if (!g_browser_process->profile_manager() || !profile) {
     return false;
+  }
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
