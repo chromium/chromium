@@ -36,8 +36,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdAuctionReportingWithMacroApi);
 // Controls the capturing of the Ad-Auction-Signals header, and the maximum
 // allowed Ad-Auction-Signals header value.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdAuctionSignals);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kAdAuctionSignalsMaxSizeBytes;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                               kAdAuctionSignalsMaxSizeBytes);
 
 // Runtime flag that changes default Permissions Policy for features
 // join-ad-interest-group and run-ad-auction to a more restricted EnableForSelf.
@@ -51,8 +51,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowerHighResolutionTimerThreshold);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAlignFontDisplayAutoTimeoutWithLCPGoal);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kAlignFontDisplayAutoTimeoutWithLCPGoalTimeoutParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kAlignFontDisplayAutoTimeoutWithLCPGoalTimeoutParam);
 enum class AlignFontDisplayAutoTimeoutWithLCPGoalMode {
   kToFailurePeriod,
   kToSwapPeriod
@@ -144,12 +145,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheWithKeepaliveRequest);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackgroundResourceFetch);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kBackgroundFontResponseProcessor;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kBackgroundScriptResponseProcessor;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kBackgroundCodeCacheDecoderStart;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kBackgroundFontResponseProcessor);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kBackgroundScriptResponseProcessor);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kBackgroundCodeCacheDecoderStart);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBakedGamutMapping);
 
@@ -177,12 +181,13 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBlockMidiByDefault);
 // Boost the priority of the first N not-small images.
 // crbug.com/1431169
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBoostImagePriority);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kBoostImagePriorityImageCount;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kBoostImagePriorityImageSize;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kBoostImagePriorityTightMediumLimit;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                               kBoostImagePriorityImageCount);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                               kBoostImagePriorityImageSize);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kBoostImagePriorityTightMediumLimit);
 
 // Boost the priority of certain loading tasks (https://crbug.com/1470003).
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBoostImageSetLoadingTaskPriority);
@@ -235,10 +240,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kCacheStorageCodeCacheHintHeaderName;
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCacheCodeOnIdle);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kCacheCodeOnIdleDelayParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kCacheCodeOnIdleDelayServiceWorkerOnlyParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kCacheCodeOnIdleDelayParam);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kCacheCodeOnIdleDelayServiceWorkerOnlyParam);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
 // Enables camera preview in permission bubble and site settings.

@@ -41,8 +41,11 @@ BASE_FEATURE(kAdAuctionReportingWithMacroApi,
 BASE_FEATURE(kAdAuctionSignals,
              "AdAuctionSignals",
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int> kAdAuctionSignalsMaxSizeBytes{
-    &kAdAuctionSignals, "ad-auction-signals-max-size-bytes", 10000};
+BASE_FEATURE_PARAM(int,
+                   kAdAuctionSignalsMaxSizeBytes,
+                   &kAdAuctionSignals,
+                   "ad-auction-signals-max-size-bytes",
+                   10000);
 
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 // Changes default Permissions Policy for features join-ad-interest-group and
@@ -79,9 +82,11 @@ BASE_FEATURE(kAlignFontDisplayAutoTimeoutWithLCPGoal,
 
 // The amount of time allowed for 'display: auto' web fonts to load without
 // intervention, counted from navigation start.
-const base::FeatureParam<int>
-    kAlignFontDisplayAutoTimeoutWithLCPGoalTimeoutParam{
-        &kAlignFontDisplayAutoTimeoutWithLCPGoal, "lcp-limit-in-ms", 2000};
+BASE_FEATURE_PARAM(int,
+                   kAlignFontDisplayAutoTimeoutWithLCPGoalTimeoutParam,
+                   &kAlignFontDisplayAutoTimeoutWithLCPGoal,
+                   "lcp-limit-in-ms",
+                   2000);
 
 const base::FeatureParam<AlignFontDisplayAutoTimeoutWithLCPGoalMode>::Option
     align_font_display_auto_timeout_with_lcp_goal_modes[] = {
@@ -201,12 +206,21 @@ BASE_FEATURE(kBackForwardCacheWithKeepaliveRequest,
 BASE_FEATURE(kBackgroundResourceFetch,
              "BackgroundResourceFetch",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<bool> kBackgroundFontResponseProcessor{
-    &kBackgroundResourceFetch, "background-font-response-processor", true};
-const base::FeatureParam<bool> kBackgroundScriptResponseProcessor{
-    &kBackgroundResourceFetch, "background-script-response-processor", true};
-const base::FeatureParam<bool> kBackgroundCodeCacheDecoderStart{
-    &kBackgroundResourceFetch, "background-code-cache-decoder-start", true};
+BASE_FEATURE_PARAM(bool,
+                   kBackgroundFontResponseProcessor,
+                   &kBackgroundResourceFetch,
+                   "background-font-response-processor",
+                   true);
+BASE_FEATURE_PARAM(bool,
+                   kBackgroundScriptResponseProcessor,
+                   &kBackgroundResourceFetch,
+                   "background-script-response-processor",
+                   true);
+BASE_FEATURE_PARAM(bool,
+                   kBackgroundCodeCacheDecoderStart,
+                   &kBackgroundResourceFetch,
+                   "background-code-cache-decoder-start",
+                   true);
 
 // Redefine the oklab and oklch spaces to have gamut mapping baked into them.
 // https://crbug.com/1508329
@@ -236,16 +250,25 @@ BASE_FEATURE(kBoostImagePriority,
              base::FEATURE_ENABLED_BY_DEFAULT);
 // The number of images to bopost the priority of before returning
 // to the default (low) priority.
-const base::FeatureParam<int> kBoostImagePriorityImageCount{
-    &kBoostImagePriority, "image_count", 5};
+BASE_FEATURE_PARAM(int,
+                   kBoostImagePriorityImageCount,
+                   &kBoostImagePriority,
+                   "image_count",
+                   5);
 // Maximum size of an image (in px^2) to be considered "small".
 // Small images, where dimensions are specified in the markup, are not boosted.
-const base::FeatureParam<int> kBoostImagePriorityImageSize{&kBoostImagePriority,
-                                                           "image_size", 10000};
+BASE_FEATURE_PARAM(int,
+                   kBoostImagePriorityImageSize,
+                   &kBoostImagePriority,
+                   "image_size",
+                   10000);
 // Number of medium-priority requests to allow in tight-mode independent of the
 // total number of outstanding requests.
-const base::FeatureParam<int> kBoostImagePriorityTightMediumLimit{
-    &kBoostImagePriority, "tight_medium_limit", 2};
+BASE_FEATURE_PARAM(int,
+                   kBoostImagePriorityTightMediumLimit,
+                   &kBoostImagePriority,
+                   "tight_medium_limit",
+                   2);
 
 // Boost the priority of certain loading tasks (https://crbug.com/1470003).
 BASE_FEATURE(kBoostImageSetLoadingTaskPriority,
@@ -374,11 +397,17 @@ BASE_FEATURE(kCORSErrorsIssueOnly,
 BASE_FEATURE(kCacheCodeOnIdle,
              "CacheCodeOnIdle",
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int> kCacheCodeOnIdleDelayParam{&kCacheCodeOnIdle,
-                                                         "delay-in-ms", 1};
+BASE_FEATURE_PARAM(int,
+                   kCacheCodeOnIdleDelayParam,
+                   &kCacheCodeOnIdle,
+                   "delay-in-ms",
+                   1);
 // Apply CacheCodeOnIdle only for service workers (https://crbug.com/1410082).
-const base::FeatureParam<bool> kCacheCodeOnIdleDelayServiceWorkerOnlyParam{
-    &kCacheCodeOnIdle, "service-worker-only", true};
+BASE_FEATURE_PARAM(bool,
+                   kCacheCodeOnIdleDelayServiceWorkerOnlyParam,
+                   &kCacheCodeOnIdle,
+                   "service-worker-only",
+                   true);
 
 // When enabled allows the header name used in the blink
 // CacheStorageCodeCacheHint runtime feature to be modified.  This runtime
