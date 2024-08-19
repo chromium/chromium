@@ -65,6 +65,27 @@ NSString* const kViewAccessibilityIdentifier = @"PanelContentViewAXID";
 
 NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 
+UIImage* CloseButtonImage(BOOL highlighted) {
+  NSArray<UIColor*>* palette = @[
+    [UIColor colorNamed:kGrey600Color],
+    [UIColor colorNamed:kBackgroundColor],
+  ];
+
+  if (highlighted) {
+    NSMutableArray<UIColor*>* transparentPalette =
+        [[NSMutableArray alloc] init];
+    [palette enumerateObjectsUsingBlock:^(UIColor* color, NSUInteger idx,
+                                          BOOL* stop) {
+      [transparentPalette addObject:[color colorWithAlphaComponent:0.6]];
+    }];
+    palette = [transparentPalette copy];
+  }
+
+  return SymbolWithPalette(
+      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseButtonIconSize),
+      palette);
+}
+
 }  // namespace
 
 @interface PanelContentViewController () <UICollectionViewDelegate,
@@ -459,15 +480,10 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 
 // Creates and initializes `_closeButton`.
 - (void)createCloseButton {
-  UIImage* closeButtonImage = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseButtonIconSize),
-      @[
-        [UIColor colorNamed:kGrey600Color],
-        [UIColor colorNamed:kBackgroundColor],
-      ]);
   UIButtonConfiguration* closeButtonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
-  closeButtonConfiguration.image = closeButtonImage;
+  // The image itself is set below in the configurationUpdateHandler, which
+  // is called before the button appears for the first time as well.
   closeButtonConfiguration.contentInsets = NSDirectionalEdgeInsetsZero;
   closeButtonConfiguration.buttonSize = UIButtonConfigurationSizeSmall;
   closeButtonConfiguration.accessibilityLabel =
@@ -481,6 +497,18 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
   _closeButton.accessibilityIdentifier = kCloseButtonAccessibilityIdentifier;
   _closeButton.pointerInteractionEnabled = YES;
+  _closeButton.configurationUpdateHandler = ^(UIButton* button) {
+    UIButtonConfiguration* updatedConfig = button.configuration;
+    switch (button.state) {
+      case UIControlStateHighlighted:
+        updatedConfig.image = CloseButtonImage(YES);
+        break;
+      case UIControlStateNormal:
+        updatedConfig.image = CloseButtonImage(NO);
+        break;
+    }
+    button.configuration = updatedConfig;
+  };
 }
 
 - (void)createDragHandleView {
