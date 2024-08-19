@@ -223,7 +223,7 @@ public class PriceInsightsBottomSheetMediator {
                 mContext.getResources().getString(R.string.price_insights_open_url_title));
         mPropertyModel.set(
                 PriceInsightsBottomSheetProperties.OPEN_URL_BUTTON_ICON,
-                R.drawable.ic_open_in_new_24dp);
+                R.drawable.ic_open_in_new_20dp);
         mPropertyModel.set(
                 PriceInsightsBottomSheetProperties.OPEN_URL_BUTTON_ON_CLICK_LISTENER,
                 view -> openJackpotUrl(info.jackpotUrl.get()));

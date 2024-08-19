@@ -337,7 +337,7 @@ public class PriceInsightsBottomSheetMediatorTest {
                 OPEN_URL_TITLE,
                 mPropertyModel.get(PriceInsightsBottomSheetProperties.OPEN_URL_TITLE));
         assertEquals(
-                R.drawable.ic_open_in_new_24dp,
+                R.drawable.ic_open_in_new_20dp,
                 mPropertyModel.get(PriceInsightsBottomSheetProperties.OPEN_URL_BUTTON_ICON));
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
