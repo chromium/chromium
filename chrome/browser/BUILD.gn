@@ -9136,11 +9136,8 @@ static_library("test_support") {
   }
 
   if (toolkit_views) {
-    sources += [
-      "../browser/ui/permission_bubble/permission_bubble_test_util.cc",
-      "../browser/ui/permission_bubble/permission_bubble_test_util.h",
-    ]
     deps += [ "//components/permissions:permissions" ]
+    public_deps += [ "//chrome/browser/ui/permission_bubble:test_support" ]
   }
 }
 

@@ -1331,7 +1331,6 @@ static_library("ui") {
       "performance_controls/tab_resource_usage_collector.h",
       "performance_controls/tab_resource_usage_tab_helper.cc",
       "performance_controls/tab_resource_usage_tab_helper.h",
-      "permission_bubble/permission_prompt.h",
       "privacy_sandbox/privacy_sandbox_prompt.cc",
       "privacy_sandbox/privacy_sandbox_prompt.h",
       "privacy_sandbox/privacy_sandbox_prompt_helper.cc",
@@ -1958,6 +1957,7 @@ static_library("ui") {
       "window_sizer/window_sizer.cc",
       "window_sizer/window_sizer.h",
     ]
+
     if (is_chrome_branded) {
       sources += [
         "webui/media_router/cast_feedback_ui.cc",
@@ -2020,6 +2020,7 @@ static_library("ui") {
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/color:mixers",
       "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/permission_bubble",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/views/side_panel:side_panel_enums",

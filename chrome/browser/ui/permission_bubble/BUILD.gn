@@ -1,0 +1,51 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("permission_bubble") {
+  sources = [ "permission_prompt.h" ]
+
+  deps = [ "//components/permissions" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [
+    "permission_bubble_browser_test_util.cc",
+    "permission_bubble_browser_test_util.h",
+  ]
+
+  deps = [
+    ":test_support",
+    "//base",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/ui",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/permissions",
+    "//components/permissions:permissions_common",
+    "//components/permissions:test_support",
+    "//components/services/app_service/public/cpp:app_types",
+  ]
+
+  if (is_mac) {
+    deps += [ "//ui/base" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "permission_bubble_test_util.cc",
+    "permission_bubble_test_util.h",
+  ]
+
+  deps = [
+    "//components/permissions",
+    "//url",
+  ]
+}

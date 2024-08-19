@@ -173,6 +173,10 @@ source_set("permissions") {
       "system/geolocation_observation.h",
     ]
   }
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/permission_bubble" ]
+  }
 }
 
 proto_library("permissions_proto") {
