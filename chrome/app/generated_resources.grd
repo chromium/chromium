@@ -4777,6 +4777,12 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DEV_TOOLS_SHARED_PROCESS_INFOBAR_LEARN_MORE" desc="Used as 'Learn More' link text.">
         Learn More
       </message>
+      <message name="IDS_DEV_TOOLS_SHARED_PROCESS_INFOBAR_OPT_OUT" desc="Used as 'Opt Out' button text.">
+        Opt Out
+      </message>
+      <message name="IDS_DEV_TOOLS_SHARED_PROCESS_INFOBAR_RESTART_NEEDED" desc="Used as 'Opt Out' button text.">
+        Opting out of process sharing requires a browser restart. This browser will restart now.
+      </message>
 
       <!-- DevTools attached infobar -->
       <message name="IDS_DEV_TOOLS_INFOBAR_LABEL" desc="Label displayed in an infobar when external debugger is attached to the browser.  The label does not disappear until the user dismisses it, even if the debugger is detached, and so should not imply that the debugger must still be debugging the browser, only that it was, and could still be.">

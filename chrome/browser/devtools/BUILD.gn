@@ -153,6 +153,7 @@ static_library("devtools") {
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/web_applications",
       "//chrome/common",
+      "//components/flags_ui",
       "//components/guest_view/browser",
       "//components/infobars/content",
       "//components/infobars/core",

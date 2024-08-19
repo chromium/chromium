@@ -3872,7 +3872,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteUpToMainFrameThresholdTest,
             webcontents2->GetPrimaryMainFrame()->GetProcess());
 }
 
-class DevToolsProcessPerSiteTest : public DevToolsTest {
+class DevToolsProcessPerSiteTest
+    : public DevToolsProcessPerSiteUpToMainFrameThresholdTest {
  public:
   DevToolsProcessPerSiteTest() = default;
 
