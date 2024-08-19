@@ -36,33 +36,12 @@ settings-collapse-radio-button:not(:first-of-type) {
   --settings-collapse-separator-line: var(--cr-separator-line);
 }
 
-.header {
-  align-items: center;
-  column-gap: 16px;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  outline: none;
-  padding: 24px 0 16px 0;
-}
-
 .header-phase2 {
   align-items: center;
   display: flex;
   flex-direction: column;
   outline: none;
   padding: 24px 0 16px 0;
-}
-
-.header-label {
-  align-self: normal;
-  color: var(--cr-primary-text-color);
-  flex: 1;
-  font-size: 123%;  /* Should be 16px when 100% is 13px. */
-  font-weight: 400;
-  padding-bottom: 0;
-  padding-top: 0;
 }
 
 .header-label-phase2 {
