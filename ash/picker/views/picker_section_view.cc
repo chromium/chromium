@@ -38,6 +38,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
@@ -145,6 +146,24 @@ std::optional<base::File::Info> ResolveFileInfo(const base::FilePath& path) {
   return info;
 }
 
+// This should align with `chromeos::clipboard_history::GetIconForDescriptor`.
+const gfx::VectorIcon& GetIconForClipboardData(
+    const PickerSearchResult::ClipboardData& data) {
+  switch (data.display_format) {
+    case PickerSearchResult::ClipboardData::DisplayFormat::kText:
+      return chromeos::kTextIcon;
+    case PickerSearchResult::ClipboardData::DisplayFormat::kUrl:
+      return vector_icons::kLinkIcon;
+    case PickerSearchResult::ClipboardData::DisplayFormat::kImage:
+      return chromeos::kFiletypeImageIcon;
+    case PickerSearchResult::ClipboardData::DisplayFormat::kFile:
+      return vector_icons::kContentCopyIcon;
+    case PickerSearchResult::ClipboardData::DisplayFormat::kHtml:
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 PickerSectionView::PickerSectionView(
@@ -197,35 +216,25 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
           [&](const PickerSearchResult::ClipboardData& data) -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
-            const gfx::VectorIcon* icon = nullptr;
             switch (data.display_format) {
               case PickerSearchResult::ClipboardData::DisplayFormat::kFile:
-                icon = &vector_icons::kContentCopyIcon;
-                item_view->SetPrimaryText(data.display_text);
-                break;
               case PickerSearchResult::ClipboardData::DisplayFormat::kText:
-                icon = &chromeos::kTextIcon;
+              case PickerSearchResult::ClipboardData::DisplayFormat::kUrl:
                 item_view->SetPrimaryText(data.display_text);
                 break;
               case PickerSearchResult::ClipboardData::DisplayFormat::kImage:
                 if (!data.display_image.has_value()) {
                   return nullptr;
                 }
-                icon = &chromeos::kFiletypeImageIcon;
                 item_view->SetPrimaryImage(*data.display_image,
                                            available_width);
-                break;
-              case PickerSearchResult::ClipboardData::DisplayFormat::kUrl:
-                icon = &vector_icons::kLinkIcon;
-                item_view->SetPrimaryText(data.display_text);
                 break;
               case PickerSearchResult::ClipboardData::DisplayFormat::kHtml:
                 NOTREACHED();
             }
-            if (icon) {
-              item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
-                  *icon, cros_tokens::kCrosSysOnSurface, kIconSize));
-            }
+            item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+                GetIconForClipboardData(data), cros_tokens::kCrosSysOnSurface,
+                kIconSize));
             return item_view;
           },
           [&](const PickerSearchResult::BrowsingHistoryData& data)
