@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -11,7 +12,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/local_tab_group_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -32,11 +32,13 @@ SavedTabGroupModelListener::SavedTabGroupModelListener(
     TabGroupSyncService* service,
     Profile* profile)
     : service_(service), profile_(profile) {
-  DCHECK(service);
-  DCHECK(profile);
+  CHECK(service);
+  CHECK(profile);
+
   for (Browser* browser : *BrowserList::GetInstance()) {
     OnBrowserAdded(browser);
   }
+
   BrowserList::GetInstance()->AddObserver(this);
 }
 

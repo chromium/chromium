@@ -62,7 +62,7 @@ class TabGroupSyncDelegateDesktop : public TabGroupSyncDelegate {
       const SavedTabGroup& saved_group);
 
   // The service used to query and manage SavedTabGroups.
-  raw_ptr<TabGroupSyncService> service_;
+  raw_ptr<TabGroupSyncService> service_ = nullptr;
 
   // Listener layer which observes and manages the state of open SavedTabGroups
   // across browsers.
