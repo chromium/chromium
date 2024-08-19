@@ -522,7 +522,7 @@ url::Origin GetTestOrigin() {
 }
 
 std::string GetTestClientDataJSON(ClientDataRequestType type) {
-  return BuildClientDataJson({std::move(type), GetTestOrigin(),
+  return BuildClientDataJson({std::move(type), GetTestOrigin(), GetTestOrigin(),
                               GetTestChallengeBytes(),
                               /*is_cross_origin_iframe=*/false});
 }
@@ -895,7 +895,8 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
   std::vector<uint8_t> challenge_bytes = {1, 2, 3};
   EXPECT_EQ(
       BuildClientDataJson({ClientDataRequestType::kWebAuthnCreate,
-                           GetTestOrigin(), challenge_bytes, false})
+                           GetTestOrigin(), GetTestOrigin(), challenge_bytes,
+                           false})
           .find(
               "{\"type\":\"webauthn.create\",\"challenge\":\"AQID\",\"origin\":"
               "\"https://a.google.com\",\"crossOrigin\":false"),
@@ -905,11 +906,13 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
   static const struct {
     const ClientDataRequestType type;
     url::Origin origin;
+    url::Origin top_origin;
     std::vector<uint8_t> challenge;
     bool is_cross_origin;
   } kTestCases[] = {
       {
           ClientDataRequestType::kWebAuthnGet,
+          GetTestOrigin(),
           GetTestOrigin(),
           {1, 2, 3},
           false,
@@ -917,6 +920,14 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
       {
           ClientDataRequestType::kPaymentGet,
           GetTestOrigin(),
+          GetTestOrigin(),
+          {1, 2, 3},
+          false,
+      },
+      {
+          ClientDataRequestType::kWebAuthnCreate,
+          GetTestOrigin(),
+          url::Origin::Create(GURL("https://toplevel.example")),
           {1, 2, 3},
           false,
       },
@@ -926,8 +937,9 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
   for (const auto& test : kTestCases) {
     SCOPED_TRACE(num++);
 
-    const std::string json = BuildClientDataJson(
-        {test.type, test.origin, test.challenge, test.is_cross_origin});
+    const std::string json =
+        BuildClientDataJson({test.type, test.origin, test.top_origin,
+                             test.challenge, test.is_cross_origin});
 
     const auto parsed = base::JSONReader::Read(json);
     ASSERT_TRUE(parsed.has_value());
@@ -957,6 +969,12 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
         base::Base64UrlEncodePolicy::OMIT_PADDING, &expected_challenge);
     EXPECT_EQ(*parsed->GetDict().FindString("challenge"), expected_challenge);
     EXPECT_EQ(*parsed->GetDict().FindBool("crossOrigin"), test.is_cross_origin);
+    if (test.is_cross_origin) {
+      EXPECT_EQ(*parsed->GetDict().FindString("topOrigin"),
+                test.top_origin.Serialize());
+    } else {
+      EXPECT_EQ(parsed->GetDict().FindString("topOrigin"), nullptr);
+    }
   }
 }
 

@@ -1115,6 +1115,7 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
   // Assemble clientDataJSON.
   ClientDataJsonParams client_data_json_params(
       ClientDataRequestType::kWebAuthnCreate, req_state_->caller_origin,
+      GetRenderFrameHost()->GetOutermostMainFrame()->GetLastCommittedOrigin(),
       options->challenge, is_cross_origin_iframe);
   if (options->remote_desktop_client_override) {
     client_data_json_params.origin =
@@ -1420,16 +1421,13 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
 
   // Assemble clientDataJSON.
   ClientDataJsonParams client_data_json_params(
-      ClientDataRequestType::kWebAuthnGet, caller_origin, options->challenge,
-      is_cross_origin_iframe);
+      ClientDataRequestType::kWebAuthnGet, caller_origin,
+      GetRenderFrameHost()->GetOutermostMainFrame()->GetLastCommittedOrigin(),
+      options->challenge, is_cross_origin_iframe);
   if (payment_options) {
     client_data_json_params.type = ClientDataRequestType::kPaymentGet;
     client_data_json_params.payment_options = std::move(payment_options);
     client_data_json_params.payment_rp = req_state_->relying_party_id;
-    client_data_json_params.payment_top_origin = GetRenderFrameHost()
-                                                     ->GetOutermostMainFrame()
-                                                     ->GetLastCommittedOrigin()
-                                                     .Serialize();
   } else if (options->extensions->remote_desktop_client_override) {
     client_data_json_params.origin =
         options->extensions->remote_desktop_client_override->origin;
