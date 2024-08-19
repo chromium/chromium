@@ -20,7 +20,7 @@ namespace ash {
 namespace {
 
 constexpr int kPickerEmojiFontSize = 20;
-const gfx::FontList kPickerEmojiFont({"Google Sans", "Roboto"},
+const gfx::FontList kPickerEmojiFont({"Noto Color Emoji"},
                                      gfx::Font::NORMAL,
                                      kPickerEmojiFontSize,
                                      gfx::Font::Weight::NORMAL);
