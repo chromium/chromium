@@ -187,7 +187,7 @@ void BookmarksFunction::OnResponded() {
   DCHECK(response_type());
   if (*response_type() == ExtensionFunction::SUCCEEDED) {
     BookmarksApiWatcher::GetForBrowserContext(browser_context())
-        ->NotifyApiInvoked(extension(), this);
+        ->NotifyApiInvoked(this);
   }
 }
 

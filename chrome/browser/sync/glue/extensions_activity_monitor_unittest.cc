@@ -58,7 +58,9 @@ template <class T>
 void FireBookmarksApiEvent(Profile* profile,
                            const scoped_refptr<Extension>& extension,
                            int repeats) {
-  scoped_refptr<extensions::BookmarksFunction> bookmarks_function(new T());
+  scoped_refptr<extensions::BookmarksFunction> bookmarks_function =
+      base::MakeRefCounted<T>();
+  bookmarks_function->set_extension(extension.get());
   bookmarks_function->set_histogram_value(T::static_histogram_value());
   bookmarks_function->SetName(T::static_function_name());
   // |bookmarks_function| won't be run, just passed to Notify(), so calling
@@ -66,7 +68,7 @@ void FireBookmarksApiEvent(Profile* profile,
   bookmarks_function->ignore_did_respond_for_testing();
   for (int i = 0; i < repeats; i++) {
     extensions::BookmarksApiWatcher::GetForBrowserContext(profile)
-        ->NotifyApiInvoked(extension.get(), bookmarks_function.get());
+        ->NotifyApiInvoked(bookmarks_function.get());
   }
 }
 
