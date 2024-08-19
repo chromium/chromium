@@ -15,8 +15,6 @@ ci/mac12-arm64-enterprise-companion-tester-rel
 ci/mac12-x64-enterprise-companion-tester-asan-dbg
 ci/mac13-arm64-enterprise-companion-tester-dbg
 ci/mac13-x64-enterprise-companion-tester-rel
-ci/mac14-arm64-enterprise-companion-tester-dbg
-ci/mac14-x64-enterprise-companion-tester-rel
 ci/win-enterprise-companion-builder-dbg
 ci/win-enterprise-companion-builder-rel
 ci/win10-32-on-64-enterprise-companion-tester-dbg

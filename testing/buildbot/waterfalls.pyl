@@ -3224,22 +3224,6 @@
           'gtest_tests': 'enterprise_companion_gtests_mac',
         },
       },
-      'mac14-arm64-enterprise-companion-tester-dbg': {
-        'mixins': [
-          'mac_14_arm64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'enterprise_companion_gtests_mac',
-        },
-      },
-      'mac14-x64-enterprise-companion-tester-rel': {
-        'mixins': [
-          'mac_14_x64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'enterprise_companion_gtests_mac',
-        },
-      },
       'win-enterprise-companion-builder-dbg': {
         'additional_compile_targets': ['chrome/enterprise_companion:all'],
       },
