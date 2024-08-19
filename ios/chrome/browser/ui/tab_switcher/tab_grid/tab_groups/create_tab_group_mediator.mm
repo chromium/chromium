@@ -223,9 +223,9 @@
   CHECK_EQ(_webStateList, webStateList);
   switch (change.type()) {
     case WebStateListChange::Type::kGroupVisualDataUpdate: {
-      const WebStateListChangeGroupVisualDataUpdate& visual_data_update =
+      const WebStateListChangeGroupVisualDataUpdate& visualDataUpdate =
           change.As<WebStateListChangeGroupVisualDataUpdate>();
-      if (_tabGroup == visual_data_update.updated_group()) {
+      if (_tabGroup == visualDataUpdate.updated_group()) {
         // Dismiss the editor.
         [self.delegate
             createTabGroupMediatorEditedGroupWasExternallyMutated:self];
