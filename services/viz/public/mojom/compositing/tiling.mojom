@@ -1,0 +1,72 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "services/viz/public/mojom/compositing/transferable_resource.mojom";
+import "skia/public/mojom/skcolor4f.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Describes a tile resource prepared by the client.
+struct TileResource {
+  // Identifies the actual texture resource containing rasterized tile contents.
+  TransferableResource resource;
+
+  // Whether or not the texture has a premultiplied alpha channel.
+  bool is_premultiplied;
+
+  // Whether or not the texture was rasterized with checker-imaged content.
+  bool is_checkered;
+};
+
+// For tiles that are missing or otherwise not ready to draw, this is the
+// reason why.
+enum MissingTileReason {
+  kOutOfMemory,
+  kResourceNotReady,
+};
+
+// Describes the visual contents of a tile.
+union TileContents {
+  // No contents.
+  MissingTileReason missing_reason;
+
+  // A rasterized tile, identified by a Viz resource which the client produced.
+  TileResource resource;
+
+  // A solid color which occupies the entire tile region.
+  skia.mojom.SkColor4f solid_color;
+};
+
+// Properties of a specific tile within a tiling.
+struct Tile {
+  // The column and row indices of the tile.
+  uint32 column_index;
+  uint32 row_index;
+
+  // The updated contents of the tile.
+  TileContents contents;
+};
+
+// Set of updates to a specific tiling for a specific layer.
+struct Tiling {
+  // Identifies the layer to which the tiling belongs. On the client side this
+  // identifies a PictureLayerImpl, and on the Viz side this must identify a
+  // corresponding TileDisplayLayerImpl established by the client in a display
+  // tree update prior to (or including) this tiling update.
+  int64 layer_id;
+
+  // The raster transform for this tiling.
+  gfx.mojom.Vector2dF raster_translation;
+  gfx.mojom.Vector2dF raster_scale;
+
+  // The size in pixels of each tile.
+  gfx.mojom.Size tile_size;
+
+  // The rectangle logically covered by tiles in this tiling.
+  gfx.mojom.Rect tiling_rect;
+
+  // New or updated tiles.
+  array<Tile> tiles;
+};

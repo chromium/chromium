@@ -2118,12 +2118,23 @@ void LayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile) {
 
   // We must have a pending or active tree layer here, since the layer is
   // guaranteed to outlive its tiles.
-  if (tile->tiling()->tree() == WhichTree::PENDING_TREE)
+  const bool is_pending_tree =
+      tile->tiling()->tree() == WhichTree::PENDING_TREE;
+  if (is_pending_tree) {
     layer_impl = pending_tree_->FindPendingTreeLayerById(tile->layer_id());
-  else
+  } else {
     layer_impl = active_tree_->FindActiveTreeLayerById(tile->layer_id());
+  }
 
   layer_impl->NotifyTileStateChanged(tile);
+
+  if (settings_.UseLayerContextForDisplay() && !is_pending_tree) {
+    // Pending tree tile updates are pushed to the display tree after
+    // activation. For active tree tile updates we push immediately.
+    layer_context_->UpdateDisplayTile(
+        static_cast<PictureLayerImpl&>(*layer_impl), *tile,
+        *resource_provider(), *layer_tree_frame_sink_->context_provider());
+  }
 
   if (!client_->IsInsideDraw() && tile->required_for_draw()) {
     // The LayerImpl::NotifyTileStateChanged() should damage the layer, so this
@@ -3058,7 +3069,10 @@ void LayerTreeHostImpl::UpdateDisplayTree(FrameData& frame) {
   }
 
   tile_manager_.PrepareToDraw();
-  layer_context_->UpdateDisplayTreeFrom(*active_tree());
+  layer_context_->UpdateDisplayTreeFrom(
+      *active_tree(), *resource_provider(),
+      *layer_tree_frame_sink_->context_provider());
+  UpdateAnimationState(true);
   active_tree()->ResetAllChangeTracking();
 }
 

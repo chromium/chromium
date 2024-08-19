@@ -7,6 +7,7 @@ module viz.mojom;
 import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
 import "services/viz/public/mojom/compositing/layer.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
+import "services/viz/public/mojom/compositing/tiling.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -71,6 +72,9 @@ struct LayerTreeUpdate {
   uint32 num_clip_nodes;
   uint32 num_effect_nodes;
   uint32 num_scroll_nodes;
+
+  // Tiling updates for any PictureLayers in the tree.
+  array<Tiling> tilings;
 };
 
 // Drives updates to a GPU-side LayerTreeHostImpl from its corresponding
@@ -81,6 +85,9 @@ interface LayerContext {
 
   // Flushes pending updates from the client to the service-side display tree.
   UpdateDisplayTree(LayerTreeUpdate update);
+
+  // Updates one or more tiles in a specific tiling.
+  UpdateDisplayTiling(Tiling tiling);
 };
 
 // Provides feedback from a GPU-side LayerTreeHostImpl to its corresponding

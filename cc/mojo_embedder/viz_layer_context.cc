@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -139,6 +140,108 @@ void ComputePropertyTreeUpdate(const TreeType& old_tree,
   }
 }
 
+viz::mojom::TileResourcePtr SerializeTileResource(
+    const Tile& tile,
+    viz::ClientResourceProvider& resource_provider,
+    viz::RasterContextProvider& context_provider) {
+  const auto& draw_info = tile.draw_info();
+  std::vector<viz::ResourceId> ids(1, draw_info.resource_id_for_export());
+  std::vector<viz::TransferableResource> resources;
+  resource_provider.PrepareSendToParent(ids, &resources, &context_provider);
+  CHECK_EQ(resources.size(), 1u);
+
+  auto wire = viz::mojom::TileResource::New();
+  wire->resource = resources[0];
+  wire->is_premultiplied = draw_info.is_premultiplied();
+  wire->is_checkered = draw_info.is_checker_imaged();
+  return wire;
+}
+
+viz::mojom::TilePtr SerializeTile(
+    const Tile& tile,
+    viz::ClientResourceProvider& resource_provider,
+    viz::RasterContextProvider& context_provider) {
+  auto wire = viz::mojom::Tile::New();
+  wire->column_index = tile.tiling_i_index();
+  wire->row_index = tile.tiling_j_index();
+  switch (tile.draw_info().mode()) {
+    case TileDrawInfo::OOM_MODE:
+      wire->contents = viz::mojom::TileContents::NewMissingReason(
+          viz::mojom::MissingTileReason::kOutOfMemory);
+      break;
+
+    case TileDrawInfo::SOLID_COLOR_MODE:
+      wire->contents = viz::mojom::TileContents::NewSolidColor(
+          tile.draw_info().solid_color());
+      break;
+
+    case TileDrawInfo::RESOURCE_MODE:
+      if (tile.draw_info().has_resource() &&
+          tile.draw_info().is_resource_ready_to_draw()) {
+        wire->contents = viz::mojom::TileContents::NewResource(
+            SerializeTileResource(tile, resource_provider, context_provider));
+      } else {
+        wire->contents = viz::mojom::TileContents::NewMissingReason(
+            viz::mojom::MissingTileReason::kResourceNotReady);
+      }
+      break;
+  }
+  return wire;
+}
+
+viz::mojom::TilingPtr SerializeTiling(
+    PictureLayerImpl& layer,
+    const PictureLayerTiling& tiling,
+    base::span<const Tile*> tiles,
+    viz::ClientResourceProvider& resource_provider,
+    viz::RasterContextProvider& context_provider) {
+  std::vector<viz::mojom::TilePtr> wire_tiles;
+  for (const Tile* tile : tiles) {
+    if (auto wire_tile =
+            SerializeTile(*tile, resource_provider, context_provider)) {
+      wire_tiles.push_back(std::move(wire_tile));
+    }
+  }
+  if (wire_tiles.empty()) {
+    return nullptr;
+  }
+
+  auto wire = viz::mojom::Tiling::New();
+  wire->layer_id = layer.id();
+  wire->raster_translation = tiling.raster_transform().translation();
+  wire->raster_scale = tiling.raster_transform().scale();
+  wire->tile_size = tiling.tile_size();
+  wire->tiling_rect = tiling.tiling_rect();
+  wire->tiles = std::move(wire_tiles);
+  return wire;
+}
+
+void SerializePictureLayerTileUpdates(
+    PictureLayerImpl& layer,
+    viz::ClientResourceProvider& resource_provider,
+    viz::RasterContextProvider& context_provider,
+    std::vector<viz::mojom::TilingPtr>& tilings) {
+  auto updates = layer.TakeUpdatedTiles();
+  for (const auto& [scale_key, tile_indices] : updates) {
+    if (const auto* tiling =
+            layer.picture_layer_tiling_set()->FindTilingWithScaleKey(
+                scale_key)) {
+      std::vector<const Tile*> tiles;
+      tiles.reserve(tile_indices.size());
+      for (const auto& index : tile_indices) {
+        if (auto* tile = tiling->TileAt(index)) {
+          tiles.push_back(tile);
+        }
+      }
+
+      if (auto wire_tiling = SerializeTiling(
+              layer, *tiling, tiles, resource_provider, context_provider)) {
+        tilings.push_back(std::move(wire_tiling));
+      }
+    }
+  }
+}
+
 }  // namespace
 
 VizLayerContext::VizLayerContext(viz::mojom::CompositorFrameSink& frame_sink,
@@ -156,7 +259,10 @@ void VizLayerContext::SetVisible(bool visible) {
   service_->SetVisible(visible);
 }
 
-void VizLayerContext::UpdateDisplayTreeFrom(LayerTreeImpl& tree) {
+void VizLayerContext::UpdateDisplayTreeFrom(
+    LayerTreeImpl& tree,
+    viz::ClientResourceProvider& resource_provider,
+    viz::RasterContextProvider& context_provider) {
   auto& property_trees = *tree.property_trees();
   auto update = viz::mojom::LayerTreeUpdate::New();
   update->source_frame_number = tree.source_frame_number();
@@ -194,6 +300,13 @@ void VizLayerContext::UpdateDisplayTreeFrom(LayerTreeImpl& tree) {
     wire->clip_tree_index = layer->clip_tree_index();
     wire->effect_tree_index = layer->effect_tree_index();
     wire->scroll_tree_index = layer->scroll_tree_index();
+
+    if (layer->GetLayerType() == mojom::LayerType::kPicture) {
+      SerializePictureLayerTileUpdates(static_cast<PictureLayerImpl&>(*layer),
+                                       resource_provider, context_provider,
+                                       update->tilings);
+    }
+
     if (layer == root) {
       DCHECK(!update->root_layer);
       update->root_layer = std::move(wire);
@@ -221,6 +334,18 @@ void VizLayerContext::UpdateDisplayTreeFrom(LayerTreeImpl& tree) {
   last_committed_property_trees_ = property_trees;
 
   service_->UpdateDisplayTree(std::move(update));
+}
+
+void VizLayerContext::UpdateDisplayTile(
+    PictureLayerImpl& layer,
+    const Tile& tile,
+    viz::ClientResourceProvider& resource_provider,
+    viz::RasterContextProvider& context_provider) {
+  const Tile* tiles[] = {&tile};
+  if (auto tiling = SerializeTiling(layer, *tile.tiling(), tiles,
+                                    resource_provider, context_provider)) {
+    service_->UpdateDisplayTiling(std::move(tiling));
+  }
 }
 
 void VizLayerContext::OnRequestCommitForFrame(const viz::BeginFrameArgs& args) {

@@ -146,6 +146,8 @@ cc_component("cc") {
     "layers/texture_layer_client.h",
     "layers/texture_layer_impl.cc",
     "layers/texture_layer_impl.h",
+    "layers/tile_display_layer_impl.cc",
+    "layers/tile_display_layer_impl.h",
     "layers/tile_size_calculator.cc",
     "layers/tile_size_calculator.h",
     "layers/touch_action_region.cc",

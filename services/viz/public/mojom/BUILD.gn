@@ -43,6 +43,7 @@ mojom("mojom") {
     "compositing/surface_info.mojom",
     "compositing/surface_range.mojom",
     "compositing/texture_releaser.mojom",
+    "compositing/tiling.mojom",
     "compositing/transferable_resource.mojom",
     "compositing/vertical_scroll_direction.mojom",
     "compositing/video_detector_observer.mojom",

@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -25,6 +26,7 @@
 #include "cc/raster/lcd_text_disallowed_reason.h"
 #include "cc/tiles/picture_layer_tiling.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
+#include "cc/tiles/tile_index.h"
 #include "cc/tiles/tiling_set_eviction_queue.h"
 #include "cc/trees/image_animation_controller.h"
 
@@ -180,6 +182,13 @@ class CC_EXPORT PictureLayerImpl
   void set_has_non_animated_image_update_rect() {
     has_non_animated_image_update_rect_ = true;
   }
+
+  // Returns the set of tiles which have been updated since the last call to
+  // this method. This returns tile indices for each updated tile, grouped by
+  // the scale key of their respective tiling. Beware that this is not pruned,
+  // so tilings or tiles identified within may no longer exist.
+  using TileUpdateSet = std::map<float, std::set<TileIndex>>;
+  TileUpdateSet TakeUpdatedTiles();
 
  protected:
   friend class RasterizeAndRecordBenchmarkImpl;
@@ -354,6 +363,9 @@ class CC_EXPORT PictureLayerImpl
   // Denotes an area that is damaged and needs redraw. This is in the layer's
   // space.
   gfx::Rect damage_rect_;
+
+  // Tracks tiles changed since the last call to TakeUpdatedTiles().
+  TileUpdateSet updated_tiles_;
 };
 
 }  // namespace cc

@@ -835,6 +835,10 @@ class CC_EXPORT LayerTreeImpl {
   // output of the current frame.
   bool HasViewTransitionSaveRequest() const;
 
+  // Manually flags `layer` as having been updated. This ensures it's included
+  // in the next set returned by TakeUpdatedLayers().
+  void MarkLayerUpdated(LayerImpl* layer);
+
   // Returns the set of layers that have been added or changed in some
   // meaningful way since the last call to TakeUpdatedLayers() or
   // ResetAllChangeTracking().

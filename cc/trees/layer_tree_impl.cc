@@ -3056,6 +3056,10 @@ bool LayerTreeImpl::HasViewTransitionSaveRequest() const {
   return false;
 }
 
+void LayerTreeImpl::MarkLayerUpdated(LayerImpl* layer) {
+  updated_layers_.insert(layer);
+}
+
 std::unordered_set<LayerImpl*> LayerTreeImpl::TakeUpdatedLayers() {
   std::unordered_set<LayerImpl*> layers;
   layers.swap(updated_layers_);

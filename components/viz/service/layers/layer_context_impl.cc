@@ -4,6 +4,7 @@
 
 #include "components/viz/service/layers/layer_context_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -11,12 +12,14 @@
 
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected_macros.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/solid_color_layer_impl.h"
+#include "cc/layers/tile_display_layer_impl.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/layer_tree_settings.h"
@@ -43,12 +46,16 @@ cc::LayerTreeSettings GetDisplayTreeSettings() {
   return settings;
 }
 
-std::unique_ptr<cc::LayerImpl> CreateLayer(cc::LayerTreeImpl& tree,
+std::unique_ptr<cc::LayerImpl> CreateLayer(LayerContextImpl& context,
+                                           cc::LayerTreeImpl& tree,
                                            cc::mojom::LayerType type,
                                            int id) {
   switch (type) {
     case cc::mojom::LayerType::kLayer:
       return cc::LayerImpl::Create(&tree, id);
+
+    case cc::mojom::LayerType::kPicture:
+      return std::make_unique<cc::TileDisplayLayerImpl>(context, tree, id);
 
     default:
       // TODO(rockot): Support other layer types.
@@ -192,6 +199,7 @@ base::expected<bool, std::string> UpdatePropertyTree(
 }
 
 base::expected<void, std::string> AddOrUpdateLayer(
+    LayerContextImpl& context,
     cc::LayerTreeImpl& tree,
     mojom::Layer& wire,
     cc::LayerImpl* existing_layer) {
@@ -204,7 +212,7 @@ base::expected<void, std::string> AddOrUpdateLayer(
     }
     layer = existing_layer;
   } else {
-    auto new_layer = CreateLayer(tree, wire.type, wire.id);
+    auto new_layer = CreateLayer(context, tree, wire.type, wire.id);
     layer = new_layer.get();
     tree.AddLayer(std::move(new_layer));
   }
@@ -297,6 +305,51 @@ base::expected<void, std::string> UpdateViewportPropertyIds(
   return base::ok();
 }
 
+base::expected<cc::TileDisplayLayerImpl::TileResource, std::string>
+DeserializeTileResource(mojom::TileResource& wire) {
+  if (wire.resource.id == kInvalidResourceId) {
+    return base::unexpected("Invalid tile resource");
+  }
+  return cc::TileDisplayLayerImpl::TileResource(
+      wire.resource, wire.is_premultiplied, wire.is_checkered);
+}
+
+base::expected<cc::TileDisplayLayerImpl::TileContents, std::string>
+DeserializeTileContents(mojom::TileContents& wire) {
+  switch (wire.which()) {
+    case mojom::TileContents::Tag::kMissingReason:
+      return cc::TileDisplayLayerImpl::TileContents(
+          cc::TileDisplayLayerImpl::NoContents());
+
+    case mojom::TileContents::Tag::kResource:
+      return DeserializeTileResource(*wire.get_resource());
+
+    case mojom::TileContents::Tag::kSolidColor:
+      return cc::TileDisplayLayerImpl::TileContents(wire.get_solid_color());
+  }
+}
+
+base::expected<void, std::string> DeserializeTiling(
+    cc::TileDisplayLayerImpl& layer,
+    mojom::Tiling& wire) {
+  const float scale_key =
+      std::max(wire.raster_scale.x(), wire.raster_scale.y());
+  auto& tiling = layer.GetOrCreateTilingFromScaleKey(scale_key);
+  tiling.SetRasterTransform(gfx::AxisTransform2d::FromScaleAndTranslation(
+      wire.raster_scale, wire.raster_translation));
+  tiling.SetTileSize(wire.tile_size);
+  tiling.SetTilingRect(wire.tiling_rect);
+  for (auto& wire_tile : wire.tiles) {
+    ASSIGN_OR_RETURN(auto contents,
+                     DeserializeTileContents(*wire_tile->contents));
+    tiling.SetTileContents(
+        cc::TileIndex{base::saturated_cast<int>(wire_tile->column_index),
+                      base::saturated_cast<int>(wire_tile->row_index)},
+        std::move(contents));
+  }
+  return base::ok();
+}
+
 }  // namespace
 
 LayerContextImpl::LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
@@ -342,6 +395,12 @@ void LayerContextImpl::BeginFrame(const BeginFrameArgs& args) {
   host_impl_->DrawLayers(&frame);
   host_impl_->DidDrawAllLayers(frame);
   host_impl_->DidFinishImplFrame(args);
+}
+
+void LayerContextImpl::ReturnResources(
+    std::vector<ReturnedResource> resources) {
+  // TODO(crbug.com/40902503): Release resources at some point.
+  NOTIMPLEMENTED();
 }
 
 void LayerContextImpl::DidLoseLayerTreeFrameSinkOnImplThread() {
@@ -479,6 +538,10 @@ void LayerContextImpl::SubmitCompositorFrame(CompositorFrame frame,
     return;
   }
 
+  frame.resource_list.insert(frame.resource_list.end(),
+                             next_frame_resources_.begin(),
+                             next_frame_resources_.end());
+  next_frame_resources_.clear();
   compositor_sink_->SubmitCompositorFrame(host_impl_->target_local_surface_id(),
                                           std::move(frame));
 }
@@ -493,6 +556,12 @@ void LayerContextImpl::DidAllocateSharedBitmap(
     const SharedBitmapId& id) {}
 
 void LayerContextImpl::DidDeleteSharedBitmap(const SharedBitmapId& id) {}
+
+void LayerContextImpl::DidAppendQuadsWithResources(
+    const std::vector<TransferableResource>& resources) {
+  next_frame_resources_.insert(next_frame_resources_.end(), resources.begin(),
+                               resources.end());
+}
 
 void LayerContextImpl::SetVisible(bool visible) {
   host_impl_->SetVisible(visible);
@@ -538,8 +607,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   }
 
   if (update->root_layer) {
-    RETURN_IF_ERROR(
-        AddOrUpdateLayer(layers, *update->root_layer, layers.root_layer()));
+    RETURN_IF_ERROR(AddOrUpdateLayer(*this, layers, *update->root_layer,
+                                     layers.root_layer()));
   } else if (!layers.root_layer() && !update->layers.empty()) {
     return base::unexpected(
         "Initial non-empty tree update missing root layer.");
@@ -547,11 +616,21 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
 
   for (auto& wire : update->layers) {
     RETURN_IF_ERROR(
-        AddOrUpdateLayer(layers, *wire, layers.LayerById(wire->id)));
+        AddOrUpdateLayer(*this, layers, *wire, layers.LayerById(wire->id)));
   }
 
   if (update->local_surface_id_from_parent) {
     host_impl_->SetTargetLocalSurfaceId(*update->local_surface_id_from_parent);
+  }
+
+  for (const auto& tiling : update->tilings) {
+    if (cc::LayerImpl* layer = layers.LayerById(tiling->layer_id)) {
+      if (layer->GetLayerType() != cc::mojom::LayerType::kTileDisplay) {
+        return base::unexpected("Invalid tile update");
+      }
+      RETURN_IF_ERROR(DeserializeTiling(
+          static_cast<cc::TileDisplayLayerImpl&>(*layer), *tiling));
+    }
   }
 
   layers.set_background_color(update->background_color);
@@ -589,6 +668,23 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
 
   compositor_sink_->SetLayerContextWantsBeginFrames(true);
   return base::ok();
+}
+
+void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling) {
+  cc::LayerTreeImpl& layers = *host_impl_->active_tree();
+  if (cc::LayerImpl* layer = layers.LayerById(tiling->layer_id)) {
+    if (layer->GetLayerType() != cc::mojom::LayerType::kTileDisplay) {
+      receiver_.ReportBadMessage("Invalid tile update");
+      return;
+    }
+
+    auto result = DeserializeTiling(
+        static_cast<cc::TileDisplayLayerImpl&>(*layer), *tiling);
+    if (!result.has_value()) {
+      receiver_.ReportBadMessage(result.error());
+      return;
+    }
+  }
 }
 
 }  // namespace viz

@@ -77,6 +77,7 @@ class CC_EXPORT TileDrawInfo {
   }
 
   inline bool has_resource() const { return !!resource_; }
+  bool is_resource_ready_to_draw() const { return is_resource_ready_to_draw_; }
 
   const ResourcePool::InUsePoolResource& GetResource() const;
 

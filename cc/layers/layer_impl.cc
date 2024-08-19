@@ -65,6 +65,8 @@ const char* LayerTypeAsString(mojom::LayerType type) {
       return "cc::SurfaceLayerImpl";
     case mojom::LayerType::kPicture:
       return "cc::PictureLayerImpl";
+    case mojom::LayerType::kTileDisplay:
+      return "cc::TileDisplayLayerImpl";
     case mojom::LayerType::kMirror:
       return "cc::MirrorLayerImpl";
     case mojom::LayerType::kHeadsUpDisplay:

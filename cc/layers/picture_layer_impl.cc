@@ -184,6 +184,15 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   // ensure the state is consistent for future raster.
   layer_impl->lcd_text_disallowed_reason_ = lcd_text_disallowed_reason_;
 
+  if (layer_tree_impl()->settings().UseLayerContextForDisplay()) {
+    // Move tile updates over to the active layer so they get pushed to the
+    // display tree. Note that active layers never accumulate their own tile
+    // updates, so replacement is safe.
+    layer_impl->updated_tiles_ = std::move(updated_tiles_);
+    updated_tiles_.clear();
+    layer_impl->layer_tree_impl()->MarkLayerUpdated(layer_impl);
+  }
+
   layer_impl->SanityCheckTilingState();
 }
 
@@ -949,6 +958,14 @@ void PictureLayerImpl::NotifyTileStateChanged(const Tile* tile) {
       tiling->set_all_tiles_done(false);
       tilings_->set_all_tiles_done(false);
     }
+  }
+
+  if (layer_tree_impl()->settings().UseLayerContextForDisplay() &&
+      !IsActive()) {
+    // Accumulate tile changes on the pending tree only. These are pushed to the
+    // active tree in PushPropertiesTo().
+    updated_tiles_[tile->contents_scale_key()].emplace(tile->tiling_i_index(),
+                                                       tile->tiling_j_index());
   }
 }
 
@@ -2233,6 +2250,12 @@ void PictureLayerImpl::InvalidatePaintWorklets(
       entry.second.second = std::nullopt;
     }
   }
+}
+
+PictureLayerImpl::TileUpdateSet PictureLayerImpl::TakeUpdatedTiles() {
+  TileUpdateSet updates;
+  updates.swap(updated_tiles_);
+  return updates;
 }
 
 gfx::ContentColorUsage PictureLayerImpl::GetContentColorUsage() const {

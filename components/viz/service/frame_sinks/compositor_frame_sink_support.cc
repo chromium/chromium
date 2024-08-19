@@ -483,6 +483,12 @@ void CompositorFrameSinkSupport::ReturnResources(
   if (resources.empty())
     return;
 
+  if (layer_context_) {
+    // Resource management is delegated to LayerContext when it's in use.
+    layer_context_->ReturnResources(std::move(resources));
+    return;
+  }
+
   // When features::OnBeginFrameAcks is disabled we attempt to return resources
   // in DidReceiveCompositorFrameAck. However if there are no pending frames
   // then we don't expect that signal soon. In which case we return the

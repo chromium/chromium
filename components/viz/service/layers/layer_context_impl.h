@@ -7,12 +7,16 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "cc/animation/animation_host.h"
+#include "cc/layers/tile_display_layer_impl.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_host_impl.h"
+#include "components/viz/common/resources/returned_resource.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
@@ -30,6 +34,7 @@ class CompositorFrameSinkSupport;
 // provides the service backend for a client-side VizLayerContext.
 class LayerContextImpl : public cc::LayerTreeHostImplClient,
                          public cc::LayerTreeFrameSink,
+                         public cc::TileDisplayLayerImpl::Client,
                          public mojom::LayerContext {
  public:
   // Constructs a new LayerContextImpl which submits frames to the local
@@ -39,6 +44,8 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
   ~LayerContextImpl() override;
 
   void BeginFrame(const BeginFrameArgs& args);
+
+  void ReturnResources(std::vector<ReturnedResource> resources);
 
  private:
   // cc::LayerTreeHostImplClient:
@@ -105,9 +112,14 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
                                const SharedBitmapId& id) override;
   void DidDeleteSharedBitmap(const SharedBitmapId& id) override;
 
+  // cc::TileDisplayLayerImpl::Client:
+  void DidAppendQuadsWithResources(
+      const std::vector<TransferableResource>& resources) override;
+
   // mojom::LayerContext:
   void SetVisible(bool visible) override;
   void UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) override;
+  void UpdateDisplayTiling(mojom::TilingPtr tiling) override;
 
   base::expected<void, std::string> DoUpdateDisplayTree(
       mojom::LayerTreeUpdatePtr update);
@@ -121,6 +133,8 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
   const std::unique_ptr<cc::TaskRunnerProvider> task_runner_provider_;
   const std::unique_ptr<cc::RenderingStatsInstrumentation> rendering_stats_;
   const std::unique_ptr<cc::LayerTreeHostImpl> host_impl_;
+
+  std::vector<TransferableResource> next_frame_resources_;
 
   raw_ptr<cc::LayerTreeFrameSinkClient> frame_sink_client_ = nullptr;
 };
