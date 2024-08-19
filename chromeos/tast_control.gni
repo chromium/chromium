@@ -89,9 +89,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/346793249, b/330290054
   "videoconferencing.OpenCLCacher",
 
-  # b/347713587, b/347111366
-  "crostini.TaskManager.bookworm_stable",
-
   # b/352753237, Pnacl and terminal.SSH failing only on brya, blocking LKGM
   "nacl.Pnacl@brya",
   "terminal.SSH@brya",
