@@ -25005,33 +25005,6 @@
             ]
         }
     ],
-    "Vulkan": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DefaultANGLEVulkan",
-                        "Vulkan",
-                        "VulkanFromANGLE"
-                    ],
-                    "hardware_classes": [
-                        "brya",
-                        "dedede",
-                        "guybrush",
-                        "nissa",
-                        "rex",
-                        "skyrim",
-                        "volteer",
-                        "zork"
-                    ]
-                }
-            ]
-        }
-    ],
     "VulkanV2": [
         {
             "platforms": [
