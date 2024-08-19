@@ -141,8 +141,11 @@ config("skia_config") {
       defines += [ "SK_METAL" ]
     }
   }
-  if(current_cpu == "loong64") {
-    cflags = [ "-mlsx", "-flax-vector-conversions=all"]
+  if (current_cpu == "loong64") {
+    cflags = [
+      "-mlsx",
+      "-flax-vector-conversions=all",
+    ]
   }
 }
 
@@ -335,6 +338,7 @@ component("skia") {
   public += skia_effects_imagefilter_public
   public += skia_utils_chromium
   public += skia_discardable_memory_chromium
+  public += skia_codec_public
   public += skia_encode_public
   public += skia_encode_png_public
   public += skia_encode_webp_public
@@ -344,15 +348,14 @@ component("skia") {
   sources += skia_ports_sources
   sources += skia_sksl_core_sources
   sources += skia_sksl_default_module_sources
-  sources += skia_codec_core
+  sources += skia_codec_shared
+  sources += skia_codec_png
   sources += skia_utils_private
   sources += skia_xps_sources
   sources += skia_encode_srcs
   sources += skia_encode_png_srcs
   sources += skia_encode_webp_srcs
   sources += [
-    "//third_party/skia/src/codec/SkEncodedInfo.cpp",
-    "//third_party/skia/src/codec/SkPngCodec.cpp",
     "//third_party/skia/src/sfnt/SkOTTable_name.cpp",
     "//third_party/skia/src/sfnt/SkOTUtils.cpp",
   ]
@@ -369,7 +372,6 @@ component("skia") {
       "//third_party/skia/src/codec/SkJpegSegmentScan.cpp",
       "//third_party/skia/src/codec/SkJpegSourceMgr.cpp",
       "//third_party/skia/src/codec/SkJpegUtility.cpp",
-      "//third_party/skia/src/codec/SkParseEncodedOrigin.cpp",
       "//third_party/skia/src/codec/SkWebpCodec.cpp",
       "//third_party/skia/src/codec/SkWuffsCodec.cpp",
     ]
