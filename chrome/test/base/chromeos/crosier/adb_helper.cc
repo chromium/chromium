@@ -53,7 +53,7 @@ yee+dcuGhs9IGBOEEF7lFA==
 // file.
 base::FilePath InstallVendorKey(const base::FilePath& path) {
   base::FilePath key_file = path.Append("crosier.adb_key");
-  base::WriteFile(key_file, kArcKey, std::size(kArcKey));
+  base::WriteFile(key_file, kArcKey);
 
   constexpr char command_template[] = R"(
     KEY_DIR="%s"
