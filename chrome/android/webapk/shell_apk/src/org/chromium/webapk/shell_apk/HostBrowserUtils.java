@@ -24,10 +24,8 @@ public class HostBrowserUtils {
 
     public static String ARC_WEBAPK_BROWSER = "org.chromium.arc.webapk";
 
-    /**
-     * The package names of the browsers that support WebAPKs. The most preferred one comes first.
-     */
-    private static Set<String> sBrowsersSupportingWebApk =
+    /** The package names of the browsers that support WebAPK notification delegation. */
+    private static Set<String> sBrowsersSupportingNotificationDelegation =
             new HashSet<String>(
                     Arrays.asList(
                             "com.google.android.apps.chrome",
@@ -40,9 +38,11 @@ public class HostBrowserUtils {
                             ARC_INTENT_HELPER_BROWSER,
                             ARC_WEBAPK_BROWSER));
 
-    /** Returns whether the passed-in browser package name supports WebAPKs. */
-    public static boolean doesBrowserSupportWebApks(String browserPackageName) {
-        return sBrowsersSupportingWebApk.contains(browserPackageName);
+    /**
+     * Returns whether the passed-in browser package name supports WebAPK notification delegation.
+     */
+    public static boolean doesBrowserSupportNotificationDelegation(String browserPackageName) {
+        return sBrowsersSupportingNotificationDelegation.contains(browserPackageName);
     }
 
     /**

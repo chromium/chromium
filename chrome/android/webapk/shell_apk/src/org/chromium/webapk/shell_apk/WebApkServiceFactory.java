@@ -33,8 +33,8 @@ public class WebApkServiceFactory extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         final String hostBrowserPackage = HostBrowserUtils.computeHostBrowserPackageName(this);
-        if (!HostBrowserUtils.doesBrowserSupportWebApks(hostBrowserPackage)) {
-            Log.w(TAG, "Host browser does not support WebAPKs.");
+        if (!HostBrowserUtils.doesBrowserSupportNotificationDelegation(hostBrowserPackage)) {
+            Log.w(TAG, "Host browser does not support WebAPK notification delegation.");
             return null;
         }
         ClassLoader webApkClassLoader =
