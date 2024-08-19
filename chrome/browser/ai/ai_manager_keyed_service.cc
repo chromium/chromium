@@ -16,9 +16,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "chrome/browser/ai/ai_rewriter.h"
 #include "chrome/browser/ai/ai_text_session.h"
-#include "chrome/browser/ai/ai_text_session_set.h"
 #include "chrome/browser/ai/ai_writer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -126,7 +126,7 @@ AIManagerKeyedService::~AIManagerKeyedService() {}
 
 void AIManagerKeyedService::AddReceiver(
     mojo::PendingReceiver<blink::mojom::AIManager> receiver,
-    AITextSessionSet::ReceiverContext context) {
+    AIContextBoundObjectSet::ReceiverContext context) {
   receivers_.Add(this, std::move(receiver), context);
 }
 
@@ -151,7 +151,7 @@ void AIManagerKeyedService::CanCreateTextSession(
 std::unique_ptr<AITextSession> AIManagerKeyedService::CreateTextSessionInternal(
     mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
     const blink::mojom::AITextSessionSamplingParamsPtr& sampling_params,
-    AITextSessionSet* session_set,
+    AIContextBoundObjectSet* context_bound_object_set,
     const std::optional<const AITextSession::Context>& context) {
   CHECK(browser_context_);
   OptimizationGuideKeyedService* service =
@@ -179,7 +179,7 @@ std::unique_ptr<AITextSession> AIManagerKeyedService::CreateTextSessionInternal(
 
   return std::make_unique<AITextSession>(
       std::move(session), browser_context_->GetWeakPtr(), std::move(receiver),
-      session_set, context);
+      context_bound_object_set, context);
 }
 
 void AIManagerKeyedService::CreateTextSession(
@@ -188,10 +188,10 @@ void AIManagerKeyedService::CreateTextSession(
     const std::optional<std::string>& system_prompt,
     CreateTextSessionCallback callback) {
   // Since this is a mojo IPC implementation, the context should be non-null;
-  AITextSessionSet* session_set =
-      AITextSessionSet::GetFromContext(receivers_.current_context());
+  AIContextBoundObjectSet* context_bound_object_set =
+      AIContextBoundObjectSet::GetFromContext(receivers_.current_context());
   std::unique_ptr<AITextSession> session = CreateTextSessionInternal(
-      std::move(receiver), sampling_params, session_set);
+      std::move(receiver), sampling_params, context_bound_object_set);
   if (!session) {
     // TODO(crbug.com/343325183): probably we should consider returning an error
     // enum and throw a clear exception from the blink side.
@@ -207,7 +207,7 @@ void AIManagerKeyedService::CreateTextSession(
     std::move(callback).Run(session->GetTextSessionInfo());
   }
 
-  session_set->AddSession(std::move(session));
+  context_bound_object_set->AddContextBoundObject(std::move(session));
 }
 
 void AIManagerKeyedService::GetTextModelInfo(
@@ -317,11 +317,11 @@ void AIManagerKeyedService::CreateTextSessionForCloning(
     base::PassKey<AITextSession> pass_key,
     mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
     blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
-    AITextSessionSet* session_set,
+    AIContextBoundObjectSet* context_bound_object_set,
     const AITextSession::Context& context,
     CreateTextSessionCallback callback) {
   std::unique_ptr<AITextSession> session = CreateTextSessionInternal(
-      std::move(receiver), sampling_params, session_set, context);
+      std::move(receiver), sampling_params, context_bound_object_set, context);
   if (!session) {
     std::move(callback).Run(nullptr);
     return;
@@ -329,7 +329,8 @@ void AIManagerKeyedService::CreateTextSessionForCloning(
 
   blink::mojom::AITextSessionInfoPtr session_info =
       session->GetTextSessionInfo();
-  session_set->AddSession(std::move(session));
+  AIContextBoundObjectSet::GetFromContext(receivers_.current_context())
+      ->AddContextBoundObject(std::move(session));
   std::move(callback).Run(std::move(session_info));
 }
 

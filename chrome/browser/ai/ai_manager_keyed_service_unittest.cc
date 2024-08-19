@@ -119,9 +119,9 @@ TEST_F(AIManagerKeyedServiceTest, NoUAFWithInvalidOnDeviceModelPath) {
   task_environment()->RunUntilIdle();
 }
 
-// Tests the `AITextSessionSet`'s behavior of managing the lifetime of
+// Tests the `AIUserDataSet`'s behavior of managing the lifetime of
 // `AITextSession`s.
-TEST_F(AIManagerKeyedServiceTest, AITextSessionSet) {
+TEST_F(AIManagerKeyedServiceTest, AIContextBoundObjectSet) {
   base::MockCallback<blink::mojom::AIManager::CreateTextSessionCallback>
       callback;
   base::RunLoop run_loop;
@@ -140,21 +140,22 @@ TEST_F(AIManagerKeyedServiceTest, AITextSessionSet) {
   mojo::Remote<blink::mojom::AITextSession> mock_session;
   ai_manager->AddReceiver(mock_remote.BindNewPipeAndPassReceiver(),
                           mock_host());
-  // Initially the `AITextSessionSet` is empty.
-  base::WeakPtr<AITextSessionSet> sessions =
-      AITextSessionSet::GetFromContext(mock_host())->GetWeakPtrForTesting();
-  ASSERT_EQ(0u, sessions->GetSessionSetSizeForTesting());
+  // Initially the `AIUserDataSet` is empty.
+  base::WeakPtr<AIContextBoundObjectSet> context_bound_objects =
+      AIContextBoundObjectSet::GetFromContext(mock_host())
+          ->GetWeakPtrForTesting();
+  ASSERT_EQ(0u, context_bound_objects->GetSizeForTesting());
 
-  // After creating one `AITextSession`, the `AITextSessionSet` contains 1
+  // After creating one `AITextSession`, the `AIUserDataSet` contains 1
   // element.
   mock_remote->CreateTextSession(mock_session.BindNewPipeAndPassReceiver(),
                                  nullptr, std::nullopt, callback.Get());
   run_loop.Run();
-  ASSERT_EQ(1u, sessions->GetSessionSetSizeForTesting());
+  ASSERT_EQ(1u, context_bound_objects->GetSizeForTesting());
 
-  // After resetting the session, the `AITextSessionSet` becomes empty again and
+  // After resetting the session, the `AIUserDataSet` becomes empty again and
   // should be removed from the context.
   mock_session.reset();
   task_environment()->RunUntilIdle();
-  ASSERT_FALSE(sessions);
+  ASSERT_FALSE(context_bound_objects);
 }

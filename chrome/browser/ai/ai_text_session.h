@@ -11,6 +11,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
+#include "chrome/browser/ai/ai_context_bound_object.h"
+#include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -21,11 +23,10 @@
 #include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-forward.h"
 
-class AITextSessionSet;
-
 // The implementation of `blink::mojom::ModelGenericSession`, which exposes the
 // single stream-based `Execute()` API for model execution.
-class AITextSession : public blink::mojom::AITextSession {
+class AITextSession : public AIContextBoundObject,
+                      public blink::mojom::AITextSession {
  public:
   using CreateTextSessionCallback =
       base::OnceCallback<void(blink::mojom::AITextSessionInfoPtr)>;
@@ -69,7 +70,7 @@ class AITextSession : public blink::mojom::AITextSession {
   };
 
   // The `AITextSession` will be owned by the `AITextSessionSet` which is bound
-  // to the `BucketContext`. However, the `disconnect_handler` should be set to
+  // to the `BucketContext`. However, the `deletion_callback` should be set to
   // properly remove the `AITextSession` from `AITextSessionSet` in case the
   // connection is closed before the `BucketContext` is destroyed.
 
@@ -83,12 +84,15 @@ class AITextSession : public blink::mojom::AITextSession {
           optimization_guide::OptimizationGuideModelExecutor::Session> session,
       base::WeakPtr<content::BrowserContext> browser_context,
       mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
-      AITextSessionSet* session_set,
+      AIContextBoundObjectSet* session_set,
       const std::optional<const Context>& context = std::nullopt);
   AITextSession(const AITextSession&) = delete;
   AITextSession& operator=(const AITextSession&) = delete;
 
   ~AITextSession() override;
+
+  // `AIUserData` implementation.
+  void SetDeletionCallback(base::OnceClosure deletion_callback) override;
 
   // `blink::mojom::ModelTextSession` implementation.
   void Prompt(const std::string& input,
@@ -102,7 +106,6 @@ class AITextSession : public blink::mojom::AITextSession {
   // the session information back through the callback.
   void SetSystemPrompt(std::string system_prompt,
                        CreateTextSessionCallback callback);
-  void SetDisconnectHandler(base::OnceClosure disconnect_handler);
   blink::mojom::AITextSessionInfoPtr GetTextSessionInfo();
 
  private:
@@ -140,8 +143,8 @@ class AITextSession : public blink::mojom::AITextSession {
   // Holds all the input and output from the previous prompt.
   std::unique_ptr<Context> context_;
   // It's safe to store a `raw_ptr` here since `this` is owned by
-  // `session_set_`.
-  const raw_ptr<AITextSessionSet> session_set_;
+  // `context_bound_object_set_`.
+  const raw_ptr<AIContextBoundObjectSet> context_bound_object_set_;
 
   mojo::Receiver<blink::mojom::AITextSession> receiver_;
 

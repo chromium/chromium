@@ -82,11 +82,11 @@ AITextSession::AITextSession(
         session,
     base::WeakPtr<content::BrowserContext> browser_context,
     mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
-    AITextSessionSet* session_set,
+    AIContextBoundObjectSet* context_bound_object_set,
     const std::optional<const Context>& context)
     : session_(std::move(session)),
       browser_context_(browser_context),
-      session_set_(session_set),
+      context_bound_object_set_(context_bound_object_set),
       receiver_(this, std::move(receiver)) {
   if (context.has_value()) {
     // If the context is provided, it will be used in this session.
@@ -111,8 +111,8 @@ void AITextSession::SetSystemPrompt(std::string system_prompt,
                      std::move(callback)));
 }
 
-void AITextSession::SetDisconnectHandler(base::OnceClosure disconnect_handler) {
-  receiver_.set_disconnect_handler(std::move(disconnect_handler));
+void AITextSession::SetDeletionCallback(base::OnceClosure deletion_callback) {
+  receiver_.set_disconnect_handler(std::move(deletion_callback));
 }
 
 blink::mojom::ModelStreamingResponseStatus ConvertModelExecutionError(
@@ -272,7 +272,7 @@ void AITextSession::Fork(
       base::PassKey<AITextSession>(), std::move(session),
       blink::mojom::AITextSessionSamplingParams::New(
           sampling_param.top_k, sampling_param.temperature),
-      session_set_, *context_, std::move(callback));
+      context_bound_object_set_, *context_, std::move(callback));
 }
 
 void AITextSession::Destroy() {

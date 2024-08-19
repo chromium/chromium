@@ -4,6 +4,9 @@
 
 source_set("ai") {
   sources = [
+    "ai_context_bound_object.h",
+    "ai_context_bound_object_set.cc",
+    "ai_context_bound_object_set.h",
     "ai_manager_keyed_service.cc",
     "ai_manager_keyed_service.h",
     "ai_manager_keyed_service_factory.cc",
@@ -12,8 +15,6 @@ source_set("ai") {
     "ai_rewriter.h",
     "ai_text_session.cc",
     "ai_text_session.h",
-    "ai_text_session_set.cc",
-    "ai_text_session_set.h",
     "ai_utils.cc",
     "ai_utils.h",
     "ai_writer.cc",

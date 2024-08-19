@@ -9,8 +9,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "chrome/browser/ai/ai_text_session.h"
-#include "chrome/browser/ai/ai_text_session_set.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
@@ -32,19 +32,18 @@ class AIManagerKeyedService : public KeyedService,
   ~AIManagerKeyedService() override;
 
   void AddReceiver(mojo::PendingReceiver<blink::mojom::AIManager> receiver,
-                   AITextSessionSet::ReceiverContext host);
+                   AIContextBoundObjectSet::ReceiverContext host);
   void CreateTextSessionForCloning(
       base::PassKey<AITextSession> pass_key,
       mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
       blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
-      AITextSessionSet* session_set,
+      AIContextBoundObjectSet* context_bound_object_set,
       const AITextSession::Context& context,
       CreateTextSessionCallback callback);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AIManagerKeyedServiceTest,
                            NoUAFWithInvalidOnDeviceModelPath);
-  FRIEND_TEST_ALL_PREFIXES(AIManagerKeyedServiceTest, AITextSessionSet);
 
   // `blink::mojom::AIManager` implementation.
   void CanCreateTextSession(CanCreateTextSessionCallback callback) override;
@@ -76,14 +75,15 @@ class AIManagerKeyedService : public KeyedService,
   std::unique_ptr<AITextSession> CreateTextSessionInternal(
       mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
       const blink::mojom::AITextSessionSamplingParamsPtr& sampling_params,
-      AITextSessionSet* session_set,
+      AIContextBoundObjectSet* context_bound_object_set,
       const std::optional<const AITextSession::Context>& context =
           std::nullopt);
 
   // A `KeyedService` should never outlive the `BrowserContext`.
   raw_ptr<content::BrowserContext> browser_context_;
 
-  mojo::ReceiverSet<blink::mojom::AIManager, AITextSessionSet::ReceiverContext>
+  mojo::ReceiverSet<blink::mojom::AIManager,
+                    AIContextBoundObjectSet::ReceiverContext>
       receivers_;
 
   base::WeakPtrFactory<AIManagerKeyedService> weak_factory_{this};
