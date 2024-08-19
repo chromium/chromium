@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // Overview
 //
 // The main entry point is CertNetFetcherURLRequest. This is an implementation
@@ -68,6 +63,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/extend.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -636,9 +632,8 @@ bool Job::ConsumeBytesRead(URLRequest* request, int num_bytes) {
   }
 
   // Append the data to |response_body_|.
-  response_body_.reserve(num_bytes);
-  response_body_.insert(response_body_.end(), read_buffer_->data(),
-                        read_buffer_->data() + num_bytes);
+  response_body_.reserve(response_body_.size() + num_bytes);
+  base::Extend(response_body_, read_buffer_->span().subspan(0, num_bytes));
   return true;
 }
 
