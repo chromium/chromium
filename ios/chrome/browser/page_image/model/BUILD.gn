@@ -16,6 +16,7 @@ source_set("model") {
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/sync/model",
   ]
 }

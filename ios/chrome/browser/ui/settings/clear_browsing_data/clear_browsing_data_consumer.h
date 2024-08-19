@@ -7,9 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/ios/block_types.h"
+#import "base/ios/block_types.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 @class TableViewItem;
 
 namespace browsing_data {

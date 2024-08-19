@@ -68,6 +68,7 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",

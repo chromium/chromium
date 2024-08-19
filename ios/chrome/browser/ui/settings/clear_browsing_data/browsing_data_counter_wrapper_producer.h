@@ -5,14 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_BROWSING_DATA_COUNTER_WRAPPER_PRODUCER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_BROWSING_DATA_COUNTER_WRAPPER_PRODUCER_H_
 
-#include <Foundation/Foundation.h>
+#import <Foundation/Foundation.h>
 
-#include <memory>
-#include <string_view>
+#import <memory>
+#import <string_view>
 
-#include "ios/chrome/browser/browsing_data/model/browsing_data_counter_wrapper.h"
-
-class ChromeBrowserState;
+#import "ios/chrome/browser/browsing_data/model/browsing_data_counter_wrapper.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 // ClearBrowsingDataManager's dependency on creating BrowsingDataCounterWrapper
 @interface BrowsingDataCounterWrapperProducer : NSObject

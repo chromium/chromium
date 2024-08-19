@@ -36,6 +36,7 @@ source_set("content_settings") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/table_view:utils",
