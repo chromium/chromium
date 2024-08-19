@@ -127,8 +127,7 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
 
   // Wrapper to call `PerformOcr` library function and record metrics.
   std::optional<chrome_screen_ai::VisualAnnotation> PerformOcrAndRecordMetrics(
-      const SkBitmap& image,
-      bool a11y_tree_request);
+      const SkBitmap& image);
 
   void OcrReceiverDisconnected();
 

@@ -304,12 +304,13 @@ void ScreenAIService::BindMainContentExtractor(
 }
 
 std::optional<chrome_screen_ai::VisualAnnotation>
-ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image,
-                                            bool a11y_tree_request) {
-  auto entry = ocr_client_types_.find(screen_ai_annotators_.current_receiver());
-  CHECK(entry != ocr_client_types_.end()) << "OCR client type is not set.";
+ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
+  CHECK(base::Contains(ocr_client_types_,
+                       screen_ai_annotators_.current_receiver()));
+  mojom::OcrClientType client_type =
+      ocr_client_types_.find(screen_ai_annotators_.current_receiver())->second;
   base::UmaHistogramEnumeration("Accessibility.ScreenAI.OCR.ClientType",
-                                GetClientType(entry->second));
+                                GetClientType(client_type));
 
   ocr_last_used_ = base::TimeTicks::Now();
   auto result = library_->PerformOcr(image);
@@ -338,9 +339,9 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image,
                             elapsed_time);
   }
 
-  // If needed to extend to more clients, an identifier can be passed from the
-  // client to introduce itself and these metrics can be collected based on it.
-  if (a11y_tree_request) {
+  // MediaApp provides OCR for ChromeOS PDF viewer.
+  if (client_type == mojom::OcrClientType::kPdfViewer ||
+      client_type == mojom::OcrClientType::kMediaApp) {
     base::UmaHistogramCounts100("Accessibility.ScreenAI.OCR.LinesCount.PDF",
                                 lines_count);
     base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Time.PDF",
@@ -360,7 +361,7 @@ void ScreenAIService::PerformOcrAndReturnAnnotation(
     const SkBitmap& image,
     PerformOcrAndReturnAnnotationCallback callback) {
   std::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
-      PerformOcrAndRecordMetrics(image, /*a11y_tree_request=*/false);
+      PerformOcrAndRecordMetrics(image);
 
   if (annotation_proto) {
     std::move(callback).Run(ConvertProtoToVisualAnnotation(*annotation_proto));
@@ -374,7 +375,7 @@ void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
     const SkBitmap& image,
     PerformOcrAndReturnAXTreeUpdateCallback callback) {
   std::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
-      PerformOcrAndRecordMetrics(image, /*a11y_tree_request=*/true);
+      PerformOcrAndRecordMetrics(image);
   ui::AXTreeUpdate update = ConvertVisualAnnotationToTreeUpdate(
       annotation_proto, gfx::Rect(image.width(), image.height()));
 
