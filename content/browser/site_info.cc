@@ -100,12 +100,14 @@ url::Origin GetPossiblyOverriddenOriginFromUrl(
       // data: URLs have an overridden origin so they can have the same nonce
       // over the course of a navigation.
       // This is checked first, since we don't want to use the precursor for
-      // data: URLs. For regular data: URLs, we should use the overridden_origin
-      // value, not the precursor. In the LoadDataWithBaseURL case, the base URL
-      // which is a real, non-opaque origin is used, and should also not use the
-      // precursor. We don't expect LoadDataWithBaseURL to have an opaque origin
-      // with a precursor in any case. If there is no base URL, then it should
-      // be treated as a regular data: URL.
+      // most data: URLs. For regular data: URLs, we should use the
+      // overridden_origin value, not the precursor. Sandboxed data: URLs are an
+      // exception and should use the precursor.
+      // In the LoadDataWithBaseURL case, the base URL which is a real,
+      // non-opaque origin is used, and should also not use the precursor. We
+      // don't expect LoadDataWithBaseURL to have an opaque origin with a
+      // precursor in any case. If there is no base URL, then it should be
+      // treated as a regular data: URL.
       return overridden_origin.value();
     } else if (precursor.IsValid()) {
       // The precursor should only be used in the about:blank case.
@@ -850,6 +852,10 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
   // situation where site URL of file://localhost/ would mismatch Blink's origin
   // (which ignores the hostname in this case - see https://crbug.com/776160).
   GURL site_url;
+  bool use_origin_keyed_process =
+      real_url_info.is_sandboxed &&
+      blink::features::kIsolateSandboxedIframesGroupingParam.Get() ==
+          blink::features::IsolateSandboxedIframesGrouping::kPerOrigin;
   if (!origin.host().empty() && origin.scheme() != url::kFileScheme) {
     // For Strict Origin Isolation, use the full origin instead of site for all
     // HTTP/HTTPS URLs.  Note that the HTTP/HTTPS restriction guarantees that
@@ -863,9 +869,7 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
     // For isolated sandboxed iframes in per-origin mode we also just return the
     // origin, as we should be using the full origin for the SiteInstance, but
     // we don't need to track the origin like we do for OriginAgentCluster.
-    if (real_url_info.is_sandboxed &&
-        blink::features::kIsolateSandboxedIframesGroupingParam.Get() ==
-            blink::features::IsolateSandboxedIframesGrouping::kPerOrigin) {
+    if (use_origin_keyed_process) {
       return origin.GetURL();
     }
 
@@ -895,13 +899,24 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
       site_url = GURL(origin.scheme() + ":");
     } else if (url.has_scheme()) {
       if (url.SchemeIs(url::kDataScheme)) {
-        // We get here for browser-initiated navigations to data URLs.
-        // We use the serialized opaque origin as the body of the data: URL to
-        // avoid storing the entire data: URL multiple times, and to use the
-        // origin's nonce to distinguish between instances of the same URL. This
-        // means each browser-initiated data: URL will get its own process. See
-        // https://crbug.com/863069.
-        site_url = GetOriginBasedSiteURLForDataURL(origin);
+        if (use_origin_keyed_process) {
+          // Sandboxed data: subframes should be in the process of their
+          // precursor origin.
+          DUMP_WILL_BE_CHECK(real_url_info.origin->opaque());
+          DUMP_WILL_BE_CHECK(
+              real_url_info.origin->GetTupleOrPrecursorTupleIfOpaque()
+                  .IsValid());
+          site_url =
+              real_url_info.origin->GetTupleOrPrecursorTupleIfOpaque().GetURL();
+        } else {
+          // We get here for browser-initiated navigations to data URLs.
+          // We use the serialized opaque origin as the body of the data: URL to
+          // avoid storing the entire data: URL multiple times, and to use the
+          // origin's nonce to distinguish between instances of the same URL.
+          // This means each browser-initiated data: URL will get its own
+          // process. See https://crbug.com/863069.
+          site_url = GetOriginBasedSiteURLForDataURL(origin);
+        }
       } else if (url.SchemeIsBlob()) {
         // In some cases, it is not safe to use just the scheme as a site URL,
         // as that might allow two URLs created by different sites to share a

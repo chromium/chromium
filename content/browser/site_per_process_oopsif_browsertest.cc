@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/site_per_process_browsertest.h"
-
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
+#include "content/browser/site_per_process_browsertest.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_switches.h"
@@ -1153,6 +1153,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
   FrameTreeNode* child = root->child_at(0);
   EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
             child->current_frame_host()->GetSiteInstance());
+
+  // Because the subframe is a data: URL, the process should be locked to the
+  // initiator origin's site, which is the parent in this case. Unlike the
+  // parent, the data: subframe process should be sandboxed.
+  EXPECT_EQ(
+      child->current_frame_host()->GetProcess()->GetProcessLock().lock_url(),
+      root->current_frame_host()->GetLastCommittedOrigin().GetURL());
   EXPECT_TRUE(child->current_frame_host()
                   ->GetSiteInstance()
                   ->GetSiteInfo()
@@ -1305,6 +1312,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
   }
   NavigateFrameToURL(child,
                      embedded_test_server()->GetURL("b.com", "/title1.html"));
+  url::Origin b_origin = child->current_frame_host()->GetLastCommittedOrigin();
 
   // Child should now be in a different, sandboxed SiteInstance.
   EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
@@ -1313,6 +1321,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                   ->GetSiteInstance()
                   ->GetSiteInfo()
                   .is_sandboxed());
+
+  // The child process should be in a process of its initiator origin.
+  EXPECT_EQ(
+      child->current_frame_host()->GetProcess()->GetProcessLock().lock_url(),
+      b_origin.GetTupleOrPrecursorTupleIfOpaque().GetURL());
 
   // Go back and ensure the data: URL remains sandboxed, and committed in a
   // different SiteInstance from the original navigation. From the spec:
