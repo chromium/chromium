@@ -1573,14 +1573,6 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.LiveCaption.LiveCaptionPinBubbleEvent"
-    enum="LiveCaptionPinBubbleEvent" expires_after="2024-09-30">
-  <owner>abigailbklein@google.com</owner>
-  <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>Records when a user pins or unpins the Live Caption bubble.</summary>
-</histogram>
-
 <histogram name="Accessibility.LiveCaption.LoadSodaErrorCode"
     enum="WinGetLastError" expires_after="2024-12-08">
   <owner>abigailbklein@google.com</owner>

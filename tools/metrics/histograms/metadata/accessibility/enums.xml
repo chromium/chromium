@@ -1541,11 +1541,6 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Bubble expanded"/>
 </enum>
 
-<enum name="LiveCaptionPinBubbleEvent">
-  <int value="0" label="Bubble unpinned"/>
-  <int value="1" label="Bubble pinned"/>
-</enum>
-
 <!-- LINT.IfChange(LiveCaptionSessionEvent) -->
 
 <enum name="LiveCaptionSessionEvent">
@@ -1703,6 +1698,7 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Line height change"/>
   <int value="4" label="Letter spacing change"/>
   <int value="5" label="Links enabled change"/>
+  <int value="6" label="Images enabled change"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAnythingSettingsChange) -->
@@ -1759,6 +1755,35 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="es-ES"/>
   <int value="5" label="fr-FR"/>
   <int value="6" label="it-IT"/>
+  <int value="7" label="en-CA"/>
+  <int value="8" label="en-AU"/>
+  <int value="9" label="en-GB"/>
+  <int value="10" label="en-IE"/>
+  <int value="11" label="en-SG"/>
+  <int value="12" label="fr-BE"/>
+  <int value="13" label="fr-CH"/>
+  <int value="14" label="en-IN"/>
+  <int value="15" label="it-CH"/>
+  <int value="16" label="de-AT"/>
+  <int value="17" label="de-BE"/>
+  <int value="18" label="de-CH"/>
+  <int value="19" label="es-US"/>
+  <int value="20" label="hi-IN"/>
+  <int value="21" label="pt-BR"/>
+  <int value="22" label="id-ID"/>
+  <int value="23" label="ko-KR"/>
+  <int value="24" label="pl-PL"/>
+  <int value="25" label="th-TH"/>
+  <int value="26" label="tr-TR"/>
+  <int value="27" label="zh-CN"/>
+  <int value="28" label="zh-TW"/>
+  <int value="29" label="da-DK"/>
+  <int value="30" label="fr-CA"/>
+  <int value="31" label="nb-NO"/>
+  <int value="32" label="nl-NL"/>
+  <int value="33" label="sv-SE"/>
+  <int value="34" label="ru-RU"/>
+  <int value="35" label="vi-VN"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/soda/constants.h:LanguageCode) -->
