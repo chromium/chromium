@@ -375,7 +375,6 @@ source_set("unit_tests") {
     "ime_controller_client_impl_unittest.cc",
     "in_session_auth_dialog_client_unittest.cc",
     "media_client_impl_unittest.cc",
-    "multitask_menu_nudge_unittest.cc",
     "session_controller_client_impl_unittest.cc",
     "system_tray_client_impl_unittest.cc",
     "wallpaper_controller_client_impl_unittest.cc",
