@@ -20,6 +20,7 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
+#include "components/sync/base/unique_position.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -139,7 +140,8 @@ SavedTabGroup SpecificsToSharedTabGroup(
 }
 
 SavedTabGroupTab SpecificsToSharedTabGroupTab(
-    const sync_pb::SharedTabGroupDataSpecifics& specifics) {
+    const sync_pb::SharedTabGroupDataSpecifics& specifics,
+    size_t position) {
   CHECK(specifics.has_tab());
 
   const base::Uuid guid = base::Uuid::ParseLowercase(specifics.guid());
@@ -150,11 +152,10 @@ SavedTabGroupTab SpecificsToSharedTabGroupTab(
   const base::Time update_time =
       TimeFromWindowsEpochMicros(specifics.update_time_windows_epoch_micros());
 
-  // TODO(crbug.com/319521964): handle tab positions.
   SavedTabGroupTab tab(
       GURL(specifics.tab().url()), base::UTF8ToUTF16(specifics.tab().title()),
       base::Uuid::ParseLowercase(specifics.tab().shared_tab_group_guid()),
-      /*position=*/std::nullopt, guid);
+      position, guid);
   tab.SetUpdateTimeWindowsEpochMicros(update_time);
   return tab;
 }
@@ -261,7 +262,9 @@ std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
       DVLOG(2) << "Entry is missing collaboration ID: " << storage_key;
     }
     if (group_guids.contains(specifics.tab().shared_tab_group_guid())) {
-      tabs.emplace_back(SpecificsToSharedTabGroupTab(specifics));
+      // TODO(crbug.com/351357559): calculate the position based on unique
+      // positions from metadata.
+      tabs.emplace_back(SpecificsToSharedTabGroupTab(specifics, 0));
       continue;
     }
     tabs_missing_groups.push_back(specifics);
@@ -292,6 +295,20 @@ std::string StorageKeyForTabInGroup(const SavedTabGroup& group,
                                     size_t tab_index) {
   CHECK_LT(tab_index, group.saved_tabs().size());
   return StorageKeyForTab(group.saved_tabs()[tab_index]);
+}
+
+// Returns the preferred index for the existing tab. The adjustment is required
+// in case the tab is moved to a larger index because tab positions get shifted
+// be one.
+// For example, if the tab is moved from a position 1 (`current_index`) before
+// another tab at index 5 (`position_insert_before`), the new position for the
+// tab being moved is 4.
+size_t AdjustPreferredTabIndex(size_t position_insert_before,
+                               size_t current_index) {
+  if (position_insert_before > current_index) {
+    return position_insert_before - 1;
+  }
+  return position_insert_before;
 }
 
 }  // namespace
@@ -769,12 +786,18 @@ void SharedTabGroupDataSyncBridge::AddTabToLocalStorage(
     return;
   }
 
-  // TODO(crbug.com/351357559): handle remote position updates.
-
   const SavedTabGroup* existing_group = model_->Get(group_guid);
   if (existing_group && existing_group->ContainsTab(tab_guid)) {
+    const size_t position_insert_before = PositionToInsertRemoteTab(
+        specifics.tab().unique_position(), *existing_group);
+    const std::optional<int> current_tab_index =
+        existing_group->GetIndexOfTab(tab_guid);
+    CHECK(current_tab_index.has_value());
+
     const SavedTabGroupTab* merged_tab =
-        model_->MergeRemoteTab(SpecificsToSharedTabGroupTab(specifics));
+        model_->MergeRemoteTab(SpecificsToSharedTabGroupTab(
+            specifics, AdjustPreferredTabIndex(position_insert_before,
+                                               current_tab_index.value())));
 
     // Unique positions are stored by sync in sync metadata.
     sync_pb::SharedTabGroupDataSpecifics merged_entry =
@@ -788,12 +811,18 @@ void SharedTabGroupDataSyncBridge::AddTabToLocalStorage(
   // Tabs are stored to the local storage regardless of the existence of its
   // group in order to recover the tabs in the event the group was not received
   // and a crash / restart occurred.
+  // TODO(crbug.com/351357559): do not store unique position outside of sync
+  // metadata.
   StoreSpecifics(write_batch, specifics);
 
   if (existing_group) {
     // This is a new tab for the group.
-    model_->AddTabToGroupFromSync(existing_group->saved_guid(),
-                                  SpecificsToSharedTabGroupTab(specifics));
+    model_->AddTabToGroupFromSync(
+        existing_group->saved_guid(),
+        SpecificsToSharedTabGroupTab(
+            specifics,
+            PositionToInsertRemoteTab(specifics.tab().unique_position(),
+                                      *existing_group)));
   } else {
     // The tab does not have a corresponding group. This can happen when sync
     // sends the tab data before the group data. In this case, the tab is stored
@@ -917,6 +946,43 @@ sync_pb::UniquePosition SharedTabGroupDataSyncBridge::CalculateUniquePosition(
   return change_processor()->UniquePositionBetween(
       StorageKeyForTabInGroup(group, tab_index - 1),
       StorageKeyForTabInGroup(group, tab_index + 1), client_tag_hash);
+}
+
+size_t SharedTabGroupDataSyncBridge::PositionToInsertRemoteTab(
+    const sync_pb::UniquePosition& remote_unique_position,
+    const SavedTabGroup& group) const {
+  syncer::UniquePosition parsed_remote_position =
+      syncer::UniquePosition::FromProto(remote_unique_position);
+  if (!parsed_remote_position.IsValid()) {
+    DVLOG(1) << "Invalid remote unique position";
+    return group.saved_tabs().size();
+  }
+
+  // Find the first local tab index before which the new tab should be inserted.
+  for (size_t i = 0; i < group.saved_tabs().size(); ++i) {
+    syncer::UniquePosition local_position = syncer::UniquePosition::FromProto(
+        change_processor()->GetUniquePositionForStorageKey(
+            StorageKeyForTabInGroup(group, i)));
+    if (!local_position.IsValid()) {
+      // Normally, this should not happen. In case the data is inconsistent,
+      // prefer to insert a valid position in the correct order before the tab
+      // with invalid unique position.
+      DVLOG(1) << "Invalid local position for tab at index " << i;
+      return i;
+    }
+
+    // Unique positions can be equal only in case it's the same as the local and
+    // the tab's position does not really change (unique positions are based on
+    // entity's client tag). In this case just return the same position.
+    // `parsed_remote_position` <= `local_position`.
+    if (!local_position.LessThan(parsed_remote_position)) {
+      // Insert the remote tab before the current local tab or keep the existing
+      // tab at the same place.
+      return i;
+    }
+  }
+
+  return group.saved_tabs().size();
 }
 
 }  // namespace tab_groups

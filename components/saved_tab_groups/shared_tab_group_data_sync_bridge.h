@@ -163,6 +163,12 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   sync_pb::UniquePosition CalculateUniquePosition(const SavedTabGroup& group,
                                                   size_t tab_index) const;
 
+  // Calculates the position to insert a remote tab with the given unique
+  // position. Always returns a valid value regardless input validness.
+  size_t PositionToInsertRemoteTab(
+      const sync_pb::UniquePosition& remote_unique_position,
+      const SavedTabGroup& group) const;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // In charge of actually persisting changes to disk, or loading previous data.
