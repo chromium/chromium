@@ -4045,13 +4045,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, NotBeBlockedByFeatureFlag) {
     })();
   )"));
   ASSERT_TRUE(result.value.is_dict());
+  auto* configAidaAvailability =
+      result.value.GetDict().FindDict("aidaAvailability");
   auto* configConsoleInsights =
       result.value.GetDict().FindDict("devToolsConsoleInsights");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(configConsoleInsights->FindBool("enabled").value());
+  EXPECT_TRUE(configAidaAvailability->FindBool("enabled").value());
 #else
-  EXPECT_FALSE(configConsoleInsights->FindBool("enabled").value());
+  EXPECT_FALSE(configAidaAvailability->FindBool("enabled").value());
 #endif
+  EXPECT_TRUE(configConsoleInsights->FindBool("enabled").value());
   CloseDevToolsWindow();
 }
 

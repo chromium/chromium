@@ -1538,45 +1538,34 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
 
   AidaClient::Availability availability = AidaClient::CanUseAida(profile_);
 
+  base::Value::Dict aida_availability;
+  aida_availability.Set("enabled", availability.available);
+  aida_availability.Set("blockedByAge", availability.blocked_by_age);
+  aida_availability.Set("blockedByEnterprisePolicy",
+                        availability.blocked_by_enterprise_policy);
+  aida_availability.Set("blockedByGeo", availability.blocked_by_geo);
+  aida_availability.Set("disallowLogging", availability.disallow_logging);
+  response_dict.Set("aidaAvailability", std::move(aida_availability));
+
   base::Value::Dict console_insights_dict;
   console_insights_dict.Set(
       "enabled",
-      base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights) &&
-          availability.available);
-  console_insights_dict.Set("aidaModelId",
+      base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights));
+  console_insights_dict.Set("modelId",
                             features::kDevToolsConsoleInsightsModelId.Get());
   console_insights_dict.Set(
-      "aidaTemperature", features::kDevToolsConsoleInsightsTemperature.Get());
-  console_insights_dict.Set("optIn",
-                            features::kDevToolsConsoleInsightsOptIn.Get());
-  console_insights_dict.Set("blockedByAge", availability.blocked_by_age);
-  console_insights_dict.Set("blockedByEnterprisePolicy",
-                            availability.blocked_by_enterprise_policy);
-  // Kept temporary to ensure compatibility http://crbug.com/348136212
-  console_insights_dict.Set(
-      "blockedByFeatureFlag",
-      !(base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights) &&
-        availability.available));
-  console_insights_dict.Set("blockedByGeo", availability.blocked_by_geo);
-  console_insights_dict.Set("blockedByRollout",
-                            availability.blocked_by_rollout);
-  console_insights_dict.Set("disallowLogging", availability.disallow_logging);
+      "temperature", features::kDevToolsConsoleInsightsTemperature.Get());
   response_dict.Set("devToolsConsoleInsights",
                     std::move(console_insights_dict));
 
   base::Value::Dict freestyler_dogfood_dict;
   freestyler_dogfood_dict.Set(
       "enabled",
-      base::FeatureList::IsEnabled(::features::kDevToolsFreestylerDogfood) &&
-          availability.available);
+      base::FeatureList::IsEnabled(::features::kDevToolsFreestylerDogfood));
   freestyler_dogfood_dict.Set(
-      "aidaModelId", features::kDevToolsFreestylerDogfoodModelId.Get());
+      "modelId", features::kDevToolsFreestylerDogfoodModelId.Get());
   freestyler_dogfood_dict.Set(
-      "aidaTemperature", features::kDevToolsFreestylerDogfoodTemperature.Get());
-  freestyler_dogfood_dict.Set("blockedByAge", availability.blocked_by_age);
-  freestyler_dogfood_dict.Set("blockedByEnterprisePolicy",
-                              availability.blocked_by_enterprise_policy);
-  freestyler_dogfood_dict.Set("blockedByGeo", availability.blocked_by_geo);
+      "temperature", features::kDevToolsFreestylerDogfoodTemperature.Get());
   response_dict.Set("devToolsFreestylerDogfood",
                     std::move(freestyler_dogfood_dict));
 
@@ -1585,10 +1574,9 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
       "enabled", base::FeatureList::IsEnabled(
                      ::features::kDevToolsExplainThisResourceDogfood));
   explain_this_resource_dogfood_dict.Set(
-      "aidaModelId",
-      features::kDevToolsExplainThisResourceDogfoodModelId.Get());
+      "modelId", features::kDevToolsExplainThisResourceDogfoodModelId.Get());
   explain_this_resource_dogfood_dict.Set(
-      "aidaTemperature",
+      "temperature",
       features::kDevToolsExplainThisResourceDogfoodTemperature.Get());
   response_dict.Set("devToolsExplainThisResourceDogfood",
                     std::move(explain_this_resource_dogfood_dict));
