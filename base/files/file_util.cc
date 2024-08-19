@@ -489,15 +489,8 @@ int ReadFile(const FilePath& filename, char* data, int max_size) {
   return checked_cast<int>(result.value());
 }
 
-bool WriteFile(const FilePath& filename, span<const uint8_t> data) {
-  int size = checked_cast<int>(data.size());
-  return WriteFile(filename, reinterpret_cast<const char*>(data.data()),
-                   size) == size;
-}
-
 bool WriteFile(const FilePath& filename, std::string_view data) {
-  int size = checked_cast<int>(data.size());
-  return WriteFile(filename, data.data(), size) == size;
+  return WriteFile(filename, as_bytes(make_span(data)));
 }
 
 FilePath GetUniquePath(const FilePath& path) {

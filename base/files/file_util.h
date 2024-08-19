@@ -577,15 +577,6 @@ BASE_EXPORT std::optional<uint64_t> ReadFile(const FilePath& filename,
 // TODO(crbug.com/40284755): Migrate callers to the span variant.
 BASE_EXPORT int ReadFile(const FilePath& filename, char* data, int max_size);
 
-// Writes the given buffer into the file, overwriting any data that was
-// previously there.  Returns the number of bytes written, or -1 on error.
-// If file doesn't exist, it gets created with read/write permissions for all.
-// Note that the other variants of WriteFile() below may be easier to use.
-// TODO(crbug.com/40284755): Migrate callers to the span variant.
-UNSAFE_BUFFER_USAGE BASE_EXPORT int WriteFile(const FilePath& filename,
-                                              const char* data,
-                                              int size);
-
 // Writes |data| into the file, overwriting any data that was previously there.
 // Returns true if and only if all of |data| was written. If the file does not
 // exist, it gets created with read/write permissions for all.

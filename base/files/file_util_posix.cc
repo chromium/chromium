@@ -1087,24 +1087,18 @@ std::optional<uint64_t> ReadFile(const FilePath& filename, span<char> buffer) {
   return bytes_read;
 }
 
-int WriteFile(const FilePath& filename, const char* data, int size) {
+bool WriteFile(const FilePath& filename, span<const uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  if (size < 0) {
-    return -1;
-  }
   int fd = HANDLE_EINTR(creat(filename.value().c_str(), 0666));
   if (fd < 0) {
-    return -1;
+    return false;
   }
 
-  int bytes_written =
-      WriteFileDescriptor(fd, std::string_view(data, static_cast<size_t>(size)))
-          ? size
-          : -1;
+  bool success = WriteFileDescriptor(fd, data);
   if (IGNORE_EINTR(close(fd)) < 0) {
-    return -1;
+    return false;
   }
-  return bytes_written;
+  return success;
 }
 
 bool WriteFileDescriptor(int fd, span<const uint8_t> data) {

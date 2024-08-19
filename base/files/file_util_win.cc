@@ -1023,21 +1023,22 @@ std::optional<uint64_t> ReadFile(const FilePath& filename, span<char> buffer) {
   return bytes_read;
 }
 
-int WriteFile(const FilePath& filename, const char* data, int size) {
+bool WriteFile(const FilePath& filename, span<const uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   win::ScopedHandle file(CreateFile(filename.value().c_str(), GENERIC_WRITE, 0,
                                     NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL,
                                     NULL));
-  if (!file.is_valid() || size < 0) {
+  if (!file.is_valid()) {
     DPLOG(WARNING) << "WriteFile failed for path " << filename.value();
-    return -1;
+    return false;
   }
 
   DWORD written;
-  BOOL result =
-      ::WriteFile(file.get(), data, static_cast<DWORD>(size), &written, NULL);
-  if (result && static_cast<int>(written) == size)
-    return static_cast<int>(written);
+  DWORD size = checked_cast<DWORD>(data.size());
+  BOOL result = ::WriteFile(file.get(), data.data(), size, &written, nullptr);
+  if (result && written == size) {
+    return true;
+  }
 
   if (!result) {
     // WriteFile failed.
@@ -1047,7 +1048,7 @@ int WriteFile(const FilePath& filename, const char* data, int size) {
     DLOG(WARNING) << "wrote" << written << " bytes to " << filename.value()
                   << " expected " << size;
   }
-  return -1;
+  return false;
 }
 
 bool AppendToFile(const FilePath& filename, span<const uint8_t> data) {
