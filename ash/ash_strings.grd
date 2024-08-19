@@ -7542,9 +7542,17 @@ New install
         desc="This string appears as the label text of a button. The button is part of a truncated list of search results. Clicking the button will show all the search results.">
         Show all
       </message>
-      <message name="IDS_PICKER_SEE_MORE_BUTTON_ACCESSIBLE_NAME"
-        desc="This string is read out by a screen reader to describe a button. The button is part of a truncated list of search results of a particular category (e.g. Google Drive files). The placeholder is the name of the category. Clicking the button will show all the search results for that particular category of results.">
-        Show all <ph name="CATEGORY_NAME">$1<ex>Drive Files</ex></ph>
+      <message name="IDS_PICKER_SEE_MORE_LINKS_BUTTON_ACCESSIBLE_NAME"
+        desc="This string is read out by a screen reader to describe a button. The button is part of a truncated list of search results from the user's browsing history. Clicking the button will show all the browsing history search results.">
+        Show all browsing history content
+      </message>
+      <message name="IDS_PICKER_SEE_MORE_LOCAL_FILES_BUTTON_ACCESSIBLE_NAME"
+        desc="This string is read out by a screen reader to describe a button. The button is part of a truncated list of search results from the ChromeOS Files app. Clicking the button will show all the search results from Files. 'Files' is the ChromeOS Files app product name and the correct localized version of the product name should be used.">
+        Show all Files content
+      </message>
+      <message name="IDS_PICKER_SEE_MORE_DRIVE_FILES_BUTTON_ACCESSIBLE_NAME"
+        desc="This string is read out by a screen reader to describe a button. The button is part of a truncated list of Google Drive search results. Clicking the button will show all the Google Drive search results. 'Google Drive' is a product name and the correct localized version of the product name should be used.">
+        Show all Google Drive content
       </message>
       <message name="IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME"
         desc="This string is appears as the tooltip of a button. The button is part of a row of emojis. Clicking the button will show more emojis.">

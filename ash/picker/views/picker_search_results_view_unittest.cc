@@ -347,7 +347,10 @@ TEST_F(PickerSearchResultsViewTest, ShowsSeeMoreLinkWhenThereAreMoreResults) {
       ElementsAre(Pointee(Property(
           "title_trailing_link_for_testing",
           &PickerSectionView::title_trailing_link_for_testing,
-          Property(&views::View::GetAccessibleName, u"Show all Files")))));
+          Property(
+              &views::View::GetAccessibleName,
+              l10n_util::GetStringUTF16(
+                  IDS_PICKER_SEE_MORE_LOCAL_FILES_BUTTON_ACCESSIBLE_NAME))))));
 }
 
 TEST_F(PickerSearchResultsViewTest,

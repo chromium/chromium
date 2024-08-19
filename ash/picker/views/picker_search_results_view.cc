@@ -58,6 +58,27 @@ constexpr gfx::Size kNoResultsIllustrationSize(200, 100);
 
 constexpr int kMaxIndexForMetrics = 10;
 
+std::u16string GetAccessibleNameForSeeMoreButton(
+    PickerSectionType section_type) {
+  switch (section_type) {
+    case PickerSectionType::kLinks:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_SEE_MORE_LINKS_BUTTON_ACCESSIBLE_NAME);
+    case PickerSectionType::kLocalFiles:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_SEE_MORE_LOCAL_FILES_BUTTON_ACCESSIBLE_NAME);
+    case PickerSectionType::kDriveFiles:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_SEE_MORE_DRIVE_FILES_BUTTON_ACCESSIBLE_NAME);
+    case PickerSectionType::kNone:
+    case PickerSectionType::kClipboard:
+    case PickerSectionType::kExamples:
+    case PickerSectionType::kEditorWrite:
+    case PickerSectionType::kEditorRewrite:
+      return u"";
+  }
+}
+
 }  // namespace
 
 PickerSearchResultsView::PickerSearchResultsView(
@@ -193,8 +214,7 @@ void PickerSearchResultsView::AppendSearchResults(
   if (section.has_more_results()) {
     section_view->AddTitleTrailingLink(
         l10n_util::GetStringUTF16(IDS_PICKER_SEE_MORE_BUTTON_TEXT),
-        l10n_util::GetStringFUTF16(IDS_PICKER_SEE_MORE_BUTTON_ACCESSIBLE_NAME,
-                                   section_title),
+        GetAccessibleNameForSeeMoreButton(section.type()),
         base::BindRepeating(&PickerSearchResultsView::OnTrailingLinkClicked,
                             base::Unretained(this), section.type()));
   }
