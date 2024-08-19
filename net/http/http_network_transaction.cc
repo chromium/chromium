@@ -1106,13 +1106,33 @@ int HttpNetworkTransaction::DoGenerateProxyAuthToken() {
         target, AuthURL(target), request_->network_anonymization_key,
         session_->http_auth_cache(), session_->http_auth_handler_factory(),
         session_->host_resolver());
-  return auth_controllers_[target]->MaybeGenerateAuthToken(request_,
-                                                           io_callback_,
-                                                           net_log_);
+  int rv = auth_controllers_[target]->MaybeGenerateAuthToken(
+      request_, io_callback_, net_log_);
+  // TODO(crbug.com/359404121): Remove this histogram after the investigation
+  // completes.
+  const bool blocked = rv == ERR_IO_PENDING;
+  if (blocked) {
+    blocked_generate_proxy_auth_token_start_time_ = base::TimeTicks::Now();
+  }
+  base::UmaHistogramBoolean(
+      base::StrCat({"Net.NetworkTransaction.GenerateProxyAuthTokenBlocked",
+                    IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
+                    NegotiatedProtocolToHistogramSuffix(response_)}),
+      blocked);
+  return rv;
 }
 
 int HttpNetworkTransaction::DoGenerateProxyAuthTokenComplete(int rv) {
   DCHECK_NE(ERR_IO_PENDING, rv);
+  // TODO(crbug.com/359404121): Remove this histogram after the investigation
+  // completes.
+  if (!blocked_generate_proxy_auth_token_start_time_.is_null()) {
+    base::UmaHistogramTimes(
+        base::StrCat({"Net.NetworkTransaction.GenerateProxyAuthTokenBlockTime",
+                      IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
+                      NegotiatedProtocolToHistogramSuffix(response_)}),
+        base::TimeTicks::Now() - blocked_generate_proxy_auth_token_start_time_);
+  }
   if (rv == OK)
     next_state_ = STATE_GENERATE_SERVER_AUTH_TOKEN;
   return rv;
@@ -1131,13 +1151,34 @@ int HttpNetworkTransaction::DoGenerateServerAuthToken() {
   }
   if (!ShouldApplyServerAuth())
     return OK;
-  return auth_controllers_[target]->MaybeGenerateAuthToken(request_,
-                                                           io_callback_,
-                                                           net_log_);
+  int rv = auth_controllers_[target]->MaybeGenerateAuthToken(
+      request_, io_callback_, net_log_);
+  // TODO(crbug.com/359404121): Remove this histogram after the investigation
+  // completes.
+  const bool blocked = rv == ERR_IO_PENDING;
+  if (blocked) {
+    blocked_generate_server_auth_token_start_time_ = base::TimeTicks::Now();
+  }
+  base::UmaHistogramBoolean(
+      base::StrCat({"Net.NetworkTransaction.GenerateServerAuthTokenBlocked",
+                    IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
+                    NegotiatedProtocolToHistogramSuffix(response_)}),
+      blocked);
+  return rv;
 }
 
 int HttpNetworkTransaction::DoGenerateServerAuthTokenComplete(int rv) {
   DCHECK_NE(ERR_IO_PENDING, rv);
+  // TODO(crbug.com/359404121): Remove this histogram after the investigation
+  // completes.
+  if (!blocked_generate_server_auth_token_start_time_.is_null()) {
+    base::UmaHistogramTimes(
+        base::StrCat({"Net.NetworkTransaction.GenerateServerAuthTokenBlockTime",
+                      IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
+                      NegotiatedProtocolToHistogramSuffix(response_)}),
+        base::TimeTicks::Now() -
+            blocked_generate_server_auth_token_start_time_);
+  }
   if (rv == OK)
     next_state_ = STATE_INIT_REQUEST_BODY;
   return rv;
