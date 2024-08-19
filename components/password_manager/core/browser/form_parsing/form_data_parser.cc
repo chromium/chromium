@@ -30,6 +30,7 @@
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -1081,6 +1082,11 @@ bool FieldValueIsTooShortForSaving(const FormFieldData* field) {
   return field && GetFieldValue(*field).size() <= 1;
 }
 
+bool FieldMaxLengthAllowsPasswordGeneration(const FormFieldData& field) {
+  return field.max_length() >=
+         autofill::password_generation::kMinimumPasswordLength;
+}
+
 }  // namespace
 
 FormParsingResult::FormParsingResult() = default;
@@ -1226,6 +1232,8 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
   // user saves the already entered one.
   bool is_new_password_reliable = mode == Mode::kFilling &&
                                   significant_fields.new_password &&
+                                  FieldMaxLengthAllowsPasswordGeneration(
+                                      *significant_fields.new_password) &&
                                   new_password_found_before_heuristic;
 
   if (mode == Mode::kFilling) {
