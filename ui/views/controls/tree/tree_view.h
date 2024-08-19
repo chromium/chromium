@@ -260,8 +260,9 @@ class VIEWS_EXPORT TreeView : public View,
     AXVirtualView* accessibility_view() const { return accessibility_view_; }
 
     // Whether the node is expanded.
-    void set_is_expanded(bool expanded) { is_expanded_ = expanded; }
+    void set_is_expanded(bool expanded);
     bool is_expanded() const { return is_expanded_; }
+    void SetAccessibleIsExpanded(bool expanded);
 
     // Whether children have been loaded.
     void set_loaded_children(bool value) { loaded_children_ = value; }

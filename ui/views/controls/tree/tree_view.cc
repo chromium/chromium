@@ -368,8 +368,9 @@ void TreeView::SetRootShown(bool root_shown) {
   AXVirtualView* ax_view = root_.accessibility_view();
   // There should always be a virtual accessibility view for the root, unless
   // someone calls this method before setting a model.
-  if (ax_view)
+  if (ax_view) {
     ax_view->NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged);
+  }
   DrawnNodesChanged();
 }
 
@@ -920,11 +921,6 @@ void TreeView::PopulateAccessibilityData(InternalNode* node,
                                          ui::AXNodeData* data) {
   DCHECK(node);
 
-  if (node->is_expanded())
-    data->AddState(ax::mojom::State::kExpanded);
-  else
-    data->AddState(ax::mojom::State::kCollapsed);
-
   DCHECK(node->model_node()) << "InternalNode must be initialized. Did you "
                                 "forget to call ConfigureInternalNode(node)?";
   data->SetName(node->model_node()->GetTitle());
@@ -1468,7 +1464,9 @@ void TreeView::SetHasFocusIndicator(bool shows) {
 
 // InternalNode ----------------------------------------------------------------
 
-TreeView::InternalNode::InternalNode() = default;
+TreeView::InternalNode::InternalNode() {
+  SetAccessibleIsExpanded(is_expanded_);
+}
 
 TreeView::InternalNode::~InternalNode() = default;
 
@@ -1478,6 +1476,27 @@ void TreeView::InternalNode::Reset(ui::TreeModelNode* node) {
   is_expanded_ = false;
   text_width_ = 0;
   accessibility_view_ = nullptr;
+}
+
+void TreeView::InternalNode::set_is_expanded(bool expanded) {
+  is_expanded_ = expanded;
+  SetAccessibleIsExpanded(is_expanded_);
+}
+
+void TreeView::InternalNode::SetAccessibleIsExpanded(bool expanded) {
+  if (!accessibility_view_) {
+    return;
+  }
+
+  ui::AXNodeData& node_data = accessibility_view_->GetCustomData();
+
+  if (expanded) {
+    node_data.RemoveState(ax::mojom::State::kCollapsed);
+    node_data.AddState(ax::mojom::State::kExpanded);
+  } else {
+    node_data.RemoveState(ax::mojom::State::kExpanded);
+    node_data.AddState(ax::mojom::State::kCollapsed);
+  }
 }
 
 size_t TreeView::InternalNode::NumExpandedNodes() const {
