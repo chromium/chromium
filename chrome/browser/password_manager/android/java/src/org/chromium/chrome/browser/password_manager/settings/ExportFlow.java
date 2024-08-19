@@ -531,11 +531,18 @@ public class ExportFlow implements ExportFlowInterface {
                                 mDelegate.getActivity().startActivity(intent);
                             } else if (positiveButtonLabelId == R.string.try_again) {
                                 mExportState = ExportState.REQUESTED;
+                                // If `mExportFileUri` is null, it means that serialization has
+                                // failed. Need to restart it too.
+                                if (mExportFileUri == null) {
+                                    mPasswordSerializationStarted = false;
+                                    serializePasswords();
+                                }
                                 exportAfterReauth();
                             }
                         } else if (which == AlertDialog.BUTTON_NEGATIVE) {
                             // Re-enable exporting, the current one was just cancelled.
                             mDelegate.onExportFlowCanceled();
+                            mProgressBarManager.hide(() -> {});
                             mExportState = ExportState.INACTIVE;
                             mExportFileUri = null;
                         }
