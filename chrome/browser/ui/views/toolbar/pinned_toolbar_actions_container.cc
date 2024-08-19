@@ -564,12 +564,15 @@ void PinnedToolbarActionsContainer::RemoveButton(
 
 bool PinnedToolbarActionsContainer::IsOverflowed(const actions::ActionId& id) {
   const auto* const pinned_button = GetPinnedButtonFor(id);
+  // TODO(pengchaocai): Support popped out buttons overflow.
   // TODO(crbug.com/40949386): If this container is not visible treat the
   // elements inside as overflowed.
-  // TODO(pengchaocai): Support popped out buttons overflow.
-  return static_cast<views::LayoutManagerBase*>(GetLayoutManager())
-             ->CanBeVisible(pinned_button) &&
-         (!GetVisible() || !pinned_button->GetVisible());
+
+  // Need to use the target layout in case the animation has not yet shown the
+  // button but is in the process of revealing it.
+  const auto* const layout =
+      GetAnimatingLayoutManager()->target_layout().GetLayoutFor(pinned_button);
+  return layout && (!GetVisible() || !layout->visible);
 }
 
 views::View* PinnedToolbarActionsContainer::GetContainerView() {
