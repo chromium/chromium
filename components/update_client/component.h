@@ -113,11 +113,7 @@ class Component {
   bool diff_update_failed() const { return diff_error_code_; }
 
   ErrorCategory error_category() const { return error_category_; }
-  int error_code() const {
-    return installer_result_ && installer_result_->original_error
-               ? installer_result_->original_error
-               : error_code_;
-  }
+  int error_code() const { return error_code_; }
   int extra_code1() const { return extra_code1_; }
   ErrorCategory diff_error_category() const { return diff_error_category_; }
   int diff_error_code() const { return diff_error_code_; }

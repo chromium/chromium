@@ -546,10 +546,6 @@ MakeUpdateClientCrxStateChangeCallback(
         update_state.error_code = crx_update_item.error_code;
         update_state.extra_code1 = crx_update_item.extra_code1;
         if (crx_update_item.installer_result) {
-          if (crx_update_item.installer_result->original_error) {
-            update_state.error_code =
-                crx_update_item.installer_result->original_error;
-          }
           update_state.installer_cmd_line =
               crx_update_item.installer_result->installer_cmd_line;
           update_state.installer_text =
@@ -1060,13 +1056,15 @@ void UpdateServiceImplImpl::RunInstaller(const std::string& app_id,
              StateChangeCallback state_update, bool usage_stats_enabled) {
             base::ScopedTempDir temp_dir;
             if (!temp_dir.CreateUniqueTempDir()) {
+              return InstallerResult(
+                  {.category_ = update_client::ErrorCategory::kInstall,
+                   .code_ = kErrorCreatingTempDir,
 #if BUILDFLAG(IS_WIN)
-              InstallerResult result(kErrorApplicationInstallerFailed);
-              result.original_error = HRESULTFromLastError();
-              return result;
-#else   // BUILDFLAG(IS_WIN)
-              return InstallerResult(kErrorApplicationInstallerFailed);
+                   .extra_ = HRESULTFromLastError()
+#else
+                   .extra_ = logging::GetLastSystemErrorCode()
 #endif  // BUILDFLAG(IS_WIN)
+                  });
             }
 
             return RunApplicationInstaller(
@@ -1099,8 +1097,10 @@ void UpdateServiceImplImpl::RunInstaller(const std::string& app_id,
             // Final state update after installation completes.
             UpdateState state;
             state.app_id = app_id;
-            state.state = result.error == 0 ? UpdateState::State::kUpdated
-                                            : UpdateState::State::kUpdateError;
+            state.state =
+                result.result.category_ == update_client::ErrorCategory::kNone
+                    ? UpdateState::State::kUpdated
+                    : UpdateState::State::kUpdateError;
 
             const base::Version registered_version =
                 internal::GetRegisteredInstallerVersion(app_id);
@@ -1111,18 +1111,16 @@ void UpdateServiceImplImpl::RunInstaller(const std::string& app_id,
               installer_version = registered_version;
             }
 
-            if (result.error == 0 && installer_version.IsValid()) {
+            if (result.result.category_ ==
+                    update_client::ErrorCategory::kNone &&
+                installer_version.IsValid()) {
               persisted_data->SetProductVersion(app_id, installer_version);
               config->GetPrefService()->CommitPendingWrite();
-            } else {
-              state.error_category = UpdateService::ErrorCategory::kInstaller;
             }
 
-            // Handle the offline installer cases similar to the online cases,
-            // and get the `error_code` from `original_error`.
-            state.error_code =
-                result.original_error ? result.original_error : result.error;
-            state.extra_code1 = result.extended_error;
+            state.error_category = ToErrorCategory(result.result.category_);
+            state.error_code = result.result.code_;
+            state.extra_code1 = result.result.extra_;
             state.installer_text = result.installer_text;
 #if BUILDFLAG(IS_WIN)
             if (state.installer_text.empty())
@@ -1148,14 +1146,18 @@ void UpdateServiceImplImpl::RunInstaller(const std::string& app_id,
               update_client->SendPing(
                   install_data,
                   {.event_type = update_client::protocol_request::kEventInstall,
-                   .result = result.error == 0,
-                   .error_code = result.error,
-                   .extra_code1 = result.extended_error},
+                   .result = result.result.category_ ==
+                             update_client::ErrorCategory::kNone,
+                   .error_category = result.result.category_,
+                   .error_code = result.result.code_,
+                   .extra_code1 = result.result.extra_},
                   base::DoNothing());
             }
 
-            std::move(callback).Run(result.error == 0 ? Result::kSuccess
-                                                      : Result::kInstallFailed);
+            std::move(callback).Run(result.result.category_ ==
+                                            update_client::ErrorCategory::kNone
+                                        ? Result::kSuccess
+                                        : Result::kInstallFailed);
           },
           config_, config_->GetUpdaterPersistedData(), update_client_,
           installer_version, state_update, app_info.app_id, app_info.ap,

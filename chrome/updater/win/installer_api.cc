@@ -31,6 +31,7 @@
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
+#include "components/update_client/update_client.h"
 
 namespace updater {
 namespace {
@@ -408,18 +409,16 @@ Installer::Result MakeInstallerResult(
   // can use the `installer_extracode1` to transmit a custom value even in the
   // case of success.
   if (outcome.installer_extracode1) {
-    result.extended_error = *outcome.installer_extracode1;
+    result.result.extra_ = *outcome.installer_extracode1;
   }
 
   switch (*outcome.installer_result) {
     case InstallerResult::kSuccess:
       // This is unconditional success:
       // - use the command line if available, and ignore everything else.
-      result.error = 0;
       if (outcome.installer_cmd_line) {
         result.installer_cmd_line = *outcome.installer_cmd_line;
       }
-      CHECK_EQ(result.error, 0);
       break;
 
     case InstallerResult::kCustomError:
@@ -431,22 +430,22 @@ Installer::Result MakeInstallerResult(
       //   error.
       // - use the installer extra code if available.
       // - use the text description of the error if available.
-      result.original_error = outcome.installer_error.value_or(exit_code);
-      if (!result.original_error) {
-        result.original_error = kErrorApplicationInstallerFailed;
+      result.result.code_ = outcome.installer_error.value_or(exit_code);
+      if (!result.result.code_) {
+        result.result.code_ = kErrorApplicationInstallerFailed;
       }
 
       // `update_client` needs to view the below codes as a success, otherwise
-      // it will consider the app as not installed. So we reset the `error` to
-      // `0` in these cases.
-      result.error =
-          result.original_error == ERROR_SUCCESS_REBOOT_INITIATED ||
-                  result.original_error == ERROR_SUCCESS_REBOOT_REQUIRED ||
-                  result.original_error == ERROR_SUCCESS_RESTART_REQUIRED
-              ? 0
-              : kErrorApplicationInstallerFailed;
+      // it will consider the app as not installed; set the error category to
+      // kNone in this case.
+      result.result.category_ =
+          result.result.code_ == ERROR_SUCCESS_REBOOT_INITIATED ||
+                  result.result.code_ == ERROR_SUCCESS_REBOOT_REQUIRED ||
+                  result.result.code_ == ERROR_SUCCESS_RESTART_REQUIRED
+              ? update_client::ErrorCategory::kNone
+              : update_client::ErrorCategory::kInstaller;
       result.installer_text = outcome.installer_text.value_or("");
-      CHECK_NE(result.original_error, 0);
+      CHECK_NE(result.result.code_, 0);
       break;
   }
 
@@ -525,7 +524,7 @@ AppInstallerResult RunApplicationInstaller(
     if (wait_result) {
       const Installer::Result installer_result = MakeInstallerResult(
           GetInstallerOutcome(app_info.scope, app_info.app_id), exit_code);
-      exit_code = installer_result.original_error;
+      exit_code = installer_result.result.code_;
       VLOG(1) << "Installer exit code " << exit_code;
       if (exit_code == ERROR_INSTALL_ALREADY_RUNNING) {
         continue;

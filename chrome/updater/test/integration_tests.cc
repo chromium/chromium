@@ -4155,7 +4155,7 @@ INSTANTIATE_TEST_SUITE_P(
             false,
             base::StrCat({"INSTALLER_RESULT=2 INSTALLER_ERROR=",
                           base::NumberToString(ERROR_INSTALL_ALREADY_RUNNING)}),
-            UpdateService::ErrorCategory::kInstaller,
+            UpdateService::ErrorCategory::kInstall,
             GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING,
             "Installer error: Another installation is already in progress. "
             "Complete that installation before proceeding with this install. ",

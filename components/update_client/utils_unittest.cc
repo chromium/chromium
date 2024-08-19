@@ -187,34 +187,6 @@ TEST(UpdateClientUtils, RemoveUnsecureUrls) {
   EXPECT_EQ(0u, urls.size());
 }
 
-TEST(UpdateClientUtils, ToInstallerResult) {
-  enum EnumA {
-    ENTRY0 = 10,
-    ENTRY1 = 20,
-  };
-
-  enum class EnumB {
-    ENTRY0 = 0,
-    ENTRY1,
-  };
-
-  const auto result1 = ToInstallerResult(EnumA::ENTRY0);
-  EXPECT_EQ(110, result1.error);
-  EXPECT_EQ(0, result1.extended_error);
-
-  const auto result2 = ToInstallerResult(ENTRY1, 10000);
-  EXPECT_EQ(120, result2.error);
-  EXPECT_EQ(10000, result2.extended_error);
-
-  const auto result3 = ToInstallerResult(EnumB::ENTRY0);
-  EXPECT_EQ(100, result3.error);
-  EXPECT_EQ(0, result3.extended_error);
-
-  const auto result4 = ToInstallerResult(EnumB::ENTRY1, 20000);
-  EXPECT_EQ(101, result4.error);
-  EXPECT_EQ(20000, result4.extended_error);
-}
-
 TEST(UpdateClientUtils, GetArchitecture) {
   const std::string arch = GetArchitecture();
 

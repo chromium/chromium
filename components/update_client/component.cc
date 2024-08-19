@@ -133,13 +133,11 @@ void InstallComplete(scoped_refptr<base::SequencedTaskRunner> main_task_runner,
              const CrxInstaller::Result& installer_result) {
             RetryDeletePathRecursively(unpack_path);
             main_task_runner->PostTask(
-                FROM_HERE,
-                base::BindOnce(
-                    std::move(callback),
-                    installer_result.error ? ErrorCategory::kInstaller
-                                           : ErrorCategory::kNone,
-                    static_cast<int>(installer_result.error),
-                    installer_result.extended_error, installer_result));
+                FROM_HERE, base::BindOnce(std::move(callback),
+                                          installer_result.result.category_,
+                                          installer_result.result.code_,
+                                          installer_result.result.extra_,
+                                          installer_result));
           },
           main_task_runner, std::move(callback), unpack_path,
           installer_result));
@@ -163,14 +161,11 @@ void InstallOnBlockingTaskRunner(
   if (!base::WriteFile(
           unpack_path.Append(FILE_PATH_LITERAL("manifest.fingerprint")),
           fingerprint)) {
-    const CrxInstaller::Result installer_result(
-        InstallError::FINGERPRINT_WRITE_FAILED,
-        logging::GetLastSystemErrorCode());
     main_task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), ErrorCategory::kInstall,
-                       static_cast<int>(installer_result.error),
-                       installer_result.extended_error, std::nullopt));
+                       static_cast<int>(InstallError::FINGERPRINT_WRITE_FAILED),
+                       logging::GetLastSystemErrorCode(), std::nullopt));
     return;
   }
 
@@ -459,6 +454,7 @@ void Component::PingOnly(const CrxComponent& crx_component,
   CHECK_EQ(ComponentState::kNew, state());
   crx_component_ = crx_component;
   previous_version_ = crx_component_->version;
+  error_category_ = ping_params.error_category;
   error_code_ = ping_params.error_code;
   extra_code1_ = ping_params.extra_code1;
   state_ = std::make_unique<StatePingOnly>(this);
@@ -1013,16 +1009,13 @@ void Component::StateUpdatingDiff::InstallComplete(
   component.diff_error_code_ = error_code;
   component.diff_extra_code1_ = extra_code1;
 
-  if (component.diff_error_code_ != 0) {
+  if (component.diff_error_category_ != ErrorCategory::kNone) {
     TransitionState(std::make_unique<StateDownloading>(&component, false));
     return;
   }
 
   CHECK_EQ(ErrorCategory::kNone, component.diff_error_category_);
-  CHECK_EQ(0, component.diff_error_code_);
-
   CHECK_EQ(ErrorCategory::kNone, component.error_category_);
-  CHECK_EQ(0, component.error_code_);
 
   if (component.action_run_.empty()) {
     TransitionState(std::make_unique<StateUpdated>(&component));
@@ -1112,13 +1105,12 @@ void Component::StateUpdating::InstallComplete(
                                   component.crx_component()->app_id));
   }
 
-  if (component.error_code_ != 0) {
+  if (component.error_category_ != ErrorCategory::kNone) {
     TransitionState(std::make_unique<StateUpdateError>(&component));
     return;
   }
 
   CHECK_EQ(ErrorCategory::kNone, component.error_category_);
-  CHECK_EQ(0, component.error_code_);
 
   if (component.action_run_.empty()) {
     TransitionState(std::make_unique<StateUpdated>(&component));

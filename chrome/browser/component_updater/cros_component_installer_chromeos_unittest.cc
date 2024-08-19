@@ -71,7 +71,7 @@ void RecordLoadResult(std::optional<ComponentManagerAsh::Error>* result_out,
 // callback. It expects a success result to be reported.
 void WrapInstallerCallback(update_client::Callback callback,
                            const update_client::CrxInstaller::Result& result) {
-  EXPECT_EQ(0, result.error);
+  EXPECT_EQ(0, result.result.code_);
   std::move(callback).Run(update_client::Error::NONE);
 }
 
