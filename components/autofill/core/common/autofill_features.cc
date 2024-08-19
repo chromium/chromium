@@ -811,6 +811,13 @@ BASE_FEATURE(kAutofillLogDeduplicationMetrics,
              "AutofillLogDeduplicationMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, various deduplication related metrics are logged on startup
+// and on import. Used only if `kAutofillLogDeduplicationMetrics` is enabled.
+// TODO(crbug.com/325452461): Remove once rolled out.
+BASE_FEATURE(kAutofillLogDeduplicationMetricsFollowup,
+             "AutofillLogDeduplicationMetricsFollowup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, low-quality quasi duplicates of rank one are silently removed
 // during the once-per-milestone deduplication routine.
 // TODO(crbug.com/325450676): Remove when launched.

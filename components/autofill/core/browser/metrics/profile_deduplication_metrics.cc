@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill::autofill_metrics {
 
@@ -64,6 +65,26 @@ void LogDeduplicationStartupMetricsForProfile(
   // TODO(crbug.com/325452461): Implement more metrics.
 }
 
+void LogPercentageOfNonQuasiDuplicates(
+    const std::vector<int>& profile_duplication_ranks) {
+  CHECK(!profile_duplication_ranks.empty());
+
+  for (int rank = 1; rank <= 5; rank++) {
+    // Find the number of profiles which duplication rank is greater than
+    // `rank`.
+    const int number_of_duplicates_with_higher_rank = std::ranges::count_if(
+        profile_duplication_ranks, [rank](int num) { return num > rank; });
+    const double percentage_of_duplicates =
+        (number_of_duplicates_with_higher_rank * 100.0) /
+        profile_duplication_ranks.size();
+    base::UmaHistogramPercentage(
+        base::StrCat({kStartupHistogramPrefix,
+                      "PercentageOfNonQuasiDuplicates.",
+                      base::NumberToString(rank)}),
+        percentage_of_duplicates);
+  }
+}
+
 }  // namespace
 
 int GetDuplicationRank(base::span<const FieldTypeSet> min_incompatible_sets) {
@@ -86,10 +107,18 @@ void LogDeduplicationStartupMetrics(
     return;
   }
   AutofillProfileComparator comparator(app_locale);
+  std::vector<int> profile_duplicaton_ranks;
   for (const AutofillProfile* profile : profiles) {
-    LogDeduplicationStartupMetricsForProfile(
-        *profile, AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
-                      *profile, profiles, comparator));
+    std::vector<FieldTypeSet> min_incompatible_sets =
+        AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
+            *profile, profiles, comparator);
+    profile_duplicaton_ranks.push_back(
+        GetDuplicationRank(min_incompatible_sets));
+    LogDeduplicationStartupMetricsForProfile(*profile, min_incompatible_sets);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillLogDeduplicationMetricsFollowup)) {
+    LogPercentageOfNonQuasiDuplicates(profile_duplicaton_ranks);
   }
 }
 

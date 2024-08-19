@@ -1933,6 +1933,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Autofill.Deduplication.ExistingProfiles.PercentageOfNonQuasiDuplicates.{MaxN}"
+    units="Percents" expires_after="2025-01-05">
+  <owner>koerber@chromium.org</owner>
+  <owner>sygiet@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    For every stored profile (in every source), calculate the
+    ProfileDuplicationRank. For a given MaxN, calculate the percentage of
+    profiles that have a ProfileDuplicationRank greater than MaxN. Emitted on
+    browser startup. Profiles of different countries are not considered, since
+    they can never be merged due to the data model differences. The metric is
+    split by the MaxN.
+  </summary>
+  <token key="MaxN">
+    <variant name="1"/>
+    <variant name="2"/>
+    <variant name="3"/>
+    <variant name="4"/>
+    <variant name="5"/>
+  </token>
+</histogram>
+
+<histogram
     name="Autofill.Deduplication.ExistingProfiles.RankOfStoredQuasiDuplicateProfiles"
     units="Rank" expires_after="2025-01-05">
   <owner>koerber@chromium.org</owner>

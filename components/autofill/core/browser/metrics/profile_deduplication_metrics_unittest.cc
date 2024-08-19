@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,6 +47,75 @@ TEST(ProfileDeduplicationMetricsTest,
       "Autofill.Deduplication.ExistingProfiles."
       "RankOfStoredQuasiDuplicateProfiles",
       0);
+}
+
+TEST(ProfileDeduplicationMetricsTest,
+     Startup_PercentageOfNonQuasiDuplicates_NotEnoughProfiles) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillLogDeduplicationMetricsFollowup);
+  AutofillProfile a = test::GetFullProfile();
+  const std::vector<AutofillProfile*> profiles = {&a};
+  base::HistogramTester histogram_tester;
+  LogDeduplicationStartupMetrics(profiles, kLocale);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Deduplication.ExistingProfiles."
+      "PercentageOfNonQuasiDuplicates.1",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Deduplication.ExistingProfiles."
+      "PercentageOfNonQuasiDuplicates.2",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Deduplication.ExistingProfiles."
+      "PercentageOfNonQuasiDuplicates.3",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Deduplication.ExistingProfiles."
+      "PercentageOfNonQuasiDuplicates.4",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Deduplication.ExistingProfiles."
+      "PercentageOfNonQuasiDuplicates.5",
+      0);
+}
+
+TEST(ProfileDeduplicationMetricsTest, Startup_PercentageOfNonQuasiDuplicates) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillLogDeduplicationMetricsFollowup);
+  // Create 4 profiles, c and d have duplication rank 2.
+  AutofillProfile a = test::GetFullProfile();
+  AutofillProfile b = test::GetFullProfile();
+  AutofillProfile c = test::GetFullProfile();
+  c.SetRawInfo(COMPANY_NAME, u"different company");
+  c.SetRawInfo(EMAIL_ADDRESS, u"different-email@gmail.com");
+  AutofillProfile d = test::GetFullProfile();
+  d.SetRawInfo(COMPANY_NAME, u"testing company");
+  d.SetRawInfo(EMAIL_ADDRESS, u"test-email@gmail.com");
+  base::HistogramTester histogram_tester;
+  const std::vector<AutofillProfile*> profiles = {&a, &b, &c, &d};
+  LogDeduplicationStartupMetrics(profiles, kLocale);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Deduplication.ExistingProfiles.PercentageOfNonQuasiDuplicates."
+      "1",
+      50, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Deduplication.ExistingProfiles.PercentageOfNonQuasiDuplicates."
+      "2",
+      0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Deduplication.ExistingProfiles.PercentageOfNonQuasiDuplicates."
+      "3",
+      0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Deduplication.ExistingProfiles.PercentageOfNonQuasiDuplicates."
+      "4",
+      0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Deduplication.ExistingProfiles.PercentageOfNonQuasiDuplicates."
+      "5",
+      0, 1);
 }
 
 TEST(ProfileDeduplicationMetricsTest, Startup_TypeOfQuasiDuplicateToken) {
