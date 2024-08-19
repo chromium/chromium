@@ -221,6 +221,10 @@ void PinnedActionToolbarButton::UpdateIcon() {
   }
 }
 
+bool PinnedActionToolbarButton::ShouldShowEphemerallyInToolbar() {
+  return should_show_in_toolbar_ || has_anchor_;
+}
+
 void PinnedActionToolbarButton::SetActionEngaged(bool action_engaged) {
   if (!IsActive()) {
     SetProperty(
@@ -280,6 +284,7 @@ void PinnedActionToolbarButton::OnAnchorCountChanged(size_t anchor_count) {
         static_cast<std::underlying_type_t<PinnedToolbarActionFlexPriority>>(
             PinnedToolbarActionFlexPriority::kHigh));
     InvalidateLayout();
+    has_anchor_ = true;
   } else {
     SetProperty(
         kToolbarButtonFlexPriorityKey,
@@ -291,6 +296,8 @@ void PinnedActionToolbarButton::OnAnchorCountChanged(size_t anchor_count) {
                   std::underlying_type_t<PinnedToolbarActionFlexPriority>>(
                   PinnedToolbarActionFlexPriority::kLow));
     InvalidateLayout();
+    has_anchor_ = false;
+    container_->MaybeRemovePoppedOutButtonFor(GetActionId());
   }
 }
 
