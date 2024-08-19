@@ -148,8 +148,9 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         WebExposedIsolationInfo::CreateNonIsolated(),
         WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
         /*does_site_request_dedicated_process_for_coop=*/false,
-        /*is_jit_disabled=*/false, /*is_pdf=*/false,
-        /*is_fenced=*/false, /*cross_origin_isolation_key=*/std::nullopt));
+        /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
+        /*is_pdf=*/false, /*is_fenced=*/false,
+        /*cross_origin_isolation_key=*/std::nullopt));
   }
 
   WebContentsImpl* web_contents() const {
@@ -176,8 +177,9 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         WebExposedIsolationInfo::CreateNonIsolated(),
         WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
         /*does_site_request_dedicated_process_for_coop=*/false,
-        /*is_jit_disabled=*/false, /*is_pdf=*/false,
-        /*is_fenced=*/false, /*cross_origin_isolation_key=*/std::nullopt));
+        /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
+        /*is_pdf=*/false, /*is_fenced=*/false,
+        /*cross_origin_isolation_key=*/std::nullopt));
   }
 
  protected:
@@ -1700,8 +1702,9 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
       WebExposedIsolationInfo::CreateNonIsolated(),
       WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
-      /*is_jit_disabled=*/false, /*is_pdf=*/false,
-      /*is_fenced=*/false, /*cross_origin_isolation_key=*/std::nullopt));
+      /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
+      /*is_pdf=*/false, /*is_fenced=*/false,
+      /*cross_origin_isolation_key=*/std::nullopt));
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 

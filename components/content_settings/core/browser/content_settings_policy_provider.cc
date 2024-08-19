@@ -311,6 +311,8 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
          prefs::kManagedDefaultInsecurePrivateNetworkSetting},
         {ContentSettingsType::JAVASCRIPT_JIT,
          prefs::kManagedDefaultJavaScriptJitSetting},
+        {ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+         prefs::kManagedDefaultJavaScriptOptimizerSetting},
         {ContentSettingsType::HID_GUARD,
          prefs::kManagedDefaultWebHidGuardSetting},
         {ContentSettingsType::WINDOW_MANAGEMENT,

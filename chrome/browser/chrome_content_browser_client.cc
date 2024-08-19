@@ -7996,6 +7996,30 @@ bool ChromeContentBrowserClient::IsJitDisabledForSite(
                      CONTENT_SETTING_BLOCK);
 }
 
+bool ChromeContentBrowserClient::AreV8OptimizationsDisabledForSite(
+    content::BrowserContext* browser_context,
+    const GURL& site_url) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile);
+  // Special case to determine if any policy is set.
+  if (map && site_url.is_empty()) {
+    return map->GetDefaultContentSetting(
+               ContentSettingsType::JAVASCRIPT_OPTIMIZER, nullptr) ==
+           CONTENT_SETTING_BLOCK;
+  }
+
+  // Only disable optimizations for schemes that might atually load web content.
+  auto* policy = ChildProcessSecurityPolicy::GetInstance();
+  if (!policy->IsWebSafeScheme(site_url.scheme())) {
+    return false;
+  }
+
+  return (map &&
+          map->GetContentSetting(site_url, site_url,
+                                 ContentSettingsType::JAVASCRIPT_OPTIMIZER) ==
+              CONTENT_SETTING_BLOCK);
+}
+
 ukm::UkmService* ChromeContentBrowserClient::GetUkmService() {
   return g_browser_process->GetMetricsServicesManager()->GetUkmService();
 }

@@ -2773,6 +2773,7 @@ if (!is_android) {
       "../browser/policy/test/policy_test_google_browsertest.cc",
       "../browser/policy/test/restore_on_startup_policy_browsertest.cc",
       "../browser/policy/test/url_blocklist_policy_browsertest.cc",
+      "../browser/policy/test/v8_optimizer_policy_browsertest.cc",
       "../browser/predictors/loading_predictor_browsertest.cc",
       "../browser/prefetch/prefetch_browsertest.cc",
       "../browser/prefs/pref_functional_browsertest.cc",

@@ -1516,6 +1516,12 @@ bool ContentBrowserClient::IsJitDisabledForSite(BrowserContext* browser_context,
   return false;
 }
 
+bool ContentBrowserClient::AreV8OptimizationsDisabledForSite(
+    BrowserContext* browser_context,
+    const GURL& site_url) {
+  return false;
+}
+
 ukm::UkmService* ContentBrowserClient::GetUkmService() {
   return nullptr;
 }

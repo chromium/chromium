@@ -340,6 +340,10 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // Returns true if this SiteInstance is for a site that has JIT disabled.
   bool IsJitDisabled();
 
+  // Returns true if this SiteInstance is for a site that has v8 optimizations
+  // disabled.
+  bool AreV8OptimizationsDisabled();
+
   // Returns true if this SiteInstance is for a site that contains PDF contents.
   bool IsPdf();
 

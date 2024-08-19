@@ -193,6 +193,17 @@ SpareRenderProcessHostManager::MaybeTakeSpareRenderProcessHost(
     refuse_reason =
         ContentBrowserClient::SpareProcessRefusedByEmbedderReason::JitDisabled;
   }
+
+  // V8 optimizations are globally enabled or disabled for a whole process, and
+  // spare renderers always have V8 optimizations enabled, so we can never use
+  // them if they're supposed to be disabled for this site.
+  if (GetContentClient()->browser()->AreV8OptimizationsDisabledForSite(
+          browser_context, site_instance->GetSiteInfo().process_lock_url())) {
+    embedder_allows_spare_usage = false;
+    refuse_reason = ContentBrowserClient::SpareProcessRefusedByEmbedderReason::
+        V8OptimizationsDisabled;
+  }
+
   if (refuse_reason.has_value()) {
     base::UmaHistogramEnumeration(
         "BrowserRenderProcessHost.SpareProcessRefusedByEmbedderReason",

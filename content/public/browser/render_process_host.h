@@ -230,6 +230,13 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // JIT disabled.
   virtual bool IsJitDisabled() = 0;
 
+  // Indicates whether the current RenderProcessHost is running with v8
+  // optimizations disabled. This is distinct from IsJitDisabled() -
+  // IsJitDisabled() disables all JIT compilation in the renderer, while
+  // AreV8OptimizationsDisabled() only disables the higher-tier V8 optimizers,
+  // leaving the basic JIT compiler in V8 (and the wasm JIT compiler) enabled.
+  virtual bool AreV8OptimizationsDisabled() = 0;
+
   // Indicates whether the current RenderProcessHost exclusively hosts PDF
   // content.
   virtual bool IsPdf() = 0;

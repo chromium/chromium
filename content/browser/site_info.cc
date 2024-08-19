@@ -136,8 +136,9 @@ SiteInfo SiteInfo::CreateForErrorPage(
                   storage_partition_config, web_exposed_isolation_info,
                   web_exposed_isolation_level, is_guest,
                   false /* does_site_request_dedicated_process_for_coop */,
-                  false /* is_jit_disabled */, false /* is_pdf */, is_fenced,
-                  std::nullopt);
+                  false /* is_jit_disabled */,
+                  false /* are_v8_optimizations_disabled */, false /* is_pdf */,
+                  is_fenced, std::nullopt);
 }
 
 // static
@@ -151,6 +152,9 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
       isolation_context.browser_or_resource_context().ToBrowserContext();
   bool is_jit_disabled = GetContentClient()->browser()->IsJitDisabledForSite(
       browser_context, GURL());
+  bool are_v8_optimizations_disabled =
+      GetContentClient()->browser()->AreV8OptimizationsDisabledForSite(
+          browser_context, GURL());
 
   WebExposedIsolationLevel web_exposed_isolation_level =
       SiteInfo::ComputeWebExposedIsolationLevelForEmptySite(
@@ -165,7 +169,8 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
       storage_partition_config, web_exposed_isolation_info,
       web_exposed_isolation_level, isolation_context.is_guest(),
       /*does_site_request_dedicated_process_for_coop=*/false, is_jit_disabled,
-      /*is_pdf=*/false, isolation_context.is_fenced(), std::nullopt);
+      are_v8_optimizations_disabled, /*is_pdf=*/false,
+      isolation_context.is_fenced(), std::nullopt);
 }
 
 // static
@@ -188,8 +193,8 @@ SiteInfo SiteInfo::CreateForGuest(
       WebExposedIsolationLevel::kNotIsolated,
       /*is_guest=*/true,
       /*does_site_request_dedicated_process_for_coop=*/false,
-      /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/false,
-      std::nullopt);
+      /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
+      /*is_pdf=*/false, /*is_fenced=*/false, std::nullopt);
 }
 
 // static
@@ -223,6 +228,7 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
   // PDF content should live in JIT-less processes because it is inherently less
   // trusted.
   bool is_jitless = url_info.is_pdf;
+  bool are_v8_optimizations_disabled = false;
 
   std::optional<StoragePartitionConfig> storage_partition_config =
       url_info.storage_partition_config;
@@ -237,6 +243,9 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
     is_jitless =
         is_jitless || GetContentClient()->browser()->IsJitDisabledForSite(
                           browser_context, lock_url);
+    are_v8_optimizations_disabled =
+        GetContentClient()->browser()->AreV8OptimizationsDisabledForSite(
+            browser_context, lock_url);
 
     if (!storage_partition_config.has_value()) {
       storage_partition_config =
@@ -326,7 +335,8 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
                   storage_partition_config.value(), web_exposed_isolation_info,
                   web_exposed_isolation_level, isolation_context.is_guest(),
                   does_site_request_dedicated_process_for_coop, is_jitless,
-                  url_info.is_pdf, isolation_context.is_fenced(),
+                  are_v8_optimizations_disabled, url_info.is_pdf,
+                  isolation_context.is_fenced(),
                   url_info.cross_origin_isolation_key);
 }
 
@@ -349,6 +359,7 @@ SiteInfo::SiteInfo(
     bool is_guest,
     bool does_site_request_dedicated_process_for_coop,
     bool is_jit_disabled,
+    bool are_v8_optimizations_disabled,
     bool is_pdf,
     bool is_fenced,
     const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
@@ -367,6 +378,7 @@ SiteInfo::SiteInfo(
       does_site_request_dedicated_process_for_coop_(
           does_site_request_dedicated_process_for_coop),
       is_jit_disabled_(is_jit_disabled),
+      are_v8_optimizations_disabled_(are_v8_optimizations_disabled),
       is_pdf_(is_pdf),
       is_fenced_(is_fenced) {
   DCHECK(is_sandboxed_ ||
@@ -416,6 +428,7 @@ SiteInfo::SiteInfo(BrowserContext* browser_context)
           /*is_guest=*/false,
           /*does_site_request_dedicated_process_for_coop=*/false,
           /*is_jit_disabled=*/false,
+          /*are_v8_optimizations_disabled=*/false,
           /*is_pdf=*/false,
           /*is_fenced=*/false,
           /*cross_origin_isolation_key=*/std::nullopt) {}
@@ -428,23 +441,23 @@ auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {
   // site-isolated due to COOP should still share a SiteInstance with other
   // same-site frames in the BrowsingInstance, even if those frames lack the
   // COOP isolation request.
-  return std::tie(site_info.site_url_.possibly_invalid_spec(),
-                  site_info.process_lock_url_.possibly_invalid_spec(),
-                  // Here we only compare |requires_origin_keyed_process_| since
-                  // we currently don't create SiteInfos where
-                  // |is_origin_agent_cluster_| differs from
-                  // |requires_origin_keyed_process_|. In fact, we don't even
-                  // have |is_origin_agent_cluster| in SiteInfo at this time,
-                  // but that could change.
-                  // TODO(wjmaclean): Update this if we ever start to create
-                  // separate SiteInfos for same-process OriginAgentCluster.
-                  site_info.requires_origin_keyed_process_,
-                  site_info.is_sandboxed_, site_info.unique_sandbox_id_,
-                  site_info.storage_partition_config_,
-                  site_info.web_exposed_isolation_info_,
-                  site_info.web_exposed_isolation_level_, site_info.is_guest_,
-                  site_info.is_jit_disabled_, site_info.is_pdf_,
-                  site_info.is_fenced_, site_info.agent_cluster_key_);
+  return std::tie(
+      site_info.site_url_.possibly_invalid_spec(),
+      site_info.process_lock_url_.possibly_invalid_spec(),
+      // Here we only compare |requires_origin_keyed_process_| since
+      // we currently don't create SiteInfos where
+      // |is_origin_agent_cluster_| differs from
+      // |requires_origin_keyed_process_|. In fact, we don't even
+      // have |is_origin_agent_cluster| in SiteInfo at this time,
+      // but that could change.
+      // TODO(wjmaclean): Update this if we ever start to create
+      // separate SiteInfos for same-process OriginAgentCluster.
+      site_info.requires_origin_keyed_process_, site_info.is_sandboxed_,
+      site_info.unique_sandbox_id_, site_info.storage_partition_config_,
+      site_info.web_exposed_isolation_info_,
+      site_info.web_exposed_isolation_level_, site_info.is_guest_,
+      site_info.is_jit_disabled_, site_info.are_v8_optimizations_disabled_,
+      site_info.is_pdf_, site_info.is_fenced_, site_info.agent_cluster_key_);
 }
 
 SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
@@ -512,8 +525,9 @@ bool SiteInfo::IsExactMatch(const SiteInfo& other) const {
       is_guest_ == other.is_guest_ &&
       does_site_request_dedicated_process_for_coop_ ==
           other.does_site_request_dedicated_process_for_coop_ &&
-      is_jit_disabled_ == other.is_jit_disabled_ && is_pdf_ == other.is_pdf_ &&
-      is_fenced_ == other.is_fenced_ &&
+      is_jit_disabled_ == other.is_jit_disabled_ &&
+      are_v8_optimizations_disabled_ == other.are_v8_optimizations_disabled_ &&
+      is_pdf_ == other.is_pdf_ && is_fenced_ == other.is_fenced_ &&
       agent_cluster_key_ == other.agent_cluster_key_;
 
   if (is_match) {
@@ -534,6 +548,8 @@ auto SiteInfo::MakeProcessLockComparisonKey() const {
   //
   // TODO(wjmaclean, alexmos): Figure out why including `is_jit_disabled_` here
   // leads to crashes in https://crbug.com/1279453.
+  // TODO(ellyjones): Same as above, but about are_v8_optimizations_disabled_
+  // (presumably).
   return std::tie(process_lock_url_, requires_origin_keyed_process_,
                   is_sandboxed_, unique_sandbox_id_, is_pdf_, is_guest_,
                   web_exposed_isolation_info_, web_exposed_isolation_level_,
@@ -602,6 +618,10 @@ std::string SiteInfo::GetDebugString() const {
 
   if (is_jit_disabled_)
     debug_string += ", jitless";
+
+  if (are_v8_optimizations_disabled_) {
+    debug_string += ", noopt";
+  }
 
   if (is_pdf_)
     debug_string += ", pdf";

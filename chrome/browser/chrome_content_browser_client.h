@@ -902,6 +902,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin& origin) override;
   bool IsJitDisabledForSite(content::BrowserContext* browser_context,
                             const GURL& site_url) override;
+  bool AreV8OptimizationsDisabledForSite(
+      content::BrowserContext* browser_context,
+      const GURL& site_url) override;
   ukm::UkmService* GetUkmService() override;
 
   blink::mojom::OriginTrialsSettingsPtr GetOriginTrialsSettings() override;

@@ -1356,6 +1356,9 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
     if (site_instance->IsPdf()) {
       flags |= RenderProcessFlags::kPdf;
     }
+    if (site_instance->AreV8OptimizationsDisabled()) {
+      flags |= RenderProcessFlags::kV8OptimizationsDisabled;
+    }
   }
 #if BUILDFLAG(IS_WIN)
   if (site_instance && GetContentClient()->browser()->ShouldUseSkiaFontManager(
@@ -3109,6 +3112,10 @@ bool RenderProcessHostImpl::IsJitDisabled() {
   return !!(flags_ & RenderProcessFlags::kJitDisabled);
 }
 
+bool RenderProcessHostImpl::AreV8OptimizationsDisabled() {
+  return !!(flags_ & RenderProcessFlags::kV8OptimizationsDisabled);
+}
+
 bool RenderProcessHostImpl::IsPdf() {
   return !!(flags_ & RenderProcessFlags::kPdf);
 }
@@ -3193,9 +3200,13 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
       command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
                                       "--jitless");
     } else {
+      // TODO(https://crbug.com/338434846): put this back to --jitless.
       command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
                                       "--no-maglev,--no-turbofan");
     }
+  } else if (AreV8OptimizationsDisabled()) {
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                    "--disable-optimizing-compilers");
   }
 
   if (features::IsTouchTextEditingRedesignEnabled()) {
@@ -4289,6 +4300,13 @@ bool RenderProcessHostImpl::IsSuitableHost(
   // reused.
   if (host->IsJitDisabled() != site_info.is_jit_disabled())
     return false;
+
+  // If this process has a different v8 optimization policy to the site then it
+  // can't be reused.
+  if (host->AreV8OptimizationsDisabled() !=
+      site_info.are_v8_optimizations_disabled()) {
+    return false;
+  }
 
   // PDF and non-PDF content cannot share processes.
   if (host->IsPdf() != site_info.is_pdf())

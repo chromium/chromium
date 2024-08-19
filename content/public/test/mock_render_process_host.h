@@ -99,6 +99,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool GetIntersectsViewport() override;
   bool IsForGuestsOnly() override;
   bool IsJitDisabled() override;
+  bool AreV8OptimizationsDisabled() override;
   bool IsPdf() override;
   void OnMediaStreamAdded() override;
   void OnMediaStreamRemoved() override;

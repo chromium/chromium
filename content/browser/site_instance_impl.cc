@@ -1006,6 +1006,10 @@ bool SiteInstanceImpl::IsJitDisabled() {
   return site_info_.is_jit_disabled();
 }
 
+bool SiteInstanceImpl::AreV8OptimizationsDisabled() {
+  return site_info_.are_v8_optimizations_disabled();
+}
+
 bool SiteInstanceImpl::IsPdf() {
   return site_info_.is_pdf();
 }

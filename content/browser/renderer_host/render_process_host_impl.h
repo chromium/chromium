@@ -240,6 +240,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool GetIntersectsViewport() override;
   bool IsForGuestsOnly() override;
   bool IsJitDisabled() override;
+  bool AreV8OptimizationsDisabled() override;
   bool IsPdf() override;
   StoragePartitionImpl* GetStoragePartition() override;
   bool Shutdown(int exit_code) override;
@@ -934,6 +935,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
     // the default font manager.
     kSkiaFontManager = 1 << 3,
 #endif
+
+    // Indicates whether v8 optimizations are disabled in this renderer process.
+    kV8OptimizationsDisabled = 1 << 4,
   };
 
   // A RenderProcessHostImpl's IO thread implementation of the
