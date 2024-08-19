@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/css/css_selector_watch.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/out_of_flow_data.h"
@@ -481,9 +482,9 @@ static CSSPropertyValueSet* ScrollMarkerGroupUserAgentDeclaration() {
       (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)));
 
   if (decl->IsEmpty()) {
-    decl->SetProperty(CSSPropertyID::kContain,
-                      *CSSIdentifierValue::Create(CSSValueID::kSize),
-                      true /* important */);
+    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kSize));
+    decl->SetProperty(CSSPropertyID::kContain, *list, /*important=*/true);
   }
   return decl;
 }
@@ -1482,16 +1483,16 @@ void StyleResolver::ApplyBaseStyleNoCache(
     }
   }
 
-  if (element->IsScrollMarkerGroupPseudoElement()) {
-    cascade.MutableMatchResult().AddMatchedProperties(
-        ScrollMarkerGroupUserAgentDeclaration(), CascadeOrigin::kUserAgent);
-  }
-
   ElementRuleCollector collector(state.ElementContext(), style_recalc_context,
                                  selector_filter_, cascade.MutableMatchResult(),
                                  state.InsideLink());
 
   if (style_request.IsPseudoStyleRequest()) {
+    if (style_request.pseudo_id == kPseudoIdScrollMarkerGroup) {
+      cascade.MutableMatchResult().AddMatchedProperties(
+          ScrollMarkerGroupUserAgentDeclaration(), CascadeOrigin::kUserAgent);
+    }
+
     collector.SetPseudoElementStyleRequest(style_request);
     GetDocument().GetStyleEngine().EnsureUAStyleForPseudoElement(
         style_request.pseudo_id);
