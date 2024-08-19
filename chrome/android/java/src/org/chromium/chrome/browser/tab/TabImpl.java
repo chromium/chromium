@@ -2081,6 +2081,11 @@ class TabImpl implements Tab {
     }
 
     @Override
+    public void setParentId(int parentId) {
+        mParentId = parentId;
+    }
+
+    @Override
     public int getRootId() {
         return mRootId;
     }

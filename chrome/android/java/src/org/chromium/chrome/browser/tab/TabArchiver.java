@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tab;
 import static org.chromium.chrome.browser.tab.Tab.INVALID_TIMESTAMP;
 import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -90,6 +92,7 @@ public class TabArchiver implements TabWindowManager.Observer {
 
         // Trigger auto-deletion after archiving tabs.
         deleteEligibleArchivedTabs();
+        ensureArchivedTabsHaveCorrectFields();
     }
 
     /** Delete eligible archived tabs. */
@@ -245,5 +248,17 @@ public class TabArchiver implements TabWindowManager.Observer {
         // Strip the root id to avoid re-using the old rootId from the tab state file.
         tabState.rootId = Tab.INVALID_TAB_ID;
         return tabState;
+    }
+
+    @VisibleForTesting
+    void ensureArchivedTabsHaveCorrectFields() {
+        for (int i = 0; i < mArchivedTabModel.getCount(); i++) {
+            Tab archivedTab = mArchivedTabModel.getTabAt(i);
+            // Archived tabs shouldn't have a root id or parent id. It's possible that there's
+            // stale data around for clients that have archived tabs prior to crrev.com/c/5750590
+            // landing. Fix those fields so that they're corrected in the tab state file.
+            archivedTab.setRootId(archivedTab.getId());
+            archivedTab.setParentId(Tab.INVALID_TAB_ID);
+        }
     }
 }

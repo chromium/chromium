@@ -361,4 +361,35 @@ public class TabArchiverTest {
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
     }
+
+    @Test
+    @MediumTest
+    public void testArchivedTabParentRootIdsReset() throws Exception {
+        Tab tab =
+                sActivityTestRule.loadUrlInNewTab(
+                        sActivityTestRule.getTestServer().getURL(TEST_PATH),
+                        /* incognito= */ false);
+
+        assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+
+        runOnUiThreadBlocking(() -> mTabArchiver.archiveAndRemoveTab(mRegularTabModel, tab));
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.TabArchived"));
+
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+        runOnUiThreadBlocking(
+                () -> {
+                    Tab archivedTab = mArchivedTabModel.getTabAt(0);
+                    assertEquals(Tab.INVALID_TAB_ID, archivedTab.getParentId());
+                    assertEquals(archivedTab.getId(), archivedTab.getRootId());
+
+                    archivedTab.setRootId(7);
+                    archivedTab.setParentId(7);
+
+                    mTabArchiver.ensureArchivedTabsHaveCorrectFields();
+                    assertEquals(Tab.INVALID_TAB_ID, archivedTab.getParentId());
+                    assertEquals(archivedTab.getId(), archivedTab.getRootId());
+                });
+    }
 }

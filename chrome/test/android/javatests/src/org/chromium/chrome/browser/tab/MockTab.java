@@ -167,6 +167,7 @@ public class MockTab extends TabImpl {
         return mParentId;
     }
 
+    @Override
     public void setParentId(int parentId) {
         mParentId = parentId;
     }
