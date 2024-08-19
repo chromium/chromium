@@ -1732,6 +1732,97 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.JavaScript.Permissions.Geolocation.Authorized"
+    enum="GeolocationAPI" expires_after="2024-12-31">
+  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@google.com</owner>
+  <summary>
+    Records when a webpage attempts to access geolocation APIs and the user has
+    authorized the API at the application level. NOTE: This is only logged if
+    the JavaScript override is setup, which currently ONLY happens if the native
+    level permission is disabled/undetermined at JavaScriptFeature creation
+    time.
+  </summary>
+</histogram>
+
+<histogram name="IOS.JavaScript.Permissions.Geolocation.Denied"
+    enum="GeolocationAPI" expires_after="2024-12-31">
+  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@google.com</owner>
+  <summary>
+    Records when a webpage attempts to access geolocation APIs, but the user has
+    denied the API at the application level. NOTE: This is only logged if the
+    JavaScript override is setup, which currently ONLY happens if the native
+    level permission is disabled/undetermined at JavaScriptFeature creation
+    time.
+  </summary>
+</histogram>
+
+<histogram name="IOS.JavaScript.Permissions.Geolocation.NotDetermined"
+    enum="GeolocationAPI" expires_after="2024-12-31">
+  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@google.com</owner>
+  <summary>
+    Records when a webpage attempts to access geolocation APIs and the API
+    access at the application level has not yet been determined. NOTE: This is
+    only logged if the JavaScript override is setup, which currently ONLY
+    happens if the native level permission is disabled/undetermined at
+    JavaScriptFeature creation time.
+  </summary>
+</histogram>
+
+<histogram name="IOS.JavaScript.Permissions.Geolocation.Restricted"
+    enum="GeolocationAPI" expires_after="2024-12-31">
+  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@google.com</owner>
+  <summary>
+    Records when a webpage attempts to access geolocation APIs, but the API
+    access at the application level is restricted. NOTE: This is only logged if
+    the JavaScript override is setup, which currently ONLY happens if the native
+    level permission is disabled/undetermined at JavaScriptFeature creation
+    time.
+  </summary>
+</histogram>
+
+<histogram name="IOS.JavaScript.Permissions.Media.Denied" enum="MediaAPIParams"
+    expires_after="2024-12-31">
+  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@google.com</owner>
+  <summary>
+    Records when a webpage attempts to access media APIs, but the user has
+    denied the API at the application level. NOTE: This is only logged if the
+    JavaScript override is setup, which currently ONLY happens if the native
+    level permission is disabled/undetermined at JavaScriptFeature creation
+    time.
+  </summary>
+</histogram>
+
+<histogram name="IOS.JavaScript.Permissions.Media.Granted"
+    enum="MediaAPIParams" expires_after="2024-12-31">
+  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@google.com</owner>
+  <summary>
+    Records when a webpage attempts to access media APIs and the user has
+    granted the API at the application level. NOTE: This is only logged if the
+    JavaScript override is setup, which currently ONLY happens if the native
+    level permission is disabled/undetermined at JavaScriptFeature creation
+    time.
+  </summary>
+</histogram>
+
+<histogram name="IOS.JavaScript.Permissions.Media.Undetermined"
+    enum="MediaAPIParams" expires_after="2024-12-31">
+  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@google.com</owner>
+  <summary>
+    Records when a webpage attempts to access media APIs, but the application
+    level access to the API has not yet been determined. NOTE: This is only
+    logged if the JavaScript override is setup, which currently ONLY happens if
+    the native level permission is disabled/undetermined at JavaScriptFeature
+    creation time.
+  </summary>
+</histogram>
+
 <histogram name="IOS.JavaScript.ScriptExecutionFailed" enum="Boolean"
     expires_after="2024-12-31">
   <owner>ajuma@chromium.org</owner>

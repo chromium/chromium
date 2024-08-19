@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
 source_set("infobar_delegate") {
   sources = [
     "permissions_infobar_delegate.h",
@@ -27,6 +29,57 @@ source_set("tab_helper") {
     "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/web/public",
   ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("geolocation") {
+  deps = [
+    ":geolocation_js",
+    "//base",
+    "//ios/chrome/browser/geolocation/model",
+    "//ios/web/public/js_messaging",
+  ]
+
+  sources = [
+    "geolocation_api_usage_java_script_feature.h",
+    "geolocation_api_usage_java_script_feature.mm",
+  ]
+}
+
+optimize_ts("geolocation_js") {
+  visibility = [ ":geolocation" ]
+
+  sources = [ "resources/geolocation_overrides.ts" ]
+
+  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
+}
+
+source_set("media") {
+  deps = [
+    ":media_js",
+    "//base",
+    "//ios/web/public/js_messaging",
+  ]
+
+  sources = [
+    "media_api_usage_java_script_feature.h",
+    "media_api_usage_java_script_feature.mm",
+  ]
+}
+
+optimize_ts("media_js") {
+  visibility = [ ":media" ]
+
+  sources = [ "resources/media_overrides.ts" ]
+
+  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
 }
 
 source_set("unit_tests") {

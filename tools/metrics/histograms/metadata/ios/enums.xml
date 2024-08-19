@@ -95,6 +95,12 @@ the generic promo launch. -->
   <int value="1" label="Apple Calendar"/>
 </enum>
 
+<enum name="GeolocationAPI">
+  <int value="0" label="Clear Watch"/>
+  <int value="1" label="Get Current Position"/>
+  <int value="2" label="Watch Position"/>
+</enum>
+
 <enum name="InactiveTabsThresholdSettingType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Never Move"/>
@@ -955,6 +961,13 @@ the generic promo launch. -->
   <int value="7" label="User editing"/>
   <int value="8" label="Text Input view not found"/>
   <int value="9" label="Success, with lower certainty"/>
+</enum>
+
+<enum name="MediaAPIParams">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Audio Only"/>
+  <int value="2" label="Video Only"/>
+  <int value="3" label="Audio and Video"/>
 </enum>
 
 <enum name="MetricKitExitData">

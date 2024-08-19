@@ -38,6 +38,9 @@
 #import "ios/chrome/browser/link_to_text/model/link_to_text_java_script_feature.h"
 #import "ios/chrome/browser/ntp/model/browser_policy_new_tab_page_rewriter.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/permissions/model/features.h"
+#import "ios/chrome/browser/permissions/model/geolocation_api_usage_java_script_feature.h"
+#import "ios/chrome/browser/permissions/model/media_api_usage_java_script_feature.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/reading_list/model/offline_page_tab_helper.h"
@@ -360,6 +363,17 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
 
   features.push_back(
       SupervisedUserInterstitialJavaScriptFeature::GetInstance());
+
+  if (base::FeatureList::IsEnabled(
+          kJavaScriptPermissionBasedAPIMetricsEnabled)) {
+    if (GeolocationAPIUsageJavaScriptFeature::ShouldOverrideAPI()) {
+      features.push_back(GeolocationAPIUsageJavaScriptFeature::GetInstance());
+    }
+    if (MediaAPIUsageJavaScriptFeature::ShouldOverrideAPI()) {
+      features.push_back(MediaAPIUsageJavaScriptFeature::GetInstance());
+    }
+  }
+
   return features;
 }
 
