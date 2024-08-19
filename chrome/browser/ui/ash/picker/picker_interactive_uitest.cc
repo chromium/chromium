@@ -232,6 +232,53 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertEmoticon) {
                 WaitForWebInputFieldValue(kExpectedFirstEmoticon)));
 }
 
+IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndSelectMoreEmojis) {
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
+  views::Textfield* picker_search_field = nullptr;
+
+  RunTestSequence(
+      InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
+                                       WaitForWebInputFieldFocus())),
+      Do([]() { TogglePickerByAccelerator(); }),
+      AfterShow(ash::kPickerSearchFieldTextfieldElementId,
+                [&picker_search_field](ui::TrackedElement* el) {
+                  picker_search_field = AsView<views::Textfield>(el);
+                }),
+      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      WaitForState(kSearchFieldFocusedState, true),
+      EnterText(ash::kPickerSearchFieldTextfieldElementId, u"thumbs"),
+      WaitForShow(ash::kPickerMoreEmojisElementId),
+      PressButton(ash::kPickerMoreEmojisElementId),
+      WaitForHide(ash::kPickerElementId),
+      WaitForShow(ash::kEmojiPickerElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchGifs) {
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
+  views::Textfield* picker_search_field = nullptr;
+
+  RunTestSequence(
+      InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
+                                       WaitForWebInputFieldFocus())),
+      Do([]() { TogglePickerByAccelerator(); }),
+      AfterShow(ash::kPickerSearchFieldTextfieldElementId,
+                [&picker_search_field](ui::TrackedElement* el) {
+                  picker_search_field = AsView<views::Textfield>(el);
+                }),
+      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      WaitForState(kSearchFieldFocusedState, true),
+      EnterText(ash::kPickerSearchFieldTextfieldElementId, u"happy"),
+      WaitForShow(ash::kPickerGifElementId),
+      PressButton(ash::kPickerGifElementId), WaitForHide(ash::kPickerElementId),
+      WaitForShow(ash::kEmojiPickerElementId));
+}
+
 // Searches for 'today', checks the top result is the date, and inserts it
 // into a web input field.
 IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertDate) {

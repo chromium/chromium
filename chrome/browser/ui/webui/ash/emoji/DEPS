@@ -1,0 +1,3 @@
+include_rules = [
+  "+ash/ash_element_identifiers.h",
+]

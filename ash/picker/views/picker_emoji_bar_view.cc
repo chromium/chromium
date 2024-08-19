@@ -164,6 +164,7 @@ class GifsButton : public views::LabelButton {
     StyleUtil::InstallRoundedCornerHighlightPathGenerator(
         this, gfx::RoundedCornersF(kGifsButtonCornerRadius));
     UpdateBackground();
+    SetProperty(views::kElementIdentifierKey, kPickerGifElementId);
   }
   GifsButton(const GifsButton&) = delete;
   GifsButton& operator=(const GifsButton&) = delete;
@@ -254,6 +255,8 @@ PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
               is_gifs_enabled
                   ? IDS_PICKER_MORE_EMOJIS_AND_GIFS_BUTTON_ACCESSIBLE_NAME
                   : IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME));
+  more_emojis_button_->SetProperty(views::kElementIdentifierKey,
+                                   kPickerMoreEmojisElementId);
 
   StyleUtil::SetUpInkDropForButton(more_emojis_button_, gfx::Insets(),
                                    /*highlight_on_hover=*/true,

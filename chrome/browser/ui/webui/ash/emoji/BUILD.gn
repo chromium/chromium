@@ -74,6 +74,7 @@ static_library("emoji") {
   ]
 
   deps = [
+    "//ash",
     "//ash/constants",
     "//ash/public/cpp",
     "//chrome/app:generated_resources",
