@@ -9,6 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SiteDetailsPermissionElement} from 'chrome://settings/lazy_load.js';
 import {ChooserType, ContentSetting, ContentSettingsTypes, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 import type {SiteSettingsPref} from './test_util.js';
@@ -312,6 +313,67 @@ suite('SiteDetailsPermission', function() {
         testElement.$.permissionItem.innerText.trim());
     assertTrue(testElement.$.permissionItem.classList.contains('two-line'));
     assertTrue(testElement.$.permission.disabled);
+  });
+
+  test('info string correct for system block', async function() {
+    const origin = 'chrome://test';
+    for (const category
+             of [ContentSettingsTypes.CAMERA, ContentSettingsTypes.MIC,
+                 ContentSettingsTypes.GEOLOCATION]) {
+      for (const disabled of [true, false]) {
+        testElement.category = category;
+        testElement.$.details.hidden = false;
+        testElement.site = createRawSiteException(origin, {
+          origin: origin,
+          embeddingOrigin: origin,
+          setting: ContentSetting.ALLOW,
+          source: SiteSettingSource.PREFERENCE,
+        });
+
+        const blockedPermissions = disabled ? [category] : [];
+        webUIListenerCallback('osGlobalPermissionChanged', blockedPermissions);
+
+        const warningElement =
+            testElement.$.permissionItem.querySelector('#permissionSecondary');
+        assertTrue(!!warningElement);
+        if (!disabled) {
+          assertTrue(warningElement.hasAttribute('hidden'));
+          return;
+        }
+
+        assertFalse(warningElement.hasAttribute('hidden'));
+
+        let sensor: string|null = null;
+        if (category === ContentSettingsTypes.CAMERA) {
+          sensor = 'camera';
+        }
+        if (category === ContentSettingsTypes.MIC) {
+          sensor = 'microphone';
+        }
+        if (category === ContentSettingsTypes.GEOLOCATION) {
+          sensor = 'location';
+        }
+
+        const variant =
+            warningElement.innerHTML.includes('Chrome') ? 'Chrome' : 'Chromium';
+
+        assertEquals(
+            `To use your ${sensor}, give ${variant} access in ` +
+                '<a href="#" id="openSystemSettingsLink">system settings</a>',
+            warningElement.innerHTML);
+
+        const linkElement = testElement.$.permissionItem.querySelector(
+            '#openSystemSettingsLink');
+        assertTrue(!!linkElement);
+
+        browserProxy.resetResolver('openSystemPermissionSettings');
+        linkElement.dispatchEvent(new MouseEvent('click'));
+        await browserProxy.whenCalled('openSystemPermissionSettings')
+            .then((contentType: string) => {
+              assertEquals(category, contentType);
+            });
+      }
+    }
   });
 
   test('sound setting default string is correct', async function() {

@@ -6564,7 +6564,7 @@ class SiteSettingsGlobalPermissionTest
   bool GeoBlocked() const { return std::get<2>(GetParam()); }
 };
 
-TEST_P(SiteSettingsGlobalPermissionTest, GetOSGlobalPermissionStatus) {
+TEST_P(SiteSettingsGlobalPermissionTest, GetSystemDeniedPermissions) {
   system_permission_settings::ScopedSettingsForTesting cam_settings(
       ContentSettingsType::MEDIASTREAM_CAMERA, CamBlocked());
   system_permission_settings::ScopedSettingsForTesting mic_settings(
@@ -6574,31 +6574,22 @@ TEST_P(SiteSettingsGlobalPermissionTest, GetOSGlobalPermissionStatus) {
 
   base::Value::List args;
   args.Append(kCallbackId);
-  handler()->HandleGetOSGlobalPermissionStatus(args);
+  handler()->HandleGetSystemDeniedPermissions(args);
   EXPECT_LT(0u, CHECK_DEREF(web_ui()).call_data().size());
   const auto& call_data = *(CHECK_DEREF(web_ui()).call_data().back());
   EXPECT_EQ(3u, call_data.args().size());
   EXPECT_EQ(base::Value(kCallbackId), CHECK_DEREF(call_data.arg1()));
   EXPECT_EQ(base::Value(true), CHECK_DEREF(call_data.arg2()));
 
-  base::Value::Dict expected_result;
+  base::Value::List expected_result;
   if (CamBlocked()) {
-    expected_result.Set(
-        "media-stream-camera",
-        base::Value(
-            "To use your camera, give Chrome access in system settings."));
+    expected_result.Append("media-stream-camera");
   }
   if (MicBlocked()) {
-    expected_result.Set(
-        "media-stream-mic",
-        base::Value("To use your microphone, give Chrome access in "
-                    "system settings."));
+    expected_result.Append("media-stream-mic");
   }
   if (GeoBlocked()) {
-    expected_result.Set(
-        "location",
-        base::Value(
-            "To use your location, give Chrome access in system settings."));
+    expected_result.Append("location");
   }
 
   EXPECT_EQ(expected_result, CHECK_DEREF(call_data.arg3()));

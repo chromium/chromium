@@ -508,7 +508,7 @@ export interface SiteSettingsPrefsBrowserProxy {
    * Gets the warning messages for the permissions types blocked at the OS
    * level.
    */
-  getOsGlobalPermissionStatus(): Promise<Record<ContentSettingsTypes, string>>;
+  getSystemDeniedPermissions(): Promise<ContentSettingsTypes[]>;
 
   /**
    * Attempts to open a system setting page that allows to modify the system
@@ -689,8 +689,8 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
     return sendWithPromise('getNumCookiesString', numCookies);
   }
 
-  getOsGlobalPermissionStatus() {
-    return sendWithPromise('getOsGlobalPermissionStatus');
+  getSystemDeniedPermissions() {
+    return sendWithPromise('getSystemDeniedPermissions');
   }
 
   openSystemPermissionSettings(contentType: string) {
