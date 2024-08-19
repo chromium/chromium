@@ -1443,6 +1443,7 @@ public class NotificationPlatformBridge {
                                 Notification.Builder.recoverBuilder(
                                         context, originalNotificationBackup);
                         builder.setTimeoutAfter(/* ms= */ 1000 * 3600 * 24 * 7);
+                        builder.setGroupAlertBehavior(Notification.GROUP_ALERT_SUMMARY);
                         originalNotificationBackup = builder.build();
 
                         notificationManager.notify(
@@ -1458,9 +1459,21 @@ public class NotificationPlatformBridge {
                     if (otherNotificationsBackups == null) return;
 
                     for (var entry : otherNotificationsBackups.entrySet()) {
+                        Notification.Builder builder =
+                                Notification.Builder.recoverBuilder(context, entry.getValue());
+                        // Sound/vibration is controlled by NotificationChannels (as of Oreo), and
+                        // calling `setDefaults`, `setSounds`, `setVibration` has no effect. These
+                        // "other" notifications we are restoring here are also not considered by
+                        // Android to "renotify" cases, so `setOnlyAlertOnce` works neither.
+                        //
+                        // However, an effective way of silencing re-showing these notifications is
+                        // to configure that sound/vibration be only played for the group summary.
+                        // This works because these notifications are put in groups by origin, but
+                        // every one of them marked as group children (and there is no summary).
+                        builder.setGroupAlertBehavior(Notification.GROUP_ALERT_SUMMARY);
                         notificationManager.notify(
                                 new NotificationWrapper(
-                                        entry.getValue(),
+                                        builder.build(),
                                         new NotificationMetadata(
                                                 NotificationUmaTracker.SystemNotificationType.SITES,
                                                 /* notificationTag= */ entry.getKey(),

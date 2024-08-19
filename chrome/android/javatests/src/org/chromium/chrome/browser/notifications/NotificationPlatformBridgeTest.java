@@ -832,6 +832,15 @@ public class NotificationPlatformBridgeTest {
         showNotification("Notification2", "{}");
         mNotificationTestRule.waitForNotificationCount(2);
 
+        // Verify that the origin notifications will play sound/vibration.
+        var originalSBNotifications = mNotificationTestRule.getNotificationEntries();
+        Assert.assertEquals(
+                Notification.GROUP_ALERT_ALL,
+                originalSBNotifications.get(0).getNotification().getGroupAlertBehavior());
+        Assert.assertEquals(
+                Notification.GROUP_ALERT_ALL,
+                originalSBNotifications.get(1).getNotification().getGroupAlertBehavior());
+
         // Click the "Unsubscribe" button.
         Assert.assertEquals(1, notification1.actions.length);
         PendingIntent unsubscribeIntent = notification1.actions[0].actionIntent;
@@ -856,12 +865,20 @@ public class NotificationPlatformBridgeTest {
 
         // Verify the icon is restored correctly.
         Context context = ApplicationProvider.getApplicationContext();
+        var restoredSBNotifications = mNotificationTestRule.getNotificationEntries();
         Bitmap largeIcon =
                 NotificationTestUtil.getLargeIconFromNotification(
-                        context,
-                        mNotificationTestRule.getNotificationEntries().get(0).getNotification());
+                        context, restoredSBNotifications.get(0).getNotification());
         Assert.assertNotNull(largeIcon);
         Assert.assertEquals(Color.RED, largeIcon.getPixel(0, 0));
+
+        // Verify that both notifications are silent when they are restored.
+        Assert.assertEquals(
+                Notification.GROUP_ALERT_SUMMARY,
+                restoredSBNotifications.get(0).getNotification().getGroupAlertBehavior());
+        Assert.assertEquals(
+                Notification.GROUP_ALERT_SUMMARY,
+                restoredSBNotifications.get(1).getNotification().getGroupAlertBehavior());
 
         // This should not have caused notifications permission to become denied.
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
