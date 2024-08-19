@@ -25,7 +25,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
-class ChromeBrowserState;
 @protocol SyncPresenter;
 
 namespace {
