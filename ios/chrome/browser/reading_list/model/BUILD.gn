@@ -50,6 +50,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
@@ -88,6 +89,7 @@ source_set("reading_list_remover") {
     "//base",
     "//components/reading_list/core",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
   ]
   public_deps = [
     # This is required because this target includes
