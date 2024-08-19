@@ -77,6 +77,7 @@ chromium/try/ios-simulator
 chromium/try/ios-simulator-exp
 chromium/try/ios-simulator-full-configs
 chromium/try/ios-simulator-noncq
+chromium/try/lacros-amd64-generic-rel
 chromium/try/lacros-arm-generic-rel
 chromium/try/layout_test_leak_detection
 chromium/try/linux-asan-dbg

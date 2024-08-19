@@ -3951,23 +3951,6 @@ targets.legacy_basic_suite(
     },
 )
 
-# Lacros tests that run on Skylab, and these tests are usually HW sensative,
-# Currently we only run Tast tests.
-targets.legacy_basic_suite(
-    name = "lacros_skylab_tests",
-    tests = {
-        "lacros_all_tast_tests": targets.legacy_test_config(
-            tast_expr = "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
-            test_level_retries = 2,
-            mixins = [
-                "has_native_resultdb_integration",
-            ],
-            timeout_sec = 10800,
-            shards = 2,
-        ),
-    },
-)
-
 targets.legacy_basic_suite(
     name = "leak_detection_isolated_scripts",
     tests = {

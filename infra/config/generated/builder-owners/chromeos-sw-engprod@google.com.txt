@@ -6,7 +6,6 @@ ci/chromeos-amd64-generic-rel-tast
 ci/chromeos-arm-generic-dbg
 ci/chromeos-arm-generic-rel
 ci/chromeos-arm64-generic-rel
-ci/lacros-amd64-generic-rel-tast
 ci/linux-chromeos-dbg
 ci/linux-chromeos-rel
 try/chromeos-amd64-generic-rel

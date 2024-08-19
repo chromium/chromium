@@ -4161,18 +4161,6 @@
       },
     },
 
-    'lacros_skylab_tests': {
-      'lacros_all_tast_tests': {
-        'tast_expr': '("group:mainline" && ("dep:lacros_stable" || "dep:lacros") && !informational)',
-        'test_level_retries': 2,
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'timeout_sec': 10800,
-        'shards': 2,
-      },
-    },
-
     'leak_detection_isolated_scripts': {
       'memory.leak_detection': {
         'test': 'performance_test_suite',
@@ -7710,28 +7698,6 @@
           'SIM_IPAD_AIR_6TH_GEN_18_0',
           'SIM_IPHONE_14_17_5',
           'SIM_IPHONE_15_18_0',
-        ],
-      },
-    },
-
-    'lacros_skylab_tests_amd64_generic_rel_gtest': {
-      'chromeos_integration_tests_suite': {
-        'mixins': [
-          'ci_only',
-        ],
-        'variants': [
-          'CROS_VOLTEER_PUBLIC_LKGM',
-        ],
-      },
-    },
-
-    'lacros_skylab_tests_amd64_generic_rel_tast': {
-      'lacros_skylab_tests': {
-        'mixins': [
-          'ci_only',
-        ],
-        'variants': [
-          'CROS_VOLTEER_PUBLIC_LKGM',
         ],
       },
     },

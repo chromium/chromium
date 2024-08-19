@@ -285,6 +285,7 @@ try/ios17-beta-simulator
 try/ios17-sdk-simulator
 try/ios18-beta-simulator
 try/ios18-sdk-simulator
+try/lacros-amd64-generic-rel
 try/lacros-arm-generic-rel
 try/lacros-arm64-generic-rel
 try/layout_test_leak_detection

@@ -254,95 +254,6 @@ try_.builder(
     contact_team_email = "chrome-deet-core@google.com",
 )
 
-try_.orchestrator_builder(
-    name = "lacros-amd64-generic-rel-gtest",
-    branch_selector = branches.selector.CROS_BRANCHES,
-    description_html = "This is a Lacros chrome builder which only runs gtest." +
-                       " This builder is the default CQ builder for" +
-                       " non-ChromeOS engineers only. See the builder" +
-                       " description for " +
-                       linkify_builder("try", "lacros-amd64-generic-rel-gtest-and-tast", "chromium") +
-                       " for more information",
-    mirrors = [
-        "ci/lacros-amd64-generic-rel",
-        "ci/lacros-amd64-generic-rel-gtest",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/lacros-amd64-generic-rel",
-            "dcheck_always_on",
-        ],
-    ),
-    compilator = "lacros-amd64-generic-rel-gtest-compilator",
-    contact_team_email = "chrome-desktop-engprod@google.com",
-    main_list_view = "try",
-)
-
-try_.orchestrator_builder(
-    name = "lacros-amd64-generic-rel-gtest-and-tast",
-    branch_selector = branches.selector.CROS_BRANCHES,
-    description_html = "This is a Lacros chrome builder which runs gtest" +
-                       " and Tast tests. This builder is the default CQ" +
-                       " builder for ChromeOS engineers only." +
-                       " For a CL, infra would check the CL’s owner to see" +
-                       " if the owner is a ChromeOS org engineer or not." +
-                       " If the owner is a ChromeOS org engineer, the" +
-                       " default CQ would include this builder which runs" +
-                       " both Tast tests and gtests. Otherwise, the default" +
-                       " CQ would include `lacros-amd64-generic-rel-gtest`" +
-                       " which only runs gtests. If you encounter unexpected" +
-                       " Tast tests failures, please contact ChromeOS" +
-                       " gardeners for help.",
-    mirrors = [
-        "ci/lacros-amd64-generic-rel",
-        "ci/lacros-amd64-generic-rel-gtest",
-        "ci/lacros-amd64-generic-rel-tast",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/lacros-amd64-generic-rel",
-            "dcheck_always_on",
-        ],
-    ),
-    compilator = "lacros-amd64-generic-rel-gtest-and-tast-compilator",
-    contact_team_email = "chrome-desktop-engprod@google.com",
-    main_list_view = "try",
-)
-
-LACROS_SHARED_CACHE = "shared_lacros_amd64_generic_rel_cache"
-
-try_.compilator_builder(
-    name = "lacros-amd64-generic-rel-gtest-compilator",
-    branch_selector = branches.selector.CROS_BRANCHES,
-    description_html = ".",
-    cores = "8",
-    caches = [
-        swarming.cache(
-            name = LACROS_SHARED_CACHE,
-            path = "builder",
-            wait_for_warm_cache = 4 * time.minute,
-        ),
-    ],
-    contact_team_email = "chrome-desktop-engprod@google.com",
-    main_list_view = "try",
-)
-
-try_.compilator_builder(
-    name = "lacros-amd64-generic-rel-gtest-and-tast-compilator",
-    branch_selector = branches.selector.CROS_BRANCHES,
-    description_html = ".",
-    cores = "8",
-    caches = [
-        swarming.cache(
-            name = LACROS_SHARED_CACHE,
-            path = "builder",
-            wait_for_warm_cache = 4 * time.minute,
-        ),
-    ],
-    contact_team_email = "chrome-desktop-engprod@google.com",
-    main_list_view = "try",
-)
-
 try_.builder(
     name = "chromeos-amd64-generic-lacros-dbg",
     branch_selector = branches.selector.CROS_BRANCHES,
@@ -373,6 +284,15 @@ try_.builder(
     },
     main_list_view = "try",
     tryjob = try_.job(),
+)
+
+try_.builder(
+    name = "lacros-amd64-generic-rel",
+    branch_selector = branches.selector.CROS_BRANCHES,
+    mirrors = [
+        "ci/lacros-amd64-generic-rel",
+    ],
+    main_list_view = "try",
 )
 
 try_.builder(
