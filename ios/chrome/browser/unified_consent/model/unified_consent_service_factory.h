@@ -5,10 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UNIFIED_CONSENT_MODEL_UNIFIED_CONSENT_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_UNIFIED_CONSENT_MODEL_UNIFIED_CONSENT_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace unified_consent {
 class UnifiedConsentService;

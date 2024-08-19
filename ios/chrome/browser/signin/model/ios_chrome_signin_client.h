@@ -5,15 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_IOS_CHROME_SIGNIN_CLIENT_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_IOS_CHROME_SIGNIN_CLIENT_H_
 
-#include <memory>
+#import <memory>
 
 #import "base/memory/raw_ptr.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/signin/public/base/signin_client.h"
-#include "net/cookies/cookie_change_dispatcher.h"
+#import "components/content_settings/core/browser/cookie_settings.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/signin/public/base/signin_client.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "net/cookies/cookie_change_dispatcher.h"
 
-class ChromeBrowserState;
 class WaitForNetworkCallbackHelperIOS;
 
 namespace version_info {

@@ -5,15 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_NOTIFICATION_INFOBAR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_NOTIFICATION_INFOBAR_DELEGATE_H_
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
-#include "components/infobars/core/confirm_infobar_delegate.h"
-#include "components/sync/service/sync_service_observer.h"
-#include "ui/gfx/image/image.h"
+#import "components/infobars/core/confirm_infobar_delegate.h"
+#import "components/sync/service/sync_service_observer.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ui/gfx/image/image.h"
 
 @protocol SettingsCommands;
-class ChromeBrowserState;
 @class UIViewController;
 
 namespace gfx {

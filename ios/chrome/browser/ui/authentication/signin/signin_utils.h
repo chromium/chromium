@@ -8,11 +8,11 @@
 #import <UIKit/UIKit.h>
 
 #import "components/signin/public/identity_manager/tribool.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 class ChromeAccountManagerService;
-class ChromeBrowserState;
 class PrefService;
 
 namespace base {
