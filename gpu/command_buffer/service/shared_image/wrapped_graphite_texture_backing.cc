@@ -69,13 +69,19 @@ class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
     CHECK(write_surfaces_.empty());
     write_surfaces_.reserve(texture_holders.size());
     for (int plane = 0; plane < format().NumberOfPlanes(); ++plane) {
+      auto color_type =
+          viz::ToClosestSkColorType(/*gpu_compositing=*/true, format(), plane);
+      void* release_context =
+          scoped_refptr<WrappedGraphiteTextureHolder>(texture_holders[plane])
+              .release();
+      auto release_proc = [](void* context) {
+        static_cast<WrappedGraphiteTextureHolder*>(context)->Release();
+      };
       auto surface = SkSurfaces::WrapBackendTexture(
           context_state_->gpu_main_graphite_recorder(),
-          texture_holders[plane]->texture(),
-          backing_impl()->GetSkColorType(plane), color_space().ToSkColorSpace(),
-          &surface_props,
-          /*textureReleaseProc=*/nullptr, /*releaseContext=*/nullptr,
-          WrappedTextureDebugLabel(plane));
+          texture_holders[plane]->texture(), color_type,
+          color_space().ToSkColorSpace(), &surface_props, release_proc,
+          release_context, WrappedTextureDebugLabel(plane));
       if (!surface) {
         LOG(ERROR) << "MakeGraphiteFromBackendTexture() failed.";
         write_surfaces_.clear();
@@ -353,11 +359,6 @@ WrappedGraphiteTextureBacking::GetGraphiteBackendTextures() {
     textures.push_back(std::move(holder->texture()));
   }
   return textures;
-}
-
-SkColorType WrappedGraphiteTextureBacking::GetSkColorType(int plane_index) {
-  return viz::ToClosestSkColorType(/*gpu_compositing=*/true, format(),
-                                   plane_index);
 }
 
 std::unique_ptr<SkiaGraphiteImageRepresentation>

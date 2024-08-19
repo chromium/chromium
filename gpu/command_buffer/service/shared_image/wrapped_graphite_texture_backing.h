@@ -86,7 +86,6 @@ class WrappedGraphiteTextureBacking : public ClearTrackingSharedImageBacking {
  private:
   class SkiaGraphiteImageRepresentationImpl;
 
-  SkColorType GetSkColorType(int plane_index);
   const std::vector<scoped_refptr<WrappedGraphiteTextureHolder>>&
   GetWrappedGraphiteTextureHolders();
   std::vector<skgpu::graphite::BackendTexture> GetGraphiteBackendTextures();
