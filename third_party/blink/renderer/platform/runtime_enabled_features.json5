@@ -2425,7 +2425,7 @@
     },
     {
       name: "IntersectionOptimization",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "InvertedColors",
