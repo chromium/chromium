@@ -129,12 +129,32 @@ class ASH_EXPORT FocusModeTasksProvider {
       bool success,
       std::optional<google_apis::ApiErrorCode> http_error,
       const ui::ListModel<api::Task>* api_tasks);
-  void OnTaskSaved(const std::string& task_list_id,
-                   const std::string& task_id,
-                   bool completed,
+  void OnTaskAdded(const std::string& title,
                    OnTaskSavedCallback callback,
                    google_apis::ApiErrorCode http_error,
                    const api::Task* api_task);
+  void OnTaskUpdated(const std::string& task_list_id,
+                     const std::string& task_id,
+                     const std::string& title,
+                     bool completed,
+                     OnTaskSavedCallback callback,
+                     google_apis::ApiErrorCode http_error,
+                     const api::Task* api_task);
+
+  // Requests the server to add the new task.
+  void AddTaskInternal(const std::string& title, OnTaskSavedCallback callback);
+
+  // Requests the server to update the existing task.
+  void UpdateTaskInternal(const std::string& task_list_id,
+                          const std::string& task_id,
+                          const std::string& title,
+                          bool completed,
+                          OnTaskSavedCallback callback);
+
+  // Called only after the add or update request is successful.
+  void UpdateOrInsertTask(const std::string& task_list_id,
+                          const api::Task* api_task,
+                          OnTaskSavedCallback callback);
 
   // Returns cached tasks according to this sort order:
   // 1. Entries added/updated by the user during the lifetime of this provider.
@@ -170,6 +190,10 @@ class ASH_EXPORT FocusModeTasksProvider {
   base::Time task_fetch_time_;
 
   FocusModeRetryState get_task_retry_state_;
+
+  // Retry states for adding and updating tasks.
+  FocusModeRetryState add_task_retry_state_;
+  FocusModeRetryState update_task_retry_state_;
 
   base::WeakPtrFactory<FocusModeTasksProvider> weak_factory_{this};
 };

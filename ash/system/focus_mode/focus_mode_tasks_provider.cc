@@ -389,13 +389,7 @@ void FocusModeTasksProvider::AddTask(const std::string& title,
   // a task list is requested. This in turn is done so that we can get the
   // actual ID of the newly created task.
   task_fetch_time_ = {};
-
-  auto* delegate = api::TasksController::Get()->tasks_delegate();
-  delegate->AddTask(
-      task_list_for_new_task_, title,
-      base::BindOnce(&FocusModeTasksProvider::OnTaskSaved,
-                     weak_factory_.GetWeakPtr(), task_list_for_new_task_, "",
-                     false, std::move(callback)));
+  AddTaskInternal(title, std::move(callback));
 }
 
 void FocusModeTasksProvider::UpdateTask(const std::string& task_list_id,
@@ -410,11 +404,8 @@ void FocusModeTasksProvider::UpdateTask(const std::string& task_list_id,
     deleted_task_ids_.insert({.list_id = task_list_id, .id = task_id});
   }
 
-  api::TasksController::Get()->tasks_delegate()->UpdateTask(
-      task_list_id, task_id, title, completed,
-      base::BindOnce(&FocusModeTasksProvider::OnTaskSaved,
-                     weak_factory_.GetWeakPtr(), task_list_id, task_id,
-                     completed, std::move(callback)));
+  UpdateTaskInternal(task_list_id, task_id, title, completed,
+                     std::move(callback));
 }
 
 void FocusModeTasksProvider::OnTasksFetched() {
@@ -517,22 +508,134 @@ void FocusModeTasksProvider::OnTasksFetchedForTask(
   get_task_retry_state_.Reset();
 }
 
-void FocusModeTasksProvider::OnTaskSaved(const std::string& task_list_id,
-                                         const std::string& task_id,
-                                         bool completed,
+void FocusModeTasksProvider::OnTaskAdded(const std::string& title,
                                          OnTaskSavedCallback callback,
                                          google_apis::ApiErrorCode http_error,
                                          const api::Task* api_task) {
   if (!api_task || api_task->title.empty()) {
-    // If there's an error, we clear the cache.
+    // When `api_task` is null, `http_error` can be
+    // `google_apis::ApiErrorCode::HTTP_SUCCESS` or other error code. Retry some
+    // of the error codes as well.
+    if (http_error != google_apis::ApiErrorCode::HTTP_SUCCESS) {
+      // Handle too many requests error.
+      if (http_error == 429 &&
+          add_task_retry_state_.retry_index < kMaxRetryTooManyRequests) {
+        // Retry if needed.
+        add_task_retry_state_.retry_index++;
+        add_task_retry_state_.timer.Start(
+            FROM_HERE, kWaitTimeTooManyRequests,
+            base::BindOnce(&FocusModeTasksProvider::AddTaskInternal,
+                           weak_factory_.GetWeakPtr(), title,
+                           std::move(callback)));
+        return;
+      }
+
+      // Handle general HTTP errors.
+      if (ShouldRetryHttpError(http_error) &&
+          add_task_retry_state_.retry_index < kMaxRetryOverall) {
+        // Retry if needed.
+        add_task_retry_state_.retry_index++;
+        add_task_retry_state_.timer.Start(
+            FROM_HERE,
+            GetExponentialBackoffRetryWaitTime(
+                add_task_retry_state_.retry_index),
+            base::BindOnce(&FocusModeTasksProvider::AddTaskInternal,
+                           weak_factory_.GetWeakPtr(), title,
+                           std::move(callback)));
+        return;
+      }
+    }
+
+    // After all of the retries, if there's still an error, we clear the cache.
+    task_fetch_time_ = {};
+    std::move(callback).Run(FocusModeTask{});
+    add_task_retry_state_.Reset();
+    return;
+  }
+
+  UpdateOrInsertTask(task_list_for_new_task_, api_task, std::move(callback));
+  add_task_retry_state_.Reset();
+}
+
+void FocusModeTasksProvider::OnTaskUpdated(const std::string& task_list_id,
+                                           const std::string& task_id,
+                                           const std::string& title,
+                                           bool completed,
+                                           OnTaskSavedCallback callback,
+                                           google_apis::ApiErrorCode http_error,
+                                           const api::Task* api_task) {
+  if (!api_task || api_task->title.empty()) {
+    // When `api_task` is null, `http_error` can be
+    // `google_apis::ApiErrorCode::HTTP_SUCCESS` or other error code. Retry some
+    // of the error codes as well.
+    if (http_error != google_apis::ApiErrorCode::HTTP_SUCCESS) {
+      // Handle too many requests error.
+      if (http_error == 429 &&
+          update_task_retry_state_.retry_index < kMaxRetryTooManyRequests) {
+        // Retry if needed.
+        update_task_retry_state_.retry_index++;
+        update_task_retry_state_.timer.Start(
+            FROM_HERE, kWaitTimeTooManyRequests,
+            base::BindOnce(&FocusModeTasksProvider::UpdateTaskInternal,
+                           weak_factory_.GetWeakPtr(), task_list_id, task_id,
+                           title, completed, std::move(callback)));
+        return;
+      }
+
+      // Handle general HTTP errors.
+      if (ShouldRetryHttpError(http_error) &&
+          update_task_retry_state_.retry_index < kMaxRetryOverall) {
+        // Retry if needed.
+        update_task_retry_state_.retry_index++;
+        update_task_retry_state_.timer.Start(
+            FROM_HERE,
+            GetExponentialBackoffRetryWaitTime(
+                update_task_retry_state_.retry_index),
+            base::BindOnce(&FocusModeTasksProvider::UpdateTaskInternal,
+                           weak_factory_.GetWeakPtr(), task_list_id, task_id,
+                           title, completed, std::move(callback)));
+        return;
+      }
+    }
+
+    // After all of the retries, if there's still an error, we clear the cache.
     task_fetch_time_ = {};
     if (completed) {
       deleted_task_ids_.erase({.list_id = task_list_id, .id = task_id});
     }
-    std::move(callback).Run(FocusModeTask());
+    std::move(callback).Run(FocusModeTask{});
+    update_task_retry_state_.Reset();
     return;
   }
 
+  UpdateOrInsertTask(task_list_id, api_task, std::move(callback));
+  update_task_retry_state_.Reset();
+}
+
+void FocusModeTasksProvider::AddTaskInternal(const std::string& title,
+                                             OnTaskSavedCallback callback) {
+  api::TasksController::Get()->tasks_delegate()->AddTask(
+      task_list_for_new_task_, title,
+      base::BindOnce(&FocusModeTasksProvider::OnTaskAdded,
+                     weak_factory_.GetWeakPtr(), task_list_for_new_task_,
+                     std::move(callback)));
+}
+
+void FocusModeTasksProvider::UpdateTaskInternal(const std::string& task_list_id,
+                                                const std::string& task_id,
+                                                const std::string& title,
+                                                bool completed,
+                                                OnTaskSavedCallback callback) {
+  api::TasksController::Get()->tasks_delegate()->UpdateTask(
+      task_list_id, task_id, title, completed,
+      base::BindOnce(&FocusModeTasksProvider::OnTaskUpdated,
+                     weak_factory_.GetWeakPtr(), task_list_id, task_id, title,
+                     completed, std::move(callback)));
+}
+
+void FocusModeTasksProvider::UpdateOrInsertTask(const std::string& task_list_id,
+                                                const api::Task* api_task,
+                                                OnTaskSavedCallback callback) {
   TaskId created_id = {.list_id = task_list_id, .id = api_task->id};
   created_task_ids_.insert(created_id);
 
