@@ -22,6 +22,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/fixed_array.h"
 
 namespace base {
 
@@ -73,8 +74,7 @@ void CPUFreqMonitorDelegate::GetCPUIds(std::vector<unsigned int>* ids) const {
   unsigned int kernel_max_cpu = GetKernelMaxCPUs();
   // CPUs related to one that's already marked for monitoring get set to "false"
   // so we don't needlessly monitor CPUs with redundant frequency information.
-  char cpus_to_monitor[kernel_max_cpu + 1];
-  std::memset(cpus_to_monitor, 1, kernel_max_cpu + 1);
+  base::FixedArray<bool> cpus_to_monitor(kernel_max_cpu + 1, true);
 
   // Rule out the related CPUs for each one so we only end up with the CPUs
   // that are representative of the cluster.
@@ -94,7 +94,7 @@ void CPUFreqMonitorDelegate::GetCPUIds(std::vector<unsigned int>* ids) const {
       unsigned int cpu_id;
       if (base::StringToUint(str_piece, &cpu_id)) {
         if (cpu_id != i && cpu_id <= kernel_max_cpu)
-          cpus_to_monitor[cpu_id] = 0;
+          cpus_to_monitor[cpu_id] = false;
       }
     }
     ids->push_back(i);
