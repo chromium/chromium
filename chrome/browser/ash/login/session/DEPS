@@ -23,6 +23,7 @@ include_rules = [
   "+chrome/browser/ash/app_restore",
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/base",
+  "+chrome/browser/ash/boca/boca_manager_factory.h",
   "+chrome/browser/ash/boot_times_recorder",
   "+chrome/browser/ash/calendar",
   "+chrome/browser/ash/camera_mic",
