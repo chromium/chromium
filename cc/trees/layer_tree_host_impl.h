@@ -47,7 +47,6 @@
 #include "cc/scheduler/begin_frame_tracker.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
 #include "cc/scheduler/draw_result.h"
-#include "cc/scheduler/redraw_reason.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/scheduler/video_frame_controller.h"
 #include "cc/tiles/tile_manager.h"
@@ -127,7 +126,7 @@ class LayerTreeHostImplClient {
   virtual void NotifyReadyToDraw() = 0;
   // Please call these 2 functions through
   // LayerTreeHostImpl's SetNeedsRedraw() and SetNeedsOneBeginImplFrame().
-  virtual void SetNeedsRedrawOnImplThread(RedrawReason reason) = 0;
+  virtual void SetNeedsRedrawOnImplThread() = 0;
   virtual void SetNeedsOneBeginImplFrameOnImplThread() = 0;
   virtual void SetNeedsUpdateDisplayTreeOnImplThread() = 0;
   virtual void SetNeedsCommitOnImplThread() = 0;
@@ -148,8 +147,8 @@ class LayerTreeHostImplClient {
   virtual void OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,
                                            bool skip_draw) = 0;
 
-  virtual void SetNeedsImplSideInvalidation(bool needs_first_draw_on_activation,
-                                            RedrawReason reason) = 0;
+  virtual void SetNeedsImplSideInvalidation(
+      bool needs_first_draw_on_activation) = 0;
 
   virtual void NotifyImageDecodeRequestFinished(int request_id,
                                                 bool decode_succeeded) = 0;
@@ -242,7 +241,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     // main thread.
     viz::BeginFrameArgs origin_begin_main_frame_args;
     DamageReasonSet damage_reasons;
-    RedrawReasonSet set_needs_redraw_reasons;
     // Preferred frame rate of VideoLayerImpl mapped to number of layers.
     base::flat_map<base::TimeDelta, uint32_t> video_layer_preferred_intervals;
     // Indicates if there are SharedElementDrawQuads in this frame.
@@ -714,7 +712,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool visible() const { return visible_; }
 
   void SetNeedsOneBeginImplFrame();
-  void SetNeedsRedraw(RedrawReason reason);
+  void SetNeedsRedraw();
   void SetNeedsUpdateDisplayTree();
 
   ManagedMemoryPolicy ActualManagedMemoryPolicy() const;
@@ -998,10 +996,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void UpdateRasterCapabilities();
 
   bool AnimatePageScale(base::TimeTicks monotonic_time);
-  // `fade_out_only_or_idle` is an output that's set to true if all scrollbars
-  // animations are either animating fade out or idle.
-  bool AnimateScrollbars(base::TimeTicks monotonic_time,
-                         bool& fade_out_only_or_idle);
+  bool AnimateScrollbars(base::TimeTicks monotonic_time);
   bool AnimateBrowserControls(base::TimeTicks monotonic_time);
 
   void UpdateTileManagerMemoryPolicy(const ManagedMemoryPolicy& policy);
@@ -1078,7 +1073,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   // Flags the tree as needing either a redraw or a display tree updating,
   // depending on whether or not it has a display tree.
-  void SetNeedsRedrawOrUpdateDisplayTree(RedrawReason reason);
+  void SetNeedsRedrawOrUpdateDisplayTree();
 
   // Returns the most up to date display color spaces.
   gfx::DisplayColorSpaces GetDisplayColorSpaces() const;

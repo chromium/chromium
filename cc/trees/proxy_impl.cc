@@ -235,7 +235,7 @@ void ProxyImpl::SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) {
 void ProxyImpl::SetNeedsRedrawOnImpl(const gfx::Rect& damage_rect) {
   DCHECK(IsImplThread());
   host_impl_->SetViewportDamage(damage_rect);
-  SetNeedsRedrawOnImplThread(RedrawReason::kUntracked);
+  SetNeedsRedrawOnImplThread();
 }
 
 void ProxyImpl::SetNeedsCommitOnImpl() {
@@ -463,10 +463,10 @@ void ProxyImpl::NotifyReadyToDraw() {
   scheduler_->NotifyReadyToDraw();
 }
 
-void ProxyImpl::SetNeedsRedrawOnImplThread(RedrawReason reason) {
+void ProxyImpl::SetNeedsRedrawOnImplThread() {
   TRACE_EVENT0("cc", "ProxyImpl::SetNeedsRedrawOnImplThread");
   DCHECK(IsImplThread());
-  scheduler_->SetNeedsRedraw(reason);
+  scheduler_->SetNeedsRedraw();
 }
 
 void ProxyImpl::SetNeedsOneBeginImplFrameOnImplThread() {
@@ -601,11 +601,9 @@ void ProxyImpl::OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,
 }
 
 void ProxyImpl::SetNeedsImplSideInvalidation(
-    bool needs_first_draw_on_activation,
-    RedrawReason reason) {
+    bool needs_first_draw_on_activation) {
   DCHECK(IsImplThread());
-  scheduler_->SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
-                                           reason);
+  scheduler_->SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
 }
 
 void ProxyImpl::NotifyImageDecodeRequestFinished(int request_id,
@@ -944,7 +942,6 @@ DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
   frame.begin_frame_ack = scheduler_->CurrentBeginFrameAckForActiveTree();
   frame.origin_begin_main_frame_args =
       scheduler_->last_activate_origin_frame_args();
-  frame.set_needs_redraw_reasons = scheduler_->GetRedrawReasons();
   bool draw_frame = false;
 
   DrawResult result;

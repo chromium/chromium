@@ -2057,8 +2057,8 @@ bool LayerTreeImpl::create_low_res_tiling() const {
   return host_impl_->create_low_res_tiling();
 }
 
-void LayerTreeImpl::SetNeedsRedraw(RedrawReason reason) {
-  host_impl_->SetNeedsRedraw(reason);
+void LayerTreeImpl::SetNeedsRedraw() {
+  host_impl_->SetNeedsRedraw();
 }
 
 void LayerTreeImpl::GetAllPrioritizedTilesForTracing(
@@ -3034,7 +3034,7 @@ void LayerTreeImpl::AddViewTransitionRequest(
   }
   view_transition_requests_.push_back(std::move(request));
   // We need to send the request to viz.
-  SetNeedsRedraw(RedrawReason::kUntracked);
+  SetNeedsRedraw();
 }
 
 std::vector<std::unique_ptr<ViewTransitionRequest>>

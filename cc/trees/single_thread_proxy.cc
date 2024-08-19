@@ -313,7 +313,7 @@ void SingleThreadProxy::SetNeedsRedraw(const gfx::Rect& damage_rect) {
   DCHECK(task_runner_provider_->IsMainThread());
   DebugScopedSetImplThread impl(task_runner_provider_);
   host_impl_->SetViewportDamage(damage_rect);
-  SetNeedsRedrawOnImplThread(RedrawReason::kUntracked);
+  SetNeedsRedrawOnImplThread();
 }
 
 void SingleThreadProxy::SetTargetLocalSurfaceId(
@@ -510,11 +510,11 @@ void SingleThreadProxy::NotifyReadyToDraw() {
     scheduler_on_impl_thread_->NotifyReadyToDraw();
 }
 
-void SingleThreadProxy::SetNeedsRedrawOnImplThread(RedrawReason reason) {
+void SingleThreadProxy::SetNeedsRedrawOnImplThread() {
   DCHECK(!task_runner_provider_->HasImplThread() ||
          task_runner_provider_->IsImplThread());
   if (scheduler_on_impl_thread_) {
-    scheduler_on_impl_thread_->SetNeedsRedraw(reason);
+    scheduler_on_impl_thread_->SetNeedsRedraw();
   }
 }
 
@@ -643,13 +643,12 @@ void SingleThreadProxy::OnDrawForLayerTreeFrameSink(
 }
 
 void SingleThreadProxy::SetNeedsImplSideInvalidation(
-    bool needs_first_draw_on_activation,
-    RedrawReason reason) {
+    bool needs_first_draw_on_activation) {
   DCHECK(!task_runner_provider_->HasImplThread() ||
          task_runner_provider_->IsImplThread());
   if (scheduler_on_impl_thread_) {
     scheduler_on_impl_thread_->SetNeedsImplSideInvalidation(
-        needs_first_draw_on_activation, reason);
+        needs_first_draw_on_activation);
   }
 }
 
@@ -1204,8 +1203,6 @@ DrawResult SingleThreadProxy::ScheduledActionDrawIfPossible() {
       scheduler_on_impl_thread_->CurrentBeginFrameAckForActiveTree();
   frame.origin_begin_main_frame_args =
       scheduler_on_impl_thread_->last_activate_origin_frame_args();
-  frame.set_needs_redraw_reasons =
-      scheduler_on_impl_thread_->GetRedrawReasons();
   return DoComposite(&frame);
 }
 

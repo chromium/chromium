@@ -113,7 +113,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void NotifyReadyToDraw() override;
   // Please call these 2 functions through
   // LayerTreeHostImpl's SetNeedsRedraw() and SetNeedsOneBeginImplFrame().
-  void SetNeedsRedrawOnImplThread(RedrawReason reason) override;
+  void SetNeedsRedrawOnImplThread() override;
   void SetNeedsOneBeginImplFrameOnImplThread() override;
   void SetNeedsUpdateDisplayTreeOnImplThread() override;
   void SetNeedsPrepareTilesOnImplThread() override;
@@ -129,8 +129,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void DidCompletePageScaleAnimationOnImplThread() override;
   void OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,
                                    bool skip_draw) override;
-  void SetNeedsImplSideInvalidation(bool needs_first_draw_on_activation,
-                                    RedrawReason reason) override;
+  void SetNeedsImplSideInvalidation(
+      bool needs_first_draw_on_activation) override;
   void NotifyImageDecodeRequestFinished(int request_id,
                                         bool decode_succeeded) override;
   void NotifyTransitionRequestFinished(uint32_t sequence_id) override;

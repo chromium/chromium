@@ -285,8 +285,6 @@ cc_component("cc") {
     "scheduler/begin_frame_tracker.h",
     "scheduler/commit_earlyout_reason.h",
     "scheduler/draw_result.h",
-    "scheduler/redraw_reason.cc",
-    "scheduler/redraw_reason.h",
     "scheduler/scheduler.cc",
     "scheduler/scheduler.h",
     "scheduler/scheduler_settings.cc",

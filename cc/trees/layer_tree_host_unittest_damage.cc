@@ -424,7 +424,7 @@ class LayerTreeHostDamageTestScrollbarDoesDamage
         break;
       case 2:
         scroll_layer->ScrollBy(gfx::Vector2dF(10.f, 10.f));
-        host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
+        host_impl->SetNeedsRedraw();
         break;
       case 3:
         // We will resize the content layer, on the main thread.
@@ -505,7 +505,7 @@ class LayerTreeHostDamageTestScrollbarCommitDoesNoDamage
         // Scroll on the thread.  This should damage the scrollbar for the
         // next draw on the thread.
         scroll_layer->ScrollBy(gfx::Vector2dF(10.f, 10.f));
-        host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
+        host_impl->SetNeedsRedraw();
         break;
       case 2:
         // Forcibly send the scroll to the main thread.

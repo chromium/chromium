@@ -623,7 +623,7 @@ void HeadsUpDisplayLayerImpl::DrawHudContents(PaintCanvas* canvas) {
   if (debug_state.ShowDebugRects()) {
     DrawDebugRects(canvas, layer_tree_impl()->debug_rect_history());
     if (IsAnimatingHUDContents()) {
-      layer_tree_impl()->SetNeedsRedraw(RedrawReason::kUntracked);
+      layer_tree_impl()->SetNeedsRedraw();
     }
   }
 

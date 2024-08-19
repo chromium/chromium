@@ -87,15 +87,13 @@ void Scheduler::Stop() {
 }
 
 void Scheduler::SetNeedsImplSideInvalidation(
-    bool needs_first_draw_on_activation,
-    RedrawReason reason) {
+    bool needs_first_draw_on_activation) {
   {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler"),
                  "Scheduler::SetNeedsImplSideInvalidation",
                  "needs_first_draw_on_activation",
                  needs_first_draw_on_activation);
-    state_machine_.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
-                                                reason);
+    state_machine_.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
   }
   ProcessScheduledActions();
 }
@@ -174,8 +172,8 @@ void Scheduler::SetNeedsOneBeginImplFrame() {
   ProcessScheduledActions();
 }
 
-void Scheduler::SetNeedsRedraw(RedrawReason reason) {
-  state_machine_.SetNeedsRedraw(reason);
+void Scheduler::SetNeedsRedraw() {
+  state_machine_.SetNeedsRedraw();
   ProcessScheduledActions();
 }
 
@@ -1062,10 +1060,6 @@ size_t Scheduler::CommitDurationSampleCountForTesting() const {
 
 viz::BeginFrameAck Scheduler::CurrentBeginFrameAckForActiveTree() const {
   return viz::BeginFrameAck(begin_main_frame_args_, true);
-}
-
-RedrawReasonSet Scheduler::GetRedrawReasons() const {
-  return state_machine_.GetRedrawReasons();
 }
 
 void Scheduler::ClearHistory() {

@@ -14,7 +14,6 @@
 #include "base/memory/ptr_util.h"
 #include "cc/base/features.h"
 #include "cc/layers/video_frame_provider_client_impl.h"
-#include "cc/scheduler/redraw_reason.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/occlusion.h"
@@ -218,7 +217,7 @@ gfx::ContentColorUsage VideoLayerImpl::GetContentColorUsage() const {
 
 void VideoLayerImpl::SetNeedsRedraw() {
   UnionUpdateRect(gfx::Rect(bounds()));
-  layer_tree_impl()->SetNeedsRedraw(RedrawReason::kVideoLayer);
+  layer_tree_impl()->SetNeedsRedraw();
 }
 
 DamageReasonSet VideoLayerImpl::GetDamageReasons() const {

@@ -311,12 +311,12 @@ void LayerTreeHostImpl::DidEndPinchZoom() {
   // so updating draw properties and drawing will ensure we are using the right
   // scales that we want when we're not inside a pinch.
   active_tree_->set_needs_update_draw_properties();
-  SetNeedsRedrawOrUpdateDisplayTree(RedrawReason::kUntracked);
+  SetNeedsRedrawOrUpdateDisplayTree();
   frame_trackers_.StopSequence(FrameSequenceTrackerType::kPinchZoom);
 }
 
 void LayerTreeHostImpl::DidUpdatePinchZoom() {
-  SetNeedsRedrawOrUpdateDisplayTree(RedrawReason::kUntracked);
+  SetNeedsRedrawOrUpdateDisplayTree();
   client_->RenewTreePriority();
 }
 
@@ -352,7 +352,7 @@ void LayerTreeHostImpl::SetNeedsFullViewportRedraw() {
   // TODO(bokan): Do these really need to be manually called? (Rather than
   // damage/redraw being set from scroll offset changes).
   SetFullViewportDamage();
-  SetNeedsRedrawOrUpdateDisplayTree(RedrawReason::kUntracked);
+  SetNeedsRedrawOrUpdateDisplayTree();
 }
 
 void LayerTreeHostImpl::SetDeferBeginMainFrame(
@@ -834,7 +834,7 @@ void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
   // tree.
   if (paint_worklet_tracker_.InvalidatePaintWorkletsOnPendingTree()) {
     client_->SetNeedsImplSideInvalidation(
-        true /* needs_first_draw_on_activation */, RedrawReason::kUntracked);
+        true /* needs_first_draw_on_activation */);
   }
   PaintImageIdFlatSet dirty_paint_worklet_ids;
   PaintWorkletJobMap dirty_paint_worklets =
@@ -1062,20 +1062,19 @@ void LayerTreeHostImpl::AnimateInternal() {
   // DCHECK(monotonic_time == current_begin_frame_tracker_.Current().frame_time)
   //  << "Called animate with unknown frame time!?";
 
+  bool did_animate = false;
+
   // TODO(bokan): This should return did_animate, see TODO in
   // ElasticOverscrollController::Animate. crbug.com/551138.
   if (input_delegate_)
     input_delegate_->TickAnimations(monotonic_time);
 
-  bool animated_others = AnimatePageScale(monotonic_time);
-  animated_others |= AnimateLayers(monotonic_time, /* is_active_tree */ true);
-  animated_others |= AnimateBrowserControls(monotonic_time);
+  did_animate |= AnimatePageScale(monotonic_time);
+  did_animate |= AnimateLayers(monotonic_time, /* is_active_tree */ true);
+  did_animate |= AnimateScrollbars(monotonic_time);
+  did_animate |= AnimateBrowserControls(monotonic_time);
 
-  bool scroll_bar_fade_out_only_or_idle = false;
-  bool animated_scrollbars =
-      AnimateScrollbars(monotonic_time, scroll_bar_fade_out_only_or_idle);
-
-  if (animated_others || animated_scrollbars) {
+  if (did_animate) {
     // Animating stuff can change the root scroll offset, so inform the
     // synchronous input handler.
     if (input_delegate_)
@@ -1083,12 +1082,7 @@ void LayerTreeHostImpl::AnimateInternal() {
 
     // If the tree changed, then we want to draw at the end of the current
     // frame.
-    RedrawReason redraw_reason = RedrawReason::kUntracked;
-    if (!animated_others && animated_scrollbars &&
-        scroll_bar_fade_out_only_or_idle) {
-      redraw_reason = RedrawReason::kScrollbarFadeOutAnimation;
-    }
-    SetNeedsRedrawOrUpdateDisplayTree(redraw_reason);
+    SetNeedsRedrawOrUpdateDisplayTree();
   }
 }
 
@@ -2039,8 +2033,7 @@ void LayerTreeHostImpl::RequestImplSideInvalidationForCheckerImagedTiles() {
   // When using impl-side invalidation for checker-imaging, a pending tree does
   // not need to be flushed as an independent update through the pipeline.
   bool needs_first_draw_on_activation = false;
-  client_->SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
-                                        RedrawReason::kUntracked);
+  client_->SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
 }
 
 size_t LayerTreeHostImpl::GetFrameIndexForImage(const PaintImage& paint_image,
@@ -2139,7 +2132,7 @@ void LayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile) {
   if (!client_->IsInsideDraw() && tile->required_for_draw()) {
     // The LayerImpl::NotifyTileStateChanged() should damage the layer, so this
     // redraw will make those tiles be displayed.
-    SetNeedsRedrawOrUpdateDisplayTree(RedrawReason::kUntracked);
+    SetNeedsRedrawOrUpdateDisplayTree();
   }
 }
 
@@ -2217,7 +2210,7 @@ void LayerTreeHostImpl::SetExternalTilePriorityConstraints(
     // Compositor, not LayerTreeFrameSink, is responsible for setting damage
     // and triggering redraw for constraint changes.
     SetFullViewportDamage();
-    SetNeedsRedrawOrUpdateDisplayTree(RedrawReason::kUntracked);
+    SetNeedsRedrawOrUpdateDisplayTree();
   }
 }
 
@@ -2349,7 +2342,7 @@ void LayerTreeHostImpl::OnDraw(const gfx::Transform& transform,
     // parameters.
     if (transform_changed || viewport_changed || resourceless_software_draw_) {
       SetFullViewportDamage();
-      SetNeedsRedraw(RedrawReason::kUntracked);
+      SetNeedsRedraw();
       active_tree_->set_needs_update_draw_properties();
     }
 
@@ -3244,7 +3237,7 @@ bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
     // Optimistically schedule a draw. This will let us expect the tile manager
     // to complete its work so that we can draw new tiles within the impl frame
     // we are beginning now.
-    SetNeedsRedraw(RedrawReason::kUntracked);
+    SetNeedsRedraw();
   }
 
   if (input_delegate_)
@@ -3807,7 +3800,7 @@ void LayerTreeHostImpl::SetVisible(bool visible) {
     // draw anything even if this is not the first time we become visible.
     if (!active_tree_->LayerListIsEmpty()) {
       SetFullViewportDamage();
-      SetNeedsRedrawOrUpdateDisplayTree(RedrawReason::kUntracked);
+      SetNeedsRedrawOrUpdateDisplayTree();
     }
   } else if (!settings_.is_display_tree) {
     EvictAllUIResources();
@@ -3826,12 +3819,10 @@ void LayerTreeHostImpl::SetNeedsOneBeginImplFrame() {
   client_->SetNeedsOneBeginImplFrameOnImplThread();
 }
 
-void LayerTreeHostImpl::SetNeedsRedraw(RedrawReason reason) {
-  TRACE_EVENT("cc", "LayerTreeHostImpl::SetNeedsRedraw", "reason",
-              RedrawReasonToString(reason));
+void LayerTreeHostImpl::SetNeedsRedraw() {
   NotifyLatencyInfoSwapPromiseMonitors();
   events_metrics_manager_.SaveActiveEventMetrics();
-  client_->SetNeedsRedrawOnImplThread(reason);
+  client_->SetNeedsRedrawOnImplThread();
 }
 
 void LayerTreeHostImpl::SetNeedsUpdateDisplayTree() {
@@ -4245,7 +4236,7 @@ void LayerTreeHostImpl::DidChangeBrowserControlsPosition() {
   active_tree_->UpdateViewportContainerSizes();
   if (pending_tree_)
     pending_tree_->UpdateViewportContainerSizes();
-  SetNeedsRedrawOrUpdateDisplayTree(RedrawReason::kUntracked);
+  SetNeedsRedrawOrUpdateDisplayTree();
   SetNeedsOneBeginImplFrame();
   SetFullViewportDamage();
 }
@@ -4404,7 +4395,7 @@ void LayerTreeHostImpl::DidScrollContent(ElementId element_id, bool animated) {
     // tick. Scheduling a redraw here before ticking means the draw gets
     // aborted due to no damage and the swap promises broken so a LatencyInfo
     // won't be recorded.
-    SetNeedsRedraw(RedrawReason::kUntracked);
+    SetNeedsRedraw();
   }
 }
 
@@ -4615,16 +4606,10 @@ bool LayerTreeHostImpl::AnimateBrowserControls(base::TimeTicks time) {
   return true;
 }
 
-bool LayerTreeHostImpl::AnimateScrollbars(base::TimeTicks monotonic_time,
-                                          bool& fade_out_only_or_idle) {
+bool LayerTreeHostImpl::AnimateScrollbars(base::TimeTicks monotonic_time) {
   bool animated = false;
-  fade_out_only_or_idle = true;
   for (auto& pair : scrollbar_animation_controllers_) {
-    bool fade_out_only = false;
-    if (pair.second->Animate(monotonic_time, fade_out_only)) {
-      animated = true;
-      fade_out_only_or_idle &= fade_out_only;
-    }
+    animated |= pair.second->Animate(monotonic_time);
   }
   return animated;
 }
@@ -4776,7 +4761,7 @@ void LayerTreeHostImpl::SetNeedsAnimateForScrollbarAnimation() {
 // TODO(danakj): Make this a return value from the Animate() call instead of an
 // interface on LTHI. (Also, crbug.com/551138.)
 void LayerTreeHostImpl::SetNeedsRedrawForScrollbarAnimation() {
-  SetNeedsRedraw(RedrawReason::kUntracked);
+  SetNeedsRedraw();
 }
 
 ScrollbarSet LayerTreeHostImpl::ScrollbarsFor(ElementId id) const {
@@ -5452,7 +5437,7 @@ void LayerTreeHostImpl::NotifyAnimationWorkletStateChange(
     SetNeedsOneBeginImplFrame();
     if (state == AnimationWorkletMutationState::COMPLETED_WITH_UPDATE &&
         tree_type == ElementListType::ACTIVE) {
-      SetNeedsRedraw(RedrawReason::kUntracked);
+      SetNeedsRedraw();
     }
   }
 }
@@ -5558,8 +5543,7 @@ void LayerTreeHostImpl::RequestInvalidationForAnimatedImages() {
   // If we are animating an image, we want at least one draw of the active tree
   // before a new tree is activated.
   bool needs_first_draw_on_activation = true;
-  client_->SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
-                                        RedrawReason::kAnimatedImage);
+  client_->SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
 }
 
 bool LayerTreeHostImpl::IsReadyToActivate() const {
@@ -5568,14 +5552,13 @@ bool LayerTreeHostImpl::IsReadyToActivate() const {
 
 void LayerTreeHostImpl::RequestImplSideInvalidationForRerasterTiling() {
   bool needs_first_draw_on_activation = true;
-  client_->SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
-                                        RedrawReason::kUntracked);
+  client_->SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
 }
 
 void LayerTreeHostImpl::RequestImplSideInvalidationForRasterInducingScroll(
     ElementId scroll_element_id) {
   client_->SetNeedsImplSideInvalidation(
-      /*needs_first_draw_on_activation=*/true, RedrawReason::kUntracked);
+      /*needs_first_draw_on_activation=*/true);
   pending_invalidation_raster_inducing_scrolls_.insert(scroll_element_id);
 }
 
@@ -5625,11 +5608,11 @@ bool LayerTreeHostImpl::RunningOnRendererProcess() const {
   return !settings().single_thread_proxy_scheduler;
 }
 
-void LayerTreeHostImpl::SetNeedsRedrawOrUpdateDisplayTree(RedrawReason reason) {
+void LayerTreeHostImpl::SetNeedsRedrawOrUpdateDisplayTree() {
   if (use_layer_context_for_display_) {
     SetNeedsUpdateDisplayTree();
   } else {
-    SetNeedsRedraw(reason);
+    SetNeedsRedraw();
   }
 }
 
