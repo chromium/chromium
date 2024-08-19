@@ -11846,13 +11846,25 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPromptAPIForGeminiNanoName,
      flag_descriptions::kPromptAPIForGeminiNanoDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kEnableAIPromptAPI),
-     flag_descriptions::kPromptAPIForGeminiNanoLinks},
+     flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
     {"summarization-api-for-gemini-nano",
      flag_descriptions::kSummarizationAPIForGeminiNanoName,
      flag_descriptions::kSummarizationAPIForGeminiNanoDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kEnableAISummarizationAPI),
-     flag_descriptions::kSummarizationAPIForGeminiNanoLinks},
+     flag_descriptions::kAIAPIsForGeminiNanoLinks},
+
+    {"writer-api-for-gemini-nano",
+     flag_descriptions::kWriterAPIForGeminiNanoName,
+     flag_descriptions::kWriterAPIForGeminiNanoDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kEnableAIWriterAPI),
+     flag_descriptions::kAIAPIsForGeminiNanoLinks},
+
+    {"rewriter-api-for-gemini-nano",
+     flag_descriptions::kRewriterAPIForGeminiNanoName,
+     flag_descriptions::kRewriterAPIForGeminiNanoDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kEnableAIRewriterAPI),
+     flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
     {"text-box-trim", flag_descriptions::kCssTextBoxTrimName,
      flag_descriptions::kCssTextBoxTrimDescription, kOsAll,

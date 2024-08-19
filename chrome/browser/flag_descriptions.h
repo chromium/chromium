@@ -2418,11 +2418,16 @@ extern const char kEnableMantaServiceDescription[];
 
 extern const char kPromptAPIForGeminiNanoName[];
 extern const char kPromptAPIForGeminiNanoDescription[];
-extern const char* const kPromptAPIForGeminiNanoLinks[2];
+extern const char* const kAIAPIsForGeminiNanoLinks[2];
 
 extern const char kSummarizationAPIForGeminiNanoName[];
 extern const char kSummarizationAPIForGeminiNanoDescription[];
-extern const char* const kSummarizationAPIForGeminiNanoLinks[2];
+
+extern const char kWriterAPIForGeminiNanoName[];
+extern const char kWriterAPIForGeminiNanoDescription[];
+
+extern const char kRewriterAPIForGeminiNanoName[];
+extern const char kRewriterAPIForGeminiNanoDescription[];
 
 // Android --------------------------------------------------------------------
 

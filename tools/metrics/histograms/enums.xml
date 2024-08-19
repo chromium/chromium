@@ -21775,6 +21775,7 @@ from previous Chrome versions.
   <int value="548618823" label="SyncAndroidPromosWithSingleButton:enabled"/>
   <int value="549168649"
       label="AutofillEnableStickyManualFallbackForCards:disabled"/>
+  <int value="549339477" label="EnableAIWriterAPI:enabled"/>
   <int value="549483647" label="EnableUnifiedMultiDeviceSettings:disabled"/>
   <int value="550378029" label="reset-app-list-install-state"/>
   <int value="550387510" label="NTPAssetDownloadSuggestions:disabled"/>
@@ -23154,6 +23155,7 @@ from previous Chrome versions.
   <int value="1128245405" label="DarkLightModeKMeansColor:disabled"/>
   <int value="1128840602" label="DisconnectWiFiOnEthernetConnected:disabled"/>
   <int value="1128874009" label="ScalableStatusArea:disabled"/>
+  <int value="1129109601" label="EnableAIWriterAPI:disabled"/>
   <int value="1129542111" label="CastAllowAllIPs:disabled"/>
   <int value="1129888794" label="ash-touch-hud"/>
   <int value="1131627624" label="DefaultStyleSheetsEarlyInit:enabled"/>
@@ -23780,6 +23782,7 @@ from previous Chrome versions.
   <int value="1389729816" label="data-reduction-proxy-lo-fi"/>
   <int value="1390803837" label="NtpSharepointModule:enabled"/>
   <int value="1391313384" label="Hotspot:disabled"/>
+  <int value="1392400382" label="EnableAIRewriterAPI:disabled"/>
   <int value="1392836587" label="DesktopPWAsElidedExtensionsMenu:disabled"/>
   <int value="1392935139" label="KidsManagementUrlClassification:enabled"/>
   <int value="1393413889" label="SeparatePointingStickSettings:disabled"/>
@@ -25310,6 +25313,7 @@ from previous Chrome versions.
   <int value="2005245012" label="SecurityInterstitialsDarkMode:disabled"/>
   <int value="2005344314" label="AutofillEnableServerIban:disabled"/>
   <int value="2005614493" label="tab-management-experiment-type-dill"/>
+  <int value="2006374447" label="EnableAIRewriterAPI:enabled"/>
   <int value="2006413281"
       label="ContextualSuggestionsAlternateCardLayout:enabled"/>
   <int value="2006856618" label="BiometricTouchToFill:enabled"/>

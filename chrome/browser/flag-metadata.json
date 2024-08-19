@@ -7893,6 +7893,11 @@
     "expiry_milestone": 129
   },
   {
+    "name": "rewriter-api-for-gemini-nano",
+    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai@chromium.org"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "rich-bubble-without-image",
     "owners": [ "nicolasmacbeth@google.com", "bling-mony-pod@google.com" ],
     "expiry_milestone": 133
@@ -9617,6 +9622,11 @@
   {
     "name": "windows11-mica-titlebar",
     "owners": [ "j@jloeffler.com", "pkasting@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
+    "name": "writer-api-for-gemini-nano",
+    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai@chromium.org"],
     "expiry_milestone": 140
   },
   {

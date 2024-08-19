@@ -4144,7 +4144,7 @@ const char kPromptAPIForGeminiNanoDescription[] =
     "You must comply with our Prohibited Use Policy [2] which provides "
     "additional details about appropriate use of "
     "Generative AI.";
-const char* const kPromptAPIForGeminiNanoLinks[2] = {
+const char* const kAIAPIsForGeminiNanoLinks[2] = {
     "https://goo.gle/chrome-ai-dev-preview",
     "https://policies.google.com/terms/generative-ai/use-policy"};
 
@@ -4159,9 +4159,24 @@ const char kSummarizationAPIForGeminiNanoDescription[] =
     "(e.g. answering knowledge questions). "
     "You must comply with our Prohibited Use Policy [2] which provides "
     "additional details about appropriate use of Generative AI.";
-const char* const kSummarizationAPIForGeminiNanoLinks[2] = {
-    "https://goo.gle/chrome-ai-dev-preview",
-    "https://policies.google.com/terms/generative-ai/use-policy"};
+
+const char kWriterAPIForGeminiNanoName[] = "Writer API for Gemini Nano";
+const char kWriterAPIForGeminiNanoDescription[] =
+    "Enables the Writer API, allowing you to write a piece "
+    "of text with a built-in large language model (Gemini Nano in Chrome)."
+    "The API may be subject to changes including the supported options."
+    "Please refer to the built-in AI article [1] for details. "
+    "You must comply with our Prohibited Use Policy [2] which provides "
+    "additional details about appropriate use of Generative AI.";
+
+const char kRewriterAPIForGeminiNanoName[] = "Rewriter API for Gemini Nano";
+const char kRewriterAPIForGeminiNanoDescription[] =
+    "Enables the Rewriter API, allowing you to rewrite a piece "
+    "of text with a built-in large language model (Gemini Nano in Chrome)."
+    "The API may be subject to changes including the supported options."
+    "Please refer to the built-in AI article [1] for details. "
+    "You must comply with our Prohibited Use Policy [2] which provides "
+    "additional details about appropriate use of Generative AI.";
 
 // Android ---------------------------------------------------------------------
 
