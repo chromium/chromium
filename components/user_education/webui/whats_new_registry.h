@@ -95,9 +95,16 @@ class WhatsNewModule {
 // with the same name as the base::Feature for your edition.
 class WhatsNewEdition {
  public:
-  WhatsNewEdition(const base::Feature& feature, std::string owner)
-      : feature_(feature), owner_(owner) {}
-  ~WhatsNewEdition() = default;
+  WhatsNewEdition(const base::Feature& feature,
+                  std::string owner,
+                  std::vector<BrowserCommand> browser_commands = {});
+  WhatsNewEdition(WhatsNewEdition&&);
+  WhatsNewEdition& operator=(WhatsNewEdition&&);
+  ~WhatsNewEdition();
+
+  std::vector<BrowserCommand> browser_commands() const {
+    return browser_commands_;
+  }
 
   // Return true if the feature is enabled, but not by default.
   // This indicates a feature is in the process of rolling out.
@@ -112,6 +119,7 @@ class WhatsNewEdition {
  private:
   raw_ref<const base::Feature> feature_;
   std::string owner_;
+  std::vector<BrowserCommand> browser_commands_;
 };
 
 // Stores module and edition data used to display the What's New page,

@@ -44,6 +44,13 @@ const char* WhatsNewModule::GetFeatureName() const {
   return feature_->name;
 }
 
+WhatsNewEdition::WhatsNewEdition(const base::Feature& feature,
+                                 std::string owner,
+                                 std::vector<BrowserCommand> browser_commands)
+    : feature_(feature), owner_(owner), browser_commands_(browser_commands) {}
+WhatsNewEdition::WhatsNewEdition(WhatsNewEdition&& other) = default;
+WhatsNewEdition::~WhatsNewEdition() = default;
+
 bool WhatsNewEdition::HasActiveFeature() const {
   return base::FeatureList::IsEnabled(*feature_) &&
          feature_->default_state == base::FEATURE_DISABLED_BY_DEFAULT;
@@ -79,6 +86,14 @@ const std::vector<BrowserCommand> WhatsNewRegistry::GetActiveCommands() const {
           module.HasActiveFeature() || module.HasRolledFeature();
       if (module_is_default_enabled || module_is_available) {
         commands.emplace_back(module.browser_command().value());
+      }
+    }
+  }
+  for (const WhatsNewEdition& edition : editions_) {
+    // The only requirement for an edition to show is that it is enabled.
+    if (edition.IsFeatureEnabled()) {
+      for (const auto browser_command : edition.browser_commands()) {
+        commands.emplace_back(browser_command);
       }
     }
   }
