@@ -615,6 +615,7 @@ CSSVariableData* CSSVariableParser::ConsumeUnparsedDeclaration(
     const ExecutionContext* context) {
   // Consume leading whitespace and comments, as required by the spec.
   stream.ConsumeWhitespace();
+  stream.EnsureLookAhead();
   wtf_size_t value_start_offset = stream.LookAheadOffset();
 
   bool has_references = false;
