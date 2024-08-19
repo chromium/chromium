@@ -318,7 +318,7 @@ export class PowerBookmarksService {
   findBookmarkWithId(id: string|undefined): chrome.bookmarks.BookmarkTreeNode
       |undefined {
     if (id) {
-      const path = this.findPathToId_(id);
+      const path = this.findPathToId(id);
       if (path) {
         return path[path.length - 1];
       }
@@ -461,7 +461,7 @@ export class PowerBookmarksService {
   }
 
   private onRemoved_(id: string) {
-    const oldPath = this.findPathToId_(id);
+    const oldPath = this.findPathToId(id);
     const removedNode = oldPath.pop()!;
     const oldParent = oldPath[oldPath.length - 1]!;
     oldParent.children!.splice(oldParent.children!.indexOf(removedNode), 1);
@@ -472,7 +472,7 @@ export class PowerBookmarksService {
    * Finds the node within all bookmarks and returns the path to the node in
    * the tree.
    */
-  private findPathToId_(id: string): chrome.bookmarks.BookmarkTreeNode[] {
+  findPathToId(id: string): chrome.bookmarks.BookmarkTreeNode[] {
     const path: chrome.bookmarks.BookmarkTreeNode[] = [];
 
     function findPathByIdInternal(

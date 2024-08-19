@@ -252,7 +252,7 @@
         back-button-title="$i18n{tooltipBack}"
         back-button-aria-label="[[getBackButtonLabel_(activeFolderPath_.*)]]"
         on-back-button-click="onBackClicked_"
-        hide-back-button="[[!activeFolderPath_.length]]"
+        hide-back-button="[[shouldHideBackButton_(activeFolderPath_.*)]]"
         disable-back-button="[[disableBackButton_(
             activeFolderPath_.*, editing_)]]">
       <h1 slot="heading">[[getActiveFolderLabel_(activeFolderPath_.*)]]</h1>
@@ -349,7 +349,7 @@
                   on-trailing-icon-clicked="onShowContextMenuClicked_"
                   on-checkbox-change="onRowSelectedChange_"
                   on-input-change="onRename_"
-                  on-power-bookmark-toggle="notifyBookmarksListResize_"
+                  on-power-bookmark-toggle="onRowToggled_"
                   tabindex$="[[tabIndex]]"
                   image-urls="[[imageUrls_]]"
                   shopping-collection-folder-id=

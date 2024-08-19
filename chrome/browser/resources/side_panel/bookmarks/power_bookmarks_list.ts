@@ -291,6 +291,8 @@ export class PowerBookmarksListElement extends PolymerElement {
   private sectionVisibility_: SectionVisibility = {};
   private shoppingCollectionFolderId_: string;
   private recordCountMetricsOnNextUpdate_: boolean = false;
+  private bookmarksTreeViewEnabled_: boolean =
+      loadTimeData.getBoolean('bookmarksTreeViewEnabled');
 
   constructor() {
     super();
@@ -628,6 +630,9 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private getActiveFolderLabel_(): string {
+    if (this.bookmarksTreeViewEnabled_ && this.compact_) {
+      return loadTimeData.getString('allBookmarks');
+    }
     return getFolderLabel(this.getActiveFolder_());
   }
 
@@ -660,7 +665,13 @@ export class PowerBookmarksListElement extends PolymerElement {
    * Update the lists of bookmarks and folders displayed to the user.
    */
   private updateDisplayLists_() {
-    const activeFolder = this.getActiveFolder_();
+    let activeFolder;
+    if (this.bookmarksTreeViewEnabled_ && this.compact_) {
+      activeFolder = this.bookmarksService_.findBookmarkWithId(
+          loadTimeData.getString('otherBookmarksId'));
+    } else {
+      activeFolder = this.getActiveFolder_();
+    }
     const primaryList = this.bookmarksService_.filterBookmarks(
         activeFolder, this.activeSortIndex_, this.searchQuery_, this.labels_);
     this.displayLists_ = [primaryList];
@@ -754,6 +765,19 @@ export class PowerBookmarksListElement extends PolymerElement {
         sortType.sortOrder;
   }
 
+  private onRowToggled_(event: CustomEvent<{
+    bookmark: chrome.bookmarks.BookmarkTreeNode,
+    expanded: boolean,
+    event: MouseEvent,
+  }>) {
+    const bookmark = event.detail.bookmark;
+    if (event.detail.expanded) {
+      this.activeFolderPath_ = this.bookmarksService_.findPathToId(bookmark.id);
+    } else if (bookmark === this.getActiveFolder_()) {
+      this.pop('activeFolderPath_');
+    }
+    this.notifyBookmarksListResize_();
+  }
   /**
    * Invoked when the user clicks a power bookmarks row. This will either
    * display children in the case of a folder row, or open the URL in the case
@@ -914,6 +938,13 @@ export class PowerBookmarksListElement extends PolymerElement {
   private onBackClicked_() {
     this.recordCountMetricsOnNextUpdate_ = true;
     this.pop('activeFolderPath_');
+  }
+
+  private shouldHideBackButton_(): boolean {
+    if (this.compact_ && this.bookmarksTreeViewEnabled_) {
+      return true;
+    }
+    return !this.activeFolderPath_.length;
   }
 
   private onSearchChanged_(e: CustomEvent<string>) {

@@ -23,7 +23,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
     @click="${this.onRowClicked_}"
     @auxclick="${this.onRowClicked_}"
     @contextmenu="${this.onContextMenu_}"
-    ?forceHover="${this.getBookmarkForceHover_(this.bookmark)}">
+    .forceHover="${this.getBookmarkForceHover_(this.bookmark)}">
 
   ${this.hasCheckbox ? html`
     <cr-checkbox id="checkbox" slot="prefix"

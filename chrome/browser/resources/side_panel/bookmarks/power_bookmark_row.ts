@@ -172,11 +172,18 @@ export class PowerBookmarkRowElement extends CrLitElement {
     return !this.renamingItem_(this.bookmark?.id) && !this.hasCheckbox;
   }
 
-  protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
-    this.toggleExpand = e.detail.value;
+  protected onExpandedChanged_(event: CustomEvent<{value: boolean}>) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.toggleExpand = event.detail.value;
     this.dispatchEvent(new CustomEvent('power-bookmark-toggle', {
       bubbles: true,
       composed: true,
+      detail: {
+        bookmark: this.bookmark,
+        expanded: this.toggleExpand,
+        event: event,
+      },
     }));
   }
 
@@ -359,8 +366,8 @@ export class PowerBookmarkRowElement extends CrLitElement {
   }
 
   protected shouldExpand_(): boolean|undefined {
-    return this.bookmark?.children && this.bookmark?.children.length > 0 &&
-        this.bookmarksTreeViewEnabled && this.compact;
+    return this.bookmark?.children && this.bookmarksTreeViewEnabled &&
+        this.compact;
   }
 
   protected canEdit_(bookmark: chrome.bookmarks.BookmarkTreeNode): boolean {
