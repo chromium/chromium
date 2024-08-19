@@ -1508,6 +1508,8 @@ enum class ToolbarKind {
   _quickDeleteCoordinator = nil;
 
   [self hideDriveFilePicker];
+
+  [self hideContextualSheet];
 }
 
 // Starts independent mediators owned by this coordinator.

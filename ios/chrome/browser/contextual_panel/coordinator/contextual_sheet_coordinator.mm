@@ -67,6 +67,7 @@
   }
 
   _animatedFullscreenDisabler = nullptr;
+  _observerBridge = nullptr;
 }
 
 - (void)traitCollectionDidChangeForViewController:
