@@ -7,7 +7,6 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/public/graph/common_types.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -28,8 +27,6 @@ class PageAggregatorTest : public GraphTestHarness {
 }  // namespace
 
 TEST_F(PageAggregatorTest, WebLocksAggregation) {
-  const WebLockNameHash kWebLockNameHash(1u);
-
   // Creates a page containing 2 frames.
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
@@ -43,15 +40,15 @@ TEST_F(PageAggregatorTest, WebLocksAggregation) {
 
   // |frame_0| now holds a WebLock, the corresponding property should be set on
   // the page node.
-  frame_0->SetIsHoldingWebLock(kWebLockNameHash, true);
+  frame_0->SetIsHoldingWebLock(true);
   EXPECT_TRUE(page->IsHoldingWebLock());
 
   // |frame_1| also holding a WebLock shouldn't affect the page property.
-  frame_1->SetIsHoldingWebLock(kWebLockNameHash, true);
+  frame_1->SetIsHoldingWebLock(true);
   EXPECT_TRUE(page->IsHoldingWebLock());
 
   // |frame_1| still holds a WebLock after this.
-  frame_0->SetIsHoldingWebLock(kWebLockNameHash, false);
+  frame_0->SetIsHoldingWebLock(false);
   EXPECT_TRUE(page->IsHoldingWebLock());
 
   // Destroying |frame_1| without explicitly releasing the WebLock it's
@@ -61,8 +58,6 @@ TEST_F(PageAggregatorTest, WebLocksAggregation) {
 }
 
 TEST_F(PageAggregatorTest, IndexedDBLocksAggregation) {
-  const IndexedDBLockNameHash kIndexedDBLockNameHash(1u);
-
   // Creates a page containing 2 frames.
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
@@ -76,16 +71,16 @@ TEST_F(PageAggregatorTest, IndexedDBLocksAggregation) {
 
   // |frame_0| now holds an IndexedDB lock, the corresponding property should be
   // set on the page node.
-  frame_0->SetIsHoldingIndexedDBLock(kIndexedDBLockNameHash, true);
+  frame_0->SetIsHoldingIndexedDBLock(true);
   EXPECT_TRUE(page->IsHoldingIndexedDBLock());
 
   // |frame_1| also holding an IndexedDB lock shouldn't affect the page
   // property.
-  frame_1->SetIsHoldingIndexedDBLock(kIndexedDBLockNameHash, true);
+  frame_1->SetIsHoldingIndexedDBLock(true);
   EXPECT_TRUE(page->IsHoldingIndexedDBLock());
 
   // |frame_1| still holds an IndexedDB lock after this.
-  frame_0->SetIsHoldingIndexedDBLock(kIndexedDBLockNameHash, false);
+  frame_0->SetIsHoldingIndexedDBLock(false);
   EXPECT_TRUE(page->IsHoldingIndexedDBLock());
 
   // Destroying |frame_1| without explicitly releasing the IndexedDB lock it's

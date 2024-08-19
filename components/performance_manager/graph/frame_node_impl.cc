@@ -198,34 +198,12 @@ bool FrameNodeImpl::IsAdFrame() const {
 
 bool FrameNodeImpl::IsHoldingWebLock() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return !held_weblocks_.empty();
-}
-
-bool FrameNodeImpl::IsHoldingWebLock(WebLockNameHash name_hash) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Contains(held_weblocks_, name_hash);
-}
-
-const base::flat_set<WebLockNameHash>& FrameNodeImpl::GetHeldWebLocks() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return held_weblocks_;
+  return is_holding_weblock_.value();
 }
 
 bool FrameNodeImpl::IsHoldingIndexedDBLock() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return !held_indexeddb_locks_.empty();
-}
-
-bool FrameNodeImpl::IsHoldingIndexedDBLock(
-    IndexedDBLockNameHash name_hash) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Contains(held_indexeddb_locks_, name_hash);
-}
-
-const base::flat_set<IndexedDBLockNameHash>&
-FrameNodeImpl::GetHeldIndexedDBLocks() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return held_indexeddb_locks_;
+  return is_holding_indexeddb_lock_.value();
 }
 
 bool FrameNodeImpl::HadUserActivation() const {
@@ -366,56 +344,16 @@ void FrameNodeImpl::SetHadUserActivation() {
   had_user_activation_.SetAndMaybeNotify(this, true);
 }
 
-void FrameNodeImpl::SetIsHoldingWebLock(WebLockNameHash name_hash,
-                                        bool is_holding_weblock) {
+void FrameNodeImpl::SetIsHoldingWebLock(bool is_holding_weblock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (is_holding_weblock) {
-    bool inserted = held_weblocks_.insert(name_hash).second;
-    CHECK(inserted);
-  } else {
-    size_t removed = held_weblocks_.erase(name_hash);
-    CHECK_EQ(removed, 1u);
-  }
-
-  const bool notify_generic =
-      (is_holding_weblock && held_weblocks_.size() == 1u) ||
-      (!is_holding_weblock && held_weblocks_.empty());
-  if (notify_generic) {
-    for (auto& observer : GetObservers()) {
-      observer.OnFrameIsHoldingWebLockChanged(this);
-    }
-  }
-
-  for (auto& observer : GetObservers()) {
-    observer.OnFrameIsHoldingWebLockChanged(this, name_hash);
-  }
+  DCHECK_NE(is_holding_weblock, is_holding_weblock_.value());
+  is_holding_weblock_.SetAndMaybeNotify(this, is_holding_weblock);
 }
 
-void FrameNodeImpl::SetIsHoldingIndexedDBLock(IndexedDBLockNameHash name_hash,
-                                              bool is_holding_indexeddb_lock) {
+void FrameNodeImpl::SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (is_holding_indexeddb_lock) {
-    bool inserted = held_indexeddb_locks_.insert(name_hash).second;
-    CHECK(inserted);
-  } else {
-    size_t removed = held_indexeddb_locks_.erase(name_hash);
-    CHECK_EQ(removed, 1u);
-  }
-
-  const bool notify_generic =
-      (is_holding_indexeddb_lock && held_indexeddb_locks_.size() == 1u) ||
-      (!is_holding_indexeddb_lock && held_indexeddb_locks_.empty());
-  if (notify_generic) {
-    for (auto& observer : GetObservers()) {
-      observer.OnFrameIsHoldingIndexedDBLockChanged(this);
-    }
-  }
-
-  for (auto& observer : GetObservers()) {
-    observer.OnFrameIsHoldingIndexedDBLockChanged(this, name_hash);
-  }
+  DCHECK_NE(is_holding_indexeddb_lock, is_holding_indexeddb_lock_.value());
+  is_holding_indexeddb_lock_.SetAndMaybeNotify(this, is_holding_indexeddb_lock);
 }
 
 void FrameNodeImpl::SetIsAudible(bool is_audible) {
@@ -504,9 +442,6 @@ void FrameNodeImpl::OnNavigationCommitted(GURL url,
 
   // Reset properties.
   document_.Reset(this, std::move(url), std::move(origin));
-
-  CHECK(held_weblocks_.empty());
-  CHECK(held_indexeddb_locks_.empty());
 }
 
 void FrameNodeImpl::AddChildWorker(WorkerNodeImpl* worker_node) {

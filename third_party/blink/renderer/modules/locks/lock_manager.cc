@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/hash/hash.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -396,8 +395,7 @@ void LockManager::RequestImpl(const LockOptions* options,
 
   mojo::PendingRemote<mojom::blink::ObservedFeature> lock_lifetime;
   observer_->Register(lock_lifetime.InitWithNewPipeAndPassReceiver(),
-                      mojom::blink::ObservedFeatureType::kWebLock,
-                      name.Impl()->GetHash());
+                      mojom::blink::ObservedFeatureType::kWebLock);
 
   mojo::PendingAssociatedRemote<mojom::blink::LockRequest> request_remote;
 

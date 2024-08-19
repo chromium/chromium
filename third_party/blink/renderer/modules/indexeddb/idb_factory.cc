@@ -290,7 +290,7 @@ IDBOpenDBRequest* IDBFactory::OpenInternal(ScriptState* script_state,
   auto* request = MakeGarbageCollected<IDBOpenDBRequest>(
       script_state, callbacks_remote.InitWithNewEndpointAndPassReceiver(),
       std::move(transaction_remote), transaction_id, version,
-      std::move(metrics), CreatePendingRemoteFeatureObserver(name));
+      std::move(metrics), CreatePendingRemoteFeatureObserver());
 
   auto do_open = WTF::BindOnce(
       &IDBFactory::OpenInternalImpl,
@@ -382,7 +382,7 @@ IDBOpenDBRequest* IDBFactory::DeleteDatabaseInternal(
       /*callbacks_receiver=*/mojo::NullAssociatedReceiver(),
       IDBTransaction::TransactionMojoRemote(context), 0,
       IDBDatabaseMetadata::kDefaultVersion, std::move(metrics),
-      CreatePendingRemoteFeatureObserver(name));
+      CreatePendingRemoteFeatureObserver());
 
   auto do_delete = WTF::BindOnce(&IDBFactory::DeleteDatabaseInternalImpl,
                                  WrapPersistent(weak_factory_.GetWeakCell()),
@@ -505,7 +505,7 @@ IDBFactory::CreatePendingRemote(
 }
 
 mojo::PendingRemote<mojom::blink::ObservedFeature>
-IDBFactory::CreatePendingRemoteFeatureObserver(const String& name) {
+IDBFactory::CreatePendingRemoteFeatureObserver() {
   if (!feature_observer_) {
     mojo::PendingRemote<mojom::blink::FeatureObserver> feature_observer;
     GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
@@ -516,8 +516,7 @@ IDBFactory::CreatePendingRemoteFeatureObserver(const String& name) {
   mojo::PendingRemote<mojom::blink::ObservedFeature> feature;
   feature_observer_->Register(
       feature.InitWithNewPipeAndPassReceiver(),
-      mojom::blink::ObservedFeatureType::kIndexedDBConnection,
-      name.Impl()->GetHash());
+      mojom::blink::ObservedFeatureType::kIndexedDBConnection);
   return feature;
 }
 

@@ -12,17 +12,13 @@ enum ObservedFeatureType {
 // An interface tied to the lifetime of a feature's usage.
 interface ObservedFeature {};
 
-// A generic interface for informing some remote that a given named feature has
-// is being used. This is for purposes such as tab freezing, which wants to
-// avoid freezing tabs that are using particular features, or implementing
-// priority inheritance when a backgrounded process is using a feature that a
-// foregrounded process wants to use. This interface is implemented by the
-// browser process so the renderer can inform it about feature usage.
+// A generic interface for informing some remote that a given feature has
+// begun or ended.  This is for purposes such as tab freezing, which wants to
+// avoid freezing tabs that are using particular features.  This interface
+// is implemented by the browser process so the renderer can inform it about
+// feature usage.
 interface FeatureObserver {
-  // Inform the observer that a particular |feature| is being used, and when the
-  // connection is broken, that instance is no longer in use. The name
-  // identifies which feature is being used, and is chosen by the website.
-  Register(pending_receiver<ObservedFeature> feature,
-           ObservedFeatureType type,
-           uint32 name_hash);
+  // Inform the observer that a particular |feature| is being used, and
+  // when the connection is broken, that instance is no longer in use.
+  Register(pending_receiver<ObservedFeature> feature, ObservedFeatureType type);
 };

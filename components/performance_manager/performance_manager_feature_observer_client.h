@@ -17,11 +17,9 @@ class PerformanceManagerFeatureObserverClient
 
   // content::FeatureObserverClient implementation:
   void OnStartUsing(content::GlobalRenderFrameHostId id,
-                    blink::mojom::ObservedFeatureType feature_type,
-                    uint32_t name_hash) override;
+                    blink::mojom::ObservedFeatureType feature_type) override;
   void OnStopUsing(content::GlobalRenderFrameHostId id,
-                   blink::mojom::ObservedFeatureType feature_type,
-                   uint32_t name_hash) override;
+                   blink::mojom::ObservedFeatureType feature_type) override;
 };
 
 }  // namespace performance_manager

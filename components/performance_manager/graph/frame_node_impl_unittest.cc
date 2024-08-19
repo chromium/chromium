@@ -159,16 +159,8 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
               (const FrameNode*),
               (override));
   MOCK_METHOD(void,
-              OnFrameIsHoldingWebLockChanged,
-              (const FrameNode*, WebLockNameHash),
-              (override));
-  MOCK_METHOD(void,
               OnFrameIsHoldingIndexedDBLockChanged,
               (const FrameNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnFrameIsHoldingIndexedDBLockChanged,
-              (const FrameNode*, IndexedDBLockNameHash),
               (override));
   MOCK_METHOD(void,
               OnPriorityAndReasonChanged,
@@ -215,7 +207,6 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
 using MockObserver = ::testing::StrictMock<LenientMockObserver>;
 
 using testing::_;
-using testing::ElementsAre;
 using testing::Invoke;
 using testing::InvokeWithoutArgs;
 
@@ -400,9 +391,6 @@ TEST_F(FrameNodeImplTest, IsAdFrame) {
 }
 
 TEST_F(FrameNodeImplTest, IsHoldingWebLock) {
-  const WebLockNameHash kWebLockNameHash1(1u);
-  const WebLockNameHash kWebLockNameHash2(2u);
-
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
@@ -411,62 +399,17 @@ TEST_F(FrameNodeImplTest, IsHoldingWebLock) {
   graph()->AddFrameNodeObserver(&obs);
 
   EXPECT_FALSE(frame_node->IsHoldingWebLock());
-  EXPECT_FALSE(frame_node->IsHoldingWebLock(kWebLockNameHash1));
-  EXPECT_FALSE(frame_node->IsHoldingWebLock(kWebLockNameHash2));
-  EXPECT_THAT(frame_node->GetHeldWebLocks(), ElementsAre());
-
-  // Acquire kWebLockNameHash1.
   EXPECT_CALL(obs, OnFrameIsHoldingWebLockChanged(frame_node.get()));
-  EXPECT_CALL(
-      obs, OnFrameIsHoldingWebLockChanged(frame_node.get(), kWebLockNameHash1));
-  frame_node->SetIsHoldingWebLock(kWebLockNameHash1, true);
-
+  frame_node->SetIsHoldingWebLock(true);
   EXPECT_TRUE(frame_node->IsHoldingWebLock());
-  EXPECT_TRUE(frame_node->IsHoldingWebLock(kWebLockNameHash1));
-  EXPECT_FALSE(frame_node->IsHoldingWebLock(kWebLockNameHash2));
-  EXPECT_THAT(frame_node->GetHeldWebLocks(), ElementsAre(kWebLockNameHash1));
-
-  // Acquire kWebLockNameHash2. The generic OnFrameIsHoldingWebLockChanged()
-  // method is not called.
-  EXPECT_CALL(
-      obs, OnFrameIsHoldingWebLockChanged(frame_node.get(), kWebLockNameHash2));
-  frame_node->SetIsHoldingWebLock(kWebLockNameHash2, true);
-
-  EXPECT_TRUE(frame_node->IsHoldingWebLock());
-  EXPECT_TRUE(frame_node->IsHoldingWebLock(kWebLockNameHash1));
-  EXPECT_TRUE(frame_node->IsHoldingWebLock(kWebLockNameHash2));
-  EXPECT_THAT(frame_node->GetHeldWebLocks(),
-              ElementsAre(kWebLockNameHash1, kWebLockNameHash2));
-
-  // Release kWebLockNameHash1. The generic OnFrameIsHoldingWebLockChanged()
-  // method is not called.
-  EXPECT_CALL(
-      obs, OnFrameIsHoldingWebLockChanged(frame_node.get(), kWebLockNameHash1));
-  frame_node->SetIsHoldingWebLock(kWebLockNameHash1, false);
-
-  EXPECT_TRUE(frame_node->IsHoldingWebLock());
-  EXPECT_FALSE(frame_node->IsHoldingWebLock(kWebLockNameHash1));
-  EXPECT_TRUE(frame_node->IsHoldingWebLock(kWebLockNameHash2));
-  EXPECT_THAT(frame_node->GetHeldWebLocks(), ElementsAre(kWebLockNameHash2));
-
-  // Release kWebLockNameHash2.
   EXPECT_CALL(obs, OnFrameIsHoldingWebLockChanged(frame_node.get()));
-  EXPECT_CALL(
-      obs, OnFrameIsHoldingWebLockChanged(frame_node.get(), kWebLockNameHash2));
-  frame_node->SetIsHoldingWebLock(kWebLockNameHash2, false);
-
+  frame_node->SetIsHoldingWebLock(false);
   EXPECT_FALSE(frame_node->IsHoldingWebLock());
-  EXPECT_FALSE(frame_node->IsHoldingWebLock(kWebLockNameHash1));
-  EXPECT_FALSE(frame_node->IsHoldingWebLock(kWebLockNameHash2));
-  EXPECT_THAT(frame_node->GetHeldWebLocks(), ElementsAre());
 
   graph()->RemoveFrameNodeObserver(&obs);
 }
 
 TEST_F(FrameNodeImplTest, IsHoldingIndexedDBLock) {
-  const IndexedDBLockNameHash kIndexedDBLockNameHash1(1u);
-  const IndexedDBLockNameHash kIndexedDBLockNameHash2(2u);
-
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
@@ -474,55 +417,12 @@ TEST_F(FrameNodeImplTest, IsHoldingIndexedDBLock) {
   MockObserver obs;
   graph()->AddFrameNodeObserver(&obs);
 
-  EXPECT_FALSE(frame_node->IsHoldingIndexedDBLock());
-  EXPECT_FALSE(frame_node->IsHoldingIndexedDBLock(kIndexedDBLockNameHash1));
-  EXPECT_FALSE(frame_node->IsHoldingIndexedDBLock(kIndexedDBLockNameHash2));
-  EXPECT_THAT(frame_node->GetHeldIndexedDBLocks(), ElementsAre());
-
-  // Acquire kIndexedDBLockNameHash1.
   EXPECT_CALL(obs, OnFrameIsHoldingIndexedDBLockChanged(frame_node.get()));
-  EXPECT_CALL(obs, OnFrameIsHoldingIndexedDBLockChanged(
-                       frame_node.get(), kIndexedDBLockNameHash1));
-  frame_node->SetIsHoldingIndexedDBLock(kIndexedDBLockNameHash1, true);
-
+  frame_node->SetIsHoldingIndexedDBLock(true);
   EXPECT_TRUE(frame_node->IsHoldingIndexedDBLock());
-  EXPECT_TRUE(frame_node->IsHoldingIndexedDBLock(kIndexedDBLockNameHash1));
-  EXPECT_FALSE(frame_node->IsHoldingIndexedDBLock(kIndexedDBLockNameHash2));
-  EXPECT_THAT(frame_node->GetHeldIndexedDBLocks(),
-              ElementsAre(kIndexedDBLockNameHash1));
-
-  // Acquire kIndexedDBLockNameHash2.
-  EXPECT_CALL(obs, OnFrameIsHoldingIndexedDBLockChanged(
-                       frame_node.get(), kIndexedDBLockNameHash2));
-  frame_node->SetIsHoldingIndexedDBLock(kIndexedDBLockNameHash2, true);
-
-  EXPECT_TRUE(frame_node->IsHoldingIndexedDBLock());
-  EXPECT_TRUE(frame_node->IsHoldingIndexedDBLock(kIndexedDBLockNameHash1));
-  EXPECT_TRUE(frame_node->IsHoldingIndexedDBLock(kIndexedDBLockNameHash2));
-  EXPECT_THAT(frame_node->GetHeldIndexedDBLocks(),
-              ElementsAre(kIndexedDBLockNameHash1, kIndexedDBLockNameHash2));
-
-  // Release kIndexedDBLockNameHash2.
-  EXPECT_CALL(obs, OnFrameIsHoldingIndexedDBLockChanged(
-                       frame_node.get(), kIndexedDBLockNameHash2));
-  frame_node->SetIsHoldingIndexedDBLock(kIndexedDBLockNameHash2, false);
-
-  EXPECT_TRUE(frame_node->IsHoldingIndexedDBLock());
-  EXPECT_TRUE(frame_node->IsHoldingIndexedDBLock(kIndexedDBLockNameHash1));
-  EXPECT_FALSE(frame_node->IsHoldingIndexedDBLock(kIndexedDBLockNameHash2));
-  EXPECT_THAT(frame_node->GetHeldIndexedDBLocks(),
-              ElementsAre(kIndexedDBLockNameHash1));
-
-  // Release kIndexedDBLockNameHash1.
   EXPECT_CALL(obs, OnFrameIsHoldingIndexedDBLockChanged(frame_node.get()));
-  EXPECT_CALL(obs, OnFrameIsHoldingIndexedDBLockChanged(
-                       frame_node.get(), kIndexedDBLockNameHash1));
-  frame_node->SetIsHoldingIndexedDBLock(kIndexedDBLockNameHash1, false);
-
+  frame_node->SetIsHoldingIndexedDBLock(false);
   EXPECT_FALSE(frame_node->IsHoldingIndexedDBLock());
-  EXPECT_FALSE(frame_node->IsHoldingIndexedDBLock(kIndexedDBLockNameHash1));
-  EXPECT_FALSE(frame_node->IsHoldingIndexedDBLock(kIndexedDBLockNameHash2));
-  EXPECT_THAT(frame_node->GetHeldIndexedDBLocks(), ElementsAre());
 
   graph()->RemoveFrameNodeObserver(&obs);
 }
