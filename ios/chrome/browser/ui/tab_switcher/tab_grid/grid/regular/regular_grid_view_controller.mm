@@ -48,16 +48,36 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
 
   // If only some of the tabs inside the tab group are going to be closed, then
   // animate the corresponding views inside the tab group cell.
-  // TODO(crbug.com/354112735): The last view can represent a tab or a counter.
-  // We should adjust the animation to only animate the last view if it
-  // represents a tab or if the tab counter will disappear after the animation.
   NSArray<UIView*>* all_views = [group_grid_cell allGroupTabViews];
   NSMutableArray<UIView*>* all_views_to_close = [[NSMutableArray alloc] init];
-  for (NSUInteger index = 0; index < all_views.count; index++) {
+
+  NSInteger numberOfViews = (NSInteger)all_views.count;
+
+  // The last view inside a group can represent a tab or a counter.
+  NSInteger lastViewIsCounter = group_grid_cell.tabsCount > numberOfViews;
+  NSInteger numberOfTabViews =
+      lastViewIsCounter ? numberOfViews - 1 : numberOfViews;
+
+  // Loop through all the views that represent tabs. A tab view is animated out
+  // if that tab is going to be closed.
+  for (NSInteger index = 0; index < numberOfTabViews; index++) {
     if (indexes_in_group_to_close.contains(index)) {
       [all_views_to_close addObject:[all_views objectAtIndex:index]];
     }
   }
+
+  // Deal with the view that represents a counter, if it exists. A counter view
+  // is animated out if it will disappear after the animation.
+  if (lastViewIsCounter) {
+    NSInteger numberOfTabsAfterClosure =
+        group_grid_cell.tabsCount - indexes_in_group_to_close.size();
+    BOOL animateCounter = numberOfTabsAfterClosure <= numberOfViews;
+    if (animateCounter) {
+      [all_views_to_close
+          addObject:[all_views objectAtIndex:numberOfViews - 1]];
+    }
+  }
+
   return all_views_to_close;
 }
 
