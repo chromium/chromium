@@ -556,6 +556,7 @@ public class TabSwitcherLayoutTest {
         ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID
     })
+    @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupOverflowMenuInTabSwitcher_renameGroupAccept() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -612,6 +613,7 @@ public class TabSwitcherLayoutTest {
         ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID
     })
+    @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupOverflowMenuInTabSwitcher_renameGroupDecline() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -669,6 +671,7 @@ public class TabSwitcherLayoutTest {
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     })
+    @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupOverflowMenuInTabSwitcher_ungroupAccept() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -828,6 +831,7 @@ public class TabSwitcherLayoutTest {
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     })
+    @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupOverflowMenuInTabSwitcher_noDeleteIncognito() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(1, 2, "about:blank");
@@ -906,6 +910,7 @@ public class TabSwitcherLayoutTest {
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     })
+    @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupOverflowMenuInTabSwitcher_deleteGroupDoNotShowAgain() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         String expectedDescription = "Open the tab group action menu for tab group Test";
@@ -1045,6 +1050,7 @@ public class TabSwitcherLayoutTest {
     @DisableFeatures({
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     })
+    @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupOverflowMenuInTabSwitcher_deleteGroupNoShowSyncDisabled() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -1065,6 +1071,7 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupColorInTabSwitcher() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -1089,6 +1096,7 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupCreation_acceptInputValues() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -1136,6 +1144,7 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupCreation_acceptNullTitle() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -1170,6 +1179,7 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupCreation_dismissEmptyTitle() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
