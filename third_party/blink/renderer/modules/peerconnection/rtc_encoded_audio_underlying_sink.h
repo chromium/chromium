@@ -36,6 +36,7 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSink final
                                     ScriptValue reason,
                                     ExceptionState&) override;
 
+  void ResetTransformerCallback();
   void Trace(Visitor*) const override;
 
  private:

@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught InvalidStateError: Failed to set the 'transform' property on 'RTCRtpReceiver': Transform already set
-[FAIL] sendKeyFrameRequest throws for unset transforms
-  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to set the 'transform' property on 'RTCRtpReceiver': Transform already set"
-Harness: the test ran to completion.
-

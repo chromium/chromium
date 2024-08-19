@@ -115,6 +115,18 @@ ScriptPromise<IDLUndefined> RTCEncodedUnderlyingSinkWrapper::abort(
   return ScriptPromise<IDLUndefined>();
 }
 
+void RTCEncodedUnderlyingSinkWrapper::Clear() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (video_to_packetizer_underlying_sink_) {
+    video_to_packetizer_underlying_sink_->ResetTransformerCallback();
+    video_to_packetizer_underlying_sink_ = nullptr;
+  }
+  if (audio_to_packetizer_underlying_sink_) {
+    audio_to_packetizer_underlying_sink_->ResetTransformerCallback();
+    audio_to_packetizer_underlying_sink_ = nullptr;
+  }
+}
+
 void RTCEncodedUnderlyingSinkWrapper::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(audio_to_packetizer_underlying_sink_);

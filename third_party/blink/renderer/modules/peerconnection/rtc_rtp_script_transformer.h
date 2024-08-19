@@ -47,6 +47,7 @@ class MODULES_EXPORT RTCRtpScriptTransformer : public ScriptWrappable {
   ScriptPromise<IDLUndefined> sendKeyFrameRequest(ScriptState* script_state);
 
   bool IsOptionsDirty() const;
+  void Clear();
   void Trace(Visitor*) const override;
 
   // These methods are called when an

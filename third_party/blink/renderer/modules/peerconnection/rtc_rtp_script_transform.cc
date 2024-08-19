@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
@@ -179,6 +180,20 @@ void RTCRtpScriptTransform::AttachToReceiver(RTCRtpReceiver* receiver) {
   CHECK(!is_attached_);
   is_attached_ = true;
   receiver_ = receiver;
+}
+
+void RTCRtpScriptTransform::Detach() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_attached_ = false;
+  receiver_ = nullptr;
+  encoded_video_transformer_ = nullptr;
+  encoded_audio_transformer_ = nullptr;
+  disconnect_callback_source_.Reset();
+  PostCrossThreadTask(
+      *rtp_transformer_task_runner_, FROM_HERE,
+      WTF::CrossThreadBindOnce(
+          &RTCRtpScriptTransformer::Clear,
+          MakeUnwrappingCrossThreadWeakHandle(*rtp_transformer_)));
 }
 
 RTCRtpScriptTransform::SendKeyFrameRequestResult

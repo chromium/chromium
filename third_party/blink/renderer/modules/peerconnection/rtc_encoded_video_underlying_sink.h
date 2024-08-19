@@ -35,7 +35,7 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSink final
   ScriptPromise<IDLUndefined> abort(ScriptState*,
                                     ScriptValue reason,
                                     ExceptionState&) override;
-
+  void ResetTransformerCallback();
   void Trace(Visitor*) const override;
 
  private:

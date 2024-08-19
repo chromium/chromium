@@ -148,4 +148,10 @@ void RTCRtpScriptTransformer::SetUpVideo(
       std::move(encoded_video_transformer));
 }
 
+void RTCRtpScriptTransformer::Clear() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  rtc_encoded_underlying_source_->Clear();
+  rtc_encoded_underlying_sink_->Clear();
+}
+
 }  // namespace blink

@@ -81,6 +81,11 @@ ScriptPromise<IDLUndefined> RTCEncodedVideoUnderlyingSink::abort(
   return close(script_state, exception_state);
 }
 
+void RTCEncodedVideoUnderlyingSink::ResetTransformerCallback() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  transformer_broker_->ResetTransformerCallback();
+}
+
 void RTCEncodedVideoUnderlyingSink::Trace(Visitor* visitor) const {
   UnderlyingSinkBase::Trace(visitor);
 }

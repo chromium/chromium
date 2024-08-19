@@ -48,6 +48,7 @@ class MODULES_EXPORT RTCEncodedUnderlyingSourceWrapper
   VideoTransformer GetVideoTransformer();
   AudioTransformer GetAudioTransformer();
 
+  void Clear();
   void Trace(Visitor*) const override;
 
  private:

@@ -79,6 +79,7 @@ class MODULES_EXPORT RTCRtpScriptTransform : public ScriptWrappable {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_attached_;
   }
+  void Detach();
 
   void CreateVideoUnderlyingSink(
       scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
@@ -124,7 +125,6 @@ class MODULES_EXPORT RTCRtpScriptTransform : public ScriptWrappable {
   scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
       encoded_video_transformer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  String kind_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool is_attached_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   WeakMember<RTCRtpReceiver> receiver_;
 };

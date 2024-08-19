@@ -80,6 +80,11 @@ ScriptPromise<IDLUndefined> RTCEncodedAudioUnderlyingSink::abort(
   return close(script_state, exception_state);
 }
 
+void RTCEncodedAudioUnderlyingSink::ResetTransformerCallback() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  transformer_broker_->ResetTransformerCallback();
+}
+
 void RTCEncodedAudioUnderlyingSink::Trace(Visitor* visitor) const {
   UnderlyingSinkBase::Trace(visitor);
 }

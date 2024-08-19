@@ -46,7 +46,7 @@ class MODULES_EXPORT RTCEncodedUnderlyingSinkWrapper
   ScriptPromise<IDLUndefined> abort(ScriptState*,
                                     ScriptValue reason,
                                     ExceptionState&) override;
-
+  void Clear();
   void Trace(Visitor*) const override;
 
  private:

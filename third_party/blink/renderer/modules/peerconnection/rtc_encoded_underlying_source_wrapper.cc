@@ -99,6 +99,13 @@ void RTCEncodedUnderlyingSourceWrapper::Trace(Visitor* visitor) const {
   UnderlyingSourceBase::Trace(visitor);
 }
 
+void RTCEncodedUnderlyingSourceWrapper::Clear() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Close();
+  audio_from_encoder_underlying_source_ = nullptr;
+  video_from_encoder_underlying_source_ = nullptr;
+}
+
 void RTCEncodedUnderlyingSourceWrapper::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (audio_from_encoder_underlying_source_) {

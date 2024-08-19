@@ -510,17 +510,21 @@ RTCInsertableStreams* RTCRtpReceiver::CreateEncodedAudioStreams(
 void RTCRtpReceiver::setTransform(RTCRtpScriptTransform* transform,
                                   ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // TODO(crbug.com/354881878): Allow changing from one transform to another, or
-  // clearing the transform.
-  if (transform_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Transform already set");
+  if (transform_ == transform) {
+    return;
+  }
+  if (!transform) {
+    transform_->Detach();
+    transform_ = nullptr;
     return;
   }
   if (transform->IsAttached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Transform is already in use");
     return;
+  }
+  if (transform_) {
+    transform_->Detach();
   }
   transform_ = transform;
   transform_->AttachToReceiver(this);
