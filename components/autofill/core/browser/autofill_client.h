@@ -141,14 +141,6 @@ class AutofillClient {
     kMaxValue = kAutoDeclined,
   };
 
-  // Used for explicitly requesting the user to enter/confirm cardholder name,
-  // expiration date month and year.
-  struct UserProvidedCardDetails {
-    std::u16string cardholder_name;
-    std::u16string expiration_date_month;
-    std::u16string expiration_date_year;
-  };
-
   // Required arguments to create a dropdown showing autofill suggestions.
   struct PopupOpenArgs {
     PopupOpenArgs();

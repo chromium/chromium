@@ -331,7 +331,8 @@ class CreditCardSaveManagerTest : public testing::Test {
   }
 
   void UserHasAcceptedCardUpload(
-      AutofillClient::UserProvidedCardDetails user_provided_card_details) {
+      payments::PaymentsAutofillClient::UserProvidedCardDetails
+          user_provided_card_details) {
     credit_card_save_manager_->OnUserDidDecideOnUploadSave(
         SaveCardOfferUserDecision::kAccepted, user_provided_card_details);
   }
@@ -341,7 +342,8 @@ class CreditCardSaveManagerTest : public testing::Test {
   }
 
   void UserHasAcceptedCvcUpload(
-      AutofillClient::UserProvidedCardDetails user_provided_card_details) {
+      payments::PaymentsAutofillClient::UserProvidedCardDetails
+          user_provided_card_details) {
     credit_card_save_manager_->OnUserDidDecideOnCvcUploadSave(
         SaveCardOfferUserDecision::kAccepted, user_provided_card_details);
   }

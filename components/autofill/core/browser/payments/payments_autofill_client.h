@@ -185,6 +185,14 @@ class PaymentsAutofillClient : public RiskDataLoader {
     kIgnored,
   };
 
+  // Used for explicitly requesting the user to enter/confirm cardholder name,
+  // expiration date month and year.
+  struct UserProvidedCardDetails {
+    std::u16string cardholder_name;
+    std::u16string expiration_date_month;
+    std::u16string expiration_date_year;
+  };
+
   // Callback to run if user presses the Save button in the migration dialog.
   // Will pass a vector of GUIDs of cards that the user selected to upload to
   // LocalCardMigrationManager.
@@ -227,10 +235,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // existing server card is offered. Sends whether the prompt was accepted,
   // declined, or ignored in `user_decision`, and additional
   // `user_provided_card_details` if applicable.
-  using UploadSaveCardPromptCallback =
-      base::OnceCallback<void(SaveCardOfferUserDecision user_decision,
-                              const AutofillClient::UserProvidedCardDetails&
-                                  user_provided_card_details)>;
+  using UploadSaveCardPromptCallback = base::OnceCallback<void(
+      SaveCardOfferUserDecision user_decision,
+      const UserProvidedCardDetails& user_provided_card_details)>;
 
 #if BUILDFLAG(IS_ANDROID)
   // Gets the AutofillSaveCardBottomSheetBridge or creates one if it doesn't

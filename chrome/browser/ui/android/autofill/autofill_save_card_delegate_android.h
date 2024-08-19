@@ -41,18 +41,21 @@ class AutofillSaveCardDelegateAndroid : public AutofillSaveCardDelegate {
   // Show users an explainer dialog describing why they need to set a device
   // lock and then redirects them to the Android OS device lock set up flow.
   void PromptUserToSetDeviceLock(
-      AutofillClient::UserProvidedCardDetails user_provided_details);
+      payments::PaymentsAutofillClient::UserProvidedCardDetails
+          user_provided_details);
 
   // Attempt to save card if user successfully sets a device lock, and runs
   // appropriate callbacks such as cleaning up pointers to this delegate that
   // have their lifecycle extended.
   void OnAfterDeviceLockUi(
-      AutofillClient::UserProvidedCardDetails user_provided_details,
+      payments::PaymentsAutofillClient::UserProvidedCardDetails
+          user_provided_details,
       bool is_device_lock_set);
 
   // AutofillSaveCardDelegate:
   void GatherAdditionalConsentIfApplicable(
-      AutofillClient::UserProvidedCardDetails user_provided_details) override;
+      payments::PaymentsAutofillClient::UserProvidedCardDetails
+          user_provided_details) override;
 
   raw_ptr<content::WebContents> web_contents_;
 

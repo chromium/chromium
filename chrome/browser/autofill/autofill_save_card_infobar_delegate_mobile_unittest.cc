@@ -106,7 +106,7 @@ class AutofillSaveCardInfoBarDelegateMobileTest
 
   void UploadSaveCardPromptCallback(
       payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
-      const AutofillClient::UserProvidedCardDetails&
+      const payments::PaymentsAutofillClient::UserProvidedCardDetails&
           user_provided_card_details) {
     personal_data_->test_payments_data_manager().SaveImportedCreditCard(
         credit_card_to_save_);

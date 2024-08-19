@@ -42,7 +42,8 @@ void AutofillSaveCardDelegate::OnUiAccepted(base::OnceClosure callback) {
 }
 
 void AutofillSaveCardDelegate::OnUiUpdatedAndAccepted(
-    AutofillClient::UserProvidedCardDetails user_provided_details) {
+    payments::PaymentsAutofillClient::UserProvidedCardDetails
+        user_provided_details) {
   LogInfoBarAction(AutofillMetrics::INFOBAR_ACCEPTED);
   GatherAdditionalConsentIfApplicable(user_provided_details);
 }
@@ -77,7 +78,8 @@ void AutofillSaveCardDelegate::OnUiIgnored() {
 
 void AutofillSaveCardDelegate::OnFinishedGatheringConsent(
     payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
-    AutofillClient::UserProvidedCardDetails user_provided_details) {
+    payments::PaymentsAutofillClient::UserProvidedCardDetails
+        user_provided_details) {
   RunSaveCardPromptCallback(user_decision, user_provided_details);
   if (!on_finished_gathering_consent_callback_.is_null()) {
     std::move(on_finished_gathering_consent_callback_).Run();
@@ -86,7 +88,8 @@ void AutofillSaveCardDelegate::OnFinishedGatheringConsent(
 
 void AutofillSaveCardDelegate::RunSaveCardPromptCallback(
     payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
-    AutofillClient::UserProvidedCardDetails user_provided_details) {
+    payments::PaymentsAutofillClient::UserProvidedCardDetails
+        user_provided_details) {
   if (is_for_upload()) {
     absl::get<payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>(
         std::move(save_card_callback_))
@@ -99,7 +102,8 @@ void AutofillSaveCardDelegate::RunSaveCardPromptCallback(
 }
 
 void AutofillSaveCardDelegate::GatherAdditionalConsentIfApplicable(
-    AutofillClient::UserProvidedCardDetails user_provided_details) {
+    payments::PaymentsAutofillClient::UserProvidedCardDetails
+        user_provided_details) {
   OnFinishedGatheringConsent(
       payments::PaymentsAutofillClient::SaveCardOfferUserDecision::kAccepted,
       user_provided_details);

@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -73,8 +72,8 @@ TEST_F(CWVCreditCardSaverTest, Ignore) {
       callback = base::BindLambdaForTesting(
           [&](autofill::payments::PaymentsAutofillClient::
                   SaveCardOfferUserDecision decision,
-              const autofill::AutofillClient::UserProvidedCardDetails&
-                  user_provided_card_details) {
+              const autofill::payments::PaymentsAutofillClient::
+                  UserProvidedCardDetails& user_provided_card_details) {
             callback_called = YES;
             EXPECT_EQ(autofill::payments::PaymentsAutofillClient::
                           SaveCardOfferUserDecision::kIgnored,
@@ -104,8 +103,8 @@ TEST_F(CWVCreditCardSaverTest, Decline) {
       callback = base::BindLambdaForTesting(
           [&](autofill::payments::PaymentsAutofillClient::
                   SaveCardOfferUserDecision decision,
-              const autofill::AutofillClient::UserProvidedCardDetails&
-                  user_provided_card_details) {
+              const autofill::payments::PaymentsAutofillClient::
+                  UserProvidedCardDetails& user_provided_card_details) {
             callback_called = YES;
             EXPECT_EQ(autofill::payments::PaymentsAutofillClient::
                           SaveCardOfferUserDecision::kDeclined,
@@ -132,8 +131,8 @@ TEST_F(CWVCreditCardSaverTest, Accept) {
       callback = base::BindLambdaForTesting(
           [&](autofill::payments::PaymentsAutofillClient::
                   SaveCardOfferUserDecision decision,
-              const autofill::AutofillClient::UserProvidedCardDetails&
-                  user_provided_card_details) {
+              const autofill::payments::PaymentsAutofillClient::
+                  UserProvidedCardDetails& user_provided_card_details) {
             callback_called = YES;
             EXPECT_EQ(autofill::payments::PaymentsAutofillClient::
                           SaveCardOfferUserDecision::kAccepted,

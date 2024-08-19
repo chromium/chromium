@@ -343,7 +343,7 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
  private:
   static void UploadSaveCardCallback(
       payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
-      const AutofillClient::UserProvidedCardDetails&
+      const payments::PaymentsAutofillClient::UserProvidedCardDetails&
           user_provided_card_details) {}
   static void LocalSaveCardCallback(
       payments::PaymentsAutofillClient::SaveCardOfferUserDecision

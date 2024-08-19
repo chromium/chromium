@@ -11,7 +11,6 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -22,7 +21,8 @@ namespace autofill {
 using InfoBarMetric = AutofillMetrics::InfoBarMetric;
 using SaveCardOfferUserDecision =
     payments::PaymentsAutofillClient::SaveCardOfferUserDecision;
-using UserProvidedCardDetails = AutofillClient::UserProvidedCardDetails;
+using UserProvidedCardDetails =
+    payments::PaymentsAutofillClient::UserProvidedCardDetails;
 using autofill_metrics::SaveCreditCardPromptResult;
 using CardSaveType = payments::PaymentsAutofillClient::CardSaveType;
 

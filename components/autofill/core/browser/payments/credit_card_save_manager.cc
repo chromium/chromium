@@ -1106,7 +1106,8 @@ int CreditCardSaveManager::GetDetectedValues() const {
 
 void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
     SaveCardOfferUserDecision user_decision,
-    const AutofillClient::UserProvidedCardDetails& user_provided_card_details) {
+    const payments::PaymentsAutofillClient::UserProvidedCardDetails&
+        user_provided_card_details) {
   switch (user_decision) {
     case SaveCardOfferUserDecision::kAccepted:
 
@@ -1142,7 +1143,8 @@ void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
 
 void CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave(
     SaveCardOfferUserDecision user_decision,
-    const AutofillClient::UserProvidedCardDetails& user_provided_card_details) {
+    const payments::PaymentsAutofillClient::UserProvidedCardDetails&
+        user_provided_card_details) {
   switch (user_decision) {
     case SaveCardOfferUserDecision::kAccepted: {
       // If accepted, clear all CvcStorage strikes for this CVC, in case the CVC
@@ -1216,7 +1218,8 @@ void CreditCardSaveManager::OnUserDidAcceptExpirationDateFixFlow(
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 void CreditCardSaveManager::OnUserDidAcceptUploadHelper(
-    const AutofillClient::UserProvidedCardDetails& user_provided_card_details) {
+    const payments::PaymentsAutofillClient::UserProvidedCardDetails&
+        user_provided_card_details) {
   // If cardholder name was explicitly requested for the user to enter/confirm,
   // replace the name on |upload_request_.card| with the entered name.  (Note
   // that it is possible a name already existed on the card if conflicting names

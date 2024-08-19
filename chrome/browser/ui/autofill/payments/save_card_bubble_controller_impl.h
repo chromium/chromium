@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -127,8 +126,9 @@ class SaveCardBubbleControllerImpl
   bool ShouldRequestExpirationDateFromUser() const override;
   ui::ImageModel GetCreditCardImage() const override;
 
-  void OnSaveButton(const AutofillClient::UserProvidedCardDetails&
-                        user_provided_card_details) override;
+  void OnSaveButton(
+      const payments::PaymentsAutofillClient::UserProvidedCardDetails&
+          user_provided_card_details) override;
   void OnLegalMessageLinkClicked(const GURL& url) override;
   void OnManageCardsClicked() override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;

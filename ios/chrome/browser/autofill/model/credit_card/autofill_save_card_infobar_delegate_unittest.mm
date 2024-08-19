@@ -7,7 +7,6 @@
 
 #import "base/functional/bind.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
@@ -34,7 +33,7 @@ class AutofillSaveCardInfoBarDelegateTest : public PlatformTest {
 
   void UploadSaveCardPromptCallbackFn(
       payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
-      const AutofillClient::UserProvidedCardDetails&
+      const payments::PaymentsAutofillClient::UserProvidedCardDetails&
           user_provided_card_details) {
     last_user_decision_ = user_decision;
     last_user_provided_card_details_ = user_provided_card_details;
@@ -82,7 +81,7 @@ class AutofillSaveCardInfoBarDelegateTest : public PlatformTest {
   std::unique_ptr<AutofillSaveCardInfoBarDelegateIOS> delegate_;
   std::optional<payments::PaymentsAutofillClient::SaveCardOfferUserDecision>
       last_user_decision_;
-  std::optional<AutofillClient::UserProvidedCardDetails>
+  std::optional<payments::PaymentsAutofillClient::UserProvidedCardDetails>
       last_user_provided_card_details_;
   std::optional<bool> card_saved_;
   bool ran_on_confirmation_closed_callback_ = false;

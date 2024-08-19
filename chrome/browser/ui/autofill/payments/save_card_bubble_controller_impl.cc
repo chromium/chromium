@@ -31,7 +31,6 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
@@ -443,7 +442,8 @@ ui::ImageModel SaveCardBubbleControllerImpl::GetCreditCardImage() const {
 }
 
 void SaveCardBubbleControllerImpl::OnSaveButton(
-    const AutofillClient::UserProvidedCardDetails& user_provided_card_details) {
+    const payments::PaymentsAutofillClient::UserProvidedCardDetails&
+        user_provided_card_details) {
   switch (current_bubble_type_) {
     case BubbleType::UPLOAD_SAVE: {
       CHECK(!upload_save_card_prompt_callback_.is_null());
