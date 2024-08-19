@@ -339,8 +339,11 @@ std::vector<std::string>
 SodaInstallerImplChromeOS::GetLiveCaptionEnabledLanguages() const {
   auto enabled_languages = SodaInstaller::GetLiveCaptionEnabledLanguages();
   // extra CrOS languages.
-  for (const char* const enabled_language : kDefaultCrOSEnabledLanguages) {
-    enabled_languages.push_back(enabled_language);
+  if (base::FeatureList::IsEnabled(kFeatureManagementCrosSodaConchLanguages) &&
+      base::FeatureList::IsEnabled(kCrosSodaConchLanguages)) {
+    for (const char* const enabled_language : kDefaultCrOSEnabledLanguages) {
+      enabled_languages.push_back(enabled_language);
+    }
   }
   return enabled_languages;
 }

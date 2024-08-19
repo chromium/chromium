@@ -158,18 +158,12 @@ TEST_F(SodaInstallerImplChromeOSTest, IsDownloading) {
   ASSERT_FALSE(IsSodaDownloading());
 }
 
-TEST_F(SodaInstallerImplChromeOSTest, OnlyEnglishAvailable) {
-  std::vector<std::string> actual_langs =
-      GetInstance()->GetAvailableLanguages();
-  EXPECT_THAT(actual_langs, ::testing::UnorderedElementsAre("en-US"));
-}
-
 TEST_F(SodaInstallerImplChromeOSTest, SubSetCorrect) {
   std::vector<std::string> actual_langs =
       GetInstance()->GetAvailableLanguages();
-  auto expected_available_langs =
+  auto expected_livecaption_langs =
       GetInstance()->GetLiveCaptionEnabledLanguages();
-  EXPECT_THAT(actual_langs, ::testing::IsSubsetOf(expected_available_langs));
+  EXPECT_THAT(expected_livecaption_langs, ::testing::IsSubsetOf(actual_langs));
 }
 
 TEST_F(SodaInstallerImplChromeOSTest, MultipleLangsAvailableInExperiment) {
