@@ -100,6 +100,7 @@ class FingerprintingProtectionWebContentsHelper
       content::NavigationHandle* navigation_handle) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
+  void WebContentsDestroyed() override;
 
  private:
   explicit FingerprintingProtectionWebContentsHelper(
@@ -107,6 +108,8 @@ class FingerprintingProtectionWebContentsHelper
       PrefService* pref_service,
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       subresource_filter::VerifiedRulesetDealer::Handle* dealer_handle);
+
+  void Detach();
 
   friend class content::WebContentsUserData<
       FingerprintingProtectionWebContentsHelper>;
@@ -121,6 +124,9 @@ class FingerprintingProtectionWebContentsHelper
   base::flat_set<raw_ptr<ThrottleManager, CtnExperimental>> throttle_managers_;
 
   bool is_subresource_blocked_ = false;
+
+  // Tracks refreshes observed.
+  int refresh_count_ = 0;
 
   base::ObserverList<FingerprintingProtectionObserver>::Unchecked
       observer_list_;

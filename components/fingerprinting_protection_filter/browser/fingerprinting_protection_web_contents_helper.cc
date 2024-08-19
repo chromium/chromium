@@ -5,6 +5,7 @@
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_observer.h"
 #include "components/fingerprinting_protection_filter/browser/throttle_manager.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
@@ -226,6 +227,9 @@ void FingerprintingProtectionWebContentsHelper::ReadyToCommitNavigation(
 
 void FingerprintingProtectionWebContentsHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->GetReloadType() != content::ReloadType::NONE) {
+    refresh_count_++;
+  }
   if (navigation_handle->IsPrerenderedPageActivation() ||
       navigation_handle->IsServedFromBackForwardCache()) {
     if (!navigation_handle->HasCommitted()) {
@@ -329,6 +333,18 @@ void FingerprintingProtectionWebContentsHelper::NotifyOnBlockedResources() {
   for (auto& observer : observer_list_) {
     observer.OnSubresourceBlocked();
   }
+}
+
+void FingerprintingProtectionWebContentsHelper::WebContentsDestroyed() {
+  // The user has closed the tab or otherwise destroyed the web contents. Flush
+  // metrics.
+  Detach();
+}
+
+void FingerprintingProtectionWebContentsHelper::Detach() {
+  base::UmaHistogramCounts100(
+      "FingerprintingProtection.WebContentsObserver.RefreshCount",
+      refresh_count_);
 }
 
 void FingerprintingProtectionWebContentsHelper::AddObserver(
