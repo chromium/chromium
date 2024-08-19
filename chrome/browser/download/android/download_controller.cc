@@ -240,6 +240,9 @@ void RecordDownloadBlocklistState(download::DownloadItem* item) {
 void CleanupAppVerificationTimestamps(download::DownloadItem* item) {
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item));
+  if (!profile || !profile->GetPrefs()) {
+    return;
+  }
   ScopedListPrefUpdate update(profile->GetPrefs(),
                               prefs::kDownloadAppVerificationPromptTimestamps);
   update->EraseIf([](const base::Value& timestamp) {
@@ -258,6 +261,9 @@ bool HasSeenTooManyAppVerificationPrompts(download::DownloadItem* item) {
   constexpr size_t kMaxImpressions = 3;
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item));
+  if (!profile || !profile->GetPrefs()) {
+    return false;
+  }
   return profile->GetPrefs()
              ->GetList(prefs::kDownloadAppVerificationPromptTimestamps)
              .size() >= kMaxImpressions;
@@ -266,6 +272,9 @@ bool HasSeenTooManyAppVerificationPrompts(download::DownloadItem* item) {
 void LogAppVerificationPromptToPrefs(download::DownloadItem* item) {
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item));
+  if (!profile || !profile->GetPrefs()) {
+    return;
+  }
   ScopedListPrefUpdate update(profile->GetPrefs(),
                               prefs::kDownloadAppVerificationPromptTimestamps);
   update->Append(base::TimeToValue(base::Time::Now()));
