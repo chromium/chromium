@@ -813,8 +813,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Sync.DataTypeStoreInitializationSuccess" enum="BooleanSuccess"
-    expires_after="2024-09-30">
+<histogram name="Sync.DataTypeStoreBackendInitializationSuccess"
+    enum="BooleanSuccess" expires_after="2024-09-30">
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -1314,7 +1314,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Sync.ModelTypeStoreInitializationSuccess"
+<histogram name="Sync.ModelTypeStoreBackendInitializationSuccess"
     enum="BooleanSuccess" expires_after="M135">
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
