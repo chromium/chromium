@@ -5113,10 +5113,45 @@ TEST_F(PasswordAutofillAgentTest, TimesReceivedFillDataForFormMetric) {
 }
 
 // Tests that if a password form was focused before parsing happened,
-// suggestions are shown to the user once the form is parsed.
-TEST_F(PasswordAutofillAgentTest, ShowSuggestionsOnParsingAutofocusedForm) {
+// suggestions are shown to the user once the form is parsed on Desktop,
+// but not on Android.
+TEST_F(PasswordAutofillAgentTest,
+       ShowSuggestionsOnParsingAutofocusedPasswordForm) {
   scoped_feature_list_.InitAndEnableFeature(
       password_manager::features::kShowSuggestionsOnAutofocus);
+
+#if BUILDFLAG(IS_ANDROID)
+  // A fixture needed to properly test suggestions showing on Android.
+  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
+  // The method above leaves the field focused, which is not needed for this
+  // test.
+  BlurElement(kUsernameName);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  FocusElement(kUsernameName);
+  CheckSuggestionsNotShown();
+
+  // Simulate receiving credentials for filling from the browser and verify that
+  // suggestions are shown to the user.
+  fill_data_.wait_for_username = true;
+  SimulateOnFillPasswordForm(fill_data_);
+#if BUILDFLAG(IS_ANDROID)
+  CheckSuggestionsNotShown();
+#else
+  CheckSuggestions(/*typed_username=*/u"", true);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+// Tests that if a password form supporting WebAuthn was focused before parsing
+// happened, suggestions are shown to the user once the form is parsed on all
+// platforms.
+TEST_F(PasswordAutofillAgentTest,
+       ShowSuggestionsOnParsingAutofocusedWebAuthnForm) {
+  scoped_feature_list_.InitAndEnableFeature(
+      password_manager::features::kShowSuggestionsOnAutofocus);
+  LoadHTML(kWebAutnFieldHTML);
+  UpdateUsernameAndPasswordElements();
+  UpdateRendererIDsInFillData();
 
 #if BUILDFLAG(IS_ANDROID)
   // A fixture needed to properly test suggestions showing on Android.
@@ -5168,7 +5203,7 @@ TEST_F(PasswordAutofillAgentTest,
 // Tests that if a password form is not focused, suggestions are not shown to
 // the user once the form is parsed.
 TEST_F(PasswordAutofillAgentTest,
-       DoNotShowSuggestionsOnParsingWebAuthnFormWithoutFocus) {
+       DoNotShowSuggestionsOnParsingFormWithoutFocus) {
   scoped_feature_list_.InitAndEnableFeature(
       password_manager::features::kShowSuggestionsOnAutofocus);
 

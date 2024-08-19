@@ -2377,6 +2377,11 @@ void PasswordAutofillAgent::MaybeTriggerSuggestionsOnFocusedElement(
   auto form_data =
       GetFormDataFromWebForm(form_util::GetOwningForm(focused_element));
   if (form_data && (times_received_fill_data_[form_data->renderer_id()] == 1) &&
+#if BUILDFLAG(IS_ANDROID)
+      // Limit showing suggestions on autofocus to WebAuthn forms only, since
+      // Android suggestion UI (TTF) can be much more intrusive.
+      IsWebAuthnForm(form_data) &&
+#endif  // BUILDFLAG(IS_ANDROID)
       base::FeatureList::IsEnabled(
           password_manager::features::kShowSuggestionsOnAutofocus)) {
     autofill_agent_->TriggerSuggestions(
