@@ -14,7 +14,10 @@ static_library("throttle") {
     "crostini_throttle.h",
   ]
 
-  public_deps = [ "//components/keyed_service/core" ]
+  public_deps = [
+    "//chromeos/ash/components/throttle",
+    "//components/keyed_service/core",
+  ]
 
   deps = [
     "//ash/public/cpp",

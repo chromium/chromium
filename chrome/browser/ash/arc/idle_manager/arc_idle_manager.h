@@ -15,7 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/timer/elapsed_timer.h"
-#include "chrome/browser/ash/throttle_service.h"
+#include "chromeos/ash/components/throttle/throttle_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/display/manager/display_configurator.h"
 

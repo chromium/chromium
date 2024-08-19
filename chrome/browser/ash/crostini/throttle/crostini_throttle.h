@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "chrome/browser/ash/throttle_service.h"
+#include "chromeos/ash/components/throttle/throttle_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

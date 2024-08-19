@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_THROTTLE_SERVICE_H_
-#define CHROME_BROWSER_ASH_THROTTLE_SERVICE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_THROTTLE_THROTTLE_SERVICE_H_
+#define CHROMEOS_ASH_COMPONENTS_THROTTLE_THROTTLE_SERVICE_H_
 
 #include <memory>
 #include <optional>
@@ -14,7 +14,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/throttle_observer.h"
+#include "base/component_export.h"
+#include "chromeos/ash/components/throttle/throttle_observer.h"
 
 namespace content {
 class BrowserContext;
@@ -27,7 +28,7 @@ namespace ash {
 // conditions. When the observers change from active to inactive or vice-versa,
 // OnObserverStateChanged checks if there is an active observer and calls
 // ThrottleInstance accordingly.
-class ThrottleService {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_THROTTLE) ThrottleService {
  public:
   class ServiceObserver : public base::CheckedObserver {
    public:
@@ -108,4 +109,4 @@ class ThrottleService {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_THROTTLE_SERVICE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_THROTTLE_THROTTLE_SERVICE_H_

@@ -41,16 +41,10 @@ static_library("ash") {
     "note_taking/note_taking_helper.h",
     "system_token_cert_db_initializer.cc",
     "system_token_cert_db_initializer.h",
-    "throttle_observer.cc",
-    "throttle_observer.h",
-    "throttle_service.cc",
-    "throttle_service.h",
     "tpm_firmware_update.cc",
     "tpm_firmware_update.h",
     "tpm_firmware_update_notification.cc",
     "tpm_firmware_update_notification.h",
-    "window_throttle_observer_base.cc",
-    "window_throttle_observer_base.h",
   ]
 
   allow_circular_includes_from = [
@@ -1350,8 +1344,6 @@ source_set("unit_tests") {
     "note_taking/note_taking_helper_unittest.cc",
     "proxy_config_service_impl_unittest.cc",
     "system_token_cert_db_initializer_unittest.cc",
-    "throttle_observer_unittest.cc",
-    "throttle_service_unittest.cc",
     "tpm_firmware_update_unittest.cc",
   ]
 

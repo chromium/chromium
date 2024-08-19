@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/window_throttle_observer_base.h"
+#include "chromeos/ash/components/throttle/window_throttle_observer_base.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "components/exo/wm_helper.h"

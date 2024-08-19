@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/throttle_service.h"
+#include "chromeos/ash/components/throttle/throttle_service.h"
 
 #include <utility>
 
-#include "chrome/test/base/testing_profile.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -80,7 +80,7 @@ class TestThrottleService : public ThrottleService {
 
 class ThrottleServiceTest : public testing::Test {
  public:
-  ThrottleServiceTest() : service_(&profile_) {
+  ThrottleServiceTest() {
     std::vector<std::unique_ptr<ThrottleObserver>> observers;
     observers.push_back(std::make_unique<ThrottleObserver>(kFirstObserverName));
     observers.push_back(
@@ -96,8 +96,8 @@ class ThrottleServiceTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
-  TestThrottleService service_;
+  content::TestBrowserContext browser_context_;
+  TestThrottleService service_{&browser_context_};
 };
 
 TEST_F(ThrottleServiceTest, TestConstructDestruct) {}

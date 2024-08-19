@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_WINDOW_THROTTLE_OBSERVER_BASE_H_
-#define CHROME_BROWSER_ASH_WINDOW_THROTTLE_OBSERVER_BASE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_THROTTLE_WINDOW_THROTTLE_OBSERVER_BASE_H_
+#define CHROMEOS_ASH_COMPONENTS_THROTTLE_WINDOW_THROTTLE_OBSERVER_BASE_H_
 
-#include "chrome/browser/ash/throttle_observer.h"
+#include "chromeos/ash/components/throttle/throttle_observer.h"
+#include "base/component_export.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace content {
@@ -19,8 +20,9 @@ class Window;
 namespace ash {
 
 // Base class for locks that observe changes in window activation.
-class WindowThrottleObserverBase : public ThrottleObserver,
-                                   public wm::ActivationChangeObserver {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_THROTTLE)
+    WindowThrottleObserverBase : public ThrottleObserver,
+                                 public wm::ActivationChangeObserver {
  public:
   explicit WindowThrottleObserverBase(const std::string& name);
 
@@ -50,4 +52,4 @@ class WindowThrottleObserverBase : public ThrottleObserver,
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_WINDOW_THROTTLE_OBSERVER_BASE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_THROTTLE_WINDOW_THROTTLE_OBSERVER_BASE_H_

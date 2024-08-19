@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_THROTTLE_OBSERVER_H_
-#define CHROME_BROWSER_ASH_THROTTLE_OBSERVER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_THROTTLE_THROTTLE_OBSERVER_H_
+#define CHROMEOS_ASH_COMPONENTS_THROTTLE_THROTTLE_OBSERVER_H_
 
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
+#include "base/component_export.h"
 
 namespace content {
 class BrowserContext;
@@ -20,7 +21,7 @@ namespace ash {
 // Base throttle observer class. Each throttle observer watches a particular
 // condition (window activates, mojom instance disconnects, and so on) and
 // calls the ObserverStateChangedCallback when there is a change.
-class ThrottleObserver {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_THROTTLE) ThrottleObserver {
  public:
   using ObserverStateChangedCallback =
       base::RepeatingCallback<void(const ThrottleObserver*)>;
@@ -73,4 +74,4 @@ class ThrottleObserver {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_THROTTLE_OBSERVER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_THROTTLE_THROTTLE_OBSERVER_H_

@@ -1,0 +1,12 @@
+include_rules = [
+  "+ash/public/cpp",
+  "+components/exo",
+  "+ui/aura",
+  "+ui/wm/public",
+]
+
+specific_include_rules = {
+  "throttle_service_unittest\.cc": [
+    "+content/public/test",
+  ],
+}

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/idle_manager/arc_throttle_test_observer.h"
 
-#include "chrome/browser/ash/throttle_observer.h"
+#include "chromeos/ash/components/throttle/throttle_observer.h"
 
 namespace arc::unittest {
 

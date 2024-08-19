@@ -66,6 +66,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/system_info:unit_tests",
     "//chromeos/ash/components/telemetry_extension:unit_tests",
     "//chromeos/ash/components/tether:unit_tests",
+    "//chromeos/ash/components/throttle:unit_tests",
     "//chromeos/ash/components/timezone:unit_tests",
     "//chromeos/ash/components/tpm:unit_tests",
     "//chromeos/ash/components/trash_service:unit_tests",
