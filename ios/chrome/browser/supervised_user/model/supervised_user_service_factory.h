@@ -5,11 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-
-class ChromeBrowserState;
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "components/supervised_user/core/browser/supervised_user_service.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace supervised_user {
 // Factory helper method that returns true if we need to show the first

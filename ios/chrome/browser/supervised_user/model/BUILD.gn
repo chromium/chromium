@@ -41,6 +41,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
@@ -71,6 +72,7 @@ source_set("capabilities") {
     "//components/supervised_user/core/common",
     "//components/supervised_user/core/common:features",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:capabilities_types",
     "//ios/web/public",
@@ -86,6 +88,7 @@ source_set("sync_settings_factory") {
     "//components/keyed_service/ios",
     "//components/supervised_user/core/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }
 
