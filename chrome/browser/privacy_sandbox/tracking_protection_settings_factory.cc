@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -41,7 +40,6 @@ TrackingProtectionSettingsFactory::TrackingProtectionSettingsFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
-  DependsOn(TrackingProtectionOnboardingFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
@@ -71,6 +69,5 @@ TrackingProtectionSettingsFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
       profile->GetPrefs(),
       HostContentSettingsMapFactory::GetForProfile(profile),
-      TrackingProtectionOnboardingFactory::GetForProfile(profile),
       profile->IsIncognitoProfile());
 }

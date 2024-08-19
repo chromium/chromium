@@ -297,6 +297,9 @@ class ThirdPartyCookieDeprecationObserverBaseBrowserTest
     EXPECT_EQ(onboarding_service()->GetOnboardingStatus(),
               privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
                   kOnboarded);
+    // Enable 3pcd as it's no longer done through the onboarding service.
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kTrackingProtection3pcdEnabled, true);
   }
 
   content::WebContents* web_contents() {

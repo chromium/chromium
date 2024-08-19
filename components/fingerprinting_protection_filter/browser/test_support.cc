@@ -33,7 +33,6 @@ TestSupport::TestSupport()
     : host_content_settings_map_(InitializePrefs()),
       tracking_protection_settings_(prefs(),
                                     host_content_settings_map_.get(),
-                                    /*onboarding_service=*/nullptr,
                                     /*is_incognito=*/false) {}
 
 TestSupport::~TestSupport() {

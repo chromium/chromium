@@ -827,6 +827,7 @@ TEST_P(ThirdPartyCookiesBlockedByCookieDeprecationExperimentTest,
     onboarding_service->MaybeMarkModeBEligible();
     onboarding_service->NoticeShown(SurfaceType::kDesktop,
                                     NoticeType::kModeBOnboarding);
+    prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
   }
 
   prefs()->SetInteger(prefs::kCookieControlsMode,

@@ -192,7 +192,7 @@ class IpProtectionConfigProviderTest : public testing::Test {
         std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
             prefs(),
             /*host_content_settings_map=*/host_content_settings_map_.get(),
-            /*onboarding_service=*/nullptr, /*is_incognito=*/false);
+            /*is_incognito=*/false);
     auto bsa = std::make_unique<MockBlindSignAuth>();
     bsa_ = bsa.get();
     getter_ = std::make_unique<IpProtectionConfigProvider>(
