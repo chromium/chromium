@@ -92,11 +92,17 @@ def _apply_mixin(spec, mixin_values):
 
     return structs.evolve(spec, value = spec_value), None
 
+def _test_expansion(*, spec, source):
+    return struct(
+        spec = spec,
+        source = source,
+    )
+
 def _get_bundle_resolver():
-    def resolved_bundle(*, additional_compile_targets, test_spec_and_source_by_name):
+    def resolved_bundle(*, additional_compile_targets, test_expansion_by_name):
         return struct(
             additional_compile_targets = additional_compile_targets,
-            test_spec_and_source_by_name = test_spec_and_source_by_name,
+            test_expansion_by_name = test_expansion_by_name,
         )
 
     def visitor(_, children):
@@ -115,7 +121,7 @@ def _get_bundle_resolver():
             # resulting from
             additional_compile_targets = set([t.key.id for t in graph.children(n.key, _targets_nodes.COMPILE_TARGET.kind)])
 
-            test_spec_and_source_by_name = {}
+            test_expansion_by_name = {}
             for test in graph.children(n.key, kind = _targets_nodes.TEST.kind):
                 spec_handler = test.props.spec_handler
                 spec_value = spec_handler.init(test, settings)
@@ -129,26 +135,30 @@ def _get_bundle_resolver():
                     if error:
                         fail("modifying {} {} with {} failed: {}"
                             .format(spec.handler.type_name, test.key.id, m, error))
-                test_spec_and_source_by_name[test.key.id] = spec, n.key
+                test_expansion_by_name[test.key.id] = _test_expansion(
+                    spec = spec,
+                    source = n.key,
+                )
 
             for child in graph.children(n.key, kind = _targets_nodes.BUNDLE.kind):
                 child_resolved_bundle = resolved_bundle_by_bundle_node[child]
                 additional_compile_targets = additional_compile_targets | child_resolved_bundle.additional_compile_targets
-                for name, (spec, source) in child_resolved_bundle.test_spec_and_source_by_name.items():
-                    if name in test_spec_and_source_by_name:
-                        existing_spec, existing_source = test_spec_and_source_by_name[name]
-                        if existing_spec != spec:
+                for name, test_expansion in child_resolved_bundle.test_expansion_by_name.items():
+                    if name in test_expansion_by_name:
+                        existing_test_expansion = test_expansion_by_name[name]
+                        if existing_test_expansion.spec != test_expansion.spec:
                             fail("target {} has conflicting definitions in deps of {}\n  {}: {}\n  {}: {}".format(
                                 name,
                                 n.key,
-                                existing_source,
-                                existing_spec,
-                                source,
-                                spec,
+                                existing_test_expansion.source,
+                                existing_test_expansion.spec,
+                                test_expansion.source,
+                                test_expansion.spec,
                             ))
-                    test_spec_and_source_by_name[name] = (spec, source)
+                    test_expansion_by_name[name] = test_expansion
 
-            def update_spec_with_mixin(test_name, spec, mixin, *, ignore_error = False):
+            def update_spec_with_mixin(test_name, test_expansion, mixin, *, ignore_error = False):
+                spec = test_expansion.spec
                 new_spec, error = _apply_mixin(spec, mixin.props.mixin_values)
                 if error:
                     if ignore_error:
@@ -158,28 +168,28 @@ def _get_bundle_resolver():
                             .format(spec.handler.type_name, test_name, mixin, error),
                         trace = n.props.stacktrace,
                     )
-                test_spec_and_source_by_name[test_name] = new_spec, n.key
+                test_expansion_by_name[test_name] = structs.evolve(test_expansion, spec = new_spec, source = n.key)
 
             for name in n.props.tests_to_remove:
-                if name not in test_spec_and_source_by_name:
+                if name not in test_expansion_by_name:
                     fail(
                         "attempting to remove test '{}' that is not contained in the bundle"
                             .format(name),
                         trace = n.props.stacktrace,
                     )
-                test_spec_and_source_by_name.pop(name)
+                test_expansion_by_name.pop(name)
 
             # The order that mixins are declared is significant,
             # DEFINITION_ORDER preserves the order that the edges were added
             # from the parent to the child
             for mixin in graph.children(n.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER):
-                for name, (spec, _) in test_spec_and_source_by_name.items():
+                for name, test_expansion in test_expansion_by_name.items():
                     # We don't care if a mixin applied at bundle level doesn't
                     # apply to every test, so ignore errors
-                    update_spec_with_mixin(name, spec, mixin, ignore_error = True)
+                    update_spec_with_mixin(name, test_expansion, mixin, ignore_error = True)
             for per_test_modification in graph.children(n.key, kind = _targets_nodes.PER_TEST_MODIFICATION.kind):
                 name = per_test_modification.key.id
-                if name not in test_spec_and_source_by_name:
+                if name not in test_expansion_by_name:
                     fail(
                         "attempting to modify test '{}' that is not contained in the bundle"
                             .format(name),
@@ -190,17 +200,17 @@ def _get_bundle_resolver():
                 # DEFINITION_ORDER preserves the order that the edges were added
                 # from the parent to the child
                 for mixin in graph.children(per_test_modification.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER):
-                    update_spec_with_mixin(name, test_spec_and_source_by_name[name][0], mixin)
+                    update_spec_with_mixin(name, test_expansion_by_name[name], mixin)
 
             resolved_bundle_by_bundle_node[n] = resolved_bundle(
                 additional_compile_targets = additional_compile_targets,
-                test_spec_and_source_by_name = test_spec_and_source_by_name,
+                test_expansion_by_name = test_expansion_by_name,
             )
 
         resolved = resolved_bundle_by_bundle_node[bundle_node]
         return (
             resolved.additional_compile_targets,
-            {name: spec for name, (spec, _) in resolved.test_spec_and_source_by_name.items()},
+            {name: test_expansion.spec for name, test_expansion in resolved.test_expansion_by_name.items()},
         )
 
     return resolve
