@@ -357,7 +357,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool OnFileTransferPolicyUpdate(const base::Value::Dict& policies);
   bool OnEnableUserInterfacePolicyUpdate(const base::Value::Dict& policies);
   bool OnAllowRemoteAccessConnections(const base::Value::Dict& policies);
-  bool OnMaxSessionDurationPolicyUpdate(const base::Value::Dict& policies);
   bool OnMaxClipboardSizePolicyUpdate(const base::Value::Dict& policies);
   bool OnUrlForwardingPolicyUpdate(const base::Value::Dict& policies);
   bool OnAllowPinAuthenticationUpdate(const base::Value::Dict& policies);
@@ -445,7 +444,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   DesktopEnvironmentOptions desktop_environment_options_;
   bool security_key_auth_policy_enabled_ = false;
   bool security_key_extension_supported_ = true;
-  std::optional<int> max_session_duration_minutes_;
 
   // Allows us to override field trials which are causing issues for chromoting.
   std::unique_ptr<base::FieldTrialList> field_trial_list_;
@@ -1285,7 +1283,6 @@ void HostProcess::OnPolicyUpdate(base::Value::Dict policies) {
   restart_required |= OnFileTransferPolicyUpdate(policies);
   restart_required |= OnEnableUserInterfacePolicyUpdate(policies);
   restart_required |= OnAllowRemoteAccessConnections(policies);
-  restart_required |= OnMaxSessionDurationPolicyUpdate(policies);
   restart_required |= OnMaxClipboardSizePolicyUpdate(policies);
   restart_required |= OnUrlForwardingPolicyUpdate(policies);
   restart_required |= OnAllowPinAuthenticationUpdate(policies);
@@ -1702,29 +1699,6 @@ bool HostProcess::OnEnableUserInterfacePolicyUpdate(
   return true;
 }
 
-bool HostProcess::OnMaxSessionDurationPolicyUpdate(
-    const base::Value::Dict& policies) {
-  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-
-  std::optional<int> value = policies.FindInt(
-      policy::key::kRemoteAccessHostMaximumSessionDurationMinutes);
-  if (!value) {
-    return false;
-  }
-
-  max_session_duration_minutes_ = *value;
-
-  if (max_session_duration_minutes_ > 0) {
-    HOST_LOG << "Policy sets maximum session duration to "
-             << max_session_duration_minutes_.value() << " minutes.";
-  } else {
-    HOST_LOG << "Policy does not set a maximum session duration.";
-  }
-
-  // Restart required.
-  return true;
-}
-
 bool HostProcess::OnMaxClipboardSizePolicyUpdate(
     const base::Value::Dict& policies) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
@@ -1934,11 +1908,6 @@ void HostProcess::StartHost() {
   }
 
   host_->AddExtension(std::make_unique<TestEchoExtension>());
-
-  if (max_session_duration_minutes_ && max_session_duration_minutes_ > 0) {
-    host_->SetMaximumSessionDuration(
-        base::Minutes(max_session_duration_minutes_.value()));
-  }
 
   host_status_logger_ = std::make_unique<HostStatusLogger>(
       host_->status_monitor(), log_to_server_.get());

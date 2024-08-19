@@ -158,11 +158,6 @@ void ChromotingHost::SetAuthenticatorFactory(
   session_manager_->set_authenticator_factory(std::move(authenticator_factory));
 }
 
-void ChromotingHost::SetMaximumSessionDuration(
-    const base::TimeDelta& max_session_duration) {
-  max_session_duration_ = max_session_duration;
-}
-
 void ChromotingHost::SetLocalSessionPolicies(const SessionPolicies& policies) {
   local_session_policies_ = policies;
   for (auto& client : clients_) {
@@ -326,8 +321,8 @@ void ChromotingHost::OnIncomingSession(
   }
   clients_.push_back(std::make_unique<ClientSession>(
       this, std::move(connection), desktop_environment_factory_,
-      desktop_environment_options_, max_session_duration_, pairing_registry_,
-      extension_ptrs, local_session_policies_));
+      desktop_environment_options_, pairing_registry_, extension_ptrs,
+      local_session_policies_));
 }
 
 ClientSession* ChromotingHost::GetConnectedClientSession() const {

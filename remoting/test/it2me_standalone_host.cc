@@ -93,8 +93,7 @@ void It2MeStandaloneHost::Connect() {
   options.set_enable_user_interface(false);
   session_ = std::make_unique<ClientSession>(
       &handler_, std::unique_ptr<protocol::ConnectionToClient>(&connection_),
-      &factory_, options, base::TimeDelta(),
-      scoped_refptr<protocol::PairingRegistry>(),
+      &factory_, options, scoped_refptr<protocol::PairingRegistry>(),
       std::vector<raw_ptr<HostExtension, VectorExperimental>>(),
       SessionPolicies());
   session_->OnConnectionAuthenticated();

@@ -199,7 +199,8 @@ class ClientSessionTest : public testing::Test {
   int curr_display_;
 
   // Message loop that will process all ClientSession tasks.
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   // AutoThreadTaskRunner on which |client_session_| will be run.
   scoped_refptr<AutoThreadTaskRunner> task_runner_;
@@ -243,6 +244,9 @@ void ClientSessionTest::SetUp() {
       std::make_unique<FakeDesktopEnvironmentFactory>(
           task_environment_.GetMainThreadTaskRunner());
   desktop_environment_options_ = DesktopEnvironmentOptions::CreateDefault();
+
+  // Suppress spammy "uninteresting call" logs.
+  EXPECT_CALL(client_stub_, SetCursorShape(_)).Times(testing::AnyNumber());
 }
 
 void ClientSessionTest::TearDown() {
@@ -273,8 +277,8 @@ void ClientSessionTest::CreateClientSession(
 
   client_session_ = std::make_unique<ClientSession>(
       &session_event_handler_, std::move(connection),
-      desktop_environment_factory_.get(), desktop_environment_options_,
-      base::TimeDelta(), nullptr, extensions_, kInitialLocalPolicies);
+      desktop_environment_factory_.get(), desktop_environment_options_, nullptr,
+      extensions_, kInitialLocalPolicies);
 }
 
 void ClientSessionTest::CreateClientSession() {
@@ -483,6 +487,20 @@ TEST_F(ClientSessionTest,
   EXPECT_TRUE(connection_->is_connected());
   client_session_->OnLocalPoliciesChanged(
       {.maximum_session_duration = base::Hours(23)});
+  EXPECT_FALSE(connection_->is_connected());
+}
+
+TEST_F(ClientSessionTest, DisconnectsAfterMaxSessionDurationIsReached) {
+  CreateClientSession();
+  ConnectClientSession();
+
+  EXPECT_TRUE(connection_->is_connected());
+  // Calling FastForwardBy() would result in a livelock, so we just advance the
+  // clock and run all the scheduled tasks, which includes the max duration
+  // timer.
+  task_environment_.AdvanceClock(
+      *kInitialLocalPolicies.maximum_session_duration + base::Minutes(1));
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(connection_->is_connected());
 }
 

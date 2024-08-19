@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "remoting/base/capabilities.h"
 #include "remoting/base/constants.h"
@@ -82,7 +83,6 @@ ClientSession::ClientSession(
     std::unique_ptr<protocol::ConnectionToClient> connection,
     DesktopEnvironmentFactory* desktop_environment_factory,
     const DesktopEnvironmentOptions& desktop_environment_options,
-    const base::TimeDelta& max_duration,
     scoped_refptr<protocol::PairingRegistry> pairing_registry,
     const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions,
     const SessionPolicies& local_policies)
@@ -98,7 +98,6 @@ ClientSession::ClientSession(
       host_clipboard_filter_(clipboard_echo_filter_.host_filter()),
       client_clipboard_filter_(clipboard_echo_filter_.client_filter()),
       client_clipboard_factory_(&client_clipboard_filter_),
-      max_duration_(max_duration),
       pairing_registry_(pairing_registry),
       connection_(std::move(connection)),
       client_jid_(connection_->session()->jid()),
@@ -511,9 +510,11 @@ void ClientSession::OnConnectionAuthenticated() {
   HOST_LOG << "Connection authenticated with session policies: "
            << effective_policies_;
 
-  if (max_duration_.is_positive()) {
+  base::TimeDelta max_duration =
+      effective_policies_.maximum_session_duration.value_or(base::TimeDelta());
+  if (max_duration.is_positive()) {
     max_duration_timer_.Start(
-        FROM_HERE, max_duration_,
+        FROM_HERE, max_duration,
         base::BindOnce(&ClientSession::DisconnectSession,
                        base::Unretained(this), ErrorCode::MAX_SESSION_LENGTH));
   }

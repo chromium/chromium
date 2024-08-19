@@ -125,7 +125,6 @@ class ClientSession : public protocol::HostStub,
       std::unique_ptr<protocol::ConnectionToClient> connection,
       DesktopEnvironmentFactory* desktop_environment_factory,
       const DesktopEnvironmentOptions& desktop_environment_options,
-      const base::TimeDelta& max_duration,
       scoped_refptr<protocol::PairingRegistry> pairing_registry,
       const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions,
       const SessionPolicies& local_policies);
@@ -339,10 +338,6 @@ class ClientSession : public protocol::HostStub,
   // This must appear after |clipboard_echo_filter_|, so that it won't outlive
   // it.
   base::WeakPtrFactory<protocol::ClipboardStub> client_clipboard_factory_;
-
-  // The maximum duration of this session.
-  // There is no maximum if this value is <= 0.
-  base::TimeDelta max_duration_;
 
   // A timer that triggers a disconnect when the maximum session duration
   // is reached.

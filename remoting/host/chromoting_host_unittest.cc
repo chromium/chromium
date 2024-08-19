@@ -149,7 +149,7 @@ class ChromotingHostTest : public testing::Test {
     protocol::ConnectionToClient* connection_ptr = connection.get();
     auto client = std::make_unique<ClientSession>(
         host_.get(), std::move(connection), desktop_environment_factory_.get(),
-        DesktopEnvironmentOptions::CreateDefault(), base::TimeDelta(), nullptr,
+        DesktopEnvironmentOptions::CreateDefault(), nullptr,
         std::vector<raw_ptr<HostExtension, VectorExperimental>>(),
         SessionPolicies());
     ClientSession* client_ptr = client.get();
