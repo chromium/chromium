@@ -152,7 +152,7 @@ public class SingleTabModuleViewBinderUnitTest {
         ImageView thumbnail = mSingleTabModuleView.findViewById(R.id.tab_thumbnail);
 
         Bitmap bitmap = Bitmap.createBitmap(300, 400, Bitmap.Config.ALPHA_8);
-        mPropertyModel.set(TAB_THUMBNAIL, bitmap);
+        mPropertyModel.set(TAB_THUMBNAIL, new BitmapDrawable(bitmap));
         assertNotNull(thumbnail.getDrawable());
 
         assertNotEquals(new Matrix(), thumbnail.getImageMatrix());
@@ -164,7 +164,7 @@ public class SingleTabModuleViewBinderUnitTest {
         ImageView thumbnail = mSingleTabModuleView.findViewById(R.id.tab_thumbnail);
 
         Bitmap bitmap = Bitmap.createBitmap(300, 400, Bitmap.Config.ALPHA_8);
-        mPropertyModel.set(TAB_THUMBNAIL, bitmap);
+        mPropertyModel.set(TAB_THUMBNAIL, new BitmapDrawable(bitmap));
         assertNotNull(thumbnail.getDrawable());
 
         Matrix identityMatrix = new Matrix();

@@ -14,9 +14,14 @@ import android.view.View.AccessibilityDelegate;
 import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.IphProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGroupInfo;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -61,14 +66,14 @@ public class TabProperties {
 
     public static final WritableIntPropertyKey TAB_ID = new WritableIntPropertyKey();
 
-    public static final WritableObjectPropertyKey<TabListMediator.TabActionListener>
-            TAB_CLICK_LISTENER = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<TabActionListener> TAB_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<TabListMediator.TabActionListener>
-            TAB_LONG_CLICK_LISTENER = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<TabActionListener> TAB_LONG_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<TabListMediator.TabActionListener>
-            TAB_ACTION_BUTTON_LISTENER = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<TabActionListener> TAB_ACTION_BUTTON_LISTENER =
+            new WritableObjectPropertyKey<>();
 
     /**
      * Indicator that a {@link TabProperties.FAVICON_FETCHER} has completed fetching a favicon. Only
@@ -81,13 +86,13 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<TabListFaviconProvider.TabFaviconFetcher>
             FAVICON_FETCHER = new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<TabListMediator.ThumbnailFetcher>
-            THUMBNAIL_FETCHER = new WritableObjectPropertyKey<>(true);
+    public static final WritableObjectPropertyKey<ThumbnailFetcher> THUMBNAIL_FETCHER =
+            new WritableObjectPropertyKey<>(true);
 
     public static final WritableObjectPropertyKey<Size> GRID_CARD_SIZE =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<TabListMediator.IphProvider> IPH_PROVIDER =
+    public static final WritableObjectPropertyKey<IphProvider> IPH_PROVIDER =
             new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
@@ -102,30 +107,27 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<SelectionDelegate<Integer>>
             TAB_SELECTION_DELEGATE = new WritableObjectPropertyKey<>();
 
-    public static final PropertyModel.ReadableBooleanPropertyKey IS_INCOGNITO =
-            new PropertyModel.ReadableBooleanPropertyKey();
+    public static final ReadableBooleanPropertyKey IS_INCOGNITO = new ReadableBooleanPropertyKey();
 
-    public static final PropertyModel.ReadableIntPropertyKey SELECTED_TAB_BACKGROUND_DRAWABLE_ID =
-            new PropertyModel.ReadableIntPropertyKey();
+    public static final ReadableIntPropertyKey SELECTED_TAB_BACKGROUND_DRAWABLE_ID =
+            new ReadableIntPropertyKey();
 
-    public static final PropertyModel.ReadableIntPropertyKey TABSTRIP_FAVICON_BACKGROUND_COLOR_ID =
-            new PropertyModel.ReadableIntPropertyKey();
+    public static final ReadableIntPropertyKey TABSTRIP_FAVICON_BACKGROUND_COLOR_ID =
+            new ReadableIntPropertyKey();
 
-    public static final PropertyModel.WritableObjectPropertyKey<ColorStateList>
-            SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND =
-                    new PropertyModel.WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<ColorStateList>
+            SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND = new WritableObjectPropertyKey<>();
 
-    public static final PropertyModel.WritableObjectPropertyKey<ColorStateList>
-            SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND =
-                    new PropertyModel.WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<ColorStateList>
+            SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND = new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<String> URL_DOMAIN =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyModel.WritableObjectPropertyKey<AccessibilityDelegate>
-            ACCESSIBILITY_DELEGATE = new PropertyModel.WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<AccessibilityDelegate> ACCESSIBILITY_DELEGATE =
+            new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<TabListMediator.ShoppingPersistedTabDataFetcher>
+    public static final WritableObjectPropertyKey<ShoppingPersistedTabDataFetcher>
             SHOPPING_PERSISTED_TAB_DATA_FETCHER = new WritableObjectPropertyKey<>(true);
 
     public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION_STRING =
@@ -147,7 +149,7 @@ public class TabProperties {
     /** The {@link TabGroupColorId} for a tab group representation's color in TabListMode only. */
     public static final WritableIntPropertyKey TAB_GROUP_COLOR_ID = new WritableIntPropertyKey();
 
-    public static final WritableObjectPropertyKey<TabListMediator.TabGroupInfo> TAB_GROUP_INFO =
+    public static final WritableObjectPropertyKey<TabGroupInfo> TAB_GROUP_INFO =
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS_TAB_GRID =

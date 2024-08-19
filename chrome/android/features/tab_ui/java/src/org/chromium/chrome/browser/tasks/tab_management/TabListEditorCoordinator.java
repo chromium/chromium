@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -547,9 +548,7 @@ class TabListEditorCoordinator {
                             mCurrentTabModelFilterSupplier);
             return mMultiThumbnailCardProvider;
         }
-        return (tabId, thumbnailSize, callback, isSelected) -> {
-            tabContentManager.getTabThumbnailWithCallback(tabId, thumbnailSize, callback);
-        };
+        return new TabContentManagerThumbnailProvider(tabContentManager);
     }
 
     // Testing-specific methods

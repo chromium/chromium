@@ -75,7 +75,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     @Mock private Tab mTab;
 
     @Captor private ArgumentCaptor<GURL> mFetchImagePageUrlCaptor;
-    @Captor private ArgumentCaptor<Callback<Bitmap>> mThumbnailCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<Drawable>> mThumbnailCallbackCaptor;
     @Captor private ArgumentCaptor<UrlImageCallback> mFetchImageCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mFetchSalientImageCallbackCaptor;
 
@@ -371,7 +371,10 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         Assert.assertNotNull(drawable);
         Assert.assertEquals(expectedBitmap, drawable.getBitmap());
 
-        mThumbnailCallbackCaptor.getAllValues().get(0).onResult(makeBitmap(64, 64));
+        mThumbnailCallbackCaptor
+                .getAllValues()
+                .get(0)
+                .onResult(new BitmapDrawable(makeBitmap(64, 64)));
         // Verifies that the placeholder icon drawable is removed after setting a foreground bitmap.
         Assert.assertNull(
                 ((TabThumbnailView) localTileView.findViewById(R.id.tab_thumbnail))
@@ -450,7 +453,10 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         Assert.assertNotNull(drawable);
         Assert.assertEquals(expectedBitmap, drawable.getBitmap());
 
-        mThumbnailCallbackCaptor.getAllValues().get(0).onResult(makeBitmap(64, 64));
+        mThumbnailCallbackCaptor
+                .getAllValues()
+                .get(0)
+                .onResult(new BitmapDrawable(makeBitmap(64, 64)));
         // Verifies that the placeholder icon drawable is removed after setting a foreground bitmap.
         Assert.assertNull(
                 ((TabThumbnailView) localTileView.findViewById(R.id.tab_thumbnail))

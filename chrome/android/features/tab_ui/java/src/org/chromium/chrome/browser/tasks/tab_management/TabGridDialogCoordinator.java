@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -193,10 +194,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             mBrowserControlsStateProvider,
                             mModalDialogManager,
                             currentTabModelFilterSupplier,
-                            (tabId, thumbnailSize, callback, isSelected) -> {
-                                tabContentManager.getTabThumbnailWithCallback(
-                                        tabId, thumbnailSize, callback);
-                            },
+                            new TabContentManagerThumbnailProvider(tabContentManager),
                             /* actionOnRelatedTabs= */ false,
                             gridCardOnClickListenerProvider,
                             mMediator.getTabGridDialogHandler(),

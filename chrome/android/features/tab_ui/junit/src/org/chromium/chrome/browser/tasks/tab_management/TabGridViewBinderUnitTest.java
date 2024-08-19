@@ -20,6 +20,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Size;
 import android.view.ViewGroup.LayoutParams;
@@ -50,10 +51,10 @@ public final class TabGridViewBinderUnitTest {
     private static final int INIT_WIDTH = 100;
     private static final int INIT_HEIGHT = 200;
     @Mock private TabGridView mViewGroup;
-    @Mock private TabListMediator.ThumbnailFetcher mFetcher;
+    @Mock private ThumbnailFetcher mFetcher;
     @Mock private TabThumbnailView mThumbnailView;
     @Mock private ImageView mFaviconView;
-    @Captor private ArgumentCaptor<Callback<Bitmap>> mCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<Drawable>> mCallbackCaptor;
     @Mock private TypedArray mTypedArray;
 
     @Mock private TabFavicon mTabFavicon;
@@ -62,7 +63,7 @@ public final class TabGridViewBinderUnitTest {
     private Context mContext;
     private PropertyModel mModel;
     private LayoutParams mLayoutParams;
-    private Bitmap mBitmap;
+    private BitmapDrawable mBitmapDrawable;
 
     @Before
     public void setUp() {
@@ -84,7 +85,8 @@ public final class TabGridViewBinderUnitTest {
 
         // mModel, view and bitmap all use the same initial values.
         mLayoutParams = new LayoutParams(INIT_WIDTH, INIT_HEIGHT);
-        mBitmap = Bitmap.createBitmap(INIT_WIDTH, INIT_HEIGHT, Config.RGB_565);
+        mBitmapDrawable =
+                new BitmapDrawable(Bitmap.createBitmap(INIT_WIDTH, INIT_HEIGHT, Config.RGB_565));
         when(mViewGroup.getLayoutParams()).thenReturn(mLayoutParams);
 
         LayoutParams thumbnailParams = new LayoutParams(INIT_WIDTH, INIT_HEIGHT);
@@ -126,11 +128,11 @@ public final class TabGridViewBinderUnitTest {
         verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
-        verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(true));
-        mCallbackCaptor.getValue().onResult(mBitmap);
+        verify(mFetcher).fetch(any(), eq(true), mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onResult(mBitmapDrawable);
 
         verify(mThumbnailView).setScaleType(ScaleType.MATRIX);
-        verify(mThumbnailView).setImageBitmap(mBitmap);
+        verify(mThumbnailView).setImageDrawable(mBitmapDrawable);
         ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
         verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
         verifyNoMoreInteractions(mThumbnailView);
@@ -158,11 +160,11 @@ public final class TabGridViewBinderUnitTest {
         verify(mThumbnailView).updateThumbnailPlaceholder(false, false);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
-        verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(false));
-        mCallbackCaptor.getValue().onResult(mBitmap);
+        verify(mFetcher).fetch(any(), eq(false), mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onResult(mBitmapDrawable);
 
         verify(mThumbnailView).setScaleType(ScaleType.MATRIX);
-        verify(mThumbnailView).setImageBitmap(mBitmap);
+        verify(mThumbnailView).setImageDrawable(mBitmapDrawable);
         ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
         verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
         verifyNoMoreInteractions(mThumbnailView);
@@ -191,13 +193,13 @@ public final class TabGridViewBinderUnitTest {
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
         verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
-        verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(true));
+        verify(mFetcher).fetch(any(), eq(true), mCallbackCaptor.capture());
 
         // Pass bitmap to callback and verify thumbnail updated with image resize.
-        mCallbackCaptor.getValue().onResult(mBitmap);
+        mCallbackCaptor.getValue().onResult(mBitmapDrawable);
 
         verify(mThumbnailView).setScaleType(ScaleType.MATRIX);
-        verify(mThumbnailView).setImageBitmap(mBitmap);
+        verify(mThumbnailView).setImageDrawable(mBitmapDrawable);
         ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
         verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
         verifyNoMoreInteractions(mThumbnailView);
@@ -225,13 +227,13 @@ public final class TabGridViewBinderUnitTest {
         verify(mViewGroup).setMinimumHeight(updatedCardHeight);
         verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
         assertThat(mLayoutParams.height, equalTo(updatedCardHeight));
-        verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(true));
+        verify(mFetcher).fetch(any(), eq(true), mCallbackCaptor.capture());
 
         // Pass bitmap to callback and verify thumbnail updated with image resize.
-        mCallbackCaptor.getValue().onResult(mBitmap);
+        mCallbackCaptor.getValue().onResult(mBitmapDrawable);
 
         verify(mThumbnailView).setScaleType(ScaleType.MATRIX);
-        verify(mThumbnailView).setImageBitmap(mBitmap);
+        verify(mThumbnailView).setImageDrawable(mBitmapDrawable);
         ArgumentCaptor<Matrix> matrixCaptor = ArgumentCaptor.forClass(Matrix.class);
         verify(mThumbnailView).setImageMatrix(matrixCaptor.capture());
         verifyNoMoreInteractions(mThumbnailView);

@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.util.FloatProperty;
 import android.util.Size;
@@ -206,8 +207,8 @@ public class StripTabDragShadowView extends FrameLayout {
                         thumbnailSize,
                         result -> {
                             if (result != null) {
-                                TabUtils.setBitmapAndUpdateImageMatrix(
-                                        mThumbnailView, result, thumbnailSize);
+                                TabUtils.setDrawableAndUpdateImageMatrix(
+                                        mThumbnailView, new BitmapDrawable(result), thumbnailSize);
                             } else {
                                 mThumbnailView.setImageDrawable(null);
                             }

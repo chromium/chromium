@@ -250,25 +250,6 @@ class TabListMediator {
         }
     }
 
-    /**
-     * The object to set to {@link TabProperties#THUMBNAIL_FETCHER} for the TabGridViewBinder to
-     * obtain the thumbnail asynchronously.
-     */
-    static class ThumbnailFetcher {
-        private ThumbnailProvider mThumbnailProvider;
-        private int mId;
-
-        ThumbnailFetcher(ThumbnailProvider provider, int id) {
-            mThumbnailProvider = provider;
-            mId = id;
-        }
-
-        void fetch(Callback<Bitmap> callback, Size thumbnailSize, boolean isSelected) {
-            mThumbnailProvider.getTabThumbnailWithCallback(
-                    mId, thumbnailSize, callback, isSelected);
-        }
-    }
-
     /** An interface to show IPH for a tab. */
     public interface IphProvider {
         void showIPH(View anchor);

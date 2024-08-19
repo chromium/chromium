@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +29,8 @@ import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.IphProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGroupInfo;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
@@ -38,11 +40,11 @@ import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 /**
- * {@link org.chromium.ui.modelutil.SimpleRecyclerViewMcp.ViewBinder} for tab grid.
- * This class supports both full and partial updates to the {@link TabGridViewHolder}.
+ * {@link org.chromium.ui.modelutil.SimpleRecyclerViewMcp.ViewBinder} for tab grid. This class
+ * supports both full and partial updates to the {@link TabGridViewHolder}.
  */
 class TabGridViewBinder {
-    private static TabListMediator.ThumbnailFetcher sThumbnailFetcherForTesting;
+    private static ThumbnailFetcher sThumbnailFetcherForTesting;
     private static final String SHOPPING_METRICS_IDENTIFIER = "EnterTabSwitcher";
 
     /**
@@ -151,7 +153,7 @@ class TabGridViewBinder {
         if (CARD_ALPHA == propertyKey) {
             view.setAlpha(model.get(CARD_ALPHA));
         } else if (TabProperties.IPH_PROVIDER == propertyKey) {
-            TabListMediator.IphProvider provider = model.get(TabProperties.IPH_PROVIDER);
+            IphProvider provider = model.get(TabProperties.IPH_PROVIDER);
             if (provider != null) provider.showIPH(view.fastFindViewById(R.id.tab_thumbnail));
         } else if (TabProperties.CARD_ANIMATION_STATUS == propertyKey) {
             ((TabGridView) view)
@@ -254,7 +256,7 @@ class TabGridViewBinder {
     }
 
     static void setNullableClickListener(
-            @Nullable TabListMediator.TabActionListener listener,
+            @Nullable TabActionListener listener,
             @NonNull View view,
             @NonNull PropertyModel propertyModel) {
         if (listener == null) {
@@ -268,7 +270,7 @@ class TabGridViewBinder {
     }
 
     static void setNullableLongClickListener(
-            @Nullable TabListMediator.TabActionListener listener,
+            @Nullable TabActionListener listener,
             @NonNull View view,
             @NonNull PropertyModel propertyModel) {
         if (listener == null) {
@@ -312,7 +314,7 @@ class TabGridViewBinder {
         final boolean isSelected = model.get(TabProperties.IS_SELECTED);
         thumbnail.updateThumbnailPlaceholder(model.get(TabProperties.IS_INCOGNITO), isSelected);
 
-        final TabListMediator.ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
+        final ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
         final Size cardSize = model.get(TabProperties.GRID_CARD_SIZE);
         if (fetcher == null || cardSize == null) {
             thumbnail.setImageDrawable(null);
@@ -322,31 +324,25 @@ class TabGridViewBinder {
         // TODO(crbug.com/40882123): Consider unsetting the bitmap early to allow memory reuse if
         // needed.
         final Size thumbnailSize = TabUtils.deriveThumbnailSize(cardSize, view.getContext());
-        Callback<Bitmap> callback =
+        Callback<Drawable> callback =
                 result -> {
+                    // TODO(crbug.com/342450242): Remove this boolean once cancel is correctly
+                    // called on the old value when setting a new THUMBNAIL_FETCHER.
                     final boolean isMostRecentRequest =
                             fetcher == model.get(TabProperties.THUMBNAIL_FETCHER)
                                     && cardSize.equals(model.get(TabProperties.GRID_CARD_SIZE));
+                    if (!isMostRecentRequest) return;
+
                     if (result != null) {
-                        // TODO(crbug.com/40882123): look into cancelling if there are multiple
-                        // in-flight
-                        // requests. Ensure only the most recently requested bitmap is used.
-                        if (!isMostRecentRequest) {
-                            result.recycle();
-                            return;
-                        }
-                        // Adjust bitmap to thumbnail.
-                        TabUtils.setBitmapAndUpdateImageMatrix(thumbnail, result, thumbnailSize);
-                    } else if (isMostRecentRequest) {
-                        // If the most recent request is a null bitmap ensure a placeholder is
-                        // visible.
+                        TabUtils.setDrawableAndUpdateImageMatrix(thumbnail, result, thumbnailSize);
+                    } else {
                         thumbnail.setImageDrawable(null);
                     }
                 };
         if (sThumbnailFetcherForTesting != null) {
-            sThumbnailFetcherForTesting.fetch(callback, thumbnailSize, isSelected);
+            sThumbnailFetcherForTesting.fetch(thumbnailSize, isSelected, callback);
         } else {
-            fetcher.fetch(callback, thumbnailSize, isSelected);
+            fetcher.fetch(thumbnailSize, isSelected, callback);
         }
     }
 
@@ -457,7 +453,7 @@ class TabGridViewBinder {
         }
     }
 
-    static void setThumbnailFeatureForTesting(TabListMediator.ThumbnailFetcher fetcher) {
+    static void setThumbnailFeatureForTesting(ThumbnailFetcher fetcher) {
         sThumbnailFetcherForTesting = fetcher;
         ResettersForTesting.register(() -> sThumbnailFetcherForTesting = null);
     }

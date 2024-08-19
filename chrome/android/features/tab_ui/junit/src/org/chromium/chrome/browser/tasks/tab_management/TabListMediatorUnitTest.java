@@ -125,6 +125,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
@@ -139,7 +140,6 @@ import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManage
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ThumbnailFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
@@ -4487,10 +4487,10 @@ public class TabListMediatorUnitTest {
         if (mMediator.getTabListModeForTesting() == TabListMode.GRID) {
             assertThat(
                     mModel.get(0).model.get(TabProperties.THUMBNAIL_FETCHER),
-                    instanceOf(TabListMediator.ThumbnailFetcher.class));
+                    instanceOf(ThumbnailFetcher.class));
             assertThat(
                     mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER),
-                    instanceOf(TabListMediator.ThumbnailFetcher.class));
+                    instanceOf(ThumbnailFetcher.class));
         } else {
             assertNull(mModel.get(0).model.get(TabProperties.THUMBNAIL_FETCHER));
             assertNull(mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER));
@@ -4692,9 +4692,7 @@ public class TabListMediatorUnitTest {
     }
 
     private ThumbnailProvider getTabThumbnailCallback() {
-        return (tabId, thumbnailSize, callback, isSelected) -> {
-            mTabContentManager.getTabThumbnailWithCallback(tabId, thumbnailSize, callback);
-        };
+        return new TabContentManagerThumbnailProvider(mTabContentManager);
     }
 
     private static void setPriceTrackingEnabledForTesting(boolean value) {

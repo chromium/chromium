@@ -14,6 +14,8 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Size;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -267,16 +269,16 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
         ThumbnailProvider thumbnailProvider = Mockito.mock(ThumbnailProvider.class);
         doAnswer(
                         (InvocationOnMock invocation) -> {
-                            ((Callback<Bitmap>) invocation.getArguments()[2])
-                                    .onResult(expectedThumbnail);
+                            ((Callback<Drawable>) invocation.getArguments()[3])
+                                    .onResult(new BitmapDrawable(expectedThumbnail));
                             return null;
                         })
                 .when(thumbnailProvider)
                 .getTabThumbnailWithCallback(
                         /* tabId= */ anyInt(),
                         /* thumbnailSize= */ any(Size.class),
-                        /* finalCallback= */ any(Callback.class),
-                        /* isSelected= */ anyBoolean());
+                        /* isSelected= */ anyBoolean(),
+                        /* callback= */ any(Callback.class));
         RoundedIconGenerator roundedIconGenerator = Mockito.mock(RoundedIconGenerator.class);
         when(roundedIconGenerator.generateIconForUrl(urlWithoutFavicon))
                 .thenReturn(expectedFallbackIcon);
@@ -300,8 +302,8 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
         urlImageProvider.getTabThumbnail(
                 /* tabId= */ 0,
                 /* thumbnailSize= */ new Size(32, 32),
-                /* tabThumbnailCallback= */ (Bitmap icon) -> {
-                    Assert.assertEquals(icon, expectedThumbnail);
+                /* tabThumbnailCallback= */ (Drawable icon) -> {
+                    Assert.assertEquals(((BitmapDrawable) icon).getBitmap(), expectedThumbnail);
                     ++mCallbackCounter;
                 });
         Assert.assertEquals(2, mCallbackCounter);
