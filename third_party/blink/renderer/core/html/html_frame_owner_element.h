@@ -80,6 +80,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   }
 
   void SetColorScheme(mojom::blink::ColorScheme);
+  void SetPreferredColorScheme(mojom::blink::PreferredColorScheme);
 
   class PluginDisposeSuspendScope {
     STACK_ALLOCATED();
@@ -127,6 +128,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   bool AllowPaymentRequest() const override { return false; }
   bool IsDisplayNone() const override { return !embedded_content_view_; }
   mojom::blink::ColorScheme GetColorScheme() const override;
+  mojom::blink::PreferredColorScheme GetPreferredColorScheme() const override;
   bool ShouldLazyLoadChildren() const final;
   void DidReportResourceTiming();
   bool HasPendingFallbackTimingInfo() const;

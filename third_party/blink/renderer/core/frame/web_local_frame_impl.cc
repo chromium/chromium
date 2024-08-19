@@ -320,6 +320,9 @@ class DummyFrameOwner final : public GarbageCollected<DummyFrameOwner>,
   mojom::blink::ColorScheme GetColorScheme() const override {
     return mojom::blink::ColorScheme::kLight;
   }
+  mojom::blink::PreferredColorScheme GetPreferredColorScheme() const override {
+    return mojom::blink::PreferredColorScheme::kLight;
+  }
   bool ShouldLazyLoadChildren() const override { return false; }
 
  private:
@@ -2352,7 +2355,8 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
       owner_element->ScrollbarMode(), owner_element->MarginWidth(),
       owner_element->MarginHeight(), owner_element->AllowFullscreen(),
       owner_element->AllowPaymentRequest(), owner_element->IsDisplayNone(),
-      owner_element->GetColorScheme());
+      owner_element->GetColorScheme(),
+      owner_element->GetPreferredColorScheme());
 
   mojo::PendingAssociatedRemote<mojom::blink::PolicyContainerHost>
       policy_container_remote;

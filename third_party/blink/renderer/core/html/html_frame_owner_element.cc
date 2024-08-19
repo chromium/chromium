@@ -448,6 +448,7 @@ void HTMLFrameOwnerElement::FrameOwnerPropertiesChanged() {
   properties->allow_payment_request = AllowPaymentRequest();
   properties->is_display_none = IsDisplayNone();
   properties->color_scheme = GetColorScheme();
+  properties->preferred_color_scheme = GetPreferredColorScheme();
 
   GetDocument()
       .GetFrame()
@@ -526,9 +527,9 @@ void HTMLFrameOwnerElement::SetEmbeddedContentView(
   if (doc && doc->GetFrame()) {
     bool will_be_display_none = !embedded_content_view;
     if (IsDisplayNone() != will_be_display_none) {
-      doc->WillChangeFrameOwnerProperties(MarginWidth(), MarginHeight(),
-                                          ScrollbarMode(), will_be_display_none,
-                                          GetColorScheme());
+      doc->WillChangeFrameOwnerProperties(
+          MarginWidth(), MarginHeight(), ScrollbarMode(), will_be_display_none,
+          GetColorScheme(), GetPreferredColorScheme());
     }
   }
 
@@ -802,9 +803,26 @@ void HTMLFrameOwnerElement::SetColorScheme(
     mojom::blink::ColorScheme color_scheme) {
   Document* doc = contentDocument();
   if (doc && doc->GetFrame()) {
-    doc->WillChangeFrameOwnerProperties(MarginWidth(), MarginHeight(),
-                                        ScrollbarMode(), IsDisplayNone(),
-                                        color_scheme);
+    doc->WillChangeFrameOwnerProperties(
+        MarginWidth(), MarginHeight(), ScrollbarMode(), IsDisplayNone(),
+        color_scheme, GetPreferredColorScheme());
+  }
+  FrameOwnerPropertiesChanged();
+}
+
+mojom::blink::PreferredColorScheme
+HTMLFrameOwnerElement::GetPreferredColorScheme() const {
+  return GetDocument().GetStyleEngine().ResolveColorSchemeForEmbedding(
+      GetComputedStyle());
+}
+
+void HTMLFrameOwnerElement::SetPreferredColorScheme(
+    mojom::blink::PreferredColorScheme preferred_color_scheme) {
+  Document* doc = contentDocument();
+  if (doc && doc->GetFrame()) {
+    doc->WillChangeFrameOwnerProperties(
+        MarginWidth(), MarginHeight(), ScrollbarMode(), IsDisplayNone(),
+        GetColorScheme(), preferred_color_scheme);
   }
   FrameOwnerPropertiesChanged();
 }

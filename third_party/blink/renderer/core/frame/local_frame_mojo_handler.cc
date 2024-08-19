@@ -545,7 +545,7 @@ void LocalFrameMojoHandler::SetFrameOwnerProperties(
   GetDocument()->WillChangeFrameOwnerProperties(
       properties->margin_width, properties->margin_height,
       properties->scrollbar_mode, properties->is_display_none,
-      properties->color_scheme);
+      properties->color_scheme, properties->preferred_color_scheme);
 
   frame_->ApplyFrameOwnerProperties(std::move(properties));
 }

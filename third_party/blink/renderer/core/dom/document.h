@@ -1217,11 +1217,13 @@ class CORE_EXPORT Document : public ContainerNode,
   // this is the top level document or the owner is remote.
   HTMLFrameOwnerElement* LocalOwner() const;
 
-  void WillChangeFrameOwnerProperties(int margin_width,
-                                      int margin_height,
-                                      mojom::blink::ScrollbarMode,
-                                      bool is_display_none,
-                                      mojom::blink::ColorScheme color_scheme);
+  void WillChangeFrameOwnerProperties(
+      int margin_width,
+      int margin_height,
+      mojom::blink::ScrollbarMode,
+      bool is_display_none,
+      mojom::blink::ColorScheme color_scheme,
+      mojom::blink::PreferredColorScheme preferred_color_scheme);
 
   String title() const { return title_; }
   void setTitle(const String&);

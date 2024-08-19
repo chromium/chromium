@@ -220,13 +220,17 @@ StyleEngine::StyleEngine(Document& document)
           MakeGarbageCollected<StyleContainmentScopeTree>()),
       document_style_sheet_collection_(
           MakeGarbageCollected<DocumentStyleSheetCollection>(document)),
-      resolver_(MakeGarbageCollected<StyleResolver>(document)) {
+      resolver_(MakeGarbageCollected<StyleResolver>(document)),
+      preferred_color_scheme_(mojom::blink::PreferredColorScheme::kLight),
+      owner_preferred_color_scheme_(mojom::blink::PreferredColorScheme::kLight),
+      owner_color_scheme_(mojom::blink::ColorScheme::kLight) {
   if (document.GetFrame()) {
     global_rule_set_ = MakeGarbageCollected<CSSGlobalRuleSet>();
     font_selector_ = CreateCSSFontSelectorFor(document);
     font_selector_->RegisterForInvalidationCallbacks(this);
     if (const FrameOwner* owner = document.GetFrame()->Owner()) {
       owner_color_scheme_ = owner->GetColorScheme();
+      owner_preferred_color_scheme_ = owner->GetPreferredColorScheme();
     }
 
     // Viewport styles are only processed in the main frame of a page with an
@@ -4012,7 +4016,7 @@ bool StyleEngine::SupportsDarkColorScheme() {
 }
 
 void StyleEngine::UpdateColorScheme() {
-  auto* settings = GetDocument().GetSettings();
+  const Settings* settings = GetDocument().GetSettings();
   if (!settings) {
     return;
   }
@@ -4023,7 +4027,11 @@ void StyleEngine::UpdateColorScheme() {
 
   mojom::blink::PreferredColorScheme old_preferred_color_scheme =
       preferred_color_scheme_;
-  preferred_color_scheme_ = settings->GetPreferredColorScheme();
+  if (GetDocument().IsInMainFrame()) {
+    preferred_color_scheme_ = settings->GetPreferredColorScheme();
+  } else {
+    preferred_color_scheme_ = owner_preferred_color_scheme_;
+  }
   bool old_force_dark_mode_enabled = force_dark_mode_enabled_;
   force_dark_mode_enabled_ = settings->GetForceDarkModeEnabled();
   bool media_feature_override_color_scheme = false;
@@ -4070,7 +4078,7 @@ void StyleEngine::UpdateColorScheme() {
 }
 
 void StyleEngine::UpdateColorSchemeMetrics() {
-  auto* settings = GetDocument().GetSettings();
+  const Settings* settings = GetDocument().GetSettings();
   if (settings->GetForceDarkModeEnabled()) {
     UseCounter::Count(GetDocument(), WebFeature::kForcedDarkMode);
   }
@@ -4181,25 +4189,26 @@ void StyleEngine::UpdateColorSchemeBackground(bool color_scheme_changed) {
                                     color_scheme_changed);
 }
 
-void StyleEngine::SetOwnerColorScheme(mojom::blink::ColorScheme color_scheme) {
+void StyleEngine::SetOwnerColorScheme(
+    mojom::blink::ColorScheme color_scheme,
+    mojom::blink::PreferredColorScheme preferred_color_scheme) {
   DCHECK(!GetDocument().IsInMainFrame());
-  if (owner_color_scheme_ == color_scheme) {
-    return;
+  if (owner_preferred_color_scheme_ != preferred_color_scheme) {
+    owner_preferred_color_scheme_ = preferred_color_scheme;
+    UpdateColorScheme();
   }
-  owner_color_scheme_ = color_scheme;
-  UpdateColorSchemeBackground(true);
+  if (owner_color_scheme_ != color_scheme) {
+    owner_color_scheme_ = color_scheme;
+    UpdateColorSchemeBackground(true);
+  }
 }
 
 mojom::blink::PreferredColorScheme StyleEngine::ResolveColorSchemeForEmbedding(
     const ComputedStyle* embedder_style) const {
-  const bool embedder_color_scheme_is_normal =
-      !embedder_style || embedder_style->ColorScheme().empty();
   // ...if 'color-scheme' is 'normal' and there's no 'color-scheme' meta tag,
   // the propagated scheme is the preferred color-scheme of the embedder
   // document.
-  if (embedder_color_scheme_is_normal &&
-      GetPageColorSchemes() ==
-          static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal)) {
+  if (!embedder_style || embedder_style->ColorSchemeFlagsIsNormal()) {
     return GetPreferredColorScheme();
   }
   return embedder_style && embedder_style->UsedColorScheme() ==

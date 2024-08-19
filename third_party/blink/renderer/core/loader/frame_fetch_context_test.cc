@@ -114,6 +114,9 @@ class DummyFrameOwner final : public GarbageCollected<DummyFrameOwner>,
   mojom::blink::ColorScheme GetColorScheme() const override {
     return mojom::blink::ColorScheme::kLight;
   }
+  mojom::blink::PreferredColorScheme GetPreferredColorScheme() const override {
+    return mojom::blink::PreferredColorScheme::kLight;
+  }
   bool ShouldLazyLoadChildren() const override { return false; }
 
  private:

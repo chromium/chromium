@@ -1397,9 +1397,6 @@ crbug.com/1068610 external/wpt/css/css-color/at-color-profile-001.html [ Failure
 # Borders and shadows don't correctly implement currentcolor
 crbug.com/1343361 external/wpt/css/css-color/currentcolor-003.html [ Failure ]
 
-# Propagate preferred color-scheme to non-top frames.
-crbug.com/1357623 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-preferred.html [ Failure ]
-
 # css-color
 crbug.com/1520748 external/wpt/css/css-color/deprecated-sameas-002.html [ Failure ]
 crbug.com/329106317 external/wpt/css/css-color/lch-009.html [ Failure ]

@@ -6219,7 +6219,8 @@ void Document::WillChangeFrameOwnerProperties(
     int margin_height,
     mojom::blink::ScrollbarMode scrollbar_mode,
     bool is_display_none,
-    mojom::blink::ColorScheme color_scheme) {
+    mojom::blink::ColorScheme color_scheme,
+    mojom::blink::PreferredColorScheme preferred_color_scheme) {
   DCHECK(GetFrame() && GetFrame()->Owner());
   FrameOwner* owner = GetFrame()->Owner();
 
@@ -6244,7 +6245,7 @@ void Document::WillChangeFrameOwnerProperties(
                                  mojom::blink::ScrollbarMode::kAlwaysOff);
     View()->SetNeedsLayout();
   }
-  GetStyleEngine().SetOwnerColorScheme(color_scheme);
+  GetStyleEngine().SetOwnerColorScheme(color_scheme, preferred_color_scheme);
 }
 
 String Document::cookie(ExceptionState& exception_state) const {
