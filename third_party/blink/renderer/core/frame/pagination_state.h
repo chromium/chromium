@@ -62,7 +62,7 @@ class PaginationState : public GarbageCollected<PaginationState> {
   wtf_size_t CurrentPageIndex() const { return current_page_index_; }
 
   ObjectPaintProperties& ContentAreaProperties() {
-    return *content_area_paint_properties_;
+    return *content_area_paint_properties_.get();
   }
 
   // Make sure that the content area properties have been created, so that they
@@ -88,7 +88,7 @@ class PaginationState : public GarbageCollected<PaginationState> {
 
  private:
   HeapVector<Member<LayoutObject>> anonymous_page_objects_;
-  Member<ObjectPaintProperties> content_area_paint_properties_;
+  std::unique_ptr<ObjectPaintProperties> content_area_paint_properties_;
   wtf_size_t current_page_index_ = 0;
 };
 

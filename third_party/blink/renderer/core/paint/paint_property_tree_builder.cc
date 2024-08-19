@@ -1583,7 +1583,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
         OnUpdateClip(properties_->UpdateMaskClip(
             *context_.current.clip,
             ClipPaintPropertyNode::State(
-                *context_.current.transform, combined_clip,
+                context_.current.transform, combined_clip,
                 FloatRoundedRect(gfx::ToEnclosingRect(combined_clip)))));
         // We don't use MaskClip as the output clip of Effect, Mask and
         // ClipPathMask because we only want to apply MaskClip to the contents,
@@ -2056,7 +2056,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
       if (needs_pixel_moving_filter_clip_expander) {
         OnUpdateClip(properties_->UpdatePixelMovingFilterClipExpander(
             *context_.current.clip,
-            ClipPaintPropertyNode::State(*context_.current.transform,
+            ClipPaintPropertyNode::State(context_.current.transform,
                                          properties_->Filter())));
       } else {
         OnClearClip(properties_->ClearPixelMovingFilterClipExpander());
@@ -2102,7 +2102,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateCssClip() {
           To<LayoutBox>(object_).ClipRect(context_.current.paint_offset);
       OnUpdateClip(properties_->UpdateCssClip(
           *context_.current.clip,
-          ClipPaintPropertyNode::State(*context_.current.transform,
+          ClipPaintPropertyNode::State(context_.current.transform,
                                        gfx::RectF(clip_rect),
                                        ToSnappedClipRect(clip_rect))));
     } else {
@@ -2166,7 +2166,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
             rrect = PathToRRect(*path);
           }
           ClipPaintPropertyNode::State state(
-              *context_.current.transform, *clip_path_bounding_box_,
+              context_.current.transform, *clip_path_bounding_box_,
               rrect.value_or(FloatRoundedRect(
                   gfx::ToEnclosingRect(*clip_path_bounding_box_))));
           if (!rrect) {
@@ -2341,7 +2341,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowControlsClip() {
                                          To<LayoutBox>(object_).Size());
     OnUpdateClip(properties_->UpdateOverflowControlsClip(
         *context_.current.clip,
-        ClipPaintPropertyNode::State(*context_.current.transform,
+        ClipPaintPropertyNode::State(context_.current.transform,
                                      gfx::RectF(clip_rect),
                                      ToSnappedClipRect(clip_rect))));
   } else {
@@ -2385,7 +2385,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateBackgroundClip() {
     }
     OnUpdateClip(properties_->UpdateBackgroundClip(
         *context_.current.clip,
-        ClipPaintPropertyNode::State(*context_.current.transform,
+        ClipPaintPropertyNode::State(context_.current.transform,
                                      gfx::RectF(clip_rect),
                                      ToSnappedClipRect(clip_rect))));
   } else {
@@ -2450,7 +2450,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
 
       AdjustRoundedClipForOverflowClipMargin(box, layout_clip_rect,
                                              paint_clip_rect);
-      ClipPaintPropertyNode::State state(*context_.current.transform,
+      ClipPaintPropertyNode::State state(context_.current.transform,
                                          layout_clip_rect, paint_clip_rect);
       OnUpdateClip(properties_->UpdateInnerBorderRadiusClip(
           *context_.current.clip, std::move(state)));
@@ -2475,7 +2475,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
     }
 
     if (NeedsOverflowClip(object_)) {
-      ClipPaintPropertyNode::State state(*context_.current.transform,
+      ClipPaintPropertyNode::State state(context_.current.transform,
                                          gfx::RectF(), FloatRoundedRect());
 
       if (object_.IsLayoutReplaced() &&
@@ -2939,7 +2939,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOutOfFlowContext() {
       if (NeedsPaintPropertyUpdate()) {
         OnUpdateClip(properties_->UpdateCssClipFixedPosition(
             *context_.fixed_position.clip,
-            ClipPaintPropertyNode::State(css_clip->LocalTransformSpace(),
+            ClipPaintPropertyNode::State(&css_clip->LocalTransformSpace(),
                                          css_clip->LayoutClipRect().Rect(),
                                          css_clip->PaintClipRect())));
       }

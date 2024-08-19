@@ -12,14 +12,13 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/paint/sparse_vector.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -41,15 +40,21 @@ namespace blink {
 // nodes store parent pointers but not child pointers and these return values
 // are important for catching property tree structure changes which require
 // updating descendant's parent pointers.
-class CORE_EXPORT ObjectPaintProperties
-    : public GarbageCollected<ObjectPaintProperties> {
+class CORE_EXPORT ObjectPaintProperties {
+  USING_FAST_MALLOC(ObjectPaintProperties);
+
  public:
-  ObjectPaintProperties() = default;
 #if DCHECK_IS_ON()
   ~ObjectPaintProperties() { DCHECK(!is_immutable_); }
 #endif
 
-  void Trace(Visitor* visitor) const { visitor->Trace(nodes_); }
+  static std::unique_ptr<ObjectPaintProperties> Create() {
+    return std::unique_ptr<ObjectPaintProperties>(new ObjectPaintProperties);
+  }
+
+ private:
+  // Use the public Create() method for instantiation.
+  ObjectPaintProperties() = default;
 
  public:
 // Preprocessor macro declarations.
@@ -60,7 +65,7 @@ class CORE_EXPORT ObjectPaintProperties
 // - ClearFoo(): a clear function
 // - foo_: the variable itself.
 //
-// Note that Clear* functions return true if the property tree structure
+// Note that clear* functions return true if the property tree structure
 // changes (an existing node was deleted), and false otherwise. See the
 // class-level comment ("update & clear implementation note") for details
 // about why this is needed for efficient updates.
@@ -318,7 +323,6 @@ class CORE_EXPORT ObjectPaintProperties
   ADD_EFFECT(HorizontalScrollbarEffect, NodeId::kHorizontalScrollbarEffect)
   ADD_EFFECT(ScrollCornerEffect, NodeId::kScrollCorner)
   ADD_ALIAS_NODE(Effect, EffectIsolationNode, NodeId::kEffectAlias)
-
   // Clip node declarations.
   //
   // The hierarchy of the clip subtree created by a LayoutObject is as follows:
@@ -450,14 +454,15 @@ class CORE_EXPORT ObjectPaintProperties
   }
 
  private:
-  using NodeList = SparseVector<NodeId, Member<PaintPropertyNode>, 2>;
+  using NodeList = SparseVector<NodeId, scoped_refptr<PaintPropertyNode>, 2>;
 
   template <typename NodeType, typename ParentType>
   PaintPropertyChangeType Update(
       NodeId node_id,
       const ParentType& parent,
       NodeType::State&& state,
-      const NodeType::AnimationState& animation_state) {
+      const NodeType::AnimationState& animation_state =
+          NodeType::AnimationState()) {
     // First, check if we need to add a new node.
     if (!nodes_.HasField(node_id)) {
       nodes_.SetField(node_id, NodeType::Create(parent, std::move(state)));
@@ -503,17 +508,16 @@ class CORE_EXPORT ObjectPaintProperties
   template <typename NodeType>
   const NodeType* GetNode(NodeId node_id) const {
     if (nodes_.HasField(node_id)) {
-      return static_cast<const NodeType*>(nodes_.GetField(node_id).Get());
+      return static_cast<const NodeType*>(nodes_.GetField(node_id).get());
     }
     return nullptr;
   }
 
   template <typename NodeType>
   NodeType* GetNode(NodeId node_id) {
-    if (nodes_.HasField(node_id)) {
-      return static_cast<NodeType*>(nodes_.GetField(node_id).Get());
-    }
-    return nullptr;
+    return const_cast<NodeType*>(
+        static_cast<const ObjectPaintProperties&>(*this).GetNode<NodeType>(
+            node_id));
   }
 
   bool HasNodeTypeInRange(NodeId first_id, NodeId last_id) const {
@@ -533,7 +537,7 @@ class CORE_EXPORT ObjectPaintProperties
     for (NodeId i = first_id; i <= last_id;
          i = static_cast<NodeId>(static_cast<int>(i) + 1)) {
       if (nodes_.HasField(i)) {
-        printer.AddNode(nodes_.GetField(i).Get());
+        printer.AddNode(nodes_.GetField(i).get());
       }
     }
   }

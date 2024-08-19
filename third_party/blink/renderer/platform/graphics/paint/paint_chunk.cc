@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 
-#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
@@ -13,15 +12,30 @@
 
 namespace blink {
 
+namespace {
+
+template <typename T>
+bool PointerValueEquals(const std::unique_ptr<T>& a,
+                        const std::unique_ptr<T>& b) {
+  if (!a && !b) {
+    return true;
+  }
+  if (!a || !b) {
+    return false;
+  }
+  return *a == *b;
+}
+}  // namespace
+
 struct SameSizeAsPaintChunk {
   wtf_size_t begin_index;
   wtf_size_t end_index;
   PaintChunk::Id id;
   PaintChunk::BackgroundColorInfo background_color;
   PropertyTreeState properties;
-  Member<HitTestData> hit_test_data;
-  Member<RegionCaptureData> region_capture_data;
-  Member<LayerSelectionData> layer_selection;
+  std::unique_ptr<int> hit_test_data;
+  std::unique_ptr<int> region_capture_data;
+  std::unique_ptr<int> layer_selection;
   gfx::Rect bounds;
   gfx::Rect drawable_bounds;
   gfx::Rect rect_known_to_be_opaque;
@@ -36,9 +50,8 @@ bool PaintChunk::EqualsForUnderInvalidationChecking(
     const PaintChunk& other) const {
   return size() == other.size() && id == other.id &&
          properties == other.properties && bounds == other.bounds &&
-         base::ValuesEquivalent(hit_test_data, other.hit_test_data) &&
-         base::ValuesEquivalent(region_capture_data,
-                                other.region_capture_data) &&
+         PointerValueEquals(hit_test_data, other.hit_test_data) &&
+         PointerValueEquals(region_capture_data, other.region_capture_data) &&
          drawable_bounds == other.drawable_bounds &&
          raster_effect_outset == other.raster_effect_outset &&
          hit_test_opaqueness == other.hit_test_opaqueness &&
@@ -87,7 +100,7 @@ static String ToStringImpl(const PaintChunk& c,
     }
     if (c.region_capture_data) {
       sb.Append(" region_capture_data=");
-      sb.Append(c.region_capture_data->ToString());
+      sb.Append(ToString(*c.region_capture_data));
     }
   }
   sb.Append(')');

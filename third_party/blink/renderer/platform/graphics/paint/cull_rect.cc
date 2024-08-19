@@ -197,8 +197,8 @@ bool CullRect::ApplyPaintProperties(
   if (IsInfinite() && &destination.Clip() == &source.Clip())
     return false;
 
-  HeapVector<Member<const TransformPaintPropertyNode>, 4> scroll_translations;
-  HeapVector<Member<const ClipPaintPropertyNode>, 4> clips;
+  Vector<const TransformPaintPropertyNode*, 4> scroll_translations;
+  Vector<const ClipPaintPropertyNode*, 4> clips;
   bool abnormal_hierarchy = false;
 
   for (const auto* t = &destination.Transform(); t != &source.Transform();
@@ -248,7 +248,7 @@ bool CullRect::ApplyPaintProperties(
   // TODO(wangxianzhu): support clip rect expansion for pixel-moving filters.
   const auto& effect_root = EffectPaintPropertyNode::Root();
   auto clip_it = clips.rbegin();
-  for (const auto& scroll_translation : base::Reversed(scroll_translations)) {
+  for (const auto* scroll_translation : base::Reversed(scroll_translations)) {
     if (clip_it == clips.rend())
       break;
 

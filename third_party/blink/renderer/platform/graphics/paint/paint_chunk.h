@@ -17,13 +17,13 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/hit_test_data.h"
 #include "third_party/blink/renderer/platform/graphics/paint/layer_selection_data.h"
-#include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidation_tracking.h"
+#include "third_party/blink/renderer/platform/graphics/paint/ref_counted_property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/paint/region_capture_data.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -79,13 +79,6 @@ struct PLATFORM_EXPORT PaintChunk {
         is_moved_from_cached_subsequence(true),
         effectively_invisible(other.effectively_invisible) {}
 
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(properties);
-    visitor->Trace(hit_test_data);
-    visitor->Trace(region_capture_data);
-    visitor->Trace(layer_selection_data);
-  }
-
   wtf_size_t size() const {
     DCHECK_GE(end_index, begin_index);
     return end_index - begin_index;
@@ -114,16 +107,14 @@ struct PLATFORM_EXPORT PaintChunk {
   bool EqualsForUnderInvalidationChecking(const PaintChunk& other) const;
 
   HitTestData& EnsureHitTestData() {
-    if (!hit_test_data) {
-      hit_test_data = MakeGarbageCollected<HitTestData>();
-    }
+    if (!hit_test_data)
+      hit_test_data = std::make_unique<HitTestData>();
     return *hit_test_data;
   }
 
   LayerSelectionData& EnsureLayerSelectionData() {
-    if (!layer_selection_data) {
-      layer_selection_data = MakeGarbageCollected<LayerSelectionData>();
-    }
+    if (!layer_selection_data)
+      layer_selection_data = std::make_unique<LayerSelectionData>();
     return *layer_selection_data;
   }
 
@@ -157,11 +148,11 @@ struct PLATFORM_EXPORT PaintChunk {
   BackgroundColorInfo background_color;
 
   // The paint properties which apply to this chunk.
-  PropertyTreeStateOrAlias properties;
+  RefCountedPropertyTreeStateOrAlias properties;
 
-  Member<HitTestData> hit_test_data;
-  Member<RegionCaptureData> region_capture_data;
-  Member<LayerSelectionData> layer_selection_data;
+  std::unique_ptr<HitTestData> hit_test_data;
+  std::unique_ptr<RegionCaptureData> region_capture_data;
+  std::unique_ptr<LayerSelectionData> layer_selection_data;
 
   // The following fields depend on the display items in this chunk.
   // They are updated when a display item is added into the chunk.
@@ -201,14 +192,10 @@ struct PLATFORM_EXPORT PaintChunk {
   bool effectively_invisible : 1;
 };
 
-using PaintChunks = HeapVector<PaintChunk>;
+using PaintChunks = Vector<PaintChunk>;
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const PaintChunk&);
 
-static_assert(std::is_trivially_destructible_v<PaintChunk>);
-
 }  // namespace blink
-
-WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::PaintChunk)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CHUNK_H_

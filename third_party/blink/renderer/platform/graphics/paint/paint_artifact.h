@@ -33,7 +33,7 @@ class PLATFORM_EXPORT PaintArtifact final
   PaintArtifact(PaintArtifact&& other) = delete;
   PaintArtifact& operator=(PaintArtifact&& other) = delete;
 
-  void Trace(Visitor* visitor) const { visitor->Trace(chunks_); }
+  void Trace(Visitor* visitor) const {}
 
   bool IsEmpty() const { return chunks_.empty(); }
 

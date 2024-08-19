@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
 
@@ -26,20 +25,12 @@ PaintPropertyChangeType ClipPaintPropertyNode::State::ComputeChange(
   return PaintPropertyChangeType::kUnchanged;
 }
 
-void ClipPaintPropertyNode::State::Trace(Visitor* visitor) const {
-  visitor->Trace(local_transform_space);
-  visitor->Trace(pixel_moving_filter);
-}
-
-ClipPaintPropertyNode::ClipPaintPropertyNode(RootTag)
-    : ClipPaintPropertyNodeOrAlias(kRoot),
-      state_(TransformPaintPropertyNode::Root(),
-             gfx::RectF(InfiniteIntRect()),
-             FloatRoundedRect(InfiniteIntRect())) {}
-
 const ClipPaintPropertyNode& ClipPaintPropertyNode::Root() {
-  DEFINE_STATIC_LOCAL(Persistent<ClipPaintPropertyNode>, root,
-                      (MakeGarbageCollected<ClipPaintPropertyNode>(kRoot)));
+  DEFINE_STATIC_REF(ClipPaintPropertyNode, root,
+                    base::AdoptRef(new ClipPaintPropertyNode(
+                        nullptr, State(&TransformPaintPropertyNode::Root(),
+                                       gfx::RectF(InfiniteIntRect()),
+                                       FloatRoundedRect(InfiniteIntRect())))));
   return *root;
 }
 
@@ -84,7 +75,7 @@ std::unique_ptr<JSONObject> ClipPaintPropertyNode::ToJSON() const {
   if (NodeChanged() != PaintPropertyChangeType::kUnchanged)
     json->SetString("changed", PaintPropertyChangeTypeToString(NodeChanged()));
   json->SetString("localTransformSpace",
-                  String::Format("%p", state_.local_transform_space.Get()));
+                  String::Format("%p", state_.local_transform_space.get()));
   json->SetString("rect", String(state_.paint_clip_rect_.Rect().ToString()));
   if (state_.layout_clip_rect_excluding_overlay_scrollbars &&
       *state_.layout_clip_rect_excluding_overlay_scrollbars !=
@@ -99,7 +90,7 @@ std::unique_ptr<JSONObject> ClipPaintPropertyNode::ToJSON() const {
   }
   if (state_.pixel_moving_filter) {
     json->SetString("pixelMovingFilter",
-                    String::Format("%p", state_.pixel_moving_filter.Get()));
+                    String::Format("%p", state_.pixel_moving_filter.get()));
   }
   return json;
 }

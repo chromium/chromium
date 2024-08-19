@@ -7,7 +7,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/token.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -15,20 +14,14 @@
 
 namespace blink {
 
-// Wraps a map from a region capture crop identifier, which is a randomly
-// generated token, to a rectangle representing the bounds of the HTML element
-// associated with the crop identifier. See the design document at:
+// Represents a map from a region capture crop identifier, which is a
+// randomly generated token, to a rectangle representing the bounds
+// of the HTML element associated with the crop identifier.
+// See the design document at:
 // https://docs.google.com/document/d/1dULARMnMZggfWqa_Ti_GrINRNYXGIli3XK9brzAKEV
-struct PLATFORM_EXPORT RegionCaptureData
-    : public GarbageCollected<RegionCaptureData> {
-  base::flat_map<RegionCaptureCropId, gfx::Rect> map;
+using RegionCaptureData = base::flat_map<RegionCaptureCropId, gfx::Rect>;
 
-  bool operator==(const RegionCaptureData& rhs) const { return map == rhs.map; }
-
-  void Trace(Visitor*) const {}
-
-  String ToString() const;
-};
+PLATFORM_EXPORT String ToString(const RegionCaptureData& data);
 
 }  // namespace blink
 

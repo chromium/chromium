@@ -24,11 +24,6 @@ class PLATFORM_EXPORT ChunkToLayerMapper {
   ChunkToLayerMapper(const PropertyTreeState& layer_state,
                      const gfx::Vector2dF& layer_offset);
 
-  void Trace(Visitor* visitor) {
-    visitor->Trace(layer_state_);
-    visitor->Trace(chunk_state_);
-  }
-
   const PropertyTreeState& LayerState() const { return layer_state_; }
   gfx::Vector2dF LayerOffset() const { return layer_offset_; }
 

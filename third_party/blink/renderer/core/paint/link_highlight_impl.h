@@ -123,7 +123,7 @@ class CORE_EXPORT LinkHighlightImpl final : public CompositorAnimationDelegate,
 
   WeakPersistent<Node> node_;
   std::unique_ptr<CompositorAnimation> compositor_animation_;
-  Persistent<EffectPaintPropertyNode> effect_;
+  scoped_refptr<EffectPaintPropertyNode> effect_;
 
   // True if an animation has been requested.
   bool start_compositor_animation_ = false;

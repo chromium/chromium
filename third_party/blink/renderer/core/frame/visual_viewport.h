@@ -363,13 +363,14 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   scoped_refptr<cc::SolidColorScrollbarLayer> scrollbar_layer_vertical_;
 
   PropertyTreeStateOrAlias parent_property_tree_state_;
-  Member<TransformPaintPropertyNode> device_emulation_transform_node_;
-  Member<TransformPaintPropertyNode> overscroll_elasticity_transform_node_;
-  Member<TransformPaintPropertyNode> page_scale_node_;
-  Member<TransformPaintPropertyNode> scroll_translation_node_;
-  Member<ScrollPaintPropertyNode> scroll_node_;
-  Member<EffectPaintPropertyNode> horizontal_scrollbar_effect_node_;
-  Member<EffectPaintPropertyNode> vertical_scrollbar_effect_node_;
+  scoped_refptr<TransformPaintPropertyNode> device_emulation_transform_node_;
+  scoped_refptr<TransformPaintPropertyNode>
+      overscroll_elasticity_transform_node_;
+  scoped_refptr<TransformPaintPropertyNode> page_scale_node_;
+  scoped_refptr<TransformPaintPropertyNode> scroll_translation_node_;
+  scoped_refptr<ScrollPaintPropertyNode> scroll_node_;
+  scoped_refptr<EffectPaintPropertyNode> horizontal_scrollbar_effect_node_;
+  scoped_refptr<EffectPaintPropertyNode> vertical_scrollbar_effect_node_;
 
   // Offset of the visual viewport from the main frame's origin, in CSS pixels.
   ScrollOffset offset_;

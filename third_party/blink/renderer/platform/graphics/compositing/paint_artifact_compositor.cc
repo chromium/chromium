@@ -93,12 +93,6 @@ PaintArtifactCompositor::PaintArtifactCompositor(
 
 PaintArtifactCompositor::~PaintArtifactCompositor() {}
 
-void PaintArtifactCompositor::Trace(Visitor* visitor) const {
-  visitor->Trace(pending_layers_);
-  visitor->Trace(painted_scroll_translations_);
-  visitor->Trace(synthesized_clip_cache_);
-}
-
 void PaintArtifactCompositor::SetTracksRasterInvalidations(bool should_track) {
   tracks_raster_invalidations_ = should_track || VLOG_IS_ON(3);
   for (auto& pending_layer : pending_layers_) {
@@ -269,7 +263,7 @@ void PaintArtifactCompositor::UpdatePaintedScrollTranslationsBeforeLayerization(
     const PaintArtifact& artifact,
     PaintChunks::const_iterator chunk_cursor) {
   const PaintChunk& chunk = *chunk_cursor;
-  const HitTestData* hit_test_data = chunk.hit_test_data.Get();
+  const HitTestData* hit_test_data = chunk.hit_test_data.get();
   if (hit_test_data && hit_test_data->scroll_translation) {
     const auto& scroll_translation = *hit_test_data->scroll_translation;
     bool is_composited =
@@ -606,8 +600,7 @@ void PaintArtifactCompositor::LayerizeGroup(
     const PaintArtifact& artifact,
     const EffectPaintPropertyNode& current_group,
     PaintChunks::const_iterator& chunk_cursor,
-    HeapHashSet<Member<const TransformPaintPropertyNode>>&
-        directly_composited_transforms,
+    HashSet<const TransformPaintPropertyNode*>& directly_composited_transforms,
     bool force_draws_content) {
   wtf_size_t first_layer_in_current_group = pending_layers_.size();
   // The worst case time complexity of the algorithm is O(pqd), where
@@ -716,9 +709,8 @@ void PaintArtifactCompositor::LayerizeGroup(
 
 void PaintArtifactCompositor::CollectPendingLayers(
     const PaintArtifact& artifact) {
-  HeapHashSet<Member<const TransformPaintPropertyNode>>
-      directly_composited_transforms;
-  auto cursor = artifact.GetPaintChunks().begin();
+  HashSet<const TransformPaintPropertyNode*> directly_composited_transforms;
+  PaintChunks::const_iterator cursor = artifact.GetPaintChunks().begin();
   LayerizeGroup(artifact, EffectPaintPropertyNode::Root(), cursor,
                 directly_composited_transforms, /*force_draws_content*/ false);
   DCHECK(cursor == artifact.GetPaintChunks().end());
@@ -895,7 +887,7 @@ void PaintArtifactCompositor::UpdateCompositorViewportProperties(
 void PaintArtifactCompositor::Update(
     const PaintArtifact& artifact,
     const ViewportProperties& viewport_properties,
-    const StackScrollTranslationVector& scroll_translation_nodes,
+    const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
     Vector<std::unique_ptr<cc::ViewTransitionRequest>> transition_requests) {
   // See: |UpdateRepaintedLayers| for repaint updates.
   DCHECK(needs_update_);
@@ -948,7 +940,7 @@ void PaintArtifactCompositor::Update(
   // However, we want to create a cc::ScrollNode regardless of whether the
   // scroller is painted. This ensures that scroll offset animations aren't
   // affected by becoming unpainted.
-  for (auto& node : scroll_translation_nodes) {
+  for (auto* node : scroll_translation_nodes) {
     property_tree_manager.EnsureCompositorScrollNode(*node);
   }
   for (auto& [node, info] : painted_scroll_translations_) {
@@ -1038,7 +1030,8 @@ void PaintArtifactCompositor::Update(
   // For information about |sequence_number|, see:
   // PaintPropertyNode::changed_sequence_number_|;
   for (auto& chunk : artifact.GetPaintChunks()) {
-    chunk.properties.ClearChangedToRoot(g_s_property_tree_sequence_number);
+    chunk.properties.GetPropertyTreeState().ClearChangedToRoot(
+        g_s_property_tree_sequence_number);
     if (chunk.hit_test_data && chunk.hit_test_data->scroll_translation) {
       chunk.hit_test_data->scroll_translation->ClearChangedToRoot(
           g_s_property_tree_sequence_number);
@@ -1062,7 +1055,7 @@ void PaintArtifactCompositor::UpdateRepaintedLayers(
   for (const auto& chunk : repainted_artifact.GetPaintChunks()) {
     // If this fires, a property tree value has changed but we are missing a
     // call to |PaintArtifactCompositor::SetNeedsUpdate|.
-    DCHECK(!chunk.properties.Unalias().ChangedToRoot(
+    DCHECK(!chunk.properties.GetPropertyTreeState().Unalias().ChangedToRoot(
         PaintPropertyChangeType::kChangedOnlyNonRerasterValues));
   }
 #endif
@@ -1360,9 +1353,8 @@ CompositingReasons PaintArtifactCompositor::GetCompositingReasons(
 Vector<cc::Layer*> PaintArtifactCompositor::SynthesizedClipLayersForTesting()
     const {
   Vector<cc::Layer*> synthesized_clip_layers;
-  for (const auto& entry : synthesized_clip_cache_) {
+  for (const auto& entry : synthesized_clip_cache_)
     synthesized_clip_layers.push_back(entry.synthesized_clip->Layer());
-  }
   return synthesized_clip_layers;
 }
 
