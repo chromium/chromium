@@ -13,13 +13,16 @@
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/request_type.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 
 class Browser;
 class ExclusiveAccessPermissionPromptView;
 
 namespace content {
 class WebContents;
+}
+
+namespace views {
+class Widget;
 }
 
 // Controls a prompt for a set of exclusive access (keyboard/pointer lock)
@@ -53,7 +56,7 @@ class ExclusiveAccessPermissionPrompt
   bool ShowPrompt();
   void ClosePrompt();
 
-  views::UniqueWidgetPtr content_scrim_widget_;
+  std::unique_ptr<views::Widget> content_scrim_widget_;
   views::ViewTracker prompt_view_tracker_;
 
   const raw_ptr<permissions::PermissionPrompt::Delegate> delegate_;

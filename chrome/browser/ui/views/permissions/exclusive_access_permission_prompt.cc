@@ -81,6 +81,5 @@ void ExclusiveAccessPermissionPrompt::ClosePrompt() {
 
   if (content_scrim_widget_) {
     content_scrim_widget_->Close();
-    content_scrim_widget_.reset();
   }
 }
