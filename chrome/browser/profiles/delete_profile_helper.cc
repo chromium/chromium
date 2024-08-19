@@ -85,17 +85,7 @@ void DisableSyncForProfileDeletion(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS Ash, profile deletion uses a different codepath but some
   // browser tests do exercise this code.
-  CHECK_IS_TEST(base::NotFatalUntil::M127);
-
-  // This is believed to be unreachable (outside tests) but the stakes are quite
-  // high too, so fall back to the legacy logic just in case.
-  // TODO(crbug.com/40797392): Remove this code and replace it all with
-  // CHECK_IS_TEST() or NOTREACHED().
-  if (SyncServiceFactory::HasSyncService(profile)) {
-    syncer::SyncService* sync_service =
-        SyncServiceFactory::GetForProfile(profile);
-    sync_service->StopAndClear();
-  }
+  CHECK_IS_TEST();
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
   identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
       signin_metrics::ProfileSignout::kSignoutDuringProfileDeletion);
