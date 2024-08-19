@@ -11,6 +11,7 @@ List of icons that are exported from figma:
 * close.svg
 * laptop_chromebook.svg
 * mic_external_on.svg
+* mic_muted.svg
 * remove_fill.svg
 
 [//]: # (TODO(pihsun): Check / update all SVG to the file from the designer,

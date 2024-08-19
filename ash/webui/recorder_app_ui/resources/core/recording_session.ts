@@ -99,6 +99,8 @@ export class RecordingSession {
 
   private readonly combinedInputNode: MediaStreamAudioDestinationNode;
 
+  private readonly sourceStreams: MediaStream[];
+
   readonly progress = computed<RecordingProgress>(() => {
     const powers = this.powers.value;
     const length = (powers.length * SAMPLES_PER_SLICE) / SAMPLE_RATE;
@@ -112,9 +114,15 @@ export class RecordingSession {
   private constructor(
     private readonly platformHandler: PlatformHandler,
     private readonly audioCtx: AudioContext,
-    private readonly sourceStreams: MediaStream[],
+    private readonly micStream: MediaStream,
+    systemAudioStream: MediaStream|null,
     speakerLabelEnabled: boolean,
   ) {
+    this.sourceStreams = [micStream];
+    if (systemAudioStream !== null) {
+      this.sourceStreams.push(systemAudioStream);
+    }
+
     this.sodaEventTransformer = new SodaEventTransformer(speakerLabelEnabled);
     this.combinedInputNode = audioCtx.createMediaStreamDestination();
     this.audioProcessor = new AudioWorkletNode(audioCtx, 'audio-processor');
@@ -149,6 +157,18 @@ export class RecordingSession {
         this.processedSamples += samples.length;
       },
     );
+  }
+
+  /**
+   * Sets the mute state of the mic stream.
+   *
+   * Note that this doesn't change the state of the system audio stream, as the
+   * mute button is intended to only mute the mic stream.
+   */
+  setMicMuted(muted: boolean): void {
+    for (const track of this.micStream.getAudioTracks()) {
+      track.enabled = !muted;
+    }
   }
 
   private onDataAvailable(event: BlobEvent): void {
@@ -286,20 +306,22 @@ export class RecordingSession {
   static async create(
     config: RecordingSessionConfig,
   ): Promise<RecordingSession> {
-    const requestingStreams = [getMicrophoneStream(config.micId)];
-    if (config.includeSystemAudio) {
-      requestingStreams.push(
-        config.platformHandler.getSystemAudioMediaStream(),
-      );
-    }
-    const streams = await Promise.all(requestingStreams);
+    const micStreamPromise = getMicrophoneStream(config.micId);
+    const systemAudioStreamPromise = config.includeSystemAudio ?
+      config.platformHandler.getSystemAudioMediaStream() :
+      null;
+    const [micStream, systemAudioStream] = await Promise.all([
+      micStreamPromise,
+      systemAudioStreamPromise,
+    ]);
 
     const audioCtx = await getAudioContext();
 
     return new RecordingSession(
       config.platformHandler,
       audioCtx,
-      streams,
+      micStream,
+      systemAudioStream,
       config.speakerLabelEnabled,
     );
   }

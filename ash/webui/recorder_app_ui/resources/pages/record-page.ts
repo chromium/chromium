@@ -343,6 +343,8 @@ export class RecordPage extends ReactiveLitElement {
 
   private readonly wakeLockRequestQueue = new AsyncJobQueue('keepLatest');
 
+  private readonly micMuted = signal(false);
+
   private async startRecording() {
     if (this.recordingSession.value !== null) {
       return;
@@ -541,6 +543,11 @@ export class RecordPage extends ReactiveLitElement {
     navigateTo('/');
   }
 
+  private onToggleMuted() {
+    this.micMuted.update((s) => !s);
+    this.recordingSession.value?.setMicMuted(this.micMuted.value);
+  }
+
   private renderAudioWaveform() {
     if (this.recordingSession.value === null) {
       return nothing;
@@ -549,9 +556,11 @@ export class RecordPage extends ReactiveLitElement {
     return html`
       <audio-waveform .values=${session.progress.value.powers}>
       </audio-waveform>
-      <cra-icon-button shape="circle">
-        <!-- TODO: b/336963138 - Implement mute. -->
-        <cra-icon slot="icon" name="mic"></cra-icon>
+      <cra-icon-button shape="circle" @click=${this.onToggleMuted}>
+        <cra-icon
+          slot="icon"
+          .name=${this.micMuted.value ? 'mic_muted' : 'mic'}
+        ></cra-icon>
       </cra-icon-button>
     `;
   }
