@@ -20,6 +20,11 @@ export class SpeakerLabelConsentDialogContent extends LitElement {
     ul {
       padding-inline-start: 20px;
     }
+
+    a,
+    a:visited {
+      color: var(--cros-sys-primary);
+    }
   `;
 
   override render(): RenderResult {
