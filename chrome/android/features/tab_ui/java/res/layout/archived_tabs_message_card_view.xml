@@ -15,7 +15,9 @@ found in the LICENSE file.
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:paddingStart="16dp"
+        android:paddingEnd="4dp"
+        android:paddingVertical="8dp">
 
         <ImageView
             android:id="@+id/start_image"
@@ -63,8 +65,8 @@ found in the LICENSE file.
 
         <ImageView
             android:id="@+id/end_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@drawable/chevron_right"
             app:tint="@color/default_icon_color_tint_list"
             android:scaleType="center"
