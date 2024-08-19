@@ -340,8 +340,8 @@ CSSStyleValueVector StyleValueFactory::FromString(
           stream, /*allow_important_annotation=*/false,
           /*is_animation_tainted=*/false,
           /*must_contain_variable_reference=*/false,
-          /*restricted_value=*/false, important_ignored,
-          parser_context->GetExecutionContext());
+          /*restricted_value=*/false, /*comma_ends_declaration=*/false,
+          important_ignored, parser_context->GetExecutionContext());
   if (variable_data) {
     if ((property_id == CSSPropertyID::kVariable &&
          variable_data->OriginalText().length() > 0) ||

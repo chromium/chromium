@@ -524,7 +524,8 @@ TEST(CSSParserImplTest,
         stream, /*allow_important_annotation=*/true,
         /*is_animation_tainted=*/false,
         /*must_contain_variable_reference=*/false,
-        /*restricted_value=*/true, is_important,
+        /*restricted_value=*/true, /*comma_ends_declaration=*/false,
+        is_important,
         /*context=*/nullptr);
     if (current_case.expected_text == "PARSE ERROR") {
       EXPECT_FALSE(data);

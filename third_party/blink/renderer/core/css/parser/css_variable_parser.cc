@@ -281,16 +281,6 @@ bool CSSVariableParser::IsValidVariableName(StringView string) {
   return string.length() >= 3 && string[0] == '-' && string[1] == '-';
 }
 
-bool CSSVariableParser::ContainsValidVariableReferences(
-    CSSParserTokenRange range,
-    const ExecutionContext* context) {
-  bool has_references;
-  bool has_positioned_braces;
-  return IsValidVariable(range, has_references, has_positioned_braces,
-                         context) &&
-         has_references && !has_positioned_braces;
-}
-
 CSSValue* CSSVariableParser::ParseDeclarationIncludingCSSWide(
     const CSSTokenizedValue& tokenized_value,
     bool is_animation_tainted,
@@ -326,6 +316,7 @@ CSSUnparsedDeclarationValue* CSSVariableParser::ParseDeclarationValue(
 
 static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
                                  bool restricted_value,
+                                 bool comma_ends_declaration,
                                  bool& has_references,
                                  bool& has_font_units,
                                  bool& has_root_font_units,
@@ -354,7 +345,8 @@ static bool ConsumeVariableReference(CSSParserTokenStream& stream,
   }
 
   // Parse the fallback value.
-  if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false, has_references,
+  if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
+                            /*comma_ends_declaration=*/false, has_references,
                             has_font_units, has_root_font_units,
                             has_line_height_units, context)) {
     return false;
@@ -406,7 +398,8 @@ static bool ConsumeEnvVariableReference(CSSParserTokenStream& stream,
   }
 
   // Parse the fallback value.
-  if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false, has_references,
+  if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
+                            /*comma_ends_declaration=*/false, has_references,
                             has_font_units, has_root_font_units,
                             has_line_height_units, context)) {
     return false;
@@ -455,7 +448,8 @@ static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
   }
 
   // Parse the fallback value.
-  if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false, has_references,
+  if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
+                            /*comma_ends_declaration=*/false, has_references,
                             has_font_units, has_root_font_units,
                             has_line_height_units, context)) {
     return false;
@@ -473,6 +467,7 @@ static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
 // Called recursively for parsing fallback values.
 static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
                                  bool restricted_value,
+                                 bool comma_ends_declaration,
                                  bool& has_references,
                                  bool& has_font_units,
                                  bool& has_root_font_units,
@@ -571,6 +566,11 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
             return !error;
           }
           break;
+        case kCommaToken:
+          if (comma_ends_declaration && block_stack_size == 0) {
+            return !error;
+          }
+          break;
         default:
           break;
       }
@@ -611,6 +611,7 @@ CSSVariableData* CSSVariableParser::ConsumeUnparsedDeclaration(
     bool is_animation_tainted,
     bool must_contain_variable_reference,
     bool restricted_value,
+    bool comma_ends_declaration,
     bool& important,
     const ExecutionContext* context) {
   // Consume leading whitespace and comments, as required by the spec.
@@ -622,8 +623,8 @@ CSSVariableData* CSSVariableParser::ConsumeUnparsedDeclaration(
   bool has_font_units = false;
   bool has_root_font_units = false;
   bool has_line_height_units = false;
-  if (!ConsumeUnparsedValue(stream, restricted_value, has_references,
-                            has_font_units, has_root_font_units,
+  if (!ConsumeUnparsedValue(stream, restricted_value, comma_ends_declaration,
+                            has_references, has_font_units, has_root_font_units,
                             has_line_height_units, context)) {
     return nullptr;
   }
@@ -637,7 +638,8 @@ CSSVariableData* CSSVariableParser::ConsumeUnparsedDeclaration(
 
   important = css_parsing_utils::MaybeConsumeImportant(
       stream, allow_important_annotation);
-  if (!stream.AtEnd()) {
+  if (!stream.AtEnd() &&
+      !(comma_ends_declaration && stream.Peek().GetType() == kCommaToken)) {
     return nullptr;
   }
 

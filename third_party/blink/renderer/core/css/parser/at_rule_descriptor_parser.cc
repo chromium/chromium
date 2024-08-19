@@ -466,8 +466,8 @@ CSSValue* AtRuleDescriptorParser::ParseAtPropertyDescriptor(
               stream, /*allow_important_annotation=*/false,
               /*is_animation_tainted=*/false,
               /*must_contain_variable_reference=*/false,
-              /*restricted_value=*/false, important_ignored,
-              context.GetExecutionContext());
+              /*restricted_value=*/false, /*comma_ends_declaration=*/false,
+              important_ignored, context.GetExecutionContext());
       if (variable_data) {
         return MakeGarbageCollected<CSSUnparsedDeclarationValue>(variable_data,
                                                                  &context);

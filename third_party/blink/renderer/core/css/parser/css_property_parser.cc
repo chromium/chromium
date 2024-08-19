@@ -216,8 +216,8 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
           /*allow_important_annotation=*/true,
           /*is_animation_tainted=*/false,
           /*must_contain_variable_reference=*/true,
-          /*restricted_value=*/true, important,
-          context_->GetExecutionContext());
+          /*restricted_value=*/true, /*comma_ends_declaration=*/false,
+          important, context_->GetExecutionContext());
   if (!variable_data) {
     return false;
   }

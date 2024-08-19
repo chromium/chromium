@@ -24,10 +24,6 @@ class CORE_EXPORT CSSVariableParser {
  public:
   // TODO(sesse): Get rid of this (and then a lot of utility functions can go
   // away, too).
-  static bool ContainsValidVariableReferences(CSSParserTokenRange,
-                                              const ExecutionContext* context);
-
-  // TODO(sesse): Same.
   static CSSValue* ParseDeclarationIncludingCSSWide(const CSSTokenizedValue&,
                                                     bool is_animation_tainted,
                                                     const CSSParserContext&);
@@ -68,6 +64,7 @@ class CORE_EXPORT CSSVariableParser {
       bool is_animation_tainted,
       bool must_contain_variable_reference,
       bool restricted_value,
+      bool comma_ends_declaration,
       bool& important,
       const ExecutionContext* context);
 

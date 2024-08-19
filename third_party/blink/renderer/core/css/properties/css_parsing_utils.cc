@@ -714,63 +714,6 @@ bool ConsumeTranslate3d(CSSParserTokenStream& stream,
   return true;
 }
 
-// Add CSSVariableData to variableData vector.
-bool AddCSSPaintArgument(
-    const Vector<CSSParserToken>& tokens,
-    HeapVector<Member<CSSVariableData>>* const variable_data,
-    const CSSParserContext& context) {
-  CSSParserTokenRange token_range(tokens);
-  if (CSSVariableParser::ContainsValidVariableReferences(
-          token_range, context.GetExecutionContext())) {
-    return false;
-  }
-  if (!token_range.AtEnd()) {
-    // CSSParserTokenRange doesn't store precise location information about
-    // where each token started or ended, so we don't have the actual original
-    // string. However, for CSS paint arguments, it's not a huge issue
-    // if we get normalized whitespace etc., so we work around it by creating
-    // a fake “original text” by serializing the tokens back.
-    String text = token_range.Serialize();
-    if (CSSVariableData* unparsed_css_variable_data =
-            CSSVariableData::Create({token_range, text}, false, false)) {
-      variable_data->push_back(unparsed_css_variable_data);
-      return true;
-    }
-  }
-  return false;
-}
-
-// Consume input arguments, if encounter function, will return the function
-// block as a Vector of CSSParserToken, otherwise, will just return a Vector of
-// a single CSSParserToken.
-Vector<CSSParserToken> ConsumeFunctionArgsOrNot(CSSParserTokenStream& stream) {
-  Vector<CSSParserToken> argument_tokens;
-  if (stream.Peek().GetBlockType() == CSSParserToken::kBlockStart) {
-    // A block of some type (maybe a function, maybe (), [], or {}).
-    // Push the block start.
-    //
-    // For functions, we don't have any upfront knowledge about the input
-    // argument types here, we should just leave the token as it is and
-    // resolve it later in the variable parsing phase.
-    argument_tokens.push_back(stream.Peek());
-    CSSParserTokenType closing_type =
-        CSSParserToken::ClosingTokenType(stream.Peek().GetType());
-
-    {
-      CSSParserTokenStream::BlockGuard guard(stream);
-      while (!stream.AtEnd()) {
-        argument_tokens.push_back(stream.Consume());
-      }
-    }
-    argument_tokens.push_back(
-        CSSParserToken(closing_type, CSSParserToken::kBlockEnd));
-
-  } else {
-    argument_tokens.push_back(stream.ConsumeIncludingWhitespace());
-  }
-  return argument_tokens;
-}
-
 CSSFunctionValue* ConsumeFilterFunction(CSSParserTokenStream& stream,
                                         const CSSParserContext& context) {
   CSSValueID filter_type = stream.Peek().FunctionId();
@@ -3621,21 +3564,42 @@ static CSSValue* ConsumePaint(CSSParserTokenStream& stream,
   // variables early if paint function is registered.
   Vector<CSSParserToken> argument_tokens;
   HeapVector<Member<CSSVariableData>> variable_data;
+  bool first_argument = true;
   while (!stream.AtEnd()) {
-    if (stream.Peek().GetType() != kCommaToken) {
-      argument_tokens.AppendVector(ConsumeFunctionArgsOrNot(stream));
-    } else {
-      if (!AddCSSPaintArgument(argument_tokens, &variable_data, context)) {
+    stream.ConsumeWhitespace();
+    if (!first_argument) {
+      if (stream.Peek().GetType() != kCommaToken) {
         return nullptr;
       }
-      argument_tokens.clear();
-      if (!ConsumeCommaIncludingWhitespace(stream)) {
+      ConsumeCommaIncludingWhitespace(stream);
+      if (stream.AtEnd()) {
         return nullptr;
       }
     }
-  }
-  if (!AddCSSPaintArgument(argument_tokens, &variable_data, context)) {
-    return nullptr;
+    bool important_ignored;
+    CSSVariableData* argument = CSSVariableParser::ConsumeUnparsedDeclaration(
+        stream, /*allow_important_annotation=*/false,
+        /*is_animation_tainted=*/false,
+        /*must_contain_variable_reference=*/false,
+        /*restricted_value=*/false, /*comma_ends_declaration=*/true,
+        important_ignored, context.GetExecutionContext());
+    if (!argument) {
+      return nullptr;
+    }
+    if (argument->NeedsVariableResolution()) {
+      // If we see an un-substituted var() or similar, it is a sign that
+      // we are in parsing (as opposed to resolving, where it would be
+      // substituted). We need to return an error so that the value as a whole
+      // becomes an unparsed value; we will be called back during resolving
+      // with all substitutions done.
+      //
+      // This is something most properties do implicitly, since var() would
+      // be a parse error. But since we accept pretty much any token sequence
+      // as arguments to paint(), we need to make this check explicitly here.
+      return nullptr;
+    }
+    variable_data.push_back(argument);
+    first_argument = false;
   }
 
   return MakeGarbageCollected<CSSPaintValue>(name, std::move(variable_data));
