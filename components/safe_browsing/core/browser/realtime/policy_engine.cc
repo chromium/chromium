@@ -30,11 +30,12 @@ enum class ConsumerVersionReason {
   // The total number of checks. This value should be used as the denominator
   // when calculating the percentage of a specific reason below.
   TOTAL_CHECKS = 0,
-  IS_OFF_THE_RECORD = 1,
+  // IS_OFF_THE_RECORD = 1, deprecated.
   INVALID_DM_TOKEN = 2,
   POLICY_DISABLED = 3,
+  IS_INCOGNITO = 4,
 
-  kMaxValue = POLICY_DISABLED
+  kMaxValue = IS_INCOGNITO
 };
 
 }  // namespace
@@ -93,13 +94,14 @@ bool RealTimePolicyEngine::CanPerformFullURLLookupWithToken(
 bool RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
     const PrefService* pref_service,
     bool has_valid_dm_token,
-    bool is_off_the_record) {
+    bool is_off_the_record,
+    bool is_guest_profile) {
   base::UmaHistogramEnumeration("SafeBrowsing.RT.ConsumerVersionReason",
                                 ConsumerVersionReason::TOTAL_CHECKS);
 
-  if (is_off_the_record) {
+  if (is_off_the_record && !is_guest_profile) {
     base::UmaHistogramEnumeration("SafeBrowsing.RT.ConsumerVersionReason",
-                                  ConsumerVersionReason::IS_OFF_THE_RECORD);
+                                  ConsumerVersionReason::IS_INCOGNITO);
     return false;
   }
 

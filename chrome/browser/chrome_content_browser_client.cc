@@ -5966,7 +5966,8 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
         connectors_service->GetDMTokenForRealTimeUrlCheck().has_value();
     bool is_enterprise_lookup_enabled =
         safe_browsing::RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
-            profile->GetPrefs(), has_valid_dm_token, profile->IsOffTheRecord());
+            profile->GetPrefs(), has_valid_dm_token, profile->IsOffTheRecord(),
+            profile->IsGuestSession());
 #else
     bool is_enterprise_lookup_enabled = false;
 #endif

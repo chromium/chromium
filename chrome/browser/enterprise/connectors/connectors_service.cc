@@ -561,7 +561,7 @@ bool ConnectorsService::ConnectorsEnabled() const {
     return false;
 #endif
 
-  return !profile->IsOffTheRecord();
+  return !profile->IsOffTheRecord() || profile->IsGuestSession();
 }
 
 PrefService* ConnectorsService::GetPrefs() {

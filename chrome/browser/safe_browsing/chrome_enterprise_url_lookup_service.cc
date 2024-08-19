@@ -91,7 +91,7 @@ bool ChromeEnterpriseRealTimeUrlLookupService::CanPerformFullURLLookup() const {
   return RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
       profile_->GetPrefs(),
       connectors_service_->GetDMTokenForRealTimeUrlCheck().has_value(),
-      profile_->IsOffTheRecord());
+      profile_->IsOffTheRecord(), profile_->IsGuestSession());
 }
 
 bool ChromeEnterpriseRealTimeUrlLookupService::
