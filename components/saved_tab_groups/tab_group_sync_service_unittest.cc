@@ -453,9 +453,11 @@ TEST_F(TabGroupSyncServiceTest, AddUpdateRemoveTabWithUnknownGroupId) {
   auto group = tab_group_sync_service_->GetGroup(unknown_group_id);
   EXPECT_FALSE(group.has_value());
 
+  SavedTabGroupTabBuilder tab_builder;
+  tab_builder.SetTitle(u"random tab title");
+  tab_builder.SetURL(GURL("www.google.com"));
   tab_group_sync_service_->UpdateTab(unknown_group_id, local_tab_id,
-                                     u"random tab title",
-                                     GURL("www.google.com"), std::nullopt);
+                                     tab_builder);
 
   group = tab_group_sync_service_->GetGroup(unknown_group_id);
   EXPECT_FALSE(group.has_value());
@@ -516,8 +518,11 @@ TEST_F(TabGroupSyncServiceTest, UpdateTab) {
   // Update tab.
   std::u16string new_title = u"tab title 2";
   GURL new_url = GURL("www.example.com");
+  SavedTabGroupTabBuilder tab_builder;
+  tab_builder.SetTitle(new_title);
+  tab_builder.SetURL(new_url);
   tab_group_sync_service_->UpdateTab(local_group_id_1_, local_tab_id_2,
-                                     new_title, new_url, 2);
+                                     tab_builder);
 
   group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
   EXPECT_TRUE(group.has_value());

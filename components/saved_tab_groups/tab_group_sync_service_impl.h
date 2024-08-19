@@ -73,9 +73,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
               std::optional<size_t> position) override;
   void UpdateTab(const LocalTabGroupID& group_id,
                  const LocalTabID& tab_id,
-                 const std::u16string& title,
-                 GURL url,
-                 std::optional<size_t> position) override;
+                 const SavedTabGroupTabBuilder& tab_builder) override;
   void RemoveTab(const LocalTabGroupID& group_id,
                  const LocalTabID& tab_id) override;
   void MoveTab(const LocalTabGroupID& group_id,

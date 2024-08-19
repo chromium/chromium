@@ -348,8 +348,10 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateTab) {
   const std::u16string new_title = u"This is the new title";
   GURL new_url = GURL("https://not_first_tab.com");
 
-  service()->UpdateTab(local_id, kFirstTabToken, new_title, new_url,
-                       /*position=*/std::nullopt);
+  SavedTabGroupTabBuilder tab_builder;
+  tab_builder.SetTitle(new_title);
+  tab_builder.SetURL(new_url);
+  service()->UpdateTab(local_id, kFirstTabToken, std::move(tab_builder));
   retrieved_group = service()->GetGroup(kGroupId);
   EXPECT_TRUE(retrieved_group.has_value());
   EXPECT_TRUE(retrieved_group->ContainsTab(kFirstTabId));

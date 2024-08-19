@@ -83,6 +83,10 @@ SavedTabGroup TestSavedGroup(const base::Uuid& saved_id) {
   return saved_group;
 }
 
+MATCHER_P2(TabTitleAndURLEq, title, url, "") {
+  return arg.title() == title && arg.url() == url;
+}
+
 }  // namespace
 
 // Test fixture for the TabStripMediator.
@@ -1347,10 +1351,9 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowser) {
               UpdateLocalTabId(local_id, saved_tab.saved_tab_guid(),
                                web_state_id.identifier()))
       .Times(1);
-  std::optional<size_t> position = std::nullopt;
   EXPECT_CALL(*tab_group_sync_service_,
-              UpdateTab(local_id, web_state_id.identifier(), new_title, new_url,
-                        position))
+              UpdateTab(local_id, web_state_id.identifier(),
+                        TabTitleAndURLEq(new_title, new_url)))
       .Times(1);
 
   [mediator_ cancelMoveForTab:web_state_id
@@ -1400,7 +1403,7 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowserModifiedGroup) {
   EXPECT_CALL(*tab_group_sync_service_, UpdateLocalTabGroupMapping(_, _))
       .Times(0);
   EXPECT_CALL(*tab_group_sync_service_, UpdateLocalTabId(_, _, _)).Times(0);
-  EXPECT_CALL(*tab_group_sync_service_, UpdateTab(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*tab_group_sync_service_, UpdateTab(_, _, _)).Times(0);
 
   [mediator_ cancelMoveForTab:web_state_id
                 originBrowser:browser_.get()
@@ -1453,10 +1456,9 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowserLargeIndex) {
               UpdateLocalTabId(local_id, saved_tab.saved_tab_guid(),
                                web_state_id.identifier()))
       .Times(1);
-  std::optional<size_t> position = std::nullopt;
   EXPECT_CALL(*tab_group_sync_service_,
-              UpdateTab(local_id, web_state_id.identifier(), new_title, new_url,
-                        position))
+              UpdateTab(local_id, web_state_id.identifier(),
+                        TabTitleAndURLEq(new_title, new_url)))
       .Times(1);
 
   // Cancel the move to a position that is larger than the number of web states.
@@ -1517,10 +1519,9 @@ TEST_F(TabStripMediatorTest, CancelTabMoveDifferentBrowser) {
               UpdateLocalTabId(local_id, saved_tab.saved_tab_guid(),
                                web_state_id.identifier()))
       .Times(1);
-  std::optional<size_t> position = std::nullopt;
   EXPECT_CALL(*tab_group_sync_service_,
-              UpdateTab(local_id, web_state_id.identifier(), new_title, new_url,
-                        position))
+              UpdateTab(local_id, web_state_id.identifier(),
+                        TabTitleAndURLEq(new_title, new_url)))
       .Times(1);
 
   // Cancel the move to a position that is larger than the number of web states.

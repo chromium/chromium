@@ -156,6 +156,37 @@ class SavedTabGroupTab {
   base::Time update_time_windows_epoch_micros_;
 };
 
+class SavedTabGroupTabBuilder {
+ public:
+  SavedTabGroupTabBuilder();
+  ~SavedTabGroupTabBuilder();
+
+  // Disallow copy/assign.
+  SavedTabGroupTabBuilder(const SavedTabGroupTabBuilder&) = delete;
+  SavedTabGroupTabBuilder& operator=(const SavedTabGroupTabBuilder&) = delete;
+
+  SavedTabGroupTabBuilder& SetURL(const GURL& url);
+  SavedTabGroupTabBuilder& SetTitle(const std::u16string& title);
+  SavedTabGroupTabBuilder& SetPosition(size_t position);
+
+  SavedTabGroupTab Build(const SavedTabGroupTab& tab) const;
+
+  // Accessors for testing.
+  GURL url() const { return url_; }
+  std::u16string title() const { return title_; }
+  size_t position() const { return position_; }
+
+ private:
+  GURL url_;
+  std::u16string title_;
+  size_t position_ = 0;
+
+  // Flags to indicate which properties have been set.
+  bool has_url_ = false;
+  bool has_title_ = false;
+  bool has_position_ = false;
+};
+
 }  // namespace tab_groups
 
 #endif  // COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_TAB_H_

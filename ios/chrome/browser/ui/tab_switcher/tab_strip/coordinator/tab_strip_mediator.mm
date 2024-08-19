@@ -285,7 +285,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   const web::WebState* const webState =
       afterMoveWebStateList->GetWebStateAt(afterMoveIndex);
   const std::u16string title = webState->GetTitle();
-  const GURL URL = webState->GetVisibleURL();
+  const GURL url = webState->GetVisibleURL();
 
   {
     // As this is a "undo" the usual mechanisms should be paused as the tab
@@ -298,12 +298,16 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                                        localGroupID);
     _tabGroupSyncService->UpdateLocalTabGroupMapping(savedID, localGroupID);
 
-    // In case the tab has changed (URl or title), update it.
+    // In case the tab has changed (URL or title), update it.
     _tabGroupSyncService->UpdateLocalTabId(
         localGroupID, savedGroup->saved_tabs()[0].saved_tab_guid(),
         tabID.identifier());
-    _tabGroupSyncService->UpdateTab(localGroupID, tabID.identifier(), title,
-                                    URL, std::nullopt);
+
+    tab_groups::SavedTabGroupTabBuilder tab_builder;
+    tab_builder.SetURL(url);
+    tab_builder.SetTitle(title);
+    _tabGroupSyncService->UpdateTab(localGroupID, tabID.identifier(),
+                                    std::move(tab_builder));
   }
 }
 

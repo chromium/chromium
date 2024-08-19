@@ -192,11 +192,10 @@ void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
   LogEvent(TabGroupEvent::kTabAdded, group_id, std::nullopt);
 }
 
-void TabGroupSyncServiceImpl::UpdateTab(const LocalTabGroupID& group_id,
-                                        const LocalTabID& tab_id,
-                                        const std::u16string& title,
-                                        GURL url,
-                                        std::optional<size_t> position) {
+void TabGroupSyncServiceImpl::UpdateTab(
+    const LocalTabGroupID& group_id,
+    const LocalTabID& tab_id,
+    const SavedTabGroupTabBuilder& tab_builder) {
   VLOG(2) << __func__;
   auto* group = model_->Get(group_id);
   if (!group) {
@@ -213,14 +212,8 @@ void TabGroupSyncServiceImpl::UpdateTab(const LocalTabGroupID& group_id,
   // Update attributions for the tab first.
   UpdateAttributions(group_id, tab_id);
 
-  // Update URL and title for the tab.
-  SavedTabGroupTab updated_tab(*tab);
-  updated_tab.SetLocalTabID(tab_id);
-  updated_tab.SetTitle(title);
-  updated_tab.SetURL(url);
-  if (position.has_value()) {
-    updated_tab.SetPosition(position.value());
-  }
+  // Use the builder to create the updated tab.
+  SavedTabGroupTab updated_tab = tab_builder.Build(*tab);
 
   model_->UpdateLastUserInteractionTimeLocally(group_id);
   model_->UpdateTabInGroup(group->saved_guid(), std::move(updated_tab));

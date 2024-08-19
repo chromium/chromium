@@ -294,9 +294,12 @@ void TabGroupLocalUpdateObserver::UpdateLocalWebStateInSyncedGroup(
     title = GetDefaultUrlAndTitle().second;
   }
 
+  SavedTabGroupTabBuilder tab_builder;
+  tab_builder.SetURL(url);
+  tab_builder.SetTitle(title);
   sync_service_->UpdateTab(tab_info.tab_group->tab_group_id(),
-                           web_state->GetUniqueIdentifier().identifier(), title,
-                           url, std::nullopt);
+                           web_state->GetUniqueIdentifier().identifier(),
+                           std::move(tab_builder));
 }
 
 void TabGroupLocalUpdateObserver::AddLocalWebStateToSyncedGroup(

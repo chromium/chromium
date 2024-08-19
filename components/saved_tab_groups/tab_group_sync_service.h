@@ -109,9 +109,7 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
                       std::optional<size_t> position) = 0;
   virtual void UpdateTab(const LocalTabGroupID& group_id,
                          const LocalTabID& tab_id,
-                         const std::u16string& title,
-                         GURL url,
-                         std::optional<size_t> position) = 0;
+                         const SavedTabGroupTabBuilder& tab_builder) = 0;
   virtual void RemoveTab(const LocalTabGroupID& group_id,
                          const LocalTabID& tab_id) = 0;
   virtual void MoveTab(const LocalTabGroupID& group_id,

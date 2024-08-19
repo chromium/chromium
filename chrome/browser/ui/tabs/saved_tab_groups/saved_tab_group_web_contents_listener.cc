@@ -151,9 +151,12 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
         favicon::TabFaviconFromWebContents(web_contents_));
   }
 
+  SavedTabGroupTabBuilder tab_builder;
+  tab_builder.SetURL(web_contents_->GetURL());
+  tab_builder.SetTitle(web_contents_->GetTitle());
+
   service_->UpdateTab(group->local_group_id().value(), saved_tab_group_tab_id_,
-                      web_contents_->GetTitle(), web_contents_->GetURL(),
-                      /*position=*/std::nullopt);
+                      std::move(tab_builder));
 }
 
 void SavedTabGroupWebContentsListener::DidGetUserInteraction(
