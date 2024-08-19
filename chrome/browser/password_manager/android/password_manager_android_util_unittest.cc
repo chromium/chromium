@@ -503,6 +503,36 @@ TEST_F(PasswordManagerAndroidUtilTest,
       "PasswordManager.LocalUpmActivationStatus", kOn, 1);
 }
 
+// Tests that acknowledging the migration warning is no longer required for
+// migration.
+TEST_F(PasswordManagerAndroidUtilTest,
+       SetUsesSplitStoresAndUPMForLocal_SkipMigrationWarningAcknowledgement) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  pref_service()->SetBoolean(
+      password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
+  ASSERT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
+            static_cast<int>(kOff));
+
+  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
+
+  // The migration got marked as pending (but the user is not considered
+  // activated).
+  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
+            static_cast<int>(kOffAndMigrationPending));
+  histogram_tester->ExpectUniqueSample(
+      "PasswordManager.LocalUpmActivationError.NonSyncingWithMigration",
+      ActivationError::kNone, 1);
+  histogram_tester->ExpectUniqueSample("PasswordManager.LocalUpmActivated",
+                                       false, 1);
+  histogram_tester->ExpectUniqueSample(
+      "PasswordManager.LocalUpmActivationStatus", kOffAndMigrationPending, 1);
+  histogram_tester = std::make_unique<base::HistogramTester>();
+}
+
 TEST_F(
     PasswordManagerAndroidUtilTest,
     SetUsesSplitStoresAndUPMForLocal_SignedOutWithCustomEnableServiceSetting) {
