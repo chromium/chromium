@@ -998,10 +998,6 @@ crbug.com/666433 external/wpt/css/css-text-decor/text-shadow/decorations-multipl
 crbug.com/666433 external/wpt/css/css-text-decor/text-shadow/quirks-decor-noblur.html [ Failure ]
 crbug.com/666433 external/wpt/css/css-text-decor/text-shadow/standards-decor-noblur.html [ Failure ]
 
-# Temporarily disabled to unblock https://crrev.com/c/5772852
-crbug.com/358254851 http/tests/devtools/sources/debugger-ui/watch-expressions-panel-switch.js [ Failure Pass ]
-crbug.com/358254851 http/tests/devtools/a11y-axe-core/sources/watch-expression-a11y-test.js [ Failure Pass ]
-
 # `text-decoration-skip-ink: all` not implemented yet.
 crbug.com/1054656 external/wpt/css/css-text-decor/text-decoration-skip-ink-005.html [ Crash Failure Pass Timeout ]
 
