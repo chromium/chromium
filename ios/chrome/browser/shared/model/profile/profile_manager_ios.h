@@ -5,13 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_MANAGER_IOS_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_MANAGER_IOS_H_
 
-#include <string>
-#include <string_view>
-#include <vector>
+#import <string>
+#import <string_view>
+#import <vector>
 
-#include "base/functional/callback.h"
+#import "base/functional/callback.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class ProfileManagerObserverIOS;
 
 // TODO(crbug.com/359492423): Remove this forward declaration and typedef when

@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-class ChromeBrowserState;
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class DeviceSharingAppInterfaceWrapper {
  public:

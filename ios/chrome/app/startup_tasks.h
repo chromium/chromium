@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-class ChromeBrowserState;
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 // Class handling all startup tasks.
 @interface StartupTasks : NSObject

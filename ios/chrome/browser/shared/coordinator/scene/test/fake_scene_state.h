@@ -6,9 +6,8 @@
 #define IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_TEST_FAKE_SCENE_STATE_H_
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "url/gurl.h"
-
-class ChromeBrowserState;
 
 // Test double for SceneState, created with appropriate interface objects backed
 // by a browser. No incognito interface is created by default.

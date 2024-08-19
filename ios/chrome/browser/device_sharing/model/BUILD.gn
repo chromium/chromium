@@ -21,6 +21,7 @@ source_set("model") {
     "//components/prefs/ios",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//net",
     "//url",
@@ -58,6 +59,7 @@ source_set("eg_app_support+eg2") {
   deps = [
     ":model",
     "//components/handoff",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/test/app:test_support",
   ]
 }
@@ -70,7 +72,10 @@ source_set("eg_test_support+eg2") {
     "handoff_manager_app_interface.h",
     "handoff_manager_app_interface_stub.mm",
   ]
-  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+  deps = [
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
 }
 
 source_set("eg2_tests") {

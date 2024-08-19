@@ -7,13 +7,13 @@
 
 #import <memory>
 
-#include "base/gtest_prod_util.h"
+#import "base/gtest_prod_util.h"
 #import "base/memory/raw_ptr.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_manager.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class Browser;
-class ChromeBrowserState;
 @class HandoffManager;
 
 class DeviceSharingManagerImpl : public DeviceSharingManager {

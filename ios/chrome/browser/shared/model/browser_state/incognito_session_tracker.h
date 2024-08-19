@@ -5,13 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_INCOGNITO_SESSION_TRACKER_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_INCOGNITO_SESSION_TRACKER_H_
 
-#include "base/callback_list.h"
-#include "base/containers/flat_map.h"
-#include "base/scoped_observation.h"
-#include "base/sequence_checker.h"
-#include "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
-
-class ChromeBrowserState;
+#import "base/callback_list.h"
+#import "base/containers/flat_map.h"
+#import "base/scoped_observation.h"
+#import "base/sequence_checker.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 // TODO(crbug.com/358356195): Remove this typedef when this header is updated
 // to use ProfileManagerIOS.

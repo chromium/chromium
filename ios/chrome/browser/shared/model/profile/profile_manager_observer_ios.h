@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_MANAGER_OBSERVER_IOS_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_MANAGER_OBSERVER_IOS_H_
 
-#include "base/observer_list_types.h"
+#import "base/observer_list_types.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class ProfileManagerIOS;
 
 // TODO(crbug.com/358356195): Remove this forward declaration and typedef when
