@@ -3860,7 +3860,7 @@
     {
       // crbug.com/359616076 and crbug.com/360158400
       name: "ShapeOutsideWritingModeFix",
-      status: "stable",
+      status: "experimental",
     },
     {
       // crbug.com/329677645
