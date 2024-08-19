@@ -118,6 +118,10 @@
   _gridContainerViewController = nil;
 }
 
+- (void)prepareForAppearance {
+  [_gridViewController prepareForAppearance];
+}
+
 #pragma mark - TabGroupsPanelMediatorDelegate
 
 - (void)tabGroupsPanelMediator:(TabGroupsPanelMediator*)tabGroupsPanelMediator

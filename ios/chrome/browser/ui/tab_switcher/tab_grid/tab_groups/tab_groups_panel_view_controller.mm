@@ -152,6 +152,10 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
   [_collectionView.collectionViewLayout invalidateLayout];
 }
 
+- (void)prepareForAppearance {
+  [_collectionView reloadData];
+}
+
 #pragma mark TabGroupsPanelConsumer
 
 - (void)populateItems:(NSArray<TabGroupsPanelItem*>*)items {

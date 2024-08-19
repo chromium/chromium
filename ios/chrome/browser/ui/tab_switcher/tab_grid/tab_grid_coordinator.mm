@@ -499,6 +499,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     }
   }
 
+  // Notify the Tab Groups panel (if any).
+  [_tabGroupsPanelCoordinator prepareForAppearance];
+
   // Record when the tab switcher is presented.
   self.tabGridEnterTime = base::TimeTicks::Now();
   base::RecordAction(base::UserMetricsAction("MobileTabGridEntered"));

@@ -49,6 +49,10 @@ class Browser;
 @property(nonatomic, readonly, strong)
     GridContainerViewController* gridContainerViewController;
 
+// Updates the visible cells to make sure that the interval since creation is
+// updated.
+- (void)prepareForAppearance;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GROUPS_TAB_GROUPS_PANEL_COORDINATOR_H_
