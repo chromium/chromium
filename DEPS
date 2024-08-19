@@ -1892,7 +1892,7 @@ deps = {
       'condition': 'checkout_android',
   },
 
-  'src/third_party/arcore-android-sdk-client': {
+  'src/third_party/arcore-android-sdk-client/cipd': {
       'packages': [
         {
           'package': 'chromium/third_party/arcore-android-sdk-client',
@@ -1900,7 +1900,7 @@ deps = {
         },
       ],
 
-      'condition': 'checkout_android',
+      'condition': 'checkout_android and non_git_source',
       'dep_type': 'cipd',
   },
 
