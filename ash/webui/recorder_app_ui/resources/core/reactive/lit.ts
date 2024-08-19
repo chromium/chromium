@@ -148,6 +148,10 @@ export class ScopedAsyncComputed<T> implements ReactiveController {
     return this.valueInternal.value;
   }
 
+  get valueSignal(): Signal<T|null> {
+    return this.valueInternal;
+  }
+
   hostConnected(): void {
     let latestRun!: symbol;
     let abortController: AbortController|null = null;

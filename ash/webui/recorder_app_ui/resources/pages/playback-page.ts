@@ -43,11 +43,12 @@ import {
 } from '../core/lit/animation_frame_controller.js';
 import {useRecordingDataManager} from '../core/lit/context.js';
 import {
+  ComputedState,
   ReactiveLitElement,
   ScopedAsyncComputed,
   ScopedAsyncEffect,
 } from '../core/reactive/lit.js';
-import {computed, signal} from '../core/reactive/signal.js';
+import {computed, Dispose, effect, signal} from '../core/reactive/signal.js';
 import {navigateTo} from '../core/state/route.js';
 import {assertExists, assertInstanceof} from '../core/utils/assert.js';
 import {formatDuration} from '../core/utils/datetime.js';
@@ -402,6 +403,9 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private readonly showTranscription = signal(false);
 
+  // TODO(pihsun): ScopedEffect without the async part?
+  private autoOpenTranscription: Dispose|null = null;
+
   constructor() {
     super();
 
@@ -441,10 +445,30 @@ export class PlaybackPage extends ReactiveLitElement {
     }
   }
 
+  override connectedCallback(): void {
+    super.connectedCallback();
+    if (this.autoOpenTranscription === null) {
+      this.autoOpenTranscription = effect(() => {
+        if (this.transcription.state === ComputedState.DONE) {
+          // We only updates the transcription open state when it's just
+          // computed.
+          const transcription = this.transcription.valueSignal.peek();
+
+          // Default to show transcription panel if there's a non-empty
+          // transcription.
+          this.showTranscription.value =
+            transcription !== null && !transcription.isEmpty();
+        }
+      });
+    }
+  }
+
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.audio.pause();
     this.revokeAudio();
+    this.autoOpenTranscription?.();
+    this.autoOpenTranscription = null;
   }
 
   private onWordClick(ev: CustomEvent<{startMs: number}>) {
@@ -597,6 +621,7 @@ export class PlaybackPage extends ReactiveLitElement {
       this.transcription.value === null ? nothing : html`
             <cra-icon-button
               buttonstyle="toggle"
+              .selected=${live(this.showTranscription.value)}
               @click=${this.toggleTranscription}
             >
               <cra-icon slot="icon" name="notes"></cra-icon>
