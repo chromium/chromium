@@ -97,6 +97,10 @@
       [_presenter presentDiscoverFeedMenuTipBubble];
       break;
     }
+    case InProductHelpType::kHomeCustomizationMenu: {
+      [_presenter presentHomeCustomizationTipBubble];
+      break;
+    }
     case InProductHelpType::kFollowWhileBrowsing: {
       [_presenter
           presentFollowWhileBrowsingTipBubbleAndLogWithRecorder:

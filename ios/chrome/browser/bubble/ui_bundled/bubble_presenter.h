@@ -57,6 +57,11 @@ class DeviceSwitcherResultDispatcher;
 // configuration and the display history of the bubble, etc.
 - (void)presentDiscoverFeedMenuTipBubble;
 
+// Optionally presents a help bubble associated with the NTP customization
+// menu's entrypoint. The eligibility can depend on the UI hierarchy at the
+// moment, the configuration and the display history of the bubble, etc.
+- (void)presentHomeCustomizationTipBubble;
+
 // Optionally presents a relevant Follow help bubble while browsing a site.
 // The eligibility can depend on the UI hierarchy at the moment, the
 // configuration and the display history of the bubble, etc.

@@ -298,6 +298,9 @@ extern const char kIOSContextualPanelPriceInsightsEntrypointUsed[];
 extern const char
     kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed[];
 
+// The user has tapped the Home customization menu's entrypoint.
+extern const char kHomeCustomizationMenuUsed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

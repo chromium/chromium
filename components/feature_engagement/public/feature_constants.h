@@ -234,6 +234,7 @@ BASE_DECLARE_FEATURE(kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
 BASE_DECLARE_FEATURE(kIPHiOSSavedTabGroupClosed);
 BASE_DECLARE_FEATURE(kIPHiOSContextualPanelSampleModelFeature);
 BASE_DECLARE_FEATURE(kIPHiOSContextualPanelPriceInsightsFeature);
+BASE_DECLARE_FEATURE(kIPHHomeCustomizationMenuFeature);
 
 // A feature flag to enable and parametrize the sliding window of time for a
 // user's eligibility to be shown a default browser promo. This is not an FET

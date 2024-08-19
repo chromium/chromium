@@ -13,6 +13,7 @@
 #import "base/ios/block_types.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -290,6 +291,11 @@ const CGFloat kFeedContainerExtraHeight = 500;
 
   [self.helpHandler
       presentInProductHelpWithType:InProductHelpType::kDiscoverFeedMenu];
+
+  if (IsHomeCustomizationEnabled() && !IsFirstRunRecent(base::Days(3))) {
+    [self.helpHandler
+        presentInProductHelpWithType:InProductHelpType::kHomeCustomizationMenu];
+  }
 
   // Scrolls NTP into feed initially if `shouldScrollIntoFeed`.
   if (self.shouldScrollIntoFeed) {

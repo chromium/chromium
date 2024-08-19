@@ -102,6 +102,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   BubbleViewControllerPresenter* _sharePageIPHBubblePresenter;
   BubbleViewControllerPresenter* _tabGridIPHBubblePresenter;
   BubbleViewControllerPresenter* _discoverFeedHeaderMenuTipBubblePresenter;
+  BubbleViewControllerPresenter* _homeCustomizationMenuTipBubblePresenter;
   BubbleViewControllerPresenter* _readingListTipBubblePresenter;
   BubbleViewControllerPresenter* _followWhileBrowsingBubbleTipPresenter;
   BubbleViewControllerPresenter* _defaultPageModeTipBubblePresenter;
@@ -173,6 +174,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   [_tabGridIPHBubblePresenter dismissAnimated:NO];
   [_bottomToolbarTipBubblePresenter dismissAnimated:NO];
   [_discoverFeedHeaderMenuTipBubblePresenter dismissAnimated:NO];
+  [_homeCustomizationMenuTipBubblePresenter dismissAnimated:NO];
   [_readingListTipBubblePresenter dismissAnimated:NO];
   [_followWhileBrowsingBubbleTipPresenter dismissAnimated:NO];
   [_priceNotificationsWhileBrowsingBubbleTipPresenter dismissAnimated:NO];
@@ -255,7 +257,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
 - (void)presentDiscoverFeedMenuTipBubble {
   BubbleArrowDirection arrowDirection = IsHomeCustomizationEnabled()
-                                            ? BubbleArrowDirectionLeading
+                                            ? BubbleArrowDirectionUp
                                             : BubbleArrowDirectionDown;
   NSString* text =
       l10n_util::GetNSStringWithFixup(IDS_IOS_DISCOVER_FEED_HEADER_IPH);
@@ -274,7 +276,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   // Slightly move IPH to ensure that the bubble doesn't bleed out the screen.
   if (IsHomeCustomizationEnabled()) {
     discoverFeedMenuAnchor.x += menuButton.frame.size.width / 2;
-    discoverFeedMenuAnchor.y += menuButton.frame.size.height / 2;
+    discoverFeedMenuAnchor.y += menuButton.frame.size.height;
   } else {
     discoverFeedMenuAnchor.x += menuButton.frame.size.width / 3;
   }
@@ -285,13 +287,54 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature_engagement::kIPHDiscoverFeedHeaderFeature
                     direction:arrowDirection
+                    alignment:IsHomeCustomizationEnabled()
+                                  ? BubbleAlignmentTopOrLeading
+                                  : BubbleAlignmentBottomOrTrailing
                          text:text
-        voiceOverAnnouncement:nil
-                  anchorPoint:discoverFeedMenuAnchor];
+        voiceOverAnnouncement:text
+                  anchorPoint:discoverFeedMenuAnchor
+                presentAction:nil
+                dismissAction:nil];
   if (!presenter)
     return;
 
   _discoverFeedHeaderMenuTipBubblePresenter = presenter;
+}
+
+- (void)presentHomeCustomizationTipBubble {
+  NSString* text =
+      l10n_util::GetNSStringWithFixup(IDS_IOS_HOME_CUSTOMIZATION_IPH);
+
+  UIView* menuButton =
+      [_layoutGuideCenter referencedViewUnderName:kFeedIPHNamedGuide];
+  // Checks "canPresentBubble" after checking that the NTP with feed is visible.
+  // This ensures that the feature tracker doesn't trigger the IPH event if the
+  // bubble isn't shown, which would prevent it from ever being shown again.
+  if (!menuButton || ![self canPresentBubble]) {
+    return;
+  }
+  CGPoint customizationMenuAnchor =
+      [menuButton.superview convertPoint:menuButton.frame.origin toView:nil];
+
+  // Slightly move IPH to ensure that the bubble doesn't bleed out the screen.
+  customizationMenuAnchor.x += menuButton.frame.size.width / 2;
+  customizationMenuAnchor.y += menuButton.frame.size.height;
+
+  BubbleViewControllerPresenter* presenter =
+      [self presentBubbleForFeature:feature_engagement::
+                                        kIPHHomeCustomizationMenuFeature
+                          direction:BubbleArrowDirectionUp
+                          alignment:BubbleAlignmentTopOrLeading
+                               text:text
+              voiceOverAnnouncement:text
+                        anchorPoint:customizationMenuAnchor
+                      presentAction:nil
+                      dismissAction:nil];
+  if (!presenter) {
+    return;
+  }
+
+  _homeCustomizationMenuTipBubblePresenter = presenter;
 }
 
 - (void)presentFollowWhileBrowsingTipBubbleAndLogWithRecorder:

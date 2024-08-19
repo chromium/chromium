@@ -13,6 +13,8 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/feed/core/v2/public/common_enums.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/feed/feed_feature_list.h"
@@ -32,6 +34,7 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/discover_feed/model/feed_model_configuration.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/model/followed_web_site.h"
 #import "ios/chrome/browser/follow/model/followed_web_site_state.h"
@@ -1783,6 +1786,9 @@
   }
   [_customizationCoordinator presentCustomizationMenuAtPage:page
                                                    animated:animated];
+  feature_engagement::TrackerFactory::GetForBrowserState(
+      self.browser->GetBrowserState())
+      ->NotifyEvent(feature_engagement::events::kHomeCustomizationMenuUsed);
 }
 
 // Returns the current customization state represnting the visibility of NTP

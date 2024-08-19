@@ -2017,6 +2017,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_HOME_CUSTOMIZATION_DISCOVER_TITLE" desc="The title of the Shortcuts toggle in the Home Customization menu's main page.">
         Discover Feed
       </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_IPH" desc="In-product help that points at the entrypoint for the Home Customization menu in the new tab page.">
+        Customize your cards, feed, and more here
+      </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_PAGE_HEADER" desc="The header text for the Magic Stack page in the Home Customization menu.">
         Choose what cards you see on your new tab page.
       </message>
