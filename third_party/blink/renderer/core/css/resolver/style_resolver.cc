@@ -473,7 +473,7 @@ static CSSPropertyValueSet* UniversalOverlayUserAgentDeclaration() {
   return decl;
 }
 
-// UA rule: ::scroll-marker-group { contain: size !important; }
+// UA rule: ::scroll-marker-group { contain: layout size !important; }
 // The generation of ::scroll-marker pseudo-elements
 // cannot invalidate layout outside of this pseudo-element.
 static CSSPropertyValueSet* ScrollMarkerGroupUserAgentDeclaration() {
@@ -483,6 +483,7 @@ static CSSPropertyValueSet* ScrollMarkerGroupUserAgentDeclaration() {
 
   if (decl->IsEmpty()) {
     CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kLayout));
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kSize));
     decl->SetProperty(CSSPropertyID::kContain, *list, /*important=*/true);
   }
