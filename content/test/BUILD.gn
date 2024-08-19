@@ -1864,6 +1864,12 @@ test("content_browsertests") {
     "//ui/webui:test_support",
   ]
 
+  if (!(is_chromeos_ash && target_cpu == "arm64" && current_cpu == "arm")) {
+    deps += [
+      "//components/variations",
+    ]
+  }
+
   data_deps = [
     "//content/shell:pak",
     "//third_party/mesa_headers",

@@ -11,5 +11,8 @@ specific_include_rules = {
   ],
   'perfetto_traced_process.cc': [
     "+chromeos/dbus/constants",
+  ],
+  'metadata_data_source.cc': [
+    "+components/variations/active_field_trials.h",
   ]
 }
