@@ -206,7 +206,7 @@ public class TabUiUtils {
             TabGroupModelFilter filter,
             ActionConfirmationManager actionConfirmationManager,
             int tabId) {
-        assert ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID);
+        assert ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING);
         TabModel tabModel = filter.getTabModel();
         Profile profile = tabModel.getProfile();
         TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
@@ -237,7 +237,7 @@ public class TabUiUtils {
             TabGroupModelFilter filter,
             ActionConfirmationManager actionConfirmationManager,
             int tabId) {
-        assert ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID);
+        assert ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING);
         TabModel tabModel = filter.getTabModel();
         Profile profile = tabModel.getProfile();
         TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);

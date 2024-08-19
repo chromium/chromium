@@ -63,7 +63,7 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 /** Unit tests for {@link TabGroupColorFaviconProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures(ChromeFeatureList.DATA_SHARING_ANDROID)
+@DisableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabGroupColorFaviconProviderTest {
     private static final @TabGroupColorId int COLOR_ID_1 = TabGroupColorId.BLUE;
     private static final @TabGroupColorId int COLOR_ID_2 = TabGroupColorId.YELLOW;
@@ -142,7 +142,7 @@ public class TabGroupColorFaviconProviderTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DATA_SHARING_ANDROID)
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testShareFaviconFromTabGroupColorFetcher() {
         TabFaviconFetcher fetcher =
                 mTabGroupColorFaviconProvider.getFaviconFromTabGroupColorFetcher(

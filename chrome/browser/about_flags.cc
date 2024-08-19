@@ -91,6 +91,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/contextual_search/core/browser/contextual_search_field_trial.h"
 #include "components/contextual_search/core/browser/public.h"
+#include "components/data_sharing/public/features.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "components/download/public/common/download_features.h"
@@ -12096,6 +12097,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRippleForEnhancedProtectionName,
      flag_descriptions::kRippleForEnhancedProtectionDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(safe_browsing::kRippleForEnhancedProtection)},
+
+    {"data-sharing", flag_descriptions::kDataSharingName,
+     flag_descriptions::kDataSharingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(data_sharing::features::kDataSharingFeature)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

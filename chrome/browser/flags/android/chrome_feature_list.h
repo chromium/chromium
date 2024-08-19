@@ -70,7 +70,6 @@ BASE_DECLARE_FEATURE(kCCTResizableForThirdParties);
 BASE_DECLARE_FEATURE(kCCTRetainingStateInMemory);
 BASE_DECLARE_FEATURE(kCCTRevampedBranding);
 BASE_DECLARE_FEATURE(kCCTTabModalDialog);
-BASE_DECLARE_FEATURE(kDataSharingAndroid);
 BASE_DECLARE_FEATURE(kDefaultBrowserPromoAndroid);
 BASE_DECLARE_FEATURE(kDontAutoHideBrowserControls);
 BASE_DECLARE_FEATURE(kCacheDeprecatedSystemLocationSetting);

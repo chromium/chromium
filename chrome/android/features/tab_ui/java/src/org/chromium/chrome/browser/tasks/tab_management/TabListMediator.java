@@ -1991,7 +1991,7 @@ class TabListMediator {
             TabGroupSyncService tabGroupSyncService = null;
             DataSharingService dataSharingService = null;
             if (isTabGroupSyncEnabled
-                    && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
+                    && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
                 identityManager = IdentityServicesProvider.get().getIdentityManager(profile);
                 tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
                 dataSharingService = DataSharingServiceFactory.getForProfile(profile);

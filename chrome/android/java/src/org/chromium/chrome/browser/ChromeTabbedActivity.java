@@ -3591,7 +3591,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void maybeShowTabSwitcherAfterTabModelLoad(Intent intent) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) return;
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) return;
         boolean shouldShowTabSwitcher =
                 IntentUtils.safeHasExtra(intent, DataSharingNotificationManager.DATA_SHARING_EXTRA)
                         && IntentHandler.wasIntentSenderChrome(intent)

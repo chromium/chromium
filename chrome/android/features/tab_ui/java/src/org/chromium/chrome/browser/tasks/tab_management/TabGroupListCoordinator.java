@@ -108,7 +108,7 @@ public class TabGroupListCoordinator {
             tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
         }
         @Nullable DataSharingService dataSharingService = null;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
             dataSharingService = DataSharingServiceFactory.getForProfile(profile);
         }
         IdentityManager identityManager =

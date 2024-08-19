@@ -46,7 +46,7 @@ import java.util.List;
 
 /** Unit tests for {@link TabUiUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.DATA_SHARING_ANDROID)
+@EnableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabUiUtilsUnitTest {
     private static final int TAB_ID = 123;
     private static final int ROOT_ID = TAB_ID;

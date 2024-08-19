@@ -4077,10 +4077,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
-        ChromeFeatureList.DATA_SHARING_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID, ChromeFeatureList.DATA_SHARING})
     public void testIsTabGroup_TabSwitcher() {
         mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
 

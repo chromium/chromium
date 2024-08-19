@@ -104,7 +104,7 @@ import java.util.List;
 /** Tests for {@link TabGridDialogMediator}. */
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "ResultOfMethodCallIgnored"})
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.DATA_SHARING_ANDROID)
+@EnableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabGridDialogMediatorUnitTest {
     private static final String TAB1_TITLE = "Tab1";
     private static final String TAB2_TITLE = "Tab2";

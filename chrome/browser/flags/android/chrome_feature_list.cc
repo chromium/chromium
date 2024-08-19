@@ -29,6 +29,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/contextual_search/core/browser/contextual_search_field_trial.h"
+#include "components/data_sharing/public/features.h"
 #include "components/download/public/common/download_features.h"
 #include "components/embedder_support/android/util/cdn_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -118,6 +119,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &content_settings::kDarkenWebsitesCheckboxInThemesSetting,
     &content_settings::features::kTrackingProtection3pcd,
     &content_settings::features::kUserBypassUI,
+    &data_sharing::features::kDataSharingFeature,
     &device::kWebAuthnEnableAndroidCableAuthenticator,
     &download::features::kSmartSuggestionForLargeDownloads,
     &download::features::kDownloadsMigrateToJobsAPI,
@@ -218,7 +220,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableForThirdParties,
     &kCCTRevampedBranding,
     &kCCTTabModalDialog,
-    &kDataSharingAndroid,
     &kDefaultBrowserPromoAndroid,
     &kDontAutoHideBrowserControls,
     &kCacheDeprecatedSystemLocationSetting,
@@ -651,10 +652,6 @@ BASE_FEATURE(kContextualSearchDisableOnlineDetection,
 
 BASE_FEATURE(kContextualSearchSuppressShortView,
              "ContextualSearchSuppressShortView",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDataSharingAndroid,
-             "DataSharingAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDefaultBrowserPromoAndroid,

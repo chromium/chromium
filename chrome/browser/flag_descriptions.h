@@ -171,8 +171,8 @@ extern const char kCustomizeChromeWallpaperSearchButtonDescription[];
 extern const char kCustomizeChromeWallpaperSearchInspirationCardName[];
 extern const char kCustomizeChromeWallpaperSearchInspirationCardDescription[];
 
-extern const char kWallpaperSearchSettingsVisibilityName[];
-extern const char kWallpaperSearchSettingsVisibilityDescription[];
+extern const char kDataSharingName[];
+extern const char kDataSharingDescription[];
 
 extern const char kDeprecateUnloadName[];
 extern const char kDeprecateUnloadDescription[];
@@ -2277,6 +2277,9 @@ extern const char kWallpaperGooglePhotosSharedAlbumsDescription[];
 
 extern const char kWallpaperPerDeskName[];
 extern const char kWallpaperPerDeskDescription[];
+
+extern const char kWallpaperSearchSettingsVisibilityName[];
+extern const char kWallpaperSearchSettingsVisibilityDescription[];
 
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kWebAuthnEnclaveAuthenticatorName[];

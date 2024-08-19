@@ -901,8 +901,7 @@ public class TabGridDialogMediator
         IdentityManager identityManager = null;
         TabGroupSyncService tabGroupSyncService = null;
         DataSharingService dataSharingService = null;
-        if (isTabGroupSyncEnabled
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
+        if (isTabGroupSyncEnabled && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
             identityManager = IdentityServicesProvider.get().getIdentityManager(mProfile);
             tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mProfile);
             dataSharingService = DataSharingServiceFactory.getForProfile(mProfile);
@@ -929,7 +928,7 @@ public class TabGridDialogMediator
     }
 
     private void handleShareClick() {
-        assert ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID);
+        assert ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING);
 
         mModel.set(TabGridDialogProperties.IS_SHARE_SHEET_VISIBLE, true);
 

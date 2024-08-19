@@ -107,7 +107,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             @NonNull ModalDialogManager modalDialogManager) {
         try (TraceEvent e = TraceEvent.scoped("TabGridDialogCoordinator.constructor")) {
             boolean isDataSharingAndroidEnabled =
-                    ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID);
+                    ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING);
 
             mActivity = activity;
             mComponentName =

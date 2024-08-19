@@ -231,10 +231,9 @@ const char kCustomizeChromeWallpaperSearchInspirationCardDescription[] =
     "Shows inspiration card in Customize Chrome Side Panel Wallpaper Search. "
     "Requires #customize-chrome-wallpaper-search to be enabled too.";
 
-const char kWallpaperSearchSettingsVisibilityName[] =
-    "Wallpaper Search Settings Visibility";
-const char kWallpaperSearchSettingsVisibilityDescription[] =
-    "Shows wallpaper search settings in settings UI.";
+const char kDataSharingName[] = "Data Sharing";
+const char kDataSharingDescription[] =
+    "Enabled Data Sharing related UI and features.";
 
 const char kDeprecateUnloadName[] = "Deprecate the unload event";
 const char kDeprecateUnloadDescription[] =
@@ -3929,6 +3928,11 @@ const char kWallpaperPerDeskName[] =
     "Enable setting different wallpapers per desk";
 const char kWallpaperPerDeskDescription[] =
     "Allow users to set different wallpapers on each of their active desks";
+
+const char kWallpaperSearchSettingsVisibilityName[] =
+    "Wallpaper Search Settings Visibility";
+const char kWallpaperSearchSettingsVisibilityDescription[] =
+    "Shows wallpaper search settings in settings UI.";
 
 #if !BUILDFLAG(IS_ANDROID)
 const char kWebAuthnEnclaveAuthenticatorName[] =

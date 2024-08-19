@@ -155,7 +155,7 @@ public class TabGroupColorFaviconProvider {
     }
 
     private boolean isTabGroupShareActive(TabModel tabModel, Tab tab) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
             return false;
         }
 

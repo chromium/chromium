@@ -32,7 +32,7 @@ import java.util.function.BiConsumer;
 
 /** Tests for {@link TabGroupRowCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.DATA_SHARING_ANDROID)
+@EnableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabGroupRowCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

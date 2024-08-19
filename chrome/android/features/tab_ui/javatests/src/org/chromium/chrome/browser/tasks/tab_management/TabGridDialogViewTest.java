@@ -56,7 +56,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** BlankUiTestActivity Tests for the {@link TabGridDialogView}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
+@DisableFeatures({ChromeFeatureList.DATA_SHARING})
 @Batch(Batch.UNIT_TESTS)
 public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
     private int mMinMargin;

@@ -20,7 +20,7 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.hamcrest.MockitoHamcrest.intThat;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING_ANDROID;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.FORCE_LIST_TAB_SWITCHER;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_PARITY_ANDROID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.areAnimatorsEnabled;
@@ -82,7 +82,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link TabGridDialogViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DisableFeatures(DATA_SHARING_ANDROID)
+@DisableFeatures(DATA_SHARING)
 @Batch(Batch.PER_CLASS)
 public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     private static final int CONTENT_TOP_MARGIN = 56;
@@ -129,8 +129,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
                                                     false);
                     mLayoutManager = spy(new GridLayoutManager(getActivity(), 2));
                     mContentView.setLayoutManager(mLayoutManager);
-                    boolean isDataSharingEnabled =
-                            ChromeFeatureList.isEnabled(DATA_SHARING_ANDROID);
+                    boolean isDataSharingEnabled = ChromeFeatureList.isEnabled(DATA_SHARING);
                     @LayoutRes
                     int toolbar_res_id =
                             isDataSharingEnabled
@@ -574,7 +573,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(DATA_SHARING_ANDROID)
+    @EnableFeatures(DATA_SHARING)
     public void testShareButton_Incognito() {
         mModel.set(TabGridDialogProperties.IS_INCOGNITO, true);
         mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
@@ -588,7 +587,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(DATA_SHARING_ANDROID)
+    @EnableFeatures(DATA_SHARING)
     public void testShareButton_NonIncognito() {
         mModel.set(TabGridDialogProperties.IS_INCOGNITO, false);
         mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
@@ -608,7 +607,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(DATA_SHARING_ANDROID)
+    @EnableFeatures(DATA_SHARING)
     public void testImageTiles_Incognito() {
         mModel.set(TabGridDialogProperties.IS_INCOGNITO, true);
         mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
@@ -622,7 +621,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(DATA_SHARING_ANDROID)
+    @EnableFeatures(DATA_SHARING)
     public void testImageTiles_NonIncognito() {
         mModel.set(TabGridDialogProperties.IS_INCOGNITO, false);
         mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, false);
