@@ -7,11 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/sessions/core/session_id.h"
-#include "ui/base/window_open_disposition.h"
+#import "components/sessions/core/session_id.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ui/base/window_open_disposition.h"
 
 class Browser;
-class ChromeBrowserState;
 class GURL;
 
 namespace web {
