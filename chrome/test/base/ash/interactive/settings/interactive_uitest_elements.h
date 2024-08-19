@@ -224,8 +224,11 @@ WebContentsInteractionTestUtil::DeepQuery CellularDetailsProxySection();
 // the details page of a cellular network, or the dialog shown to unlock a
 // locked SIM either using a PIN or a PUK.
 WebContentsInteractionTestUtil::DeepQuery CellularSimLockToggle();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockTogglePolicyIcon();
 WebContentsInteractionTestUtil::DeepQuery CellularSimLockChangePinButton();
 WebContentsInteractionTestUtil::DeepQuery CellularSimLockDialogs();
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockEnterPinDialogPolicySubtitle();
 WebContentsInteractionTestUtil::DeepQuery CellularSimLockEnterPinDialogButton();
 WebContentsInteractionTestUtil::DeepQuery
 CellularSimLockEnterPinDialogSubtext();
@@ -236,7 +239,8 @@ WebContentsInteractionTestUtil::DeepQuery CellularSimLockChangePinDialogNew();
 WebContentsInteractionTestUtil::DeepQuery
 CellularSimLockChangePinDialogNewConfirm();
 WebContentsInteractionTestUtil::DeepQuery CellularSimLockChangePinDialogOld();
-WebContentsInteractionTestUtil::DeepQuery CellularSimLockUnlockPinDialogDone();
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockUnlockPinDialogButton();
 WebContentsInteractionTestUtil::DeepQuery CellularSimLockUnlockPinDialogPin();
 WebContentsInteractionTestUtil::DeepQuery
 CellularSimLockUnlockPukDialogButton();

@@ -5,6 +5,7 @@
 #include "ui/message_center/views/notification_view_base.h"
 
 #include <stddef.h>
+
 #include <algorithm>
 #include <memory>
 #include <utility>
@@ -61,6 +62,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -212,6 +214,8 @@ void NotificationViewBase::CreateOrUpdateViews(
 NotificationViewBase::NotificationViewBase(const Notification& notification)
     : MessageView(notification), for_ash_notification_(IsForAshNotification()) {
   UpdateCornerRadius(kNotificationCornerRadius, kNotificationCornerRadius);
+  SetProperty(views::kElementIdentifierKey,
+              notification.host_view_element_id());
 }
 
 NotificationViewBase::~NotificationViewBase() = default;

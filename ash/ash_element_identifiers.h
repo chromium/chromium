@@ -34,6 +34,10 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
 
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kCalendarViewElementId);
 
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kCellularManagedSimLockNotificationElementId);
+
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kEnterpriseManagedView);
 
 // Uniquely identifies an element corresponding to the Explore app. Note that

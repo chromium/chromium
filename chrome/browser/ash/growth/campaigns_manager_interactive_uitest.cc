@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/toast/system_nudge_view.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
@@ -17,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/growth/show_notification_action_performer.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
                        ShowNotification) {
   RunTestSequence(
       SetTabletMode(ShouldUseTabletMode()),
-      WaitForShow(ash::AshNotificationView::kBubbleIdForTesting),
+      WaitForShow(ShowNotificationActionPerformer::kBubbleIdForTesting),
       WithoutDelay(Steps(
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 101, 1),
           CheckHistogramCounts(
@@ -499,9 +499,9 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
 
   RunTestSequence(
       SetTabletMode(ShouldUseTabletMode()),
-      WaitForShow(ash::AshNotificationView::kBubbleIdForTesting),
+      WaitForShow(ShowNotificationActionPerformer::kBubbleIdForTesting),
       Click(/*button_index=*/0),
-      WaitForHide(ash::AshNotificationView::kBubbleIdForTesting),
+      WaitForHide(ShowNotificationActionPerformer::kBubbleIdForTesting),
       WaitForWindowWithTitle(env, u"www.google.com"),
       WithoutDelay(Steps(
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 101, 1),
@@ -520,9 +520,9 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
 
   RunTestSequence(
       SetTabletMode(ShouldUseTabletMode()),
-      WaitForShow(ash::AshNotificationView::kBubbleIdForTesting),
+      WaitForShow(ShowNotificationActionPerformer::kBubbleIdForTesting),
       Click(/*button_index=*/1),
-      WaitForHide(ash::AshNotificationView::kBubbleIdForTesting),
+      WaitForHide(ShowNotificationActionPerformer::kBubbleIdForTesting),
       WithoutDelay(Steps(
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 101, 1),
           CheckHistogramCounts(

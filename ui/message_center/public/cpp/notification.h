@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -612,6 +613,16 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
     custom_view_type_ = custom_view_type;
   }
 
+  // Gets the element ID that should be used for the view that hosts this
+  // notification.
+  ui::ElementIdentifier host_view_element_id() const {
+    return host_view_element_id_;
+  }
+  void set_host_view_element_id(
+      const ui::ElementIdentifier host_view_element_id) {
+    host_view_element_id_ = host_view_element_id;
+  }
+
  protected:
   // The type of notification we'd like displayed.
   NotificationType type_;
@@ -660,6 +671,10 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // creating the view for this notification. The type should match the type
   // used to register the factory in MessageViewFactory.
   std::string custom_view_type_;
+
+  // The value that should be used for the element ID of the view that hosts
+  // this notification.
+  ui::ElementIdentifier host_view_element_id_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // The warning level of a system notification.

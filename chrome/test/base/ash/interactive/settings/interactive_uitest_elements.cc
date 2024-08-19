@@ -299,6 +299,11 @@ WebContentsInteractionTestUtil::DeepQuery CellularSimLockToggle() {
          "cr-toggle#simLockButton";
 }
 
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockTogglePolicyIcon() {
+  return InternetDetailsSubpage() + "network-siminfo#cellularSimInfoAdvanced" +
+         "cr-policy-indicator#simLockPolicyIcon";
+}
+
 WebContentsInteractionTestUtil::DeepQuery CellularSimLockChangePinButton() {
   return InternetDetailsSubpage() + "network-siminfo#cellularSimInfoAdvanced" +
          "cr-button#changePinButton";
@@ -307,6 +312,11 @@ WebContentsInteractionTestUtil::DeepQuery CellularSimLockChangePinButton() {
 WebContentsInteractionTestUtil::DeepQuery CellularSimLockDialogs() {
   return InternetDetailsSubpage() + "network-siminfo#cellularSimInfoAdvanced" +
          "sim-lock-dialogs";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockEnterPinDialogPolicySubtitle() {
+  return CellularSimLockDialogs() + "div#adminSubtitle";
 }
 
 WebContentsInteractionTestUtil::DeepQuery
@@ -320,7 +330,8 @@ CellularSimLockEnterPinDialogSubtext() {
 }
 
 WebContentsInteractionTestUtil::DeepQuery CellularSimLockEnterPinDialogPin() {
-  return CellularSimLockDialogs() + "network-password-input#enterPin";
+  return CellularSimLockDialogs() + "network-password-input#enterPin" +
+         "cr-input#input" + "input#input";
 }
 
 WebContentsInteractionTestUtil::DeepQuery
@@ -329,24 +340,29 @@ CellularSimLockChangePinDialogButton() {
 }
 
 WebContentsInteractionTestUtil::DeepQuery CellularSimLockChangePinDialogNew() {
-  return CellularSimLockDialogs() + "network-password-input#changePinNew1";
+  return CellularSimLockDialogs() + "network-password-input#changePinNew1" +
+         "cr-input#input" + "input#input";
 }
 
 WebContentsInteractionTestUtil::DeepQuery
 CellularSimLockChangePinDialogNewConfirm() {
-  return CellularSimLockDialogs() + "network-password-input#changePinNew2";
+  return CellularSimLockDialogs() + "network-password-input#changePinNew2" +
+         "cr-input#input" + "input#input";
 }
 
 WebContentsInteractionTestUtil::DeepQuery CellularSimLockChangePinDialogOld() {
-  return CellularSimLockDialogs() + "network-password-input#changePinOld";
+  return CellularSimLockDialogs() + "network-password-input#changePinOld" +
+         "cr-input#input" + "input#input";
 }
 
-WebContentsInteractionTestUtil::DeepQuery CellularSimLockUnlockPinDialogDone() {
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockUnlockPinDialogButton() {
   return CellularSimLockDialogs() + "cr-button#unlockPinButton";
 }
 
 WebContentsInteractionTestUtil::DeepQuery CellularSimLockUnlockPinDialogPin() {
-  return CellularSimLockDialogs() + "network-password-input#unlockPin";
+  return CellularSimLockDialogs() + "network-password-input#unlockPin" +
+         "cr-input#input" + "input#input";
 }
 
 WebContentsInteractionTestUtil::DeepQuery
@@ -355,16 +371,19 @@ CellularSimLockUnlockPukDialogButton() {
 }
 
 WebContentsInteractionTestUtil::DeepQuery CellularSimLockUnlockPukDialogPin() {
-  return CellularSimLockDialogs() + "network-password-input#unlockPin1";
+  return CellularSimLockDialogs() + "network-password-input#unlockPin1" +
+         "cr-input#input" + "input#input";
 }
 
 WebContentsInteractionTestUtil::DeepQuery CellularSimLockUnlockPukDialogPuk() {
-  return CellularSimLockDialogs() + "network-password-input#unlockPuk";
+  return CellularSimLockDialogs() + "network-password-input#unlockPuk" +
+         "cr-input#input" + "input#input";
 }
 
 WebContentsInteractionTestUtil::DeepQuery
 CellularSimLockUnlockPukDialogPinConfirm() {
-  return CellularSimLockDialogs() + "network-password-input#unlockPin2";
+  return CellularSimLockDialogs() + "network-password-input#unlockPin2" +
+         "cr-input#input" + "input#input";
 }
 
 WebContentsInteractionTestUtil::DeepQuery CellularSubpageMenuRenameButton() {

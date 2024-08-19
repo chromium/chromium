@@ -156,6 +156,9 @@ void HandleNotificationClickAndCloseDelegate::Close(bool by_user) {
   close_callback_.Run(by_user);
 }
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ShowNotificationActionPerformer,
+                                      kBubbleIdForTesting);
+
 ShowNotificationActionPerformer::ShowNotificationActionPerformer() = default;
 ShowNotificationActionPerformer::~ShowNotificationActionPerformer() = default;
 
@@ -206,6 +209,8 @@ void ShowNotificationActionPerformer::Run(
                   show_notification_params->should_log_cros_events)),
           *show_notification_params->icon,
           message_center::SystemNotificationWarningLevel::NORMAL);
+  notification->set_host_view_element_id(kBubbleIdForTesting);
+
   auto* message_center = message_center::MessageCenter::Get();
   CHECK(message_center);
 
