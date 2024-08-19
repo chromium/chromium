@@ -138,6 +138,12 @@ export class AudioWaveform extends ReactiveLitElement {
         position: absolute;
       }
 
+      .speaker-single {
+        & .range {
+          display: none;
+        }
+      }
+
       .speaker-duo,
       .speaker-multiple {
         & .no-speaker {
