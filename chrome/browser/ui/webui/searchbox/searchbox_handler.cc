@@ -355,7 +355,7 @@ std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     mojom_match->is_rich_suggestion =
         !mojom_match->image_url.empty() ||
         match.type == AutocompleteMatchType::CALCULATOR ||
-        (match.answer_template.has_value()) || (match.answer.has_value());
+        match.answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED;
     if (base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
       for (const auto& action : match.actions) {
         const OmniboxAction::LabelStrings& label_strings =

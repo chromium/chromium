@@ -267,12 +267,8 @@ OmniboxMatchCellView::~OmniboxMatchCellView() = default;
 
 // static
 bool OmniboxMatchCellView::ShouldDisplayImage(const AutocompleteMatch& match) {
-  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
-    return match.answer_template.has_value() ||
-           match.type == AutocompleteMatchType::CALCULATOR ||
-           !match.image_url.is_empty();
-  }
-  return match.answer || match.type == AutocompleteMatchType::CALCULATOR ||
+  return match.answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED ||
+         match.type == AutocompleteMatchType::CALCULATOR ||
          !match.image_url.is_empty();
 }
 

@@ -432,10 +432,8 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
       selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText;
   bool prefers_contrast =
       GetNativeTheme() && GetNativeTheme()->UserHasContrastPreference();
-  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled
-          ? match_.answer_template.has_value()
-          : match_.answer ||
-                match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
+  if (match_.answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED ||
+      match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
     suggestion_view_->content()->ApplyTextColor(default_id);
     suggestion_view_->description()->ApplyTextColor(dimmed_id);
   } else if (match_.type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
