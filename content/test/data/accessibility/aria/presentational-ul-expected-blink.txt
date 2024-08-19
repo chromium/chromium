@@ -5,13 +5,13 @@ rootWebArea
 ++++++++list
 ++++++++++listItem
 ++++++++++++listMarker name='%E2%80%A2 '
-++++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++++++staticText ignored
 ++++++++++++staticText name='List'
 ++++++++++++++inlineTextBox name='List'
 ++++++++list
 ++++++++++listItem
 ++++++++++++listMarker name='%E2%80%A2 '
-++++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++++++staticText ignored
 ++++++++++++staticText name='List role has no effect'
 ++++++++++++++inlineTextBox name='List role has no effect'
 ++++++++none ignored

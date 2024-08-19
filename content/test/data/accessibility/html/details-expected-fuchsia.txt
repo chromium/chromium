@@ -5,19 +5,19 @@ UNKNOWN focusable has_input_focus
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN focusable label='details tag' actions='{DEFAULT}'
 ++++++++++++LIST_ELEMENT_MARKER hidden
-++++++++++++++STATIC_TEXT hidden label='%E2%96%B8 '
+++++++++++++++STATIC_TEXT hidden
 ++++++++++++STATIC_TEXT label='details tag'
 ++++++++++++++UNKNOWN label='details tag'
 ++++++++UNKNOWN hidden
-++++++++++STATIC_TEXT hidden label='<newline>    '
-++++++++++STATIC_TEXT hidden label='<newline>    '
+++++++++++STATIC_TEXT hidden
+++++++++++STATIC_TEXT hidden
 ++++++++++PARAGRAPH hidden
-++++++++++STATIC_TEXT hidden label='<newline>  '
+++++++++++STATIC_TEXT hidden
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN focusable label='details tag open' actions='{DEFAULT}'
 ++++++++++++LIST_ELEMENT_MARKER hidden
-++++++++++++++STATIC_TEXT hidden label='%E2%96%BE '
+++++++++++++++STATIC_TEXT hidden
 ++++++++++++STATIC_TEXT label='details tag open'
 ++++++++++++++UNKNOWN label='details tag open'
 ++++++++UNKNOWN hidden

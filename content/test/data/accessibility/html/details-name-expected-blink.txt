@@ -5,20 +5,20 @@ rootWebArea
 ++++++++genericContainer ignored
 ++++++++++disclosureTriangle collapsed name='the summary'
 ++++++++++++listMarker ignored
-++++++++++++++staticText ignored name='%E2%96%B8 '
+++++++++++++++staticText ignored
 ++++++++++++staticText name='the summary'
 ++++++++++++++inlineTextBox name='the summary'
 ++++++++genericContainer ignored
-++++++++++staticText ignored invisible name='<newline>    '
-++++++++++staticText ignored invisible name='<newline>    '
+++++++++++staticText ignored invisible
+++++++++++staticText ignored invisible
 ++++++++++paragraph ignored invisible
-++++++++++staticText ignored invisible name='<newline>  '
+++++++++++staticText ignored invisible
 ++++++sectionWithoutName
 ++++++++details
 ++++++++++genericContainer ignored
 ++++++++++++disclosureTriangleGrouped name='materials' setSize=3 posInSet=1
 ++++++++++++++listMarker ignored
-++++++++++++++++staticText ignored name='%E2%96%BE '
+++++++++++++++++staticText ignored
 ++++++++++++++staticText name='materials'
 ++++++++++++++++inlineTextBox name='materials'
 ++++++++++genericContainer ignored
@@ -29,23 +29,23 @@ rootWebArea
 ++++++++++genericContainer ignored
 ++++++++++++disclosureTriangleGrouped collapsed name='dimensions' setSize=3 posInSet=2
 ++++++++++++++listMarker ignored
-++++++++++++++++staticText ignored name='%E2%96%B8 '
+++++++++++++++++staticText ignored
 ++++++++++++++staticText name='dimensions'
 ++++++++++++++++inlineTextBox name='dimensions'
 ++++++++++genericContainer ignored
-++++++++++++staticText ignored invisible name='<newline>      '
-++++++++++++staticText ignored invisible name='<newline>      '
+++++++++++++staticText ignored invisible
+++++++++++++staticText ignored invisible
 ++++++++++++paragraph ignored invisible
-++++++++++++staticText ignored invisible name='<newline>    '
+++++++++++++staticText ignored invisible
 ++++++++details
 ++++++++++genericContainer ignored
 ++++++++++++disclosureTriangleGrouped collapsed name='origin' setSize=3 posInSet=3
 ++++++++++++++listMarker ignored
-++++++++++++++++staticText ignored name='%E2%96%B8 '
+++++++++++++++++staticText ignored
 ++++++++++++++staticText name='origin'
 ++++++++++++++++inlineTextBox name='origin'
 ++++++++++genericContainer ignored
-++++++++++++staticText ignored invisible name='<newline>      '
-++++++++++++staticText ignored invisible name='<newline>      '
+++++++++++++staticText ignored invisible
+++++++++++++staticText ignored invisible
 ++++++++++++paragraph ignored invisible
-++++++++++++staticText ignored invisible name='<newline>    '
+++++++++++++staticText ignored invisible

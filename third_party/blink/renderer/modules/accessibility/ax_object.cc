@@ -1377,14 +1377,7 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   // verbalizations can be made if they actually receive focus.
   if (IsIgnored()) {
     node_data->AddState(ax::mojom::blink::State::kIgnored);
-    // Early return for ignored, unfocusable nodes, avoiding unnecessary work.
     if (!CanSetFocusAttribute()) {
-      // The name is important for exposing the selection around ignored nodes.
-      // TODO(accessibility) Remove this and still pass this
-      // content_browsertest:
-      // All/DumpAccessibilityTreeTest.AccessibilityIgnoredSelection/blink
-      if (RoleValue() == ax::mojom::blink::Role::kStaticText)
-        SerializeNameAndDescriptionAttributes(accessibility_mode, node_data);
       return;
     }
   }

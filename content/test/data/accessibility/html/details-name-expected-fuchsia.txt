@@ -5,20 +5,20 @@ UNKNOWN focusable has_input_focus
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN focusable label='the summary' actions='{DEFAULT}'
 ++++++++++++LIST_ELEMENT_MARKER hidden
-++++++++++++++STATIC_TEXT hidden label='%E2%96%B8 '
+++++++++++++++STATIC_TEXT hidden
 ++++++++++++STATIC_TEXT label='the summary'
 ++++++++++++++UNKNOWN label='the summary'
 ++++++++UNKNOWN hidden
-++++++++++STATIC_TEXT hidden label='<newline>    '
-++++++++++STATIC_TEXT hidden label='<newline>    '
+++++++++++STATIC_TEXT hidden
+++++++++++STATIC_TEXT hidden
 ++++++++++PARAGRAPH hidden
-++++++++++STATIC_TEXT hidden label='<newline>  '
+++++++++++STATIC_TEXT hidden
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN focusable label='materials' actions='{DEFAULT}'
 ++++++++++++++LIST_ELEMENT_MARKER hidden
-++++++++++++++++STATIC_TEXT hidden label='%E2%96%BE '
+++++++++++++++++STATIC_TEXT hidden
 ++++++++++++++STATIC_TEXT label='materials'
 ++++++++++++++++UNKNOWN label='materials'
 ++++++++++UNKNOWN hidden
@@ -29,23 +29,23 @@ UNKNOWN focusable has_input_focus
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN focusable label='dimensions' actions='{DEFAULT}'
 ++++++++++++++LIST_ELEMENT_MARKER hidden
-++++++++++++++++STATIC_TEXT hidden label='%E2%96%B8 '
+++++++++++++++++STATIC_TEXT hidden
 ++++++++++++++STATIC_TEXT label='dimensions'
 ++++++++++++++++UNKNOWN label='dimensions'
 ++++++++++UNKNOWN hidden
-++++++++++++STATIC_TEXT hidden label='<newline>      '
-++++++++++++STATIC_TEXT hidden label='<newline>      '
+++++++++++++STATIC_TEXT hidden
+++++++++++++STATIC_TEXT hidden
 ++++++++++++PARAGRAPH hidden
-++++++++++++STATIC_TEXT hidden label='<newline>    '
+++++++++++++STATIC_TEXT hidden
 ++++++++UNKNOWN
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN focusable label='origin' actions='{DEFAULT}'
 ++++++++++++++LIST_ELEMENT_MARKER hidden
-++++++++++++++++STATIC_TEXT hidden label='%E2%96%B8 '
+++++++++++++++++STATIC_TEXT hidden
 ++++++++++++++STATIC_TEXT label='origin'
 ++++++++++++++++UNKNOWN label='origin'
 ++++++++++UNKNOWN hidden
-++++++++++++STATIC_TEXT hidden label='<newline>      '
-++++++++++++STATIC_TEXT hidden label='<newline>      '
+++++++++++++STATIC_TEXT hidden
+++++++++++++STATIC_TEXT hidden
 ++++++++++++PARAGRAPH hidden
-++++++++++++STATIC_TEXT hidden label='<newline>    '
+++++++++++++STATIC_TEXT hidden

@@ -5,19 +5,19 @@ rootWebArea
 ++++++++genericContainer ignored
 ++++++++++disclosureTriangle collapsed name='details tag'
 ++++++++++++listMarker ignored
-++++++++++++++staticText ignored name='%E2%96%B8 '
+++++++++++++++staticText ignored
 ++++++++++++staticText name='details tag'
 ++++++++++++++inlineTextBox name='details tag'
 ++++++++genericContainer ignored
-++++++++++staticText ignored invisible name='<newline>    '
-++++++++++staticText ignored invisible name='<newline>    '
+++++++++++staticText ignored invisible
+++++++++++staticText ignored invisible
 ++++++++++paragraph ignored invisible
-++++++++++staticText ignored invisible name='<newline>  '
+++++++++++staticText ignored invisible
 ++++++details
 ++++++++genericContainer ignored
 ++++++++++disclosureTriangle name='details tag open'
 ++++++++++++listMarker ignored
-++++++++++++++staticText ignored name='%E2%96%BE '
+++++++++++++++staticText ignored
 ++++++++++++staticText name='details tag open'
 ++++++++++++++inlineTextBox name='details tag open'
 ++++++++genericContainer ignored

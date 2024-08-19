@@ -23,7 +23,7 @@ rootWebArea
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer editable
 ++++++++++++genericContainer ignored invisible
-++++++++++++++staticText ignored invisible name='Strong password'
+++++++++++++++staticText ignored invisible
 ++++++labelText
 ++++++++staticText name='Search: '
 ++++++++++inlineTextBox name='Search: '
