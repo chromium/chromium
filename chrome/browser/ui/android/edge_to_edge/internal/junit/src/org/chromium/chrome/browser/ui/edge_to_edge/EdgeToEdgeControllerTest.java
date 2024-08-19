@@ -53,7 +53,6 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -72,7 +71,6 @@ import org.chromium.ui.base.WindowAndroid;
  * Tests the EdgeToEdgeController code. Ideally this would include {@link EdgeToEdgeController},
  * {@link EdgeToEdgeControllerFactory}, along with {@link EdgeToEdgeControllerImpl}
  */
-@DisableIf.Build(sdk_is_less_than = VERSION_CODES.R)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         sdk = VERSION_CODES.R,
