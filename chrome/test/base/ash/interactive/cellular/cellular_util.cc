@@ -6,10 +6,9 @@
 
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/test/base/ash/interactive/network/shill_service_util.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
-#include "chromeos/ash/components/network/network_connection_handler.h"
-#include "chromeos/ash/components/network/network_handler.h"
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
@@ -39,14 +38,11 @@ SimInfo::SimInfo(unsigned int id)
 SimInfo::~SimInfo() = default;
 
 void SimInfo::Connect() const {
-  NetworkHandler::Get()->network_connection_handler()->ConnectToNetwork(
-      service_path_, base::DoNothing(), base::DoNothing(),
-      /*check_error_state=*/false, ConnectCallbackMode::ON_COMPLETED);
+  ConnectShillService(service_path_);
 }
 
 void SimInfo::Disconnect() const {
-  NetworkHandler::Get()->network_connection_handler()->DisconnectNetwork(
-      service_path_, base::DoNothing(), base::DoNothing());
+  DisconnectShillService(service_path_);
 }
 
 void ConfigureEsimProfile(const EuiccInfo& euicc_info,
