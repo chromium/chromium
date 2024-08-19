@@ -71,7 +71,6 @@ export class TranscriptionView extends ReactiveLitElement {
 
       #transcript {
         display: grid;
-        gap: 12px;
         grid-template-columns:
           minmax(calc(12px + 40px + 10px), max-content)
           1fr;
