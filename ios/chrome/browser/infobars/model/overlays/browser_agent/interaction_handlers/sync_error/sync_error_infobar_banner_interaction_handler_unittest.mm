@@ -15,7 +15,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-class ChromeBrowserState;
 @protocol SyncPresenter;
 
 // Test fixture for SyncErrorInfobarBannerInteractionHandler.

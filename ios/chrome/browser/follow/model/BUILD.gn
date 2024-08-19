@@ -110,6 +110,7 @@ source_set("service_factory") {
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/public/provider/chrome/browser/follow:follow_api",
   ]
 }
