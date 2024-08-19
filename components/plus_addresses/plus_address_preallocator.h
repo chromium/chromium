@@ -102,6 +102,9 @@ class PlusAddressPreallocator : public PlusAddressAllocator {
   // the request for more pre-allocated addresses has finished.
   void ProcessAllocationRequests(bool is_user_triggered);
 
+  // Replies to all currently ongoing requests with `error`.
+  void ReplyToRequestsWithError(const PlusAddressRequestError& error);
+
   // Returns the next available pre-allocated plus address or `std::nullopt` if
   // there is none. It does not attempt to pre-allocate more.
   std::optional<PlusAddress> GetNextPreallocatedPlusAddress();

@@ -707,4 +707,43 @@ TEST_F(PlusAddressPreallocatorTest, RemoveAllocatedPlusAddress) {
   EXPECT_EQ(GetPreallocatedAddressesNext(), 0);
 }
 
+// Tests that errors encountered during allocation are forward to pending
+// allocation requests.
+TEST_F(PlusAddressPreallocatorTest, ErrorDuringAllocationRequest) {
+  ASSERT_THAT(GetPreallocatedAddresses(), IsEmpty());
+
+  const url::Origin kValidOrigin1 =
+      url::Origin::Create(GURL("https://foo.com"));
+  const url::Origin kValidOrigin2 =
+      url::Origin::Create(GURL("https://bar.com"));
+  constexpr auto kMode = PlusAddressAllocator::AllocationMode::kAny;
+  constexpr auto kNotFound = base::unexpected(
+      PlusAddressRequestError::AsNetworkError(net::HTTP_NOT_FOUND));
+  base::MockCallback<PlusAddressRequestCallback> callback1;
+  base::MockCallback<PlusAddressRequestCallback> callback2;
+  MockFunction<void()> check;
+  PlusAddressHttpClient::PreallocatePlusAddressesCallback preallocate_callback;
+  {
+    InSequence s;
+    EXPECT_CALL(http_client(), PreallocatePlusAddresses)
+        .WillOnce(MoveArg(&preallocate_callback));
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(callback1, Run(PlusProfileOrError(kNotFound)));
+    EXPECT_CALL(callback2, Run(PlusProfileOrError(kNotFound)));
+    EXPECT_CALL(check, Call);
+  }
+
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), AlwaysEnabled());
+  allocator.AllocatePlusAddress(kValidOrigin1, kMode, callback1.Get());
+  // Work-around to deal with asynchronicity.
+  task_environment().FastForwardBy(base::Milliseconds(1));
+  ASSERT_TRUE(preallocate_callback);
+  allocator.AllocatePlusAddress(kValidOrigin2, kMode, callback2.Get());
+  // No error is returned until the server replies with an error.
+  check.Call();
+  std::move(preallocate_callback).Run(kNotFound);
+  check.Call();
+}
+
 }  // namespace plus_addresses

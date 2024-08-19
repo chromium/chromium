@@ -105,7 +105,7 @@ class PlusAddressRequestError {
       PlusAddressRequestErrorType error_type)
       : error_type_(error_type) {}
 
-  static PlusAddressRequestError AsNetworkError(
+  static constexpr PlusAddressRequestError AsNetworkError(
       std::optional<int> response_code) {
     PlusAddressRequestError result(PlusAddressRequestErrorType::kNetworkError);
     result.http_response_code_ = response_code;

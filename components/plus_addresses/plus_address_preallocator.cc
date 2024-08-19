@@ -230,7 +230,7 @@ void PlusAddressPreallocator::OnReceivePreallocatedPlusAddresses(
       backoff_entry_.InformOfRequest(/*succeeded=*/false);
       SendRequestWithDelay(backoff_entry_.GetTimeUntilRelease());
     }
-    // TODO: crbug.com/324559503 - Inform the existing requests about the error.
+    ReplyToRequestsWithError(result.error());
     return;
   }
 
@@ -247,16 +247,11 @@ void PlusAddressPreallocator::OnReceivePreallocatedPlusAddresses(
 void PlusAddressPreallocator::ProcessAllocationRequests(
     bool is_user_triggered) {
   if (!IsEnabled()) {
-    while (!requests_.empty()) {
-      Request request = std::move(requests_.front());
-      requests_.pop();
-      // TODO: crbug.com/324559503 - distinguish between the signout case other
-      // reasons for errors by making `IsEnabled` return an error code. That
-      // will likely also require changing the `IsEnabledCheck`'s return type.
-      std::move(request.callback)
-          .Run(base::unexpected(PlusAddressRequestError(
-              PlusAddressRequestErrorType::kUserSignedOut)));
-    }
+    // TODO: crbug.com/324559503 - distinguish between the signout case other
+    // reasons for errors by making `IsEnabled` return an error code. That  will
+    // likely also require changing the `IsEnabledCheck`'s return type.
+    ReplyToRequestsWithError(
+        PlusAddressRequestError(PlusAddressRequestErrorType::kUserSignedOut));
     return;
   }
 
@@ -276,6 +271,15 @@ void PlusAddressPreallocator::ProcessAllocationRequests(
   // We may have dipped below the minimum size of the pre-allocated plus address
   // pool that we want to keep around. If so, request new ones.
   MaybeRequestNewPreallocatedPlusAddresses(is_user_triggered);
+}
+
+void PlusAddressPreallocator::ReplyToRequestsWithError(
+    const PlusAddressRequestError& error) {
+  while (!requests_.empty()) {
+    Request request = std::move(requests_.front());
+    requests_.pop();
+    std::move(request.callback).Run(base::unexpected(error));
+  }
 }
 
 std::optional<PlusAddress>
