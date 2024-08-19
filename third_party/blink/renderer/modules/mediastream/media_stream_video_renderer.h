@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_MEDIASTREAM_WEB_MEDIA_STREAM_VIDEO_RENDERER_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_MEDIASTREAM_WEB_MEDIA_STREAM_VIDEO_RENDERER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_VIDEO_RENDERER_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_VIDEO_RENDERER_H_
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace media {
 class VideoFrame;
@@ -17,8 +17,8 @@ namespace blink {
 // Interface returned by MediaStreamRendererFactory that provides controls for
 // the flow of video frame callbacks being made.
 // TODO(wjia): remove ref count.
-class WebMediaStreamVideoRenderer
-    : public base::RefCountedThreadSafe<WebMediaStreamVideoRenderer> {
+class MediaStreamVideoRenderer
+    : public ThreadSafeRefCounted<MediaStreamVideoRenderer> {
  public:
   typedef base::RepeatingCallback<void(scoped_refptr<media::VideoFrame>)>
       RepaintCB;
@@ -38,11 +38,10 @@ class WebMediaStreamVideoRenderer
   virtual void Pause() = 0;
 
  protected:
-  friend class base::RefCountedThreadSafe<WebMediaStreamVideoRenderer>;
-
-  virtual ~WebMediaStreamVideoRenderer() {}
+  friend class ThreadSafeRefCounted<MediaStreamVideoRenderer>;
+  virtual ~MediaStreamVideoRenderer() = default;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_MEDIASTREAM_WEB_MEDIA_STREAM_VIDEO_RENDERER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_VIDEO_RENDERER_H_

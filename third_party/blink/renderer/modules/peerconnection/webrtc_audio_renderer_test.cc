@@ -11,6 +11,7 @@
 #include "base/cfi_buildflags.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -27,7 +28,6 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
-#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_renderer.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -35,6 +35,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_audio_renderer.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
@@ -175,7 +176,7 @@ class WebRtcAudioRendererTest : public testing::Test {
   }
 
   void SetupRenderer(const String& device_id) {
-    renderer_ = new blink::WebRtcAudioRenderer(
+    renderer_ = base::MakeRefCounted<WebRtcAudioRenderer>(
         scheduler::GetSingleThreadTaskRunnerForTesting(), stream_descriptor_,
         *web_local_frame_, base::UnguessableToken::Create(), device_id,
         base::RepeatingCallback<void()>());
@@ -247,7 +248,7 @@ class WebRtcAudioRendererTest : public testing::Test {
   WebLocalFrameClient web_local_frame_client_;
   raw_ptr<WebLocalFrame> web_local_frame_ = nullptr;
   scoped_refptr<blink::WebRtcAudioRenderer> renderer_;
-  scoped_refptr<blink::WebMediaStreamAudioRenderer> renderer_proxy_;
+  scoped_refptr<blink::MediaStreamAudioRenderer> renderer_proxy_;
 };
 
 // Verify that the renderer will be stopped if the only proxy is stopped.
@@ -269,12 +270,11 @@ TEST_F(WebRtcAudioRendererTest, DISABLED_MultipleRenderers) {
   renderer_proxy_->Start();
 
   // Create a vector of renderer proxies from the |renderer_|.
-  std::vector<scoped_refptr<blink::WebMediaStreamAudioRenderer>>
-      renderer_proxies_;
+  std::vector<scoped_refptr<MediaStreamAudioRenderer>> renderer_proxies_;
   static const int kNumberOfRendererProxy = 5;
   for (int i = 0; i < kNumberOfRendererProxy; ++i) {
-    scoped_refptr<blink::WebMediaStreamAudioRenderer> renderer_proxy(
-        renderer_->CreateSharedAudioRendererProxy(stream_descriptor_));
+    scoped_refptr<MediaStreamAudioRenderer> renderer_proxy =
+        renderer_->CreateSharedAudioRendererProxy(stream_descriptor_);
     renderer_proxy->Start();
     renderer_proxies_.push_back(renderer_proxy);
   }
@@ -429,7 +429,7 @@ TEST_F(WebRtcAudioRendererTest, SwitchOutputDeviceInvalidDevice) {
 }
 
 TEST_F(WebRtcAudioRendererTest, InitializeWithInvalidDevice) {
-  renderer_ = new blink::WebRtcAudioRenderer(
+  renderer_ = base::MakeRefCounted<WebRtcAudioRenderer>(
       scheduler::GetSingleThreadTaskRunnerForTesting(), stream_descriptor_,
       *web_local_frame_, base::UnguessableToken::Create(),
       kInvalidOutputDeviceId, base::RepeatingCallback<void()>());

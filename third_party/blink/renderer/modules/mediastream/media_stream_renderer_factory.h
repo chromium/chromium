@@ -7,9 +7,9 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_renderer.h"
-#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_video_renderer.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_audio_renderer.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_renderer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace base {
@@ -34,13 +34,13 @@ class MODULES_EXPORT MediaStreamRendererFactory {
 
   virtual ~MediaStreamRendererFactory();
 
-  virtual scoped_refptr<WebMediaStreamVideoRenderer> GetVideoRenderer(
+  virtual scoped_refptr<MediaStreamVideoRenderer> GetVideoRenderer(
       const WebMediaStream& web_stream,
-      const WebMediaStreamVideoRenderer::RepaintCB& repaint_cb,
+      const MediaStreamVideoRenderer::RepaintCB& repaint_cb,
       scoped_refptr<base::SequencedTaskRunner> video_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner);
 
-  virtual scoped_refptr<WebMediaStreamAudioRenderer> GetAudioRenderer(
+  virtual scoped_refptr<MediaStreamAudioRenderer> GetAudioRenderer(
       const WebMediaStream& web_stream,
       WebLocalFrame* web_frame,
       const WebString& device_id,
