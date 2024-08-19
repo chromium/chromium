@@ -173,6 +173,8 @@ void StorageAccessHandle::BindBlobStorage(
       ->GetBlobUrlRegistry()
       ->AddReceiver(blink::StorageKey::CreateFirstParty(
                         render_frame_host().GetStorageKey().origin()),
+                    render_frame_host().GetLastCommittedOrigin(),
+                    render_frame_host().GetProcess()->GetID(),
                     std::move(receiver));
 }
 

@@ -11745,7 +11745,8 @@ void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
       static_cast<StoragePartitionImpl*>(GetStoragePartition());
 
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
-      GetStorageKey(), std::move(receiver));
+      GetStorageKey(), GetLastCommittedOrigin(), GetProcess()->GetID(),
+      std::move(receiver));
 }
 
 void RenderFrameHostImpl::BindBlobUrlStoreReceiver(
@@ -11755,7 +11756,8 @@ void RenderFrameHostImpl::BindBlobUrlStoreReceiver(
       static_cast<StoragePartitionImpl*>(GetStoragePartition());
 
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
-      GetStorageKey(), std::move(receiver));
+      GetStorageKey(), GetLastCommittedOrigin(), GetProcess()->GetID(),
+      std::move(receiver));
 }
 
 bool RenderFrameHostImpl::IsFocused() {

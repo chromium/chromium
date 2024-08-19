@@ -111,7 +111,7 @@ class BlobURLStoreImplTestP
 
   mojo::PendingRemote<BlobURLStore> CreateURLStore() {
     mojo::PendingRemote<BlobURLStore> result;
-    url_registry_.AddReceiver(kStorageKey,
+    url_registry_.AddReceiver(kStorageKey, kStorageKey.origin(), /*rph_id=*/0,
                               result.InitWithNewPipeAndPassReceiver());
     return result;
   }
@@ -154,7 +154,8 @@ TEST_P(BlobURLStoreImplTestP, BasicRegisterRevoke) {
       CreateBlobFromString(kId, "hello world");
 
   // Register a URL and make sure the URL keeps the blob alive.
-  BlobURLStoreImpl url_store(kStorageKey, url_registry_.AsWeakPtr());
+  BlobURLStoreImpl url_store(kStorageKey, kStorageKey.origin(), /*rph_id=*/0,
+                             url_registry_.AsWeakPtr());
   RegisterURL(&url_store, std::move(blob), kValidUrl);
 
   blob = url_registry_.GetBlobFromUrl(kValidUrl);
@@ -209,7 +210,8 @@ TEST_P(BlobURLStoreImplTestP, ImplicitRevoke) {
   blob->Clone(blob2.InitWithNewPipeAndPassReceiver());
 
   auto url_store = std::make_unique<BlobURLStoreImpl>(
-      kStorageKey, url_registry_.AsWeakPtr());
+      kStorageKey, kStorageKey.origin(), /*rph_id=*/0,
+      url_registry_.AsWeakPtr());
   RegisterURL(url_store.get(), blob.Unbind(), kValidUrl);
   EXPECT_TRUE(url_registry_.GetBlobFromUrl(kValidUrl));
   RegisterURL(url_store.get(), std::move(blob2), kValidUrl2);
@@ -225,8 +227,10 @@ TEST_P(BlobURLStoreImplTestP, RevokeThroughDifferentURLStore) {
   mojo::PendingRemote<blink::mojom::Blob> blob =
       CreateBlobFromString(kId, "hello world");
 
-  BlobURLStoreImpl url_store1(kStorageKey, url_registry_.AsWeakPtr());
-  BlobURLStoreImpl url_store2(kStorageKey, url_registry_.AsWeakPtr());
+  BlobURLStoreImpl url_store1(kStorageKey, kStorageKey.origin(), /*rph_id=*/0,
+                              url_registry_.AsWeakPtr());
+  BlobURLStoreImpl url_store2(kStorageKey, kStorageKey.origin(), /*rph_id=*/0,
+                              url_registry_.AsWeakPtr());
 
   RegisterURL(&url_store1, std::move(blob), kValidUrl);
   EXPECT_TRUE(url_registry_.GetBlobFromUrl(kValidUrl));
@@ -263,8 +267,10 @@ TEST_P(BlobURLStoreImplTestP, RevokeWrongStorageKey) {
   mojo::PendingRemote<blink::mojom::Blob> blob =
       CreateBlobFromString(kId, "hello world");
 
-  BlobURLStoreImpl url_store1(kStorageKey, url_registry_.AsWeakPtr());
-  BlobURLStoreImpl url_store2(kWrongStorageKey, url_registry_.AsWeakPtr());
+  BlobURLStoreImpl url_store1(kStorageKey, kStorageKey.origin(), /*rph_id=*/0,
+                              url_registry_.AsWeakPtr());
+  BlobURLStoreImpl url_store2(kWrongStorageKey, kWrongStorageKey.origin(),
+                              /*rph_id=*/0, url_registry_.AsWeakPtr());
 
   RegisterURL(&url_store1, std::move(blob), kValidUrl);
   EXPECT_TRUE(url_registry_.GetBlobFromUrl(kValidUrl));
@@ -279,7 +285,8 @@ TEST_P(BlobURLStoreImplTestP, RevokeWrongStorageKey) {
 }
 
 TEST_P(BlobURLStoreImplTestP, ResolveAsURLLoaderFactoryNonExistentURL) {
-  BlobURLStoreImpl url_store(kStorageKey, url_registry_.AsWeakPtr());
+  BlobURLStoreImpl url_store(kStorageKey, kStorageKey.origin(), /*rph_id=*/0,
+                             url_registry_.AsWeakPtr());
   mojo::Remote<network::mojom::URLLoaderFactory> factory;
   base::RunLoop resolve_loop;
   url_store.ResolveAsURLLoaderFactory(
@@ -309,7 +316,8 @@ TEST_P(BlobURLStoreImplTestP, ResolveAsURLLoaderFactoryNonExistentURL) {
   download_loop.Run();
 }
 TEST_P(BlobURLStoreImplTestP, ResolveAsURLLoaderFactoryInvalidURL) {
-  BlobURLStoreImpl url_store(kStorageKey, url_registry_.AsWeakPtr());
+  BlobURLStoreImpl url_store(kStorageKey, kStorageKey.origin(), /*rph_id=*/0,
+                             url_registry_.AsWeakPtr());
   mojo::Remote<network::mojom::URLLoaderFactory> factory;
   base::RunLoop resolve_loop;
   url_store.ResolveAsURLLoaderFactory(
@@ -343,7 +351,8 @@ TEST_P(BlobURLStoreImplTestP, ResolveAsURLLoaderFactory) {
   mojo::PendingRemote<blink::mojom::Blob> blob =
       CreateBlobFromString(kId, "hello world");
 
-  BlobURLStoreImpl url_store(kStorageKey, url_registry_.AsWeakPtr());
+  BlobURLStoreImpl url_store(kStorageKey, kStorageKey.origin(), /*rph_id=*/0,
+                             url_registry_.AsWeakPtr());
   RegisterURL(&url_store, std::move(blob), kValidUrl);
 
   mojo::Remote<network::mojom::URLLoaderFactory> factory;
@@ -381,7 +390,8 @@ TEST_P(BlobURLStoreImplTestP, ResolveForNavigation) {
   mojo::PendingRemote<blink::mojom::Blob> blob =
       CreateBlobFromString(kId, "hello world");
 
-  BlobURLStoreImpl url_store(kStorageKey, url_registry_.AsWeakPtr());
+  BlobURLStoreImpl url_store(kStorageKey, kStorageKey.origin(), /*rph_id=*/0,
+                             url_registry_.AsWeakPtr());
   RegisterURL(&url_store, std::move(blob), kValidUrl);
 
   base::RunLoop loop0;

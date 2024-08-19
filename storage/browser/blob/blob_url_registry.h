@@ -38,11 +38,15 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
   // contexts and stores them in `frame_receivers_`.
   void AddReceiver(
       const blink::StorageKey& storage_key,
+      const url::Origin& renderer_origin,
+      int render_process_host_id,
       mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver);
 
   // Binds receivers corresponding to connections from renderer worker
   // contexts and stores them in `worker_receivers_`.
   void AddReceiver(const blink::StorageKey& storage_key,
+                   const url::Origin& renderer_origin,
+                   int render_process_host_id,
                    mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver,
                    BlobURLValidityCheckBehavior validity_check_behavior =
                        BlobURLValidityCheckBehavior::DEFAULT);
@@ -54,11 +58,15 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
   // Creates a URL mapping from blob to the given URL. Returns false if
   // there already is a map for the URL. The URL mapping will be associated with
   // the `storage_key`, and most subsequent URL lookup attempts will require a
-  // matching StorageKey to succeed.
+  // matching StorageKey to succeed. `origin` is the origin of the Blob URL, and
+  // `render_process_host_id` is the ID of the process where the blob URL
+  // registration comes from.
   bool AddUrlMapping(
       const GURL& url,
       mojo::PendingRemote<blink::mojom::Blob> blob,
       const blink::StorageKey& storage_key,
+      const url::Origin& renderer_origin,
+      int render_process_host_id,
       // TODO(crbug.com/40775506): Remove these once experiment is over.
       const base::UnguessableToken& unsafe_agent_cluster_id,
       const std::optional<net::SchemefulSite>& unsafe_top_level_site);
@@ -92,6 +100,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
                        GURL* url,
                        mojo::PendingRemote<blink::mojom::Blob>* blob);
 
+  // Returns the origin for a Blob URL navigation to `url`, given the precursor
+  // origin and target process information.
+  url::Origin GetOriginForNavigation(
+      const GURL& url,
+      const url::Origin& precursor_origin,
+      std::optional<int> target_render_process_host_id);
+
   // Support adding a handler to be run when AddReceiver is called. This allows
   // browser tests to intercept incoming BlobURLStore connections and swap in
   // arbitrary BlobURLs to ensure that attempting to register certain blobs
@@ -122,6 +137,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
       token_to_url_and_blob_;
 
   std::map<GURL, blink::StorageKey> url_to_storage_key_;
+  std::map<GURL, url::Origin> url_to_origin_;
+  std::map<GURL, int> url_to_render_process_host_id_;
 
   // When the renderer uses the BlobUrlRegistry from a frame context or from a
   // main thread worklet context, a navigation-associated interface is used to

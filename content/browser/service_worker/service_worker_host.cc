@@ -230,7 +230,8 @@ void ServiceWorkerHost::CreateBlobUrlStoreProvider(
   }
 
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
-      version()->key(), std::move(receiver));
+      version()->key(), version()->key().origin(), GetProcessHost()->GetID(),
+      std::move(receiver));
 }
 
 void ServiceWorkerHost::CreateBucketManagerHost(

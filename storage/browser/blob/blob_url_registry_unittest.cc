@@ -97,8 +97,10 @@ TEST_P(BlobUrlRegistryTestP, URLRegistration) {
   EXPECT_EQ(0u, registry.url_count());
 
   EXPECT_TRUE(registry.AddUrlMapping(kURL1, blob1.Clone(), storageKey1,
+                                     storageKey1.origin(), /*rph_id=*/0,
                                      kTokenId1, kTopLevelSite1));
   EXPECT_FALSE(registry.AddUrlMapping(kURL1, blob2.Clone(), storageKey1,
+                                      storageKey1.origin(), /*rph_id=*/0,
                                       kTokenId1, kTopLevelSite1));
   EXPECT_EQ(kTokenId1, registry.GetUnsafeAgentClusterID(kURL1));
   EXPECT_EQ(kTopLevelSite1, registry.GetUnsafeTopLevelSite(kURL1));
@@ -109,6 +111,7 @@ TEST_P(BlobUrlRegistryTestP, URLRegistration) {
   EXPECT_EQ(1u, registry.url_count());
 
   EXPECT_TRUE(registry.AddUrlMapping(kURL2, blob2.Clone(), storageKey2,
+                                     storageKey2.origin(), /*rph_id=*/0,
                                      kTokenId2, kTopLevelSite2));
   EXPECT_EQ(kTokenId2, registry.GetUnsafeAgentClusterID(kURL2));
   EXPECT_EQ(kTopLevelSite2, registry.GetUnsafeTopLevelSite(kURL2));
@@ -120,6 +123,8 @@ TEST_P(BlobUrlRegistryTestP, URLRegistration) {
 
   // Both urls point to the same blob.
   EXPECT_TRUE(registry.AddUrlMapping(kURL2, blob1.Clone(), storageKey2,
+
+                                     storageKey2.origin(), /*rph_id=*/0,
                                      kTokenId2, kTopLevelSite2));
   EXPECT_EQ(kTokenId2, registry.GetUnsafeAgentClusterID(kURL2));
   EXPECT_EQ(kTopLevelSite2, registry.GetUnsafeTopLevelSite(kURL2));
@@ -146,9 +151,10 @@ TEST_P(BlobUrlRegistryTestP, URLRegistration) {
         blink::StorageKey::Create(url::Origin::Create(kURL1), kTopLevelSite2,
                                   blink::mojom::AncestorChainBit::kCrossSite);
 
-    EXPECT_TRUE(registry.AddUrlMapping(kURL1, blob1.Clone(),
-                                       partitionedStorageKey1, kTokenId1,
-                                       kTopLevelSite1));
+    EXPECT_TRUE(
+        registry.AddUrlMapping(kURL1, blob1.Clone(), partitionedStorageKey1,
+                               partitionedStorageKey1.origin(), /*rph_id=*/0,
+                               kTokenId1, kTopLevelSite1));
     EXPECT_TRUE(registry.IsUrlMapped(kURL1, partitionedStorageKey1));
     EXPECT_EQ(kBlobId1, UuidFromBlob(registry.GetBlobFromUrl(kURL1)));
     EXPECT_TRUE(registry.GetBlobFromUrl(kURL1));

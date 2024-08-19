@@ -65,9 +65,13 @@ class BlobURLTokenImpl : public blink::mojom::BlobURLToken {
 
 BlobURLStoreImpl::BlobURLStoreImpl(
     const blink::StorageKey& storage_key,
+    const url::Origin& renderer_origin,
+    int render_process_host_id,
     base::WeakPtr<BlobUrlRegistry> registry,
     BlobURLValidityCheckBehavior validity_check_behavior)
     : storage_key_(storage_key),
+      renderer_origin_(renderer_origin),
+      render_process_host_id_(render_process_host_id),
       registry_(std::move(registry)),
       validity_check_behavior_(validity_check_behavior) {}
 
@@ -94,6 +98,7 @@ void BlobURLStoreImpl::Register(
 
   if (registry_)
     registry_->AddUrlMapping(url, std::move(blob), storage_key_,
+                             renderer_origin_, render_process_host_id_,
                              unsafe_agent_cluster_id, unsafe_top_level_site);
   urls_.insert(url);
   std::move(callback).Run();

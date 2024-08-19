@@ -8217,8 +8217,8 @@ NavigationRequest::GetOriginForURLLoaderFactoryBeforeResponseWithDebugInfo(
       network::mojom::WebSandboxFlags::kOrigin;
   if (use_opaque_origin) {
     origin_and_debug_info =
-        std::make_pair(origin_and_debug_info.first.DeriveNewOpaqueOrigin(),
-                       origin_and_debug_info.second + ", sandbox_flags");
+        std::pair(origin_and_debug_info.first.DeriveNewOpaqueOrigin(),
+                  origin_and_debug_info.second + ", sandbox_flags");
   }
 
   return origin_and_debug_info;
@@ -10739,6 +10739,24 @@ NavigationRequest::GetOriginForURLLoaderFactoryUncheckedWithDebugInfo() {
           frame_tree_node()->current_frame_host()->GetLastCommittedOrigin(),
           "about_srcdoc, no-parent");
     }
+  }
+
+  if (GetURL().SchemeIsBlob()) {
+    // Blob URLs either have the origin embedded within the URL, or have a
+    // URL -> origin mapping for it saved in the BlobURLRegistry.
+    std::optional<int> target_rph_id;
+    if (HasRenderFrameHost() && GetRenderFrameHost()->GetProcess()) {
+      target_rph_id = GetRenderFrameHost()->GetProcess()->GetID();
+    }
+    return std::make_pair(
+        static_cast<StoragePartitionImpl*>(
+            GetStoragePartitionWithCurrentSiteInfo())
+            ->GetBlobUrlRegistry()
+            ->GetOriginForNavigation(
+                GetURL(),
+                common_params().initiator_origin.value_or(url::Origin()),
+                target_rph_id),
+        "blob");
   }
 
   // In cases not covered above, URLLoaderFactory should be associated with the
