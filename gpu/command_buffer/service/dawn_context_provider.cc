@@ -54,12 +54,6 @@
 namespace gpu {
 namespace {
 
-#if DCHECK_IS_ON() || BUILDFLAG(IS_WIN)
-constexpr bool kUseUserDefinedLabels = true;
-#else
-constexpr bool kUseUserDefinedLabels = false;
-#endif
-
 // Used as a flag to test dawn initialization failure.
 BASE_FEATURE(kForceDawnInitializeFailure,
              "ForceDawnInitializeFailure",
@@ -338,9 +332,12 @@ bool DawnSharedState::Initialize(
   }
   // The following toggles are all device-scoped toggles so it's not necessary
   // to pass them when creating the Instance above.
-  if (kUseUserDefinedLabels) {
-    enabled_toggles.push_back("use_user_defined_labels_in_backend");
-  }
+
+  // Only enable backend labels on Windows or DCHECK builds on other platforms
+  // since it can have non-trivial performance overhead e.g. with Metal.
+#if DCHECK_IS_ON() || BUILDFLAG(IS_WIN)
+  enabled_toggles.push_back("use_user_defined_labels_in_backend");
+#endif
 
 #if !DCHECK_IS_ON()
   if (features::kSkiaGraphiteDawnSkipValidation.Get()) {
@@ -788,7 +785,7 @@ wgpu::Instance DawnContextProvider::GetInstance() const {
 }
 
 bool DawnContextProvider::InitializeGraphiteContext(
-    const GpuDriverBugWorkarounds& gpu_driver_workarounds) {
+    const skgpu::graphite::ContextOptions& context_options) {
   CHECK(!graphite_context_);
 
   if (auto device = GetDevice()) {
@@ -796,9 +793,7 @@ bool DawnContextProvider::InitializeGraphiteContext(
     backend_context.fInstance = GetInstance();
     backend_context.fDevice = device;
     backend_context.fQueue = device.GetQueue();
-    auto context_options =
-        GetDefaultGraphiteContextOptions(gpu_driver_workarounds);
-    context_options.fSetBackendLabels = kUseUserDefinedLabels;
+
     graphite_context_ = skgpu::graphite::ContextFactory::MakeDawn(
         backend_context, context_options);
   }

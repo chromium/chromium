@@ -94,11 +94,14 @@ size_t MaxNumSkSurface() {
 }
 
 // Creates a Graphite recorder, supplying it with a GraphiteImageProvider.
-std::unique_ptr<skgpu::graphite::Recorder>
-MakeGraphiteRecorderWithImageProvider(skgpu::graphite::Context* context) {
+std::unique_ptr<skgpu::graphite::Recorder> MakeGraphiteRecorder(
+    skgpu::graphite::Context* context,
+    size_t max_resource_cache_bytes,
+    size_t max_image_provider_cache_bytes) {
   skgpu::graphite::RecorderOptions options;
-  options.fImageProvider = sk_make_sp<gpu::GraphiteImageProvider>(
-      gpu::DetermineGraphiteImageProviderCacheLimitFromAvailableMemory());
+  options.fGpuBudgetInBytes = max_resource_cache_bytes;
+  options.fImageProvider =
+      sk_make_sp<gpu::GraphiteImageProvider>(max_image_provider_cache_bytes);
   return context->makeRecorder(options);
 }
 
@@ -540,10 +543,13 @@ bool SharedContextState::InitializeGanesh(
 bool SharedContextState::InitializeGraphite(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds) {
+  const skgpu::graphite::ContextOptions context_options =
+      GetDefaultGraphiteContextOptions(workarounds);
+
   if (gr_context_type_ == GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     CHECK(dawn_context_provider_);
-    if (dawn_context_provider_->InitializeGraphiteContext(workarounds)) {
+    if (dawn_context_provider_->InitializeGraphiteContext(context_options)) {
       graphite_context_ = dawn_context_provider_->GetGraphiteContext();
     } else {
       // There is currently no way for the GPU process to gracefully handle
@@ -559,8 +565,7 @@ bool SharedContextState::InitializeGraphite(
     CHECK_EQ(gr_context_type_, GrContextType::kGraphiteMetal);
 #if BUILDFLAG(SKIA_USE_METAL)
     if (metal_context_provider_ &&
-        metal_context_provider_->InitializeGraphiteContext(
-            GetDefaultGraphiteContextOptions(workarounds))) {
+        metal_context_provider_->InitializeGraphiteContext(context_options)) {
       graphite_context_ = metal_context_provider_->GetGraphiteContext();
     } else {
       DLOG(ERROR) << "Failed to create Graphite Context for Metal";
@@ -578,15 +583,23 @@ bool SharedContextState::InitializeGraphite(
   // images (for the SkiaRenderer recorder, this occurs in special cases such as
   // an SVG/CSS filter effect that references an image but that got the effect
   // promoted to composited).
+  size_t max_gpu_main_image_provider_cache_bytes = 0;
+  size_t max_viz_compositor_image_provider_cache_bytes = 0;
+  DetermineGraphiteImageProviderCacheLimits(
+      &max_gpu_main_image_provider_cache_bytes,
+      &max_viz_compositor_image_provider_cache_bytes);
+
   gpu_main_graphite_recorder_ =
-      MakeGraphiteRecorderWithImageProvider(graphite_context_);
+      MakeGraphiteRecorder(graphite_context_, context_options.fGpuBudgetInBytes,
+                           max_gpu_main_image_provider_cache_bytes);
   gpu_main_graphite_cache_controller_ =
       base::MakeRefCounted<raster::GraphiteCacheController>(
           gpu_main_graphite_recorder_.get(), graphite_context_.get(),
           dawn_context_provider_);
 
   viz_compositor_graphite_recorder_ =
-      MakeGraphiteRecorderWithImageProvider(graphite_context_);
+      MakeGraphiteRecorder(graphite_context_, context_options.fGpuBudgetInBytes,
+                           max_viz_compositor_image_provider_cache_bytes);
 
   transfer_cache_ = std::make_unique<ServiceTransferCache>(
       gpu_preferences,
