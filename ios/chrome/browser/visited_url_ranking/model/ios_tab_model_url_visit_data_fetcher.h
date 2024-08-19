@@ -5,11 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_VISITED_URL_RANKING_MODEL_IOS_TAB_MODEL_URL_VISIT_DATA_FETCHER_H_
 #define IOS_CHROME_BROWSER_VISITED_URL_RANKING_MODEL_IOS_TAB_MODEL_URL_VISIT_DATA_FETCHER_H_
 
-#include "base/memory/raw_ptr.h"
-#include "components/visited_url_ranking/public/fetch_result.h"
-#include "components/visited_url_ranking/public/url_visit_data_fetcher.h"
-
-class ChromeBrowserState;
+#import "base/memory/raw_ptr.h"
+#import "components/visited_url_ranking/public/fetch_result.h"
+#import "components/visited_url_ranking/public/url_visit_data_fetcher.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace visited_url_ranking {
 

@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_NTP_TILES_MODEL_IOS_POPULAR_SITES_FACTORY_H_
 #define IOS_CHROME_BROWSER_NTP_TILES_MODEL_IOS_POPULAR_SITES_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-class ChromeBrowserState;
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace ntp_tiles {
 class PopularSites;
