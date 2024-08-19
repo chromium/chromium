@@ -25,7 +25,7 @@
 #include "components/ukm/observers/history_delete_observer.h"
 #include "components/ukm/observers/ukm_consent_state_observer.h"
 #include "components/variations/synthetic_trial_registry.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager_observer.h"
+#include "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
 #include "ios/web/public/deprecated/global_web_state_observer.h"
 
 class ChromeBrowserState;

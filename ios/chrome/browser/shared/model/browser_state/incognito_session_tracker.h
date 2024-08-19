@@ -9,7 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager_observer.h"
+#include "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
 
 class ChromeBrowserState;
 

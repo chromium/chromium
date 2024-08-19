@@ -16,9 +16,9 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager_observer.h"
 #include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#include "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
 
 class PrefService;
 
