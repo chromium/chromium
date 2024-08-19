@@ -5,16 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_SYNC_MODEL_IOS_CHROME_SYNC_CLIENT_H__
 #define IOS_CHROME_BROWSER_SYNC_MODEL_IOS_CHROME_SYNC_CLIENT_H__
 
-#include <memory>
+#import <memory>
 
-#include "base/files/file_path.h"
+#import "base/files/file_path.h"
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "components/sync/service/data_type_controller.h"
-#include "components/sync/service/sync_client.h"
-#include "components/trusted_vault/trusted_vault_client.h"
-
-class ChromeBrowserState;
+#import "base/memory/weak_ptr.h"
+#import "components/sync/service/data_type_controller.h"
+#import "components/sync/service/sync_client.h"
+#import "components/trusted_vault/trusted_vault_client.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace browser_sync {
 class SyncEngineFactoryImpl;

@@ -5,9 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SYNC_MODEL_GLUE_SYNC_START_UTIL_H_
 #define IOS_CHROME_BROWSER_SYNC_MODEL_GLUE_SYNC_START_UTIL_H_
 
-#include "components/sync/model/syncable_service.h"
-
-class ChromeBrowserState;
+#import "components/sync/model/syncable_service.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 // Various utilities for kicking off sync initialization from data types or
 // other services.

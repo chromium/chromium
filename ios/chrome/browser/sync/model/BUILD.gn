@@ -83,6 +83,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/sharing_message/model:sharing_message_bridge_factory",
@@ -148,6 +149,7 @@ source_set("sync_invalidations_service_factory") {
     "//ios/chrome/browser/gcm/model",
     "//ios/chrome/browser/gcm/model/instance_id",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }
 
@@ -161,6 +163,7 @@ source_set("data_type_store_service_factory") {
     "//components/keyed_service/ios",
     "//components/sync",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }
 
