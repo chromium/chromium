@@ -297,9 +297,8 @@
     [weakSelf takeActionForActionType:actionType weakGroup:weakGroup];
   };
   [_tabGroupConfirmationCoordinator start];
-
-  self.gridViewController.tabGroupConfirmationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), TabGroupConfirmationCommands);
+  self.gridViewController.tabGroupConfirmationHandler =
+      _tabGroupConfirmationCoordinator;
 }
 
 - (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
@@ -316,9 +315,8 @@
     [weakSelf takeActionForActionType:actionType weakGroup:weakGroup];
   };
   [_tabGroupConfirmationCoordinator start];
-
-  self.gridViewController.tabGroupConfirmationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), TabGroupConfirmationCommands);
+  self.gridViewController.tabGroupConfirmationHandler =
+      _tabGroupConfirmationCoordinator;
 }
 
 - (void)showTabGridTabGroupSnackbarAfterClosingGroups:

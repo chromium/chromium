@@ -263,9 +263,8 @@
   };
 
   [_tabGroupConfirmationCoordinator start];
-
-  self.tabStripViewController.tabGroupConfirmationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), TabGroupConfirmationCommands);
+  self.tabStripViewController.tabGroupConfirmationHandler =
+      _tabGroupConfirmationCoordinator;
 }
 
 - (void)showTabStripTabGroupSnackbarAfterClosingGroups:
