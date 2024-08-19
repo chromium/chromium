@@ -8,12 +8,10 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/case_conversion.h"
@@ -26,12 +24,9 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_map.h"
-#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
-#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
-#include "components/search_engines/template_url_id.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -293,68 +288,29 @@ void DefaultSearchManager::OnOverridesPrefChanged() {
 }
 
 void DefaultSearchManager::MergePrefsDataWithPrepopulated() {
-  if (!prefs_default_search_) {
+  if (!prefs_default_search_ || !prefs_default_search_->prepopulate_id)
     return;
-  }
 
-  // Evaluate whether items should be reconciled.
-  // Permit merging Play entries if feature is enabled.
-  bool reconciliationRequired =
-      prefs_default_search_->created_from_play_api &&
-      base::FeatureList::IsEnabled(switches::kTemplateUrlReconciliation);
-
-  // Permit merging by Prepopulated ID, except Play entries.
-  reconciliationRequired |= prefs_default_search_->prepopulate_id &&
-                            !prefs_default_search_->created_from_play_api;
-
-  // Don't call GetPrepopulatedEngines() if we don't have anything to reconcile.
-  if (!reconciliationRequired) {
+  // TODO(crbug.com/40117818): Parameters for search engine created from play
+  // api should be preserved even if corresponding prepopulated search engine
+  // exists. This logic will be revisited as part of implementation of
+  // crbug.com/1049784, which will enable updating play api search engine
+  // parameters with prepopulated data.
+  if (prefs_default_search_->created_from_play_api)
     return;
-  }
 
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
           pref_service_, search_engine_choice_service_);
-  auto matching_engine = prepopulated_urls.end();
 
-  if (prefs_default_search_->created_from_play_api) {
-    if (prefs_default_search_->keyword() == u"yahoo.com") {
-      // The domain name prefix specifies the regional version of Yahoo's search
-      // engine requests. Until 08.2024 Android EEA Yahoo keywords all pointed
-      // to Yahoo US. See go/chrome:template-url-reconciliation for more
-      // information.
-      GURL yahoo_search_url(prefs_default_search_->url());
-      std::string_view yahoo_search_host = yahoo_search_url.host_piece();
-      matching_engine = base::ranges::find_if(
-          prepopulated_urls, [yahoo_search_host](const auto& builtin_engine) {
-            // Don't parse domain name for non-Yahoo engines.
-            if (builtin_engine->prepopulate_id !=
-                SearchEngineType::SEARCH_ENGINE_YAHOO) {
-              return false;
-            }
-            GURL builtin_search_url(builtin_engine->url());
-            return builtin_search_url.DomainIs(yahoo_search_host);
-          });
+  auto default_engine = base::ranges::find(
+      prepopulated_urls, prefs_default_search_->prepopulate_id,
+      &TemplateURLData::prepopulate_id);
 
-    } else {
-      // Match by keyword.
-      matching_engine = base::ranges::find(
-          prepopulated_urls,
-          std::u16string_view(prefs_default_search_->keyword()),
-          &TemplateURLData::keyword);
-    }
-  } else if (prefs_default_search_->prepopulate_id) {
-    // Match by prepopulate_id.
-    matching_engine = base::ranges::find(prepopulated_urls,
-                                         prefs_default_search_->prepopulate_id,
-                                         &TemplateURLData::prepopulate_id);
-  }
-
-  if (matching_engine == prepopulated_urls.end()) {
+  if (default_engine == prepopulated_urls.end())
     return;
-  }
 
-  auto& engine = *matching_engine;
+  auto& engine = *default_engine;
 
   if (!prefs_default_search_->safe_for_autoreplace) {
     engine->safe_for_autoreplace = false;
@@ -368,7 +324,6 @@ void DefaultSearchManager::MergePrefsDataWithPrepopulated() {
   engine->last_modified = prefs_default_search_->last_modified;
   engine->last_visited = prefs_default_search_->last_visited;
   engine->favicon_url = prefs_default_search_->favicon_url;
-  engine->created_from_play_api = prefs_default_search_->created_from_play_api;
 
   prefs_default_search_ = std::move(engine);
 }
