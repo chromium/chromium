@@ -55,16 +55,11 @@ void SetOverrides(sync_preferences::TestingPrefServiceSyncable* prefs,
             .Set("alternate_urls", std::move(alternate_urls)));
   };
 
-  add_definition(SEARCH_ENGINE_ATLAS, update ? "new_foo" : "foo",
-                 "https://atlas.com");
-  add_definition(SEARCH_ENGINE_BRAVE, update ? "new_bar" : "bar",
-                 "https://brave.com");
-  add_definition(SEARCH_ENGINE_CONDUIT, update ? "new_bar" : "bar",
-                 "https://conduit.com");
-  add_definition(SEARCH_ENGINE_YAHOO, "yahoo.com",
-                 "https://at.search.yahoo.com");
-  add_definition(SEARCH_ENGINE_YAHOO, "yahoo.com",
-                 "https://emea.search.yahoo.com");
+  add_definition(100, update ? "new_foo" : "foo", "https://atlas.com");
+  add_definition(101, update ? "new_bar" : "bar", "https://brave.com");
+  add_definition(102, update ? "new_bar" : "bar", "https://conduit.com");
+  add_definition(103, "at.yahoo.com", "https://at.search.yahoo.com");
+  add_definition(104, "emea.yahoo.com", "https://emea.search.yahoo.com");
 
   prefs->SetUserPref(prefs::kSearchProviderOverridesVersion, base::Value(1));
   prefs->SetUserPref(prefs::kSearchProviderOverrides, std::move(overrides));
@@ -458,9 +453,6 @@ TEST_F(DefaultSearchManagerTest,
       pref_service(), search_engine_choice_service());
   const auto& builtin_engine =
       *base::ranges::find_if(all_engines, [](const auto& engine) {
-        if (engine->prepopulate_id != SearchEngineType::SEARCH_ENGINE_YAHOO) {
-          return false;
-        }
         GURL url(engine->url());
         return url.is_valid() && url.host_piece() == "emea.search.yahoo.com";
       });

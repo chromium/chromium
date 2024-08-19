@@ -299,16 +299,16 @@ void DefaultSearchManager::MergePrefsDataWithPrepopulated() {
 
   // Evaluate whether items should be reconciled.
   // Permit merging Play entries if feature is enabled.
-  bool reconciliationRequired =
+  bool reconcile_by_keyword =
       prefs_default_search_->created_from_play_api &&
       base::FeatureList::IsEnabled(switches::kTemplateUrlReconciliation);
 
-  // Permit merging by Prepopulated ID, except Play entries.
-  reconciliationRequired |= prefs_default_search_->prepopulate_id &&
-                            !prefs_default_search_->created_from_play_api;
+  // Permit merging by Prepopulated ID (except Play entries).
+  bool reconcile_by_id = prefs_default_search_->prepopulate_id &&
+                         !prefs_default_search_->created_from_play_api;
 
   // Don't call GetPrepopulatedEngines() if we don't have anything to reconcile.
-  if (!reconciliationRequired) {
+  if (!(reconcile_by_id || reconcile_by_keyword)) {
     return;
   }
 
@@ -317,33 +317,27 @@ void DefaultSearchManager::MergePrefsDataWithPrepopulated() {
           pref_service_, search_engine_choice_service_);
   auto matching_engine = prepopulated_urls.end();
 
-  if (prefs_default_search_->created_from_play_api) {
+  if (reconcile_by_keyword) {
+    std::u16string keyword = prefs_default_search_->keyword();
+
     if (prefs_default_search_->keyword() == u"yahoo.com") {
       // The domain name prefix specifies the regional version of Yahoo's search
       // engine requests. Until 08.2024 Android EEA Yahoo keywords all pointed
       // to Yahoo US. See go/chrome:template-url-reconciliation for more
       // information.
+      // Extract the Country Code from the Yahoo domain name and use it to
+      // construct a keyword that we may find in PrepopulatedEngines.
       GURL yahoo_search_url(prefs_default_search_->url());
       std::string_view yahoo_search_host = yahoo_search_url.host_piece();
-      matching_engine = base::ranges::find_if(
-          prepopulated_urls, [yahoo_search_host](const auto& builtin_engine) {
-            // Don't parse domain name for non-Yahoo engines.
-            if (builtin_engine->prepopulate_id !=
-                SearchEngineType::SEARCH_ENGINE_YAHOO) {
-              return false;
-            }
-            GURL builtin_search_url(builtin_engine->url());
-            return builtin_search_url.DomainIs(yahoo_search_host);
-          });
-
-    } else {
-      // Match by keyword.
-      matching_engine = base::ranges::find(
-          prepopulated_urls,
-          std::u16string_view(prefs_default_search_->keyword()),
-          &TemplateURLData::keyword);
+      std::string_view country_code =
+          yahoo_search_host.substr(0, yahoo_search_host.find('.'));
+      keyword = base::UTF8ToUTF16(country_code) + u".yahoo.com";
     }
-  } else if (prefs_default_search_->prepopulate_id) {
+
+    // Match by keyword.
+    matching_engine = base::ranges::find(prepopulated_urls, keyword,
+                                         &TemplateURLData::keyword);
+  } else if (reconcile_by_id) {
     // Match by prepopulate_id.
     matching_engine = base::ranges::find(prepopulated_urls,
                                          prefs_default_search_->prepopulate_id,
