@@ -15,6 +15,7 @@ source_set("device_reauth") {
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/browser_state:browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/common/ui/reauthentication",
     "//ui/base:base",
   ]
