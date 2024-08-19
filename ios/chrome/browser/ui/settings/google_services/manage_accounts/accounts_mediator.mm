@@ -132,8 +132,10 @@
 
 #pragma mark - AccountsMutator
 
-- (void)requestRemoveIdentityWithGaiaID:(NSString*)gaiaID {
-  [self.delegate handleRemoveIdentity:[self identityWithGaiaID:gaiaID]];
+- (void)requestRemoveIdentityWithGaiaID:(NSString*)gaiaID
+                               itemView:(UIView*)itemView {
+  [self.delegate handleRemoveIdentity:[self identityWithGaiaID:gaiaID]
+                             itemView:itemView];
 }
 
 #pragma mark - ChromeAccountManagerServiceObserver

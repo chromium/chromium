@@ -8,7 +8,8 @@
 @protocol AccountsMutator <NSObject>
 
 // Called when remove identity is tapped.
-- (void)requestRemoveIdentityWithGaiaID:(NSString*)gaiaID;
+- (void)requestRemoveIdentityWithGaiaID:(NSString*)gaiaID
+                               itemView:(UIView*)itemView;
 
 @end
 

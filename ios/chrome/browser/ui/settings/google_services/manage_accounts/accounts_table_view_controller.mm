@@ -160,8 +160,12 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
       TableViewAccountItem* accountItem =
           base::apple::ObjCCastStrict<TableViewAccountItem>(
               [self.tableViewModel itemAtIndexPath:accountItemIndexPath]);
-      [self.mutator requestRemoveIdentityWithGaiaID:
-                        [self gaiaIDWithAccountItem:accountItem]];
+      UIView* itemView =
+          [[tableView cellForRowAtIndexPath:indexPath] contentView];
+      [self.mutator
+          requestRemoveIdentityWithGaiaID:[self
+                                              gaiaIDWithAccountItem:accountItem]
+                                 itemView:itemView];
       break;
   }
 
