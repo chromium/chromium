@@ -5285,7 +5285,7 @@
 <translation id="4824958205181053313">取消同步？</translation>
 <translation id="4825532258163983651">无法删除通行密钥</translation>
 <translation id="4827134188176577524">Chrome 根存储区包含 Chrome Root Program 信任的证书授权机构颁发的证书，并会持续进行审核。</translation>
-<translation id="4827283332383516812">删除卡片</translation>
+<translation id="4827283332383516812">删除卡</translation>
 <translation id="4827675678516992122">无法连接</translation>
 <translation id="4827784381479890589">在 Chrome 浏览器中使用增强的“拼写检查”功能（您输入的文字会被发送给 Google 以方便其提供拼写建议）</translation>
 <translation id="4827904420700932487">为此图片创建二维码</translation>
@@ -6585,7 +6585,7 @@
 <translation id="5792295754950501287">显示可对“<ph name="CARD_DESCRIPTION" />”执行的更多操作</translation>
 <translation id="5792728279623964091">请点按您的电源按钮</translation>
 <translation id="5792874008054171483">可对 <ph name="SITE_NAME" /> 执行的更多操作</translation>
-<translation id="5793317771769868848">此付款方式将被从该设备中删除</translation>
+<translation id="5793317771769868848">此付款方式将从本设备中删除</translation>
 <translation id="5793339252089865437">如果您通过移动网络下载更新，则可能需要支付超额费用。</translation>
 <translation id="5793420564274426163">配对确认</translation>
 <translation id="5794034487966529952">桌面“<ph name="DESK_TITLE" />”打开了 <ph name="NUM_BROWSERS" /> 个浏览器窗口</translation>
@@ -10771,7 +10771,7 @@
 <translation id="8849541329228110748">对您的互联网流量有访问权限的各方可以看到您访问的网页</translation>
 <translation id="8850251000316748990">查看更多…</translation>
 <translation id="885246833287407341">API 函数参数</translation>
-<translation id="8853586775156634952">此信用卡信息将仅保存到此设备上</translation>
+<translation id="8853586775156634952">此卡的信息将仅保存到此设备上</translation>
 <translation id="8854745870658584490">“选择”快捷方式</translation>
 <translation id="8855242995793521265">不会致使浏览器或设备的运行速度明显变慢。</translation>
 <translation id="8855977033756560989">该 Chromebook 企业版设备捆绑了 Chrome 企业版升级许可。要充分利用企业版功能，请使用 Google 管理控制台账号注册该设备。</translation>
