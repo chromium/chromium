@@ -15705,6 +15705,14 @@
                     ]
                 },
                 {
+                    "name": "Pre_I18n_Launch_Disablement",
+                    "disable_features": [
+                        "OrcaFrench",
+                        "OrcaGerman",
+                        "OrcaJapanese"
+                    ]
+                },
+                {
                     "name": "Enabled_From_121_Dogfood",
                     "params": {
                         "ime_allowlist": "[\"xkb:es::spa\"]"
