@@ -619,8 +619,8 @@ export class PlaybackPage extends ReactiveLitElement {
         >
           <cra-icon slot="icon" name="more_vertical"></cra-icon>
         </cra-icon-button>
+        ${this.renderMenu()}
       </div>
-      ${this.renderMenu()}
     `;
   }
 

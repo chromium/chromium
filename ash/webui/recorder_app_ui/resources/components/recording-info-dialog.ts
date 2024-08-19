@@ -34,6 +34,10 @@ import {CraDialog} from './cra/cra-dialog.js';
 
 export class RecordingInfoDialog extends ReactiveLitElement {
   static override styles: CSSResultGroup = css`
+    :host {
+      display: contents;
+    }
+
     cra-dialog {
       width: 420px;
 
