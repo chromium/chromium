@@ -87,28 +87,12 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // initialized.
   void DisableNavigationForTesting();
 
-  // Returns the GURL of all preloadable WebUIs.
-  static std::vector<GURL> GetAllPreloadableWebUIURLsForTesting();
-
-  // Returns the currently preloaded WebUI URL. Returns nullopt if no content is
-  // preloaded. This is a mirror of GetPreloadedURL().
-  std::optional<GURL> GetPreloadedURLForTesting() const;
-
-  // Returns the next WebUI URL to preload. This can return nullopt indicating
-  // that no new WebUI will be preloaded. This is a mirror of
-  // GetNextWebUIURLToPreload().
-  std::optional<GURL> GetNextWebUIURLToPreloadForTesting(
-      content::BrowserContext* browser_context) const;
-
-  void MaybePreloadForBrowserContextForTesting(
-      content::BrowserContext* browser_context);
-
-  void SetPreloadCandidateSelectorForTesting(
-      std::unique_ptr<webui::PreloadCandidateSelector>
-          preload_candidate_selector);
-
  private:
+  friend class WebUIContentsPreloadManagerTestAPI;
   class WebUIControllerEmbedderStub;
+  class PendingPreload;
+
+  std::vector<GURL> GetAllPreloadableWebUIURLs();
 
   // Returns the currently preloaded WebUI URL. Returns nullopt if no content is
   // preloaded.
@@ -127,6 +111,22 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // with a new contents under the given `browser_context`.
   // If under heavy memory pressure, no preloaded contents will be created.
   void MaybePreloadForBrowserContext(content::BrowserContext* browser_context);
+
+  // Schedule a preload. This calls MaybePreloadForBrowserContext() at a later
+  // time.
+  //
+  // The preload will happen when `busy_web_contents_to_watch` emits the
+  // first non-empty paint or when the deadline has passed.
+  //
+  // When called with a nullptr `busy_web_contents_to_watch`, only watch for
+  // deadline to pass.
+  //
+  // When called while a preload is pending, cancel the pending preload and
+  // schedule a new one.
+  void MaybePreloadForBrowserContextLater(
+      content::BrowserContext* browser_context,
+      content::WebContents* busy_web_contents_to_watch,
+      base::TimeDelta deadline = base::Seconds(3));
 
   // Sets the current preloaded WebContents and performs necessary bookkepping.
   // The bookkeeping includes monitoring for the shutdown of the browser context
@@ -166,6 +166,8 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   bool is_setting_preloaded_web_contents_ = false;
 
   std::unique_ptr<content::WebContents> preloaded_web_contents_;
+
+  std::unique_ptr<PendingPreload> pending_preload_;
 
   // Tracks the timeticks when Request() is called.
   std::map<raw_ptr<content::WebContents>, base::TimeTicks> request_time_map_;

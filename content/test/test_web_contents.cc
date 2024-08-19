@@ -242,6 +242,10 @@ void TestWebContents::TestDidFailLoadWithError(const GURL& url,
   GetPrimaryMainFrame()->DidFailLoadWithError(url, error_code);
 }
 
+void TestWebContents::TestDidFirstVisuallyNonEmptyPaint() {
+  OnFirstVisuallyNonEmptyPaint(GetPrimaryPage());
+}
+
 bool TestWebContents::CrossProcessNavigationPending() {
   // If we don't have a speculative RenderFrameHost then it means we did not
   // change SiteInstances so we must be in the same process.

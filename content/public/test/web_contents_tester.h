@@ -155,6 +155,9 @@ class WebContentsTester {
   // Simulates terminating an load with a network error.
   virtual void TestDidFailLoadWithError(const GURL& url, int error_code) = 0;
 
+  // Simulates the first non-empty paint.
+  virtual void TestDidFirstVisuallyNonEmptyPaint() = 0;
+
   // Returns whether PauseSubresourceLoading was called on this web contents.
   virtual bool GetPauseSubresourceLoadingCalled() = 0;
 

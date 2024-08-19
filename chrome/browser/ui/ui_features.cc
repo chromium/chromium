@@ -200,6 +200,9 @@ const base::FeatureParam<PreloadTopChromeWebUIMode> kPreloadTopChromeWebUIMode{
 const char kPreloadTopChromeWebUISmartPreloadName[] = "smart-preload";
 const base::FeatureParam<bool> kPreloadTopChromeWebUISmartPreload{
     &kPreloadTopChromeWebUI, kPreloadTopChromeWebUISmartPreloadName, false};
+const char kPreloadTopChromeWebUIDelayPreloadName[] = "delay-preload";
+const base::FeatureParam<bool> kPreloadTopChromeWebUIDelayPreload{
+    &kPreloadTopChromeWebUI, kPreloadTopChromeWebUIDelayPreloadName, false};
 
 // Enables exiting browser fullscreen (users putting the browser itself into the
 // fullscreen mode via the browser UI or shortcuts) with press-and-hold Esc.

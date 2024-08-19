@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/webui/top_chrome/preload_candidate_selector.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager_test_api.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -68,10 +69,6 @@ int GetCommandIdForURL(GURL webui_url) {
   return *config->GetCommandIdForTesting();
 }
 
-std::vector<GURL> GetAllPreloadableWebUIURLs() {
-  return WebUIContentsPreloadManager::GetAllPreloadableWebUIURLsForTesting();
-}
-
 using PreloadModeName = const char*;
 std::vector<PreloadModeName> GetAllPreloadManagerModes() {
   return {features::kPreloadTopChromeWebUIModePreloadOnWarmupName,
@@ -100,7 +97,7 @@ class WebUIContentsPreloadManagerBrowserTestBase : public InProcessBrowserTest {
     auto preload_candidate_selector =
         std::make_unique<testing::NiceMock<MockPreloadCandidateSelector>>();
     preload_candidate_selector_ = preload_candidate_selector.get();
-    preload_manager()->SetPreloadCandidateSelectorForTesting(
+    test_api().SetPreloadCandidateSelector(
         std::move(preload_candidate_selector));
     SetUpPreloadURL();
 
@@ -117,7 +114,7 @@ class WebUIContentsPreloadManagerBrowserTestBase : public InProcessBrowserTest {
     preload_candidate_selector_ = nullptr;
     // The mock object does not expect itself to leak outside of the test.
     // Clearing it from the preload manager to destroy it.
-    preload_manager()->SetPreloadCandidateSelectorForTesting(nullptr);
+    test_api().SetPreloadCandidateSelector(nullptr);
 
     InProcessBrowserTest::TearDown();
   }
@@ -125,6 +122,8 @@ class WebUIContentsPreloadManagerBrowserTestBase : public InProcessBrowserTest {
   WebUIContentsPreloadManager* preload_manager() {
     return WebUIContentsPreloadManager::GetInstance();
   }
+
+  WebUIContentsPreloadManagerTestAPI& test_api() { return test_api_; }
 
   content::TestNavigationObserver* navigation_waiter() {
     return navigation_waiter_.get();
@@ -140,6 +139,7 @@ class WebUIContentsPreloadManagerBrowserTestBase : public InProcessBrowserTest {
  private:
   std::unique_ptr<content::TestNavigationObserver> navigation_waiter_;
   base::test::ScopedFeatureList feature_list_;
+  WebUIContentsPreloadManagerTestAPI test_api_;
   raw_ptr<MockPreloadCandidateSelector> preload_candidate_selector_;
 };
 
@@ -182,7 +182,7 @@ class WebUIContentsPreloadManagerBrowserSmokeTest
 IN_PROC_BROWSER_TEST_P(WebUIContentsPreloadManagerBrowserSmokeTest,
                        TriggerPreloadedUIs) {
   const std::string preload_mode = GetParam();
-  for (const GURL& webui_url : GetAllPreloadableWebUIURLs()) {
+  for (const GURL& webui_url : test_api().GetAllPreloadableWebUIURLs()) {
     // Set the next preload WebUI URL.
     ON_CALL(*mock_preload_candidate_selector(), GetURLToPreload(_))
         .WillByDefault(Return(webui_url));
@@ -285,19 +285,17 @@ IN_PROC_BROWSER_TEST_F(WebUIContentsPreoloadManagerPageLoadMetricsTest,
   histogram_tester.ExpectTotalCount(
       chrome::kNonTabWebUIRequestToFCPHistogramName, 0);
 
-  preload_manager()->MaybePreloadForBrowserContextForTesting(
-      browser()->profile());
+  test_api().MaybePreloadForBrowserContext(browser()->profile());
   navigation_waiter()->Wait();
-  ASSERT_TRUE(preload_manager()->GetPreloadedURLForTesting().has_value());
+  ASSERT_TRUE(test_api().GetPreloadedURL().has_value());
 
   // FCP is not recorded because the WebUI is not yet shown.
   histogram_tester.ExpectTotalCount(
       chrome::kNonTabWebUIRequestToFCPHistogramName, 0);
 
   WebUIContentsPreloadManager::RequestResult request_result =
-      preload_manager()->Request(
-          *preload_manager()->GetPreloadedURLForTesting(),
-          browser()->profile());
+      preload_manager()->Request(*test_api().GetPreloadedURL(),
+                                 browser()->profile());
   content::WebContents* web_contents = request_result.web_contents.get();
   ASSERT_NE(web_contents, nullptr);
 
