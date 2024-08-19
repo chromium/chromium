@@ -100,6 +100,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 }
 
 - (void)stop {
+  [_mediator disconnect];
   _mediator = nil;
   _tabContextMenuHelper = nil;
 
