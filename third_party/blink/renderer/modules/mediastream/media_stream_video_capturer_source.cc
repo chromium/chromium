@@ -26,52 +26,7 @@
 
 namespace blink {
 
-using mojom::blink::CapturedSurfaceControlResult;
 using mojom::blink::MediaStreamRequestResult;
-
-namespace {
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-inline DOMException* MakeDOMException(DOMExceptionCode code, String message) {
-  return MakeGarbageCollected<DOMException>(code, std::move(message));
-}
-
-DOMException* CscResultToDOMException(CapturedSurfaceControlResult result) {
-  switch (result) {
-    case CapturedSurfaceControlResult::kSuccess:
-      return nullptr;
-    case CapturedSurfaceControlResult::kUnknownError:
-      return MakeDOMException(DOMExceptionCode::kUnknownError,
-                              "Unknown error.");
-    case CapturedSurfaceControlResult::kNoPermissionError:
-      return MakeDOMException(DOMExceptionCode::kNotAllowedError,
-                              "No permission.");
-    case CapturedSurfaceControlResult::kCapturerNotFoundError:
-      return MakeDOMException(
-          DOMExceptionCode::kNotFoundError,
-          "Capturer not found (likely stopped asynchronously).");
-    case CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError:
-      return MakeDOMException(
-          DOMExceptionCode::kNotFoundError,
-          "Captured surface not found (likely stopped asynchronously).");
-    case CapturedSurfaceControlResult::kDisallowedForSelfCaptureError:
-      return MakeDOMException(DOMExceptionCode::kInvalidStateError,
-                              "API not supported for self-capture.");
-    case CapturedSurfaceControlResult::kCapturerNotFocusedError:
-      return MakeDOMException(DOMExceptionCode::kInvalidStateError,
-                              "Capturing application not focused.");
-  }
-  NOTREACHED();
-}
-
-void OnCapturedSurfaceControlResult(
-    base::OnceCallback<void(DOMException*)> callback,
-    CapturedSurfaceControlResult result) {
-  std::move(callback).Run(CscResultToDOMException(result));
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-}  // namespace
 
 MediaStreamVideoCapturerSource::MediaStreamVideoCapturerSource(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
@@ -244,47 +199,6 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-void MediaStreamVideoCapturerSource::SendWheel(
-    double relative_x,
-    double relative_y,
-    int wheel_delta_x,
-    int wheel_delta_y,
-    base::OnceCallback<void(DOMException*)> callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  const std::optional<base::UnguessableToken>& session_id =
-      device().serializable_session_id();
-  if (!session_id.has_value()) {
-    std::move(callback).Run(MakeDOMException(DOMExceptionCode::kUnknownError,
-                                             "Missing session ID."));
-    return;
-  }
-
-  GetMediaStreamDispatcherHost()->SendWheel(
-      session_id.value(),
-      blink::mojom::blink::CapturedWheelAction::New(
-          relative_x, relative_y, wheel_delta_x, wheel_delta_y),
-      WTF::BindOnce(&OnCapturedSurfaceControlResult, std::move(callback)));
-}
-
-void MediaStreamVideoCapturerSource::SetZoomLevel(
-    int zoom_level,
-    base::OnceCallback<void(DOMException*)> callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  const std::optional<base::UnguessableToken>& session_id =
-      device().serializable_session_id();
-  if (!session_id.has_value()) {
-    std::move(callback).Run(MakeDOMException(DOMExceptionCode::kUnknownError,
-                                             "Missing session ID."));
-    return;
-  }
-
-  GetMediaStreamDispatcherHost()->SetZoomLevel(
-      session_id.value(), zoom_level,
-      WTF::BindOnce(&OnCapturedSurfaceControlResult, std::move(callback)));
-}
-
 void MediaStreamVideoCapturerSource::ApplySubCaptureTarget(
     media::mojom::blink::SubCaptureTargetType type,
     const base::Token& sub_capture_target,

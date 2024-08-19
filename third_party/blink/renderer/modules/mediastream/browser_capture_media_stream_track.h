@@ -15,8 +15,6 @@
 
 namespace blink {
 
-class DOMException;
-
 class MODULES_EXPORT BrowserCaptureMediaStreamTrack
     : public MediaStreamTrackImpl {
   DEFINE_WRAPPERTYPEINFO();
@@ -35,15 +33,6 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
 
 #if !BUILDFLAG(IS_ANDROID)
   void Trace(Visitor*) const override;
-
-  // MediaStreamTrack impl
-  void SendWheel(double relative_x,
-                 double relative_y,
-                 int wheel_delta_x,
-                 int wheel_delta_y,
-                 base::OnceCallback<void(DOMException*)> callback) override;
-  void SetZoomLevel(int zoom_level,
-                    base::OnceCallback<void(DOMException*)> callback) override;
 
   // Allows tests to invoke OnSubCaptureTargetVersionObserved() directly, since
   // triggering it via mocks would be prohibitively difficult.

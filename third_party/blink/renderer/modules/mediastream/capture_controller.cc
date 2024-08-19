@@ -15,7 +15,11 @@
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+
+using ::blink::mojom::blink::CapturedSurfaceControlResult;
 
 namespace blink {
 
@@ -105,16 +109,6 @@ bool ShouldFocusCapturedSurface(V8CaptureStartFocusBehavior focus_behavior) {
   NOTREACHED();
 }
 
-void OnCapturedSurfaceControlResult(
-    ScriptPromiseResolver<IDLUndefined>* resolver,
-    DOMException* exception) {
-  if (exception) {
-    resolver->Reject(exception);
-  } else {
-    resolver->Resolve();
-  }
-}
-
 std::optional<int> GetInitialZoomLevel(MediaStreamTrack* video_track) {
   const MediaStreamVideoSource* native_source =
       MediaStreamVideoSource::GetVideoSource(
@@ -131,6 +125,66 @@ std::optional<int> GetInitialZoomLevel(MediaStreamTrack* video_track) {
 
   return display_media_info->initial_zoom_level;
 }
+
+std::optional<base::UnguessableToken> GetCaptureSessionId(
+    MediaStreamTrack* track) {
+  if (!track) {
+    return std::nullopt;
+  }
+  MediaStreamComponent* component = track->Component();
+  if (!component) {
+    return std::nullopt;
+  }
+  MediaStreamSource* source = component->Source();
+  if (!source) {
+    return std::nullopt;
+  }
+  WebPlatformMediaStreamSource* platform_source = source->GetPlatformSource();
+  if (!platform_source) {
+    return std::nullopt;
+  }
+  return platform_source->device().serializable_session_id();
+}
+
+DOMException* CscResultToDOMException(CapturedSurfaceControlResult result) {
+  switch (result) {
+    case CapturedSurfaceControlResult::kSuccess:
+      return nullptr;
+    case CapturedSurfaceControlResult::kUnknownError:
+      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError,
+                                                "Unknown error.");
+    case CapturedSurfaceControlResult::kNoPermissionError:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError, "No permission.");
+    case CapturedSurfaceControlResult::kCapturerNotFoundError:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotFoundError,
+          "Capturer not found (likely stopped asynchronously).");
+    case CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotFoundError,
+          "Captured surface not found (likely stopped asynchronously).");
+    case CapturedSurfaceControlResult::kDisallowedForSelfCaptureError:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError,
+          "API not supported for self-capture.");
+    case CapturedSurfaceControlResult::kCapturerNotFocusedError:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError,
+          "Capturing application not focused.");
+  }
+  NOTREACHED_NORETURN();
+}
+
+void OnCapturedSurfaceControlResult(
+    ScriptPromiseResolver<IDLUndefined>* resolver,
+    CapturedSurfaceControlResult result) {
+  if (auto* exception = CscResultToDOMException(result)) {
+    resolver->Reject(exception);
+  } else {
+    resolver->Resolve();
+  }
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
@@ -144,7 +198,13 @@ CaptureController* CaptureController::Create(ExecutionContext* context) {
 }
 
 CaptureController::CaptureController(ExecutionContext* context)
-    : ExecutionContextClient(context) {}
+    : ExecutionContextClient(context)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+      ,
+      media_stream_dispatcher_host_(context)
+#endif
+{
+}
 
 void CaptureController::setFocusBehavior(
     V8CaptureStartFocusBehavior focus_behavior,
@@ -219,9 +279,19 @@ ScriptPromise<IDLUndefined> CaptureController::sendWheel(
     return promise;
   }
 
-  video_track_->SendWheel(
-      scaled_coordinates->relative_x, scaled_coordinates->relative_y,
-      action->wheelDeltaX(), action->wheelDeltaY(),
+  const std::optional<base::UnguessableToken>& session_id =
+      GetCaptureSessionId(video_track_);
+  if (!session_id.has_value()) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError,
+                                     "Invalid capture");
+    return promise;
+  }
+
+  GetMediaStreamDispatcherHost()->SendWheel(
+      *session_id,
+      blink::mojom::blink::CapturedWheelAction::New(
+          scaled_coordinates->relative_x, scaled_coordinates->relative_y,
+          action->wheelDeltaX(), action->wheelDeltaY()),
       WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
 
   return promise;
@@ -308,8 +378,16 @@ ScriptPromise<IDLUndefined> CaptureController::setZoomLevel(
     return promise;
   }
 
-  video_track_->SetZoomLevel(
-      zoom_level,
+  const std::optional<base::UnguessableToken>& session_id =
+      GetCaptureSessionId(video_track_);
+  if (!session_id.has_value()) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError,
+                                     "Invalid capture");
+    return promise;
+  }
+
+  GetMediaStreamDispatcherHost()->SetZoomLevel(
+      session_id.value(), zoom_level,
       WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
   return promise;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -388,10 +466,34 @@ void CaptureController::SourceChangedZoomLevel(int zoom_level) {
 
   DispatchEvent(*Event::Create(event_type_names::kCapturedzoomlevelchange));
 }
+
+mojom::blink::MediaStreamDispatcherHost*
+CaptureController::GetMediaStreamDispatcherHost() {
+  DCHECK(IsMainThread());
+  CHECK(GetExecutionContext());
+  if (!media_stream_dispatcher_host_.is_bound()) {
+    GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
+        media_stream_dispatcher_host_.BindNewPipeAndPassReceiver(
+            GetExecutionContext()->GetTaskRunner(
+                TaskType::kInternalMediaRealTime)));
+  }
+
+  return media_stream_dispatcher_host_.get();
+}
+
+void CaptureController::SetMediaStreamDispatcherHostForTesting(
+    mojo::PendingRemote<mojom::blink::MediaStreamDispatcherHost> host) {
+  media_stream_dispatcher_host_.Bind(
+      std::move(host),
+      GetExecutionContext()->GetTaskRunner(TaskType::kInternalMediaRealTime));
+}
 #endif
 
 void CaptureController::Trace(Visitor* visitor) const {
   visitor->Trace(video_track_);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  visitor->Trace(media_stream_dispatcher_host_);
+#endif
   EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }

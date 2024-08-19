@@ -429,38 +429,4 @@ TEST_F(MediaStreamVideoCapturerSourceTest, FailStartCamInUse) {
   EXPECT_EQ(start_result_, MediaStreamRequestResult::DEVICE_IN_USE);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(MediaStreamVideoCapturerSourceTest, SendWheelWithoutSessionIdFails) {
-  InSequence s;
-  EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _));
-  WebMediaStreamTrack track =
-      StartSource(VideoTrackAdapterSettings(), std::nullopt, false, 0.0);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_CALL(mock_dispatcher_host_, SendWheel(_, _, _)).Times(0);
-  base::MockOnceCallback<void(DOMException*)> callback;
-  EXPECT_CALL(callback, Run(IsExpectedDOMException("UnknownError",
-                                                   "Missing session ID.")));
-
-  video_capturer_source_->SendWheel(/*relative_x=*/0, /*relative_y=*/0,
-                                    /*wheel_delta_x=*/0, /*wheel_delta_y=*/0,
-                                    callback.Get());
-}
-
-TEST_F(MediaStreamVideoCapturerSourceTest, SetZoomLevelWithoutSessionIdFails) {
-  InSequence s;
-  EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _));
-  WebMediaStreamTrack track =
-      StartSource(VideoTrackAdapterSettings(), std::nullopt, false, 0.0);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_CALL(mock_dispatcher_host_, SetZoomLevel(_, _, _)).Times(0);
-  base::MockOnceCallback<void(DOMException*)> callback;
-  EXPECT_CALL(callback, Run(IsExpectedDOMException("UnknownError",
-                                                   "Missing session ID.")));
-
-  video_capturer_source_->SetZoomLevel(/*zoom_level=*/100, callback.Get());
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 }  // namespace blink

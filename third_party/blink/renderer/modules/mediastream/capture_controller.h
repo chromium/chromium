@@ -7,6 +7,9 @@
 
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_start_focus_behavior.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -74,6 +77,9 @@ class MODULES_EXPORT CaptureController final
   void SourceChangedCaptureHandle() override {}
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void SourceChangedZoomLevel(int) override;
+
+  void SetMediaStreamDispatcherHostForTesting(
+      mojo::PendingRemote<mojom::blink::MediaStreamDispatcherHost>);
 #endif
   void Trace(Visitor* visitor) const override;
 
@@ -86,6 +92,10 @@ class MODULES_EXPORT CaptureController final
   };
 
   ValidationResult ValidateCapturedSurfaceControlCall() const;
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  mojom::blink::MediaStreamDispatcherHost* GetMediaStreamDispatcherHost();
+#endif
 
   // Whether this CaptureController has been passed to a getDisplayMedia() call.
   // This helps enforce the requirement that any CaptureController may only
@@ -120,6 +130,10 @@ class MODULES_EXPORT CaptureController final
   // Never changes back to nullopt.
   // Always stays at 100 (the default value) for window- and screen-capture.
   std::optional<int> zoom_level_;
+
+  HeapMojoRemote<mojom::blink::MediaStreamDispatcherHost>
+      media_stream_dispatcher_host_;
+
 #endif
 };
 

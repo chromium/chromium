@@ -46,7 +46,6 @@
 namespace blink {
 
 class AudioSourceProvider;
-class DOMException;
 class ImageCapture;
 class MediaTrackCapabilities;
 class MediaTrackConstraints;
@@ -127,16 +126,6 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   ExecutionContext* GetExecutionContext() const override;
   void AddedEventListener(const AtomicString&,
                           RegisteredEventListener&) override;
-
-#if !BUILDFLAG(IS_ANDROID)
-  void SendWheel(double relative_x,
-                 double relative_y,
-                 int wheel_delta_x,
-                 int wheel_delta_y,
-                 base::OnceCallback<void(DOMException*)> callback) override;
-  void SetZoomLevel(int zoom_level,
-                    base::OnceCallback<void(DOMException*)> callback) override;
-#endif
 
   // ScriptWrappable
   bool HasPendingActivity() const final;
