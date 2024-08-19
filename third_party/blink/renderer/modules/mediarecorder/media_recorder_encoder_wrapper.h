@@ -43,9 +43,6 @@ class MODULES_EXPORT MediaRecorderEncoderWrapper final
   MediaRecorderEncoderWrapper& operator=(const MediaRecorderEncoderWrapper&) =
       delete;
 
-  base::WeakPtr<Encoder> GetWeakPtr() override {
-    return weak_factory_.GetWeakPtr();
-  }
   bool IsScreenContentEncodingForTesting() const override;
 
  private:
