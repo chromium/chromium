@@ -140,7 +140,6 @@ def _get_daemon_status():
     """
     status = json.loads(
         run_ffx_command(cmd=('daemon', 'socket'),
-                        check=True,
                         capture_output=True,
                         json_out=True).stdout.strip())
     return status.get('pid', {}).get('status', {'NotRunning': True})

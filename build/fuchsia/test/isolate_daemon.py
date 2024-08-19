@@ -1,19 +1,16 @@
-#!/usr/bin/env vpython3
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Sets up the isolate daemon environment to run test on the bots."""
 
 import os
-import sys
 import tempfile
 
 from contextlib import AbstractContextManager
 from typing import List
 
-from common import catch_sigterm, get_ffx_isolate_dir, has_ffx_isolate_dir, \
-                   set_ffx_isolate_dir, start_ffx_daemon, stop_ffx_daemon, \
-                   wait_for_sigterm
+from common import has_ffx_isolate_dir, set_ffx_isolate_dir, start_ffx_daemon, \
+                   stop_ffx_daemon
 from ffx_integration import ScopedFfxConfig
 
 
@@ -74,17 +71,3 @@ class IsolateDaemon(AbstractContextManager):
         for extra_init in self._extra_inits:
             extra_init.__exit__(exc_type, exc_value, traceback)
         stop_ffx_daemon()
-
-
-def main():
-    """Executes the IsolateDaemon and waits for the sigterm."""
-    catch_sigterm()
-    with IsolateDaemon():
-        # Clients can assume the daemon is up and running when the output is
-        # captured. Note, the client may rely on the printed isolate_dir.
-        print(get_ffx_isolate_dir(), flush=True)
-        wait_for_sigterm('shutting down the daemon.')
-
-
-if __name__ == '__main__':
-    sys.exit(main())

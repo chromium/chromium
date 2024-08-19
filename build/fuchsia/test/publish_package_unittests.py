@@ -62,57 +62,6 @@ class PublishPackageTest(unittest.TestCase):
             parser.parse_args(['--no-repo-init'])
         self.assertRegex(mock_stderr.getvalue(), 'unrecognized arguments')
 
-    def test_main_no_repo_flag(self) -> None:
-        """Tests that not specifying packages raise a ValueError."""
-
-        with mock.patch('sys.argv', ['publish_package.py', '--repo', _REPO]):
-            with self.assertRaises(ValueError):
-                publish_package.main()
-
-    def test_main_no_packages_flag(self) -> None:
-        """Tests that not specifying directory raise a ValueError."""
-
-        with mock.patch('sys.argv',
-                        ['publish_package.py', '--packages', _PACKAGES[0]]):
-            with self.assertRaises(ValueError):
-                publish_package.main()
-
-    def test_main_no_out_dir_flag(self) -> None:
-        """Tests |main| with `out_dir` omitted."""
-
-        with mock.patch('sys.argv', [
-                'publish_package.py', '--packages', _PACKAGES[0], '--repo',
-                _REPO
-        ]):
-            publish_package.main()
-            self.assertEqual(self._ffx_mock.call_count, 1)
-
-    @mock.patch('publish_package.read_package_paths')
-    def test_main(self, read_mock) -> None:
-        """Tests |main|."""
-
-        read_mock.return_value = ['out/test/package/path']
-        with mock.patch('sys.argv', [
-                'publish_package.py', '--packages', _PACKAGES[0], '--repo',
-                _REPO, '--out-dir', 'out/test'
-        ]):
-            publish_package.main()
-            self.assertEqual(self._ffx_mock.call_count, 1)
-
-    @mock.patch('publish_package.read_package_paths')
-    @mock.patch('publish_package.make_clean_directory')
-    def test_purge_repo(self, read_mock, make_clean_directory_mock) -> None:
-        """Tests purge_repo flag."""
-
-        read_mock.return_value = ['out/test/package/path']
-        with mock.patch('sys.argv', [
-                'publish_package.py', '--packages', _PACKAGES[0], '--repo',
-                _REPO, '--out-dir', 'out/test', '--purge-repo'
-        ]):
-            publish_package.main()
-            self.assertEqual(self._ffx_mock.call_count, 2)
-            self.assertEqual(make_clean_directory_mock.call_count, 1)
-
 
 if __name__ == '__main__':
     unittest.main()

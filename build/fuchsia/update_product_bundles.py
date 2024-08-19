@@ -54,7 +54,7 @@ def remove_repositories(repo_names_to_remove):
     repo_names_to_remove: List of repo names (as strings) to remove.
   """
   for repo_name in repo_names_to_remove:
-    common.run_ffx_command(cmd=('repository', 'remove', repo_name), check=True)
+    common.run_ffx_command(cmd=('repository', 'remove', repo_name))
 
 
 def get_repositories():
@@ -77,7 +77,6 @@ def get_repositories():
 
   repos = json.loads(
       common.run_ffx_command(cmd=('--machine', 'json', 'repository', 'list'),
-                             check=True,
                              capture_output=True).stdout.strip())
   to_prune = set()
   sdk_root_abspath = os.path.abspath(os.path.dirname(common.SDK_ROOT))
@@ -199,7 +198,6 @@ def main():
         '--machine', 'json', 'product', 'lookup', product, new_hash,
         '--base-url', base_url
     ] + effective_auth_args,
-                                           check=True,
                                            capture_output=True).stdout.strip()
     download_url = json.loads(lookup_output)['transfer_manifest_url']
     # The download_url is purely a timestamp based gs location and is fairly
@@ -208,8 +206,7 @@ def main():
     logging.info(f'Downloading {product} from {base_url} and {download_url}.')
     common.run_ffx_command(
         cmd=['product', 'download', download_url, image_dir] +
-        effective_auth_args,
-        check=True)
+        effective_auth_args)
 
   return 0
 
