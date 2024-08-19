@@ -3,38 +3,46 @@
 // found in the LICENSE file.
 
 suite('SettingsDialog', function() {
-  test('Theme Selection', function() {
+  test('Theme Selection', async function() {
+    // Use a dynamic import since this file is not executed as a module from
+    // distilled_page_js_browsertest.cc
+    const {assert} = await import('./chai.js');
+
     const body = document.body;
     const queryString = 'input[type=\'radio\']:checked';
-    chai.assert(body.classList.contains('light'));
-    chai.assert.equal(document.querySelector(queryString).value, 'light');
+    assert.isTrue(body.classList.contains('light'));
+    assert.equal(document.querySelector(queryString).value, 'light');
 
     useTheme('dark');
-    chai.assert(body.classList.contains('dark'));
-    chai.assert.equal(document.querySelector(queryString).value, 'dark');
+    assert.isTrue(body.classList.contains('dark'));
+    assert.equal(document.querySelector(queryString).value, 'dark');
 
     useTheme('sepia');
-    chai.assert(body.classList.contains('sepia'));
-    chai.assert.equal(document.querySelector(queryString).value, 'sepia');
+    assert.isTrue(body.classList.contains('sepia'));
+    assert.equal(document.querySelector(queryString).value, 'sepia');
   });
 
-  test('Font Family Selection', function() {
+  test('Font Family Selection', async function() {
+    // Use a dynamic import since this file is not executed as a module from
+    // distilled_page_js_browsertest.cc
+    const {assert} = await import('./chai.js');
+
     const body = document.body;
     const fontFamilySelector = document.getElementById('font-family-selection');
-    chai.assert.equal(
+    assert.equal(
         fontFamilySelector[fontFamilySelector.selectedIndex].value,
         'sans-serif');
-    chai.assert(body.classList.contains('sans-serif'));
+    assert.isTrue(body.classList.contains('sans-serif'));
 
     useFontFamily('serif');
-    chai.assert.equal(
+    assert.equal(
         fontFamilySelector[fontFamilySelector.selectedIndex].value, 'serif');
-    chai.assert(body.classList.contains('serif'));
+    assert.isTrue(body.classList.contains('serif'));
 
     useFontFamily('monospace');
-    chai.assert.equal(
+    assert.equal(
         fontFamilySelector[fontFamilySelector.selectedIndex].value,
         'monospace');
-    chai.assert(body.classList.contains('monospace'));
+    assert.isTrue(body.classList.contains('monospace'));
   });
 });

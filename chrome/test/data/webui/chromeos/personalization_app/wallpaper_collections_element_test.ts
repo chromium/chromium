@@ -130,8 +130,8 @@ suite('WallpaperCollectionsElementTest', function() {
         personalizationStore.data.wallpaper.backdrop,
         'expected backdrop data is set',
     );
-    assertDeepEquals(
-        {
+    assertEquals(
+        JSON.stringify({
           ...emptyState().wallpaper.loading,
           collections: false,
           images: {
@@ -147,8 +147,8 @@ suite('WallpaperCollectionsElementTest', function() {
             },
             images: false,
           },
-        },
-        personalizationStore.data.wallpaper.loading,
+        }),
+        JSON.stringify(personalizationStore.data.wallpaper.loading),
         'expected loading state is set',
     );
   });

@@ -19,7 +19,7 @@ update NPM dependencies.
 Name: Mocha
 Short Name: mocha
 URL: https://github.com/mochajs/mocha
-Version: 10.0.0
+Version: 10.4.0
 Revision: 0501b9a278ae40a01f989d70801f4886ee686445
 License: MIT
 License File: LICENSE
@@ -39,9 +39,9 @@ Local Modifications:
 Name: Chai Assertion Library
 Short Name: chai
 URL: https://github.com/chaijs/chai
-Version: 4.2.0
-Revision: 26c8a794ec6da695f004bdbd6362a466dc3d098f
-Date: 2018-09-25
+Version: 5.1.1
+Revision: 37263c08b85f1f7a55d9522607a9b40f2ee651cd
+Date: 2024-06-20
 License: MIT
 License File: LICENSE
 Security Critical: no
@@ -52,8 +52,7 @@ BDD / TDD assertion framework for node.js and the browser that can be
 paired with any testing framework.
 
 Local Modifications:
- - Applied patches/chai.patch so that chai.js can run within a d8 shell, which
-   is used in unit_tests
+(none)
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
@@ -97,6 +96,24 @@ The compiler is not shipped with Chrome but code compiled using it is.
 Local Modifications:
 See patches/typescript.patch to work-around
 https://github.com/microsoft/TypeScript/issues/30024
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: Type Definition for chai.js library
+Short Name: @types/chai
+URL: https://www.npmjs.com/package/@types/chai
+Version: 4.3.16
+License: MIT
+Security Critical: no
+Shipped: no
+
+Description:
+This package contains type definitions for the chai.js library.
+The types are only used when type checking in Chrome.
+
+Local Modifications:
+Added patch to work around the lack of official TS definitions for v5, see
+https://github.com/chaijs/chai/issues/1554.
 
 -------------------- DEPENDENCY DIVIDER --------------------
 

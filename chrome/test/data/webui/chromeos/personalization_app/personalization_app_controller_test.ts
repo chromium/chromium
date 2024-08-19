@@ -269,16 +269,15 @@ suite('Personalization app controller', () => {
         ],
         personalizationStore.actions);
 
-    assertDeepEquals(
-        [
+    assertEquals(
+        JSON.stringify([
           // Begin loading local image list.
           {
-            'wallpaper.loading.local': {images: true, data: {}},
             'wallpaper.local': {images: null, data: {}},
+            'wallpaper.loading.local': {images: true, data: {}},
           },
           // Done loading local image data.
           {
-            'wallpaper.loading.local': {data: {}, images: false},
             'wallpaper.local': {
               images: [
                 {path: 'LocalImage0.png'},
@@ -286,24 +285,21 @@ suite('Personalization app controller', () => {
               ],
               data: {},
             },
+            'wallpaper.loading.local': {data: {}, images: false},
           },
           // Mark image 0 as loading.
           {
-            'wallpaper.loading.local': {
-              data: {'LocalImage0.png': true},
-              images: false,
-            },
             'wallpaper.local': {
               images: [{path: 'LocalImage0.png'}, {path: 'LocalImage1.png'}],
               data: {},
             },
+            'wallpaper.loading.local': {
+              data: {'LocalImage0.png': true},
+              images: false,
+            },
           },
           // Mark image 1 as loading.
           {
-            'wallpaper.loading.local': {
-              data: {'LocalImage0.png': true, 'LocalImage1.png': true},
-              images: false,
-            },
             'wallpaper.local': {
               images: [
                 {path: 'LocalImage0.png'},
@@ -311,13 +307,13 @@ suite('Personalization app controller', () => {
               ],
               data: {},
             },
+            'wallpaper.loading.local': {
+              data: {'LocalImage0.png': true, 'LocalImage1.png': true},
+              images: false,
+            },
           },
           // Finish loading image 0.
           {
-            'wallpaper.loading.local': {
-              data: {'LocalImage0.png': false, 'LocalImage1.png': true},
-              images: false,
-            },
             'wallpaper.local': {
               images: [
                 {path: 'LocalImage0.png'},
@@ -329,13 +325,13 @@ suite('Personalization app controller', () => {
                 },
               },
             },
+            'wallpaper.loading.local': {
+              data: {'LocalImage0.png': false, 'LocalImage1.png': true},
+              images: false,
+            },
           },
           // Finish loading image 1.
           {
-            'wallpaper.loading.local': {
-              data: {'LocalImage0.png': false, 'LocalImage1.png': false},
-              images: false,
-            },
             'wallpaper.local': {
               images: [
                 {path: 'LocalImage0.png'},
@@ -350,10 +346,14 @@ suite('Personalization app controller', () => {
                 },
               },
             },
+            'wallpaper.loading.local': {
+              data: {'LocalImage0.png': false, 'LocalImage1.png': false},
+              images: false,
+            },
           },
-        ],
-        personalizationStore.states.map(filterAndFlattenState(
-            ['wallpaper.local', 'wallpaper.loading.local'])));
+        ]),
+        JSON.stringify(personalizationStore.states.map(filterAndFlattenState(
+            ['wallpaper.local', 'wallpaper.loading.local']))));
   });
 
   test('subtracts an image from state when it disappears', async () => {
@@ -376,14 +376,10 @@ suite('Personalization app controller', () => {
         personalizationStore.actions,
     );
 
-    assertDeepEquals(
-        [
+    assertEquals(
+        JSON.stringify([
           // Begin loading new image list.
           {
-            'wallpaper.loading.local': {
-              data: {'LocalImage0.png': false, 'LocalImage1.png': false},
-              images: true,
-            },
             'wallpaper.local': {
               images: [{path: 'LocalImage0.png'}, {path: 'LocalImage1.png'}],
               data: {
@@ -395,12 +391,14 @@ suite('Personalization app controller', () => {
                 },
               },
             },
+            'wallpaper.loading.local': {
+              data: {'LocalImage0.png': false, 'LocalImage1.png': false},
+              images: true,
+            },
           },
           // Load new image list with only image 0. Deletes image 1 information
           // from loading state and thumbnail state.
           {
-            'wallpaper.loading.local':
-                {data: {'LocalImage0.png': false}, images: false},
             'wallpaper.local': {
               images: [{path: 'LocalImage0.png'}],
               data: {
@@ -409,10 +407,12 @@ suite('Personalization app controller', () => {
                 },
               },
             },
+            'wallpaper.loading.local':
+                {data: {'LocalImage0.png': false}, images: false},
           },
-        ],
-        personalizationStore.states.map(filterAndFlattenState(
-            ['wallpaper.local', 'wallpaper.loading.local'])));
+        ]),
+        JSON.stringify(personalizationStore.states.map(filterAndFlattenState(
+            ['wallpaper.local', 'wallpaper.loading.local']))));
   });
 
   test('fetches new images that are added', async () => {
@@ -458,14 +458,10 @@ suite('Personalization app controller', () => {
         personalizationStore.actions,
         JSON.stringify(personalizationStore.actions));
 
-    assertDeepEquals(
-        [
+    assertEquals(
+        JSON.stringify([
           // Begin loading image list.
           {
-            'wallpaper.loading.local': {
-              'data': {'LocalImage0.png': false, 'LocalImage1.png': false},
-              'images': true,
-            },
             'wallpaper.local': {
               'images': [
                 {'path': 'LocalImage0.png'},
@@ -480,13 +476,28 @@ suite('Personalization app controller', () => {
                 },
               },
             },
+            'wallpaper.loading.local': {
+              'data': {'LocalImage0.png': false, 'LocalImage1.png': false},
+              'images': true,
+            },
           },
           // Done loading image list.
           {
+            'wallpaper.local': {
+              'images': [{'path': 'LocalImage0.png'}, {'path': 'NewPath.png'}],
+              'data': {
+                'LocalImage0.png': {
+                  url: 'data:image/png;base64,localimage0data',
+                },
+              },
+            },
             'wallpaper.loading.local': {
               'data': {'LocalImage0.png': false},
               'images': false,
             },
+          },
+          // Begin loading NewPath.png data.
+          {
             'wallpaper.local': {
               'images': [{'path': 'LocalImage0.png'}, {'path': 'NewPath.png'}],
               'data': {
@@ -495,28 +506,13 @@ suite('Personalization app controller', () => {
                 },
               },
             },
-          },
-          // Begin loading NewPath.png data.
-          {
             'wallpaper.loading.local': {
               'data': {'LocalImage0.png': false, 'NewPath.png': true},
               'images': false,
             },
-            'wallpaper.local': {
-              'images': [{'path': 'LocalImage0.png'}, {'path': 'NewPath.png'}],
-              'data': {
-                'LocalImage0.png': {
-                  url: 'data:image/png;base64,localimage0data',
-                },
-              },
-            },
           },
           // Done loading NewPath.png data.
           {
-            'wallpaper.loading.local': {
-              'data': {'LocalImage0.png': false, 'NewPath.png': false},
-              'images': false,
-            },
             'wallpaper.local': {
               'images': [{'path': 'LocalImage0.png'}, {'path': 'NewPath.png'}],
               'data': {
@@ -526,10 +522,14 @@ suite('Personalization app controller', () => {
                 'NewPath.png': {url: 'data:image/png;base64,newpath'},
               },
             },
+            'wallpaper.loading.local': {
+              'data': {'LocalImage0.png': false, 'NewPath.png': false},
+              'images': false,
+            },
           },
-        ],
-        personalizationStore.states.map(filterAndFlattenState(
-            ['wallpaper.local', 'wallpaper.loading.local'])));
+        ]),
+        JSON.stringify(personalizationStore.states.map(filterAndFlattenState(
+            ['wallpaper.local', 'wallpaper.loading.local']))));
   });
 
   test('clears local images when fetching new image list fails', async () => {
@@ -544,13 +544,16 @@ suite('Personalization app controller', () => {
     assertEquals(
         null, personalizationStore.data.wallpaper.local.images,
         'local images set to null');
-    assertDeepEquals({}, personalizationStore.data.wallpaper.local.data);
+    assertEquals(
+        JSON.stringify({}),
+        JSON.stringify(personalizationStore.data.wallpaper.local.data));
     assertDeepEquals(
         {url: ''},
         personalizationStore.data.wallpaper.local.data[kDefaultImageSymbol],
         'default image still present but set to empty url');
-    assertDeepEquals(
-        {}, personalizationStore.data.wallpaper.loading.local.data,
+    assertEquals(
+        JSON.stringify({}),
+        JSON.stringify(personalizationStore.data.wallpaper.loading.local.data),
         'local images not loading');
     assertFalse(
         personalizationStore.data.wallpaper.loading.local

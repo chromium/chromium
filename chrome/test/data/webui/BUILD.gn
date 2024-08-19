@@ -375,6 +375,11 @@ webui_ts_library("build_ts") {
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
   ]
+
+  path_mappings =
+      [ "//webui-test/chai.js|" +
+        rebase_path("//third_party/node/node_modules/@types/chai/index.d.ts",
+                    target_gen_dir) ]
 }
 
 generate_grd("build_grd") {

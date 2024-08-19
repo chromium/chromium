@@ -4,7 +4,7 @@
   "author": "dpapad@chromium.org",
   "dependencies": {
     "@mediapipe/tasks-vision": "0.10.9",
-    "@types/chai": "4.2.22",
+    "@types/chai": "4.3.16",
     "@types/d3": "7.4.0",
     "@types/dom-mediacapture-transform": "0.1.7",
     "@types/dom-speech-recognition": "0.0.1",
@@ -14,7 +14,7 @@
     "@types/filesystem": "0.0.32",
     "@types/filewriter": "0.0.29",
     "@types/google.analytics": "0.0.42",
-    "@types/mocha": "9.0.0",
+    "@types/mocha": "10.0.6",
     "@types/offscreencanvas": "2019.6.4",
     "@types/trusted-types": "1.0.6",
     "@types/w3c-image-capture": "1.0.8",

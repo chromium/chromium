@@ -1,0 +1,18 @@
+diff --git a/node_modules/@types/chai/index.d.ts b/node_modules/@types/chai/index.d.ts
+index f1cdab73a0635..f35471312637a 100644
+--- a/node_modules/@types/chai/index.d.ts
++++ b/node_modules/@types/chai/index.d.ts
+@@ -2090,11 +2090,8 @@ declare namespace Chai {
+     }
+ }
+ 
+-declare const chai: Chai.ChaiStatic;
+-
+-declare module "chai" {
+-    export = chai;
+-}
++export const assert: Chai.AssertStatic;
++export const expect: Chai.ExpectStatic;
+ 
+ interface Object {
+     should: Chai.Assertion;

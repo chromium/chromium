@@ -93,10 +93,10 @@ suite('Chrome OS', function() {
   });
 
   test('GAIA name and picture', async () => {
-    chai.assert.include(
-        peoplePage.shadowRoot!.querySelector<HTMLElement>(
-                                  '#profile-icon')!.style.backgroundImage,
-        'data:image/png;base64,primaryAccountPicData');
+    assertTrue(
+        peoplePage.shadowRoot!.querySelector<HTMLElement>('#profile-icon')!
+            .style.backgroundImage.includes(
+                'data:image/png;base64,primaryAccountPicData'));
     assertEquals(
         'Primary Account',
         peoplePage.shadowRoot!.querySelector(

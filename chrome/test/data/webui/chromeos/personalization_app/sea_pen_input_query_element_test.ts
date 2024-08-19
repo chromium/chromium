@@ -9,6 +9,7 @@ import {SeaPenActionName, SeaPenInputQueryElement, SeaPenRecentImageDeleteEvent,
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrTextareaElement} from 'chrome://resources/ash/common/cr_elements/cr_textarea/cr_textarea.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {assert} from 'chrome://webui-test/chai.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPersonalizationStore} from 'test_personalization_store.js';
@@ -299,7 +300,7 @@ suite('SeaPenInputQueryElementTest', function() {
     shuffleButton.click();
 
     await waitAfterNextRender(seaPenInputQueryElement);
-    chai.assert.notSameOrderedMembers(originalSuggestions, getSuggestions());
+    assert.notSameOrderedMembers(originalSuggestions, getSuggestions());
   });
 
   test('clicking suggestion adds text to whitespace input', async () => {
@@ -423,7 +424,7 @@ suite('SeaPenInputQueryElementTest', function() {
     await setTextInputValue('abc');
 
     // These suggestions should not be the same as the first set of suggestions.
-    chai.assert.notSameOrderedMembers(originalSuggestions, getSuggestions());
+    assert.notSameOrderedMembers(originalSuggestions, getSuggestions());
   });
 
   test('inspires me', async () => {
