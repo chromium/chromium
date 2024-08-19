@@ -11,9 +11,6 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_event_histogram_value.h"
-#include "extensions/common/extension_id.h"
-
-class GURL;
 
 namespace extensions {
 
@@ -34,54 +31,37 @@ class EventRouterForwarder
   EventRouterForwarder(const EventRouterForwarder&) = delete;
   EventRouterForwarder& operator=(const EventRouterForwarder&) = delete;
 
-  // Calls
-  //   DispatchEventToRenderers(event_name, event_args, profile, event_url)
-  // on all (original) profiles' EventRouters.
-  // May be called on any thread.
+  // Dispatches an event to all active on-the-record EventRouters.
+  // Safe to call on any thread.
   void BroadcastEventToRenderers(events::HistogramValue histogram_value,
                                  const std::string& event_name,
                                  base::Value::List event_args,
-                                 const GURL& event_url,
                                  bool dispatch_to_off_the_record_profiles);
 
-  // Calls
-  //   DispatchEventToRenderers(event_name, event_args,
-  //       use_profile_to_restrict_events ? profile : NULL, event_url)
-  // on |profile|'s EventRouter. May be called on any thread.
+  // Dispatches an event to the EventRouter associated with the given `profile`.
+  // Safe to call on any thread.
   void DispatchEventToRenderers(events::HistogramValue histogram_value,
                                 const std::string& event_name,
                                 base::Value::List event_args,
-                                void* profile,
-                                bool use_profile_to_restrict_events,
-                                const GURL& event_url,
-                                bool dispatch_to_off_the_record_profiles);
+                                void* profile);
 
  protected:
   // Protected for testing.
   virtual ~EventRouterForwarder();
 
-  // Helper function for {Broadcast,Dispatch}EventTo{Extension,Renderers}.
-  // Virtual for testing.
-  virtual void HandleEvent(const ExtensionId& extension_id,
-                           events::HistogramValue histogram_value,
-                           const std::string& event_name,
-                           base::Value::List event_args,
-                           void* profile,
-                           bool use_profile_to_restrict_events,
-                           const GURL& event_url,
-                           bool dispatch_to_off_the_record_profiles);
+  // Common handler for dispatching the event.
+  void HandleEvent(events::HistogramValue histogram_value,
+                   const std::string& event_name,
+                   base::Value::List event_args,
+                   void* profile,
+                   bool dispatch_to_off_the_record_profiles);
 
-  // Calls DispatchEventToRenderers or DispatchEventToExtension (depending on
-  // whether extension_id == "" or not) of |profile|'s EventRouter.
-  // |profile| may never be NULL.
+  // Broadcasts the event to listeners associated with `profile`'s EventRouter.
   // Virtual for testing.
   virtual void CallEventRouter(Profile* profile,
-                               const ExtensionId& extension_id,
                                events::HistogramValue histogram_value,
                                const std::string& event_name,
-                               base::Value::List event_args,
-                               Profile* restrict_to_profile,
-                               const GURL& event_url);
+                               base::Value::List event_args);
 
  private:
   friend class base::RefCountedThreadSafe<EventRouterForwarder>;

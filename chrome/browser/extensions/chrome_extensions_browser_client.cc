@@ -562,7 +562,7 @@ void ChromeExtensionsBrowserClient::BroadcastEventToRenderers(
     bool dispatch_to_off_the_record_profiles) {
   g_browser_process->extension_event_router_forwarder()
       ->BroadcastEventToRenderers(histogram_value, event_name, std::move(args),
-                                  GURL(), dispatch_to_off_the_record_profiles);
+                                  dispatch_to_off_the_record_profiles);
 }
 
 ExtensionCache* ChromeExtensionsBrowserClient::GetExtensionCache() {

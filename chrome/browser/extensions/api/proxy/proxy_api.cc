@@ -54,13 +54,13 @@ void ProxyEventRouter::OnProxyError(
   args.Append(base::Value(std::move(dict)));
 
   if (profile) {
-    event_router->DispatchEventToRenderers(
-        events::PROXY_ON_PROXY_ERROR, kProxyEventOnProxyError, std::move(args),
-        profile, true, GURL(), false);
+    event_router->DispatchEventToRenderers(events::PROXY_ON_PROXY_ERROR,
+                                           kProxyEventOnProxyError,
+                                           std::move(args), profile);
   } else {
     event_router->BroadcastEventToRenderers(events::PROXY_ON_PROXY_ERROR,
                                             kProxyEventOnProxyError,
-                                            std::move(args), GURL(), false);
+                                            std::move(args), false);
   }
 }
 
@@ -81,13 +81,13 @@ void ProxyEventRouter::OnPACScriptError(EventRouterForwarder* event_router,
   args.Append(base::Value(std::move(dict)));
 
   if (profile) {
-    event_router->DispatchEventToRenderers(
-        events::PROXY_ON_PROXY_ERROR, kProxyEventOnProxyError, std::move(args),
-        profile, true, GURL(), false);
+    event_router->DispatchEventToRenderers(events::PROXY_ON_PROXY_ERROR,
+                                           kProxyEventOnProxyError,
+                                           std::move(args), profile);
   } else {
     event_router->BroadcastEventToRenderers(events::PROXY_ON_PROXY_ERROR,
                                             kProxyEventOnProxyError,
-                                            std::move(args), GURL(), false);
+                                            std::move(args), false);
   }
 }
 
