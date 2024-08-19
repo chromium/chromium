@@ -20,11 +20,14 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_HISTORY_CHART;
 import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_HISTORY_DESCRIPTION;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.res.Resources;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,8 +38,10 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -55,6 +60,7 @@ import org.chromium.components.commerce.core.ShoppingService.PricePoint;
 import org.chromium.components.commerce.core.ShoppingService.ProductInfo;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ToastManager;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
@@ -63,7 +69,9 @@ import java.util.Optional;
 /** Tests for {@link PriceInsightsBottomSheetMediator}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowToast.class})
 public class PriceInsightsBottomSheetMediatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -78,6 +86,7 @@ public class PriceInsightsBottomSheetMediatorTest {
     @Mock private PriceInsightsDelegate mMockPriceInsightsDelegate;
     @Mock private ObservableSupplier<Boolean> mMockPriceTrackingStateSupplier;
     @Mock private View mMockPriceHistoryChart;
+    @Mock private NotificationManager mMockNotificationManager;
 
     private static final String PRODUCT_TITLE = "Testing Sneaker";
     private static final String PRICE_TRACKING_DESCRIPTION =
@@ -150,6 +159,13 @@ public class PriceInsightsBottomSheetMediatorTest {
                 .when(mMockPriceInsightsDelegate)
                 .getPriceTrackingStateSupplier(mMockTab);
 
+        doReturn(LayoutInflater.from(ContextUtils.getApplicationContext()))
+                .when(mMockContext)
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        doReturn(mMockNotificationManager)
+                .when(mMockContext)
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+
         mPriceInsightsMediator =
                 new PriceInsightsBottomSheetMediator(
                         mMockContext,
@@ -158,6 +174,12 @@ public class PriceInsightsBottomSheetMediatorTest {
                         mMockShoppingService,
                         mMockPriceInsightsDelegate,
                         mPropertyModel);
+    }
+
+    @After
+    public void tearDown() {
+        ToastManager.resetForTesting();
+        ShadowToast.reset();
     }
 
     @Test
@@ -220,6 +242,7 @@ public class PriceInsightsBottomSheetMediatorTest {
         priceTrackingButtonListener.onClick(null);
         assertPriceTrackingButtonHasTrackingState(/* isTracking= */ true);
         watcher.assertExpected();
+        assertNotNull(ShadowToast.getLatestToast());
     }
 
     @Test
@@ -249,6 +272,7 @@ public class PriceInsightsBottomSheetMediatorTest {
         priceTrackingButtonListener.onClick(null);
         assertPriceTrackingButtonHasTrackingState(/* isTracking= */ false);
         watcher.assertExpected();
+        assertNotNull(ShadowToast.getLatestToast());
     }
 
     @Test
@@ -271,6 +295,7 @@ public class PriceInsightsBottomSheetMediatorTest {
         priceTrackingButtonListener.onClick(null);
         assertPriceTrackingButtonHasTrackingState(/* isTracking= */ false);
         watcher.assertExpected();
+        assertNotNull(ShadowToast.getLatestToast());
     }
 
     @Test

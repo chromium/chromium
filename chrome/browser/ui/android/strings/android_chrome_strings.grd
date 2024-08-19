@@ -4456,6 +4456,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKING_BUTTON_CONTENT_DESCRIPTION" desc="Accessibility string that describes the price tracking button to track or untrack a product.">
         Tap to track or untrack a product.
       </message>
+      <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKING_ERROR_MESSAGE" desc="Error message when user is tracking or untracking a product encountered an error.">
+        Something went wrong
+      </message>
+      <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKED_SUCCESS_NOTIFICATION_ENABLED_MESSAGE" desc="Confirmation message when user track a product successfully with notification enabled.">
+        You'll get notified if the price drops on any site
+      </message>
+      <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKED_SUCCESS_NOTIFICATION_DISABLED_MESSAGE" desc="Confirmation message when user track a product successfully with notification disabled.">
+        Bookmark saved
+      </message>
+      <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_UNTRACKED_SUCCESS_MESSAGE" desc="Confirmation message when user untrack a product successfully.">
+        Alerts for this product have been turned off
+      </message>
       <message name="IDS_PRICE_INSIGHTS_TITLE" desc="The title for the price insights button.">
         Price insights
       </message>

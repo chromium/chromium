@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+import androidx.core.app.NotificationManagerCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
@@ -26,6 +27,7 @@ import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 import org.chromium.components.commerce.core.ShoppingService.ProductInfo;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 /** Mediator for price insights bottom sheet responsible for model update. */
@@ -167,13 +169,28 @@ public class PriceInsightsBottomSheetMediator {
             Callback<Boolean> callback =
                     (success) -> {
                         updatePriceTrackingButtonModel(mPriceTrackingStateSupplier.get());
-                        if (!success) {
-                            // TODO(qib): Add error message.
-                        }
+                        showToastMessage(shouldBeTracked, success);
                     };
             updatePriceTrackingButtonState(shouldBeTracked);
             mPriceInsightsDelegate.setPriceTrackingStateForTab(mTab, shouldBeTracked, callback);
         };
+    }
+
+    private void showToastMessage(boolean shouldBeTracked, boolean success) {
+        @StringRes int textResId = R.string.price_insights_content_price_tracking_error_message;
+        if (success) {
+            if (shouldBeTracked) {
+                textResId =
+                        NotificationManagerCompat.from(mContext).areNotificationsEnabled()
+                                ? R.string
+                                        .price_insights_content_price_tracked_success_notification_enabled_message
+                                : R.string
+                                        .price_insights_content_price_tracked_success_notification_disabled_message;
+            } else {
+                textResId = R.string.price_insights_content_price_untracked_success_message;
+            }
+        }
+        Toast.makeText(mContext, textResId, Toast.LENGTH_SHORT).show();
     }
 
     private void updatePriceInsightsInfo(PriceInsightsInfo info) {
