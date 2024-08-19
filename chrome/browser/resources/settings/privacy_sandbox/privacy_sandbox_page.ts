@@ -77,6 +77,12 @@ export class SettingsPrivacySandboxPageElement extends
             loadTimeData.getBoolean('psRedesignAdPrivacyPageEnableToggles'),
       },
 
+      measurementLinkRowClass_: {
+        type: String,
+        value: () =>
+            loadTimeData.getBoolean('isPrivacySandboxRestricted') ? '' : 'hr',
+      },
+
     };
   }
 
