@@ -778,7 +778,7 @@ ios_builder(
             "debug_static_builder",
             "remoteexec",
             "ios_simulator",
-            "x64",
+            "arm64",
             "xctest",
         ],
     ),
