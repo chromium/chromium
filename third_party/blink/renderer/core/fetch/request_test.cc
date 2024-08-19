@@ -94,8 +94,7 @@ TEST_F(RequestBodyTest, InitWithBodyArrayBuffer) {
 TEST_F(RequestBodyTest, InitWithBodyArrayBufferView) {
   V8TestingScope scope;
   String body = "test body!";
-  DOMArrayBufferView* buffer_view =
-      DOMUint8Array::Create(body.Span8().data(), body.length());
+  DOMArrayBufferView* buffer_view = DOMUint8Array::Create(body.Span8());
   auto* init =
       CreateRequestInit(scope, ToV8Traits<DOMArrayBufferView>::ToV8(
                                    scope.GetScriptState(), buffer_view));
