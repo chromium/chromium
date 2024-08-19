@@ -935,6 +935,33 @@ TEST_F(PickerControllerTest, AddsRecentEmojiEmptyHistory) {
           PickerSearchResult::Emoji(u"😢"), PickerSearchResult::Emoji(u"👏")));
 }
 
+TEST_F(PickerControllerTest, RecentlyAddedEmojiHasCorrectType) {
+  controller().ToggleWidget();
+  controller().CloseWidgetThenInsertResultOnNextFocus(
+      PickerSearchResult::Emoji(u"abc"));
+
+  EXPECT_THAT(controller().GetSuggestedEmoji(),
+              Contains(PickerSearchResult::Emoji(u"abc")));
+}
+
+TEST_F(PickerControllerTest, RecentlyAddedSymbolHasCorrectType) {
+  controller().ToggleWidget();
+  controller().CloseWidgetThenInsertResultOnNextFocus(
+      PickerSearchResult::Symbol(u"abc"));
+
+  EXPECT_THAT(controller().GetSuggestedEmoji(),
+              Contains(PickerSearchResult::Symbol(u"abc")));
+}
+
+TEST_F(PickerControllerTest, RecentlyAddedEmoticonHasCorrectType) {
+  controller().ToggleWidget();
+  controller().CloseWidgetThenInsertResultOnNextFocus(
+      PickerSearchResult::Emoticon(u"abc"));
+
+  EXPECT_THAT(controller().GetSuggestedEmoji(),
+              Contains(PickerSearchResult::Emoticon(u"abc")));
+}
+
 TEST_F(PickerControllerTest, AddRecentEmojiWithFocus) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();

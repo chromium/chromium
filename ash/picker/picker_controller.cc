@@ -280,7 +280,7 @@ ui::EmojiPickerCategory EmojiResultTypeToCategory(
     case PickerSearchResult::EmojiData::Type::kEmoji:
       return ui::EmojiPickerCategory::kEmojis;
     case PickerSearchResult::EmojiData::Type::kSymbol:
-      return ui::EmojiPickerCategory::kEmojis;
+      return ui::EmojiPickerCategory::kSymbols;
     case PickerSearchResult::EmojiData::Type::kEmoticon:
       return ui::EmojiPickerCategory::kEmoticons;
   }
