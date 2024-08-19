@@ -4276,6 +4276,24 @@ void MediaStreamManager::SetZoomLevel(
   controller->SetZoomLevel(zoom_level, std::move(callback));
 }
 
+void MediaStreamManager::RequestCapturedSurfaceControlPermission(
+    GlobalRenderFrameHostId capturer_rfh_id,
+    const base::UnguessableToken& session_id,
+    base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
+        callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  CapturedSurfaceControlResult result;
+  CapturedSurfaceController* const controller =
+      GetCapturedSurfaceController(capturer_rfh_id, session_id, result);
+  if (!controller) {
+    std::move(callback).Run(result);
+    return;
+  }
+
+  controller->RequestPermission(std::move(callback));
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void MediaStreamManager::RegisterDispatcherHost(

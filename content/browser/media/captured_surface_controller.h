@@ -66,6 +66,9 @@ class CONTENT_EXPORT CapturedSurfaceController {
       int zoom_level,
       base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback);
 
+  virtual void RequestPermission(
+      base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback);
+
   struct CapturedSurfaceInfo final {
     CapturedSurfaceInfo(
         base::WeakPtr<WebContents> captured_wc,

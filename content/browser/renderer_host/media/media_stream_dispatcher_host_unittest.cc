@@ -27,6 +27,7 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/media/media_devices_util.h"
@@ -43,6 +44,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_captured_surface_controller.h"
 #include "content/public/test/test_renderer_host.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_system_impl.h"
@@ -64,6 +66,7 @@
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #endif
 
+using ::blink::mojom::CapturedSurfaceControlResult;
 using ::testing::_;
 using ::testing::InSequence;
 using ::testing::Invoke;
@@ -1519,5 +1522,73 @@ TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
           .Get<MediaStreamDispatcherHost::GenerateStreamsUIThreadCheckResult>()
           .request_allowed);
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+class MediaStreamDispatcherHostCapturedSurfaceControlTest
+    : public MediaStreamDispatcherHostTest {
+ public:
+  MediaStreamDispatcherHostCapturedSurfaceControlTest() {
+    media_stream_manager_->SetCapturedSurfaceControllerFactoryForTesting(
+        base::BindRepeating(
+            [](GlobalRenderFrameHostId gdm_rfhid,
+               WebContentsMediaCaptureId captured_wc_id,
+               base::RepeatingCallback<void(int)> zoom_level_callback)
+                -> std::unique_ptr<CapturedSurfaceController> {
+              auto captured_surface_controller =
+                  std::make_unique<MockCapturedSurfaceController>(
+                      gdm_rfhid, captured_wc_id);
+              captured_surface_controller->SetRequestPermissionResponse(
+                  CapturedSurfaceControlResult::kSuccess);
+              return captured_surface_controller;
+            }));
+  }
+
+ protected:
+  base::UnguessableToken SimulateGetDisplayMedia() {
+    media_stream_manager_->UseFakeUIFactoryForTests(
+        base::BindRepeating([]() {
+          auto fake_ui = std::make_unique<FakeMediaStreamUIProxy>(
+              /*tests_use_fake_render_frame_hosts=*/true);
+          return std::unique_ptr<FakeMediaStreamUIProxy>(std::move(fake_ui));
+        }),
+        /*use_for_gum_desktop_capture=*/false,
+        /*captured_tab_id=*/std::nullopt);
+
+    blink::StreamControls controls(/*request_audio=*/false,
+                                   /*request_video=*/true);
+    controls.video.stream_type =
+        blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+
+    base::test::TestFuture<blink::mojom::MediaStreamRequestResult,
+                           const std::string&,
+                           blink::mojom::StreamDevicesSetPtr, bool>
+        future;
+    media_stream_manager_->GenerateStreams(
+        kRenderFrameHostId, /*requester_id=*/1,
+        /*page_request_id=*/1, controls, MediaDeviceSaltAndOrigin::Empty(),
+        /*user_gesture=*/true,
+        blink::mojom::StreamSelectionInfo::NewSearchOnlyByDeviceId({}),
+        future.GetCallback(),
+        /*device_stopped_callback=*/base::DoNothing(),
+        /*device_changed_callback=*/base::DoNothing(),
+        /*device_request_state_change_callback=*/base::DoNothing(),
+        /*device_capture_configuration_change_callback=*/base::DoNothing(),
+        /*device_capture_handle_change_callback=*/base::DoNothing(),
+        /*zoom_level_change_callback=*/base::DoNothing());
+
+    return future.Get<2>()->stream_devices[0]->video_device->session_id();
+  }
+};
+
+TEST_F(MediaStreamDispatcherHostCapturedSurfaceControlTest,
+       RequestPermissionIsForwarded) {
+  base::UnguessableToken session_id = SimulateGetDisplayMedia();
+  blink::mojom::MediaStreamDispatcherHost* msdh = host_.get();
+  base::test::TestFuture<CapturedSurfaceControlResult> future;
+  msdh->RequestCapturedSurfaceControlPermission(session_id,
+                                                future.GetCallback());
+  EXPECT_EQ(future.Get(), CapturedSurfaceControlResult::kSuccess);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace content

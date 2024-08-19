@@ -765,8 +765,23 @@ void MediaStreamDispatcherHost::SetZoomLevel(
                                       zoom_level, std::move(callback));
 }
 
+void MediaStreamDispatcherHost::RequestCapturedSurfaceControlPermission(
+    const base::UnguessableToken& session_id,
+    RequestCapturedSurfaceControlPermissionCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (!base::FeatureList::IsEnabled(
+          features::kCapturedSurfaceControlKillswitch)) {
+    std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
+    return;
+  }
+
+  media_stream_manager_->RequestCapturedSurfaceControlPermission(
+      render_frame_host_id_, session_id, std::move(callback));
+}
+
 void MediaStreamDispatcherHost::OnSubCaptureTargetValidationComplete(
-    const base::UnguessableToken& device_id,
+    const base::UnguessableToken& session_id,
     media::mojom::SubCaptureTargetType type,
     const base::Token& target,
     uint32_t sub_capture_target_version,
@@ -783,7 +798,8 @@ void MediaStreamDispatcherHost::OnSubCaptureTargetValidationComplete(
   }
 
   media_stream_manager_->video_capture_manager()->ApplySubCaptureTarget(
-      device_id, type, target, sub_capture_target_version, std::move(callback));
+      session_id, type, target, sub_capture_target_version,
+      std::move(callback));
 }
 #endif
 

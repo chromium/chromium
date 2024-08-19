@@ -4,19 +4,35 @@
 
 #include "third_party/blink/renderer/modules/mediastream/capture_controller.h"
 
+#include <cmath>
+#include <optional>
+
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/events/wheel_event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 using ::blink::mojom::blink::CapturedSurfaceControlResult;
@@ -158,12 +174,10 @@ DOMException* CscResultToDOMException(CapturedSurfaceControlResult result) {
           DOMExceptionCode::kNotAllowedError, "No permission.");
     case CapturedSurfaceControlResult::kCapturerNotFoundError:
       return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotFoundError,
-          "Capturer not found (likely stopped asynchronously).");
+          DOMExceptionCode::kNotFoundError, "Capturer not found.");
     case CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError:
       return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotFoundError,
-          "Captured surface not found (likely stopped asynchronously).");
+          DOMExceptionCode::kNotFoundError, "Captured surface not found.");
     case CapturedSurfaceControlResult::kDisallowedForSelfCaptureError:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kInvalidStateError,
@@ -188,6 +202,58 @@ void OnCapturedSurfaceControlResult(
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+class CaptureController::WheelEventListener : public NativeEventListener {
+ public:
+  WheelEventListener(ScriptState* script_state, CaptureController* controller)
+      : script_state_(script_state), controller_(controller) {}
+
+  void ListenTo(HTMLElement* element) {
+    if (element_) {
+      element_->removeEventListener(event_type_names::kWheel, this,
+                                    /*use_capture=*/false);
+    }
+    element_ = element;
+    if (element_) {
+      element_->addEventListener(event_type_names::kWheel, this);
+    }
+  }
+
+  void StopListening() { ListenTo(nullptr); }
+
+  // NativeEventListener
+  void Invoke(ExecutionContext* context, Event* event) override {
+    CHECK(element_);
+    CHECK(controller_);
+    WheelEvent* wheel_event = DynamicTo<WheelEvent>(event);
+    if (!wheel_event) {
+      return;
+    }
+
+    DOMRect* element_rect = element_->GetBoundingClientRect();
+    double relative_x =
+        static_cast<double>(wheel_event->offsetX()) / element_rect->width();
+    double relative_y =
+        static_cast<double>(wheel_event->offsetY()) / element_rect->height();
+
+    controller_->SendWheel(relative_x, relative_y, -wheel_event->deltaX(),
+                           -wheel_event->deltaY());
+  }
+
+  void Trace(Visitor* visitor) const override {
+    NativeEventListener::Trace(visitor);
+    visitor->Trace(script_state_);
+    visitor->Trace(controller_);
+    visitor->Trace(element_);
+  }
+
+ private:
+  Member<ScriptState> script_state_;
+  Member<CaptureController> controller_;
+  Member<HTMLElement> element_;
+};
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 CaptureController::ValidationResult::ValidationResult(DOMExceptionCode code,
                                                       String message)
@@ -294,6 +360,50 @@ ScriptPromise<IDLUndefined> CaptureController::sendWheel(
           action->wheelDeltaX(), action->wheelDeltaY()),
       WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
 
+  return promise;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+}
+
+ScriptPromise<IDLUndefined> CaptureController::captureWheel(
+    ScriptState* script_state,
+    HTMLElement* element) {
+  DCHECK(IsMainThread());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  const auto promise = resolver->Promise();
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                   "Unsupported.");
+  return promise;
+#else
+  if (!element) {
+    if (wheel_listener_) {
+      wheel_listener_->StopListening();
+    }
+    resolver->Resolve();
+    return promise;
+  }
+
+  std::optional<base::UnguessableToken> session_id =
+      GetCaptureSessionId(video_track_);
+  if (!session_id.has_value()) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                     "Invalid capture.");
+    return promise;
+  }
+
+  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
+  if (validation_result.code != DOMExceptionCode::kNoError) {
+    resolver->RejectWithDOMException(validation_result.code,
+                                     validation_result.message);
+    return promise;
+  }
+
+  GetMediaStreamDispatcherHost()->RequestCapturedSurfaceControlPermission(
+      *session_id,
+      WTF::BindOnce(&CaptureController::OnCaptureWheelPermissionResult,
+                    WrapWeakPersistent(this), WrapPersistent(resolver),
+                    WrapWeakPersistent(element)));
   return promise;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
@@ -467,6 +577,42 @@ void CaptureController::SourceChangedZoomLevel(int zoom_level) {
   DispatchEvent(*Event::Create(event_type_names::kCapturedzoomlevelchange));
 }
 
+void CaptureController::OnCaptureWheelPermissionResult(
+    ScriptPromiseResolver<IDLUndefined>* resolver,
+    HTMLElement* element,
+    CapturedSurfaceControlResult result) {
+  DCHECK(IsMainThread());
+  DOMException* exception = CscResultToDOMException(result);
+  if (exception) {
+    resolver->Reject(exception);
+    return;
+  }
+
+  if (!wheel_listener_) {
+    wheel_listener_ = MakeGarbageCollected<WheelEventListener>(
+        resolver->GetScriptState(), this);
+  }
+  wheel_listener_->ListenTo(element);
+  resolver->Resolve();
+}
+
+void CaptureController::SendWheel(double relative_x,
+                                  double relative_y,
+                                  int32_t wheel_delta_x,
+                                  int32_t wheel_delta_y) {
+  const std::optional<base::UnguessableToken>& session_id =
+      GetCaptureSessionId(video_track_);
+  if (!session_id.has_value()) {
+    return;
+  }
+
+  GetMediaStreamDispatcherHost()->SendWheel(
+      *session_id,
+      blink::mojom::blink::CapturedWheelAction::New(
+          relative_x, relative_y, wheel_delta_x, wheel_delta_y),
+      WTF::BindOnce([](CapturedSurfaceControlResult) {}));
+}
+
 mojom::blink::MediaStreamDispatcherHost*
 CaptureController::GetMediaStreamDispatcherHost() {
   DCHECK(IsMainThread());
@@ -492,6 +638,7 @@ void CaptureController::SetMediaStreamDispatcherHostForTesting(
 void CaptureController::Trace(Visitor* visitor) const {
   visitor->Trace(video_track_);
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  visitor->Trace(wheel_listener_);
   visitor->Trace(media_stream_dispatcher_host_);
 #endif
   EventTarget::Trace(visitor);

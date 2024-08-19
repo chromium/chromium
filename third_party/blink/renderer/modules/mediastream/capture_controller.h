@@ -22,6 +22,7 @@
 namespace blink {
 
 class ExceptionState;
+class HTMLElement;
 
 class MODULES_EXPORT CaptureController final
     : public EventTarget,
@@ -41,6 +42,8 @@ class MODULES_EXPORT CaptureController final
   // Captured Surface Control IDL interface - scrolling
   ScriptPromise<IDLUndefined> sendWheel(ScriptState* script_state,
                                         CapturedWheelAction* action);
+  ScriptPromise<IDLUndefined> captureWheel(ScriptState* script_state,
+                                           HTMLElement* element);
 
   // Captured Surface Control IDL interface - zooming
   static Vector<int> getSupportedZoomLevels();
@@ -78,6 +81,23 @@ class MODULES_EXPORT CaptureController final
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void SourceChangedZoomLevel(int) override;
 
+  // Deliver a wheel event on the captured tab.
+  //
+  // `relative_x` is a value from [0, 1). It denotes the relative position
+  // in the coordinate space of the captured surface, which is unknown to the
+  // capturer. A value of 0 denotes the leftmost pixel; increasing values denote
+  // values further to the right. The sender of the message scales from its own
+  // coordinate space down to the relative values, and the receiver scales
+  // back up to its own coordinates.
+  //
+  // `relative_y` is defined analogously to `relative_x`.
+  //
+  // `wheel_delta_x` and `wheel_delta_y` represent the scroll deltas in pixels.
+  void SendWheel(double relative_x,
+                 double relative_y,
+                 int32_t wheel_delta_x,
+                 int32_t wheel_delta_y);
+
   void SetMediaStreamDispatcherHostForTesting(
       mojo::PendingRemote<mojom::blink::MediaStreamDispatcherHost>);
 #endif
@@ -94,7 +114,14 @@ class MODULES_EXPORT CaptureController final
   ValidationResult ValidateCapturedSurfaceControlCall() const;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  class WheelEventListener;
+
   mojom::blink::MediaStreamDispatcherHost* GetMediaStreamDispatcherHost();
+  void OnCaptureWheelPermissionResult(
+      ScriptPromiseResolver<IDLUndefined>*,
+      HTMLElement*,
+      mojom::blink::CapturedSurfaceControlResult);
+  bool DoCaptureWheel(ScriptState*, HTMLElement*);
 #endif
 
   // Whether this CaptureController has been passed to a getDisplayMedia() call.
@@ -131,6 +158,7 @@ class MODULES_EXPORT CaptureController final
   // Always stays at 100 (the default value) for window- and screen-capture.
   std::optional<int> zoom_level_;
 
+  Member<WheelEventListener> wheel_listener_;
   HeapMojoRemote<mojom::blink::MediaStreamDispatcherHost>
       media_stream_dispatcher_host_;
 

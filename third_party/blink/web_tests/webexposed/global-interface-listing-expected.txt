@@ -1457,6 +1457,7 @@ interface CaptureController : EventTarget
     attribute @@toStringTag
     getter oncapturedmousechange
     getter oncapturedzoomlevelchange
+    method captureWheel
     method constructor
     method getZoomLevel
     method sendWheel

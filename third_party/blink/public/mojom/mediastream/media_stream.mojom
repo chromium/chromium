@@ -153,16 +153,16 @@ struct GetOpenDeviceResponse {
 // Mouse-wheel events to be delivered from a capturing app to a captured tab.
 // https://screen-share.github.io/captured-surface-control/
 //
-// |relative_x| is a value from [0, 1). It denotes the relative position
+// `relative_x` is a value from [0, 1). It denotes the relative position
 // in the coordinate space of the captured surface, which is unknown to the
 // capturer. A value of 0 denotes the leftmost pixel; increasing values denote
 // values further to the right. The sender of the message scales from its own
 // coordinate space down to the relative values, and the receiver scales
 // back up to its own coordinates.
 //
-// |relative_y| is defined analogously to |relative_x|.
+// `relative_y` is defined analogously to `relative_x`.
 //
-// |wheel_delta_x| and |wheel_delta_y| represent the scroll deltas in pixels.
+// `wheel_delta_x` and `wheel_delta_y` represent the scroll deltas in pixels.
 struct CapturedWheelAction {
   double relative_x;
   double relative_y;
@@ -217,25 +217,25 @@ struct StreamDevicesSet {
 // make media stream requests.
 interface MediaStreamDispatcherHost {
   // Requests a new media stream.
-  // |request_id| is used by the renderer to identify the stream generation
+  // `request_id` is used by the renderer to identify the stream generation
   // request.
-  // |controls| contains track-related settings such as device ID or MediaStream
+  // `controls` contains track-related settings such as device ID or MediaStream
   // type.
-  // |user_gesture| indicates whether the call was made in the context of a user
+  // `user_gesture` indicates whether the call was made in the context of a user
   // gesture.
-  // |audio_stream_selection_info| is used to request a specific stream using
+  // `audio_stream_selection_info` is used to request a specific stream using
   // the associated session ID and is only used for audio devices when
-  // |audio_stream_selection_info.strategy| is SEARCH_BY_SESSION_ID; when it is
+  // `audio_stream_selection_info.strategy` is SEARCH_BY_SESSION_ID; when it is
   // FORCE_NEW_STREAM, a new stream with a new session ID is always generated;
   // finally, when it is SEARCH_BY_DEVICE_ID, an existing stream is used if the
   // device associated to the request already has an opened stream available, or
   // a new one otherwise.
   // The result callback provides:
-  // |result|: The overall result of the stream generation.
-  // |label|: The request label.
-  // |stream_devices|: A list of devices per stream. If |result| is not ok, this
+  // `result`: The overall result of the stream generation.
+  // `label`: The request label.
+  // `stream_devices`: A list of devices per stream. If `result` is not ok, this
   // list may be null.
-  // |pan_tilt_zoom_allowed|: A flag indicating whether pan / tilt / zoom is
+  // `pan_tilt_zoom_allowed`: A flag indicating whether pan / tilt / zoom is
   // allowed.
   // TODO(crbug.com/1327958): Use expected<T,E> for the return values.
   GenerateStreams(int32 request_id, StreamControls controls, bool user_gesture,
@@ -244,9 +244,9 @@ interface MediaStreamDispatcherHost {
          StreamDevicesSet? stream_devices,
          bool pan_tilt_zoom_allowed);
 
-  // The |focus| bit is |true| if focus should be switched to
+  // The `focus` bit is `true` if focus should be switched to
   // the captured source (tab/window).
-  // It is an error to set it to |true| for anything other than
+  // It is an error to set it to `true` for anything other than
   // a video track derived from tab/window screen-capture.
   [EnableIfNot=is_android_or_ios]
   FocusCapturedSurface(string label, bool focus);
@@ -255,22 +255,22 @@ interface MediaStreamDispatcherHost {
   CancelRequest(int32 request_id);
 
   // Closes a stream device that has been opened by GenerateStream.
-  // If the corresponding MediaStreamDevice (identified by |device_id| and
-  // |session_id|) has ongoing transfers, in case of transferred
+  // If the corresponding MediaStreamDevice (identified by `device_id` and
+  // `session_id`) has ongoing transfers, in case of transferred
   // MediaStreamTracks, the MediaStreamDevice will not stop immediately and
   // will be kept alive until all the transfers are complete.
   StopStreamDevice(string device_id, mojo_base.mojom.UnguessableToken? session_id);
 
-  // Opens a device identified by |device_id|.
+  // Opens a device identified by `device_id`.
   OpenDevice(int32 request_id, string device_id, MediaStreamType type)
       => (bool success, string label, MediaStreamDevice device);
 
-  // Cancels an open request identified by |label|.
+  // Cancels an open request identified by `label`.
   CloseDevice(string label);
 
   // Tells the browser process if the video capture is secure (i.e., all
   // connected video sinks meet the requirement of output protection.).
-  // Note: the browser process only trusts the |is_secure| value in this Mojo
+  // Note: the browser process only trusts the `is_secure` value in this Mojo
   // message if it's comimg from a trusted, whitelisted extension. Extensions
   // run in separate render processes. So it shouldn't be possible, for example,
   // for a user's visit to a malicious web page to compromise a render process
@@ -281,14 +281,14 @@ interface MediaStreamDispatcherHost {
 
   // Start/stop cropping or restricting the video track.
   //
-  // Non-empty |sub_capture_target_id| sets (or changes) the target.
-  // Empty |sub_capture_target_id| reverts the capture to its original state.
+  // Non-empty `sub_capture_target_id` sets (or changes) the target.
+  // Empty `sub_capture_target_id` reverts the capture to its original state.
   //
-  // |sub_capture_target_version| is plumbed down to Viz, which associates that
+  // `sub_capture_target_version` is plumbed down to Viz, which associates that
   // value with all subsequent frames.
   //
   // For a given device, new calls to ApplySubCaptureTarget() must be with a
-  // |sub_capture_target_version| that is greater than the value from the
+  // `sub_capture_target_version` that is greater than the value from the
   // previous call, but not necessarily by exactly one.
   // (If a call to cropTo or restrictTo is rejected earlier in the pipeline,
   // the sub-capture-target-version can increase in Blink, and later calls to
@@ -297,7 +297,7 @@ interface MediaStreamDispatcherHost {
   //
   // The callback reports success/failure.
   [EnableIfNot=is_android_or_ios]
-  ApplySubCaptureTarget(mojo_base.mojom.UnguessableToken device_id,
+  ApplySubCaptureTarget(mojo_base.mojom.UnguessableToken session_id,
        media.mojom.SubCaptureTargetType type,
        mojo_base.mojom.Token sub_capture_target,
        uint32 sub_capture_target_version)
@@ -305,26 +305,33 @@ interface MediaStreamDispatcherHost {
 
   // Deliver a wheel event from a capturing app to a captured tab.
   //
-  // |device_id| identifies the captured tab.
-  // |action| is the action (mouse event) to be delivered.
-  // |callback| will be invoked with the result.
+  // `session_id` identifies the captured tab.
+  // `action` is the action (mouse event) to be delivered.
+  // `callback` will be invoked with the result.
   [EnableIfNot=is_android_or_ios]
-  SendWheel(mojo_base.mojom.UnguessableToken device_id,
+  SendWheel(mojo_base.mojom.UnguessableToken session_id,
             CapturedWheelAction action) =>
     (CapturedSurfaceControlResult result);
 
   // Sets the zoom level of the captured tab.
   //
-  // |device_id| identifies the captured tab.
-  // |zoom_level| is the zoom level to be set.
-  // |result| reports if the call was successful or what type of error occurred.
+  // `session_id` identifies the captured tab.
+  // `zoom_level` is the zoom level to be set.
+  // `result` reports if the call was successful or what type of error occurred.
   //
   // TODO(crbug.com/1512609): Create a new device mojo interface to replace the
   // use of the device_id token.
   [EnableIfNot=is_android_or_ios]
-  SetZoomLevel(mojo_base.mojom.UnguessableToken device_id,
+  SetZoomLevel(mojo_base.mojom.UnguessableToken session_id,
                int32 zoom_level)
            => (CapturedSurfaceControlResult result);
+
+  // Request permission to use Captured Surface Control.
+  // `session_id` identifies the captured tab.
+  [EnableIfNot=is_android_or_ios]
+  RequestCapturedSurfaceControlPermission(
+        mojo_base.mojom.UnguessableToken session_id)
+    => (CapturedSurfaceControlResult result);
 
   // Get a MediaStreamDevice metadata object which refers to the same flow of
   // media backing an existing MediaStreamDevice.
@@ -335,13 +342,13 @@ interface MediaStreamDispatcherHost {
   //
   // This call is synchronous since the MediaStreamTrack needs to be created
   // synchronously during deserialization of a transferred track.
-  // |request_id| is used by the renderer to identify the stream generation
+  // `request_id` is used by the renderer to identify the stream generation
   // request.
-  // |session_id| is used to uniquely identify a session/MediaStreamDevice.
-  // |transfer_id| is used to identify a MediaStreamTrack transfer request.
+  // `session_id` is used to uniquely identify a session/MediaStreamDevice.
+  // `transfer_id` is used to identify a MediaStreamTrack transfer request.
   // This is generated in the original context and passed to the receiving
   // context to identify this transfer in the browser process.
-  // |response| is null if and only if result != OK.
+  // `response` is null if and only if result != OK.
   [Sync]
   GetOpenDevice(int32 request_id, mojo_base.mojom.UnguessableToken session_id,
                 mojo_base.mojom.UnguessableToken transfer_id)
@@ -355,14 +362,14 @@ interface MediaStreamDispatcherHost {
   // for any other ongoing transfers of this MediaStreamDevice. If there are
   // none and the MediaStreamDevice is marked to be stopped, stop the
   // MediaStreamDevice.
-  // |session_id| is used to uniquely identify a session/MediaStreamDevice.
+  // `session_id` is used to uniquely identify a session/MediaStreamDevice.
   // This is the same MediaStreamDevice that is to be cloned in GetOpenDevice
   // to be connected to the transferred track.
-  // |transfer_id| is used to identify a MediaStreamTrack transfer request.
+  // `transfer_id` is used to identify a MediaStreamTrack transfer request.
   // This is generated in the original context, which calls this function, and
   // is passed to the receiving context to identify this transfer in the
   // browser process.
-  // |device_found| is true if the MediaStreamDevice was found.
+  // `device_found` is true if the MediaStreamDevice was found.
   KeepDeviceAliveForTransfer(mojo_base.mojom.UnguessableToken session_id,
                   mojo_base.mojom.UnguessableToken transfer_id)
               => (bool device_found);
