@@ -27,6 +27,7 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
     const std::string& email_to_reauth,
     const GURL& request_url,
     VerificationPurpose verification_purpose,
+    supervised_user::ChildAccountService* child_account_service,
     std::unique_ptr<
         security_interstitials::SecurityInterstitialControllerClient>
         controller_client)
@@ -36,7 +37,18 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
           std::move(controller_client)),
       email_to_reauth_(email_to_reauth),
       request_url_(request_url),
-      verification_purpose_(verification_purpose) {}
+      verification_purpose_(verification_purpose),
+      child_account_service_(child_account_service) {
+  if (child_account_service_) {
+    // Reloads the interstitial to continue navigation once the supervised user
+    // is authenticated.
+    google_auth_state_subscription_ =
+        child_account_service_->ObserveGoogleAuthState(base::BindRepeating(
+            &security_interstitials::SecurityInterstitialControllerClient::
+                Reload,
+            base::Unretained(this->controller())));
+  }
+}
 
 SupervisedUserVerificationPage::~SupervisedUserVerificationPage() = default;
 
@@ -119,8 +131,8 @@ void SupervisedUserVerificationPage::CommandReceived(
 
   switch (cmd) {
     case security_interstitials::CMD_OPEN_LOGIN:
-      controller()->OpenUrlInCurrentTab(signin::GetChromeReauthURL(
-          {.email = email_to_reauth_, .continue_url = request_url_}));
+      controller()->OpenUrlInNewForegroundTab(
+          signin::GetChromeReauthURL({.email = email_to_reauth_}));
       break;
     case security_interstitials::CMD_DONT_PROCEED:
     case security_interstitials::CMD_OPEN_HELP_CENTER:

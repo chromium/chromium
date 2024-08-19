@@ -8598,6 +8598,12 @@ const char kSupervisedProfileReauthForYouTubeDescription[] =
     "Ask supervised users to re-authenticate when attempting to access YouTube "
     "in the pending state.";
 
+const char kSupervisedProfileReauthForBlockedSiteName[] =
+    "Supervised Profile blocked site reauth";
+const char kSupervisedProfileReauthForBlockedSiteDescription[] =
+    "Ask supervised users to re-authenticate when attempting to navigate to a "
+    "site blocked by parental controls.";
+
 const char kSupervisedProfileFilteringFallbackName[] =
     "Supervised Profile filtering fallback";
 const char kSupervisedProfileFilteringFallbackDescription[] =

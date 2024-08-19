@@ -82,6 +82,10 @@ BASE_DECLARE_FEATURE(kForceSafeSearchForUnauthenticatedSupervisedUsers);
 // Force re-authentication when an unauthenticated supervised user tries to
 // access YouTube, so that content restrictions can be applied.
 BASE_DECLARE_FEATURE(kForceSupervisedUserReauthenticationForYouTube);
+
+// Force re-authentication when an unauthenticated supervised user tries to
+// access a blocked site, allowing the user to ask for parent's approval.
+BASE_DECLARE_FEATURE(kForceSupervisedUserReauthenticationForBlockedSites);
 #endif
 
 // Fallback to sending un-credentialed filtering requests for supervised users

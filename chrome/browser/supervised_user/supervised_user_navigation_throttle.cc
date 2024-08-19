@@ -208,8 +208,29 @@ void SupervisedUserNavigationThrottle::OnInterstitialResult(
       break;
     }
     case kCancelWithInterstitial: {
+      CHECK(navigation_handle());
       Profile* profile = Profile::FromBrowserContext(
           navigation_handle()->GetWebContents()->GetBrowserContext());
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+      if (base::FeatureList::IsEnabled(
+              supervised_user::
+                  kForceSupervisedUserReauthenticationForBlockedSites) &&
+          !supervised_user::IsAuthenticatedSupervisedProfile(profile)) {
+        // Show the re-authentication interstitial if the user signed out of the
+        // content area, as parent's approval requires authentication. This
+        // interstitial is only available on Linux/Mac/Windows as ChromeOS and
+        // Android have different re-auth mechanisms.
+        CancelDeferredNavigation(
+            content::NavigationThrottle::ThrottleCheckResult(
+                CANCEL, net::ERR_BLOCKED_BY_CLIENT,
+                supervised_user::CreateReauthenticationInterstitial(
+                    *navigation_handle(),
+                    SupervisedUserVerificationPage::VerificationPurpose::
+                        BLOCKED_SITE)));
+        return;
+      }
+#endif
       std::string interstitial_html =
           supervised_user::SupervisedUserInterstitial::GetHTMLContents(
               SupervisedUserServiceFactory::GetForProfile(profile),

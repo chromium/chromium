@@ -126,6 +126,10 @@ BASE_FEATURE(kForceSafeSearchForUnauthenticatedSupervisedUsers,
 BASE_FEATURE(kForceSupervisedUserReauthenticationForYouTube,
              "ForceSupervisedUserReauthenticationForYouTube",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kForceSupervisedUserReauthenticationForBlockedSites,
+             "ForceSupervisedUserReauthenticationForBlockedSites",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kUncredentialedFilteringFallbackForSupervisedUsers,

@@ -12055,6 +12055,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          supervised_user::kForceSupervisedUserReauthenticationForYouTube)},
 
+    {"supervised-profile-blocked-site-reauth",
+     flag_descriptions::kSupervisedProfileReauthForBlockedSiteName,
+     flag_descriptions::kSupervisedProfileReauthForBlockedSiteDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(
+         supervised_user::kForceSupervisedUserReauthenticationForBlockedSites)},
+
     {"supervised-profile-filtering-fallback",
      flag_descriptions::kSupervisedProfileFilteringFallbackName,
      flag_descriptions::kSupervisedProfileFilteringFallbackDescription,

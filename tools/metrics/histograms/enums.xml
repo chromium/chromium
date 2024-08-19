@@ -23678,6 +23678,8 @@ from previous Chrome versions.
   <int value="1343713259" label="ArcPrintSpoolerExperiment:disabled"/>
   <int value="1344833841" label="ImeThread:enabled"/>
   <int value="1345192233" label="VaapiVideoDecoder:enabled"/>
+  <int value="1346018846"
+      label="ForceSupervisedUserReauthenticationForBlockedSites:enabled"/>
   <int value="1346994602" label="SyncPseudoUSSDictionary:enabled"/>
   <int value="1348575062" label="LayoutExtraction:enabled"/>
   <int value="1349100152"
@@ -25055,6 +25057,8 @@ from previous Chrome versions.
   <int value="1901847019" label="VCBackgroundBlur:enabled"/>
   <int value="1902274960" label="WebViewLogFirstPartyPageTimeSpent:enabled"/>
   <int value="1902894451" label="BorealisPermitted:enabled"/>
+  <int value="1903186050"
+      label="ForceSupervisedUserReauthenticationForBlockedSites:disabled"/>
   <int value="1903206193" label="NewWindowAppMenu:disabled"/>
   <int value="1903444879" label="VirtualKeyboardApi:disabled"/>
   <int value="1903793531" label="FasterSplitScreenSetup:enabled"/>

@@ -8,8 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "content/public/browser/web_contents.h"
+#include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
+#include "content/public/browser/web_contents.h"
 
 class GURL;
 
@@ -31,13 +34,16 @@ class SupervisedUserVerificationPage
   static const security_interstitials::SecurityInterstitialPage::TypeID
       kTypeForTesting;
 
-  // |request_url| is the URL which triggered the interstitial page. It can be
+  // `request_url` is the URL which triggered the interstitial page. It can be
   // a main frame or a subresource URL.
+  // `child_account_service` should only be null for demo interstitials, such as
+  // for "chrome://interstitials/supervised-user-verify".
   SupervisedUserVerificationPage(
       content::WebContents* web_contents,
       const std::string& email_to_reauth,
       const GURL& request_url,
       VerificationPurpose verification_purpose,
+      supervised_user::ChildAccountService* child_account_service,
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client);
@@ -61,10 +67,11 @@ class SupervisedUserVerificationPage
 
  private:
   void PopulateStringsForSharedHTML(base::Value::Dict& load_time_data);
-
+  base::CallbackListSubscription google_auth_state_subscription_;
   const std::string email_to_reauth_;
   const GURL request_url_;
   const VerificationPurpose verification_purpose_;
+  raw_ptr<supervised_user::ChildAccountService> child_account_service_;
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_VERIFICATION_PAGE_H_
