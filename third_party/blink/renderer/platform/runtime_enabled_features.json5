@@ -1604,7 +1604,7 @@
     },
     {
       name: "DynamicScrollCullRectExpansion",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ElementCapture",
