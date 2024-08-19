@@ -123,11 +123,11 @@ void ChromeRenderViewTest::RegisterMainFrameRemoteInterfaces() {}
 void ChromeRenderViewTest::InitChromeContentRendererClient(
     ChromeContentRendererClient* client) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  ChromeExtensionsRendererClient* ext_client =
-      ChromeExtensionsRendererClient::GetInstance();
-  ext_client->SetDispatcherForTesting(std::make_unique<extensions::Dispatcher>(
-      std::vector<
-          std::unique_ptr<const extensions::ExtensionsRendererAPIProvider>>()));
+  ChromeExtensionsRendererClient::Create();
+  extensions::ExtensionsRendererClient::Get()->SetDispatcherForTesting(
+      std::make_unique<extensions::Dispatcher>(
+          std::vector<std::unique_ptr<
+              const extensions::ExtensionsRendererAPIProvider>>()));
 #endif
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)

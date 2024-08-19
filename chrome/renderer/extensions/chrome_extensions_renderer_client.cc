@@ -45,15 +45,19 @@ enum class GoogleDocsExtensionAvailablity {
 
 }  // namespace
 
-ChromeExtensionsRendererClient::ChromeExtensionsRendererClient() {}
+ChromeExtensionsRendererClient::ChromeExtensionsRendererClient() {
+  ExtensionsRendererClient::Set(this);
+}
 
-ChromeExtensionsRendererClient::~ChromeExtensionsRendererClient() {}
+ChromeExtensionsRendererClient::~ChromeExtensionsRendererClient() {
+  ExtensionsRendererClient::Set(nullptr);
+}
 
 // static
-ChromeExtensionsRendererClient* ChromeExtensionsRendererClient::GetInstance() {
+void ChromeExtensionsRendererClient::Create() {
   static base::LazyInstance<ChromeExtensionsRendererClient>::Leaky client =
       LAZY_INSTANCE_INITIALIZER;
-  return client.Pointer();
+  client.Pointer();
 }
 
 bool ChromeExtensionsRendererClient::IsIncognitoProcess() const {

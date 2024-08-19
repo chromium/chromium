@@ -40,8 +40,14 @@ class ChromeExtensionsRendererClient
 
   ~ChromeExtensionsRendererClient() override;
 
-  // Get the LazyInstance for ChromeExtensionsRendererClient.
-  static ChromeExtensionsRendererClient* GetInstance();
+  // Creates the global instance of the ChromeExtensionsRendererClient, which
+  // will then set itself as the sole ExtensionsRendererClient.
+  // Note: This class should be accessed through
+  // ExtensionsRendererClient::Get(). Callers should not assume a particular
+  // implementation.
+  // There's an exception for the static methods below, which just live here
+  // for want of a better home.
+  static void Create();
 
   // extensions::ExtensionsRendererClient implementation.
   bool IsIncognitoProcess() const override;
