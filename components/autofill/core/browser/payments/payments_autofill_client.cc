@@ -227,4 +227,9 @@ bool PaymentsAutofillClient::ShowTouchToFillIban(
 
 void PaymentsAutofillClient::HideTouchToFillPaymentMethod() {}
 
+payments::MandatoryReauthManager*
+PaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
+  return nullptr;
+}
+
 }  // namespace autofill::payments

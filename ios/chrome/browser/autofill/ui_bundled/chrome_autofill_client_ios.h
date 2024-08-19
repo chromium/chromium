@@ -18,7 +18,6 @@
 #import "components/autofill/core/browser/country_type.h"
 #import "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #import "components/autofill/core/browser/payments/card_unmask_delegate.h"
-#import "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/strike_databases/strike_database.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
@@ -91,8 +90,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
   translate::TranslateDriver* GetTranslateDriver() override;
   GeoIpCountryCode GetVariationConfigCountryCode() const override;
   void ShowAutofillSettings(SuggestionType suggestion_type) override;
-  payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
-      override;
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
@@ -163,7 +160,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
   raw_ptr<infobars::InfoBarManager> infobar_manager_;
   std::unique_ptr<LogManager> log_manager_;
   const AutofillAblationStudy ablation_study_;
-  std::unique_ptr<payments::MandatoryReauthManager> payments_reauth_manager_;
 
   // Order matters for this initialization. This initialization must happen
   // after all of the members passed into the constructor of

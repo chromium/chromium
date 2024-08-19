@@ -47,6 +47,7 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/mock_autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
@@ -2786,7 +2787,8 @@ TEST_F(FormDataImporterTest,
   // from the form.
   EXPECT_CALL(
       *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
-          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+          autofill_client_->GetPaymentsAutofillClient()
+              ->GetOrCreatePaymentsMandatoryReauthManager()),
       ShouldOfferOptin)
       .Times(0);
 
@@ -3984,13 +3986,15 @@ TEST_F(FormDataImporterTest,
 
   EXPECT_CALL(
       *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
-          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+          autofill_client_->GetPaymentsAutofillClient()
+              ->GetOrCreatePaymentsMandatoryReauthManager()),
       ShouldOfferOptin)
       .Times(1)
       .WillOnce(testing::Return(false));
   EXPECT_CALL(
       *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
-          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+          autofill_client_->GetPaymentsAutofillClient()
+              ->GetOrCreatePaymentsMandatoryReauthManager()),
       StartOptInFlow)
       .Times(0);
 
@@ -4015,12 +4019,14 @@ TEST_F(FormDataImporterTest,
 
   EXPECT_CALL(
       *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
-          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+          autofill_client_->GetPaymentsAutofillClient()
+              ->GetOrCreatePaymentsMandatoryReauthManager()),
       ShouldOfferOptin)
       .Times(0);
   EXPECT_CALL(
       *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
-          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+          autofill_client_->GetPaymentsAutofillClient()
+              ->GetOrCreatePaymentsMandatoryReauthManager()),
       StartOptInFlow)
       .Times(0);
 
@@ -4046,13 +4052,15 @@ TEST_F(FormDataImporterTest,
 
   EXPECT_CALL(
       *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
-          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+          autofill_client_->GetPaymentsAutofillClient()
+              ->GetOrCreatePaymentsMandatoryReauthManager()),
       ShouldOfferOptin)
       .Times(1)
       .WillOnce(testing::Return(true));
   EXPECT_CALL(
       *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
-          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+          autofill_client_->GetPaymentsAutofillClient()
+              ->GetOrCreatePaymentsMandatoryReauthManager()),
       StartOptInFlow)
       .Times(1);
 
@@ -4078,10 +4086,12 @@ TEST_F(FormDataImporterTest, ProcessExtractedIban_MandatoryReauthOffered) {
       .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
           NonInteractivePaymentMethodType::kLocalIban);
 
-  EXPECT_CALL(*autofill_client_->GetOrCreatePaymentsMandatoryReauthManager(),
+  EXPECT_CALL(*autofill_client_->GetPaymentsAutofillClient()
+                   ->GetOrCreatePaymentsMandatoryReauthManager(),
               ShouldOfferOptin)
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(*autofill_client_->GetOrCreatePaymentsMandatoryReauthManager(),
+  EXPECT_CALL(*autofill_client_->GetPaymentsAutofillClient()
+                   ->GetOrCreatePaymentsMandatoryReauthManager(),
               StartOptInFlow);
 
   EXPECT_TRUE(ExtractFormDataAndProcessIbanCandidates(
@@ -4102,10 +4112,12 @@ TEST_F(FormDataImporterTest, ProcessExtractedIban_MandatoryReauthNotOffered) {
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                          nullptr);
 
-  EXPECT_CALL(*autofill_client_->GetOrCreatePaymentsMandatoryReauthManager(),
+  EXPECT_CALL(*autofill_client_->GetPaymentsAutofillClient()
+                   ->GetOrCreatePaymentsMandatoryReauthManager(),
               ShouldOfferOptin)
       .WillOnce(testing::Return(false));
-  EXPECT_CALL(*autofill_client_->GetOrCreatePaymentsMandatoryReauthManager(),
+  EXPECT_CALL(*autofill_client_->GetPaymentsAutofillClient()
+                   ->GetOrCreatePaymentsMandatoryReauthManager(),
               StartOptInFlow)
       .Times(0);
 

@@ -21,6 +21,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace autofill {
 
 namespace {
@@ -407,7 +411,8 @@ class IbanAccessManagerMandatoryReauthTest : public IbanAccessManagerTest {
 
   payments::MockMandatoryReauthManager& mandatory_reauth_manager() {
     return *static_cast<payments::MockMandatoryReauthManager*>(
-        autofill_client_.GetOrCreatePaymentsMandatoryReauthManager());
+        autofill_client_.GetPaymentsAutofillClient()
+            ->GetOrCreatePaymentsMandatoryReauthManager());
   }
 };
 

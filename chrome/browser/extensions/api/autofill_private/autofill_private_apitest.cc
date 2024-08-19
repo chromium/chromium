@@ -22,6 +22,7 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/address_save_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -288,7 +289,9 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
                        authenticateUserAndFlipMandatoryAuthToggle) {
   base::UserActionTester user_action_tester;
   auto* mock_mandatory_reauth_manager =
-      autofill_client()->GetOrCreatePaymentsMandatoryReauthManager();
+      autofill_client()
+          ->GetPaymentsAutofillClient()
+          ->GetOrCreatePaymentsMandatoryReauthManager();
 
   ON_CALL(*static_cast<autofill::payments::MockMandatoryReauthManager*>(
               mock_mandatory_reauth_manager),
@@ -319,7 +322,9 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
       ->payments_data_manager()
       .SetPaymentMethodsMandatoryReauthEnabled(true);
   auto* mock_mandatory_reauth_manager =
-      autofill_client()->GetOrCreatePaymentsMandatoryReauthManager();
+      autofill_client()
+          ->GetPaymentsAutofillClient()
+          ->GetOrCreatePaymentsMandatoryReauthManager();
 
   ON_CALL(*static_cast<autofill::payments::MockMandatoryReauthManager*>(
               mock_mandatory_reauth_manager),
@@ -350,7 +355,9 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
       ->payments_data_manager()
       .SetPaymentMethodsMandatoryReauthEnabled(false);
   auto* mock_mandatory_reauth_manager =
-      autofill_client()->GetOrCreatePaymentsMandatoryReauthManager();
+      autofill_client()
+          ->GetPaymentsAutofillClient()
+          ->GetOrCreatePaymentsMandatoryReauthManager();
 
   EXPECT_CALL(*static_cast<autofill::payments::MockMandatoryReauthManager*>(
                   mock_mandatory_reauth_manager),
