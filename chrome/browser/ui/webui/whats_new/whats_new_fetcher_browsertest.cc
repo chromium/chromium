@@ -76,6 +76,17 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
+                       GetV2ServerStagingURLForRenderNoFeatures) {
+  std::string expected = base::StringPrintf(
+      "https://chrome-staging.corp.google.com/chrome/v2/whats-new/"
+      "?version=%d&internal=true",
+      CHROME_VERSION_MAJOR);
+
+  EXPECT_EQ(expected,
+            whats_new::GetV2ServerURLForRender(true).possibly_invalid_spec());
+}
+
+IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
                        GetV2ServerURLForRenderWithOneEnabled) {
   whats_new::WhatsNewRegistry* registry = GetRegistry();
   registry->RegisterModule(whats_new::WhatsNewModule(kTestModuleEnabled, ""));

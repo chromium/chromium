@@ -280,6 +280,10 @@ export class UserEducationInternalsElement extends
   protected onSessionExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.sessionExpanded_ = e.detail.value;
   }
+
+  protected launchWhatsNewStaging_() {
+    this.handler_.launchWhatsNewStaging();
+  }
 }
 
 declare global {

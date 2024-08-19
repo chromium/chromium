@@ -32,6 +32,7 @@
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/webui/whats_new_registry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -39,7 +40,7 @@
 
 namespace {
 
-void CreateAndAddWhatsNewUIHtmlSource(Profile* profile) {
+void CreateAndAddWhatsNewUIHtmlSource(Profile* profile, bool enable_staging) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIWhatsNewHost);
 
@@ -52,11 +53,15 @@ void CreateAndAddWhatsNewUIHtmlSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("isWhatsNewV2", user_education::features::IsWhatsNewV2());
+  source->AddBoolean("isStaging", enable_staging);
 
   // Allow embedding of iframe from chrome.com
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
-      "child-src chrome://webui-test https://www.google.com/;");
+      enable_staging
+          ? "child-src chrome://webui-test https://www.google.com/ "
+            "https://chrome-staging.corp.google.com/;"
+          : "child-src chrome://webui-test https://www.google.com/;");
 }
 
 }  // namespace
@@ -74,7 +79,9 @@ WhatsNewUI::WhatsNewUI(content::WebUI* web_ui)
       page_factory_receiver_(this),
       browser_command_factory_receiver_(this),
       profile_(Profile::FromWebUI(web_ui)) {
-  CreateAndAddWhatsNewUIHtmlSource(profile_);
+  GURL url = web_ui->GetWebContents()->GetVisibleURL();
+  bool enable_staging = url.query_piece().compare("staging=true") == 0;
+  CreateAndAddWhatsNewUIHtmlSource(profile_, enable_staging);
 }
 
 // static

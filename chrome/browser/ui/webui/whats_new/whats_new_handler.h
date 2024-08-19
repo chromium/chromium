@@ -35,7 +35,7 @@ class WhatsNewHandler : public whats_new::mojom::PageHandler {
 
  private:
   // whats_new::mojom::PageHandler
-  void GetServerUrl(GetServerUrlCallback callback) override;
+  void GetServerUrl(bool is_staging, GetServerUrlCallback callback) override;
   FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest, GetServerUrl);
   FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest, HistogramsAreEmitted);
   FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest, V2SurveyIsTriggered);

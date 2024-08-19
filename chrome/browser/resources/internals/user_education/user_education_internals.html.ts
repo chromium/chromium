@@ -35,11 +35,9 @@ export function getHtml(this: UserEducationInternalsElement) {
         <a role="menuitem" href="#newBadges" class="cr-nav-menu-item">
           "New" Badges
         </a>
-        ${this.isWhatsNewV2_ ? html`
-          <a role="menuitem" href="#whatsNew" class="cr-nav-menu-item">
-            What's New
-          </a>` :
-          ''}
+        <a role="menuitem" href="#whatsNew" class="cr-nav-menu-item">
+          What's New
+        </a>
         <a role="menuitem" href="#advanced" class="cr-nav-menu-item">
           Advanced
         </a>
@@ -90,32 +88,40 @@ export function getHtml(this: UserEducationInternalsElement) {
               @clear-promo-data="${this.clearNewBadgeData_}">
           </user-education-internals-card>`)}
       </div>
-      ${this.isWhatsNewV2_ ? html`
-        <div id="whatsNew">
-          <h2>What's New</h2>
-          ${this.whatsNewModules_.length > 0 ? html`
-            <h3 class="whats-new-section">Modules</h3>` :
-            ''}
-          ${this.whatsNewModules_.map(item => html`
-            <user-education-whats-new-internals-card
-                id="${item.moduleName}"
-                ?hidden="${!this.whatsNewFilter_(item)}"
-                .item="${item}"
-                type="module"
-                @clear-whats-new-data="${this.clearWhatsNewData_}">
-            </user-education-whats-new-internals-card>`)}
-          ${this.whatsNewEditions_.length > 0 ? html`
-            <h3 class="whats-new-section">Editions</h3>` :
-            ''}
-          ${this.whatsNewEditions_.map(item => html`
-            <user-education-whats-new-internals-card
-                id="${item.editionName}"
-                ?hidden="${!this.whatsNewFilter_(item)}"
-                .item="${item}"
-                type="edition"
-                @clear-whats-new-data="${this.clearWhatsNewData_}">
-            </user-education-whats-new-internals-card>`)}</div>` :
-        ''}
+      <div id="whatsNew">
+        <h2>What's New</h2>
+        <if expr="is_chromeos == False">
+          <div class="whats-new-section">
+            <cr-button @click=${this.launchWhatsNewStaging_}>
+              Launch staging
+            </cr-button>
+          </div>
+        </if>
+        ${this.isWhatsNewV2_ ? html`
+            ${this.whatsNewModules_.length > 0 ? html`
+              <h3 class="whats-new-section">Modules</h3>` :
+              ''}
+            ${this.whatsNewModules_.map(item => html`
+              <user-education-whats-new-internals-card
+                  id="${item.moduleName}"
+                  ?hidden="${!this.whatsNewFilter_(item)}"
+                  .item="${item}"
+                  type="module"
+                  @clear-whats-new-data="${this.clearWhatsNewData_}">
+              </user-education-whats-new-internals-card>`)}
+            ${this.whatsNewEditions_.length > 0 ? html`
+              <h3 class="whats-new-section">Editions</h3>` :
+              ''}
+            ${this.whatsNewEditions_.map(item => html`
+              <user-education-whats-new-internals-card
+                  id="${item.editionName}"
+                  ?hidden="${!this.whatsNewFilter_(item)}"
+                  .item="${item}"
+                  type="edition"
+                  @clear-whats-new-data="${this.clearWhatsNewData_}">
+              </user-education-whats-new-internals-card>`)}` :
+          ''}
+      </div>
       <div id="advanced">
         <a name="advanced"></a>
         <h2>Advanced</h2>

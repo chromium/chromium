@@ -128,13 +128,14 @@ void WhatsNewHandler::RecordModuleLinkClicked(
   base::UmaHistogramEnumeration(action_name, position);
 }
 
-void WhatsNewHandler::GetServerUrl(GetServerUrlCallback callback) {
+void WhatsNewHandler::GetServerUrl(bool is_staging,
+                                   GetServerUrlCallback callback) {
   GURL result = GURL("");
   if (!whats_new::IsRemoteContentDisabled()) {
     if (user_education::features::IsWhatsNewV2()) {
-      result = whats_new::GetV2ServerURLForRender();
+      result = whats_new::GetV2ServerURLForRender(is_staging);
     } else {
-      result = whats_new::GetServerURL(true);
+      result = whats_new::GetServerURL(true, is_staging);
     }
   }
   std::move(callback).Run(result);

@@ -53,6 +53,7 @@ class UserEducationInternalsPageHandlerImpl
   void GetWhatsNewModules(GetWhatsNewModulesCallback callback) override;
   void GetWhatsNewEditions(GetWhatsNewEditionsCallback callback) override;
   void ClearWhatsNewData(ClearWhatsNewDataCallback callback) override;
+  void LaunchWhatsNewStaging() override;
 
  private:
   raw_ptr<content::WebUI> web_ui_ = nullptr;

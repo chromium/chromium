@@ -41,6 +41,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/resource_path.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
+#include "net/base/url_util.h"
+#endif
+
 using mojom::user_education_internals::FeaturePromoDemoPageData;
 using mojom::user_education_internals::FeaturePromoDemoPageDataPtr;
 using mojom::user_education_internals::FeaturePromoDemoPageInfo;
@@ -756,4 +762,15 @@ void UserEducationInternalsPageHandlerImpl::ClearWhatsNewData(
   }
   registry->ResetData();
   std::move(callback).Run(std::string());
+}
+
+void UserEducationInternalsPageHandlerImpl::LaunchWhatsNewStaging() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  GURL url = net::AppendQueryParameter(GURL(chrome::kChromeUIWhatsNewURL),
+                                       "staging", "true");
+  NavigateParams params(profile_, url, ui::PAGE_TRANSITION_TYPED);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.browser = chrome::FindBrowserWithTab(web_ui_->GetWebContents());
+  Navigate(&params);
+#endif
 }

@@ -341,8 +341,9 @@ export class WhatsNewAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    WhatsNewProxyImpl.getInstance().handler.getServerUrl().then(
-        ({url}: {url: Url}) => this.handleUrlResult_(url.url));
+    WhatsNewProxyImpl.getInstance()
+        .handler.getServerUrl(loadTimeData.getBoolean('isStaging'))
+        .then(({url}: {url: Url}) => this.handleUrlResult_(url.url));
   }
 
   override disconnectedCallback() {

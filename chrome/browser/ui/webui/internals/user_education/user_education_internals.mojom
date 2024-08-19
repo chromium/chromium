@@ -114,4 +114,7 @@ interface UserEducationInternalsPageHandler {
   // Clears What's New data.
   // Returns an error message if the operation fails; empty string on success.
   ClearWhatsNewData() => (string error_message);
+
+  // Launches What's New page with for the staging environment.
+  LaunchWhatsNewStaging();
 };

@@ -98,7 +98,7 @@ TEST_F(WhatsNewHandlerTest, GetServerUrl) {
       .WillOnce(testing::Invoke(
           [&](GURL actual_url) { EXPECT_EQ(actual_url, expected_url); }));
 
-  handler_->GetServerUrl(callback.Get());
+  handler_->GetServerUrl(false, callback.Get());
   mock_page_.FlushForTesting();
 }
 
@@ -172,7 +172,7 @@ TEST_F(WhatsNewHandlerTest, V2SurveyIsTriggered) {
   EXPECT_CALL(callback, Run).Times(1);
   EXPECT_CALL(*mock_hats_service(), LaunchDelayedSurveyForWebContents).Times(1);
 
-  handler_->GetServerUrl(callback.Get());
+  handler_->GetServerUrl(false, callback.Get());
   mock_page_.FlushForTesting();
 }
 
@@ -218,7 +218,7 @@ TEST_P(WhatsNewHandlerTestWithCountry, SurveyIsTriggeredInActiveCountries) {
         .Times(0);
   }
 
-  handler_->GetServerUrl(callback.Get());
+  handler_->GetServerUrl(false, callback.Get());
   mock_page_.FlushForTesting();
 }
 
