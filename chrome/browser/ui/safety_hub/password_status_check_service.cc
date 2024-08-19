@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 
+#include <memory>
 #include <random>
+#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/json/values_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/rand_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -22,6 +25,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/ui/bulk_leak_check_service_adapter.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -29,6 +33,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
+
+using password_manager::InsecureType;
 
 namespace {
 
@@ -275,6 +281,44 @@ base::Value::Dict GetNoPasswordCardData(bool password_saving_allowed) {
              static_cast<int>(safety_hub::SafetyHubCardState::kInfo));
   return result;
 }
+
+bool ShouldAddToCompromisedPasswords(
+    const password_manager::PasswordForm form) {
+  auto& issues = form.password_issues;
+
+  // If the password is leaked but muted, then do not add to compromised
+  // passwords.
+  if (issues.contains(InsecureType::kLeaked) &&
+      issues.at(InsecureType::kLeaked).is_muted) {
+    return false;
+  }
+
+  // If the password is phished but muted, then do not add to compromised
+  // passwords.
+  if (issues.contains(InsecureType::kPhished) &&
+      issues.at(InsecureType::kPhished).is_muted) {
+    return false;
+  }
+
+  // Add to compromised passwords, if leaked or phished
+  return issues.contains(InsecureType::kLeaked) ||
+         issues.contains(InsecureType::kPhished);
+}
+
+// Returns saved password forms number
+int GetSavedPasswordsCount(
+    password_manager::SavedPasswordsPresenter* saved_passwords_presenter) {
+  CHECK(saved_passwords_presenter);
+  const auto& credential_entries =
+      saved_passwords_presenter->GetSavedPasswords();
+  int saved_password_forms = 0;
+  // Each CredentialUIEntry may contain one or more password forms.
+  for (const auto& entry : credential_entries) {
+    saved_password_forms = saved_password_forms + entry.facets.size();
+  }
+  return saved_password_forms;
+}
+
 }  // namespace
 
 PasswordStatusCheckService::PasswordStatusCheckService(Profile* profile)
@@ -336,6 +380,7 @@ void PasswordStatusCheckService::StartRepeatedUpdates() {
         base::RandTimeDeltaUpTo(features::kPasswordCheckOverdueInterval.Get());
   }
 
+  // Check compromised passwords with the interval of password_check_run_delta.
   password_check_timer_.Start(
       FROM_HERE, password_check_run_delta,
       base::BindOnce(
@@ -344,11 +389,17 @@ void PasswordStatusCheckService::StartRepeatedUpdates() {
           weak_ptr_factory_.GetWeakPtr(),
           base::BindOnce(&PasswordStatusCheckService::RunPasswordCheckAsync,
                          weak_ptr_factory_.GetWeakPtr())));
+
+  // Check weak and reuse passwords daily.
+  weak_and_reuse_check_timer_.Start(
+      FROM_HERE, base::Days(1),
+      base::BindRepeating(
+          &PasswordStatusCheckService::UpdateInsecureCredentialCountAsync,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PasswordStatusCheckService::UpdateInsecureCredentialCountAsync() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   // In infrastructure is initilizided OnInsecureCredentialsChanged() will
   // update cache anyway.
   if (IsInfrastructureReady()) {
@@ -372,8 +423,8 @@ void PasswordStatusCheckService::RunPasswordCheckAsync() {
   // This is unexpected to happen just before the password check starts.
   CHECK(IsInfrastructureReady());
 
-  no_passwords_saved_ =
-      saved_passwords_presenter_->GetSavedCredentials().empty();
+  saved_credential_count_ =
+      GetSavedPasswordsCount(saved_passwords_presenter_.get());
 
   bulk_leak_check_service_adapter_->StartBulkLeakCheck(
       password_manager::LeakDetectionInitiator::
@@ -387,8 +438,8 @@ void PasswordStatusCheckService::RunPasswordCheckAsync() {
 void PasswordStatusCheckService::RunWeakReusedCheckAsync() {
   CHECK(IsInfrastructureReady());
 
-  no_passwords_saved_ =
-      saved_passwords_presenter_->GetSavedCredentials().empty();
+  saved_credential_count_ =
+      GetSavedPasswordsCount(saved_passwords_presenter_.get());
 
   if (std::exchange(running_weak_reused_check_, true)) {
     // Return early if the check is already running.
@@ -452,13 +503,63 @@ void PasswordStatusCheckService::OnCredentialDone(
 void PasswordStatusCheckService::OnLoginsChanged(
     password_manager::PasswordStoreInterface* store,
     const password_manager::PasswordStoreChangeList& changes) {
-  for (const auto& change : changes) {
-    if (change.type() == password_manager::PasswordStoreChange::ADD ||
-        change.type() == password_manager::PasswordStoreChange::REMOVE ||
-        change.password_changed() || change.insecure_credentials_changed()) {
-      UpdateInsecureCredentialCountAsync();
-      return;
+  // latest_result_ might be null during start up, if
+  // `UpdateInsecureCredentialCountAsync` is not run yet. Ignore
+  // `OnLoginsChanged` call in that case, since weak and reuse checks will be
+  // run after start up is completed.
+  if (!latest_result_) {
+    return;
+  }
+
+  std::vector<password_manager::PasswordForm> forms_to_add;
+  std::vector<password_manager::PasswordForm> forms_to_remove;
+  for (const password_manager::PasswordStoreChange& change : changes) {
+    // Ignore federated or blocked entries.
+    const auto& form = change.form();
+    if (form.IsFederatedCredential() || form.blocked_by_user) {
+      continue;
     }
+    switch (change.type()) {
+      case password_manager::PasswordStoreChange::ADD:
+        forms_to_add.push_back(form);
+        break;
+      case password_manager::PasswordStoreChange::UPDATE:
+        forms_to_remove.push_back(form);
+        forms_to_add.push_back(form);
+        break;
+      case password_manager::PasswordStoreChange::REMOVE:
+        forms_to_remove.push_back(form);
+        break;
+    }
+  }
+
+  const std::set<PasswordPair>& stored_password =
+      latest_result_->GetCompromisedPasswords();
+  std::set<PasswordPair> updated_passwords = stored_password;
+
+  // Remove deleted forms
+  for (const auto& form : forms_to_remove) {
+    saved_credential_count_--;
+    updated_passwords.erase(
+        PasswordPair(form.url.spec(), base::UTF16ToUTF8(form.username_value)));
+  }
+
+  // Add new forms
+  for (const auto& form : forms_to_add) {
+    saved_credential_count_++;
+    if (ShouldAddToCompromisedPasswords(form)) {
+      updated_passwords.insert(PasswordPair(
+          form.url.spec(), base::UTF16ToUTF8(form.username_value)));
+    }
+  }
+
+  // Update cached values
+  latest_result_ = std::make_unique<PasswordStatusCheckResult>();
+  compromised_credential_count_ = 0;
+  for (const PasswordPair& password : updated_passwords) {
+    compromised_credential_count_++;
+    latest_result_->AddToCompromisedPasswords(password.origin,
+                                              password.username);
   }
 }
 
@@ -611,7 +712,7 @@ base::TimeDelta PasswordStatusCheckService::GetScheduledPasswordCheckInterval()
 
 base::Value::Dict PasswordStatusCheckService::GetPasswordCardData(
     bool signed_in) {
-  if (no_passwords_saved_) {
+  if (no_passwords_saved()) {
     bool password_saving_allowed = profile_->GetPrefs()->GetBoolean(
         password_manager::prefs::kCredentialsEnableService);
     return GetNoPasswordCardData(password_saving_allowed);
