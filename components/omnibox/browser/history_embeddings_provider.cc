@@ -5,10 +5,8 @@
 #include "history_embeddings_provider.h"
 
 #include <string>
-#include <tuple>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history_embeddings/history_embeddings_features.h"
@@ -19,7 +17,6 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/keyword_provider.h"
-#include "components/search_engines/template_url.h"
 
 namespace {
 constexpr int kMaxScore = 1000;
@@ -28,9 +25,7 @@ constexpr int kMaxScore = 1000;
 HistoryEmbeddingsProvider::HistoryEmbeddingsProvider(
     AutocompleteProviderClient* client,
     AutocompleteProviderListener* listener)
-    : AutocompleteProvider(AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS),
-      client_(client) {
-  CHECK(client_);
+    : HistoryProvider(AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS, client) {
   AddListener(listener);
 }
 
@@ -41,7 +36,7 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
   done_ = true;
   matches_.clear();
 
-  if (!client_->IsHistoryEmbeddingsEnabled()) {
+  if (!client()->IsHistoryEmbeddingsEnabled()) {
     return;
   }
 
@@ -49,7 +44,7 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
   // engine.
   const auto [adjusted_input, starter_pack_engine] =
       KeywordProvider::AdjustInputForStarterPackEngines(
-          input, client_->GetTemplateURLService());
+          input, client()->GetTemplateURLService());
   starter_pack_engine_ = starter_pack_engine;
 
   int num_terms =
@@ -58,7 +53,7 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
     return;
 
   history_embeddings::HistoryEmbeddingsService* service =
-      client_->GetHistoryEmbeddingsService();
+      client()->GetHistoryEmbeddingsService();
   CHECK(service);
   last_search_input_ = adjusted_input.text();
   done_ = false;
@@ -73,11 +68,6 @@ void HistoryEmbeddingsProvider::Stop(bool clear_cached_results,
   done_ = true;
   // TODO(b/333770460): Once `HistoryEmbeddingsService` has a stop API, we
   //   should call it here.
-}
-
-void HistoryEmbeddingsProvider::DeleteMatch(const AutocompleteMatch& match) {
-  // TODO(b/333770460): Should delete the entry in the history & embeddings DBs.
-  //   Should also set `match.deletable = true`.
 }
 
 void HistoryEmbeddingsProvider::OnReceivedSearchResult(
@@ -98,7 +88,8 @@ void HistoryEmbeddingsProvider::OnReceivedSearchResult(
   for (const history_embeddings::ScoredUrlRow& scored_url_row :
        result.scored_url_rows) {
     AutocompleteMatch match(this, scored_url_row.scored_url.score * kMaxScore,
-                            false, AutocompleteMatchType::HISTORY_EMBEDDINGS);
+                            client()->AllowDeletingBrowserHistory(),
+                            AutocompleteMatchType::HISTORY_EMBEDDINGS);
     match.destination_url = scored_url_row.row.url();
 
     match.description =
