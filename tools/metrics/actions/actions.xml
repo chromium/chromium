@@ -2640,6 +2640,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.AddToHomescreenIPH.Message.Clicked">
+  <obsolete>Deprecated as of 08/2024</obsolete>
   <owner>shaktisahu@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <description>
@@ -2648,6 +2649,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.AddToHomescreenIPH.Message.Shown">
+  <obsolete>Deprecated as of 08/2024</obsolete>
   <owner>shaktisahu@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <description>Add to homescreen IPH message UI was shown.</description>

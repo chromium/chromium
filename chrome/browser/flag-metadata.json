@@ -77,11 +77,6 @@
     "expiry_milestone": 133
   },
   {
-    "name": "add-to-homescreen-iph",
-    "owners": [ "shaktisahu@chromium.org" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "align-wakeups",
     "owners": [
       "etiennep@google.com", "fdoray@google.com"

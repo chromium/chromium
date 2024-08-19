@@ -2567,19 +2567,6 @@ const FeatureEntry::FeatureVariation kFeedCloseRefreshVariations[] = {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kAddToHomescreen_UseTextBubble[] = {
-    {"use_text_bubble", "true"}};
-const FeatureEntry::FeatureParam kAddToHomescreen_UseMessage[] = {
-    {"use_message", "true"}};
-
-const FeatureEntry::FeatureVariation kAddToHomescreenIPHVariations[] = {
-    {"Use Text Bubble", kAddToHomescreen_UseTextBubble,
-     std::size(kAddToHomescreen_UseTextBubble), nullptr},
-    {"Use Message", kAddToHomescreen_UseMessage,
-     std::size(kAddToHomescreen_UseMessage), nullptr}};
-#endif
-
 const FeatureEntry::Choice kNotificationSchedulerChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::
@@ -5490,11 +5477,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSystemKeyboardLockDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSystemKeyboardLock)},
 #if BUILDFLAG(IS_ANDROID)
-    {"add-to-homescreen-iph", flag_descriptions::kAddToHomescreenIPHName,
-     flag_descriptions::kAddToHomescreenIPHDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAddToHomescreenIPH,
-                                    kAddToHomescreenIPHVariations,
-                                    "AddToHomescreen")},
     {"notification-permission-rationale-dialog",
      flag_descriptions::kNotificationPermissionRationaleName,
      flag_descriptions::kNotificationPermissionRationaleDescription, kOsAndroid,

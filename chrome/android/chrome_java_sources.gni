@@ -1170,7 +1170,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/usage_stats/UsageStatsService.java",
   "java/src/org/chromium/chrome/browser/usage_stats/WebsiteEvent.java",
   "java/src/org/chromium/chrome/browser/webapps/ActivateWebApkActivity.java",
-  "java/src/org/chromium/chrome/browser/webapps/AddToHomescreenMostVisitedTileClickObserver.java",
   "java/src/org/chromium/chrome/browser/webapps/ChromeWebApkHost.java",
   "java/src/org/chromium/chrome/browser/webapps/GooglePlayWebApkInstallDelegate.java",
   "java/src/org/chromium/chrome/browser/webapps/PwaRestorePromoUtils.java",

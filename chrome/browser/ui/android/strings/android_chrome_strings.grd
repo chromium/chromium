@@ -3108,15 +3108,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_WEBAPK_INSTALL_FAILED_ACTION_OPEN" desc="The label of the button which upon click would open the site user was trying to install as PWA. ">
         Go back to site
       </message>
-      <message name="IDS_IPH_MESSAGE_ADD_TO_HOME_SCREEN_TITLE" desc="The title of in-product-help message encouraging users to add a commonly visited webpage to the home screen.">
-        Add to Home screen
-      </message>
-      <message name="IDS_IPH_MESSAGE_ADD_TO_HOME_SCREEN_DESCRIPTION" desc="The description of in-product-help message encouraging users to add a commonly visited webpage to the home screen.">
-        Get to this site quicker next time
-      </message>
-      <message name="IDS_IPH_MESSAGE_ADD_TO_HOME_SCREEN_ACTION" desc="The Add button in the in-product help message encouraging users to add a commonly visited webpage to the home screen.">
-        Add
-      </message>
       <message name="IDS_IPH_MESSAGE_SHARED_HIGHLIGHTING_TITLE" desc="The title of in-product-help message encouraging users to create highlights.">
         Create a highlighted link like this one?
       </message>

@@ -129,8 +129,6 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninPromoLauncher;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
-import org.chromium.chrome.browser.webapps.AddToHomescreenIPHController;
-import org.chromium.chrome.browser.webapps.AddToHomescreenMostVisitedTileClickObserver;
 import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -139,7 +137,6 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerFactory;
@@ -172,9 +169,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private WebFeedFollowIntroController mWebFeedFollowIntroController;
     private UrlFocusChangeListener mUrlFocusChangeListener;
     private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
-    private AddToHomescreenIPHController mAddToHomescreenIPHController;
     private LinkToTextIPHController mLinkToTextIPHController;
-    private AddToHomescreenMostVisitedTileClickObserver mAddToHomescreenMostVisitedTileObserver;
     private PwaBottomSheetController mPwaBottomSheetController;
     private NotificationPermissionController mNotificationPermissionController;
     private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
@@ -450,8 +445,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (mRootUiTabObserver != null) mRootUiTabObserver.destroy();
-
-        if (mAddToHomescreenIPHController != null) mAddToHomescreenIPHController.destroy();
 
         if (mPwaBottomSheetController != null) {
             PwaBottomSheetControllerFactory.detach(mPwaBottomSheetController);
@@ -944,19 +937,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mStatusIndicatorCoordinator);
         }
 
-        mAddToHomescreenIPHController =
-                new AddToHomescreenIPHController(
-                        mActivity,
-                        mWindowAndroid,
-                        profile,
-                        mModalDialogManagerSupplier.get(),
-                        MessageDispatcherProvider.from(mWindowAndroid));
         mLinkToTextIPHController =
                 new LinkToTextIPHController(
                         mActivityTabProvider, mTabModelSelectorSupplier.get(), mProfileSupplier);
-        mAddToHomescreenMostVisitedTileObserver =
-                new AddToHomescreenMostVisitedTileClickObserver(
-                        mActivityTabProvider, mAddToHomescreenIPHController);
         if (!didTriggerPromo
                 && mWindowAndroid.getWindow() != null
                 && LocalizationUtils.isLayoutRtl()

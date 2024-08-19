@@ -2463,9 +2463,6 @@ extern const char kAdaptiveButtonInTopToolbarAddToBookmarksDescription[];
 extern const char kAdaptiveButtonInTopToolbarCustomizationName[];
 extern const char kAdaptiveButtonInTopToolbarCustomizationDescription[];
 
-extern const char kAddToHomescreenIPHName[];
-extern const char kAddToHomescreenIPHDescription[];
-
 extern const char kAImageReaderName[];
 extern const char kAImageReaderDescription[];
 

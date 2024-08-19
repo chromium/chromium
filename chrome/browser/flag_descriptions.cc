@@ -4232,11 +4232,6 @@ const char kAccountPasswordsOnSigninDescription[] =
     "Allows saving/filling account passwords when the user is signed-in but "
     "not syncing";
 
-const char kAddToHomescreenIPHName[] = "Add to homescreen IPH";
-const char kAddToHomescreenIPHDescription[] =
-    " Shows in-product-help messages educating users about add to homescreen "
-    "option in chrome.";
-
 const char kAImageReaderName[] = "Android ImageReader";
 const char kAImageReaderDescription[] =
     " Enables MediaPlayer and MediaCodec to use AImageReader on Android. "
