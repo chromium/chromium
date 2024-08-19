@@ -6,7 +6,6 @@ package org.chromium.webapk.shell_apk;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.text.TextUtils;
@@ -19,13 +18,6 @@ import java.util.Set;
 
 /** Contains methods for getting information about host browser. */
 public class HostBrowserUtils {
-    private static final int MINIMUM_REQUIRED_CHROME_VERSION = 57;
-
-    private static final int MINIMUM_REQUIRED_INTENT_HELPER_VERSION = 2;
-
-    // Lowest version of Chromium which supports ShellAPK showing the splash screen.
-    public static final int MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH = 78;
-
     private static final String VERSION_NAME_DEVELOPER_BUILD = "Developer Build";
 
     public static String ARC_INTENT_HELPER_BROWSER = "org.chromium.arc.intent_helper";
@@ -53,52 +45,6 @@ public class HostBrowserUtils {
         return sBrowsersSupportingWebApk.contains(browserPackageName);
     }
 
-    /** Queries the given host browser's major version. */
-    public static int queryHostBrowserMajorChromiumVersion(
-            Context context, String hostBrowserPackageName) {
-        if (!doesBrowserSupportWebApks(hostBrowserPackageName)) {
-            return -1;
-        }
-
-        PackageInfo info;
-        try {
-            info = context.getPackageManager().getPackageInfo(hostBrowserPackageName, 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            return -1;
-        }
-        String versionName = info.versionName;
-
-        if (TextUtils.equals(versionName, VERSION_NAME_DEVELOPER_BUILD)) {
-            return Integer.MAX_VALUE;
-        }
-
-        int dotIndex = versionName.indexOf(".");
-        if (dotIndex < 0) {
-            return -1;
-        }
-        try {
-            return Integer.parseInt(versionName.substring(0, dotIndex));
-        } catch (NumberFormatException e) {
-            return -1;
-        }
-    }
-
-    /** Returns whether a WebAPK should be launched as a tab. See crbug.com/772398. */
-    public static boolean shouldLaunchInTab(HostBrowserLauncherParams params) {
-        String hostBrowserPackageName = params.getHostBrowserPackageName();
-        int hostBrowserMajorChromiumVersion = params.getHostBrowserMajorChromiumVersion();
-
-        if (TextUtils.equals(hostBrowserPackageName, ARC_INTENT_HELPER_BROWSER)) {
-            return hostBrowserMajorChromiumVersion < MINIMUM_REQUIRED_INTENT_HELPER_VERSION;
-        }
-
-        if (TextUtils.equals(hostBrowserPackageName, ARC_WEBAPK_BROWSER)) {
-            return false;
-        }
-
-        return hostBrowserMajorChromiumVersion < MINIMUM_REQUIRED_CHROME_VERSION;
-    }
-
     /**
      * Returns whether intents (android.intent.action.MAIN, android.intent.action.SEND ...) should
      * launch {@link SplashActivity} for the given host browser params.
@@ -106,9 +52,7 @@ public class HostBrowserUtils {
     public static boolean shouldIntentLaunchSplashActivity(HostBrowserLauncherParams params) {
         return params.isNewStyleWebApk()
                 && !params.getHostBrowserPackageName().equals(ARC_INTENT_HELPER_BROWSER)
-                && !params.getHostBrowserPackageName().equals(ARC_WEBAPK_BROWSER)
-                && params.getHostBrowserMajorChromiumVersion()
-                        >= MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH;
+                && !params.getHostBrowserPackageName().equals(ARC_WEBAPK_BROWSER);
     }
 
     /**

@@ -24,7 +24,6 @@ import java.util.Locale;
 public class HostBrowserLauncherParams {
     private boolean mIsNewStyleWebApk;
     private String mHostBrowserPackageName;
-    private int mHostBrowserMajorChromiumVersion;
     private boolean mDialogShown;
     private Intent mOriginalIntent;
     private String mStartUrl;
@@ -48,9 +47,6 @@ public class HostBrowserLauncherParams {
         Bundle metadata = WebApkUtils.readMetaData(context);
         if (metadata == null) return null;
 
-        int hostBrowserMajorChromiumVersion =
-                HostBrowserUtils.queryHostBrowserMajorChromiumVersion(
-                        context, hostBrowserPackageName);
         long intentLaunchTimeMs = intent.getLongExtra(WebApkConstants.EXTRA_WEBAPK_LAUNCH_TIME, -1);
         if (intentLaunchTimeMs > 0) {
             launchTimeMs = intentLaunchTimeMs;
@@ -107,7 +103,6 @@ public class HostBrowserLauncherParams {
         return new HostBrowserLauncherParams(
                 isNewStyleWebApk,
                 hostBrowserPackageName,
-                hostBrowserMajorChromiumVersion,
                 dialogShown,
                 intent,
                 startUrl,
@@ -231,7 +226,6 @@ public class HostBrowserLauncherParams {
     private HostBrowserLauncherParams(
             boolean isNewStyleWebApk,
             String hostBrowserPackageName,
-            int hostBrowserMajorChromiumVersion,
             boolean dialogShown,
             Intent originalIntent,
             String startUrl,
@@ -242,7 +236,6 @@ public class HostBrowserLauncherParams {
             String selectedShareTargetActivityClassName) {
         mIsNewStyleWebApk = isNewStyleWebApk;
         mHostBrowserPackageName = hostBrowserPackageName;
-        mHostBrowserMajorChromiumVersion = hostBrowserMajorChromiumVersion;
         mDialogShown = dialogShown;
         mOriginalIntent = originalIntent;
         mStartUrl = startUrl;
@@ -264,14 +257,6 @@ public class HostBrowserLauncherParams {
     /** Returns the chosen host browser. */
     public String getHostBrowserPackageName() {
         return mHostBrowserPackageName;
-    }
-
-    /**
-     * Returns the major version of the host browser. Currently, only Chromium host browsers (Chrome
-     * Canary, Chrome Dev ...) are supported.
-     */
-    public int getHostBrowserMajorChromiumVersion() {
-        return mHostBrowserMajorChromiumVersion;
     }
 
     /** Returns whether the choose-host-browser dialog was shown. */

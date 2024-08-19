@@ -65,11 +65,6 @@ public final class LaunchTest {
     private static final String CATEGORY_LAUNCH_WEBAPK_SITE_SETTINGS =
             "androidx.browser.trusted.category.LaunchWebApkSiteSettings";
 
-    /** Chromium version which does not support showing the splash screen within WebAPK. */
-    private static final int BROWSER_H2O_INCOMPATIBLE_VERSION = 57;
-
-    public static final int SITE_SETTINGS_COMPATIBLE_BROWSER_VERSION = 87;
-
     private static String sWebApkPackageName;
 
     private Context mAppContext;
@@ -108,18 +103,7 @@ public final class LaunchTest {
                 launchAndCheckBrowserLaunched(
                         /* opaqueMainActivityInitiallyEnabled= */ false,
                         launchIntent,
-                        H2OTransparentLauncherActivity.class,
-                        BROWSER_H2O_INCOMPATIBLE_VERSION);
-        Assert.assertEquals(1, launchedIntents.size());
-        assertIntentIsForBrowserLaunch(launchedIntents.get(0), deepLinkUrl);
-        assertOnlyEnabledMainIntentHandler(H2OMainActivity.class);
-
-        launchedIntents =
-                launchAndCheckBrowserLaunched(
-                        /* opaqueMainActivityInitiallyEnabled= */ false,
-                        launchIntent,
-                        H2OTransparentLauncherActivity.class,
-                        HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH);
+                        H2OTransparentLauncherActivity.class);
         Assert.assertEquals(5, launchedIntents.size());
         assertIntentComponentClassNameEquals(H2OMainActivity.class, launchedIntents.get(0));
         Assert.assertEquals(BROWSER_PACKAGE_NAME, launchedIntents.get(1).getPackage());
@@ -133,19 +117,7 @@ public final class LaunchTest {
                 launchAndCheckBrowserLaunched(
                         /* opaqueMainActivityInitiallyEnabled= */ true,
                         launchIntent,
-                        H2OTransparentLauncherActivity.class,
-                        BROWSER_H2O_INCOMPATIBLE_VERSION);
-        Assert.assertEquals(2, launchedIntents.size());
-        assertIntentComponentClassNameEquals(SplashActivity.class, launchedIntents.get(0));
-        assertIntentIsForBrowserLaunch(launchedIntents.get(1), deepLinkUrl);
-        assertOnlyEnabledMainIntentHandler(H2OMainActivity.class);
-
-        launchedIntents =
-                launchAndCheckBrowserLaunched(
-                        /* opaqueMainActivityInitiallyEnabled= */ true,
-                        launchIntent,
-                        H2OTransparentLauncherActivity.class,
-                        HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH);
+                        H2OTransparentLauncherActivity.class);
         Assert.assertEquals(2, launchedIntents.size());
         assertIntentComponentClassNameEquals(SplashActivity.class, launchedIntents.get(0));
         assertIntentIsForBrowserLaunch(launchedIntents.get(1), deepLinkUrl);
@@ -171,18 +143,7 @@ public final class LaunchTest {
                 launchAndCheckBrowserLaunched(
                         /* opaqueMainActivityInitiallyEnabled= */ false,
                         launchIntent,
-                        H2OTransparentLauncherActivity.class,
-                        BROWSER_H2O_INCOMPATIBLE_VERSION);
-        Assert.assertEquals(1, launchedIntents.size());
-        assertIntentIsForBrowserLaunchWithViewAction(launchedIntents.get(0), deepLinkUrl);
-        assertOnlyEnabledMainIntentHandler(H2OMainActivity.class);
-
-        launchedIntents =
-                launchAndCheckBrowserLaunched(
-                        /* opaqueMainActivityInitiallyEnabled= */ false,
-                        launchIntent,
-                        H2OTransparentLauncherActivity.class,
-                        HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH);
+                        H2OTransparentLauncherActivity.class);
         Assert.assertEquals(5, launchedIntents.size());
         assertIntentComponentClassNameEquals(H2OMainActivity.class, launchedIntents.get(0));
         Assert.assertEquals(BROWSER_PACKAGE_NAME, launchedIntents.get(1).getPackage());
@@ -196,19 +157,7 @@ public final class LaunchTest {
                 launchAndCheckBrowserLaunched(
                         /* opaqueMainActivityInitiallyEnabled= */ true,
                         launchIntent,
-                        H2OTransparentLauncherActivity.class,
-                        BROWSER_H2O_INCOMPATIBLE_VERSION);
-        Assert.assertEquals(2, launchedIntents.size());
-        assertIntentComponentClassNameEquals(SplashActivity.class, launchedIntents.get(0));
-        assertIntentIsForBrowserLaunchWithViewAction(launchedIntents.get(1), deepLinkUrl);
-        assertOnlyEnabledMainIntentHandler(H2OMainActivity.class);
-
-        launchedIntents =
-                launchAndCheckBrowserLaunched(
-                        /* opaqueMainActivityInitiallyEnabled= */ true,
-                        launchIntent,
-                        H2OTransparentLauncherActivity.class,
-                        HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH);
+                        H2OTransparentLauncherActivity.class);
         Assert.assertEquals(2, launchedIntents.size());
         assertIntentComponentClassNameEquals(SplashActivity.class, launchedIntents.get(0));
         assertIntentIsForBrowserLaunchWithViewAction(launchedIntents.get(1), deepLinkUrl);
@@ -228,18 +177,7 @@ public final class LaunchTest {
                 launchAndCheckBrowserLaunched(
                         /* opaqueMainActivityInitiallyEnabled= */ false,
                         launchIntent,
-                        H2OMainActivity.class,
-                        BROWSER_H2O_INCOMPATIBLE_VERSION);
-        Assert.assertEquals(1, launchedIntents.size());
-        assertIntentIsForBrowserLaunch(launchedIntents.get(0), DEFAULT_START_URL);
-        assertOnlyEnabledMainIntentHandler(H2OMainActivity.class);
-
-        launchedIntents =
-                launchAndCheckBrowserLaunched(
-                        /* opaqueMainActivityInitiallyEnabled= */ false,
-                        launchIntent,
-                        H2OMainActivity.class,
-                        HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH);
+                        H2OMainActivity.class);
         Assert.assertEquals(4, launchedIntents.size());
         Assert.assertEquals(BROWSER_PACKAGE_NAME, launchedIntents.get(0).getPackage());
         assertIntentComponentClassNameEquals(
@@ -252,19 +190,7 @@ public final class LaunchTest {
                 launchAndCheckBrowserLaunched(
                         /* opaqueMainActivityInitiallyEnabled= */ true,
                         launchIntent,
-                        H2OOpaqueMainActivity.class,
-                        BROWSER_H2O_INCOMPATIBLE_VERSION);
-        Assert.assertEquals(2, launchedIntents.size());
-        assertIntentComponentClassNameEquals(SplashActivity.class, launchedIntents.get(0));
-        assertIntentIsForBrowserLaunch(launchedIntents.get(1), DEFAULT_START_URL);
-        assertOnlyEnabledMainIntentHandler(H2OMainActivity.class);
-
-        launchedIntents =
-                launchAndCheckBrowserLaunched(
-                        /* opaqueMainActivityInitiallyEnabled= */ true,
-                        launchIntent,
-                        H2OOpaqueMainActivity.class,
-                        HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH);
+                        H2OOpaqueMainActivity.class);
         Assert.assertEquals(2, launchedIntents.size());
         assertIntentComponentClassNameEquals(SplashActivity.class, launchedIntents.get(0));
         assertIntentIsForBrowserLaunch(launchedIntents.get(1), DEFAULT_START_URL);
@@ -287,18 +213,7 @@ public final class LaunchTest {
                 launchAndCheckBrowserLaunched(
                         /* opaqueMainActivityInitiallyEnabled= */ false,
                         launchIntent,
-                        H2OMainActivity.class,
-                        BROWSER_H2O_INCOMPATIBLE_VERSION);
-        Assert.assertEquals(1, launchedIntents.size());
-        assertIntentIsForBrowserLaunchWithViewAction(launchedIntents.get(0), DEFAULT_START_URL);
-        assertOnlyEnabledMainIntentHandler(H2OMainActivity.class);
-
-        launchedIntents =
-                launchAndCheckBrowserLaunched(
-                        /* opaqueMainActivityInitiallyEnabled= */ false,
-                        launchIntent,
-                        H2OMainActivity.class,
-                        HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH);
+                        H2OMainActivity.class);
         Assert.assertEquals(4, launchedIntents.size());
         Assert.assertEquals(BROWSER_PACKAGE_NAME, launchedIntents.get(0).getPackage());
         assertIntentComponentClassNameEquals(
@@ -311,19 +226,7 @@ public final class LaunchTest {
                 launchAndCheckBrowserLaunched(
                         /* opaqueMainActivityInitiallyEnabled= */ true,
                         launchIntent,
-                        H2OOpaqueMainActivity.class,
-                        BROWSER_H2O_INCOMPATIBLE_VERSION);
-        Assert.assertEquals(2, launchedIntents.size());
-        assertIntentComponentClassNameEquals(SplashActivity.class, launchedIntents.get(0));
-        assertIntentIsForBrowserLaunchWithViewAction(launchedIntents.get(1), DEFAULT_START_URL);
-        assertOnlyEnabledMainIntentHandler(H2OMainActivity.class);
-
-        launchedIntents =
-                launchAndCheckBrowserLaunched(
-                        /* opaqueMainActivityInitiallyEnabled= */ true,
-                        launchIntent,
-                        H2OOpaqueMainActivity.class,
-                        HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH);
+                        H2OOpaqueMainActivity.class);
         Assert.assertEquals(2, launchedIntents.size());
         assertIntentComponentClassNameEquals(SplashActivity.class, launchedIntents.get(0));
         assertIntentIsForBrowserLaunchWithViewAction(launchedIntents.get(1), DEFAULT_START_URL);
@@ -356,8 +259,7 @@ public final class LaunchTest {
                 launchAndCheckBrowserLaunched(
                         /* opaqueMainActivityInitiallyEnabled= */ true,
                         launchIntent,
-                        H2OTransparentLauncherActivity.class,
-                        BROWSER_H2O_INCOMPATIBLE_VERSION);
+                        H2OTransparentLauncherActivity.class);
         Assert.assertTrue(launchedIntents.size() > 1);
 
         Intent browserLaunchIntent = launchedIntents.get(launchedIntents.size() - 1);
@@ -387,8 +289,7 @@ public final class LaunchTest {
                 launchAndCheckBrowserLaunched(
                         /* opaqueMainActivityInitiallyEnabled= */ true,
                         launchIntent,
-                        H2OTransparentLauncherActivity.class,
-                        HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH);
+                        H2OTransparentLauncherActivity.class);
         Assert.assertTrue(launchedIntents.size() > 1);
 
         Intent browserLaunchIntent = launchedIntents.get(launchedIntents.size() - 1);
@@ -415,8 +316,7 @@ public final class LaunchTest {
                 launchAndCheckBrowserLaunched(
                         /* opaqueMainActivityInitiallyEnabled= */ true,
                         launchIntent,
-                        H2OTransparentLauncherActivity.class,
-                        HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH);
+                        H2OTransparentLauncherActivity.class);
         Assert.assertTrue(launchedIntents.size() > 1);
 
         Intent browserLaunchIntent = launchedIntents.get(launchedIntents.size() - 1);
@@ -440,9 +340,7 @@ public final class LaunchTest {
                 mPackageManager,
                 H2OMainActivity.class,
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED);
-        installBrowser(
-                BROWSER_PACKAGE_NAME,
-                HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH);
+        installBrowser(BROWSER_PACKAGE_NAME);
 
         Intent launchIntent = new Intent(Intent.ACTION_MAIN);
         launchIntent.setPackage(sWebApkPackageName);
@@ -496,9 +394,7 @@ public final class LaunchTest {
                 mPackageManager,
                 H2OMainActivity.class,
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
-        installBrowser(
-                HostBrowserUtils.ARC_INTENT_HELPER_BROWSER,
-                HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH);
+        installBrowser(HostBrowserUtils.ARC_INTENT_HELPER_BROWSER);
         ArrayList<Intent> launchedIntents =
                 runActivityChain(
                         launchIntent,
@@ -532,8 +428,7 @@ public final class LaunchTest {
                 launchAndCheckBrowserLaunched(
                         /* opaqueMainActivityInitiallyEnabled= */ false,
                         launchIntent,
-                        H2OTransparentLauncherActivity.class,
-                        HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH);
+                        H2OTransparentLauncherActivity.class);
         Assert.assertEquals(1, launchedIntents.size());
         assertIntentIsForBrowserLaunch(launchedIntents.get(0), deepLinkUrl);
         assertOnlyEnabledMainIntentHandler(H2OMainActivity.class);
@@ -554,8 +449,7 @@ public final class LaunchTest {
                 launchAndCheckBrowserLaunched(
                         /* opaqueMainActivityInitiallyEnabled= */ false,
                         launchIntent,
-                        H2OMainActivity.class,
-                        HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH);
+                        H2OMainActivity.class);
         Assert.assertEquals(1, launchedIntents.size());
         assertIntentIsForBrowserLaunch(launchedIntents.get(0), DEFAULT_START_URL);
         assertOnlyEnabledMainIntentHandler(H2OMainActivity.class);
@@ -577,8 +471,7 @@ public final class LaunchTest {
                 launchAndCheckBrowserLaunched(
                         /* opaqueMainActivityInitiallyEnabled= */ false,
                         launchIntent,
-                        H2OTransparentLauncherActivity.class,
-                        HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH);
+                        H2OTransparentLauncherActivity.class);
         Assert.assertEquals(1, launchedIntents.size());
         assertIntentIsForBrowserLaunchWithViewAction(launchedIntents.get(0), deepLinkUrl);
         assertOnlyEnabledMainIntentHandler(H2OMainActivity.class);
@@ -599,8 +492,7 @@ public final class LaunchTest {
                 launchAndCheckBrowserLaunched(
                         /* opaqueMainActivityInitiallyEnabled= */ false,
                         launchIntent,
-                        H2OMainActivity.class,
-                        HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH);
+                        H2OMainActivity.class);
         Assert.assertEquals(1, launchedIntents.size());
         assertIntentIsForBrowserLaunchWithViewAction(launchedIntents.get(0), DEFAULT_START_URL);
         assertOnlyEnabledMainIntentHandler(H2OMainActivity.class);
@@ -656,8 +548,7 @@ public final class LaunchTest {
         launchAndCheckBrowserLaunched(
                 /* opaqueMainActivityInitiallyEnabled= */ false,
                 launchIntent,
-                H2OMainActivity.class,
-                SITE_SETTINGS_COMPATIBLE_BROWSER_VERSION);
+                H2OMainActivity.class);
 
         ShortcutManager shortcutManager = mAppContext.getSystemService(ShortcutManager.class);
         assertTrue(containsSiteSettingsDynamicShortcut(shortcutManager));
@@ -667,8 +558,7 @@ public final class LaunchTest {
         launchAndCheckBrowserLaunched(
                 /* opaqueMainActivityInitiallyEnabled= */ true,
                 launchIntent,
-                H2OOpaqueMainActivity.class,
-                SITE_SETTINGS_COMPATIBLE_BROWSER_VERSION);
+                H2OOpaqueMainActivity.class);
         assertTrue(containsSiteSettingsDynamicShortcut(shortcutManager));
     }
 
@@ -683,8 +573,7 @@ public final class LaunchTest {
         launchAndCheckBrowserLaunched(
                 /* opaqueMainActivityInitiallyEnabled= */ false,
                 launchIntent,
-                H2OMainActivity.class,
-                SITE_SETTINGS_COMPATIBLE_BROWSER_VERSION);
+                H2OMainActivity.class);
 
         ShortcutManager shortcutManager = mAppContext.getSystemService(ShortcutManager.class);
         assertFalse(containsSiteSettingsDynamicShortcut(shortcutManager));
@@ -701,8 +590,7 @@ public final class LaunchTest {
         launchAndCheckBrowserLaunched(
                 /* opaqueMainActivityInitiallyEnabled= */ false,
                 launchIntent,
-                H2OMainActivity.class,
-                SITE_SETTINGS_COMPATIBLE_BROWSER_VERSION);
+                H2OMainActivity.class);
 
         ShortcutManager shortcutManager = mAppContext.getSystemService(ShortcutManager.class);
         assertFalse(containsSiteSettingsDynamicShortcut(shortcutManager));
@@ -791,20 +679,18 @@ public final class LaunchTest {
      *     beginning of the test case.
      * @param launchIntent Intent to launch.
      * @param launchActivity Activity which should receive the launch intent.
-     * @param browserVersion The version of the Chromium browser to install.
      * @return List of launched activity intents (including the host browser launch intent).
      */
     private ArrayList<Intent> launchAndCheckBrowserLaunched(
             boolean opaqueMainActivityInitiallyEnabled,
             Intent launchIntent,
-            Class<? extends Activity> launchActivity,
-            int browserVersion) {
+            Class<? extends Activity> launchActivity) {
         changeEnabledActivity(
                 opaqueMainActivityInitiallyEnabled
                         ? H2OOpaqueMainActivity.class
                         : H2OMainActivity.class);
 
-        installBrowser(BROWSER_PACKAGE_NAME, browserVersion);
+        installBrowser(BROWSER_PACKAGE_NAME);
 
         ArrayList<Intent> launchedIntents =
                 runActivityChain(launchIntent, launchActivity, BROWSER_PACKAGE_NAME);
@@ -920,9 +806,9 @@ public final class LaunchTest {
     }
 
     /** Installs browser with the given package name and version. */
-    private void installBrowser(String browserPackageName, int version) {
+    private void installBrowser(String browserPackageName) {
         mTestBrowserInstaller.uninstallBrowser(browserPackageName);
-        mTestBrowserInstaller.installBrowserWithVersion(browserPackageName, version + ".");
+        mTestBrowserInstaller.installModernBrowser(browserPackageName);
     }
 
     private static void setAppTaskTopActivity(int taskId, Activity topActivity) {
