@@ -30,8 +30,7 @@ bool IsPriceTrackingEnabled(ChromeBrowserState* browser_state) {
 bool IsPriceNotificationsEnabled() {
   std::string country = base::ToLowerASCII(variations::GetCurrentCountryCode(
       GetApplicationContext()->GetVariationsService()));
-  std::string current_locale = base::ToLowerASCII(
-      base::SysNSStringToUTF8([NSLocale currentLocale].localeIdentifier));
+  std::string current_locale = GetApplicationContext()->GetApplicationLocale();
 
   // commerce::IsEnabledForCountryAndLocale expectes format with "-", not "_"
   // (as observed locally). E.g. "en-US", not "en_US".

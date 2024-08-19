@@ -18,6 +18,9 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/test/mock_sync_service.h"
+#import "components/variations/service/variations_service.h"
+#import "components/variations/service/variations_service_client.h"
+#import "components/variations/synthetic_trial_registry.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -48,7 +51,9 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "services/network/test/test_network_connection_tracker.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -59,11 +64,87 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using web::WebTaskEnvironment;
 
+namespace {
+
+using variations::SyntheticTrialRegistry;
+using variations::UIStringOverrider;
+using variations::VariationsService;
+using variations::VariationsServiceClient;
+
+// TODO(crbug.com/40742801): Remove when fake VariationsServiceClient created.
+class TestVariationsServiceClient : public VariationsServiceClient {
+ public:
+  TestVariationsServiceClient() = default;
+  TestVariationsServiceClient(const TestVariationsServiceClient&) = delete;
+  TestVariationsServiceClient& operator=(const TestVariationsServiceClient&) =
+      delete;
+  ~TestVariationsServiceClient() override = default;
+
+  // VariationsServiceClient:
+  base::Version GetVersionForSimulation() override { return base::Version(); }
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
+      override {
+    return nullptr;
+  }
+  network_time::NetworkTimeTracker* GetNetworkTimeTracker() override {
+    return nullptr;
+  }
+  bool OverridesRestrictParameter(std::string* parameter) override {
+    return false;
+  }
+  bool IsEnterprise() override { return false; }
+  void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
+      PrefService* local_state) override {}
+
+ private:
+  // VariationsServiceClient:
+  version_info::Channel GetChannel() override {
+    return version_info::Channel::UNKNOWN;
+  }
+};
+
+// Creates a VariationsService and sets it as the TestingApplicationContext's
+// VariationService for the life of the instance.
+class ScopedVariationsService {
+ public:
+  ScopedVariationsService() {
+    EXPECT_EQ(nullptr,
+              TestingApplicationContext::GetGlobal()->GetVariationsService());
+    synthetic_trial_registry_ = std::make_unique<SyntheticTrialRegistry>();
+
+    variations_service_ = VariationsService::Create(
+        std::make_unique<TestVariationsServiceClient>(),
+        TestingApplicationContext::GetGlobal()->GetLocalState(),
+        /*state_manager=*/nullptr, "dummy-disable-background-switch",
+        UIStringOverrider(),
+        network::TestNetworkConnectionTracker::CreateGetter(),
+        synthetic_trial_registry_.get());
+    TestingApplicationContext::GetGlobal()->SetVariationsService(
+        variations_service_.get());
+  }
+
+  ~ScopedVariationsService() {
+    EXPECT_EQ(variations_service_.get(),
+              TestingApplicationContext::GetGlobal()->GetVariationsService());
+    TestingApplicationContext::GetGlobal()->SetVariationsService(nullptr);
+    variations_service_.reset();
+  }
+
+  VariationsService* Get() { return variations_service_.get(); }
+
+  std::unique_ptr<VariationsService> variations_service_;
+  std::unique_ptr<SyntheticTrialRegistry> synthetic_trial_registry_;
+};
+
+}  // namespace
+
 class SettingsTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  public:
   void SetUp() override {
     LegacyChromeTableViewControllerTest::SetUp();
+
+    scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
 
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
@@ -201,6 +282,7 @@ class SettingsTableViewControllerTest
   // Needed for test browser state created by TestChromeBrowserState().
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  ScopedVariationsService scoped_variations_service_;
   TestChromeBrowserStateManager browser_state_manager_;
 
   FakeSystemIdentity* fake_identity_ = nullptr;

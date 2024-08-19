@@ -333,6 +333,8 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/translate/core/browser",
     "//components/translate/core/common",
+    "//components/variations",
+    "//components/variations/service",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/browsing_data/model:counters",
