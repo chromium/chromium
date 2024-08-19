@@ -8,7 +8,7 @@ import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
-assert(enable_extensions || enable_desktop_android_extensions)
+assert(enable_extensions_core)
 
 # The overarching "build all the things" for the browser side of the
 # //extensions module. In particular, this includes:

@@ -6,7 +6,7 @@ import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 
-assert(enable_extensions || enable_desktop_android_extensions)
+assert(enable_extensions_core)
 
 source_set("renderer") {
   sources = [

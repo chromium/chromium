@@ -9,7 +9,7 @@ import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
-assert(enable_extensions || enable_desktop_android_extensions)
+assert(enable_extensions_core)
 
 group("common_constants") {
   if (is_component_build) {

@@ -8,7 +8,7 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 import("//ui/base/ui_features.gni")
 
-assert(enable_extensions || enable_desktop_android_extensions)
+assert(enable_extensions_core)
 
 if (is_component_build) {
   component("extensions") {

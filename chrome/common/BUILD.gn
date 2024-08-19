@@ -285,10 +285,16 @@ static_library("common_lib") {
     public_deps += [ "//ppapi/shared_impl" ]
   }
 
-  if (enable_extensions || enable_desktop_android_extensions) {
+  if (enable_extensions_core) {
+    public_deps += [
+      "//extensions/common",
+      "//extensions/common:common_constants",
+      "//extensions/common:core_api_provider",
+    ]
+
     # TODO(https://crbug.com/356905053): Gradually include more of these sources
-    # in the desktop-android build, or put them behind more specific build
-    # flags.
+    # in the desktop-android build (taking them out of this enable_extensions
+    # block), or put them behind more specific build flags.
     if (enable_extensions) {
       sources += [
         "controlled_frame/controlled_frame.cc",
@@ -311,12 +317,6 @@ static_library("common_lib") {
         "//services/device/public/cpp/usb",
       ]
     }  # if (enable_extensions)
-
-    public_deps += [
-      "//extensions/common",
-      "//extensions/common:common_constants",
-      "//extensions/common:core_api_provider",
-    ]
   }
 
   if (is_mac) {
