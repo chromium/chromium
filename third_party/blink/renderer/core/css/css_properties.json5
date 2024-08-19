@@ -3786,7 +3786,7 @@
       name: "masonry-template-tracks",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       layout_dependent: true,
-      field_group: "*",
+      field_group: "*->masonry",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/computed_grid_track_list.h"],
       default_value: "ComputedGridTrackList::DefaultMasonryTrackList()",
