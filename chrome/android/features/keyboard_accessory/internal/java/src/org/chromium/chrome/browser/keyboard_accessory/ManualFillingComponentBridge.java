@@ -229,6 +229,7 @@ class ManualFillingComponentBridge {
                         .setDisplayText(plusAddress)
                         .setTextToFill(plusAddress)
                         .setA11yDescription(plusAddress)
+                        .setId("")
                         .setIsObfuscated(false)
                         .setCallback(callback)
                         .build();

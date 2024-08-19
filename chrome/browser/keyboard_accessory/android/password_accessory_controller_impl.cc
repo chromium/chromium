@@ -716,6 +716,12 @@ bool PasswordAccessoryControllerImpl::AppearsInSuggestions(
     return false;  // Don't proceed for invalid origins.
   }
 
+  // If the `suggestion` to fill is a valid plus address, it can be filled.
+  if (plus_address_service_ &&
+      plus_address_service_->IsPlusAddress(base::UTF16ToUTF8(suggestion))) {
+    return true;
+  }
+
   return base::ranges::any_of(
       credential_cache_->GetCredentialStore(origin).GetCredentials(),
       [&](const auto& cred) {
