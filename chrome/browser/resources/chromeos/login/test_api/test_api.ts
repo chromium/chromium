@@ -633,11 +633,13 @@ class PinSetupScreenTester extends ScreenElementApi {
 class EnrollmentSignInStep extends PolymerElementApi {
   private signInFrame: PolymerElementApi;
   private nextButton: PolymerElementApi;
+  private backButton: PolymerElementApi;
 
   constructor(parent: ScreenElementApi) {
     super(parent, '#step-signin');
     this.signInFrame = new PolymerElementApi(this, '#signin-frame');
     this.nextButton = new PolymerElementApi(this, '#primary-action-button');
+    this.backButton = new PolymerElementApi(this, '#signin-back-button');
   }
 
   /**
