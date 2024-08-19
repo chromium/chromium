@@ -1006,7 +1006,9 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::WriteWeightsToFile(
 
   for (auto& [key, buffer] : graph_info_->constant_id_to_buffer_map) {
     const mojom::Operand& operand = GetOperand(key);
-    if (operand.descriptor.shape().empty()) {
+    // int32 is only supported as immediate value.
+    if (operand.descriptor.shape().empty() ||
+        operand.descriptor.data_type() == OperandDataType::kInt32) {
       RETURN_IF_ERROR(AddConstantImmediateValue(key, block));
       continue;
     }
