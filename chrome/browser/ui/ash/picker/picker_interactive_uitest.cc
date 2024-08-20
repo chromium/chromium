@@ -340,6 +340,48 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchBrowsingHistory) {
                 WaitForWebInputFieldValue(u"https://foo.com/history")));
 }
 
+IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchBrowsingHistoryCategory) {
+  AddUrlToHistory(GetActiveUserProfile(), GURL("https://foo.com/history"));
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
+  constexpr std::string_view kHistoryCategoryResultName =
+      "HistoryCategoryResult";
+  constexpr std::string_view kHistoryResultName = "HistoryResult";
+  views::Textfield* picker_search_field = nullptr;
+
+  RunTestSequence(
+      InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
+                                       WaitForWebInputFieldFocus())),
+      Do([]() { TogglePickerByAccelerator(); }),
+      AfterShow(ash::kPickerSearchFieldTextfieldElementId,
+                [&picker_search_field](ui::TrackedElement* el) {
+                  picker_search_field = AsView<views::Textfield>(el);
+                }),
+      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      WaitForState(kSearchFieldFocusedState, true),
+      EnterText(ash::kPickerSearchFieldTextfieldElementId, u"history"),
+      WaitForShow(ash::kPickerSearchResultsPageElementId),
+      WaitForShow(ash::kPickerSearchResultsListItemElementId),
+      NameDescendantViewByProperty(
+          ash::kPickerSearchResultsPageElementId, kHistoryCategoryResultName,
+          &ash::PickerListItemView::GetPrimaryTextForTesting,
+          u"Browsing history"),
+      PressButton(kHistoryCategoryResultName),
+      EnterText(ash::kPickerSearchFieldTextfieldElementId, u"f"),
+      WaitForShow(ash::kPickerSearchResultsPageElementId,
+                  /*transition_only_on_event=*/true),
+      WaitForShow(ash::kPickerSearchResultsListItemElementId),
+      NameDescendantViewByProperty(
+          ash::kPickerSearchResultsPageElementId, kHistoryResultName,
+          &ash::PickerListItemView::GetPrimaryTextForTesting,
+          u"foo.com/history"),
+      PressButton(kHistoryResultName), WaitForHide(ash::kPickerElementId),
+      InContext(browser_context,
+                WaitForWebInputFieldValue(u"https://foo.com/history")));
+}
+
 IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchLocalFile) {
   ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test.png"));
   // TODO: b/360229206 - Use a contenteditable input field so the file can be
