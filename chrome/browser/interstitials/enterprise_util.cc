@@ -21,8 +21,13 @@ extensions::SafeBrowsingPrivateEventRouter* GetEventRouter(
     return nullptr;
 
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
-  if (browser_context->IsOffTheRecord())
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  // In guest profile, IsOffTheRecord also returns true. So we need an
+  // additional check on IsGuestSession to ensure the event is sent in guest
+  // mode.
+  if (profile->IsOffTheRecord() && !profile->IsGuestSession()) {
     return nullptr;
+  }
 
   return extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
       browser_context);
