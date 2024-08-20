@@ -461,6 +461,17 @@ const AtomicString& GetMonoEmojiFont(const SkFontMgr& font_manager) {
   return emoji_font;
 }
 
+const AtomicString& GetMathFont(const SkFontMgr& font_manager) {
+  // Calling `AvailableMonoEmojiFont()` from `DEFINE_THREAD_SAFE_STATIC_LOCAL`
+  // may cause hangs. crbug.com/349456407
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, math_font, (g_empty_atom));
+  if (math_font.empty() && !math_font.IsNull()) {
+    math_font = AtomicString(FirstAvailableMathFont(font_manager));
+    CHECK(!math_font.empty() || math_font.IsNull());
+  }
+  return math_font;
+}
+
 const AtomicString& GetFontBasedOnUnicodeBlock(UBlockCode block_code,
                                                const SkFontMgr& font_manager) {
   switch (block_code) {
@@ -492,11 +503,8 @@ const AtomicString& GetFontBasedOnUnicodeBlock(UBlockCode block_code,
     case UBLOCK_SUPPLEMENTAL_MATHEMATICAL_OPERATORS:
     case UBLOCK_MATHEMATICAL_ALPHANUMERIC_SYMBOLS:
     case UBLOCK_ARABIC_MATHEMATICAL_ALPHABETIC_SYMBOLS:
-    case UBLOCK_GEOMETRIC_SHAPES_EXTENDED: {
-      DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kMathFont,
-                                      (FirstAvailableMathFont(font_manager)));
-      return kMathFont;
-    }
+    case UBLOCK_GEOMETRIC_SHAPES_EXTENDED:
+      return GetMathFont(font_manager);
     default:
       return g_null_atom;
   }
