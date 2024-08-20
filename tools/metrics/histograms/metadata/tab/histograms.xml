@@ -54,6 +54,12 @@ chromium-metrics-reviews@google.com.
                condition"/>
 </variants>
 
+<variants name="TabModelSelectorType">
+  <variant name="Archived" summary="The archived tab model selector"/>
+  <variant name="Custom" summary="The custom tab model selector."/>
+  <variant name="Regular" summary="The regular tab model selector."/>
+</variants>
+
 <variants name="TabOrganizationEntryPoint">
   <variant name=".AllEntrypoints" summary="any of the entrypoints"/>
   <variant name=".Proactive"
@@ -2184,6 +2190,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.Startup.RestoreDuration.{TabModelSelectorType}"
+    units="ms" expires_after="2025-01-26">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the realtime duration it took to restore all the tab states per
+    {TabModelSelectorType}. Recorded after tab model selector restoration
+    completes successfully. Android-only.
+  </summary>
+  <token key="TabModelSelectorType" variants="TabModelSelectorType"/>
+</histogram>
+
 <histogram name="Tabs.Startup.TabCount.{TabType}" units="count"
     expires_after="2025-01-26">
   <owner>davidjm@chromium.org</owner>
@@ -2203,11 +2221,7 @@ chromium-metrics-reviews@google.com.
     Records the number of {TabType} Tabs loaded on startup per
     {TabModelSelectorType}.
   </summary>
-  <token key="TabModelSelectorType">
-    <variant name="Archived" summary="The archived tab model selector"/>
-    <variant name="Custom" summary="The custom tab model selector."/>
-    <variant name="Regular" summary="The regular tab model selector."/>
-  </token>
+  <token key="TabModelSelectorType" variants="TabModelSelectorType"/>
   <token key="TabType">
     <variant name="Incognito" summary="Incognito"/>
     <variant name="Regular" summary="Regular"/>
