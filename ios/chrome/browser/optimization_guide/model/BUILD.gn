@@ -39,6 +39,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/signin/model",
     "//ios/web",
@@ -55,6 +56,7 @@ source_set("download_client_header") {
   deps = [
     "//base",
     "//components/download/public/background_service:public",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }
 
