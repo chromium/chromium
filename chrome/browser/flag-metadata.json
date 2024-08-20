@@ -763,7 +763,7 @@
       "darwinyang@chromium.org",
       "chrome-payments-team@google.com"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 132
   },
   {
     "name": "autofill-enable-save-card-local-save-fallback",
@@ -771,7 +771,7 @@
       "darwinyang@chromium.org",
       "chrome-payments-team@google.com"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 132
   },
   {
     "name": "autofill-enable-server-iban",
@@ -790,8 +790,12 @@
   },
   {
     "name": "autofill-enable-vcn-enroll-loading-and-confirmation",
-    "owners": [ "kavitasoni@chromium.org", "chrome-payments-team@google.com" ],
-    "expiry_milestone": 130
+    "owners": [
+      "kavitasoni@chromium.org",
+      "darwinyang@chromium.org",
+      "chrome-payments-team@google.com"
+    ],
+    "expiry_milestone": 132
   },
   {
     "name": "autofill-enable-vcn-gray-out-for-merchant-opt-out",
