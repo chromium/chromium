@@ -312,6 +312,7 @@
   },
   {
     "prefix": "feature-policy-permissions",
+    "owners": ["guidou@chromium.org", "agpalak@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/mediacapture-streams"],
     "exclusive_tests": ["external/wpt/mediacapture-streams/MediaStream-default-feature-policy.https.html"],
