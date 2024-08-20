@@ -8,6 +8,9 @@ import("//build/config/ui.gni")
 
 source_set("toasts") {
   sources = [
+    "toast_id.h",
+    "toast_registry.cc",
+    "toast_registry.h",
     "toast_specification.cc",
     "toast_specification.h",
   ]

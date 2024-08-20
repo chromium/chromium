@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/toasts/toast_registry.h"
+
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/ui/toasts/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_specification.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -103,4 +106,61 @@ TEST_F(ToastRegistryTest, PersistentToast) {
   EXPECT_TRUE(spec->action_button_callback().is_null());
   EXPECT_EQ(spec->menu_model(), nullptr);
   EXPECT_TRUE(spec->is_persistent_toast());
+}
+
+TEST_F(ToastRegistryTest, RegisterSpecification) {
+  std::unique_ptr<ToastSpecification> unique_spec =
+      ToastSpecification::Builder(vector_icons::kEmailIcon,
+                                  /*body_string_id=*/0)
+          .AddPersistance()
+          .Build();
+
+  ToastSpecification* toast_specification = unique_spec.get();
+
+  std::unique_ptr<ToastRegistry> toast_registry =
+      std::make_unique<ToastRegistry>();
+
+  toast_registry->RegisterToast(ToastId::kImageCopied, std::move(unique_spec));
+  EXPECT_EQ(toast_specification,
+            toast_registry->GetToastSpecification(ToastId::kImageCopied));
+}
+
+TEST_F(ToastRegistryTest, RegisterNullSpecification) {
+  std::unique_ptr<ToastRegistry> toast_registry =
+      std::make_unique<ToastRegistry>();
+
+  // ToastRegistry should hit a check when we try to register a null
+  // ToastSpecification.
+  EXPECT_DEATH(toast_registry->RegisterToast(ToastId::kImageCopied, nullptr),
+               "");
+}
+
+TEST_F(ToastRegistryTest, RegisterDuplicateToastId) {
+  std::unique_ptr<ToastRegistry> toast_registry =
+      std::make_unique<ToastRegistry>();
+
+  toast_registry->RegisterToast(
+      ToastId::kImageCopied, ToastSpecification::Builder(
+                                 vector_icons::kEmailIcon, /*body_string_id=*/0)
+                                 .Build());
+
+  // Even though we are registering a slightly different toast, the
+  // ToastRegistry should still hit a CHECK because we are using an already
+  // registered ToastId.
+  EXPECT_DEATH(toast_registry->RegisterToast(
+                   ToastId::kImageCopied,
+                   ToastSpecification::Builder(vector_icons::kEmailIcon,
+                                               /*body_string_id=*/0)
+                       .AddCloseButton()
+                       .Build()),
+               "");
+}
+
+TEST_F(ToastRegistryTest, RetrieveUnregisteredToastId) {
+  std::unique_ptr<ToastRegistry> toast_registry =
+      std::make_unique<ToastRegistry>();
+
+  // The ToastRegistry should check when we try to retrieve the
+  // ToastSpecification for an id that was not registered.
+  EXPECT_DEATH(toast_registry->GetToastSpecification(ToastId::kLinkCopied), "");
 }
