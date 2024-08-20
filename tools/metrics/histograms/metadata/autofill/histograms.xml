@@ -662,6 +662,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.AcceptedSuggestionDesktopRowViewVisibleEnough"
+    enum="Boolean" expires_after="2025-08-07">
+  <owner>vykochko@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    This metric is emitted by the desktop autofill popup row view just before
+    accepting the suggestion. This indicates that at least 50% of the popup were
+    visible for at least 500ms and serves as a safeguard against quick (and
+    potentially deceptive, which can lead to revealing user's data) accepts.
+    This metric serves as a sanity check for the guarding logic (the number of
+    `false`s is expected to be extremly low) and will be removed with the
+    `kAutofillPopupDontAcceptNonVisibleEnoughSuggestion` feature.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AddedNewAddress"
     enum="AutofillManuallyAddedAddressSurface" expires_after="2025-03-19">
   <owner>brunobraga@google.com</owner>

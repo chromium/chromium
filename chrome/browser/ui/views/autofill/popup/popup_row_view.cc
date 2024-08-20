@@ -529,7 +529,13 @@ bool PopupRowView::IsViewVisibleEnough() const {
     return true;
   }
 
-  return barrier_for_accepting_ && barrier_for_accepting_->value();
+  bool visible_enough =
+      barrier_for_accepting_ && barrier_for_accepting_->value();
+
+  base::UmaHistogramBoolean(
+      "Autofill.AcceptedSuggestionDesktopRowViewVisibleEnough", visible_enough);
+
+  return visible_enough;
 }
 
 BEGIN_METADATA(PopupRowView)

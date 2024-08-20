@@ -600,6 +600,8 @@ BASE_FEATURE(kAutofillPopupDisablePaintChecks,
 // If the feature is enabled, before triggering suggestion acceptance, the row
 // view checks that a substantial portion of its content was visible for some
 // minimum required period.
+// TODO(crbug.com/337222641): During cleaning up, in the popup row view remove
+// emitting of "Autofill.AcceptedSuggestionDesktopRowViewVisibleEnough".
 BASE_FEATURE(kAutofillPopupDontAcceptNonVisibleEnoughSuggestion,
              "AutofillPopupDontAcceptNonVisibleEnoughSuggestion",
              base::FEATURE_DISABLED_BY_DEFAULT);
