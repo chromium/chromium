@@ -1042,13 +1042,13 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.IndexAndPersistRulesTime"
-    units="ms" expires_after="2024-10-01">
+    units="ms" expires_after="2025-10-01">
   <owner>kelvinjiang@chromium.org</owner>
-  <owner>src/extensions/OWNERS</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
-    Time taken to index and persist to disk, the deserialized json rules
-    provided by an extension manifest for the Declarative Net Request API. This
-    is emitted whenever a packaged extension with a declarative ruleset is
+    Time taken to index and persist to disk the deserialized json rules provided
+    by an extension manifest for the Declarative Net Request API. This is
+    emitted whenever a packaged extension with a declarative ruleset is
     installed or updated.
   </summary>
 </histogram>
