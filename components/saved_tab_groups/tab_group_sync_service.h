@@ -46,27 +46,27 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   class Observer : public base::CheckedObserver {
    public:
     // The data from sync DataTypeStore has been loaded to memory.
-    virtual void OnInitialized() = 0;
+    virtual void OnInitialized() {}
 
     // A new tab group was added at the given |source|.
     virtual void OnTabGroupAdded(const SavedTabGroup& group,
-                                 TriggerSource source) = 0;
+                                 TriggerSource source) {}
 
     // An existing tab group was updated at the given |source|.
     // Called whenever there are an update to a tab group, which can be title,
     // color, position, pinned state, or update to any of its tabs.
     virtual void OnTabGroupUpdated(const SavedTabGroup& group,
-                                   TriggerSource source) = 0;
+                                   TriggerSource source) {}
 
     // The local tab group corresponding to the |local_id| was removed.
     virtual void OnTabGroupRemoved(const LocalTabGroupID& local_id,
-                                   TriggerSource source) = 0;
+                                   TriggerSource source) {}
 
     // Tab group corresponding to the |sync_id| was removed. Only used by the
     // revisit surface that needs to show both open and closed tab groups.
     // All other consumers should use the local ID variant of this method.
     virtual void OnTabGroupRemoved(const base::Uuid& sync_id,
-                                   TriggerSource source) = 0;
+                                   TriggerSource source) {}
   };
 
 #if BUILDFLAG(IS_ANDROID)

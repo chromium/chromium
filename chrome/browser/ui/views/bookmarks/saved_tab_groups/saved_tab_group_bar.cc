@@ -536,11 +536,6 @@ void SavedTabGroupBar::OnTabGroupUpdated(const SavedTabGroup& group,
   SavedTabGroupUpdated(group.saved_guid());
 }
 
-void SavedTabGroupBar::OnTabGroupRemoved(const LocalTabGroupID& local_id,
-                                         TriggerSource source) {
-  NOTIMPLEMENTED();
-}
-
 void SavedTabGroupBar::OnTabGroupRemoved(const base::Uuid& sync_id,
                                          TriggerSource source) {
   SavedTabGroupRemoved(sync_id);

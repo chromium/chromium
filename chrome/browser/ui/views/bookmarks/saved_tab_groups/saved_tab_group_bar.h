@@ -100,8 +100,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
                        TriggerSource source) override;
   void OnTabGroupUpdated(const SavedTabGroup& group,
                          TriggerSource source) override;
-  void OnTabGroupRemoved(const LocalTabGroupID& local_id,
-                         TriggerSource source) override;
   void OnTabGroupRemoved(const base::Uuid& sync_id,
                          TriggerSource source) override;
 
