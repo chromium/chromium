@@ -1763,6 +1763,7 @@
 
   {
     "prefix": "origin-agent-cluster-default-warning",
+    "owners": ["vogelheim@chromium.org", "wjmaclean@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "wpt_internal/origin-agent-cluster-default-warning" ],
     "exclusive_tests": "ALL",
