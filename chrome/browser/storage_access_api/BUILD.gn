@@ -15,6 +15,10 @@ source_set("storage_access_api") {
     "storage_access_api_tab_helper.h",
     "storage_access_grant_permission_context.cc",
     "storage_access_grant_permission_context.h",
+    "storage_access_header_service.cc",
+    "storage_access_header_service.h",
+    "storage_access_header_service_factory.cc",
+    "storage_access_header_service_factory.h",
   ]
 
   public_deps = [
@@ -29,6 +33,7 @@ source_set("storage_access_api") {
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
+    "//components/origin_trials:browser",
     "//content/public/browser",
     "//services/network/public/mojom",
   ]

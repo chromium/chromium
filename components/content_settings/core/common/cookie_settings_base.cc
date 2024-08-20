@@ -175,6 +175,7 @@ CookieSettingsBase::GetContentSettingsTypes() {
           ContentSettingsType::FEDERATED_IDENTITY_SHARING,
           ContentSettingsType::TRACKING_PROTECTION,
           ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL,
+          ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL,
       });
   return kInstance;
 }

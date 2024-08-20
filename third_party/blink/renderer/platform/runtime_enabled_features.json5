@@ -4064,6 +4064,11 @@
       status: "experimental",
     },
     {
+      name: "StorageAccessHeader",
+      origin_trial_feature_name: "StorageAccessHeader",
+      status: "experimental"
+    },
+    {
       name: "StorageBuckets",
       status: "stable",
     },
