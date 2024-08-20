@@ -388,7 +388,7 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillUploadContents& upload) {
   }
 
   out << Tr{} << "form_signature:" << upload.form_signature();
-  for (const auto& field : upload.field()) {
+  for (const auto& field : upload.field_data()) {
     out << Tr{} << Attrib{"style", "font-weight: bold"}
         << "field_signature:" << field.signature();
 
@@ -740,7 +740,8 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
           /*form_submission_source_for_vote_upload=*/std::nullopt)) {
     for (AutofillUploadContents& upload : upload_contents) {
       upload.clear_randomized_form_metadata();
-      for (AutofillUploadContents::Field& field : *upload.mutable_field()) {
+      for (AutofillUploadContents::Field& field :
+           *upload.mutable_field_data()) {
         field.clear_randomized_field_metadata();
       }
     }

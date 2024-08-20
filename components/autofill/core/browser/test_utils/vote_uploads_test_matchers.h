@@ -47,7 +47,7 @@ inline ::testing::Matcher<AutofillUploadContents> FormSignatureIs(
 template <typename... Matchers>
 inline ::testing::Matcher<AutofillUploadContents> FieldsAre(
     Matchers... matchers) {
-  return ::testing::Property("field", &AutofillUploadContents::field,
+  return ::testing::Property("field_data", &AutofillUploadContents::field_data,
                              ::testing::ElementsAre(matchers...));
 }
 
@@ -59,7 +59,7 @@ template <typename... Matchers>
 inline ::testing::Matcher<AutofillUploadContents> FieldsContain(
     Matchers... matchers) {
   return ::testing::Property(
-      "field", &AutofillUploadContents::field,
+      "field_data", &AutofillUploadContents::field_data,
       ::testing::IsSupersetOf(
           std::initializer_list<
               ::testing::Matcher<AutofillUploadContents::Field>>{matchers...}));

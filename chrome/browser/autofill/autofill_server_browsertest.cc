@@ -211,15 +211,19 @@ MATCHER_P(EqualsUploadProto, expected_const, "") {
             expected.upload().has_randomized_form_metadata());
   request.mutable_upload()->clear_randomized_form_metadata();
   expected.mutable_upload()->clear_randomized_form_metadata();
-  EXPECT_EQ(request.upload().field_size(), expected.upload().field_size());
-  if (request.upload().field_size() != expected.upload().field_size())
+  EXPECT_EQ(request.upload().field_data_size(),
+            expected.upload().field_data_size());
+  if (request.upload().field_data_size() !=
+      expected.upload().field_data_size()) {
     return false;
-  for (int i = 0; i < request.upload().field_size(); i++) {
+
+  }
+  for (int i = 0; i < request.upload().field_data_size(); i++) {
     request.mutable_upload()
-        ->mutable_field(i)
+        ->mutable_field_data(i)
         ->clear_randomized_field_metadata();
     expected.mutable_upload()
-        ->mutable_field(i)
+        ->mutable_field_data(i)
         ->clear_randomized_field_metadata();
   }
 
@@ -311,10 +315,10 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
 
   // Enabling raw form data uploading (e.g., field name) is too complicated in
   // this test. So, don't expect it in the upload.
-  test::FillUploadField(upload->add_field(), 2594484045U, 2U);
-  test::FillUploadField(upload->add_field(), 2750915947U, 2U);
-  test::FillUploadField(upload->add_field(), 3494787134U, 2U);
-  test::FillUploadField(upload->add_field(), 1236501728U, 2U);
+  test::FillUploadField(upload->add_field_data(), 2594484045U, 2U);
+  test::FillUploadField(upload->add_field_data(), 2750915947U, 2U);
+  test::FillUploadField(upload->add_field_data(), 3494787134U, 2U);
+  test::FillUploadField(upload->add_field_data(), 1236501728U, 2U);
 
   WindowedNetworkObserver upload_network_observer(EqualsUploadProto(request));
   content::WebContents* web_contents =

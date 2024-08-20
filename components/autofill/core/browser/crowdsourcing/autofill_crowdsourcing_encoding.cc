@@ -320,7 +320,7 @@ void EncodeFormFieldsForUpload(const FormStructure& form,
       continue;
     }
 
-    auto* added_field = upload->add_field();
+    auto* added_field = upload->add_field_data();
     for (auto field_type : field->possible_types()) {
       added_field->add_autofill_type(field_type);
     }

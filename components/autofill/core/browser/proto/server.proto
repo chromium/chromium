@@ -178,7 +178,7 @@ message AutofillRandomizedFieldMetadata {
 
 // This message contains information about the field types in a single form.
 // It is sent by the toolbar to contribute to the field type statistics.
-// Next available id: 48
+// Next available id: 49
 message AutofillUploadContents {
   required string client_version = 1;
   required fixed64 form_signature = 2;
@@ -198,7 +198,7 @@ message AutofillUploadContents {
   required string data_present = 4;
 
   // List of the fields in the form and their types.
-  repeated group Field = 5 {
+  message Field {
     // Field identification inside the current form.
     required fixed32 signature = 6;
 
@@ -335,6 +335,7 @@ message AutofillUploadContents {
     // wasn't changed. Not set if the field didn't have a pre-filled value.
     optional bool initial_value_changed = 47;
   }
+  repeated Field field_data = 48;
   // Signature of the form action host (e.g. Hash64Bit("example.com")).
   optional fixed64 action_signature = 13;
 
@@ -468,6 +469,9 @@ message AutofillUploadContents {
   optional fixed64 last_address_form_submitted = 43;
   optional fixed64 second_last_address_form_submitted = 44;
   optional fixed64 last_credit_card_form_submitted = 45;
+
+  reserved 5;
+  reserved "Field";
 }
 
 // This proto contains information about the validity of each field in an
