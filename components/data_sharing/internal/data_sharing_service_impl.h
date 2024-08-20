@@ -97,6 +97,10 @@ class DataSharingServiceImpl : public DataSharingService,
       const GroupId& group_id,
       base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback)
       override;
+  void GetSharedEntitiesPreview(
+      const GroupToken& group_token,
+      base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
+          callback) override;
 
   // CollaborationGroupSyncBridge::Observer implementation.
   void OnGroupsUpdated(const std::vector<GroupId>& added_group_ids,

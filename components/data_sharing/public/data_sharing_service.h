@@ -71,6 +71,8 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
       base::expected<GroupData, PeopleGroupActionFailure>;
   using GroupsDataSetOrFailureOutcome =
       base::expected<std::set<GroupData>, PeopleGroupActionFailure>;
+  using SharedDataPreviewOrFailureOutcome =
+      base::expected<SharedDataPreview, PeopleGroupActionFailure>;
   using ParseURLResult = base::expected<GroupToken, ParseURLStatus>;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -167,6 +169,13 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   virtual void EnsureGroupVisibility(
       const GroupId& group_id,
       base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) = 0;
+
+  // Gets a preview of the shared entities. The returned result may contain
+  // all types of shared entities for the group.
+  virtual void GetSharedEntitiesPreview(
+      const GroupToken& group_token,
+      base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
+          callback) = 0;
 };
 
 }  // namespace data_sharing

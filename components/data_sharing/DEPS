@@ -1,6 +1,7 @@
 include_rules = [
   "+components/keyed_service",
   "+components/sync/model",
+  "+components/sync/protocol",
   "+net/android",
   "+net/traffic_annotation",
 ]

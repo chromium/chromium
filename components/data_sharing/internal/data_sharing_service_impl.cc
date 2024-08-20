@@ -577,6 +577,14 @@ void DataSharingServiceImpl::EnsureGroupVisibility(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void DataSharingServiceImpl::GetSharedEntitiesPreview(
+    const GroupToken& group_token,
+    base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
+        callback) {
+  std::move(callback).Run(
+      base::unexpected(PeopleGroupActionFailure::kPersistentFailure));
+}
+
 void DataSharingServiceImpl::OnAccessTokenAdded(
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback,
     const base::expected<data_sharing_pb::AddAccessTokenResult, absl::Status>&
