@@ -1027,6 +1027,7 @@
   },
   {
     "prefix": "trust-tokens",
+    "owners": ["sergeyka@google.com", "jewoo@google.com"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
         "external/wpt/trust-tokens/end-to-end",
