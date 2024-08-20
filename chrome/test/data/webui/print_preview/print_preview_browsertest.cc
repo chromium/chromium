@@ -1112,6 +1112,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedItemTest, QueryOption) {
   RunTestCase("QueryOption");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedItemTest, QueryJapaneseCharacters) {
+  RunTestCase("QueryJapaneseCharacters");
+}
+
 class PrintPreviewDestinationListTest : public PrintPreviewBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {
