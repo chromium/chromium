@@ -964,12 +964,14 @@ int SSLClientSocketImpl::DoHandshakeComplete(int result) {
   }
   UMA_HISTOGRAM_ENUMERATION("Net.SSLHandshakeDetails", details);
 
-  // Measure TLS connections that implement the renegotiation_info extension.
-  // Note this records true for TLS 1.3. By removing renegotiation altogether,
-  // TLS 1.3 is implicitly patched against the bug. See
-  // https://crbug.com/850800.
+  // Measure TLS connections that implement the renegotiation_info and EMS
+  // extensions. TLS 1.3 is already patched for both bugs, so these functions
+  // record true in TLS 1.3 although the extensions are not actually negotiated.
+  // See https://crbug.com/850800.
   base::UmaHistogramBoolean("Net.SSLRenegotiationInfoSupported",
                             SSL_get_secure_renegotiation_support(ssl_.get()));
+  base::UmaHistogramBoolean("Net.SSLExtendedMainSecretSupported",
+                            SSL_get_extms_support(ssl_.get()));
 
   completed_connect_ = true;
   next_handshake_state_ = STATE_NONE;

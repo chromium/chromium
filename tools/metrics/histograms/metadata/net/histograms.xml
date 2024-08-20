@@ -5428,6 +5428,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.SSLExtendedMainSecretSupported" enum="BooleanSupported"
+    expires_after="2025-08-20">
+  <owner>davidben@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    For each TLS handshake, whether the server supports the Extended Main Secret
+    extension (RFC 7627). If the server negotiated TLS 1.3, which is always
+    patched against this bug, it is considered to support the extension. Servers
+    that do not implement this extension may be vulnerable to attacks when using
+    channel binding or key exporters.
+
+    Note this extension was originally defined with a different name in RFC
+    7276. It is being renamed in draft-ietf-tls-rfc8446bis to Extended Main
+    Secret. With both names, it is often referred to by the acronym EMS.
+  </summary>
+</histogram>
+
 <histogram name="Net.SSLHandshakeDetails" enum="SSLHandshakeDetails"
     expires_after="2025-02-10">
   <owner>davidben@chromium.org</owner>
@@ -5488,7 +5505,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SSLRenegotiationInfoSupported" enum="BooleanSupported"
-    expires_after="2024-11-20">
+    expires_after="2025-08-20">
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
