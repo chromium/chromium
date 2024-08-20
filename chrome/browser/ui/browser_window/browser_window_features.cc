@@ -17,12 +17,15 @@
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/browser_tab_group_sync_observer.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/lens/lens_features.h"
+#include "components/saved_tab_groups/features.h"
 
 namespace {
 
@@ -69,6 +72,15 @@ void BrowserWindowFeatures::Init(Browser* browser) {
     product_specifications_entry_point_controller_ =
         std::make_unique<commerce::ProductSpecificationsEntryPointController>(
             browser);
+
+    if (browser->profile()->IsRegularProfile() &&
+        tab_groups::IsTabGroupsSaveV2Enabled() &&
+        browser->tab_strip_model()->SupportsTabGroups()) {
+      browser_tab_group_sync_observer =
+          std::make_unique<tab_groups::BrowserTabGroupSyncObserver>(
+              browser->profile(), browser->tab_strip_model(),
+              browser->session_id());
+    }
   }
 
   // The LensOverlayEntryPointController is constructed for all browser types

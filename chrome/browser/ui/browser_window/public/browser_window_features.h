@@ -26,6 +26,10 @@ namespace lens {
 class LensOverlayEntryPointController;
 }  // namespace lens
 
+namespace tab_groups {
+class BrowserTabGroupSyncObserver;
+}  // namespace tab_groups
+
 // This class owns the core controllers for features that are scoped to a given
 // browser window on desktop. It can be subclassed by tests to perform
 // dependency injection.
@@ -118,6 +122,9 @@ class BrowserWindowFeatures {
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
 
   std::unique_ptr<ReadAnythingCoordinator> read_anything_coordinator_;
+
+  std::unique_ptr<tab_groups::BrowserTabGroupSyncObserver>
+      browser_tab_group_sync_observer;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

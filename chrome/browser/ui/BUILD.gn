@@ -1482,6 +1482,8 @@ static_library("ui") {
       "tabs/pinned_tab_service_factory.h",
       "tabs/recent_tabs_sub_menu_model.cc",
       "tabs/recent_tabs_sub_menu_model.h",
+      "tabs/saved_tab_groups/browser_tab_group_sync_observer.cc",
+      "tabs/saved_tab_groups/browser_tab_group_sync_observer.h",
       "tabs/saved_tab_groups/local_tab_group_listener.cc",
       "tabs/saved_tab_groups/local_tab_group_listener.h",
       "tabs/saved_tab_groups/saved_tab_group_controller.h",

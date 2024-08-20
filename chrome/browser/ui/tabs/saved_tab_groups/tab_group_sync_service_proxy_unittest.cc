@@ -671,7 +671,7 @@ TEST_P(TabGroupSyncServiceProxyUnitTest,
       retrieved_group->local_group_id().value()));
 }
 
-INSTANTIATE_TEST_SUITE_P(TabGroupServiceWrapper,
+INSTANTIATE_TEST_SUITE_P(TabGroupSyncServiceProxy,
                          TabGroupSyncServiceProxyUnitTest,
                          testing::Bool());
 

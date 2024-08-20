@@ -223,7 +223,7 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
                           base::Unretained(this))));
 
   // Add the observer.
-  // TODO(crbug.com/359715038): Consider consolidating logic by forwarding
+  // TODO(crbug.com/361110303): Consider consolidating logic by forwarding
   // observer in proxy.
   if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
     tab_group_service_->AddObserver(this);
@@ -262,7 +262,7 @@ SavedTabGroupBar::~SavedTabGroupBar() {
   // Remove all buttons from the hierarchy
   RemoveAllButtons();
 
-  // TODO(crbug.com/359715038): Consider consolidating logic by forwarding
+  // TODO(crbug.com/361110303): Consider consolidating logic by forwarding
   // observer in proxy.
   if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
     tab_group_service_->RemoveObserver(this);
