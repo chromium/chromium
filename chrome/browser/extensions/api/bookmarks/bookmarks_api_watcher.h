@@ -12,18 +12,20 @@
 
 #include "content/public/browser/browser_context.h"
 
-class ExtensionFunction;
-
 namespace extensions {
+class BookmarksFunction;
+class Extension;
 
-// This KeyedService is meant to observe the bookmarks API and provide
-// notifications.
+// This KeyedService is meant to observe the bookmark api and provide
+// notifications
 class BookmarksApiWatcher : public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
     // Notifies listeners that the bookmark API was invoked.
-    virtual void OnBookmarksApiInvoked(const ExtensionFunction* func) {}
+    virtual void OnBookmarksApiInvoked(
+        const extensions::Extension* extension,
+        const extensions::BookmarksFunction* func) {}
   };
 
   static BookmarksApiWatcher* GetForBrowserContext(
@@ -34,7 +36,8 @@ class BookmarksApiWatcher : public KeyedService {
   BookmarksApiWatcher(const BookmarksApiWatcher&) = delete;
   BookmarksApiWatcher& operator=(const BookmarksApiWatcher&) = delete;
 
-  void NotifyApiInvoked(const ExtensionFunction* func);
+  void NotifyApiInvoked(const extensions::Extension* extension,
+                        const extensions::BookmarksFunction* func);
 
   // Add/remove observer.
   void AddObserver(Observer* observer);
