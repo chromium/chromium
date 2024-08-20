@@ -2082,6 +2082,19 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ),
         treat_as_error=False,
     ),
+    BanRule(
+        pattern='BrowserWithTestWindowTest',
+        explanation=
+        ('Do not use BrowserWithTestWindowTest. By instantiating an instance '
+         'of class Browser, the test is no longer a unit test but is instead a '
+         'browser test. The class BrowserWithTestWindowTest forces production '
+         'logic to take on test-only conditionals, which is an anti-pattern. '
+         'Features should be performing dependency injection rather than '
+         'directly using class Browser. See '
+         'docs/chrome_browser_design_principles.md for more details.'
+        ),
+        treat_as_error=False,
+    ),
 )
 
 _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING = (

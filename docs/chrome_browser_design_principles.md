@@ -222,6 +222,21 @@ code. Some code is used on Android.
       that can be nullptr in tests.
     * In the event that they are necessary, document and enforce via
       `CHECK_IS_TEST()`.
+    * As a corollary: do not use BrowserWithTestWindowTest. In production code,
+      there is a 1:1 correspondence between "class Browser" and "class
+      BrowserView". Features that span the two classes (which is most UI
+      features) should be able to unconditionally reference "class BrowserView".
+      The existence of this test suite forces features tested by these tests to
+      have "if (!browser_view)" test-only checks in production code. Either
+      write a browser test (where both classes are provided by the test fixture) or a unit test
+      that requires neither.
+        * This also comes from a corollary of don't use "class Browser".
+          Historically, features were written that take a "class Browser" as an
+          input parameter. "class Browser" cannot be stubbed/faked/mocked, and
+          BrowserWithTestWindowTest was written as a workaround as a way to
+          provide a "class Browser" without a "class BrowserView". New features
+          should not be taking "class Browser" as input, and should instead
+          perform dependency injection.
 * Avoid unreachable branches.
     * We should have a semantic understanding of each path of control flow. How
       is this reached? If we don't know, then we should not have a conditional.
