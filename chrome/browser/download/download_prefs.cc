@@ -56,10 +56,6 @@
 #include "chrome/common/chrome_paths_lacros.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/ui/pdf/adobe_reader_info_win.h"
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif
@@ -481,12 +477,6 @@ void DownloadPrefs::SetShouldOpenPdfInSystemReader(bool should_open) {
 }
 
 bool DownloadPrefs::ShouldOpenPdfInSystemReader() const {
-#if BUILDFLAG(IS_WIN)
-  if (IsAdobeReaderDefaultPDFViewer() &&
-      !DownloadTargetDeterminer::IsAdobeReaderUpToDate()) {
-      return false;
-  }
-#endif
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, there is always an "app" to handle PDF files. E.g., a "View"
   // app which configures a file handler to open in a browser tab. However,

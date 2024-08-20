@@ -2898,12 +2898,6 @@ are declared in tools/grit/grit_rule.gni.
             &amp;Learn More
           </message>
         </if>  <!-- not use_titlecase -->
-        <if expr="is_win">
-          <message name="IDS_DOWNLOAD_MENU_ALWAYS_OPEN_PDF_IN_READER"
-                   desc="Download context menu: Always open PDFs using Adobe Reader">
-            Always open in Adobe Reader
-          </message>
-        </if>
         <message name="IDS_DOWNLOAD_MENU_DEEP_SCAN"
           desc="Download context menu: send file for deep scanning">
           Scan file

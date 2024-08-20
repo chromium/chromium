@@ -34,7 +34,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/download/download_target_determiner.h"
-#include "chrome/browser/ui/pdf/adobe_reader_info_win.h"
 #endif
 
 namespace {
@@ -187,18 +186,7 @@ bool DownloadCommands::IsDownloadPdf() const {
 }
 
 bool DownloadCommands::CanOpenPdfInSystemViewer() const {
-#if BUILDFLAG(IS_WIN)
-  bool is_adobe_pdf_reader_up_to_date = false;
-  if (IsDownloadPdf() && IsAdobeReaderDefaultPDFViewer()) {
-    is_adobe_pdf_reader_up_to_date =
-        DownloadTargetDeterminer::IsAdobeReaderUpToDate();
-  }
-  return IsDownloadPdf() &&
-         (IsAdobeReaderDefaultPDFViewer() ? is_adobe_pdf_reader_up_to_date
-                                          : true);
-#else  // BUILDFLAG(IS_WIN)
   return IsDownloadPdf();
-#endif
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||

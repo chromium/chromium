@@ -3775,8 +3775,6 @@ static_library("ui") {
     sources += [
       "network_profile_bubble.cc",
       "network_profile_bubble.h",
-      "pdf/adobe_reader_info_win.cc",
-      "pdf/adobe_reader_info_win.h",
       "startup/credential_provider_signin_dialog_win.cc",
       "startup/credential_provider_signin_dialog_win.h",
       "startup/credential_provider_signin_info_fetcher_win.cc",

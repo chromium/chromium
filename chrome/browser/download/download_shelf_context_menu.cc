@@ -20,10 +20,6 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/color_palette.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/ui/pdf/adobe_reader_info_win.h"
-#endif
-
 using InsecureDownloadStatus = download::DownloadItem::InsecureDownloadStatus;
 
 bool DownloadShelfContextMenu::WantsContextMenu(
@@ -169,10 +165,6 @@ std::u16string DownloadShelfContextMenu::GetLabelForCommandId(
             download_commands_->CanOpenPdfInSystemViewer();
         if (can_open_pdf_in_system_viewer) {
           id = IDS_DOWNLOAD_MENU_PLATFORM_OPEN_ALWAYS;
-#if BUILDFLAG(IS_WIN)
-          if (IsAdobeReaderDefaultPDFViewer())
-            id = IDS_DOWNLOAD_MENU_ALWAYS_OPEN_PDF_IN_READER;
-#endif  // BUILDFLAG(IS_WIN)
           break;
         }
       }
