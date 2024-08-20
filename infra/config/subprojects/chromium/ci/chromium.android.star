@@ -802,8 +802,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
-    # TODO(crbug.com/351944004): Enable gardening once tests are stable
-    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "tester|tablet",
         short_name = "12L-L",
