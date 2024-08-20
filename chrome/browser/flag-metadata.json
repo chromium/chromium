@@ -6691,32 +6691,32 @@
   {
     "name": "omnibox-ml-log-url-scoring-signals",
     "owners": [ "junzou@chromium.org", "yoangela@chromium.org", "manukh@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "omnibox-ml-url-piecewise-mapped-search-blending",
     "owners": ["khalidpeer@chromium.org", "junzou@chromium.org", "manukh@chromium.org", "chrome-desktop-search@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "omnibox-ml-url-score-caching",
     "owners": [ "khalidpeer@chromium.org", "junzou@chromium.org", "manukh@chromium.org", "chrome-desktop-search@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "omnibox-ml-url-scoring",
     "owners": ["yoangela@chromium.org", "junzou@chromium.org", "manukh@chromium.org", "chrome-desktop-search@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "omnibox-ml-url-scoring-model",
     "owners": [ "junzou@chromium.org", "yoangela@chromium.org", "manukh@chromium.org", "chrome-desktop-search@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "omnibox-ml-url-search-blending",
     "owners": ["yoangela@chromium.org", "junzou@chromium.org", "manukh@chromium.org", "chrome-desktop-search@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "omnibox-modernize-visual-update",
