@@ -10,7 +10,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sync/engine/events/protocol_event_observer.h"
 #include "components/sync/invalidations/invalidations_listener.h"
 #include "components/sync/service/sync_service_observer.h"
@@ -68,14 +67,6 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
 
   // Handler for triggerRefresh message.
   void HandleTriggerRefresh(const base::Value::List& args);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Handler for isLacrosEnabled message.
-  void IsLacrosEnabled(const base::Value::List& args);
-
-  // Handler for openBrowserSyncInternals message.
-  void OpenLacrosSyncInternals(const base::Value::List& args);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Callback used in GetAllNodes.
   void OnReceivedAllNodes(const std::string& callback_id,

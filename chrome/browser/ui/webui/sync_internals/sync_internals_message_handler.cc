@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -31,12 +30,6 @@
 #include "components/sync_user_events/user_event_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/common/webui_url_constants.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using syncer::SyncInvalidationsService;
 using syncer::SyncService;
@@ -149,18 +142,6 @@ void SyncInternalsMessageHandler::RegisterMessages() {
       syncer::sync_ui_util::kGetAllNodes,
       base::BindRepeating(&SyncInternalsMessageHandler::HandleGetAllNodes,
                           base::Unretained(this)));
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterMessageCallback(
-      syncer::sync_ui_util::kIsLacrosEnabled,
-      base::BindRepeating(&SyncInternalsMessageHandler::IsLacrosEnabled,
-                          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      syncer::sync_ui_util::kOpenLacrosSyncInternals,
-      base::BindRepeating(&SyncInternalsMessageHandler::OpenLacrosSyncInternals,
-                          base::Unretained(this)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates(
@@ -305,30 +286,6 @@ void SyncInternalsMessageHandler::HandleTriggerRefresh(
 
   service->TriggerRefresh(syncer::DataTypeSet::All());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void SyncInternalsMessageHandler::IsLacrosEnabled(
-    const base::Value::List& args) {
-  CHECK_EQ(1U, args.size());
-
-  AllowJavascript();
-  const bool is_lacros_enabled = crosapi::browser_util::IsLacrosEnabled();
-  std::string callback_id = args[0].GetString();
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(is_lacros_enabled));
-}
-
-void SyncInternalsMessageHandler::OpenLacrosSyncInternals(
-    const base::Value::List& args) {
-  CHECK_EQ(0U, args.size());
-
-  // Note: This will only be called by the UI when Lacros is available.
-  DCHECK(crosapi::BrowserManager::Get());
-  crosapi::BrowserManager::Get()->SwitchToTab(
-      GURL(chrome::kChromeUISyncInternalsUrl),
-      /*path_behavior=*/NavigateParams::RESPECT);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void SyncInternalsMessageHandler::OnReceivedAllNodes(
     const std::string& callback_id,
