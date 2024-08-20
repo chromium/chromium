@@ -18,6 +18,7 @@ source_set("model") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/ui/symbols:buildflags",
   ]
