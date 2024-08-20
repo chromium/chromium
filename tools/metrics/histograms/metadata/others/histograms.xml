@@ -10095,25 +10095,8 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VoiceInteraction.AudioPermissionEvent{Timing}"
-    enum="AudioPermissionState" expires_after="2023-07-05">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Android: The events related to granting or denying audio permission for
-    system level transcription (as opposite to Assistant). Will be logged
-    {Timing}.
-  </summary>
-  <token key="Timing">
-    <variant name=""
-        summary="each time non-Assistant voice recognition is triggered with
-                 a mic button press"/>
-    <variant name=".SessionStart" summary="on browser session start"/>
-  </token>
-</histogram>
-
 <histogram name="VoiceInteraction.DismissedEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2025-01-26">
+    enum="VoiceInteractionEventSource" expires_after="2025-01-28">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -10123,7 +10106,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.FailureEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2024-09-15">
+    enum="VoiceInteractionEventSource" expires_after="2025-01-28">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -10135,7 +10118,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.FinishEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2025-01-26">
+    enum="VoiceInteractionEventSource" expires_after="2025-01-28">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -10144,41 +10127,8 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VoiceInteraction.QueryDuration.Android" units="ms"
-    expires_after="2023-07-05">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Records the time it takes between the user clicking the mic and chrome
-    receiving the transcribed voice query. This is recorded after an Assistant
-    intent has completed successfully.
-  </summary>
-</histogram>
-
-<histogram name="VoiceInteraction.QueryDuration.Android{Action}" units="ms"
-    expires_after="2023-07-05">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Records the time it takes between the user clicking the mic and chrome
-    receiving the intent response for {Action} actions. This is recorded after
-    an Assistant intent has completed successfully. These per-action variants
-    are recorded only when non-transcription actions are enabled. See
-    VoiceInteraction.QueryDuration.Android for the total count that includes
-    clients with non-transcription actions disabled.
-  </summary>
-  <token key="Action">
-<!-- Must be kept in sync with AssistantActionPerformed in enums.xml. -->
-
-    <variant name=".Readout" summary="Readout"/>
-    <variant name=".Transcription" summary="Transcription"/>
-    <variant name=".Translate" summary="Translate"/>
-    <variant name=".Unknown" summary="Unknown"/>
-  </token>
-</histogram>
-
 <histogram name="VoiceInteraction.StartEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2025-01-26">
+    enum="VoiceInteractionEventSource" expires_after="2025-01-28">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -10187,29 +10137,21 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VoiceInteraction.UnexpectedResultSource"
-    enum="VoiceInteractionEventSource" expires_after="2023-07-05">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Android: The source of an incoming result that doesn't align with an
-    outgoing request from Chrome. This is recorded when the extraneous intent
-    response is received.
-  </summary>
-</histogram>
-
 <histogram name="VoiceInteraction.VoiceResultConfidenceValue" units="%"
-    expires_after="2024-04-28">
+    expires_after="2025-01-28">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: Records the confidence value of a successful voice search as a
     percentage. This is recorded when the voice intent returns successfully.
+
+    Warning: this histogram was expired from 2024-04-28 to 2024-08-19; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="VoiceInteraction.VoiceSearchResult" enum="BooleanSuccess"
-    expires_after="2025-01-26">
+    expires_after="2025-01-28">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

@@ -865,12 +865,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="9" label="kPassthroughDTS"/>
 </enum>
 
-<enum name="AudioPermissionState">
-  <int value="0" label="Granted"/>
-  <int value="1" label="Denied but can ask again"/>
-  <int value="2" label="Denied and can't ask again"/>
-</enum>
-
 <enum name="AudioSampleRate">
   <int value="0" label="8 kHz"/>
   <int value="1" label="16 kHz"/>
