@@ -21,18 +21,6 @@ ChromeSyncInternalsMessageHandler::ChromeSyncInternalsMessageHandler(
                                   user_event_service,
                                   channel) {}
 
-ChromeSyncInternalsMessageHandler::ChromeSyncInternalsMessageHandler(
-    AboutSyncDataDelegate about_sync_data_delegate,
-    syncer::SyncService* sync_service,
-    syncer::SyncInvalidationsService* sync_invalidations_service,
-    syncer::UserEventService* user_event_service,
-    const std::string& channel)
-    : SyncInternalsMessageHandler(std::move(about_sync_data_delegate),
-                                  sync_service,
-                                  sync_invalidations_service,
-                                  user_event_service,
-                                  channel) {}
-
 void ChromeSyncInternalsMessageHandler::SendEventToPage(
     std::string_view event_name,
     base::span<const base::ValueView> args) {

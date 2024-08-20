@@ -36,16 +36,6 @@ class ChromeSyncInternalsMessageHandler
   void RegisterMessages() override;
   void OnJavascriptDisallowed() override;
 
- protected:
-  // TODO(crbug.com/360321896): Remove when the unit test is testing
-  // SyncInternalsMessageHandler instead.
-  explicit ChromeSyncInternalsMessageHandler(
-      AboutSyncDataDelegate about_sync_data_delegate,
-      syncer::SyncService* sync_service,
-      syncer::SyncInvalidationsService* sync_invalidations_service,
-      syncer::UserEventService* user_event_service,
-      const std::string& channel);
-
  private:
   // When handling a message page from the page, this class might want to reply
   // back, which requires javascript to be enabled. This wrapper ensures it.

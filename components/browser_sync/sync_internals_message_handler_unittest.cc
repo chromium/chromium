@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/sync_internals/chrome_sync_internals_message_handler.h"
+#include "components/browser_sync/sync_internals_message_handler.h"
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <utility>
@@ -14,48 +15,68 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/service/sync_internals_util.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/mock_sync_invalidations_service.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "components/sync_user_events/fake_user_event_service.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using syncer::sync_ui_util::kGetAllNodes;
+using syncer::sync_ui_util::kOnAboutInfoUpdated;
+using syncer::sync_ui_util::kOnEntityCountsUpdated;
 using syncer::sync_ui_util::kRequestDataAndRegisterForUpdates;
 using syncer::sync_ui_util::kWriteUserEvent;
+using testing::_;
+using testing::ElementsAre;
 
+namespace browser_sync {
 namespace {
 
 const char kChannel[] = "canary";
 
-// TODO(crbug.com/360321896): Move to //components and test the cross-platform
-// class instead. That's also why the file and fixture weren't renamed yet.
-class TestableSyncInternalsMessageHandler
-    : public ChromeSyncInternalsMessageHandler {
+// Matches a given base::ValueView against `dict`.
+MATCHER_P(ValueViewMatchesDict, dict, "") {
+  base::Value value = arg.ToValue();
+  return value.is_dict() && value.GetDict() == dict;
+}
+
+class TestableSyncInternalsMessageHandler : public SyncInternalsMessageHandler {
  public:
   TestableSyncInternalsMessageHandler(
       AboutSyncDataDelegate about_sync_data_delegate,
       syncer::SyncService* sync_service,
       syncer::SyncInvalidationsService* sync_invalidations_service,
       syncer::UserEventService* user_event_service)
-      : ChromeSyncInternalsMessageHandler(std::move(about_sync_data_delegate),
-                                          sync_service,
-                                          sync_invalidations_service,
-                                          user_event_service,
-                                          kChannel) {}
+      : SyncInternalsMessageHandler(std::move(about_sync_data_delegate),
+                                    sync_service,
+                                    sync_invalidations_service,
+                                    user_event_service,
+                                    kChannel) {}
 
-  using ChromeSyncInternalsMessageHandler::GetMessageHandlerMap;
+  using SyncInternalsMessageHandler::DisableMessagesToPage;
+  using SyncInternalsMessageHandler::GetMessageHandlerMap;
+
+  // TODO(crbug.com/360321896): Move the virtual methods to a different class.
+  MOCK_METHOD(void,
+              SendEventToPage,
+              (std::string_view, base::span<const base::ValueView>),
+              (override));
+  MOCK_METHOD(void,
+              ResolvePageCallback,
+              (const base::ValueView, const base::ValueView),
+              (override));
 };
 
-class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
+class SyncInternalsMessageHandlerTest : public testing::Test {
  public:
-  SyncInternalsMessageHandlerTest() = default;
+  SyncInternalsMessageHandlerTest() {
+    ON_CALL(mock_sync_service_, GetEntityCountsForDebugging)
+        .WillByDefault(base::test::RunCallback<0>(
+            syncer::TypeEntitiesCount(syncer::PASSWORDS)));
+  }
 
   SyncInternalsMessageHandlerTest(const SyncInternalsMessageHandlerTest&) =
       delete;
@@ -63,34 +84,6 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
       const SyncInternalsMessageHandlerTest&) = delete;
 
   ~SyncInternalsMessageHandlerTest() override = default;
-
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    ON_CALL(*mock_sync_service(), GetEntityCountsForDebugging)
-        .WillByDefault(base::test::RunCallback<0>(
-            syncer::TypeEntitiesCount(syncer::PASSWORDS)));
-    web_ui_->set_web_contents(web_contents());
-    handler_ = new TestableSyncInternalsMessageHandler(
-        base::BindRepeating(
-            &SyncInternalsMessageHandlerTest::ConstructFakeAboutInformation,
-            base::Unretained(this)),
-        &mock_sync_service_, &mock_sync_invalidations_service_,
-        &fake_user_event_service_);
-    web_ui_->AddMessageHandler(
-        std::unique_ptr<content::WebUIMessageHandler>(handler_));
-    // In production, RegisterMessages() ensures that AllowJavascript() is
-    // called before any Handle*() method. But these tests are calling the
-    // handlers directly, so enable javascript here to avoid crashes.
-    handler_->AllowJavascriptForTesting();
-  }
-
-  void TearDown() override {
-    // Destroy |handler_| before |web_contents()|.
-    handler_ = nullptr;
-    ChromeRenderViewHostTestHarness::TearDown();
-  }
-
-  content::TestWebUI* web_ui() { return web_ui_.get(); }
 
   syncer::MockSyncService* mock_sync_service() { return &mock_sync_service_; }
 
@@ -104,29 +97,11 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
 
   TestableSyncInternalsMessageHandler* handler() { return handler_.get(); }
 
-  int CallCountWithName(const std::string& function_name) {
-    int count = 0;
-    for (const auto& call_data : web_ui_->call_data()) {
-      if (call_data->function_name() == function_name) {
-        count++;
-      }
-    }
-    return count;
-  }
-
   int about_sync_data_delegate_call_count() const {
     return about_sync_data_delegate_call_count_;
   }
 
-  const std::vector<std::unique_ptr<content::TestWebUI::CallData>>& call_data()
-      const {
-    return web_ui_->call_data();
-  }
-
-  void ResetHandler() {
-    handler_ = nullptr;
-    web_ui_.reset();
-  }
+  void ResetHandler() { handler_.reset(); }
 
   // Fake return value for sync_ui_util::ConstructAboutInformation().
   const base::Value::Dict kAboutInformation =
@@ -140,12 +115,17 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
     return kAboutInformation.Clone();
   }
 
-  std::unique_ptr<content::TestWebUI> web_ui_ =
-      std::make_unique<content::TestWebUI>();
   syncer::MockSyncService mock_sync_service_;
   syncer::MockSyncInvalidationsService mock_sync_invalidations_service_;
   syncer::FakeUserEventService fake_user_event_service_;
-  raw_ptr<TestableSyncInternalsMessageHandler> handler_ = nullptr;
+  std::unique_ptr<TestableSyncInternalsMessageHandler> handler_ =
+      std::make_unique<TestableSyncInternalsMessageHandler>(
+          base::BindRepeating(
+              &SyncInternalsMessageHandlerTest::ConstructFakeAboutInformation,
+              base::Unretained(this)),
+          &mock_sync_service_,
+          &mock_sync_invalidations_service_,
+          &fake_user_event_service_);
   int about_sync_data_delegate_call_count_ = 0;
 };
 
@@ -163,7 +143,7 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObservers) {
   ResetHandler();
 }
 
-TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversDisallowJavascript) {
+TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversDisableMessages) {
   EXPECT_CALL(*mock_sync_service(), AddObserver);
   EXPECT_CALL(*mock_sync_service(), RemoveObserver).Times(0);
   handler()
@@ -174,7 +154,7 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversDisallowJavascript) {
 
   EXPECT_CALL(*mock_sync_service(), AddObserver).Times(0);
   EXPECT_CALL(*mock_sync_service(), RemoveObserver);
-  handler()->DisallowJavascript();
+  handler()->DisableMessagesToPage();
   testing::Mock::VerifyAndClearExpectations(mock_sync_service());
 
   // Deregistration should not repeat, no counts should increase.
@@ -185,19 +165,16 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversDisallowJavascript) {
 
 TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversSyncDisabled) {
   // Simulate completely disabling sync by flag or other mechanism.
-  auto* handler = new TestableSyncInternalsMessageHandler(
+  auto handler = std::make_unique<TestableSyncInternalsMessageHandler>(
       base::BindLambdaForTesting([&](syncer::SyncService*, const std::string&) {
         return kAboutInformation.Clone();
       }),
       /*sync_service=*/nullptr, mock_sync_invalidations_service(),
       fake_user_event_service());
-  web_ui()->AddMessageHandler(
-      std::unique_ptr<content::WebUIMessageHandler>(handler));
-  handler->AllowJavascriptForTesting();
   handler->GetMessageHandlerMap()
       .at(kRequestDataAndRegisterForUpdates)
       .Run(base::Value::List());
-  handler->DisallowJavascript();
+  handler->DisableMessagesToPage();
   // Cannot verify observer methods on sync services were not called, because
   // there is no sync service. Rather, we're just making sure the handler hasn't
   // performed any invalid operations when the sync service is missing.
@@ -211,8 +188,9 @@ TEST_F(SyncInternalsMessageHandlerTest, HandleGetAllNodes) {
       ->GetMessageHandlerMap()
       .at(kGetAllNodes)
       .Run(base::Value::List().Append("getAllNodes_0"));
+  EXPECT_CALL(*handler(), ResolvePageCallback);
   std::move(get_all_nodes_callback).Run(base::Value::List());
-  EXPECT_EQ(1, CallCountWithName("cr.webUIResponse"));
+  testing::Mock::VerifyAndClearExpectations(handler());
 
   handler()
       ->GetMessageHandlerMap()
@@ -220,49 +198,27 @@ TEST_F(SyncInternalsMessageHandlerTest, HandleGetAllNodes) {
       .Run(base::Value::List().Append("getAllNodes_1"));
   // This  breaks the weak ref the callback is hanging onto. Which results in
   // the call count not incrementing.
-  handler()->DisallowJavascript();
+  handler()->DisableMessagesToPage();
+  EXPECT_CALL(*handler(), ResolvePageCallback).Times(0);
   std::move(get_all_nodes_callback).Run(base::Value::List());
-  EXPECT_EQ(1, CallCountWithName("cr.webUIResponse"));
+  testing::Mock::VerifyAndClearExpectations(handler());
 
-  handler()->AllowJavascriptForTesting();
   handler()
       ->GetMessageHandlerMap()
       .at(kGetAllNodes)
       .Run(base::Value::List().Append("getAllNodes_2"));
+  EXPECT_CALL(*handler(), ResolvePageCallback);
   std::move(get_all_nodes_callback).Run(base::Value::List());
-  EXPECT_EQ(2, CallCountWithName("cr.webUIResponse"));
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, SendAboutInfo) {
-  handler()->AllowJavascriptForTesting();
+  EXPECT_CALL(*handler(), SendEventToPage(kOnAboutInfoUpdated,
+                                          ElementsAre(ValueViewMatchesDict(
+                                              std::cref(kAboutInformation)))));
+  EXPECT_CALL(*handler(), SendEventToPage(kOnEntityCountsUpdated, _));
   static_cast<syncer::SyncServiceObserver*>(handler())->OnStateChanged(
       mock_sync_service());
   EXPECT_EQ(1, about_sync_data_delegate_call_count());
-
-  // There should be one kOnAboutInfoUpdated event, and one
-  // kOnEntityCountsUpdated event (because TestSyncService responds with the
-  // entity count for a single data type).
-  ASSERT_EQ(2u, call_data().size());
-
-  // Check the syncer::sync_ui_util::kOnAboutInfoUpdated event dispatch.
-  const content::TestWebUI::CallData& about_info_call_data = *call_data()[0];
-  EXPECT_EQ("cr.webUIListenerCallback", about_info_call_data.function_name());
-  ASSERT_NE(nullptr, about_info_call_data.arg1());
-  EXPECT_EQ(base::Value(syncer::sync_ui_util::kOnAboutInfoUpdated),
-            *about_info_call_data.arg1());
-  ASSERT_NE(nullptr, about_info_call_data.arg2());
-  EXPECT_EQ(kAboutInformation, *about_info_call_data.arg2());
-
-  // TestSyncService::GetEntityCountsForDebugging() responds synchronously and
-  // for a single data type, so check for a single
-  // syncer::sync_ui_util::kOnEntityCountsUpdated event dispatch.
-  const content::TestWebUI::CallData& entity_counts_updated_call_data =
-      *call_data()[1];
-  EXPECT_EQ("cr.webUIListenerCallback",
-            entity_counts_updated_call_data.function_name());
-  ASSERT_NE(nullptr, entity_counts_updated_call_data.arg1());
-  EXPECT_EQ(base::Value(syncer::sync_ui_util::kOnEntityCountsUpdated),
-            *entity_counts_updated_call_data.arg1());
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, WriteUserEvent) {
@@ -328,3 +284,4 @@ TEST_F(SyncInternalsMessageHandlerTest, WriteUserEventZero) {
 }
 
 }  // namespace
+}  // namespace browser_sync
