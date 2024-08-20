@@ -7,7 +7,7 @@
 
 #import <string>
 
-class ChromeBrowserState;
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 // Feature flag parameter in Price Insights to determine the text displayed for
 // a low price.
