@@ -285,8 +285,10 @@
   },
   "The stable suite tests for conformance to HTML/web specifications, and",
   "detects unintentional changes to web exposed surface, so should not expire.",
+  "Owners are part of third_party/blink/API_OWNERS.",
   {
     "prefix": "stable",
+    "owners": ["blink-api-owners@chromium.org"],
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": ["fast/css3-text/css3-text-decoration/stable",
               "fast/dom/Window",
