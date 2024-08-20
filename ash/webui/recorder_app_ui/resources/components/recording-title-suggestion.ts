@@ -25,7 +25,11 @@ import {
   ReactiveLitElement,
   ScopedAsyncComputed,
 } from '../core/reactive/lit.js';
-import {assertExhaustive, assertInstanceof} from '../core/utils/assert.js';
+import {
+  assertExhaustive,
+  assertExists,
+  assertInstanceof,
+} from '../core/utils/assert.js';
 
 import {GenaiResultType} from './genai-error.js';
 
@@ -116,6 +120,16 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
 
   suggestedTitles: ScopedAsyncComputed<ModelResponse<string[]>|null>|null =
     null;
+
+  get firstSuggestedTitleForTest(): Chip {
+    return assertExists(this.shadowRoot?.querySelector('.suggestion'));
+  }
+
+  nthSuggestedTitleForTest(index: number): Chip {
+    const allSuggestions =
+      assertExists(this.shadowRoot?.querySelectorAll('.suggestion'));
+    return assertInstanceof(allSuggestions[index], Chip);
+  }
 
   private onCloseClick() {
     this.dispatchEvent(new Event('close'));

@@ -18,6 +18,7 @@ import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {ExportDialog} from '../components/export-dialog.js';
 import {MicSelectionMenu} from '../components/mic-selection-menu.js';
+import {RecordingFileList} from '../components/recording-file-list.js';
 import {RecordingInfoDialog} from '../components/recording-info-dialog.js';
 import {SettingsMenu} from '../components/settings-menu.js';
 import {
@@ -106,6 +107,10 @@ export class MainPage extends ReactiveLitElement {
 
   private readonly exportDialog = createRef<ExportDialog>();
 
+  private readonly startRecordingButton = createRef<HTMLButtonElement>();
+
+  private readonly recordingFileList = createRef<RecordingFileList>();
+
   private lastDeleteId: string|null = null;
 
   private get micSelectionMenu(): MicSelectionMenu|null {
@@ -114,6 +119,14 @@ export class MainPage extends ReactiveLitElement {
 
   private get settingsMenu(): SettingsMenu|null {
     return this.shadowRoot?.querySelector('settings-menu') ?? null;
+  }
+
+  get startRecordingButtonForTest(): HTMLButtonElement {
+    return assertExists(this.startRecordingButton.value);
+  }
+
+  get recordingFileListForTest(): RecordingFileList {
+    return assertExists(this.recordingFileList.value);
   }
 
   private readonly recordingInfoDialog = createRef<RecordingInfoDialog>();
@@ -167,6 +180,7 @@ export class MainPage extends ReactiveLitElement {
       id="record-button"
       shape="circle"
       @click=${this.onClickRecordButton}
+      ${ref(this.startRecordingButton)}
     >
       <cra-icon slot="icon" name="circle_fill"></cra-icon>
     </cra-icon-button>`;
@@ -219,6 +233,7 @@ export class MainPage extends ReactiveLitElement {
           @delete-recording-clicked=${this.onDeleteRecordingClick}
           @export-recording-clicked=${this.onExportRecordingClick}
           @show-recording-info-clicked=${this.onShowRecordingInfoClick}
+          ${ref(this.recordingFileList)}
         >
         </recording-file-list>
         <div id="actions">

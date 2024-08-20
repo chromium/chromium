@@ -35,7 +35,7 @@ import {
   RecordingMetadataMap,
 } from '../core/recording_data_manager.js';
 import {RecordingSortType, settings} from '../core/state/settings.js';
-import {assertExhaustive} from '../core/utils/assert.js';
+import {assertExhaustive, assertExists} from '../core/utils/assert.js';
 import {
   getMonthLabel,
   getToday,
@@ -44,6 +44,7 @@ import {
 } from '../core/utils/datetime.js';
 
 import {CraMenu} from './cra/cra-menu.js';
+import {RecordingFileListItem} from './recording-file-list-item.js';
 
 interface RecordingSearchResult {
   highlight: [number, number]|null;
@@ -144,6 +145,16 @@ export class RecordingFileList extends ReactiveLitElement {
   private readonly sortMenuOpened = signal(false);
 
   private readonly platformHandler = usePlatformHandler();
+
+  get firstRecordingForTest(): RecordingFileListItem {
+    return assertExists(
+      this.shadowRoot?.querySelector('recording-file-list-item')
+    );
+  }
+
+  recordingFileCountForTest(): number {
+    return Object.keys(this.recordingMetadataMap).length;
+  }
 
   private onSortingTypeClick(newSortType: RecordingSortType) {
     settings.mutate((d) => {

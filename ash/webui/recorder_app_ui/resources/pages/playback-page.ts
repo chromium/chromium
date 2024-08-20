@@ -37,6 +37,8 @@ import {CraMenu} from '../components/cra/cra-menu.js';
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {ExportDialog} from '../components/export-dialog.js';
 import {RecordingInfoDialog} from '../components/recording-info-dialog.js';
+import {RecordingTitle} from '../components/recording-title.js';
+import {SummarizationView} from '../components/summarization-view.js';
 import {i18n} from '../core/i18n.js';
 import {
   AnimationFrameController,
@@ -50,7 +52,7 @@ import {
 } from '../core/reactive/lit.js';
 import {computed, Dispose, effect, signal} from '../core/reactive/signal.js';
 import {navigateTo} from '../core/state/route.js';
-import {assertExists, assertInstanceof} from '../core/utils/assert.js';
+import {assert, assertExists, assertInstanceof} from '../core/utils/assert.js';
 import {formatDuration} from '../core/utils/datetime.js';
 
 /**
@@ -358,6 +360,16 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private readonly floatingVolume = createRef<HTMLElement>();
 
+  private readonly backButton = createRef<HTMLButtonElement>();
+
+  private readonly playPauseButton = createRef<HTMLButtonElement>();
+
+  private readonly transcriptionButtonRef = createRef<HTMLButtonElement>();
+
+  private readonly recordingTitle = createRef<RecordingTitle>();
+
+  private readonly summarizationView = createRef<SummarizationView>();
+
   // TODO(pihsun): Loading spinner when loading metadata.
   private readonly recordingMetadata = computed(() => {
     const id = this.recordingIdSignal.value;
@@ -436,6 +448,27 @@ export class PlaybackPage extends ReactiveLitElement {
         );
       }
     });
+  }
+
+  get pauseButtonForTest(): HTMLButtonElement {
+    assert(this.audioPlaying.value, 'The playback is already paused');
+    return assertExists(this.playPauseButton.value);
+  }
+
+  get backButtonForTest(): HTMLButtonElement {
+    return assertExists(this.backButton.value);
+  }
+
+  get transcriptionToggleButtonForTest(): HTMLButtonElement {
+    return assertExists(this.transcriptionButtonRef.value);
+  }
+
+  get recordingTitleForTest(): RecordingTitle {
+    return assertExists(this.recordingTitle.value);
+  }
+
+  get summarizationViewForTest(): SummarizationView {
+    return assertExists(this.summarizationView.value);
   }
 
   private revokeAudio() {
@@ -531,7 +564,10 @@ export class PlaybackPage extends ReactiveLitElement {
       .currentTime=${this.currentTime.value}
       seekable
     >
-      <summarization-view .transcription=${transcription}></summarization-view>
+      <summarization-view
+        .transcription=${transcription}
+        ${ref(this.summarizationView)}
+      ></summarization-view>
     </transcription-view>`;
   }
 
@@ -540,6 +576,7 @@ export class PlaybackPage extends ReactiveLitElement {
       id="play-button"
       shape="circle"
       @click=${this.onPlayPauseClick}
+      ${ref(this.playPauseButton)}
     >
       <cra-icon
         slot="icon"
@@ -623,6 +660,7 @@ export class PlaybackPage extends ReactiveLitElement {
               buttonstyle="toggle"
               .selected=${live(this.showTranscription.value)}
               @click=${this.toggleTranscription}
+              ${ref(this.transcriptionButtonRef)}
             >
               <cra-icon slot="icon" name="notes"></cra-icon>
               <cra-icon slot="selectedIcon" name="notes"></cra-icon>
@@ -631,10 +669,17 @@ export class PlaybackPage extends ReactiveLitElement {
 
     return html`
       <div id="header" class="sheet">
-        <cra-icon-button buttonstyle="floating" href="/">
+        <cra-icon-button
+          buttonstyle="floating"
+          @click=${() => navigateTo('/')}
+          ${ref(this.backButton)}
+        >
           <cra-icon slot="icon" name="arrow_back"></cra-icon>
         </cra-icon-button>
-        <recording-title .recordingMetadata=${this.recordingMetadata.value}>
+        <recording-title
+          .recordingMetadata=${this.recordingMetadata.value}
+          ${ref(this.recordingTitle)}
+        >
         </recording-title>
         ${transcriptionToggleButton}
         <cra-icon-button

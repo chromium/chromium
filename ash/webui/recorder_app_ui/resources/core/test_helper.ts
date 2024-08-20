@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {RecorderApp} from '../pages/recorder-app.js';
+
 import {
   useRecordingDataManager,
 } from './lit/context.js';
@@ -111,4 +113,87 @@ export class TestHelper {
       await useRecordingDataManager().createRecording(params, blob);
     }
   }
+
+  // UI-related functions.
+  /**
+   * Returns the UI from the given key, throws an error if not exists.
+   *
+   * @param key UI key listed in `UI_COMPONENTS` object.
+   * @return The resolved UI element.
+   */
+  static resolveComponent(key: ComponentKey): Element {
+    return UI_COMPONENTS[key]();
+  }
+
+  /**
+   * Returns the number of the recording files in the main page.
+   *
+   * @return Number of recording files in the main Page.
+   */
+  static getRecordingFileCount(): number {
+    return app()
+      .mainPageForTest.recordingFileListForTest.recordingFileCountForTest();
+  }
+
+  /**
+   * Returns the title suggestion given the index.
+   *
+   * @param index Zero-based index.
+   * @return An element of the n-th title suggestion.
+   */
+  static getNthSuggestedTitle(index: number): Element {
+    return app()
+      .playbackPageForTest.recordingTitleForTest.titleSuggestionForTest
+      .nthSuggestedTitleForTest(index);
+  }
+
+  /**
+   * Returns the summary shown in the playback page.
+   *
+   * @return A string containing the recording summary, may contains `\n`.
+   */
+  static getSummaryContent(): string {
+    return app()
+      .playbackPageForTest.summarizationViewForTest.getSummaryContentForTest();
+  }
 }
+
+/**
+ * Returns the `RecorderApp` queried from the document.
+ *
+ * @return `RecorderApp` object.
+ */
+function app(): RecorderApp {
+  return assertExists(document.querySelector('recorder-app'));
+}
+
+// TODO: b/361015174 - Simplify the approach to access UI components.
+const UI_COMPONENTS = {
+  firstSuggestedTitle: () =>
+    app()
+      .playbackPageForTest.recordingTitleForTest.titleSuggestionForTest
+      .firstSuggestedTitleForTest,
+  firstRecordingCard: () => app()
+                              .mainPageForTest.recordingFileListForTest
+                              .firstRecordingForTest.recordingCardForTest,
+  mainPage: () => app().mainPageForTest,
+  playbackBackButton: () => app().playbackPageForTest.backButtonForTest,
+  playbackPage: () => app().playbackPageForTest,
+  playbackPauseButton: () => app().playbackPageForTest.pauseButtonForTest,
+  playbackRecordingTitle: () => app().playbackPageForTest.recordingTitleForTest,
+  playbackTranscriptionToggleButton: () =>
+    app().playbackPageForTest.transcriptionToggleButtonForTest,
+  recordPage: () => app().recordPageForTest,
+  renameTitleText: () =>
+    app().playbackPageForTest.recordingTitleForTest.renameContainerForTest,
+  suggestTitleButton: () =>
+    app().playbackPageForTest.recordingTitleForTest.suggestTitleButtonForTest,
+  summaryContainer: () =>
+    app().playbackPageForTest.summarizationViewForTest.summaryContainerForTest,
+  startRecordingButton: () => app().mainPageForTest.startRecordingButtonForTest,
+  stopRecordingButton: () => app().recordPageForTest.stopRecordingButtonForTest,
+  toggleSummaryButton: () =>
+    app()
+      .playbackPageForTest.summarizationViewForTest.toggleSummaryButtonForTest,
+};
+type ComponentKey = keyof typeof UI_COMPONENTS;

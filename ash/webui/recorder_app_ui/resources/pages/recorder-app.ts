@@ -7,10 +7,21 @@ import './main-page.js';
 import './playback-page.js';
 import './record-page.js';
 
-import {css, html, nothing} from 'chrome://resources/mwc/lit/index.js';
+import {
+  createRef,
+  css,
+  html,
+  nothing,
+  ref,
+} from 'chrome://resources/mwc/lit/index.js';
 
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {currentRoute} from '../core/state/route.js';
+import {assertExists} from '../core/utils/assert.js';
+
+import {MainPage} from './main-page.js';
+import {PlaybackPage} from './playback-page.js';
+import {RecordPage} from './record-page.js';
 
 function getBoolean(search: URLSearchParams, key: string): boolean {
   return search.get(key) === 'true';
@@ -27,6 +38,24 @@ export class RecorderApp extends ReactiveLitElement {
       width: 100%;
     }
   `;
+
+  private readonly mainPage = createRef<MainPage>();
+
+  private readonly playbackPage = createRef<PlaybackPage>();
+
+  private readonly recordPage = createRef<RecordPage>();
+
+  get mainPageForTest(): MainPage {
+    return assertExists(this.mainPage.value);
+  }
+
+  get playbackPageForTest(): PlaybackPage {
+    return assertExists(this.playbackPage.value);
+  }
+
+  get recordPageForTest(): RecordPage {
+    return assertExists(this.recordPage.value);
+  }
 
   private render404() {
     return 'Not found';
@@ -62,11 +91,15 @@ export class RecorderApp extends ReactiveLitElement {
     const search = new URLSearchParams(routeInHash.search);
 
     if (path === '/') {
-      return html`<main-page></main-page>`;
+      return html`<main-page ${ref(this.mainPage)}></main-page>`;
     }
     if (path === '/playback') {
       const id = search.get('id');
-      return html`<playback-page .recordingId=${id}></playback-page>`;
+      return html`<playback-page
+        .recordingId=${id}
+        ${ref(this.playbackPage)}
+      >
+      </playback-page>`;
     }
     if (path === '/record') {
       const includeSystemAudio = getBoolean(search, 'includeSystemAudio');
@@ -74,6 +107,7 @@ export class RecorderApp extends ReactiveLitElement {
       return html`<record-page
         .includeSystemAudio=${includeSystemAudio}
         .micId=${micId}
+        ${ref(this.recordPage)}
       >
       </record-page>`;
     }

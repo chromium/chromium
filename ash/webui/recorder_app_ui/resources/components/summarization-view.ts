@@ -13,11 +13,13 @@ import './summary-consent-card.js';
 
 import {
   classMap,
+  createRef,
   css,
   CSSResultGroup,
   html,
   nothing,
   PropertyDeclarations,
+  ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
@@ -27,7 +29,7 @@ import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {Transcription} from '../core/soda/soda.js';
 import {settings, SummaryEnableState} from '../core/state/settings.js';
-import {assertExhaustive} from '../core/utils/assert.js';
+import {assert, assertExhaustive, assertExists} from '../core/utils/assert.js';
 
 import {GenaiResultType} from './genai-error.js';
 
@@ -175,6 +177,25 @@ export class SummarizationView extends ReactiveLitElement {
 
   private readonly platformHandler = usePlatformHandler();
 
+  private readonly toggleSummaryButton = createRef<HTMLButtonElement>();
+
+  private readonly summaryContainer = createRef<HTMLDivElement>();
+
+  get toggleSummaryButtonForTest(): HTMLButtonElement {
+    return assertExists(this.toggleSummaryButton.value);
+  }
+
+  get summaryContainerForTest(): HTMLDivElement {
+    return assertExists(this.summaryContainer.value);
+  }
+
+  getSummaryContentForTest(): string {
+    const summary =
+      assertExists(this.summary.value, 'Summary is still processing');
+    assert(summary.kind === 'success', `Summary status is ${summary.kind}`);
+    return summary.result;
+  }
+
   private onSummaryOpenClick(ev: MouseEvent) {
     ev.stopPropagation();
     if (!this.summaryRequested.value) {
@@ -222,7 +243,9 @@ export class SummarizationView extends ReactiveLitElement {
         >
         </genai-error>`;
       case 'success':
-        return html`<div id="summary">${summary.result}</div>
+        return html`<div
+          id="summary" ${ref(this.summaryContainer)}>${summary.result}
+        </div>
           ${this.renderSummaryFooter()}`;
       default:
         assertExhaustive(summary);
@@ -246,6 +269,7 @@ export class SummarizationView extends ReactiveLitElement {
           <cra-icon-button
             @click=${this.onSummaryOpenClick}
             buttonstyle="floating"
+            ${ref(this.toggleSummaryButton)}
           >
             <cra-icon name=${expandIconName} slot="icon"></cra-icon>
           </cra-icon-button>

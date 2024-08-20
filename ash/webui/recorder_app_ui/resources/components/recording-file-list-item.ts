@@ -6,13 +6,16 @@ import 'chrome://resources/cros_components/card/card.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 
+import {Card} from 'chrome://resources/cros_components/card/card.js';
 import {
   classMap,
+  createRef,
   css,
   html,
   map,
   nothing,
   PropertyDeclarations,
+  ref,
   styleMap,
 } from 'chrome://resources/mwc/lit/index.js';
 
@@ -23,7 +26,7 @@ import {
   RecordingMetadata,
   TimelineSegmentKind,
 } from '../core/recording_data_manager.js';
-import {assertExhaustive} from '../core/utils/assert.js';
+import {assertExhaustive, assertExists} from '../core/utils/assert.js';
 import {
   formatDate,
   formatDuration,
@@ -194,6 +197,12 @@ export class RecordingFileListItem extends ReactiveLitElement {
   private readonly menuShown = signal(false);
 
   private readonly platformHandler = usePlatformHandler();
+
+  private readonly recordingCard = createRef<Card>();
+
+  get recordingCardForTest(): Card {
+    return assertExists(this.recordingCard.value);
+  }
 
   private onRecordingClick() {
     if (this.recording === null) {
@@ -369,6 +378,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
             cardstyle="filled"
             tabindex="0"
             interactive
+            ${ref(this.recordingCard)}
           >
             <cra-icon-button
               shape="circle"

@@ -341,11 +341,17 @@ export class RecordPage extends ReactiveLitElement {
   private readonly transcriptionConsentDialog =
     createRef<TranscriptionConsentDialog>();
 
+  private readonly stopRecordingButton = createRef<HTMLButtonElement>();
+
   private wakeLock: WakeLockSentinel|null = null;
 
   private readonly wakeLockRequestQueue = new AsyncJobQueue('keepLatest');
 
   private readonly micMuted = signal(false);
+
+  get stopRecordingButtonForTest(): HTMLButtonElement {
+    return assertExists(this.stopRecordingButton.value);
+  }
 
   private async startRecording() {
     if (this.recordingSession.value !== null) {
@@ -663,6 +669,7 @@ export class RecordPage extends ReactiveLitElement {
       shape="circle"
       .label=${i18n.recordStopButton}
       @click=${this.onStopRecording}
+      ${ref(this.stopRecordingButton)}
     >
       <cra-icon slot="leading-icon" name="stop"></cra-icon>
     </cra-button>`;
