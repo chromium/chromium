@@ -128,6 +128,11 @@ void WhatsNewHandler::RecordModuleLinkClicked(
   base::UmaHistogramEnumeration(action_name, position);
 }
 
+void WhatsNewHandler::RecordBrowserCommandExecuted() {
+  base::RecordAction(
+      base::UserMetricsAction("UserEducation.WhatsNew.BrowserCommandExecuted"));
+}
+
 void WhatsNewHandler::GetServerUrl(bool is_staging,
                                    GetServerUrlCallback callback) {
   GURL result = GURL("");

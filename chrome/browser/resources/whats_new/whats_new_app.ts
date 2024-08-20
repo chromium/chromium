@@ -153,6 +153,8 @@ function handleBrowserCommand(messageData: BrowserCommand) {
   handler.canExecuteCommand(commandId).then(({canExecute}) => {
     if (canExecute) {
       handler.executeCommand(commandId, messageData.clickInfo);
+      const pageHandler = WhatsNewProxyImpl.getInstance().handler;
+      pageHandler.recordBrowserCommandExecuted();
     } else {
       console.warn('Received invalid command: ' + commandId);
     }

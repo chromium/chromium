@@ -99,6 +99,9 @@ suite('WhatsNewAppTest', function() {
 
     const {data} = await whenMessage;
     assertEquals(3, data.data.commandId);
+
+    await proxy.handler.whenCalled('recordBrowserCommandExecuted');
+    assertEquals(1, proxy.handler.getCallCount('recordBrowserCommandExecuted'));
   });
 
   test('with browser command format', async () => {
@@ -121,6 +124,9 @@ suite('WhatsNewAppTest', function() {
     const {data} = await whenMessage;
     assertEquals('browser_command', data.data.event);
     assertEquals(4, data.data.commandId);
+
+    await proxy.handler.whenCalled('recordBrowserCommandExecuted');
+    assertEquals(1, proxy.handler.getCallCount('recordBrowserCommandExecuted'));
   });
 
   test('with page_load metrics from embedded page', async () => {
