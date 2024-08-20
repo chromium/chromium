@@ -323,8 +323,8 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchBrowsingHistory) {
       ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"foo.com"),
-      WaitForShow(ash::kPickerSearchResultsListItemElementId,
-                  /*transition_only_on_event=*/true),
+      WaitForShow(ash::kPickerSearchResultsPageElementId),
+      WaitForShow(ash::kPickerSearchResultsListItemElementId),
       NameDescendantView(
           ash::kPickerSearchResultsPageElementId, kHistoryResultName,
           base::BindLambdaForTesting([](const views::View* view) {
