@@ -18,6 +18,7 @@
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/syncable_service.h"
 
+class PrefService;
 class Profile;
 class ThemeService;
 class ThemeSyncableServiceTest;
@@ -36,6 +37,7 @@ enum class ThemePrefInMigration {
 };
 
 std::string_view GetThemePrefNameInMigration(ThemePrefInMigration theme_pref);
+void MigrateSyncingThemePrefsToNonSyncingIfNeeded(PrefService* prefs);
 
 class ThemeSyncableService final : public syncer::SyncableService,
                                    public ThemeServiceObserver {

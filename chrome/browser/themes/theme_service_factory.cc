@@ -160,6 +160,8 @@ void ThemeServiceFactory::RegisterProfilePrefs(
                                 false);
   registry->RegisterBooleanPref(prefs::kBrowserFollowsSystemThemeColors,
                                 BUILDFLAG(IS_CHROMEOS));
+  registry->RegisterBooleanPref(prefs::kSyncingThemePrefsMigratedToNonSyncing,
+                                false);
 }
 
 bool ThemeServiceFactory::ServiceIsCreatedWithBrowserContext() const {

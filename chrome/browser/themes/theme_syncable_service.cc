@@ -21,6 +21,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/common/extensions/sync_helper.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -35,6 +36,8 @@ using std::string;
 
 namespace {
 
+// TODO(crbug.com/356148174): Consider making {syncing pref, non-syncing pref} a
+// custom struct instead.
 constexpr auto kThemePrefsInMigration =
     base::MakeFixedFlatMap<ThemePrefInMigration,
                            std::array<std::string_view, 2>>({
@@ -73,6 +76,25 @@ const char ThemeSyncableService::kSyncEntityTitle[] = "Current Theme";
 std::string_view GetThemePrefNameInMigration(ThemePrefInMigration theme_pref) {
   return kThemePrefsInMigration.at(theme_pref)[static_cast<int>(
       base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics))];
+}
+
+void MigrateSyncingThemePrefsToNonSyncingIfNeeded(PrefService* prefs) {
+  if (!base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics)) {
+    // Clear migration flag to allow re-migration when the feature flag is
+    // re-enabled.
+    prefs->ClearPref(prefs::kSyncingThemePrefsMigratedToNonSyncing);
+    return;
+  }
+  if (prefs->GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing)) {
+    return;
+  }
+  for (const auto& [pref_in_migration, pref_names] : kThemePrefsInMigration) {
+    if (const base::Value* value = prefs->GetUserPrefValue(pref_names[0])) {
+      prefs->Set(pref_names[1], value->Clone());
+    }
+  }
+
+  prefs->SetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing, true);
 }
 
 ThemeSyncableService::ThemeSyncableService(Profile* profile,

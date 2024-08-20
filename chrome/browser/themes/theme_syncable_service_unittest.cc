@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_helper.h"
@@ -30,12 +31,15 @@
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
+#include "components/sync_preferences/pref_service_syncable.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -1029,4 +1033,100 @@ TEST_F(RealThemeSyncableServiceTest, ProcessSyncThemeChange_DisabledExtension) {
   EXPECT_TRUE(theme_service->UsingExtensionTheme());
   EXPECT_EQ(theme_extension()->id(), theme_service->GetThemeID());
   EXPECT_TRUE(service()->IsExtensionEnabled(theme_extension()->id()));
+}
+
+class ThemePrefsMigrationTest : public ::testing::Test {
+ public:
+  void SetUp() override {
+    user_prefs::PrefRegistrySyncable* registry = pref_service_.registry();
+    // Register all the prefs involved in the migration.
+    registry->RegisterBooleanPref(prefs::kSyncingThemePrefsMigratedToNonSyncing,
+                                  false);
+    registry->RegisterIntegerPref(
+        prefs::kBrowserColorSchemeDoNotUse,
+        static_cast<int>(ThemeService::BrowserColorScheme::kSystem),
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    registry->RegisterIntegerPref(
+        prefs::kNonSyncingBrowserColorSchemeDoNotUse,
+        static_cast<int>(ThemeService::BrowserColorScheme::kSystem));
+    registry->RegisterIntegerPref(
+        prefs::kUserColorDoNotUse, SK_ColorTRANSPARENT,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    registry->RegisterIntegerPref(prefs::kNonSyncingUserColorDoNotUse,
+                                  SK_ColorTRANSPARENT);
+    registry->RegisterIntegerPref(
+        prefs::kBrowserColorVariantDoNotUse,
+        static_cast<int>(ui::mojom::BrowserColorVariant::kSystem),
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    registry->RegisterIntegerPref(
+        prefs::kNonSyncingBrowserColorVariantDoNotUse,
+        static_cast<int>(ui::mojom::BrowserColorVariant::kSystem));
+    registry->RegisterBooleanPref(
+        prefs::kGrayscaleThemeEnabledDoNotUse, false,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    registry->RegisterBooleanPref(
+        prefs::kNonSyncingGrayscaleThemeEnabledDoNotUse, false);
+    registry->RegisterDictionaryPref(prefs::kNtpCustomBackgroundDictDoNotUse);
+    registry->RegisterDictionaryPref(
+        prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
+  }
+
+ protected:
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
+};
+
+TEST_F(ThemePrefsMigrationTest, MigrateSyncingThemePrefsToNonSyncing) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kMoveThemePrefsToSpecifics);
+
+  ASSERT_FALSE(
+      pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
+
+  pref_service_.SetInteger(prefs::kUserColorDoNotUse, SK_ColorBLUE);
+  EXPECT_FALSE(pref_service_.HasPrefPath(prefs::kNonSyncingUserColorDoNotUse));
+
+  MigrateSyncingThemePrefsToNonSyncingIfNeeded(&pref_service_);
+  EXPECT_TRUE(
+      pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
+  EXPECT_EQ(pref_service_.GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+            static_cast<int>(SK_ColorBLUE));
+}
+
+TEST_F(ThemePrefsMigrationTest,
+       DoNotMigrateSyncingThemePrefsToNonSyncingIfFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(syncer::kMoveThemePrefsToSpecifics);
+
+  ASSERT_FALSE(
+      pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
+
+  MigrateSyncingThemePrefsToNonSyncingIfNeeded(&pref_service_);
+  EXPECT_FALSE(
+      pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
+}
+
+TEST_F(ThemePrefsMigrationTest,
+       DoNotMigrateSyncingThemePrefsToNonSyncingIfAlreadyDone) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kMoveThemePrefsToSpecifics);
+
+  pref_service_.SetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing, true);
+  pref_service_.SetInteger(prefs::kUserColorDoNotUse, SK_ColorBLUE);
+
+  MigrateSyncingThemePrefsToNonSyncingIfNeeded(&pref_service_);
+  EXPECT_FALSE(pref_service_.HasPrefPath(prefs::kNonSyncingUserColorDoNotUse));
+}
+
+TEST_F(ThemePrefsMigrationTest,
+       ClearFlagUponMigrateSyncingThemePrefsToNonSyncingIfFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(syncer::kMoveThemePrefsToSpecifics);
+
+  // Migration has run before.
+  pref_service_.SetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing, true);
+
+  MigrateSyncingThemePrefsToNonSyncingIfNeeded(&pref_service_);
+  // Flag gets cleared to allow re-migration.
+  EXPECT_FALSE(
+      pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
 }
