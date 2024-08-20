@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "mako_ui\.cc": [
+    "+ash/lobster/lobster_controller.h",
+  ],
+}
