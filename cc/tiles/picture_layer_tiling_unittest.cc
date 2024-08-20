@@ -1227,7 +1227,9 @@ TEST_F(PictureLayerTilingIteratorTest, TightCover2) {
 TEST_F(PictureLayerTilingIteratorTest, TilesStoreTilings) {
   gfx::Size bounds(200, 200);
   InitializeFilled(gfx::Size(100, 100), 1.f, bounds);
-  SetLiveRectAndVerifyTiles(gfx::Rect(bounds));
+  gfx::Rect rect(bounds);
+  SetLiveRectAndVerifyTiles(rect);
+  tiling_->SetTilePriorityRectsForTesting(rect, rect, rect, rect);
 
   // Get all tiles and ensure they are associated with |tiling_|.
   std::vector<Tile*> tiles = tiling_->AllTilesForTesting();

@@ -193,7 +193,10 @@ class CC_EXPORT PictureLayerTiling {
 
   // For testing functionality.
   void CreateAllTilesForTesting() {
-    SetLiveTilesRect(tiling_data_.tiling_rect());
+    CreateAllTilesForTesting(tiling_data_.tiling_rect());
+  }
+  void CreateAllTilesForTesting(const gfx::Rect& live_tiles_rect) {
+    SetLiveTilesRect(live_tiles_rect);
   }
   const TilingData& TilingDataForTesting() const { return tiling_data_; }
   std::vector<Tile*> AllTilesForTesting() const {
@@ -222,14 +225,10 @@ class CC_EXPORT PictureLayerTiling {
   const gfx::Rect& GetCurrentVisibleRectForTesting() const {
     return current_visible_rect_;
   }
-  void SetTilePriorityRectsForTesting(
-      const gfx::Rect& visible_rect_in_content_space,
-      const gfx::Rect& skewport,
-      const gfx::Rect& soon_border_rect,
-      const gfx::Rect& eventually_rect) {
-    SetTilePriorityRects(1.f, visible_rect_in_content_space, skewport,
-                         soon_border_rect, eventually_rect, Occlusion());
-  }
+  void SetTilePriorityRectsForTesting(const gfx::Rect& visible_rect,
+                                      const gfx::Rect& skewport_rect,
+                                      const gfx::Rect& soon_border_rect,
+                                      const gfx::Rect& eventually_rect);
 
   using TileMap = std::unordered_map<TileIndex, std::unique_ptr<Tile>>;
 
@@ -370,10 +369,13 @@ class CC_EXPORT PictureLayerTiling {
   std::unique_ptr<Tile> TakeTileAt(int i, int j);
   bool TilingMatchesTileIndices(const PictureLayerTiling* twin) const;
 
+  void SetRect(const gfx::Rect& rect_in_layer_space,
+               PriorityRectType rect_type);
+
   // Save the required data for computing tile priorities later.
   void SetTilePriorityRects(float content_to_screen_scale,
-                            const gfx::Rect& visible_rect_in_content_space,
-                            const gfx::Rect& skewport,
+                            const gfx::Rect& visible_rect,
+                            const gfx::Rect& skewport_rect,
                             const gfx::Rect& soon_border_rect,
                             const gfx::Rect& eventually_rect,
                             const Occlusion& occlusion_in_layer_space);
@@ -477,6 +479,13 @@ class CC_EXPORT PictureLayerTiling {
   gfx::Rect current_skewport_rect_;
   gfx::Rect current_soon_border_rect_;
   gfx::Rect current_eventually_rect_;
+
+  // Iteration rects in layer space.
+  gfx::Rect current_visible_rect_in_layer_space_;
+  gfx::Rect current_skewport_rect_in_layer_space_;
+  gfx::Rect current_soon_border_rect_in_layer_space_;
+  gfx::Rect current_eventually_rect_in_layer_space_;
+
   // Other properties used for tile iteration and prioritization.
   float current_content_to_screen_scale_ = 0.f;
   Occlusion current_occlusion_in_layer_space_;

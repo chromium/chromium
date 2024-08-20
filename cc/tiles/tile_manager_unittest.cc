@@ -3716,10 +3716,10 @@ TEST_F(CheckerImagingTileManagerMemoryTest, AddsAllNowTilesToImageDecodeQueue) {
       pending_layer()->picture_layer_tiling_set();
   PictureLayerTiling* pending_tiling = tiling_set->tiling_at(0);
   pending_tiling->set_resolution(HIGH_RESOLUTION);
-  pending_tiling->CreateAllTilesForTesting();
 
   // Use a rect that only rasterizes the bottom 2 rows of tiles.
   gfx::Rect rect_to_raster(0, 500, 900, 900);
+  pending_tiling->CreateAllTilesForTesting(rect_to_raster);
   pending_tiling->SetTilePriorityRectsForTesting(
       rect_to_raster,   // Visible rect.
       rect_to_raster,   // Skewport rect.

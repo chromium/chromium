@@ -85,7 +85,12 @@ Tile* PictureLayerTiling::CreateTile(const Tile::CreateInfo& info) {
   const int i = info.tiling_i_index;
   const int j = info.tiling_j_index;
   TileIndex index(i, j);
-  DCHECK(!base::Contains(tiles_, index));
+  if (base::Contains(tiles_, index)) {
+    // We are only here from TakeTilesAndPropertiesFrom calling
+    // ComputeTilePriorityRects. It doesn't matter if we return the existing
+    // tile at index or nullptr.
+    return TileAt(index);
+  }
 
   if (!raster_source_->IntersectsRect(info.enclosing_layer_rect)) {
     return nullptr;
@@ -148,13 +153,6 @@ void PictureLayerTiling::TakeTilesAndPropertiesFrom(
   RemoveTilesInRegion(layer_invalidation, false /* recreate tiles */);
 
   resolution_ = pending_twin->resolution_;
-  bool create_missing_tiles = false;
-  if (live_tiles_rect_.IsEmpty()) {
-    live_tiles_rect_ = pending_twin->live_tiles_rect();
-    create_missing_tiles = true;
-  } else {
-    SetLiveTilesRect(pending_twin->live_tiles_rect());
-  }
 
   while (!pending_twin->tiles_.empty()) {
     auto pending_iter = pending_twin->tiles_.begin();
@@ -162,6 +160,15 @@ void PictureLayerTiling::TakeTilesAndPropertiesFrom(
     tiles_[pending_iter->first] = std::move(pending_iter->second);
     pending_twin->tiles_.erase(pending_iter);
   }
+
+  ComputeTilePriorityRects(
+      pending_twin->current_visible_rect_in_layer_space_,
+      pending_twin->current_skewport_rect_in_layer_space_,
+      pending_twin->current_soon_border_rect_in_layer_space_,
+      pending_twin->current_eventually_rect_in_layer_space_,
+      pending_twin->current_content_to_screen_scale_ * contents_scale_key(),
+      pending_twin->current_occlusion_in_layer_space_);
+
   if (all_tiles_done_ && !pending_twin->all_tiles_done_) {
     all_tiles_done_ = false;
     client_->OnAllTilesDoneCleared();
@@ -170,17 +177,7 @@ void PictureLayerTiling::TakeTilesAndPropertiesFrom(
   DCHECK(pending_twin->tiles_.empty());
   pending_twin->all_tiles_done_ = true;
 
-  if (create_missing_tiles)
-    CreateMissingTilesInLiveTilesRect();
-
   VerifyLiveTilesRect();
-
-  SetTilePriorityRects(pending_twin->current_content_to_screen_scale_,
-                       pending_twin->current_visible_rect_,
-                       pending_twin->current_skewport_rect_,
-                       pending_twin->current_soon_border_rect_,
-                       pending_twin->current_eventually_rect_,
-                       pending_twin->current_occlusion_in_layer_space_);
 }
 
 bool PictureLayerTiling::SetRasterSourceAndResize(
@@ -414,6 +411,30 @@ std::unique_ptr<Tile> PictureLayerTiling::TakeTileAt(int i, int j) {
   return result;
 }
 
+void PictureLayerTiling::SetTilePriorityRectsForTesting(
+    const gfx::Rect& visible_rect,
+    const gfx::Rect& skewport_rect,
+    const gfx::Rect& soon_border_rect,
+    const gfx::Rect& eventually_rect) {
+  current_occlusion_in_layer_space_ = Occlusion();
+  current_content_to_screen_scale_ = 1.0;
+
+  SetRect(EnclosingLayerRectFromContentsRect(visible_rect), VISIBLE_RECT);
+  SetRect(EnclosingLayerRectFromContentsRect(skewport_rect), SKEWPORT_RECT);
+  SetRect(EnclosingLayerRectFromContentsRect(soon_border_rect),
+          SOON_BORDER_RECT);
+  SetRect(EnclosingLayerRectFromContentsRect(eventually_rect), EVENTUALLY_RECT);
+
+  // Note that we use the largest skewport extent from the viewport as the
+  // "skewport extent". Also note that this math can't produce negative numbers,
+  // since skewport.Contains(visible_rect) is always true.
+  max_skewport_extent_in_screen_space_ = std::max(
+      {current_visible_rect_.x() - current_skewport_rect_.x(),
+       current_skewport_rect_.right() - current_visible_rect_.right(),
+       current_visible_rect_.y() - current_skewport_rect_.y(),
+       current_skewport_rect_.bottom() - current_visible_rect_.bottom()});
+}
+
 void PictureLayerTiling::Reset() {
   live_tiles_rect_ = gfx::Rect();
   tiles_.clear();
@@ -422,7 +443,7 @@ void PictureLayerTiling::Reset() {
 
 void PictureLayerTiling::ComputeTilePriorityRects(
     const gfx::Rect& visible_rect_in_layer_space,
-    const gfx::Rect& skewport_in_layer_space,
+    const gfx::Rect& skewport_rect_in_layer_space,
     const gfx::Rect& soon_border_rect_in_layer_space,
     const gfx::Rect& eventually_rect_in_layer_space,
     float ideal_contents_scale,
@@ -434,43 +455,14 @@ void PictureLayerTiling::ComputeTilePriorityRects(
     set_all_tiles_done(false);
   }
 
-  const float content_to_screen_scale =
+  current_occlusion_in_layer_space_ = occlusion_in_layer_space;
+  current_content_to_screen_scale_ =
       ideal_contents_scale / contents_scale_key();
 
-  const gfx::Rect* input_rects[] = {
-      &visible_rect_in_layer_space, &skewport_in_layer_space,
-      &soon_border_rect_in_layer_space, &eventually_rect_in_layer_space};
-  gfx::Rect output_rects[4];
-  for (size_t i = 0; i < std::size(input_rects); ++i)
-    output_rects[i] = EnclosingContentsRectFromLayerRect(*input_rects[i]);
-
-  SetTilePriorityRects(content_to_screen_scale, output_rects[0],
-                       output_rects[1], output_rects[2], output_rects[3],
-                       occlusion_in_layer_space);
-  output_rects[3].Intersect(tiling_rect());
-  SetLiveTilesRect(output_rects[3]);
-}
-
-void PictureLayerTiling::SetTilePriorityRects(
-    float content_to_screen_scale,
-    const gfx::Rect& visible_rect_in_content_space,
-    const gfx::Rect& skewport,
-    const gfx::Rect& soon_border_rect,
-    const gfx::Rect& eventually_rect,
-    const Occlusion& occlusion_in_layer_space) {
-  current_visible_rect_ = visible_rect_in_content_space;
-  current_skewport_rect_ = skewport;
-  current_soon_border_rect_ = soon_border_rect;
-  current_eventually_rect_ = eventually_rect;
-  current_occlusion_in_layer_space_ = occlusion_in_layer_space;
-  current_content_to_screen_scale_ = content_to_screen_scale;
-
-  has_visible_rect_tiles_ = tiling_rect().Intersects(current_visible_rect_);
-  has_skewport_rect_tiles_ = tiling_rect().Intersects(current_skewport_rect_);
-  has_soon_border_rect_tiles_ =
-      tiling_rect().Intersects(current_soon_border_rect_);
-  has_eventually_rect_tiles_ =
-      tiling_rect().Intersects(current_eventually_rect_);
+  SetRect(visible_rect_in_layer_space, VISIBLE_RECT);
+  SetRect(skewport_rect_in_layer_space, SKEWPORT_RECT);
+  SetRect(soon_border_rect_in_layer_space, SOON_BORDER_RECT);
+  SetRect(eventually_rect_in_layer_space, EVENTUALLY_RECT);
 
   // Note that we use the largest skewport extent from the viewport as the
   // "skewport extent". Also note that this math can't produce negative numbers,
@@ -482,6 +474,55 @@ void PictureLayerTiling::SetTilePriorityRects(
            current_skewport_rect_.right() - current_visible_rect_.right(),
            current_visible_rect_.y() - current_skewport_rect_.y(),
            current_skewport_rect_.bottom() - current_visible_rect_.bottom()});
+
+  gfx::Rect live_tiles_rect = current_eventually_rect_;
+  live_tiles_rect.Intersect(tiling_rect());
+  SetLiveTilesRect(live_tiles_rect);
+}
+
+void PictureLayerTiling::SetRect(const gfx::Rect& rect_in_layer_space,
+                                 PriorityRectType rect_type) {
+  switch (rect_type) {
+    case VISIBLE_RECT:
+      if (current_visible_rect_in_layer_space_ != rect_in_layer_space) {
+        current_visible_rect_in_layer_space_ = rect_in_layer_space;
+        current_visible_rect_ =
+            EnclosingContentsRectFromLayerRect(rect_in_layer_space);
+        has_visible_rect_tiles_ =
+            tiling_rect().Intersects(current_visible_rect_);
+      }
+      break;
+    case SKEWPORT_RECT:
+      if (current_skewport_rect_in_layer_space_ != rect_in_layer_space) {
+        current_skewport_rect_in_layer_space_ = rect_in_layer_space;
+        current_skewport_rect_ =
+            EnclosingContentsRectFromLayerRect(rect_in_layer_space);
+        has_skewport_rect_tiles_ =
+            tiling_rect().Intersects(current_skewport_rect_);
+      }
+      break;
+    case SOON_BORDER_RECT:
+      if (current_soon_border_rect_in_layer_space_ != rect_in_layer_space) {
+        current_soon_border_rect_in_layer_space_ = rect_in_layer_space;
+        current_soon_border_rect_ =
+            EnclosingContentsRectFromLayerRect(rect_in_layer_space);
+        has_soon_border_rect_tiles_ =
+            tiling_rect().Intersects(current_soon_border_rect_);
+      }
+      break;
+    case EVENTUALLY_RECT:
+      if (current_eventually_rect_in_layer_space_ != rect_in_layer_space) {
+        current_eventually_rect_in_layer_space_ = rect_in_layer_space;
+        gfx::Rect rect =
+            EnclosingContentsRectFromLayerRect(rect_in_layer_space);
+        current_eventually_rect_ = rect;
+        has_eventually_rect_tiles_ =
+            tiling_rect().Intersects(current_eventually_rect_);
+      }
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 void PictureLayerTiling::SetLiveTilesRect(
