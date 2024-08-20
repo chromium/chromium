@@ -305,15 +305,14 @@ def add_results_options_group(parser: argparse.ArgumentParser,
                                action='store_false',
                                default=None,
                                help='Do not run just the SmokeTests')
+    results_group.add_argument(
+        '--additional-expectations',
+        action='append',
+        default=[],
+        help=('Path to a test_expectations file that will override previous '
+              'expectations. Specify multiple times for multiple sets of '
+              'overrides.'))
     if rwt:
-        results_group.add_argument(
-            '--additional-expectations',
-            action='append',
-            default=[],
-            help=(
-                'Path to a test_expectations file that will override previous '
-                'expectations. Specify multiple times for multiple sets of '
-                'overrides.'))
         results_group.add_argument(
             '--ignore-default-expectations',
             action='store_true',
