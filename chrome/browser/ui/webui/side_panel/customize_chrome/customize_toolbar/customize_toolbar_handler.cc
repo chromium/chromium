@@ -163,6 +163,7 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
 
   const ui::ColorProvider* const provider =
       browser_->window()->GetColorProvider();
+  const int icon_color_id = ui::kColorSysOnSurface;
   const float scale_factor =
       display::Screen::GetScreen()
           ->GetDisplayNearestWindow(browser_->window()->GetNativeWindow())
@@ -175,7 +176,7 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
       side_panel::customize_chrome::mojom::CategoryId::kNavigation,
       GURL(webui::EncodePNGAndMakeDataURI(
           ui::ImageModel::FromVectorIcon(kNavigateHomeChromeRefreshIcon,
-                                         ui::kColorIcon)
+                                         icon_color_id)
               .Rasterize(provider),
           scale_factor)));
 
@@ -186,7 +187,7 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
       side_panel::customize_chrome::mojom::CategoryId::kNavigation,
       GURL(webui::EncodePNGAndMakeDataURI(
           ui::ImageModel::FromVectorIcon(
-              vector_icons::kForwardArrowChromeRefreshIcon, ui::kColorIcon)
+              vector_icons::kForwardArrowChromeRefreshIcon, icon_color_id)
               .Rasterize(provider),
           scale_factor)));
 
@@ -209,12 +210,24 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
                       base::Unretained(this))));
         }
 
+        // If the icon is a vector icon, recolor it to match the spec.
+        // Non-vector icons cannot be recolored, but there aren't any of those
+        // currently anyways.
+        const ui::ImageModel& original_icon = action_item->GetImage();
+        const ui::ImageModel recolored_icon =
+            original_icon.IsVectorIcon()
+                ? ui::ImageModel::FromVectorIcon(
+                      *(action_item->GetImage().GetVectorIcon().vector_icon()),
+                      icon_color_id,
+                      action_item->GetImage().GetVectorIcon().icon_size())
+                : original_icon;
+
         auto mojo_action = side_panel::customize_chrome::mojom::Action::New(
             MojoActionForChromeAction(id).value(),
             base::UTF16ToUTF8(action_item->GetText()), model_->Contains(id),
             category,
             GURL(webui::EncodePNGAndMakeDataURI(
-                action_item->GetImage().Rasterize(provider), scale_factor)));
+                recolored_icon.Rasterize(provider), scale_factor)));
         actions.push_back(std::move(mojo_action));
       };
 
