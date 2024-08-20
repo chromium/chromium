@@ -233,13 +233,11 @@ void AIManagerKeyedService::CreateWriter(
     client_remote->OnResult(mojo::PendingRemote<blink::mojom::AIWriter>());
     return;
   }
-  // The new `AIWriter` shares the same lifetime with the passed remote.
-  // TODO(crbug.com/357967382): Move the ownership of `AIWriter` to a UserData
-  // structure like `AITextSessionSet`.
   mojo::PendingRemote<blink::mojom::AIWriter> pending_remote;
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<AIWriter>(std::move(session), shared_context),
-      pending_remote.InitWithNewPipeAndPassReceiver());
+  AIContextBoundObjectSet::GetFromContext(receivers_.current_context())
+      ->AddContextBoundObject(std::make_unique<AIWriter>(
+          std::move(session), pending_remote.InitWithNewPipeAndPassReceiver(),
+          shared_context));
   client_remote->OnResult(std::move(pending_remote));
 }
 
@@ -269,14 +267,11 @@ void AIManagerKeyedService::CreateRewriter(
     client_remote->OnResult(mojo::PendingRemote<blink::mojom::AIRewriter>());
     return;
   }
-  // The new `AIRewriter` shares the same lifetime with the passed remote.
-  // TODO(crbug.com/358214322): Move the ownership of `AIRewriter` to a UserData
-  // structure like `AITextSessionSet`.
   mojo::PendingRemote<blink::mojom::AIRewriter> pending_remote;
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<AIRewriter>(std::move(session), shared_context, tone,
-                                   length),
-      pending_remote.InitWithNewPipeAndPassReceiver());
+  AIContextBoundObjectSet::GetFromContext(receivers_.current_context())
+      ->AddContextBoundObject(std::make_unique<AIRewriter>(
+          std::move(session), pending_remote.InitWithNewPipeAndPassReceiver(),
+          shared_context, tone, length));
   client_remote->OnResult(std::move(pending_remote));
 }
 

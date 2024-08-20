@@ -15,8 +15,11 @@
 AIWriter::AIWriter(
     std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
         session,
+    mojo::PendingReceiver<blink::mojom::AIWriter> receiver,
     const std::optional<std::string>& shared_context)
-    : session_(std::move(session)), shared_context_(shared_context) {}
+    : session_(std::move(session)),
+      shared_context_(shared_context),
+      receiver_(this, std::move(receiver)) {}
 
 AIWriter::~AIWriter() {
   for (auto& responder : responder_set_) {
@@ -24,6 +27,10 @@ AIWriter::~AIWriter() {
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed,
         /*text=*/std::nullopt, /*current_tokens=*/std::nullopt);
   }
+}
+
+void AIWriter::SetDeletionCallback(base::OnceClosure deletion_callback) {
+  receiver_.set_disconnect_handler(std::move(deletion_callback));
 }
 
 void AIWriter::Write(const std::string& input,

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -126,6 +127,7 @@ void CheckComposeRequestUserInput(
 }
 
 }  // namespace
+
 class AIWriterTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
@@ -171,6 +173,8 @@ class AIWriterTest : public ChromeRenderViewHostTestHarness {
         ai_manager.BindNewPipeAndPassReceiver(), mock_host_.get());
     return ai_manager;
   }
+
+  void ResetMockHost() { mock_host_.reset(); }
 
   raw_ptr<MockOptimizationGuideKeyedService> optimization_guide_keyed_service_;
 
@@ -218,6 +222,44 @@ TEST_F(AIWriterTest, CreateWriterStartSessionError) {
   ai_manager->CreateWriter(
       kSharedContextString,
       mock_create_writer_client.BindNewPipeAndPassRemote());
+  run_loop.Run();
+}
+
+TEST_F(AIWriterTest, ContextDestroyed) {
+  SetupMockOptimizationGuideKeyedService();
+  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            return std::make_unique<optimization_guide::MockSession>();
+          }));
+
+  mojo::Remote<blink::mojom::AIWriter> writer_remote;
+  {
+    MockCreateWriterClient mock_create_writer_client;
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_create_writer_client, OnResult(_))
+        .WillOnce(testing::Invoke(
+            [&](mojo::PendingRemote<::blink::mojom::AIWriter> writer) {
+              EXPECT_TRUE(writer);
+              writer_remote =
+                  mojo::Remote<blink::mojom::AIWriter>(std::move(writer));
+              run_loop.Quit();
+            }));
+
+    mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
+    ai_manager->CreateWriter(
+        kSharedContextString,
+        mock_create_writer_client.BindNewPipeAndPassRemote());
+    run_loop.Run();
+  }
+
+  // Resetting mock host must delete the AIWriter.
+  base::RunLoop run_loop;
+  writer_remote.set_disconnect_handler(
+      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+  ResetMockHost();
   run_loop.Run();
 }
 

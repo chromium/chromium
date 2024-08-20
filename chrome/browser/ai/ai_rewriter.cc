@@ -14,13 +14,15 @@
 AIRewriter::AIRewriter(
     std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
         session,
+    mojo::PendingReceiver<blink::mojom::AIRewriter> receiver,
     const std::optional<std::string>& shared_context,
     blink::mojom::AIRewriterTone tone,
     blink::mojom::AIRewriterLength length)
     : session_(std::move(session)),
       shared_context_(shared_context),
       tone_(tone),
-      length_(length) {}
+      length_(length),
+      receiver_(this, std::move(receiver)) {}
 
 AIRewriter::~AIRewriter() {
   for (auto& responder : responder_set_) {
@@ -28,6 +30,10 @@ AIRewriter::~AIRewriter() {
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed,
         /*text=*/std::nullopt, /*current_tokens=*/std::nullopt);
   }
+}
+
+void AIRewriter::SetDeletionCallback(base::OnceClosure deletion_callback) {
+  receiver_.set_disconnect_handler(std::move(deletion_callback));
 }
 
 void AIRewriter::Rewrite(
