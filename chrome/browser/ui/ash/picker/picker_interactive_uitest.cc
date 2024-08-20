@@ -143,6 +143,22 @@ class PickerInteractiveUiTest : public InteractiveAshTest {
     return Steps(WaitForStateChange(kWebContentsElementId, expected_state));
   }
 
+  // Same as `NameDescendantView` but matches on a property of the view.
+  template <typename V, typename R, typename T>
+  auto NameDescendantViewByProperty(ElementSpecifier view,
+                                    std::string_view name,
+                                    R (V::*property)() const,
+                                    T&& value) {
+    return NameDescendantView(
+        view, name,
+        base::BindLambdaForTesting([property, value](const views::View* view) {
+          if (const auto* v = views::AsViewClass<V>(view)) {
+            return (v->*property)() == value;
+          }
+          return false;
+        }));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_{ash::features::kPicker};
 };
@@ -171,17 +187,9 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertEmoji) {
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"thumbs up"),
       WaitForShow(ash::kPickerEmojiItemElementId,
                   /*transition_only_on_event=*/true),
-      NameDescendantView(
+      NameDescendantViewByProperty(
           ash::kPickerEmojiBarElementId, kFirstEmojiResultName,
-          base::BindLambdaForTesting(
-              [kExpectedFirstEmoji](const views::View* view) {
-                if (const auto* emoji_item_view =
-                        views::AsViewClass<ash::PickerEmojiItemView>(view)) {
-                  return emoji_item_view->GetTextForTesting() ==
-                         kExpectedFirstEmoji;
-                }
-                return false;
-              })),
+          &ash::PickerEmojiItemView::GetTextForTesting, kExpectedFirstEmoji),
       PressButton(kFirstEmojiResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context,
                 WaitForWebInputFieldValue(kExpectedFirstEmoji)));
@@ -212,17 +220,9 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertSymbol) {
                 u"greek letter alpha"),
       WaitForShow(ash::kPickerEmojiItemElementId,
                   /*transition_only_on_event=*/true),
-      NameDescendantView(
+      NameDescendantViewByProperty(
           ash::kPickerEmojiBarElementId, kFirstSymbolResultName,
-          base::BindLambdaForTesting(
-              [kExpectedFirstSymbol](const views::View* view) {
-                if (const auto* symbol_item_view =
-                        views::AsViewClass<ash::PickerSymbolItemView>(view)) {
-                  return symbol_item_view->GetTextForTesting() ==
-                         kExpectedFirstSymbol;
-                }
-                return false;
-              })),
+          &ash::PickerSymbolItemView::GetTextForTesting, kExpectedFirstSymbol),
       PressButton(kFirstSymbolResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context,
                 WaitForWebInputFieldValue(kExpectedFirstSymbol)));
@@ -253,17 +253,10 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertEmoticon) {
                 u"denko of disapproval"),
       WaitForShow(ash::kPickerEmojiItemElementId,
                   /*transition_only_on_event=*/true),
-      NameDescendantView(
+      NameDescendantViewByProperty(
           ash::kPickerEmojiBarElementId, kFirstEmoticonResultName,
-          base::BindLambdaForTesting(
-              [kExpectedFirstEmoticon](const views::View* view) {
-                if (const auto* emoticon_item_view =
-                        views::AsViewClass<ash::PickerEmoticonItemView>(view)) {
-                  return emoticon_item_view->GetTextForTesting() ==
-                         kExpectedFirstEmoticon;
-                }
-                return false;
-              })),
+          &ash::PickerEmoticonItemView::GetTextForTesting,
+          kExpectedFirstEmoticon),
       PressButton(kFirstEmoticonResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context,
                 WaitForWebInputFieldValue(kExpectedFirstEmoticon)));
@@ -338,16 +331,10 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchBrowsingHistory) {
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"foo.com"),
       WaitForShow(ash::kPickerSearchResultsPageElementId),
       WaitForShow(ash::kPickerSearchResultsListItemElementId),
-      NameDescendantView(
+      NameDescendantViewByProperty(
           ash::kPickerSearchResultsPageElementId, kHistoryResultName,
-          base::BindLambdaForTesting([](const views::View* view) {
-            if (const auto* list_item_view =
-                    views::AsViewClass<ash::PickerListItemView>(view)) {
-              return list_item_view->GetPrimaryTextForTesting() ==
-                     u"foo.com/history";
-            }
-            return false;
-          })),
+          &ash::PickerListItemView::GetPrimaryTextForTesting,
+          u"foo.com/history"),
       PressButton(kHistoryResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context,
                 WaitForWebInputFieldValue(u"https://foo.com/history")));
@@ -377,15 +364,9 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchLocalFile) {
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"test"),
       WaitForShow(ash::kPickerSearchResultsPageElementId),
       WaitForShow(ash::kPickerSearchResultsListItemElementId),
-      NameDescendantView(
+      NameDescendantViewByProperty(
           ash::kPickerSearchResultsPageElementId, kFileResultName,
-          base::BindLambdaForTesting([](const views::View* view) {
-            if (const auto* list_item_view =
-                    views::AsViewClass<ash::PickerListItemView>(view)) {
-              return list_item_view->GetPrimaryTextForTesting() == u"test.png";
-            }
-            return false;
-          })),
+          &ash::PickerListItemView::GetPrimaryTextForTesting, u"test.png"),
       PressButton(kFileResultName), WaitForHide(ash::kPickerElementId));
 }
 
@@ -422,16 +403,9 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertDate) {
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"today"),
       WaitForShow(ash::kPickerSearchResultsPageElementId),
       WaitForShow(ash::kPickerSearchResultsListItemElementId),
-      NameDescendantView(
+      NameDescendantViewByProperty(
           ash::kPickerSearchResultsPageElementId, kDateResultName,
-          base::BindLambdaForTesting([kExpectedDate](const views::View* view) {
-            if (const auto* list_item_view =
-                    views::AsViewClass<ash::PickerListItemView>(view)) {
-              return list_item_view->GetPrimaryTextForTesting() ==
-                     kExpectedDate;
-            }
-            return false;
-          })),
+          &ash::PickerListItemView::GetPrimaryTextForTesting, kExpectedDate),
       PressButton(kDateResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context, WaitForWebInputFieldValue(kExpectedDate)));
 }
@@ -461,17 +435,9 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, DISABLED_SearchAndInsertMath) {
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"1 + 1"),
       WaitForShow(ash::kPickerSearchResultsPageElementId),
       WaitForShow(ash::kPickerSearchResultsListItemElementId),
-      NameDescendantView(
+      NameDescendantViewByProperty(
           ash::kPickerSearchResultsPageElementId, kMathResultName,
-          base::BindLambdaForTesting(
-              [kExpectedResult](const views::View* view) {
-                if (const auto* list_item_view =
-                        views::AsViewClass<ash::PickerListItemView>(view)) {
-                  return list_item_view->GetPrimaryTextForTesting() ==
-                         kExpectedResult;
-                }
-                return false;
-              })),
+          &ash::PickerListItemView::GetPrimaryTextForTesting, kExpectedResult),
       PressButton(kMathResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context, WaitForWebInputFieldValue(kExpectedResult)));
 }
@@ -563,15 +529,9 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, LocalFilePreview) {
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"test"),
       WaitForShow(ash::kPickerSearchResultsPageElementId),
       WaitForShow(ash::kPickerSearchResultsListItemElementId),
-      NameDescendantView(
+      NameDescendantViewByProperty(
           ash::kPickerSearchResultsPageElementId, kFileResultName,
-          base::BindLambdaForTesting([](const views::View* view) {
-            if (const auto* list_item_view =
-                    views::AsViewClass<ash::PickerListItemView>(view)) {
-              return list_item_view->GetPrimaryTextForTesting() == u"test.png";
-            }
-            return false;
-          })),
+          &ash::PickerListItemView::GetPrimaryTextForTesting, u"test.png"),
       MoveMouseTo(kFileResultName),
       WaitForShow(ash::kPickerPreviewBubbleElementId));
 }
