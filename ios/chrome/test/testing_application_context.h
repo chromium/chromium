@@ -51,10 +51,6 @@ class TestingApplicationContext : public ApplicationContext {
   void SetSystemIdentityManager(
       std::unique_ptr<SystemIdentityManager> system_identity_manager);
 
-  // Sets the UpgradeCenter.
-  // Must be set before `GetUpgradeCenter` is called.
-  void SetUpgradeCenter(UpgradeCenter* upgrade_center);
-
   // Sets the IOSChromeIOThread.
   void SetIOSChromeIOThread(IOSChromeIOThread* ios_chrome_io_thread);
 
@@ -96,7 +92,6 @@ class TestingApplicationContext : public ApplicationContext {
   AccountProfileMapper* GetAccountProfileMapper() override;
   IncognitoSessionTracker* GetIncognitoSessionTracker() override;
   PushNotificationService* GetPushNotificationService() override;
-  UpgradeCenter* GetUpgradeCenter() override;
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
 
  private:
@@ -124,7 +119,6 @@ class TestingApplicationContext : public ApplicationContext {
   std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
   std::unique_ptr<PushNotificationService> push_notification_service_;
   raw_ptr<variations::VariationsService> variations_service_;
-  __strong UpgradeCenter* upgrade_center_ = nil;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   raw_ptr<IOSChromeIOThread> ios_chrome_io_thread_;
 };

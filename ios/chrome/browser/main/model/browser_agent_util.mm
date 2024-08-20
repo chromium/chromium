@@ -32,8 +32,6 @@
 #import "ios/chrome/browser/tabs/model/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/synced_window_delegate_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/tab_parenting_browser_agent.h"
-#import "ios/chrome/browser/upgrade/model/upgrade_center.h"
-#import "ios/chrome/browser/upgrade/model/upgrade_center_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/view_source/model/view_source_browser_agent.h"
@@ -118,13 +116,6 @@ void AttachBrowserAgents(Browser* browser) {
 
   if (!browser_is_inactive) {
     SyncErrorBrowserAgent::CreateForBrowser(browser);
-  }
-
-  // The UpgradeCenter may be null (e.g. in unit tests). Do not create the
-  // UpgradeCenterBrowserAgent in that case.
-  if (UpgradeCenter* upgrade_center =
-          GetApplicationContext()->GetUpgradeCenter()) {
-    UpgradeCenterBrowserAgent::CreateForBrowser(browser, upgrade_center);
   }
 
   WebStateUpdateBrowserAgent::CreateForBrowser(browser);

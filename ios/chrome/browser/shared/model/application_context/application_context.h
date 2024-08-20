@@ -80,7 +80,6 @@ class PushNotificationService;
 class SafeBrowsingService;
 @protocol SingleSignOnService;
 class SystemIdentityManager;
-@class UpgradeCenter;
 
 // Gets the global application context. Cannot return null.
 ApplicationContext* GetApplicationContext();
@@ -197,10 +196,6 @@ class ApplicationContext {
   // Returns the application's PushNotificationService that handles all
   // interactions with the push notification server
   virtual PushNotificationService* GetPushNotificationService() = 0;
-
-  // Returns the application's UpgradeCenter that handle presenting all the
-  // notification to upgrade Chrome on iOS.
-  virtual UpgradeCenter* GetUpgradeCenter() = 0;
 
   // Returns the application's OSCryptAsync instance which can be used to create
   // instances of Encryptor for data encryption.

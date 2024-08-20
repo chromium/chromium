@@ -490,7 +490,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/unit_conversion:unit_tests",
     "//ios/chrome/browser/unit_conversion/ui_bundled:unit_tests",
     "//ios/chrome/browser/update_client/model:unit_tests",
-    "//ios/chrome/browser/upgrade/model:unit_tests",
     "//ios/chrome/browser/url_loading/model:unit_tests",
     "//ios/chrome/browser/variations/model:unit_tests",
     "//ios/chrome/browser/visited_url_ranking/model:unit_tests",

@@ -65,7 +65,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/update_client/model/ios_chrome_update_query_params_delegate.h"
-#import "ios/chrome/browser/upgrade/model/upgrade_center.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
@@ -553,15 +552,6 @@ PushNotificationService* ApplicationContextImpl::GetPushNotificationService() {
   }
 
   return push_notification_service_.get();
-}
-
-UpgradeCenter* ApplicationContextImpl::GetUpgradeCenter() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!upgrade_center_) {
-    upgrade_center_ = [[UpgradeCenter alloc] init];
-    DCHECK(upgrade_center_);
-  }
-  return upgrade_center_;
 }
 
 os_crypt_async::OSCryptAsync* ApplicationContextImpl::GetOSCryptAsync() {

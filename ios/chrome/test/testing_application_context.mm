@@ -95,12 +95,6 @@ void TestingApplicationContext::SetSystemIdentityManager(
   system_identity_manager_ = std::move(system_identity_manager);
 }
 
-void TestingApplicationContext::SetUpgradeCenter(
-    UpgradeCenter* upgrade_center) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  upgrade_center_ = upgrade_center;
-}
-
 void TestingApplicationContext::SetIOSChromeIOThread(
     IOSChromeIOThread* ios_chrome_io_thread) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -306,11 +300,6 @@ TestingApplicationContext::GetPushNotificationService() {
   }
 
   return push_notification_service_.get();
-}
-
-UpgradeCenter* TestingApplicationContext::GetUpgradeCenter() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return upgrade_center_;
 }
 
 os_crypt_async::OSCryptAsync* TestingApplicationContext::GetOSCryptAsync() {

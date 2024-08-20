@@ -347,7 +347,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest, HandlesOmahaResponseAppIsUpToDate) {
 
   task_environment_.FastForwardBy(kOmahaNetworkWaitTime / 2);
 
-  safety_check_manager_->HandleOmahaResponseForTesting(UpdatedAppDetails());
+  safety_check_manager_->HandleOmahaResponse(UpdatedAppDetails());
 
   task_environment_.RunUntilIdle();
 
@@ -373,7 +373,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest, HandlesOmahaResponseAppOutdated) {
 
   task_environment_.FastForwardBy(kOmahaNetworkWaitTime / 2);
 
-  safety_check_manager_->HandleOmahaResponseForTesting(OutdatedAppDetails());
+  safety_check_manager_->HandleOmahaResponse(OutdatedAppDetails());
 
   task_environment_.RunUntilIdle();
 
@@ -472,7 +472,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
   // `kUpToDate`. However, this call should be ignored because the Safety
   // Check was cancelled, reverting the check state `kDefault`, and ignoring the
   // future update below.
-  safety_check_manager_->HandleOmahaResponseForTesting(UpdatedAppDetails());
+  safety_check_manager_->HandleOmahaResponse(UpdatedAppDetails());
 
   task_environment_.RunUntilIdle();
 
@@ -501,7 +501,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
   // `kOmahaError`. However, this call should be ignored because the Safety
   // Check was cancelled, reverting the check state `kDefault`, and ignoring the
   // future error below.
-  safety_check_manager_->HandleOmahaResponseForTesting(OutdatedAppDetails());
+  safety_check_manager_->HandleOmahaResponse(OutdatedAppDetails());
 
   task_environment_.RunUntilIdle();
 

@@ -89,7 +89,6 @@ class ApplicationContextImpl : public ApplicationContext {
   AccountProfileMapper* GetAccountProfileMapper() override;
   IncognitoSessionTracker* GetIncognitoSessionTracker() override;
   PushNotificationService* GetPushNotificationService() override;
-  UpgradeCenter* GetUpgradeCenter() override;
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
 
  private:
@@ -166,8 +165,6 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<PushNotificationService> push_notification_service_;
 
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
-
-  __strong UpgradeCenter* upgrade_center_ = nil;
 };
 
 #endif  // IOS_CHROME_BROWSER_APPLICATION_CONTEXT_MODEL_APPLICATION_CONTEXT_IMPL_H_

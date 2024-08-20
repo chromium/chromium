@@ -143,9 +143,18 @@ class IOSChromeSafetyCheckManager
   // Returns the time of the last Safety Check run, if ever.
   base::Time GetLastSafetyCheckRunTime() const;
 
+  // Ingests the Omaha response, `details`, to determine if the app is up to
+  // date.
+  //
+  // If the app is up-to-date, calls `SetUpdateChromeCheckState()` to reflect
+  // the new, updated state.
+  //
+  // If the app is outdated, sets `upgrade_url_` and `next_version_` to maintain
+  // the upgrade details.
+  void HandleOmahaResponse(UpgradeRecommendedDetails details);
+
   // For unit-testing only.
   void StartOmahaCheckForTesting();
-  void HandleOmahaResponseForTesting(UpgradeRecommendedDetails details);
   RunningSafetyCheckState GetRunningCheckStateForTesting() const;
   void SetPasswordCheckStateForTesting(PasswordSafetyCheckState state);
   void SetInsecurePasswordCountsForTesting(
@@ -218,16 +227,6 @@ class IOSChromeSafetyCheckManager
   // NOTE: The response from the Omaha service is handled by
   // `HandleOmahaResponse()`.
   void StartOmahaCheck();
-
-  // Ingests the Omaha response, `details`, to determine if the app is up to
-  // date.
-  //
-  // If the app is up-to-date, calls `SetUpdateChromeCheckState()` to reflect
-  // the new, updated state.
-  //
-  // If the app is outdated, sets `upgrade_url_` and `next_version_` to maintain
-  // the upgrade details.
-  void HandleOmahaResponse(UpgradeRecommendedDetails details);
 
   // Checks if the Update Chrome check is still running after
   // `kOmahaNetworkWaitTime` has elapsed. If so, considers this an Omaha

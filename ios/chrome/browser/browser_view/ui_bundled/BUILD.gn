@@ -244,7 +244,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/whats_new",
     "//ios/chrome/browser/unit_conversion/ui_bundled:coordinator",
-    "//ios/chrome/browser/upgrade/model",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:new_tab_animation_tab_helper",
     "//ios/chrome/browser/view_source/model",

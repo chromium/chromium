@@ -2,64 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("model") {
-  sources = [
-    "upgrade_center.h",
-    "upgrade_center.mm",
-    "upgrade_center_browser_agent.h",
-    "upgrade_center_browser_agent.mm",
-    "upgrade_recommended_details.h",
-  ]
-  deps = [
-    ":public",
-    "//base",
-    "//components/infobars/core",
-    "//components/version_info",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/infobars/model",
-    "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/util",
-    "//ios/web/common",
-    "//net",
-    "//ui/base",
-    "//ui/gfx",
-    "//url",
-  ]
-  public_deps = [ "//ios/web/public" ]
-  frameworks = [ "UIKit.framework" ]
-}
-
 source_set("public") {
   sources = [
     "upgrade_constants.h",
     "upgrade_constants.mm",
+    "upgrade_recommended_details.h",
     "upgrade_utils.h",
     "upgrade_utils.mm",
   ]
-  frameworks = [ "UIKit.framework" ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "upgrade_center_browser_agent_unittest.mm",
-    "upgrade_center_unittest.mm",
-  ]
   deps = [
-    ":model",
     "//base",
-    "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
-    "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
-    "//ios/chrome/browser/upgrade/model/test",
-    "//ios/chrome/test:test_support",
-    "//ios/web/public/test:test",
-    "//ios/web/public/test/fakes:fakes",
-    "//testing/gtest",
+    "//url",
   ]
+  frameworks = [ "UIKit.framework" ]
 }

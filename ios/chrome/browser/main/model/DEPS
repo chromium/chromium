@@ -28,8 +28,6 @@ specific_include_rules = {
     "+ios/chrome/browser/tabs/model/closing_web_state_observer_browser_agent.h",
     "+ios/chrome/browser/tabs/model/synced_window_delegate_browser_agent.h",
     "+ios/chrome/browser/tabs/model/tab_parenting_browser_agent.h",
-    "+ios/chrome/browser/upgrade/model/upgrade_center.h",
-    "+ios/chrome/browser/upgrade/model/upgrade_center_browser_agent.h",
     "+ios/chrome/browser/url_loading/model/url_loading_browser_agent.h",
     "+ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h",
     "+ios/chrome/browser/web/model/page_placeholder_browser_agent.h",

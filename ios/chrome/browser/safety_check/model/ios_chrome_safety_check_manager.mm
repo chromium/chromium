@@ -710,12 +710,6 @@ void IOSChromeSafetyCheckManager::StartOmahaCheckForTesting() {
   StartOmahaCheck();
 }
 
-void IOSChromeSafetyCheckManager::HandleOmahaResponseForTesting(
-    UpgradeRecommendedDetails details) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  HandleOmahaResponse(details);
-}
-
 RunningSafetyCheckState
 IOSChromeSafetyCheckManager::GetRunningCheckStateForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
