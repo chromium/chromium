@@ -64,6 +64,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift_constants_for_objective_c.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
@@ -1091,6 +1092,15 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_sufficientlyVisible(), nil);
 }
 
++ (id<GREYMatcher>)tabGridGroupCellWithName:(NSString*)groupName
+                                      count:(NSInteger)count {
+  return grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetNSStringF(
+          IDS_IOS_TAB_GROUP_CELL_ACCESSIBILITY_TITLE,
+          base::SysNSStringToUTF16(groupName), base::NumberToString16(count))),
+      grey_kindOfClassName(@"GroupGridCell"), grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)tabStripCellAtIndex:(unsigned int)index {
   return grey_allOf(grey_accessibilityID(IdentifierForStripCellAtIndex(index)),
                     grey_sufficientlyVisible(), nil);
@@ -1151,6 +1161,15 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)tabGridOtherDevicesPanelButton {
   return grey_accessibilityID(kTabGridRemoteTabsPageButtonIdentifier);
+}
+
++ (id<GREYMatcher>)tabGroupSnackBar:(NSInteger)tabGroupCount {
+  NSString* messageLabel =
+      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_TAB_GROUP_SNACKBAR_LABEL, tabGroupCount));
+  return grey_allOf(
+      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier"),
+      grey_text(messageLabel), nil);
 }
 
 + (id<GREYMatcher>)tabGridTabGroupsPanelButton {
@@ -1571,6 +1590,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 #pragma mark - Tab Grid Selection Mode
+
 + (id<GREYMatcher>)tabGridEditButton {
   return grey_accessibilityID(kTabGridEditButtonIdentifier);
 }
@@ -1612,6 +1632,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 #pragma mark - Tab Grid Search Mode
+
 + (id<GREYMatcher>)tabGridSearchTabsButton {
   return grey_allOf(grey_accessibilityID(kTabGridSearchButtonIdentifier),
                     grey_sufficientlyVisible(), nil);
@@ -1633,6 +1654,110 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_descendant([ChromeMatchersAppInterface tabGridSearchBar]),
       grey_descendant([ChromeMatchersAppInterface tabGridSearchCancelButton]),
       grey_sufficientlyVisible(), nil);
+}
+
+#pragma mark - Create Tab Group View
+
++ (id<GREYMatcher>)tabGroupCreationView {
+  return grey_allOf(grey_accessibilityID(kCreateTabGroupViewIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)createTabGroupTextField {
+  return grey_allOf(grey_accessibilityID(kCreateTabGroupTextFieldIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)createTabGroupTextFieldClearButton {
+  return grey_allOf(
+      grey_accessibilityID(kCreateTabGroupTextFieldClearButtonIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)createTabGroupCreateButton {
+  return grey_allOf(grey_accessibilityID(kCreateTabGroupCreateButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)createTabGroupCancelButton {
+  return grey_allOf(grey_accessibilityID(kCreateTabGroupCancelButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
+#pragma mark - Tab Group View
+
++ (id<GREYMatcher>)tabGroupView {
+  return grey_allOf(grey_accessibilityID(kTabGroupViewIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGroupViewTitle:(NSString*)title {
+  return grey_allOf(grey_accessibilityID(kTabGroupViewTitleIdentifier),
+                    grey_accessibilityLabel(title), nil);
+}
+
++ (id<GREYMatcher>)tabGroupOverflowMenuButton {
+  return grey_allOf(grey_accessibilityID(kTabGroupOverflowMenuButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGroupBackButton {
+  return grey_allOf(
+      [ChromeMatchersAppInterface
+          buttonWithAccessibilityLabel:l10n_util::GetNSString(
+                                           IDS_IOS_ICON_ARROW_BACK)],
+      grey_kindOfClassName(@"UIAccessibilityBackButtonElement"), nil);
+}
+
+#pragma mark - Tab Groups Context Menus
+
++ (id<GREYMatcher>)addTabToNewGroupButton {
+  return grey_allOf(
+      [ChromeMatchersAppInterface
+          contextMenuItemWithAccessibilityLabel:
+              l10n_util::GetPluralNSStringF(
+                  IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP, 1)],
+      grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)addTabToGroupSubMenuButton {
+  return [ChromeMatchersAppInterface
+      contextMenuItemWithAccessibilityLabelID:
+          IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP_SUBMENU];
+}
+
++ (id<GREYMatcher>)renameGroupButton {
+  return [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
+                                         IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP];
+}
+
++ (id<GREYMatcher>)ungroupButton {
+  return [ChromeMatchersAppInterface
+      contextMenuItemWithAccessibilityLabelID:IDS_IOS_CONTENT_CONTEXT_UNGROUP];
+}
+
++ (id<GREYMatcher>)ungroupConfirmationButton {
+  return grey_allOf(grey_accessibilityID(
+                        [l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_UNGROUP)
+                            stringByAppendingString:@"AlertAction"]),
+                    grey_interactable(), nil);
+}
+
++ (id<GREYMatcher>)deleteGroupButton {
+  return [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
+                                         IDS_IOS_CONTENT_CONTEXT_DELETEGROUP];
+}
+
++ (id<GREYMatcher>)deleteGroupConfirmationButton {
+  return grey_allOf(grey_accessibilityID([l10n_util::GetNSString(
+                        IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)
+                        stringByAppendingString:@"AlertAction"]),
+                    grey_interactable(), nil);
+}
+
++ (id<GREYMatcher>)closeGroupButton {
+  return [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
+                                         IDS_IOS_CONTENT_CONTEXT_CLOSEGROUP];
 }
 
 @end

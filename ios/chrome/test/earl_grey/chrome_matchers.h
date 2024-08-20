@@ -528,6 +528,11 @@ id<GREYMatcher> TabGridCellAtIndex(unsigned int index);
 // Returns a matcher for the group cell at `index` in the tab grid.
 id<GREYMatcher> TabGridGroupCellAtIndex(unsigned int index);
 
+// Returns a matcher for the group cell for the given `group_name` and
+// `tab_count`.
+id<GREYMatcher> TabGridGroupCellWithName(NSString* group_name,
+                                         NSInteger tab_count);
+
 // Returns a matcher for the cell at `index` in the tab strip.
 id<GREYMatcher> TabStripCellAtIndex(unsigned int index);
 
@@ -570,6 +575,9 @@ id<GREYMatcher> TabGridIncognitoTabsPanelButton();
 // Returns a matcher for the button to go to the other devices panel in
 // the tab grid.
 id<GREYMatcher> TabGridOtherDevicesPanelButton();
+
+// Returns the matcher for the tab group snack bar.
+id<GREYMatcher> TabGroupSnackBar(int tabGroupCount);
 
 // Returns a matcher for the button to go to the Tab Groups panel in
 // the tab grid.
@@ -837,6 +845,70 @@ id<GREYMatcher> TabGridSearchCancelButton();
 
 // Returns a matcher for the tab grid search mode toolbar.
 id<GREYMatcher> TabGridSearchModeToolbar();
+
+#pragma mark - Create Tab Group View
+
+// Returns the matcher for the tab group creation view.
+id<GREYMatcher> TabGroupCreationView();
+
+// Returns the matcher for the text field in the tab group creation view.
+id<GREYMatcher> CreateTabGroupTextField();
+
+// Returns the matcher for the text field's clear button in the tab group
+// creation view.
+id<GREYMatcher> CreateTabGroupTextFieldClearButton();
+
+// Returns the matcher for `Create Group` button in the tab group creation view.
+id<GREYMatcher> CreateTabGroupCreateButton();
+
+// Returns the matcher for the cancel button in the tab group creation view.
+id<GREYMatcher> CreateTabGroupCancelButton();
+
+#pragma mark - Tab Group View
+
+// Returns the matcher for the tab group view.
+id<GREYMatcher> TabGroupView();
+
+// Returns the matcher for the title on the tab group view.
+id<GREYMatcher> TabGroupViewTitle(NSString* title);
+
+// Returns the matcher for the overflow menu button in the tab group view.
+id<GREYMatcher> TabGroupOverflowMenuButton();
+
+// Returns the matcher for the back button in the tab group view.
+id<GREYMatcher> TabGroupBackButton();
+
+#pragma mark - Tab Groups Context Menus
+
+// Returns the matcher for `Add Tab to New Group` button in the context menu.
+id<GREYMatcher> AddTabToNewGroupButton();
+
+// Returns the matcher for the sub menu button `New Tab Group` in the `Add Tab
+// To Group` button.
+id<GREYMatcher> AddTabToGroupSubMenuButton();
+
+// Returns the matcher for `Rename Group` button in the context menu of a tab
+// group.
+id<GREYMatcher> RenameGroupButton();
+
+// Returns the matcher for `Ungroup` button in the context menu of a tab group.
+id<GREYMatcher> UngroupButton();
+
+// Returns the matcher for `Ungroup` button in the confirmation dialog of a tab
+// group. It's displayed only when tab groups sync is enabled.
+id<GREYMatcher> UngroupConfirmationButton();
+
+// Returns the matcher for `Delete Group` button in the context menu of a tab
+// group.
+id<GREYMatcher> DeleteGroupButton();
+
+// Returns the matcher for `Delete Group` button in the confirmation dialog of a
+// tab group. It's displayed only when tab groups sync is enabled.
+id<GREYMatcher> DeleteGroupConfirmationButton();
+
+// Returns the matcher for `Close Group` button in the context menu of a tab
+// group.
+id<GREYMatcher> CloseGroupButton();
 
 }  // namespace chrome_test_util
 

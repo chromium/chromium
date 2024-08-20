@@ -653,6 +653,12 @@ id<GREYMatcher> TabGridGroupCellAtIndex(unsigned int index) {
   return [ChromeMatchersAppInterface tabGridGroupCellAtIndex:index];
 }
 
+id<GREYMatcher> TabGridGroupCellWithName(NSString* group_name,
+                                         NSInteger tab_count) {
+  return [ChromeMatchersAppInterface tabGridGroupCellWithName:group_name
+                                                        count:tab_count];
+}
+
 id<GREYMatcher> TabStripCellAtIndex(unsigned int index) {
   return [ChromeMatchersAppInterface tabStripCellAtIndex:index];
 }
@@ -699,6 +705,10 @@ id<GREYMatcher> TabGridIncognitoTabsPanelButton() {
 
 id<GREYMatcher> TabGridOtherDevicesPanelButton() {
   return [ChromeMatchersAppInterface tabGridOtherDevicesPanelButton];
+}
+
+id<GREYMatcher> TabGroupSnackBar(int tab_group_count) {
+  return [ChromeMatchersAppInterface tabGroupSnackBar:tab_group_count];
 }
 
 id<GREYMatcher> TabGridTabGroupsPanelButton() {
@@ -1028,6 +1038,80 @@ id<GREYMatcher> TabGridSearchCancelButton() {
 
 id<GREYMatcher> TabGridSearchModeToolbar() {
   return [ChromeMatchersAppInterface tabGridSearchModeToolbar];
+}
+
+#pragma mark - Create Tab Group View
+
+id<GREYMatcher> TabGroupCreationView() {
+  return [ChromeMatchersAppInterface tabGroupCreationView];
+}
+
+id<GREYMatcher> CreateTabGroupTextField() {
+  return [ChromeMatchersAppInterface createTabGroupTextField];
+}
+
+id<GREYMatcher> CreateTabGroupTextFieldClearButton() {
+  return [ChromeMatchersAppInterface createTabGroupTextFieldClearButton];
+}
+
+id<GREYMatcher> CreateTabGroupCreateButton() {
+  return [ChromeMatchersAppInterface createTabGroupCreateButton];
+}
+
+id<GREYMatcher> CreateTabGroupCancelButton() {
+  return [ChromeMatchersAppInterface createTabGroupCancelButton];
+}
+
+#pragma mark - Tab Group View
+
+id<GREYMatcher> TabGroupView() {
+  return [ChromeMatchersAppInterface tabGroupView];
+}
+
+id<GREYMatcher> TabGroupViewTitle(NSString* title) {
+  return [ChromeMatchersAppInterface tabGroupViewTitle:title];
+}
+
+id<GREYMatcher> TabGroupOverflowMenuButton() {
+  return [ChromeMatchersAppInterface tabGroupOverflowMenuButton];
+}
+
+id<GREYMatcher> TabGroupBackButton() {
+  return [ChromeMatchersAppInterface tabGroupBackButton];
+}
+
+#pragma mark - Tab Groups Context Menus
+
+id<GREYMatcher> AddTabToNewGroupButton() {
+  return [ChromeMatchersAppInterface addTabToNewGroupButton];
+}
+
+id<GREYMatcher> AddTabToGroupSubMenuButton() {
+  return [ChromeMatchersAppInterface addTabToGroupSubMenuButton];
+}
+
+id<GREYMatcher> RenameGroupButton() {
+  return [ChromeMatchersAppInterface renameGroupButton];
+}
+
+id<GREYMatcher> UngroupButton() {
+  return [ChromeMatchersAppInterface ungroupButton];
+}
+
+id<GREYMatcher> UngroupConfirmationButton() {
+  return [ChromeMatchersAppInterface ungroupConfirmationButton];
+}
+
+id<GREYMatcher> DeleteGroupButton() {
+  return [ChromeMatchersAppInterface deleteGroupButton];
+}
+
+id<GREYMatcher> DeleteGroupConfirmationButton() {
+  return [ChromeMatchersAppInterface deleteGroupConfirmationButton];
+}
+
+id<GREYMatcher> CloseGroupButton() {
+  return [ChromeMatchersAppInterface closeGroupButton];
 }
 
 }  // namespace chrome_test_util
