@@ -1631,7 +1631,7 @@
   {
     "name": "content-suggestions-magic-stack",
     "owners": [ "thegreenfrog@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 135
   },
   {
     "name": "contextual-nudges",
@@ -5438,11 +5438,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "ios-magic-stack-collection-view",
-    "owners": [ "thegreenfrog@google.com", "bling-get-set-up@google.com" ],
-    "expiry_milestone": 128
-  },
-  {
     "name": "ios-magic-stack-segmentation-ranking",
     "owners": [ "thegreenfrog@google.com", "ritikagup@google.com" ],
     "expiry_milestone": 126
@@ -5450,12 +5445,12 @@
   {
     "name": "ios-magic-stack-segmentation-ranking-caching",
     "owners": [ "thegreenfrog@google.com", "ritikagup@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "ios-magic-stack-segmentation-ranking-split-by-surface",
     "owners": [ "thegreenfrog@google.com", "ritikagup@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "ios-page-info-last-visited",
