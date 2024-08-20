@@ -1525,6 +1525,16 @@
       },
     },
   },
+  'chrome_wpt_tests': {
+    'modifications': {
+      'WebKit Linux MSAN': {
+        'args': [
+          '--additional-expectations',
+          '../../third_party/blink/web_tests/MSANExpectations',
+        ],
+      },
+    },
+  },
   'chromedriver_py_tests': {
     'modifications': {
       'Win10 Tests x64': {

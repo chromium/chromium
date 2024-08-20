@@ -10903,7 +10903,9 @@
       },
       {
         "args": [
-          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter"
+          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter",
+          "--additional-expectations",
+          "../../third_party/blink/web_tests/MSANExpectations"
         ],
         "merge": {
           "args": [
