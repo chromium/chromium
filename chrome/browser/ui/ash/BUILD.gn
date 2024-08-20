@@ -457,7 +457,6 @@ source_set("browser_tests") {
     "snap_group_browsertest.cc",
     "system_tray_client_impl_browsertest.cc",
     "system_tray_tray_cast_browsertest_media_router_chromeos.cc",
-    "volume_controller_browsertest.cc",
   ]
 
   deps = [
