@@ -4116,7 +4116,7 @@ public class TabListMediatorUnitTest {
         assertNotNull(mModel.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER));
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
-        mMediator.onMenuItemClicked(R.id.close_tab, TAB1_ID);
+        mMediator.onMenuItemClicked(R.id.close_tab, TAB1_ID, /* collaborationId= */ null);
         verify(mTabGroupModelFilter)
                 .closeTabs(TabClosureParams.closeTabs(tabs).hideTabGroups(true).build());
     }
@@ -4140,7 +4140,7 @@ public class TabListMediatorUnitTest {
         assertNotNull(mModel.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER));
         when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mIncognitoTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
-        mMediator.onMenuItemClicked(R.id.ungroup_tab, TAB1_ID);
+        mMediator.onMenuItemClicked(R.id.ungroup_tab, TAB1_ID, /* collaborationId= */ null);
         verify(mIncognitoTabGroupModelFilter).moveTabOutOfGroup(TAB1_ID);
     }
 
@@ -4164,7 +4164,7 @@ public class TabListMediatorUnitTest {
         assertNotNull(mModel.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER));
         when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mIncognitoTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
-        mMediator.onMenuItemClicked(R.id.delete_tab, TAB1_ID);
+        mMediator.onMenuItemClicked(R.id.delete_tab, TAB1_ID, /* collaborationId= */ null);
         verify(mIncognitoTabGroupModelFilter).closeTabs(TabClosureParams.closeTabs(tabs).build());
     }
 
@@ -4184,7 +4184,7 @@ public class TabListMediatorUnitTest {
         assertNotNull(mModel.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER));
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
-        mMediator.onMenuItemClicked(R.id.close_tab, TAB1_ID);
+        mMediator.onMenuItemClicked(R.id.close_tab, TAB1_ID, /* collaborationId= */ null);
         verify(mTabGroupModelFilter)
                 .closeTabs(TabClosureParams.closeTabs(tabs).hideTabGroups(true).build());
     }

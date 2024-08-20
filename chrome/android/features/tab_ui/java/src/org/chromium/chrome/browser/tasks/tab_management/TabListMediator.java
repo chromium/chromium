@@ -2891,7 +2891,7 @@ class TabListMediator implements TabListNotificationHandler {
     }
 
     @VisibleForTesting
-    void onMenuItemClicked(@IdRes int menuId, int tabId) {
+    void onMenuItemClicked(@IdRes int menuId, int tabId, @Nullable String collaborationId) {
         boolean isSyncEnabled = TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile);
         if (menuId == R.id.close_tab || menuId == R.id.delete_tab) {
             boolean hideTabGroups = menuId == R.id.close_tab;

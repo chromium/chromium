@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.data_sharing;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -186,6 +188,14 @@ public class DataSharingTabManager {
         }
     }
 
+    /**
+     * Creates a collaboration group.
+     *
+     * @param activity The activity in which the group is to be created.
+     * @param tabGroupDisplayName The title or display name of the tab group.
+     * @param localTabGroupId The tab group ID of the tab in the local tab group model.
+     * @param createGroupFinishedCallback Callback invoked when the creation flow is finished.
+     */
     public void createGroupFlow(
             Activity activity,
             String tabGroupDisplayName,
@@ -210,25 +220,13 @@ public class DataSharingTabManager {
             return;
         }
 
-        ViewGroup bottomSheetView =
-                (ViewGroup)
-                        LayoutInflater.from(activity)
-                                .inflate(R.layout.data_sharing_bottom_sheet, null);
-        TabGridDialogShareBottomSheetContent bottomSheetContent =
-                new TabGridDialogShareBottomSheetContent(bottomSheetView);
-        mBottomSheetControllerSupplier.get().requestShowContent(bottomSheetContent, true);
-        mBottomSheetControllerSupplier
-                .get()
-                .addObserver(
-                        new EmptyBottomSheetObserver() {
-                            @Override
-                            public void onSheetClosed(@StateChangeReason int reason) {
-                                mBottomSheetControllerSupplier.get().removeObserver(this);
-                                if (reason != StateChangeReason.INTERACTION_COMPLETE) {
-                                    createGroupFinishedCallback.onResult(false);
-                                }
-                            }
-                        });
+        Callback<Integer> onClosedCallback =
+                (reason) -> {
+                    if (reason != StateChangeReason.INTERACTION_COMPLETE) {
+                        createGroupFinishedCallback.onResult(false);
+                    }
+                };
+        BottomSheetContent bottomSheetContent = showBottomSheet(activity, onClosedCallback);
 
         Callback<DataSharingService.GroupDataOrFailureOutcome> createGroupCallback =
                 (result) -> {
@@ -265,7 +263,7 @@ public class DataSharingTabManager {
                         mProfileSupplier.get().getOriginalProfile());
         uiDelegate.showMemberPicker(
                 activity,
-                bottomSheetView,
+                (ViewGroup) bottomSheetContent.getContentView(),
                 new MemberPickerListenerImpl(pickerCallback),
                 /* config= */ null);
     }
@@ -293,5 +291,56 @@ public class DataSharingTabManager {
         mShareDelegateSupplier
                 .get()
                 .share(shareParams, chromeShareExtras, ShareDelegate.ShareOrigin.TAB_GROUP);
+    }
+
+    /**
+     * Shows UI for manage sharing.
+     *
+     * @param activity The activity to show the UI for.
+     * @param collaborationId The collaboration ID to show the UI for.
+     */
+    public void showManageSharing(Activity activity, String collaborationId) {
+        BottomSheetContent bottomSheetContent =
+                showBottomSheet(activity, /* onClosedCallback= */ null);
+
+        DataSharingUIDelegate uiDelegate =
+                DataSharingServiceFactory.getUIDelegate(
+                        mProfileSupplier.get().getOriginalProfile());
+        // This API is likely to change in the future.
+        uiDelegate.createGroupMemberListView(
+                activity,
+                (ViewGroup) bottomSheetContent.getContentView(),
+                collaborationId,
+                /* tokenSecret= */ null,
+                /* config= */ null);
+    }
+
+    /**
+     * Shows UI for recent activity.
+     *
+     * @param collaborationId The collaboration ID to show the UI for.
+     */
+    public void showRecentActivity(String collaborationId) {}
+
+    private BottomSheetContent showBottomSheet(
+            Context context, Callback<Integer> onClosedCallback) {
+        ViewGroup bottomSheetView =
+                (ViewGroup)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.data_sharing_bottom_sheet, null);
+        TabGridDialogShareBottomSheetContent bottomSheetContent =
+                new TabGridDialogShareBottomSheetContent(bottomSheetView);
+
+        BottomSheetController controller = mBottomSheetControllerSupplier.get();
+        controller.requestShowContent(bottomSheetContent, true);
+        controller.addObserver(
+                new EmptyBottomSheetObserver() {
+                    @Override
+                    public void onSheetClosed(@StateChangeReason int reason) {
+                        controller.removeObserver(this);
+                        Callback.runNullSafe(onClosedCallback, reason);
+                    }
+                });
+        return bottomSheetContent;
     }
 }

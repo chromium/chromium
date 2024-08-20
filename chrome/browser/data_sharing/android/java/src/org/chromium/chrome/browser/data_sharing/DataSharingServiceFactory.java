@@ -18,6 +18,7 @@ import org.chromium.components.data_sharing.DataSharingUIDelegate;
 /** This factory creates DataSharingService for the given {@link Profile}. */
 public final class DataSharingServiceFactory {
     private static DataSharingService sDataSharingServiceForTesting;
+    private static DataSharingUIDelegate sDataSharingUIDelegateForTesting;
 
     // Don't instantiate me.
     private DataSharingServiceFactory() {}
@@ -55,6 +56,9 @@ public final class DataSharingServiceFactory {
      * @return The {@link DataSharingUIDelegate} for the given profile.
      */
     public static DataSharingUIDelegate getUIDelegate(Profile profile) {
+        if (sDataSharingUIDelegateForTesting != null) {
+            return sDataSharingUIDelegateForTesting;
+        }
         UserDataHost host = getForProfile(profile).getUserDataHost();
         DataSharingUIDelegateImpl uiDelegateImpl =
                 host.getUserData(DataSharingUIDelegateImpl.class);
@@ -63,6 +67,16 @@ public final class DataSharingServiceFactory {
                     DataSharingUIDelegateImpl.class, new DataSharingUIDelegateImpl(profile));
         }
         return uiDelegateImpl;
+    }
+
+    /**
+     * Set a {@link DataSharingUIDelegate} for testing.
+     *
+     * @param delegate The test delegate to use.
+     */
+    public static void setDataSharingUIDelegateForTesting(DataSharingUIDelegate delegate) {
+        sDataSharingUIDelegateForTesting = delegate;
+        ResettersForTesting.register(() -> sDataSharingUIDelegateForTesting = null);
     }
 
     @NativeMethods

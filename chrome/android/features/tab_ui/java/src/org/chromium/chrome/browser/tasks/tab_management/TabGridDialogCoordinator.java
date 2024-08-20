@@ -177,7 +177,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             animationSourceViewProvider,
                             mSnackbarManager,
                             mSharedImageTilesCoordinator,
-                            bottomSheetController,
                             dataSharingTabManager,
                             mComponentName,
                             showColorPickerPopupRunnable,

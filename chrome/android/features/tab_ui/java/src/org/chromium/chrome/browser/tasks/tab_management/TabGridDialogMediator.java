@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegateImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -177,9 +176,9 @@ public class TabGridDialogMediator
     private final @Nullable SnackbarManager mSnackbarManager;
     private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private final String mComponentName;
-    private final @NonNull BottomSheetController mBottomSheetController;
     private final Runnable mShowColorPickerPopupRunnable;
     private final ActionConfirmationManager mActionConfirmationManager;
+    private final DataSharingTabManager mDataSharingTabManager;
 
     private TabGridDialogMenuCoordinator mTabGridDialogMenuCoordinator;
     private TabGroupTitleEditor mTabGroupTitleEditor;
@@ -189,9 +188,8 @@ public class TabGridDialogMediator
     private int mCurrentTabId = Tab.INVALID_TAB_ID;
     private boolean mIsUpdatingTitle;
     private String mCurrentGroupModifiedTitle;
-    private Profile mProfile;
+    private Profile mOriginalProfile;
     private @Nullable CollaborationActivityMessageCardViewModel mCollaborationActivityPropertyModel;
-    private DataSharingTabManager mDataSharingTabManager;
 
     TabGridDialogMediator(
             Activity activity,
@@ -204,7 +202,6 @@ public class TabGridDialogMediator
             AnimationSourceViewProvider animationSourceViewProvider,
             @Nullable SnackbarManager snackbarManager,
             @Nullable SharedImageTilesCoordinator sharedImageTilesCoordinator,
-            @NonNull BottomSheetController bottomSheetController,
             @NonNull DataSharingTabManager dataSharingTabManager,
             String componentName,
             Runnable showColorPickerPopupRunnable,
@@ -221,11 +218,10 @@ public class TabGridDialogMediator
         mComponentName = componentName;
         mActivity = activity;
         mSharedImageTilesCoordinator = sharedImageTilesCoordinator;
-        mBottomSheetController = bottomSheetController;
         mShowColorPickerPopupRunnable = showColorPickerPopupRunnable;
         mActionConfirmationManager = actionConfirmationManager;
         mDataSharingTabManager = dataSharingTabManager;
-        mProfile =
+        mOriginalProfile =
                 mCurrentTabModelFilterSupplier
                         .get()
                         .getTabModel()
@@ -842,7 +838,7 @@ public class TabGridDialogMediator
     }
 
     @VisibleForTesting
-    public void onToolbarMenuItemClick(int menuId, int tabId) {
+    public void onToolbarMenuItemClick(int menuId, int tabId, String collaborationId) {
         assert tabId == mCurrentTabId;
         if (menuId == R.id.ungroup_tab || menuId == R.id.select_tabs) {
             RecordUserAction.record("TabGridDialogMenu.SelectTabs");
@@ -861,10 +857,10 @@ public class TabGridDialogMediator
                     TabGroupColorChangeActionType.VIA_OVERFLOW_MENU);
         } else if (menuId == R.id.manage_sharing) {
             RecordUserAction.record("TabGridDialogMenu.ManageSharing");
-            // TODO(crbug.com/348731625): Make this do something.
+            mDataSharingTabManager.showManageSharing(mActivity, collaborationId);
         } else if (menuId == R.id.recent_activity) {
             RecordUserAction.record("TabGridDialogMenu.RecentActivity");
-            // TODO(crbug.com/348731625): Make this do something.
+            mDataSharingTabManager.showRecentActivity(collaborationId);
         } else if (menuId == R.id.close_tab || menuId == R.id.delete_tab) {
             boolean hideTabGroups = menuId == R.id.close_tab;
             if (hideTabGroups) {
@@ -877,7 +873,7 @@ public class TabGridDialogMediator
                     mActionConfirmationManager,
                     tabId,
                     hideTabGroups,
-                    TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile),
+                    TabGroupSyncFeatures.isTabGroupSyncEnabled(mOriginalProfile),
                     /* didCloseCallback= */ null);
         } else if (menuId == R.id.delete_shared_group) {
             RecordUserAction.record("TabGridDialogMenu.DeleteShared");
@@ -896,15 +892,16 @@ public class TabGridDialogMediator
 
     private View.OnClickListener getMenuButtonClickListener() {
         assert mTabListEditorControllerSupplier != null;
-        boolean isTabGroupSyncEnabled = TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile);
+        boolean isTabGroupSyncEnabled =
+                TabGroupSyncFeatures.isTabGroupSyncEnabled(mOriginalProfile);
 
         IdentityManager identityManager = null;
         TabGroupSyncService tabGroupSyncService = null;
         DataSharingService dataSharingService = null;
         if (isTabGroupSyncEnabled && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
-            identityManager = IdentityServicesProvider.get().getIdentityManager(mProfile);
-            tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mProfile);
-            dataSharingService = DataSharingServiceFactory.getForProfile(mProfile);
+            identityManager = IdentityServicesProvider.get().getIdentityManager(mOriginalProfile);
+            tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mOriginalProfile);
+            dataSharingService = DataSharingServiceFactory.getForProfile(mOriginalProfile);
         }
         if (mTabGridDialogMenuCoordinator == null) {
             mTabGridDialogMenuCoordinator =

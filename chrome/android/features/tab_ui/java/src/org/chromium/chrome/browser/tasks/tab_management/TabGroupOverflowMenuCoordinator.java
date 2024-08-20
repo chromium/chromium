@@ -53,7 +53,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
     /** Helper interface for handling menu item clicks for tab group related actions. */
     @FunctionalInterface
     public interface OnItemClickedCallback {
-        void onClick(@IdRes int menuId, int tabId);
+        void onClick(@IdRes int menuId, int tabId, @Nullable String collaborationId);
     }
 
     private static class OverflowMenuHolder {
@@ -74,6 +74,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
                 OnItemClickedCallback onItemClickedCallback,
                 boolean isIncognito,
                 int tabId,
+                @Nullable String collaborationId,
                 @DimenRes int popupWidthRes,
                 @Nullable Callback<OverflowMenuHolder> onDismiss,
                 Activity activity) {
@@ -117,7 +118,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
             listView.setAdapter(adapter);
             listView.setOnItemClickListener(
                     (p, v, pos, id) -> {
-                        onItemClickedCallback.onClick((int) id, tabId);
+                        onItemClickedCallback.onClick((int) id, tabId, collaborationId);
                         mMenuWindow.dismiss();
                     });
 
@@ -291,6 +292,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
             @NonNull Activity activity) {
         assert mMenuHolder == null;
         boolean isIncognito = mTabModelSupplier.get().isIncognitoBranded();
+        @Nullable String collaborationId = getCollaborationIdOrNull(tabId);
         mMenuHolder =
                 new OverflowMenuHolder(
                         anchorViewRectProvider,
@@ -301,11 +303,12 @@ public abstract class TabGroupOverflowMenuCoordinator {
                         mOnItemClickedCallback,
                         isIncognito,
                         tabId,
+                        collaborationId,
                         getMenuWidth(),
                         this::onDismiss,
                         activity);
         buildCustomView(mMenuHolder.getContentView(), isIncognito);
-        configureMenuItems(mMenuHolder.getModelList(), isIncognito, tabId);
+        configureMenuItems(mMenuHolder.getModelList(), isIncognito, tabId, collaborationId);
         mMenuHolder.show();
     }
 
@@ -317,8 +320,8 @@ public abstract class TabGroupOverflowMenuCoordinator {
         onMenuDismissed();
     }
 
-    private void configureMenuItems(ModelList modelList, boolean isIncognito, int tabId) {
-        @Nullable String collaborationId = getCollaborationIdOrNull(tabId);
+    private void configureMenuItems(
+            ModelList modelList, boolean isIncognito, int tabId, @Nullable String collaborationId) {
         boolean hasCollaborationData =
                 !TextUtils.isEmpty(collaborationId)
                         && mIdentityManager != null

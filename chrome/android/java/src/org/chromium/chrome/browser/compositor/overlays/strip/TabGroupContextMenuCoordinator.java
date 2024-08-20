@@ -98,7 +98,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             ActionConfirmationManager actionConfirmationManager,
             TabCreator tabCreator,
             boolean isTabGroupSyncEnabled) {
-        return (menuId, tabId) -> {
+        return (menuId, tabId, collaborationId) -> {
             if (menuId == org.chromium.chrome.R.id.ungroup_tab) {
                 TabUiUtils.ungroupTabGroup(
                         tabGroupModelFilter,
