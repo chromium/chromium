@@ -5,31 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_BROWSER_STATE_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_BROWSER_STATE_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+// This is a forwarding header to ease the name transition of ChromeBrowserState
+// and related classes to ProfileIOS.
+// TODO(crbug.com/358267438): Remove this file.
 
-class PushNotificationBrowserStateService;
-
-// Singleton that creates the PushNotificationProfileService and associates that
-// service with ChromeBrowserState.
-class PushNotificationBrowserStateServiceFactory
-    : public BrowserStateKeyedServiceFactory {
- public:
-  static PushNotificationBrowserStateServiceFactory* GetInstance();
-  static PushNotificationBrowserStateService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-
- private:
-  friend class base::NoDestructor<PushNotificationBrowserStateServiceFactory>;
-
-  PushNotificationBrowserStateServiceFactory();
-  ~PushNotificationBrowserStateServiceFactory() override;
-
-  // BrowserStateKeyedServiceFactory implementation.
-  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  bool ServiceIsNULLWhileTesting() const override;
-};
+#import "ios/chrome/browser/push_notification/model/push_notification_profile_service_factory.h"
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_BROWSER_STATE_SERVICE_FACTORY_H_

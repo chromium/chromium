@@ -59,6 +59,8 @@ source_set("model") {
     "signin_error_controller_factory.h",
     "signin_metrics_service_factory.h",
     "signin_metrics_service_factory.mm",
+    "signin_profile_info_updater.h",
+    "signin_profile_info_updater_factory.h",
   ]
   deps = [
     ":capabilities_types",

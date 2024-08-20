@@ -5,38 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_BROWSER_STATE_INFO_UPDATER_FACTORY_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_BROWSER_STATE_INFO_UPDATER_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+// This is a forwarding header to ease the name transition of ChromeBrowserState
+// and related classes to ProfileIOS.
+// TODO(crbug.com/358267438): Remove this file.
 
-class SigninBrowserStateInfoUpdater;
-
-class SigninBrowserStateInfoUpdaterFactory
-    : public BrowserStateKeyedServiceFactory {
- public:
-  // Returns nullptr if this browser state cannot have a
-  // SigninBrowserStateInfoUpdater (for example, if it is incognito).
-  static SigninBrowserStateInfoUpdater* GetForBrowserState(
-      ChromeBrowserState* chrome_browser_state);
-
-  // Returns an instance of the factory singleton.
-  static SigninBrowserStateInfoUpdaterFactory* GetInstance();
-
-  SigninBrowserStateInfoUpdaterFactory(
-      const SigninBrowserStateInfoUpdaterFactory&) = delete;
-  SigninBrowserStateInfoUpdaterFactory& operator=(
-      const SigninBrowserStateInfoUpdaterFactory&) = delete;
-
- private:
-  friend class base::NoDestructor<SigninBrowserStateInfoUpdaterFactory>;
-
-  SigninBrowserStateInfoUpdaterFactory();
-  ~SigninBrowserStateInfoUpdaterFactory() override;
-
-  // BrowserStateKeyedServiceFactory:
-  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* state) const override;
-  bool ServiceIsCreatedWithBrowserState() const override;
-};
+#import "ios/chrome/browser/signin/model/signin_profile_info_updater_factory.h"
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_BROWSER_STATE_INFO_UPDATER_FACTORY_H_

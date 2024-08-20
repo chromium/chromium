@@ -5,35 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_BROWSER_STATE_SERVICE_H_
 #define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_BROWSER_STATE_SERVICE_H_
 
-#import "base/files/file_path.h"
-#import "base/memory/raw_ptr.h"
-#import "components/keyed_service/core/keyed_service.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
+// This is a forwarding header to ease the name transition of ChromeBrowserState
+// and related classes to ProfileIOS.
+// TODO(crbug.com/358267438): Remove this file.
 
-// This is a KeyedService that encapsulates the push notification functionality
-// that is coupled with a user profile.
-class PushNotificationBrowserStateService
-    : public KeyedService,
-      public signin::IdentityManager::Observer {
- public:
-  PushNotificationBrowserStateService(signin::IdentityManager* identity_manager,
-                                      base::FilePath browser_state_path);
-  ~PushNotificationBrowserStateService() override;
-
-  // KeyedService
-  void Shutdown() override;
-
-  // signin::IdentityManager::Observer:
-  void OnPrimaryAccountChanged(
-      const signin::PrimaryAccountChangeEvent& event) override;
-
- private:
-  // This object notifies the PushNotificationProfileService of the signin and
-  // signout events.
-  const raw_ptr<signin::IdentityManager> identity_manager_;
-  // The path of the browser state with which the
-  // PushNotificationBrowserStateService instance is associated.
-  const base::FilePath browser_state_path_;
-};
+#import "ios/chrome/browser/push_notification/model/push_notification_profile_service.h"
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_BROWSER_STATE_SERVICE_H_
