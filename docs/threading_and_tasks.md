@@ -35,19 +35,24 @@ This documentation assumes familiarity with computer science
    [data races](https://en.wikipedia.org/wiki/Race_condition#Data_race)!
    Prefer passing messages across sequences instead. Alternatives to message
    passing like using locks is discouraged.
- * To prevent accidental data races, prefer for most classes to be used
-   exclusively on a single sequence. You should use utilities like
-   [SEQUENCE_CHECKER](https://source.chromium.org/chromium/chromium/src/+/main:base/sequence_checker.h)
-   or [base::SequenceBound](https://source.chromium.org/chromium/chromium/src/+/main:base/threading/sequence_bound.h)
-   to help enforce this constraint.
  * If you need to orchestrate multiple objects that live on different
-   sequences, be careful about object lifetimes. For example,
-   using [base::Unretained](https://source.chromium.org/chromium/chromium/src/+/main:base/functional/bind.h;l=169;drc=ef1375f2c9fffa0d9cd664b43b0035c09fb70e99)
-   in posted tasks can often lead to use-after-free bugs without careful
-   analysis of object lifetimes. Consider whether you need to use
-   [weak pointers](https://source.chromium.org/chromium/chromium/src/+/main:base/memory/weak_ptr.h)
-   or [scoped refptrs](https://source.chromium.org/chromium/chromium/src/+/main:base/memory/scoped_refptr.h)
-   instead.
+   sequences, be careful about object lifetimes.
+    * To prevent accidental data races, prefer for most classes to be used
+      exclusively on a single sequence. You should use utilities like
+      [SEQUENCE_CHECKER][4] or [base::SequenceBound][5] to help enforce this
+      constraint.
+    * As a rule of thumb, avoid [base::Unretained][1]. [weak pointers][2] can
+      usually be substituted.
+    * Explicit ownership via `std::unique_ptr` is preferred.
+    * [scoped_refptrs][3] can be used for objects that have multiple owners
+      across multiple sequences. This is usually the wrong design pattern and is
+      discouraged for new code.
+
+[1]: https://source.chromium.org/chromium/chromium/src/+/main:base/functional/bind.h;l=169;drc=ef1375f2c9fffa0d9cd664b43b0035c09fb70e99
+[2]: https://source.chromium.org/chromium/chromium/src/+/main:base/memory/weak_ptr.h
+[3]: https://source.chromium.org/chromium/chromium/src/+/main:base/memory/scoped_refptr.h
+[4]: https://source.chromium.org/chromium/chromium/src/+/main:base/sequence_checker.h
+[5]: https://source.chromium.org/chromium/chromium/src/+/main:base/threading/sequence_bound.h
 
 ### Nomenclature
 
