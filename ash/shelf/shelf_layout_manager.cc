@@ -1346,7 +1346,9 @@ void ShelfLayoutManager::OnOverviewModeWillStart() {
 
 void ShelfLayoutManager::OnOverviewModeStarting() {
   overview_mode_will_start_ = false;
-  overview_suspend_work_area_update_.emplace(this);
+  if (!overview_suspend_work_area_update_) {
+    overview_suspend_work_area_update_.emplace(this);
+  }
   UpdateContextualNudges();
 }
 
@@ -1360,7 +1362,14 @@ void ShelfLayoutManager::OnOverviewModeStartingAnimationComplete(
 }
 
 void ShelfLayoutManager::OnOverviewModeEnding(OverviewSession* session) {
-  overview_suspend_work_area_update_.emplace(this);
+  // If `overview_suspend_work_area_update_` is already set because the previous
+  // overview transition was canceled, `emplace()` will resume work area
+  // updates, then immediately suspend it again. This is not only wasteful, but
+  // causes transient shelf state updates from the temporary resume which is
+  // confusing and results in test failures.
+  if (!overview_suspend_work_area_update_) {
+    overview_suspend_work_area_update_.emplace(this);
+  }
 }
 
 void ShelfLayoutManager::OnOverviewModeEndingAnimationComplete(bool canceled) {

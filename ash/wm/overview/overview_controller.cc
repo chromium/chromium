@@ -454,6 +454,10 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       OnStartingAnimationComplete(/*canceled=*/true);
     start_animations_.clear();
 
+    for (auto& observer : observers_) {
+      observer.OnOverviewModeEnding(overview_session_.get());
+    }
+
     if (type == OverviewEnterExitType::kFadeOutExit) {
       // FadeOutExit is used for transition to the home launcher. Minimize the
       // windows without animations to prevent them from getting maximized
@@ -473,8 +477,6 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     // Do not show rounded corners or shadow during overview shutdown.
     overview_session_->UpdateRoundedCornersAndShadow();
 
-    for (auto& observer : observers_)
-      observer.OnOverviewModeEnding(overview_session_.get());
     overview_session_->Shutdown();
 
     const bool should_end_immediately =
