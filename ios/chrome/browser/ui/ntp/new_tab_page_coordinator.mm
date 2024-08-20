@@ -558,6 +558,11 @@
 
 - (void)didNavigateAwayFromNTP {
   [self cancelOmniboxEdit];
+  if (IsHomeCustomizationEnabled()) {
+    [_customizationCoordinator dismissCustomizationMenu];
+    [_customizationCoordinator stop];
+    _customizationCoordinator = nil;
+  }
   [self saveNTPState];
   [self updateNTPIsVisible:NO];
   [self updateStartForVisibilityChange:NO];

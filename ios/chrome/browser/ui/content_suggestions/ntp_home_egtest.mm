@@ -1864,6 +1864,10 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
+                                   kCustomizationCollectionDiscoverIdentifier)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
                                    kCustomizationLinkLearnMoreIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 

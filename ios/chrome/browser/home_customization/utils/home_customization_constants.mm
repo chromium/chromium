@@ -44,6 +44,13 @@ NSString* const kCustomizationLinkActivityIdentifier =
 NSString* const kCustomizationLinkLearnMoreIdentifier =
     @"kCustomizationLinkLearnMoreIdentifier";
 
+NSString* const kCustomizationCollectionMainIdentifier =
+    @"kCustomizationCollectionMainIdentifier";
+NSString* const kCustomizationCollectionMagicStackIdentifier =
+    @"kCustomizationCollectionMagicStackIdentifier";
+NSString* const kCustomizationCollectionDiscoverIdentifier =
+    @"kCustomizationCollectionDiscoverIdentifier";
+
 const char kDiscoverFollowingURL[] =
     "https://google.com/preferences/interests/yourinterests";
 const char kDiscoverHiddenURL[] =

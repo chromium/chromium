@@ -44,6 +44,11 @@ extern NSString* const kCustomizationLinkHiddenIdentifier;
 extern NSString* const kCustomizationLinkActivityIdentifier;
 extern NSString* const kCustomizationLinkLearnMoreIdentifier;
 
+// The identifiers for each menu page's collection view.
+extern NSString* const kCustomizationCollectionMainIdentifier;
+extern NSString* const kCustomizationCollectionMagicStackIdentifier;
+extern NSString* const kCustomizationCollectionDiscoverIdentifier;
+
 // The URLs for the links in the Discover submenu.
 extern const char kDiscoverFollowingURL[];
 extern const char kDiscoverHiddenURL[];

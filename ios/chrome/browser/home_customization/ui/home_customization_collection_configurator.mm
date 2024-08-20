@@ -53,6 +53,8 @@ const CGFloat kSpacingBelowHeader = 10;
                          collectionViewLayout:[self collectionViewLayout]];
   collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   collectionView.delegate = _viewController;
+  collectionView.accessibilityIdentifier = [HomeCustomizationHelper
+      accessibilityIdentifierForPageCollection:_viewController.page];
   _viewController.collectionView = collectionView;
 
   UICollectionViewDiffableDataSource* diffableDataSource =
