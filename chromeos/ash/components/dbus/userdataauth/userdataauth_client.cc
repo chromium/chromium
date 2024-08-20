@@ -109,6 +109,16 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
     progress_observer_list_.RemoveObserver(observer);
   }
 
+  void AddAuthFactorStatusUpdateObserver(
+      AuthFactorStatusUpdateObserver* observer) override {
+    auth_factor_status_observer_list_.AddObserver(observer);
+  }
+
+  void RemoveAuthFactorStatusUpdateObserver(
+      AuthFactorStatusUpdateObserver* observer) override {
+    auth_factor_status_observer_list_.RemoveObserver(observer);
+  }
+
   void WaitForServiceToBeAvailable(
       chromeos::WaitForServiceToBeAvailableCallback callback) override {
     proxy_->WaitForServiceToBeAvailable(std::move(callback));
@@ -487,6 +497,19 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
     }
   }
 
+  void OnAuthFactorStatusUpdate(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    ::user_data_auth::AuthFactorStatusUpdate proto;
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      LOG(ERROR) << "Failed to parse AuthFactorStatusUpdate protobuf from "
+                    "UserDataAuth signal";
+      return;
+    }
+    for (auto& observer : auth_factor_status_observer_list_) {
+      observer.OnAuthFactorStatusUpdate(proto);
+    }
+  }
+
   // Connects the dbus signals.
   void ConnectToSignals() {
     proxy_->ConnectToSignal(
@@ -515,6 +538,12 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
             &UserDataAuthClientImpl::OnPrepareAuthFactorProgress,
             weak_factory_.GetWeakPtr()),
         base::BindOnce(&OnSignalConnected));
+    proxy_->ConnectToSignal(
+        ::user_data_auth::kUserDataAuthInterface,
+        ::user_data_auth::kAuthFactorStatusUpdate,
+        base::BindRepeating(&UserDataAuthClientImpl::OnAuthFactorStatusUpdate,
+                            weak_factory_.GetWeakPtr()),
+        base::BindOnce(&OnSignalConnected));
   }
 
   // D-Bus proxy for cryptohomed, not owned.
@@ -528,6 +557,10 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
 
   // List of observers for dbus signals related to fingerprint.
   base::ObserverList<PrepareAuthFactorProgressObserver> progress_observer_list_;
+
+  // List of observers for dbus signal AuthFactorStatusUpdate.
+  base::ObserverList<AuthFactorStatusUpdateObserver>
+      auth_factor_status_observer_list_;
 
   base::WeakPtrFactory<UserDataAuthClientImpl> weak_factory_{this};
 };

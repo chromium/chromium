@@ -46,4 +46,14 @@ void MockUserDataAuthClient::RemovePrepareAuthFactorProgressObserver(
   NOTIMPLEMENTED();
 }
 
+void MockUserDataAuthClient::AddAuthFactorStatusUpdateObserver(
+    AuthFactorStatusUpdateObserver* observer) {
+  NOTIMPLEMENTED();
+}
+
+void MockUserDataAuthClient::RemoveAuthFactorStatusUpdateObserver(
+    AuthFactorStatusUpdateObserver* observer) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace ash

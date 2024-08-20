@@ -685,6 +685,16 @@ void FakeUserDataAuthClient::RemovePrepareAuthFactorProgressObserver(
   progress_observers_.RemoveObserver(observer);
 }
 
+void FakeUserDataAuthClient::AddAuthFactorStatusUpdateObserver(
+    AuthFactorStatusUpdateObserver* observer) {
+  auth_factor_status_observer_list_.AddObserver(observer);
+}
+
+void FakeUserDataAuthClient::RemoveAuthFactorStatusUpdateObserver(
+    AuthFactorStatusUpdateObserver* observer) {
+  auth_factor_status_observer_list_.RemoveObserver(observer);
+}
+
 void FakeUserDataAuthClient::IsMounted(
     const ::user_data_auth::IsMountedRequest& request,
     IsMountedCallback callback) {
