@@ -251,8 +251,8 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   // |progress_view_| or |live_status_view_| will show.
   live_status_view_ =
       progress_row->AddChildView(std::make_unique<MediaLiveStatusView>(
-          media_color_theme_.playing_progress_foreground_color_id,
-          media_color_theme_.playing_progress_background_color_id));
+          media_color_theme_.play_button_foreground_color_id,
+          media_color_theme_.play_button_container_color_id));
   progress_row->SetFlexForView(live_status_view_, 1);
   live_status_view_->SetVisible(false);
 

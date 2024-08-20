@@ -32,6 +32,7 @@ MediaLiveStatusView::MediaLiveStatusView(ui::ColorId foreground_color_id,
   live_label_ = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_MEDIA_LIVE_TEXT),
       views::style::CONTEXT_LABEL, views::style::STYLE_CAPTION_BOLD));
+  live_label_->SetAutoColorReadabilityEnabled(false);
   live_label_->SetEnabledColorId(foreground_color_id);
   live_label_->SetBorder(views::CreateEmptyBorder(kLiveLabelPadding));
   live_label_->SetBackground(views::CreateThemedRoundedRectBackground(

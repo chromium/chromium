@@ -42,7 +42,8 @@ constexpr int kDeviceEntryIconSize = 20;
 
 constexpr gfx::Insets kBackgroundInsets = gfx::Insets::VH(16, 8);
 constexpr gfx::Insets kCastHeaderRowInsets = gfx::Insets::VH(0, 8);
-constexpr gfx::Insets kIssueHoverButtonInsets = gfx::Insets::VH(6, 16);
+constexpr gfx::Insets kIconHoverButtonInsets = gfx::Insets::VH(6, 8);
+constexpr gfx::Insets kThrobberHoverButtonInsets = gfx::Insets::VH(0, 8);
 
 }  // namespace
 
@@ -59,7 +60,7 @@ IssueHoverButton::IssueHoverButton(PressedCallback callback,
   GetViewAccessibility().SetName(
       base::JoinString({device_name, status_text}, u"\n"));
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, kIssueHoverButtonInsets,
+      views::BoxLayout::Orientation::kHorizontal, kIconHoverButtonInsets,
       kDeviceEntrySeparator));
 
   // Create a column to hold the info icon view.
@@ -281,6 +282,8 @@ std::unique_ptr<HoverButton> CastDeviceSelectorView::BuildCastDeviceEntryView(
 
     device_entry_button = std::make_unique<HoverButton>(
         std::move(callback), std::move(throbber), device_name);
+    device_entry_button->SetBorder(
+        views::CreateEmptyBorder(kThrobberHoverButtonInsets));
     device_entry_button->title()->SetDefaultTextStyle(
         views::style::STYLE_BODY_2);
     device_entry_button->title()->SetDefaultEnabledColorId(
@@ -302,6 +305,8 @@ std::unique_ptr<HoverButton> CastDeviceSelectorView::BuildCastDeviceEntryView(
             media_color_theme_.secondary_foreground_color_id,
             kDeviceEntryIconSize),
         device_name);
+    device_entry_button->SetBorder(
+        views::CreateEmptyBorder(kIconHoverButtonInsets));
     device_entry_button->SetLabelStyle(views::style::STYLE_BODY_2);
     device_entry_button->SetEnabledTextColorIds(
         media_color_theme_.secondary_foreground_color_id);

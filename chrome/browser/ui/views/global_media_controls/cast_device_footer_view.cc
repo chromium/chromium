@@ -19,11 +19,12 @@ constexpr int kBackgroundBorderThickness = 1;
 constexpr int kBackgroundCornerRadius = 8;
 constexpr int kStopCastingButtonCornerRadius = 10;
 constexpr int kBackgroundSeparator = 8;
-constexpr int kStopCastingButtonSeparator = 6;
+constexpr int kStopCastingButtonSeparator = 4;
 constexpr int kDeviceIconSize = 20;
 constexpr int kStopCastingButtonIconSize = 12;
 
-constexpr gfx::Insets kBackgroundInsets = gfx::Insets::VH(14, 16);
+constexpr gfx::Insets kBackgroundInsets = gfx::Insets::VH(13, 15);
+constexpr gfx::Insets kStopCastingButtonInsets = gfx::Insets::TLBR(2, 6, 2, 8);
 
 }  // namespace
 
@@ -45,7 +46,7 @@ CastDeviceFooterView::CastDeviceFooterView(
   // Add the device icon.
   device_icon_ = AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kMediaRouterIdleIcon,
+          vector_icons::kCastIcon,
           media_color_theme.device_selector_foreground_color_id,
           kDeviceIconSize)));
 
@@ -56,7 +57,7 @@ CastDeviceFooterView::CastDeviceFooterView(
   if (device_name.has_value()) {
     device_name_->SetText(base::UTF8ToUTF16(device_name.value()));
   }
-  device_name_->SetTextStyle(views::style::STYLE_BODY_2);
+  device_name_->SetTextStyle(views::style::STYLE_BODY_2_MEDIUM);
   device_name_->SetEnabledColorId(
       media_color_theme.device_selector_foreground_color_id);
   device_name_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -74,6 +75,8 @@ CastDeviceFooterView::CastDeviceFooterView(
           vector_icons::kStopCircleIcon,
           media_color_theme.error_foreground_color_id,
           kStopCastingButtonIconSize));
+  stop_casting_button_->SetBorder(
+      views::CreateEmptyBorder(kStopCastingButtonInsets));
   stop_casting_button_->SetLabelStyle(views::style::STYLE_BODY_5);
   stop_casting_button_->SetEnabledTextColorIds(
       media_color_theme.error_foreground_color_id);
