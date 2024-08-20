@@ -2643,6 +2643,9 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/script-transform-sendKeyFrameRequest.https.html [ Skip Timeout ]
+[ Mac15 ] external/wpt/webrtc-encoded-transform/script-transform-sendKeyFrameRequest.https.html [ Skip Timeout ]
+[ Mac15 ] external/wpt/webusb/usbDevice.https.any.worker.html [ Skip Timeout ]
 [ Win11-arm64 ] external/wpt/pointerevents/pointerevent_touch-action-inherit_child-pan-x-child-pan-y_touch.html [ Crash Failure ]
 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-inherit_child-pan-x-child-pan-y_touch.html [ Crash Failure ]
 [ Win11-arm64 ] external/wpt/pointerevents/pointerevent_touch-action-none-css_touch.html [ Crash Failure ]

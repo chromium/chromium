@@ -82,6 +82,7 @@ crbug.com/1209223 [ Linux ] external/wpt/html/browsers/browsing-the-web/navigati
 crbug.com/1209223 [ Linux ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+wpt_internal/webxr/ar/ar_hittestsource_lifetimes.https.html [ Failure Timeout ]
 wpt_internal/html/semantics/forms/the-select-element/stylable-select/native-popup-with-datalist.tentative.html [ Failure ]
 crbug.com/332970422 external/wpt/html/semantics/embedded-content/media-elements/autoplay-allowed-by-feature-policy-attribute.https.sub.html [ Timeout ]
 crbug.com/626703 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-iframe-content-attribute.tentative.https.sub.html [ Timeout ]

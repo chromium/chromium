@@ -196816,6 +196816,19 @@
       ]
      },
      "text-autospace": {
+      "text-autospace-001.html": [
+       "afd1352d5d22455b2c8dd7e7d43d0f280259f4ee",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-autospace/text-autospace-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-autospace-break-001.html": [
        "5af0e1f65afed7d878bb82ac9dfe3695a273cc97",
        [
@@ -271396,7 +271409,7 @@
         ]
        ],
        "2d.layer.global-states.filter.no-transform.html": [
-        "dc55eeb38cf9093d7e6749ffcd56b89d775dbfc1",
+        "0b6769e878409928a19362652997b425d330fa12",
         [
          null,
          [
@@ -271409,7 +271422,7 @@
         ]
        ],
        "2d.layer.global-states.filter.rotation.html": [
-        "49676d458ef38f581b3f3cc03fec160b83bf3826",
+        "a9046dec0548075a8cdf1dd5f652bcb400743873",
         [
          null,
          [
@@ -271422,7 +271435,7 @@
         ]
        ],
        "2d.layer.global-states.no-transform.html": [
-        "cabbe954cee38864c414099114998c1b559d3d4d",
+        "1bc6777b90d439b6c052ab1309eeee1988e75044",
         [
          null,
          [
@@ -271435,7 +271448,7 @@
         ]
        ],
        "2d.layer.global-states.rotation.html": [
-        "240a510b844710ecaabe94b08bbc482a977abef1",
+        "a73753a7abad8792abdc8b8133465e5952700e2e",
         [
          null,
          [
@@ -274146,7 +274159,7 @@
         ]
        ],
        "2d.layer.global-states.filter.no-transform.html": [
-        "3afded0040552a09621515de9f1ce94789262715",
+        "9aa5cd57edd0dff7113495c7c81e35b2d45d49bd",
         [
          null,
          [
@@ -274159,7 +274172,7 @@
         ]
        ],
        "2d.layer.global-states.filter.no-transform.w.html": [
-        "7b925b2539aeabc0f8b21ea0c5eb97f256bb8bc2",
+        "c98482af03ddd2b0409bc6a68a2ba4a9fc513aa8",
         [
          null,
          [
@@ -274172,7 +274185,7 @@
         ]
        ],
        "2d.layer.global-states.filter.rotation.html": [
-        "851b24adbd5f5acc8277ef5396be3a57b0c54f70",
+        "4d6841e9c516fb533cd1c80532742821aca2dd69",
         [
          null,
          [
@@ -274185,7 +274198,7 @@
         ]
        ],
        "2d.layer.global-states.filter.rotation.w.html": [
-        "adb85393eb1e2e866fdef409a5a5f36a3341c8d4",
+        "b498615cdc54d226fcbaacc0281c36759c804320",
         [
          null,
          [
@@ -274198,7 +274211,7 @@
         ]
        ],
        "2d.layer.global-states.no-transform.html": [
-        "d80b669af927b320716deaeb30304eb6290e88cd",
+        "8cd6d2a3f25346c069b9485257cd293c9c63382c",
         [
          null,
          [
@@ -274211,7 +274224,7 @@
         ]
        ],
        "2d.layer.global-states.no-transform.w.html": [
-        "e9e1f753a3cf350480a2da2e2a37feb5acebde17",
+        "ca375f6a8506816407c44cbe0ed66e2a9e76cd53",
         [
          null,
          [
@@ -274224,7 +274237,7 @@
         ]
        ],
        "2d.layer.global-states.rotation.html": [
-        "30d0ef5aca5893fe1733ba4603208c0c79d7814c",
+        "d6281ae33209a08ea5b4eeaaa295b1847be1d540",
         [
          null,
          [
@@ -274237,7 +274250,7 @@
         ]
        ],
        "2d.layer.global-states.rotation.w.html": [
-        "7f947d8dba2ac3cb3023f608c7963f207fdf6b02",
+        "8d97efa59b072e50b0fa130ae5f1d546937b7c61",
         [
          null,
          [
@@ -343879,6 +343892,10 @@
       ]
      },
      "text-autospace": {
+      "text-autospace-001-ref.html": [
+       "5c231fac913a0ba8c149db5d5845e63aa5908295",
+       []
+      ],
       "text-autospace-break-001-ref.html": [
        "130c89fcba5dc5307a4b27a2f3ca4d46fc71f844",
        []
@@ -370679,19 +370696,19 @@
         []
        ],
        "2d.layer.global-states.filter.no-transform-expected.html": [
-        "c57e256847846ac136679ad6455ed6b3b8f566a3",
+        "6291bdcbcd932fa62326c846f54b3fc4c4954691",
         []
        ],
        "2d.layer.global-states.filter.rotation-expected.html": [
-        "650a40bb80c1409b6b8f6effaa10ad7baf8d45f2",
+        "69d9bb007b310e818573607e39dd50c1f8000d12",
         []
        ],
        "2d.layer.global-states.no-transform-expected.html": [
-        "ad6f64043f6a175b105db4313d46c64d18f417eb",
+        "c0f414ea7dec686c93f07ef487a10c41c40d8892",
         []
        ],
        "2d.layer.global-states.rotation-expected.html": [
-        "376504488c392ea6f58f415da8f03faafafb41f2",
+        "b79d9684523544329e0ead0cbf0ae607a07731e2",
         []
        ],
        "2d.layer.globalCompositeOperation-expected.html": [
@@ -371827,19 +371844,19 @@
         []
        ],
        "2d.layer.global-states.filter.no-transform-expected.html": [
-        "c57e256847846ac136679ad6455ed6b3b8f566a3",
+        "6291bdcbcd932fa62326c846f54b3fc4c4954691",
         []
        ],
        "2d.layer.global-states.filter.rotation-expected.html": [
-        "650a40bb80c1409b6b8f6effaa10ad7baf8d45f2",
+        "69d9bb007b310e818573607e39dd50c1f8000d12",
         []
        ],
        "2d.layer.global-states.no-transform-expected.html": [
-        "ad6f64043f6a175b105db4313d46c64d18f417eb",
+        "c0f414ea7dec686c93f07ef487a10c41c40d8892",
         []
        ],
        "2d.layer.global-states.rotation-expected.html": [
-        "376504488c392ea6f58f415da8f03faafafb41f2",
+        "b79d9684523544329e0ead0cbf0ae607a07731e2",
         []
        ],
        "2d.layer.globalCompositeOperation-expected.html": [
@@ -372269,7 +372286,7 @@
         []
        ],
        "layers.yaml": [
-        "59030a69914b0c6556b9cbef50f07601414921ed",
+        "589dadddeaf5fcbe3a00acd83af1d1f3818a0625",
         []
        ],
        "line-styles.yaml": [
@@ -396128,7 +396145,7 @@
      []
     ],
     "testharness.js": [
-     "61cd18511151f3574a41aabcfdb0b3531244c534",
+     "7fd5336bf34ae9d173b277acf48db45390193e40",
      []
     ],
     "testharness.js.headers": [
@@ -409031,10 +409048,6 @@
      "84a7aaac181db4ce2abdac295faa1555196e9b9a",
      []
     ],
-    "script-change-transform.https-expected.txt": [
-     "27f4f5ab184b3f186c7c328d45e5e02e2f035bda",
-     []
-    ],
     "script-late-transform.https-expected.txt": [
      "5ae1a6bac6c4a9c62dffb708026dafcf779c8544",
      []
@@ -409059,20 +409072,12 @@
      "5e68ee1fb9be8133501ee3f5338f4335bd4901de",
      []
     ],
-    "script-transform-sendKeyFrameRequest.https-expected.txt": [
-     "05c4f0ed82296e0e7e173ae28b3f3b8b200f62f1",
-     []
-    ],
     "script-transform-sendKeyFrameRequest.js": [
      "361d7ce0235794b8a39201b5869a38f6720c80ca",
      []
     ],
     "script-transform-worker.js": [
      "88efb9c6a38b50f8c381e957c77043f28e30f5f9",
-     []
-    ],
-    "script-transform.https-expected.txt": [
-     "6e789bf22babc19819f3309a9a21d5b044e394e3",
      []
     ],
     "script-write-twice-transform-worker.js": [
@@ -479167,13 +479172,6 @@
       ]
      },
      "text-autospace": {
-      "text-autospace-001.html": [
-       "40a98861ad9c3b4a0d3028512bcf52c0fa36b51f",
-       [
-        null,
-        {}
-       ]
-      ],
       "text-autospace-first-line-001.html": [
        "7294856b8f68e299185cf8471ba7d5dd92380591",
        [
@@ -497414,6 +497412,13 @@
            ]
           ]
          }
+        ]
+       ],
+       "moveBefore-shadow-inside.html": [
+        "239b08ee95b76d9626001756c59cf9ac9e9da634",
+        [
+         null,
+         {}
         ]
        ],
        "pointer-events.html": [
