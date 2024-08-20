@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/bubble/bubble_constants.h"
 #include "ash/bubble/bubble_utils.h"
 #include "ash/style/typography.h"
@@ -24,6 +25,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -87,23 +89,23 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
       .set_margins(kMargins)
       .set_corner_radius(kPickerBubbleCornerRadius)
       .SetButtons(ui::DIALOG_BUTTON_NONE)
-      .AddChildren(
-          views::Builder<RoundedPreviewImageView>(
-              std::make_unique<RoundedPreviewImageView>(
-                  kPreviewImageSize, kPreviewBackgroundBorderRadius))
-              .CopyAddressTo(&image_view_),
-          views::Builder<views::BoxLayoutView>()
-              .SetOrientation(views::BoxLayout::Orientation::kVertical)
-              .SetCrossAxisAlignment(
-                  views::BoxLayout::CrossAxisAlignment::kStart)
-              .SetInsideBorderInsets(kLabelPadding)
-              .SetVisible(false)
-              .CopyAddressTo(&box_layout_view_)
-              .AddChildren(views::Builder<views::Label>(
-                               ash::bubble_utils::CreateLabel(
-                                   TypographyToken::kCrosBody2, u"",
-                                   cros_tokens::kCrosSysOnSurface))
-                               .CopyAddressTo(&main_label_)))
+      .SetProperty(views::kElementIdentifierKey, kPickerPreviewBubbleElementId)
+      .AddChildren(views::Builder<RoundedPreviewImageView>(
+                       std::make_unique<RoundedPreviewImageView>(
+                           kPreviewImageSize, kPreviewBackgroundBorderRadius))
+                       .CopyAddressTo(&image_view_),
+                   views::Builder<views::BoxLayoutView>()
+                       .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                       .SetCrossAxisAlignment(
+                           views::BoxLayout::CrossAxisAlignment::kStart)
+                       .SetInsideBorderInsets(kLabelPadding)
+                       .SetVisible(false)
+                       .CopyAddressTo(&box_layout_view_)
+                       .AddChildren(views::Builder<views::Label>(
+                                        ash::bubble_utils::CreateLabel(
+                                            TypographyToken::kCrosBody2, u"",
+                                            cros_tokens::kCrosSysOnSurface))
+                                        .CopyAddressTo(&main_label_)))
       .BuildChildren();
 
   // Show the widget.

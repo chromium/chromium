@@ -121,6 +121,10 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kPickerGifElementId);
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kPickerMoreEmojisElementId);
 
+// Identifies the preview bubble of Picker.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
+                                          kPickerPreviewBubbleElementId);
+
 // Identifies the textfield that implements the Picker search field.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kPickerSearchFieldTextfieldElementId);

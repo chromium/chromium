@@ -547,6 +547,33 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, KeyboardNavigationInZeroState) {
                         ash::PickerItemView::ItemState::kNormal));
 }
 
-// TODO: b/330786933: Add interactive UI test for file previews.
+IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, LocalFilePreview) {
+  ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test.png"));
+  constexpr std::string_view kFileResultName = "FileResult";
+  views::Textfield* picker_search_field = nullptr;
+
+  RunTestSequence(
+      Do([]() { TogglePickerByAccelerator(); }),
+      AfterShow(ash::kPickerSearchFieldTextfieldElementId,
+                [&picker_search_field](ui::TrackedElement* el) {
+                  picker_search_field = AsView<views::Textfield>(el);
+                }),
+      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      WaitForState(kSearchFieldFocusedState, true),
+      EnterText(ash::kPickerSearchFieldTextfieldElementId, u"test"),
+      WaitForShow(ash::kPickerSearchResultsPageElementId),
+      WaitForShow(ash::kPickerSearchResultsListItemElementId),
+      NameDescendantView(
+          ash::kPickerSearchResultsPageElementId, kFileResultName,
+          base::BindLambdaForTesting([](const views::View* view) {
+            if (const auto* list_item_view =
+                    views::AsViewClass<ash::PickerListItemView>(view)) {
+              return list_item_view->GetPrimaryTextForTesting() == u"test.png";
+            }
+            return false;
+          })),
+      MoveMouseTo(kFileResultName),
+      WaitForShow(ash::kPickerPreviewBubbleElementId));
+}
 
 }  // namespace
