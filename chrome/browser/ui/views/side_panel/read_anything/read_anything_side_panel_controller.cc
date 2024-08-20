@@ -122,14 +122,6 @@ ReadAnythingSidePanelController::CreateContainerView() {
 void ReadAnythingSidePanelController::TabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
-  // TODO(https://crbug.com/360169305): TabStripModel unit tests currently
-  // create TabFeatures but are not associated with a Browser, which is
-  // conceptually incorrect.
-  if (!tab_->GetBrowserWindowInterface()) {
-    CHECK_IS_TEST();
-    return;  // IN-TEST
-  }
-
   auto* coordinator =
       tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
   // TODO(https://crbug.com/360163254): BrowserWithTestWindowTest currently does

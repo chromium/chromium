@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -429,6 +430,7 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
 
  private:
   TestTabStripModelDelegate tab_strip_model_delegate_;
+  tabs::PreventTabFeatureInitialization prevent_;
 };
 
 }  // namespace

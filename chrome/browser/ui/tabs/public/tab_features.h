@@ -110,7 +110,8 @@ class TabFeatures {
   }
 
   // Called exactly once to initialize features.
-  void Init(TabInterface& tab, Profile* profile);
+  // Can be overridden in tests to initialize nothing.
+  virtual void Init(TabInterface& tab, Profile* profile);
 
  protected:
   TabFeatures();

@@ -750,6 +750,8 @@ static_library("test_support") {
       "../browser/ui/profiles/profile_ui_test_utils.h",
       "../browser/ui/tabs/pinned_tab_test_utils.cc",
       "../browser/ui/tabs/pinned_tab_test_utils.h",
+      "../browser/ui/tabs/test_util.cc",
+      "../browser/ui/tabs/test_util.h",
       "../browser/ui/test/pixel_test_configuration_mixin.cc",
       "../browser/ui/test/pixel_test_configuration_mixin.h",
       "../browser/ui/test/test_browser_dialog.cc",
