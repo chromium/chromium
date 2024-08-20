@@ -52,22 +52,22 @@ def register_targets(*, parent_key, builder_group, builder_name, name, targets, 
 
     graph.add_edge(parent_key, targets_key)
 
-_OS_SPECIFIC_ARGS = set([
-    "android_args",
-    "chromeos_args",
-    "lacros_args",
-])
+_OS_SPECIFIC_ARGS = {
+    "android_args": "is_android",
+    "chromeos_args": "is_cros",
+    "lacros_args": "is_lacros",
+}
 
-_OS_SPECIFIC_SWARMING = set([
-    "android_swarming",
-])
+_OS_SPECIFIC_SWARMING = {
+    "android_swarming": "is_android",
+}
 
-def _apply_mixin(spec, mixin_values):
+def _apply_mixin(spec, settings, mixin_values):
     invalid_mixin_values = set([k for k in mixin_values if k not in spec.value])
     if "args" in spec.value:
-        invalid_mixin_values -= _OS_SPECIFIC_ARGS
+        invalid_mixin_values -= set(_OS_SPECIFIC_ARGS)
     if "swarming" in spec.value:
-        invalid_mixin_values -= _OS_SPECIFIC_SWARMING
+        invalid_mixin_values -= set(_OS_SPECIFIC_SWARMING)
     if invalid_mixin_values:
         # Return the original spec in the case of an error so that the caller
         # doesn't have to save the original value
@@ -76,17 +76,21 @@ def _apply_mixin(spec, mixin_values):
     spec_value = dict(spec.value)
     mixin_values = dict(mixin_values)
 
-    # TODO: crbug.com/40258588 Implement support for the os-specific mixin values
-    for a in _OS_SPECIFIC_ARGS | _OS_SPECIFIC_SWARMING:
-        mixin_values.pop(a, None)
-
     args_mixin = mixin_values.pop("args", None)
     if args_mixin:
         spec_value["args"] = args_lib.listify(spec_value["args"], args_mixin) or None
+    for os_specific_args_attr, settings_attr in _OS_SPECIFIC_ARGS.items():
+        os_specific_args = mixin_values.pop(os_specific_args_attr, None)
+        if os_specific_args != None and getattr(settings, settings_attr):
+            spec_value["args"] = args_lib.listify(spec_value["args"], os_specific_args)
 
     swarming_mixin = mixin_values.pop("swarming", None)
     if swarming_mixin:
         spec_value["swarming"] = _targets_common.merge_swarming(spec_value["swarming"], swarming_mixin)
+    for os_specific_swarming_attr, settings_attr in _OS_SPECIFIC_SWARMING.items():
+        os_specific_swarming = mixin_values.pop(os_specific_swarming_attr, None)
+        if os_specific_swarming and getattr(settings, settings_attr):
+            spec_value["swarming"] = _targets_common.merge_swarming(spec_value["swarming"], os_specific_swarming)
 
     spec_value.update(mixin_values)
 
@@ -96,6 +100,7 @@ def _test_expansion(*, spec, source):
     return struct(
         spec = spec,
         source = source,
+        mixins_to_ignore = set(),
     )
 
 def _get_bundle_resolver():
@@ -131,7 +136,7 @@ def _get_bundle_resolver():
                 # DEFINITION_ORDER preserves the order that the edges were added
                 # from the parent to the child
                 for m in graph.children(test.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER):
-                    spec, error = _apply_mixin(spec, m.props.mixin_values)
+                    spec, error = _apply_mixin(spec, settings, m.props.mixin_values)
                     if error:
                         fail("modifying {} {} with {} failed: {}"
                             .format(spec.handler.type_name, test.key.id, m, error))
@@ -157,9 +162,25 @@ def _get_bundle_resolver():
                             ))
                     test_expansion_by_name[name] = test_expansion
 
+            # Update the mixins to remove for the test expansions
+            for per_test_modification in graph.children(n.key, kind = _targets_nodes.PER_TEST_MODIFICATION.kind):
+                name = per_test_modification.key.id
+                if name not in test_expansion_by_name:
+                    fail(
+                        "attempting to modify test '{}' that is not contained in the bundle"
+                            .format(name),
+                        trace = n.props.stacktrace,
+                    )
+                mixins_to_ignore = _targets_nodes.REMOVE_MIXIN.children(per_test_modification.key)
+                if mixins_to_ignore:
+                    test_expansion = test_expansion_by_name[name]
+                    test_expansion_by_name[name] = structs.evolve(test_expansion, mixins_to_ignore = test_expansion.mixins_to_ignore | set(mixins_to_ignore))
+
             def update_spec_with_mixin(test_name, test_expansion, mixin, *, ignore_error = False):
+                if mixin in test_expansion.mixins_to_ignore:
+                    return
                 spec = test_expansion.spec
-                new_spec, error = _apply_mixin(spec, mixin.props.mixin_values)
+                new_spec, error = _apply_mixin(spec, settings, mixin.props.mixin_values)
                 if error:
                     if ignore_error:
                         return
@@ -189,12 +210,6 @@ def _get_bundle_resolver():
                     update_spec_with_mixin(name, test_expansion, mixin, ignore_error = True)
             for per_test_modification in graph.children(n.key, kind = _targets_nodes.PER_TEST_MODIFICATION.kind):
                 name = per_test_modification.key.id
-                if name not in test_expansion_by_name:
-                    fail(
-                        "attempting to modify test '{}' that is not contained in the bundle"
-                            .format(name),
-                        trace = n.props.stacktrace,
-                    )
 
                 # The order that mixins are declared is significant,
                 # DEFINITION_ORDER preserves the order that the edges were added

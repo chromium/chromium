@@ -846,6 +846,59 @@ ci.builder(
             "webview_google",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "android_marshmallow_gtests",
+            "chromium_junit_tests_scripts",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "pie_fleet",
+            "walleye",
+        ],
+        per_test_modifications = {
+            "android_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
+            "chrome_public_test_apk": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 25,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 16,
+                ),
+            ),
+            "crashpad_tests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.arm64_proguard_rel.crashpad_tests.filter",
+                ],
+            ),
+            "gin_unittests": targets.mixin(
+                args = [
+                    # https://crbug.com/1404782
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.gin_unittests.filter",
+                ],
+            ),
+            "gl_tests_validating": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.arm64_proguard_rel.gl_tests.filter",  # https://crbug.com/1034007
+                ],
+            ),
+            "perfetto_unittests": targets.remove(
+                reason = "TODO(crbug.com/931138): Fix permission issue when creating tmp files",
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|arm64",

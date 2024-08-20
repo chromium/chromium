@@ -36,21 +36,6 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "android_marshmallow_gtests",
-    basic_suites = [
-        "android_smoke_tests",
-        "android_specific_chromium_gtests",  # Already includes gl_gtests.
-        "chromium_gtests",
-        "chromium_gtests_for_devices_with_graphical_output",
-        "chrome_public_tests",
-        "linux_flavor_specific_chromium_gtests",
-        "vr_android_specific_chromium_tests",
-        "vr_platform_specific_chromium_gtests",
-        "webview_instrumentation_test_apk_single_process_mode_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "android_oreo_emulator_gtests",
     basic_suites = [
         "android_emulator_specific_chrome_public_tests",

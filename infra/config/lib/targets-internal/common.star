@@ -79,6 +79,7 @@ def _settings(
         is_android = os_type == _os_type.ANDROID,
         is_cros = os_type == _os_type.CROS,
         is_fuchsia = os_type == _os_type.FUCHSIA,
+        is_lacros = os_type == _os_type.LACROS,
     )
 
 def _create_compile_target(*, name):
@@ -225,6 +226,12 @@ def _remove(*, reason):
         __targets_remove__ = reason,
     )
 
+def _per_test_modification(*, mixins = None, remove_mixins = None):
+    return struct(
+        mixins = args_lib.listify(mixins),
+        remove_mixins = args_lib.listify(remove_mixins),
+    )
+
 def _create_bundle(
         *,
         name,
@@ -263,8 +270,17 @@ def _create_bundle(
         # have None for name
         modification_key = _targets_nodes.PER_TEST_MODIFICATION.add(bundle_key.id, test_name)
         graph.add_edge(bundle_key, modification_key)
-        for m in args_lib.listify(mods):
+
+        # mods may be a single unnamed mixin, which would appear here as a
+        # keyset, which is also a struct
+        if graph.is_keyset(mods) or type(mods) != type(struct()):
+            mods = _per_test_modification(
+                mixins = mods,
+            )
+        for m in mods.mixins:
             graph.add_edge(modification_key, _targets_nodes.MIXIN.key(m))
+        for r in mods.remove_mixins:
+            _targets_nodes.REMOVE_MIXIN.link(modification_key, _targets_nodes.MIXIN.key(r))
     return bundle_key
 
 def _create_test(*, name, spec_handler, details = None, mixins = None):
@@ -549,6 +565,7 @@ common = struct(
     basic_suite_test_config = _basic_suite_test_config,
     create_legacy_test = _create_legacy_test,
     create_test = _create_test,
+    per_test_modification = _per_test_modification,
     create_bundle = _create_bundle,
 
     # Functions for defining target spec types

@@ -451,6 +451,7 @@
     #   Android arm Builder (dbg)
     #   Android arm64 Builder (dbg)
     #   Oreo Phone Tester
+    #   android-arm64-proguard-rel
     #   android-pie-arm64-dbg
     'name': 'chromium.android',
     'mixins': ['chromium-tester-service-account'],
@@ -602,21 +603,6 @@
         'test_suites': {
           'gtest_tests': 'android_14_emulator_gtests',
         }
-      },
-      'android-arm64-proguard-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'pie_fleet',
-          'walleye',
-        ],
-        'test_suites': {
-          'gtest_tests': 'android_marshmallow_gtests',
-          'isolated_scripts': 'chromium_junit_tests_scripts',
-        },
-        'os_type': 'android',
       },
       'android-bfcache-rel': {
         'mixins': [

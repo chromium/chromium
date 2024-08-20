@@ -5677,18 +5677,6 @@
       'cronet_gtests',
     ],
 
-    'android_marshmallow_gtests': [
-      'android_smoke_tests',
-      'android_specific_chromium_gtests',
-      'chrome_public_tests',
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'linux_flavor_specific_chromium_gtests',
-      'vr_android_specific_chromium_tests',
-      'vr_platform_specific_chromium_gtests',
-      'webview_instrumentation_test_apk_single_process_mode_gtests',
-    ],
-
     'android_oreo_emulator_gtests': [
       'android_emulator_specific_chrome_public_tests',
       'android_emulator_specific_network_enabled_content_browsertests',
