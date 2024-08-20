@@ -7,18 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
-#include <memory>
-#include <optional>
+#import <memory>
+#import <optional>
 
 #import "base/memory/raw_ptr.h"
-#include "components/omnibox/browser/location_bar_model.h"
-#include "components/omnibox/browser/omnibox_view.h"
-#include "ios/chrome/browser/ui/omnibox/omnibox_text_change_delegate.h"
+#import "components/omnibox/browser/location_bar_model.h"
+#import "components/omnibox/browser/omnibox_view.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_text_change_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
-#include "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_provider.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_provider.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_suggestions_delegate.h"
 
-class ChromeBrowserState;
 class GURL;
 class OmniboxClient;
 struct AutocompleteMatch;

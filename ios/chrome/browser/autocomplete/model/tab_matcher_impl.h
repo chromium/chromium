@@ -6,9 +6,8 @@
 #define IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_TAB_MATCHER_IMPL_H_
 
 #import "base/memory/raw_ptr.h"
-#include "components/omnibox/browser/tab_matcher.h"
-
-class ChromeBrowserState;
+#import "components/omnibox/browser/tab_matcher.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class TabMatcherImpl : public TabMatcher {
  public:
