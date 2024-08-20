@@ -1043,10 +1043,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
     clear_site_data_prevents_cookies_from_being_stored = true;
   }
 
-  base::Time response_date;
-  std::optional<base::Time> server_time = std::nullopt;
-  if (GetResponseHeaders()->GetDateValue(&response_date))
-    server_time = std::make_optional(response_date);
+  std::optional<base::Time> server_time = GetResponseHeaders()->GetDateValue();
 
   bool force_ignore_site_for_cookies =
       request_->force_ignore_site_for_cookies();

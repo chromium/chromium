@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <unordered_set>
 
@@ -20,6 +21,7 @@
 #include "net/http/http_byte_range.h"
 #include "net/http/http_response_headers_test_util.h"
 #include "net/http/http_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !BUILDFLAG(CRONET_BUILD)
@@ -68,32 +70,27 @@ class HttpResponseHeadersCacheControlTest : public HttpResponseHeadersTest {
 
   const scoped_refptr<HttpResponseHeaders>& headers() { return headers_; }
 
-  // Return a pointer to a TimeDelta object. For use when the value doesn't
-  // matter.
-  TimeDelta* TimeDeltaPointer() { return &delta_; }
-
   // Get the max-age value. This should only be used in tests where a valid
   // max-age parameter is expected to be present.
   TimeDelta GetMaxAgeValue() {
     DCHECK(headers_.get()) << "Call InitializeHeadersWithCacheControl() first";
-    TimeDelta max_age_value;
-    EXPECT_TRUE(headers()->GetMaxAgeValue(&max_age_value));
-    return max_age_value;
+    std::optional<TimeDelta> max_age_value = headers()->GetMaxAgeValue();
+    EXPECT_TRUE(max_age_value);
+    return max_age_value.value();
   }
 
   // Get the stale-while-revalidate value. This should only be used in tests
   // where a valid max-age parameter is expected to be present.
   TimeDelta GetStaleWhileRevalidateValue() {
     DCHECK(headers_.get()) << "Call InitializeHeadersWithCacheControl() first";
-    TimeDelta stale_while_revalidate_value;
-    EXPECT_TRUE(
-        headers()->GetStaleWhileRevalidateValue(&stale_while_revalidate_value));
-    return stale_while_revalidate_value;
+    std::optional<TimeDelta> stale_while_revalidate_value =
+        headers()->GetStaleWhileRevalidateValue();
+    EXPECT_TRUE(stale_while_revalidate_value);
+    return stale_while_revalidate_value.value();
   }
 
  private:
   scoped_refptr<HttpResponseHeaders> headers_;
-  TimeDelta delta_;
 };
 
 class CommonHttpResponseHeadersTest
@@ -646,19 +643,16 @@ TEST(HttpResponseHeadersTest, DefaultDateToGMT) {
   ASSERT_TRUE(base::Time::FromString("Tue, 07 Aug 2007 23:10:55 GMT",
                                      &expected_value));
 
-  base::Time value;
   // When the timezone is missing, GMT is a good guess as its what RFC2616
   // requires.
-  EXPECT_TRUE(parsed->GetDateValue(&value));
-  EXPECT_EQ(expected_value, value);
+  EXPECT_EQ(expected_value, parsed->GetDateValue());
   // If GMT is missing but an RFC822-conforming one is present, use that.
-  EXPECT_TRUE(parsed->GetLastModifiedValue(&value));
-  EXPECT_EQ(expected_value, value);
+  EXPECT_EQ(expected_value, parsed->GetLastModifiedValue());
   // If an unknown timezone is present, treat like a missing timezone and
   // default to GMT.  The only example of a web server not specifying "GMT"
   // used "UTC" which is equivalent to GMT.
-  if (parsed->GetExpiresValue(&value))
-    EXPECT_EQ(expected_value, value);
+  EXPECT_THAT(parsed->GetExpiresValue(),
+              testing::AnyOf(std::nullopt, expected_value));
 }
 
 TEST(HttpResponseHeadersTest, GetAgeValue10) {
@@ -667,9 +661,7 @@ TEST(HttpResponseHeadersTest, GetAgeValue10) {
       "Age: 10\n";
   HeadersToRaw(&headers);
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
-  base::TimeDelta age;
-  ASSERT_TRUE(parsed->GetAgeValue(&age));
-  EXPECT_EQ(10, age.InSeconds());
+  EXPECT_EQ(base::Seconds(10), parsed->GetAgeValue());
 }
 
 TEST(HttpResponseHeadersTest, GetAgeValue0) {
@@ -678,9 +670,7 @@ TEST(HttpResponseHeadersTest, GetAgeValue0) {
       "Age: 0\n";
   HeadersToRaw(&headers);
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
-  base::TimeDelta age;
-  ASSERT_TRUE(parsed->GetAgeValue(&age));
-  EXPECT_EQ(0, age.InSeconds());
+  EXPECT_EQ(base::TimeDelta(), parsed->GetAgeValue());
 }
 
 TEST(HttpResponseHeadersTest, GetAgeValueBogus) {
@@ -689,8 +679,7 @@ TEST(HttpResponseHeadersTest, GetAgeValueBogus) {
       "Age: donkey\n";
   HeadersToRaw(&headers);
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
-  base::TimeDelta age;
-  ASSERT_FALSE(parsed->GetAgeValue(&age));
+  EXPECT_FALSE(parsed->GetAgeValue());
 }
 
 TEST(HttpResponseHeadersTest, GetAgeValueNegative) {
@@ -699,8 +688,7 @@ TEST(HttpResponseHeadersTest, GetAgeValueNegative) {
       "Age: -10\n";
   HeadersToRaw(&headers);
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
-  base::TimeDelta age;
-  ASSERT_FALSE(parsed->GetAgeValue(&age));
+  EXPECT_FALSE(parsed->GetAgeValue());
 }
 
 TEST(HttpResponseHeadersTest, GetAgeValueLeadingPlus) {
@@ -709,8 +697,7 @@ TEST(HttpResponseHeadersTest, GetAgeValueLeadingPlus) {
       "Age: +10\n";
   HeadersToRaw(&headers);
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
-  base::TimeDelta age;
-  ASSERT_FALSE(parsed->GetAgeValue(&age));
+  EXPECT_FALSE(parsed->GetAgeValue());
 }
 
 TEST(HttpResponseHeadersTest, GetAgeValueOverflow) {
@@ -719,11 +706,10 @@ TEST(HttpResponseHeadersTest, GetAgeValueOverflow) {
       "Age: 999999999999999999999999999999999999999999\n";
   HeadersToRaw(&headers);
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
-  base::TimeDelta age;
-  ASSERT_TRUE(parsed->GetAgeValue(&age));
 
   // Should have saturated to 2^32 - 1.
-  EXPECT_EQ(static_cast<int64_t>(0xFFFFFFFFL), age.InSeconds());
+  EXPECT_EQ(base::Seconds(static_cast<int64_t>(0xFFFFFFFFL)),
+            parsed->GetAgeValue());
 }
 
 struct ContentTypeTestData {
@@ -2282,33 +2268,33 @@ INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
 
 TEST_F(HttpResponseHeadersCacheControlTest, AbsentMaxAgeReturnsFalse) {
   InitializeHeadersWithCacheControl("nocache");
-  EXPECT_FALSE(headers()->GetMaxAgeValue(TimeDeltaPointer()));
+  EXPECT_FALSE(headers()->GetMaxAgeValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeWithNoParameterRejected) {
   InitializeHeadersWithCacheControl("max-age=,private");
-  EXPECT_FALSE(headers()->GetMaxAgeValue(TimeDeltaPointer()));
+  EXPECT_FALSE(headers()->GetMaxAgeValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeWithSpaceParameterRejected) {
   InitializeHeadersWithCacheControl("max-age= ,private");
-  EXPECT_FALSE(headers()->GetMaxAgeValue(TimeDeltaPointer()));
+  EXPECT_FALSE(headers()->GetMaxAgeValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeWithInterimSpaceIsRejected) {
   InitializeHeadersWithCacheControl("max-age=1 2");
-  EXPECT_FALSE(headers()->GetMaxAgeValue(TimeDeltaPointer()));
+  EXPECT_FALSE(headers()->GetMaxAgeValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeWithMinusSignIsRejected) {
   InitializeHeadersWithCacheControl("max-age=-7");
-  EXPECT_FALSE(headers()->GetMaxAgeValue(TimeDeltaPointer()));
+  EXPECT_FALSE(headers()->GetMaxAgeValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest,
        MaxAgeWithSpaceBeforeEqualsIsRejected) {
   InitializeHeadersWithCacheControl("max-age = 7");
-  EXPECT_FALSE(headers()->GetMaxAgeValue(TimeDeltaPointer()));
+  EXPECT_FALSE(headers()->GetMaxAgeValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest,
@@ -2361,7 +2347,7 @@ TEST_P(MaxAgeEdgeCasesTest, MaxAgeEdgeCases) {
     EXPECT_EQ(test.expected_seconds.value(), GetMaxAgeValue().InSeconds())
         << " for max-age=" << test.max_age_string;
   } else {
-    EXPECT_FALSE(headers()->GetMaxAgeValue(TimeDeltaPointer()));
+    EXPECT_FALSE(headers()->GetMaxAgeValue());
   }
 }
 
@@ -2391,19 +2377,19 @@ INSTANTIATE_TEST_SUITE_P(HttpResponseHeadersCacheControl,
 TEST_F(HttpResponseHeadersCacheControlTest,
        AbsentStaleWhileRevalidateReturnsFalse) {
   InitializeHeadersWithCacheControl("max-age=3600");
-  EXPECT_FALSE(headers()->GetStaleWhileRevalidateValue(TimeDeltaPointer()));
+  EXPECT_FALSE(headers()->GetStaleWhileRevalidateValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest,
        StaleWhileRevalidateWithoutValueRejected) {
   InitializeHeadersWithCacheControl("max-age=3600,stale-while-revalidate=");
-  EXPECT_FALSE(headers()->GetStaleWhileRevalidateValue(TimeDeltaPointer()));
+  EXPECT_FALSE(headers()->GetStaleWhileRevalidateValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest,
        StaleWhileRevalidateWithInvalidValueIgnored) {
   InitializeHeadersWithCacheControl("max-age=3600,stale-while-revalidate=true");
-  EXPECT_FALSE(headers()->GetStaleWhileRevalidateValue(TimeDeltaPointer()));
+  EXPECT_FALSE(headers()->GetStaleWhileRevalidateValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest, StaleWhileRevalidateValueReturned) {

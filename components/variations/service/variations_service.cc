@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -850,14 +851,14 @@ void VariationsService::OnSimpleLoaderComplete(
   DCHECK(headers);
   DCHECK(response_body);
 
-  base::Time response_date;
-  if (headers->GetDateValue(&response_date)) {
-    DCHECK(!response_date.is_null());
+  std::optional<base::Time> response_date = headers->GetDateValue();
+  if (response_date) {
+    DCHECK(!response_date->is_null());
 
     const base::TimeDelta latency = now - last_request_started_time_;
     client_->GetNetworkTimeTracker()->UpdateNetworkTime(
-        response_date, base::Seconds(kServerTimeResolutionInSeconds), latency,
-        now);
+        response_date.value(), base::Seconds(kServerTimeResolutionInSeconds),
+        latency, now);
   }
 
   if (response_code == net::HTTP_NOT_MODIFIED) {
@@ -869,7 +870,7 @@ void VariationsService::OnSimpleLoaderComplete(
     // seed, even when running in safe mode, so it's appropriate to always
     // modify the latest seed's date.
     field_trial_creator_.seed_store()->UpdateSeedDateAndLogDayChange(
-        response_date);
+        response_date.value_or(base::Time()));
     return;
   }
 
@@ -889,8 +890,8 @@ void VariationsService::OnSimpleLoaderComplete(
   std::string signature = GetHeaderValue(headers.get(), "X-Seed-Signature");
   std::string country_code = GetHeaderValue(headers.get(), "X-Country");
   StoreSeed(std::move(*response_body), std::move(signature),
-            std::move(country_code), response_date, is_delta_compressed,
-            is_gzip_compressed);
+            std::move(country_code), response_date.value_or(base::Time()),
+            is_delta_compressed, is_gzip_compressed);
 }
 
 bool VariationsService::MaybeRetryOverHTTP() {

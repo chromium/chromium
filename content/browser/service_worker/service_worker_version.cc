@@ -8,6 +8,7 @@
 
 #include <limits>
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -278,8 +279,13 @@ constexpr base::TimeDelta ServiceWorkerVersion::kStopWorkerTimeout;
 ServiceWorkerVersion::MainScriptResponse::MainScriptResponse(
     const network::mojom::URLResponseHead& response_head) {
   response_time = response_head.response_time;
-  if (response_head.headers)
-    response_head.headers->GetLastModifiedValue(&last_modified);
+  if (response_head.headers) {
+    std::optional<base::Time> value =
+        response_head.headers->GetLastModifiedValue();
+    if (value) {
+      last_modified = value.value();
+    }
+  }
   headers = response_head.headers;
   if (response_head.ssl_info.has_value())
     ssl_info = response_head.ssl_info.value();
