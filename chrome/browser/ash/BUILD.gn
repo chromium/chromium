@@ -25,8 +25,6 @@ static_library("ash") {
   sources = [
     "browser_context_keyed_service_factories.cc",
     "browser_context_keyed_service_factories.h",
-    "camera_presence_notifier.cc",
-    "camera_presence_notifier.h",
     "chrome_browser_main_parts_ash.cc",
     "chrome_browser_main_parts_ash.h",
     "external_protocol_dialog.cc",
@@ -1336,7 +1334,6 @@ source_set("unit_tests") {
     "../ui/browser_finder_chromeos_unittest.cc",
     "../ui/views/select_file_dialog_extension_unittest.cc",
     "../ui/webui/settings/about_handler_unittest.cc",
-    "camera_presence_notifier_unittest.cc",
     "proxy_config_service_impl_unittest.cc",
     "system_token_cert_db_initializer_unittest.cc",
     "tpm_firmware_update_unittest.cc",

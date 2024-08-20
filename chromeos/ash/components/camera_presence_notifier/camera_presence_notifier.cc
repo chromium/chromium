@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/camera_presence_notifier.h"
+#include "chromeos/ash/components/camera_presence_notifier/camera_presence_notifier.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/singleton.h"

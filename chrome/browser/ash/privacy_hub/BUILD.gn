@@ -18,6 +18,7 @@ static_library("privacy_hub") {
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/browser/ash/hats",
     "//chrome/browser/profiles",
+    "//chromeos/ash/components/camera_presence_notifier",
     "//components/session_manager/core",
   ]
 

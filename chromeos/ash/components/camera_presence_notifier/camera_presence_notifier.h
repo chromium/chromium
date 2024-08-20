@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CAMERA_PRESENCE_NOTIFIER_H_
-#define CHROME_BROWSER_ASH_CAMERA_PRESENCE_NOTIFIER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_CAMERA_PRESENCE_NOTIFIER_CAMERA_PRESENCE_NOTIFIER_H_
+#define CHROMEOS_ASH_COMPONENTS_CAMERA_PRESENCE_NOTIFIER_CAMERA_PRESENCE_NOTIFIER_H_
 
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
@@ -78,4 +78,4 @@ class CameraPresenceNotifier : public base::SupportsUserData::Data {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_CAMERA_PRESENCE_NOTIFIER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_CAMERA_PRESENCE_NOTIFIER_CAMERA_PRESENCE_NOTIFIER_H_

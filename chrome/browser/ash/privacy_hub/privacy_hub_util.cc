@@ -26,11 +26,11 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/supports_user_data.h"
-#include "chrome/browser/ash/camera_presence_notifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/app_access_notifier.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chromeos/ash/components/camera_presence_notifier/camera_presence_notifier.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
