@@ -56,8 +56,8 @@ export function getHtml(this: PowerBookmarkRowElement) {
       </div>
     </sp-list-item-badge>
   ` : ''}
-    <cr-icon-button slot="suffix" .ironIcon="${this.trailingIcon}"
-        ?hidden="${!this.trailingIcon}" @click="${this.onTrailingIconClicked_}"
+    <cr-icon-button slot="suffix" iron-icon="cr:more-vert"
+        @click="${this.onTrailingIconClicked_}"
         .title="${this.trailingIconTooltip}"
         .ariaLabel="${this.getBookmarkMenuA11yLabel_(url, title!)}">
     </cr-icon-button>
@@ -84,7 +84,6 @@ ${this.toggleExpand ? html`
         id="bookmark-${item.id}"
         .bookmark="${item}"
         .compact="${this.compact}"
-        trailingIcon="cr:more-vert"
         trailingIconTooltip="$i18n{tooltipMore}"
         .hasCheckbox="${this.hasCheckbox}"
         .renamingId="${this.renamingId}"

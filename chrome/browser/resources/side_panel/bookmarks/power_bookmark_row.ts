@@ -56,7 +56,6 @@ export class PowerBookmarkRowElement extends CrLitElement {
       searchQuery: {type: String},
       shoppingCollectionFolderId: {type: String},
       rowAriaDescription: {type: String},
-      trailingIcon: {type: String},
       trailingIconTooltip: {type: String},
       listItemSize: {type: String},
       bookmarksService: {type: Object},
@@ -75,7 +74,6 @@ export class PowerBookmarkRowElement extends CrLitElement {
   searchQuery: string|undefined;
   shoppingCollectionFolderId: string = '';
   rowAriaDescription: string = '';
-  trailingIcon: string = '';
   trailingIconTooltip: string = '';
   toggleExpand: boolean = false;
   imageUrls: {[key: string]: string} = {};
