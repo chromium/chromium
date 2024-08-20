@@ -43,7 +43,7 @@ class WebRtcMetronomeAdapter : public webrtc::Metronome {
   const base::WeakPtr<MetronomeSource> source_;
 };
 
-MetronomeSource::MetronomeSource(std::unique_ptr<TickProvider> tick_provider)
+MetronomeSource::MetronomeSource(scoped_refptr<TickProvider> tick_provider)
     : tick_provider_(std::move(tick_provider)) {
   DETACH_FROM_SEQUENCE(metronome_sequence_checker_);
 }

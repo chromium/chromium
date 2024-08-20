@@ -43,20 +43,25 @@ namespace blink {
 // for testing.
 class RTC_EXPORT MetronomeSource final {
  public:
-  // Class abstracting requesting a callback on the next tick.
-  class TickProvider {
+  // Class abstracting requesting a callback on the next tick. This class is a
+  // thread safe ref-counted object that can be shared by multiple
+  // `MetronomeSource` instance.
+  class TickProvider : public base::RefCountedThreadSafe<TickProvider> {
    public:
-    virtual ~TickProvider() = default;
-
     // Requests a callback on the next tick. The callback must be run on the
     // same sequence that called this method.
     virtual void RequestCallOnNextTick(base::OnceClosure callback) = 0;
 
     // Estimate the current tick period. A soft lower bound value is okay here.
     virtual base::TimeDelta TickPeriod() = 0;
+
+   protected:
+    friend class base::RefCountedThreadSafe<TickProvider>;
+
+    virtual ~TickProvider() = default;
   };
 
-  explicit MetronomeSource(std::unique_ptr<TickProvider> tick_provider);
+  explicit MetronomeSource(scoped_refptr<TickProvider> tick_provider);
   ~MetronomeSource();
 
   MetronomeSource(const MetronomeSource&) = delete;
@@ -84,7 +89,7 @@ class RTC_EXPORT MetronomeSource final {
   SEQUENCE_CHECKER(metronome_sequence_checker_);
   std::vector<absl::AnyInvocable<void() &&>> callbacks_
       GUARDED_BY_CONTEXT(metronome_sequence_checker_);
-  std::unique_ptr<TickProvider> tick_provider_
+  scoped_refptr<TickProvider> tick_provider_
       GUARDED_BY_CONTEXT(metronome_sequence_checker_);
   base::WeakPtrFactory<MetronomeSource> weak_factory_{this};
 };
