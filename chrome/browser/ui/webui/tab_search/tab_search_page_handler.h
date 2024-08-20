@@ -77,6 +77,7 @@ class TabSearchPageHandler
   void RejectTabOrganization(int32_t session_id,
                              int32_t organization_id) override;
   void GetProfileData(GetProfileDataCallback callback) override;
+  void GetStaleTabs(GetStaleTabsCallback callback) override;
   void GetTabOrganizationSession(
       GetTabOrganizationSessionCallback callback) override;
   void GetTabOrganizationModelStrategy(
@@ -168,6 +169,7 @@ class TabSearchPageHandler
   void MaybeShowUI();
 
   tab_search::mojom::ProfileDataPtr CreateProfileData();
+  std::vector<tab_search::mojom::TabPtr> FindStaleTabs();
 
   // Adds recently closed tabs and tab groups.
   void AddRecentlyClosedEntries(

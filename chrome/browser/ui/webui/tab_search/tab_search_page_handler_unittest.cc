@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/metrics_reporter/mock_metrics_reporter.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search.mojom-forward.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -81,6 +82,7 @@ class MockPage : public tab_search::mojom::Page {
   MOCK_METHOD(void, TabSearchTabIndexChanged, (int32_t));
   MOCK_METHOD(void, ShowFREChanged, (bool));
   MOCK_METHOD(void, TabOrganizationEnabledChanged, (bool));
+  MOCK_METHOD(void, StaleTabsChanged, (std::vector<tab_search::mojom::TabPtr>));
 };
 
 void ExpectNewTab(const tab_search::mojom::Tab* tab,
@@ -262,6 +264,7 @@ TEST_F(TabSearchPageHandlerTest, GetTabs) {
   EXPECT_CALL(page_, TabsChanged(_)).Times(1);
   EXPECT_CALL(page_, TabUpdated(_)).Times(2);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(6);
   handler()->mock_debounce_timer()->Fire();
 
   int32_t tab_id2 = 0;
@@ -395,6 +398,7 @@ TEST_F(TabSearchPageHandlerTest, TabsAndGroups) {
 
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(4);
 }
 
 TEST_F(TabSearchPageHandlerTest, MediaTabsTest) {
@@ -418,6 +422,7 @@ TEST_F(TabSearchPageHandlerTest, MediaTabsTest) {
 
   // Tab will be removed on tear down.
   EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(3);
 }
 
 TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabGroup) {
@@ -477,6 +482,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabGroup) {
 
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(4);
 }
 
 TEST_F(TabSearchPageHandlerTest, RecentlyClosedWindowWithGroupTabs) {
@@ -532,6 +538,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedWindowWithGroupTabs) {
 
   EXPECT_CALL(page_, TabUpdated(_)).Times(2);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(6);
 }
 
 // Ensure that repeated tab model changes do not result in repeated calls to
@@ -541,6 +548,7 @@ TEST_F(TabSearchPageHandlerTest, TabsChanged) {
   EXPECT_CALL(page_, TabsChanged(_)).Times(3);
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(3);
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(6);
   FireTimer();  // Will call TabsChanged().
 
   // Add 2 tabs in browser1.
@@ -616,6 +624,7 @@ TEST_F(TabSearchPageHandlerTest, TabUpdated) {
   EXPECT_CALL(page_, TabsChanged(_)).Times(1);
   EXPECT_CALL(page_, TabUpdated(Truly(VerifyTabUpdated))).Times(1);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(3);
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
   // Adding the following tab will trigger TabUpdated() to the first tab
   // since the tab index will change from 0 to 1
@@ -634,6 +643,7 @@ TEST_F(TabSearchPageHandlerTest, CloseTab) {
       browser2()->tab_strip_model()->GetWebContentsAt(0));
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(3);
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(6);
   handler()->CloseTab(tab_id);
   ASSERT_EQ(1, browser1()->tab_strip_model()->count());
   ASSERT_EQ(1, browser2()->tab_strip_model()->count());
@@ -666,6 +676,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTab) {
   handler()->GetProfileData(std::move(callback));
   EXPECT_CALL(page_, TabUpdated(_)).Times(2);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(3);
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(7);
 }
 
 TEST_F(TabSearchPageHandlerTest, OpenRecentlyClosedTab) {
@@ -705,6 +716,7 @@ TEST_F(TabSearchPageHandlerTest, OpenRecentlyClosedTab) {
   handler()->GetProfileData(std::move(callback2));
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(5);
 }
 
 TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabsHaveNoRepeatedURLEntry) {
@@ -717,6 +729,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabsHaveNoRepeatedURLEntry) {
   browser1()->tab_strip_model()->CloseAllTabs();
   EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(3);
 
   tab_search::mojom::PageHandler::GetProfileDataCallback callback1 =
       base::BindLambdaForTesting(
@@ -771,6 +784,7 @@ TEST_F(TabSearchPageHandlerTest,
 
   EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
   EXPECT_CALL(page_, TabUpdated(_)).Times(2);
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(6);
 }
 
 TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabEntriesFilterOpenTabUrls) {
@@ -787,6 +801,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabEntriesFilterOpenTabUrls) {
 
   EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(4);
 
   tab_search::mojom::PageHandler::GetProfileDataCallback callback1 =
       base::BindLambdaForTesting(
@@ -814,6 +829,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedSectionExpandedUserPref) {
 
   EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(4);
 
   tab_search::mojom::PageHandler::GetProfileDataCallback callback1 =
       base::BindLambdaForTesting(
@@ -849,6 +865,7 @@ TEST_F(TabSearchPageHandlerTest, TabDataToMojo) {
       browser1()->tab_strip_model()->GetWebContentsAt(0));
   handler()->CloseTab(tab_id);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
+  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(2);
 }
 
 TEST_F(TabSearchPageHandlerTest, TabOrganizationToMojo) {

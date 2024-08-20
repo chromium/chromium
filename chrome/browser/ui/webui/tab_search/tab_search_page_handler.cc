@@ -344,6 +344,10 @@ void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
   std::move(callback).Run(std::move(profile_tabs));
 }
 
+void TabSearchPageHandler::GetStaleTabs(GetStaleTabsCallback callback) {
+  std::move(callback).Run(FindStaleTabs());
+}
+
 void TabSearchPageHandler::GetTabOrganizationSession(
     GetTabOrganizationSessionCallback callback) {
   Browser* browser = chrome::FindLastActive();
@@ -776,6 +780,20 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
   return profile_data;
 }
 
+std::vector<tab_search::mojom::TabPtr> TabSearchPageHandler::FindStaleTabs() {
+  // TODO(crbug.com/358381117): Replace with actual stale tab data as provided
+  // by TabDeclutterService. This is a placeholder for now, returning all tabs
+  // from the current window regardless of last active time.
+  Browser* browser = chrome::FindLastActive();
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  std::vector<tab_search::mojom::TabPtr> tabs;
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
+    auto* web_contents = tab_strip_model->GetWebContentsAt(i);
+    tabs.push_back(GetTab(tab_strip_model, web_contents, i));
+  }
+  return tabs;
+}
+
 void TabSearchPageHandler::AddRecentlyClosedEntries(
     std::vector<tab_search::mojom::RecentlyClosedTabPtr>& recently_closed_tabs,
     std::vector<tab_search::mojom::RecentlyClosedTabGroupPtr>&
@@ -1015,6 +1033,11 @@ void TabSearchPageHandler::OnTabStripModelChanged(
       browser_tab_strip_tracker_.is_processing_initial_browsers()) {
     return;
   }
+  // TODO(crbug.com/358382876): Ensure this is called whenever stale tabs may
+  // have changed, once there is a method of observing this information. This
+  // call is here only as a placeholder approximation until such a method
+  // exists.
+  page_->StaleTabsChanged(FindStaleTabs());
   if (change.type() == TabStripModelChange::kRemoved) {
     std::vector<int> tab_ids;
     std::set<SessionID> tab_restore_ids;

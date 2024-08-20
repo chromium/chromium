@@ -223,6 +223,9 @@ interface PageHandler {
   // Get window and tab data for the current profile.
   GetProfileData() => (ProfileData profile_data);
 
+  // Get all tabs that are considered stale based on their last active time.
+  GetStaleTabs() => (array<Tab> tabs);
+
   // Get the current tab organization session info.
   GetTabOrganizationSession() => (TabOrganizationSession session);
 
@@ -317,4 +320,8 @@ interface Page {
 
   // Called when the tab organization feature should be enabled/disabled.
   TabOrganizationEnabledChanged(bool enabled);
+
+  // Called when the list of tabs considered stale based on their last active
+  // time has changed.
+  StaleTabsChanged(array<Tab> tabs);
 };

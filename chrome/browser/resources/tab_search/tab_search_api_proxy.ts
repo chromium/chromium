@@ -27,6 +27,8 @@ export interface TabSearchApiProxy {
 
   getProfileData(): Promise<{profileData: ProfileData}>;
 
+  getStaleTabs(): Promise<{tabs: Tab[]}>;
+
   getTabOrganizationSession(): Promise<{session: TabOrganizationSession}>;
 
   getTabOrganizationModelStrategy():
@@ -97,6 +99,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   getProfileData() {
     return this.handler.getProfileData();
+  }
+
+  getStaleTabs() {
+    return this.handler.getStaleTabs();
   }
 
   getTabOrganizationSession() {

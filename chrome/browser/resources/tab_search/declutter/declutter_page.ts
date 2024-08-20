@@ -6,9 +6,10 @@ import '../tab_search_item.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {TabItemType} from '../tab_data.js';
-import type {TabData} from '../tab_data.js';
+import {normalizeURL, TabData, TabItemType} from '../tab_data.js';
 import type {Tab} from '../tab_search.mojom-webui.js';
+import type {TabSearchApiProxy} from '../tab_search_api_proxy.js';
+import {TabSearchApiProxyImpl} from '../tab_search_api_proxy.js';
 
 import {getCss} from './declutter_page.css.js';
 import {getHtml} from './declutter_page.html.js';
@@ -24,7 +25,9 @@ export class DeclutterPageElement extends CrLitElement {
     };
   }
 
-  protected staleTabDatas_: TabData[] = this.getDummyStaleTabDatas_();
+  protected staleTabDatas_: TabData[] = [];
+  private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
+  private listenerIds_: number[] = [];
 
   static override get styles() {
     return getCss();
@@ -34,44 +37,27 @@ export class DeclutterPageElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
-  // TODO(358383553): Replace with actual data.
-  private getDummyStaleTabDatas_(): TabData[] {
-    return [
-      this.createTabData_(this.createTab_({title: 'Tab 1'})),
-      this.createTabData_(this.createTab_({title: 'Tab 2'})),
-      this.createTabData_(this.createTab_({title: 'Tab 3'})),
-    ];
+  override connectedCallback() {
+    super.connectedCallback();
+    this.apiProxy_.getStaleTabs().then(({tabs}) => this.setStaleTabs_(tabs));
+    const callbackRouter = this.apiProxy_.getCallbackRouter();
+    this.listenerIds_.push(callbackRouter.staleTabsChanged.addListener(
+        this.setStaleTabs_.bind(this)));
   }
 
-  private createTabData_(tab: Tab): TabData {
-    return {
-      tab: tab,
-      hostname: '',
-      inActiveWindow: false,
-      type: TabItemType.OPEN_TAB,
-      a11yTypeText: '',
-      highlightRanges: {},
-    };
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.listenerIds_.forEach(
+        id => this.apiProxy_.getCallbackRouter().removeListener(id));
   }
 
-  private createTab_(override: Partial<Tab> = {}): Tab {
-    return Object.assign(
-        {
-          active: false,
-          alertStates: [],
-          index: -1,
-          faviconUrl: null,
-          tabId: -1,
-          groupId: -1,
-          pinned: false,
-          title: '',
-          url: {url: 'https://www.google.com'},
-          isDefaultFavicon: false,
-          showIcon: false,
-          lastActiveTimeTicks: -1,
-          lastActiveElapsedText: '',
-        },
-        override);
+  private setStaleTabs_(tabs: Tab[]): void {
+    this.staleTabDatas_ = tabs.map((tab) => this.tabDataFromTab_(tab));
+  }
+
+  private tabDataFromTab_(tab: Tab): TabData {
+    return new TabData(
+        tab, TabItemType.OPEN_TAB, new URL(normalizeURL(tab.url.url)).hostname);
   }
 }
 

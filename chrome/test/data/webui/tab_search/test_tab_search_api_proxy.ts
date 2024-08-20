@@ -12,6 +12,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
   callbackRouterRemote: PageRemote;
   private profileData_?: ProfileData;
   private tabOrganizationSession_?: TabOrganizationSession;
+  private staleTabs_: Tab[] = [];
 
   constructor() {
     super([
@@ -19,6 +20,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'acceptTabOrganization',
       'rejectTabOrganization',
       'getProfileData',
+      'getStaleTabs',
       'getTabOrganizationSession',
       'getTabOrganizationModelStrategy',
       'openRecentlyClosedEntry',
@@ -62,6 +64,11 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
   getProfileData() {
     this.methodCalled('getProfileData');
     return Promise.resolve({profileData: this.profileData_!});
+  }
+
+  getStaleTabs() {
+    this.methodCalled('getStaleTabs');
+    return Promise.resolve({tabs: this.staleTabs_});
   }
 
   getTabOrganizationSession() {
@@ -157,5 +164,9 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
 
   setSession(session: TabOrganizationSession) {
     this.tabOrganizationSession_ = session;
+  }
+
+  setStaleTabs(tabs: Tab[]) {
+    this.staleTabs_ = tabs;
   }
 }

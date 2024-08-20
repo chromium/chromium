@@ -8,6 +8,7 @@ export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.j
 export {TabSearchAppElement} from './app.js';
 export {AutoTabGroupsPageElement} from './auto_tab_groups/auto_tab_groups_page.js';
 export {AutoTabGroupsResultsElement} from './auto_tab_groups/auto_tab_groups_results.js';
+export {DeclutterPageElement} from './declutter/declutter_page.js';
 export {search, SearchOptions} from './search.js';
 export {SelectableLazyListElement} from './selectable_lazy_list.js';
 export {getHostname, getTabGroupTitle, getTitle, ItemData, TabData, TabItemType} from './tab_data.js';
