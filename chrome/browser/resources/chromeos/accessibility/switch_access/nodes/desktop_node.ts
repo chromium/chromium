@@ -7,42 +7,31 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import {Navigator} from '../navigator.js';
 import {SwitchAccess} from '../switch_access.js';
 import {ErrorType} from '../switch_access_constants.js';
-import {SwitchAccessPredicate} from '../switch_access_predicate.js';
 
 import {BasicNode, BasicRootNode} from './basic_node.js';
+import {SAChildNode, SARootNode} from './switch_access_node.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
+type AutomationNode = chrome.automation.AutomationNode;
 
 /**
  * This class handles interactions with the desktop automation node.
  */
 export class DesktopNode extends BasicRootNode {
-  /**
-   * @param {!AutomationNode} autoNode The automation node representing the
-   *     desktop.
-   */
-  constructor(autoNode) {
-    super(autoNode);
-  }
-
   // ================= General methods =================
 
-  /** @override */
-  equals(other) {
+  override equals(other: SARootNode): boolean {
     // The underlying automation tree only has one desktop node, so all
     // DesktopNode instances are equal.
     return other instanceof DesktopNode;
   }
 
-  /** @override */
-  isValidGroup() {
+  override isValidGroup(): boolean {
     return true;
   }
 
-  /** @override */
-  refresh() {
+  override refresh(): void {
     // Find the currently focused child.
-    let focusedChild = null;
+    let focusedChild: SAChildNode | null = null;
     for (const child of this.children) {
       if (child.isFocused()) {
         focusedChild = child;
@@ -51,7 +40,8 @@ export class DesktopNode extends BasicRootNode {
     }
 
     // Update this DesktopNode's children.
-    const childConstructor = node => BasicNode.create(node, this);
+    const childConstructor = (node: AutomationNode): BasicNode =>
+        BasicNode.create(node, this);
     DesktopNode.findAndSetChildren(this, childConstructor);
 
     // Set the new instance of that child to be the focused node.
@@ -69,20 +59,18 @@ export class DesktopNode extends BasicRootNode {
 
   // ================= Static methods =================
 
-  /**
-   * @param {!AutomationNode} desktop
-   * @return {!DesktopNode}
-   */
-  static build(desktop) {
+  static build(desktop: AutomationNode): DesktopNode {
     const root = new DesktopNode(desktop);
-    const childConstructor = autoNode => BasicNode.create(autoNode, root);
+    const childConstructor = (autoNode: AutomationNode): BasicNode =>
+        BasicNode.create(autoNode, root);
 
     DesktopNode.findAndSetChildren(root, childConstructor);
     return root;
   }
 
-  /** @override */
-  static findAndSetChildren(root, childConstructor) {
+  static override findAndSetChildren(
+      root: DesktopNode,
+      childConstructor: (node: AutomationNode) => SAChildNode): void {
     const interestingChildren = BasicRootNode.getInterestingChildren(root);
 
     if (interestingChildren.length < 1) {
