@@ -63,6 +63,7 @@
   width: var(--badge-width);
 }
 
+.tangible-sync-style .work-badge > cr-icon,
 .tangible-sync-style .work-badge > iron-icon {
   --work-icon-size: 14px;
   background-color: var(--signin-work-badge-background-color);
