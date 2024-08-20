@@ -609,16 +609,6 @@ void MaybeEnqueueLaunchParams(content::WebContents* contents,
       std::move(launch_params));
 }
 
-content::WebContents* NavigateWebApplicationWindow(
-    Browser* browser,
-    const std::string& app_id,
-    const GURL& url,
-    WindowOpenDisposition disposition) {
-  NavigateParams nav_params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  nav_params.disposition = disposition;
-  return NavigateWebAppUsingParams(app_id, nav_params);
-}
-
 content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
                                                 NavigateParams& nav_params) {
   if (nav_params.browser->app_controller() &&

@@ -365,9 +365,12 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
   TabStripModel* const tab_strip = browser->tab_strip_model();
   if (tab_strip->empty() ||
       navigation_disposition != WindowOpenDisposition::CURRENT_TAB) {
-    return {.web_contents = NavigateWebApplicationWindow(
-                browser, params_->app_id, launch_url, navigation_disposition),
-            .did_navigate = true};
+    NavigateParams nav_params(browser, launch_url,
+                              ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+    nav_params.disposition = navigation_disposition;
+    return {
+        .web_contents = NavigateWebAppUsingParams(params_->app_id, nav_params),
+        .did_navigate = true};
   }
 
   content::WebContents* existing_tab = tab_strip->GetActiveWebContents();
