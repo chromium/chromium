@@ -167,6 +167,13 @@ void PriceInsightsModel::UpdatePriceInsightsItemConfig(const GURL& url) {
   if (!execution_it->second->config) {
     return;
   }
+
+  if (!execution_it->second->config->price_insights_info.has_value() &&
+      !execution_it->second->config->can_price_track) {
+    execution_it->second->config = nullptr;
+    return;
+  }
+
   execution_it->second->config->entrypoint_image_name =
       base::SysNSStringToUTF8(kDownTrendSymbol);
   execution_it->second->config->image_type =
