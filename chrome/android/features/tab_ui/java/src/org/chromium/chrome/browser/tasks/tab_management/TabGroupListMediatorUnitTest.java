@@ -25,8 +25,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.OPEN_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
 
-import android.graphics.drawable.Drawable;
-
 import androidx.core.util.Pair;
 
 import org.junit.Before;
@@ -74,12 +72,10 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.MockitoHelper;
-import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 /** Tests for {@link TabGroupListMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -108,7 +104,7 @@ public class TabGroupListMediatorUnitTest {
     @Mock private DataSharingService mDataSharingService;
     @Mock private IdentityManager mIdentityManager;
     @Mock private PaneManager mPaneManager;
-    @Mock private BiConsumer<GURL, Callback<Drawable>> mFaviconResolver;
+    @Mock private FaviconResolver mFaviconResolver;
     @Mock private TabSwitcherPaneBase mTabSwitcherPaneBase;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private ActionConfirmationManager mActionConfirmationManager;

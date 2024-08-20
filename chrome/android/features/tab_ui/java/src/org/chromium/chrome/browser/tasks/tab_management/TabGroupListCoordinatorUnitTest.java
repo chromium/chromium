@@ -38,10 +38,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
-
-import java.util.function.BiConsumer;
 
 /** Tests for {@link TabGroupListCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -74,9 +71,9 @@ public class TabGroupListCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testForeignFavicon() {
-        BiConsumer<GURL, Callback<Drawable>> resolver =
+        FaviconResolver resolver =
                 TabGroupListCoordinator.buildFaviconResolver(mActivity, mProfile);
-        resolver.accept(JUnitTestGURLs.URL_1, mCallback);
+        resolver.resolve(JUnitTestGURLs.URL_1, mCallback);
         verify(mFaviconHelperJniMock)
                 .getForeignFaviconImageForURL(
                         anyLong(), any(), any(), anyInt(), mFaviconImageCallbackCaptor.capture());
@@ -88,9 +85,9 @@ public class TabGroupListCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testFallbackFavicon() {
-        BiConsumer<GURL, Callback<Drawable>> resolver =
+        FaviconResolver resolver =
                 TabGroupListCoordinator.buildFaviconResolver(mActivity, mProfile);
-        resolver.accept(JUnitTestGURLs.URL_1, mCallback);
+        resolver.resolve(JUnitTestGURLs.URL_1, mCallback);
         verify(mFaviconHelperJniMock)
                 .getForeignFaviconImageForURL(
                         anyLong(), any(), any(), anyInt(), mFaviconImageCallbackCaptor.capture());
@@ -102,9 +99,9 @@ public class TabGroupListCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testInternalFavicon() {
-        BiConsumer<GURL, Callback<Drawable>> resolver =
+        FaviconResolver resolver =
                 TabGroupListCoordinator.buildFaviconResolver(mActivity, mProfile);
-        resolver.accept(JUnitTestGURLs.NTP_NATIVE_URL, mCallback);
+        resolver.resolve(JUnitTestGURLs.NTP_NATIVE_URL, mCallback);
         verify(mCallback).onResult(notNull());
     }
 }

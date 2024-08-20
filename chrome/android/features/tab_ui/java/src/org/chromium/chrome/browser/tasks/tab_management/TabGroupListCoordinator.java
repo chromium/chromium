@@ -48,7 +48,6 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.function.BiConsumer;
 
 /** Orchestrates the displaying of a list of interactable tab groups. */
 public class TabGroupListCoordinator {
@@ -83,26 +82,19 @@ public class TabGroupListCoordinator {
 
         ViewBuilder<TabGroupRowView> layoutBuilder =
                 new LayoutViewBuilder<>(R.layout.tab_group_row);
-        mSimpleRecyclerViewAdapter =
-                new SimpleRecyclerViewAdapter(modelList) {
-                    @Override
-                    public void onBindViewHolder(ViewHolder viewHolder, int position) {
-                        ((TabGroupRowView) viewHolder.itemView).resetOnBind();
-                        super.onBindViewHolder(viewHolder, position);
-                    }
-                };
+        mSimpleRecyclerViewAdapter = new SimpleRecyclerViewAdapter(modelList);
         mSimpleRecyclerViewAdapter.registerType(
                 RowType.TAB_GROUP, layoutBuilder, new TabGroupRowViewBinder());
 
         mView =
                 (TabGroupListView)
-                        LayoutInflater.from(context).inflate(R.layout.tab_group_list, null);
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.tab_group_list, /* root= */ null);
         PropertyModelChangeProcessor.create(propertyModel, mView, TabGroupListViewBinder::bind);
         mView.setRecyclerViewAdapter(mSimpleRecyclerViewAdapter);
 
         Profile profile = profileProvider.getOriginalProfile();
-        BiConsumer<GURL, Callback<Drawable>> faviconResolver =
-                buildFaviconResolver(context, profile);
+        FaviconResolver faviconResolver = buildFaviconResolver(context, profile);
         @Nullable TabGroupSyncService tabGroupSyncService = null;
         if (TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) {
             tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
@@ -132,8 +124,7 @@ public class TabGroupListCoordinator {
     }
 
     @VisibleForTesting
-    static BiConsumer<GURL, Callback<Drawable>> buildFaviconResolver(
-            Context context, Profile profile) {
+    static FaviconResolver buildFaviconResolver(Context context, Profile profile) {
         return (GURL url, Callback<Drawable> callback) -> {
             if (UrlUtilities.isInternalScheme(url)) {
                 // Do not bother resizing, the view will use a fixed size. No resizing should allow

@@ -7,13 +7,11 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DELETE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
 
-import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
@@ -46,13 +44,11 @@ import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 /** Populates a {@link ModelList} with an item for each tab group. */
 public class TabGroupListMediator {
@@ -79,7 +75,7 @@ public class TabGroupListMediator {
     private final ModelList mModelList;
     private final PropertyModel mPropertyModel;
     private final TabGroupModelFilter mFilter;
-    private final BiConsumer<GURL, Callback<Drawable>> mFaviconResolver;
+    private final FaviconResolver mFaviconResolver;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final @Nullable DataSharingService mDataSharingService;
     private final IdentityManager mIdentityManager;
@@ -162,7 +158,7 @@ public class TabGroupListMediator {
             ModelList modelList,
             PropertyModel propertyModel,
             TabGroupModelFilter filter,
-            BiConsumer<GURL, Callback<Drawable>> faviconResolver,
+            FaviconResolver faviconResolver,
             @Nullable TabGroupSyncService tabGroupSyncService,
             @Nullable DataSharingService dataSharingService,
             IdentityManager identityManager,
