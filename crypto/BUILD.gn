@@ -188,6 +188,10 @@ test("crypto_unittests") {
     sources += [ "unexportable_key_metrics_unittest.cc" ]
   }
 
+  if (is_apple) {
+    sources += [ "mock_apple_keychain_unittest.cc" ]
+  }
+
   if (is_mac) {
     sources += [
       "apple_keychain_util_unittest.mm",
@@ -214,6 +218,10 @@ test("crypto_unittests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_apple) {
+    deps += [ ":mock_apple_keychain" ]
+  }
 }
 
 static_library("test_support") {
