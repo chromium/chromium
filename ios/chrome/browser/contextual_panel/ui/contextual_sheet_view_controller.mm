@@ -46,10 +46,10 @@ const CGFloat kTopCornerRadius = 10;
   // The height of the sheet's content.
   CGFloat _contentHeight;
 
-  // Constraints for the width of the sheet. The second constraint constraints
-  // the sheet to half its parent's width and is used in compact height.
+  // Constraints for the width of the sheet. The second constraint constrains
+  // the sheet to a portion of its parent's width and is used in compact height.
   NSLayoutConstraint* _widthConstraint;
-  NSLayoutConstraint* _halfWidthConstraint;
+  NSLayoutConstraint* _compactHeightWidthConstraint;
 }
 
 - (void)viewDidLoad {
@@ -85,10 +85,10 @@ const CGFloat kTopCornerRadius = 10;
   _widthConstraint.active =
       self.traitCollection.verticalSizeClass != UIUserInterfaceSizeClassCompact;
 
-  _halfWidthConstraint = [self.view.widthAnchor
+  _compactHeightWidthConstraint = [self.view.widthAnchor
       constraintEqualToAnchor:self.view.superview.widthAnchor
-                   multiplier:0.5];
-  _halfWidthConstraint.active =
+                   multiplier:0.66];
+  _compactHeightWidthConstraint.active =
       self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
 
   CGFloat initialHeight =
@@ -116,7 +116,7 @@ const CGFloat kTopCornerRadius = 10;
 
   _widthConstraint.active =
       self.traitCollection.verticalSizeClass != UIUserInterfaceSizeClassCompact;
-  _halfWidthConstraint.active =
+  _compactHeightWidthConstraint.active =
       self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
 }
 
