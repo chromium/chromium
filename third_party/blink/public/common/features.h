@@ -203,32 +203,42 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBrowsingTopicsBypassIPIsPubliclyRoutableCheck);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBrowsingTopicsDocumentAPI);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBrowsingTopicsParameters);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kBrowsingTopicsTimePeriodPerEpoch;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kBrowsingTopicsNumberOfEpochsToExpose;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kBrowsingTopicsNumberOfTopTopicsPerEpoch;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kBrowsingTopicsUseRandomTopicProbabilityPercent;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kBrowsingTopicsMaxEpochIntroductionDelay;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kBrowsingTopicsNumberOfEpochsOfObservationDataToUseForFiltering;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kBrowsingTopicsMaxNumberOfApiUsageContextDomainsToKeepPerTopic;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kBrowsingTopicsMaxNumberOfApiUsageContextEntriesToLoadPerEpoch;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kBrowsingTopicsMaxNumberOfApiUsageContextDomainsToStorePerPageLoad;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kBrowsingTopicsTaxonomyVersion;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kBrowsingTopicsTimePeriodPerEpoch);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kBrowsingTopicsNumberOfEpochsToExpose);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kBrowsingTopicsNumberOfTopTopicsPerEpoch);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kBrowsingTopicsUseRandomTopicProbabilityPercent);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kBrowsingTopicsMaxEpochIntroductionDelay);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kBrowsingTopicsNumberOfEpochsOfObservationDataToUseForFiltering);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kBrowsingTopicsMaxNumberOfApiUsageContextDomainsToKeepPerTopic);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kBrowsingTopicsMaxNumberOfApiUsageContextEntriesToLoadPerEpoch);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kBrowsingTopicsMaxNumberOfApiUsageContextDomainsToStorePerPageLoad);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                               kBrowsingTopicsTaxonomyVersion);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kBrowsingTopicsDisabledTopicsList;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kBrowsingTopicsPrioritizedTopicsList;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kBrowsingTopicsFirstTimeoutRetryDelay;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kBrowsingTopicsFirstTimeoutRetryDelay);
 constexpr int kBrowsingTopicsTaxonomyVersionDefault = 2;
 
 // Suppresses console errors for CORS problems which report an associated
