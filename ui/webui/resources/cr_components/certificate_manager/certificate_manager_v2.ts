@@ -316,20 +316,20 @@ export class CertificateManagerV2Element extends
   }
 
   private onMenuItemActivate_(e: CustomEvent<{item: HTMLElement}>) {
-    const page = e.detail.item.getAttribute('path');
+    const page = e.detail.item.getAttribute('href');
     assert(page, 'Page is not available');
-    Router.getInstance().navigateTo(page as Page);
+    Router.getInstance().navigateTo(page.substring(1) as Page);
   }
 
-  private getSelectedTopLevelPage_(): string {
+  private getSelectedTopLevelHref_(): string {
     switch (this.selectedPage_) {
       case Page.ADMIN_CERTS:
       case Page.PLATFORM_CERTS:
-        return Page.LOCAL_CERTS;
+        return this.generateHrefForPage_(Page.LOCAL_CERTS);
       case Page.PLATFORM_CLIENT_CERTS:
-        return Page.CLIENT_CERTS;
+        return this.generateHrefForPage_(Page.CLIENT_CERTS);
       default:
-        return this.selectedPage_;
+        return this.generateHrefForPage_(this.selectedPage_);
     }
   }
 
