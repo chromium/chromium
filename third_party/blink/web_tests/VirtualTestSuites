@@ -633,6 +633,7 @@
   "speed up the test.",
   {
     "prefix": "wasm-code-caching",
+    "owners": ["clemensb@chromium.org", "evih@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/wasm/caching"],
     "exclusive_tests": "ALL",
