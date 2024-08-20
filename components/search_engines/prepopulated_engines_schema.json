@@ -148,7 +148,8 @@
         "type_name": "RegulatoryExtension",
         "fields": [
           { "field": "variant", "type": "string" },
-          { "field": "params", "type": "string" }
+          { "field": "search_params", "type": "string" },
+          { "field": "suggest_params", "type": "string" }
         ]
       },
       "optional": true

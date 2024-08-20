@@ -837,6 +837,10 @@ bool TemplateURLRef::ParseParameter(size_t start,
     // We don't support these.
     if (!optional)
       url->insert(start, "1");
+  } else if (parameter == "regSearchExt") {
+    replacements->emplace_back(REGULATORY_SEARCH_EXTENSIONS, start);
+  } else if (parameter == "regSuggestExt") {
+    replacements->emplace_back(REGULATORY_SUGGEST_EXTENSIONS, start);
   } else if (!prepopulated_) {
     base::UmaHistogramBoolean("Omnibox.TemplateUrl.UnrecognizedParameter",
                               /* is externally supplied template? */ false);
@@ -1581,6 +1585,39 @@ std::string TemplateURLRef::HandleReplacements(
         break;
       }
 
+      case REGULATORY_SEARCH_EXTENSIONS: {
+        // Note: Regulatory Search extension may or may not offer substitution.
+        // It is up to the person defining the extension to make an educated
+        // decision whether a parameter delimiter is important in a given
+        // context and to add one if so.
+        auto* extension = owner_->GetRegulatoryExtension();
+        if (extension != nullptr && extension->search_params != nullptr) {
+          std::string search_extension(extension->search_params);
+
+          if (!search_extension.empty()) {
+            HandleReplacement(std::string(), "&" + search_extension,
+                              replacement, &url);
+          }
+        }
+        break;
+      }
+
+      case REGULATORY_SUGGEST_EXTENSIONS: {
+        // Note: Regulatory Suggest extension may or may not offer substitution.
+        // It is up to the person defining the extension to make an educated
+        // decision whether a parameter delimiter is important in a given
+        // context and to add one if so.
+        auto* extension = owner_->GetRegulatoryExtension();
+        if (extension != nullptr && extension->suggest_params != nullptr) {
+          std::string suggest_extension(extension->suggest_params);
+          if (!suggest_extension.empty()) {
+            HandleReplacement(std::string(), "&" + suggest_extension,
+                              replacement, &url);
+          }
+        }
+        break;
+      }
+
       default:
         NOTREACHED_IN_MIGRATION();
         break;
@@ -2000,6 +2037,20 @@ GURL TemplateURL::GenerateSuggestionURL(
 
   return GURL(suggestions_url_ref().ReplaceSearchTerms(
       TemplateURLRef::SearchTermsArgs(), search_terms_data, nullptr));
+}
+
+const TemplateURLData::RegulatoryExtension*
+TemplateURL::GetRegulatoryExtension() const {
+  auto extension = data_.regulatory_extensions.end();
+
+  if (data_.created_from_play_api) {
+    extension = data_.regulatory_extensions.find("android_eea");
+  } else {
+    extension = data_.regulatory_extensions.find("default");
+  }
+
+  return extension == data_.regulatory_extensions.end() ? nullptr
+                                                        : extension->second;
 }
 
 bool TemplateURL::IsSideSearchSupported() const {

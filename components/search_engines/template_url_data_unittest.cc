@@ -60,14 +60,23 @@ TEST(TemplateURLDataTest, RejectUnknownRegulatoryKeywords) {
 
 TEST(TemplateURLDataTest, AcceptKnownRegulatoryKeywords) {
   std::array<TemplateURLData::RegulatoryExtension, 2> extensions = {{
-      {"default", "default_data"},
-      {"android_eea", "android_eea_data"},
+      {.variant = "default",
+       .search_params = "default_search",
+       .suggest_params = "default_suggest"},
+      {.variant = "android_eea",
+       .search_params = "android_eea_search",
+       .suggest_params = "android_eea_suggest"},
   }};
 
   auto data = BuildDataForRegulatoryExtensions(extensions);
-  EXPECT_EQ("default_data", data.regulatory_extensions.at("default")->params);
-  EXPECT_EQ("android_eea_data",
-            data.regulatory_extensions.at("android_eea")->params);
+  EXPECT_EQ("default_search",
+            data.regulatory_extensions.at("default")->search_params);
+  EXPECT_EQ("default_suggest",
+            data.regulatory_extensions.at("default")->suggest_params);
+  EXPECT_EQ("android_eea_search",
+            data.regulatory_extensions.at("android_eea")->search_params);
+  EXPECT_EQ("android_eea_suggest",
+            data.regulatory_extensions.at("android_eea")->suggest_params);
 }
 
 #if DCHECK_IS_ON()

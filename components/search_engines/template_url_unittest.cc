@@ -1000,6 +1000,192 @@ TEST_F(TemplateURLTest, ReplaceOmniboxFocusType) {
   }
 }
 
+TEST_F(TemplateURLTest, GetRegulatoryExtension_NoExtension) {
+  TemplateURLData data;
+
+  {
+    // Request default extension.
+    TemplateURL url(data);
+    EXPECT_EQ(nullptr, url.GetRegulatoryExtension());
+  }
+
+  {
+    // Request android_eea extension.
+    data.created_from_play_api = true;
+    TemplateURL url(data);
+    EXPECT_EQ(nullptr, url.GetRegulatoryExtension());
+  }
+}
+
+TEST_F(TemplateURLTest, GetRegulatoryExtension_OnlyDefaultExtension) {
+  constexpr auto default_ext = TemplateURLData::RegulatoryExtension{
+      .variant = "default",
+      .search_params = "search=params1",
+      .suggest_params = "suggest=params2",
+  };
+
+  TemplateURLData data;
+  data.regulatory_extensions.insert_or_assign("default", &default_ext);
+
+  {
+    // Default extension should give us params mentioned above.
+    TemplateURL url(data);
+    auto* extension = url.GetRegulatoryExtension();
+    EXPECT_EQ(&default_ext, extension);
+  }
+
+  {
+    // Android EEA extension should not fall back to default; instead an empty
+    // definition should be served.
+    data.created_from_play_api = true;
+    TemplateURL url(data);
+    auto* extension = url.GetRegulatoryExtension();
+    EXPECT_EQ(nullptr, extension);
+  }
+}
+
+TEST_F(TemplateURLTest, GetRegulatoryExtension_WithDefaultAndEEAExtensions) {
+  constexpr auto default_ext = TemplateURLData::RegulatoryExtension{
+      .variant = "default",
+      .search_params = "search=params1",
+      .suggest_params = "suggest=params2",
+  };
+  constexpr auto android_eea_ext = TemplateURLData::RegulatoryExtension{
+      .variant = "android_eea",
+      .search_params = "eea_search=params3",
+      .suggest_params = "eea_suggest=params4",
+  };
+  TemplateURLData data;
+  data.regulatory_extensions.insert_or_assign("default", &default_ext);
+  data.regulatory_extensions.insert_or_assign("android_eea", &android_eea_ext);
+
+  {
+    // Default extension should give us default params.
+    TemplateURL url(data);
+    auto* extension = url.GetRegulatoryExtension();
+    EXPECT_EQ(&default_ext, extension);
+  }
+
+  {
+    // Android EEA extension should use android_eea params.
+    data.created_from_play_api = true;
+    TemplateURL url(data);
+    auto* extension = url.GetRegulatoryExtension();
+    EXPECT_EQ(&android_eea_ext, extension);
+  }
+}
+
+TEST_F(TemplateURLTest, RegulatoryExtensionsReplacement_withNoValues) {
+  constexpr auto default_ext = TemplateURLData::RegulatoryExtension{
+      .variant = "default",
+      .search_params = "",
+      .suggest_params = "",
+  };
+
+  TemplateURLRef::SearchTermsArgs search_terms_args;
+  TemplateURLData data;
+  data.SetURL(
+      "http://engine.com/?q={searchTerms}{regSearchExt}{regSuggestExt}");
+  data.regulatory_extensions.insert_or_assign("default", &default_ext);
+
+  {
+    TemplateURL url(data);
+
+    GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,
+                                                 search_terms_data_));
+    EXPECT_EQ("http://engine.com/?q=", result.spec());
+  }
+}
+
+TEST_F(TemplateURLTest, RegulatoryExtensionsReplacement_withPartialValues) {
+  constexpr auto default_ext = TemplateURLData::RegulatoryExtension{
+      .variant = "default",
+      .search_params = "",
+      .suggest_params = "suggest=value",
+  };
+  constexpr auto android_eea_ext = TemplateURLData::RegulatoryExtension{
+      .variant = "android_eea",
+      .search_params = "search=value",
+      .suggest_params = "",
+  };
+
+  TemplateURLRef::SearchTermsArgs search_terms_args;
+  TemplateURLData data;
+  data.SetURL(
+      "http://engine.com/?q={searchTerms}{regSearchExt}{regSuggestExt}");
+  data.regulatory_extensions.insert_or_assign("default", &default_ext);
+  data.regulatory_extensions.insert_or_assign("android_eea", &android_eea_ext);
+
+  {
+    TemplateURL url(data);
+
+    GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,
+                                                 search_terms_data_));
+    EXPECT_EQ("http://engine.com/?q=&suggest=value", result.spec());
+  }
+
+  {
+    data.created_from_play_api = true;
+    TemplateURL url(data);
+
+    GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,
+                                                 search_terms_data_));
+    EXPECT_EQ(
+        "http://engine.com/?q=&search=value"
+#if BUILDFLAG(IS_ANDROID)
+        "&chrome_dse_attribution=1"
+#endif
+        ,
+        result.spec());
+  }
+}
+TEST_F(TemplateURLTest, RegulatoryExtensionsReplacement_withValues) {
+  constexpr auto default_ext = TemplateURLData::RegulatoryExtension{
+      .variant = "default",
+      .search_params = "search=params1",
+      .suggest_params = "suggest=params2",
+  };
+  constexpr auto android_eea_ext = TemplateURLData::RegulatoryExtension{
+      .variant = "android_eea",
+      .search_params = "eea_search=params3",
+      .suggest_params = "eea_suggest=params4",
+  };
+
+  TemplateURLRef::SearchTermsArgs search_terms_args;
+  TemplateURLData data;
+  data.SetURL(
+      "http://engine.com/?q={searchTerms}{regSearchExt}{regSuggestExt}");
+  data.regulatory_extensions.insert_or_assign("default", &default_ext);
+  data.regulatory_extensions.insert_or_assign("android_eea", &android_eea_ext);
+
+  {
+    // Default variant should expand "default" params.
+    TemplateURL url(data);
+
+    GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,
+                                                 search_terms_data_));
+    EXPECT_EQ("http://engine.com/?q=&search=params1&suggest=params2",
+              result.spec());
+  }
+
+  {
+    // Android EEA variant should expand "android_eea" params.
+    data.created_from_play_api = true;
+    TemplateURL url(data);
+
+    GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,
+                                                 search_terms_data_));
+    EXPECT_EQ(
+        "http://engine.com/"
+        "?q=&eea_search=params3&eea_suggest=params4"
+#if BUILDFLAG(IS_ANDROID)
+        "&chrome_dse_attribution=1"
+#endif
+        ,
+        result.spec());
+  }
+}
+
 class TemplateURLOnePrefetchSourceTest : public base::test::WithFeatureOverride,
                                          public TemplateURLTest {
  public:
