@@ -122,8 +122,7 @@ class ScopedPlusAddressFeatureList {
     plus_addresses_enabled_params_with_server["server-url"] = server_url;
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kPlusAddressesEnabled,
-         plus_addresses_enabled_params_with_server},
-        {features::kPlusAddressRefresh, {}}};
+         plus_addresses_enabled_params_with_server}};
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (enable_onboarding) {

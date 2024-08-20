@@ -8,10 +8,8 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
-#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/mock_plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_allocator.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
@@ -61,19 +59,10 @@ class PlusAddressJitAllocatorRefreshTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_{features::kPlusAddressRefresh};
 
   NiceMock<MockPlusAddressHttpClient> http_client_;
   PlusAddressJitAllocator allocator_;
 };
-
-// Tests that refreshing is disabled when the feature is turned off.
-TEST_F(PlusAddressJitAllocatorRefreshTest, RefreshDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kPlusAddressRefresh);
-
-  EXPECT_FALSE(allocator().IsRefreshingSupported(GetSampleOrigin1()));
-}
 
 // Tests that the allocator translates the `AllocationMode` properly into the
 // `refresh` parameter of the client.

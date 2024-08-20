@@ -138,11 +138,6 @@ BASE_FEATURE(kPlusAddressProfileAwareFeatureCheck,
              "PlusAddressProfileAwareFeatureCheck",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, plus address refresh requests to the backend are supported.
-BASE_FEATURE(kPlusAddressRefresh,
-             "PlusAddressRefresh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // When enabled, plus address settings on Desktop are nested under address
 // autofill and the label for the autofill settings entry gains a subtitle.

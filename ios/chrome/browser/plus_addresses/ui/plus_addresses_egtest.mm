@@ -119,11 +119,6 @@ void ExpectModalTimeSample(
          {"manage-url", {plus_addresses::test::kFakeManagementUrl}},
          {"error-report-url", {plus_addresses::test::kFakeErrorReportUrl}}}}});
 
-  if ([self isRunningTest:@selector(testRefresh)]) {
-    config.features_enabled_and_params.push_back(
-        {plus_addresses::features::kPlusAddressRefresh, {}});
-  }
-
   if ([self isRunningTest:@selector(testCreatePlusAddressIPH)]) {
     config.iph_feature_enabled =
         feature_engagement::kIPHPlusAddressCreateSuggestionFeature.name;
