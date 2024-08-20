@@ -61,6 +61,13 @@ WindowAndroid::ScopedWindowAndroidForTesting::~ScopedWindowAndroidForTesting() {
   Java_WindowAndroid_destroy(env, window_->GetJavaObject());
 }
 
+void WindowAndroid::ScopedWindowAndroidForTesting::SetModalDialogManager(
+    base::android::ScopedJavaLocalRef<jobject> modal_dialog_manager) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_WindowAndroid_setModalDialogManagerForTesting(  // IN-TEST
+      env, window_->GetJavaObject(), modal_dialog_manager);
+}
+
 // static
 WindowAndroid* WindowAndroid::FromJavaWindowAndroid(
     const JavaParamRef<jobject>& jwindow_android) {

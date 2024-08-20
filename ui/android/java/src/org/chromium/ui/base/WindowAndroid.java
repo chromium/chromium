@@ -30,6 +30,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -179,6 +180,8 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     private final ObserverList<OnCloseContextMenuListener> mContextMenuCloseListeners =
             new ObserverList<>();
 
+    private ModalDialogManager mModalDialogManagerForTesting;
+
     /**
      * @param context The application {@link Context}.
      */
@@ -237,7 +240,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
                 && uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
     }
 
-    @CalledByNative
+    @CalledByNativeForTesting
     private static long createForTesting() {
         WindowAndroid windowAndroid = new WindowAndroid(ContextUtils.getApplicationContext());
         // |windowAndroid.getNativePointer()| creates native WindowAndroid object
@@ -646,10 +649,18 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
 
     /**
      * Returns the ModalDialogManager to be used with this window.
+     *
      * @return a {@link ModalDialogManager} for this window, or null if there is none.
      */
     public @Nullable ModalDialogManager getModalDialogManager() {
-        return null;
+        // Will always be null except for some tests.
+        return mModalDialogManagerForTesting;
+    }
+
+    /** Set the ModalDialogManager for testing. */
+    @CalledByNativeForTesting
+    private void setModalDialogManagerForTesting(ModalDialogManager modalDialogManager) {
+        mModalDialogManagerForTesting = modalDialogManager;
     }
 
     /**

@@ -6,16 +6,13 @@
 
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
-
-#if defined(TOOLKIT_VIEWS)
-#include "components/constrained_window/constrained_window_views.h"
-#endif
 
 namespace {
 
@@ -74,15 +71,10 @@ void ShowFileSystemAccessRestrictedDirectoryDialog(
     HandleType handle_type,
     base::OnceCallback<void(SensitiveEntryResult)> callback,
     content::WebContents* web_contents) {
-#if defined(TOOLKIT_VIEWS)
-  auto model = CreateFileSystemAccessRestrictedDirectoryDialog(
-          web_contents, origin, handle_type, std::move(callback));
-  constrained_window::ShowWebModal(std::move(model), web_contents);
-#else
-  // Run callback as if the dialog was instantly cancelled.
-  std::move(callback).Run(
-      content::FileSystemAccessPermissionContext::SensitiveEntryResult::kAbort);
-#endif
+  chrome::ShowTabModal(
+      CreateFileSystemAccessRestrictedDirectoryDialog(
+          web_contents, origin, handle_type, std::move(callback)),
+      web_contents);
 }
 
 std::unique_ptr<ui::DialogModel>

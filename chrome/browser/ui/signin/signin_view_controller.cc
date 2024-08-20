@@ -49,6 +49,7 @@
 #include "chrome/browser/signin/logout_tab_helper.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
@@ -58,7 +59,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/constrained_window/constrained_window_views.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -799,7 +799,7 @@ void SigninViewController::ShowChromeSigninDialogForExtensions(
                            l10n_util::GetStringUTF16(IDS_CANCEL)))
       .SetDialogDestroyingCallback(std::move(on_complete));
 
-  constrained_window::ShowWebModal(dialog_builder.Build(), contents);
+  chrome::ShowTabModal(dialog_builder.Build(), contents);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

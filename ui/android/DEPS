@@ -22,6 +22,7 @@ include_rules = [
   "+ui/display",
   "+ui/events",
   "+ui/gfx",
+  "+ui/strings/grit/ui_strings.h",
   "+ui/touch_selection/touch_handle.h",
 ]
 

@@ -7,8 +7,8 @@
 #include <cstdlib>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -60,7 +60,7 @@ void ShowRequestFileSystemDialog(
                ui::DialogModelLabel::CreateEmphasizedText(volume_name)}))
           .Build();
 
-  constrained_window::ShowWebModal(std::move(dialog_model), web_contents);
+  chrome::ShowTabModal(std::move(dialog_model), web_contents);
 }
 
 }  // namespace extensions

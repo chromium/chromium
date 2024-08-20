@@ -7,8 +7,15 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 
-#if !defined(TOOLKIT_VIEWS)
+#if defined(TOOLKIT_VIEWS)
+#include "components/constrained_window/constrained_window_views.h"
+#else
 #include "ui/shell_dialogs/selected_file_info.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "content/public/browser/web_contents.h"
+#include "ui/android/modal_dialog_bridge.h"
 #endif
 
 namespace chrome {
@@ -21,6 +28,19 @@ void ShowWindowNamePrompt(Browser* browser) {
 void ShowWindowNamePromptForTesting(Browser* browser,
                                     gfx::NativeWindow context) {
   NOTIMPLEMENTED();
+}
+#endif
+
+#if defined(TOOLKIT_VIEWS)
+void ShowTabModal(std::unique_ptr<ui::DialogModel> dialog_model,
+                  content::WebContents* web_contents) {
+  constrained_window::ShowWebModal(std::move(dialog_model), web_contents);
+}
+#elif BUILDFLAG(IS_ANDROID)
+void ShowTabModal(std::unique_ptr<ui::DialogModel> dialog_model,
+                  content::WebContents* web_contents) {
+  ui::ModalDialogBridge::ShowTabModal(std::move(dialog_model),
+                                      web_contents->GetTopLevelNativeWindow());
 }
 #endif
 
