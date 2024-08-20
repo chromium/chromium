@@ -241,14 +241,24 @@ bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {
 
   __weak __typeof(self) weakSelf = self;
   UIAction* editAction = [actionFactory actionToEditWithBlock:^{
-    [weakSelf.navigationDelegate openCardDetails:card inEditMode:YES];
+    [weakSelf openAddressDetails:card inEditMode:YES];
   }];
 
   UIAction* showDetailsAction = [actionFactory actionToShowDetailsWithBlock:^{
-    [weakSelf.navigationDelegate openCardDetails:card inEditMode:NO];
+    [weakSelf openAddressDetails:card inEditMode:NO];
   }];
 
   return @[ editAction, showDetailsAction ];
+}
+
+// Requests the `navigationDelegate` to open the details of the given `card`.
+// `editMode` indicates whether the details should be opened in edit mode.
+- (void)openAddressDetails:(const CreditCard*)card inEditMode:(BOOL)editMode {
+  base::RecordAction(base::UserMetricsAction(
+      editMode ? "ManualFallback_CreditCard_OverflowMenu_Edit"
+               : "ManualFallback_CreditCard_OverflowMenu_ShowDetails"));
+
+  [self.navigationDelegate openCardDetails:card inEditMode:editMode];
 }
 
 // Returns the icon associated with the provided credit card.
