@@ -71,6 +71,8 @@
         ctx.shadowBlur = 3;
   - no-cxt-filter:
       filter_statement: // No filter.
+    ctx-filter:
+      filter_statement: ctx.filter = 'drop-shadow(-4px -4px 0 fuchsia)';
   - no-transform:
       transform_statement: // No transform.
     rotation:
@@ -330,28 +332,6 @@
     ctx.fillStyle = 'blue';
     ctx.fillRect(30, 30, 50, 50);
 
-- name: 2d.layer.global-filter
-  desc: Tests that layers ignore the global context filter.
-  size: [150, 100]
-  code: |
-    ctx.filter = 'blur(5px)'
-
-    ctx.beginLayer();
-    ctx.fillRect(10, 10, 30, 30);  // `ctx.filter` applied to draw call.
-    ctx.endLayer();
-
-    ctx.beginLayer();
-    ctx.filter = 'none';
-    ctx.fillRect(60, 10, 30, 30);  // Should not be filted by the layer.
-    ctx.endLayer();
-
-    ctx.fillRect(110, 10, 30, 30);  // `ctx.filter` is still set.
-  reference: |
-    ctx.fillRect(60, 10, 30, 30);
-    ctx.filter = 'blur(5px)'
-    ctx.fillRect(10, 10, 30, 30);
-    ctx.fillRect(110, 10, 30, 30);
-
 - name: 2d.layer.nested
   desc: Tests nested canvas layers.
   size: [200, 200]
@@ -434,7 +414,7 @@
     ctx.fillRect(70, 70, 75, 50);
 
 - name: 2d.layer.layer-rendering-state-reset-in-layer
-  desc: Tests that layers ignore the global context filter.
+  desc: Tests that rendering states are reset in layers and restored after.
   test_type: sync
   code: |
     ctx.globalAlpha = 0.5;
@@ -443,6 +423,7 @@
     ctx.shadowOffsetX = 10;
     ctx.shadowOffsetY = 20;
     ctx.shadowBlur = 30;
+    ctx.filter = 'blur(5px)';
 
     @assert ctx.globalAlpha === 0.5;
     @assert ctx.globalCompositeOperation === 'xor';
@@ -450,6 +431,7 @@
     @assert ctx.shadowOffsetX === 10;
     @assert ctx.shadowOffsetY === 20;
     @assert ctx.shadowBlur === 30;
+    @assert ctx.filter === 'blur(5px)';
 
     ctx.beginLayer();
 
@@ -459,6 +441,7 @@
     @assert ctx.shadowOffsetX === 0;
     @assert ctx.shadowOffsetY === 0;
     @assert ctx.shadowBlur === 0;
+    @assert ctx.filter === 'none';
 
     ctx.endLayer();
 
@@ -468,6 +451,7 @@
     @assert ctx.shadowOffsetX === 10;
     @assert ctx.shadowOffsetY === 20;
     @assert ctx.shadowBlur === 30;
+    @assert ctx.filter === 'blur(5px)';
 
 - name: 2d.layer.clip-outside
   desc: Check clipping set outside the layer
@@ -535,6 +519,50 @@
         </g>
       </g>
     </svg>
+
+- name: 2d.layer.ctm.ctx-filter
+  desc: Checks that parent transforms don't affect context filters.
+  size: [200, 200]
+  code: |
+    ctx.fillStyle = 'grey';
+    ctx.translate(30, 90);
+    ctx.scale(2, 2);
+    ctx.rotate(Math.PI / 2);
+
+    // The transform doesn't apply to context filter on normal draw calls.
+    ctx.save();
+    ctx.filter = 'drop-shadow(10px 10px 0px red)';
+    ctx.fillRect(-30, -5, 60, 10);
+    ctx.restore();
+
+    // Likewise, the transform doesn't apply to context filter applied on layer.
+    ctx.save();
+    ctx.filter = 'drop-shadow(10px 10px 0px green)';
+    ctx.beginLayer();
+    ctx.fillRect(-30, -25, 60, 10);
+    ctx.endLayer();
+    ctx.restore();
+
+    // Filters inside layers aren't affected by transform either.
+    ctx.beginLayer();
+    ctx.filter = 'drop-shadow(5px 5px 0px blue)';
+    ctx.fillRect(-30, -45, 60, 10);
+    ctx.endLayer();
+  reference: |
+    ctx.fillStyle = 'red';
+    ctx.fillRect(30, 40, 20, 120);
+    ctx.fillStyle = 'grey';
+    ctx.fillRect(20, 30, 20, 120);
+
+    ctx.fillStyle = 'green';
+    ctx.fillRect(70, 40, 20, 120);
+    ctx.fillStyle = 'grey';
+    ctx.fillRect(60, 30, 20, 120);
+
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(105, 35, 20, 120);
+    ctx.fillStyle = 'grey';
+    ctx.fillRect(100, 30, 20, 120);
 
 - name: 2d.layer.ctm.shadow-in-transformed-layer
   desc: Check shadows inside of a transformed layer.
@@ -872,6 +900,7 @@
     ctx.shadowOffsetY = 3;
     ctx.shadowColor = 'rgba(0, 30, 0, 0.3)';
     ctx.shadowBlur = 3;
+    ctx.filter = 'blur(5px)';
 
     ctx.beginLayer({filter: {name: 'dropShadow', dx: -3, dy: 3}});
 
@@ -882,6 +911,7 @@
     ctx.shadowOffsetY = 6;
     ctx.shadowColor = 'rgba(0, 60, 0, 0.6)';
     ctx.shadowBlur = 3;
+    ctx.filter = 'blur(15px)';
 
     ctx.reset();
 
@@ -1367,3 +1397,30 @@
     ctx.fillRect(260, 60, 100, 100);
     ctx.fillStyle = 'red';
     ctx.fillRect(250, 50, 100, 100);
+
+- name: 2d.layer.nested-ctx-filter
+  desc: Tests nested canvas layers with context filters.
+  size: [200, 200]
+  code: |
+    ctx.filter = 'drop-shadow(20px 20px 0px red)';
+    ctx.beginLayer();
+    ctx.filter = 'drop-shadow(10px 10px 0px green)';
+    ctx.beginLayer();
+    ctx.filter = 'drop-shadow(5px 5px 0px blue)';
+    ctx.fillStyle = 'grey';
+    ctx.fillRect(10, 10, 100, 100);
+    ctx.endLayer();
+    ctx.endLayer();
+  reference: |
+    ctx.fillStyle = 'red';
+    ctx.fillRect(45, 45, 100, 100);
+    ctx.fillRect(40, 40, 100, 100);
+    ctx.fillRect(35, 35, 100, 100);
+    ctx.fillRect(30, 30, 100, 100);
+    ctx.fillStyle = 'green';
+    ctx.fillRect(25, 25, 100, 100);
+    ctx.fillRect(20, 20, 100, 100);
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(15, 15, 100, 100);
+    ctx.fillStyle = 'grey';
+    ctx.fillRect(10, 10, 100, 100);

@@ -436,6 +436,8 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
   DCHECK(!layer_state.ShouldDrawShadows());
   setGlobalAlpha(1.0);
   setGlobalCompositeOperation("source-over");
+  setFilter(script_state,
+            MakeGarbageCollected<V8UnionCanvasFilterOrString>("none"));
 }
 
 void BaseRenderingContext2D::AddLayerFilterUserCount(
@@ -473,11 +475,21 @@ class ScopedResetCtm {
   std::optional<SkM44> ctm_to_restore_;
 };
 
+namespace {
+sk_sp<PaintFilter> CombineFilters(sk_sp<PaintFilter> first,
+                                  sk_sp<PaintFilter> second) {
+  if (second) {
+    return sk_make_sp<ComposePaintFilter>(std::move(first), std::move(second));
+  }
+  return first;
+}
+}  // namespace
+
 CanvasRenderingContext2DState::SaveType
 BaseRenderingContext2D::SaveLayerForState(
     const CanvasRenderingContext2DState& state,
-    sk_sp<PaintFilter> filter,
-    cc::PaintCanvas& canvas) const {
+    sk_sp<PaintFilter> layer_filter,
+    cc::PaintCanvas& canvas) {
   if (!IsTransformInvertible()) {
     canvas.saveLayerAlphaf(1.0f);
     return CanvasRenderingContext2DState::SaveType::kBeginEndLayerOneSave;
@@ -485,6 +497,7 @@ BaseRenderingContext2D::SaveLayerForState(
 
   const int initial_save_count = canvas.getSaveCount();
   bool needs_compositing = state.GlobalComposite() != SkBlendMode::kSrcOver;
+  sk_sp<PaintFilter> context_filter = StateGetFilter();
 
   // The "copy" globalCompositeOperation replaces everything that was in the
   // canvas. We therefore have to clear the canvas before proceeding. Since the
@@ -496,17 +509,23 @@ BaseRenderingContext2D::SaveLayerForState(
   // Global states must be applied on the result of the layer's filter, so the
   // filter has to go in a nested layer.
   //
-  // For alpha + (shadows or compositing), we must use two nested layers. The
-  // inner one applies the alpha and the outer one applies the shadow and/or
-  // compositing. This is needed to to get a transparent foreground, as the
-  // alpha would otherwise be applied to the result of foreground+background.
+  // For globalAlpha + (shadows or compositing), we must use two nested layers.
+  // The inner one applies the alpha and the outer one applies the shadow and/or
+  // compositing. This is needed to get a transparent foreground, as the alpha
+  // would otherwise be applied to the result of foreground+background.
   if (state.GlobalComposite() == SkBlendMode::kSrc) {
     canvas.clear(HasAlpha() ? SkColors::kTransparent : SkColors::kBlack);
+    if (context_filter) {
+      ScopedResetCtm scoped_reset_ctm(state, canvas);
+      cc::PaintFlags flags;
+      flags.setImageFilter(std::move(context_filter));
+      canvas.saveLayer(flags);
+    }
     needs_compositing = false;
   } else if (bool should_draw_shadow = state.ShouldDrawShadows(),
              needs_composited_draw = BlendModeRequiresCompositedDraw(state);
-             should_draw_shadow || needs_composited_draw) {
-    if (should_draw_shadow && needs_composited_draw) {
+             context_filter || should_draw_shadow || needs_composited_draw) {
+    if (should_draw_shadow && (context_filter || needs_composited_draw)) {
       ScopedResetCtm scoped_reset_ctm(state, canvas);
       // According to the WHATWG spec, the shadow and foreground need to be
       // composited independently to the canvas, one after the other
@@ -518,14 +537,25 @@ BaseRenderingContext2D::SaveLayerForState(
       // foreground.
       cc::PaintFlags flags;
       flags.setBlendMode(state.GlobalComposite());
-      sk_sp<PaintFilter> foreground_filter;  // nullptr means no filter.
+      sk_sp<PaintFilter> shadow_filter =
+          CombineFilters(state.ShadowOnlyImageFilter(), context_filter);
       canvas.saveLayerFilters(
-          std::array{state.ShadowOnlyImageFilter(), foreground_filter}, flags);
+          std::array{
+              std::move(shadow_filter),   // Shadow.
+              std::move(context_filter),  // Foreground.
+          },
+          flags);
     } else if (should_draw_shadow) {
       ScopedResetCtm scoped_reset_ctm(state, canvas);
       cc::PaintFlags flags;
       flags.setImageFilter(state.ShadowAndForegroundImageFilter());
       flags.setBlendMode(state.GlobalComposite());
+      canvas.saveLayer(flags);
+    } else if (context_filter) {
+      ScopedResetCtm scoped_reset_ctm(state, canvas);
+      cc::PaintFlags flags;
+      flags.setBlendMode(state.GlobalComposite());
+      flags.setImageFilter(std::move(context_filter));
       canvas.saveLayer(flags);
     } else {
       cc::PaintFlags flags;
@@ -535,10 +565,10 @@ BaseRenderingContext2D::SaveLayerForState(
     needs_compositing = false;
   }
 
-  if (filter || needs_compositing) {
+  if (layer_filter || needs_compositing) {
     cc::PaintFlags flags;
     flags.setAlphaf(static_cast<float>(state.GlobalAlpha()));
-    flags.setImageFilter(filter);
+    flags.setImageFilter(layer_filter);
     if (needs_compositing) {
       flags.setBlendMode(state.GlobalComposite());
     }

@@ -708,8 +708,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   CanvasRenderingContext2DState::SaveType SaveLayerForState(
       const CanvasRenderingContext2DState& state,
-      sk_sp<PaintFilter> filter,
-      cc::PaintCanvas& canvas) const;
+      sk_sp<PaintFilter> layer_filter,
+      cc::PaintCanvas& canvas);
 
   void AddLayerFilterUserCount(const V8CanvasFilterInput*);
 

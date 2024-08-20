@@ -323,9 +323,8 @@ TEST(BaseRenderingContextLayerTests, ResetsAndRestoresFilterStates) {
             filter->GetAsCanvasFilter()->Operations());
   context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
                       exception_state);
-  ASSERT_TRUE(context->filter()->IsCanvasFilter());
-  EXPECT_EQ(context->filter()->GetAsCanvasFilter()->Operations(),
-            filter->GetAsCanvasFilter()->Operations());
+  ASSERT_TRUE(context->filter()->IsString());
+  EXPECT_EQ(context->filter()->GetAsString(), "none");
 
   context->endLayer(exception_state);
 
@@ -1030,30 +1029,88 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterCompositeAndShadow) {
           PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, BeginLayerIgnoresGlobalFilter) {
+TEST(BaseRenderingContextLayerGlobalStateTests, ContextFilter) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
   NonThrowableExceptionState exception_state;
 
-  V8UnionCanvasFilterOrString* filter = MakeBlurCanvasFilter(20.0f);
-  context->setFilter(scope.GetScriptState(), filter);
+  context->setFilter(scope.GetScriptState(), MakeBlurCanvasFilter(20.0f));
   context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
                       exception_state);
-
-  ASSERT_TRUE(context->filter()->IsCanvasFilter());
-  EXPECT_EQ(context->filter()->GetAsCanvasFilter()->Operations(),
-            filter->GetAsCanvasFilter()->Operations());
-
   context->endLayer(exception_state);
 
-  EXPECT_THAT(context->FlushRecorder(),
-              RecordedOpsAre(DrawRecordOpEq(PaintOpEq<SaveLayerAlphaOp>(1.0f),
-                                            PaintOpEq<RestoreOp>())));
+  cc::PaintFlags filter_flags;
+  filter_flags.setImageFilter(
+      sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(DrawRecordOpEq(PaintOpEq<SaveLayerOp>(filter_flags),
+                                    PaintOpEq<RestoreOp>())));
 }
 
-TEST(BaseRenderingContextLayerGlobalStateTests, TransformsWithoutShadow) {
+TEST(BaseRenderingContextLayerGlobalStateTests, ContextFilterLayerFilter) {
+  test::TaskEnvironment task_environment;
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  NonThrowableExceptionState exception_state;
+
+  context->setFilter(scope.GetScriptState(), MakeBlurCanvasFilter(2.0f));
+  context->beginLayer(scope.GetScriptState(),
+                      FilterOption(scope, "'blur(5px)'"), exception_state);
+  context->endLayer(exception_state);
+
+  cc::PaintFlags global_flags;
+  cc::PaintFlags layer_flags;
+  global_flags.setImageFilter(
+      sk_make_sp<BlurPaintFilter>(2.0f, 2.0f, SkTileMode::kDecal, nullptr));
+  layer_flags.setImageFilter(
+      sk_make_sp<BlurPaintFilter>(5.0f, 5.0f, SkTileMode::kDecal, nullptr));
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(DrawRecordOpEq(
+                  PaintOpEq<SaveLayerOp>(global_flags),
+                  PaintOpEq<SaveLayerOp>(layer_flags), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>())));
+}
+
+TEST(BaseRenderingContextLayerGlobalStateTests, ContextFilterShadow) {
+  test::TaskEnvironment task_environment;
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  NonThrowableExceptionState exception_state;
+
+  context->setShadowBlur(2.0);
+  context->setShadowColor("red");
+  context->setFilter(scope.GetScriptState(), MakeBlurCanvasFilter(5.0f));
+  context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
+                      exception_state);
+  context->endLayer(exception_state);
+
+  cc::PaintFlags layer_flags;
+  sk_sp<cc::PaintFilter> foreground_filter =
+      sk_make_sp<BlurPaintFilter>(5.0f, 5.0f, SkTileMode::kDecal, nullptr);
+
+  sk_sp<cc::PaintFilter> shadow_filter = sk_make_sp<DropShadowPaintFilter>(
+      0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
+      DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr);
+
+  sk_sp<cc::PaintFilter> background_filter =
+      sk_make_sp<ComposePaintFilter>(shadow_filter, foreground_filter);
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(DrawRecordOpEq(
+          PaintOpEq<SaveLayerFiltersOp>(
+              std::array{background_filter, foreground_filter}, layer_flags),
+          PaintOpEq<RestoreOp>())));
+}
+
+TEST(BaseRenderingContextLayerGlobalStateTests, TransformsAlone) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
@@ -1109,6 +1166,129 @@ TEST(BaseRenderingContextLayerGlobalStateTests, TransformsWithShadow) {
                   PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>())));
 }
 
+TEST(BaseRenderingContextLayerGlobalStateTests, TransformsWithContextFilter) {
+  test::TaskEnvironment task_environment;
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  NonThrowableExceptionState exception_state;
+
+  context->translate(4, 5);
+  context->setFilter(scope.GetScriptState(), MakeBlurCanvasFilter(5.0f));
+  context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
+                      exception_state);
+  context->endLayer(exception_state);
+
+  cc::PaintFlags filter_flags;
+  filter_flags.setImageFilter(
+      sk_make_sp<BlurPaintFilter>(5.0f, 5.0f, SkTileMode::kDecal, nullptr));
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(
+          PaintOpEq<TranslateOp>(4, 5),
+          DrawRecordOpEq(PaintOpEq<SaveOp>(),
+                         PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                                      0, 1, 0, 0,  //
+                                                      0, 0, 1, 0,  //
+                                                      0, 0, 0, 1)),
+                         PaintOpEq<SaveLayerOp>(filter_flags),
+                         PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                                      0, 1, 0, 5,  //
+                                                      0, 0, 1, 0,  //
+                                                      0, 0, 0, 1)),
+                         PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>())));
+}
+
+TEST(BaseRenderingContextLayerGlobalStateTests,
+     TransformsWithShadowAndCompositedDraw) {
+  test::TaskEnvironment task_environment;
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  NonThrowableExceptionState exception_state;
+
+  context->translate(4, 5);
+  context->setShadowBlur(2.0);
+  context->setShadowColor("red");
+  context->setGlobalCompositeOperation("source-in");
+  context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
+                      exception_state);
+  context->endLayer(exception_state);
+
+  cc::PaintFlags composite_flags;
+  composite_flags.setBlendMode(SkBlendMode::kSrcIn);
+
+  sk_sp<cc::PaintFilter> shadow_filter = sk_make_sp<DropShadowPaintFilter>(
+      0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
+      DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr);
+  sk_sp<cc::PaintFilter> foreground_filter = nullptr;
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(
+          PaintOpEq<TranslateOp>(4, 5),
+          DrawRecordOpEq(PaintOpEq<SaveOp>(),
+                         PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                                      0, 1, 0, 0,  //
+                                                      0, 0, 1, 0,  //
+                                                      0, 0, 0, 1)),
+                         PaintOpEq<SaveLayerFiltersOp>(
+                             std::array{shadow_filter, foreground_filter},
+                             composite_flags),
+                         PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                                      0, 1, 0, 5,  //
+                                                      0, 0, 1, 0,  //
+                                                      0, 0, 0, 1)),
+                         PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>())));
+}
+
+TEST(BaseRenderingContextLayerGlobalStateTests,
+     TransformsWithShadowAndContextFilter) {
+  test::TaskEnvironment task_environment;
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  NonThrowableExceptionState exception_state;
+
+  context->translate(4, 5);
+  context->setShadowBlur(2.0);
+  context->setShadowColor("red");
+  context->setFilter(scope.GetScriptState(), MakeBlurCanvasFilter(5.0f));
+  context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
+                      exception_state);
+  context->endLayer(exception_state);
+
+  cc::PaintFlags layer_flags;
+  sk_sp<cc::PaintFilter> foreground_filter =
+      sk_make_sp<BlurPaintFilter>(5.0f, 5.0f, SkTileMode::kDecal, nullptr);
+
+  sk_sp<cc::PaintFilter> shadow_filter = sk_make_sp<DropShadowPaintFilter>(
+      0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
+      DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr);
+
+  sk_sp<cc::PaintFilter> background_filter =
+      sk_make_sp<ComposePaintFilter>(shadow_filter, foreground_filter);
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(
+          PaintOpEq<TranslateOp>(4, 5),
+          DrawRecordOpEq(PaintOpEq<SaveOp>(),
+                         PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                                      0, 1, 0, 0,  //
+                                                      0, 0, 1, 0,  //
+                                                      0, 0, 0, 1)),
+                         PaintOpEq<SaveLayerFiltersOp>(
+                             std::array{background_filter, foreground_filter},
+                             layer_flags),
+                         PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                                      0, 1, 0, 5,  //
+                                                      0, 0, 1, 0,  //
+                                                      0, 0, 0, 1)),
+                         PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>())));
+}
+
 TEST(BaseRenderingContextLayerGlobalStateTests, NonInvertibleTransform) {
   test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
@@ -1159,26 +1339,45 @@ TEST(BaseRenderingContextLayerGlobalStateTests,
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
   NonThrowableExceptionState exception_state;
 
+  context->translate(6, 7);
   context->setGlobalAlpha(0.4);
   context->setGlobalCompositeOperation("copy");
   context->setShadowBlur(2.0);
   context->setShadowColor("red");
+  context->setFilter(scope.GetScriptState(), MakeBlurCanvasFilter(5.0f));
   context->beginLayer(
       scope.GetScriptState(),
       FilterOption(scope, "({name: 'gaussianBlur', stdDeviation: 20})"),
       exception_state);
   context->endLayer(exception_state);
 
-  cc::PaintFlags filter_flags;
-  filter_flags.setAlphaf(0.4f);
-  filter_flags.setImageFilter(
+  cc::PaintFlags global_flags;
+  global_flags.setImageFilter(
+      sk_make_sp<BlurPaintFilter>(5.0f, 5.0f, SkTileMode::kDecal, nullptr));
+
+  cc::PaintFlags layer_flags;
+  layer_flags.setAlphaf(0.4f);
+  layer_flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
 
-  EXPECT_THAT(context->FlushRecorder(),
-              RecordedOpsAre(DrawRecordOpEq(
-                  PaintOpEq<DrawColorOp>(SkColors::kBlack, SkBlendMode::kSrc),
-                  PaintOpEq<SaveLayerOp>(filter_flags),
-                  PaintOpEq<RestoreOp>())));
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(
+          PaintOpEq<TranslateOp>(6, 7),
+          DrawRecordOpEq(
+              PaintOpEq<DrawColorOp>(SkColors::kBlack, SkBlendMode::kSrc),
+              PaintOpEq<SaveOp>(),
+              PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                           0, 1, 0, 0,  //
+                                           0, 0, 1, 0,  //
+                                           0, 0, 0, 1)),
+              PaintOpEq<SaveLayerOp>(global_flags),
+              PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 6,  //
+                                           0, 1, 0, 7,  //
+                                           0, 0, 1, 0,  //
+                                           0, 0, 0, 1)),
+              PaintOpEq<SaveLayerOp>(layer_flags), PaintOpEq<RestoreOp>(),
+              PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>())));
 }
 
 TEST(BaseRenderingContextRestoreStackTests, RestoresSaves) {
