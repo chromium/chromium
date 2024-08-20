@@ -475,15 +475,24 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         You can choose your search engine
       </message>
 
-      <!-- Search engine choice screen. TODO(b/280753530): replace with final versions -->
-      <message name="IDS_SEARCH_ENGINE_CHOICE_SCREEN_TITLE" desc="" translateable="false">
-        *Title*
+      <!-- Blocking choice dialog strings. TODO(b/355054464): replace with final versions -->
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_TITLE" desc="" translateable="false">
+        To continue, update your Android settings
       </message>
-      <message name="IDS_SEARCH_ENGINE_CHOICE_SCREEN_SUBTITLE" desc="" translateable="false">
-        *Subtitle*
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_MESSAGE" desc="" translateable="false">
+        Based on a law in your region, your need to finish selecting your device\u2019s default apps
       </message>
-      <message name="IDS_SEARCH_ENGINE_CHOICE_SCREEN_PRIMARY_ACTION" desc="" translateable="false">
-        *Primary Action*
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_BUTTON" desc="" translateable="false">
+        Next
+      </message>
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_TITLE" desc="" translateable="false">
+        You're all set!
+      </message>
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_MESSAGE" desc="" translateable="false">
+        If you have selected another browser it will be downloaded in the background
+      </message>
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_BUTTON" desc="" translateable="false">
+        Got it
       </message>
 
       <!-- Autofill and Payments preferences -->

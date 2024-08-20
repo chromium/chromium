@@ -588,7 +588,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         super.onFinishNativeInitialization();
         assert mLayoutManager != null;
 
-        // final Function<Tab, Boolean> backButtonShouldCloseTabFn = mBackButtonShouldCloseTabFn;
         mHistoryNavigationCoordinator =
                 HistoryNavigationCoordinator.create(
                         mWindowAndroid,
@@ -1209,7 +1208,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      */
     private boolean maybeShowRequiredPromptsAndPromos(Profile profile, boolean intentWithEffect) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CLAY_BLOCKING)) {
-            mChoiceDialogCoordinator = ChoiceDialogCoordinator.maybeShow(mActivity);
+            mChoiceDialogCoordinator =
+                    ChoiceDialogCoordinator.maybeShow(mActivity, mModalDialogManagerSupplier.get());
             if (mChoiceDialogCoordinator != null) {
                 return true;
             }
