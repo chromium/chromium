@@ -8,14 +8,17 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupColorFavi
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupColorFaviconProvider.FAVICON_BACKGROUND_SELECTED_ALPHA;
 
 import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -90,6 +93,17 @@ class TabStripViewBinder {
                         setFavicon(view, model, tabFavicon.getDefaultDrawable());
                         model.set(TabProperties.FAVICON_FETCHED, true);
                     });
+        } else if (TabProperties.HAS_NOTIFICATION_BUBBLE == propertyKey) {
+            ImageView notificationView =
+                    (ImageView) view.fastFindViewById(R.id.tab_strip_notification_bubble);
+
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
+                int visibility =
+                        model.get(TabProperties.HAS_NOTIFICATION_BUBBLE) ? View.VISIBLE : View.GONE;
+                notificationView.setVisibility(visibility);
+            } else {
+                notificationView.setVisibility(View.GONE);
+            }
         }
     }
 

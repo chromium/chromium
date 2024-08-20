@@ -174,8 +174,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -4376,6 +4378,27 @@ public class TabListMediatorUnitTest {
         callback.onResult(true);
 
         assertEquals(0, mModel.size());
+    }
+
+    @Test
+    public void testUpdateTabStripNotificationBubble_hasUpdate() {
+        // Setup the test such that the tab list is strip mode, with a tab group of 2 tabs.
+        setUpTabListMediator(TabListMediatorType.TAB_STRIP, TabListMode.STRIP);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
+
+        mMediator.resetWithListOfTabs(tabs, false);
+
+        assertEquals(mModel.get(POSITION1).model.get(TabProperties.HAS_NOTIFICATION_BUBBLE), false);
+        assertEquals(mModel.get(POSITION2).model.get(TabProperties.HAS_NOTIFICATION_BUBBLE), false);
+
+        // Only pass in updates for mTab1 and leaving mTab2 untouched.
+        Set<Integer> tabIdsToBeUpdated = new HashSet<>();
+        tabIdsToBeUpdated.add(mTab1.getId());
+        mMediator.updateTabStripNotificationBubble(tabIdsToBeUpdated, true);
+
+        assertEquals(mModel.get(POSITION1).model.get(TabProperties.HAS_NOTIFICATION_BUBBLE), true);
+        assertEquals(mModel.get(POSITION2).model.get(TabProperties.HAS_NOTIFICATION_BUBBLE), false);
     }
 
     private void setUpCloseButtonDescriptionString(boolean isGroup) {

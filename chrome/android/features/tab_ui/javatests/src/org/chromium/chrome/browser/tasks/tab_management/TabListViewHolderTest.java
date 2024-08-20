@@ -983,6 +983,18 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                 drawable.getColor());
     }
 
+    @Test
+    @MediumTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testTabStripNotificationBubble_toggleHasNotification() {
+        ImageView notificationView = mTabStripView.findViewById(R.id.tab_strip_notification_bubble);
+
+        assertEquals(notificationView.getVisibility(), View.GONE);
+        mStripModel.set(TabProperties.HAS_NOTIFICATION_BUBBLE, true);
+        assertEquals(notificationView.getVisibility(), View.VISIBLE);
+    }
+
     private void testFaviconFetcher(
             PropertyModel model,
             ImageView faviconView,

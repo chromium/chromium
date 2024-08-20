@@ -135,7 +135,7 @@ import java.util.stream.Collectors;
  * signifies. TODO(yusufo): Move some of the logic here to a parent component to make the above
  * true.
  */
-class TabListMediator {
+class TabListMediator implements TabListNotificationHandler {
     // Set to true after a `resetWithListOfTabs` that used a non-null list of tabs. Remains true
     // until `postHiding` is invoked or the mediator is destroyed. While true, this mediator is
     // actively tracking updates to a TabModel.
@@ -2787,6 +2787,31 @@ class TabListMediator {
 
         recyclerView.setForeground(gradientDrawable);
         wipeAnimation.start();
+    }
+
+    // TabListNotificationHandler implementation.
+    @Override
+    public void updateTabStripNotificationBubble(
+            Set<Integer> tabIdsToBeUpdated, boolean hasUpdate) {
+        assert mMode == TabListMode.STRIP;
+
+        Callback<PropertyModel> updateTabStripItemCallback =
+                (model) -> {
+                    model.set(TabProperties.HAS_NOTIFICATION_BUBBLE, hasUpdate);
+                };
+
+        updateTabListItemsNotificationStatus(tabIdsToBeUpdated, updateTabStripItemCallback);
+    }
+
+    private void updateTabListItemsNotificationStatus(
+            Set<Integer> tabIdsToBeUpdated, Callback<PropertyModel> updateCallback) {
+        for (int i = 0; i < mModel.size(); i++) {
+            int tabId = mModel.get(i).model.get(TabProperties.TAB_ID);
+
+            if (tabIdsToBeUpdated.contains(tabId)) {
+                updateCallback.onResult(mModel.get(i).model);
+            }
+        }
     }
 
     /**

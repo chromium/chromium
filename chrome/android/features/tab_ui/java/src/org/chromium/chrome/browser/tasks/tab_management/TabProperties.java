@@ -152,6 +152,9 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<TabGroupInfo> TAB_GROUP_INFO =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableBooleanPropertyKey HAS_NOTIFICATION_BUBBLE =
+            new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS_TAB_GRID =
             new PropertyKey[] {
                 TAB_ACTION_STATE,
@@ -187,6 +190,7 @@ public class TabProperties {
                 TAB_GROUP_INFO,
                 VISIBILITY,
                 USE_SHRINK_CLOSE_ANIMATION,
+                HAS_NOTIFICATION_BUBBLE
             };
 
     public static final PropertyKey[] ALL_KEYS_TAB_STRIP =
@@ -199,7 +203,8 @@ public class TabProperties {
                 IS_SELECTED,
                 TITLE,
                 TABSTRIP_FAVICON_BACKGROUND_COLOR_ID,
-                IS_INCOGNITO
+                IS_INCOGNITO,
+                HAS_NOTIFICATION_BUBBLE
             };
 
     public static final PropertyKey[] TAB_GRID_SELECTABLE_KEYS =
