@@ -65,7 +65,6 @@ struct VirtualCardManualFallbackBubbleOptions;
 
 namespace payments {
 
-class MandatoryReauthManager;
 class PaymentsWindowManager;
 
 // Chrome implementation of PaymentsAutofillClient. Used for Chrome Desktop
@@ -201,8 +200,6 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::Iban> ibans_to_suggest) override;
   void HideTouchToFillPaymentMethod() override;
-  payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
-      override;
 
 #if BUILDFLAG(IS_ANDROID)
   // The AutofillSnackbarController is used to show a snackbar notification
@@ -315,9 +312,6 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       card_unmask_authentication_selection_controller_;
 
   std::unique_ptr<IbanAccessManager> iban_access_manager_;
-
-  std::unique_ptr<payments::MandatoryReauthManager>
-      payments_mandatory_reauth_manager_;
 
   // Used to cache client side risk data. The cache is invalidated when the
   // chrome browser tab is closed.

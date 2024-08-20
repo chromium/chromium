@@ -168,16 +168,14 @@ void IbanAccessManager::StartDeviceAuthenticationForFilling(
     OnIbanFetchedCallback on_iban_fetched,
     const std::u16string& value,
     NonInteractivePaymentMethodType non_interactive_payment_method_type) {
-  client_->GetPaymentsAutofillClient()
-      ->GetOrCreatePaymentsMandatoryReauthManager()
+  client_->GetOrCreatePaymentsMandatoryReauthManager()
       ->StartDeviceAuthentication(
           non_interactive_payment_method_type,
           base::BindOnce(
               &IbanAccessManager::OnDeviceAuthenticationResponseForFilling,
               weak_ptr_factory_.GetWeakPtr(), std::move(on_iban_fetched), value,
               non_interactive_payment_method_type,
-              client_->GetPaymentsAutofillClient()
-                  ->GetOrCreatePaymentsMandatoryReauthManager()
+              client_->GetOrCreatePaymentsMandatoryReauthManager()
                   ->GetAuthenticationMethod()));
 }
 

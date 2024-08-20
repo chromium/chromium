@@ -33,6 +33,8 @@
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
+#include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
@@ -56,6 +58,10 @@
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/autofill/core/browser/payments/test_internal_authenticator.h"
@@ -239,6 +245,38 @@ class TestAutofillClientTemplate : public T {
 #endif
 
   void ShowAutofillSettings(SuggestionType suggestion_type) override {}
+
+  payments::MockMandatoryReauthManager*
+  GetOrCreatePaymentsMandatoryReauthManager() override {
+    if (!mock_payments_mandatory_reauth_manager_) {
+      mock_payments_mandatory_reauth_manager_ = std::make_unique<
+          testing::NiceMock<payments::MockMandatoryReauthManager>>();
+    }
+    return mock_payments_mandatory_reauth_manager_.get();
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Set up a mock to simulate successful mandatory reauth when autofilling
+  // payment methods.
+  void SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive() {
+    if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+      return;
+    }
+
+    payments::MockMandatoryReauthManager& mandatory_reauth_manager =
+        *GetOrCreatePaymentsMandatoryReauthManager();
+
+    ON_CALL(mandatory_reauth_manager, GetAuthenticationMethod)
+        .WillByDefault(testing::Return(
+            payments::MandatoryReauthAuthenticationMethod::kBiometric));
+
+    ON_CALL(mandatory_reauth_manager, Authenticate)
+        .WillByDefault(testing::WithArg<0>(
+            testing::Invoke([](base::OnceCallback<void(bool)> callback) {
+              std::move(callback).Run(true);
+            })));
+  }
+#endif
 
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
@@ -471,6 +509,8 @@ class TestAutofillClientTemplate : public T {
   ::testing::NiceMock<MockAutocompleteHistoryManager>
       mock_autocomplete_history_manager_;
   ::testing::NiceMock<MockFastCheckoutClient> mock_fast_checkout_client_;
+  std::unique_ptr<::testing::NiceMock<payments::MockMandatoryReauthManager>>
+      mock_payments_mandatory_reauth_manager_;
   std::unique_ptr<device_reauth::MockDeviceAuthenticator>
       device_authenticator_ = nullptr;
 

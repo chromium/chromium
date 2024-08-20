@@ -43,8 +43,6 @@ class VirtualCardEnrollUiModel;
 
 namespace payments {
 
-class MandatoryReauthManager;
-
 // Chrome iOS implementation of PaymentsAutofillClient. Owned by the
 // ChromeAutofillClientIOS. Created lazily in the ChromeAutofillClientIOS when
 // it is needed.
@@ -120,8 +118,6 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   CreditCardOtpAuthenticator* GetOtpAuthenticator() override;
   CreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator() override;
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
-  payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
-      override;
 
   std::unique_ptr<AutofillProgressDialogControllerImpl>
   GetProgressDialogModel() {
@@ -180,8 +176,6 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
 
   CardExpirationDateFixFlowControllerImpl
       card_expiration_date_fix_flow_controller_;
-
-  std::unique_ptr<payments::MandatoryReauthManager> payments_reauth_manager_;
 };
 
 }  // namespace payments

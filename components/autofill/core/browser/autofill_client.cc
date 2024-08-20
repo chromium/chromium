@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
+#include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/version_info/channel.h"
@@ -113,6 +114,11 @@ profile_metrics::BrowserProfileType AutofillClient::GetProfileType() const {
 }
 
 FastCheckoutClient* AutofillClient::GetFastCheckoutClient() {
+  return nullptr;
+}
+
+payments::MandatoryReauthManager*
+AutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   return nullptr;
 }
 

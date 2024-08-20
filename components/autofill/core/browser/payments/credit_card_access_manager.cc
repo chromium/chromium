@@ -1665,8 +1665,7 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
 
   payments::MandatoryReauthAuthenticationMethod authentication_method =
       autofill_client()
-          .GetPaymentsAutofillClient()
-          ->GetOrCreatePaymentsMandatoryReauthManager()
+          .GetOrCreatePaymentsMandatoryReauthManager()
           ->GetAuthenticationMethod();
 
   // If there is no supported auth method on the device, we should skip re-auth
@@ -1695,8 +1694,7 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
       autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
   autofill_client()
-      .GetPaymentsAutofillClient()
-      ->GetOrCreatePaymentsMandatoryReauthManager()
+      .GetOrCreatePaymentsMandatoryReauthManager()
       ->AuthenticateWithMessage(
           l10n_util::GetStringUTF16(
               IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH),
@@ -1707,10 +1705,8 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
   // TODO(crbug.com/40261690): Convert this to
   // MandatoryReauthManager::AuthenticateWithMessage() with the correct message
   // once it is supported. Currently, the message is "Verify it's you".
-  autofill_client()
-      .GetPaymentsAutofillClient()
-      ->GetOrCreatePaymentsMandatoryReauthManager()
-      ->Authenticate(base::BindOnce(
+  autofill_client().GetOrCreatePaymentsMandatoryReauthManager()->Authenticate(
+      base::BindOnce(
           &CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling,
           GetWeakPtr(), authentication_method, card));
 #else

@@ -48,6 +48,10 @@ class AutofillOptimizationGuide;
 class FormFieldData;
 enum class SuggestionType;
 
+namespace payments {
+class MandatoryReauthManager;
+}  // namespace payments
+
 // Chrome implementation of AutofillClient.
 //
 // ChromeAutofillClient is instantiated once per WebContents, and usages of
@@ -119,6 +123,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<webauthn::InternalAuthenticator>
   CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
   void ShowAutofillSettings(SuggestionType suggestion_type) override;
+  payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
+      override;
   void ShowEditAddressProfileDialog(
       const AutofillProfile& profile,
       AddressProfileSavePromptCallback on_user_decision_callback) override;
@@ -210,6 +216,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   // Therefore, do not access the members directly.
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
+  std::unique_ptr<payments::MandatoryReauthManager>
+      payments_mandatory_reauth_manager_;
 
   payments::ChromePaymentsAutofillClient payments_autofill_client_{this};
 

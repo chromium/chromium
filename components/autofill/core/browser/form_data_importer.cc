@@ -743,8 +743,7 @@ bool FormDataImporter::ProcessExtractedCreditCard(
   // didn't update the result that was filled into the form, re-auth opt-in flow
   // might be offered.
   if (auto* mandatory_reauth_manager =
-          client_->GetPaymentsAutofillClient()
-              ->GetOrCreatePaymentsMandatoryReauthManager();
+          client_->GetOrCreatePaymentsMandatoryReauthManager();
       credit_card_import_type_ != CreditCardImportType::kNewCard &&
       mandatory_reauth_manager &&
       mandatory_reauth_manager->ShouldOfferOptin(
@@ -800,8 +799,7 @@ bool FormDataImporter::ProcessIbanImportCandidate(Iban& extracted_iban) {
   // If a flow where there was no interactive authentication was completed,
   // re-auth opt-in flow might be offered.
   if (auto* mandatory_reauth_manager =
-          client_->GetPaymentsAutofillClient()
-              ->GetOrCreatePaymentsMandatoryReauthManager();
+          client_->GetOrCreatePaymentsMandatoryReauthManager();
       mandatory_reauth_manager &&
       mandatory_reauth_manager->ShouldOfferOptin(
           payment_method_type_if_non_interactive_authentication_flow_completed_)) {

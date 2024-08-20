@@ -36,7 +36,6 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
-#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
@@ -835,15 +834,12 @@ AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
       !personal_data_manager->payments_data_manager()
            .IsPaymentMethodsMandatoryReauthEnabled(),
       MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
-  client->GetPaymentsAutofillClient()
-      ->GetOrCreatePaymentsMandatoryReauthManager()
-      ->AuthenticateWithMessage(
-          l10n_util::GetStringUTF16(
-              IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT),
-          base::BindOnce(
-              &AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
-                  UpdateMandatoryAuthTogglePref,
-              this));
+  client->GetOrCreatePaymentsMandatoryReauthManager()->AuthenticateWithMessage(
+      l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT),
+      base::BindOnce(
+          &AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
+              UpdateMandatoryAuthTogglePref,
+          this));
 
   return RespondNow(NoArguments());
 #else
@@ -911,8 +907,7 @@ ExtensionFunction::ResponseAction AutofillPrivateGetLocalCardFunction::Run() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     // Based on the result of the auth, we will be asynchronously returning the
     // card if the user can edit the local card.
-    client->GetPaymentsAutofillClient()
-        ->GetOrCreatePaymentsMandatoryReauthManager()
+    client->GetOrCreatePaymentsMandatoryReauthManager()
         ->AuthenticateWithMessage(
             l10n_util::GetStringUTF16(
                 IDS_PAYMENTS_AUTOFILL_EDIT_CARD_MANDATORY_REAUTH_PROMPT),

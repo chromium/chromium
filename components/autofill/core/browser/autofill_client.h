@@ -90,6 +90,7 @@ struct Suggestion;
 enum class WebauthnDialogState;
 
 namespace payments {
+class MandatoryReauthManager;
 class PaymentsAutofillClient;
 }
 
@@ -333,6 +334,11 @@ class AutofillClient {
 
   // Causes the Autofill settings UI to be shown.
   virtual void ShowAutofillSettings(SuggestionType suggestion_type) = 0;
+
+  // Gets or creates a payments autofill mandatory re-auth manager. This will be
+  // used to handle payments mandatory re-auth related flows.
+  virtual payments::MandatoryReauthManager*
+  GetOrCreatePaymentsMandatoryReauthManager();
 
   // Show an edit address profile dialog, giving the user an option to alter
   // autofill profile data. `on_user_decision_callback` is used to react to the

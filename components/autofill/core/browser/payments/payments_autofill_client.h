@@ -47,7 +47,6 @@ enum class WebauthnDialogCallbackType;
 
 namespace payments {
 
-class MandatoryReauthManager;
 class PaymentsNetworkInterface;
 class PaymentsWindowManager;
 
@@ -551,11 +550,6 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // currently shown. Should be called only if the feature is supported by the
   // platform.
   virtual void HideTouchToFillPaymentMethod();
-
-  // Gets or creates a payments autofill mandatory re-auth manager. This will be
-  // used to handle payments mandatory re-auth related flows.
-  virtual payments::MandatoryReauthManager*
-  GetOrCreatePaymentsMandatoryReauthManager();
 };
 
 }  // namespace payments

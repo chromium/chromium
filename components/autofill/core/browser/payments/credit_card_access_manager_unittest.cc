@@ -688,8 +688,7 @@ class CreditCardAccessManagerMandatoryReauthTest
 
   payments::MockMandatoryReauthManager& mandatory_reauth_manager() {
     return *static_cast<payments::MockMandatoryReauthManager*>(
-        autofill_client_.GetPaymentsAutofillClient()
-            ->GetOrCreatePaymentsMandatoryReauthManager());
+        autofill_client_.GetOrCreatePaymentsMandatoryReauthManager());
   }
 
   virtual bool PrefIsEnabled() const = 0;
