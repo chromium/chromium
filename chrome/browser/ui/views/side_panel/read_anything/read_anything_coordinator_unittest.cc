@@ -123,14 +123,6 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
     read_anything_coordinator_->OnBrowserSetLastActive(browser);
   }
 
-  void ActivePageDistillable() {
-    read_anything_coordinator_->ActivePageDistillable();
-  }
-
-  void ActivePageNotDistillable() {
-    read_anything_coordinator_->ActivePageNotDistillable();
-  }
-
   void AddTabToBrowser(const GURL& tab_url) {
     AddTab(browser_view()->browser(), tab_url);
     // Remove the companion entry if it present.
@@ -248,17 +240,6 @@ TEST_F(ReadAnythingCoordinatorTest,
   OnBrowserSetLastActive(browser);
 
   EXPECT_FALSE(side_panel_coordinator_->IsSidePanelShowing());
-}
-
-TEST_F(ReadAnythingCoordinatorTest, OnActivePageDistillableCalled) {
-  AddObserver(&coordinator_observer_);
-
-  EXPECT_CALL(coordinator_observer_, OnActivePageDistillable(true)).Times(1);
-  // Called once when calling ActivePageDistillable and once on destruction.
-  EXPECT_CALL(coordinator_observer_, OnActivePageDistillable(false)).Times(2);
-
-  ActivePageDistillable();
-  ActivePageNotDistillable();
 }
 
 TEST_F(ReadAnythingCoordinatorTest, WithWebUIFlagEnabled_ShowsWebUIToolbar) {

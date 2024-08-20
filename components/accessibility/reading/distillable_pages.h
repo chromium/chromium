@@ -15,6 +15,9 @@ namespace a11y {
 // chosen in order to show the IPH on pages where the distillation model has the
 // best chance of success.
 const std::vector<std::string>& GetDistillableDomains();
+
+// Test method to set domains for testing.
+void SetDistillableDomainsForTesting(std::vector<std::string> domains);
 }  // namespace a11y
 
 #endif  // COMPONENTS_ACCESSIBILITY_READING_DISTILLABLE_PAGES_H_

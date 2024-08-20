@@ -1172,6 +1172,10 @@ BrowserWindowInterface::Type Browser::GetType() const {
   return type_;
 }
 
+user_education::FeaturePromoController* Browser::GetFeaturePromoController() {
+  return window()->GetFeaturePromoController();
+}
+
 void Browser::DidBecomeActive() {
   BrowserList::SetLastActive(this);
   did_become_active_callback_list_.Notify(this);

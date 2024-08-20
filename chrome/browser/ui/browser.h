@@ -850,6 +850,7 @@ class Browser : public TabStripModelObserver,
   ExclusiveAccessManager* GetExclusiveAccessManager() override;
   BrowserActions* GetActions() override;
   Type GetType() const override;
+  user_education::FeaturePromoController* GetFeaturePromoController() override;
 
   // Called by BrowserView when on active changes.
   void DidBecomeActive();

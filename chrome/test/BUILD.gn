@@ -2598,7 +2598,6 @@ if (!is_android) {
       "../browser/performance_manager/persistence/site_data/site_data_cache_facade_browsertest.cc",
       "../browser/screen_ai/optical_character_recognizer_browsertest.cc",
       "../browser/screen_ai/screen_ai_service_router_browsertest.cc",
-      "../browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller_browsertest.cc",
       "../browser/webapps/installable/installable_manager_browsertest.cc",
       "../browser/webapps/installable/ml_promotion_browsertest.cc",
 
@@ -10846,6 +10845,7 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/views/permissions/permission_rhs_indicators_interactive_uitest.cc",
       "../browser/ui/views/plus_addresses/plus_address_creation_dialog_interactive_uitest.cc",
       "../browser/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_interactive_ui_test.cc",
+      "../browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller_interactive_uitest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_interactive_uitest.cc",
       "../browser/ui/views/web_dialog_view_browsertest.cc",
       "../browser/ui/web_applications/web_app_interactive_uitest.cc",
@@ -10956,6 +10956,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/renderer",
       "//chrome/test/media_router:browser_tests",
       "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
+      "//components/accessibility:reading",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/core/common:credit_card_number_validation",
       "//components/back_forward_cache",

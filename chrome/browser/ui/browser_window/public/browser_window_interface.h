@@ -17,6 +17,10 @@
 // your feature needs. This comment will be deleted after there are 10+ features
 // in BrowserWindowFeatures.
 
+namespace user_education {
+class FeaturePromoController;
+}  // namespace user_education
+
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
@@ -138,6 +142,11 @@ class BrowserWindowInterface : public content::PageNavigator {
     // BrowserTest.StartMaximized.
   };
   virtual Type GetType() const = 0;
+
+  // Gets the windows's FeaturePromoController which manages display of
+  // in-product help. Will return null in incognito and guest profiles.
+  virtual user_education::FeaturePromoController*
+  GetFeaturePromoController() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_

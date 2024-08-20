@@ -23,9 +23,11 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/accessibility/reading/distillable_pages.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_types.h"
@@ -52,6 +54,15 @@ ReadAnythingSidePanelController::ReadAnythingSidePanelController(
   tab_subscriptions_.push_back(tab_->RegisterWillDetach(
       base::BindRepeating(&ReadAnythingSidePanelController::TabWillDetach,
                           weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterDidEnterForeground(
+      base::BindRepeating(&ReadAnythingSidePanelController::TabForegrounded,
+                          weak_factory_.GetWeakPtr())));
+  Observe(tab_->GetContents());
+
+  // We do not know if the current tab is in the process of loading a page.
+  // Assume that a page just finished loading to populate initial state.
+  distillable_ = IsActivePageDistillable();
+  UpdateIphVisibility();
 }
 
 ReadAnythingSidePanelController::~ReadAnythingSidePanelController() {
@@ -119,6 +130,23 @@ ReadAnythingSidePanelController::CreateContainerView() {
   return std::move(web_view);
 }
 
+bool ReadAnythingSidePanelController::IsActivePageDistillable() const {
+  auto url = tab_->GetContents()->GetLastCommittedURL();
+
+  for (const std::string& distillable_domain : a11y::GetDistillableDomains()) {
+    // If the url's domain is found in distillable domains AND the url has a
+    // filename (i.e. it is not a home page or sub-home page), show the promo.
+    if (url.DomainIs(distillable_domain) && !url.ExtractFileName().empty()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void ReadAnythingSidePanelController::TabForegrounded(tabs::TabInterface* tab) {
+  UpdateIphVisibility();
+}
+
 void ReadAnythingSidePanelController::TabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
@@ -134,5 +162,43 @@ void ReadAnythingSidePanelController::TabWillDetach(
   if (coordinator->IsSidePanelEntryShowing(
           SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything))) {
     coordinator->Close(/*suppress_animation=*/true);
+  }
+}
+
+void ReadAnythingSidePanelController::DidStopLoading() {
+  // The page finished loading.
+  loading_ = false;
+  UpdateIphVisibility();
+}
+
+void ReadAnythingSidePanelController::PrimaryPageChanged(content::Page& page) {
+  // A navigation was committed but the page is still loading.
+  previous_page_distillable_ = distillable_;
+  loading_ = true;
+  distillable_ = IsActivePageDistillable();
+  UpdateIphVisibility();
+}
+
+void ReadAnythingSidePanelController::UpdateIphVisibility() {
+  if (!tab_->IsInForeground()) {
+    return;
+  }
+
+  bool should_show_iph = loading_ ? previous_page_distillable_ : distillable_;
+
+  // Promo controller does not exist for incognito windows.
+  auto* promo_controller =
+      tab_->GetBrowserWindowInterface()->GetFeaturePromoController();
+  if (!promo_controller) {
+    return;
+  }
+
+  if (should_show_iph) {
+    promo_controller->MaybeShowPromo(
+        feature_engagement::kIPHReadingModeSidePanelFeature);
+  } else {
+    promo_controller->EndPromo(
+        feature_engagement::kIPHReadingModeSidePanelFeature,
+        user_education::EndFeaturePromoReason::kAbortPromo);
   }
 }
