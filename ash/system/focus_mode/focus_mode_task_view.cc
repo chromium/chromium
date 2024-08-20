@@ -117,24 +117,6 @@ class FocusModeTaskView::TaskTextfield : public SystemTextfield {
     GetRenderText()->SetElideBehavior(active ? gfx::NO_ELIDE : gfx::ELIDE_TAIL);
   }
 
-  // SystemTextfield:
-  void OnFocus() override {
-    if (show_selected_state_) {
-      // If we are in a selected state, we want to make the textfield focused
-      // but not active, so that we can allow the user to press the `Enter` key
-      // to activate the textfield. Thus, we only need to show its focus ring.
-      SetShowFocusRing(true);
-      return;
-    }
-
-    SystemTextfield::OnFocus();
-  }
-
-  void OnBlur() override {
-    SystemTextfield::OnBlur();
-    SetShowFocusRing(false);
-  }
-
   // views::View:
   std::u16string GetTooltipText(const gfx::Point& p) const override {
     return tooltip_text_;
@@ -291,9 +273,12 @@ FocusModeTaskView::FocusModeTaskView(bool is_network_connected)
       views::FocusRing::Get(textfield_container_);
   textfield_container_focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
   textfield_container_focus_ring->SetOutsetFocusRingDisabled(true);
+  // `textfield_container_` has the focus ring only when `textfield_` is active
+  // and isn't in selected state.
   textfield_container_focus_ring->SetHasFocusPredicate(base::BindRepeating(
       [](const TaskTextfield* textfield, const views::View* view) {
-        return textfield && textfield->IsActive();
+        return textfield && textfield->IsActive() &&
+               !textfield->show_selected();
       },
       textfield_));
 
@@ -480,9 +465,11 @@ void FocusModeTaskView::PaintFocusRingAndUpdateStyle() {
   if (is_active) {
     // `SystemTextfield::SetActive` will show focus ring when `textfield_` is
     // active. But in our case, we don't want the textfield to show the focus
-    // ring, but show its parent focus ring. Thus, we need to hide
-    // `textfield_`'s focus ring.
-    textfield_->SetShowFocusRing(false);
+    // ring except for when it's in selected state, but show its parent's focus
+    // ring. Thus, we need to hide `textfield_`'s focus ring.
+    if (!textfield_->show_selected()) {
+      textfield_->SetShowFocusRing(false);
+    }
   } else if (textfield_->HasFocus()) {
     // TODO(b/312226702): Remove the call for clearing the focus for the
     // `textfield_` after this bug resolved.
@@ -492,6 +479,7 @@ void FocusModeTaskView::PaintFocusRingAndUpdateStyle() {
     ClearFocusForTextfield(textfield_);
   }
   textfield_->UpdateElideBehavior(is_active);
+  views::FocusRing::Get(textfield_container_)->SchedulePaint();
 }
 
 void FocusModeTaskView::OnCompleteTask() {

@@ -731,27 +731,72 @@ TEST_F(FocusModeDetailedViewTest, A11yFocusAfterTaskTextfield) {
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(complete_button->HasFocus());
 
-  // 2. Edit the existing textfield and commit the change. Then, pessing the
-  // `Enter` key will bring the focus on the radio button.
+  // 2. Tab to the textfield, which will let us edit the existing textfield
+  // directly. Then, pressing the `Enter` key will bring the focus on the radio
+  // button.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
   EXPECT_TRUE(task_textfield->HasFocus());
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   EXPECT_TRUE(task_textfield->IsActive());
   task_textfield->SetText(u"task title2");
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(complete_button->HasFocus());
 
-  // 3. Edit the existing textfield and commit the change. Then, pessing the
-  // `TAB` key will bring the focus on the deselect button.
+  // 3. Tab to the textfield, which will let us edit the existing textfield
+  // directly. Then, pressing the `TAB` key will bring the focus on the deselect
+  // button.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
   EXPECT_TRUE(task_textfield->HasFocus());
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   EXPECT_TRUE(task_textfield->IsActive());
   task_textfield->SetText(u"task title3");
   PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(task_view->deselect_button_for_testing()->HasFocus());
+}
+
+// Tests that the focus ring should be either on the textfield container or on
+// the textfield depending on if there is a selected task.
+TEST_F(FocusModeDetailedViewTest, RegularFocusRingCheckForTaskTextfield) {
+  auto* task_container_view = GetTaskContainerView();
+  auto* task_view = GetTaskView();
+  auto* textfield_container = task_view->textfield_container_for_testing();
+  auto* task_textfield = task_view->GetTaskTextfieldForTesting();
+  auto* complete_button = task_view->complete_button_for_testing();
+  auto* controller = FocusModeController::Get();
+
+  // When there is no selected task, no focus ring will be painted before
+  // clicking on the textfield.
+  EXPECT_FALSE(task_textfield->HasFocus());
+  auto* container_focus_ring = views::FocusRing::Get(textfield_container);
+  auto* texfield_focus_ring = views::FocusRing::Get(task_textfield);
+  EXPECT_FALSE(container_focus_ring->ShouldPaintForTesting());
+  EXPECT_FALSE(texfield_focus_ring->ShouldPaintForTesting());
+
+  // 1. Click the textfield and the focus ring should be painted on the
+  // container instead of the textfield itself.
+  LeftClickOn(task_textfield);
+  EXPECT_TRUE(task_textfield->HasFocus());
+  EXPECT_TRUE(container_focus_ring->ShouldPaintForTesting());
+  EXPECT_FALSE(texfield_focus_ring->ShouldPaintForTesting());
+
+  // 2. Set a selected task and tab to the textfield from the complete button.
+  FocusModeTask task;
+  task.task_id = {.list_id = "default", .id = "task1"};
+  task.title = "task_name";
+  task.updated = base::Time::Now();
+  controller->SetSelectedTask(task);
+
+  views::test::RunScheduledLayout(task_container_view);
+  EXPECT_TRUE(complete_button->GetVisible());
+  complete_button->RequestFocus();
+  EXPECT_TRUE(complete_button->HasFocus());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+
+  // In the selected state, the focus ring should be on the textfield itself
+  // instead of the container.
+  EXPECT_FALSE(container_focus_ring->ShouldPaintForTesting());
+  EXPECT_TRUE(texfield_focus_ring->ShouldPaintForTesting());
+  EXPECT_TRUE(task_textfield->IsActive());
 }
 
 // Tests that tabbing to the timer decrease button after setting the time to 1
