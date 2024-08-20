@@ -18803,6 +18803,20 @@
       ]
      ]
     },
+    "pointerevent_capture_implicit_release_on_parent_doc_while_subdoc_captures-manual.html": [
+     "b8524b378bef28d17c8023084e71aaa2f1409e32",
+     [
+      null,
+      {}
+     ]
+    ],
+    "pointerevent_capture_implicit_release_on_subdoc_while_parent_doc_captures-manual.html": [
+     "44032c11e5fbf31ff8a69804b30f07eb6b787441",
+     [
+      null,
+      {}
+     ]
+    ],
     "pointerevent_multiple_primary_pointers_boundary_events-manual.html": [
      "029aa26368413ea96b90823285a780b6798a12d9",
      [
@@ -359565,6 +359579,10 @@
       "1de61847879fbfb07e154d5033ff60ee4d8417d0",
       []
      ],
+     "createlink-with-selecting-img-expected.txt": [
+      "bb0e3188ef607c2af1045118beb2b0a8a1708fab",
+      []
+     ],
      "delete_1-1000-expected.txt": [
       "4bab1c9800679b6b180f19aed766561df522b753",
       []
@@ -497446,6 +497464,13 @@
          {}
         ]
        ],
+       "mutation-events.html": [
+        "4bba1efa8e14b986bb51144062e144366d4af19d",
+        [
+         null,
+         {}
+        ]
+       ],
        "pointer-events.html": [
         "a5d34fe40051d934a0b2792b8b7a3c9132cdf5c5",
         [
@@ -502164,6 +502189,13 @@
        {
         "testdriver": true
        }
+      ]
+     ],
+     "createlink-with-selecting-img.html": [
+      "2dd2acdc0f065e61856868a975e764e085865d34",
+      [
+       null,
+       {}
       ]
      ],
      "createlink.html": [
