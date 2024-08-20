@@ -18,6 +18,7 @@
                 ],
                 "build_config": "Debug",
                 "config": "chromium",
+                "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "mac"
               },
