@@ -13,5 +13,6 @@ specific_include_rules = {
   ".*(\.cc|\.h)": [
     "+third_party/abseil-cpp/absl/time/time.h",
     "+third_party/abseil-cpp/absl/status/statusor.h",
+    "+third_party/abseil-cpp/absl/types/span.h",
   ]
 }

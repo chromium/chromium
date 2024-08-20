@@ -18,6 +18,7 @@
 #include "components/ip_protection/android/blind_sign_message_android_impl.h"
 #include "components/ip_protection/common/ip_protection_config_provider_helper.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
+#include "components/ip_protection/common/mock_blind_sign_auth.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
@@ -32,71 +33,6 @@ constexpr char kTryGetAuthTokensResultHistogram[] =
     "NetworkService.AwIpProtection.TryGetAuthTokensResult";
 constexpr char kTokenBatchHistogram[] =
     "NetworkService.AwIpProtection.TokenBatchRequestTime";
-
-// TODO(b/360340499): Move MockBlindSignAuth to separate class to deduplicate
-// code in chrome and webview config providers.
-class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
- public:
-  void GetTokens(std::optional<std::string> oauth_token,
-                 int num_tokens,
-                 quiche::ProxyLayer proxy_layer,
-                 quiche::BlindSignAuthServiceType /*service_type*/,
-                 quiche::SignedTokenCallback callback) override {
-    get_tokens_called_ = true;
-    oauth_token_ = oauth_token ? *oauth_token : "";
-    num_tokens_ = num_tokens;
-    proxy_layer_ = proxy_layer;
-
-    absl::StatusOr<absl::Span<quiche::BlindSignToken>> result;
-    if (status_.ok()) {
-      result = absl::Span<quiche::BlindSignToken>(tokens_);
-    } else {
-      result = status_;
-    }
-
-    std::move(callback)(std::move(result));
-  }
-
-  void set_tokens(std::vector<quiche::BlindSignToken> tokens) {
-    tokens_ = std::move(tokens);
-  }
-
-  void set_status(absl::Status status) { status_ = std::move(status); }
-  bool get_tokens_called() const { return get_tokens_called_; }
-
-  std::optional<std::string> oauth_token() const {
-    return oauth_token_.empty() ? std::nullopt
-                                : std::optional<std::string>{oauth_token_};
-  }
-
-  int num_tokens() const { return num_tokens_; }
-
-  quiche::ProxyLayer proxy_layer() const { return proxy_layer_; }
-
-  const absl::Status& status() const { return status_; }
-
-  const std::vector<quiche::BlindSignToken>& tokens() const { return tokens_; }
-
- private:
-  // True if `GetTokens()` was called.
-  bool get_tokens_called_ = false;
-
-  // The token with which `GetTokens()` was called.
-  std::string oauth_token_ = "";
-
-  // The num_tokens with which `GetTokens()` was called.
-  int num_tokens_ = 0;
-
-  // The proxy for which the tokens are intended for.
-  quiche::ProxyLayer proxy_layer_ = quiche::ProxyLayer::kProxyA;
-
-  // If not Ok, the status that will be returned from `GetTokens()`.
-  absl::Status status_ = absl::OkStatus();
-
-  // The tokens that will be returned from `GetTokens()` , if `status_` is not
-  // `OkStatus`.
-  std::vector<quiche::BlindSignToken> tokens_;
-};
 
 class MockIpProtectionProxyConfigRetriever
     : public ip_protection::IpProtectionProxyConfigRetriever {
@@ -138,7 +74,7 @@ class AwIpProtectionConfigProviderTest : public testing::Test {
   void SetUp() override {
     getter_ = std::make_unique<AwIpProtectionConfigProvider>(
         /*aw_browser_context=*/nullptr);
-    auto bsa = std::make_unique<MockBlindSignAuth>();
+    auto bsa = std::make_unique<ip_protection::MockBlindSignAuth>();
     bsa_ = bsa.get();
     getter_->SetUpForTesting(
         std::make_unique<MockIpProtectionProxyConfigRetriever>(std::nullopt),
@@ -198,7 +134,7 @@ class AwIpProtectionConfigProviderTest : public testing::Test {
 
   // quiche::BlindSignAuthInterface owned and used by the sequence bound
   // ip_protection_token_batch_ipc_fetcher_ in getter_.
-  raw_ptr<MockBlindSignAuth> bsa_;
+  raw_ptr<ip_protection::MockBlindSignAuth> bsa_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -453,7 +389,7 @@ TEST_F(AwIpProtectionConfigProviderTest, ProxyOverrideFlagsAll) {
   response.mutable_geo_hint()->set_iso_region(geo_hint_.iso_region);
   response.mutable_geo_hint()->set_city_name(geo_hint_.city_name);
 
-  auto bsa = std::make_unique<MockBlindSignAuth>();
+  auto bsa = std::make_unique<ip_protection::MockBlindSignAuth>();
   bsa_ = bsa.get();
 
   getter_->SetUpForTesting(
@@ -497,7 +433,7 @@ TEST_F(AwIpProtectionConfigProviderTest, GetProxyList_IpProtectionDisabled) {
   response.mutable_geo_hint()->set_iso_region(geo_hint_.iso_region);
   response.mutable_geo_hint()->set_city_name(geo_hint_.city_name);
 
-  auto bsa = std::make_unique<MockBlindSignAuth>();
+  auto bsa = std::make_unique<ip_protection::MockBlindSignAuth>();
   bsa_ = bsa.get();
 
   getter_->SetUpForTesting(

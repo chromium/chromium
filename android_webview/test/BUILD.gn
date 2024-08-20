@@ -582,6 +582,7 @@ test("android_webview_unittests") {
     "//components/flags_ui:flags_ui",
     "//components/ip_protection:browser",
     "//components/ip_protection:ip_protection",
+    "//components/ip_protection:unit_tests",
     "//components/metrics",
     "//components/metrics:component_metrics",
     "//components/metrics:content",
