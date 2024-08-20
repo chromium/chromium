@@ -177,7 +177,7 @@ BASE_FEATURE(kIOSEditMenuHideSearchWeb,
 
 BASE_FEATURE(kEnableColorLensAndVoiceIconsInHomeScreenWidget,
              "kEnableColorLensAndVoiceIconsInHomeScreenWidget",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableLensInOmniboxCopiedImage,
              "EnableLensInOmniboxCopiedImage",
@@ -434,7 +434,7 @@ BASE_FEATURE(kDisableLensCamera,
 
 BASE_FEATURE(kOmniboxColorIcons,
              "OmniboxColorIcons",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClearDeviceDataOnSignOutForManagedUsers,
              "ClearDeviceDataOnSignOutForManagedUsers",
