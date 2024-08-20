@@ -320,8 +320,7 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
         submitted_form, &extracted_form_data.address_profile_import_candidates);
   }
 
-  if (profile_autofill_enabled && payment_methods_autofill_enabled &&
-      base::FeatureList::IsEnabled(features::kAutofillAssociateForms)) {
+  if (profile_autofill_enabled && payment_methods_autofill_enabled) {
     auto origin = url::Origin::Create(submitted_form.source_url());
     FormSignature form_signature = submitted_form.form_signature();
     // If multiple complete address profiles were extracted, this most likely

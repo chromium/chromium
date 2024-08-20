@@ -63,16 +63,6 @@ BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
              "AutofillCreditCardUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the two most recent address forms and the most recent credit card
-// forms, which were submitted on the same origin, are associated with each
-// other. The association only happens if at most `kAutofillAssociateFormsTTL`
-// time passes between all submissions.
-BASE_FEATURE(kAutofillAssociateForms,
-             "AutofillAssociateForms",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta> kAutofillAssociateFormsTTL{
-    &kAutofillAssociateForms, "associate_forms_ttl", base::Minutes(5)};
-
 // Autofill offers improvements on how field types and filling values are
 // predicted.
 BASE_FEATURE(kAutofillPredictionImprovementsEnabled,

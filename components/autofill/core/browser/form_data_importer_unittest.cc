@@ -3770,10 +3770,6 @@ TEST_F(FormDataImporterTest, MultiStepImport_DeleteOnBrowsingHistoryCleared) {
 // that multiple address form in the same form are associated with each other.
 // The functionality itself is tested in form_data_importer_utils_unittest.cc.
 TEST_F(FormDataImporterTest, FormAssociator) {
-  base::test::ScopedFeatureList form_association_feature;
-  form_association_feature.InitAndEnableFeature(
-      features::kAutofillAssociateForms);
-
   std::unique_ptr<FormStructure> form_structure =
       ConstructShippingAndBillingFormStructure();
   FormSignature form_signature = form_structure->form_signature();

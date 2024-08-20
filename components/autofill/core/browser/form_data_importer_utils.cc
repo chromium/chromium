@@ -157,7 +157,7 @@ FormAssociator::~FormAssociator() = default;
 void FormAssociator::TrackFormAssociations(const url::Origin& origin,
                                            FormSignature form_signature,
                                            FormType form_type) {
-  const base::TimeDelta ttl = features::kAutofillAssociateFormsTTL.Get();
+  static constexpr base::TimeDelta ttl = base::Minutes(5);
   // This ensures that `recent_address_forms_` and `recent_credit_card_forms`
   // share the same origin (if they are non-empty).
   recent_address_forms_.RemoveOutdatedItems(ttl, origin);
