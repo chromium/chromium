@@ -280,7 +280,8 @@ std::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
   std::optional<base::FilePath> path = GetLibraryFolderPath(scope);
   return path ? std::optional<base::FilePath>(
                     path->Append("Application Support")
-                        .Append(GetUpdaterFolderName()))
+                        .Append(COMPANY_SHORTNAME_STRING)
+                        .Append(PRODUCT_FULLNAME_STRING))
               : std::nullopt;
 }
 
