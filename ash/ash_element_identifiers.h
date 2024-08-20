@@ -170,6 +170,11 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kWelcomeTourDialogElementId);
 
+// Dialog shown by `DisableBluetoothDialogControllerImpl`.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kWarnBeforeDisconnectingBluetoothDialogElementId);
+
 // Element Names ---------------------------------------------------------------
 // Please keep this list alphabetized.
 

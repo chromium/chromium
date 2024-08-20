@@ -574,6 +574,11 @@ WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceList() {
          "os-settings-paired-bluetooth-list";
 }
 
+WebContentsInteractionTestUtil::DeepQuery BluetoothSubpageToggle() {
+  return BluetoothPage() + "os-settings-bluetooth-devices-subpage" +
+         "cr-toggle#enableBluetoothToggle";
+}
+
 WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceDetailSubpage() {
   return BluetoothPage() + "os-settings-bluetooth-device-detail-subpage";
 }

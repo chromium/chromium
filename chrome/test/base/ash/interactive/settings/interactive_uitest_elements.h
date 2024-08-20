@@ -376,6 +376,9 @@ WebContentsInteractionTestUtil::DeepQuery BluetoothPairingDialog();
 // The Bluetooth device list page.
 WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceList();
 
+// The Bluetooth state toggle in Bluetooth subpage.
+WebContentsInteractionTestUtil::DeepQuery BluetoothSubpageToggle();
+
 // The Bluetooth device details subpage.
 WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceDetailSubpage();
 

@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/devicetype.h"
 #include "ash/shell.h"
@@ -19,6 +20,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -87,6 +89,9 @@ void DisableBluetoothDialogControllerImpl::ShowDialog(
                         &DisableBluetoothDialogControllerImpl::OnConfirmDialog,
                         weak_ptr_factory_.GetWeakPtr()))
                     .Build();
+
+  dialog->SetProperty(views::kElementIdentifierKey,
+                      kWarnBeforeDisconnectingBluetoothDialogElementId);
 
   std::vector<std::u16string> texts;
   const size_t count = std::min(devices.size(), kMaxDeviceListLength);
