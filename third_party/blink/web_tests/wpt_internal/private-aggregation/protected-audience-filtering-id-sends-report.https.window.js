@@ -1,14 +1,9 @@
-<!doctype html>
-<meta name=timeout content=long>
-<script src="/common/get-host-info.sub.js"></script>
-<script src='/resources/testharness.js'></script>
-<script src='/resources/testharnessreport.js'></script>
-<script src='/common/utils.js'></script>
-<script src='resources/utils.js'></script>
-<script src='/private-aggregation/resources/protected-audience-helper-module.js'></script>
+// META: timeout=long
+// META: script=/common/get-host-info.sub.js
+// META: script=/common/utils.js
+// META: script=resources/utils.js
+// META: script=/private-aggregation/resources/protected-audience-helper-module.js
 
-<body>
-<script>
 'use strict';
 
 private_aggregation_promise_test(async test => {
@@ -28,8 +23,9 @@ private_aggregation_promise_test(async test => {
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
       /*expected_payload=*/
-      buildExpectedPayload(ONE_CONTRIBUTION_WITH_FILTERING_ID_EXAMPLE,
-                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
+      buildExpectedPayload(
+          ONE_CONTRIBUTION_WITH_FILTERING_ID_EXAMPLE,
+          NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -53,7 +49,7 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ false, /*debug_key=*/ undefined,
-    /*expected_payload=*/ undefined);
+      /*expected_payload=*/ undefined);
 
   // We use a short timeout as the previous poll should've waited long enough.
   const debug_reports = await pollReports(
@@ -78,8 +74,8 @@ private_aggregation_promise_test(async test => {
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
       /*expected_payload=*/
-      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
-                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
+      buildExpectedPayload(
+          ONE_CONTRIBUTION_EXAMPLE, NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -106,8 +102,8 @@ private_aggregation_promise_test(async test => {
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
       /*expected_payload=*/
-      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
-                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
+      buildExpectedPayload(
+          ONE_CONTRIBUTION_EXAMPLE, NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -132,7 +128,7 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ false, /*debug_key=*/ undefined,
-    /*expected_payload=*/ undefined);
+      /*expected_payload=*/ undefined);
 
   // We use a short timeout as the previous poll should've waited long enough.
   const debug_reports = await pollReports(
@@ -196,8 +192,9 @@ private_aggregation_promise_test(async test => {
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
       /*expected_payload=*/
-      buildExpectedPayload(MULTIPLE_CONTRIBUTIONS_DIFFERING_IN_FILTERING_ID_EXAMPLE,
-                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
+      buildExpectedPayload(
+          MULTIPLE_CONTRIBUTIONS_DIFFERING_IN_FILTERING_ID_EXAMPLE,
+          NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -205,6 +202,3 @@ private_aggregation_promise_test(async test => {
 
   verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
 }, 'auction that calls Private Aggregation with contributions that match buckets but not filtering IDs');
-
-</script>
-</body>

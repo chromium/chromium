@@ -1,13 +1,8 @@
-<!doctype html>
-<meta name=timeout content=long>
-<script src="/common/get-host-info.sub.js"></script>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="resources/utils.js"></script>
-<script src="/shared-storage/resources/util.js"></script>
+// META: timeout=long
+// META: script=/common/get-host-info.sub.js
+// META: script=resources/utils.js
+// META: script=/shared-storage/resources/util.js
 
-<body>
-<script>
 'use strict';
 
 private_aggregation_promise_test(async () => {
@@ -26,8 +21,8 @@ private_aggregation_promise_test(async () => {
       /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
       /*expected_payload=*/
-      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
-                       NUM_CONTRIBUTIONS_SHARED_STORAGE));
+      buildExpectedPayload(
+          ONE_CONTRIBUTION_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -55,8 +50,8 @@ private_aggregation_promise_test(async () => {
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
       /*expected_payload=*/
-      buildExpectedPayload(MULTIPLE_CONTRIBUTIONS_EXAMPLE,
-                       NUM_CONTRIBUTIONS_SHARED_STORAGE));
+      buildExpectedPayload(
+          MULTIPLE_CONTRIBUTIONS_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -85,8 +80,8 @@ private_aggregation_promise_test(async () => {
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ '1234',
       /*expected_payload=*/
-      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
-                       NUM_CONTRIBUTIONS_SHARED_STORAGE));
+      buildExpectedPayload(
+          ONE_CONTRIBUTION_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -116,8 +111,8 @@ private_aggregation_promise_test(async () => {
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ '1234',
       /*expected_payload=*/
-      buildExpectedPayload(MULTIPLE_CONTRIBUTIONS_EXAMPLE,
-                       NUM_CONTRIBUTIONS_SHARED_STORAGE));
+      buildExpectedPayload(
+          MULTIPLE_CONTRIBUTIONS_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -175,8 +170,8 @@ private_aggregation_promise_test(async () => {
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ '1234',
       /*expected_payload=*/
-      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
-                       NUM_CONTRIBUTIONS_SHARED_STORAGE));
+      buildExpectedPayload(
+          ONE_CONTRIBUTION_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -263,8 +258,8 @@ private_aggregation_promise_test(async () => {
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
       /*expected_payload=*/
-      buildExpectedPayload(MULTIPLE_CONTRIBUTIONS_EXAMPLE,
-                       NUM_CONTRIBUTIONS_SHARED_STORAGE));
+      buildExpectedPayload(
+          MULTIPLE_CONTRIBUTIONS_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -292,8 +287,8 @@ private_aggregation_promise_test(async () => {
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
       /*expected_payload=*/
-      buildExpectedPayload(MULTIPLE_CONTRIBUTIONS_EXAMPLE,
-                       NUM_CONTRIBUTIONS_SHARED_STORAGE));
+      buildExpectedPayload(
+          MULTIPLE_CONTRIBUTIONS_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -306,7 +301,8 @@ private_aggregation_promise_test(async () => {
   await addModuleOnce('resources/shared-storage-module.js');
 
   let contributions = [];
-  for (let i = 1; i <= NUM_CONTRIBUTIONS_SHARED_STORAGE + 1; i++) {  // Too many contributions
+  for (let i = 1; i <= NUM_CONTRIBUTIONS_SHARED_STORAGE + 1;
+       i++) {  // Too many contributions
     contributions.push({bucket: BigInt(i), value: 1});
   }
 
@@ -322,7 +318,8 @@ private_aggregation_promise_test(async () => {
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
       /*expected_payload=*/
-      buildPayloadWithSequentialContributions(NUM_CONTRIBUTIONS_SHARED_STORAGE));
+      buildPayloadWithSequentialContributions(
+          NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -351,8 +348,9 @@ private_aggregation_promise_test(async () => {
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
       /*expected_payload=*/
-      buildExpectedPayload(ONE_CONTRIBUTION_HIGHER_VALUE_EXAMPLE,
-                       NUM_CONTRIBUTIONS_SHARED_STORAGE));
+      buildExpectedPayload(
+          ONE_CONTRIBUTION_HIGHER_VALUE_EXAMPLE,
+          NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -384,5 +382,3 @@ private_aggregation_promise_test(async () => {
       /*wait_for=*/ 1, /*timeout=*/ 50)
   assert_equals(debug_reports, null);
 }, 'run() that calls Private Aggregation with values that sum to more than the max long');
-</script>
-</body>

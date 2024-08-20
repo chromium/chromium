@@ -1,13 +1,8 @@
-<!doctype html>
-<meta name=timeout content=long>
-<script src="/common/get-host-info.sub.js"></script>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="resources/utils.js"></script>
-<script src="/shared-storage/resources/util.js"></script>
+// META: timeout=long
+// META: script=/common/get-host-info.sub.js
+// META: script=resources/utils.js
+// META: script=/shared-storage/resources/util.js
 
-<body>
-<script>
 'use strict';
 
 private_aggregation_promise_test(async () => {
@@ -29,8 +24,9 @@ private_aggregation_promise_test(async () => {
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
       /*expected_payload=*/
-      buildExpectedPayload(ONE_CONTRIBUTION_WITH_FILTERING_ID_EXAMPLE,
-                       NUM_CONTRIBUTIONS_SHARED_STORAGE),
+      buildExpectedPayload(
+          ONE_CONTRIBUTION_WITH_FILTERING_ID_EXAMPLE,
+          NUM_CONTRIBUTIONS_SHARED_STORAGE),
       /*expected_context_id=*/ undefined);
 
   const debug_reports = await pollReports(
@@ -84,8 +80,8 @@ private_aggregation_promise_test(async () => {
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
       /*expected_payload=*/
-      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
-                       NUM_CONTRIBUTIONS_SHARED_STORAGE),
+      buildExpectedPayload(
+          ONE_CONTRIBUTION_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE),
       /*expected_context_id=*/ undefined);
 
   const debug_reports = await pollReports(
@@ -115,8 +111,8 @@ private_aggregation_promise_test(async () => {
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
       /*expected_payload=*/
-      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
-                       NUM_CONTRIBUTIONS_SHARED_STORAGE),
+      buildExpectedPayload(
+          ONE_CONTRIBUTION_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE),
       /*expected_context_id=*/ undefined);
 
   const debug_reports = await pollReports(
@@ -210,11 +206,11 @@ private_aggregation_promise_test(async () => {
       /*debug_key=*/ undefined,
       /*expected_payload=*/
       buildExpectedPayload(
-        ONE_CONTRIBUTION_WITH_FILTERING_ID_AND_CUSTOM_MAX_BYTES_EXAMPLE,
-        NUM_CONTRIBUTIONS_SHARED_STORAGE,
-        NULL_CONTRIBUTION_WITH_CUSTOM_FILTERING_ID_MAX_BYTES),
+          ONE_CONTRIBUTION_WITH_FILTERING_ID_AND_CUSTOM_MAX_BYTES_EXAMPLE,
+          NUM_CONTRIBUTIONS_SHARED_STORAGE,
+          NULL_CONTRIBUTION_WITH_CUSTOM_FILTERING_ID_MAX_BYTES),
       /*expected_context_id=*/ undefined,
-    /*aggregation_coordinator_origin=*/ undefined);
+      /*aggregation_coordinator_origin=*/ undefined);
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -241,15 +237,15 @@ private_aggregation_promise_test(async () => {
 
   const report = JSON.parse(reports[0]);
   verifyReport(
-    report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
-    /*debug_key=*/ undefined,
-    /*expected_payload=*/
-    buildExpectedPayload(
-      ONE_CONTRIBUTION_WITH_CUSTOM_FILTERING_ID_MAX_BYTES_EXAMPLE,
-      NUM_CONTRIBUTIONS_SHARED_STORAGE,
-      NULL_CONTRIBUTION_WITH_CUSTOM_FILTERING_ID_MAX_BYTES),
-    /*expected_context_id=*/ undefined,
-    /*aggregation_coordinator_origin=*/ undefined);
+      report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
+      /*debug_key=*/ undefined,
+      /*expected_payload=*/
+      buildExpectedPayload(
+          ONE_CONTRIBUTION_WITH_CUSTOM_FILTERING_ID_MAX_BYTES_EXAMPLE,
+          NUM_CONTRIBUTIONS_SHARED_STORAGE,
+          NULL_CONTRIBUTION_WITH_CUSTOM_FILTERING_ID_MAX_BYTES),
+      /*expected_context_id=*/ undefined,
+      /*aggregation_coordinator_origin=*/ undefined);
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -390,8 +386,9 @@ private_aggregation_promise_test(async () => {
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
       /*expected_payload=*/
-      buildExpectedPayload(MULTIPLE_CONTRIBUTIONS_DIFFERING_IN_FILTERING_ID_EXAMPLE,
-                       NUM_CONTRIBUTIONS_SHARED_STORAGE));
+      buildExpectedPayload(
+          MULTIPLE_CONTRIBUTIONS_DIFFERING_IN_FILTERING_ID_EXAMPLE,
+          NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -399,6 +396,3 @@ private_aggregation_promise_test(async () => {
 
   verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
 }, 'run() that calls Private Aggregation with contributions that match buckets but not filtering IDs');
-
-</script>
-</body>

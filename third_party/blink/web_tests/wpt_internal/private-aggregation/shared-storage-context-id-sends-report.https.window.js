@@ -1,13 +1,8 @@
-<!doctype html>
-<meta name=timeout content=long>
-<script src="/common/get-host-info.sub.js"></script>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="resources/utils.js"></script>
-<script src="/shared-storage/resources/util.js"></script>
+// META: timeout=long
+// META: script=/common/get-host-info.sub.js
+// META: script=resources/utils.js
+// META: script=/shared-storage/resources/util.js
 
-<body>
-<script>
 'use strict';
 
 private_aggregation_promise_test(async () => {
@@ -30,8 +25,8 @@ private_aggregation_promise_test(async () => {
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
       /*expected_payload=*/
-      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
-                       NUM_CONTRIBUTIONS_SHARED_STORAGE),
+      buildExpectedPayload(
+          ONE_CONTRIBUTION_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE),
       /*expected_context_id=*/ 'example-context-id');
 
   const debug_reports = await pollReports(
@@ -101,6 +96,3 @@ private_aggregation_promise_test(async () => {
       /*wait_for=*/ 1, /*timeout=*/ 50)
   assert_equals(debug_reports, null);
 }, 'run() that calls Private Aggregation with context ID and no contributions');
-
-</script>
-</body>
