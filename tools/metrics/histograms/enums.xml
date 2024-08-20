@@ -12982,6 +12982,21 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Close Incognito"/>
 </enum>
 
+<enum name="InitStageDuringBackgroundRefreshType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="InitStageStart"/>
+  <int value="2" label="InitStageBrowserBasic"/>
+  <int value="3" label="InitStageSafeMode"/>
+  <int value="4" label="InitStageVariationsSeed"/>
+  <int value="5" label="InitStageBrowserObjectsForBackgroundHandlers"/>
+  <int value="6" label="InitStageEnterprise"/>
+  <int value="7" label="InitStageBrowserObjectsForUI"/>
+  <int value="8" label="InitStageNormalUI"/>
+  <int value="9" label="InitStageFirstRun"/>
+  <int value="10" label="InitStageChoiceScreen"/>
+  <int value="11" label="InitStageFinal"/>
+</enum>
+
 <enum name="InProductHelpDismissalReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Timed Out"/>
