@@ -50,6 +50,7 @@ source_set("google_groups_updater") {
     "//components/variations/service",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }
 

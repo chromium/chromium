@@ -5,30 +5,30 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_MODEL_IOS_CHROME_METRICS_SERVICE_CLIENT_H_
 #define IOS_CHROME_BROWSER_METRICS_MODEL_IOS_CHROME_METRICS_SERVICE_CLIENT_H_
 
-#include <stdint.h>
+#import <stdint.h>
 
-#include <memory>
-#include <set>
-#include <string>
-#include <string_view>
+#import <memory>
+#import <set>
+#import <string>
+#import <string_view>
 
-#include "base/callback_list.h"
-#include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#include "base/sequence_checker.h"
-#include "components/metrics/file_metrics_provider.h"
-#include "components/metrics/metrics_log_uploader.h"
-#include "components/metrics/metrics_service_client.h"
-#include "components/metrics/persistent_synthetic_trial_observer.h"
-#include "components/omnibox/browser/omnibox_event_global_tracker.h"
-#include "components/ukm/observers/history_delete_observer.h"
-#include "components/ukm/observers/ukm_consent_state_observer.h"
-#include "components/variations/synthetic_trial_registry.h"
-#include "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
-#include "ios/web/public/deprecated/global_web_state_observer.h"
+#import "base/callback_list.h"
+#import "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
+#import "base/scoped_observation.h"
+#import "base/sequence_checker.h"
+#import "components/metrics/file_metrics_provider.h"
+#import "components/metrics/metrics_log_uploader.h"
+#import "components/metrics/metrics_service_client.h"
+#import "components/metrics/persistent_synthetic_trial_observer.h"
+#import "components/omnibox/browser/omnibox_event_global_tracker.h"
+#import "components/ukm/observers/history_delete_observer.h"
+#import "components/ukm/observers/ukm_consent_state_observer.h"
+#import "components/variations/synthetic_trial_registry.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
+#import "ios/web/public/deprecated/global_web_state_observer.h"
 
-class ChromeBrowserState;
 class IOSChromeStabilityMetricsProvider;
 class PrefRegistrySimple;
 
