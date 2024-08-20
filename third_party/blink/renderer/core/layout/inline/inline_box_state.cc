@@ -232,16 +232,16 @@ void InlineBoxState::EnsureTextMetrics(const ComputedStyle& styleref,
 
 void InlineBoxState::AccumulateUsedFonts(const ShapeResultView* shape_result) {
   const auto baseline_type = style->GetFontBaseline();
-  HeapHashSet<Member<const SimpleFontData>> fallback_fonts;
-  ClearCollectionScope clear_scope(&fallback_fonts);
-  shape_result->FallbackFonts(&fallback_fonts);
-  for (const SimpleFontData* const fallback_font : fallback_fonts) {
-    FontHeight fallback_metrics =
-        fallback_font->GetFontMetrics().GetFontHeight(baseline_type);
+  HeapHashSet<Member<const SimpleFontData>> used_fonts =
+      shape_result->UsedFonts();
+  ClearCollectionScope clear_scope(&used_fonts);
+  for (const auto& used_font : used_fonts) {
+    FontHeight used_metrics =
+        used_font->GetFontMetrics().GetFontHeight(baseline_type);
     FontHeight leading_space = CalculateLeadingSpace(
-        fallback_font->GetFontMetrics().FixedLineSpacing(), fallback_metrics);
-    fallback_metrics.AddLeading(leading_space);
-    metrics.Unite(fallback_metrics);
+        used_font->GetFontMetrics().FixedLineSpacing(), used_metrics);
+    used_metrics.AddLeading(leading_space);
+    metrics.Unite(used_metrics);
   }
 }
 

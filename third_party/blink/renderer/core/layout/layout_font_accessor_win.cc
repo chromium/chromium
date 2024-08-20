@@ -32,15 +32,17 @@ void GetFontsUsedByFragment(const PhysicalBoxFragment& fragment,
     if (item.IsText()) {
       const ShapeResultView* shape_result_view = item.TextShapeResult();
       if (shape_result_view) {
-        const String font_family =
-            shape_result_view->PrimaryFont()->PlatformData().FontFamilyName();
+        const String font_family = item.Style()
+                                       .GetFont()
+                                       .PrimaryFont()
+                                       ->PlatformData()
+                                       .FontFamilyName();
         if (!font_family.empty())
           result.font_names.insert(font_family);
-        HeapHashSet<Member<const SimpleFontData>> fallback_font_data;
-        ClearCollectionScope clear_scope(&fallback_font_data);
-        shape_result_view->FallbackFonts(&fallback_font_data);
-        for (const SimpleFontData* font_data : fallback_font_data) {
-          result.font_names.insert(font_data->PlatformData().FontFamilyName());
+        HeapHashSet<Member<const SimpleFontData>> used_fonts =
+            shape_result_view->UsedFonts();
+        for (const auto& used_font : used_fonts) {
+          result.font_names.insert(used_font->PlatformData().FontFamilyName());
         }
       }
       continue;

@@ -372,15 +372,14 @@ void ShapeResultView::GetRunFontData(
   }
 }
 
-void ShapeResultView::FallbackFonts(
-    HeapHashSet<Member<const SimpleFontData>>* fallback) const {
-  DCHECK(fallback);
-  DCHECK(primary_font_);
+HeapHashSet<Member<const SimpleFontData>> ShapeResultView::UsedFonts() const {
+  HeapHashSet<Member<const SimpleFontData>> used_fonts;
   for (const auto& part : RunsOrParts()) {
-    if (part.run_->font_data_ && part.run_->font_data_ != primary_font_) {
-      fallback->insert(part.run_->font_data_.Get());
+    if (part.run_->font_data_) {
+      used_fonts.insert(part.run_->font_data_.Get());
     }
   }
+  return used_fonts;
 }
 
 template <bool has_non_zero_glyph_offsets>
