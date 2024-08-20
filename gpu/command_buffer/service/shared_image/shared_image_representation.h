@@ -356,6 +356,9 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
       return graphite_textures_[plane_index];
     }
 
+    // Return the representations's implementation.
+    bool NeedGraphiteContextSubmit();
+
     // NOTE: Implemented only for Ganesh.
     // Checks if there's a need to apply skgpu::MutableTextureState.
     virtual bool HasBackendSurfaceEndState() = 0;
@@ -403,6 +406,9 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
     skgpu::graphite::BackendTexture graphite_texture(int plane_index) const {
       return graphite_textures_[plane_index];
     }
+
+    // Return the representations's implementation.
+    bool NeedGraphiteContextSubmit();
 
     // Creates an SkImage from BackendTexture for single planar formats or if
     // format prefers external sampler. Creates an SkImage from
@@ -474,6 +480,9 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
   virtual std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores) = 0;
+
+  // NOTE: Implemented only for Graphite.
+  virtual bool NeedGraphiteContextSubmit() = 0;
 
   virtual bool SupportsMultipleConcurrentReadAccess();
 
@@ -591,6 +600,9 @@ class GPU_GLES2_EXPORT SkiaGaneshImageRepresentation
   std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores) override;
+
+  // Return false for ganesh.
+  bool NeedGraphiteContextSubmit() final;
 
  protected:
   friend class WrappedSkiaGaneshCompoundImageRepresentation;
@@ -727,6 +739,8 @@ class GPU_GLES2_EXPORT SkiaGraphiteImageRepresentation
   std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores) override;
+
+  bool NeedGraphiteContextSubmit() override;
 
  protected:
   friend class WrappedSkiaGraphiteCompoundImageRepresentation;

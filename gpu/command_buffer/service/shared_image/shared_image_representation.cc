@@ -202,6 +202,10 @@ SkiaImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
   representation()->EndWriteAccess();
 }
 
+bool SkiaImageRepresentation::ScopedWriteAccess::NeedGraphiteContextSubmit() {
+  return representation()->NeedGraphiteContextSubmit();
+}
+
 SkiaImageRepresentation::ScopedReadAccess::ScopedReadAccess(
     SkiaImageRepresentation* representation,
     std::vector<sk_sp<GrPromiseImageTexture>> promise_image_textures)
@@ -224,6 +228,10 @@ SkiaImageRepresentation::ScopedReadAccess::~ScopedReadAccess() {
   representation()->EndReadAccess();
 }
 
+bool SkiaImageRepresentation::ScopedReadAccess::NeedGraphiteContextSubmit() {
+  return representation()->NeedGraphiteContextSubmit();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // SkiaGaneshImageRepresentation
 
@@ -234,6 +242,11 @@ SkiaGaneshImageRepresentation::SkiaGaneshImageRepresentation(
     MemoryTypeTracker* tracker)
     : SkiaImageRepresentation(manager, backing, tracker),
       gr_context_(gr_context) {}
+
+bool SkiaGaneshImageRepresentation::NeedGraphiteContextSubmit() {
+  // Ganesh shouldn't need a Graphite context submit.
+  return false;
+}
 
 SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::ScopedGaneshWriteAccess(
     base::PassKey<SkiaGaneshImageRepresentation> /* pass_key */,
@@ -515,6 +528,11 @@ SkiaGraphiteImageRepresentation::SkiaGraphiteImageRepresentation(
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker)
     : SkiaImageRepresentation(manager, backing, tracker) {}
+
+bool SkiaGraphiteImageRepresentation::NeedGraphiteContextSubmit() {
+  // As default, assume Graphite context submit is needed.
+  return true;
+}
 
 SkiaGraphiteImageRepresentation::ScopedGraphiteWriteAccess::
     ScopedGraphiteWriteAccess(
