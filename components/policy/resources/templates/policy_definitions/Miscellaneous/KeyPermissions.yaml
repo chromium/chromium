@@ -18,9 +18,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 owners:
-- pmarko@chromium.org
 - miersh@google.com
-- omorsi@google.com
 schema:
   additionalProperties:
     properties:

@@ -2233,7 +2233,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.Kcer.Error" enum="KcerError"
     expires_after="2025-04-01">
   <owner>miersh@google.com</owner>
-  <owner>pmarko@google.com</owner>
+  <owner>chromeos-commercial-networking@google.com</owner>
   <summary>Tracks errors from the Kcer component.</summary>
 </histogram>
 
@@ -2247,7 +2247,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.Kcer.Pkcs12Migration"
     enum="KcerPkcs12MigrationUmaEvent" expires_after="2025-04-01">
   <owner>miersh@google.com</owner>
-  <owner>pmarko@google.com</owner>
+  <owner>chromeos-commercial-networking@google.com</owner>
   <summary>
     Tracks events related to the migration of the PKCS#12 import.
   </summary>
@@ -2682,7 +2682,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.Ownership.OwnerKeyUmaEvent" enum="OwnerKeyUmaEvent"
     expires_after="2025-01-05">
   <owner>miersh@google.com</owner>
-  <owner>pmarko@google.com</owner>
   <owner>chromeos-commercial-networking@google.com</owner>
   <summary>
     Records events related to the owner key generation, loading and usage.

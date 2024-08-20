@@ -34,7 +34,7 @@ features:
 future_on:
 - fuchsia
 owners:
-- pmarko@chromium.org
+- acostinas@google.com
 - file://components/proxy_config/OWNERS
 schema:
   properties:

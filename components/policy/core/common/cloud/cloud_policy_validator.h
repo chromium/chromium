@@ -446,7 +446,7 @@ class POLICY_EXPORT CloudPolicyValidator final
              value_validator : value_validators_) {
       value_validator->ValidateValues(*payload_, &value_validation_issues_);
     }
-    // TODO(hendrich,pmarko): https://crbug.com/794848
+    // TODO(hendrich): https://crbug.com/794848
     // Always return OK independent of value validation results for now. We only
     // want to reject policy blobs on failed value validation sometime in the
     // future.

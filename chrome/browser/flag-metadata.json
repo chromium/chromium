@@ -2213,11 +2213,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "dns-over-https-with-identifiers-reuse-old-policy",
-    "owners": [ "acostinas@chromium.org", "pmarko@chromium.org" ,"srad@chromium.org" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "document-picture-in-picture-animate-resize",
     "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
     "expiry_milestone": 150

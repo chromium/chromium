@@ -209,7 +209,7 @@ void CloudPolicyService::ReportValidationResult(CloudPolicyStore* store) {
     return;
   }
 
-  // TODO(hendrich,pmarko): https://crbug.com/794848
+  // TODO(hendrich): https://crbug.com/794848
   // Update the status to reflect value validation errors/warnings. For now we
   // don't want to reject policies on value validation errors, therefore the
   // validation result will be |VALIDATION_OK| even though we might have value

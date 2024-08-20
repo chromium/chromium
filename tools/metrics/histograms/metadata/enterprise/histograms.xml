@@ -3270,7 +3270,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.TimeToUnthrottlePolicyInit" units="ms"
     expires_after="2024-01-14">
   <owner>emaxx@chromium.org</owner>
-  <owner>pmarko@chromium.org</owner>
   <summary>
     Duration between when the construction of the policy stack for a user
     profile starts and when its initialization gets unthrottled.

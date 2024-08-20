@@ -17,7 +17,6 @@ items:
   value: false
 owners:
 - acostinas@chromium.org
-- pmarko@chromium.org
 schema:
   type: boolean
 supported_on:

@@ -645,7 +645,7 @@ function verifySignFail(privateKey, signParams) {
             }));
 }
 
-// TODO(pmarko,emaxx): Test this by verifying that no private key is returned,
+// TODO(emaxx): Test this by verifying that no private key is returned,
 // once that's implemented, see crbug.com/799410.
 function testSignFails(cert, spki) {
   var keyParams = {name: 'RSASSA-PKCS1-v1_5', hash: {name: 'SHA-1'}};
