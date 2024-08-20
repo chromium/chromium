@@ -4,6 +4,8 @@
 
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
@@ -60,19 +62,23 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 
   [ChromeEarlGrey resetDataForLocalStatePref:
                       safety_check_prefs::kSafetyCheckInMagicStackDisabledPref];
+
   [NewTabPageAppInterface disableSetUpList];
-  [[self class] closeAllTabs];
-  [ChromeEarlGrey openNewTab];
 }
 
 - (void)tearDown {
+  [[self class] closeAllTabs];
+
   [ChromeEarlGrey resetDataForLocalStatePref:
                       safety_check_prefs::kSafetyCheckInMagicStackDisabledPref];
+
   [super tearDown];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled.push_back(kSafetyCheckNotifications);
   config.features_enabled.push_back(kSafetyCheckMagicStack);
   config.additional_args.push_back("--test-ios-module-ranker=safety_check");
 
@@ -82,7 +88,20 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 // Tests that long pressing the Safety Check view displays a context menu; tests
 // the Safety Check view is properly hidden via the context menu.
 - (void)testLongPressAndHide {
+  // Intentionally forces a Safety Check error to ensure module visibility in
+  // the Magic Stack.
+  [ChromeEarlGrey
+         setStringValue:NameForSafetyCheckState(
+                            SafeBrowsingSafetyCheckState::kUnsafe)
+      forLocalStatePref:prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult];
+
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithConfiguration:[self appConfigurationForTestCase]];
+
+  [ChromeEarlGrey openNewTab];
+
   WaitUntilSafetyCheckModuleVisibleOrTimeout(true);
+
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(
                                               safety_check::kSafetyCheckViewID),

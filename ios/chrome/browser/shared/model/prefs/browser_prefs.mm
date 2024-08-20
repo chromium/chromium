@@ -673,6 +673,12 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // settings UI on chrome://settings/security.
   registry->RegisterBooleanPref(kSafeBrowsingEsbOptInWithFriendlierSettings,
                                 false);
+
+  // Registers a preference to store the count of displayed Safety Check issues.
+  // This count determines if the Safety Check module remains in the Magic
+  // Stack.
+  registry->RegisterIntegerPref(
+      prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, 0);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {

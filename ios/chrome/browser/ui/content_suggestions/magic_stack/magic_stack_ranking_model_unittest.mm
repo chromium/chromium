@@ -508,7 +508,7 @@ TEST_F(MagicStackRankingModelTest, TestModelDidGetLatestRankingOrder) {
         base::RunLoop().RunUntilIdle();
         return [delegate_.rank count] > 0;
       }));
-  NSArray* expectedModuleRank = @[ @(5), @(0), @(1), @(7), @(10), @(11) ];
+  NSArray* expectedModuleRank = @[ @(5), @(0), @(1), @(10), @(11) ];
   EXPECT_EQ([delegate_.rank count], [expectedModuleRank count]);
   for (NSUInteger i = 0; i < [expectedModuleRank count]; i++) {
     MagicStackModule* config = delegate_.rank[i];
@@ -531,12 +531,12 @@ TEST_F(MagicStackRankingModelTest, TestFeatureInsertCalls) {
       }));
 
   [_magicStackRankingModel newParcelsAvailable];
-  EXPECT_EQ(delegate_.lastInsertionIndex, 5u);
+  EXPECT_EQ(delegate_.lastInsertionIndex, 4u);
   EXPECT_EQ(delegate_.lastInsertedItem,
             _parcelTrackingMediator.parcelTrackingItemToShow);
 
   [_magicStackRankingModel tabResumptionHelperDidReceiveItem];
-  EXPECT_EQ(delegate_.lastInsertionIndex, 4u);
+  EXPECT_EQ(delegate_.lastInsertionIndex, 3u);
   EXPECT_EQ(delegate_.lastInsertedItem, _tabResumptionMediator.itemConfig);
 }
 

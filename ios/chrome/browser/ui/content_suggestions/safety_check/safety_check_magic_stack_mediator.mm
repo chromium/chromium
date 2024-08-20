@@ -100,6 +100,11 @@
 
       _safetyCheckState = [self initialSafetyCheckState];
 
+      if (ShouldHideSafetyCheckModuleIfNoIssues()) {
+        [self updateIssueCount:[_safetyCheckState numberOfIssues]
+               withPrefService:localState];
+      }
+
       _safetyCheckManagerObserver =
           std::make_unique<SafetyCheckObserverBridge>(self, safetyCheckManager);
 
@@ -193,6 +198,11 @@
 - (void)runningStateChanged:(RunningSafetyCheckState)state {
   _safetyCheckState.runningState = state;
   _safetyCheckState.shouldShowSeeMore = [_safetyCheckState numberOfIssues] > 2;
+
+  if (ShouldHideSafetyCheckModuleIfNoIssues()) {
+    [self updateIssueCount:[_safetyCheckState numberOfIssues]
+           withPrefService:_localState];
+  }
 
   if (safety_check_prefs::IsSafetyCheckInMagicStackDisabled(
           IsHomeCustomizationEnabled() ? _userState : _localState)) {
@@ -369,6 +379,17 @@
   }
 
   return std::nullopt;
+}
+
+// Persists the current number of Safety Check issues, `issuesCount`, to
+// `localPrefService`.
+- (void)updateIssueCount:(NSUInteger)issuesCount
+         withPrefService:(PrefService*)localPrefService {
+  CHECK(localPrefService);
+  CHECK(ShouldHideSafetyCheckModuleIfNoIssues());
+
+  localPrefService->SetInteger(
+      prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, issuesCount);
 }
 
 @end
