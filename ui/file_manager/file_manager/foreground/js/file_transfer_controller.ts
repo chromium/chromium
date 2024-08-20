@@ -50,20 +50,26 @@ import {TreeItem} from './ui/tree.js';
  * since DataTransfer object is in protected state. Reachable from other
  * file manager instances.
  */
-const DRAG_AND_DROP_GLOBAL_DATA = '__drag_and_drop_global_data';
+export const DRAG_AND_DROP_GLOBAL_DATA = '__drag_and_drop_global_data';
 
 /**
  * The key under which we store if the file content is missing. This property
- * tells us if we are attemptint to use a drive file while Drive is
+ * tells us if we are attempting to use a drive file while Drive is
  * disconnected.
  */
-const MISSING_FILE_CONTENTS = 'missingFileContents';
+export const MISSING_FILE_CONTENTS = 'missingFileContents';
+
+/**
+ * The key under which we store the list of dragged files. This allows us to
+ * set the correct drag effect.
+ */
+export const SOURCE_URLS = 'sources';
 
 /**
  * The key under which we store the root of the file system of files on which
  * we operate. This allows us to set the correct drag effect.
  */
-const SOURCE_ROOT_URL = 'sourceRootURL';
+export const SOURCE_ROOT_URL = 'sourceRootURL';
 
 /**
  * The key under which we store the flag denoting that the dragged file is
@@ -71,7 +77,7 @@ const SOURCE_ROOT_URL = 'sourceRootURL';
  * implemented at the moment (May 2023), this allows us to unset the drag effect
  * when moving such a file outside Drive.
  */
-const ENCRYPTED = 'encrypted';
+export const ENCRYPTED = 'encrypted';
 
 /**
  * Confirmation message types.
@@ -108,6 +114,7 @@ type FileAsyncData =
     Record<FileKey, {file?: File, externalFileUrl?: string}|null>;
 
 interface DragAndDropGlobalData {
+  sourceURLs: string;
   sourceRootURL: string;
   missingFileContents: string;
   encrypted: boolean;
@@ -502,14 +509,17 @@ export class FileTransferController {
 
   private getDragAndDropGlobalData_(): DragAndDropGlobalData|null {
     const storage = window.localStorage;
+    const sourceURLs =
+        storage.getItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_URLS}`);
     const sourceRootURL =
         storage.getItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`);
     const missingFileContents = storage.getItem(
         `${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`);
     const encrypted =
         storage.getItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${ENCRYPTED}`) === 'true';
-    if (sourceRootURL !== null && missingFileContents !== null) {
-      return {sourceRootURL, missingFileContents, encrypted};
+    if (sourceURLs !== null && sourceRootURL !== null &&
+        missingFileContents !== null) {
+      return {sourceURLs, sourceRootURL, missingFileContents, encrypted};
     }
     return null;
   }
@@ -845,6 +855,9 @@ export class FileTransferController {
 
     const storage = window.localStorage;
     storage.setItem(
+        `${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_URLS}`,
+        dataTransfer.getData(`fs/${SOURCE_URLS}`));
+    storage.setItem(
         `${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`,
         dataTransfer.getData(`fs/${SOURCE_ROOT_URL}`));
     storage.setItem(
@@ -864,6 +877,7 @@ export class FileTransferController {
     container.textContent = '';
     this.clearDropTarget_();
     const storage = window.localStorage;
+    storage.removeItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_URLS}`);
     storage.removeItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`);
     storage.removeItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`);
     storage.removeItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${ENCRYPTED}`);
@@ -1008,6 +1022,29 @@ export class FileTransferController {
     this.directoryModel_.changeDirectoryEntry(this.destinationEntry_);
   }
 
+  protected isDropTargetAllowed_(destinationEntryURL: string) {
+    // Disallow dropping a directory either on itself or on one of its children.
+    const {sourceURLs} = this.getDragAndDropGlobalData_() || {sourceURLs: ''};
+    const destinationURLWithTrailingSlash =
+        destinationEntryURL + (destinationEntryURL.endsWith('/') ? '' : '/');
+    for (const url of sourceURLs.split('\n')) {
+      if (url === destinationEntryURL ||
+          destinationURLWithTrailingSlash.startsWith(url)) {
+        // Note: When this method is called, destinationEntry is always a
+        // directory and its URL doesn't have a trailing slash.
+        return false;
+      }
+    }
+
+    // Disallow drop target for disabled destination entries.
+    const fileData = getFileData(getStore().getState(), destinationEntryURL);
+    if (fileData?.disabled) {
+      return false;
+    }
+
+    return true;
+  }
+
   /**
    * Sets the drop target.
    */
@@ -1033,18 +1070,7 @@ export class FileTransferController {
     domElement.classList.remove('accepts');
     domElement.classList.add('denies');
 
-    // Disallow dropping a directory on itself.
-    const entries = this.selectionHandler_.selection.entries;
-    for (const entry of entries) {
-      if (isSameEntry(entry, destinationEntry)) {
-        return;
-      }
-    }
-
-    // Disallow drop target for disabled destination entries.
-    const fileData =
-        getFileData(getStore().getState(), destinationEntry.toURL());
-    if (fileData?.disabled) {
+    if (!this.isDropTargetAllowed_(destinationEntry.toURL())) {
       return;
     }
 
