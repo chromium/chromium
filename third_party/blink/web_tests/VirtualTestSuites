@@ -1333,6 +1333,7 @@
       "external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/045.html",
       "external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/054.html",
       "external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/055.html",
+      "external/wpt/dom/nodes/moveBefore/tentative/mutation-events.html",
       "external/wpt/uievents/legacy-domevents-tests/approved/domnodeinserted.html",
       "external/wpt/uievents/legacy-domevents-tests/approved/ProcessingInstruction.DOMCharacterDataModified.html",
       "http/tests/inspector-protocol/console/console-dom-mutation-violations.js",
