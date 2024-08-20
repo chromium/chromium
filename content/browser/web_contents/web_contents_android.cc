@@ -716,7 +716,7 @@ void WebContentsAndroid::AXTreeSnapshotCallback(
     const JavaRef<jobject>& view_structure_root,
     const JavaRef<jobject>& view_structure_builder,
     const JavaRef<jobject>& callback,
-    const ui::AXTreeUpdate& result) {
+    ui::AXTreeUpdate& result) {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (result.nodes.empty()) {
     RunRunnableAndroid(callback);

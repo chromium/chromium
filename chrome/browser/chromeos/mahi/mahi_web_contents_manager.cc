@@ -331,7 +331,7 @@ void MahiWebContentsManager::OnGetSnapshot(
     content::WebContents* web_contents,
     const base::Time& start_time,
     GetContentCallback callback,
-    const ui::AXTreeUpdate& snapshot) {
+    ui::AXTreeUpdate& snapshot) {
   if (focused_web_content_state_.page_id != page_id) {
     // TODO(b:336438243): Add UMA to track this.
     std::move(callback).Run(nullptr);

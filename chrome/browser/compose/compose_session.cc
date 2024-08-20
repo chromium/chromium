@@ -1084,7 +1084,7 @@ void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
 
 void ComposeSession::UpdateAXSnapshotAndContinueComposeIfNecessary(
     int request_id,
-    const ui::AXTreeUpdate& update) {
+    ui::AXTreeUpdate& update) {
   if (current_ax_snapshot_request_id_ != request_id) {
     return;
   }

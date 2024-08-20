@@ -38,7 +38,7 @@ class AXTreeSnapshotWaiter {
 
   const ui::AXTreeUpdate& snapshot() const { return snapshot_; }
 
-  void ReceiveSnapshot(const ui::AXTreeUpdate& snapshot) {
+  void ReceiveSnapshot(ui::AXTreeUpdate& snapshot) {
     snapshot_ = snapshot;
     loop_runner_->Quit();
   }

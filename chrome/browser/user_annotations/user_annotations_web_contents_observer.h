@@ -43,7 +43,7 @@ class UserAnnotationsWebContentsObserver
  private:
   // Callback invoked when AXTree for the frame has been snapshotted.
   void OnAXTreeSnapshotted(const autofill::FormData& form,
-                           const ui::AXTreeUpdate& snapshot);
+                           ui::AXTreeUpdate& snapshot);
 
   // The service for storing user annotations. Owned by the profile that owns
   // the web contents. Guaranteed to outlive `this`.

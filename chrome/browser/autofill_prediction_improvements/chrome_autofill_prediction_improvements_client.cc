@@ -46,16 +46,15 @@ ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
 void ChromeAutofillPredictionImprovementsClient::GetAXTree(
     AXTreeCallback callback) {
   using ProtoTreeUpdate = optimization_guide::proto::AXTreeUpdate;
-  base::OnceCallback<ProtoTreeUpdate(const ui::AXTreeUpdate&)>
-      processing_callback =
-          base::BindOnce([](const ui::AXTreeUpdate& ax_tree_update) {
-            ProtoTreeUpdate ax_tree_proto;
+  base::OnceCallback<ProtoTreeUpdate(ui::AXTreeUpdate&)> processing_callback =
+      base::BindOnce([](ui::AXTreeUpdate& ax_tree_update) {
+        ProtoTreeUpdate ax_tree_proto;
 #if BUILDFLAG(ENABLE_COMPOSE)
-            ComposeAXSerializationUtils::PopulateAXTreeUpdate(ax_tree_update,
-                                                              &ax_tree_proto);
+        ComposeAXSerializationUtils::PopulateAXTreeUpdate(ax_tree_update,
+                                                          &ax_tree_proto);
 #endif
-            return ax_tree_proto;
-          });
+        return ax_tree_proto;
+      });
   GetWebContents().RequestAXTreeSnapshot(
       std::move(processing_callback).Then(std::move(callback)),
       ui::kAXModeWebContentsOnly,

@@ -335,7 +335,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void ProcessCompletedAccessibilityTreeSnapshot(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& view_structure_root,
-      const ui::AXTreeUpdate& result);
+      ui::AXTreeUpdate& result);
 
   void RecursivelyPopulateViewStructureTree(
       JNIEnv* env,

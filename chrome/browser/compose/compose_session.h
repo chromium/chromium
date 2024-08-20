@@ -268,9 +268,8 @@ class ComposeSession
       int request_id,
       std::unique_ptr<content_extraction::InnerTextResult> result);
 
-  void UpdateAXSnapshotAndContinueComposeIfNecessary(
-      int request_id,
-      const ui::AXTreeUpdate& update);
+  void UpdateAXSnapshotAndContinueComposeIfNecessary(int request_id,
+                                                     ui::AXTreeUpdate& update);
 
   // Continues the compose request if all page context has been received.
   // Note that this adds necessary metadata that may have been populated from

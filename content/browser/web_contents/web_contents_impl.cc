@@ -2046,7 +2046,7 @@ class AXTreeSnapshotCombiner : public base::RefCounted<AXTreeSnapshotCombiner> {
                           is_root);
   }
 
-  void ReceiveSnapshot(bool is_root, const ui::AXTreeUpdate& snapshot) {
+  void ReceiveSnapshot(bool is_root, ui::AXTreeUpdate& snapshot) {
     combiner_.AddTree(snapshot, is_root);
   }
 
@@ -2064,7 +2064,9 @@ class AXTreeSnapshotCombiner : public base::RefCounted<AXTreeSnapshotCombiner> {
   // when there are no more references to this object.
   ~AXTreeSnapshotCombiner() {
     combiner_.Combine();
-    std::move(callback_).Run(combiner_.combined());
+    CHECK(combiner_.combined());
+    ui::AXTreeUpdate update = std::move(combiner_.combined().value());
+    std::move(callback_).Run(update);
   }
 
   ui::AXTreeCombiner combiner_;

@@ -94,7 +94,7 @@ void PaintPreviewFileMixin::GetCapturedPaintPreviewProto(
 void PaintPreviewFileMixin::WriteAXTreeUpdate(
     const DirectoryKey& key,
     base::OnceCallback<void(bool)> finished_callback,
-    const ui::AXTreeUpdate& ax_tree_update) {
+    ui::AXTreeUpdate& ax_tree_update) {
   std::vector<uint8_t> ax_data =
       ax::mojom::AXTreeUpdate::Serialize(&ax_tree_update);
   task_runner_->PostTaskAndReplyWithResult(

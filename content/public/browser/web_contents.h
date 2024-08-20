@@ -541,8 +541,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // of |max_nodes| and |timeout|. |policy| is used directly in
   // WebContentsImpl::RequestAXTreeSnapshot; its meaning is explained in the
   // AXTreeSnapshotPolicy definition above.
-  using AXTreeSnapshotCallback =
-      base::OnceCallback<void(const ui::AXTreeUpdate&)>;
+  using AXTreeSnapshotCallback = base::OnceCallback<void(ui::AXTreeUpdate&)>;
   virtual void RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
                                      ui::AXMode ax_mode,
                                      size_t max_nodes,

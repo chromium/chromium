@@ -123,7 +123,7 @@ class MainContentExtractionTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_EQ(web_contents->GetURL(), page);
 
-    base::test::TestFuture<const ui::AXTreeUpdate&> future;
+    base::test::TestFuture<ui::AXTreeUpdate&> future;
     web_contents->RequestAXTreeSnapshot(
         future.GetCallback(), ui::kAXModeComplete,
         /* max_nodes= */ 0,

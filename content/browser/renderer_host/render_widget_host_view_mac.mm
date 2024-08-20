@@ -962,7 +962,7 @@ void AddTextNodesToVector(const ui::AXNode* node,
 
 using SpeechCallback = base::OnceCallback<void(const std::u16string&)>;
 void CombineTextNodesAndMakeCallback(SpeechCallback callback,
-                                     const ui::AXTreeUpdate& update) {
+                                     ui::AXTreeUpdate& update) {
   std::vector<std::u16string> text_node_contents;
   text_node_contents.reserve(update.nodes.size());
 

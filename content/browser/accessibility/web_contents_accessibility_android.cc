@@ -1677,7 +1677,7 @@ void WebContentsAccessibilityAndroid::RequestAccessibilityTreeSnapshot(
 void WebContentsAccessibilityAndroid::ProcessCompletedAccessibilityTreeSnapshot(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& view_structure_root,
-    const ui::AXTreeUpdate& result) {
+    ui::AXTreeUpdate& result) {
   // If we don't have a connection back to the Java-side objects, then fail.
   ScopedJavaLocalRef<jobject> obj = java_adb_ref_.get(env);
   CHECK(obj);
