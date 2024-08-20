@@ -129,6 +129,16 @@ void HideEndingMomentNudge() {
   }
 }
 
+void OnTaskFetched(FocusModeTasksModel::Delegate::FetchTaskCallback callback,
+                   const FocusModeTask& task) {
+  if (task.empty()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  std::move(callback).Run(task);
+}
+
 }  // namespace
 
 FocusModeController::FocusModeController(
@@ -260,16 +270,6 @@ void FocusModeController::OnTaskCompleted(const FocusModeTask& completed_task) {
   if (focus_mode_metrics_recorder_) {
     focus_mode_metrics_recorder_->IncrementTasksCompletedCount();
   }
-}
-
-void OnTaskFetched(FocusModeTasksModel::Delegate::FetchTaskCallback callback,
-                   const FocusModeTask& task) {
-  if (task.empty()) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
-  std::move(callback).Run(task);
 }
 
 void FocusModeController::FetchTask(
