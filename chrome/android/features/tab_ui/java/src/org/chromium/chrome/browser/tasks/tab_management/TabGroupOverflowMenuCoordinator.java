@@ -41,6 +41,7 @@ import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -70,6 +71,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
                 boolean horizontalOverlapAnchor,
                 boolean verticalOverlapAnchor,
                 @StyleRes int animStyle,
+                @HorizontalOrientation int horizontalOrientation,
                 @LayoutRes int menuLayout,
                 OnItemClickedCallback onItemClickedCallback,
                 boolean isIncognito,
@@ -137,6 +139,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
             mMenuWindow.setFocusable(true);
             mMenuWindow.setHorizontalOverlapAnchor(horizontalOverlapAnchor);
             mMenuWindow.setVerticalOverlapAnchor(verticalOverlapAnchor);
+            mMenuWindow.setPreferredHorizontalOrientation(horizontalOrientation);
             // Override animation style or animate from anchor as default.
             if (animStyle == ResourcesCompat.ID_NULL) {
                 mMenuWindow.setAnimationStyle(animStyle);
@@ -271,6 +274,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
                 /* horizontalOverlapAnchor= */ true,
                 /* verticalOverlapAnchor= */ true,
                 R.style.EndIconMenuAnim,
+                HorizontalOrientation.MAX_AVAILABLE_SPACE,
                 activity);
     }
 
@@ -282,6 +286,8 @@ public abstract class TabGroupOverflowMenuCoordinator {
      * @param horizontalOverlapAnchor If true, horizontally overlaps menu with the anchor view.
      * @param verticalOverlapAnchor If true, vertically overlaps menu with the anchor view.
      * @param animStyle Animation style to apply for menu show/hide.
+     * @param horizontalOrientation @{@link HorizontalOrientation} to use for the menu position.
+     * @param activity Activity to get resources and decorView for menu.
      */
     protected void createAndShowMenu(
             RectProvider anchorViewRectProvider,
@@ -289,6 +295,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
             boolean horizontalOverlapAnchor,
             boolean verticalOverlapAnchor,
             @StyleRes int animStyle,
+            @HorizontalOrientation int horizontalOrientation,
             @NonNull Activity activity) {
         assert mMenuHolder == null;
         boolean isIncognito = mTabModelSupplier.get().isIncognitoBranded();
@@ -299,6 +306,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
                         horizontalOverlapAnchor,
                         verticalOverlapAnchor,
                         animStyle,
+                        horizontalOrientation,
                         mMenuLayout,
                         mOnItemClickedCallback,
                         isIncognito,

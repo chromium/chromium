@@ -41,6 +41,7 @@ import org.chromium.ui.listmenu.ListSectionDividerProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 
 /**
@@ -147,6 +148,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 /* horizontalOverlapAnchor= */ true,
                 /* verticalOverlapAnchor= */ false,
                 /* animStyle= */ ResourcesCompat.ID_NULL,
+                HorizontalOrientation.LAYOUT_DIRECTION,
                 mWindowAndroid.getActivity().get());
         recordUserAction("Shown");
     }
