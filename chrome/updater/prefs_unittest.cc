@@ -21,16 +21,37 @@
 #include "components/update_client/update_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/win/registry.h"
+#include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/win_constants.h"
+#endif
+
 namespace updater {
 
-// TODO(crbug.com/360158404): Flaky on windows.
+class PrefsTest : public ::testing::Test {
+ protected:
+  void SetUp() override { DeleteBrandCodeValueInRegistry(); }
+  void TearDown() override { DeleteBrandCodeValueInRegistry(); }
+
+ private:
+  void DeleteBrandCodeValueInRegistry() {
 #if BUILDFLAG(IS_WIN)
-#define MAYBE_PrefsCommitPendingWrites DISABLED_PrefsCommitPendingWrites
+    base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                      GetAppClientStateKey(L"someappid").c_str(),
+                      Wow6432(KEY_SET_VALUE))
+        .DeleteValue(kRegValueBrandCode);
 #else
-#define MAYBE_PrefsCommitPendingWrites PrefsCommitPendingWrites
+    return;
 #endif
-TEST(PrefsTest, MAYBE_PrefsCommitPendingWrites) {
-  base::test::TaskEnvironment task_environment;
+  }
+
+  base::test::TaskEnvironment task_environment_;
+};
+
+TEST_F(PrefsTest, PrefsCommitPendingWrites) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   auto metadata = base::MakeRefCounted<PersistedData>(
@@ -39,6 +60,16 @@ TEST(PrefsTest, MAYBE_PrefsCommitPendingWrites) {
   // Writes something to prefs.
   metadata->SetBrandCode("someappid", "brand");
   EXPECT_STREQ(metadata->GetBrandCode("someappid").c_str(), "brand");
+
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(
+      base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                        GetAppClientStateKey(L"someappid").c_str(),
+                        Wow6432(KEY_SET_VALUE))
+          .WriteValue(kRegValueBrandCode, L"nbrnd"),
+      ERROR_SUCCESS);
+  EXPECT_STREQ(metadata->GetBrandCode("someappid").c_str(), "nbrnd");
+#endif
 
   // Tests writing to storage completes.
   PrefsCommitPendingWrites(pref.get());
