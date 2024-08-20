@@ -334,10 +334,20 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         if (ChromeFeatureList.sAndroidTabDeclutterArchiveAllButActiveTab.isEnabled()) {
             mTabArchiveSettings.setArchiveTimeDeltaHours(0);
         }
+
+        // TODO(crbug.com/361130234): Record timing metrics here.
+        mTabArchiver.addObserver(
+                new TabArchiver.Observer() {
+                    @Override
+                    public void onDeclutterPassCompleted() {
+                        if (ChromeFeatureList.sAndroidTabDeclutterArchiveAllButActiveTab
+                                .isEnabled()) {
+                            mTabArchiveSettings.setArchiveTimeDeltaHours(archiveTimeHours);
+                        }
+                        mTabArchiver.removeObserver(this);
+                    }
+                });
         runDeclutterAndScheduleNext();
-        if (ChromeFeatureList.sAndroidTabDeclutterArchiveAllButActiveTab.isEnabled()) {
-            mTabArchiveSettings.setArchiveTimeDeltaHours(archiveTimeHours);
-        }
 
         mDeclutterInitializationCalled = true;
     }

@@ -208,9 +208,9 @@ public class TabArchiverTest {
                                         .getActivity()
                                         .getTabModelSelectorSupplier()
                                         .get()));
-        assertEquals(1, mUserActionTester.getActionCount("Tabs.TabArchived"));
-        assertEquals(2, mRegularTabModel.getCount());
+        CriteriaHelper.pollUiThread(() -> 2 == mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.TabArchived"));
     }
 
     @Test
@@ -252,9 +252,9 @@ public class TabArchiverTest {
                                         .getActivity()
                                         .getTabModelSelectorSupplier()
                                         .get()));
-        watcher.assertExpected();
-        assertEquals(1, mRegularTabModel.getCount());
+        CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
         assertEquals(2, mArchivedTabModel.getCount());
+        watcher.assertExpected();
     }
 
     @Test
