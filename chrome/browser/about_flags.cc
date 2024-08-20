@@ -10187,6 +10187,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"safety-hub-followup", flag_descriptions::kSafetyHubFollowupName,
      flag_descriptions::kSafetyHubFollowupDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kSafetyHubFollowup)},
+
+    {"safety-hub-android-survey",
+     flag_descriptions::kSafetyHubAndroidSurveyName,
+     flag_descriptions::kSafetyHubAndroidSurveyDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kSafetyHubAndroidSurvey)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"safety-hub-abusive-notification-revocation",

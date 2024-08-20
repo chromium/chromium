@@ -1100,6 +1100,7 @@ chromium-metrics-reviews@google.com.
   <int value="49" label="SaveCardFailure"/>
   <int value="50" label="VirtualCardEnrollFailure"/>
   <int value="51" label="PromptHatsQuickDelete"/>
+  <int value="52" label="PromptHatsSafetyHub"/>
 </enum>
 
 <enum name="MinimizeAppAndCloseTabType">

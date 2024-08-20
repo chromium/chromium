@@ -132,6 +132,7 @@ enum class MessageIdentifier {
   SAVE_CARD_FAILURE = 49,
   VIRTUAL_CARD_ENROLL_FAILURE = 50,
   PROMPT_HATS_QUICK_DELETE = 51,
+  PROMPT_HATS_SAFETY_HUB = 52,
   // Insert new values before this line.
   COUNT
 };

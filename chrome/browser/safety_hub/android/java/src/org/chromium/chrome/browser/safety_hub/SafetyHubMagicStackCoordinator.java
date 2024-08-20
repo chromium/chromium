@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
@@ -27,7 +28,8 @@ class SafetyHubMagicStackCoordinator implements ModuleProvider {
             @NonNull Profile profile,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull ModuleDelegate moduleDelegate,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            @NonNull Callback<String> showSurveyCallback) {
         PropertyModel model = new PropertyModel(SafetyHubMagicStackViewProperties.ALL_KEYS);
         mMediator =
                 new SafetyHubMagicStackMediator(
@@ -39,7 +41,8 @@ class SafetyHubMagicStackCoordinator implements ModuleProvider {
                         tabModelSelector,
                         moduleDelegate,
                         new PrefChangeRegistrar(),
-                        modalDialogManagerSupplier);
+                        modalDialogManagerSupplier,
+                        showSurveyCallback);
     }
 
     @Override
