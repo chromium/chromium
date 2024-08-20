@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 
 #include <optional>
 #include <string>
@@ -90,7 +90,7 @@ user_manager::UserType GetUserType(const AccountId& id) {
     if (auto* user = user_manager::UserManager::Get()->FindUser(id))
       return user->GetType();
   }
-  // TODO(b/258750657): Convert this to a DCHECK when tests are fixed.
+  // TODO(crbug.com/1329256): Convert this to a DCHECK when tests are fixed.
   LOG(WARNING) << "No matching user. This should only happen in tests.";
   // Unit tests may not have a UserManager.
   return user_manager::UserType::kRegular;

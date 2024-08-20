@@ -84,7 +84,7 @@
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/ash/tab_cluster_ui_client.h"
 #include "chrome/browser/ui/ash/vpn_list_forwarder.h"
-#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_manager_impl.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension_factory.h"

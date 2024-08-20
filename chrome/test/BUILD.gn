@@ -8601,8 +8601,6 @@ test("unit_tests") {
       "//chrome/browser/ui/ash/holding_space:test_support",
       "//chrome/browser/ui/ash/multi_user",
       "//chrome/browser/ui/ash/shelf",
-      "//chrome/browser/ui/ash/wallpaper",
-      "//chrome/browser/ui/ash/wallpaper:test_support",
       "//chrome/browser/ui/chromeos/magic_boost",
       "//chrome/browser/ui/chromeos/magic_boost:magic_boost_constants",
       "//chrome/browser/ui/chromeos/magic_boost:test_support",

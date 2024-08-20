@@ -155,7 +155,7 @@ static_library("test_support") {
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/ash/wallpaper",
+    "//chrome/browser/ui/ash",
     "//components/manta",
   ]
 }
@@ -192,7 +192,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/ash/wallpaper",
+    "//chrome/browser/ui/ash",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/geolocation",
     "//chromeos/constants",
@@ -257,8 +257,8 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/ash/wallpaper",
-    "//chrome/browser/ui/ash/wallpaper:test_support",
+    "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash:test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
