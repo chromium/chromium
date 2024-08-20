@@ -1596,7 +1596,7 @@
   {
     "name": "container",
     "owners": [ "dmblack@google.com", "xiaohuic@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "container-debug",
@@ -3378,17 +3378,7 @@
   {
     "name": "enable-holding-space-suggestions",
     "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "enable-holding-space-wallpaper-nudge",
-    "owners": [ "//ash/user_education/OWNERS" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "enable-holding-space-wallpaper-nudge-force-eligibility",
-    "owners": [ "//ash/user_education/OWNERS" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "enable-hostname-setting",
@@ -4373,12 +4363,12 @@
   {
     "name": "enable-welcome-tour",
     "owners": [ "//ash/user_education/OWNERS" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "enable-welcome-tour-force-user-eligibility",
     "owners": [ "//ash/user_education/OWNERS" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "enable-wifi-qos",
@@ -8585,11 +8575,6 @@
       "cros-peripherals@google.com"
     ],
     "expiry_milestone": 140
-  },
-  {
-    "name": "system-ui-downloads-integration-v2",
-    "owners": ["andrewxu@google.com", "dmblack@google.com"],
-    "expiry_milestone": 130
   },
   {
     "name": "system-voice-isolation-option",
