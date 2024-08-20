@@ -106,16 +106,23 @@ public class HistorySyncFirstRunFragment extends Fragment
         }
     }
 
+    /** Implements {@link HistorySyncDelegate} */
+    @Override
+    public boolean isLargeScreen() {
+        return !getPageDelegate().canUseLandscapeLayout();
+    }
+
+    /** Implements {@link HistorySyncDelegate} */
+    @Override
+    public void maybeRecordFreProgress(@MobileFreProgress int state) {
+        getPageDelegate().recordFreProgressHistogram(state);
+    }
+
     @Override
     public void onDetach() {
         super.onDetach();
         if (mHistorySyncCoordinator != null) {
             mHistorySyncCoordinator.destroy();
         }
-    }
-
-    @Override
-    public boolean isLargeScreen() {
-        return !getPageDelegate().canUseLandscapeLayout();
     }
 }

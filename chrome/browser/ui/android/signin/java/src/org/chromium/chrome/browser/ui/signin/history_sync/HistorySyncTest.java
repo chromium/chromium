@@ -45,6 +45,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -165,6 +166,8 @@ public class HistorySyncTest {
         histogramWatcher.assertExpected();
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
+        verify(mHistorySyncDelegateMock)
+                .maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_ACCEPTED);
         verify(mHistorySyncDelegateMock).dismissHistorySync();
         verify(mHistorySyncHelperMock).clearHistorySyncDeclinedPrefs();
     }
@@ -190,6 +193,8 @@ public class HistorySyncTest {
 
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
+        verify(mHistorySyncDelegateMock)
+                .maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_DISMISSED);
         verify(mHistorySyncDelegateMock).dismissHistorySync();
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
     }
@@ -216,6 +221,8 @@ public class HistorySyncTest {
         histogramWatcher.assertExpected();
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
+        verify(mHistorySyncDelegateMock)
+                .maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_ACCEPTED);
         verify(mHistorySyncDelegateMock).dismissHistorySync();
     }
 
@@ -240,6 +247,8 @@ public class HistorySyncTest {
 
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
+        verify(mHistorySyncDelegateMock)
+                .maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_DISMISSED);
         verify(mHistorySyncDelegateMock).dismissHistorySync();
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();

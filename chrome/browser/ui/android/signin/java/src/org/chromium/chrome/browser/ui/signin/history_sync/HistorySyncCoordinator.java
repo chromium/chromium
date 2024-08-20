@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
@@ -25,6 +26,8 @@ public class HistorySyncCoordinator {
         void dismissHistorySync();
 
         boolean isLargeScreen();
+
+        default void maybeRecordFreProgress(@MobileFreProgress int state) {}
     }
 
     private final Context mContext;

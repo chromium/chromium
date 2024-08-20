@@ -10,9 +10,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * This is used for histograms to track the FRE progress.
- * It should therefore be treated as append-only.
- * See {@code MobileFreProgress} in tools/metrics/histograms/enums.xml.
+ * This is used for histograms to track the FRE progress. It should therefore be treated as
+ * append-only. See {@code MobileFreProgress} in tools/metrics/histograms/enums.xml.
  */
 @IntDef({
     MobileFreProgress.STARTED,
@@ -27,6 +26,9 @@ import java.lang.annotation.RetentionPolicy;
     MobileFreProgress.WELCOME_SIGNIN_WITH_NON_DEFAULT_ACCOUNT,
     MobileFreProgress.WELCOME_DISMISS,
     MobileFreProgress.SYNC_CONSENT_SETTINGS_LINK_CLICK,
+    MobileFreProgress.HISTORY_SYNC_OPT_IN_SHOWN,
+    MobileFreProgress.HISTORY_SYNC_ACCEPTED,
+    MobileFreProgress.HISTORY_SYNC_DISMISSED,
     MobileFreProgress.MAX,
 })
 @Retention(RetentionPolicy.SOURCE)
@@ -59,5 +61,13 @@ public @interface MobileFreProgress {
     /** The user clicked on the |settings| link on sync consent screen. */
     int SYNC_CONSENT_SETTINGS_LINK_CLICK = 11;
 
-    int MAX = 12;
+    int HISTORY_SYNC_OPT_IN_SHOWN = 12;
+
+    /** The user clicked on the |Yes, I'm in| button to accept history sync. */
+    int HISTORY_SYNC_ACCEPTED = 13;
+
+    /** The user clicked on the |No thanks| button to decline history sync. */
+    int HISTORY_SYNC_DISMISSED = 14;
+
+    int MAX = 15;
 }

@@ -337,6 +337,13 @@ chromium-metrics-reviews@google.com.
       label="The user clicked the dismiss button on welcome screen"/>
   <int value="11"
       label="The user clicked on the |settings| link on sync consent screen"/>
+  <int value="12" label="History sync opt-in shown"/>
+  <int value="13"
+      label="The user clicked on the |Yes, I'm in| button to accept history
+             sync"/>
+  <int value="14"
+      label="The user clicked on the |No thanks| button to decline history
+             sync"/>
 </enum>
 
 <enum name="MobileFreSignInChoice">

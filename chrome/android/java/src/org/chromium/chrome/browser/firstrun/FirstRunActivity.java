@@ -163,8 +163,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
             mFreProgressStates.add(MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN);
         }
 
-        // An optional sync consent page, the visibility of this page will be decided on the fly
-        // according to the situation.
+        // An optional history sync opt-in page, the visibility of this page will be decided on the
+        // fly according to the situation.
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
             BooleanSupplier showHistorySync =
@@ -176,12 +176,13 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                 historySyncHelper.recordHistorySyncNotShown(SigninAccessPoint.START_PAGE);
             }
             mPages.add(new FirstRunPage<>(HistorySyncFirstRunFragment.class, showHistorySync));
+            mFreProgressStates.add(MobileFreProgress.HISTORY_SYNC_OPT_IN_SHOWN);
         } else {
             BooleanSupplier showSyncConsent =
                     () -> mFreProperties.getBoolean(SHOW_SYNC_CONSENT_PAGE);
             mPages.add(new FirstRunPage<>(SyncConsentFirstRunFragment.class, showSyncConsent));
+            mFreProgressStates.add(MobileFreProgress.SYNC_CONSENT_SHOWN);
         }
-        mFreProgressStates.add(MobileFreProgress.SYNC_CONSENT_SHOWN);
 
         if (mPagerAdapter != null) {
             mPagerAdapter.notifyDataSetChanged();
