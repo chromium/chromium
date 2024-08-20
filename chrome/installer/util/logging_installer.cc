@@ -137,7 +137,7 @@ base::FilePath GetLogFilePath(const installer::InitialPreferences& prefs) {
   // fails.
   base::FilePath tmp_path;
   std::ignore = ::IsUserAnAdmin()
-                    ? base::GetSecureSystemTemp(&tmp_path)
+                    ? base::PathService::Get(base::DIR_SYSTEM_TEMP, &tmp_path)
                     : base::PathService::Get(base::DIR_TEMP, &tmp_path);
   return tmp_path.Append(kLogFilename);
 }

@@ -11,6 +11,7 @@
 
 #include "base/environment.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -202,6 +203,22 @@ bool PathProviderWin(int key, FilePath* result) {
         return false;
       }
       cur = FilePath(system_buffer);
+      break;
+    case base::DIR_SYSTEM_TEMP:
+      // Try C:\Windows\SystemTemp, which was introduced sometime before Windows
+      // 10 build 19042. Do not use GetTempPath2, as it only appeared later and
+      // will only return the path for processes running as SYSTEM.
+      if (PathService::Get(DIR_WINDOWS, &cur)) {
+        cur = cur.Append(FILE_PATH_LITERAL("SystemTemp"));
+        if (PathIsWritable(cur)) {
+          break;
+        }
+      }
+      // Failing that, use C:\Program Files or C:\Program Files (x86) for older
+      // versions of Windows 10.
+      if (!PathService::Get(DIR_PROGRAM_FILES, &cur) || !PathIsWritable(cur)) {
+        return false;
+      }
       break;
     default:
       return false;

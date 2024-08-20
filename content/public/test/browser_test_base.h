@@ -25,6 +25,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
+#include "base/test/scoped_path_override.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -242,6 +243,10 @@ class BrowserTestBase : public ::testing::Test {
   // Captures |browser_main_parts_| and forwards the call to
   // CreatedBrowserMainParts().
   void CreatedBrowserMainPartsImpl(BrowserMainParts* browser_main_parts);
+
+#if BUILDFLAG(IS_WIN)
+  std::optional<base::ScopedPathOverride> system_temp_override_;
+#endif
 
   // Embedded HTTP test server, cheap to create, started on demand.
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;

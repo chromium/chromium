@@ -3044,24 +3044,6 @@ TEST_F(FileUtilTest, FILEToFile) {
   EXPECT_EQ(file.GetLength(), 5L);
 }
 
-#if BUILDFLAG(IS_WIN)
-TEST_F(FileUtilTest, GetSecureSystemTemp) {
-  FilePath secure_system_temp;
-  ASSERT_EQ(GetSecureSystemTemp(&secure_system_temp), !!::IsUserAnAdmin());
-  if (!::IsUserAnAdmin()) {
-    GTEST_SKIP() << "This test must be run by an admin user";
-  }
-
-  FilePath dir_windows;
-  ASSERT_TRUE(PathService::Get(DIR_WINDOWS, &dir_windows));
-  FilePath dir_program_files;
-  ASSERT_TRUE(PathService::Get(DIR_PROGRAM_FILES, &dir_program_files));
-
-  ASSERT_TRUE((dir_windows.AppendASCII("SystemTemp") == secure_system_temp) ||
-              (dir_program_files == secure_system_temp));
-}
-#endif  // BUILDFLAG(IS_WIN)
-
 TEST_F(FileUtilTest, CreateNewTempDirectoryTest) {
   FilePath temp_dir;
   ASSERT_TRUE(CreateNewTempDirectory(FilePath::StringType(), &temp_dir));
@@ -3079,7 +3061,8 @@ TEST_F(FileUtilTest, TempDirectoryParentTest) {
   EXPECT_TRUE(PathExists(temp_dir));
 
   FilePath expected_parent_dir;
-  if (!GetSecureSystemTemp(&expected_parent_dir)) {
+  if (!::IsUserAnAdmin() ||
+      !PathService::Get(DIR_SYSTEM_TEMP, &expected_parent_dir)) {
     EXPECT_TRUE(PathService::Get(DIR_TEMP, &expected_parent_dir));
   }
   EXPECT_TRUE(expected_parent_dir.IsParent(temp_dir));

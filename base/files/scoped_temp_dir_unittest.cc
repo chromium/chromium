@@ -62,7 +62,8 @@ TEST(ScopedTempDir, TempDir) {
 
 #if BUILDFLAG(IS_WIN)
     FilePath expected_parent_dir;
-    if (!GetSecureSystemTemp(&expected_parent_dir)) {
+    if (!::IsUserAnAdmin() ||
+        !PathService::Get(DIR_SYSTEM_TEMP, &expected_parent_dir)) {
       EXPECT_TRUE(PathService::Get(DIR_TEMP, &expected_parent_dir));
     }
     EXPECT_TRUE(expected_parent_dir.IsParent(test_path));
