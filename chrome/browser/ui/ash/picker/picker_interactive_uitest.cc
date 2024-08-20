@@ -71,6 +71,12 @@ void TogglePickerByAccelerator() {
                             /*alt=*/false, /*command=*/true);
 }
 
+void SendKeyPressWithoutModifiers(ui::KeyboardCode key) {
+  ui_controls::SendKeyPress(/*window=*/nullptr, key,
+                            /*control=*/false, /*shift=*/false,
+                            /*alt=*/false, /*command=*/false);
+}
+
 void AddUrlToHistory(Profile* profile,
                      GURL url,
                      base::Time last_visit = base::Time::Now()) {
@@ -419,6 +425,77 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, DISABLED_SearchAndInsertMath) {
               })),
       PressButton(kMathResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context, WaitForWebInputFieldValue(kExpectedResult)));
+}
+
+// Navigates through the zero-state UI using only the keyboard.
+IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, KeyboardNavigationInZeroState) {
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
+  constexpr std::string_view kItem1Name = "Item1";
+  constexpr std::string_view kItem2Name = "Item2";
+  constexpr std::string_view kEmoji1Name = "Emoji1";
+  constexpr std::string_view kEmoji2Name = "Emoji2";
+  views::Textfield* picker_search_field = nullptr;
+
+  RunTestSequence(
+      InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
+                                       WaitForWebInputFieldFocus())),
+      Do([]() { TogglePickerByAccelerator(); }),
+      AfterShow(ash::kPickerSearchFieldTextfieldElementId,
+                [&picker_search_field](ui::TrackedElement* el) {
+                  picker_search_field = AsView<views::Textfield>(el);
+                }),
+      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      WaitForState(kSearchFieldFocusedState, true),
+      NameDescendantViewByType<ash::PickerListItemView>(ash::kPickerElementId,
+                                                        kItem1Name, 0),
+      NameDescendantViewByType<ash::PickerListItemView>(ash::kPickerElementId,
+                                                        kItem2Name, 1),
+      NameDescendantViewByType<ash::PickerEmojiItemView>(ash::kPickerElementId,
+                                                         kEmoji1Name, 0),
+      NameDescendantViewByType<ash::PickerEmojiItemView>(ash::kPickerElementId,
+                                                         kEmoji2Name, 1),
+      // The first item should be selected by default.
+      CheckViewProperty(kItem1Name, &ash::PickerItemView::GetItemState,
+                        ash::PickerItemView::ItemState::kPseudoFocused),
+      // Down arrow should move to the next item.
+      Do([]() { SendKeyPressWithoutModifiers(ui::VKEY_DOWN); }),
+      CheckViewProperty(kItem2Name, &ash::PickerItemView::GetItemState,
+                        ash::PickerItemView::ItemState::kPseudoFocused),
+      CheckViewProperty(kItem1Name, &ash::PickerItemView::GetItemState,
+                        ash::PickerItemView::ItemState::kNormal),
+      // Up arrow should move to the previous item.
+      Do([]() { SendKeyPressWithoutModifiers(ui::VKEY_UP); }),
+      CheckViewProperty(kItem1Name, &ash::PickerItemView::GetItemState,
+                        ash::PickerItemView::ItemState::kPseudoFocused),
+      CheckViewProperty(kItem2Name, &ash::PickerItemView::GetItemState,
+                        ash::PickerItemView::ItemState::kNormal),
+      // Up arrow should move to the first emoji in the emoji bar.
+      Do([]() { SendKeyPressWithoutModifiers(ui::VKEY_UP); }),
+      CheckViewProperty(kEmoji1Name, &ash::PickerItemView::GetItemState,
+                        ash::PickerItemView::ItemState::kPseudoFocused),
+      CheckViewProperty(kItem1Name, &ash::PickerItemView::GetItemState,
+                        ash::PickerItemView::ItemState::kNormal),
+      // Right arrow should move to the second emoji in the emoji bar.
+      Do([]() { SendKeyPressWithoutModifiers(ui::VKEY_RIGHT); }),
+      CheckViewProperty(kEmoji2Name, &ash::PickerItemView::GetItemState,
+                        ash::PickerItemView::ItemState::kPseudoFocused),
+      CheckViewProperty(kEmoji1Name, &ash::PickerItemView::GetItemState,
+                        ash::PickerItemView::ItemState::kNormal),
+      // Left arrow should back move to the first emoji in the emoji bar.
+      Do([]() { SendKeyPressWithoutModifiers(ui::VKEY_LEFT); }),
+      CheckViewProperty(kEmoji1Name, &ash::PickerItemView::GetItemState,
+                        ash::PickerItemView::ItemState::kPseudoFocused),
+      CheckViewProperty(kEmoji2Name, &ash::PickerItemView::GetItemState,
+                        ash::PickerItemView::ItemState::kNormal),
+      // Down arrow should back move to the first item.
+      Do([]() { SendKeyPressWithoutModifiers(ui::VKEY_DOWN); }),
+      CheckViewProperty(kItem1Name, &ash::PickerItemView::GetItemState,
+                        ash::PickerItemView::ItemState::kPseudoFocused),
+      CheckViewProperty(kEmoji1Name, &ash::PickerItemView::GetItemState,
+                        ash::PickerItemView::ItemState::kNormal));
 }
 
 // TODO: b/330786933: Add interactive UI test for file previews.
