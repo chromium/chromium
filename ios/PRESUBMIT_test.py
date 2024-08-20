@@ -127,6 +127,29 @@ class CheckHasNoPipeInCommentTest(unittest.TestCase):
         error_lines = errors[0].message.split('\n')
         self.assertEqual(len(error_lines), len(bad_lines) * 2 + 3)
 
+class CheckHasNoChromeBrowserStateForwardDeclarationTest(unittest.TestCase):
+    """Test the _CheckHasNoChromeBrowserStateForwardDeclaration presubmit. """
+
+    def testFindsChromeBrowserStateForwardDeclaration(self):
+        good_lines = [
+          'friend class ChromeBrowserState;',
+          'class ChromeBrowserStateSuffixed;',
+          'class ChromeBrowserState {'
+          ]
+        bad_lines = [
+          'class ChromeBrowserState;'
+        ]
+        mock_input = PRESUBMIT_test_mocks.MockInputApi()
+        mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile('ios/path/foo_controller.h',
+                                          good_lines + bad_lines),
+        ]
+        mock_output = PRESUBMIT_test_mocks.MockOutputApi()
+        errors = PRESUBMIT._CheckHasNoChromeBrowserStateForwardDeclaration(
+            mock_input, mock_output)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual('error', errors[0].type)
+        self.assertTrue('ios/path/foo_controller.h:4' in errors[0].message)
 
 if __name__ == '__main__':
     unittest.main()
