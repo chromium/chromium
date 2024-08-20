@@ -26641,6 +26641,8 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationPreconnect) {
     request.network_isolation_key = network_isolation_key_for_request;
     request.network_anonymization_key = network_anonymization_key_for_request;
 
+    // Run until idle to ensure that preconnects complete.
+    RunUntilIdle();
     EXPECT_EQ(2, GetIdleSocketCountInTransportSocketPool(session.get()));
 
     // Make the request.
