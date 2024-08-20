@@ -19,6 +19,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/lens_shared_resources.h"
+#include "chrome/grit/lens_shared_resources_map.h"
 #include "chrome/grit/lens_untrusted_resources.h"
 #include "chrome/grit/lens_untrusted_resources_map.h"
 #include "components/lens/lens_features.h"
@@ -187,6 +189,9 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
       base::make_span(kLensUntrustedResources, kLensUntrustedResourcesSize),
       IDR_LENS_UNTRUSTED_LENS_OVERLAY_HTML);
 
+  html_source->AddResourcePaths(
+      base::make_span(kLensSharedResources, kLensSharedResourcesSize));
+
   // Add required resources for the searchbox.
   SearchboxHandler::SetupWebUIDataSource(html_source,
                                          Profile::FromWebUI(web_ui));
@@ -199,7 +204,7 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
                                   IDS_GOOGLE_LENS_SEARCH_BOX_EMPTY_HINT);
   html_source->AddLocalizedString("searchBoxHintMultimodal",
                                   IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MULTIMODAL);
-  html_source->AddBoolean("searchboxInSidePanel", true);
+  html_source->AddBoolean("isLensSearchbox", true);
 
   // Determine if the cursor tooltip should appear.
   Profile* profile = Profile::FromWebUI(web_ui);

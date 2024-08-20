@@ -17,7 +17,7 @@
   }
 
   /* Side panel searchbox should not have a shadow when dropdown isn't visible */
-  :host([in-side-panel_]:not([dropdown-is-visible])) {
+  :host([is-lens-searchbox_]:not([dropdown-is-visible])) {
     --cr-realbox-shadow: none;
   }
 
@@ -146,11 +146,11 @@
   /* TODO(b/328294049): Switch all hard-coded colors to CSS color tokens. */
   /* When input is focused and dropdown is not visible, switch realbox background
    * to steady state color because side panel doesn't have box shadow. */
-  :host([in-side-panel_]:not([dropdown-is-visible])) input:focus {
+  :host([is-lens-searchbox_]:not([dropdown-is-visible])) input:focus {
     background-color: #F1F3F4;
   }
 
-  :host-context([dark-mode]):host([in-side-panel_]:not([dropdown-is-visible])) input:focus {
+  :host-context([dark-mode]):host([is-lens-searchbox_]:not([dropdown-is-visible])) input:focus {
     background-color: #303134;
   }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '../strings.m.js';
+import '/lens/shared/searchbox_shared_style.css.js';
 import '//resources/cr_components/searchbox/searchbox.js';
 import './side_panel_ghost_loader.js';
 

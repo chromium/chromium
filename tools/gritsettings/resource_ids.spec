@@ -710,6 +710,10 @@
     "META": {"sizes": {"includes": [20]}},
     "includes": [5360],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/lens/shared/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [5370],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/enterprise_reporting/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [5380],

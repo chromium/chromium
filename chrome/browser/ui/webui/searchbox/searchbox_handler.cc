@@ -464,9 +464,9 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   // http://g/chrome-webui/haW6I9yt-uA/38ckX-aGAgAJ for details.
   source->AddBoolean("reportMetrics", true);
 
-  // The side panel searchbox overrides this to true to adjust various color
-  // and layout options.
-  source->AddBoolean("searchboxInSidePanel", false);
+  // The lens searchboxes overrides this to true to adjust various color and
+  // layout options.
+  source->AddBoolean("isLensSearchbox", false);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},

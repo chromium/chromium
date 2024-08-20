@@ -135,9 +135,9 @@ export class SearchboxIconElement extends PolymerElement {
         value: false,
       },
 
-      inSidePanel_: {
+      isLensSearchbox_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('searchboxInSidePanel'),
+        value: () => loadTimeData.getBoolean('isLensSearchbox'),
         reflectToAttribute: true,
       },
     };

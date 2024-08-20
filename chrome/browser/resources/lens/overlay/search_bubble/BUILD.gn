@@ -22,6 +22,7 @@ build_webui("build") {
   non_web_component_files = [ "search_bubble_proxy.ts" ]
 
   ts_deps = [
+    "//chrome/browser/resources/lens/shared:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/searchbox:build_ts",
@@ -34,6 +35,10 @@ build_webui("build") {
   mojo_files = [
     "$root_gen_dir/chrome/browser/lens/core/mojom/search_bubble.mojom-webui.ts",
   ]
+  ts_path_mappings =
+      [ "/lens/shared/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/lens/shared/tsc/*",
+                    target_gen_dir) ]
 
   webui_context_type = "trusted"
 }

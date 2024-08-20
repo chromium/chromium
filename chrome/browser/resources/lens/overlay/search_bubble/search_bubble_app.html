@@ -1,4 +1,4 @@
-<style include="cr-icons">
+<style include="cr-icons searchbox-shared-style">
 :host {
   --cr-realbox-min-width: 332px;
 }
@@ -26,6 +26,10 @@
   --cr-icon-button-icon-size: 16px;
 }
 
+:host([dark-mode]) #closeButton {
+  --cr-icon-button-fill-color: #9AA0A6;
+}
+
 :host-context([dir='ltr']) #closeButton {
   margin-right: 16px;
 }
@@ -35,7 +39,6 @@
 }
 
 #realboxContainer {
-  display: flex;
   flex-basis: 100%;
   justify-content: center;
   --cr-realbox-height: 52px;

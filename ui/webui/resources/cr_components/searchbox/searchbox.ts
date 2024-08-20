@@ -135,9 +135,9 @@ export class SearchboxElement extends SearchboxElementBase {
       // Private properties
       //========================================================================
 
-      inSidePanel_: {
+      isLensSearchbox_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('searchboxInSidePanel'),
+        value: () => loadTimeData.getBoolean('isLensSearchbox'),
         reflectToAttribute: true,
       },
 
