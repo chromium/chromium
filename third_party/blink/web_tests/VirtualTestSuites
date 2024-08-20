@@ -1153,6 +1153,7 @@
   "expires.",
   {
     "prefix": "threaded-composited-iframes",
+    "owners": ["acomminos@fb.com", "shaseley@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/is-input-pending"],
     "exclusive_tests": "ALL",
