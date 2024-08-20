@@ -2540,7 +2540,6 @@ void QuotaManagerImpl::DidDumpBucketTableForHistogram(
 
   base::UmaHistogramCounts100000("Quota.TotalBucketCount", entries.size());
 
-  int nonce_count = 0;
   std::map<StorageKey, int64_t> usage_map =
       GetUsageTracker(StorageType::kTemporary)->GetCachedStorageKeysUsage();
   base::Time now = QuotaDatabase::GetNow();
@@ -2554,11 +2553,6 @@ void QuotaManagerImpl::DidDumpBucketTableForHistogram(
     if (!storage_key.has_value()) {
       continue;
     }
-
-    if (storage_key.value().nonce().has_value()) {
-      nonce_count += 1;
-    }
-
     auto it = usage_map.find(*storage_key);
     if (it == usage_map.end() || it->second == 0) {
       continue;
@@ -2573,7 +2567,6 @@ void QuotaManagerImpl::DidDumpBucketTableForHistogram(
                                 base::HistogramBase::kUmaTargetedHistogramFlag)
         ->AddCount(age.InDays(), base::saturated_cast<int>(kilobytes));
   }
-  base::UmaHistogramCounts100000("Quota.StorageKeyNonceCount", nonce_count);
 }
 
 std::set<BucketId> QuotaManagerImpl::GetEvictionBucketExceptions() {
