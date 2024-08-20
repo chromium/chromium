@@ -1376,6 +1376,12 @@ chromium-metrics-reviews@google.com.
   <token key="MileStone">
     <variant name="AFTEnd" summary="AFT end event is sent"/>
     <variant name="AFTStart" summary="AFT start event is sent"/>
+    <variant name="BodyChunkEnd"
+        summary="end of the header chunk start event is sent"/>
+    <variant name="BodyChunkStart" summary="beginning of the body chunk"/>
+    <variant name="HeaderChunkEnd"
+        summary="end of the header chunk start event is sent"/>
+    <variant name="HeaderChunkStart" summary="beginning of the header chunk"/>
   </token>
 </histogram>
 
