@@ -228,6 +228,13 @@ void SecurityStatePageLoadMetricsObserver::RecordSecurityLevelHistogram(
   // resolved.
   security_state_tab_helper_ =
       SecurityStateTabHelper::FromWebContents(web_contents);
+  // TODO(https://crbug.com/355894536): There are some features that currently
+  // instantiate a SecurityStatePageLoadMetricsObserver without a
+  // ChromeSecurityStateTabHelper. This does not make sense conceptually. For
+  // now add an early return.
+  if (!security_state_tab_helper_) {
+    return;
+  }
 
   DCHECK_EQ(initial_security_level_, security_state::NONE);
   DCHECK_EQ(current_security_level_, security_state::NONE);
