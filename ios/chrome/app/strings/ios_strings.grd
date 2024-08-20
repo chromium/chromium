@@ -179,8 +179,8 @@
       <message name="IDS_IOS_ACCOUNT_PICKER_SUBMIT_TAPPED_ACCESSIBILITY_LABEL" desc="Accessibility label of the Submit button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver. [iOS only]" meaning="Accessibility label of the Submit button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver. [iOS only]">
         Action in progress…
       </message>
-      <message name="IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE" translateable="false" desc="The snackbar message title to confirm the signed-in account after a successful account switch. [iOS only]">
-        ***Signed in as <ph name="USER">$1<ex>Jane Doe</ex></ph>***
+      <message name="IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE" desc="The snackbar message title to confirm the signed-in account after a successful account switch. [iOS only]">
+        Signed in as <ph name="USER">$1<ex>Jane Doe</ex></ph>
       </message>
       <message name="IDS_IOS_ACCOUNT_TABLE_ENTER_PASSPHRASE_MESSAGE" desc="The error message to show in the account table when there is a passphrase error. [iOS only]">
         Sync is not working. To start sync enter your passphrase.

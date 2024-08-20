@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator.h"
 
+#import <MaterialComponents/MaterialSnackbar.h>
+
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -21,6 +23,7 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -74,6 +77,7 @@
       _syncEncryptionPassphraseTableViewController;
   // ApplicationCommands handler.
   id<ApplicationCommands> _applicationHandler;
+  ChromeAccountManagerService* _accountManagerService;
 }
 
 - (void)dealloc {
@@ -87,7 +91,7 @@
   _syncService = SyncServiceFactory::GetForBrowserState(browserState);
   _authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
-  ChromeAccountManagerService* accountManagerService =
+  _accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(browserState);
@@ -111,7 +115,7 @@
 
   _mediator =
       [[AccountMenuMediator alloc] initWithSyncService:_syncService
-                                 accountManagerService:accountManagerService
+                                 accountManagerService:_accountManagerService
                                            authService:_authenticationService
                                        identityManager:identityManager];
   _mediator.delegate = self;
@@ -154,6 +158,7 @@
   _applicationHandler = nil;
   _syncService = nullptr;
   _authenticationService = nullptr;
+  _accountManagerService = nullptr;
   [self stopSignoutActionSheetCoordinator];
   [self stopAccountsCoordinator];
   [super stop];
@@ -325,12 +330,12 @@
 
 - (void)triggerAccountSwitchSnackbarWithIdentity:
     (id<SystemIdentity>)systemIdentity {
-  NSString* accountName = systemIdentity.userGivenName
-                              ? systemIdentity.userGivenName
-                              : systemIdentity.userEmail;
-  MDCSnackbarMessage* snackbarTitle = CreateSnackbarMessage(
-      l10n_util::GetNSStringF(IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
-                              base::SysNSStringToUTF16(accountName)));
+  UIImage* avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
+      systemIdentity, IdentityAvatarSize::Regular);
+  MDCSnackbarMessage* snackbarTitle =
+      [[IdentitySnackbarMessage alloc] initWithName:systemIdentity.userGivenName
+                                              email:systemIdentity.userEmail
+                                             avatar:avatar];
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   id<SnackbarCommands> snackbarCommandsHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
