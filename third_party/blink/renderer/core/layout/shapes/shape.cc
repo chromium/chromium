@@ -296,8 +296,7 @@ static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
     float threshold,
     int content_block_size,
     const gfx::Rect& image_rect,
-    const gfx::Rect& margin_rect,
-    const gfx::Rect& margin_physical_rect) {
+    const gfx::Rect& margin_logical_rect) {
   DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(contents);
   DOMUint8ClampedArray* pixel_array =
       DOMUint8ClampedArray::Create(array_buffer, 0, array_buffer->ByteLength());
@@ -306,18 +305,10 @@ static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
 
   DCHECK_EQ(image_rect.size().Area64() * 4, pixel_array->length());
 
-  // TODO(crbug.com/359616076): These three values should take into account
-  // of writing-mode.
   const int image_block_start = image_rect.y();
   const int image_block_end = image_rect.bottom();
-  const int margin_box_block_size =
-      RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()
-          ? std::max(margin_physical_rect.height(), 0)
-          : margin_rect.height();
-  const int margin_block_start =
-      RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()
-          ? margin_physical_rect.y()
-          : margin_rect.y();
+  const int margin_box_block_size = margin_logical_rect.height();
+  const int margin_block_start = margin_logical_rect.y();
   const int margin_block_end = margin_block_start + margin_box_block_size;
 
   int min_buffer_y = std::max(0, margin_block_start - image_rect.y());
@@ -373,16 +364,11 @@ std::unique_ptr<Shape> Shape::CreateRasterShape(
     float threshold,
     int content_block_size,
     const gfx::Rect& image_rect,
-    const DeprecatedLayoutRect& margin_r,
-    const gfx::Rect& margin_physical_rect,
+    const gfx::Rect& margin_logical_rect,
     WritingMode writing_mode,
     float margin,
     RespectImageOrientationEnum respect_orientation) {
-  gfx::Rect margin_rect = ToPixelSnappedRect(margin_r);
-  gfx::Size margin_box_size =
-      RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()
-          ? margin_physical_rect.size()
-          : margin_rect.size();
+  gfx::Size margin_box_size = margin_logical_rect.size();
   if (!IsValidRasterShapeSize(margin_box_size) ||
       !IsValidRasterShapeSize(image_rect.size())) {
     return CreateEmptyRasterShape(writing_mode, margin);
@@ -396,8 +382,7 @@ std::unique_ptr<Shape> Shape::CreateRasterShape(
 
   std::unique_ptr<RasterShapeIntervals> intervals =
       ExtractIntervalsFromImageData(contents, threshold, content_block_size,
-                                    image_rect, margin_rect,
-                                    margin_physical_rect);
+                                    image_rect, margin_logical_rect);
   std::unique_ptr<RasterShape> raster_shape =
       std::make_unique<RasterShape>(std::move(intervals), margin_box_size);
   raster_shape->writing_mode_ = writing_mode;

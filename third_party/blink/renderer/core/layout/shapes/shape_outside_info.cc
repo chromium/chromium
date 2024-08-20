@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
@@ -44,6 +45,17 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
+
+namespace {
+
+gfx::Rect ToPixelSnappedLogicalRect(const LogicalRect& rect) {
+  return gfx::Rect(
+      rect.offset.inline_offset.Round(), rect.offset.block_offset.Round(),
+      SnapSizeToPixel(rect.size.inline_size, rect.offset.inline_offset),
+      SnapSizeToPixel(rect.size.block_size, rect.offset.block_offset));
+}
+
+}  // namespace
 
 CSSBoxType ReferenceBox(const ShapeValue& shape_value) {
   if (shape_value.CssBox() == CSSBoxType::kMissing)
@@ -202,10 +214,21 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
                        reference_box_logical_size_.block_size.ToFloat()),
       respect_orientation);
 
-  const LogicalRect& margin_rect =
-      GetShapeImageMarginRect(*layout_box_, reference_box_logical_size_);
-  const PhysicalRect margin_physical_rect =
-      GetShapeImagePhysicalMarginRect(*layout_box_, reference_physical_size);
+  LogicalRect margin_rect;
+  if (RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()) {
+    WritingModeConverter converter({writing_mode, TextDirection::kLtr},
+                                   reference_physical_size);
+    margin_rect = converter.ToLogical(
+        GetShapeImagePhysicalMarginRect(*layout_box_, reference_physical_size));
+    margin_rect.size.inline_size =
+        margin_rect.size.inline_size.ClampNegativeToZero();
+    margin_rect.size.block_size =
+        margin_rect.size.block_size.ClampNegativeToZero();
+  } else {
+    margin_rect =
+        GetShapeImageMarginRect(*layout_box_, reference_box_logical_size_);
+  }
+
   const gfx::Rect image_rect = ToPixelSnappedRect(
       layout_box_->IsLayoutImage()
           ? To<LayoutImage>(layout_box_.Get())->ReplacedContentRect()
@@ -218,8 +241,8 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
   return Shape::CreateRasterShape(
       image.get(), shape_image_threshold,
       reference_box_logical_size_.block_size.Floor(), image_rect,
-      margin_rect.ToLayoutRect(), ToPixelSnappedRect(margin_physical_rect),
-      writing_mode, margin, respect_orientation);
+      ToPixelSnappedLogicalRect(margin_rect), writing_mode, margin,
+      respect_orientation);
 }
 
 const Shape& ShapeOutsideInfo::ComputedShape() const {
