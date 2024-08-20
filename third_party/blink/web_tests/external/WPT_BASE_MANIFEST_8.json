@@ -84916,6 +84916,19 @@
        {}
       ]
      ],
+     "box-shadow-005.html": [
+      "536e2ad67d0cfa8d9a16ef7fed1ab8fb743f7138",
+      [
+       null,
+       [
+        [
+         "/css/css-break/box-shadow-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "br-clear-all.html": [
       "ac3a67ffd034ecb315c66da5682500dea47ee2d4",
       [
@@ -271331,6 +271344,19 @@
          {}
         ]
        ],
+       "2d.layer.ctm.ctx-filter.html": [
+        "66d57624bdc76bd70d4a8aaa646cb908ecedbab4",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.ctm.ctx-filter-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "2d.layer.ctm.filter.html": [
         "3d56ac36011cdac9aff399c0159806162edf9b58",
         [
@@ -271409,65 +271435,104 @@
          {}
         ]
        ],
-       "2d.layer.global-filter.html": [
-        "cf46f41b974947839f6f69e028b6dc51ba4ec62d",
+       "2d.layer.global-states.ctx-filter.no-transform.html": [
+        "a7636efcef757fb4883b298813170a7aeb9c769c",
         [
          null,
          [
           [
-           "/html/canvas/element/layers/2d.layer.global-filter-expected.html",
+           "/html/canvas/element/layers/2d.layer.global-states.ctx-filter.no-transform-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.filter.no-transform.html": [
-        "0b6769e878409928a19362652997b425d330fa12",
+       "2d.layer.global-states.ctx-filter.rotation.html": [
+        "677fb3bae75882a06330457ebd5c9bc5aa6069d6",
         [
          null,
          [
           [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.no-transform-expected.html",
+           "/html/canvas/element/layers/2d.layer.global-states.ctx-filter.rotation-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.filter.rotation.html": [
-        "a9046dec0548075a8cdf1dd5f652bcb400743873",
+       "2d.layer.global-states.filter.ctx-filter.no-transform.html": [
+        "6c327382eafc7a0154d4451e2948fe46c3f57475",
         [
          null,
          [
           [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.rotation-expected.html",
+           "/html/canvas/element/layers/2d.layer.global-states.filter.ctx-filter.no-transform-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.no-transform.html": [
-        "1bc6777b90d439b6c052ab1309eeee1988e75044",
+       "2d.layer.global-states.filter.ctx-filter.rotation.html": [
+        "7a7ae56980ac48b4caf33742ea03dcc9badc823f",
         [
          null,
          [
           [
-           "/html/canvas/element/layers/2d.layer.global-states.no-transform-expected.html",
+           "/html/canvas/element/layers/2d.layer.global-states.filter.ctx-filter.rotation-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.rotation.html": [
-        "a73753a7abad8792abdc8b8133465e5952700e2e",
+       "2d.layer.global-states.filter.no-cxt-filter.no-transform.html": [
+        "a0bcfb3978286f5e16e0d7fce274d0396af10f96",
         [
          null,
          [
           [
-           "/html/canvas/element/layers/2d.layer.global-states.rotation-expected.html",
+           "/html/canvas/element/layers/2d.layer.global-states.filter.no-cxt-filter.no-transform-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.no-cxt-filter.rotation.html": [
+        "fcfe914fc01740a6f84de2ab64d4278ac49b3342",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.global-states.filter.no-cxt-filter.rotation-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.no-cxt-filter.no-transform.html": [
+        "ca6791971f5b9547165fe117179f735055e39562",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.global-states.no-cxt-filter.no-transform-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.no-cxt-filter.rotation.html": [
+        "f7914c6a70c56e6b89f2ad8c93b0f9a16b73621e",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.global-states.no-cxt-filter.rotation-expected.html",
            "=="
           ]
          ],
@@ -271481,6 +271546,19 @@
          [
           [
            "/html/canvas/element/layers/2d.layer.globalCompositeOperation-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.nested-ctx-filter.html": [
+        "68c8b06857bcfab428aa83365e539f6a4754c52b",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.nested-ctx-filter-expected.html",
            "=="
           ]
          ],
@@ -271566,7 +271644,7 @@
         ]
        ],
        "2d.layer.reset.html": [
-        "9ad779abfddabe221d600b4cc48f69954ee1aa4f",
+        "ecb3903b008b58bc75dd29983fab76778a1f43c7",
         [
          null,
          [
@@ -274016,6 +274094,32 @@
          {}
         ]
        ],
+       "2d.layer.ctm.ctx-filter.html": [
+        "8ef1bbee08f2e7b273759f1ad555c6c1aeddbd1c",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.ctm.ctx-filter-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.ctm.ctx-filter.w.html": [
+        "8f9981a6fc54c1d4dd5e124dff2e54c2d5dff167",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.ctm.ctx-filter-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "2d.layer.ctm.filter.html": [
         "e5efc24bcc4f1e19ba49e5e5bee67cc21cce1eb6",
         [
@@ -274146,130 +274250,208 @@
          {}
         ]
        ],
-       "2d.layer.global-filter.html": [
-        "2388a06a964222700dd1f71b57ad0b7004becfbb",
+       "2d.layer.global-states.ctx-filter.no-transform.html": [
+        "483cbd077f72e5e449c5259ee743b36edf0e5a40",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-filter-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.ctx-filter.no-transform-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-filter.w.html": [
-        "4c8f92d18a1d149185ae86a5e9d6c3ad7dd16aa5",
+       "2d.layer.global-states.ctx-filter.no-transform.w.html": [
+        "50cc215d852e2d5fa90e499d33480dad95b27f2a",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-filter-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.ctx-filter.no-transform-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.filter.no-transform.html": [
-        "9aa5cd57edd0dff7113495c7c81e35b2d45d49bd",
+       "2d.layer.global-states.ctx-filter.rotation.html": [
+        "fde83b631e2678350ca898ef9fb1d39ffbe6df26",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-transform-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.ctx-filter.rotation-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.filter.no-transform.w.html": [
-        "c98482af03ddd2b0409bc6a68a2ba4a9fc513aa8",
+       "2d.layer.global-states.ctx-filter.rotation.w.html": [
+        "3ba60548851684aab64a2e84936d82f01b4e8ef2",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-transform-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.ctx-filter.rotation-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.filter.rotation.html": [
-        "4d6841e9c516fb533cd1c80532742821aca2dd69",
+       "2d.layer.global-states.filter.ctx-filter.no-transform.html": [
+        "01a366f3f85a1ca900c4c4109fa3162fe14f4087",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.rotation-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.ctx-filter.no-transform-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.filter.rotation.w.html": [
-        "b498615cdc54d226fcbaacc0281c36759c804320",
+       "2d.layer.global-states.filter.ctx-filter.no-transform.w.html": [
+        "e9a5d4265c76fe5e51abb4acbd473b6c19f504a1",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.rotation-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.ctx-filter.no-transform-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.no-transform.html": [
-        "8cd6d2a3f25346c069b9485257cd293c9c63382c",
+       "2d.layer.global-states.filter.ctx-filter.rotation.html": [
+        "b3221ed51810d75a8cb95deb56266705dfb9ba8d",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.no-transform-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.ctx-filter.rotation-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.no-transform.w.html": [
-        "ca375f6a8506816407c44cbe0ed66e2a9e76cd53",
+       "2d.layer.global-states.filter.ctx-filter.rotation.w.html": [
+        "3468b0020f3185df874d4d523d44ba294b075b4d",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.no-transform-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.ctx-filter.rotation-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.rotation.html": [
-        "d6281ae33209a08ea5b4eeaaa295b1847be1d540",
+       "2d.layer.global-states.filter.no-cxt-filter.no-transform.html": [
+        "2d88a8e6be4cdadb0830e616b77e220600615e79",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.rotation-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-cxt-filter.no-transform-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.rotation.w.html": [
-        "8d97efa59b072e50b0fa130ae5f1d546937b7c61",
+       "2d.layer.global-states.filter.no-cxt-filter.no-transform.w.html": [
+        "d55a0958dd7551a34c1f2883d4604c61f8c008cf",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.rotation-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-cxt-filter.no-transform-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.no-cxt-filter.rotation.html": [
+        "4ed3bed784e1826a1949dbb976d9b89a5b618add",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-cxt-filter.rotation-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.filter.no-cxt-filter.rotation.w.html": [
+        "d36f3874da87273adbe413a5dd1ef2c18c663fad",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-cxt-filter.rotation-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.no-cxt-filter.no-transform.html": [
+        "b4e3d1b79514934f9183302be313dedd043fd85c",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.no-cxt-filter.no-transform-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.no-cxt-filter.no-transform.w.html": [
+        "09715cb7f229be742a9545260f43ff9e4cdde2db",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.no-cxt-filter.no-transform-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.no-cxt-filter.rotation.html": [
+        "40ae3a8bf6612cbe5965d9f507f5a0c551e3db35",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.no-cxt-filter.rotation-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.global-states.no-cxt-filter.rotation.w.html": [
+        "9e71313b7ac3d1229cbd530264e2da6a37a623a8",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.global-states.no-cxt-filter.rotation-expected.html",
            "=="
           ]
          ],
@@ -274296,6 +274478,32 @@
          [
           [
            "/html/canvas/offscreen/layers/2d.layer.globalCompositeOperation-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.nested-ctx-filter.html": [
+        "b48bf6b9b2b1c30ded3930bfb4463057a76611b2",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.nested-ctx-filter-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.nested-ctx-filter.w.html": [
+        "9e1749b8bd087bcb025d5f3e5b461f0cdb4430e2",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.nested-ctx-filter-expected.html",
            "=="
           ]
          ],
@@ -274459,7 +274667,7 @@
         ]
        ],
        "2d.layer.reset.html": [
-        "3254c0a0489094feee414f868bdd59da81e11729",
+        "be2628d1eddecfcb31797204334c04037379e8e6",
         [
          null,
          [
@@ -274472,7 +274680,7 @@
         ]
        ],
        "2d.layer.reset.w.html": [
-        "09bd6451bd00884dc837b830b275204fd81fc044",
+        "2706b1fbc248112c953babea35e30dbf003a412c",
         [
          null,
          [
@@ -314937,6 +315145,10 @@
       "29156878c0b5aea6f0eec393279f11ebb742cb47",
       []
      ],
+     "box-shadow-005-ref.html": [
+      "f675826ac35de6a84d3d3519590ec5fe9209185e",
+      []
+     ],
      "break-inside-avoid-min-block-size-1-ref.html": [
       "56789f62cbb570c4f5fbdcbdb13b97feda4fa174",
       []
@@ -319155,6 +319367,10 @@
        []
       ]
      },
+     "flex-one-sets-flex-basis-to-zero-px-expected.txt": [
+      "6f3c4ed83293ff38c4bc5696143697f8b2297700",
+      []
+     ],
      "flex-order-ref.html": [
       "02f0eb35752e805aa2bc0bd339f73ff2b197c99e",
       []
@@ -370689,6 +370905,10 @@
         "60f78d80965fd0dec9ea11bc21d3652fc3d7bad1",
         []
        ],
+       "2d.layer.ctm.ctx-filter-expected.html": [
+        "fd5b51f7deaa412fb75d4f0054e140e7bb21b063",
+        []
+       ],
        "2d.layer.ctm.filter-expected.html": [
         "5fc1ac9acd5ec1b6132fb57a0c34e74a835f3372",
         []
@@ -370713,28 +370933,44 @@
         "532c29576cff610107dec60f91ea8dd2231df888",
         []
        ],
-       "2d.layer.global-filter-expected.html": [
-        "88057fc354a4e593191a4b3d5c94cdfa7d466126",
+       "2d.layer.global-states.ctx-filter.no-transform-expected.html": [
+        "611fb758e710c161e13d2abade9d0bb4c982af58",
         []
        ],
-       "2d.layer.global-states.filter.no-transform-expected.html": [
-        "6291bdcbcd932fa62326c846f54b3fc4c4954691",
+       "2d.layer.global-states.ctx-filter.rotation-expected.html": [
+        "0460013c856678d92e61ba7084938a7546f9fe79",
         []
        ],
-       "2d.layer.global-states.filter.rotation-expected.html": [
-        "69d9bb007b310e818573607e39dd50c1f8000d12",
+       "2d.layer.global-states.filter.ctx-filter.no-transform-expected.html": [
+        "a00b50b52ffdf1951c2ca1cddb890fc9586d6608",
         []
        ],
-       "2d.layer.global-states.no-transform-expected.html": [
-        "c0f414ea7dec686c93f07ef487a10c41c40d8892",
+       "2d.layer.global-states.filter.ctx-filter.rotation-expected.html": [
+        "b9cf004179a9039aab5102bf5bdb528be7b3f596",
         []
        ],
-       "2d.layer.global-states.rotation-expected.html": [
-        "b79d9684523544329e0ead0cbf0ae607a07731e2",
+       "2d.layer.global-states.filter.no-cxt-filter.no-transform-expected.html": [
+        "2475d52803305ad306c63f802730c9f4c6cb6b88",
+        []
+       ],
+       "2d.layer.global-states.filter.no-cxt-filter.rotation-expected.html": [
+        "9553485eaf9f4ba4e14b86278309002b62074a56",
+        []
+       ],
+       "2d.layer.global-states.no-cxt-filter.no-transform-expected.html": [
+        "cf9fc1042e6f191dce3d3fc761cd944db6561724",
+        []
+       ],
+       "2d.layer.global-states.no-cxt-filter.rotation-expected.html": [
+        "97a9fa4e4c58820f0c18494d5959a18d84aebe59",
         []
        ],
        "2d.layer.globalCompositeOperation-expected.html": [
         "02a8915c0b530b779842e1b10e4e7663e1de8598",
+        []
+       ],
+       "2d.layer.nested-ctx-filter-expected.html": [
+        "77d41f725eac880785d49287af195251c9fe1ae8",
         []
        ],
        "2d.layer.nested-expected.html": [
@@ -371841,6 +372077,10 @@
         "60f78d80965fd0dec9ea11bc21d3652fc3d7bad1",
         []
        ],
+       "2d.layer.ctm.ctx-filter-expected.html": [
+        "fd5b51f7deaa412fb75d4f0054e140e7bb21b063",
+        []
+       ],
        "2d.layer.ctm.filter-expected.html": [
         "5fc1ac9acd5ec1b6132fb57a0c34e74a835f3372",
         []
@@ -371861,28 +372101,44 @@
         "26f6e752149102af7cd3bda76045092545712ba4",
         []
        ],
-       "2d.layer.global-filter-expected.html": [
-        "88057fc354a4e593191a4b3d5c94cdfa7d466126",
+       "2d.layer.global-states.ctx-filter.no-transform-expected.html": [
+        "611fb758e710c161e13d2abade9d0bb4c982af58",
         []
        ],
-       "2d.layer.global-states.filter.no-transform-expected.html": [
-        "6291bdcbcd932fa62326c846f54b3fc4c4954691",
+       "2d.layer.global-states.ctx-filter.rotation-expected.html": [
+        "0460013c856678d92e61ba7084938a7546f9fe79",
         []
        ],
-       "2d.layer.global-states.filter.rotation-expected.html": [
-        "69d9bb007b310e818573607e39dd50c1f8000d12",
+       "2d.layer.global-states.filter.ctx-filter.no-transform-expected.html": [
+        "a00b50b52ffdf1951c2ca1cddb890fc9586d6608",
         []
        ],
-       "2d.layer.global-states.no-transform-expected.html": [
-        "c0f414ea7dec686c93f07ef487a10c41c40d8892",
+       "2d.layer.global-states.filter.ctx-filter.rotation-expected.html": [
+        "b9cf004179a9039aab5102bf5bdb528be7b3f596",
         []
        ],
-       "2d.layer.global-states.rotation-expected.html": [
-        "b79d9684523544329e0ead0cbf0ae607a07731e2",
+       "2d.layer.global-states.filter.no-cxt-filter.no-transform-expected.html": [
+        "2475d52803305ad306c63f802730c9f4c6cb6b88",
+        []
+       ],
+       "2d.layer.global-states.filter.no-cxt-filter.rotation-expected.html": [
+        "9553485eaf9f4ba4e14b86278309002b62074a56",
+        []
+       ],
+       "2d.layer.global-states.no-cxt-filter.no-transform-expected.html": [
+        "cf9fc1042e6f191dce3d3fc761cd944db6561724",
+        []
+       ],
+       "2d.layer.global-states.no-cxt-filter.rotation-expected.html": [
+        "97a9fa4e4c58820f0c18494d5959a18d84aebe59",
         []
        ],
        "2d.layer.globalCompositeOperation-expected.html": [
         "02a8915c0b530b779842e1b10e4e7663e1de8598",
+        []
+       ],
+       "2d.layer.nested-ctx-filter-expected.html": [
+        "77d41f725eac880785d49287af195251c9fe1ae8",
         []
        ],
        "2d.layer.nested-expected.html": [
@@ -372308,7 +372564,7 @@
         []
        ],
        "layers.yaml": [
-        "589dadddeaf5fcbe3a00acd83af1d1f3818a0625",
+        "678038032f19e734489e2001e000e39c1ed24f75",
         []
        ],
        "line-styles.yaml": [
@@ -386893,7 +387149,7 @@
      []
     ],
     "crash-reporting.idl": [
-     "7c8a0ff71f2ab026b48d7d36c2bf366ce2a7ecd9",
+     "a6737ca8482e1d67c40d6d3618424969fa680f96",
      []
     ],
     "credential-management.idl": [
@@ -386953,7 +387209,7 @@
      []
     ],
     "css-font-loading.idl": [
-     "5e5f4252a40e26b7d6739d95fe9d8a9d99993cf6",
+     "a5db8f3c494d61f1c1ae9829debb647e5e8b1e02",
      []
     ],
     "css-fonts.idl": [
@@ -387077,7 +387333,7 @@
      []
     ],
     "dom.idl": [
-     "72d61f5cfd80ad446e4508b8e8bfe29c424d27c4",
+     "99192924f4f46f937124488950fa6b1916ccc895",
      []
     ],
     "edit-context.idl": [
@@ -387377,11 +387633,11 @@
      []
     ],
     "payment-handler.idl": [
-     "91c01297f40bb12e08dcbba2807f7b35929fd396",
+     "8aa55e9e950098f5145f0ec44e4bcc27ce7b57ad",
      []
     ],
     "payment-request.idl": [
-     "50c12fe49c33d6dfeda13be2595f22334189fb7c",
+     "c1227d59c6bb9d2c1e9cff1818c48284c01851e9",
      []
     ],
     "performance-measure-memory.idl": [
@@ -387417,7 +387673,7 @@
      []
     ],
     "pointerevents.idl": [
-     "4ecb290ed4143eafad0c8d1f667809a1d0f8fab8",
+     "0356e845058a5c97d27f96c5bc41e8ea74bd9cbc",
      []
     ],
     "pointerlock.idl": [
@@ -387509,7 +387765,7 @@
      []
     ],
     "scheduling-apis.idl": [
-     "3c858a2db06ad3f7e47198aaa4935303116533fe",
+     "6f93db15a74e052913a277e5130226280a3f9311",
      []
     ],
     "screen-capture.idl": [
@@ -387605,7 +387861,7 @@
      []
     ],
     "turtledove.idl": [
-     "314f2f07d9203b9226f77785f3a857f9bc56d061",
+     "8ed7903f0b1c2af8cd0bfc05832cf9bedfb64777",
      []
     ],
     "ua-client-hints.idl": [
@@ -387697,7 +387953,7 @@
      []
     ],
     "webauthn.idl": [
-     "c44df9b26a68be98248ef1ee24a71b276d9ab1b6",
+     "10dd0f7e059a7ba11d0d4ac06eee02703da1cb76",
      []
     ],
     "webcodecs-aac-codec-registration.idl": [
@@ -409039,7 +409295,7 @@
      []
     ],
     "RTCRtpScriptTransform-encoded-transform-worker.js": [
-     "3faafd26673819ca0850f26d9793a056f8cc2d2f",
+     "ba3ddc1b7564ee59ce561fe7bd11e992e86d715a",
      []
     ],
     "RTCRtpScriptTransform-sender-worker-single-frame.js": [
@@ -460459,7 +460715,7 @@
       ]
      ],
      "flex-one-sets-flex-basis-to-zero-px.html": [
-      "8fca136352ff7d9a838616d73f809da7cff44ba0",
+      "d7116868d7512efc8112bf5052c30a4dd5eea35d",
       [
        null,
        {}
@@ -560199,7 +560455,7 @@
         ]
        ],
        "2d.layer.layer-rendering-state-reset-in-layer.html": [
-        "5d755cfc498552a4543a6e3b843fd9929cdd74d6",
+        "c7c520cff6fdbf28c4511520cfb3c76d935fb14b",
         [
          null,
          {}
@@ -570913,14 +571169,14 @@
         ]
        ],
        "2d.layer.layer-rendering-state-reset-in-layer.html": [
-        "cebdfd5f27ee86f59a55d6f2092641c9d275a89f",
+        "9788a72c680bf148dda6631ec2ba55ea43003214",
         [
          null,
          {}
         ]
        ],
        "2d.layer.layer-rendering-state-reset-in-layer.worker.js": [
-        "a566cccf14bc89eaae903df97ab69b46c4806197",
+        "715e7a5a9881cdc3bbaa1d4a59508c17f4db9552",
         [
          "html/canvas/offscreen/layers/2d.layer.layer-rendering-state-reset-in-layer.worker.html",
          {}
