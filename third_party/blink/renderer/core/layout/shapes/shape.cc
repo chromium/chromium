@@ -295,25 +295,29 @@ static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
     ArrayBufferContents& contents,
     float threshold,
     int content_block_size,
-    const gfx::Rect& image_rect,
-    const gfx::Rect& margin_logical_rect) {
+    const gfx::Size& image_physical_size,
+    const gfx::Rect& image_logical_rect,
+    const gfx::Rect& margin_logical_rect,
+    WritingMode writing_mode) {
   DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(contents);
   DOMUint8ClampedArray* pixel_array =
       DOMUint8ClampedArray::Create(array_buffer, 0, array_buffer->ByteLength());
 
   uint8_t alpha_pixel_threshold = threshold * 255;
 
-  DCHECK_EQ(image_rect.size().Area64() * 4, pixel_array->length());
+  DCHECK_EQ(image_logical_rect.size().Area64() * 4, pixel_array->length());
 
-  const int image_block_start = image_rect.y();
-  const int image_block_end = image_rect.bottom();
+  const int image_inline_size = image_logical_rect.width();
+  const int image_inline_start = image_logical_rect.x();
+  const int image_block_start = image_logical_rect.y();
+  const int image_block_end = image_logical_rect.bottom();
   const int margin_box_block_size = margin_logical_rect.height();
   const int margin_block_start = margin_logical_rect.y();
   const int margin_block_end = margin_block_start + margin_box_block_size;
 
-  int min_buffer_y = std::max(0, margin_block_start - image_rect.y());
-  int max_buffer_y =
-      std::min(image_rect.height(), margin_block_end - image_rect.y());
+  int min_buffer_y = std::max(0, margin_block_start - image_block_start);
+  int max_buffer_y = std::min(image_logical_rect.height(),
+                              margin_block_end - image_block_start);
   const bool fix_clipped =
       RuntimeEnabledFeatures::ShapeOutsideClippedImageFixEnabled();
   if (fix_clipped) {
@@ -326,24 +330,27 @@ static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
       std::make_unique<RasterShapeIntervals>(margin_box_block_size,
                                              -margin_block_start);
 
-  LogicalPixelScanner scanner(*pixel_array, image_rect.size(),
-                              WritingMode::kHorizontalTb);
+  LogicalPixelScanner scanner(
+      *pixel_array, image_physical_size,
+      RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()
+          ? writing_mode
+          : WritingMode::kHorizontalTb);
   for (int y = image_block_start; fix_clipped && y < min_buffer_y; ++y) {
     scanner.NextLine();
   }
   for (int y = min_buffer_y; y < max_buffer_y; ++y, scanner.NextLine()) {
     int start_x = -1;
-    for (int x = 0; x < image_rect.width(); ++x, scanner.Next()) {
+    for (int x = 0; x < image_inline_size; ++x, scanner.Next()) {
       uint8_t alpha = scanner.GetAlpha();
       bool alpha_above_threshold = alpha > alpha_pixel_threshold;
       if (start_x == -1 && alpha_above_threshold) {
         start_x = x;
       } else if (start_x != -1 &&
-                 (!alpha_above_threshold || x == image_rect.width() - 1)) {
+                 (!alpha_above_threshold || x == image_inline_size - 1)) {
         int end_x = alpha_above_threshold ? x + 1 : x;
-        intervals->IntervalAt(fix_clipped ? y : (y + image_rect.y()))
-            .Unite(IntShapeInterval(start_x + image_rect.x(),
-                                    end_x + image_rect.x()));
+        intervals->IntervalAt(fix_clipped ? y : (y + image_block_start))
+            .Unite(IntShapeInterval(start_x + image_inline_start,
+                                    end_x + image_inline_start));
         start_x = -1;
       }
     }
@@ -363,26 +370,32 @@ std::unique_ptr<Shape> Shape::CreateRasterShape(
     Image* image,
     float threshold,
     int content_block_size,
-    const gfx::Rect& image_rect,
+    const gfx::Rect& image_logical_rect,
     const gfx::Rect& margin_logical_rect,
     WritingMode writing_mode,
     float margin,
     RespectImageOrientationEnum respect_orientation) {
   gfx::Size margin_box_size = margin_logical_rect.size();
   if (!IsValidRasterShapeSize(margin_box_size) ||
-      !IsValidRasterShapeSize(image_rect.size())) {
+      !IsValidRasterShapeSize(image_logical_rect.size())) {
     return CreateEmptyRasterShape(writing_mode, margin);
   }
 
   ArrayBufferContents contents;
-  if (!ExtractImageData(image, image_rect.size(), contents,
+  gfx::Size image_physical_size = image_logical_rect.size();
+  if (RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled() &&
+      !IsHorizontalWritingMode(writing_mode)) {
+    image_physical_size.Transpose();
+  }
+  if (!ExtractImageData(image, image_physical_size, contents,
                         respect_orientation)) {
     return CreateEmptyRasterShape(writing_mode, margin);
   }
 
   std::unique_ptr<RasterShapeIntervals> intervals =
       ExtractIntervalsFromImageData(contents, threshold, content_block_size,
-                                    image_rect, margin_logical_rect);
+                                    image_physical_size, image_logical_rect,
+                                    margin_logical_rect, writing_mode);
   std::unique_ptr<RasterShape> raster_shape =
       std::make_unique<RasterShape>(std::move(intervals), margin_box_size);
   raster_shape->writing_mode_ = writing_mode;

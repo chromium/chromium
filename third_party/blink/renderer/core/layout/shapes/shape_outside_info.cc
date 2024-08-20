@@ -229,10 +229,19 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
         GetShapeImageMarginRect(*layout_box_, reference_box_logical_size_);
   }
 
-  const gfx::Rect image_rect = ToPixelSnappedRect(
+  gfx::Rect image_rect;
+  const PhysicalRect image_physical_rect =
       layout_box_->IsLayoutImage()
           ? To<LayoutImage>(layout_box_.Get())->ReplacedContentRect()
-          : PhysicalRect({}, PhysicalSize::FromSizeFRound(image_size)));
+          : PhysicalRect({}, PhysicalSize::FromSizeFRound(image_size));
+  if (RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()) {
+    WritingModeConverter converter({writing_mode, TextDirection::kLtr},
+                                   reference_physical_size);
+    image_rect =
+        ToPixelSnappedLogicalRect(converter.ToLogical(image_physical_rect));
+  } else {
+    image_rect = ToPixelSnappedRect(image_physical_rect);
+  }
 
   scoped_refptr<Image> image =
       style_image->GetImage(*layout_box_, layout_box_->GetDocument(),

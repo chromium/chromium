@@ -3874,7 +3874,7 @@
     {
       // crbug.com/359616076 and crbug.com/360158400
       name: "ShapeOutsideWritingModeFix",
-      status: "experimental",
+      status: "stable",
     },
     {
       // crbug.com/329677645
