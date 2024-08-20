@@ -7813,7 +7813,6 @@ test("unit_tests") {
       "../browser/ui/tabs/existing_base_sub_menu_model_unittest.cc",
       "../browser/ui/tabs/existing_tab_group_sub_menu_model_unittest.cc",
       "../browser/ui/tabs/existing_window_sub_menu_model_unittest.cc",
-      "../browser/ui/tabs/organization/tab_declutter_service_unittest.cc",
       "../browser/ui/tabs/organization/tab_organization_service_unittest.cc",
       "../browser/ui/tabs/organization/tab_organization_unittest.cc",
       "../browser/ui/tabs/organization/trigger_observer_unittest.cc",

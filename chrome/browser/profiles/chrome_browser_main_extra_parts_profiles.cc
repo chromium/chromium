@@ -498,7 +498,6 @@
 #include "chrome/browser/ui/performance_controls/performance_controls_hats_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
-#include "chrome/browser/ui/tabs/organization/tab_declutter_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/usb/usb_connection_tracker_factory.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
@@ -1261,7 +1260,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   tab_groups::TabGroupSyncServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   TabOrganizationServiceFactory::GetInstance();
-  TabDeclutterServiceFactory::GetInstance();
 #endif
   TabRestoreServiceFactory::GetInstance();
   TemplateURLFetcherFactory::GetInstance();
