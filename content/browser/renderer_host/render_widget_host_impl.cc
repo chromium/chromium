@@ -150,7 +150,7 @@
 #include "content/browser/renderer_host/input/fling_scheduler_mac.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
-#include "ui/base/cocoa/cursor_utils.h"
+#include "ui/base/cocoa/cursor_accessibility_scale_factor.h"
 #endif
 
 using blink::DragOperationsMask;
