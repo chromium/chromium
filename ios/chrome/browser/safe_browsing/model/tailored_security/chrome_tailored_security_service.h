@@ -8,8 +8,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
-
-class ChromeBrowserState;
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace signin {
 class IdentityManager;
