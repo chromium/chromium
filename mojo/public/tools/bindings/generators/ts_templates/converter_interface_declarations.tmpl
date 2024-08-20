@@ -25,4 +25,15 @@ export class {{struct.name}}DataView {
 {%-   endfor %}
 }
 
+export interface {{struct.name}}TypeMapper<T> {
+  // Encoding:
+  {%- for packed_field in struct.packed.packed_fields_in_ordinal_order %}
+    {%- set f = packed_field.field %}
+  {{f.name}}(mappedTyped: T): {{f.kind|ts_type_maybe_nullable}};
+  {%- endfor %}
+
+  // Decoding:
+  convert(dataView: {{struct.name}}DataView): T;
+}
+
 {% endfor -%}
