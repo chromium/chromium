@@ -82,7 +82,6 @@ class AutofillSuggestionDelegate;
 class AutofillPlusAddressDelegate;
 class AutofillPredictionImprovementsDelegate;
 class AutofillProfile;
-enum class CreditCardFetchResult;
 class FormDataImporter;
 class LogManager;
 class PersonalDataManager;
