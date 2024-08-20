@@ -19,7 +19,6 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -151,7 +150,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
-#include "net/test/scoped_mutually_exclusive_feature_list.h"
 #include "net/test/url_request/url_request_mock_http_job.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "pdf/buildflags.h"
@@ -2313,9 +2311,9 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, NullInitiator) {
   EXPECT_EQ(0u, observer->NumDownloadsSeenInState(DownloadItem::COMPLETE));
 }
 
-class DownloadTestSplitCacheEnabledBase : public DownloadTest {
+class DownloadTestSplitCacheEnabled : public DownloadTest {
  public:
-  DownloadTestSplitCacheEnabledBase() {
+  DownloadTestSplitCacheEnabled() {
     feature_list_.InitAndEnableFeature(
         net::features::kSplitCacheByNetworkIsolationKey);
   }
@@ -2324,85 +2322,14 @@ class DownloadTestSplitCacheEnabledBase : public DownloadTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-enum class SplitCacheTestCase {
-  kEnabledTripleKeyed,
-  kEnabledTriplePlusCrossSiteMainFrameNavBool,
-  kEnabledTriplePlusMainFrameNavInitiator,
-  kEnabledTriplePlusNavInitiator
-};
-
-const struct TestCaseToFeatureMapping {
-  const SplitCacheTestCase test_case;
-  base::test::FeatureRef feature;
-} kTestCaseToFeatureMapping[] = {
-    {SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean},
-    {SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-     net::features::kSplitCacheByMainFrameNavigationInitiator},
-    {SplitCacheTestCase::kEnabledTriplePlusNavInitiator,
-     net::features::kSplitCacheByNavigationInitiator}};
-const base::span<const TestCaseToFeatureMapping> kTestCaseToFeatureMappingSpan(
-    kTestCaseToFeatureMapping);
-
-std::string GetSplitCacheTestName(SplitCacheTestCase test_case) {
-  switch (test_case) {
-    case (SplitCacheTestCase::kEnabledTripleKeyed):
-      return "TripleKeyed";
-    case (SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool):
-      return "TriplePlusCrossSiteMainFrameNavigationBool";
-    case (SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator):
-      return "TriplePlusMainFrameNavigationInitiator";
-    case (SplitCacheTestCase::kEnabledTriplePlusNavInitiator):
-      return "TriplePlusNavigationInitiator";
-  }
-}
-
-class DownloadTestSplitCacheEnabled
-    : public DownloadTestSplitCacheEnabledBase,
-      public testing::WithParamInterface<SplitCacheTestCase> {
- public:
-  DownloadTestSplitCacheEnabled()
-      : split_cache_experiment_feature_list_(GetParam(),
-                                             kTestCaseToFeatureMappingSpan) {}
-
- private:
-  net::test::ScopedMutuallyExclusiveFeatureList
-      split_cache_experiment_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DownloadTestSplitCacheEnabled,
-    testing::ValuesIn(
-        {SplitCacheTestCase::kEnabledTripleKeyed,
-         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-         SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-         SplitCacheTestCase::kEnabledTriplePlusNavInitiator}),
-    [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
-      return GetSplitCacheTestName(info.param);
-    });
-
 #if BUILDFLAG(ENABLE_PDF)
-class PdfDownloadTestSplitCacheEnabled
-    : public DownloadTestSplitCacheEnabledBase,
-      public testing::WithParamInterface<std::tuple<bool, SplitCacheTestCase>> {
+class PdfDownloadTestSplitCacheEnabled : public base::test::WithFeatureOverride,
+                                         public DownloadTestSplitCacheEnabled {
  public:
   PdfDownloadTestSplitCacheEnabled()
-      : split_cache_experiment_feature_list_(GetSplitCacheTestCase(),
-                                             kTestCaseToFeatureMappingSpan) {
-    if (UseOopif()) {
-      oopif_feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
-    } else {
-      oopif_feature_list_.InitAndDisableFeature(
-          chrome_pdf::features::kPdfOopif);
-    }
-  }
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
 
-  bool UseOopif() const { return std::get<0>(GetParam()); }
-
-  SplitCacheTestCase GetSplitCacheTestCase() const {
-    return std::get<1>(GetParam());
-  }
+  bool UseOopif() const { return GetParam(); }
 
   pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager() {
     return factory_.GetTestPdfViewerStreamManager(
@@ -2474,16 +2401,13 @@ class PdfDownloadTestSplitCacheEnabled
   }
 
  private:
-  net::test::ScopedMutuallyExclusiveFeatureList
-      split_cache_experiment_feature_list_;
-  base::test::ScopedFeatureList oopif_feature_list_;
   pdf::TestPdfViewerStreamManagerFactory factory_;
 };
 
 // Test that the PDF can be saved from the primary frame's context menu.
 IN_PROC_BROWSER_TEST_P(
     PdfDownloadTestSplitCacheEnabled,
-    SaveMainFramePdfFromPrimaryFrameContextMenuBrowserInitiatedNavigation) {
+    SaveMainFramePdfFromPrimaryFrameContextMenu_BrowserInitiatedNavigation) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(https_test_server()->Start());
   EnableFileChooser(true);
@@ -2504,7 +2428,7 @@ IN_PROC_BROWSER_TEST_P(
 // document.
 IN_PROC_BROWSER_TEST_P(
     PdfDownloadTestSplitCacheEnabled,
-    SaveMainFramePdfFromPrimaryFrameContextMenuRendererInitiatedNavigation) {
+    SaveMainFramePdfFromPrimaryFrameContextMenu_RendererInitiatedNavigation) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(https_test_server()->Start());
   EnableFileChooser(true);
@@ -2528,7 +2452,7 @@ IN_PROC_BROWSER_TEST_P(
 // Test that the PDF can be saved from the PDf extension frame's context menu.
 IN_PROC_BROWSER_TEST_P(
     PdfDownloadTestSplitCacheEnabled,
-    SaveMainFramePdfFromExtensionFrameContextMenuBrowserInitiatedNavigation) {
+    SaveMainFramePdfFromExtensionFrameContextMenu_BrowserInitiatedNavigation) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(https_test_server()->Start());
   EnableFileChooser(true);
@@ -2551,7 +2475,7 @@ IN_PROC_BROWSER_TEST_P(
 // document.
 IN_PROC_BROWSER_TEST_P(
     PdfDownloadTestSplitCacheEnabled,
-    SaveMainFramePdfFromExtensionFrameContextMenuRendererInitiatedNavigation) {
+    SaveMainFramePdfFromExtensionFrameContextMenu_RendererInitiatedNavigation) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(https_test_server()->Start());
   EnableFileChooser(true);
@@ -2578,7 +2502,7 @@ IN_PROC_BROWSER_TEST_P(
 // Test that the PDF can be saved from the PDF content frame's context menu.
 IN_PROC_BROWSER_TEST_P(
     PdfDownloadTestSplitCacheEnabled,
-    SaveMainFramePdfFromContentFrameContextMenuBrowserInitiatedNavigation) {
+    SaveMainFramePdfFromContentFrameContextMenu_BrowserInitiatedNavigation) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(https_test_server()->Start());
   EnableFileChooser(true);
@@ -2602,7 +2526,7 @@ IN_PROC_BROWSER_TEST_P(
 // document.
 IN_PROC_BROWSER_TEST_P(
     PdfDownloadTestSplitCacheEnabled,
-    SaveMainFramePdfFromContentFrameContextMenuRendererInitiatedNavigation) {
+    SaveMainFramePdfFromContentFrameContextMenu_RendererInitiatedNavigation) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(https_test_server()->Start());
   EnableFileChooser(true);
@@ -2627,7 +2551,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
-                       SaveSubframePdfFromPdfUIIsolationInfo) {
+                       SaveSubframePdfFromPdfUI_IsolationInfo) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(https_test_server()->Start());
   EnableFileChooser(true);
@@ -2735,8 +2659,8 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-IN_PROC_BROWSER_TEST_P(DownloadTestSplitCacheEnabled,
-                       SaveSubframeImageFromContextMenuIsolationInfo) {
+IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
+                       SaveSubframeImageFromContextMenu_IsolationInfo) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(https_test_server()->Start());
   EnableFileChooser(true);
@@ -2818,7 +2742,7 @@ IN_PROC_BROWSER_TEST_P(DownloadTestSplitCacheEnabled,
 
 #if BUILDFLAG(ENABLE_PDF)
 IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
-                       SaveSubframePdfFromContextMenuIsolationInfo) {
+                       SaveSubframePdfFromContextMenu_IsolationInfo) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(https_test_server()->Start());
   EnableFileChooser(true);
@@ -2930,23 +2854,7 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PdfDownloadTestSplitCacheEnabled,
-    testing::Combine(
-        testing::Bool(),
-        testing::ValuesIn(
-            {SplitCacheTestCase::kEnabledTripleKeyed,
-             SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-             SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-             SplitCacheTestCase::kEnabledTriplePlusNavInitiator})),
-    [](const testing::TestParamInfo<std::tuple<bool, SplitCacheTestCase>>&
-           info) {
-      std::string test_prefix =
-          std::get<0>(info.param) ? "PdfOopifEnabled" : "PdfOopifDisabled";
-      return base::StrCat(
-          {test_prefix, "_", GetSplitCacheTestName(std::get<1>(info.param))});
-    });
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PdfDownloadTestSplitCacheEnabled);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 class DownloadTestWithHistogramTester : public DownloadTest {
