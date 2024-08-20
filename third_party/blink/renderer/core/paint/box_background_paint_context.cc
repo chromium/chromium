@@ -25,8 +25,10 @@ namespace blink {
 
 namespace {
 
-// Computes the stitched table-grid rect relative to the current fragment.
-PhysicalRect ComputeStitchedTableGridRect(const PhysicalBoxFragment& fragment) {
+// Computes the offset into the stitched table-grid for the current fragment,
+// and the total size of the stitched grid rectangle.
+PhysicalOffset OffsetInStitchedTableGrid(const PhysicalBoxFragment& fragment,
+                                         PhysicalSize* stitched_grid_size) {
   const auto writing_direction = fragment.Style().GetWritingDirection();
   LogicalRect table_grid_rect;
   LogicalRect fragment_local_grid_rect;
@@ -50,14 +52,12 @@ PhysicalRect ComputeStitchedTableGridRect(const PhysicalBoxFragment& fragment) {
         LogicalFragment(writing_direction, walker).BlockSize();
   }
 
-  // Make the rect relative to the fragment we are currently painting.
-  table_grid_rect.offset.block_offset -=
-      fragment_local_grid_rect.offset.block_offset;
+  // Make the rect relative to the table grid.
+  fragment_local_grid_rect.offset -= table_grid_rect.offset;
 
-  WritingModeConverter converter(
-      writing_direction, ToPhysicalSize(fragment_local_grid_rect.size,
-                                        writing_direction.GetWritingMode()));
-  return converter.ToPhysical(table_grid_rect);
+  WritingModeConverter converter(writing_direction, table_grid_rect.size);
+  *stitched_grid_size = converter.ToPhysical(table_grid_rect.size);
+  return converter.ToPhysical(fragment_local_grid_rect).offset;
 }
 
 }  // Anonymous namespace
@@ -114,18 +114,18 @@ BoxBackgroundPaintContext::BoxBackgroundPaintContext(
         view->GetFrameView()->GetPaginationState()->CurrentPageIndex();
     element_positioning_area_offset_ =
         StitchedPageContentRect(*view, page_index).offset;
-  } else if (fragment.IsTable()) {
-    auto stitched_background_rect = ComputeStitchedTableGridRect(fragment);
-    positioning_size_override_ = stitched_background_rect.size;
-    element_positioning_area_offset_ = -stitched_background_rect.offset;
+  } else {
+    if (fragment.IsTable()) {
+      element_positioning_area_offset_ =
+          OffsetInStitchedTableGrid(fragment, &positioning_size_override_);
+    } else if (!fragment.IsOnlyForNode()) {
+      // The element is block-fragmented. We need to calculate the correct
+      // background offset within an imaginary box where all the fragments have
+      // been stitched together.
+      element_positioning_area_offset_ =
+          OffsetInStitchedFragments(fragment, &positioning_size_override_);
+    }
     box_has_multiple_fragments_ = !fragment.IsOnlyForNode();
-  } else if (!fragment.IsOnlyForNode()) {
-    // The element is block-fragmented. We need to calculate the correct
-    // background offset within an imaginary box where all the fragments have
-    // been stitched together.
-    element_positioning_area_offset_ =
-        OffsetInStitchedFragments(fragment, &positioning_size_override_);
-    box_has_multiple_fragments_ = true;
   }
 }
 
