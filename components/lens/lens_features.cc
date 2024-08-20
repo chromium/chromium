@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 namespace lens::features {
 
@@ -41,7 +42,15 @@ BASE_FEATURE(kEnableContextMenuInLensSidePanel,
              "EnableContextMenuInLensSidePanel",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlay, "LensOverlay", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensOverlay,
+             "LensOverlay",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
+
 BASE_FEATURE(kLensOverlayTranslateButton,
              "LensOverlayTranslateButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -95,7 +104,7 @@ const base::FeatureParam<int> kLensOverlayImageDownscaleUiScalingFactor{
 const base::FeatureParam<bool> kLensOverlayDebuggingMode{
     &kLensOverlay, "debugging-mode", false};
 const base::FeatureParam<int> kLensOverlayVerticalTextMargin{
-    &kLensOverlay, "text-vertical-margin", 4};
+    &kLensOverlay, "text-vertical-margin", 12};
 const base::FeatureParam<int> kLensOverlayHorizontalTextMargin{
     &kLensOverlay, "text-horizontal-margin", 4};
 const base::FeatureParam<bool> kLensOverlaySearchBubble{&kLensOverlay,
@@ -176,7 +185,7 @@ constexpr base::FeatureParam<int> kLensOverlayTapRegionWidth{
 
 constexpr base::FeatureParam<double>
     kLensOverlaySelectTextOverRegionTriggerThreshold{
-        &kLensOverlay, "select-text-over-region-trigger-threshold", 0.03};
+        &kLensOverlay, "select-text-over-region-trigger-threshold", 0.1};
 
 constexpr base::FeatureParam<int> kLensOverlaySignificantRegionMinArea{
     &kLensOverlay, "significant-regions-min-area", 500};
