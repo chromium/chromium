@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/ui_devtools/connector_delegate.h"
 #include "components/ui_devtools/devtools_server.h"
 
@@ -15,7 +17,7 @@ namespace ui_devtools {
 // A factory helper to construct a UiDevToolsServer for Views.
 // The connector is used in TracingAgent to hook up with the tracing service.
 std::unique_ptr<UiDevToolsServer> CreateUiDevToolsServerForViews(
-    network::mojom::NetworkContext* network_context,
+    scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner,
     std::unique_ptr<ConnectorDelegate> connector,
     const base::FilePath& active_port_output_directory);
 

@@ -21,12 +21,16 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/thread_annotations.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "components/ui_devtools/switches.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log.h"
-#include "services/network/public/cpp/server/http_server_request_info.h"
-#include "services/network/public/mojom/tcp_socket.mojom.h"
+#include "net/server/http_server.h"
+#include "net/server/http_server_request_info.h"
+#include "net/socket/tcp_server_socket.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace ui_devtools {
 
@@ -69,66 +73,197 @@ const net::NetworkTrafficAnnotationTag UiDevToolsServer::kUIDevtoolsServerTag =
           "Not implemented, only used in Devtools and is behind a switch."
       })");
 
+class UiDevToolsServer::IOThreadData : public net::HttpServer::Delegate {
+ public:
+  IOThreadData(base::WeakPtr<UiDevToolsServer> owner,
+               net::NetworkTrafficAnnotationTag tag);
+  IOThreadData(IOThreadData&) = delete;
+  ~IOThreadData() override = default;
+
+  IOThreadData& operator=(IOThreadData&) = delete;
+
+  // Creates a ServerSocket and an HttpServer and starts listening for
+  // connections.
+  void MakeServer(int port, base::FilePath active_port_output_directory);
+
+  // These wrap the corresponding HttpServer functions.
+  void AcceptWebSocket(int connection_id,
+                       const net::HttpServerRequestInfo& request);
+  void SendOverWebSocket(int connection_id, std::string data);
+
+ private:
+  // HttpServer::Delegate:
+  void OnConnect(int connection_id) override;
+  void OnHttpRequest(int connection_id,
+                     const net::HttpServerRequestInfo& info) override;
+  void OnWebSocketRequest(int connection_id,
+                          const net::HttpServerRequestInfo& info) override;
+  void OnWebSocketMessage(int connection_id, std::string data) override;
+  void OnClose(int connection_id) override;
+
+  base::WeakPtr<UiDevToolsServer> owner_;
+  const scoped_refptr<base::SequencedTaskRunner> main_sequence_task_runner_;
+  std::unique_ptr<net::HttpServer> server_
+      GUARDED_BY_CONTEXT(io_thread_sequence_);
+
+  const net::NetworkTrafficAnnotationTag tag_;
+
+  SEQUENCE_CHECKER(io_thread_sequence_);
+};
+
+UiDevToolsServer::IOThreadData::IOThreadData(
+    base::WeakPtr<UiDevToolsServer> owner,
+    net::NetworkTrafficAnnotationTag tag)
+    : owner_(owner),
+      main_sequence_task_runner_(
+          base::SequencedTaskRunner::GetCurrentDefault()),
+      tag_(tag) {
+  DETACH_FROM_SEQUENCE(io_thread_sequence_);
+}
+
+void UiDevToolsServer::IOThreadData::MakeServer(
+    int port,
+    base::FilePath active_port_output_directory) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_thread_sequence_);
+  DCHECK(!server_);
+
+  // Create the socket using the address 127.0.0.1 to listen on all interfaces.
+  constexpr int kBacklog = 1;
+  std::unique_ptr<net::ServerSocket> socket =
+      std::make_unique<net::TCPServerSocket>(nullptr, net::NetLogSource());
+  if (socket->Listen(net::IPEndPoint(net::IPAddress::IPv4Localhost(), port),
+                     kBacklog, /*ipv6_only=*/std::nullopt) == net::OK) {
+    server_ = std::make_unique<net::HttpServer>(std::move(socket), this);
+    // When --enable-ui-devtools=0, the browser will pick an available port and
+    // write to |kUIDevToolsActivePortFileName|. The file is useful for other
+    // programs such as Telemetry to know which port to listen to.
+    net::IPEndPoint local_addr;
+    if (port == 0 && server_->GetLocalAddress(&local_addr) == net::OK) {
+      port = local_addr.port();
+      if (!active_port_output_directory.empty()) {
+        base::ThreadPool::PostTask(
+            FROM_HERE, {base::MayBlock()},
+            base::BindOnce(&WriteUIDevtoolsPortToFile,
+                           std::move(active_port_output_directory), port));
+      }
+    }
+  }
+
+  main_sequence_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&UiDevToolsServer::ServerCreated, owner_, port));
+}
+
+void UiDevToolsServer::IOThreadData::OnConnect(int connection_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_thread_sequence_);
+  base::RecordAction(base::UserMetricsAction("UI_DevTools_Connect"));
+}
+
+void UiDevToolsServer::IOThreadData::OnHttpRequest(
+    int connection_id,
+    const net::HttpServerRequestInfo& info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_thread_sequence_);
+  NOTIMPLEMENTED();
+}
+
+void UiDevToolsServer::IOThreadData::OnWebSocketRequest(
+    int connection_id,
+    const net::HttpServerRequestInfo& info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_thread_sequence_);
+  main_sequence_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&UiDevToolsServer::OnWebSocketRequest, owner_,
+                                connection_id, info));
+}
+
+void UiDevToolsServer::IOThreadData::OnWebSocketMessage(int connection_id,
+                                                        std::string data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_thread_sequence_);
+  main_sequence_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&UiDevToolsServer::OnWebSocketMessage, owner_,
+                                connection_id, std::move(data)));
+}
+
+void UiDevToolsServer::IOThreadData::OnClose(int connection_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_thread_sequence_);
+  main_sequence_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&UiDevToolsServer::OnClose, owner_, connection_id));
+}
+
+void UiDevToolsServer::ServerCreated(int port) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
+  connected_ = true;
+  port_ = port;
+  if (on_socket_connected_) {
+    std::move(on_socket_connected_).Run();
+  }
+}
+
+void UiDevToolsServer::IOThreadData::AcceptWebSocket(
+    int connection_id,
+    const net::HttpServerRequestInfo& request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_thread_sequence_);
+  server_->AcceptWebSocket(connection_id, request, tag_);
+}
+
+void UiDevToolsServer::IOThreadData::SendOverWebSocket(int connection_id,
+                                                       std::string data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_thread_sequence_);
+  server_->SendOverWebSocket(connection_id, data, tag_);
+}
+
 UiDevToolsServer::UiDevToolsServer(
+    scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner,
     int port,
     net::NetworkTrafficAnnotationTag tag,
     const base::FilePath& active_port_output_directory)
-    : port_(port),
-      active_port_output_directory_(active_port_output_directory),
-      tag_(tag) {
+    : io_thread_task_runner_(std::move(io_thread_task_runner)), port_(port) {
   DCHECK(!devtools_server_);
   devtools_server_ = this;
+
+  // Can't initialize this in the initializer list, since it depends on
+  // `weak_ptr_factory_`, which tooling requires be declared last in the class,
+  // and thus is the last field to be initialized.
+  io_thread_data_ =
+      std::make_unique<IOThreadData>(weak_ptr_factory_.GetWeakPtr(), tag);
+
+  io_thread_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&UiDevToolsServer::IOThreadData::MakeServer,
+                                base::Unretained(io_thread_data_.get()), port,
+                                active_port_output_directory));
 }
 
 UiDevToolsServer::~UiDevToolsServer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
+  io_thread_task_runner_->DeleteSoon(FROM_HERE, std::move(io_thread_data_));
   devtools_server_ = nullptr;
 }
 
 // static
 std::unique_ptr<UiDevToolsServer> UiDevToolsServer::CreateForViews(
-    network::mojom::NetworkContext* network_context,
+    scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner,
     int port,
     const base::FilePath& active_port_output_directory) {
   // TODO(mhashmi): Change port if more than one inspectable clients
-  auto server = base::WrapUnique(new UiDevToolsServer(
-      port, kUIDevtoolsServerTag, active_port_output_directory));
-  mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket;
-  auto receiver = server_socket.InitWithNewPipeAndPassReceiver();
-  CreateTCPServerSocket(std::move(receiver), network_context, port,
-                        kUIDevtoolsServerTag,
-                        base::BindOnce(&UiDevToolsServer::MakeServer,
-                                       server->weak_ptr_factory_.GetWeakPtr(),
-                                       std::move(server_socket)));
-  return server;
+  return base::WrapUnique(new UiDevToolsServer(std::move(io_thread_task_runner),
+                                               port, kUIDevtoolsServerTag,
+                                               active_port_output_directory));
 }
 
 void UiDevToolsServer::SetOnSocketConnectedForTesting(
     base::OnceClosure on_socket_connected) {
-  if (server_) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
+  if (connected_) {
     std::move(on_socket_connected).Run();
     return;
   }
   on_socket_connected_ = std::move(on_socket_connected);
 }
 
-// static
-void UiDevToolsServer::CreateTCPServerSocket(
-    mojo::PendingReceiver<network::mojom::TCPServerSocket>
-        server_socket_receiver,
-    network::mojom::NetworkContext* network_context,
-    int port,
-    net::NetworkTrafficAnnotationTag tag,
-    network::mojom::NetworkContext::CreateTCPServerSocketCallback callback) {
-  // Create the socket using the address 127.0.0.1 to listen on all interfaces.
-  net::IPAddress address(127, 0, 0, 1);
-  constexpr int kBacklog = 1;
-
-  auto options = network::mojom::TCPServerSocketOptions::New();
-  options->backlog = kBacklog;
-  network_context->CreateTCPServerSocket(
-      net::IPEndPoint(address, port), std::move(options),
-      net::MutableNetworkTrafficAnnotationTag(tag),
-      std::move(server_socket_receiver), std::move(callback));
+void UiDevToolsServer::OnWebSocketRequestForTesting(
+    int connection_id,
+    net::HttpServerRequestInfo info) {
+  OnWebSocketRequest(connection_id, std::move(info));
 }
 
 // static
@@ -138,6 +273,7 @@ UiDevToolsServer::GetClientNamesAndUrls() {
   if (!devtools_server_)
     return pairs;
 
+  DCHECK_CALLED_ON_VALID_SEQUENCE(devtools_server_->main_sequence_);
   for (ClientsList::size_type i = 0; i != devtools_server_->clients_.size();
        i++) {
     pairs.push_back(std::pair<std::string, std::string>(
@@ -171,60 +307,27 @@ int UiDevToolsServer::GetUiDevToolsPort(const char* enable_devtools_flag,
 }
 
 void UiDevToolsServer::AttachClient(std::unique_ptr<UiDevToolsClient> client) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(devtools_server_sequence_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
   clients_.push_back(std::move(client));
 }
 
 void UiDevToolsServer::SendOverWebSocket(int connection_id,
                                          std::string_view message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(devtools_server_sequence_);
-  server_->SendOverWebSocket(connection_id, message, tag_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
+  io_thread_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&IOThreadData::SendOverWebSocket,
+                                base::Unretained(io_thread_data_.get()),
+                                connection_id, std::string(message)));
 }
 
 void UiDevToolsServer::SetOnSessionEnded(base::OnceClosure callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
   on_session_ended_ = std::move(callback);
 }
 
-void UiDevToolsServer::MakeServer(
-    mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket,
-    int result,
-    const std::optional<net::IPEndPoint>& local_addr) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(devtools_server_sequence_);
-  if (result == net::OK) {
-    server_ = std::make_unique<network::server::HttpServer>(
-        std::move(server_socket), this);
-    // When --enable-ui-devtools=0, the browser will pick an available port and
-    // write to |kUIDevToolsActivePortFileName|. The file is useful for other
-    // programs such as Telemetry to know which port to listen to.
-    if (port_ == 0 && local_addr) {
-      port_ = local_addr->port();
-      if (!active_port_output_directory_.empty()) {
-        base::ThreadPool::PostTask(
-            FROM_HERE, {base::MayBlock()},
-            base::BindOnce(&WriteUIDevtoolsPortToFile,
-                           active_port_output_directory_, port_));
-      }
-    }
-  }
-  if (on_socket_connected_)
-    std::move(on_socket_connected_).Run();
-}
-
-// HttpServer::Delegate Implementation
-void UiDevToolsServer::OnConnect(int connection_id) {
-  base::RecordAction(base::UserMetricsAction("UI_DevTools_Connect"));
-}
-
-void UiDevToolsServer::OnHttpRequest(
-    int connection_id,
-    const network::server::HttpServerRequestInfo& info) {
-  NOTIMPLEMENTED();
-}
-
-void UiDevToolsServer::OnWebSocketRequest(
-    int connection_id,
-    const network::server::HttpServerRequestInfo& info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(devtools_server_sequence_);
+void UiDevToolsServer::OnWebSocketRequest(int connection_id,
+                                          net::HttpServerRequestInfo info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
   size_t target_id = 0;
   if (info.path.empty() ||
       !base::StringToSizeT(info.path.substr(1), &target_id) ||
@@ -238,11 +341,14 @@ void UiDevToolsServer::OnWebSocketRequest(
     return;
   client->set_connection_id(connection_id);
   connections_[connection_id] = client;
-  server_->AcceptWebSocket(connection_id, info, tag_);
+  io_thread_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&IOThreadData::AcceptWebSocket,
+                                base::Unretained(io_thread_data_.get()),
+                                connection_id, std::move(info)));
 }
 
 void UiDevToolsServer::OnWebSocketMessage(int connection_id, std::string data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(devtools_server_sequence_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
   auto it = connections_.find(connection_id);
   CHECK(it != connections_.end(), base::NotFatalUntil::M130);
   UiDevToolsClient* client = it->second;
@@ -250,7 +356,7 @@ void UiDevToolsServer::OnWebSocketMessage(int connection_id, std::string data) {
 }
 
 void UiDevToolsServer::OnClose(int connection_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(devtools_server_sequence_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
   auto it = connections_.find(connection_id);
   if (it == connections_.end())
     return;
@@ -259,12 +365,12 @@ void UiDevToolsServer::OnClose(int connection_id) {
   connections_.erase(it);
 
   if (connections_.empty() && on_session_ended_) {
-    // The call stack might have callbacks which still have the pointer of
-    // `this` and `on_session_ended_` may destroy this. Ensure
-    // `on_session_ended_` is called in a dedicated task.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(on_session_ended_));
+    // `on_session_ended_` may destroy this, but there's nothing else on the
+    // call stack, so this should be safe.
+    std::move(on_session_ended_).Run();
   }
+
+  // `this` may have been destroyed at this point.
 }
 
 }  // namespace ui_devtools
