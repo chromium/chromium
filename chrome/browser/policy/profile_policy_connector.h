@@ -112,7 +112,6 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
 
  private:
   void DoPostInit();
-  void ReportChromePolicyInitialized();
 
   // Returns the policy store which is actually used.
   const CloudPolicyStore* GetActualPolicyStore() const;
@@ -211,8 +210,6 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
       policy_providers_;
 
   std::unique_ptr<PolicyService> policy_service_;
-
-  std::optional<base::TimeTicks> creation_time_for_metrics_;
 
   std::unique_ptr<bool> is_managed_override_;
 
