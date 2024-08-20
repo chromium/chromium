@@ -384,7 +384,7 @@ void FocusModeYouTubeMusicDelegate::OnNextTrackDone(
   }
 
   std::move(next_track_state_.done_callback).Run(result);
-  next_track_state_.done_callback = base::NullCallback();
+  next_track_state_.Reset();
 }
 
 void FocusModeYouTubeMusicDelegate::OnReportPlaybackDone(
