@@ -53,11 +53,6 @@ BASE_FEATURE(kSearchEngineChoiceAttribution,
 #endif
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_FEATURE(kSearchEnginesSortingCleanup,
-             "kSearchEnginesSortingCleanup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 const base::FeatureParam<bool> kSearchEngineChoiceTriggerWithForceEeaCountry{
     &kSearchEngineChoiceTrigger, /*name=*/"with_force_eea_country", false};
 

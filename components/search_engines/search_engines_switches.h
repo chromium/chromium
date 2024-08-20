@@ -46,9 +46,6 @@ COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kSearchEngineChoiceAttribution);
 #endif
 
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_DECLARE_FEATURE(kSearchEnginesSortingCleanup);
-
 // Forces the search engine choice country to Belgium. Used for testing
 // purposes.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)

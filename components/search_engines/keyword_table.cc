@@ -339,16 +339,6 @@ int KeywordTable::GetBuiltinKeywordDataVersion() {
                                                                      : 0;
 }
 
-bool KeywordTable::SetBuiltinKeywordMilestone(int milestone) {
-  return meta_table_->SetValue(kBuiltinKeywordMilestone, milestone);
-}
-
-int KeywordTable::GetBuiltinKeywordMilestone() {
-  int milestone = 0;
-  return meta_table_->GetValue(kBuiltinKeywordMilestone, &milestone) ? milestone
-                                                                     : 0;
-}
-
 bool KeywordTable::ClearBuiltinKeywordMilestone() {
   return meta_table_->DeleteKey(kBuiltinKeywordMilestone);
 }

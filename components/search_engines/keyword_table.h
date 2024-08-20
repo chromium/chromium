@@ -141,8 +141,6 @@ class KeywordTable : public WebDatabaseTable {
   int GetBuiltinKeywordDataVersion();
 
   // Chrome milestone when the built-in keywords were last updated.
-  bool SetBuiltinKeywordMilestone(int milestone);
-  int GetBuiltinKeywordMilestone();
   bool ClearBuiltinKeywordMilestone();
 
   // Country associated with the built-in keywords, stored as a country ID,
