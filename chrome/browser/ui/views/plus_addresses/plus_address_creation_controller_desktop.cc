@@ -82,13 +82,15 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
   relevant_origin_ = main_frame_origin;
   callback_ = std::move(callback);
 
-  metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalShown);
+  const bool should_show_notice = ShouldShowNotice();
   modal_shown_time_ = base::TimeTicks::Now();
+  metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalShown,
+                            /*is_notice_screen=*/should_show_notice);
   if (!suppress_ui_for_testing_) {
     dialog_delegate_ = std::make_unique<PlusAddressCreationDialogDelegate>(
         GetWeakPtr(), &GetWebContents(), maybe_email.value(),
         plus_address_service->IsRefreshingSupported(relevant_origin_),
-        ShouldShowNotice());
+        should_show_notice);
     constrained_window::ShowWebModalDialogViews(dialog_delegate_.get(),
                                                 &GetWebContents());
   }
@@ -103,7 +105,8 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
 void PlusAddressCreationControllerDesktop::OnConfirmed() {
   // The UI prevents any attempt to Confirm if Reserve() had failed.
   CHECK(plus_profile_.has_value());
-  metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalConfirmed);
+  metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalConfirmed,
+                            ShouldShowNotice());
 
   if (plus_profile_->is_confirmed) {
     OnPlusAddressConfirmed(plus_profile_.value());
@@ -123,13 +126,16 @@ void PlusAddressCreationControllerDesktop::OnConfirmed() {
 void PlusAddressCreationControllerDesktop::OnCanceled() {
   // TODO(b/320541525) ModalEvent is in sync with actual user action. May
   // re-evaluate the use of this metric when modal becomes more complex.
-  metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalCanceled);
+  const bool was_notice_shown = ShouldShowNotice();
+  metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalCanceled,
+                            was_notice_shown);
   if (modal_error_status_.has_value()) {
-    RecordModalShownOutcome(modal_error_status_.value());
+    RecordModalShownOutcome(modal_error_status_.value(), was_notice_shown);
     modal_error_status_.reset();
   } else {
     RecordModalShownOutcome(
-        metrics::PlusAddressModalCompletionStatus::kModalCanceled);
+        metrics::PlusAddressModalCompletionStatus::kModalCanceled,
+        was_notice_shown);
   }
 }
 void PlusAddressCreationControllerDesktop::OnDialogDestroyed() {
@@ -143,13 +149,14 @@ PlusAddressCreationControllerDesktop::get_view_for_testing() {
 }
 
 void PlusAddressCreationControllerDesktop::RecordModalShownOutcome(
-    metrics::PlusAddressModalCompletionStatus status) {
+    metrics::PlusAddressModalCompletionStatus status,
+    bool was_notice_shown) {
   if (modal_shown_time_.has_value()) {
     // The number of refreshes is equal to the number of `reserve` responses
     // minus 1, since the first displayed plus address also calls `reserve`.
     metrics::RecordModalShownOutcome(
         status, base::TimeTicks::Now() - modal_shown_time_.value(),
-        std::max(0, reserve_response_count_ - 1));
+        std::max(0, reserve_response_count_ - 1), was_notice_shown);
     modal_shown_time_.reset();
     reserve_response_count_ = 0;
   }
@@ -198,12 +205,14 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
 
     // If this was a first run dialog, record that the user has accepted the
     // notice.
-    if (ShouldShowNotice()) {
+    const bool was_notice_shown = ShouldShowNotice();
+    if (was_notice_shown) {
       GetPlusAddressSettingService()->SetHasAcceptedNotice();
     }
 
     RecordModalShownOutcome(
-        metrics::PlusAddressModalCompletionStatus::kModalConfirmed);
+        metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
+        was_notice_shown);
   } else {
     modal_error_status_ =
         metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError;
