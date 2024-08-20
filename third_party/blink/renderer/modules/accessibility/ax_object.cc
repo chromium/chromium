@@ -2262,21 +2262,6 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
         ax::mojom::blink::BoolAttribute::kNotUserSelectableStyle, true);
   }
 
-  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader) ||
-      accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
-    // The DOMNodeID from Blink. Currently only populated when using
-    // the accessibility tree for PDF exporting. Warning, this is totally
-    // unrelated to the ID attribute for an HTML element - it's an ID used to
-    // uniquely identify nodes in Blink.
-    // TODO(accessibility) Remove this and use the AXObjectID(), which is the
-    // the same when there there is a DOM node (will always be positive).
-    int dom_node_id = GetDOMNodeId();
-    if (dom_node_id) {
-      node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kDOMNodeId,
-                                 dom_node_id);
-    }
-  }
-
   // If text, return early as a performance tweak, as the rest of the properties
   // in this method do not apply to text.
   if (RoleValue() == ax::mojom::blink::Role::kStaticText) {
@@ -6836,13 +6821,6 @@ AXObject::AXObjectVector AXObject::TableCellChildren() const {
       result.AppendVector(child->TableCellChildren());
   }
   return result;
-}
-
-int AXObject::GetDOMNodeId() const {
-  Node* node = GetNode();
-  if (node)
-    return node->GetDomNodeId();
-  return 0;
 }
 
 void AXObject::GetRelativeBounds(AXObject** out_container,

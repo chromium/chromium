@@ -5067,25 +5067,27 @@ IFACEMETHODIMP AXPlatformNodeWin::Navigate(
 
 void AXPlatformNodeWin::GetRuntimeIdArray(
     AXPlatformNodeWin::RuntimeIdArray& runtime_id) {
-  int dom_id;
   runtime_id[0] = UiaAppendRuntimeId;
 
   // The combination of tree/frame id and Blink (DOM) id is unique and gives
   // nodes stable ids across layouts/tree movement. If there's a valid tree
   // id, use that, otherwise fall back to the globally unique id.
-  AXTreeID tree_id = GetDelegate()->GetTreeData().tree_id;
-  if (GetIntAttribute(ax::mojom::IntAttribute::kDOMNodeId, &dom_id) &&
-      tree_id != AXTreeIDUnknown()) {
-    AXActionHandlerRegistry::FrameID frame_id =
-        AXActionHandlerRegistry::GetInstance()->GetFrameID(tree_id);
-    runtime_id[1] = frame_id.first;
-    runtime_id[2] = frame_id.second;
-    runtime_id[3] = dom_id;
-  } else {
-    runtime_id[1] = 0;
-    runtime_id[2] = 0;
-    runtime_id[3] = GetUniqueId();
+  int dom_id = GetData().GetDOMNodeId();
+  if (dom_id) {
+    AXTreeID tree_id = GetDelegate()->GetTreeData().tree_id;
+    if (tree_id != AXTreeIDUnknown()) {
+      AXActionHandlerRegistry::FrameID frame_id =
+          AXActionHandlerRegistry::GetInstance()->GetFrameID(tree_id);
+      runtime_id[1] = frame_id.first;
+      runtime_id[2] = frame_id.second;
+      runtime_id[3] = dom_id;
+      return;
+    }
   }
+
+  runtime_id[1] = 0;
+  runtime_id[2] = 0;
+  runtime_id[3] = GetUniqueId();
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::GetRuntimeId(SAFEARRAY** runtime_id) {

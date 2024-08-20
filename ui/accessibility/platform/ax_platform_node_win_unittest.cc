@@ -5130,9 +5130,9 @@ TEST_F(AXPlatformNodeWinTest, UIAGetEmbeddedFragmentRoots) {
   EXPECT_EQ(nullptr, embedded_fragment_roots.Get());
 }
 
-TEST_F(AXPlatformNodeWinTest, UIAGetRuntimeId) {
+TEST_F(AXPlatformNodeWinTest, UIAGetRuntimeIdForGeneratedId) {
   AXNodeData root_data;
-  root_data.id = 1;
+  root_data.id = -99;
   root_data.role = ax::mojom::Role::kRootWebArea;
   Init(root_data);
 
@@ -5159,6 +5159,39 @@ TEST_F(AXPlatformNodeWinTest, UIAGetRuntimeId) {
   EXPECT_NE(-1, array_data[1]);
   EXPECT_NE(-1, array_data[2]);
   EXPECT_NE(-1, array_data[3]);
+
+  EXPECT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(runtime_id.Get()));
+}
+
+TEST_F(AXPlatformNodeWinTest, UIAGetRuntimeIdForSuppliedId) {
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+  Init(root_data);
+
+  ComPtr<IRawElementProviderFragment> root_provider =
+      GetRootIRawElementProviderFragment();
+
+  base::win::ScopedSafearray runtime_id;
+  EXPECT_HRESULT_SUCCEEDED(root_provider->GetRuntimeId(runtime_id.Receive()));
+
+  LONG array_lower_bound;
+  EXPECT_HRESULT_SUCCEEDED(
+      ::SafeArrayGetLBound(runtime_id.Get(), 1, &array_lower_bound));
+  EXPECT_EQ(0, array_lower_bound);
+
+  LONG array_upper_bound;
+  EXPECT_HRESULT_SUCCEEDED(
+      ::SafeArrayGetUBound(runtime_id.Get(), 1, &array_upper_bound));
+  EXPECT_EQ(3, array_upper_bound);
+
+  int* array_data;
+  EXPECT_HRESULT_SUCCEEDED(::SafeArrayAccessData(
+      runtime_id.Get(), reinterpret_cast<void**>(&array_data)));
+  EXPECT_EQ(UiaAppendRuntimeId, array_data[0]);
+  EXPECT_EQ(-1, array_data[1]);
+  EXPECT_EQ(-1, array_data[2]);
+  EXPECT_EQ(1, array_data[3]);
 
   EXPECT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(runtime_id.Get()));
 }

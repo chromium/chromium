@@ -1471,9 +1471,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
                                               int* index_in_ancestor1,
                                               int* index_in_ancestor2);
 
-  // Blink-internal DOM Node ID. Currently used for PDF exporting.
-  int GetDOMNodeId() const;
-
   bool IsHiddenForTextAlternativeCalculation(
       const AXObject* aria_label_or_description_root) const;
 

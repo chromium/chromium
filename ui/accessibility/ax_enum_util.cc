@@ -1561,7 +1561,7 @@ const char* ToString(ax::mojom::IntAttribute int_attribute) {
       return "nextFocusId";
     case ax::mojom::IntAttribute::kImageAnnotationStatus:
       return "imageAnnotationStatus";
-    case ax::mojom::IntAttribute::kDOMNodeId:
+    case ax::mojom::IntAttribute::kDOMNodeIdDeprecated:
       return "domNodeId";
     case ax::mojom::IntAttribute::kNextWindowFocusId:
       return "nextWindowFocusId";
@@ -1700,7 +1700,7 @@ ax::mojom::IntAttribute StringToIntAttribute(const std::string& int_attribute) {
   } else if (int_attribute == "kImageAnnotationStatus") {
     return ax::mojom::IntAttribute::kImageAnnotationStatus;
   } else if (int_attribute == "kDomNodeId") {
-    return ax::mojom::IntAttribute::kDOMNodeId;
+    return ax::mojom::IntAttribute::kDOMNodeIdDeprecated;
   } else if (int_attribute == "kNextWindowFocusId") {
     return ax::mojom::IntAttribute::kNextWindowFocusId;
   } else if (int_attribute == "kPreviousWindowFocusId") {

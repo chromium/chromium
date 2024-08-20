@@ -3019,7 +3019,7 @@ int AXObjectCacheImpl::GetLocationSerializationDelay() {
   // currently focused object, so schedule serializations (almost )immediately
   // if that object changes. The root is an exception because it often has focus
   // while the page is loading.
-  DOMNodeId focused_node_id = FocusedObject()->GetDOMNodeId();
+  DOMNodeId focused_node_id = FocusedNode()->GetDomNodeId();
   if (focused_node_id != document_->GetDomNodeId() &&
       changed_bounds_ids_.Contains(focused_node_id)) {
     return kDelayForLocationUpdatesFocused;

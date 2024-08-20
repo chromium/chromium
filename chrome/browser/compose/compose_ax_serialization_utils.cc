@@ -699,8 +699,9 @@ optimization_guide::proto::AXIntAttribute IntAttributeToProto(
     case ax::mojom::IntAttribute::kDropeffectDeprecated:
       return optimization_guide::proto::AXIntAttribute::
           AX_IA_DROPEFFECTDEPRECATED;
-    case ax::mojom::IntAttribute::kDOMNodeId:
-      return optimization_guide::proto::AXIntAttribute::AX_IA_DOMNODEID;
+    case ax::mojom::IntAttribute::kDOMNodeIdDeprecated:
+      return optimization_guide::proto::AXIntAttribute::
+          AX_IA_DOMNODEIDDEPRECATED;
     case ax::mojom::IntAttribute::kIsPopup:
       return optimization_guide::proto::AXIntAttribute::AX_IA_ISPOPUP;
     case ax::mojom::IntAttribute::kNextWindowFocusId:

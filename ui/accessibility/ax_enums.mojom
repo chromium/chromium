@@ -772,11 +772,8 @@ enum IntAttribute {
   // Note: aria-dropeffect is deprecated in WAI-ARIA 1.1.
   kDropeffectDeprecated = 59,
 
-  // The DOMNodeID from Blink. Currently only populated when using
-  // the accessibility tree for PDF exporting. Warning, this is totally
-  // unrelated to the accessibility node ID, or the ID attribute for an
-  // HTML element - it's an ID used to uniquely identify nodes in Blink.
-  kDOMNodeId = 60,
+  // Deprecated, use AXNodeData.id (see ui/accessibility/ax_node_id_forward.h).
+  kDOMNodeIdDeprecated = 60,
 
   // Indicates whether the element is a popover ("popup") and if so, what type.
   [MinVersion=1] kIsPopup = 61,

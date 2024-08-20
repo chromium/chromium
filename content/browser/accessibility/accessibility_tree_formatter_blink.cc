@@ -150,7 +150,7 @@ std::string IntAttrToString(const ui::AXNode& node,
     case ax::mojom::IntAttribute::kAriaCellRowSpan:
     case ax::mojom::IntAttribute::kAriaRowCount:
     case ax::mojom::IntAttribute::kColorValue:
-    case ax::mojom::IntAttribute::kDOMNodeId:
+    case ax::mojom::IntAttribute::kDOMNodeIdDeprecated:
     case ax::mojom::IntAttribute::kDropeffectDeprecated:
     case ax::mojom::IntAttribute::kErrormessageIdDeprecated:
     case ax::mojom::IntAttribute::kHierarchicalLevel:
