@@ -89,6 +89,9 @@ class MojoAudioEncoderTest : public ::testing::Test {
   }
 
   std::unique_ptr<AudioBus> MakeInput(float seed, int channels, int frames) {
+    CHECK_EQ(std::clamp(seed, -1.0f, 1.0f), seed)
+        << "Some AudioBuffer <-> AudioBus conversions involve clipping to the "
+           "range [-1.0, 1.0], so test results will be unreliable";
     auto result = AudioBus::Create(channels, frames);
     for (int channel = 0; channel < channels; channel++) {
       for (int i = 0; i < frames; i++)
@@ -238,7 +241,8 @@ TEST_F(MojoAudioEncoderTest, Initialize_Twice) {
 TEST_F(MojoAudioEncoderTest, Encode) {
   base::RunLoop run_loop;
   AudioEncoder::Options options = MakeOptions();
-  const int input_count = 20;
+  constexpr int kInputCount = 20;
+  constexpr size_t kFrameCount = 1024;
   int output_count = 0;
   AudioEncoder::OutputCB service_output_cb;
   EXPECT_CALL(*mock_audio_encoder_, Initialize(_, _, _))
@@ -258,18 +262,20 @@ TEST_F(MojoAudioEncoderTest, Encode) {
         std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 
         int64_t input_number = ToMilliseconds(capture_time);
-        EXPECT_LE(input_number, input_count);
+        EXPECT_LE(input_number, kInputCount);
 
         AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                {CHANNEL_LAYOUT_DISCRETE, audio_bus->channels()},
                                options.sample_rate, audio_bus->frames());
 
-        auto data = base::HeapArray<uint8_t>::Uninit(audio_bus->frames());
-        for (size_t i = 0; i < data.size(); i++) {
-          data[i] = static_cast<int>(audio_bus->channel(0)[i]);
-        }
+        const auto channel_data = base::make_span(
+            reinterpret_cast<const uint8_t*>(audio_bus->channel(0)),
+            base::checked_cast<size_t>(AudioBus::CalculateMemorySize(
+                /*channels=*/1, audio_bus->frames())));
+        auto encoded_data = base::HeapArray<uint8_t>::CopiedFrom(channel_data);
 
-        EncodedAudioBuffer output(params, std::move(data), capture_time);
+        EncodedAudioBuffer output(params, std::move(encoded_data),
+                                  capture_time);
 
         std::optional<AudioEncoder::CodecDescription> desc;
         if (input_number > 0)
@@ -281,15 +287,18 @@ TEST_F(MojoAudioEncoderTest, Encode) {
   AudioEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](EncodedAudioBuffer output,
           std::optional<AudioEncoder::CodecDescription> desc) {
-        int64_t output_number = ToMilliseconds(output.timestamp);
+        const int64_t output_number = ToMilliseconds(output.timestamp);
         EXPECT_EQ(output_number, output_count);
         EXPECT_EQ(output.params.channels(), options.channels);
         EXPECT_EQ(output.params.sample_rate(), options.sample_rate);
-        EXPECT_EQ(output.encoded_data.size(),
-                  static_cast<size_t>(options.sample_rate));
-
-        for (size_t i = 0; i < output.encoded_data.size(); i++) {
-          EXPECT_EQ(output.encoded_data[i], output_number)
+        ASSERT_EQ(output.encoded_data.size(),
+                  base::checked_cast<size_t>(AudioBus::CalculateMemorySize(
+                      /*channels=*/1, kFrameCount)));
+        const float seed = 1.0 / kInputCount * output_number;
+        auto* const encoded_data =
+            reinterpret_cast<const float*>(output.encoded_data.data());
+        for (size_t i = 0; i < kFrameCount; i++) {
+          EXPECT_EQ(encoded_data[i], seed)
               << " output_number: " << output_number << " i: " << i;
         }
 
@@ -299,17 +308,18 @@ TEST_F(MojoAudioEncoderTest, Encode) {
           EXPECT_EQ(output_number, desc.value()[0]);
 
         output_count++;
-        if (output_count == input_count)
+        if (output_count == kInputCount) {
           run_loop.QuitWhenIdle();
+        }
       });
 
   mojo_audio_encoder_->Initialize(options, std::move(output_cb),
                                   ValidatingStatusCB());
 
-  for (int i = 0; i < input_count; i++) {
+  for (int i = 0; i < kInputCount; i++) {
     auto ts = FromMilliseconds(i);
     mojo_audio_encoder_->Encode(
-        MakeInput(i, options.channels, options.sample_rate), ts,
+        MakeInput(1.0 / kInputCount * i, options.channels, kFrameCount), ts,
         ValidatingStatusCB());
   }
 
@@ -406,8 +416,8 @@ TEST_F(MojoAudioEncoderTest, Flush) {
   for (int i = 0; i < input_count; i++) {
     auto ts = FromMilliseconds(i);
     mojo_audio_encoder_->Encode(
-        MakeInput(i, options.channels, options.sample_rate), ts,
-        ValidatingStatusCB());
+        MakeInput(1.0 / input_count * i, options.channels, options.sample_rate),
+        ts, ValidatingStatusCB());
   }
 
   auto flush_cb = base::BindLambdaForTesting([&](EncoderStatus s) {
@@ -458,8 +468,8 @@ TEST_F(MojoAudioEncoderTest, MojoErrorCallsAllDoneCallbacks) {
       error_count++;
     });
     mojo_audio_encoder_->Encode(
-        MakeInput(i, options.channels, options.sample_rate), ts,
-        std::move(done_cb));
+        MakeInput(1.0 / input_count * i, options.channels, options.sample_rate),
+        ts, std::move(done_cb));
   }
   auto flush_cb = base::BindLambdaForTesting([&](EncoderStatus s) {
     EXPECT_EQ(s.code(), EncoderStatus::Codes::kEncoderMojoConnectionError);
