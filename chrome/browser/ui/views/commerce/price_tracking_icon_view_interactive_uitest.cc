@@ -7,9 +7,11 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
@@ -726,4 +728,43 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 "Commerce.PriceTracking.EditedBookmarkFolderFromOmniboxBubble"),
             1);
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       TabDiscardDuringNavigationNoCrash) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+  constexpr char kEmptyDocumentURL[] = "/empty.html";
+  mock_shopping_service_->SetIsSubscribedCallbackValue(false);
+  const GURL shopping_url = embedded_test_server()->GetURL(kShoppingURL);
+
+  RunTestSequence(
+      InstrumentTab(kShoppingTab),
+
+      // Make a second tab.
+      AddInstrumentedTab(kSecondTab,
+                         embedded_test_server()->GetURL(kEmptyDocumentURL)),
+      SelectTab(kTabStripElementId, 0),
+
+      // Navigate the first tab to a shopping URL and wait for the chip to show.
+      NavigateWebContents(kShoppingTab, shopping_url),
+      WaitForShow(kPriceTrackingChipElementId),
+
+      // Start a navigation to an empty URL. Do not wait for the navigation to
+      // finish.
+      Do(base::BindLambdaForTesting([&]() {
+        ui_test_utils::NavigateToURLWithDisposition(
+            browser(), embedded_test_server()->GetURL(kEmptyDocumentURL),
+            WindowOpenDisposition::CURRENT_TAB,
+            ui_test_utils::BROWSER_TEST_NO_WAIT);
+      })),
+
+      // Immediately switch tabs and discard the navigating tab.
+      SelectTab(kTabStripElementId, 1), Do(base::BindLambdaForTesting([&]() {
+        // Note that because the active tab cannot be discarded, this line is
+        // guaranteed to discard the first tab.
+        g_browser_process->GetTabManager()->DiscardTab(
+            mojom::LifecycleUnitDiscardReason::EXTERNAL);
+      })));
+
+  // There should not be a crash.
 }
