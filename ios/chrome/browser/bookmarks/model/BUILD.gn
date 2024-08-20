@@ -42,6 +42,7 @@ source_set("model") {
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/signin/model:system_identity_manager",
@@ -67,6 +68,7 @@ source_set("model_utils") {
     "//components/prefs",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
   ]
   public_deps = [ ":bookmark_storage_type" ]
 }
