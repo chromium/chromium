@@ -5,6 +5,8 @@
 #include "remoting/protocol/webrtc_data_stream_adapter.h"
 
 #include <stdint.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -58,6 +60,7 @@ void WebrtcDataStreamAdapter::Start(EventHandler* event_handler) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(pending_open_callback_));
   }
+  HandleIncomingMessages();
 }
 
 void WebrtcDataStreamAdapter::Send(google::protobuf::MessageLite* message,
@@ -65,7 +68,7 @@ void WebrtcDataStreamAdapter::Send(google::protobuf::MessageLite* message,
   rtc::CopyOnWriteBuffer buffer;
   buffer.SetSize(message->ByteSize());
   message->SerializeWithCachedSizesToArray(buffer.MutableData());
-  pending_messages_.emplace(
+  pending_outgoing_messages_.emplace(
       webrtc::DataBuffer(std::move(buffer), true /* binary */),
       std::move(done));
 
@@ -84,9 +87,9 @@ void WebrtcDataStreamAdapter::SendMessagesIfReady() {
   // Send messages to the data channel until it has to add one to its own queue.
   // This ensures that the lower-level buffers remain full.
   while (state_ == State::OPEN && channel_->buffered_amount() == 0 &&
-         !pending_messages_.empty()) {
-    PendingMessage message = std::move(pending_messages_.front());
-    pending_messages_.pop();
+         !pending_outgoing_messages_.empty()) {
+    PendingMessage message = std::move(pending_outgoing_messages_.front());
+    pending_outgoing_messages_.pop();
     if (!channel_->Send(std::move(message.buffer))) {
       LOG(ERROR) << "Send failed on data channel " << channel_->label();
       channel_->Close();
@@ -117,6 +120,7 @@ void WebrtcDataStreamAdapter::OnStateChange() {
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, std::move(pending_open_callback_));
       }
+      HandleIncomingMessages();
       break;
 
     case webrtc::DataChannelInterface::kClosing:
@@ -137,19 +141,12 @@ void WebrtcDataStreamAdapter::OnStateChange() {
 }
 
 void WebrtcDataStreamAdapter::OnMessage(const webrtc::DataBuffer& rtc_buffer) {
-  if (state_ != State::OPEN) {
-    LOG(ERROR) << "Dropping a message received when the channel is not open.";
-    return;
-  }
-
-  std::unique_ptr<CompoundBuffer> buffer(new CompoundBuffer());
+  auto buffer = std::make_unique<CompoundBuffer>();
   buffer->AppendCopyOf(reinterpret_cast<const char*>(rtc_buffer.data.data()),
                        rtc_buffer.data.size());
   buffer->Lock();
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WebrtcDataStreamAdapter::InvokeMessageEvent,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(buffer)));
+  pending_incoming_messages_.emplace(std::move(buffer));
+  HandleIncomingMessages();
 }
 
 void WebrtcDataStreamAdapter::OnBufferedAmountChange(uint64_t previous_amount) {
@@ -175,6 +172,18 @@ void WebrtcDataStreamAdapter::InvokeClosedEvent() {
 void WebrtcDataStreamAdapter::InvokeMessageEvent(
     std::unique_ptr<CompoundBuffer> buffer) {
   event_handler_->OnMessageReceived(std::move(buffer));
+}
+
+void WebrtcDataStreamAdapter::HandleIncomingMessages() {
+  while (state_ == State::OPEN && event_handler_ &&
+         !pending_incoming_messages_.empty()) {
+    auto buffer = std::move(pending_incoming_messages_.front());
+    pending_incoming_messages_.pop();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WebrtcDataStreamAdapter::InvokeMessageEvent,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(buffer)));
+  }
 }
 
 WebrtcDataStreamAdapter::PendingMessage::PendingMessage(
