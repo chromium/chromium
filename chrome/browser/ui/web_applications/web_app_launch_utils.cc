@@ -888,6 +888,10 @@ void LaunchWebApp(apps::AppLaunchParams params,
     debug_value.Set("error", error_str);
     DVLOG(1) << error_str;
   }
+
+  debug_value.Set("web_contents", base::ToString(web_contents));
+  debug_value.Set("browser", base::ToString(browser));
+
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
