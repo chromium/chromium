@@ -1918,14 +1918,14 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/hamcrest': {
+  'src/third_party/hamcrest/cipd': {
       'packages': [
           {
               'package': 'chromium/third_party/hamcrest',
               'version': '37eccfc658fe79695d6abb6dd497463c4372032f',
           },
       ],
-      'condition': 'checkout_android',
+      'condition': 'checkout_android and non_git_source',
       'dep_type': 'cipd',
   },
 
