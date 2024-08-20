@@ -3577,7 +3577,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.NumericQuantity.DidTriggerSuggestions" enum="Boolean"
-    expires_after="M130">
+    expires_after="M132">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
