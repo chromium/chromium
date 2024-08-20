@@ -3453,7 +3453,11 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PageLCPStopsUponInput) {
   ASSERT_EQ(all_frames_value, main_frame_value);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+// The LinkPreview feature is implemented only on desktops, and window
+// implementation assumes the Aura for now.
+// TODO(crbug.com/305004651): Implement the feature for other platforms and
+// enable the following tests on the remaining platforms.
 class PageLoadMetricsPreviewBrowserTest : public PageLoadMetricsBrowserTest {
  public:
   PageLoadMetricsPreviewBrowserTest() {
@@ -3486,7 +3490,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsPreviewBrowserTest,
       1);
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 
 class PageLoadMetricsBrowserTestTerminatedPage
     : public PageLoadMetricsBrowserTest {
