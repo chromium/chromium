@@ -20,6 +20,10 @@ BASE_FEATURE(kSyncAndroidLimitNTPPromoImpressions,
 BASE_FEATURE(kEnableBatchUploadFromSettings,
              "EnableBatchUploadFromSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUnoPhase2FollowUp,
+             "UnoPhase2FollowUp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kSyncAutofillWalletUsageData,

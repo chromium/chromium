@@ -30,6 +30,13 @@ inline constexpr base::FeatureParam<int> kSyncAndroidNTPPromoMaxImpressions{
 // Controls whether to show a batch upload card in Android unified settings
 // panel.
 BASE_DECLARE_FEATURE(kEnableBatchUploadFromSettings);
+
+// Flag that controls Uno fast-follow features which are:
+// - Batch upload of left-behind bookmarks from the bookmark manager
+// - Turn on bookmarks and reading list when signing in from bookmark manager
+// - Confirmation dialog when turning off “Allow Chrome sign-in”
+// - Promo for signed-in users with bookmarks toggle off
+BASE_DECLARE_FEATURE(kUnoPhase2FollowUp);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Controls whether to enable syncing of Autofill Wallet Usage Data.
