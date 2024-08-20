@@ -4,7 +4,7 @@
 
 import type {ViewerPdfSidenavElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 function createSidenav(): ViewerPdfSidenavElement {
   document.body.innerHTML = '';
@@ -31,7 +31,7 @@ const tests = [
       {name: 'attachment2', size: -1, readable: true},
     ];
 
-    await microtasksFinished();
+    await waitAfterNextRender(sidenav);
 
     const icons = sidenav.shadowRoot!.querySelector('#icons')!;
     const content = sidenav.shadowRoot!.querySelector('#content')!;
@@ -118,53 +118,43 @@ const tests = [
 
     // Click on outline view.
     outlineButton.click();
-    await microtasksFinished();
     assertOutlineView();
 
     // Click on attachment view.
     attachmentButton.click();
-    await microtasksFinished();
     assertAttachmentView();
 
     // Return to thumbnail view.
     thumbnailButton.click();
-    await microtasksFinished();
     assertThumbnailView();
 
     // Arrow keys toggle through thumbnail, outline and attachment view.
     // Thumbnail -> Outline
     keyDownOn(icons, 0, [], 'ArrowDown');
-    await microtasksFinished();
     assertOutlineView();
 
     // Outline -> Attachment
     keyDownOn(icons, 0, [], 'ArrowDown');
-    await microtasksFinished();
     assertAttachmentView();
 
     // Attachment -> Thumbnail
     keyDownOn(icons, 0, [], 'ArrowDown');
-    await microtasksFinished();
     assertThumbnailView();
 
     // Thumbnail -> Attachment
     keyDownOn(icons, 0, [], 'ArrowUp');
-    await microtasksFinished();
     assertAttachmentView();
 
     // Attachment -> Outline
     keyDownOn(icons, 0, [], 'ArrowUp');
-    await microtasksFinished();
     assertOutlineView();
 
     // Outline -> Thumbnail
     keyDownOn(icons, 0, [], 'ArrowUp');
-    await microtasksFinished();
     assertThumbnailView();
 
     // Pressing arrow keys outside of icons shouldn't do anything.
     keyDownOn(content, 0, [], 'ArrowDown');
-    await microtasksFinished();
     assertThumbnailView();
 
     chrome.test.succeed();
@@ -183,7 +173,7 @@ const tests = [
       {title: 'Bar', page: 2, children: []},
     ];
 
-    await microtasksFinished();
+    await waitAfterNextRender(sidenav);
     const icons = sidenav.shadowRoot!.querySelector('#icons')!;
     const content = sidenav.shadowRoot!.querySelector('#content')!;
     const buttons = sidenav.shadowRoot!.querySelectorAll('cr-icon-button');
@@ -234,34 +224,28 @@ const tests = [
 
     // Click on outline view.
     outlineButton.click();
-    await microtasksFinished();
     assertOutlineView();
 
     // Return to thumbnail view.
     thumbnailButton.click();
-    await microtasksFinished();
     assertThumbnailView();
 
     // Arrow keys toggle through thumbnail and outline view.
 
     // Thumbnail -> Outline
     keyDownOn(icons, 0, [], 'ArrowDown');
-    await microtasksFinished();
     assertOutlineView();
 
     // Outline -> Thumbnail
     keyDownOn(icons, 0, [], 'ArrowDown');
-    await microtasksFinished();
     assertThumbnailView();
 
     // Thumbnail -> Outline
     keyDownOn(icons, 0, [], 'ArrowUp');
-    await microtasksFinished();
     assertOutlineView();
 
     // Outline -> Thumbnail
     keyDownOn(icons, 0, [], 'ArrowUp');
-    await microtasksFinished();
     assertThumbnailView();
 
     chrome.test.succeed();
@@ -277,7 +261,7 @@ const tests = [
       {name: 'attachment2', size: -1, readable: true},
     ];
 
-    await microtasksFinished();
+    await waitAfterNextRender(sidenav);
 
     const icons = sidenav.shadowRoot!.querySelector('#icons')!;
     const content = sidenav.shadowRoot!.querySelector('#content')!;
@@ -331,34 +315,28 @@ const tests = [
 
     // Click on attachment view.
     attachmentButton.click();
-    await microtasksFinished();
     assertAttachmentView();
 
     // Return to thumbnail view.
     thumbnailButton.click();
-    await microtasksFinished();
     assertThumbnailView();
 
     // Arrow keys toggle through thumbnail and attachment view.
 
     // Thumbnail -> Attachment
     keyDownOn(icons, 0, [], 'ArrowDown');
-    await microtasksFinished();
     assertAttachmentView();
 
     // Attachment -> Thumbnail
     keyDownOn(icons, 0, [], 'ArrowDown');
-    await microtasksFinished();
     assertThumbnailView();
 
     // Thumbnail -> Attachment
     keyDownOn(icons, 0, [], 'ArrowUp');
-    await microtasksFinished();
     assertAttachmentView();
 
     // Attachment -> Thumbnail
     keyDownOn(icons, 0, [], 'ArrowUp');
-    await microtasksFinished();
     assertThumbnailView();
 
     chrome.test.succeed();
@@ -368,12 +346,11 @@ const tests = [
     const sidenav = createSidenav();
     chrome.test.assertEq(0, sidenav.bookmarks.length);
     chrome.test.assertEq(0, sidenav.attachments.length);
-
-    chrome.test.assertFalse(isVisible(sidenav.$.icons));
+    chrome.test.assertTrue(sidenav.getHideIconsForTesting());
     chrome.test.succeed();
   },
 
-  async function testTabIconsHiddenWithBookmarks() {
+  function testTabIconsHiddenWithBookmarks() {
     const sidenav = createSidenav();
 
     // Add dummy bookmarks so that the buttons appear.
@@ -382,15 +359,13 @@ const tests = [
       {title: 'Bar', page: 2, children: []},
     ];
 
-    await microtasksFinished();
-
     chrome.test.assertEq(2, sidenav.bookmarks.length);
     chrome.test.assertEq(0, sidenav.attachments.length);
-    chrome.test.assertFalse(sidenav.$.icons.hidden);
+    chrome.test.assertFalse(sidenav.getHideIconsForTesting());
     chrome.test.succeed();
   },
 
-  async function testTabIconsHiddenWithAttachments() {
+  function testTabIconsHiddenWithAttachments() {
     const sidenav = createSidenav();
 
     // Add dummy attachments so that the buttons appear.
@@ -398,11 +373,10 @@ const tests = [
       {name: 'attachment1', size: 10, readable: true},
       {name: 'attachment2', size: -1, readable: true},
     ];
-    await microtasksFinished();
 
     chrome.test.assertEq(0, sidenav.bookmarks.length);
     chrome.test.assertEq(2, sidenav.attachments.length);
-    chrome.test.assertFalse(sidenav.$.icons.hidden);
+    chrome.test.assertFalse(sidenav.getHideIconsForTesting());
     chrome.test.succeed();
   },
 ];

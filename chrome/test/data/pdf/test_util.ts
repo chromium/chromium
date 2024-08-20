@@ -12,7 +12,7 @@ import {PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojof
 // </if>
 import {assert} from 'chrome://resources/js/assert.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 export class MockElement {
   dir: string = '';
@@ -326,14 +326,13 @@ export function getRequiredElement(parent: HTMLElement, query: string) {
  * Open the toolbar menu. Does nothing if the menu is already open.
  * @param toolbar The toolbar containing the menu to open.
  */
-export async function openToolbarMenu(toolbar: ViewerToolbarElement) {
+export function openToolbarMenu(toolbar: ViewerToolbarElement) {
   const menu = toolbar.$.menu;
   if (menu.open) {
     return;
   }
 
   getRequiredElement(toolbar, '#more').click();
-  await microtasksFinished();
   assert(menu.open);
 }
 
@@ -348,7 +347,7 @@ export function assertCheckboxMenuButton(
   // Check that the check mark visibility matches `checked`.
   chrome.test.assertEq(String(checked), button.getAttribute('aria-checked'));
   chrome.test.assertEq(
-      checked, isVisible(button.querySelector('.check-container cr-icon')));
+      checked, isVisible(button.querySelector('.check-container iron-icon')));
 }
 
 export async function ensureFullscreen(): Promise<void> {
