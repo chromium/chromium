@@ -18,7 +18,7 @@ class CSSValue;
 
 class CORE_EXPORT CSSSyntaxDefinition {
  public:
-  const CSSValue* Parse(CSSTokenizedValue,
+  const CSSValue* Parse(StringView,
                         const CSSParserContext&,
                         bool is_animation_tainted) const;
 

@@ -198,25 +198,6 @@ bool IsInterpolation(CascadePriority priority) {
   }
 }
 
-#if DCHECK_IS_ON()
-
-bool HasUnresolvedReferences(CSSParserTokenRange range) {
-  while (!range.AtEnd()) {
-    switch (range.Consume().FunctionId()) {
-      case CSSValueID::kVar:
-      case CSSValueID::kEnv:
-        return true;
-      case CSSValueID::kArg:
-        return RuntimeEnabledFeatures::CSSFunctionsEnabled();
-      default:
-        continue;
-    }
-  }
-  return false;
-}
-
-#endif  // DCHECK_IS_ON()
-
 // https://drafts.csswg.org/css-values-5/#attr-substitution-value
 std::optional<CSSParserToken> GetAttrSubstitutionValue(
     const String& attribute_value,
@@ -245,8 +226,7 @@ std::optional<CSSParserToken> GetAttrSubstitutionValue(
   std::optional<CSSSyntaxDefinition> syntax_definition =
       attribute_type.ConvertToCSSSyntaxDefinition();
   if (syntax_definition.has_value()) {
-    if (!syntax_definition->Parse(CSSTokenizedValue{range, attribute_value},
-                                  context, false)) {
+    if (!syntax_definition->Parse(attribute_value, context, false)) {
       return std::nullopt;
     }
   } else {
@@ -1526,8 +1506,7 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
     // https://drafts.css-houdini.org/css-properties-values-api-1/#fallbacks-in-var-references
     //
     // TODO(sesse): Do we need the token range here anymore?
-    if (!ValidateFallback(property,
-                          {fallback.TokenRange(), fallback.OriginalText()})) {
+    if (!ValidateFallback(property, fallback.OriginalText())) {
       return false;
     }
     if (!data) {
@@ -1655,10 +1634,8 @@ const CSSValue* StyleCascade::ResolveFunctionExpression(
         kCalcEnd);
   }
 
-  const CSSValue* value =
-      type.syntax.Parse(CSSTokenizedValue{resolved_expr.TokenRange(),
-                                          resolved_expr.OriginalText()},
-                        context, /*is_animation_tainted=*/false);
+  const CSSValue* value = type.syntax.Parse(
+      resolved_expr.OriginalText(), context, /*is_animation_tainted=*/false);
   if (!value) {
     return nullptr;
   }
@@ -1828,10 +1805,7 @@ bool StyleCascade::HasLineHeightDependency(const CustomProperty& property,
 }
 
 bool StyleCascade::ValidateFallback(const CustomProperty& property,
-                                    CSSTokenizedValue value) const {
-#if DCHECK_IS_ON()
-  DCHECK(!HasUnresolvedReferences(value.range));
-#endif  // DCHECK_IS_ON()
+                                    StringView value) const {
   if (!property.IsRegistered()) {
     return true;
   }

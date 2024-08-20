@@ -114,15 +114,15 @@ const CSSValue* ConsumeSyntaxComponent(const CSSSyntaxComponent& syntax,
 
 }  // namespace
 
-const CSSValue* CSSSyntaxDefinition::Parse(CSSTokenizedValue value,
+const CSSValue* CSSSyntaxDefinition::Parse(StringView text,
                                            const CSSParserContext& context,
                                            bool is_animation_tainted) const {
   if (IsUniversal()) {
-    return CSSVariableParser::ParseUniversalSyntaxValue(value, context,
+    return CSSVariableParser::ParseUniversalSyntaxValue(text, context,
                                                         is_animation_tainted);
   }
   for (const CSSSyntaxComponent& component : syntax_components_) {
-    CSSTokenizer tokenizer(value.text);
+    CSSTokenizer tokenizer(text);
     CSSParserTokenStream stream(tokenizer);
     stream.ConsumeWhitespace();
     if (const CSSValue* result =

@@ -20,247 +20,6 @@ namespace blink {
 
 namespace {
 
-bool IsValidVariableReference(CSSParserTokenRange, const ExecutionContext*);
-bool IsValidEnvVariableReference(CSSParserTokenRange, const ExecutionContext*);
-bool IsValidAttributeReference(CSSParserTokenRange, const ExecutionContext*);
-
-// Checks if a token sequence is a valid <declaration-value> [1],
-// with the additional restriction that any var()/env() functions (if present)
-// must follow their respective grammars as well.
-//
-// If this function returns true, then it outputs some additional details about
-// the token sequence that can be used to determine if it's valid in a given
-// situation, e.g. if "var()" is present (has_references=true), then the
-// sequence is valid for any property [2].
-//
-// Braces (i.e. {}) are considered to be "positioned" when they appear
-// top-level with non-whitespace tokens to the left or the right.
-//
-// For example:
-//
-//   foo {}    =>  Positioned
-//   {} foo    =>  Positioned
-//   { foo }   =>  Not positioned (the {} covers the whole value).
-//   foo [{}]  =>  Not positioned (the {} appears within another block).
-//
-// Token sequences with "positioned" braces are not valid in standard
-// properties, even if var()/env() is present in the value [3].
-//
-// [1] https://drafts.csswg.org/css-syntax-3/#typedef-declaration-value
-// [2] https://drafts.csswg.org/css-variables/#using-variables
-// [3] https://github.com/w3c/csswg-drafts/issues/9317
-bool IsValidRestrictedDeclarationValue(CSSParserTokenRange range,
-                                       bool& has_references,
-                                       bool& has_positioned_braces,
-                                       const ExecutionContext* context) {
-  size_t block_stack_size = 0;
-
-  // https://drafts.csswg.org/css-syntax/#component-value
-  size_t top_level_component_values = 0;
-  bool has_top_level_brace = false;
-
-  while (!range.AtEnd()) {
-    if (block_stack_size == 0 && range.Peek().GetType() != kWhitespaceToken) {
-      ++top_level_component_values;
-      if (range.Peek().GetType() == kLeftBraceToken) {
-        has_top_level_brace = true;
-      }
-    }
-
-    // First check if this is a valid variable reference, then handle the next
-    // token accordingly.
-    if (range.Peek().GetBlockType() == CSSParserToken::kBlockStart) {
-      const CSSParserToken& token = range.Peek();
-
-      // A block may have both var and env references. They can also be nested
-      // and used as fallbacks.
-      switch (token.FunctionId()) {
-        case CSSValueID::kInvalid:
-          // Not a built-in function, but it might be a user-defined
-          // CSS function (e.g. --foo()).
-          if (RuntimeEnabledFeatures::CSSFunctionsEnabled() &&
-              token.GetType() == kFunctionToken &&
-              CSSVariableParser::IsValidVariableName(token.Value())) {
-            has_references = true;
-          }
-          break;
-        case CSSValueID::kVar:
-          if (!IsValidVariableReference(range.ConsumeBlock(), context)) {
-            return false;  // Invalid reference.
-          }
-          has_references = true;
-          continue;
-        case CSSValueID::kEnv:
-          if (!IsValidEnvVariableReference(range.ConsumeBlock(), context)) {
-            return false;  // Invalid reference.
-          }
-          has_references = true;
-          continue;
-        case CSSValueID::kAttr:
-          if (!RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
-            break;
-          }
-          if (!IsValidAttributeReference(range.ConsumeBlock(), context)) {
-            return false;  // Invalid reference.
-          }
-          has_references = true;
-          continue;
-        default:
-          break;
-      }
-    }
-
-    const CSSParserToken& token = range.Consume();
-    if (token.GetBlockType() == CSSParserToken::kBlockStart) {
-      ++block_stack_size;
-    } else if (token.GetBlockType() == CSSParserToken::kBlockEnd) {
-      --block_stack_size;
-    } else {
-      switch (token.GetType()) {
-        case kDelimiterToken: {
-          if (token.Delimiter() == '!' && block_stack_size == 0) {
-            return false;
-          }
-          break;
-        }
-        case kRightParenthesisToken:
-        case kRightBraceToken:
-        case kRightBracketToken:
-        case kBadStringToken:
-        case kBadUrlToken:
-          return false;
-        case kSemicolonToken:
-          if (block_stack_size == 0) {
-            return false;
-          }
-          break;
-        default:
-          break;
-      }
-    }
-  }
-
-  has_positioned_braces =
-      has_top_level_brace && (top_level_component_values > 1);
-
-  return true;
-}
-
-bool IsValidVariableReference(CSSParserTokenRange range,
-                              const ExecutionContext* context) {
-  range.ConsumeWhitespace();
-  if (!CSSVariableParser::IsValidVariableName(
-          range.ConsumeIncludingWhitespace())) {
-    return false;
-  }
-  if (range.AtEnd()) {
-    return true;
-  }
-
-  if (range.Consume().GetType() != kCommaToken) {
-    return false;
-  }
-
-  bool has_references = false;
-  bool has_positioned_braces = false;
-  return IsValidRestrictedDeclarationValue(range, has_references,
-                                           has_positioned_braces, context);
-}
-
-bool IsValidEnvVariableReference(CSSParserTokenRange range,
-                                 const ExecutionContext* context) {
-  range.ConsumeWhitespace();
-  auto token = range.ConsumeIncludingWhitespace();
-  if (token.GetType() != CSSParserTokenType::kIdentToken) {
-    return false;
-  }
-  if (range.AtEnd()) {
-    return true;
-  }
-
-  if (RuntimeEnabledFeatures::ViewportSegmentsEnabled(context)) {
-    // Consume any number of integer values that indicate the indices for a
-    // multi-dimensional variable.
-    token = range.ConsumeIncludingWhitespace();
-    while (token.GetType() == kNumberToken) {
-      if (token.GetNumericValueType() != kIntegerValueType) {
-        return false;
-      }
-      if (token.NumericValue() < 0.) {
-        return false;
-      }
-      token = range.ConsumeIncludingWhitespace();
-    }
-
-    // If that's all we had (either ident then integers or just the ident) then
-    // the env() is valid.
-    if (token.GetType() == kEOFToken) {
-      return true;
-    }
-  } else {
-    token = range.Consume();
-  }
-
-  // Otherwise we need a comma followed by an optional fallback value.
-  if (token.GetType() != kCommaToken) {
-    return false;
-  }
-
-  bool has_references = false;
-  bool has_positioned_braces = false;
-  return IsValidRestrictedDeclarationValue(range, has_references,
-                                           has_positioned_braces, context);
-}
-
-// attr() = attr( <attr-name> <attr-type>? , <declaration-value>?)
-bool IsValidAttributeReference(CSSParserTokenRange range,
-                               const ExecutionContext* context) {
-  range.ConsumeWhitespace();
-  // Parse <attr-name>.
-  auto token = range.ConsumeIncludingWhitespace();
-  if (token.GetType() != kIdentToken) {
-    return false;
-  }
-  if (range.AtEnd()) {
-    // attr = attr(<attr-name>) is allowed, so return true.
-    return true;
-  }
-
-  token = range.ConsumeIncludingWhitespace();
-
-  // Parse <attr-type>.
-  if (token.GetType() == kIdentToken) {
-    if (!CSSAttrType::Parse(token.Value()).IsValid()) {
-      return false;
-    }
-    if (range.AtEnd()) {
-      // attr = attr(<attr-name> <attr-type>) is allowed, so return true.
-      return true;
-    }
-  }
-
-  if (range.Consume().GetType() != kCommaToken) {
-    return false;
-  }
-  if (range.AtEnd()) {
-    return false;
-  }
-  bool has_references = false;
-  bool has_positioned_braces = false;
-  return IsValidRestrictedDeclarationValue(range, has_references,
-                                           has_positioned_braces, context);
-}
-
-bool IsValidVariable(CSSParserTokenRange range,
-                     bool& has_references,
-                     bool& has_positioned_braces,
-                     const ExecutionContext* context) {
-  has_references = false;
-  has_positioned_braces = false;
-  return IsValidRestrictedDeclarationValue(range, has_references,
-                                           has_positioned_braces, context);
-}
-
 CSSValue* ParseCSSWideValue(CSSParserTokenRange range) {
   range.ConsumeWhitespace();
   CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(range);
@@ -288,30 +47,31 @@ CSSValue* CSSVariableParser::ParseDeclarationIncludingCSSWide(
   if (CSSValue* css_wide = ParseCSSWideValue(tokenized_value.range)) {
     return css_wide;
   }
-  return ParseDeclarationValue(tokenized_value, is_animation_tainted, context);
+  return ParseDeclarationValue(tokenized_value.text, is_animation_tainted,
+                               context);
 }
 
 CSSUnparsedDeclarationValue* CSSVariableParser::ParseDeclarationValue(
-    const CSSTokenizedValue& tokenized_value,
+    StringView text,
     bool is_animation_tainted,
     const CSSParserContext& context) {
-  bool has_references;
-  bool has_positioned_braces_ignored;
-  // Note that positioned braces are allowed in custom property declarations.
-  if (!IsValidVariable(tokenized_value.range, has_references,
-                       has_positioned_braces_ignored,
-                       context.GetExecutionContext())) {
+  // Note that positioned braces are allowed in custom property declarations
+  // (i.e., restricted_value=false).
+  CSSTokenizer tokenizer(text);
+  CSSParserTokenStream stream(tokenizer);
+  bool important;
+  CSSVariableData* variable_data = ConsumeUnparsedDeclaration(
+      stream,
+      /*allow_important_annotation=*/false, is_animation_tainted,
+      /*must_contain_variable_reference=*/false,
+      /*restricted_value=*/false,
+      /* comma_ends_declaration=*/false, important,
+      context.GetExecutionContext());
+  if (!variable_data) {
     return nullptr;
   }
-  if (tokenized_value.text.length() > CSSVariableData::kMaxVariableBytes) {
-    return nullptr;
-  }
-
-  StringView text = StripTrailingWhitespaceAndComments(tokenized_value.text);
-  return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
-      CSSVariableData::Create(CSSTokenizedValue{tokenized_value.range, text},
-                              is_animation_tainted, has_references),
-      &context);
+  return MakeGarbageCollected<CSSUnparsedDeclarationValue>(variable_data,
+                                                           &context);
 }
 
 static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
@@ -457,14 +217,42 @@ static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
   return stream.AtEnd();
 }
 
-// Utility function for ConsumeUnparsedDeclaration(). Parses until it
-// detects some error (such as a stray top-level right-paren; if so,
-// returns false) or something that should end a declaration, such as
-// a top-level exclamation semicolon (returns true). AtEnd() must be
-// checked by the caller even if this returns success, although on
+// Utility function for ConsumeUnparsedDeclaration().
+// Checks if a token sequence is a valid <declaration-value> [1],
+// with the additional restriction that any var()/env() functions (if present)
+// must follow their respective grammars as well.
+//
+// Parses until it detects some error (such as a stray top-level right-paren;
+// if so, returns false) or something that should end a declaration,
+// such as a top-level exclamation semicolon (returns true). AtEnd() must
+// be checked by the caller even if this returns success, although on
 // top-level, it may need to strip !important first.
 //
 // Called recursively for parsing fallback values.
+//
+// If this function returns true, then it outputs some additional details about
+// the token sequence that can be used to determine if it's valid in a given
+// situation, e.g. if "var()" is present (has_references=true), then the
+// sequence is valid for any property [2].
+//
+//
+// Braces (i.e. {}) are considered to be "positioned" when they appear
+// top-level with non-whitespace tokens to the left or the right.
+//
+// For example:
+//
+//   foo {}    =>  Positioned
+//   {} foo    =>  Positioned
+//   { foo }   =>  Not positioned (the {} covers the whole value).
+//   foo [{}]  =>  Not positioned (the {} appears within another block).
+//
+// Token sequences with "positioned" braces are not valid in standard
+// properties (restricted_value=true), even if var()/env() is present
+// in the value [3].
+//
+// [1] https://drafts.csswg.org/css-syntax-3/#typedef-declaration-value
+// [2] https://drafts.csswg.org/css-variables/#using-variables
+// [3] https://github.com/w3c/csswg-drafts/issues/9317
 static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
                                  bool restricted_value,
                                  bool comma_ends_declaration,
@@ -659,22 +447,30 @@ CSSVariableData* CSSVariableParser::ConsumeUnparsedDeclaration(
 }
 
 CSSUnparsedDeclarationValue* CSSVariableParser::ParseUniversalSyntaxValue(
-    CSSTokenizedValue value,
+    StringView text,
     const CSSParserContext& context,
     bool is_animation_tainted) {
-  bool has_references;
-  bool has_positioned_braces_ignored;
-  if (!IsValidVariable(value.range, has_references,
-                       has_positioned_braces_ignored,
-                       context.GetExecutionContext())) {
+  CSSTokenizer tokenizer(text);
+  CSSParserTokenStream stream(tokenizer);
+  stream.EnsureLookAhead();
+
+  bool important;
+  if (CSSPropertyParser::ConsumeCSSWideKeyword(
+          stream, /*allow_important_annotation=*/false, important)) {
     return nullptr;
   }
-  if (ParseCSSWideValue(value.range)) {
+
+  CSSVariableData* variable_data =
+      CSSVariableParser::ConsumeUnparsedDeclaration(
+          stream, /*allow_important_annotation=*/false, is_animation_tainted,
+          /*must_contain_variable_reference=*/false,
+          /*restricted_value=*/false, /*comma_ends_declaration=*/false,
+          important, context.GetExecutionContext());
+  if (!variable_data) {
     return nullptr;
   }
-  return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
-      CSSVariableData::Create(value, is_animation_tainted, has_references),
-      &context);
+  return MakeGarbageCollected<CSSUnparsedDeclarationValue>(variable_data,
+                                                           &context);
 }
 
 StringView CSSVariableParser::StripTrailingWhitespaceAndComments(

@@ -175,10 +175,7 @@ const CSSValue* CSSVariableData::ParseForSyntax(
   DCHECK(!NeedsVariableResolution());
   // TODO(timloh): This probably needs a proper parser context for
   // relative URL resolution.
-  CSSTokenizer tokenizer(OriginalText());
-  Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
-  return syntax.Parse(CSSTokenizedValue{range, OriginalText()},
+  return syntax.Parse(OriginalText(),
                       *StrictCSSParserContext(secure_context_mode),
                       is_animation_tainted_);
 }

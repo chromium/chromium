@@ -184,12 +184,8 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
   if (!registered_value) {
     DCHECK(declaration);
     CSSVariableData& data = *declaration->VariableDataValue();
-    CSSTokenizer tokenizer(data.OriginalText());
-    Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-    CSSTokenizedValue tokenized_value{CSSParserTokenRange(tokens),
-                                      data.OriginalText()};
     registered_value =
-        Parse(tokenized_value, *context, CSSParserLocalContext());
+        Parse(data.OriginalText(), *context, CSSParserLocalContext());
   }
 
   if (!registered_value) {
@@ -247,21 +243,21 @@ const CSSValue* CustomProperty::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* CustomProperty::ParseUntyped(
-    const CSSTokenizedValue& value,
+    StringView text,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
   return CSSVariableParser::ParseDeclarationValue(
-      value, local_context.IsAnimationTainted(), context);
+      text, local_context.IsAnimationTainted(), context);
 }
 
 const CSSValue* CustomProperty::Parse(
-    CSSTokenizedValue value,
+    StringView text,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
   if (!registration_) {
-    return ParseUntyped(value, context, local_context);
+    return ParseUntyped(text, context, local_context);
   }
-  return registration_->Syntax().Parse(value, context,
+  return registration_->Syntax().Parse(text, context,
                                        local_context.IsAnimationTainted());
 }
 

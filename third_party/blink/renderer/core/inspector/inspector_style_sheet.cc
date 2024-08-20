@@ -23,7 +23,6 @@
  * DAMAGE.
  */
 
-
 #include "third_party/blink/renderer/core/inspector/inspector_style_sheet.h"
 
 #include <algorithm>
@@ -337,16 +336,17 @@ void StyleSheetHandler::AddNewRuleToSourceTree(CSSRuleSourceData* rule) {
   // inside the rule. A `disabled` property means that
   // it is a commented out property and parsing it happens
   // inside the inspector[4] and it is not a feature of the Blink CSS parser.
-  // So, even if there is a disabled property in the rule; the rule is not added as a
-  // CSSOM rule in the blink parser, because of this, we're not adding
-  // it as a rule to the source data as well.
+  // So, even if there is a disabled property in the rule; the rule is not added
+  // as a CSSOM rule in the blink parser, because of this, we're not adding it
+  // as a rule to the source data as well.
   //
   // [1]: https://drafts.csswg.org/css-nesting-1/#nested-group-rules
   // [2]:
   // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/css/parser/css_parser_impl.cc;l=2122;drc=255b4e7036f1326f2219bd547d3d6dcf76064870
   // [3]:
   // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/css/parser/css_parser_impl.cc;l=2131;drc=255b4e7036f1326f2219bd547d3d6dcf76064870
-  // [4]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/inspector/inspector_style_sheet.cc;l=484?q=f:inspector_style_sheet
+  // [4]:
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/inspector/inspector_style_sheet.cc;l=484?q=f:inspector_style_sheet
   if (rule->rule_header_range.length() == 0 &&
       (rule->type == StyleRule::RuleType::kStyle)) {
     // Check if there is an active property inside the style rule.
@@ -1200,16 +1200,11 @@ bool InspectorStyle::CheckRegisteredPropertySyntaxWithVarSubstitution(
     return false;
   }
 
-  CSSTokenizer tokenizer(property.value);
-  Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-  CSSTokenizedValue tokenized_value{CSSParserTokenRange(tokens),
-                                    property.value};
-
   PropertyRegistry* empty_registry = MakeGarbageCollected<PropertyRegistry>();
   CustomProperty p(atomic_name, empty_registry);
 
   const CSSParserContext* parser_context = ParserContextForDocument(document);
-  const CSSValue* result = p.Parse(tokenized_value, *parser_context, {});
+  const CSSValue* result = p.Parse(property.value, *parser_context, {});
   if (!result) {
     return false;
   }
@@ -1223,13 +1218,7 @@ bool InspectorStyle::CheckRegisteredPropertySyntaxWithVarSubstitution(
   }
 
   // Now check the substitution result against the registered syntax.
-  String computed_text = computed_value->CssText();
-  CSSTokenizer computed_text_tokenizer(computed_text);
-  Vector<CSSParserToken, 32> computed_text_tokens =
-      computed_text_tokenizer.TokenizeToEOF();
-  CSSTokenizedValue tokenized_computed_value{
-      CSSParserTokenRange(computed_text_tokens), computed_text};
-  if (!registration->Syntax().Parse(tokenized_computed_value, *parser_context,
+  if (!registration->Syntax().Parse(computed_value->CssText(), *parser_context,
                                     false)) {
     return false;
   }
@@ -2148,12 +2137,9 @@ void InspectorStyleSheet::ParseText(const String& text) {
           if (!registration) {
             continue;
           }
-          CSSTokenizer tokenizer(property_source_data.value);
-          Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-          CSSTokenizedValue tokenized_value{CSSParserTokenRange(tokens),
-                                            property_source_data.value};
-          if (!registration->Syntax().Parse(
-                  tokenized_value, *style_sheet->ParserContext(), false)) {
+          if (!registration->Syntax().Parse(property_source_data.value,
+                                            *style_sheet->ParserContext(),
+                                            false)) {
             property_source_data.parsed_ok = false;
           }
         }

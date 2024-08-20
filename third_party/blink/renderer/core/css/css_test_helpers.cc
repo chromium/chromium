@@ -229,10 +229,7 @@ const CSSValue* ParseValue(Document& document, String syntax, String value) {
     return nullptr;
   }
   const auto* context = MakeGarbageCollected<CSSParserContext>(document);
-  CSSTokenizer tokenizer(value);
-  auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
-  return syntax_definition->Parse(CSSTokenizedValue{range, value}, *context,
+  return syntax_definition->Parse(value, *context,
                                   /* is_animation_tainted */ false);
 }
 

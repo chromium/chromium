@@ -48,12 +48,8 @@ class CustomPropertyTest : public PageTestBase {
   const CSSValue* ParseValue(const CustomProperty& property,
                              const String& value,
                              const CSSParserLocalContext& local_context) {
-    CSSTokenizer tokenizer(value);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
     auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
-    return property.Parse(CSSTokenizedValue{range, value}, *context,
-                          local_context);
+    return property.Parse(value, *context, local_context);
   }
 };
 

@@ -477,7 +477,7 @@ class CORE_EXPORT StyleCascade {
   // the declaration is "invalid at computed-value time".'
   //
   // https://drafts.css-houdini.org/css-properties-values-api-1/#fallbacks-in-var-references
-  bool ValidateFallback(const CustomProperty&, CSSTokenizedValue) const;
+  bool ValidateFallback(const CustomProperty&, StringView) const;
   // Marks the CustomProperty as referenced by something. Needed to avoid
   // animating these custom properties on the compositor.
   void MarkIsReferenced(const CSSProperty& referencer,
