@@ -6615,7 +6615,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5792295754950501287">Mais ações para <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Toque no botão liga/desliga</translation>
 <translation id="5792874008054171483">Mais ações para o site <ph name="SITE_NAME" /></translation>
-<translation id="5793317771769868848">Essa forma de pagamento vai ser excluída do dispositivo</translation>
+<translation id="5793317771769868848">A forma de pagamento será excluída do dispositivo</translation>
 <translation id="5793339252089865437">Se você fizer o download da atualização pela rede móvel, poderá receber cobranças adicionais.</translation>
 <translation id="5793420564274426163">Confirmação de pareamento</translation>
 <translation id="5794034487966529952">O espaço de trabalho <ph name="DESK_TITLE" /> tem <ph name="NUM_BROWSERS" /> janelas do navegador abertas</translation>
@@ -9510,7 +9510,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7928175190925744466">Já mudou essa senha?</translation>
 <translation id="7929468958996190828">Você pode <ph name="BEGIN_LINK" />atualizar agora<ph name="END_LINK" /> ou tentar de novo mais tarde depois de abrir novas guias semelhantes</translation>
 <translation id="7929962904089429003">Abrir o menu</translation>
-<translation id="7930294771522048157">As formas de pagamento salvas serão exibidas aqui</translation>
+<translation id="7930294771522048157">As formas de pagamento salvas aparecem aqui</translation>
 <translation id="79312157130859720">O app <ph name="APP_NAME" /> está compartilhando sua tela e áudio.</translation>
 <translation id="793293630927785390">Caixa de diálogo para nova rede Wi-Fi</translation>
 <translation id="7932969338829957666">As pastas compartilhadas estão disponíveis no Linux em <ph name="BASE_DIR" />.</translation>
