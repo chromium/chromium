@@ -10548,6 +10548,10 @@ interface ViewTransitionTypeSet
     method has
     method keys
     method values
+interface Viewport
+    attribute @@toStringTag
+    getter segments
+    method constructor
 interface VirtualKeyboard : EventTarget
     attribute @@toStringTag
     getter boundingRect
@@ -10575,7 +10579,6 @@ interface VisualViewport : EventTarget
     getter pageLeft
     getter pageTop
     getter scale
-    getter segments
     getter width
     method constructor
     setter onresize
@@ -13088,6 +13091,7 @@ namespace console
     getter top
     getter translation
     getter trustedTypes
+    getter viewport
     getter visualViewport
     getter window
     method NodeFilter
@@ -13315,6 +13319,7 @@ namespace console
     setter statusbar
     setter toolbar
     setter translation
+    setter viewport
     setter visualViewport
 PASS successfullyParsed is true
 

@@ -111,7 +111,10 @@ class FoldableAPIsOriginTrialBrowserTest : public ContentBrowserTest {
   }
 
   bool HasViewportSegmentsApi() {
-    return EvalJs(shell(), "'segments' in window.visualViewport").ExtractBool();
+    return EvalJs(
+               shell(),
+               "window.viewport != undefined && 'segments' in window.viewport")
+        .ExtractBool();
   }
 
   bool HasViewportSegmentsCSSApi() {

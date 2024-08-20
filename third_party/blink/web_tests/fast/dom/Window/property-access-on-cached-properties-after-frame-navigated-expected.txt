@@ -156,6 +156,7 @@ PASS window.cached_styleMedia.type is ''
 PASS window.cached_toolbar.visible is false
 PASS window.cached_trustedTypes.defaultPolicy is null
 PASS window.cached_trustedTypes.onbeforecreatepolicy is null
+PASS window.cached_viewport.segments is null
 PASS window.cached_visualViewport.height is 0
 PASS window.cached_visualViewport.offsetLeft is 0
 PASS window.cached_visualViewport.offsetTop is 0
@@ -165,7 +166,6 @@ PASS window.cached_visualViewport.onscrollend is null
 PASS window.cached_visualViewport.pageLeft is 0
 PASS window.cached_visualViewport.pageTop is 0
 PASS window.cached_visualViewport.scale is 0
-PASS window.cached_visualViewport.segments is null
 PASS window.cached_visualViewport.width is 0
 PASS successfullyParsed is true
 

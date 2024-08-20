@@ -1660,6 +1660,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_view_transition_type_set.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_visibility_state_entry.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_visibility_state_entry.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_viewport.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_viewport.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_visual_viewport.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_visual_viewport.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_vtt_cue.cc",

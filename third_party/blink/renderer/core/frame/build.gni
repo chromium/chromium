@@ -55,6 +55,8 @@ blink_core_sources_frame = [
   "display_cutout_client_impl.h",
   "document_policy_violation_report_body.cc",
   "document_policy_violation_report_body.h",
+  "dom_viewport.cc",
+  "dom_viewport.h",
   "dom_visual_viewport.cc",
   "dom_visual_viewport.h",
   "dom_window.cc",

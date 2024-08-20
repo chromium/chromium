@@ -70,6 +70,7 @@ class CustomElementRegistry;
 class Document;
 class DocumentInit;
 class DOMSelection;
+class DOMViewport;
 class DOMVisualViewport;
 class Element;
 class ExceptionState;
@@ -275,6 +276,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   double pageXOffset() const { return scrollX(); }
   double pageYOffset() const { return scrollY(); }
 
+  DOMViewport* viewport();
   DOMVisualViewport* visualViewport();
 
   const AtomicString& name() const;
@@ -573,6 +575,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   Member<ScriptController> script_controller_;
 
   Member<Document> document_;
+  Member<DOMViewport> viewport_;
   Member<DOMVisualViewport> visualViewport_;
 
   bool should_print_when_finished_loading_;
