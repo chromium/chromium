@@ -907,6 +907,11 @@ extern const char kSendUmaOverAnyNetworkDescription[];
 extern const char kSharedHighlightingIOSName[];
 extern const char kSharedHighlightingIOSDescription[];
 
+// Title and description for the flag to control if Shared Tab Groups is
+// enabled.
+extern const char kSharedTabGroupsName[];
+extern const char kSharedTabGroupsDescription[];
+
 // Title and description for the flag to enable the Share button
 // in the web context menu in iOS.
 extern const char kShareInWebContextMenuIOSName[];

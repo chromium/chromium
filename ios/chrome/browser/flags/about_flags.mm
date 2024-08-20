@@ -1959,6 +1959,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillIsolatedWorldForJavascriptIOSDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAutofillIsolatedWorldForJavascriptIos)},
+    {"shared-tab-groups", flag_descriptions::kSharedTabGroupsName,
+     flag_descriptions::kSharedTabGroupsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kSharedTabGroups)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -419,6 +419,15 @@ bool IsTabGroupSyncEnabled() {
          base::FeatureList::IsEnabled(kTabGroupSync);
 }
 
+BASE_FEATURE(kSharedTabGroups,
+             "SharedTabGroups",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsSharedTabGroupsEnabled() {
+  return IsTabGroupSyncEnabled() &&
+         base::FeatureList::IsEnabled(kSharedTabGroups);
+}
+
 BASE_FEATURE(kDisableLensCamera,
              "DisableLensCamera",
              base::FEATURE_DISABLED_BY_DEFAULT);
