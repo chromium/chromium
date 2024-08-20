@@ -4227,6 +4227,7 @@ crbug.com/946335 [ Debug Mac ] fast/filesystem/file-writer-abort-depth.html [ Cr
 
 # Sheriff 2019-04-17
 crbug.com/953591 [ Win ] fast/forms/datalist/input-appearance-range-with-transform.html [ Failure Pass ]
+crbug.com/938884 http/tests/devtools/elements/styles-3/styles-add-blank-property.js [ Pass Timeout ]
 
 # Sheriff 2019-04-30
 crbug.com/948785 fast/events/pointerevents/pointer-event-consumed-touchstart-in-slop-region.html [ Crash Failure Pass Timeout ]
@@ -6527,6 +6528,7 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] fast/dom/shadow/selections-in-shadow.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/controls-refresh-hc/fast/forms/color-scheme/media/video-playback-speed-menu.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-iframe.https.sub.html [ Skip Timeout ]
+[ Debug Mac13 ] http/tests/devtools/elements/styles-4/styles-update-links-1.js [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?10-10 [ Failure ]
 [ Debug Mac13 ] http/tests/devtools/console/console-tests.js [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/speculation-rules/prerender/response-code-successful.html?code=202 [ Failure ]
@@ -8000,20 +8002,6 @@ crbug.com/356963272 [ Linux ] external/wpt/webrtc/RTCDataChannel-send-close.html
 # re-implement it, based on the now updated spec, soon enough, at which point
 # we can remove this expectation.
 crbug.com/40900417 virtual/sanitizer-api/* [ Failure Pass Skip ]
-
-# Gardener 2024-08-05
-crbug.com/357571602 http/tests/devtools/components/datagrid.js [ Failure Pass ]
-crbug.com/357571602 http/tests/devtools/elements/styles-2/parse-comments.js [ Failure Pass ]
-crbug.com/357571602 http/tests/devtools/elements/styles-3/styles-add-blank-property.js [ Failure Pass ]
-crbug.com/357571602 http/tests/devtools/elements/styles-4/styles-do-not-detach-sourcemap-on-edits.js [ Failure Pass ]
-crbug.com/357571602 http/tests/devtools/elements/styles-4/styles-new-API.js [ Failure Pass ]
-crbug.com/357571602 http/tests/devtools/elements/styles-4/styles-overriden-properties.js [ Failure Pass ]
-crbug.com/357571602 http/tests/devtools/elements/styles-4/styles-update-links-1.js [ Failure Pass ]
-crbug.com/357571602 http/tests/devtools/elements/styles-4/styles-update-links-4.js [ Failure Pass ]
-crbug.com/357571602 http/tests/devtools/elements/styles-2/get-set-stylesheet-text-expected.txt [ Failure Pass ]
-crbug.com/357571602 http/tests/devtools/extensions/extensions-sidebar.js [ Failure Pass ]
-crbug.com/357571602 http/tests/devtools/extensions/multiple-extensions.js [ Failure Pass ]
-
 
 # depends on csstest-*.ttf fonts we did not install
 crbug.com/342886014 external/wpt/css/css-fonts/variations/font-weight-matching-installed-fonts.html [ Failure ]
