@@ -422,6 +422,8 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
   if (!self.item.isPriceTracked) {
     _trackButton.accessibilityLabel = l10n_util::GetNSString(
         IDS_PRICE_TRACKING_NOT_TRACKING_ACCESSIBILITY_DESCRIPTION);
+  } else {
+    _trackButton.accessibilityLabel = nil;
   }
 
   [_trackButton setAttributedTitle:title forState:UIControlStateNormal];
