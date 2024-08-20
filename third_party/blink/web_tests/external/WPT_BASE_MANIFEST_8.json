@@ -357534,20 +357534,36 @@
      "fc8f6a62cda5062676e1fb27324739c17ac0f91e",
      []
     ],
+    "dc-types.ts": [
+     "f2b7e3a172c35f250d4f2e1fa84c713c3e4f287b",
+     []
+    ],
     "digital-credentials-static-methods.tentative.https-expected.txt": [
      "5c4a3b206c3f733dc0fe3e9255e7698d30f4b028",
      []
     ],
+    "get-user-activation.https-expected.txt": [
+     "46153d34349e8c7a9c065233b385ff0a04ce7e77",
+     []
+    ],
+    "identity-create.tentative.https-expected.txt": [
+     "6f85454107e790266871b2d481b33e98b7b53bd0",
+     []
+    ],
     "support": {
      "helper.js": [
-      "8fff82745172154972dcda4c3c6cb98d4a5af5e1",
+      "6bbcdb2cd3eb8fae557fd9a2156b7947b4504544",
       []
      ],
      "iframe.html": [
-      "74733d82ec6533cbd0c6da4af1e88af61413e868",
+      "0598cfb00be418f0f799f0d928d69539760ae587",
       []
      ]
-    }
+    },
+    "tsconfig.json": [
+     "1387caf21b7712f1ccdff45871d642d379701677",
+     []
+    ]
    },
    "direct-sockets": {
     "DIR_METADATA": [
@@ -362902,7 +362918,7 @@
       []
      ],
      "remote-context-executor.https.html": [
-      "6b2f5ccc000058ce47d2f8d699de283a77d3d067",
+      "93e2ab905e785160b84061d3712c74aa5815c17a",
       []
      ],
      "report-url.html": [
@@ -366944,18 +366960,6 @@
    "fs": {
     "DIR_METADATA": [
      "16b976ab451500a09882e7fda75b8bf2f4af2acc",
-     []
-    ],
-    "FileSystemObserver-writable-file-stream.https.tentative.any-expected.txt": [
-     "b44a5b5bc39a0da02e5741115cd7dacae5c6db5c",
-     []
-    ],
-    "FileSystemObserver-writable-file-stream.https.tentative.any.sharedworker-expected.txt": [
-     "b44a5b5bc39a0da02e5741115cd7dacae5c6db5c",
-     []
-    ],
-    "FileSystemObserver-writable-file-stream.https.tentative.any.worker-expected.txt": [
-     "b44a5b5bc39a0da02e5741115cd7dacae5c6db5c",
      []
     ],
     "META.yml": [
@@ -373319,10 +373323,6 @@
        ],
        "custom-attrs-expected.txt": [
         "b450c530ad031e1e0dcefc456be0b1ed10e2cded",
-        []
-       ],
-       "dir-auto-dynamic-changes.window-expected.txt": [
-        "86aec2e17232e96c139e5a1a6227c65807b31bde",
         []
        ],
        "dir-auto-dynamic-simple-ref.html": [
@@ -428971,7 +428971,7 @@
       ]
      ],
      "comp_label.html": [
-      "373940c04d0c176a31b80fc7a3d350dd56ea4618",
+      "843a7aa65c97580bb6eb00f825a7061f3d898242",
       [
        null,
        {
@@ -470784,7 +470784,14 @@
         }
        ]
       ]
-     }
+     },
+     "sticky-dialog.html": [
+      "2a2ef34d81f4811f23f4deffbc0c45d87383c7b3",
+      [
+       null,
+       {}
+      ]
+     ]
     },
     "css-properties-values-api": {
      "animate-invalid.html": [
@@ -493446,8 +493453,26 @@
       {}
      ]
     ],
+    "get-user-activation.https.html": [
+     "d4af78a9362e5f7aa802c27c75a879e49899e546",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "identity-create.tentative.https.html": [
+     "027a796652e8664b1805085cc7aaefbcd3e8c241",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "identity-get.tentative.https.html": [
-     "15597ed594a2409dbdcf6a10fee21d145833fa76",
+     "775d7205101366922c752a5a8f97829f8d819c2d",
      [
       null,
       {
@@ -518092,6 +518117,15 @@
     ],
     "automatic-beacon-cross-origin-no-opt-in.https.html": [
      "6f1ebee449846e234a6cd8e66508871e30a1bc72",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "automatic-beacon-data-cross-origin-subframe.https.html": [
+     "d97bf370dc9a760e03ce06d697dd5646079c5fb8",
      [
       null,
       {
@@ -582552,7 +582586,7 @@
         ]
        ],
        "dir-auto-dynamic-changes.window.js": [
-        "d57d8664dfaff8c867c322c5fb4516bcbf6c3a0d",
+        "979c73800a459f03a91dfc614536264b5c5fdd7f",
         [
          "html/dom/elements/global-attributes/dir-auto-dynamic-changes.window.html",
          {
@@ -582580,7 +582614,7 @@
         ]
        ],
        "dir-slots-directionality.html": [
-        "c0a11ba9a90949b5046339a956bf8f14d934395e",
+        "7a16e38de125146643cc19b4ee105651758cc8ef",
         [
          null,
          {}
@@ -607872,7 +607906,7 @@
      ]
     ],
     "roles.html": [
-     "387acc260ddd694ef182b707aa9dbdb9f389e6d0",
+     "22c3e7a215cd4a39a725cfc67dcf276eac1d271b",
      [
       null,
       {
