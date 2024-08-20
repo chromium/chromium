@@ -844,7 +844,7 @@ TEST_F(ContentAutofillDriverWithMultiFrameCreditCardForm, ExtractForm_Found) {
   task_environment()->RunUntilIdle();
 }
 
-TEST_F(ContentAutofillDriverTest, GetFourDigitCombinationsFromDOM_NoMatches) {
+TEST_F(ContentAutofillDriverTest, GetFourDigitCombinationsFromDom_NoMatches) {
   base::RunLoop run_loop;
   auto cb =
       [](base::OnceCallback<void(const std::vector<std::string>&)> callback) {
@@ -855,7 +855,7 @@ TEST_F(ContentAutofillDriverTest, GetFourDigitCombinationsFromDOM_NoMatches) {
       .WillOnce(WithArg<0>(Invoke(cb)));
 
   std::vector<std::string> matches = {"dummy data"};
-  driver().browser_events().GetFourDigitCombinationsFromDOM(
+  driver().browser_events().GetFourDigitCombinationsFromDom(
       base::BindLambdaForTesting([&](const std::vector<std::string>& result) {
         matches = result;
         run_loop.Quit();
@@ -865,7 +865,7 @@ TEST_F(ContentAutofillDriverTest, GetFourDigitCombinationsFromDOM_NoMatches) {
 }
 
 TEST_F(ContentAutofillDriverTest,
-       GetFourDigitCombinationsFromDOM_SuccessfulMatches) {
+       GetFourDigitCombinationsFromDom_SuccessfulMatches) {
   base::RunLoop run_loop;
   auto cb =
       [](base::OnceCallback<void(const std::vector<std::string>&)> callback) {
@@ -875,7 +875,7 @@ TEST_F(ContentAutofillDriverTest,
   EXPECT_CALL(agent(), GetPotentialLastFourCombinationsForStandaloneCvc)
       .WillOnce(WithArg<0>(Invoke(cb)));
   std::vector<std::string> matches;
-  driver().browser_events().GetFourDigitCombinationsFromDOM(
+  driver().browser_events().GetFourDigitCombinationsFromDom(
       base::BindLambdaForTesting([&](const std::vector<std::string>& result) {
         matches = result;
         run_loop.Quit();

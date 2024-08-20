@@ -304,7 +304,7 @@ void ContentAutofillDriver::TriggerFormExtractionInAllFrames(
   }
 }
 
-void ContentAutofillDriver::GetFourDigitCombinationsFromDOM(
+void ContentAutofillDriver::GetFourDigitCombinationsFromDom(
     base::OnceCallback<void(const std::vector<std::string>&)>
         potential_matches) {
   if (!IsActive()) {
@@ -312,8 +312,12 @@ void ContentAutofillDriver::GetFourDigitCombinationsFromDOM(
     std::move(potential_matches).Run({});
     return;
   }
-  GetAutofillAgent()->GetPotentialLastFourCombinationsForStandaloneCvc(
-      std::move(potential_matches));
+  content::RenderFrameHost* main_rfh = render_frame_host_->GetMainFrame();
+  if (auto* main_driver = GetForRenderFrameHost(main_rfh)) {
+    main_driver->GetAutofillAgent()
+        ->GetPotentialLastFourCombinationsForStandaloneCvc(
+            std::move(potential_matches));
+  }
 }
 
 // static

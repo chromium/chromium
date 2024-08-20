@@ -264,10 +264,11 @@ void AutofillDriverIOS::TriggerFormExtractionInAllFrames(
   NOTIMPLEMENTED();
 }
 
-void AutofillDriverIOS::GetFourDigitCombinationsFromDOM(
+void AutofillDriverIOS::GetFourDigitCombinationsFromDom(
     base::OnceCallback<void(const std::vector<std::string>&)>
         potential_matches) {
-  // TODO(crbug.com/40260122): Implement GetFourDigitCombinationsFromDOM in iOS.
+  // TODO(crbug.com/40260122): Implement GetFourDigitCombinationsFromDom() in
+  // iOS.
   NOTIMPLEMENTED();
 }
 

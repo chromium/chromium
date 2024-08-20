@@ -133,7 +133,7 @@ class AutofillDriverIOS final : public AutofillDriver,
   void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool)> form_extraction_finished_callback)
       override;
-  void GetFourDigitCombinationsFromDOM(
+  void GetFourDigitCombinationsFromDom(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;
 

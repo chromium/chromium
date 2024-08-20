@@ -2259,7 +2259,7 @@ bool BrowserAutofillManager::ShouldUploadForm(const FormStructure& form) {
 
 void BrowserAutofillManager::
     FetchPotentialCardLastFourDigitsCombinationFromDOM() {
-  driver().GetFourDigitCombinationsFromDOM(base::BindOnce(
+  driver().GetFourDigitCombinationsFromDom(base::BindOnce(
       [](base::WeakPtr<BrowserAutofillManager> self,
          const std::vector<std::string>& four_digit_combinations_in_dom) {
         if (!self) {
