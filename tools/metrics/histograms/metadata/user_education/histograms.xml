@@ -241,7 +241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.ActivePeriodDuration.Min.Under24Hours"
-    units="minutes" expires_after="2025-01-19">
+    units="minutes" expires_after="2025-02-10">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -288,7 +288,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.MonthlyActiveDays" units="count"
-    expires_after="2024-12-24">
+    expires_after="2025-02-10">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -324,7 +324,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.RecentSuperActiveWeeks" units="count"
-    expires_after="2024-09-21">
+    expires_after="2025-02-10">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
