@@ -57,8 +57,7 @@ def index_one_target(target_name,
                      gn_path=None,
                      logfile=None):
   try:
-    process_stdout = subprocess.check_output(
-        [args.gn_path, 'clean', args.out_path])
+    process_stdout = subprocess.check_output([gn_path, 'clean', out_path])
     log_subprocess_output(process_stdout)
   except subprocess.CalledProcessError as e:
     print("Failed to clean build directory between targets")
