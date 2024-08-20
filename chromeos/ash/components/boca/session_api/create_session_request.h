@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
@@ -29,18 +30,16 @@ class CreateSessionRequest : public google_apis::UrlFetchRequestBase {
  public:
   CreateSessionRequest(google_apis::RequestSender* sender,
                        std::string gaia_id,
-                       int duration_in_sec,
+                       base::TimeDelta duration,
                        ::boca::Session::SessionState session_state,
                        CreateSessionCallback callback);
   CreateSessionRequest(const CreateSessionRequest&) = delete;
   CreateSessionRequest& operator=(const CreateSessionRequest&) = delete;
   ~CreateSessionRequest() override;
 
-  const std::string& teacher_gaia_id() const { return teacher_gaia_id_; }
-  const int& duration() const { return duration_; }
-  const ::boca::Session::SessionState& session_state() {
-    return session_state_;
-  }
+  const std::string teacher_gaia_id() const { return teacher_gaia_id_; }
+  base::TimeDelta duration() const { return duration_; }
+  ::boca::Session::SessionState session_state() const { return session_state_; }
 
   std::vector<::boca::UserIdentity> student_groups() const {
     return student_groups_;
@@ -89,7 +88,7 @@ class CreateSessionRequest : public google_apis::UrlFetchRequestBase {
   void OnDataParsed(bool success);
 
   std::string teacher_gaia_id_;
-  int duration_;
+  base::TimeDelta duration_;
   ::boca::Session::SessionState session_state_;
 
   std::vector<::boca::UserIdentity> student_groups_;

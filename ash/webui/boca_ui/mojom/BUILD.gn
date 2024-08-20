@@ -19,6 +19,4 @@ mojom("mojom") {
     "//ui/events/ash/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
-
-  cpp_typemaps = []
 }

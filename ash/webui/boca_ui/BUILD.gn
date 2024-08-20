@@ -38,6 +38,7 @@ static_library("boca_ui") {
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
+    "//components/account_id",
     "//components/app_constants",
     "//components/app_restore",
     "//components/signin/public/identity_manager",
@@ -63,12 +64,20 @@ buildflag_header("buildflags") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "provider/classroom_page_handler_impl_unittest.cc" ]
+  sources = [
+    "boca_app_page_handler_unittest.cc",
+    "provider/classroom_page_handler_impl_unittest.cc",
+  ]
 
   deps = [
     ":boca_ui",
+    "//ash:test_support",
+    "//ash/webui/boca_ui/mojom",
     "//base/test:test_support",
     "//chrome/test:test_support",
+    "//chromeos/ash/components:test_support",
+    "//chromeos/ash/components/boca/proto",
+    "//chromeos/ash/components/boca/session_api",
     "//content/test:test_support",
     "//google_apis:test_support",
     "//google_apis/common:test_support",

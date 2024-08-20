@@ -113,7 +113,9 @@ void BocaUI::Create(
     mojo::PendingReceiver<boca::mojom::PageHandler> page_handler,
     mojo::PendingRemote<boca::mojom::Page> page) {
   page_handler_impl_ = std::make_unique<BocaAppHandler>(
-      this, std::move(page_handler), std::move(page), web_ui_);
+      this, std::move(page_handler), std::move(page), web_ui_,
+      std::make_unique<ClassroomPageHandlerImpl>(),
+      std::make_unique<SessionClientImpl>());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BocaUI)
