@@ -958,7 +958,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.TotalNewDefaultSearchEngineCount" units="count"
-    expires_after="2024-11-27">
+    expires_after="2025-02-16">
   <owner>aattar@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

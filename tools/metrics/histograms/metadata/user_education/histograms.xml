@@ -200,7 +200,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.NewBadge.{NewBadgeFeature}.MaxShownReached"
-    enum="BooleanCompleted" expires_after="2024-12-01">
+    enum="BooleanCompleted" expires_after="2025-02-16">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>

@@ -5358,7 +5358,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.SharedStorageServerCardDataSetResult"
     enum="AutofillSharedStorageServerCardDataSetResult"
-    expires_after="2024-12-15">
+    expires_after="2025-02-16">
   <owner>nburris@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -7009,7 +7009,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.WebView.KeyMetrics.FillingCorrectness{AutofillFormType}"
-    enum="BooleanAutofillFillingCorrectness" expires_after="2024-12-12">
+    enum="BooleanAutofillFillingCorrectness" expires_after="2025-02-16">
   <owner>pkotwicz@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -7122,7 +7122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.WebView.SuggestionTime" units="ms"
-    expires_after="2024-12-12">
+    expires_after="2025-02-16">
   <owner>battre@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>The time taken to display suggestion.</summary>

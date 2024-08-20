@@ -1393,7 +1393,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.iOS.NewLargerTextCategory" enum="BooleanHit"
-    expires_after="2024-12-15">
+    expires_after="2025-02-16">
   <owner>gambard@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
@@ -1683,7 +1683,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.CharactersTranslated"
-    units="count" expires_after="2024-12-15">
+    units="count" expires_after="2025-02-16">
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1693,7 +1693,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.EnableFrom{Entrypoint}"
-    enum="BooleanEnabled" expires_after="2024-12-15">
+    enum="BooleanEnabled" expires_after="2025-02-16">
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1709,7 +1709,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.SourceLanguage"
-    enum="LocaleCodeISO639" expires_after="2024-12-15">
+    enum="LocaleCodeISO639" expires_after="2025-02-16">
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1719,7 +1719,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.TargetLanguage"
-    enum="LocaleCodeISO639" expires_after="2024-12-15">
+    enum="LocaleCodeISO639" expires_after="2025-02-16">
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2483,7 +2483,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.ReadAloud{Action}SessionCount"
-    units="count" expires_after="2024-12-15">
+    units="count" expires_after="2025-02-16">
   <owner>lwinston@google.com</owner>
   <owner>komo-eng@google.com</owner>
   <summary>
@@ -2650,7 +2650,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.DlcInstallResult"
-    enum="DlcInstallResult" expires_after="2024-12-13">
+    enum="DlcInstallResult" expires_after="2025-02-16">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>Records the result of Screen AI DLC installation.</summary>

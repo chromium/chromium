@@ -143,7 +143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.FingerprintingProtection.Enabled"
-    enum="BooleanEnabled" expires_after="2024-12-01">
+    enum="BooleanEnabled" expires_after="2025-02-16">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
