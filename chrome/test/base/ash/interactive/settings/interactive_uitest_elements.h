@@ -196,6 +196,9 @@ WebContentsInteractionTestUtil::DeepQuery CellularNetworksList();
 // The cellular networks subpage pSIM networks list title.
 WebContentsInteractionTestUtil::DeepQuery CellularSubpagePsimListTitle();
 
+// The cellular network details subpage title.
+WebContentsInteractionTestUtil::DeepQuery CellularDetailsSubpageTitle();
+
 // The auto connect toggle in cellular network details subpage.
 WebContentsInteractionTestUtil::DeepQuery
 CellularDetailsSubpageAutoConnectToggle();
@@ -305,40 +308,8 @@ WebContentsInteractionTestUtil::DeepQuery HotspotSSIDInput();
 }  // namespace hotspot
 
 namespace wifi {
-
 // The wifi "row" on the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery WifiSummaryItem();
-
-// The Known networks subpage button on the network page.
-WebContentsInteractionTestUtil::DeepQuery WifiKnownNetworksSubpageButton();
-
-// The known networks subpage.
-WebContentsInteractionTestUtil::DeepQuery KnownNetworksSubpage();
-
-// The passpoint subscription list on the known network subpage.
-WebContentsInteractionTestUtil::DeepQuery
-KnownNetworksSubpagePasspointSubsciptions();
-
-// The expiration date on the passpoint subscription subpage.
-WebContentsInteractionTestUtil::DeepQuery PasspointSubpageExpirationDate();
-
-// The source provider on the passpoint subscription subpage.
-WebContentsInteractionTestUtil::DeepQuery PasspointSubpageProviderSource();
-
-// The associated network list item on the passpoint subscription subpage.
-WebContentsInteractionTestUtil::DeepQuery
-PasspointSubpageAssociatedNetworksListItem();
-
-// The domain list expansion button on the passpoint subscription subpage.
-WebContentsInteractionTestUtil::DeepQuery
-PasspointSubpageDomainExpansionButton();
-
-// The domain list on the passpoint subscription subpage.
-WebContentsInteractionTestUtil::DeepQuery PasspointSubpageDomainList();
-
-// The domain item on the passpoint subscription subpage.
-WebContentsInteractionTestUtil::DeepQuery PasspointSubpageDomainListItem();
-
 }  // namespace wifi
 
 namespace vpn {

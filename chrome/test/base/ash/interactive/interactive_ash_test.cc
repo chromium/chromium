@@ -358,41 +358,6 @@ InteractiveAshTest::NavigateToBluetoothDeviceDetailsPage(
                    device_name));
 }
 
-ui::test::internal::InteractiveTestPrivate::MultiStep
-InteractiveAshTest::NavigateToKnownNetworksPage(
-    const ui::ElementIdentifier& element_id) {
-  return Steps(
-      NavigateSettingsToInternetPage(element_id),
-      WaitForElementEnabled(element_id, ash::settings::wifi::WifiSummaryItem()),
-      ClickElement(element_id, ash::settings::wifi::WifiSummaryItem()),
-      WaitForElementEnabled(
-          element_id, ash::settings::wifi::WifiKnownNetworksSubpageButton()),
-      ClickElement(element_id,
-                   ash::settings::wifi::WifiKnownNetworksSubpageButton()),
-      WaitForElementExists(element_id,
-                           ash::settings::wifi::KnownNetworksSubpage()));
-}
-
-ui::test::internal::InteractiveTestPrivate::MultiStep
-InteractiveAshTest::NavigateToPasspointSubscriptionSubpage(
-    const ui::ElementIdentifier& element_id,
-    const std::string& passpoint_name) {
-  const WebContentsInteractionTestUtil::DeepQuery
-      passpoint_subscription_item_name({"cr-link-row", "div#label"});
-
-  return Steps(
-      NavigateToKnownNetworksPage(element_id),
-      WaitForElementExists(
-          element_id,
-          ash::settings::wifi::KnownNetworksSubpagePasspointSubsciptions()),
-      ClickAnyElementTextContains(
-          element_id, ash::settings::wifi::KnownNetworksSubpage(),
-          passpoint_subscription_item_name, passpoint_name),
-      WaitForElementTextContains(element_id,
-                                 ash::settings::InternetSettingsSubpageTitle(),
-                                 /*text=*/passpoint_name.c_str()));
-}
-
 Profile* InteractiveAshTest::GetActiveUserProfile() {
   return ProfileManager::GetActiveUserProfile();
 }

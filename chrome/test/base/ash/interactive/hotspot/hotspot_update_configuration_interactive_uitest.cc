@@ -43,8 +43,7 @@ class HotspotUpdateConfigurationInteractiveUITest : public InteractiveAshTest {
   const ShillServiceInfo& shill_service_info() { return shill_service_info_; }
 
  private:
-  const ShillServiceInfo shill_service_info_ =
-      ShillServiceInfo(/*id=*/0, shill::kTypeCellular);
+  const ShillServiceInfo shill_service_info_ = ShillServiceInfo(/*id=*/0);
 };
 
 IN_PROC_BROWSER_TEST_F(HotspotUpdateConfigurationInteractiveUITest,
