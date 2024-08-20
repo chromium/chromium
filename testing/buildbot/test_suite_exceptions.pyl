@@ -3338,22 +3338,6 @@
       'win-rel-cft',
     ],
   },
-  'ios_chrome_integration_eg2tests_module iPhone 14 17.5': {
-    'modifications': {
-      'ios-simulator': {
-        # TODO(crbug.com/360705833): Move back to try.
-        'ci_only': True,
-      },
-    },
-  },
-  'ios_chrome_integration_eg2tests_module iPhone 15 18.0': {
-    'modifications': {
-      'ios-simulator': {
-        # TODO(crbug.com/360705833): Move back to try.
-        'ci_only': True,
-      },
-    },
-  },
   'ipc_tests': {
     'modifications': {
       'android-asan': {
