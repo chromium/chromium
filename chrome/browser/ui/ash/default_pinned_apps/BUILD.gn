@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("default_pinned_apps") {
+  sources = [
+    "default_pinned_apps.cc",
+    "default_pinned_apps.h",
+  ]
+
+  public_deps = [ "//content/public/browser" ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/scalable_iph:scalable_iph_factory",
+    "//chrome/browser/web_applications",
+    "//chrome/common/extensions",
+    "//chromeos/constants",
+    "//extensions/common:common_constants",
+  ]
+}

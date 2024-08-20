@@ -46,8 +46,6 @@ static_library("ash") {
     "chrome_shell_delegate.h",
     "crosapi_new_window_delegate.cc",
     "crosapi_new_window_delegate.h",
-    "default_pinned_apps.cc",
-    "default_pinned_apps.h",
     "fwupd_download_client_impl.cc",
     "fwupd_download_client_impl.h",
     "google_one_offer_iph_tab_helper.cc",
