@@ -257,9 +257,12 @@ void EnrollmentScreen::ClearAuth(base::OnceClosure callback) {
     std::move(callback).Run();
     return;
   }
+
+  // TODO(b/357063414): Revoke the tokens conditionally.
   enrollment_launcher_->ClearAuth(
       base::BindOnce(&EnrollmentScreen::OnAuthCleared,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      /*revoke_oauth2_tokens=*/true);
 }
 
 void EnrollmentScreen::OnAuthCleared(base::OnceClosure callback) {

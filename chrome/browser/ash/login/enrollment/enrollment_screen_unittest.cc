@@ -242,10 +242,13 @@ class EnrollmentScreenBaseTest : public testing::Test {
   }
 
   void ExpectClearAuth() {
-    EXPECT_CALL(mock_enrollment_launcher_, ClearAuth(_))
+    // At the moment we expect the tokens to always be revoked.
+    EXPECT_CALL(mock_enrollment_launcher_, ClearAuth(_, true))
         .Times(AnyNumber())
         .WillRepeatedly(
-            [](base::OnceClosure callback) { std::move(callback).Run(); });
+            [](base::OnceClosure callback, bool revoke_oauth2_tokens) {
+              std::move(callback).Run();
+            });
   }
 
   void ExpectEnrollmentConfig(policy::EnrollmentConfig::Mode mode,
