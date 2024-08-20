@@ -636,17 +636,6 @@ chromium-metrics-reviews@google.com.
   <token key="PersistentAllocatorType" variants="PersistentAllocatorType"/>
 </histogram>
 
-<histogram name="UMA.PersistentAllocator.{PersistentAllocatorType}.Errors"
-    enum="PersistentAllocatorErrors" expires_after="M85">
-  <owner>asvitkine@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Errors detected by the persistent memory allocator. These are set when they
-    occur. {PersistentAllocatorType}
-  </summary>
-  <token key="PersistentAllocatorType" variants="PersistentAllocatorType"/>
-</histogram>
-
 <histogram name="UMA.PersistentAllocator.{PersistentAllocatorType}.UsedPct"
     units="%" expires_after="2025-02-09">
   <owner>asvitkine@chromium.org</owner>

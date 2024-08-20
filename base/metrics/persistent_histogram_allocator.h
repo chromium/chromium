@@ -287,7 +287,6 @@ class BASE_EXPORT PersistentHistogramAllocator {
   //
   // IMPORTANT: tools/metrics/histograms/metadata/uma/histograms.xml must
   // be updated with the following histograms for each |name| param:
-  //    UMA.PersistentAllocator.name.Errors
   //    UMA.PersistentAllocator.name.UsedPct
   void CreateTrackingHistograms(std::string_view name);
   void UpdateTrackingHistograms();
@@ -523,4 +522,4 @@ class BASE_EXPORT GlobalHistogramAllocator
 
 }  // namespace base
 
-#endif  // BASE_METRICS_PERSISTENT_HISTOGRAM_ALLOCATOR_H__
+#endif  // BASE_METRICS_PERSISTENT_HISTOGRAM_ALLOCATOR_H_

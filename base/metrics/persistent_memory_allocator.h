@@ -743,9 +743,6 @@ class BASE_EXPORT PersistentMemoryAllocator {
             ref, type_id, size));
   }
 
-  // Records an error in the internal histogram.
-  void RecordError(int error) const;
-
   // Returns the offset to the first free space segment.
   uint32_t freeptr() const;
 
@@ -757,12 +754,8 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // Local version of "corrupted" flag.
   mutable std::atomic<bool> corrupt_ = false;
 
-  // Histogram recording allocs.
-  raw_ptr<HistogramBase> allocs_histogram_ = nullptr;
   // Histogram recording used space.
   raw_ptr<HistogramBase> used_histogram_ = nullptr;
-  // Histogram recording errors.
-  raw_ptr<HistogramBase> errors_histogram_ = nullptr;
 
   // TODO(crbug.com/40064026) For debugging purposes. Remove these once done.
   friend class DelayedPersistentAllocation;
