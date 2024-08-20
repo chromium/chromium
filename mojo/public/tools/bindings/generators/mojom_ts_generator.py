@@ -229,28 +229,19 @@ class TypeScriptStylizer(generator.Stylizer):
 class Generator(generator.Generator):
   def _GetParameters(self):
     return {
-        "bindings_library_path":
-        self._GetBindingsLibraryPath(),
-        "enums":
-        self.module.enums,
-        "for_bindings_internals":
-        self.disallow_native_types,
-        "interfaces":
-        self.module.interfaces,
-        "js_module_imports":
-        self._GetJsModuleImports(),
-        "kinds":
-        self.module.kinds,
-        "module":
-        self.module,
-        "mojom_namespace":
-        self.module.mojom_namespace,
-        "structs":
-        self.module.structs + self._GetStructsFromMethods(),
-        "unions":
-        self.module.unions,
-        "generate_struct_deserializers":
-        self.js_generate_struct_deserializers,
+        "bindings_library_path": self._GetBindingsLibraryPath(),
+        "enums": self.module.enums,
+        "for_bindings_internals": self.disallow_native_types,
+        "interfaces": self.module.interfaces,
+        "js_module_imports": self._GetJsModuleImports(),
+        "kinds": self.module.kinds,
+        "module": self.module,
+        "module_filename": self._GetModuleFilename(filetype='js'),
+        "mojom_namespace": self.module.mojom_namespace,
+        "structs": self.module.structs + self._GetStructsFromMethods(),
+        "unions": self.module.unions,
+        "generate_struct_deserializers": self.js_generate_struct_deserializers,
+        "typemapped_structs": self._TypeMappedStructs(),
     }
 
   @staticmethod
@@ -282,6 +273,9 @@ class Generator(generator.Generator):
   def _GenerateWebUiModule(self):
     return self._GetParameters()
 
+  def _GetModuleFilename(self, filetype='ts'):
+    return f"{self.module.path}-webui.{filetype}"
+
   def GenerateFiles(self, args):
     if self.variant:
       raise Exception("Variants not supported in JavaScript bindings.")
@@ -295,7 +289,7 @@ class Generator(generator.Generator):
 
     assert(_GetWebUiModulePath(self.module) is not None)
     self.WriteWithComment(self._GenerateWebUiModule(),
-                          "%s-webui.ts" % self.module.path)
+                          self._GetModuleFilename())
     self.WriteWithComment(self._GenerateConverterInterfaces(),
                           "%s-converters.ts" % self.module.path)
 
@@ -670,3 +664,13 @@ class Generator(generator.Generator):
 
   def _IsPrimitiveKind(self, kind):
     return kind in mojom.PRIMITIVES
+
+  def _TypeMappedStructs(self):
+    if len(self.typemap) == 0:
+      return []
+
+    mapped_structs = []
+    for struct in self.module.structs:
+      if struct.qualified_name in self.typemap:
+        mapped_structs.append(struct)
+    return mapped_structs

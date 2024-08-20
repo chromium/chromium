@@ -1,3 +1,28 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+{%- for struct in typemapped_structs %}
+import type {
+  {{struct.name}}
+{%-   if not loop.last -%},{% endif %}
+} from './{{module_filename}}';
+{%- endfor %}
+
+{%- for struct in typemapped_structs %}
+
+export class {{struct.name}}DataView {
+  private readonly mojoType: {{struct.name}};
+
+  constructor(mojoType: {{struct.name}}) {
+    this.mojoType = mojoType;
+  }
+{%-    for packed_field in struct.packed.packed_fields %}
+{%-      set f = packed_field.field %}
+
+  {{f.name}}(): {{f.kind|ts_type_maybe_nullable}} {
+    return this.mojoType.{{f.name}};
+  }
+{%-   endfor %}
+}
+
+{% endfor -%}
