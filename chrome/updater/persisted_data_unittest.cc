@@ -235,21 +235,19 @@ TEST(PersistedDataTest, SetEulaRequired) {
 #endif
 
 class PersistedDataRegistrationRequestTest : public ::testing::Test {
+#if BUILDFLAG(IS_WIN)
  protected:
   void SetUp() override { DeleteBrandCodeValueInRegistry(); }
   void TearDown() override { DeleteBrandCodeValueInRegistry(); }
 
  private:
   void DeleteBrandCodeValueInRegistry() {
-#if BUILDFLAG(IS_WIN)
     base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
                       GetAppClientStateKey(L"someappid").c_str(),
                       Wow6432(KEY_SET_VALUE))
         .DeleteValue(kRegValueBrandCode);
-#else
-    return;
-#endif
   }
+#endif
 };
 
 TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequest) {
