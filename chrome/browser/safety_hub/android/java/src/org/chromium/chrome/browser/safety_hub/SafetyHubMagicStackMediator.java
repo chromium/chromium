@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.record
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
@@ -88,10 +87,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 bindNotificationReviewView(magicStackEntry.getDescription());
                 break;
             case MagicStackEntry.ModuleType.REVOKED_PERMISSIONS:
-                bindSafeStateView(
-                        magicStackEntry.getDescription(),
-                        /* summary= */ null,
-                        MagicStackEntry.ModuleType.REVOKED_PERMISSIONS);
+                bindRevokedPermissionsView(magicStackEntry.getDescription());
                 break;
             case MagicStackEntry.ModuleType.SAFE_BROWSING:
                 bindSafeBrowsingView(magicStackEntry.getDescription());
@@ -162,15 +158,11 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModuleDelegate.removeModule(ModuleType.SAFETY_HUB);
     }
 
-    private void bindSafeStateView(
-            @NonNull String title, @Nullable String summary, String moduleType) {
+    private void bindRevokedPermissionsView(@NonNull String title) {
         mModel.set(
                 SafetyHubMagicStackViewProperties.HEADER,
                 mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
         mModel.set(SafetyHubMagicStackViewProperties.TITLE, title);
-        if (summary != null) {
-            mModel.set(SafetyHubMagicStackViewProperties.SUMMARY, summary);
-        }
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_TEXT,
                 mContext.getResources()
@@ -184,7 +176,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
-                    mShowSurveyCallback.onResult(moduleType);
+                    mShowSurveyCallback.onResult(MagicStackEntry.ModuleType.REVOKED_PERMISSIONS);
                     SettingsLauncherFactory.createSettingsLauncher()
                             .launchSettingsActivity(mContext, SafetyHubFragment.class);
                     recordExternalInteractions(ExternalInteractions.OPEN_FROM_MAGIC_STACK);

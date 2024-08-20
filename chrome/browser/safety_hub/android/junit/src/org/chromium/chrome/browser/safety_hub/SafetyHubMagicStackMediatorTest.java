@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.safety_hub;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -18,8 +19,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.view.View;
 import android.view.View.OnClickListener;
-
-import androidx.annotation.Nullable;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -156,7 +155,26 @@ public class SafetyHubMagicStackMediatorTest {
         doReturn(entry).when(mMagicStackBridge).getModuleToShow();
         mMediator.showModule();
 
-        testSafeStateDisplayed(DESCRIPTION, null, MagicStackEntry.ModuleType.REVOKED_PERMISSIONS);
+        verify(mModuleDelegate).onDataReady(eq(ModuleType.SAFETY_HUB), eq(mModel));
+        assertEquals(
+                mModel.get(SafetyHubMagicStackViewProperties.HEADER),
+                mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
+        assertEquals(mModel.get(SafetyHubMagicStackViewProperties.TITLE), DESCRIPTION);
+        assertNull(mModel.get(SafetyHubMagicStackViewProperties.SUMMARY));
+        assertEquals(
+                mModel.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT),
+                mContext.getResources()
+                        .getString(R.string.safety_hub_magic_stack_safe_state_button_text));
+        assertEquals(
+                shadowOf(mModel.get(SafetyHubMagicStackViewProperties.ICON_DRAWABLE))
+                        .getCreatedFromResId(),
+                R.drawable.ic_check_circle_filled_green_24dp);
+
+        OnClickListener onClickListener =
+                mModel.get(SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER);
+        onClickListener.onClick(mView);
+        verify(mSettingsLauncher).launchSettingsActivity(eq(mContext), eq(SafetyHubFragment.class));
+        verify(mShowSurveyCallback).onResult(MagicStackEntry.ModuleType.REVOKED_PERMISSIONS);
     }
 
     @Test
@@ -316,28 +334,5 @@ public class SafetyHubMagicStackMediatorTest {
         // Ensure that the module cannot be shown anymore.
         mMediator.showModule();
         verify(mModuleDelegate, times(1)).onDataReady(eq(ModuleType.SAFETY_HUB), any());
-    }
-
-    private void testSafeStateDisplayed(String title, @Nullable String summary, String moduleType) {
-        verify(mModuleDelegate).onDataReady(eq(ModuleType.SAFETY_HUB), eq(mModel));
-        assertEquals(
-                mModel.get(SafetyHubMagicStackViewProperties.HEADER),
-                mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
-        assertEquals(mModel.get(SafetyHubMagicStackViewProperties.TITLE), title);
-        assertEquals(mModel.get(SafetyHubMagicStackViewProperties.SUMMARY), summary);
-        assertEquals(
-                mModel.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT),
-                mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_safe_state_button_text));
-        assertEquals(
-                shadowOf(mModel.get(SafetyHubMagicStackViewProperties.ICON_DRAWABLE))
-                        .getCreatedFromResId(),
-                R.drawable.ic_check_circle_filled_green_24dp);
-
-        OnClickListener onClickListener =
-                mModel.get(SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER);
-        onClickListener.onClick(mView);
-        verify(mSettingsLauncher).launchSettingsActivity(eq(mContext), eq(SafetyHubFragment.class));
-        verify(mShowSurveyCallback).onResult(moduleType);
     }
 }
