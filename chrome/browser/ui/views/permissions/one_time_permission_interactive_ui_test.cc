@@ -396,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
 
   // Open new tab to the right.
   ASSERT_NO_FATAL_FAILURE(
-      Initialize(INITIALIZATION_NEWTAB, GetGeolocationGurl()));
+      Initialize(INITIALIZATION_DEFAULT, GetGeolocationGurl()));
 
   // Ensure that a prompt is triggered again when requesting geolocation
   // permission.
@@ -412,43 +412,6 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   OtpEventExpectBucketCount(
       ContentSettingsType::GEOLOCATION,
       permissions::OneTimePermissionEvent::ALL_TABS_CLOSED_OR_DISCARDED, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
-                       DiscardingTabToOriginRevokesPermission_MultipleDiscard) {
-  ASSERT_NO_FATAL_FAILURE(
-      Initialize(INITIALIZATION_DEFAULT, GetGeolocationGurl()));
-
-  // Request geolocation permission, expect prompt and grant it.
-  WatchPositionAndExpectGrantedPermission(
-      permissions::PermissionRequestManager::ACCEPT_ONCE, true);
-
-  // Open new tab to the right.
-  ASSERT_NO_FATAL_FAILURE(
-      Initialize(INITIALIZATION_NEWTAB, GetDifferentOriginUrl()));
-
-  // Discard previous tab.
-  DiscardTabAt(0);
-
-  // Go to previous tab, this should reactivate and reload the tab.
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
-
-  // Request geolocation permission again, expect prompt and grant it.
-  WatchPositionAndExpectGrantedPermission(
-      permissions::PermissionRequestManager::ACCEPT_ONCE, true);
-
-  // Return to the new tab and again discard the former tab.
-  browser()->tab_strip_model()->ActivateTabAt(1);
-  DiscardTabAt(0);
-
-  OtpEventExpectBucketCount(
-      ContentSettingsType::GEOLOCATION,
-      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 2);
-  OtpEventExpectBucketCount(
-      ContentSettingsType::GEOLOCATION,
-      permissions::OneTimePermissionEvent::ALL_TABS_CLOSED_OR_DISCARDED, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(

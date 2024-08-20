@@ -58,6 +58,7 @@ struct TabRendererData {
   bool should_hide_throbber = false;
   bool should_render_empty_title = false;
   bool should_themify_favicon = false;
+  bool is_tab_discarded = false;
   bool should_show_discard_status = false;
   // Amount of memory saved through discarding the tab
   int64_t discarded_memory_savings_in_bytes = 0;

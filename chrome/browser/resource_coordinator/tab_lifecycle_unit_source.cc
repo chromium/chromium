@@ -252,6 +252,22 @@ void TabLifecycleUnitSource::OnTabDetached(content::WebContents* contents) {
   lifecycle_unit->SetTabStripModel(nullptr);
 }
 
+void TabLifecycleUnitSource::OnTabReplaced(content::WebContents* old_contents,
+                                           content::WebContents* new_contents) {
+  auto* old_contents_holder =
+      TabLifecycleUnitHolder::FromWebContents(old_contents);
+  DCHECK(old_contents_holder);
+  DCHECK(old_contents_holder->lifecycle_unit());
+  TabLifecycleUnitHolder::CreateForWebContents(new_contents);
+  auto* new_contents_holder =
+      TabLifecycleUnitHolder::FromWebContents(new_contents);
+  DCHECK(new_contents_holder);
+  DCHECK(!new_contents_holder->lifecycle_unit());
+  new_contents_holder->set_lifecycle_unit(
+      old_contents_holder->TakeTabLifecycleUnit());
+  new_contents_holder->lifecycle_unit()->SetWebContents(new_contents);
+}
+
 void TabLifecycleUnitSource::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
@@ -270,7 +286,9 @@ void TabLifecycleUnitSource::OnTabStripModelChanged(
       break;
     }
     case TabStripModelChange::kReplaced: {
-      return;
+      auto* replace = change.GetReplace();
+      OnTabReplaced(replace->old_contents, replace->new_contents);
+      break;
     }
     case TabStripModelChange::kMoved:
     case TabStripModelChange::kSelectionOnly:

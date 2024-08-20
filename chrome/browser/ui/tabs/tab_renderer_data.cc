@@ -74,6 +74,7 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
   if (thumbnail_tab_helper) {
     data.thumbnail = thumbnail_tab_helper->thumbnail();
   }
+  data.is_tab_discarded = contents->WasDiscarded();
   data.network_state = TabNetworkStateForWebContents(contents);
   data.title = tab_ui_helper->GetTitle();
   data.visible_url = contents->GetVisibleURL();
@@ -146,6 +147,7 @@ bool TabRendererData::operator==(const TabRendererData& other) const {
          pinned == other.pinned && blocked == other.blocked &&
          alert_state == other.alert_state &&
          should_hide_throbber == other.should_hide_throbber &&
+         is_tab_discarded == other.is_tab_discarded &&
          should_show_discard_status == other.should_show_discard_status &&
          discarded_memory_savings_in_bytes ==
              other.discarded_memory_savings_in_bytes &&

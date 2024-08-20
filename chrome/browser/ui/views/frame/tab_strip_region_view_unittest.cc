@@ -66,7 +66,7 @@ class TabStripRegionViewTestBase : public ChromeViewsTestBase {
     auto controller = std::make_unique<FakeBaseTabStripController>();
     controller_ = controller.get();
     auto tab_strip = std::make_unique<TabStrip>(
-        std::unique_ptr<TabStripController>(controller.release()), nullptr);
+        std::unique_ptr<TabStripController>(controller.release()));
     tab_strip_ = tab_strip.get();
     controller_->set_tab_strip(tab_strip_);
     widget_ =

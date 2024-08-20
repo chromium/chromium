@@ -64,19 +64,11 @@ void ThumbnailReadinessTracker::DidFinishNavigation(
 }
 
 void ThumbnailReadinessTracker::DocumentOnLoadCompletedInPrimaryMainFrame() {
-  // Discard may result in load of a new empty document, do not update the
-  // readiness in the case of a discarded document load.
-  if (!web_contents()->WasDiscarded()) {
-    UpdateReadiness(Readiness::kReadyForFinalCapture);
-  }
+  UpdateReadiness(Readiness::kReadyForFinalCapture);
 }
 
 void ThumbnailReadinessTracker::WebContentsDestroyed() {
   pending_navigation_ = nullptr;
-  UpdateReadiness(Readiness::kNotReady);
-}
-
-void ThumbnailReadinessTracker::WasDiscarded() {
   UpdateReadiness(Readiness::kNotReady);
 }
 

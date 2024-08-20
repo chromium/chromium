@@ -106,16 +106,35 @@ void TabPageDecorator::OnBeforePageNodeRemoved(const PageNode* page_node) {
 void TabPageDecorator::OnAboutToBeDiscarded(const PageNode* page_node,
                                             const PageNode* new_page_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(page_node, new_page_node);
   CHECK_EQ(page_node->GetType(), performance_manager::PageType::kTab);
+  CHECK_EQ(new_page_node->GetType(), performance_manager::PageType::kUnknown);
 
-  // TODO(crbug.com/347770670): Remove this now that new page nodes are no
-  // longer created during discard operations.
+  // Move the handle out of the old node's data into the new one. We do this so
+  // that users of the API can keep using the same TabHandle object
+  // transparently regardless of whether the underlying PageNode changes.
   TabPageDecorator::Data* old_data =
       TabPageDecorator::Data::Get(PageNodeImpl::FromNode(page_node));
 
+  // The new PageNode is created with kUnknown type, so create the data for it
+  // here. This will also prevent observers from being notified of tab creation
+  // when this PageNode's type changes to kTab.
+  CHECK(!TabPageDecorator::Data::Get(PageNodeImpl::FromNode(new_page_node)));
+  TabPageDecorator::Data* new_data = TabPageDecorator::Data::GetOrCreate(
+      PageNodeImpl::FromNode(new_page_node));
+
+  CHECK(old_data);
+
+  old_data->tab_handle()->SetPageNode(new_page_node);
+  old_data->TransferTabHandleTo(new_data);
+
+  // Destroy the old node's data so OnBeforePageNodeRemoved doesn't treat it as
+  // a tab going away
+  bool destroyed =
+      TabPageDecorator::Data::Destroy(PageNodeImpl::FromNode(page_node));
+  CHECK(destroyed);
+
   for (auto& obs : observers_) {
-    obs.OnTabAboutToBeDiscarded(page_node, old_data->tab_handle());
+    obs.OnTabAboutToBeDiscarded(page_node, new_data->tab_handle());
   }
 }
 

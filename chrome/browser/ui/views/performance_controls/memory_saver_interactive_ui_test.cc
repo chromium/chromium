@@ -329,8 +329,8 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       WaitForShow(kMemorySaverChipElementId),
 
       // Discards tab on chrome://newtab page
-      TryDiscardTab(1), CheckTabIsDiscarded(1, true),
-      SelectTab(kTabStripElementId, 1),
+      TryDiscardTab(1), WaitForHide(kSecondTabContents),
+      CheckTabIsDiscarded(1, true), SelectTab(kTabStripElementId, 1),
       EnsureNotPresent(kMemorySaverChipElementId));
 }
 

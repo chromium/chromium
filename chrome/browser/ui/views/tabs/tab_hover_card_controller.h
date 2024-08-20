@@ -31,13 +31,12 @@ class TabHoverCardBubbleView;
 class TabHoverCardThumbnailObserver;
 class Tab;
 class TabStrip;
-class TabStripModel;
 
 // Controls how hover cards are shown and hidden for tabs.
 class TabHoverCardController : public views::ViewObserver,
                                public TabResourceUsageCollector::Observer {
  public:
-  TabHoverCardController(TabStrip* tab_strip, TabStripModel* tab_strip_model);
+  explicit TabHoverCardController(TabStrip* tab_strip);
   ~TabHoverCardController() override;
 
   bool IsHoverCardVisible() const;
@@ -142,8 +141,6 @@ class TabHoverCardController : public views::ViewObserver,
     return thumbnail_wait_state_ != ThumbnailWaitState::kNotWaiting;
   }
 
-  bool IsTabDiscarded(Tab* tab);
-
   // Timestamp of the last time the hover card is hidden by the mouse leaving
   // the tab strip. This is used for reshowing the hover card without delay if
   // the mouse reenters within a given amount of time.
@@ -151,7 +148,6 @@ class TabHoverCardController : public views::ViewObserver,
 
   raw_ptr<Tab> target_tab_ = nullptr;
   const raw_ptr<TabStrip> tab_strip_;
-  const raw_ptr<TabStripModel> tab_strip_model_;
   raw_ptr<TabHoverCardBubbleView> hover_card_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver>
       hover_card_observation_{this};

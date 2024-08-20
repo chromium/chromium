@@ -1914,8 +1914,6 @@ DisableForRenderFrameHostReasonToProtocol(
         case BackForwardCacheDisable::DisabledReasonId::kScreenReader:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               ContentScreenReader;
-        case BackForwardCacheDisable::DisabledReasonId::kDiscarded:
-          return Page::BackForwardCacheNotRestoredReasonEnum::ContentDiscarded;
       }
     case BackForwardCache::DisabledSource::kEmbedder:
       switch (static_cast<back_forward_cache::DisabledReasonId>(reason.id)) {

@@ -199,7 +199,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
     top_container_ =
         browser_view_->AddChildView(CreateFixedSizeView(gfx::Size(800, 60)));
     auto tab_strip = std::make_unique<TabStrip>(
-        std::make_unique<FakeBaseTabStripController>(), nullptr);
+        std::make_unique<FakeBaseTabStripController>());
     tab_strip_ = tab_strip.get();
     TabStripRegionView* tab_strip_region_view = top_container_->AddChildView(
         std::make_unique<TabStripRegionView>(std::move(tab_strip)));

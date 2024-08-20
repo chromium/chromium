@@ -51,6 +51,8 @@ void BrowserListRouterHelper::OnTabStripModelChanged(
          change.GetInsert()->contents) {
       web_contents.push_back(contents.contents);
     }
+  } else if (change.type() == TabStripModelChange::kReplaced) {
+    web_contents.push_back(change.GetReplace()->new_contents);
   } else {
     return;
   }
