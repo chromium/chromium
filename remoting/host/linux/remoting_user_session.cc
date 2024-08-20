@@ -6,6 +6,11 @@
 // proper PAM session. It will generally be run as root and drop privileges to
 // the specified user before running the me2me session script.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // Usage: user-session start [--foreground] [--user user] [-- SCRIPT_ARGS...]
 //
 // Options:
