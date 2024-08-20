@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.download.DownloadCollectionBridge;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.navigation_controller.LoadURLType;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -36,7 +37,7 @@ public class DownloadController {
      */
     public static void downloadUrl(String url, Tab tab) {
         assert hasFileAccess(tab.getWindowAndroid());
-        DownloadControllerJni.get().downloadUrl(url, tab.getProfile());
+        DownloadControllerJni.get().downloadUrl(url, tab.getWebContents());
     }
 
     /**
@@ -175,7 +176,7 @@ public class DownloadController {
                 boolean granted,
                 @JniType("std::string") String permissionToUpdate);
 
-        void downloadUrl(@JniType("std::string") String url, @JniType("Profile*") Profile profile);
+        void downloadUrl(@JniType("std::string") String url, WebContents webContents);
 
         void cancelDownload(
                 @JniType("Profile*") Profile profile, @JniType("std::string") String downloadGuid);
