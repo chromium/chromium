@@ -24,36 +24,16 @@ class LimitedEntropySyntheticTrialTest : public ::testing::Test {
 };
 
 TEST_F(LimitedEntropySyntheticTrialTest,
-       RandomizesWithExistingSeed_StableEnabled) {
-  local_state_.SetUint64(prefs::kVariationsLimitedEntropySyntheticTrialSeed, 1);
-  LimitedEntropySyntheticTrial trial(&local_state_,
-                                     version_info::Channel::STABLE);
-  EXPECT_TRUE(trial.IsEnabled());
-  EXPECT_EQ(1u, local_state_.GetUint64(
-                    prefs::kVariationsLimitedEntropySyntheticTrialSeed));
-}
+       GeneratesAndRandomizesWithNewSeed_Stable) {
+  ASSERT_FALSE(local_state_.HasPrefPath(
+      prefs::kVariationsLimitedEntropySyntheticTrialSeed));
 
-TEST_F(LimitedEntropySyntheticTrialTest,
-       RandomizesWithExistingSeed_StableDisabled) {
-  local_state_.SetUint64(prefs::kVariationsLimitedEntropySyntheticTrialSeed, 2);
   LimitedEntropySyntheticTrial trial(&local_state_,
                                      version_info::Channel::STABLE);
-  EXPECT_FALSE(trial.IsEnabled());
-  EXPECT_EQ(kLimitedEntropySyntheticTrialControl, trial.GetGroupName());
-  EXPECT_EQ(2u, local_state_.GetUint64(
-                    prefs::kVariationsLimitedEntropySyntheticTrialSeed));
-}
+  auto group_name = trial.GetGroupName();
 
-TEST_F(LimitedEntropySyntheticTrialTest,
-       RandomizesWithExistingSeed_StableDefault) {
-  local_state_.SetUint64(prefs::kVariationsLimitedEntropySyntheticTrialSeed,
-                         99);
-  LimitedEntropySyntheticTrial trial(&local_state_,
-                                     version_info::Channel::STABLE);
-  EXPECT_FALSE(trial.IsEnabled());
-  EXPECT_EQ(kLimitedEntropySyntheticTrialDefault, trial.GetGroupName());
-  EXPECT_EQ(99u, local_state_.GetUint64(
-                     prefs::kVariationsLimitedEntropySyntheticTrialSeed));
+  // All stable clients must be in the enabled group.
+  EXPECT_EQ(kLimitedEntropySyntheticTrialEnabled, group_name);
 }
 
 TEST_F(LimitedEntropySyntheticTrialTest,

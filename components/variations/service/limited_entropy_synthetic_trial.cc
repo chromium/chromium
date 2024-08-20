@@ -25,7 +25,7 @@ bool g_trial_is_randomized = false;
 // 100 or an integer within [0, 50]. `kStableEnabledPercentage` specifies this
 // percentage in the stable channel, and `kNonStableEnabledPercentage` is for
 // other channels including `Channel::UNKNOWN`.
-constexpr uint64_t kStableEnabledPercentage = 1;
+constexpr uint64_t kStableEnabledPercentage = 100;
 constexpr uint64_t kNonStableEnabledPercentage = 100;
 
 uint64_t SelectEnabledPercentage(version_info::Channel channel) {
