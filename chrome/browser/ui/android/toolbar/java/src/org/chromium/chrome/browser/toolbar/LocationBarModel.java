@@ -577,15 +577,11 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     @Override
-    public int getPageClassification(boolean isFocusedFromFakebox, boolean isPrefetch) {
+    public int getPageClassification(boolean isPrefetch) {
         if (mNativeLocationBarModelAndroid == 0) return PageClassification.INVALID_SPEC_VALUE;
 
         return LocationBarModelJni.get()
-                .getPageClassification(
-                        mNativeLocationBarModelAndroid,
-                        LocationBarModel.this,
-                        isFocusedFromFakebox,
-                        isPrefetch);
+                .getPageClassification(mNativeLocationBarModelAndroid, isPrefetch);
     }
 
     @Override
@@ -829,11 +825,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         GURL getUrlOfVisibleNavigationEntry(
                 long nativeLocationBarModelAndroid, LocationBarModel caller);
 
-        int getPageClassification(
-                long nativeLocationBarModelAndroid,
-                LocationBarModel caller,
-                boolean isFocusedFromFakebox,
-                boolean isPrefetch);
+        int getPageClassification(long nativeLocationBarModelAndroid, boolean isPrefetch);
     }
 
     public void onPageLoadStopped() {

@@ -135,11 +135,10 @@ public interface LocationBarDataProvider {
     /**
      * Returns the current page classification.
      *
-     * @param isFocusedFromFakebox If the omnibox focus originated from the fakebox.
      * @param isPrefetch If the page classification for prefetching is requested.
      * @return Integer value representing the {@code OmniboxEventProto.PageClassification}.
      */
-    int getPageClassification(boolean isFocusedFromFakebox, boolean isPrefetch);
+    int getPageClassification(boolean isPrefetch);
 
     /**
      * Returns the resource ID of the icon that should be displayed or 0 if no icon should be shown.

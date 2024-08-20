@@ -352,14 +352,14 @@ class AutocompleteMediator
     private void maybeCacheResult(@NonNull AutocompleteResult result) {
         if (mIsInZeroPrefixContext
                 && !result.isFromCachedResult()
-                && mDataProvider.getPageClassification(false, false)
+                && mDataProvider.getPageClassification(false)
                         == PageClassification.ANDROID_SEARCH_WIDGET_VALUE) {
             CachedZeroSuggestionsManager.saveToCache(result);
         }
     }
 
     private void maybeServeCachedResult() {
-        int pageClass = mDataProvider.getPageClassification(false, false);
+        int pageClass = mDataProvider.getPageClassification(false);
         if (mAutocomplete.isPresent()
                 || !mIsInZeroPrefixContext
                 || (pageClass != PageClassification.ANDROID_SEARCH_WIDGET_VALUE
@@ -415,10 +415,7 @@ class AutocompleteMediator
             mRefineActionUsage = RefineActionUsage.NOT_USED;
             mOmniboxFocusResultedInNavigation = false;
             mSuggestionsListScrolled = false;
-            mPageClassification =
-                    OptionalInt.of(
-                            mDataProvider.getPageClassification(
-                                    mDelegate.didFocusUrlFromFakebox(), /* isPrefetch= */ false));
+            mPageClassification = OptionalInt.of(mDataProvider.getPageClassification(false));
             mUrlFocusTime = System.currentTimeMillis();
 
             // Ask directly for zero-suggestions related to current input, unless the user is
@@ -1044,9 +1041,7 @@ class AutocompleteMediator
 
     /** Sends a zero suggest request to the server in order to pre-populate the result cache. */
     /* package */ void startPrefetch() {
-        int pageClassification =
-                mDataProvider.getPageClassification(
-                        /* isFocusedFromFakebox= */ false, /* isPrefetch= */ true);
+        int pageClassification = mDataProvider.getPageClassification(true);
         postAutocompleteRequest(
                 () ->
                         mAutocomplete.ifPresent(
@@ -1138,9 +1133,7 @@ class AutocompleteMediator
                     a ->
                             a.start(
                                     mDataProvider.getCurrentGurl(),
-                                    mDataProvider.getPageClassification(
-                                            /* isFocusedFromFakebox= */ false,
-                                            /* isPrefetch= */ false),
+                                    mDataProvider.getPageClassification(false),
                                     query,
                                     -1,
                                     false));

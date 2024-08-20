@@ -128,7 +128,7 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     }
 
     @Override
-    public int getPageClassification(boolean isFocusedFromFakebox, boolean isPrefetch) {
+    public int getPageClassification(boolean isPrefetch) {
         return mPageClassification;
     }
 

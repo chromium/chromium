@@ -294,8 +294,7 @@ public class AutocompleteMediatorUnitTest {
         when(mLocationBarDataProvider.hasTab()).thenReturn(true);
         when(mLocationBarDataProvider.getCurrentGurl()).thenReturn(url);
         when(mLocationBarDataProvider.getTitle()).thenReturn(title);
-        when(mLocationBarDataProvider.getPageClassification(false, false))
-                .thenReturn(pageClassification);
+        when(mLocationBarDataProvider.getPageClassification(false)).thenReturn(pageClassification);
     }
 
     /** Sets the native object reference for all suggestions in mSuggestionList. */
