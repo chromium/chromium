@@ -48,10 +48,10 @@ class DOMTypedArray final : public DOMArrayBufferView {
     return buffer ? Create(buffer, 0, length) : nullptr;
   }
 
-  static ThisType* CreateOrNull(const ValueType* array, size_t length) {
+  static ThisType* CreateOrNull(base::span<const ValueType> array) {
     DOMArrayBuffer* buffer =
-        DOMArrayBuffer::CreateOrNull(array, length * sizeof(ValueType));
-    return buffer ? Create(buffer, 0, length) : nullptr;
+        DOMArrayBuffer::CreateOrNull(base::as_bytes(array));
+    return buffer ? Create(buffer, 0, array.size()) : nullptr;
   }
 
   static ThisType* CreateUninitializedOrNull(size_t length) {

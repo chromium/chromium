@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/auto_reset.h"
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -561,9 +562,8 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
       }
       if (!byob_view) {
         CHECK(!array);
-        array = DOMUint8Array::CreateOrNull(
-            reinterpret_cast<const unsigned char*>(buffer),
-            base::checked_cast<uint32_t>(available));
+        array = DOMUint8Array::CreateOrNull(UNSAFE_TODO(base::span(
+            reinterpret_cast<const unsigned char*>(buffer), available)));
       }
       result = consumer_->EndRead(available);
       if (!array && !byob_view) {
