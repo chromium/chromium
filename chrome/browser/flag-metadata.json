@@ -5332,11 +5332,6 @@
     "expiry_milestone": 133
   },
   {
-    "name": "indexed-db-compress-values-with-snappy",
-    "owners": [ "estade@chromium.org", "chrome-owp-storage@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "info-card-acknowledgement-tracking",
     "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
     "expiry_milestone": 130

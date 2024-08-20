@@ -10982,11 +10982,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kUseAdHocSigningForWebAppShims)},
 #endif  // BUILDFLAG(IS_MAC)
 
-    {"indexed-db-compress-values-with-snappy",
-     flag_descriptions::kIndexedDBCompressValuesWithSnappy,
-     flag_descriptions::kIndexedDBCompressValuesWithSnappyDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kIndexedDBCompressValuesWithSnappy)},
-
     {"autofill-enable-server-iban",
      flag_descriptions::kAutofillEnableServerIbanName,
      flag_descriptions::kAutofillEnableServerIbanDescription, kOsDesktop,

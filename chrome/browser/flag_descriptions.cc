@@ -2272,10 +2272,6 @@ const char kIncognitoScreenshotDescription[] =
     "Enables Incognito screenshots on Android. It will also make Incognito "
     "thumbnails visible.";
 
-const char kIndexedDBCompressValuesWithSnappy[] = "Compress IndexedDB values";
-const char kIndexedDBCompressValuesWithSnappyDescription[] =
-    "Compress IndexedDB values in the renderer process using Snappy.";
-
 const char kIndexedDBDefaultDurabilityRelaxed[] =
     "IndexedDB transactions relaxed durability by default";
 const char kIndexedDBDefaultDurabilityRelaxedDescription[] =
