@@ -163,7 +163,7 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
         initWithShoppingService:(commerce::ShoppingService*)shopping_service_
                   bookmarkModel:bookmark_model_
                    imageFetcher:std::move(image_fetcher_)
-                       webState:(web::WebState*)web_state_.get()
+                       webState:web_state_.get()->GetWeakPtr()
         pushNotificationService:(PushNotificationService*)
                                     push_notification_service_.get()];
   }

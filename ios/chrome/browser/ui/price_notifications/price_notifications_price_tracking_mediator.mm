@@ -71,7 +71,7 @@ using PriceNotificationItems =
 // The service responsible for managing bookmarks.
 @property(nonatomic, readonly) bookmarks::BookmarkModel* bookmarkModel;
 // The current browser state's webstate.
-@property(nonatomic, assign) web::WebState* webState;
+@property(nonatomic, assign) base::WeakPtr<web::WebState> webState;
 // The product data for the product contained on the site the user is currently
 // viewing.
 @property(nonatomic, assign) std::optional<commerce::ProductInfo>
@@ -89,7 +89,7 @@ using PriceNotificationItems =
               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                imageFetcher:
                    (std::unique_ptr<image_fetcher::ImageDataFetcher>)fetcher
-                   webState:(web::WebState*)webState
+                   webState:(base::WeakPtr<web::WebState>)webState
     pushNotificationService:(PushNotificationService*)pushNotificationService {
   self = [super init];
   if (self) {

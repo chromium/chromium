@@ -93,7 +93,7 @@ NSDate* getNSDateFromString(std::string date) {
       initWithShoppingService:self.shoppingService
                 bookmarkModel:bookmarkModel
                  imageFetcher:std::move(imageFetcher)
-                     webState:webState
+                     webState:webState->GetWeakPtr()
       pushNotificationService:pushNotificationService];
   self.mediator.priceInsightsConsumer = self;
 }
