@@ -123,10 +123,8 @@ struct AttributionScopesData {
   AttributionScopesSet attribution_scopes_set;
 
   // Represents the number of distinct attribution scopes allowed per
-  // destination for a source's reporting origin. If attribution_scope_limit is
-  // null, it indicates that scopes are not set for this source registration and
-  // that max_event_states is its default value.
-  uint32? attribution_scope_limit;
+  // destination for a source's reporting origin.
+  uint32 attribution_scope_limit;
 
   // Represents the maximum number of trigger states for an event source type
   // sources per destination for a source's reporting origin.
@@ -178,8 +176,9 @@ struct SourceRegistration {
   int64 destination_limit_priority;
 
   // Controls the scopes the source can be attributed to along with the amount
-  // limit of scopes and the max number of event states.
-  AttributionScopesData attribution_scopes_data;
+  // limit of scopes and the max number of event states. Logic pertaining to
+  // scopes are ignored if this field is null.
+  AttributionScopesData? attribution_scopes_data;
 };
 
 // Mojo representation of the trigger configuration provided by a reporting

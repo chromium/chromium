@@ -70,6 +70,7 @@ enum SourceRegistrationError {
   kAttributionScopeLimitRequired = 44,
   kMaxEventStatesInvalid = 45,
   kAttributionScopesInvalid = 46,
-  kAttributionScopesValueInvalid = 47,
+  kAttributionScopesListInvalid = 47,
+  kAttributionScopesListValueInvalid = 48,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionSourceRegistrationError)

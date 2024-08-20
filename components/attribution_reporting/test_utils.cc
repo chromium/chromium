@@ -124,15 +124,13 @@ std::ostream& operator<<(std::ostream& out,
 std::ostream& operator<<(std::ostream& out,
                          const AttributionScopesSet& attribution_scopes_set) {
   base::Value::Dict dict;
-  attribution_scopes_set.Serialize(dict);
+  attribution_scopes_set.SerializeForTrigger(dict);
   return out << dict;
 }
 
 std::ostream& operator<<(std::ostream& out,
                          const AttributionScopesData& attribution_scopes_data) {
-  base::Value::Dict dict;
-  attribution_scopes_data.Serialize(dict);
-  return out << dict;
+  return out << attribution_scopes_data.ToJson();
 }
 
 std::ostream& operator<<(std::ostream& out, const SourceRegistration& s) {
