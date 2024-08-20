@@ -91,7 +91,10 @@ void Tiling::GetTileRect(
                        dest_rect_.y() + y * tile_size_.height(),
                        dest_rect_.x() + (x + 1) * tile_size_.width(),
                        dest_rect_.y() + (y + 1) * tile_size_.height());
-  tile_dest_rect.intersect(dest_rect_);
+  if (!tile_dest_rect.intersect(dest_rect_)) {
+    tile_dest_rect = SkRect::MakeEmpty();
+    return;
+  }
 
   tile_source_rects.resize(source_count_);
   tile_source_subset_rects.resize(source_count_);
