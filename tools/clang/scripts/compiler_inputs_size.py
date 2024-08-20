@@ -21,10 +21,10 @@ information. On a fast machine, it should take less than a minute for the
 
 This currently doesnt work on Windows due to different deps handling.
 
-Example usage: (Set use_reclient=false if you don't have reclient access.)
+Example usage: (Remove use_remoteexec=true if you don't have reclient access.)
 
 $ gn gen out/Debug --args="system_headers_in_deps=true enable_nacl=false
-      symbol_level=0 use_reclient=true"
+      symbol_level=0 use_remoteexec=true"
 $ autoninja -C out/Debug chrome
 $ tools/clang/scripts/compiler_inputs_size.py out/Debug \
       <(ninja -C out/Debug -t commands chrome) <(ninja -C out/Debug -t deps)
