@@ -5568,6 +5568,8 @@ crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/f
 crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-open-invalidation.tentative.html [ Failure ]
 crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-option-images.tentative.html [ Failure ]
 crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-option-images.tentative.html [ Failure ]
+crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-mouse-behavior.tentative.html [ Failure ]
+crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-mouse-behavior.tentative.html [ Failure ]
 crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-keyboard-behavior.tentative.html [ Failure ]
 crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-keyboard-behavior.tentative.html [ Failure ]
 crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-fallback-datalist-animations.tentative.html [ Failure ]
