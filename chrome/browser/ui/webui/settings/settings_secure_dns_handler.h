@@ -6,14 +6,15 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_SECURE_DNS_HANDLER_H_
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/values.h"
+#include "chrome/browser/net/dns_over_https_config_source.h"
 #include "chrome/browser/net/dns_probe_runner.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "services/network/public/cpp/network_context_getter.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
@@ -80,7 +81,8 @@ class SecureDnsHandler : public SettingsPageUIHandler {
   // ID of the Javascript callback for the current pending probe, or "" if
   // there is no probe currently in progress.
   std::string probe_callback_id_;
-  PrefChangeRegistrar pref_registrar_;
+
+  std::unique_ptr<DnsOverHttpsConfigSource> doh_source_;
 };
 
 }  // namespace settings

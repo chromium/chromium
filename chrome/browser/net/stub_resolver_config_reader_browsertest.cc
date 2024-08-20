@@ -15,6 +15,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -45,7 +47,7 @@
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 const std::string kDnsOverHttpsTemplatesPrefName =
     prefs::kDnsOverHttpsEffectiveTemplatesChromeOS;
 #else
@@ -298,7 +300,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
 #endif
 
   SetSecureDnsModePolicy("secure");
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   g_browser_process->local_state()->SetString(
       prefs::kDnsOverHttpsEffectiveTemplatesChromeOS, "https://doh.test/");
 #else
@@ -309,10 +311,6 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
   EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kSecure);
   EXPECT_EQ(*net::DnsOverHttpsConfig::FromString("https://doh.test/"),
             secure_dns_config.doh_servers());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_FALSE(
-      config_reader_->GetDohWithIdentifiersDisplayServers().has_value());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
@@ -391,15 +389,13 @@ constexpr char kTemplateIdentifiers[] =
 constexpr char kEffectiveTemplateIdentifiers[] =
     "https://dns.google.alternativeuri/"
     "8E71AF9783B71B6996DAE103B28BC55882BD5CB93B29260D000D8121D9D10977";
-constexpr char kDisplayTemplateIdentifiers[] =
-    "https://dns.google.alternativeuri/"
-    "${stub-user@example.com}";
 IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
                        DohWithIdentifiers) {
   PrefService* local_state = g_browser_process->local_state();
 
   std::unique_ptr<ash::SecureDnsManager> secure_dns_manager =
-      std::make_unique<ash::SecureDnsManager>(local_state);
+      std::make_unique<ash::SecureDnsManager>(local_state,
+                                              /*is_profile_managed=*/true);
 
   local_state->SetString(prefs::kDnsOverHttpsMode,
                          SecureDnsConfig::kModeSecure);
@@ -412,9 +408,6 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
 
   EXPECT_EQ(secure_dns_config.doh_servers().ToString(),
             kEffectiveTemplateIdentifiers);
-
-  EXPECT_THAT(config_reader_->GetDohWithIdentifiersDisplayServers(),
-              testing::Optional(std::string(kDisplayTemplateIdentifiers)));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_flusher.h"
@@ -237,8 +238,9 @@ void BrowserProcessPlatformPart::InitializePrimaryProfileServices(
         primary_profile);
   }
 
-  secure_dns_manager_ =
-      std::make_unique<ash::SecureDnsManager>(g_browser_process->local_state());
+  secure_dns_manager_ = std::make_unique<ash::SecureDnsManager>(
+      g_browser_process->local_state(),
+      primary_profile->GetProfilePolicyConnector()->IsManaged());
 }
 
 void BrowserProcessPlatformPart::ShutdownPrimaryProfileServices() {

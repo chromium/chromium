@@ -101,6 +101,7 @@
 #include "components/sharing_message/sharing_sync_preference.h"
 #include "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/updates/announcement_notification/announcement_notification_service.h"
@@ -1649,6 +1650,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::Preferences::RegisterPrefs(registry);
   ash::ResetScreen::RegisterPrefs(registry);
   ash::SchedulerConfigurationManager::RegisterLocalStatePrefs(registry);
+  ash::SecureDnsManager::RegisterLocalStatePrefs(registry);
   ash::ServicesCustomizationDocument::RegisterPrefs(registry);
   ash::standalone_browser::migrator_util::RegisterLocalStatePrefs(registry);
   ash::StartupUtils::RegisterPrefs(registry);

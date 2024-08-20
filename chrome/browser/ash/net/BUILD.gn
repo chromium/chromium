@@ -14,6 +14,8 @@ static_library("net") {
     "alwayson_vpn_pre_connect_url_allowlist_service_factory.h",
     "apn_migrator.cc",
     "apn_migrator.h",
+    "ash_dns_over_https_config_source.cc",
+    "ash_dns_over_https_config_source.h",
     "ash_proxy_monitor.cc",
     "ash_proxy_monitor.h",
     "bluetooth_pref_state_observer.cc",

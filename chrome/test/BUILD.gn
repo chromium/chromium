@@ -9619,6 +9619,9 @@ test("unit_tests") {
     if (is_chromeos) {
       deps += [ "//chromeos/components/mgs" ]
     }
+    if (is_chromeos_ash) {
+      deps += [ "//chrome/browser/ash/net" ]
+    }
   }
 
   if (is_linux || is_chromeos_ash || is_mac || is_win) {

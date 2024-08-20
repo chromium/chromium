@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 
@@ -45,14 +46,24 @@ class SecureDnsManager : public NetworkStateHandlerObserver {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  explicit SecureDnsManager(PrefService* local_state);
+  // If `is_profile_managed` is true, then the secure DNS settings can only be
+  // configured by enterprise policy; otherwise the secure DNS settings can be
+  // configured by the user in the settings UI.
+  SecureDnsManager(PrefService* local_state, bool is_profile_managed);
   SecureDnsManager(const SecureDnsManager&) = delete;
   SecureDnsManager& operator=(const SecureDnsManager&) = delete;
   ~SecureDnsManager() override;
 
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
   void SetDoHTemplatesUriResolverForTesting(
       std::unique_ptr<dns_over_https::TemplatesUriResolver>
           doh_templates_uri_resolver);
+
+  // If the URI templates for the DNS-over-HTTPS resolver contain user or device
+  // identifiers (which are hashed before being used), this method returns the
+  // plain text version of the URI templates. Otherwise returns nullopt.
+  std::optional<std::string> GetDohWithIdentifiersDisplayServers() const;
 
  private:
   void DefaultNetworkChanged(const NetworkState* network) override;

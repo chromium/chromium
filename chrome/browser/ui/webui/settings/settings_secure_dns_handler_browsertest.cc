@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/dns_probe_test_util.h"
 #include "chrome/browser/net/secure_dns_config.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/country_codes/country_codes.h"
@@ -31,6 +32,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "components/account_id/account_id.h"
@@ -149,6 +151,8 @@ class SecureDnsHandlerTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     handler_ = std::make_unique<TestSecureDnsHandler>();
+    web_ui_.set_web_contents(
+        browser()->tab_strip_model()->GetActiveWebContents());
     handler_->set_web_ui(&web_ui_);
     handler_->RegisterMessages();
     handler_->AllowJavascriptForTesting();
@@ -377,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, DropdownListContents) {
 }
 
 IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsTemplates) {
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   const std::string kDnsOverHttpsTemplatesPrefName =
       prefs::kDnsOverHttpsEffectiveTemplatesChromeOS;
 #else
@@ -430,13 +434,7 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest,
       "FD5DFBED0D7B875A6416AFC61A37DBB63B6BA05B627AE9F5BE463A1F858F2D4E/"
       "dns-query{?dns}";
   std::string templates = "https://bar.test/dns-query{?dns}";
-
   PrefService* local_state = g_browser_process->local_state();
-  // SecureDnsManager does the identifier placeholder replacement for the
-  // template URI and maps the final value to the
-  // prefs::kDnsOverHttpsEffectiveTemplatesChromeOS local state pref.
-  std::unique_ptr<ash::SecureDnsManager> secure_dns_manager =
-      std::make_unique<ash::SecureDnsManager>(local_state);
 
   // Create an affiliated user.
   auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
