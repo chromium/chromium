@@ -2935,13 +2935,10 @@ enum class ToolbarKind {
 
 - (void)showParcelTrackingOptInPromptWithParcels:
     (NSArray<CustomTextCheckingResult*>*)parcels {
-  web::WebState* activeWebState = self.activeWebState;
-  CHECK(activeWebState);
   [self dismissParcelTrackingOptInPrompt];
   self.parcelTrackingOptInCoordinator = [[ParcelTrackingOptInCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                        webState:activeWebState
                          parcels:parcels];
   [self.parcelTrackingOptInCoordinator start];
 }
