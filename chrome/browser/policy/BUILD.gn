@@ -333,7 +333,6 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//components/enterprise",
     "//components/enterprise:test_support",
-    "//components/invalidation:test_support",
     "//components/invalidation/impl:test_support",
     "//components/invalidation/public:public",
     "//components/keyed_service/core",

@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <variant>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -25,7 +24,6 @@
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/extensions/external_loader.h"
-#include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -38,13 +36,7 @@ namespace chromeos {
 class DeviceLocalAccountExternalPolicyLoader;
 }  // namespace chromeos
 
-namespace invalidation {
-class InvalidationListener;
-}
-
 namespace policy {
-
-class AffiliatedInvalidationServiceProvider;
 
 // The main switching central that downloads, caches, refreshes, etc. policy for
 // a single device-local account.
@@ -68,9 +60,7 @@ class DeviceLocalAccountPolicyBroker
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       const scoped_refptr<base::SequencedTaskRunner>&
           resource_cache_task_runner,
-      std::variant<AffiliatedInvalidationServiceProvider*,
-                   invalidation::InvalidationListener*>
-          invalidation_service_provider_or_listener);
+      AffiliatedInvalidationServiceProvider* invalidation_service_provider);
 
   DeviceLocalAccountPolicyBroker(const DeviceLocalAccountPolicyBroker&) =
       delete;
@@ -146,9 +136,8 @@ class DeviceLocalAccountPolicyBroker
   void CreateComponentCloudPolicyService(CloudPolicyClient* client);
   void UpdateExtensionListFromStore();
 
-  const std::variant<raw_ptr<AffiliatedInvalidationServiceProvider>,
-                     raw_ptr<invalidation::InvalidationListener>>
-      invalidation_service_provider_or_listener_;
+  const raw_ptr<AffiliatedInvalidationServiceProvider>
+      invalidation_service_provider_;
   const std::string account_id_;
   const std::string user_id_;
   const base::FilePath component_policy_cache_path_;
@@ -162,9 +151,7 @@ class DeviceLocalAccountPolicyBroker
   CloudPolicyCore core_;
   std::unique_ptr<ComponentCloudPolicyService> component_policy_service_;
   base::RepeatingClosure policy_update_callback_;
-  std::variant<std::unique_ptr<AffiliatedCloudPolicyInvalidator>,
-               std::unique_ptr<CloudPolicyInvalidator>>
-      invalidator_ = std::unique_ptr<AffiliatedCloudPolicyInvalidator>{nullptr};
+  std::unique_ptr<AffiliatedCloudPolicyInvalidator> invalidator_;
   const scoped_refptr<base::SequencedTaskRunner> resource_cache_task_runner_;
 };
 

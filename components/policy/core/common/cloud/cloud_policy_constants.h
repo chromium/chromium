@@ -221,7 +221,7 @@ enum class MarketSegment {
 
 // Sender ID of FCM (Firebase Cloud Messaging)
 // Policy Invalidation sender coming from the Firebase console.
-inline constexpr char kPolicyFCMInvalidationSenderID[] = "1013309121859";
+extern const char kPolicyFCMInvalidationSenderID[];
 
 // Kiosk SKU name. This is the constant of the enrollment license type that
 // exists on the server side.

@@ -7,9 +7,7 @@
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/drive/drive_notification_manager.h"
-#include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
-#include "components/invalidation/public/invalidation_service.h"
 
 namespace drive {
 namespace {
@@ -17,22 +15,13 @@ namespace {
 constexpr char kDriveFcmSenderId[] = "947318989803";
 
 invalidation::InvalidationService* GetInvalidationService(Profile* profile) {
-  auto* profile_invalidation_factory =
-      invalidation::ProfileInvalidationProviderFactory::GetForProfile(profile);
-  if (!profile_invalidation_factory) {
+  if (!invalidation::ProfileInvalidationProviderFactory::GetForProfile(
+          profile)) {
     return nullptr;
   }
-  auto invalidation_service_or_listener =
-      profile_invalidation_factory->GetInvalidationServiceOrListener(
-          kDriveFcmSenderId, /*project_id=*/"");
-  if (std::holds_alternative<invalidation::InvalidationListener*>(
-          invalidation_service_or_listener)) {
-    LOG(ERROR) << "Drive does not support InvalidationListener";
-    return nullptr;
-  }
-
-  return std::get<invalidation::InvalidationService*>(
-      invalidation_service_or_listener);
+  return invalidation::ProfileInvalidationProviderFactory::GetForProfile(
+             profile)
+      ->GetInvalidationServiceForCustomSender(kDriveFcmSenderId);
 }
 
 }  // namespace
@@ -46,7 +35,8 @@ DriveNotificationManagerFactory::FindForBrowserContext(
 }
 
 // static
-DriveNotificationManager* DriveNotificationManagerFactory::GetForBrowserContext(
+DriveNotificationManager*
+DriveNotificationManagerFactory::GetForBrowserContext(
     content::BrowserContext* context) {
   if (!GetInvalidationService(Profile::FromBrowserContext(context))) {
     // Do not create a DriveNotificationManager for |context|s that do not

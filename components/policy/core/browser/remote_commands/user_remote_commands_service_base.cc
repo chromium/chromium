@@ -5,9 +5,7 @@
 #include "components/policy/core/browser/remote_commands/user_remote_commands_service_base.h"
 
 #include "base/time/default_clock.h"
-#include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
@@ -44,9 +42,8 @@ void UserRemoteCommandsServiceBase::
   invalidator_ = std::make_unique<RemoteCommandsInvalidatorImpl>(
       core_, base::DefaultClock::GetInstance(), PolicyInvalidationScope::kUser);
   invalidator_->Initialize(
-      invalidation_provider->GetInvalidationServiceOrListener(
-          kPolicyFCMInvalidationSenderID,
-          invalidation::InvalidationListener::kProjectNumberEnterprise));
+      invalidation_provider->GetInvalidationServiceForCustomSender(
+          kPolicyFCMInvalidationSenderID));
 }
 
 void UserRemoteCommandsServiceBase::OnPolicyRefreshed(bool success) {}

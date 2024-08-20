@@ -49,9 +49,8 @@ const char kAffiliatedUserID1[] = "test_1@example.com";
 const char kAffiliatedUserID2[] = "test_2@example.com";
 const char kUnaffiliatedUserID[] = "test@other_domain.test";
 
-std::variant<std::unique_ptr<invalidation::InvalidationService>,
-             std::unique_ptr<invalidation::InvalidationListener>>
-CreateInvalidationServiceForSenderId(std::string, std::string, std::string) {
+std::unique_ptr<invalidation::InvalidationService>
+CreateInvalidationServiceForSenderId(const std::string& fcm_sender_id) {
   std::unique_ptr<invalidation::FakeInvalidationService> invalidation_service(
       new invalidation::FakeInvalidationService);
   invalidation_service->SetInvalidatorState(
@@ -364,13 +363,9 @@ AffiliatedInvalidationServiceProviderImplTest::GetProfileInvalidationService(
               ->GetServiceForBrowserContext(profile, create));
   if (!invalidation_provider)
     return nullptr;
-  auto invalidation_service =
-      invalidation_provider->GetInvalidationServiceOrListener(
-          kPolicyFCMInvalidationSenderID, /*project_id=*/"");
-  CHECK(std::holds_alternative<invalidation::InvalidationService*>(
-      invalidation_service));
   return static_cast<invalidation::FakeInvalidationService*>(
-      std::get<invalidation::InvalidationService*>(invalidation_service));
+      invalidation_provider->GetInvalidationServiceForCustomSender(
+          kPolicyFCMInvalidationSenderID));
 }
 
 // No consumers are registered with the
