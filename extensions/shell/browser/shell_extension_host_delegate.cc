@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "extensions/browser/media_capture_util.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/shell/browser/shell_extension_web_contents_observer.h"
 
 namespace extensions {
@@ -32,7 +33,7 @@ ShellExtensionHostDelegate::GetJavaScriptDialogManager() {
 
 void ShellExtensionHostDelegate::CreateTab(
     std::unique_ptr<content::WebContents> web_contents,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture) {

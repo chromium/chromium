@@ -5,6 +5,7 @@
 #include "extensions/renderer/bindings/api_binding_bridge.h"
 
 #include "base/values.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/renderer/bindings/api_binding_hooks.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/js_runner.h"
@@ -30,7 +31,7 @@ gin::WrapperInfo APIBindingBridge::kWrapperInfo = {gin::kEmbedderNativeGin};
 APIBindingBridge::APIBindingBridge(APIBindingHooks* hooks,
                                    v8::Local<v8::Context> context,
                                    v8::Local<v8::Value> api_object,
-                                   const std::string& extension_id,
+                                   const ExtensionId& extension_id,
                                    const std::string& context_type)
     : extension_id_(extension_id), context_type_(context_type) {
   v8::Isolate* isolate = context->GetIsolate();

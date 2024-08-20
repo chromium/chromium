@@ -1053,7 +1053,7 @@ void Dispatcher::UpdateUserScriptWorlds(
 }
 
 void Dispatcher::ClearUserScriptWorldConfig(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::optional<std::string>& world_id) {
   IsolatedWorldManager::GetInstance().ClearUserScriptWorldProperties(
       extension_id, world_id);
