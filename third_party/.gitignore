@@ -58,8 +58,6 @@
 /google-truth/src/
 /googlefonts_testdata/data
 /guava/lib/
-/hamcrest/lib/
-/icu4j/lib/
 /instrumented_libs/
 /jacoco/coverage/
 /jacoco/doc/
