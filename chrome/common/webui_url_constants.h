@@ -284,6 +284,11 @@ inline constexpr char kChromeUIUntrustedImageEditorURL[] =
     "chrome-untrusted://image-editor/";
 inline constexpr char kChromeUIUntrustedPrintURL[] =
     "chrome-untrusted://print/";
+inline constexpr char kChromeUIUntrustedPrivacySandboxDialogURL[] =
+    "chrome-untrusted://privacy-sandbox-dialog/";
+inline constexpr char
+    kChromeUIUntrustedPrivacySandboxDialogPrivacyPolicyPath[] =
+        "privacy-policy";
 inline constexpr char kChromeUIUntrustedThemeURL[] =
     "chrome-untrusted://theme/";
 inline constexpr char kChromeUIUsbInternalsHost[] = "usb-internals";

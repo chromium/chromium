@@ -38,6 +38,21 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
       base::make_span(kPrivacySandboxResources, kPrivacySandboxResourcesSize),
       IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_HTML);
 
+  // Allow the chrome-untrusted://privacy-sandbox-dialog/privacy-policy page to
+  // load as an iframe in the page.
+  std::string frame_src = base::StringPrintf(
+      "frame-src %s 'self';",
+      base::StrCat(
+          {chrome::kChromeUIUntrustedPrivacySandboxDialogURL,
+           chrome::kChromeUIUntrustedPrivacySandboxDialogPrivacyPolicyPath})
+          .c_str());
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc, frame_src);
+
+  // Set up Content Security Policy (CSP) for
+  // chrome-untrusted://privacy-sandbox-dialog/ iframe.
+  web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
+
   source->AddResourcePath(
       chrome::kChromeUIPrivacySandboxDialogCombinedPath,
       IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_COMBINED_DIALOG_HTML);

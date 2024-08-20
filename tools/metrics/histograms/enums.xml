@@ -34448,6 +34448,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="-1911971715" label="chrome://history/"/>
   <int value="-1899361569" label="chrome-untrusted://eche-app/"/>
   <int value="-1887206190" label="chrome://nfc-debug/"/>
+  <int value="-1877210733" label="chrome-untrusted://privacy-sandbox-dialog/"/>
   <int value="-1837941403" label="chrome://launcher-internals/"/>
   <int value="-1825876526" label="chrome://delayeduithreadhang/"/>
   <int value="-1808179141" label="chrome://password-manager-internals/"/>
