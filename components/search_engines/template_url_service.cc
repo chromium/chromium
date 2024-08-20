@@ -53,6 +53,7 @@
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -1463,8 +1464,18 @@ void TemplateURLService::OnWebDataServiceRequestDone(
     if (updated_keywords_metadata.HasBuiltinKeywordData()) {
       web_data_service_->SetBuiltinKeywordDataVersion(
           updated_keywords_metadata.builtin_keyword_data_version);
-      web_data_service_->SetBuiltinKeywordMilestone(
-          updated_keywords_metadata.builtin_keyword_milestone);
+
+      if (base::FeatureList::IsEnabled(
+              switches::kSearchEnginesSortingCleanup)) {
+        // Added 20/08/2024.
+        // This is used for database cleanup.
+        // TODO(b/361013517): Remove the call and cleanup the code in a year.
+        web_data_service_->ClearBuiltinKeywordMilestone();
+      } else {
+        web_data_service_->SetBuiltinKeywordMilestone(
+            updated_keywords_metadata.builtin_keyword_milestone);
+      }
+
       web_data_service_->SetBuiltinKeywordCountry(
           updated_keywords_metadata.builtin_keyword_country);
     }

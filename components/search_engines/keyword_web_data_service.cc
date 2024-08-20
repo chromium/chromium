@@ -11,6 +11,7 @@
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/webdata/common/web_data_results.h"
+#include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_service.h"
 
 namespace {
@@ -62,6 +63,12 @@ WebDatabase::State SetBuiltinKeywordMilestoneImpl(int milestone_version,
                                                   WebDatabase* db) {
   return KeywordTable::FromWebDatabase(db)->SetBuiltinKeywordMilestone(
              milestone_version)
+             ? WebDatabase::COMMIT_NEEDED
+             : WebDatabase::COMMIT_NOT_NEEDED;
+}
+
+WebDatabase::State ClearBuiltinKeywordMilestoneImpl(WebDatabase* db) {
+  return KeywordTable::FromWebDatabase(db)->ClearBuiltinKeywordMilestone()
              ? WebDatabase::COMMIT_NEEDED
              : WebDatabase::COMMIT_NOT_NEEDED;
 }
@@ -171,6 +178,11 @@ void KeywordWebDataService::SetBuiltinKeywordDataVersion(int version) {
 void KeywordWebDataService::SetBuiltinKeywordMilestone(int version) {
   wdbs_->ScheduleDBTask(
       FROM_HERE, base::BindOnce(&SetBuiltinKeywordMilestoneImpl, version));
+}
+
+void KeywordWebDataService::ClearBuiltinKeywordMilestone() {
+  wdbs_->ScheduleDBTask(FROM_HERE,
+                        base::BindOnce(&ClearBuiltinKeywordMilestoneImpl));
 }
 
 void KeywordWebDataService::SetBuiltinKeywordCountry(int version) {

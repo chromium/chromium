@@ -349,6 +349,10 @@ int KeywordTable::GetBuiltinKeywordMilestone() {
                                                                      : 0;
 }
 
+bool KeywordTable::ClearBuiltinKeywordMilestone() {
+  return meta_table_->DeleteKey(kBuiltinKeywordMilestone);
+}
+
 bool KeywordTable::SetBuiltinKeywordCountry(int country_id) {
   return meta_table_->SetValue(kBuiltinKeywordCountry, country_id);
 }
