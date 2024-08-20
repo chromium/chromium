@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {PluginController, SaveRequestType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createMockPdfPluginForTest, finishInkStroke, getRequiredElement} from './test_util.js';
 
@@ -22,6 +22,7 @@ chrome.test.runTests([
   // the download button will save the PDF as original.
   async function testSaveOriginal() {
     viewerToolbar.toggleAnnotation();
+    await microtasksFinished();
     chrome.test.assertTrue(viewerToolbar.annotationMode);
 
     const downloadControls = getDownloadControls();
@@ -53,6 +54,7 @@ chrome.test.runTests([
     chrome.test.assertFalse(actionMenu.open);
 
     finishInkStroke(controller);
+    await microtasksFinished();
     downloadButton.click();
 
     // The download menu should be shown.
@@ -68,6 +70,7 @@ chrome.test.runTests([
     chrome.test.assertTrue(viewerToolbar.annotationMode);
 
     viewerToolbar.toggleAnnotation();
+    await microtasksFinished();
     chrome.test.assertFalse(viewerToolbar.annotationMode);
 
     const downloadControls = getDownloadControls();
@@ -91,6 +94,7 @@ chrome.test.runTests([
     chrome.test.assertFalse(viewerToolbar.annotationMode);
 
     viewerToolbar.toggleAnnotation();
+    await microtasksFinished();
     chrome.test.assertTrue(viewerToolbar.annotationMode);
 
     mockPlugin.clearMessages();
@@ -105,6 +109,7 @@ chrome.test.runTests([
     actionMenu.close();
 
     undoButton.click();
+    await microtasksFinished();
 
     // After undo, there aren't any ink strokes on the PDF, and the button will
     // be disabled.
@@ -136,6 +141,7 @@ chrome.test.runTests([
     const actionMenu = downloadControls.$.menu;
 
     redoButton.click();
+    await microtasksFinished();
     downloadButton.click();
 
     // The download menu should be shown.
@@ -152,6 +158,7 @@ chrome.test.runTests([
 
     // Add another ink stroke. There should now be two ink strokes on the PDF.
     finishInkStroke(controller);
+    await microtasksFinished();
 
     const undoButton =
         getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo');
@@ -160,6 +167,7 @@ chrome.test.runTests([
     // Undo both ink strokes.
     undoButton.click();
     undoButton.click();
+    await microtasksFinished();
 
     // There shouldn't be any ink strokes on the PDF.
     chrome.test.assertTrue(undoButton.disabled);

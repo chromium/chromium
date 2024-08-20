@@ -106,9 +106,11 @@ build_webui("build") {
     "elements/viewer_download_controls.css",
     "elements/viewer_page_selector.css",
     "elements/viewer_password_dialog.css",
+    "elements/viewer_pdf_sidenav.css",
     "elements/viewer_properties_dialog.css",
     "elements/viewer_thumbnail.css",
     "elements/viewer_thumbnail_bar.css",
+    "elements/viewer_toolbar.css",
     "pdf_viewer_shared_style.css",
 
     # Files only used in Print Preview's PDF Viewer UI.
