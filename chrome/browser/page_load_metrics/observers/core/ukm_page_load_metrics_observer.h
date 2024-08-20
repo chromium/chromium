@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
+#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/site_instance_process_assignment.h"
@@ -363,6 +364,12 @@ class UkmPageLoadMetricsObserver
   // navigation, for instance due to a change by the user in settings or the
   // battery being recharged above 20%.
   bool refresh_rate_throttled_ = false;
+
+  // The type of initiator starts the navigation, for more details, please refer
+  // to `page_load_metrics::NavigationHandleUserData::InitiatorLocation`.
+  page_load_metrics::NavigationHandleUserData::InitiatorLocation
+      navigation_trigger_type_ = page_load_metrics::NavigationHandleUserData::
+          InitiatorLocation::kOther;
 
   base::WeakPtrFactory<UkmPageLoadMetricsObserver> weak_factory_{this};
 };
