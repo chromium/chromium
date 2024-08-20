@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_AUTHPOLICY_KERBEROS_FILES_HANDLER_H_
-#define CHROME_BROWSER_ASH_AUTHPOLICY_KERBEROS_FILES_HANDLER_H_
+#ifndef CHROME_BROWSER_ASH_KERBEROS_KERBEROS_FILES_HANDLER_H_
+#define CHROME_BROWSER_ASH_KERBEROS_KERBEROS_FILES_HANDLER_H_
 
 #include <optional>
 #include <string>
@@ -66,4 +66,4 @@ class KerberosFilesHandler {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_AUTHPOLICY_KERBEROS_FILES_HANDLER_H_
+#endif  // CHROME_BROWSER_ASH_KERBEROS_KERBEROS_FILES_HANDLER_H_
