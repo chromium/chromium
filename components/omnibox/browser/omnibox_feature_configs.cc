@@ -147,7 +147,7 @@ ShortcutBoosting::ShortcutBoosting() {
 // static
 BASE_FEATURE(SuggestionAnswerMigration::kOmniboxSuggestionAnswerMigration,
              "OmniboxSuggestionAnswerMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 SuggestionAnswerMigration::SuggestionAnswerMigration() {
   enabled = base::FeatureList::IsEnabled(kOmniboxSuggestionAnswerMigration);
 }
