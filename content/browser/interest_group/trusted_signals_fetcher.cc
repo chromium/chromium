@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <bit>
 #include <map>
 #include <set>
@@ -14,12 +15,14 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -27,6 +30,7 @@
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -307,9 +311,159 @@ void TrustedSignalsFetcher::OnRequestComplete(
     return;
   }
 
-  // TODO(crbug.com/333445540): Parse the response.
-  std::move(callback_).Run(
-      base::unexpected(ErrorInfo("Response parsing not yet implemented")));
+  // TODO(crbug.com/333445540): Add decryption here.
+
+  base::SpanReader reader(base::as_byte_span(*response_body));
+
+  uint8_t compression_scheme_bytes;
+  uint32_t cbor_length;
+  if (!reader.ReadU8BigEndian(compression_scheme_bytes) ||
+      !reader.ReadU32BigEndian(cbor_length)) {
+    std::move(callback_).Run(base::unexpected(CreateError(
+        base::StringPrintf("Response body is shorter than a %s header",
+                           kResponseMediaType.data()))));
+    return;
+  }
+
+  // Only the first to bits are used for compression format in the whole byte.
+  compression_scheme_bytes &= 0x03;
+  if (compression_scheme_bytes == 0x00) {
+    compression_scheme_ =
+        auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone;
+  } else if (compression_scheme_bytes == 0x02) {
+    compression_scheme_ =
+        auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip;
+  } else {
+    std::move(callback_).Run(base::unexpected(CreateError(base::StringPrintf(
+        "Unsupported compression scheme: %u", compression_scheme_bytes))));
+    return;
+  }
+
+  base::span<const uint8_t> remaining_span = reader.remaining_span();
+  if (remaining_span.size() < cbor_length) {
+    std::move(callback_).Run(
+        base::unexpected(CreateError("Length header exceeds body size")));
+    return;
+  }
+
+  base::span<const uint8_t> cbor = remaining_span.subspan(0, cbor_length);
+  data_decoder::DataDecoder::ParseCborIsolated(
+      cbor, base::BindOnce(&TrustedSignalsFetcher::OnCborParsed,
+                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TrustedSignalsFetcher::OnCborParsed(
+    data_decoder::DataDecoder::ValueOrError value_or_error) {
+  std::move(callback_).Run(ParseDataDecoderResult(std::move(value_or_error)));
+}
+
+TrustedSignalsFetcher::SignalsFetchResult
+TrustedSignalsFetcher::ParseDataDecoderResult(
+    data_decoder::DataDecoder::ValueOrError value_or_error) {
+  if (!value_or_error.has_value()) {
+    return base::unexpected(CreateError("Failed to parse response as CBOR"));
+  }
+
+  if (!value_or_error->is_dict()) {
+    // Since the data is CBOR, use CBOR type names in error messages ("map"
+    // instead of JSON "object" or Value "dict").
+    return base::unexpected(CreateError("Response body is not a map"));
+  }
+
+  base::Value::Dict& dict = value_or_error->GetDict();
+
+  // Get compression groups.
+  base::Value::List* compression_groups = dict.FindList("compressionGroups");
+  if (!compression_groups) {
+    return base::unexpected(
+        CreateError("Response is missing compressionGroups array"));
+  }
+
+  CompressionGroupResultMap compression_groups_out;
+  for (auto& compression_group : *compression_groups) {
+    int compression_group_id;
+    auto compression_group_result =
+        ParseCompressionGroup(compression_group, compression_group_id);
+
+    if (!compression_group_result.has_value()) {
+      return base::unexpected(std::move(compression_group_result).error());
+    }
+
+    if (!compression_groups_out
+             .try_emplace(compression_group_id,
+                          std::move(compression_group_result).value())
+             .second) {
+      return base::unexpected(CreateError(base::StringPrintf(
+          "Response contains two compression groups with id %i",
+          compression_group_id)));
+    }
+  }
+
+  return compression_groups_out;
+}
+
+base::expected<TrustedSignalsFetcher::CompressionGroupResult,
+               TrustedSignalsFetcher::ErrorInfo>
+TrustedSignalsFetcher::ParseCompressionGroup(
+    const base::Value& compression_group_value,
+    int& compression_group_id) {
+  if (!compression_group_value.is_dict()) {
+    return base::unexpected(CreateError(
+        base::StringPrintf("Compression group is not of type map")));
+  }
+
+  const base::Value::Dict& compression_group_dict =
+      compression_group_value.GetDict();
+  std::optional<int> compression_group_id_opt =
+      compression_group_dict.FindInt("compressionGroupId");
+  if (!compression_group_id_opt.has_value() || *compression_group_id_opt < 0) {
+    return base::unexpected(CreateError(
+        base::StringPrintf("Compression group must have a non-negative integer "
+                           "compressionGroupId")));
+  }
+
+  const base::Value* ttl_ms_value = compression_group_dict.Find("ttlMs");
+  // Default TTL is 0.
+  base::TimeDelta ttl;
+  if (ttl_ms_value) {
+    if (!ttl_ms_value->is_int()) {
+      return base::unexpected(CreateError(base::StringPrintf(
+          "Compression group %i ttlMs value is not an integer",
+          *compression_group_id_opt)));
+    }
+    // Treat negative values as 0. Using zero is more robust if these values are
+    // ever used to set a timer.
+    ttl = base::Milliseconds(std::max(0, ttl_ms_value->GetInt()));
+  }
+
+  const std::string* content = compression_group_dict.FindString("content");
+  if (!content) {
+    return base::unexpected(CreateError(
+        base::StringPrintf("Compression group %i missing content string",
+                           *compression_group_id_opt)));
+  }
+
+  compression_group_id = *compression_group_id_opt;
+
+  CompressionGroupResult result;
+  result.compression_scheme = compression_scheme_;
+  // TODO(crbug.com/333445540): This copy is unnecessary, since Value::Dict
+  // allows its values to be moved. Instead, make `compression_group_data` a
+  // std::string. Can then either switch the API to using a mojom::BigString and
+  // pass to Mojo as a std::string, and have the other end use BigBuffer
+  // directly (Which is what mojom::BigString is typemapped to), or continue to
+  // use mojom::BigBuffer pass as a span<uint8_t>.
+  result.compression_group_data =
+      std::vector<uint8_t>(content->begin(), content->end());
+  result.ttl = ttl;
+  return result;
+}
+
+TrustedSignalsFetcher::ErrorInfo TrustedSignalsFetcher::CreateError(
+    const std::string& error_message) {
+  return ErrorInfo(base::StringPrintf("Failed to load %s: %s.",
+                                      trusted_signals_url_.spec().c_str(),
+                                      error_message.c_str()));
 }
 
 }  // namespace content

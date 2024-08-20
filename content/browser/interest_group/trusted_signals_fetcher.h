@@ -14,10 +14,12 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "url/gurl.h"
@@ -174,10 +176,37 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
 
   void OnRequestComplete(std::unique_ptr<std::string> response_body);
 
+  void OnCborParsed(data_decoder::DataDecoder::ValueOrError value_or_error);
+
+  // Attempts to parse the base::Value result from having the DataDecoder parse
+  // the CBOR contents of the fetch.
+  SignalsFetchResult ParseDataDecoderResult(
+      data_decoder::DataDecoder::ValueOrError value_or_error);
+
+  // Attempts to parse a single compression group object.
+  // `compression_group_value` should be a value from the `compressionGroups`
+  // array of the parsed CBOR value. On success, returns a
+  // CompressionGroupResult and sets `compression_group_id` to the ID from the
+  // passed in value. On failure, leaves `compression_group_id` alone, and
+  // returns an ErrorInfo.
+  base::expected<CompressionGroupResult, ErrorInfo> ParseCompressionGroup(
+      const base::Value& compression_group_value,
+      int& compression_group_id);
+
+  // Returns an ErrorInfo, prefixing the passed in message with the URL.
+  ErrorInfo CreateError(const std::string& error_message);
+
   // The URL being fetched. Cached for using in error strings.
   GURL trusted_signals_url_;
   Callback callback_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
+
+  // Compression scheme used by all compression groups. Populated when reading
+  // the response.
+  auction_worklet::mojom::TrustedSignalsCompressionScheme compression_scheme_ =
+      auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone;
+
+  base::WeakPtrFactory<TrustedSignalsFetcher> weak_ptr_factory_{this};
 };
 
 }  // namespace content
