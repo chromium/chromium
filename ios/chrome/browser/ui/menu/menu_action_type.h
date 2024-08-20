@@ -66,7 +66,10 @@ enum class MenuActionType {
   OpenLinkInNewGroup = 53,
   ShowDetails = 54,
   ShowFullURL = 55,
-  kMaxValue = ShowFullURL
+  SortDriveItemsByName = 56,
+  SortDriveItemsByModificationTime = 57,
+  SortDriveItemsByOpeningTime = 58,
+  kMaxValue = SortDriveItemsByOpeningTime
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/mobile/enums.xml)
 

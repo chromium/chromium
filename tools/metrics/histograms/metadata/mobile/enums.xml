@@ -221,6 +221,9 @@ chromium-metrics-reviews@google.com.
   <int value="53" label="Open Link In New Group"/>
   <int value="54" label="Show Details"/>
   <int value="55" label="Show Full URL"/>
+  <int value="56" label="Sort Drive Items By Name"/>
+  <int value="57" label="Sort Drive Items By Modification Time"/>
+  <int value="58" label="Sort Drive Items By Opening Time"/>
 </enum>
 
 <enum name="IOSMenuScenario">
@@ -252,6 +255,7 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="Autofill Manual Fallback Payment Entry"/>
   <int value="26" label="Autofill Manual Fallback Address Entry"/>
   <int value="27" label="Tab Groups Panel Entry"/>
+  <int value="28" label="Sort Drive Items Entry"/>
 </enum>
 
 <enum name="IOSShareAction">

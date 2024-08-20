@@ -199,6 +199,17 @@ class TabGroup;
 // details, which will invoke the given `block` when executed.
 - (UIAction*)actionToShowDetailsWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance to sort drive items by name.
+- (UIAction*)actionToSortDriveItemsByNameWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance to sort drive items by modification time.
+- (UIAction*)actionToSortDriveItemsByModificationTimeWithBlock:
+    (ProceduralBlock)block;
+
+// Creates a UIAction instance to sort drive items by opening time.
+- (UIAction*)actionToSortDriveItemsByOpeningTimeWithBlock:
+    (ProceduralBlock)block;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_ACTION_FACTORY_H_

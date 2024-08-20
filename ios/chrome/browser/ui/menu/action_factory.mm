@@ -665,4 +665,31 @@
   }
   return groupsMenu;
 }
+
+- (UIAction*)actionToSortDriveItemsByNameWithBlock:(ProceduralBlock)block {
+  return
+      [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_DRIVE_SORT_BY_NAME)
+                      image:nil
+                       type:MenuActionType::SortDriveItemsByName
+                      block:block];
+}
+
+- (UIAction*)actionToSortDriveItemsByModificationTimeWithBlock:
+    (ProceduralBlock)block {
+  return [self
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_DRIVE_SORT_BY_MODIFICATION)
+                image:nil
+                 type:MenuActionType::SortDriveItemsByModificationTime
+                block:block];
+}
+
+- (UIAction*)actionToSortDriveItemsByOpeningTimeWithBlock:
+    (ProceduralBlock)block {
+  return [self
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_DRIVE_SORT_BY_OPENING)
+                image:nil
+                 type:MenuActionType::SortDriveItemsByOpeningTime
+                block:block];
+}
+
 @end

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -18,12 +19,28 @@
 @implementation DriveFilePickerTableViewController {
   // The status of file dowload.
   DriveFileDownloadStatus _status;
+
+  // The sorting order.
+  DriveItemsSortingOrder _sortingOrder;
+
+  // The sorting type.
+  DriveItemsSortingType _sortingType;
+
+  // The Sorting actions
+  UIAction* _sortByNameAction;
+  UIAction* _sortByModificationTimeAction;
+  UIAction* _sortByOpeningTimeAction;
+
+  // The sort button.
+  UIBarButtonItem* _sortButton;
 }
 
 - (instancetype)init {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _status = DriveFileDownloadStatus::kNotStarted;
+    _sortingOrder = DriveItemsSortingOrder::kDescending;
+    _sortingType = DriveItemsSortingType::kModificationTime;
   }
   return self;
 }
@@ -33,6 +50,7 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  [self configureSortButton];
   [self configureToolbar];
 
   self.navigationItem.rightBarButtonItem = [self configureRightBarButtonItem];
@@ -94,12 +112,13 @@
       kSortSymbol, kSymbolAccessoryPointSize);
 
   // TODO(crbug.com/344812548): Add the action of the sort button.
-  UIBarButtonItem* sortButton =
-      [[UIBarButtonItem alloc] initWithImage:sortIcon
-                                       style:UIBarButtonItemStylePlain
-                                      target:self
-                                      action:nil];
-  sortButton.enabled =
+  _sortButton = [[UIBarButtonItem alloc]
+      initWithImage:sortIcon
+               menu:[UIMenu menuWithChildren:@[
+                 _sortByNameAction, _sortByOpeningTimeAction,
+                 _sortByModificationTimeAction
+               ]]];
+  _sortButton.enabled =
       self != self.navigationController.viewControllers.firstObject;
 
   // TODO(crbug.com/344812548): Add the menu and the title of the account button
@@ -112,7 +131,7 @@
                            target:nil
                            action:nil];
   [self setToolbarItems:@[
-    filterButton, spaceButton, accountButton, spaceButton, sortButton
+    filterButton, spaceButton, accountButton, spaceButton, _sortButton
   ]
                animated:NO];
 }
@@ -154,6 +173,121 @@
       [[UIBarButtonItem alloc] initWithCustomView:activityIndicator];
   activityIndicatorButton.enabled = YES;
   return activityIndicatorButton;
+}
+
+// Configures the sort button by attaching a UIMenu of the actions to it.
+- (void)configureSortButton {
+  ActionFactory* actionFactory = [[ActionFactory alloc]
+      initWithScenario:kMenuScenarioHistogramSortDriveItemsEntry];
+
+  __weak __typeof(self) weakSelf = self;
+  _sortByNameAction = [actionFactory actionToSortDriveItemsByNameWithBlock:^{
+    [weakSelf turnOnSortByName];
+    // TODO(crbug.com/344812548): Add the sorting request.
+  }];
+  _sortByModificationTimeAction =
+      [actionFactory actionToSortDriveItemsByModificationTimeWithBlock:^{
+        [weakSelf turnOnSortByModificationTime];
+        // TODO(crbug.com/344812548): Add the sorting request.
+      }];
+  _sortByModificationTimeAction.state = UIMenuElementStateOn;
+  _sortByModificationTimeAction.image =
+      DefaultSymbolWithPointSize(kChevronDownSymbol, kSymbolAccessoryPointSize);
+  _sortByOpeningTimeAction =
+      [actionFactory actionToSortDriveItemsByOpeningTimeWithBlock:^{
+        [weakSelf turnOnSortByOpeningTime];
+        // TODO(crbug.com/344812548): Add the sorting request.
+      }];
+}
+
+// Turns on the state of `_sortByNameAction` if it was previously off, if not,
+// switches the sorting order.
+- (void)turnOnSortByName {
+  if (_sortingType == DriveItemsSortingType::kName) {
+    [self switchSortingOrderForType:DriveItemsSortingType::kName];
+  } else {
+    [self selectSortingType:DriveItemsSortingType::kName];
+  }
+  _sortButton.menu = [_sortButton.menu menuByReplacingChildren:@[
+    _sortByNameAction, _sortByOpeningTimeAction, _sortByModificationTimeAction
+  ]];
+}
+
+// Turns on the state of `_sortByModificationTimeAction` if it was previously
+// off, if not, switches the sorting order.
+- (void)turnOnSortByModificationTime {
+  if (_sortingType == DriveItemsSortingType::kModificationTime) {
+    [self switchSortingOrderForType:DriveItemsSortingType::kModificationTime];
+  } else {
+    [self selectSortingType:DriveItemsSortingType::kModificationTime];
+  }
+  _sortButton.menu = [_sortButton.menu menuByReplacingChildren:@[
+    _sortByNameAction, _sortByOpeningTimeAction, _sortByModificationTimeAction
+  ]];
+}
+
+// Turns on the state of `_sortByOpeningTimeAction` if it was previously off, if
+// not, switches the sorting order.
+- (void)turnOnSortByOpeningTime {
+  if (_sortingType == DriveItemsSortingType::kOpeningTime) {
+    [self switchSortingOrderForType:DriveItemsSortingType::kOpeningTime];
+  } else {
+    [self selectSortingType:DriveItemsSortingType::kOpeningTime];
+  }
+  _sortButton.menu = [_sortButton.menu menuByReplacingChildren:@[
+    _sortByNameAction, _sortByOpeningTimeAction, _sortByModificationTimeAction
+  ]];
+}
+
+// Switches the recent sorting order and updates the actions icons accordinly.
+- (void)switchSortingOrderForType:(DriveItemsSortingType)sortingType {
+  UIAction* sortingAction = [self actionForSortingType:sortingType];
+  switch (_sortingOrder) {
+    case DriveItemsSortingOrder::kAscending:
+      _sortingOrder = DriveItemsSortingOrder::kDescending;
+      sortingAction.image = DefaultSymbolWithPointSize(
+          kChevronDownSymbol, kSymbolAccessoryPointSize);
+      break;
+    case DriveItemsSortingOrder::kDescending:
+      _sortingOrder = DriveItemsSortingOrder::kAscending;
+      sortingAction.image = DefaultSymbolWithPointSize(
+          kChevronUpSymbol, kSymbolAccessoryPointSize);
+      break;
+  }
+}
+
+// Resets the states and icons of the sorting actions.
+- (void)resetSortingActionsStates {
+  _sortByNameAction.state = UIMenuElementStateOff;
+  _sortByNameAction.image = nil;
+  _sortByOpeningTimeAction.state = UIMenuElementStateOff;
+  _sortByOpeningTimeAction.image = nil;
+  _sortByModificationTimeAction.state = UIMenuElementStateOff;
+  _sortByModificationTimeAction.image = nil;
+}
+
+// Updates the status and icon of the action corresponding to a given sorting
+// type.
+- (void)selectSortingType:(DriveItemsSortingType)sortingType {
+  UIAction* sortingAction = [self actionForSortingType:sortingType];
+  [self resetSortingActionsStates];
+  sortingAction.state = UIMenuElementStateOn;
+  sortingAction.image =
+      DefaultSymbolWithPointSize(kChevronDownSymbol, kSymbolAccessoryPointSize);
+  _sortingType = sortingType;
+  _sortingOrder = DriveItemsSortingOrder::kDescending;
+}
+
+// Returns the action corresponding to a given `sortingType`.
+- (UIAction*)actionForSortingType:(DriveItemsSortingType)sortingType {
+  switch (sortingType) {
+    case DriveItemsSortingType::kName:
+      return _sortByNameAction;
+    case DriveItemsSortingType::kModificationTime:
+      return _sortByModificationTimeAction;
+    case DriveItemsSortingType::kOpeningTime:
+      return _sortByOpeningTimeAction;
+  }
 }
 
 @end

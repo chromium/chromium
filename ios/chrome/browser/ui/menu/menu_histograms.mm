@@ -64,6 +64,8 @@ const char kAutofillManualFallbackAddressEntryActionsHistogram[] =
     "Mobile.ContextMenu.AutofillManualFallbackAddressEntry.Actions";
 const char kTabGroupsPanelEntryActionsHistogram[] =
     "Mobile.ContextMenu.TabGroupsPanelEntry.Actions";
+const char kSortDriveItemsEntryActionsHistogram[] =
+    "Mobile.ContextMenu.SortDriveItemsEntry.Actions";
 // LINT.ThenChange(/tools/metrics/histograms/metadata/mobile/histograms.xml)
 }  // namespace
 
@@ -128,6 +130,8 @@ const char* GetActionsHistogramName(MenuScenarioHistogram scenario) {
       return kAutofillManualFallbackAddressEntryActionsHistogram;
     case kMenuScenarioHistogramTabGroupsPanelEntry:
       return kTabGroupsPanelEntryActionsHistogram;
+    case kMenuScenarioHistogramSortDriveItemsEntry:
+      return kSortDriveItemsEntryActionsHistogram;
     case kMenuScenarioHistogramCount:
       NOTREACHED();
   }
