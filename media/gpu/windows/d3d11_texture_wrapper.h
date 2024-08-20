@@ -20,7 +20,6 @@
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d_com_defs.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/hdr_metadata.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -74,13 +73,7 @@ class MEDIA_GPU_EXPORT Texture2DWrapper {
   // used to refer to it.
   virtual D3D11Status ProcessTexture(
       const gfx::ColorSpace& input_color_space,
-      media::ClientSharedImageOrMailboxHolder& shared_image_dest_out,
-      gfx::ColorSpace* output_color_space) = 0;
-
-  virtual void SetStreamHDRMetadata(
-      const gfx::HDRMetadata& stream_metadata) = 0;
-  virtual void SetDisplayHDRMetadata(
-      const DXGI_HDR_METADATA_HDR10& dxgi_display_metadata) = 0;
+      media::ClientSharedImageOrMailboxHolder& shared_image_dest_out) = 0;
 };
 
 // The default texture wrapper that uses GPUResources to talk to hardware
@@ -119,12 +112,8 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
 
   D3D11Status ProcessTexture(
       const gfx::ColorSpace& input_color_space,
-      ClientSharedImageOrMailboxHolder& shared_image_dest,
-      gfx::ColorSpace* output_color_space) override;
+      ClientSharedImageOrMailboxHolder& shared_image_dest) override;
 
-  void SetStreamHDRMetadata(const gfx::HDRMetadata& stream_metadata) override;
-  void SetDisplayHDRMetadata(
-      const DXGI_HDR_METADATA_HDR10& dxgi_display_metadata) override;
   void OnGPUResourceInitDone(
       scoped_refptr<media::D3D11PictureBuffer> picture_buffer,
       std::unique_ptr<gpu::VideoImageRepresentation> shared_image_rep,

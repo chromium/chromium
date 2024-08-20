@@ -70,10 +70,8 @@ D3D11Status D3D11PictureBuffer::Init(
 
 D3D11Status D3D11PictureBuffer::ProcessTexture(
     const gfx::ColorSpace& input_color_space,
-    ClientSharedImageOrMailboxHolder& shared_image_dest,
-    gfx::ColorSpace* output_color_space) {
-  return texture_wrapper_->ProcessTexture(input_color_space, shared_image_dest,
-                                          output_color_space);
+    ClientSharedImageOrMailboxHolder& shared_image_dest) {
+  return texture_wrapper_->ProcessTexture(input_color_space, shared_image_dest);
 }
 
 ComD3D11Texture2D D3D11PictureBuffer::Texture() const {

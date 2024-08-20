@@ -27,7 +27,6 @@
 #include "media/gpu/ipc/service/media_gpu_channel_manager.h"
 #include "media/gpu/windows/d3d11_video_decoder.h"
 #include "media/gpu/windows/mf_audio_encoder.h"
-#include "ui/gl/direct_composition_support.h"
 
 namespace media {
 
@@ -50,12 +49,6 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
     if (gpu_workarounds_.disable_d3d11_video_decoder) {
       return nullptr;
     }
-    // Report that HDR is enabled if any display has HDR enabled.
-    bool hdr_enabled = false;
-    auto dxgi_info = gl::GetDirectCompositionHDRMonitorDXGIInfo();
-    for (const auto& output_desc : dxgi_info->output_descs) {
-      hdr_enabled |= output_desc->hdr_enabled;
-    }
 
     if (!multithread_protected_ &&
         IsDedicatedMediaServiceThreadEnabled(
@@ -75,8 +68,7 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
     return D3D11VideoDecoder::Create(
         gpu_task_runner_, traits.media_log->Clone(), gpu_preferences_,
         gpu_workarounds_, traits.get_command_buffer_stub_cb,
-        GetD3DDeviceCallback(), traits.get_cached_configs_cb.Run(),
-        hdr_enabled);
+        GetD3DDeviceCallback(), traits.get_cached_configs_cb.Run());
   }
 
   std::unique_ptr<AudioEncoder> CreatePlatformAudioEncoder(

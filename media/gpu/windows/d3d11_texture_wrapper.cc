@@ -109,8 +109,7 @@ D3D11Status DefaultTexture2DWrapper::BeginSharedImageAccess() {
 
 D3D11Status DefaultTexture2DWrapper::ProcessTexture(
     const gfx::ColorSpace& input_color_space,
-    ClientSharedImageOrMailboxHolder& shared_image_dest,
-    gfx::ColorSpace* output_color_space) {
+    ClientSharedImageOrMailboxHolder& shared_image_dest) {
   // If we've received an error, then return it to our caller.  This is probably
   // from some previous operation.
   // TODO(liberato): Return the error.
@@ -120,9 +119,6 @@ D3D11Status DefaultTexture2DWrapper::ProcessTexture(
   }
 
   shared_image_dest = shared_image_;
-
-  // We're just binding, so the output and output color spaces are the same.
-  *output_color_space = input_color_space;
 
   // TODO(hitawala): Possibly optimize this method as input and stored color
   // spaces should be same.
@@ -179,12 +175,6 @@ void DefaultTexture2DWrapper::OnError(D3D11Status status) {
   if (!received_error_)
     received_error_ = status;
 }
-
-void DefaultTexture2DWrapper::SetStreamHDRMetadata(
-    const gfx::HDRMetadata& stream_metadata) {}
-
-void DefaultTexture2DWrapper::SetDisplayHDRMetadata(
-    const DXGI_HDR_METADATA_HDR10& dxgi_display_metadata) {}
 
 void DefaultTexture2DWrapper::OnGPUResourceInitDone(
     scoped_refptr<media::D3D11PictureBuffer> picture_buffer,
