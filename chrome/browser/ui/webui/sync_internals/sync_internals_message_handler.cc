@@ -31,9 +31,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
 
-using syncer::SyncInvalidationsService;
-using syncer::SyncService;
-
 namespace {
 
 // Converts the string at |index| in |list| to an int, defaulting to 0 on error.
@@ -77,9 +74,7 @@ SyncInternalsMessageHandler::SyncInternalsMessageHandler(
     : include_specifics_(GetIncludeSpecificsInitialState()),
       about_sync_data_delegate_(std::move(about_sync_data_delegate)) {}
 
-SyncInternalsMessageHandler::~SyncInternalsMessageHandler() {
-  UnregisterModelNotifications();
-}
+SyncInternalsMessageHandler::~SyncInternalsMessageHandler() = default;
 
 void SyncInternalsMessageHandler::OnJavascriptDisallowed() {
   // Invaliding weak ptrs works well here because the only weak ptr we vend is
@@ -87,7 +82,9 @@ void SyncInternalsMessageHandler::OnJavascriptDisallowed() {
   // javascript side. If javascript is disallowed, we don't care about updating
   // the UI with data, so dropping those callbacks is fine.
   weak_ptr_factory_.InvalidateWeakPtrs();
-  UnregisterModelNotifications();
+  sync_service_observation_.Reset();
+  protocol_event_observation_.Reset();
+  invalidations_observation_.Reset();
 }
 
 void SyncInternalsMessageHandler::RegisterMessages() {
@@ -149,17 +146,20 @@ void SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates(
   CHECK(args.empty());
   AllowJavascript();
 
-  // is_registered_ flag protects us from double-registering.  This could
+  // Checking IsObserving() protects us from double-registering.  This could
   // happen on a page refresh, where the JavaScript gets re-run but the
   // message handler remains unchanged.
-  SyncService* service = GetSyncService();
-  if (service && !is_registered_) {
-    service->AddObserver(this);
-    service->AddProtocolEventObserver(this);
-
-    GetSyncInvalidationsService()->AddListener(this);
-
-    is_registered_ = true;
+  syncer::SyncService* sync_service = GetSyncService();
+  if (sync_service && !sync_service_observation_.IsObserving()) {
+    sync_service_observation_.Observe(sync_service);
+  }
+  if (sync_service && !protocol_event_observation_.IsObserving()) {
+    protocol_event_observation_.Observe(sync_service);
+  }
+  syncer::SyncInvalidationsService* invalidations_service =
+      GetSyncInvalidationsService();
+  if (invalidations_service && !invalidations_observation_.IsObserving()) {
+    invalidations_observation_.Observe(invalidations_service);
   }
 
   SendAboutInfoAndEntityCounts();
@@ -201,7 +201,7 @@ void SyncInternalsMessageHandler::HandleGetAllNodes(
 
   const std::string& callback_id = args[0].GetString();
 
-  SyncService* service = GetSyncService();
+  syncer::SyncService* service = GetSyncService();
   if (service) {
     // This opens up the possibility of non-javascript code calling us
     // asynchronously, and potentially at times we're not allowed to call into
@@ -250,7 +250,7 @@ void SyncInternalsMessageHandler::HandleRequestStart(
     const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
 
-  SyncService* service = GetSyncService();
+  syncer::SyncService* service = GetSyncService();
   if (!service) {
     return;
   }
@@ -270,7 +270,7 @@ void SyncInternalsMessageHandler::HandleRequestStopClearData(
     const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
 
-  SyncService* service = GetSyncService();
+  syncer::SyncService* service = GetSyncService();
   if (!service) {
     return;
   }
@@ -280,7 +280,7 @@ void SyncInternalsMessageHandler::HandleRequestStopClearData(
 
 void SyncInternalsMessageHandler::HandleTriggerRefresh(
     const base::Value::List& args) {
-  SyncService* service = GetSyncService();
+  syncer::SyncService* service = GetSyncService();
   if (!service) {
     return;
   }
@@ -294,7 +294,7 @@ void SyncInternalsMessageHandler::OnReceivedAllNodes(
   ResolveJavascriptCallback(base::Value(callback_id), nodes);
 }
 
-void SyncInternalsMessageHandler::OnStateChanged(SyncService* sync) {
+void SyncInternalsMessageHandler::OnStateChanged(syncer::SyncService* sync) {
   SendAboutInfoAndEntityCounts();
 }
 
@@ -332,7 +332,7 @@ void SyncInternalsMessageHandler::SendAboutInfoAndEntityCounts() {
       chrome::GetChannelName(chrome::WithExtendedStable(true)));
   FireWebUIListener(syncer::sync_ui_util::kOnAboutInfoUpdated, value);
 
-  if (SyncService* service = GetSyncService()) {
+  if (syncer::SyncService* service = GetSyncService()) {
     service->GetEntityCountsForDebugging(
         BindRepeating(&SyncInternalsMessageHandler::OnGotEntityCounts,
                       weak_ptr_factory_.GetWeakPtr()));
@@ -355,30 +355,13 @@ void SyncInternalsMessageHandler::OnGotEntityCounts(
                     event_details);
 }
 
-SyncService* SyncInternalsMessageHandler::GetSyncService() {
+syncer::SyncService* SyncInternalsMessageHandler::GetSyncService() {
   return SyncServiceFactory::GetForProfile(
       Profile::FromWebUI(web_ui())->GetOriginalProfile());
 }
 
-SyncInvalidationsService*
+syncer::SyncInvalidationsService*
 SyncInternalsMessageHandler::GetSyncInvalidationsService() {
   return SyncInvalidationsServiceFactory::GetForProfile(
       Profile::FromWebUI(web_ui())->GetOriginalProfile());
-}
-
-void SyncInternalsMessageHandler::UnregisterModelNotifications() {
-  SyncService* service = GetSyncService();
-  if (!service) {
-    return;
-  }
-
-  // Cannot use ScopedObserver to do all the tracking because most don't follow
-  // AddObserver/RemoveObserver method naming style.
-  if (is_registered_) {
-    service->RemoveObserver(this);
-    service->RemoveProtocolEventObserver(this);
-    GetSyncInvalidationsService()->RemoveListener(this);
-
-    is_registered_ = false;
-  }
 }

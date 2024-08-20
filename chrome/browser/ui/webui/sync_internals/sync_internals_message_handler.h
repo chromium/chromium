@@ -9,15 +9,17 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/scoped_observation_traits.h"
 #include "base/values.h"
 #include "components/sync/engine/events/protocol_event_observer.h"
 #include "components/sync/invalidations/invalidations_listener.h"
+#include "components/sync/invalidations/sync_invalidations_service.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace syncer {
-class SyncService;
-class SyncInvalidationsService;
 struct TypeEntitiesCount;
 }  //  namespace syncer
 
@@ -106,12 +108,13 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
   // Gets the SyncInvalidationsService of the underlying original profile.
   syncer::SyncInvalidationsService* GetSyncInvalidationsService();
 
-  // Unregisters for notifications from all notifications coming from the sync
-  // machinery. Leaves notifications hooked into the UI alone.
-  void UnregisterModelNotifications();
-
-  // A flag used to prevent double-registration with SyncService.
-  bool is_registered_ = false;
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
+  base::ScopedObservation<syncer::SyncService, syncer::ProtocolEventObserver>
+      protocol_event_observation_{this};
+  base::ScopedObservation<syncer::SyncInvalidationsService,
+                          syncer::InvalidationsListener>
+      invalidations_observation_{this};
 
   // Whether specifics should be included when converting protocol events to a
   // human readable format.
@@ -122,5 +125,39 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
 
   base::WeakPtrFactory<SyncInternalsMessageHandler> weak_ptr_factory_{this};
 };
+
+namespace base {
+
+// Required to use base::ScopedObservation with syncer::ProtocolEventObserver,
+// since the methods are not called AddObserver/RemoveObserver.
+template <>
+struct ScopedObservationTraits<syncer::SyncService,
+                               syncer::ProtocolEventObserver> {
+  static void AddObserver(syncer::SyncService* source,
+                          syncer::ProtocolEventObserver* observer) {
+    source->AddProtocolEventObserver(observer);
+  }
+  static void RemoveObserver(syncer::SyncService* source,
+                             syncer::ProtocolEventObserver* observer) {
+    source->RemoveProtocolEventObserver(observer);
+  }
+};
+
+// Required to use base::ScopedObservation with syncer::InvalidationsListener,
+// since the methods are not called AddObserver/RemoveObserver.
+template <>
+struct ScopedObservationTraits<syncer::SyncInvalidationsService,
+                               syncer::InvalidationsListener> {
+  static void AddObserver(syncer::SyncInvalidationsService* source,
+                          syncer::InvalidationsListener* observer) {
+    source->AddListener(observer);
+  }
+  static void RemoveObserver(syncer::SyncInvalidationsService* source,
+                             syncer::InvalidationsListener* observer) {
+    source->RemoveListener(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SYNC_INTERNALS_SYNC_INTERNALS_MESSAGE_HANDLER_H_
