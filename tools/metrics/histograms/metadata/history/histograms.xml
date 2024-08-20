@@ -1823,6 +1823,60 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.DatabaseIterationSkippedEmbeddings"
+    units="rows" expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
+  <summary>
+    Number of database statement iteration rows skipped due to embeddings data
+    load failure. If a row is skipped, only one counter is incremented to
+    reflect the reason; the check order is: passages, embeddings, mismatches.
+    Logged once for each full iteration, which happens when the database is
+    queried; this may include a time range or not, and may exhaust all rows or
+    stop early if a new query is initiated.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.DatabaseIterationSkippedMismatches"
+    units="rows" expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
+  <summary>
+    Number of database statement iteration rows skipped due to embeddings count
+    mismatching passages count. If a row is skipped, only one counter is
+    incremented to reflect the reason; the check order is: passages, embeddings,
+    mismatches. Logged once for each full iteration, which happens when the
+    database is queried; this may include a time range or not, and may exhaust
+    all rows or stop early if a new query is initiated.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.DatabaseIterationSkippedPassages"
+    units="rows" expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
+  <summary>
+    Number of database statement iteration rows skipped due to passages data
+    load failure. If a row is skipped, only one counter is incremented to
+    reflect the reason; the check order is: passages, embeddings, mismatches.
+    Logged once for each full iteration, which happens when the database is
+    queried; this may include a time range or not, and may exhaust all rows or
+    stop early if a new query is initiated.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.DatabaseIterationYielded" units="rows"
+    expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
+  <summary>
+    Number of database statement iteration rows yielded with valid data. Logged
+    once for each full iteration, which happens when the database is queried;
+    this may include a time range or not, and may exhaust all rows or stop early
+    if a new query is initiated.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Embedder.CacheHit" enum="Boolean"
     expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>
