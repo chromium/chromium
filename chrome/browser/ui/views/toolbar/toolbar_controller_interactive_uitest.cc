@@ -78,6 +78,8 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
     element_flex_order_start_ = toolbar_controller_->element_flex_order_start_;
     MaybeAddDummyButtonsToToolbarView();
     overflow_threshold_width_ = GetOverflowThresholdWidthInToolbarContainer();
+    default_browser_width_ = browser()->window()->GetBounds().width();
+    ASSERT_GT(default_browser_width_, overflow_threshold_width_);
   }
 
   void TearDownOnMainThread() override {
@@ -307,8 +309,8 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
                  WaitForHide(kSidePanelElementId));
   }
 
-  auto SetBrowserSuperWide() {
-    return Steps(Do([this]() { SetBrowserWidth(3000); }),
+  auto RestoreBrowserWidth() {
+    return Steps(Do([this]() { SetBrowserWidth(default_browser_width_); }),
                  WaitForHide(kToolbarOverflowButtonElementId));
   }
 
@@ -386,6 +388,8 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
 
   // The minimum width the toolbar view can be without any elements dropped out.
   int overflow_threshold_width_;
+
+  int default_browser_width_;
 };
 
 // TODO(crbug.com/41495158): Flaky on Windows.
@@ -523,10 +527,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, ActivateActionElementFromMenu) {
 
 // TODO(crbug.com/360465388): Lacros failures are because resize doesn't
 // actually stick.
-// TODO(crbug.com/361082412): Linux flakes are due to X11 delayed resize, which
-// causes the window to revert to the first size the test resized it to after
-// the second resize.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ActionItemsOverflowAndReappear \
   DISABLED_ActionItemsOverflowAndReappear
 #else
@@ -542,8 +543,8 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                   AddDummyButtonsToToolbarTillElementOverflows(
                       ChromeActionIds::kActionSidePanelShowBookmarks),
 
-                  // Set browser super wide action item reappears.
-                  SetBrowserSuperWide(),
+                  // Set browser wider; action item reappears.
+                  RestoreBrowserWidth(),
                   WaitForShow(kPinnedToolbarActionsContainerElementId),
                   CheckActionItemOverflowed(
                       ChromeActionIds::kActionSidePanelShowBookmarks, false));
@@ -596,8 +597,8 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
       CheckActionItemOverflowed(ChromeActionIds::kActionSidePanelShowBookmarks,
                                 false),
 
-      // Set browser wide still no overflow.
-      SetBrowserSuperWide(),
+      // Set browser wider; still no overflow.
+      RestoreBrowserWidth(),
       CheckActionItemOverflowed(ChromeActionIds::kActionSidePanelShowBookmarks,
                                 false));
 }
