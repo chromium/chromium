@@ -96,14 +96,6 @@ BASE_FEATURE(kPlusAddressIOSManualFallbackEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_ANDROID)
-// When enabled, loading states during plus address creation on Android are more
-// refined.
-BASE_FEATURE(kPlusAddressLoadingStatesAndroid,
-             "PlusAddressLoadingStatesAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // When enabled, plus address creation is offered on all email fields that are
 // not a username field - even if they are on a login form or a change password
 // form.

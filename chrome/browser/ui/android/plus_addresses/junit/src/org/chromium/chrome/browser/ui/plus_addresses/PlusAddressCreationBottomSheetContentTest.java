@@ -33,9 +33,6 @@ import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowView;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.ui.base.TestActivity;
@@ -344,18 +341,6 @@ public class PlusAddressCreationBottomSheetContentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.PLUS_ADDRESS_LOADING_STATES_ANDROID})
-    public void testOnConfirmButtonClicked_callsDelegateOnConfirmRequested() {
-        Button modalConfirmButton =
-                mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
-        modalConfirmButton.callOnClick();
-
-        verify(mDelegate).onConfirmRequested();
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.PLUS_ADDRESS_LOADING_STATES_ANDROID})
     public void testOnConfirmButtonClicked_setsRefreshIconToDisabledColor() {
         Button modalConfirmButton =
                 mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
@@ -375,7 +360,6 @@ public class PlusAddressCreationBottomSheetContentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.PLUS_ADDRESS_LOADING_STATES_ANDROID})
     public void testOnConfirmButtonClicked_showsLoadingIndicator() throws TimeoutException {
         LoadingView loadingView =
                 mBottomSheetContent
@@ -394,6 +378,7 @@ public class PlusAddressCreationBottomSheetContentTest {
 
         // Show the loading indicator and hide the buttons once we click the confirm button.
         modalConfirmButton.callOnClick();
+        verify(mDelegate).onConfirmRequested();
         Assert.assertEquals(modalConfirmButton.getVisibility(), View.GONE);
         Assert.assertEquals(modalCancelButton.getVisibility(), View.GONE);
         Assert.assertEquals(loadingView.getVisibility(), View.VISIBLE);

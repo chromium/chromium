@@ -342,7 +342,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &permissions::features::kPermissionsPromptSurvey,
     &permissions::features::kPermissionDedicatedCpssSettingAndroid,
     &plus_addresses::features::kPlusAddressesEnabled,
-    &plus_addresses::features::kPlusAddressLoadingStatesAndroid,
     &privacy_sandbox::kFingerprintingProtectionSetting,
     &privacy_sandbox::kFingerprintingProtectionUserBypass,
     &privacy_sandbox::kIpProtectionV1,
