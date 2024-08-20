@@ -35,6 +35,7 @@ source_set("factory") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }
 
