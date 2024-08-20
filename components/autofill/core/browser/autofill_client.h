@@ -379,7 +379,7 @@ class AutofillClient {
       base::span<const SelectOption> datalist) = 0;
 
   // Informs the client that the suggestion UI needs to be kept alive. Call
-  // before |UpdatePopup| to update the open popup in-place.
+  // before `UpdateAutofillSuggestions` to update the open popup in-place.
   virtual void PinAutofillSuggestions() = 0;
 
   // Returns the information of the popup on the screen, if there is one that is
@@ -389,12 +389,13 @@ class AutofillClient {
   // Returns (not elided) suggestions currently held by the UI.
   virtual base::span<const Suggestion> GetAutofillSuggestions() const;
 
-  // Updates the popup contents with the newly given suggestions.
-  // `trigger_source` indicates the reason for updating the popup. (However, the
-  // password manager makes no distinction).
-  virtual void UpdatePopup(const std::vector<Suggestion>& suggestions,
-                           FillingProduct main_filling_product,
-                           AutofillSuggestionTriggerSource trigger_source) = 0;
+  // Updates the shown Autofill suggestions. `trigger_source` indicates the
+  // reason for updating the popup. (However, the password manager makes no
+  // distinction).
+  virtual void UpdateAutofillSuggestions(
+      const std::vector<Suggestion>& suggestions,
+      FillingProduct main_filling_product,
+      AutofillSuggestionTriggerSource trigger_source);
 
   // Hides the Autofill suggestions UI if it is currently showing.
   virtual void HideAutofillSuggestions(SuggestionHidingReason reason) = 0;

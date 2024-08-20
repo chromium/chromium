@@ -236,13 +236,6 @@ void WebViewAutofillClientIOS::PinAutofillSuggestions() {
   NOTIMPLEMENTED();
 }
 
-void WebViewAutofillClientIOS::UpdatePopup(
-    const std::vector<Suggestion>& suggestions,
-    FillingProduct main_filling_product,
-    AutofillSuggestionTriggerSource trigger_source) {
-  NOTIMPLEMENTED();
-}
-
 void WebViewAutofillClientIOS::HideAutofillSuggestions(
     SuggestionHidingReason reason) {
   [bridge_ hideAutofillPopup];

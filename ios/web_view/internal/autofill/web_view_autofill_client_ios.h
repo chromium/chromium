@@ -93,9 +93,6 @@ class WebViewAutofillClientIOS : public AutofillClient {
   void UpdateAutofillDataListValues(
       base::span<const autofill::SelectOption> datalist) override;
   void PinAutofillSuggestions() override;
-  void UpdatePopup(const std::vector<Suggestion>& suggestions,
-                   FillingProduct main_filling_product,
-                   AutofillSuggestionTriggerSource trigger_source) override;
   void HideAutofillSuggestions(SuggestionHidingReason reason) override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;

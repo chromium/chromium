@@ -603,17 +603,17 @@ ChromeAutofillClient::GetPopupScreenLocation() const {
              : std::make_optional<AutofillClient::PopupScreenLocation>();
 }
 
-void ChromeAutofillClient::UpdatePopup(
+void ChromeAutofillClient::UpdateAutofillSuggestions(
     const std::vector<Suggestion>& suggestions,
     FillingProduct main_filling_product,
     AutofillSuggestionTriggerSource trigger_source) {
   if (!suggestion_controller_.get()) {
-    return;  // Update only if there is a popup.
+    return;  // Update only if there is a controller.
   }
 
-  // When a form changes dynamically, |suggestion_controller_| may hold a
+  // When a form changes dynamically, `suggestion_controller_` may hold a
   // delegate of the wrong type, so updating the popup would call into the wrong
-  // delegate. Hence, just close the existing popup (crbug/1113241).
+  // delegate. Hence, just close the existing popup (crbug.com/1113241).
   if (main_filling_product !=
       suggestion_controller_.get()->GetMainFillingProduct()) {
     suggestion_controller_->Hide(SuggestionHidingReason::kStaleData);

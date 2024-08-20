@@ -309,9 +309,10 @@ class TestAutofillClientTemplate : public T {
 
   void PinAutofillSuggestions() override {}
 
-  void UpdatePopup(const std::vector<Suggestion>& suggestions,
-                   FillingProduct main_filling_product,
-                   AutofillSuggestionTriggerSource trigger_source) override {}
+  void UpdateAutofillSuggestions(
+      const std::vector<Suggestion>& suggestions,
+      FillingProduct main_filling_product,
+      AutofillSuggestionTriggerSource trigger_source) override {}
 
   void HideAutofillSuggestions(SuggestionHidingReason reason) override {
     popup_hidden_reason_ = reason;

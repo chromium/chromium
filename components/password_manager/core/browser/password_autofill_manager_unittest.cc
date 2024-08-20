@@ -228,7 +228,7 @@ class MockAutofillClient : public autofill::TestAutofillClient {
               (override));
   MOCK_METHOD(void, PinAutofillSuggestions, (), (override));
   MOCK_METHOD(void,
-              UpdatePopup,
+              UpdateAutofillSuggestions,
               (const std::vector<Suggestion>&,
                FillingProduct,
                autofill::AutofillSuggestionTriggerSource),
@@ -623,9 +623,9 @@ TEST_F(PasswordAutofillManagerTest,
   // Accepting a suggestion should trigger a call to update the popup. The
   // update puts the unlock button into a loading state.
   std::vector<autofill::Suggestion> suggestions;
-  EXPECT_CALL(
-      autofill_client,
-      UpdatePopup(SuggestionVectorIdsAre(
+  EXPECT_CALL(autofill_client,
+              UpdateAutofillSuggestions(
+                  SuggestionVectorIdsAre(
                       autofill::SuggestionType::kPasswordEntry,
                       autofill::SuggestionType::kAllSavedPasswordsEntry,
                       autofill::SuggestionType::kPasswordAccountStorageOptIn),
@@ -658,9 +658,9 @@ TEST_F(PasswordAutofillManagerTest,
   // Accepting a suggestion should trigger a call to update the popup. The
   // update puts the unlock-to-generate button in a loading state.
   std::vector<autofill::Suggestion> suggestions;
-  EXPECT_CALL(
-      autofill_client,
-      UpdatePopup(SuggestionVectorIdsAre(
+  EXPECT_CALL(autofill_client,
+              UpdateAutofillSuggestions(
+                  SuggestionVectorIdsAre(
                       autofill::SuggestionType::kPasswordEntry,
                       autofill::SuggestionType::kAllSavedPasswordsEntry,
                       autofill::SuggestionType::
@@ -715,7 +715,7 @@ TEST_F(PasswordAutofillManagerTest, FailedOptInAndFillUpdatesPopup) {
   // Accepting a suggestion should trigger a call to update the popup.
   // First the popup enters the waiting state. As soon as the waiting state is
   // pending, the next update resets the popup.
-  EXPECT_CALL(autofill_client, UpdatePopup).WillOnce([&] {
+  EXPECT_CALL(autofill_client, UpdateAutofillSuggestions).WillOnce([&] {
     testing::Mock::VerifyAndClear(&autofill_client);
     EXPECT_CALL(client,
                 TriggerReauthForPrimaryAccount(
@@ -725,7 +725,7 @@ TEST_F(PasswordAutofillManagerTest, FailedOptInAndFillUpdatesPopup) {
     EXPECT_CALL(autofill_client, PinAutofillSuggestions);
     EXPECT_CALL(
         autofill_client,
-        UpdatePopup(
+        UpdateAutofillSuggestions(
             SuggestionVectorIdsAre(
                 autofill::SuggestionType::kPasswordEntry,
                 autofill::SuggestionType::kAllSavedPasswordsEntry,
@@ -760,7 +760,7 @@ TEST_F(PasswordAutofillManagerTest, FailedOptInAndGenerateUpdatesPopup) {
   // Accepting a suggestion should trigger a call to update the popup.
   // First the popup enters the waiting state. As soon as the waiting state is
   // pending, the next update resets the popup.
-  EXPECT_CALL(autofill_client, UpdatePopup).WillOnce([&] {
+  EXPECT_CALL(autofill_client, UpdateAutofillSuggestions).WillOnce([&] {
     testing::Mock::VerifyAndClear(&autofill_client);
     EXPECT_CALL(
         client,
@@ -771,7 +771,7 @@ TEST_F(PasswordAutofillManagerTest, FailedOptInAndGenerateUpdatesPopup) {
     EXPECT_CALL(autofill_client, PinAutofillSuggestions);
     EXPECT_CALL(
         autofill_client,
-        UpdatePopup(
+        UpdateAutofillSuggestions(
             SuggestionVectorIdsAre(
                 autofill::SuggestionType::kPasswordEntry,
                 autofill::SuggestionType::kAllSavedPasswordsEntry,
@@ -804,7 +804,7 @@ TEST_F(PasswordAutofillManagerTest, SuccessfullOptInAndFillHidesPopup) {
                                         /*has_re_signin=*/false);
 
   // Accepting a suggestion should trigger a call to update the popup.
-  EXPECT_CALL(autofill_client, UpdatePopup);
+  EXPECT_CALL(autofill_client, UpdateAutofillSuggestions);
   EXPECT_CALL(client,
               TriggerReauthForPrimaryAccount(
                   signin_metrics::ReauthAccessPoint::kAutofillDropdown, _))
@@ -832,7 +832,7 @@ TEST_F(PasswordAutofillManagerTest,
                                         /*has_re_signin=*/false);
 
   // Accepting a suggestion should trigger a call to update the popup.
-  EXPECT_CALL(autofill_client, UpdatePopup);
+  EXPECT_CALL(autofill_client, UpdateAutofillSuggestions);
   EXPECT_CALL(
       client,
       TriggerReauthForPrimaryAccount(
@@ -875,9 +875,9 @@ TEST_F(PasswordAutofillManagerTest, SuccessfullOptInMayShowEmptyState) {
   EXPECT_CALL(
       autofill_client,
       HideAutofillSuggestions(autofill::SuggestionHidingReason::kStaleData));
-  EXPECT_CALL(
-      autofill_client,
-      UpdatePopup(SuggestionVectorIdsAre(
+  EXPECT_CALL(autofill_client,
+              UpdateAutofillSuggestions(
+                  SuggestionVectorIdsAre(
                       autofill::SuggestionType::kPasswordAccountStorageEmpty),
                   FillingProduct::kPassword,
                   autofill::AutofillSuggestionTriggerSource::kPasswordManager));
@@ -913,9 +913,9 @@ TEST_F(PasswordAutofillManagerTest,
   EXPECT_CALL(
       autofill_client,
       HideAutofillSuggestions(autofill::SuggestionHidingReason::kStaleData));
-  EXPECT_CALL(
-      autofill_client,
-      UpdatePopup(SuggestionVectorIdsAre(
+  EXPECT_CALL(autofill_client,
+              UpdateAutofillSuggestions(
+                  SuggestionVectorIdsAre(
                       autofill::SuggestionType::kAccountStoragePasswordEntry,
                       autofill::SuggestionType::kPasswordEntry,
                       autofill::SuggestionType::kSeparator,
@@ -1840,7 +1840,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
 
   EXPECT_CALL(*client.mock_driver(), CanShowAutofillUi)
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(autofill_client, UpdatePopup);
+  EXPECT_CALL(autofill_client, UpdateAutofillSuggestions);
   password_autofill_manager_->DidAcceptSuggestion(suggestion,
                                                   SuggestionPosition{.row = 0});
 }
@@ -2133,7 +2133,7 @@ TEST_F(PasswordAutofillManagerTest,
   // Select a passkey.
   std::vector<autofill::Suggestion> updatedSuggestions;
   WebAuthnCredentialsDelegate::OnPasskeySelectedCallback hide_callback;
-  EXPECT_CALL(autofill_client, UpdatePopup)
+  EXPECT_CALL(autofill_client, UpdateAutofillSuggestions)
       .WillOnce(testing::SaveArg<0>(&updatedSuggestions));
   EXPECT_CALL(*webauthn_credentials_delegate_, SelectPasskey)
       .WillRepeatedly(MoveArg<1>(std::move(&hide_callback)));

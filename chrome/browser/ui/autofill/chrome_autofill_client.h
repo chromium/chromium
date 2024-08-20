@@ -144,9 +144,10 @@ class ChromeAutofillClient : public ContentAutofillClient,
   base::span<const Suggestion> GetAutofillSuggestions() const override;
   void PinAutofillSuggestions() override;
   std::optional<PopupScreenLocation> GetPopupScreenLocation() const override;
-  void UpdatePopup(const std::vector<Suggestion>& suggestions,
-                   FillingProduct main_filling_product,
-                   AutofillSuggestionTriggerSource trigger_source) override;
+  void UpdateAutofillSuggestions(
+      const std::vector<Suggestion>& suggestions,
+      FillingProduct main_filling_product,
+      AutofillSuggestionTriggerSource trigger_source) override;
   void HideAutofillSuggestions(SuggestionHidingReason reason) override;
   void TriggerUserPerceptionOfAutofillSurvey(
       FillingProduct filling_product,

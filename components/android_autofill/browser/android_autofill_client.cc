@@ -200,13 +200,6 @@ void AndroidAutofillClient::PinAutofillSuggestions() {
   NOTIMPLEMENTED();
 }
 
-void AndroidAutofillClient::UpdatePopup(
-    const std::vector<autofill::Suggestion>& suggestions,
-    autofill::FillingProduct main_filling_product,
-    autofill::AutofillSuggestionTriggerSource trigger_source) {
-  NOTIMPLEMENTED();
-}
-
 void AndroidAutofillClient::HideAutofillSuggestions(
     autofill::SuggestionHidingReason reason) {
   // TODO(321950502): Analyze hiding the datalist popup here.

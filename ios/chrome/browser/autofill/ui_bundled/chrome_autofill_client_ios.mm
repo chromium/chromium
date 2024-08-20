@@ -332,13 +332,6 @@ void ChromeAutofillClientIOS::PinAutofillSuggestions() {
   NOTIMPLEMENTED();
 }
 
-void ChromeAutofillClientIOS::UpdatePopup(
-    const std::vector<Suggestion>& suggestions,
-    FillingProduct main_filling_product,
-    AutofillSuggestionTriggerSource trigger_source) {
-  NOTIMPLEMENTED();
-}
-
 void ChromeAutofillClientIOS::HideAutofillSuggestions(
     SuggestionHidingReason reason) {
   [bridge_ hideAutofillPopup];

@@ -170,6 +170,13 @@ base::span<const Suggestion> AutofillClient::GetAutofillSuggestions() const {
   return {};
 }
 
+void AutofillClient::UpdateAutofillSuggestions(
+    const std::vector<Suggestion>& suggestions,
+    FillingProduct main_filling_product,
+    AutofillSuggestionTriggerSource trigger_source) {
+  NOTIMPLEMENTED();
+}
+
 void AutofillClient::set_test_addresses(
     std::vector<AutofillProfile> test_addresses) {}
 

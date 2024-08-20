@@ -112,10 +112,6 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   void UpdateAutofillDataListValues(
       base::span<const autofill::SelectOption> datalist) override;
   void PinAutofillSuggestions() override;
-  void UpdatePopup(
-      const std::vector<autofill::Suggestion>& suggestions,
-      autofill::FillingProduct main_filling_product,
-      autofill::AutofillSuggestionTriggerSource trigger_source) override;
   void HideAutofillSuggestions(
       autofill::SuggestionHidingReason reason) override;
   bool IsAutocompleteEnabled() const override;
