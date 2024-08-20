@@ -22,6 +22,7 @@ static_library("on_task") {
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/webui/boca_ui",
     "//base",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/profiles:profile",
@@ -58,5 +59,20 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash:test_support",
     "//chrome/test:test_support",
     "//content/test:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "on_task_system_web_app_manager_impl_browsertest.cc" ]
+
+  deps = [
+    ":on_task",
+    "//base/test:test_support",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/test:test_support",
   ]
 }
