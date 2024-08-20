@@ -10672,19 +10672,6 @@
     "HandleLocalNetworkPermission": [
         {
             "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseNetworkFrameworkForLocalDiscovery"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
                 "chromeos",
                 "linux",
                 "mac",
@@ -10694,7 +10681,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ShowCastPermissionRejectedError"
+                        "ShowCastPermissionRejectedError",
+                        "UseNetworkFrameworkForLocalDiscovery"
                     ]
                 }
             ]
