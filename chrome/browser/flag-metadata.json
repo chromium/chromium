@@ -7213,11 +7213,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "policy-on-signin",
-    "owners": [ "mthiesse@chromium.org", "chrome-signin-android-reviews@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "power-bookmark-backend",
     "owners": [ "wylieb@chromium.org", "skym@chromium.org" ],
     "expiry_milestone": 125
