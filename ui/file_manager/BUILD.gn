@@ -185,7 +185,8 @@ webui_ts_library("build_ts") {
   ]
 
   in_files = static_js_files + generated_js_files + ts_files + ts_polymer +
-             ts_generated_templates + image_loader_ts
+             ts_generated_templates +
+             filter_exclude(image_loader_ts, [ "image_loader/background.ts" ])
 
   definitions = other_dts_files
   foreach(_file, generate_definitions_js_files) {
