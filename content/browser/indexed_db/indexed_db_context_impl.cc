@@ -273,14 +273,13 @@ void IndexedDBContextImpl::BindControl(
 
 void IndexedDBContextImpl::BindIndexedDB(
     const BucketLocator& bucket_locator,
+    const storage::BucketClientInfo& client_info,
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
-    const base::UnguessableToken& client_token,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
-  auto on_got_bucket = base::BindOnce(&IndexedDBContextImpl::BindIndexedDBImpl,
-                                      weak_factory_.GetWeakPtr(),
-                                      std::move(client_state_checker_remote),
-                                      client_token, std::move(receiver));
+  auto on_got_bucket = base::BindOnce(
+      &IndexedDBContextImpl::BindIndexedDBImpl, weak_factory_.GetWeakPtr(),
+      client_info, std::move(client_state_checker_remote), std::move(receiver));
 
   if (bucket_locator.is_default) {
     // If it's for a default bucket, `bucket_locator` will be a placeholder
@@ -296,9 +295,9 @@ void IndexedDBContextImpl::BindIndexedDB(
 }
 
 void IndexedDBContextImpl::BindIndexedDBImpl(
+    const storage::BucketClientInfo& client_info,
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
-    const base::UnguessableToken& client_token,
     mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver,
     storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
   std::optional<storage::BucketInfo> bucket;
@@ -310,7 +309,7 @@ void IndexedDBContextImpl::BindIndexedDBImpl(
     auto iter = bucket_contexts_.find(bucket->id);
     CHECK(iter != bucket_contexts_.end(), base::NotFatalUntil::M130);
     iter->second.AsyncCall(&IndexedDBBucketContext::AddReceiver)
-        .WithArgs(std::move(client_state_checker_remote), client_token,
+        .WithArgs(client_info, std::move(client_state_checker_remote),
                   std::move(pending_receiver));
   } else {
     mojo::MakeSelfOwnedReceiver(std::make_unique<MissingBucketErrorEndpoint>(),
@@ -395,20 +394,6 @@ void IndexedDBContextImpl::StopMetadataRecording(
         .Then(std::move(callback));
   } else {
     std::move(callback).Run({});
-  }
-}
-
-void IndexedDBContextImpl::GetDevToolsTokenForClient(
-    storage::BucketId bucket_id,
-    const base::UnguessableToken& client_token,
-    GetDevToolsTokenForClientCallback callback) {
-  auto iter = bucket_contexts_.find(bucket_id);
-  if (iter != bucket_contexts_.end()) {
-    iter->second.AsyncCall(&IndexedDBBucketContext::GetDevToolsTokenForClient)
-        .WithArgs(client_token,
-                  base::BindPostTask(idb_task_runner_, std::move(callback)));
-  } else {
-    std::move(callback).Run(std::nullopt);
   }
 }
 

@@ -5,9 +5,8 @@
 #ifndef CONTENT_BROWSER_BUCKETS_BUCKET_CONTEXT_H_
 #define CONTENT_BROWSER_BUCKETS_BUCKET_CONTEXT_H_
 
-#include "base/unguessable_token.h"
+#include "components/services/storage/privileged/cpp/bucket_client_info.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-forward.h"
@@ -51,18 +50,8 @@ class CONTENT_EXPORT BucketContext {
       blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
           callback) = 0;
 
-  // Returns the ID of the `RenderFrameHost` "associated" with this context,
-  // which is:
-  // - `this` for `RenderFrameHost`s themselves
-  // - The owning `RenderFrameHost` for dedicated workers, and
-  // - Null for shared workers and service workers.
-  virtual GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const = 0;
-
-  // Returns the DevTools token for this context whose string representation can
-  // be passed to `DevToolsAgentHostImpl::GetForId()`.
-  // NOTE: This token is ONLY intended to be used for interacting with the
-  // DevTools subsystem. DO NOT use it for anything else.
-  virtual base::UnguessableToken GetDevToolsToken() const = 0;
+  // Returns the `BucketClientInfo` for this context.
+  virtual storage::BucketClientInfo GetBucketClientInfo() const = 0;
 };
 
 }  // namespace content

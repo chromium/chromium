@@ -672,23 +672,6 @@ IndexedDBBucketContext::StopMetadataRecording() {
   return std::move(metadata_recording_buffer_);
 }
 
-void IndexedDBBucketContext::GetDevToolsTokenForClient(
-    base::UnguessableToken client_token,
-    OptionalTokenCallback callback) {
-  for (const auto& [receiver_id, context] : receivers_.GetAllContexts()) {
-    if (context->client_token == client_token) {
-      context->client_state_checker_remote->GetDevToolsToken(base::BindOnce(
-          [](OptionalTokenCallback callback,
-             const base::UnguessableToken& token) {
-            std::move(callback).Run(token);
-          },
-          std::move(callback)));
-      return;
-    }
-  }
-  std::move(callback).Run(std::nullopt);
-}
-
 int64_t IndexedDBBucketContext::GetInMemorySize() {
   return backing_store_ ? backing_store_->GetInMemorySize() : 0;
 }
@@ -882,9 +865,9 @@ void IndexedDBBucketContext::RunTasks() {
 }
 
 void IndexedDBBucketContext::AddReceiver(
+    const storage::BucketClientInfo& client_info,
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
-    base::UnguessableToken client_token,
     mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver) {
   // When `on_ready_for_destruction` is non-null, `this` hasn't requested its
   // own destruction. When it is null, this is to be torn down and has to bounce
@@ -892,10 +875,10 @@ void IndexedDBBucketContext::AddReceiver(
   if (delegate().on_ready_for_destruction) {
     receivers_.Add(
         this, std::move(pending_receiver),
-        ReceiverContext(std::move(client_state_checker_remote), client_token));
+        ReceiverContext(client_info, std::move(client_state_checker_remote)));
   } else {
-    delegate().on_receiver_bounced.Run(std::move(client_state_checker_remote),
-                                       client_token,
+    delegate().on_receiver_bounced.Run(client_info,
+                                       std::move(client_state_checker_remote),
                                        std::move(pending_receiver));
   }
 }
@@ -962,7 +945,11 @@ void IndexedDBBucketContext::Open(
   connection->was_cold_open = was_cold_open;
   connection->data_loss_info = data_loss_info;
   ReceiverContext& client = receivers_.current_context();
-  connection->client_token = client.client_token;
+  // `IndexedDBConnection` only needs an opaque token to uniquely identify the
+  // document or worker that owns the other side of the connection.
+  connection->client_token = client.client_info.document_token
+                                 ? client.client_info.document_token->value()
+                                 : client.client_info.context_token.value();
   // Null in unit tests.
   if (client.client_state_checker_remote) {
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
@@ -1087,6 +1074,9 @@ storage::mojom::IdbBucketMetadataPtr IndexedDBBucketContext::FillInMetadata(
     database_list.push_back(db->GetIdbInternalsMetadata());
   }
   info->databases = std::move(database_list);
+  for (const auto& [_, context] : receivers_.GetAllContexts()) {
+    info->clients.push_back(context->client_info);
+  }
   return info;
 }
 
@@ -1774,11 +1764,11 @@ void IndexedDBBucketContext::RecordInternalsSnapshot() {
 }
 
 IndexedDBBucketContext::ReceiverContext::ReceiverContext(
+    const storage::BucketClientInfo& client_info,
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        client_state_checker,
-    base::UnguessableToken client_token)
-    : client_state_checker_remote(std::move(client_state_checker)),
-      client_token(client_token) {}
+        client_state_checker_remote)
+    : client_info(client_info),
+      client_state_checker_remote(std::move(client_state_checker_remote)) {}
 
 IndexedDBBucketContext::ReceiverContext::ReceiverContext(
     IndexedDBBucketContext::ReceiverContext&&) noexcept = default;

@@ -17135,13 +17135,9 @@ void RenderFrameHostImpl::GetSandboxedFileSystemForBucket(
       bucket.ToBucketLocator(), directory_path_components, std::move(callback));
 }
 
-GlobalRenderFrameHostId RenderFrameHostImpl::GetAssociatedRenderFrameHostId()
-    const {
-  return GetGlobalId();
-}
-
-base::UnguessableToken RenderFrameHostImpl::GetDevToolsToken() const {
-  return devtools_frame_token();
+storage::BucketClientInfo RenderFrameHostImpl::GetBucketClientInfo() const {
+  return storage::BucketClientInfo{GetProcess()->GetID(), GetFrameToken(),
+                                   GetDocumentToken()};
 }
 
 std::ostream& operator<<(std::ostream& o,

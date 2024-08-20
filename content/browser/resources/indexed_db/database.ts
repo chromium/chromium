@@ -6,15 +6,17 @@ import './transaction_table.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import type {BucketId} from './bucket_id.mojom-webui.js';
+import type {BucketClientInfo} from './bucket_client_info.mojom-webui.js';
 import {getTemplate} from './database.html.js';
 import {IdbInternalsHandler} from './indexed_db_internals.mojom-webui.js';
 import type {IdbDatabaseMetadata, IdbTransactionMetadata} from './indexed_db_internals_types.mojom-webui.js';
+import type {ExecutionContextToken} from './tokens.mojom-webui.js';
 import type {IndexedDbTransactionTable} from './transaction_table.js';
 
 export class IndexedDbDatabase extends CustomElement {
-  idbBucketId: BucketId;
+  clients: BucketClientInfo[];
 
   static override get template() {
     return getTemplate();
@@ -83,8 +85,14 @@ export class IndexedDbDatabase extends CustomElement {
     clientMetadata.querySelector('.client-id')!.textContent = clientToken;
     clientMetadata.querySelector('.control.inspect')!.addEventListener(
         'click', () => {
+          // If there are non-zero clients, inspecting any of them should have
+          // the same effect.
+          const client = this.getClientsMatchingToken(clientToken).pop();
+          if (!client) {
+            return;
+          }
           IdbInternalsHandler.getRemote()
-              .inspectClient(this.idbBucketId, clientToken)
+              .inspectClient(client)
               .then(message => {
                 if (message.error) {
                   console.error(message.error);
@@ -100,6 +108,46 @@ export class IndexedDbDatabase extends CustomElement {
     container.appendChild(clientMetadata);
     container.appendChild(transactionTable);
     return container;
+  }
+
+  // Returns the list of clients whose `documentToken` or `contextToken` matches
+  // the supplied `token`.
+  private getClientsMatchingToken(token: string): BucketClientInfo[] {
+    const matchedClients: BucketClientInfo[] = [];
+    for (const client of this.clients) {
+      const tokenValue = client.documentToken ?
+          client.documentToken.value :
+          this.getExecutionContextTokenValue(client.contextToken);
+      if (tokenValue && this.tokenToHexString(tokenValue) === token) {
+        matchedClients.push(client);
+      }
+    }
+    return matchedClients;
+  }
+
+  private getExecutionContextTokenValue(token: ExecutionContextToken):
+      UnguessableToken {
+    if (token.localFrameToken) {
+      return token.localFrameToken.value;
+    }
+    if (token.dedicatedWorkerToken) {
+      return token.dedicatedWorkerToken.value;
+    }
+    if (token.serviceWorkerToken) {
+      return token.serviceWorkerToken.value;
+    }
+    if (token.sharedWorkerToken) {
+      return token.sharedWorkerToken.value;
+    }
+    throw new Error('Unrecognized ExecutionContextToken');
+  }
+
+  // This is the equivalent of `base::UnguessableToken::ToString()`.
+  private tokenToHexString(token: UnguessableToken) {
+    // Return the concatenation of the upper-case hexadecimal representations
+    // of high and low, both padded to be 16 characters long.
+    return token.high.toString(16).padStart(16, '0').toUpperCase() +
+        token.low.toString(16).padStart(16, '0').toUpperCase();
   }
 }
 

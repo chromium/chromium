@@ -197,7 +197,7 @@ SharedWorkerHost::~SharedWorkerHost() {
   service_->NotifyBeforeWorkerDestroyed(token_);
 }
 
-RenderProcessHost* SharedWorkerHost::GetProcessHost() {
+RenderProcessHost* SharedWorkerHost::GetProcessHost() const {
   DCHECK(site_instance_->HasProcess());
   return site_instance_->GetProcess();
 }
@@ -475,10 +475,8 @@ void SharedWorkerHost::GetSandboxedFileSystemForBucket(
       bucket.ToBucketLocator(), directory_path_components, std::move(callback));
 }
 
-GlobalRenderFrameHostId SharedWorkerHost::GetAssociatedRenderFrameHostId()
-    const {
-  // For shared workers, there is no associated `RenderFrameHost`.
-  return GlobalRenderFrameHostId();
+storage::BucketClientInfo SharedWorkerHost::GetBucketClientInfo() const {
+  return storage::BucketClientInfo{GetProcessHost()->GetID(), token()};
 }
 
 void SharedWorkerHost::AllowFileSystem(
@@ -855,7 +853,7 @@ bool SharedWorkerHost::HasClients() const {
   return !clients_.empty();
 }
 
-base::UnguessableToken SharedWorkerHost::GetDevToolsToken() const {
+const base::UnguessableToken& SharedWorkerHost::GetDevToolsToken() const {
   return devtools_handle_->dev_tools_token();
 }
 

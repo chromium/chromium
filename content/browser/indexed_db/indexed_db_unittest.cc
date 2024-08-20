@@ -46,9 +46,9 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
+#include "components/services/storage/privileged/cpp/bucket_client_info.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -417,8 +417,8 @@ class IndexedDBTest
           checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
       storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
-    context()->BindIndexedDBImpl(std::move(checker_remote),
-                                 base::UnguessableToken(), std::move(receiver),
+    context()->BindIndexedDBImpl(storage::BucketClientInfo{},
+                                 std::move(checker_remote), std::move(receiver),
                                  bucket_info);
   }
 
@@ -1688,7 +1688,7 @@ TEST_P(IndexedDBTest, CloseWithReceiversActive) {
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
       checker_remote;
   bucket_context_handle->AddReceiver(
-      std::move(checker_remote), /*client_token=*/{},
+      storage::BucketClientInfo{}, std::move(checker_remote),
       factory_remote.BindNewPipeAndPassReceiver());
 
   // The bucket context and the backing store should exist.
@@ -1724,7 +1724,7 @@ TEST_P(IndexedDBTest, CloseWithReceiversInactive) {
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
       checker_remote;
   bucket_context_handle->AddReceiver(
-      std::move(checker_remote), /*client_token=*/{},
+      storage::BucketClientInfo{}, std::move(checker_remote),
       factory_remote.BindNewPipeAndPassReceiver());
 
   // The bucket context and the backing store should exist.

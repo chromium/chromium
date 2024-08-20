@@ -170,16 +170,16 @@ void BucketHost::GetIdbFactory(
     return;
   }
 
-  auto [state_checker, token] =
-      IndexedDBClientStateCheckerFactory::InitializePendingRemote(
-          *bucket_context);
+  storage::BucketClientInfo client_info = bucket_context->GetBucketClientInfo();
+  auto state_checker =
+      IndexedDBClientStateCheckerFactory::InitializePendingRemote(client_info);
   if (!state_checker) {
     // The client is not in a valid state to use IndexedDB.
     return;
   }
 
   bucket_manager_host_->GetStoragePartition()->BindIndexedDB(
-      bucket_info_.ToBucketLocator(), std::move(state_checker), token,
+      bucket_info_.ToBucketLocator(), client_info, std::move(state_checker),
       std::move(receiver));
 }
 

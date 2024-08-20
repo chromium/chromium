@@ -4,6 +4,7 @@
 
 module storage.mojom;
 
+import "components/services/storage/privileged/mojom/bucket_client_info.mojom";
 import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
@@ -34,6 +35,7 @@ struct IdbBucketMetadata {
   array<mojo_base.mojom.FilePath> paths;
   uint64 connection_count;
   array<IdbDatabaseMetadata> databases;
+  array<BucketClientInfo> clients;
   // For snapshot recorings, stores the number of milliseconds since the
   // recording was started.
   uint64 delta_recording_start_ms;

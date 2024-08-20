@@ -339,7 +339,7 @@ class FileSystemAccessObserverObservationTest
     RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
 
     auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-        kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+        kTestStorageKey, kTestURL, rfh->GetGlobalId());
 
     manager_->watcher_manager().BindObserverHost(bf_cache_context,
                                                  std::move(host_receiver));

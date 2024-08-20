@@ -4,6 +4,7 @@
 
 module storage.mojom;
 
+import "components/services/storage/privileged/mojom/bucket_client_info.mojom";
 import "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom";
 import "components/services/storage/privileged/mojom/indexed_db_control_test.mojom";
 import "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom";
@@ -13,7 +14,6 @@ import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "components/services/storage/public/mojom/storage_usage_info.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
-import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "third_party/blink/public/mojom/indexeddb/indexeddb.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
@@ -56,9 +56,9 @@ interface IndexedDBControl {
   // the default bucket, its ID may be invalid.
   BindIndexedDB(
       storage.mojom.BucketLocator bucket_locator,
+      storage.mojom.BucketClientInfo client_info,
       pending_remote<storage.mojom.IndexedDBClientStateChecker>
           client_state_checker_remote,
-      mojo_base.mojom.UnguessableToken client_token,
       pending_receiver<blink.mojom.IDBFactory> receiver);
 
   // Forcibly closes all connections to all databases within the bucket.
@@ -87,18 +87,6 @@ interface IndexedDBControl {
   // each snapshot taken during the recording session.
   StopMetadataRecording(storage.mojom.BucketId bucket_id)
       => (array<IdbBucketMetadata> metadata);
-
-  // Retrieves the DevTools token for a client represented by `client_token`
-  // that has bound an `IDBFactory` on `bucket_id` through an earlier call to
-  // `BindIndexedDB()`. The token is retrieved from the
-  // `IndexedDBClientStateChecker` that was passed in said call. The token will
-  // not be present if the client is no longer alive or has disconnected from
-  // the bucket. Refer to the code comments on
-  // `IndexedDBClientStateChecker::GetDevToolsToken()` for potential uses of
-  // this token.
-  GetDevToolsTokenForClient(storage.mojom.BucketId bucket_id,
-                            mojo_base.mojom.UnguessableToken client_token)
-      => (mojo_base.mojom.UnguessableToken? dev_tools_token);
 
   // Disables the exit-time deletion of session-only data, so that internal
   // restarts can preserve that data.

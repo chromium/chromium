@@ -8,34 +8,30 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/unguessable_token.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace content {
+namespace storage {
+struct BucketClientInfo;
+}
 
-class BucketContext;
+namespace content {
 
 class CONTENT_EXPORT IndexedDBClientStateCheckerFactory {
  public:
   IndexedDBClientStateCheckerFactory() = delete;
   ~IndexedDBClientStateCheckerFactory() = delete;
 
-  // Factory method that creates and returns a client state checker and a token
-  // that serves as a unique identifier for the `RenderFrameHost` associated
-  // with `bucket_context`. Callers must check the validity of the returned
-  // `PendingRemote` before consuming it since it will be bound only if
-  // `bucket_context` is in a valid state. This method is called on the browser
-  // UI thread and the objects it returns are suitable for use from other
-  // (privileged) threads or processes.
-  // TODO (crbug.com/349019967): Return a strongly-typed token from Blink's
-  // tokens.h here instead of a custom, generated token.
-  static std::tuple<
-      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>,
-      base::UnguessableToken>
-  InitializePendingRemote(BucketContext& bucket_context);
+  // Factory method that creates and returns a client state checker for the
+  // client represented by `client_info`. Callers must check the validity of the
+  // returned `PendingRemote` before consuming it since it will be bound only if
+  // the client is in a valid state.
+  // This method is called on the browser UI thread and the object it returns is
+  // suitable for use from other (privileged) threads or processes.
+  static mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+  InitializePendingRemote(const storage::BucketClientInfo& client_info);
 
   // Factory method that returns the pointer to the implementation of
   // `storage::mojom::IndexedDBClientStateChecker`. `rfh_id` should be a valid

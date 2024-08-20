@@ -40,6 +40,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/attribution_reporting/features.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/services/storage/privileged/cpp/bucket_client_info.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/constants.h"
@@ -3201,12 +3202,12 @@ StoragePartitionImpl::GetStorageServiceForTesting() {
 
 void StoragePartitionImpl::BindIndexedDB(
     const storage::BucketLocator& bucket_locator,
+    const storage::BucketClientInfo& client_info,
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
-    const base::UnguessableToken& client_token,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   indexed_db_control_wrapper_->BindIndexedDB(
-      bucket_locator, std::move(client_state_checker_remote), client_token,
+      bucket_locator, client_info, std::move(client_state_checker_remote),
       std::move(receiver));
 }
 

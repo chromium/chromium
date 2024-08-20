@@ -807,7 +807,7 @@ void DedicatedWorkerHost::GetFileSystemAccessManager(
           // URL for workers instead of the origin as source url.
           // This URL will be used for SafeBrowsing checks and for
           // the Quarantine Service.
-          GetStorageKey().origin().GetURL(), GetAssociatedRenderFrameHostId(),
+          GetStorageKey().origin().GetURL(), GetAncestorRenderFrameHostId(),
           /*is_worker=*/true),
       std::move(receiver));
 }
@@ -1094,17 +1094,13 @@ void DedicatedWorkerHost::GetSandboxedFileSystemForBucket(
       bucket.ToBucketLocator(), directory_path_components, std::move(callback));
 }
 
-GlobalRenderFrameHostId DedicatedWorkerHost::GetAssociatedRenderFrameHostId()
-    const {
-  return GetAncestorRenderFrameHostId();
-}
-
-base::UnguessableToken DedicatedWorkerHost::GetDevToolsToken() const {
-  // This method is expected to be called only when PlzDedicatedWorker is
-  // enabled. See code comments on `WorkerDevToolsManager`.
-  CHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
-  return DedicatedWorkerDevToolsAgentHost::GetFor(this)
-      ->devtools_worker_token();
+storage::BucketClientInfo DedicatedWorkerHost::GetBucketClientInfo() const {
+  const auto* ancestor_rfh =
+      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
+  return storage::BucketClientInfo{
+      worker_process_host_->GetID(), GetToken(),
+      ancestor_rfh ? std::optional(ancestor_rfh->GetDocumentToken())
+                   : std::nullopt};
 }
 
 blink::scheduler::WebSchedulerTrackedFeatures

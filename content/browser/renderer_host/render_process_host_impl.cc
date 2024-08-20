@@ -1870,17 +1870,17 @@ void RenderProcessHostImpl::BindIndexedDB(
     return;
   }
 
-  auto [state_checker, token] =
-      IndexedDBClientStateCheckerFactory::InitializePendingRemote(
-          bucket_context);
+  storage::BucketClientInfo client_info = bucket_context.GetBucketClientInfo();
+  auto state_checker =
+      IndexedDBClientStateCheckerFactory::InitializePendingRemote(client_info);
   if (!state_checker) {
     // The client is not in a valid state to use IndexedDB.
     return;
   }
 
   storage_partition_impl_->BindIndexedDB(
-      storage::BucketLocator::ForDefaultBucket(storage_key),
-      std::move(state_checker), token, std::move(receiver));
+      storage::BucketLocator::ForDefaultBucket(storage_key), client_info,
+      std::move(state_checker), std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindBucketManagerHost(

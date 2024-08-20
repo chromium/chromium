@@ -24,6 +24,7 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
+#include "components/services/storage/privileged/cpp/bucket_client_info.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom.h"
@@ -146,9 +147,9 @@ class CONTENT_EXPORT IndexedDBBucketContext
     // call: specifically, if destruction has already been initiated by calling
     // `on_ready_for_destruction`.
     base::RepeatingCallback<void(
+        const storage::BucketClientInfo& /*client_info*/,
         mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         /*client_state_checker_remote*/,
-        const base::UnguessableToken& /*client_token*/,
         mojo::PendingReceiver<blink::mojom::IDBFactory> /*pending_receiver*/)>
         on_receiver_bounced;
 
@@ -205,11 +206,6 @@ class CONTENT_EXPORT IndexedDBBucketContext
   // returned the next time `StopMetadataRecording()` is invoked.
   void StartMetadataRecording();
   std::vector<storage::mojom::IdbBucketMetadataPtr> StopMetadataRecording();
-
-  using OptionalTokenCallback =
-      base::OnceCallback<void(const std::optional<base::UnguessableToken>&)>;
-  void GetDevToolsTokenForClient(base::UnguessableToken client_token,
-                                 OptionalTokenCallback callback);
 
   int64_t GetInMemorySize();
 
@@ -293,9 +289,9 @@ class CONTENT_EXPORT IndexedDBBucketContext
   }
 
   void AddReceiver(
+      const storage::BucketClientInfo& client_info,
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker_remote,
-      base::UnguessableToken client_token,
       mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver);
 
   // blink::mojom::IDBFactory implementation:
@@ -369,9 +365,9 @@ class CONTENT_EXPORT IndexedDBBucketContext
   // be stored together with the receiver in the `mojo::ReceiverSet`.
   struct ReceiverContext {
     ReceiverContext(
+        const storage::BucketClientInfo& client_info,
         mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-            client_state_checker_remote,
-        base::UnguessableToken token);
+            client_state_checker_remote);
 
     ~ReceiverContext();
 
@@ -380,10 +376,9 @@ class CONTENT_EXPORT IndexedDBBucketContext
     ReceiverContext& operator=(const ReceiverContext&) = delete;
     ReceiverContext& operator=(ReceiverContext&&) = delete;
 
+    const storage::BucketClientInfo client_info;
     mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote;
-
-    base::UnguessableToken client_token;
   };
 
   // Used to synchronize the global throttling of LevelDB cleanup operations.
