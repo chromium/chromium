@@ -16,13 +16,11 @@ namespace extensions {
 
 // This class forwards events to EventRouters.
 // The advantages of this class over direct usage of EventRouters are:
-// - this class is thread-safe, you can call the functions from UI and IO
-//   thread.
+// - this class is thread-safe.
 // - the class can handle if a profile is deleted between the time of sending
-//   the event from the IO thread to the UI thread.
-// - this class can be used in contexts that are not governed by a profile, e.g.
-//   by system URLRequestContexts. In these cases the |restrict_to_profile|
-//   parameter remains NULL and events are broadcasted to all profiles.
+//   the event from a different thread to the UI thread.
+// - this class can send events to the set of all active profiles. This is
+//   useful for system-wide settings that may change.
 class EventRouterForwarder
     : public base::RefCountedThreadSafe<EventRouterForwarder> {
  public:
