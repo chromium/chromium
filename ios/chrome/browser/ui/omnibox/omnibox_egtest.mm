@@ -492,11 +492,6 @@ void FocusFakebox() {
 // displayed, if certain conditions are met, with bottom omnibox for phone form
 // factor.
 - (void)testCopyInOmniboxTriggersShareButtonIPHWithBottomOmnibox {
-  // TODO(crbug.com/350460961): On iOS18 TapOnPreEditTextInOmnibox() is not
-  // working.
-  if (@available(iOS 18, *)) {
-    EARL_GREY_TEST_SKIPPED(@"Test failing on iOS18");
-  }
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (no bottom omnibox in tablet)");
   }
@@ -541,11 +536,6 @@ void FocusFakebox() {
 // Tests that copying in the omnibox will trigger the share button IPH to be
 // displayed, if certain conditions are met, when omnibox is at the top.
 - (void)testCopyInOmniboxTriggersShareButtonIPHWithTopOmnibox {
-  // TODO(crbug.com/350460961): On iOS18 TapOnPreEditTextInOmnibox() is not
-  // working.
-  if (@available(iOS 18, *)) {
-    EARL_GREY_TEST_SKIPPED(@"Test failing on iOS18");
-  }
   // Enable the IPH flag to ensure the IPH triggers
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.iph_feature_enabled = "IPH_iOSShareToolbarItemFeature";
@@ -1022,11 +1012,6 @@ void FocusFakebox() {
 // display a callout menu with cut,copy and paste (if there is a text on the
 // pasteboard).
 - (void)testTapOmniboxOnPreEditState {
-  // TODO(crbug.com/350460961): On iOS18 TapOnPreEditTextInOmnibox() is not
-  // working.
-  if (@available(iOS 18, *)) {
-    EARL_GREY_TEST_SKIPPED(@"Test failing on iOS18");
-  }
   // Load a web page.
   [ChromeEarlGrey loadURL:_URL];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
@@ -1060,12 +1045,6 @@ void FocusFakebox() {
 // Tests that Cut callout button would erase the current url and copy it on the
 // pasteboard.
 - (void)testCutCalloutButton {
-  // TODO(crbug.com/350460961): On iOS18 TapOnPreEditTextInOmnibox() is not
-  // working.
-  if (@available(iOS 18, *)) {
-    EARL_GREY_TEST_SKIPPED(@"Test failing on iOS18");
-  }
-
   // Load a web page.
   [ChromeEarlGrey loadURL:_URL];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
@@ -1095,12 +1074,6 @@ void FocusFakebox() {
 // Tests that Paste callout button would erase the current url and replace it
 // with text on pasteboard.
 - (void)testPasteCalloutButton {
-  // TODO(crbug.com/350460961): On iOS18 TapOnPreEditTextInOmnibox() is not
-  // working.
-  if (@available(iOS 18, *)) {
-    EARL_GREY_TEST_SKIPPED(@"Test failing on iOS18");
-  }
-
   // Load a web page.
   [ChromeEarlGrey loadURL:_URL];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
