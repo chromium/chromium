@@ -398,7 +398,7 @@ BASE_FEATURE(kFullscreenImprovement,
 
 BASE_FEATURE(kTabGroupsInGrid,
              "TabGroupsInGrid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGroupsIPad,
              "TabGroupsIPad",
