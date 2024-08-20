@@ -162,6 +162,9 @@ bool UnittestingSystemAppDelegate::ShouldAllowFullscreen() const {
 bool UnittestingSystemAppDelegate::ShouldHaveTabStrip() const {
   return has_tab_strip_;
 }
+bool UnittestingSystemAppDelegate::ShouldHideNewTabButton() const {
+  return hide_new_tab_button_;
+}
 bool UnittestingSystemAppDelegate::ShouldHaveReloadButtonInMinimalUi() const {
   return should_have_reload_button_in_minimal_ui_;
 }
@@ -254,6 +257,9 @@ void UnittestingSystemAppDelegate::SetShouldAllowMaximize(bool value) {
 }
 void UnittestingSystemAppDelegate::SetShouldHaveTabStrip(bool value) {
   has_tab_strip_ = value;
+}
+void UnittestingSystemAppDelegate::SetShouldHideNewTabButton(bool value) {
+  hide_new_tab_button_ = value;
 }
 void UnittestingSystemAppDelegate::SetShouldHaveReloadButtonInMinimalUi(
     bool value) {
@@ -636,13 +642,15 @@ TestSystemWebAppInstallation::SetupAppWithAllowScriptsToCloseWindows(
 
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
-TestSystemWebAppInstallation::SetUpAppWithTabStrip(bool has_tab_strip) {
+TestSystemWebAppInstallation::SetUpAppWithTabStrip(bool has_tab_strip,
+                                                   bool hide_new_tab_button) {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
           SystemWebAppType::MEDIA, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
   delegate->SetShouldHaveTabStrip(has_tab_strip);
+  delegate->SetShouldHideNewTabButton(hide_new_tab_button);
 
   return base::WrapUnique(
       new TestSystemWebAppInstallation(std::move(delegate)));

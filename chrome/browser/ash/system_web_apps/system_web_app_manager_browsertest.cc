@@ -919,16 +919,18 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAdditionalSearchTermsTest,
       });
 }
 
-class SystemWebAppManagerHasTabStripTest
+class SystemWebAppManagerHasTabStripWithNewTabButtonTest
     : public TestProfileTypeMixin<SystemWebAppBrowserTestBase> {
  public:
-  SystemWebAppManagerHasTabStripTest() {
+  SystemWebAppManagerHasTabStripWithNewTabButtonTest() {
     SetSystemWebAppInstallation(
-        TestSystemWebAppInstallation::SetUpAppWithTabStrip(true));
+        TestSystemWebAppInstallation::SetUpAppWithTabStrip(
+            /*has_tab_strip=*/true, /*hide_new_tab_button=*/false));
   }
 };
 
-IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasTabStripTest, HasTabStrip) {
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasTabStripWithNewTabButtonTest,
+                       ShouldHaveTabStripWithNewTabButton) {
   WaitForTestSystemAppInstall();
 
   Browser* browser;
@@ -937,21 +939,65 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasTabStripTest, HasTabStrip) {
   EXPECT_FALSE(browser->app_controller()->ShouldHideNewTabButton());
 }
 
-class SystemWebAppManagerHasNoTabStripTest
+class SystemWebAppManagerHasTabStripWithHiddenNewTabButtonTest
     : public TestProfileTypeMixin<SystemWebAppBrowserTestBase> {
  public:
-  SystemWebAppManagerHasNoTabStripTest() {
+  SystemWebAppManagerHasTabStripWithHiddenNewTabButtonTest() {
     SetSystemWebAppInstallation(
-        TestSystemWebAppInstallation::SetUpAppWithTabStrip(false));
+        TestSystemWebAppInstallation::SetUpAppWithTabStrip(
+            /*has_tab_strip=*/true, /*hide_new_tab_button=*/true));
   }
 };
 
-IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasNoTabStripTest, HasNoTabStrip) {
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasTabStripWithHiddenNewTabButtonTest,
+                       HasTabStripWithNoNewTabButton) {
+  WaitForTestSystemAppInstall();
+
+  Browser* browser;
+  EXPECT_TRUE(LaunchApp(GetAppType(), &browser));
+  EXPECT_TRUE(browser->app_controller()->has_tab_strip());
+  EXPECT_TRUE(browser->app_controller()->ShouldHideNewTabButton());
+}
+
+class SystemWebAppManagerHasNoTabStripWithNewTabButtonTest
+    : public TestProfileTypeMixin<SystemWebAppBrowserTestBase> {
+ public:
+  SystemWebAppManagerHasNoTabStripWithNewTabButtonTest() {
+    SetSystemWebAppInstallation(
+        TestSystemWebAppInstallation::SetUpAppWithTabStrip(
+            /*has_tab_strip=*/false, /*hide_new_tab_button=*/false));
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasNoTabStripWithNewTabButtonTest,
+                       HasNoTabStripWithNoNewTabButton) {
   WaitForTestSystemAppInstall();
 
   Browser* browser;
   EXPECT_TRUE(LaunchApp(GetAppType(), &browser));
   EXPECT_FALSE(browser->app_controller()->has_tab_strip());
+  EXPECT_TRUE(browser->app_controller()->ShouldHideNewTabButton());
+}
+
+class SystemWebAppManagerHasNoTabStripWithHiddenNewTabButtonTest
+    : public TestProfileTypeMixin<SystemWebAppBrowserTestBase> {
+ public:
+  SystemWebAppManagerHasNoTabStripWithHiddenNewTabButtonTest() {
+    SetSystemWebAppInstallation(
+        TestSystemWebAppInstallation::SetUpAppWithTabStrip(
+            /*has_tab_strip=*/false, /*hide_new_tab_button=*/true));
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(
+    SystemWebAppManagerHasNoTabStripWithHiddenNewTabButtonTest,
+    HasNoTabStripWithNoNewTabButton) {
+  WaitForTestSystemAppInstall();
+
+  Browser* browser;
+  EXPECT_TRUE(LaunchApp(GetAppType(), &browser));
+  EXPECT_FALSE(browser->app_controller()->has_tab_strip());
+  EXPECT_TRUE(browser->app_controller()->ShouldHideNewTabButton());
 }
 
 // We only support custom bounds on Chrome OS.
@@ -1952,10 +1998,16 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerBackgroundTaskTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    SystemWebAppManagerHasTabStripTest);
+    SystemWebAppManagerHasTabStripWithNewTabButtonTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    SystemWebAppManagerHasNoTabStripTest);
+    SystemWebAppManagerHasTabStripWithHiddenNewTabButtonTest);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    SystemWebAppManagerHasNoTabStripWithNewTabButtonTest);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    SystemWebAppManagerHasNoTabStripWithHiddenNewTabButtonTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerDefaultBoundsTest);

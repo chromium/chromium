@@ -498,9 +498,10 @@ GURL WebAppBrowserController::GetAppNewTabUrl() const {
 
 bool WebAppBrowserController::ShouldHideNewTabButton() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Show new tab button for Terminal System App.
+  // Configure new tab button visibility for system apps based on their delegate
+  // implementation.
   if (system_app() && system_app()->ShouldHaveTabStrip()) {
-    return false;
+    return system_app()->ShouldHideNewTabButton();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
