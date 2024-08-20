@@ -2807,7 +2807,6 @@
     // Mutation Events.
     {
       name: "MutationEvents",
-      status: "stable",
       origin_trial_feature_name: "MutationEvents",
       origin_trial_type: "deprecation",
       origin_trial_allows_insecure: true,
