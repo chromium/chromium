@@ -209,7 +209,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 SettingsUtils.getTintedIcon(
                         mContext,
                         R.drawable.safety_hub_notifications_icon,
-                        R.color.default_icon_color_accent1_baseline));
+                        R.color.default_icon_color_accent1_tint_list));
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
@@ -239,7 +239,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 SettingsUtils.getTintedIcon(
                         mContext,
                         R.drawable.ic_gshield_24,
-                        R.color.default_icon_color_accent1_baseline));
+                        R.color.default_icon_color_accent1_tint_list));
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
@@ -271,7 +271,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 SettingsUtils.getTintedIcon(
                         mContext,
                         R.drawable.ic_password_manager_key,
-                        R.color.default_icon_color_accent1_baseline));
+                        R.color.default_icon_color_accent1_tint_list));
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
