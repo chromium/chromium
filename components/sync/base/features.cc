@@ -212,4 +212,9 @@ BASE_FEATURE(kWebApkBackupAndRestoreBackend,
 BASE_FEATURE(kSyncAccountKeyedTransportPrefs,
              "SyncAccountKeyedTransportPrefs",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSyncEnableModelTypeLocalDataBatchUploaders,
+             "SyncEnableModelTypeLocalDataBatchUploaders",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace syncer
