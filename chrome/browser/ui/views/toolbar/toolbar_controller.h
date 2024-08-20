@@ -236,7 +236,7 @@ class ToolbarController : public views::MenuDelegate,
   }
 
  private:
-  friend class ToolbarControllerUiTest2;
+  friend class ToolbarControllerUiTest;
   friend class ToolbarControllerUnitTest;
 
   // Returns currently hidden elements.
