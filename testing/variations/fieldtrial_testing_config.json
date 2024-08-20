@@ -12071,7 +12071,7 @@
             ]
         }
     ],
-    "IOSTabGroupSync": [
+    "IOSTabGroupSynciPhone": [
         {
             "platforms": [
                 "ios"
