@@ -325,8 +325,6 @@ class AndroidAutofillProviderTestBase
   TestAutofillManagerInjector<TestAndroidAutofillManager>
       autofill_manager_injector_;
   raw_ptr<MockAndroidAutofillProviderBridge> provider_bridge_ = nullptr;
-  base::test::ScopedFeatureList feature_list_{
-      features::kAndroidAutofillCancelSessionOnNavigation};
 };
 
 class AndroidAutofillProviderTest : public AndroidAutofillProviderTestBase {
@@ -729,28 +727,6 @@ TEST_F(AndroidAutofillProviderTest, FormSubmissionHappensOnFrameDestruction) {
       ->Detach();
 }
 
-// Tests that no prefill request is sent if the feature is disabled.
-TEST_F(AndroidAutofillProviderTest, NoPrefillRequestWithoutFeature) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_U) {
-    GTEST_SKIP();
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAndroidAutofillPrefillRequestsForLoginForms);
-
-  FormData form =
-      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
-  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
-  ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
-
-  // Upon receiving server predictions a prefill request should be sent.
-  EXPECT_CALL(provider_bridge(), SendPrefillRequest).Times(0);
-  android_autofill_manager().SimulatePropagateAutofillPredictions(
-      form.global_id());
-}
-
 // Tests the predictions from `password_manager::FormDataParser` are used to
 // overwrite all type predictions of the respective `FormDataAndroidField`s.
 TEST_F(AndroidAutofillProviderTest,
@@ -759,9 +735,6 @@ TEST_F(AndroidAutofillProviderTest,
       base::android::SdkVersion::SDK_VERSION_U) {
     GTEST_SKIP();
   }
-
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAndroidAutofillPrefillRequestsForLoginForms};
 
   FormData form =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
@@ -789,9 +762,6 @@ TEST_F(AndroidAutofillProviderTest,
       base::android::SdkVersion::SDK_VERSION_U) {
     GTEST_SKIP();
   }
-
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAndroidAutofillPrefillRequestsForLoginForms};
 
   FormData form =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
@@ -836,10 +806,6 @@ TEST_F(AndroidAutofillProviderTest,
 // Tests that new document navigation (manager reset) cancels the ongoing
 // autofill session
 TEST_F(AndroidAutofillProviderTest, CancelSessionOnNavigation) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAndroidAutofillCancelSessionOnNavigation);
-
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
@@ -990,15 +956,7 @@ TEST_F(AndroidAutofillProviderWithCredManTest,
   FocusFormField(webauthn_email_field());
 }
 
-class AndroidAutofillProviderPrefillRequestTest
-    : public AndroidAutofillProviderTest {
- public:
-  AndroidAutofillProviderPrefillRequestTest() = default;
-
- private:
-  base::test::ScopedFeatureList prefill_request_feature_list_{
-      features::kAndroidAutofillPrefillRequestsForLoginForms};
-};
+using AndroidAutofillProviderPrefillRequestTest = AndroidAutofillProviderTest;
 
 // Tests that we can send another prefill request after navigation.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
@@ -1007,9 +965,6 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
       base::android::SdkVersion::SDK_VERSION_U) {
     GTEST_SKIP();
   }
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAndroidAutofillCancelSessionOnNavigation);
 
   FormData form = test::GetFormData(
       {.fields = {{.autocomplete_attribute = "username"},
@@ -1362,9 +1317,6 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
   }
 
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAndroidAutofillPrefillRequestsForLoginForms);
 
   FormData login_form =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());

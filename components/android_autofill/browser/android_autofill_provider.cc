@@ -708,10 +708,7 @@ void AndroidAutofillProvider::Reset() {
   was_shown_bottom_sheet_timer_.Stop();
   was_bottom_sheet_just_shown_ = false;
 
-  if (base::FeatureList::IsEnabled(
-          features::kAndroidAutofillCancelSessionOnNavigation)) {
-    CancelSession();
-  }
+  CancelSession();
 
   // Resets the Java instance and hides the datalist popup if there is one.
   bridge_->Reset();
@@ -736,9 +733,7 @@ SessionId AndroidAutofillProvider::CreateSessionId() {
 
 bool AndroidAutofillProvider::ArePrefillRequestsSupported() const {
   return base::android::BuildInfo::GetInstance()->sdk_int() >=
-             kMinimumSdkVersionForPrefillRequests &&
-         base::FeatureList::IsEnabled(
-             features::kAndroidAutofillPrefillRequestsForLoginForms);
+         kMinimumSdkVersionForPrefillRequests;
 }
 
 void AndroidAutofillProvider::MaybeSendPrefillRequest(
