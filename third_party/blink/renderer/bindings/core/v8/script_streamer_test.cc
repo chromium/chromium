@@ -924,7 +924,7 @@ class DummyBackgroundResponseProcessorClient
 class DummyCachedMetadataSender : public CachedMetadataSender {
  public:
   DummyCachedMetadataSender() = default;
-  void Send(CodeCacheHost*, const uint8_t*, size_t) override {}
+  void Send(CodeCacheHost*, base::span<const uint8_t>) override {}
   bool IsServedFromCacheStorage() override { return false; }
 };
 
