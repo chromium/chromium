@@ -400,6 +400,7 @@ public abstract class ChromeFeatureList {
     public static final String PRIVACY_SANDBOX_SETTINGS_4 = "PrivacySandboxSettings4";
     public static final String PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS =
             "PrivacySandboxPrivacyGuideAdTopics";
+    public static final String PRIVACY_SANDBOX_PRIVACY_POLICY = "PrivacySandboxPrivacyPolicy";
     public static final String PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING =
             "PrivacySandboxProactiveTopicsBlocking";
     public static final String PRIVATE_STATE_TOKENS = "PrivateStateTokens";
