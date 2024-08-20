@@ -260,12 +260,12 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
 
   // Most LCP elements are provided by the main frame, and delaying subframe's
   // resources seems not to improve LCP.
-  static const bool main_frame_only =
+  const bool main_frame_only =
       features::kLowPriorityAsyncScriptExecutionMainFrameOnlyParam.Get();
   if (main_frame_only && !element_document->IsInOutermostMainFrame())
     return false;
 
-  static const base::TimeDelta feature_limit =
+  const base::TimeDelta feature_limit =
       features::kLowPriorityAsyncScriptExecutionFeatureLimitParam.Get();
   if (!feature_limit.is_zero() &&
       element_document->GetStartTime().Elapsed() > feature_limit) {
@@ -282,7 +282,7 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
   }
 
   // Check if LCP influencing scripts are to be excluded.
-  static const bool exclude_lcp_influencers =
+  const bool exclude_lcp_influencers =
       features::kLowPriorityAsyncScriptExecutionExcludeLcpInfluencersParam
           .Get();
   if (exclude_lcp_influencers && LcppScriptObserverEnabled()) {
@@ -293,7 +293,7 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
     }
   }
 
-  static const bool disable_when_lcp_not_in_html =
+  const bool disable_when_lcp_not_in_html =
       features::kLowPriorityAsyncScriptExecutionDisableWhenLcpNotInHtmlParam
           .Get();
   if (disable_when_lcp_not_in_html && !top_document.IsLcpElementFoundInHtml()) {
@@ -302,7 +302,7 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
     return false;
   }
 
-  static const bool cross_site_only =
+  const bool cross_site_only =
       features::kLowPriorityAsyncScriptExecutionCrossSiteOnlyParam.Get();
   if (cross_site_only && GetResource() &&
       element_document->GetExecutionContext()) {
@@ -343,26 +343,26 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
       break;
   }
 
-  static const bool exclude_non_parser_inserted =
+  const bool exclude_non_parser_inserted =
       features::kLowPriorityAsyncScriptExecutionExcludeNonParserInsertedParam
           .Get();
   if (exclude_non_parser_inserted && !parser_inserted()) {
     return false;
   }
 
-  static const bool exclude_scripts_via_document_write =
+  const bool exclude_scripts_via_document_write =
       features::kLowPriorityAsyncScriptExecutionExcludeDocumentWriteParam.Get();
   if (exclude_scripts_via_document_write && is_in_document_write()) {
     return false;
   }
 
-  static const bool opt_out_low =
+  const bool opt_out_low =
       features::kLowPriorityAsyncScriptExecutionOptOutLowFetchPriorityHintParam
           .Get();
-  static const bool opt_out_auto =
+  const bool opt_out_auto =
       features::kLowPriorityAsyncScriptExecutionOptOutAutoFetchPriorityHintParam
           .Get();
-  static const bool opt_out_high =
+  const bool opt_out_high =
       features::kLowPriorityAsyncScriptExecutionOptOutHighFetchPriorityHintParam
           .Get();
 

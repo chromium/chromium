@@ -347,12 +347,12 @@ bool IsEligibleForDelay(const Resource& resource,
 
   // Most LCP elements are provided by the main frame, and delaying subframe's
   // resources seems not to improve LCP.
-  static const bool main_frame_only =
+  const bool main_frame_only =
       features::kDelayAsyncScriptExecutionMainFrameOnlyParam.Get();
   if (main_frame_only && !element_document.IsInOutermostMainFrame())
     return false;
 
-  static const base::TimeDelta feature_limit =
+  const base::TimeDelta feature_limit =
       features::kDelayAsyncScriptExecutionFeatureLimitParam.Get();
   if (!feature_limit.is_zero() &&
       element_document.GetStartTime().Elapsed() > feature_limit) {
@@ -377,12 +377,12 @@ bool IsEligibleForDelay(const Resource& resource,
       break;
   }
 
-  static const bool opt_out_low =
+  const bool opt_out_low =
       features::kDelayAsyncScriptExecutionOptOutLowFetchPriorityHintParam.Get();
-  static const bool opt_out_auto =
+  const bool opt_out_auto =
       features::kDelayAsyncScriptExecutionOptOutAutoFetchPriorityHintParam
           .Get();
-  static const bool opt_out_high =
+  const bool opt_out_high =
       features::kDelayAsyncScriptExecutionOptOutHighFetchPriorityHintParam
           .Get();
 
@@ -439,19 +439,19 @@ bool IsEligibleForLowPriorityScriptLoading(const Document& element_document,
 
   // Most LCP elements are provided by the main frame, and delaying subframe's
   // resources seems not to improve LCP.
-  static const bool main_frame_only =
+  const bool main_frame_only =
       features::kLowPriorityScriptLoadingMainFrameOnlyParam.Get();
   if (main_frame_only && !element_document.IsInOutermostMainFrame())
     return false;
 
-  static const base::TimeDelta feature_limit =
+  const base::TimeDelta feature_limit =
       features::kLowPriorityScriptLoadingFeatureLimitParam.Get();
   if (!feature_limit.is_zero() &&
       element_document.GetStartTime().Elapsed() > feature_limit) {
     return false;
   }
 
-  static const bool cross_site_only =
+  const bool cross_site_only =
       features::kLowPriorityScriptLoadingCrossSiteOnlyParam.Get();
   if (cross_site_only && IsSameSite(url, element_document))
     return false;

@@ -368,18 +368,23 @@ enum class DelayAsyncScriptTarget {
 };
 BLINK_COMMON_EXPORT extern const base::FeatureParam<DelayAsyncScriptTarget>
     kDelayAsyncScriptTargetParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kDelayAsyncScriptExecutionDelayLimitParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kDelayAsyncScriptExecutionFeatureLimitParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kDelayAsyncScriptExecutionDelayLimitParam);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kDelayAsyncScriptExecutionFeatureLimitParam);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kDelayAsyncScriptAllowList;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kDelayAsyncScriptExecutionMainFrameOnlyParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kDelayAsyncScriptExecutionWhenLcpFoundInHtml;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kDelayAsyncScriptExecutionDelayByDefaultParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kDelayAsyncScriptExecutionMainFrameOnlyParam);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kDelayAsyncScriptExecutionWhenLcpFoundInHtml);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kDelayAsyncScriptExecutionDelayByDefaultParam);
 enum class AsyncScriptExperimentalSchedulingTarget {
   kAds,
   kNonAds,
@@ -388,12 +393,15 @@ enum class AsyncScriptExperimentalSchedulingTarget {
 BLINK_COMMON_EXPORT extern const base::FeatureParam<
     AsyncScriptExperimentalSchedulingTarget>
     kDelayAsyncScriptExecutionTargetParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kDelayAsyncScriptExecutionOptOutLowFetchPriorityHintParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kDelayAsyncScriptExecutionOptOutAutoFetchPriorityHintParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kDelayAsyncScriptExecutionOptOutHighFetchPriorityHintParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kDelayAsyncScriptExecutionOptOutLowFetchPriorityHintParam);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kDelayAsyncScriptExecutionOptOutAutoFetchPriorityHintParam);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kDelayAsyncScriptExecutionOptOutHighFetchPriorityHintParam);
 
 // If enabled, the ResourceLoadScheculer will take the current network state
 // into consideration, when it plans to delay a low-priority throttleable
@@ -931,8 +939,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPLazyLoadImagePreload);
 
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLCPPLazyLoadImagePreloadDryRun;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                               kLCPPLazyLoadImagePreloadDryRun);
 
 // The type of preloading for LCP images which are loaded lazily.
 // crbug.com/1498777 for more details.
@@ -1057,26 +1065,31 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kTimeoutForLowPriorityAsyncScriptExecution;
 // kLowPriorityAsyncScriptExecution will be disabled after document elapsed more
 // than |low_pri_async_exec_feature_limit|. Zero value means no limit.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kLowPriorityAsyncScriptExecutionFeatureLimitParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kLowPriorityAsyncScriptExecutionFeatureLimitParam);
 // kLowPriorityAsyncScriptExecution will be applied only for cross site scripts.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLowPriorityAsyncScriptExecutionCrossSiteOnlyParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kLowPriorityAsyncScriptExecutionCrossSiteOnlyParam);
 // kLowPriorityAsyncScriptExecution will be applied only for main frame's
 // scripts.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLowPriorityAsyncScriptExecutionMainFrameOnlyParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kLowPriorityAsyncScriptExecutionMainFrameOnlyParam);
 // kLowPriorityAsyncScriptExecution will be excluded for async scripts that
 // influence LCP element. Requires the following features enabled as a
 // pre-requisite: kLCPCriticalPathPredictor, kLCPScriptObserver and
 // kLowPriorityAsyncScriptExecution.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLowPriorityAsyncScriptExecutionExcludeLcpInfluencersParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kLowPriorityAsyncScriptExecutionExcludeLcpInfluencersParam);
 // kLowPriorityAsyncScriptExecution will be disabled when LCP element is
 // not detected in Html. Requires kLCPCriticalPathPredictor experiment to be
 // enabled for this to work.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLowPriorityAsyncScriptExecutionDisableWhenLcpNotInHtmlParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kLowPriorityAsyncScriptExecutionDisableWhenLcpNotInHtmlParam);
 enum class AsyncScriptPrioritisationType {
   kHigh,
   kLow,
@@ -1088,27 +1101,35 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<
 BLINK_COMMON_EXPORT extern const base::FeatureParam<
     AsyncScriptExperimentalSchedulingTarget>
     kLowPriorityAsyncScriptExecutionTargetParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLowPriorityAsyncScriptExecutionExcludeNonParserInsertedParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLowPriorityAsyncScriptExecutionExcludeDocumentWriteParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLowPriorityAsyncScriptExecutionOptOutLowFetchPriorityHintParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLowPriorityAsyncScriptExecutionOptOutAutoFetchPriorityHintParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLowPriorityAsyncScriptExecutionOptOutHighFetchPriorityHintParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kLowPriorityAsyncScriptExecutionExcludeNonParserInsertedParam);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kLowPriorityAsyncScriptExecutionExcludeDocumentWriteParam);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kLowPriorityAsyncScriptExecutionOptOutLowFetchPriorityHintParam);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kLowPriorityAsyncScriptExecutionOptOutAutoFetchPriorityHintParam);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kLowPriorityAsyncScriptExecutionOptOutHighFetchPriorityHintParam);
 
 // If enabled, async scripts will be loaded with a lower fetch priority.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowPriorityScriptLoading);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLowPriorityScriptLoadingCrossSiteOnlyParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kLowPriorityScriptLoadingFeatureLimitParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kLowPriorityScriptLoadingCrossSiteOnlyParam);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kLowPriorityScriptLoadingFeatureLimitParam);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kLowPriorityScriptLoadingDenyListParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLowPriorityScriptLoadingMainFrameOnlyParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kLowPriorityScriptLoadingMainFrameOnlyParam);
 
 // Keep strong references in the blink memory cache to maximize resource reuse.
 // See https://crbug.com/1409349.

@@ -612,8 +612,7 @@ class TokenPreloadScanner::StartTagScanner {
     //
     // If the dry run mode is enabled, prevents the actual preload request from
     // being created.
-    static const bool dry_run_mode =
-        features::kLCPPLazyLoadImagePreloadDryRun.Get();
+    const bool dry_run_mode = features::kLCPPLazyLoadImagePreloadDryRun.Get();
     if (is_potentially_lcp_element && !source_size_is_auto_ && !dry_run_mode) {
       switch (document_parameters.preload_lazy_load_image_type) {
         case features::LcppPreloadLazyLoadImageType::kNativeLazyLoading:

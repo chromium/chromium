@@ -660,33 +660,43 @@ const base::FeatureParam<DelayAsyncScriptTarget> kDelayAsyncScriptTargetParam{
 
 // kDelayAsyncScriptExecution will delay executing async script at max
 // |delay_async_exec_delay_limit|.
-const base::FeatureParam<base::TimeDelta>
-    kDelayAsyncScriptExecutionDelayLimitParam{&kDelayAsyncScriptExecution,
-                                              "delay_async_exec_delay_limit",
-                                              base::Seconds(0)};
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kDelayAsyncScriptExecutionDelayLimitParam,
+                   &kDelayAsyncScriptExecution,
+                   "delay_async_exec_delay_limit",
+                   base::Seconds(0));
 
 // kDelayAsyncScriptExecution will be disabled after document elapsed more than
 // |delay_async_exec_feature_limit|. Zero value means no limit.
 // This is to avoid unnecessary async script delay after LCP (for
 // kEachLcpCandidate or kEachPaint). Because we can't determine the LCP timing
 // while loading, we use timeout instead.
-const base::FeatureParam<base::TimeDelta>
-    kDelayAsyncScriptExecutionFeatureLimitParam{
-        &kDelayAsyncScriptExecution, "delay_async_exec_feature_limit",
-        base::Seconds(0)};
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kDelayAsyncScriptExecutionFeatureLimitParam,
+                   &kDelayAsyncScriptExecution,
+                   "delay_async_exec_feature_limit",
+                   base::Seconds(0));
 
 const base::FeatureParam<std::string> kDelayAsyncScriptAllowList{
     &kDelayAsyncScriptExecution, "delay_async_exec_allow_list", ""};
 
-const base::FeatureParam<bool> kDelayAsyncScriptExecutionDelayByDefaultParam{
-    &kDelayAsyncScriptExecution, "delay_async_exec_delay_by_default", true};
+BASE_FEATURE_PARAM(bool,
+                   kDelayAsyncScriptExecutionDelayByDefaultParam,
+                   &kDelayAsyncScriptExecution,
+                   "delay_async_exec_delay_by_default",
+                   true);
 
-const base::FeatureParam<bool> kDelayAsyncScriptExecutionMainFrameOnlyParam{
-    &kDelayAsyncScriptExecution, "delay_async_exec_main_frame_only", false};
+BASE_FEATURE_PARAM(bool,
+                   kDelayAsyncScriptExecutionMainFrameOnlyParam,
+                   &kDelayAsyncScriptExecution,
+                   "delay_async_exec_main_frame_only",
+                   false);
 
-const base::FeatureParam<bool> kDelayAsyncScriptExecutionWhenLcpFoundInHtml{
-    &kDelayAsyncScriptExecution, "delay_async_exec_when_lcp_found_in_html",
-    false};
+BASE_FEATURE_PARAM(bool,
+                   kDelayAsyncScriptExecutionWhenLcpFoundInHtml,
+                   &kDelayAsyncScriptExecution,
+                   "delay_async_exec_when_lcp_found_in_html",
+                   false);
 
 // kDelayAsyncScriptExecution will change evaluation schedule for the
 // specified target.
@@ -702,18 +712,21 @@ const base::FeatureParam<AsyncScriptExperimentalSchedulingTarget>
         AsyncScriptExperimentalSchedulingTarget::kBoth,
         &async_script_experimental_scheduling_targets};
 
-const base::FeatureParam<bool>
-    kDelayAsyncScriptExecutionOptOutLowFetchPriorityHintParam{
-        &kDelayAsyncScriptExecution,
-        "delay_async_exec_opt_out_low_fetch_priority_hint", false};
-const base::FeatureParam<bool>
-    kDelayAsyncScriptExecutionOptOutAutoFetchPriorityHintParam{
-        &kDelayAsyncScriptExecution,
-        "delay_async_exec_opt_out_auto_fetch_priority_hint", false};
-const base::FeatureParam<bool>
-    kDelayAsyncScriptExecutionOptOutHighFetchPriorityHintParam{
-        &kDelayAsyncScriptExecution,
-        "delay_async_exec_opt_out_high_fetch_priority_hint", false};
+BASE_FEATURE_PARAM(bool,
+                   kDelayAsyncScriptExecutionOptOutLowFetchPriorityHintParam,
+                   &kDelayAsyncScriptExecution,
+                   "delay_async_exec_opt_out_low_fetch_priority_hint",
+                   false);
+BASE_FEATURE_PARAM(bool,
+                   kDelayAsyncScriptExecutionOptOutAutoFetchPriorityHintParam,
+                   &kDelayAsyncScriptExecution,
+                   "delay_async_exec_opt_out_auto_fetch_priority_hint",
+                   false);
+BASE_FEATURE_PARAM(bool,
+                   kDelayAsyncScriptExecutionOptOutHighFetchPriorityHintParam,
+                   &kDelayAsyncScriptExecution,
+                   "delay_async_exec_opt_out_high_fetch_priority_hint",
+                   false);
 
 BASE_FEATURE(kDelayLowPriorityRequestsAccordingToNetworkState,
              "DelayLowPriorityRequestsAccordingToNetworkState",
@@ -1419,8 +1432,11 @@ BASE_FEATURE(kLCPPLazyLoadImagePreload,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If true, do not make a preload request.
-const base::FeatureParam<bool> kLCPPLazyLoadImagePreloadDryRun{
-    &kLCPPLazyLoadImagePreload, "lcpp_lazy_load_image_preload_dry_run", false};
+BASE_FEATURE_PARAM(bool,
+                   kLCPPLazyLoadImagePreloadDryRun,
+                   &kLCPPLazyLoadImagePreload,
+                   "lcpp_lazy_load_image_preload_dry_run",
+                   false);
 
 const base::FeatureParam<
     LcppPreloadLazyLoadImageType>::Option lcpp_preload_lazy_load_image[] = {
@@ -1577,35 +1593,40 @@ const base::FeatureParam<base::TimeDelta>
 
 // kLowPriorityAsyncScriptExecution will be disabled after document elapsed more
 // than |low_pri_async_exec_feature_limit|. Zero value means no limit.
-const base::FeatureParam<base::TimeDelta>
-    kLowPriorityAsyncScriptExecutionFeatureLimitParam{
-        &kLowPriorityAsyncScriptExecution, "low_pri_async_exec_feature_limit",
-        base::Seconds(0)};
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kLowPriorityAsyncScriptExecutionFeatureLimitParam,
+                   &kLowPriorityAsyncScriptExecution,
+                   "low_pri_async_exec_feature_limit",
+                   base::Seconds(0));
 
 // kLowPriorityAsyncScriptExecution will be applied only for cross site scripts.
-const base::FeatureParam<bool>
-    kLowPriorityAsyncScriptExecutionCrossSiteOnlyParam{
-        &kLowPriorityAsyncScriptExecution, "low_pri_async_exec_cross_site_only",
-        false};
+BASE_FEATURE_PARAM(bool,
+                   kLowPriorityAsyncScriptExecutionCrossSiteOnlyParam,
+                   &kLowPriorityAsyncScriptExecution,
+                   "low_pri_async_exec_cross_site_only",
+                   false);
 
-const base::FeatureParam<bool>
-    kLowPriorityAsyncScriptExecutionMainFrameOnlyParam{
-        &kLowPriorityAsyncScriptExecution, "low_pri_async_exec_main_frame_only",
-        false};
+BASE_FEATURE_PARAM(bool,
+                   kLowPriorityAsyncScriptExecutionMainFrameOnlyParam,
+                   &kLowPriorityAsyncScriptExecution,
+                   "low_pri_async_exec_main_frame_only",
+                   false);
 
 // kLowPriorityAsyncScriptExecution will exclude scripts that influence LCP
 // element.
-const base::FeatureParam<bool>
-    kLowPriorityAsyncScriptExecutionExcludeLcpInfluencersParam{
-        &kLowPriorityAsyncScriptExecution,
-        "low_pri_async_exec_exclude_lcp_influencers", false};
+BASE_FEATURE_PARAM(bool,
+                   kLowPriorityAsyncScriptExecutionExcludeLcpInfluencersParam,
+                   &kLowPriorityAsyncScriptExecution,
+                   "low_pri_async_exec_exclude_lcp_influencers",
+                   false);
 
 // kLowPriorityAsyncScriptExecution will exclude scripts on pages where LCP
 // element isn't directly embedded in HTML.
-const base::FeatureParam<bool>
-    kLowPriorityAsyncScriptExecutionDisableWhenLcpNotInHtmlParam{
-        &kLowPriorityAsyncScriptExecution,
-        "low_pri_async_exec_disable_when_lcp_not_in_html", false};
+BASE_FEATURE_PARAM(bool,
+                   kLowPriorityAsyncScriptExecutionDisableWhenLcpNotInHtmlParam,
+                   &kLowPriorityAsyncScriptExecution,
+                   "low_pri_async_exec_disable_when_lcp_not_in_html",
+                   false);
 
 // kLowPriorityAsyncScriptExecution will use the specified priority as a lower
 // task priority.
@@ -1630,49 +1651,65 @@ const base::FeatureParam<AsyncScriptExperimentalSchedulingTarget>
         &async_script_experimental_scheduling_targets};
 // If true, kLowPriorityAsyncScriptExecution will not change the script
 // evaluation timing for the non parser inserted script.
-const base::FeatureParam<bool>
-    kLowPriorityAsyncScriptExecutionExcludeNonParserInsertedParam{
-        &kLowPriorityAsyncScriptExecution,
-        "low_pri_async_exec_exclude_non_parser_inserted", false};
+BASE_FEATURE_PARAM(
+    bool,
+    kLowPriorityAsyncScriptExecutionExcludeNonParserInsertedParam,
+    &kLowPriorityAsyncScriptExecution,
+    "low_pri_async_exec_exclude_non_parser_inserted",
+    false);
 // If true, kLowPriorityAsyncScriptExecution will not change the script
 // evaluation timing for the scripts that were added via document.write().
-const base::FeatureParam<bool>
-    kLowPriorityAsyncScriptExecutionExcludeDocumentWriteParam{
-        &kLowPriorityAsyncScriptExecution,
-        "low_pri_async_exec_exclude_document_write", false};
+BASE_FEATURE_PARAM(bool,
+                   kLowPriorityAsyncScriptExecutionExcludeDocumentWriteParam,
+                   &kLowPriorityAsyncScriptExecution,
+                   "low_pri_async_exec_exclude_document_write",
+                   false);
 
 // kLowPriorityAsyncScriptExecution will be opted-out when FetchPriorityHint is
 // low.
-const base::FeatureParam<bool>
-    kLowPriorityAsyncScriptExecutionOptOutLowFetchPriorityHintParam{
-        &kLowPriorityAsyncScriptExecution,
-        "low_pri_async_exec__opt_out_low_fetch_priority_hint", false};
+BASE_FEATURE_PARAM(
+    bool,
+    kLowPriorityAsyncScriptExecutionOptOutLowFetchPriorityHintParam,
+    &kLowPriorityAsyncScriptExecution,
+    "low_pri_async_exec__opt_out_low_fetch_priority_hint",
+    false);
 // kLowPriorityAsyncScriptExecution will be opted-out when FetchPriorityHint is
 // auto.
-const base::FeatureParam<bool>
-    kLowPriorityAsyncScriptExecutionOptOutAutoFetchPriorityHintParam{
-        &kLowPriorityAsyncScriptExecution,
-        "low_pri_async_exec_opt_out_auto_fetch_priority_hint", false};
+BASE_FEATURE_PARAM(
+    bool,
+    kLowPriorityAsyncScriptExecutionOptOutAutoFetchPriorityHintParam,
+    &kLowPriorityAsyncScriptExecution,
+    "low_pri_async_exec_opt_out_auto_fetch_priority_hint",
+    false);
 // kLowPriorityAsyncScriptExecution will be opted-out when FetchPriorityHint is
 // high.
-const base::FeatureParam<bool>
-    kLowPriorityAsyncScriptExecutionOptOutHighFetchPriorityHintParam{
-        &kLowPriorityAsyncScriptExecution,
-        "low_pri_async_exec_opt_out_high_fetch_priority_hint", false};
+BASE_FEATURE_PARAM(
+    bool,
+    kLowPriorityAsyncScriptExecutionOptOutHighFetchPriorityHintParam,
+    &kLowPriorityAsyncScriptExecution,
+    "low_pri_async_exec_opt_out_high_fetch_priority_hint",
+    false);
 
 BASE_FEATURE(kLowPriorityScriptLoading,
              "LowPriorityScriptLoading",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<bool> kLowPriorityScriptLoadingCrossSiteOnlyParam{
-    &kLowPriorityScriptLoading, "low_pri_async_loading_cross_site_only", false};
-const base::FeatureParam<base::TimeDelta>
-    kLowPriorityScriptLoadingFeatureLimitParam{
-        &kLowPriorityScriptLoading, "low_pri_async_loading_feature_limit",
-        base::Seconds(0)};
+BASE_FEATURE_PARAM(bool,
+                   kLowPriorityScriptLoadingCrossSiteOnlyParam,
+                   &kLowPriorityScriptLoading,
+                   "low_pri_async_loading_cross_site_only",
+                   false);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kLowPriorityScriptLoadingFeatureLimitParam,
+                   &kLowPriorityScriptLoading,
+                   "low_pri_async_loading_feature_limit",
+                   base::Seconds(0));
 const base::FeatureParam<std::string> kLowPriorityScriptLoadingDenyListParam{
     &kLowPriorityScriptLoading, "low_pri_async_loading_deny_list", ""};
-const base::FeatureParam<bool> kLowPriorityScriptLoadingMainFrameOnlyParam{
-    &kLowPriorityScriptLoading, "low_pri_async_loading_main_frame_only", false};
+BASE_FEATURE_PARAM(bool,
+                   kLowPriorityScriptLoadingMainFrameOnlyParam,
+                   &kLowPriorityScriptLoading,
+                   "low_pri_async_loading_main_frame_only",
+                   false);
 
 BASE_FEATURE(kMixedContentAutoupgrade,
              "AutoupgradeMixedContent",
