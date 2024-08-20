@@ -1,3 +1,0 @@
-ci/chromeos-amd64-generic-rel-tast
-ci/chromeos-jacuzzi-rel
-ci/chromeos-octopus-rel
