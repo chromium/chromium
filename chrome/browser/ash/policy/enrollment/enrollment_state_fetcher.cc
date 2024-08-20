@@ -232,8 +232,7 @@ class EmbargoDate {
 
   bool Passed(DeterminationContext& context) {
     const ash::system::FactoryPingEmbargoState embargo_state =
-        ash::system::GetEnterpriseManagementPingEmbargoState(
-            context.statistics_provider);
+        ash::system::GetRlzPingEmbargoState(context.statistics_provider);
     if (embargo_state == ash::system::FactoryPingEmbargoState::kNotPassed) {
       LOG(WARNING) << "Embargo date not passed";
       return false;

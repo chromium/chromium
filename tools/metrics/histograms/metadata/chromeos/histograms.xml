@@ -209,7 +209,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <variant name="DevswBoot"/>
   <variant name="DisplayProfiles"/>
   <variant name="DockMac"/>
-  <variant name="EnterpriseManagementEmbargoEndDate"/>
   <variant name="EthernetMac"/>
   <variant name="FlexId"/>
   <variant name="GbindAttribute"/>

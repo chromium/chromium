@@ -476,7 +476,7 @@ AutoEnrollmentTypeChecker::GetInitialStateDeterminationRequirement(
     return InitialStateDeterminationRequirement::kDisabled;
   }
   const ash::system::FactoryPingEmbargoState embargo_state =
-      ash::system::GetEnterpriseManagementPingEmbargoState(statistics_provider);
+      ash::system::GetRlzPingEmbargoState(statistics_provider);
   const std::optional<std::string_view> serial_number =
       statistics_provider->GetMachineID();
   if (!serial_number || serial_number->empty()) {

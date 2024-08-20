@@ -48,59 +48,6 @@ class FactoryPingEmbargoCheckTest : public ::testing::Test {
   FakeStatisticsProvider statistics_provider_;
 };
 
-// No initial state embargo end date in VPD.
-TEST_F(FactoryPingEmbargoCheckTest, EnterpriseManagementNoValue) {
-  EXPECT_EQ(FactoryPingEmbargoState::kMissingOrMalformed,
-            GetEnterpriseManagementPingEmbargoState(&statistics_provider_));
-}
-
-// There is a malformed initial state embargo end date in VPD.
-TEST_F(FactoryPingEmbargoCheckTest, EnterpriseManagementMalformedValue) {
-  statistics_provider_.SetMachineStatistic(
-      kEnterpriseManagementEmbargoEndDateKey, "blabla");
-  EXPECT_EQ(FactoryPingEmbargoState::kMissingOrMalformed,
-            GetEnterpriseManagementPingEmbargoState(&statistics_provider_));
-}
-
-// There is an initial state embargo end date in VPD which is too far in the
-// future to be plausible.
-TEST_F(FactoryPingEmbargoCheckTest, EnterpriseManagementInvalidValue) {
-  statistics_provider_.SetMachineStatistic(
-      kEnterpriseManagementEmbargoEndDateKey,
-      GenerateEmbargoEndDate(15 /* days_offset */));
-  EXPECT_EQ(FactoryPingEmbargoState::kInvalid,
-            GetEnterpriseManagementPingEmbargoState(&statistics_provider_));
-}
-
-// The current time is before a (valid and plausible) initial state embargo end
-// date.
-TEST_F(FactoryPingEmbargoCheckTest, EnterpriseManagementEmbargoNotPassed) {
-  statistics_provider_.SetMachineStatistic(
-      kEnterpriseManagementEmbargoEndDateKey,
-      GenerateEmbargoEndDate(1 /* days_offset */));
-  EXPECT_EQ(FactoryPingEmbargoState::kNotPassed,
-            GetEnterpriseManagementPingEmbargoState(&statistics_provider_));
-}
-
-// The current time is after a (valid and plausible) initial state embargo end
-// date.
-TEST_F(FactoryPingEmbargoCheckTest, EnterpriseManagementEmbargoPassed) {
-  statistics_provider_.SetMachineStatistic(
-      kEnterpriseManagementEmbargoEndDateKey,
-      GenerateEmbargoEndDate(-1 /* days_offset */));
-  EXPECT_EQ(FactoryPingEmbargoState::kPassed,
-            GetEnterpriseManagementPingEmbargoState(&statistics_provider_));
-}
-
-// Fallback to the RLZ embargo.
-TEST_F(FactoryPingEmbargoCheckTest,
-       EnterpriseManagementFallbackToRlzEmbargoPassed) {
-  statistics_provider_.SetMachineStatistic(
-      kRlzEmbargoEndDateKey, GenerateEmbargoEndDate(-1 /* days_offset */));
-  EXPECT_EQ(FactoryPingEmbargoState::kPassed,
-            GetEnterpriseManagementPingEmbargoState(&statistics_provider_));
-}
-
 // No RLZ embargo end date in VPD.
 TEST_F(FactoryPingEmbargoCheckTest, NoValue) {
   EXPECT_EQ(FactoryPingEmbargoState::kMissingOrMalformed,
