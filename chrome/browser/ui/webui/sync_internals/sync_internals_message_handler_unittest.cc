@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/sync_internals/sync_internals_message_handler.h"
+#include "chrome/browser/ui/webui/sync_internals/chrome_sync_internals_message_handler.h"
 
 #include <memory>
 #include <string>
@@ -33,14 +33,23 @@ using syncer::SyncServiceObserver;
 
 namespace {
 
-class TestableSyncInternalsMessageHandler : public SyncInternalsMessageHandler {
+// TODO(crbug.com/360321896): Move to //components and test the cross-platform
+// class instead. That's also why the file and fixture weren't renamed yet.
+class TestableSyncInternalsMessageHandler
+    : public ChromeSyncInternalsMessageHandler {
  public:
   TestableSyncInternalsMessageHandler(
       content::WebUI* web_ui,
       AboutSyncDataDelegate about_sync_data_delegate)
-      : SyncInternalsMessageHandler(std::move(about_sync_data_delegate)) {
+      : ChromeSyncInternalsMessageHandler(std::move(about_sync_data_delegate)) {
     set_web_ui(web_ui);
+    // In production, RegisterMessages() ensures that AllowJavascript() is
+    // called before any Handle*() method. But these tests are calling the
+    // handlers directly, so enable javascript here to avoid crashes.
+    AllowJavascript();
   }
+
+  using ChromeSyncInternalsMessageHandler::AllowJavascript;
 };
 
 static std::unique_ptr<KeyedService> BuildMockSyncService(
@@ -215,6 +224,7 @@ TEST_F(SyncInternalsMessageHandlerTest, HandleGetAllNodes) {
 
   base::Value::List args3;
   args3.Append("getAllNodes_2");
+  handler()->AllowJavascript();
   handler()->HandleGetAllNodes(args3);
   std::move(get_all_nodes_callback).Run(base::Value::List());
   EXPECT_EQ(2, CallCountWithName("cr.webUIResponse"));

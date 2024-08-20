@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SYNC_INTERNALS_SYNC_INTERNALS_MESSAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_SYNC_INTERNALS_SYNC_INTERNALS_MESSAGE_HANDLER_H_
+#ifndef COMPONENTS_BROWSER_SYNC_SYNC_INTERNALS_MESSAGE_HANDLER_H_
+#define COMPONENTS_BROWSER_SYNC_SYNC_INTERNALS_MESSAGE_HANDLER_H_
 
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
@@ -17,18 +22,25 @@
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
-#include "content/public/browser/web_ui_message_handler.h"
 
 namespace syncer {
+class UserEventService;
 struct TypeEntitiesCount;
 }  //  namespace syncer
 
-// The implementation for the chrome://sync-internals page.
-class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
-                                    public syncer::SyncServiceObserver,
+namespace browser_sync {
+
+// Abstract class with the common logic for the chrome://sync-internals page.
+// See also the concrete classes ChromeSyncInternalsMessageHandler and
+// IOSSyncInternalsMessageHandler.
+class SyncInternalsMessageHandler : public syncer::SyncServiceObserver,
                                     public syncer::ProtocolEventObserver,
                                     public syncer::InvalidationsListener {
  public:
+  // Handler for a message from the page.
+  using PageMessageHandler =
+      base::RepeatingCallback<void(const base::Value::List&)>;
+
   SyncInternalsMessageHandler();
 
   SyncInternalsMessageHandler(const SyncInternalsMessageHandler&) = delete;
@@ -37,9 +49,15 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
 
   ~SyncInternalsMessageHandler() override;
 
-  // content::WebUIMessageHandler implementation.
-  void OnJavascriptDisallowed() override;
-  void RegisterMessages() override;
+  // Disables all messages sent from this class to the page via
+  // SendEventToPage() or ResolvePageCallback().
+  void DisableMessagesToPage();
+
+  // Returns the messages handled by this class and the corresponding handler.
+  // Such messages can be sent by the page via chrome.send(). The embedder is
+  // responsible for actually registering the handlers, since the mechanism
+  // depends on the platform.
+  base::flat_map<std::string, PageMessageHandler> GetMessageHandlerMap();
 
   // Fires an event to send updated data to the About page and registers
   // observers to notify the page upon updates.
@@ -101,13 +119,36 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
 
   void OnGotEntityCounts(const syncer::TypeEntitiesCount& entity_counts);
 
+  // TODO(crbug.com/360321896): Revisit visibility of all methods in this class
+  // and reorder public/protected/private sections.
+ protected:
   // Gets the SyncService of the underlying original profile. May return
   // nullptr (e.g. if sync is disabled on the command line).
-  syncer::SyncService* GetSyncService();
+  virtual syncer::SyncService* GetSyncService() = 0;
 
   // Gets the SyncInvalidationsService of the underlying original profile.
-  syncer::SyncInvalidationsService* GetSyncInvalidationsService();
+  virtual syncer::SyncInvalidationsService* GetSyncInvalidationsService() = 0;
 
+  // Gets the UserEventService of the underlying original profile.
+  virtual syncer::UserEventService* GetUserEventService() = 0;
+
+  // The version_info::Channel in string form.
+  virtual std::string GetChannel() = 0;
+
+  // Sends `event_name` to the page. The page can listen to events via
+  // addWebUiListener().
+  virtual void SendEventToPage(std::string_view event_name,
+                               base::span<const base::ValueView> args) = 0;
+
+  // A page can send a message to this class which includes a `callback_id`.
+  // This method is then be used to reply to the page with `response`.
+  virtual void ResolvePageCallback(const base::ValueView callback_id,
+                                   const base::ValueView response) = 0;
+
+ private:
+  // Using base::ScopedObservation is important because GetSyncService() and
+  // GetSyncInvalidationsService() are virtual and cannot be invoked on
+  // destruction to remove the observer.
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
   base::ScopedObservation<syncer::SyncService, syncer::ProtocolEventObserver>
@@ -125,6 +166,8 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
 
   base::WeakPtrFactory<SyncInternalsMessageHandler> weak_ptr_factory_{this};
 };
+
+}  // namespace browser_sync
 
 namespace base {
 
@@ -160,4 +203,4 @@ struct ScopedObservationTraits<syncer::SyncInvalidationsService,
 
 }  // namespace base
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SYNC_INTERNALS_SYNC_INTERNALS_MESSAGE_HANDLER_H_
+#endif  // COMPONENTS_BROWSER_SYNC_SYNC_INTERNALS_MESSAGE_HANDLER_H_

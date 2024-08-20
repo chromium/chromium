@@ -16,6 +16,8 @@ static_library("browser_sync") {
     "signin_confirmation_helper.h",
     "sync_engine_factory_impl.cc",
     "sync_engine_factory_impl.h",
+    "sync_internals_message_handler.cc",
+    "sync_internals_message_handler.h",
     "sync_to_signin_migration.cc",
     "sync_to_signin_migration.h",
   ]

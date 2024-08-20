@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/sync_internals/sync_internals_message_handler.h"
+#include "components/browser_sync/sync_internals_message_handler.h"
 
 #include <utility>
 #include <vector>
@@ -12,11 +12,6 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/sync_invalidations_service_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/sync/user_event_service_factory.h"
-#include "chrome/common/channel_info.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/events/protocol_event.h"
@@ -28,8 +23,8 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync_user_events/user_event_service.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/web_ui.h"
+
+namespace browser_sync {
 
 namespace {
 
@@ -76,10 +71,10 @@ SyncInternalsMessageHandler::SyncInternalsMessageHandler(
 
 SyncInternalsMessageHandler::~SyncInternalsMessageHandler() = default;
 
-void SyncInternalsMessageHandler::OnJavascriptDisallowed() {
+void SyncInternalsMessageHandler::DisableMessagesToPage() {
   // Invaliding weak ptrs works well here because the only weak ptr we vend is
   // to the sync side to give us information that should be used to populate the
-  // javascript side. If javascript is disallowed, we don't care about updating
+  // page side. If messages are disallowed, we don't care about updating
   // the UI with data, so dropping those callbacks is fine.
   weak_ptr_factory_.InvalidateWeakPtrs();
   sync_service_observation_.Reset();
@@ -87,64 +82,47 @@ void SyncInternalsMessageHandler::OnJavascriptDisallowed() {
   invalidations_observation_.Reset();
 }
 
-void SyncInternalsMessageHandler::RegisterMessages() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  web_ui()->RegisterMessageCallback(
-      syncer::sync_ui_util::kRequestDataAndRegisterForUpdates,
-      base::BindRepeating(
-          &SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates,
-          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      syncer::sync_ui_util::kRequestListOfTypes,
-      base::BindRepeating(
-          &SyncInternalsMessageHandler::HandleRequestListOfTypes,
-          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      syncer::sync_ui_util::kRequestIncludeSpecificsInitialState,
-      base::BindRepeating(&SyncInternalsMessageHandler::
-                              HandleRequestIncludeSpecificsInitialState,
-                          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      syncer::sync_ui_util::kSetIncludeSpecifics,
-      base::BindRepeating(
-          &SyncInternalsMessageHandler::HandleSetIncludeSpecifics,
-          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      syncer::sync_ui_util::kWriteUserEvent,
-      base::BindRepeating(&SyncInternalsMessageHandler::HandleWriteUserEvent,
-                          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      syncer::sync_ui_util::kRequestStart,
-      base::BindRepeating(&SyncInternalsMessageHandler::HandleRequestStart,
-                          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      syncer::sync_ui_util::kRequestStopClearData,
-      base::BindRepeating(
-          &SyncInternalsMessageHandler::HandleRequestStopClearData,
-          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      syncer::sync_ui_util::kTriggerRefresh,
-      base::BindRepeating(&SyncInternalsMessageHandler::HandleTriggerRefresh,
-                          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      syncer::sync_ui_util::kGetAllNodes,
-      base::BindRepeating(&SyncInternalsMessageHandler::HandleGetAllNodes,
-                          base::Unretained(this)));
+base::flat_map<std::string, SyncInternalsMessageHandler::PageMessageHandler>
+SyncInternalsMessageHandler::GetMessageHandlerMap() {
+  return {
+      {syncer::sync_ui_util::kRequestDataAndRegisterForUpdates,
+       base::BindRepeating(
+           &SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates,
+           base::Unretained(this))},
+      {syncer::sync_ui_util::kRequestListOfTypes,
+       base::BindRepeating(
+           &SyncInternalsMessageHandler::HandleRequestListOfTypes,
+           base::Unretained(this))},
+      {syncer::sync_ui_util::kRequestIncludeSpecificsInitialState,
+       base::BindRepeating(&SyncInternalsMessageHandler::
+                               HandleRequestIncludeSpecificsInitialState,
+                           base::Unretained(this))},
+      {syncer::sync_ui_util::kSetIncludeSpecifics,
+       base::BindRepeating(
+           &SyncInternalsMessageHandler::HandleSetIncludeSpecifics,
+           base::Unretained(this))},
+      {syncer::sync_ui_util::kWriteUserEvent,
+       base::BindRepeating(&SyncInternalsMessageHandler::HandleWriteUserEvent,
+                           base::Unretained(this))},
+      {syncer::sync_ui_util::kRequestStart,
+       base::BindRepeating(&SyncInternalsMessageHandler::HandleRequestStart,
+                           base::Unretained(this))},
+      {syncer::sync_ui_util::kRequestStopClearData,
+       base::BindRepeating(
+           &SyncInternalsMessageHandler::HandleRequestStopClearData,
+           base::Unretained(this))},
+      {syncer::sync_ui_util::kTriggerRefresh,
+       base::BindRepeating(&SyncInternalsMessageHandler::HandleTriggerRefresh,
+                           base::Unretained(this))},
+      {syncer::sync_ui_util::kGetAllNodes,
+       base::BindRepeating(&SyncInternalsMessageHandler::HandleGetAllNodes,
+                           base::Unretained(this))},
+  };
 }
 
 void SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates(
     const base::Value::List& args) {
   CHECK(args.empty());
-  AllowJavascript();
 
   // Checking IsObserving() protects us from double-registering.  This could
   // happen on a page refresh, where the JavaScript gets re-run but the
@@ -168,7 +146,6 @@ void SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates(
 void SyncInternalsMessageHandler::HandleRequestListOfTypes(
     const base::Value::List& args) {
   CHECK(args.empty());
-  AllowJavascript();
 
   base::Value::Dict event_details;
   base::Value::List type_list;
@@ -177,27 +154,26 @@ void SyncInternalsMessageHandler::HandleRequestListOfTypes(
     type_list.Append(DataTypeToDebugString(type));
   }
   event_details.Set(syncer::sync_ui_util::kTypes, std::move(type_list));
-  FireWebUIListener(syncer::sync_ui_util::kOnReceivedListOfTypes,
-                    event_details);
+  base::ValueView event_args[] = {event_details};
+  SendEventToPage(syncer::sync_ui_util::kOnReceivedListOfTypes, event_args);
 }
 
 void SyncInternalsMessageHandler::HandleRequestIncludeSpecificsInitialState(
     const base::Value::List& args) {
   CHECK(args.empty());
-  AllowJavascript();
 
   base::Value::Dict value;
   value.Set(syncer::sync_ui_util::kIncludeSpecifics,
             GetIncludeSpecificsInitialState());
 
-  FireWebUIListener(
-      syncer::sync_ui_util::kOnReceivedIncludeSpecificsInitialState, value);
+  base::ValueView event_args[] = {value};
+  SendEventToPage(syncer::sync_ui_util::kOnReceivedIncludeSpecificsInitialState,
+                  event_args);
 }
 
 void SyncInternalsMessageHandler::HandleGetAllNodes(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-  AllowJavascript();
 
   const std::string& callback_id = args[0].GetString();
 
@@ -216,19 +192,12 @@ void SyncInternalsMessageHandler::HandleGetAllNodes(
 void SyncInternalsMessageHandler::HandleSetIncludeSpecifics(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-  AllowJavascript();
   include_specifics_ = args[0].GetBool();
 }
 
 void SyncInternalsMessageHandler::HandleWriteUserEvent(
     const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
-  AllowJavascript();
-
-  Profile* profile = Profile::FromWebUI(web_ui());
-  syncer::UserEventService* user_event_service =
-      browser_sync::UserEventServiceFactory::GetForProfile(
-          profile->GetOriginalProfile());
 
   sync_pb::UserEventSpecifics event_specifics;
   // Even though there's nothing to set inside the test event object, it needs
@@ -243,7 +212,7 @@ void SyncInternalsMessageHandler::HandleWriteUserEvent(
     event_specifics.set_navigation_id(StringAtIndexToInt64(args, 1u));
   }
 
-  user_event_service->RecordUserEvent(event_specifics);
+  GetUserEventService()->RecordUserEvent(event_specifics);
 }
 
 void SyncInternalsMessageHandler::HandleRequestStart(
@@ -291,7 +260,7 @@ void SyncInternalsMessageHandler::HandleTriggerRefresh(
 void SyncInternalsMessageHandler::OnReceivedAllNodes(
     const std::string& callback_id,
     base::Value::List nodes) {
-  ResolveJavascriptCallback(base::Value(callback_id), nodes);
+  ResolvePageCallback(callback_id, nodes);
 }
 
 void SyncInternalsMessageHandler::OnStateChanged(syncer::SyncService* sync) {
@@ -300,8 +269,9 @@ void SyncInternalsMessageHandler::OnStateChanged(syncer::SyncService* sync) {
 
 void SyncInternalsMessageHandler::OnProtocolEvent(
     const syncer::ProtocolEvent& event) {
-  FireWebUIListener(syncer::sync_ui_util::kOnProtocolEvent,
-                    event.ToValue(include_specifics_));
+  base::Value::Dict dict = event.ToValue(include_specifics_);
+  base::ValueView event_args[] = {dict};
+  SendEventToPage(syncer::sync_ui_util::kOnProtocolEvent, event_args);
 }
 
 void SyncInternalsMessageHandler::OnInvalidationReceived(
@@ -322,15 +292,15 @@ void SyncInternalsMessageHandler::OnInvalidationReceived(
     }
   }
 
-  FireWebUIListener(syncer::sync_ui_util::kOnInvalidationReceived,
-                    data_types_list);
+  base::ValueView event_args[] = {data_types_list};
+  SendEventToPage(syncer::sync_ui_util::kOnInvalidationReceived, event_args);
 }
 
 void SyncInternalsMessageHandler::SendAboutInfoAndEntityCounts() {
-  base::Value::Dict value = about_sync_data_delegate_.Run(
-      GetSyncService(),
-      chrome::GetChannelName(chrome::WithExtendedStable(true)));
-  FireWebUIListener(syncer::sync_ui_util::kOnAboutInfoUpdated, value);
+  base::Value::Dict value =
+      about_sync_data_delegate_.Run(GetSyncService(), GetChannel());
+  base::ValueView event_args[] = {value};
+  SendEventToPage(syncer::sync_ui_util::kOnAboutInfoUpdated, event_args);
 
   if (syncer::SyncService* service = GetSyncService()) {
     service->GetEntityCountsForDebugging(
@@ -351,17 +321,8 @@ void SyncInternalsMessageHandler::OnGotEntityCounts(
   base::Value::Dict event_details;
   event_details.Set(syncer::sync_ui_util::kEntityCounts,
                     std::move(count_dictionary));
-  FireWebUIListener(syncer::sync_ui_util::kOnEntityCountsUpdated,
-                    event_details);
+  base::ValueView event_args[] = {event_details};
+  SendEventToPage(syncer::sync_ui_util::kOnEntityCountsUpdated, event_args);
 }
 
-syncer::SyncService* SyncInternalsMessageHandler::GetSyncService() {
-  return SyncServiceFactory::GetForProfile(
-      Profile::FromWebUI(web_ui())->GetOriginalProfile());
-}
-
-syncer::SyncInvalidationsService*
-SyncInternalsMessageHandler::GetSyncInvalidationsService() {
-  return SyncInvalidationsServiceFactory::GetForProfile(
-      Profile::FromWebUI(web_ui())->GetOriginalProfile());
-}
+}  // namespace browser_sync

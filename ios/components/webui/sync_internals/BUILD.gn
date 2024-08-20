@@ -4,8 +4,8 @@
 
 source_set("sync_internals") {
   sources = [
-    "sync_internals_message_handler.h",
-    "sync_internals_message_handler.mm",
+    "ios_sync_internals_message_handler.h",
+    "ios_sync_internals_message_handler.mm",
     "sync_internals_ui.h",
     "sync_internals_ui.mm",
   ]

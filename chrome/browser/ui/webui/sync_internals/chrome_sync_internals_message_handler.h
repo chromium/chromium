@@ -1,0 +1,52 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_WEBUI_SYNC_INTERNALS_CHROME_SYNC_INTERNALS_MESSAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_SYNC_INTERNALS_CHROME_SYNC_INTERNALS_MESSAGE_HANDLER_H_
+
+#include "components/browser_sync/sync_internals_message_handler.h"
+#include "content/public/browser/web_ui_message_handler.h"
+
+// Chrome-specific implementation of SyncInternalsMessageHandler.
+class ChromeSyncInternalsMessageHandler
+    : public browser_sync::SyncInternalsMessageHandler,
+      public content::WebUIMessageHandler {
+ public:
+  ChromeSyncInternalsMessageHandler() = default;
+
+  ChromeSyncInternalsMessageHandler(const ChromeSyncInternalsMessageHandler&) =
+      delete;
+  ChromeSyncInternalsMessageHandler& operator=(
+      const ChromeSyncInternalsMessageHandler&) = delete;
+
+  ~ChromeSyncInternalsMessageHandler() override = default;
+
+  // browser_sync::SyncInternalsMessageHandler overrides.
+  syncer::SyncService* GetSyncService() override;
+  syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
+  syncer::UserEventService* GetUserEventService() override;
+  std::string GetChannel() override;
+  void SendEventToPage(std::string_view event_name,
+                       base::span<const base::ValueView> args) override;
+  void ResolvePageCallback(const base::ValueView callback_id,
+                           const base::ValueView response) override;
+
+  // content::WebUIMessageHandler overrides.
+  void RegisterMessages() override;
+  void OnJavascriptDisallowed() override;
+
+ protected:
+  // TODO(crbug.com/360321896): Remove when the unit test is testing
+  // SyncInternalsMessageHandler instead.
+  explicit ChromeSyncInternalsMessageHandler(
+      AboutSyncDataDelegate about_sync_data_delegate);
+
+ private:
+  // When handling a message page from the page, this class might want to reply
+  // back, which requires javascript to be enabled. This wrapper ensures it.
+  void AllowJavascriptAndHandleMessage(const PageMessageHandler& handler,
+                                       const base::Value::List& args);
+};
+
+#endif  // CHROME_BROWSER_UI_WEBUI_SYNC_INTERNALS_CHROME_SYNC_INTERNALS_MESSAGE_HANDLER_H_

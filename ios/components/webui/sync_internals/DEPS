@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/browser_sync",
   "+components/grit",
   "+components/sync",
   "+ui/base",
