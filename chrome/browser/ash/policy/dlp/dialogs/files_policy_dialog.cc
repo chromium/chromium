@@ -46,6 +46,7 @@ std::u16string GetAccessibleLearnMoreLinkNameForBlockReason(
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_LEARN_MORE_ABOUT_MALWARE_PROTECTION_ACCESSIBLE_NAME);
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsScanFailed:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknownScanResult:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsLargeFile:
@@ -67,6 +68,8 @@ PolicyDialogBase::ViewIds FilesPolicyDialog::MapBlockReasonToViewID(
       return PolicyDialogBase::kDlpSectionId;
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknownScanResult:
       return PolicyDialogBase::kEnterpriseConnectorsUnknownScanResultSectionId;
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsScanFailed:
+      return PolicyDialogBase::kEnterpriseConnectorsScanFailedResultSectionId;
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData:
       return PolicyDialogBase::kEnterpriseConnectorsSensitiveDataSectionId;
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware:

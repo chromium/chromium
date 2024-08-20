@@ -52,6 +52,8 @@ class FilesPolicyDialog : public PolicyDialogBase {
     // File was blocked because added to an Enterprise Connectors scanned
     // directory after the scan begun, and thus the file was not scanned.
     kEnterpriseConnectorsUnknownScanResult,
+    // File was blocked because the scan failed.
+    kEnterpriseConnectorsScanFailed,
     // File was blocked because it contains sensitive data (e.g., SSNs).
     kEnterpriseConnectorsSensitiveData,
     // File was blocked because it's a malware.
@@ -68,9 +70,10 @@ class FilesPolicyDialog : public PolicyDialogBase {
 
   // All the available reasons.
   // Please keep the array in sync with the `BlockReason` enum above!
-  static constexpr std::array<BlockReason, 7> available_reasons{
+  static constexpr std::array<BlockReason, 8> available_reasons{
       BlockReason::kDlp,
       BlockReason::kEnterpriseConnectorsUnknownScanResult,
+      BlockReason::kEnterpriseConnectorsScanFailed,
       BlockReason::kEnterpriseConnectorsSensitiveData,
       BlockReason::kEnterpriseConnectorsMalware,
       BlockReason::kEnterpriseConnectorsEncryptedFile,

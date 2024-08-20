@@ -218,6 +218,9 @@ void FilesPolicyErrorDialog::SetupBlockedFilesSections(
   }
 
   AppendBlockedFilesSection(
+      FilesPolicyErrorDialog::BlockReason::kEnterpriseConnectorsScanFailed,
+      dialog_info_map);
+  AppendBlockedFilesSection(
       FilesPolicyErrorDialog::BlockReason::kEnterpriseConnectorsEncryptedFile,
       dialog_info_map);
   AppendBlockedFilesSection(

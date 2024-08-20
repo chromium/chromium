@@ -419,6 +419,7 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, AllErrorSections) {
       FilesPolicyDialog::BlockReason::kDlp,
       FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
       FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware,
+      FilesPolicyDialog::BlockReason::kEnterpriseConnectorsScanFailed,
       FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile,
       FilesPolicyDialog::BlockReason::kEnterpriseConnectorsLargeFile,
       FilesPolicyDialog::BlockReason::kEnterpriseConnectors};

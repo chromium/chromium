@@ -44,6 +44,12 @@ FilesPolicyDialog::BlockReason GetEnterpriseConnectorsBlockReason(
           kEnterpriseConnectorsLargeFile;
     }
 
+    if (result.final_result().value() ==
+        enterprise_connectors::FinalContentAnalysisResult::FAIL_CLOSED) {
+      return policy::FilesPolicyDialog::BlockReason::
+          kEnterpriseConnectorsScanFailed;
+    }
+
     NOTREACHED_IN_MIGRATION()
         << "Enterprise connector result representing a blocked transfer "
            "without a tag but with an unexpected final result value.";
