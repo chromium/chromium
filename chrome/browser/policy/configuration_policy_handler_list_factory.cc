@@ -120,7 +120,7 @@
 #include "components/safe_browsing/content/common/file_type_policies_prefs.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/search_engines/default_search_policy_handler.h"
+#include "components/search_engines/enterprise/default_search_policy_handler.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/security_interstitials/core/https_only_mode_policy_handler.h"
 #include "components/security_interstitials/core/pref_names.h"
@@ -278,7 +278,7 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-#include "components/search_engines/site_search_policy_handler.h"
+#include "components/search_engines/enterprise/site_search_policy_handler.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

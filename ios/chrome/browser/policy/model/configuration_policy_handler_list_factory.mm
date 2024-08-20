@@ -30,7 +30,7 @@
 #import "components/policy/policy_constants.h"
 #import "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#import "components/search_engines/default_search_policy_handler.h"
+#import "components/search_engines/enterprise/default_search_policy_handler.h"
 #import "components/security_interstitials/core/https_only_mode_policy_handler.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/service/sync_policy_handler.h"

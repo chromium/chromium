@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/search_engines/site_search_policy_handler.h"
+#include "components/search_engines/enterprise/site_search_policy_handler.h"
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -17,7 +17,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/search_engines/default_search_manager.h"
-#include "components/search_engines/enterprise_site_search_manager.h"
+#include "components/search_engines/enterprise/enterprise_site_search_manager.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"

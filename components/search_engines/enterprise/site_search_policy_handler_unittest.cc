@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "components/search_engines/site_search_policy_handler.h"
+#include "components/search_engines/enterprise/site_search_policy_handler.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -23,7 +23,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/search_engines/default_search_manager.h"
-#include "components/search_engines/enterprise_site_search_manager.h"
+#include "components/search_engines/enterprise/enterprise_site_search_manager.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"

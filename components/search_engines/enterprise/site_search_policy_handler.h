@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEARCH_ENGINES_SITE_SEARCH_POLICY_HANDLER_H_
-#define COMPONENTS_SEARCH_ENGINES_SITE_SEARCH_POLICY_HANDLER_H_
+#ifndef COMPONENTS_SEARCH_ENGINES_ENTERPRISE_SITE_SEARCH_POLICY_HANDLER_H_
+#define COMPONENTS_SEARCH_ENGINES_ENTERPRISE_SITE_SEARCH_POLICY_HANDLER_H_
 
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
@@ -52,4 +52,4 @@ class SiteSearchPolicyHandler : public SimpleSchemaValidatingPolicyHandler {
 
 }  // namespace policy
 
-#endif  // COMPONENTS_SEARCH_ENGINES_SITE_SEARCH_POLICY_HANDLER_H_
+#endif  // COMPONENTS_SEARCH_ENGINES_ENTERPRISE_SITE_SEARCH_POLICY_HANDLER_H_

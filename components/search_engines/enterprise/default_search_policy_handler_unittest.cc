@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/search_engines/default_search_policy_handler.h"
+#include "components/search_engines/enterprise/default_search_policy_handler.h"
 
 #include <memory>
 

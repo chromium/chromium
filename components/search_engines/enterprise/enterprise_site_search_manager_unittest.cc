@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/search_engines/enterprise_site_search_manager.h"
+#include "components/search_engines/enterprise/enterprise_site_search_manager.h"
 
 #include <string>
 #include <utility>

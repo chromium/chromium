@@ -29,7 +29,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/default_search_manager.h"
-#include "components/search_engines/enterprise_site_search_manager.h"
+#include "components/search_engines/enterprise/enterprise_site_search_manager.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_host_to_urls_map.h"
 #include "components/search_engines/search_terms_data.h"
