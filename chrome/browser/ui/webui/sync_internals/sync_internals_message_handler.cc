@@ -227,7 +227,8 @@ void SyncInternalsMessageHandler::HandleWriteUserEvent(
 
   Profile* profile = Profile::FromWebUI(web_ui());
   syncer::UserEventService* user_event_service =
-      browser_sync::UserEventServiceFactory::GetForProfile(profile);
+      browser_sync::UserEventServiceFactory::GetForProfile(
+          profile->GetOriginalProfile());
 
   sync_pb::UserEventSpecifics event_specifics;
   // Even though there's nothing to set inside the test event object, it needs
