@@ -75,6 +75,8 @@ chromium-metrics-reviews@google.com.
       summary="the module for Search Box Suggestions"/>
   <variant name="SidePanelPinning" summary="the module for Side Panel Pinning"/>
   <variant name="TabOrganizer" summary="the module for Tab Organizer"/>
+  <variant name="TestDefaultModule"
+      summary="the default module used for testing only"/>
   <variant name="TestModule" summary="the module used for testing only"/>
   <variant name="TranslationSettings"
       summary="the module for Translation Settings"/>

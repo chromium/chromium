@@ -132,7 +132,7 @@ class WhatsNewRegistryTest : public testing::Test {
     whats_new_registry_->RegisterModule(
         WhatsNewModule(kTestModuleDisabledByDefault, ""));
     whats_new_registry_->RegisterModule(
-        WhatsNewModule("", BrowserCommand::kUnknownCommand));
+        WhatsNewModule("", "", BrowserCommand::kUnknownCommand));
   }
 
   void RegisterModulesAndEditions(

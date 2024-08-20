@@ -44520,6 +44520,7 @@ should be able to be added at any place in this file.
   <suffix name="SearchBoxSuggestions" label="Search Box Suggestions"/>
   <suffix name="SidePanelPinning" label="Side Panel Pinning"/>
   <suffix name="TabOrganizer" label="Tab Organizer"/>
+  <suffix name="TestDefaultModule" label="Test default module"/>
   <suffix name="TestModule" label="Test module"/>
   <suffix name="TranslationSettings" label="Translation Settings"/>
   <affected-action name="UserEducation.WhatsNew.ModuleLinkClicked"/>

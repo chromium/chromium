@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
   whats_new::WhatsNewRegistry* registry = GetRegistry();
   registry->RegisterModule(whats_new::WhatsNewModule(kTestModuleEnabled, ""));
   registry->RegisterModule(
-      whats_new::WhatsNewModule("", BrowserCommand::kNoOpCommand));
+      whats_new::WhatsNewModule("", "", BrowserCommand::kNoOpCommand));
 
   std::string expected = base::StringPrintf(
       "https://www.google.com/chrome/v2/whats-new/?version=%d",
@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
   registry->RegisterModule(whats_new::WhatsNewModule(kTestModuleEnabled, ""));
   registry->RegisterModule(whats_new::WhatsNewModule(kTestModule2Enabled, ""));
   registry->RegisterModule(
-      whats_new::WhatsNewModule("", BrowserCommand::kNoOpCommand));
+      whats_new::WhatsNewModule("", "", BrowserCommand::kNoOpCommand));
 
   std::string expected = base::StringPrintf(
       "https://www.google.com/chrome/v2/whats-new/?version=%d",
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
       whats_new::WhatsNewModule(kTestModuleDisabledByDefault, ""));
   // Will be ignored - no feature.
   registry->RegisterModule(
-      whats_new::WhatsNewModule("", BrowserCommand::kNoOpCommand));
+      whats_new::WhatsNewModule("", "", BrowserCommand::kNoOpCommand));
 
   std::string expected = base::StringPrintf(
       "https://www.google.com/chrome/v2/whats-new/?version=%d",
