@@ -125,12 +125,11 @@ void CryptoResultImpl::CompleteWithError(WebCryptoErrorType error_type,
   ClearResolver();
 }
 
-void CryptoResultImpl::CompleteWithBuffer(const void* bytes,
-                                          unsigned bytes_size) {
+void CryptoResultImpl::CompleteWithBuffer(base::span<const uint8_t> bytes) {
   if (!resolver_)
     return;
 
-  auto* buffer = DOMArrayBuffer::Create(bytes, bytes_size);
+  auto* buffer = DOMArrayBuffer::Create(bytes);
   if (type_ == ResolverType::kTyped) {
     resolver_->DowncastTo<DOMArrayBuffer>()->Resolve(buffer);
   } else {
@@ -141,8 +140,7 @@ void CryptoResultImpl::CompleteWithBuffer(const void* bytes,
   ClearResolver();
 }
 
-void CryptoResultImpl::CompleteWithJson(const char* utf8_data,
-                                        unsigned length) {
+void CryptoResultImpl::CompleteWithJson(std::string_view utf8_data) {
   if (!resolver_)
     return;
 
@@ -150,14 +148,15 @@ void CryptoResultImpl::CompleteWithJson(const char* utf8_data,
   v8::Isolate* isolate = script_state->GetIsolate();
   ScriptState::Scope scope(script_state);
 
-  if (length > v8::String::kMaxLength) {
+  if (utf8_data.size() > v8::String::kMaxLength) {
     // TODO(crbug.com/1316976): this should probably raise an exception instead.
     LOG(FATAL) << "Result string is longer than v8::String::kMaxLength";
   }
 
   v8::Local<v8::String> json_string =
-      v8::String::NewFromUtf8(isolate, utf8_data, v8::NewStringType::kNormal,
-                              length)
+      v8::String::NewFromUtf8(isolate, utf8_data.data(),
+                              v8::NewStringType::kNormal,
+                              static_cast<int>(utf8_data.size()))
           .ToLocalChecked();
 
   v8::TryCatch exception_catcher(isolate);
