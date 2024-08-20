@@ -96,6 +96,7 @@ AutoPipSettingHelper::CreateOverlayViewIfNeeded(
       // If the user already said to allow once, then continue allowing.  It's
       // assumed that we're used for at most one visit to a site.
       if (already_selected_allow_once_) {
+        RecordResult(PromptResult::kNotShownAllowedOnce);
         return nullptr;
       }
       // Create and return the UI to ask the user.
@@ -105,9 +106,11 @@ AutoPipSettingHelper::CreateOverlayViewIfNeeded(
           browser_view_overridden_bounds, anchor_view, arrow);
     case CONTENT_SETTING_ALLOW:
       // Nothing to do -- allow the auto pip to proceed.
+      RecordResult(PromptResult::kNotShownAllowedOnEveryVisit);
       return nullptr;
     case CONTENT_SETTING_BLOCK:
       // Auto-pip is not allowed.  Close the window.
+      RecordResult(PromptResult::kNotShownBlocked);
       std::move(close_pip_cb).Run();
       return nullptr;
     default:
@@ -115,6 +118,14 @@ AutoPipSettingHelper::CreateOverlayViewIfNeeded(
       std::move(close_pip_cb).Run();
       return nullptr;
   }
+}
+
+void AutoPipSettingHelper::OnAutoPipBlockedByPermission() {
+  RecordResult(PromptResult::kNotShownBlocked);
+}
+
+void AutoPipSettingHelper::OnAutoPipBlockedByIncognito() {
+  RecordResult(PromptResult::kNotShownIncognito);
 }
 
 void AutoPipSettingHelper::OnUiResult(base::OnceClosure close_pip_cb,
@@ -143,6 +154,6 @@ void AutoPipSettingHelper::OnUiResult(base::OnceClosure close_pip_cb,
 }
 
 void AutoPipSettingHelper::RecordResult(PromptResult result) {
-  base::UmaHistogramEnumeration("Media.AutoPictureInPicture.PromptResult",
+  base::UmaHistogramEnumeration("Media.AutoPictureInPicture.PromptResultV2",
                                 result);
 }

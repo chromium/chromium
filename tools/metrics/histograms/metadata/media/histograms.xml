@@ -1814,15 +1814,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.AutoPictureInPicture.PromptResult"
-    enum="MediaAutoPictureInPicturePromptResult" expires_after="2025-01-05">
+<histogram name="Media.AutoPictureInPicture.PromptResultV2"
+    enum="MediaAutoPictureInPicturePromptResult" expires_after="2025-04-05">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Recorded when the user either selects an option from the Automatic
     picture-in-picture permission prompt, or when the user manually closes the
-    picture-in-picture window without responding to the prompt. Records their
-    selection (or &quot;Ignored&quot; if they did not select an option).
+    picture-in-picture window without responding to the prompt, or when we
+    decide to not show the prompt at all. When the prompt is shown, this records
+    their selection (or &quot;Ignored&quot; if they did not select an option).
+    When the prompt is not shown, records why it was not shown.
   </summary>
 </histogram>
 
