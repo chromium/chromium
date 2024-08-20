@@ -163,9 +163,6 @@ interface NativeWidgetNSWindowHost {
   // state has changed.
   OnWindowStateRestorationDataChanged(array<uint8> data);
 
-  // Called when this widget is reparented to another window.
-  OnWindowParentChanged(uint64 new_parent_id);
-
   // Called when the toolbar reveal status changes. The toolbar is visible
   // either because there are outstanding reveal locks or the mouse is
   // hovering over the upper border of the screen.

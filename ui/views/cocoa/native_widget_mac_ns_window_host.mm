@@ -99,7 +99,6 @@ class BridgedNativeWidgetHostDummy
                                 bool full_keyboard_access_enabled) override {}
   void OnWindowStateRestorationDataChanged(
       const std::vector<uint8_t>& data) override {}
-  void OnWindowParentChanged(uint64_t new_parent_id) override {}
   void OnImmersiveFullscreenToolbarRevealChanged(bool is_revealed) override {}
   void OnImmersiveFullscreenMenuBarRevealChanged(float reveal_amount) override {
   }
@@ -1352,32 +1351,6 @@ void NativeWidgetMacNSWindowHost::OnWindowStateRestorationDataChanged(
   state_restoration_data_ = data;
   if (Widget* widget = GetWidget()) {
     widget->OnNativeWidgetWorkspaceChanged();
-  }
-}
-
-void NativeWidgetMacNSWindowHost::OnWindowParentChanged(
-    uint64_t new_parent_id) {
-  NativeWidgetMacNSWindowHost* new_parent = GetFromId(new_parent_id);
-
-  if (new_parent == parent_) {
-    return;
-  }
-
-  if (parent_) {
-    auto found = base::ranges::find(parent_->children_, this);
-    CHECK(found != parent_->children_.end());
-    parent_->children_.erase(found);
-    parent_ = nullptr;
-  }
-
-  parent_ = new_parent;
-  if (parent_) {
-    parent_->children_.push_back(this);
-  }
-
-  if (Widget* widget = GetWidget()) {
-    widget->OnNativeWidgetParentChanged(
-        parent_ ? parent_->native_widget_mac()->GetNativeView() : nullptr);
   }
 }
 
