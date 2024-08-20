@@ -185,6 +185,9 @@ class CORE_EXPORT AbortSignal : public EventTarget {
   // only be called for composite signals.
   void InvokeRegistryCallback(base::FunctionRef<void(AbortSignalRegistry&)>);
 
+  void SetAbortReason(ScriptState* script_state, ScriptValue reason);
+  void RunAbortSteps();
+
   // https://dom.spec.whatwg.org/#abortsignal-abort-reason
   // There is one difference from the spec. The value is empty instead of
   // undefined when this signal is not aborted. This is because

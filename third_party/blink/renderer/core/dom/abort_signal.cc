@@ -219,8 +219,45 @@ void AbortSignal::SignalAbort(ScriptState* script_state,
                               ScriptValue reason,
                               SignalAbortPassKey) {
   DCHECK(!reason.IsEmpty());
-  if (aborted())
+  if (aborted()) {
     return;
+  }
+
+  CHECK(composition_manager_);
+  auto* source_signal_manager =
+      DynamicTo<SourceSignalCompositionManager>(composition_manager_.Get());
+  // `SignalAbort` can only be called on source signals.
+  CHECK(source_signal_manager);
+  HeapVector<Member<AbortSignal>> dependent_signals_to_abort;
+  dependent_signals_to_abort.ReserveInitialCapacity(
+      source_signal_manager->GetDependentSignals().size());
+
+  // Set the abort reason for this signal and any unaborted dependent signals so
+  // that all dependent signals are aborted before JS runs in abort algorithms
+  // or event dispatch.
+  SetAbortReason(script_state, reason);
+
+  for (auto& signal : source_signal_manager->GetDependentSignals()) {
+    CHECK(signal.Get());
+    if (!signal->aborted()) {
+      signal->SetAbortReason(script_state, abort_reason_);
+      dependent_signals_to_abort.push_back(signal);
+    }
+  }
+
+  RunAbortSteps();
+
+  for (auto& signal : dependent_signals_to_abort) {
+    signal->RunAbortSteps();
+    signal->composition_manager_->Settle();
+  }
+
+  composition_manager_->Settle();
+}
+
+void AbortSignal::SetAbortReason(ScriptState* script_state,
+                                 ScriptValue reason) {
+  CHECK(!aborted());
   if (reason.IsUndefined()) {
     abort_reason_ = ScriptValue(
         script_state->GetIsolate(),
@@ -230,7 +267,9 @@ void AbortSignal::SignalAbort(ScriptState* script_state,
   } else {
     abort_reason_ = reason;
   }
+}
 
+void AbortSignal::RunAbortSteps() {
   for (AbortSignal::AlgorithmHandle* handle : abort_algorithms_) {
     CHECK(handle);
     CHECK(handle->GetAlgorithm());
@@ -238,20 +277,6 @@ void AbortSignal::SignalAbort(ScriptState* script_state,
   }
 
   DispatchEvent(*Event::Create(event_type_names::kAbort));
-
-  DCHECK(composition_manager_);
-  // Dependent signals are linked directly to source signals, so the abort
-  // only gets propagated for source signals.
-  if (auto* source_signal_manager = DynamicTo<SourceSignalCompositionManager>(
-          composition_manager_.Get())) {
-    // This is safe against reentrancy because new dependents are not added to
-    // already aborted signals.
-    for (auto& signal : source_signal_manager->GetDependentSignals()) {
-      CHECK(signal.Get());
-      signal->SignalAbort(script_state, abort_reason_, SignalAbortPassKey());
-    }
-  }
-  composition_manager_->Settle();
 }
 
 void AbortSignal::Trace(Visitor* visitor) const {
