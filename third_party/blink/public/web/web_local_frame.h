@@ -450,6 +450,9 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
                                     mojom::WantResultOption,
                                     mojom::PromiseResultOption) = 0;
 
+  // Returns if devtools is connected to the frame.
+  virtual bool IsInspectorConnected() = 0;
+
   // Logs to the console associated with this frame. If |discard_duplicates| is
   // set, the message will only be added if it is unique (i.e. has not been
   // added to the console previously from this page).

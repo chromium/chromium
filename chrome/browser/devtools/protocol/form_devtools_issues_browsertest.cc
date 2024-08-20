@@ -23,12 +23,12 @@ namespace {
 class AutofillFormDevtoolsProtocolTest : public DevToolsProtocolTestBase {
  public:
   void NavigateToFormPageAndEnableAudits() {
+    Attach();
     GURL test_url = content::GetTestUrl(
         "autofill", "autofill_form_devtools_issues_test.html");
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
     EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
-    Attach();
     SendCommandSync("Audits.enable");
   }
 

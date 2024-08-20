@@ -1108,6 +1108,10 @@ void WebLocalFrameImpl::RequestExecuteScript(
       promise_behavior);
 }
 
+bool WebLocalFrameImpl::IsInspectorConnected() {
+  return LocalRoot()->DevToolsAgentImpl(/*create_if_necessary=*/false);
+}
+
 v8::MaybeLocal<v8::Value> WebLocalFrameImpl::CallFunctionEvenIfScriptDisabled(
     v8::Local<v8::Function> function,
     v8::Local<v8::Value> receiver,
