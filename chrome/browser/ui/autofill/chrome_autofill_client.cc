@@ -113,7 +113,6 @@
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/variations/service/variations_service.h"
-#include "components/webauthn/content/browser/internal_authenticator_impl.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/ssl_status.h"
@@ -137,7 +136,6 @@
 #include "components/infobars/core/infobar.h"
 #include "components/messages/android/messages_feature.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/webauthn/android/internal_authenticator_android.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/autofill_prediction_improvements/chrome_autofill_prediction_improvements_client.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
@@ -433,18 +431,6 @@ FastCheckoutClient* ChromeAutofillClient::GetFastCheckoutClient() {
   return fast_checkout_client_.get();
 #else
   return nullptr;
-#endif
-}
-
-std::unique_ptr<webauthn::InternalAuthenticator>
-ChromeAutofillClient::CreateCreditCardInternalAuthenticator(
-    AutofillDriver* driver) {
-  auto* cad = static_cast<ContentAutofillDriver*>(driver);
-  content::RenderFrameHost* rfh = cad->render_frame_host();
-#if BUILDFLAG(IS_ANDROID)
-  return std::make_unique<webauthn::InternalAuthenticatorAndroid>(rfh);
-#else
-  return std::make_unique<content::InternalAuthenticatorImpl>(rfh);
 #endif
 }
 

@@ -17,8 +17,15 @@
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 
+#if !BUILDFLAG(IS_IOS)
+namespace webauthn {
+class InternalAuthenticator;
+}
+#endif
+
 namespace autofill {
 
+class AutofillDriver;
 struct AutofillErrorDialogContext;
 class AutofillOfferData;
 class AutofillOfferManager;
@@ -550,6 +557,14 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // currently shown. Should be called only if the feature is supported by the
   // platform.
   virtual void HideTouchToFillPaymentMethod();
+
+#if !BUILDFLAG(IS_IOS)
+  // Creates the appropriate implementation of InternalAuthenticator. May be
+  // null for platforms that don't support this, in which case standard CVC
+  // authentication will be used instead.
+  virtual std::unique_ptr<webauthn::InternalAuthenticator>
+  CreateCreditCardInternalAuthenticator(AutofillDriver* driver);
+#endif
 };
 
 }  // namespace payments

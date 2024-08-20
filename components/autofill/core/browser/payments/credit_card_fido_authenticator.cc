@@ -856,8 +856,9 @@ void CreditCardFidoAuthenticator::HandleGetAssertionFailure() {
 
 webauthn::InternalAuthenticator* CreditCardFidoAuthenticator::authenticator() {
   if (!authenticator_) {
-    authenticator_ = autofill_client_->CreateCreditCardInternalAuthenticator(
-        autofill_driver_.get());
+    authenticator_ =
+        autofill_client_->GetPaymentsAutofillClient()
+            ->CreateCreditCardInternalAuthenticator(autofill_driver_.get());
     // `authenticator_` may be null for unsupported platforms.
     if (authenticator_) {
       authenticator_->SetEffectiveOrigin(

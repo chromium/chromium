@@ -29,11 +29,16 @@
 
 class GURL;
 
+namespace webauthn {
+class InternalAuthenticator;
+}
+
 namespace autofill {
 
 #if BUILDFLAG(IS_ANDROID)
 class AutofillCvcSaveMessageDelegate;
 #endif  // BUILDFLAG(IS_ANDROID)
+class AutofillDriver;
 class AutofillErrorDialogControllerImpl;
 #if BUILDFLAG(IS_ANDROID)
 class AutofillMessageController;
@@ -200,6 +205,8 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::Iban> ibans_to_suggest) override;
   void HideTouchToFillPaymentMethod() override;
+  std::unique_ptr<webauthn::InternalAuthenticator>
+  CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
 
 #if BUILDFLAG(IS_ANDROID)
   // The AutofillSnackbarController is used to show a snackbar notification

@@ -22,8 +22,8 @@
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
-#include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -120,8 +120,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   GeoIpCountryCode GetVariationConfigCountryCode() const override;
   profile_metrics::BrowserProfileType GetProfileType() const override;
   FastCheckoutClient* GetFastCheckoutClient() override;
-  std::unique_ptr<webauthn::InternalAuthenticator>
-  CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
   void ShowAutofillSettings(SuggestionType suggestion_type) override;
   payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
       override;

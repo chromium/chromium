@@ -21,9 +21,18 @@
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 
+#if !BUILDFLAG(IS_IOS)
+namespace webauthn {
+class InternalAuthenticator;
+}
+#endif  // !BUILDFLAG(IS_IOS)
+
 namespace autofill {
 
 class AutofillClient;
+#if !BUILDFLAG(IS_IOS)
+class AutofillDriver;
+#endif  // !BUILDFLAG(IS_IOS)
 class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
 class MerchantPromoCodeManager;
@@ -104,6 +113,10 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest,
       base::span<const Suggestion> suggestions) override;
+#if !BUILDFLAG(IS_IOS)
+  std::unique_ptr<webauthn::InternalAuthenticator>
+  CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
+#endif
 
   bool GetMandatoryReauthOptInPromptWasShown();
 

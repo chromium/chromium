@@ -227,4 +227,12 @@ bool PaymentsAutofillClient::ShowTouchToFillIban(
 
 void PaymentsAutofillClient::HideTouchToFillPaymentMethod() {}
 
+#if !BUILDFLAG(IS_IOS)
+std::unique_ptr<webauthn::InternalAuthenticator>
+PaymentsAutofillClient::CreateCreditCardInternalAuthenticator(
+    AutofillDriver* driver) {
+  return nullptr;
+}
+#endif
+
 }  // namespace autofill::payments

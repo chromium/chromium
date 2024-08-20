@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/risk_util.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/merchant_promo_code_manager.h"
@@ -54,6 +55,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
@@ -76,6 +78,7 @@
 #include "components/autofill/core/browser/payments/autofill_save_iban_ui_info.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_view.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
+#include "components/webauthn/android/internal_authenticator_android.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager.h"
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
@@ -86,6 +89,7 @@
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_state.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/webauthn/content/browser/internal_authenticator_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill::payments {
@@ -829,6 +833,18 @@ void ChromePaymentsAutofillClient::HideTouchToFillPaymentMethod() {
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED_IN_MIGRATION();
+#endif
+}
+
+std::unique_ptr<webauthn::InternalAuthenticator>
+ChromePaymentsAutofillClient::CreateCreditCardInternalAuthenticator(
+    AutofillDriver* driver) {
+  auto* cad = static_cast<ContentAutofillDriver*>(driver);
+  content::RenderFrameHost* rfh = cad->render_frame_host();
+#if BUILDFLAG(IS_ANDROID)
+  return std::make_unique<webauthn::InternalAuthenticatorAndroid>(rfh);
+#else
+  return std::make_unique<content::InternalAuthenticatorImpl>(rfh);
 #endif
 }
 

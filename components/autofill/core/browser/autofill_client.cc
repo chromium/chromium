@@ -122,13 +122,6 @@ AutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   return nullptr;
 }
 
-#if !BUILDFLAG(IS_IOS)
-std::unique_ptr<webauthn::InternalAuthenticator>
-AutofillClient::CreateCreditCardInternalAuthenticator(AutofillDriver* driver) {
-  return nullptr;
-}
-#endif
-
 LogManager* AutofillClient::GetLogManager() const {
   return nullptr;
 }

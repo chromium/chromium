@@ -63,11 +63,6 @@
 #include "base/android/build_info.h"
 #endif
 
-#if !BUILDFLAG(IS_IOS)
-#include "components/autofill/core/browser/payments/test_internal_authenticator.h"
-#include "components/webauthn/core/browser/internal_authenticator.h"
-#endif
-
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
 #endif
@@ -236,13 +231,6 @@ class TestAutofillClientTemplate : public T {
   GeoIpCountryCode GetVariationConfigCountryCode() const override {
     return variation_config_country_code_;
   }
-
-#if !BUILDFLAG(IS_IOS)
-  std::unique_ptr<webauthn::InternalAuthenticator>
-  CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override {
-    return std::make_unique<TestInternalAuthenticator>();
-  }
-#endif
 
   void ShowAutofillSettings(SuggestionType suggestion_type) override {}
 

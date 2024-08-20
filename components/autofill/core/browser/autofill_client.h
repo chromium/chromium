@@ -61,12 +61,6 @@ namespace version_info {
 enum class Channel;
 }
 
-#if !BUILDFLAG(IS_IOS)
-namespace webauthn {
-class InternalAuthenticator;
-}
-#endif
-
 namespace autofill {
 
 class AddressNormalizer;
@@ -74,7 +68,6 @@ class AutocompleteHistoryManager;
 class AutofillAblationStudy;
 class AutofillComposeDelegate;
 class AutofillCrowdsourcingManager;
-class AutofillDriver;
 class AutofillDriverFactory;
 class AutofillMlPredictionModelHandler;
 class AutofillOptimizationGuide;
@@ -323,14 +316,6 @@ class AutofillClient {
 
   // Gets a FastCheckoutClient instance (can be null for unsupported platforms).
   virtual FastCheckoutClient* GetFastCheckoutClient();
-
-#if !BUILDFLAG(IS_IOS)
-  // Creates the appropriate implementation of InternalAuthenticator. May be
-  // null for platforms that don't support this, in which case standard CVC
-  // authentication will be used instead.
-  virtual std::unique_ptr<webauthn::InternalAuthenticator>
-  CreateCreditCardInternalAuthenticator(AutofillDriver* driver);
-#endif
 
   // Causes the Autofill settings UI to be shown.
   virtual void ShowAutofillSettings(SuggestionType suggestion_type) = 0;
