@@ -286,10 +286,7 @@ class Component {
     void PatchingComplete(
         const base::expected<base::FilePath, CategorizedError>&);
     void InstallProgress(int install_progress);
-    void InstallComplete(ErrorCategory error_category,
-                         int error_code,
-                         int extra_code1,
-                         std::optional<CrxInstaller::Result> installer_result);
+    void InstallComplete(const CrxInstaller::Result& installer_result);
   };
 
   class StateUpdating : public State {
@@ -304,10 +301,7 @@ class Component {
     void DoHandle() override;
 
     void InstallProgress(int install_progress);
-    void InstallComplete(ErrorCategory error_category,
-                         int error_code,
-                         int extra_code1,
-                         std::optional<CrxInstaller::Result> installer_result);
+    void InstallComplete(const CrxInstaller::Result& installer_result);
   };
 
   class StateUpdated : public State {
