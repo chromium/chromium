@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/fixed_array.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -262,8 +263,8 @@ void GestureInterpreterLibevdevCros::OnLibEvdevCrosEvent(Evdev* evdev,
   }
 
   // Touch.
-  FingerState fingers[Event_Get_Slot_Count(evdev)];
-  memset(&fingers, 0, sizeof(fingers));
+  base::FixedArray<FingerState> fingers(Event_Get_Slot_Count(evdev));
+  memset(fingers.data(), 0, fingers.memsize());
   int current_finger = 0;
   for (int i = 0; i < evstate->slot_count; i++) {
     MtSlotPtr slot = &evstate->slots[i];
@@ -282,7 +283,7 @@ void GestureInterpreterLibevdevCros::OnLibEvdevCrosEvent(Evdev* evdev,
   }
   hwstate.touch_cnt = Event_Get_Touch_Count(evdev);
   hwstate.finger_cnt = current_finger;
-  hwstate.fingers = fingers;
+  hwstate.fingers = fingers.data();
 
   // Buttons.
   if (Event_Get_Button_Left(evdev))
