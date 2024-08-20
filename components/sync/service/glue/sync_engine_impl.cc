@@ -87,11 +87,9 @@ SyncTransportDataStartupState ValidateSyncTransportData(
   // one (otherwise the data may be corrupt). Note that, for local sync, the
   // authenticated account is always empty.
   if (prefs.GetCurrentSyncingGaiaId() != core_account_info.gaia) {
-    // Note that if kSyncAccountKeyedTransportPrefs is enabled, an empty
-    // last-syncing-GaiaID is fine and expected if the user signed out and back
-    // in again.
-    if (!prefs.GetCurrentSyncingGaiaId().empty() ||
-        !base::FeatureList::IsEnabled(kSyncAccountKeyedTransportPrefs)) {
+    // Note that an empty last-syncing-GaiaID is fine and expected if the user
+    // signed out and back in again.
+    if (!prefs.GetCurrentSyncingGaiaId().empty()) {
       DLOG(WARNING) << "Found mismatching gaia ID in sync preferences";
       return SyncTransportDataStartupState::kGaiaIdMismatch;
     }

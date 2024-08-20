@@ -197,9 +197,6 @@ BASE_DECLARE_FEATURE(kMoveThemePrefsToSpecifics);
 BASE_DECLARE_FEATURE(kWebApkBackupAndRestoreBackend);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// If enabled, SyncTransportDataPrefs are account-keyed (instead of just for the
-// currently-signed-in account).
-BASE_DECLARE_FEATURE(kSyncAccountKeyedTransportPrefs);
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

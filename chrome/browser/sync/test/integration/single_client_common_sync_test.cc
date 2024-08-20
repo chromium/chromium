@@ -194,28 +194,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
   }
 }
 
-class SingleClientReuseCacheGuidSyncTest : public SyncTest {
- public:
-  SingleClientReuseCacheGuidSyncTest() : SyncTest(SINGLE_CLIENT) {
-    override_features_.InitAndEnableFeature(
-        syncer::kSyncAccountKeyedTransportPrefs);
-  }
-  ~SingleClientReuseCacheGuidSyncTest() override = default;
-  SingleClientReuseCacheGuidSyncTest(
-      const SingleClientReuseCacheGuidSyncTest&) = delete;
-  SingleClientReuseCacheGuidSyncTest& operator=(
-      const SingleClientReuseCacheGuidSyncTest&) = delete;
-
- private:
-  base::test::ScopedFeatureList override_features_;
-};
-
 // ChromeOS-Ash doesn't support primary account signout.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Note: See also SyncErrorTest.ClientDataObsoleteTest, which ensures the cache
 // GUID does *not* get reused if the client's data needs to be reset.
-IN_PROC_BROWSER_TEST_F(SingleClientReuseCacheGuidSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
                        ReusesCacheGuidAfterSignoutAndSignin) {
   ASSERT_TRUE(SetupSync());
 
@@ -247,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientReuseCacheGuidSyncTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientReuseCacheGuidSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
                        ReusesCacheGuidOnlyForSameAccount) {
   ASSERT_TRUE(SetupClients());
 

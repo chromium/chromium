@@ -152,13 +152,6 @@ void ClearRelevantData() {
     config.features_disabled.push_back(
         kClearDeviceDataOnSignOutForManagedUsers);
   }
-  if ([self isRunningTest:@selector
-            (testSyncCheckDifferentCacheGuid_SignOutAndSignIn)]) {
-    config.features_disabled.push_back(syncer::kSyncAccountKeyedTransportPrefs);
-  } else if ([self isRunningTest:@selector
-                   (testSyncCheckSameCacheGuid_SignOutAndSignIn)]) {
-    config.features_enabled.push_back(syncer::kSyncAccountKeyedTransportPrefs);
-  }
 
   return config;
 }
@@ -260,34 +253,8 @@ void ClearRelevantData() {
                                    inStorage:BookmarkStorageType::kAccount];
 }
 
-// Tests that the local cache guid changes when the user signs out and then
-// signs back in with the same account.
-// Note that for this test, kSyncAccountKeyedTransportPrefs is DISabled.
-- (void)testSyncCheckDifferentCacheGuid_SignOutAndSignIn {
-  // Sign in a fake identity, and store the initial sync guid.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
-  std::string original_guid = [ChromeEarlGrey syncCacheGUID];
-
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  [SigninEarlGrey signOut];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncOperationTimeout];
-
-  // Sign the user back in, and verify the guid has changed.
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
-  GREYAssertTrue(
-      [ChromeEarlGrey syncCacheGUID] != original_guid,
-      @"guid didn't change after user signed out and signed back in");
-}
-
 // Tests that the local cache guid is reused when the user signs out and then
 // signs back in with the same account.
-// Note that for this test, kSyncAccountKeyedTransportPrefs is ENabled.
 - (void)testSyncCheckSameCacheGuid_SignOutAndSignIn {
   // Sign in a fake identity, and store the initial sync guid.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];

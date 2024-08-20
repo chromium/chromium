@@ -47,34 +47,32 @@ SyncTransportDataPrefs::SyncTransportDataPrefs(
     PrefService* pref_service,
     const signin::GaiaIdHash& gaia_id_hash)
     : pref_service_(pref_service), gaia_id_hash_(gaia_id_hash) {
-  if (base::FeatureList::IsEnabled(kSyncAccountKeyedTransportPrefs)) {
-    // If the account-keyed prefs aren't populated yet, copy over the values.
-    // As a sanity check, ensure that the Gaia IDs match.
-    std::string old_gaia_id = pref_service_->GetString(kSyncGaiaId);
-    if (signin::GaiaIdHash::FromGaiaId(old_gaia_id) == gaia_id_hash_ &&
-        !pref_service_->HasPrefPath(kSyncTransportDataPerAccount)) {
-      ScopedDictPrefUpdate update_account_dict(pref_service_,
-                                               kSyncTransportDataPerAccount);
-      base::Value::Dict* account_values =
-          update_account_dict->EnsureDict(gaia_id_hash_.ToBase64());
-      account_values->Set(kSyncCacheGuid,
-                          pref_service_->GetValue(kSyncCacheGuid).Clone());
-      account_values->Set(kSyncBirthday,
-                          pref_service_->GetValue(kSyncBirthday).Clone());
-      account_values->Set(kSyncBagOfChips,
-                          pref_service_->GetValue(kSyncBagOfChips).Clone());
-      account_values->Set(kSyncLastSyncedTime,
-                          pref_service_->GetValue(kSyncLastSyncedTime).Clone());
-      account_values->Set(kSyncLastPollTime,
-                          pref_service_->GetValue(kSyncLastPollTime).Clone());
-      account_values->Set(kSyncPollInterval,
-                          pref_service_->GetValue(kSyncPollInterval).Clone());
-    }
-  } else {
-    // Account-keyed transport prefs are disabled - clear any existing value,
-    // to start over fresh when the feature gets (re)enabled.
-    pref_service_->ClearPref(kSyncTransportDataPerAccount);
+  // If the account-keyed prefs aren't populated yet, copy over the values from
+  // the legacy prefs.
+  // TODO(crbug.com/360888481): Clean up this migration after 2025-05 or so.
+  // As a sanity check, ensure that the Gaia IDs match.
+  std::string old_gaia_id = pref_service_->GetString(kSyncGaiaId);
+  if (signin::GaiaIdHash::FromGaiaId(old_gaia_id) == gaia_id_hash_ &&
+      !pref_service_->HasPrefPath(kSyncTransportDataPerAccount)) {
+    ScopedDictPrefUpdate update_account_dict(pref_service_,
+                                             kSyncTransportDataPerAccount);
+    base::Value::Dict* account_values =
+        update_account_dict->EnsureDict(gaia_id_hash_.ToBase64());
+    account_values->Set(kSyncCacheGuid,
+                        pref_service_->GetValue(kSyncCacheGuid).Clone());
+    account_values->Set(kSyncBirthday,
+                        pref_service_->GetValue(kSyncBirthday).Clone());
+    account_values->Set(kSyncBagOfChips,
+                        pref_service_->GetValue(kSyncBagOfChips).Clone());
+    account_values->Set(kSyncLastSyncedTime,
+                        pref_service_->GetValue(kSyncLastSyncedTime).Clone());
+    account_values->Set(kSyncLastPollTime,
+                        pref_service_->GetValue(kSyncLastPollTime).Clone());
+    account_values->Set(kSyncPollInterval,
+                        pref_service_->GetValue(kSyncPollInterval).Clone());
   }
+  // TODO(crbug.com/337034860): Also clear the legacy prefs here, and stop
+  // populating them below.
 }
 
 SyncTransportDataPrefs::~SyncTransportDataPrefs() = default;
@@ -86,9 +84,8 @@ void SyncTransportDataPrefs::RegisterProfilePrefs(
 
   registry->RegisterDictionaryPref(kSyncTransportDataPerAccount);
 
-  // TODO(crbug.com/337034860): Clean up all the non-account-keyed prefs once
-  // kSyncAccountKeyedTransportPrefs is rolled out (plus some grace period for
-  // migration).
+  // TODO(crbug.com/360888481): Clean up the legacy non-account-keyed prefs
+  // after 2025-05 or so.
   registry->RegisterStringPref(kSyncCacheGuid, std::string());
   registry->RegisterStringPref(kSyncBirthday, std::string());
   registry->RegisterStringPref(kSyncBagOfChips, std::string());
@@ -127,10 +124,6 @@ void SyncTransportDataPrefs::KeepAccountSettingsPrefsOnlyForUsers(
 
 base::Time SyncTransportDataPrefs::GetLastSyncedTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(kSyncAccountKeyedTransportPrefs)) {
-    return pref_service_->GetTime(kSyncLastSyncedTime);
-  }
-
   const base::Value* value =
       GetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
                                    gaia_id_hash_, kSyncLastSyncedTime);
@@ -141,19 +134,13 @@ void SyncTransportDataPrefs::SetLastSyncedTime(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetTime(kSyncLastSyncedTime, time);
 
-  if (base::FeatureList::IsEnabled(kSyncAccountKeyedTransportPrefs)) {
-    SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
-                                 gaia_id_hash_, kSyncLastSyncedTime,
-                                 base::TimeToValue(time));
-  }
+  SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
+                               gaia_id_hash_, kSyncLastSyncedTime,
+                               base::TimeToValue(time));
 }
 
 base::Time SyncTransportDataPrefs::GetLastPollTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(kSyncAccountKeyedTransportPrefs)) {
-    return pref_service_->GetTime(kSyncLastPollTime);
-  }
-
   const base::Value* value =
       GetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
                                    gaia_id_hash_, kSyncLastPollTime);
@@ -164,25 +151,19 @@ void SyncTransportDataPrefs::SetLastPollTime(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetTime(kSyncLastPollTime, time);
 
-  if (base::FeatureList::IsEnabled(kSyncAccountKeyedTransportPrefs)) {
-    SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
-                                 gaia_id_hash_, kSyncLastPollTime,
-                                 base::TimeToValue(time));
-  }
+  SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
+                               gaia_id_hash_, kSyncLastPollTime,
+                               base::TimeToValue(time));
 }
 
 base::TimeDelta SyncTransportDataPrefs::GetPollInterval() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::TimeDelta poll_interval;
-  if (base::FeatureList::IsEnabled(kSyncAccountKeyedTransportPrefs)) {
-    const base::Value* value = GetAccountKeyedPrefDictEntry(
-        pref_service_, kSyncTransportDataPerAccount, gaia_id_hash_,
-        kSyncPollInterval);
-    poll_interval = base::ValueToTimeDelta(value).value_or(base::TimeDelta());
-  } else {
-    poll_interval = pref_service_->GetTimeDelta(kSyncPollInterval);
-  }
+  const base::Value* value =
+      GetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
+                                   gaia_id_hash_, kSyncPollInterval);
+  base::TimeDelta poll_interval =
+      base::ValueToTimeDelta(value).value_or(base::TimeDelta());
 
   // If the poll interval is unreasonably short, reset it. This will cause
   // callers to use a reasonable default value instead.
@@ -199,11 +180,9 @@ void SyncTransportDataPrefs::SetPollInterval(base::TimeDelta interval) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetTimeDelta(kSyncPollInterval, interval);
 
-  if (base::FeatureList::IsEnabled(kSyncAccountKeyedTransportPrefs)) {
-    SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
-                                 gaia_id_hash_, kSyncPollInterval,
-                                 base::TimeDeltaToValue(interval));
-  }
+  SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
+                               gaia_id_hash_, kSyncPollInterval,
+                               base::TimeDeltaToValue(interval));
 }
 
 void SyncTransportDataPrefs::SetCurrentSyncingGaiaId(
@@ -238,19 +217,13 @@ void SyncTransportDataPrefs::SetCacheGuid(const std::string& cache_guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetString(kSyncCacheGuid, cache_guid);
 
-  if (base::FeatureList::IsEnabled(kSyncAccountKeyedTransportPrefs)) {
-    SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
-                                 gaia_id_hash_, kSyncCacheGuid,
-                                 base::Value(cache_guid));
-  }
+  SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
+                               gaia_id_hash_, kSyncCacheGuid,
+                               base::Value(cache_guid));
 }
 
 std::string SyncTransportDataPrefs::GetCacheGuid() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(kSyncAccountKeyedTransportPrefs)) {
-    return pref_service_->GetString(kSyncCacheGuid);
-  }
-
   const base::Value* value =
       GetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
                                    gaia_id_hash_, kSyncCacheGuid);
@@ -261,19 +234,13 @@ void SyncTransportDataPrefs::SetBirthday(const std::string& birthday) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetString(kSyncBirthday, birthday);
 
-  if (base::FeatureList::IsEnabled(kSyncAccountKeyedTransportPrefs)) {
-    SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
-                                 gaia_id_hash_, kSyncBirthday,
-                                 base::Value(birthday));
-  }
+  SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
+                               gaia_id_hash_, kSyncBirthday,
+                               base::Value(birthday));
 }
 
 std::string SyncTransportDataPrefs::GetBirthday() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(kSyncAccountKeyedTransportPrefs)) {
-    return pref_service_->GetString(kSyncBirthday);
-  }
-
   const base::Value* value =
       GetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
                                    gaia_id_hash_, kSyncBirthday);
@@ -287,25 +254,19 @@ void SyncTransportDataPrefs::SetBagOfChips(const std::string& bag_of_chips) {
   std::string encoded = base::Base64Encode(bag_of_chips);
   pref_service_->SetString(kSyncBagOfChips, encoded);
 
-  if (base::FeatureList::IsEnabled(kSyncAccountKeyedTransportPrefs)) {
-    SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
-                                 gaia_id_hash_, kSyncBagOfChips,
-                                 base::Value(encoded));
-  }
+  SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
+                               gaia_id_hash_, kSyncBagOfChips,
+                               base::Value(encoded));
 }
 
 std::string SyncTransportDataPrefs::GetBagOfChips() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string encoded;
-  if (base::FeatureList::IsEnabled(kSyncAccountKeyedTransportPrefs)) {
-    const base::Value* value = GetAccountKeyedPrefDictEntry(
-        pref_service_, kSyncTransportDataPerAccount, gaia_id_hash_,
-        kSyncBagOfChips);
-    if (value && value->is_string()) {
-      encoded = value->GetString();
-    }
-  } else {
-    encoded = pref_service_->GetString(kSyncBagOfChips);
+  const base::Value* value =
+      GetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
+                                   gaia_id_hash_, kSyncBagOfChips);
+  if (value && value->is_string()) {
+    encoded = value->GetString();
   }
 
   // |kSyncBagOfChips| gets stored in base64 because it represents a serialized
