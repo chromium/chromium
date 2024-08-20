@@ -207,7 +207,7 @@ em::DeviceManagementRequest GetPolicyRequest() {
   em::PolicyFetchRequest* policy_fetch_request =
       policy_request.mutable_policy_request()->add_requests();
   policy_fetch_request->set_policy_type(dm_protocol::kChromeUserPolicyType);
-  policy_fetch_request->set_signature_type(em::PolicyFetchRequest::SHA1_RSA);
+  policy_fetch_request->set_signature_type(em::PolicyFetchRequest::SHA256_RSA);
   policy_fetch_request->set_verification_key_hash(kPolicyVerificationKeyHash);
   policy_fetch_request->set_device_dm_token(kDeviceDMToken);
   policy_request.mutable_policy_request()->set_reason(kProtoReason);
