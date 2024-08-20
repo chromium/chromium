@@ -1436,17 +1436,6 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/android_toolchain_canary/ndk': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/android_toolchain_canary/android_toolchain_canary',
-              'version': 'JtKBKwZ4O-6avfvuQNOAMYqUwQAMGX10y-GrIlJPo_wC',
-          },
-      ],
-      'condition': 'checkout_android_native_support',
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/androidx/cipd': {
     'packages': [
       {

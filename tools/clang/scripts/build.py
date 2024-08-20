@@ -59,12 +59,6 @@ ANDROID_NDK_TOOLCHAIN_RELATIVE_DIR = os.path.join('toolchains', 'llvm',
                                                   'prebuilt', 'linux-x86_64')
 ANDROID_NDK_TOOLCHAIN_DIR = os.path.join(ANDROID_NDK_DIR,
                                          ANDROID_NDK_TOOLCHAIN_RELATIVE_DIR)
-# NOTE(nathaniel): Using the canary Android NDK in this manner is forecast
-# to be temporary (~months; will be done differently by 2024).
-ANDROID_NDK_CANARY_DIR = os.path.join(CHROMIUM_DIR, 'third_party',
-                                      'android_toolchain_canary', 'ndk')
-ANDROID_NDK_CANARY_TOOLCHAIN_DIR = os.path.join(
-    ANDROID_NDK_CANARY_DIR, ANDROID_NDK_TOOLCHAIN_RELATIVE_DIR)
 FUCHSIA_SDK_DIR = os.path.join(CHROMIUM_DIR, 'third_party', 'fuchsia-sdk',
                                'sdk')
 PINNED_CLANG_DIR = os.path.join(LLVM_BUILD_TOOLS_DIR, 'pinned-clang')
