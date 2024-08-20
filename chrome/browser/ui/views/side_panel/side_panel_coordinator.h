@@ -116,7 +116,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   void RemoveSidePanelViewStateObserver(SidePanelViewStateObserver* observer);
 
-  void Close(bool suppress_animations);
+  void Close(bool supress_animations);
 
  private:
   friend class SidePanelCoordinatorTest;
@@ -131,7 +131,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   void Show(SidePanelEntry* entry,
             std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger =
                 std::nullopt,
-            bool suppress_animations = false);
+            bool supress_animations = false);
   void OnClosed();
 
   // Returns the corresponding entry for `entry_key` or a nullptr if this key is
@@ -157,7 +157,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // `content_view` if provided, otherwise get the content_view from the
   // provided SidePanelEntry.
   void PopulateSidePanel(
-      bool suppress_animations,
+      bool supress_animations,
       SidePanelEntry* entry,
       std::optional<std::unique_ptr<views::View>> content_view);
 
