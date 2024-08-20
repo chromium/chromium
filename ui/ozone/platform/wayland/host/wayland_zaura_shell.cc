@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/353039516): Remove this and convert code to safer constructs.
+// TODO(crbug.com/354862211): Remove this after removing unsafe code only used
+// in Lacros in OnDesksChanged
 #pragma allow_unsafe_buffers
 #endif
 
@@ -154,7 +155,9 @@ void WaylandZAuraShell::OnDesksChanged(void* data,
   auto* self = static_cast<WaylandZAuraShell*>(data);
   char* desk_name = reinterpret_cast<char*>(states->data);
   self->desks_.clear();
-  // SAFETY: TODO(crbug.com/353039516): fix unsafe pointer arithmetic.
+  // SAFETY: TODO(crbug.com/354862211): This code is only used by Lacros and
+  // will be removed, so we are opting not fix the unsafe pointer
+  // arithmetic and -Wunsafe-buffer-usage suppression in this file.
   while (desk_name < reinterpret_cast<char*>(states->data) + states->size) {
     std::string str(desk_name, strlen(desk_name));
     self->desks_.push_back(str);
