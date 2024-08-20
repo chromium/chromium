@@ -80,7 +80,6 @@ static_library("arc") {
     "//chrome/browser/ui/webui/ash",
     "//chrome/browser/ui/webui/ash/settings/pages/about",
     "//chrome/browser/ui/webui/ash/settings/pages/apps",
-    "//chrome/browser/ui/webui/ash/settings/pages/device",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",
@@ -142,7 +141,6 @@ static_library("arc") {
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ui/webui/ash/settings/pages/about",
     "//chrome/browser/ui/webui/ash/settings/pages/apps",
-    "//chrome/browser/ui/webui/ash/settings/pages/device",
   ]
 }
 

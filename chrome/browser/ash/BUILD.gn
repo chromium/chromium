@@ -35,10 +35,6 @@ static_library("ash") {
     "http_auth_dialog.h",
     "idle_detector.cc",
     "idle_detector.h",
-    "note_taking/note_taking_controller_client.cc",
-    "note_taking/note_taking_controller_client.h",
-    "note_taking/note_taking_helper.cc",
-    "note_taking/note_taking_helper.h",
     "system_token_cert_db_initializer.cc",
     "system_token_cert_db_initializer.h",
     "tpm_firmware_update.cc",
@@ -330,6 +326,7 @@ static_library("ash") {
     "//chrome/browser/ash/login/version_updater",
     "//chrome/browser/ash/mahi",
     "//chrome/browser/ash/nearby:quick_start_connectivity_service",
+    "//chrome/browser/ash/note_taking",
     "//chrome/browser/ash/power/ml:screen_brightness_event_proto",
     "//chrome/browser/ash/power/ml:user_activity_event_proto",
     "//chrome/browser/ash/power/ml/smart_dim",
@@ -1340,7 +1337,6 @@ source_set("unit_tests") {
     "../ui/views/select_file_dialog_extension_unittest.cc",
     "../ui/webui/settings/about_handler_unittest.cc",
     "camera_presence_notifier_unittest.cc",
-    "note_taking/note_taking_helper_unittest.cc",
     "proxy_config_service_impl_unittest.cc",
     "system_token_cert_db_initializer_unittest.cc",
     "tpm_firmware_update_unittest.cc",
@@ -2034,6 +2030,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/nearby:unit_tests",
     "//chrome/browser/ash/net:unit_tests",
     "//chrome/browser/ash/network_change_manager:unit_tests",
+    "//chrome/browser/ash/note_taking:unit_tests",
     "//chrome/browser/ash/notifications:unit_tests",
     "//chrome/browser/ash/os_feedback:unit_tests",
     "//chrome/browser/ash/ownership:unit_tests",
@@ -2127,7 +2124,6 @@ source_set("browser_tests") {
 
   sources = [
     "first_web_contents_profiler_ash_browsertest.cc",
-    "note_taking/note_taking_helper_browsertest.cc",
     "wmp_browsertest.cc",
   ]
 
@@ -2219,6 +2215,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/mahi:browser_tests",
     "//chrome/browser/ash/net:browser_tests",
     "//chrome/browser/ash/network_change_manager:browser_tests",
+    "//chrome/browser/ash/note_taking:browser_tests",
     "//chrome/browser/ash/os_feedback:browser_tests",
     "//chrome/browser/ash/platform_keys:browser_tests",
     "//chrome/browser/ash/policy/affiliation:browser_tests",

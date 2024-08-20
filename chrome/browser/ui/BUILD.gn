@@ -2503,6 +2503,7 @@ static_library("ui") {
       "//chrome/browser/ash/nearby/presence",
       "//chrome/browser/ash/net",
       "//chrome/browser/ash/net/network_health",
+      "//chrome/browser/ash/note_taking",
       "//chrome/browser/ash/notifications",
       "//chrome/browser/ash/os_feedback",
       "//chrome/browser/ash/ownership",
