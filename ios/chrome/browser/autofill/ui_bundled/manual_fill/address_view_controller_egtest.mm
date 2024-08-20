@@ -274,7 +274,8 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 }
 
 // Tests that the "Manage Addresses..." action works.
-- (void)testManageAddressesActionOpensAddressSettings {
+// TODO(crbug.com/40928438): Fix this flaky test.
+- (void)FLAKY_testManageAddressesActionOpensAddressSettings {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];
@@ -295,7 +296,8 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 
 // Tests that returning from "Manage Addresses..." leaves the icons and keyboard
 // in the right state.
-- (void)testAddressesStateAfterPresentingManageAddresses {
+// TODO(crbug.com/40928438): Fix this flaky test.
+- (void)FLAKY_testAddressesStateAfterPresentingManageAddresses {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];
@@ -388,7 +390,8 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 
 // Tests that the Address View Controller is dismissed when tapping the outside
 // the popover on iPad.
-- (void)testIPadTappingOutsidePopOverDismissAddressController {
+// TODO(crbug.com/40928438): Fix this flaky test.
+- (void)FLAKY_testIPadTappingOutsidePopOverDismissAddressController {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test is not applicable for iPhone");
   }
@@ -415,7 +418,8 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 }
 
 // Tests that the address icon is hidden when no addresses are available.
-- (void)testAddressIconIsNotVisibleWhenAddressStoreEmpty {
+// TODO(crbug.com/40928438): Fix this flaky test.
+- (void)FLAKY_testAddressIconIsNotVisibleWhenAddressStoreEmpty {
   if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the Keyboard "
                            @"Accessory Upgrade feature is enabled.");
@@ -490,7 +494,8 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 
 // Tests that tapping the "Autofill Form" button fills the address form with
 // the right data.
-- (void)testAutofillFormButtonFillsForm {
+// TODO(crbug.com/40928438): Fix this flaky test.
+- (void)FLAKY_testAutofillFormButtonFillsForm {
   if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
     EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
                             @"Accessory Upgrade feature is disabled.")
@@ -527,7 +532,8 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 
 // Tests that the overflow menu button is only visible when the Keyboard
 // Accessory Upgrade feature is enabled.
-- (void)testOverflowMenuVisibility {
+// TODO(crbug.com/40928438): Fix this flaky test.
+- (void)FLAKY_testOverflowMenuVisibility {
   // Bring up the keyboard
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];
