@@ -11428,6 +11428,22 @@
             ]
         }
     ],
+    "IOSAccountCapabilitiesMigration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS",
+                        "ReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSBackgroundPasteboardAccess": [
         {
             "platforms": [
