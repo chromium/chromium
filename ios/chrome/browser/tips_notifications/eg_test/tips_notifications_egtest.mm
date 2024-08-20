@@ -181,7 +181,8 @@ void MaybeDismissNotification() {
 }
 
 // Tests triggering and interacting with each of the Tips notifications.
-- (void)testTriggerNotifications {
+// TODO(crbug.com/361075026): Test is flaky on various bots.
+- (void)DISABLED_testTriggerNotifications {
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGreyUI waitForAppToIdle];
 
