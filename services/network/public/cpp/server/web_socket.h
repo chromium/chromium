@@ -10,6 +10,8 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "net/server/web_socket_encoder.h"
+#include "net/server/web_socket_parse_result.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_frame.h"
 
@@ -20,27 +22,14 @@ namespace server {
 class HttpConnection;
 class HttpServer;
 class HttpServerRequestInfo;
-class WebSocketEncoder;
 
 class WebSocket final {
  public:
-  enum ParseResult {
-    // Final frame of a text message or compressed frame.
-    FRAME_OK_FINAL,
-    // Other frame of a text message.
-    FRAME_OK_MIDDLE,
-    FRAME_PING,
-    FRAME_PONG,
-    FRAME_INCOMPLETE,
-    FRAME_CLOSE,
-    FRAME_ERROR
-  };
-
   WebSocket(HttpServer* server, HttpConnection* connection);
 
   void Accept(const HttpServerRequestInfo& request,
               const net::NetworkTrafficAnnotationTag traffic_annotation);
-  ParseResult Read(std::string* message);
+  net::WebSocketParseResult Read(std::string* message);
   void Send(std::string_view message,
             net::WebSocketFrameHeader::OpCodeEnum op_code,
             const net::NetworkTrafficAnnotationTag traffic_annotation);
@@ -58,7 +47,7 @@ class WebSocket final {
 
   const raw_ptr<HttpServer> server_;
   const raw_ptr<HttpConnection> connection_;
-  std::unique_ptr<WebSocketEncoder> encoder_;
+  std::unique_ptr<net::WebSocketEncoder> encoder_;
   bool closed_;
   std::unique_ptr<net::NetworkTrafficAnnotationTag> traffic_annotation_ =
       nullptr;

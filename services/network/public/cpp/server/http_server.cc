@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/net_errors.h"
+#include "net/server/web_socket_parse_result.h"
 #include "services/network/public/cpp/server/http_connection.h"
 #include "services/network/public/cpp/server/http_server_request_info.h"
 #include "services/network/public/cpp/server/http_server_response_info.h"
@@ -272,18 +273,20 @@ void HttpServer::HandleReadResult(HttpConnection* connection, MojoResult rv) {
   while (!connection->read_buf().empty()) {
     if (connection->web_socket()) {
       std::string message;
-      WebSocket::ParseResult result = connection->web_socket()->Read(&message);
-      if (result == WebSocket::FRAME_INCOMPLETE) {
+      net::WebSocketParseResult result =
+          connection->web_socket()->Read(&message);
+      if (result == net::WebSocketParseResult::FRAME_INCOMPLETE) {
         break;
       }
 
-      if (result == WebSocket::FRAME_CLOSE ||
-          result == WebSocket::FRAME_ERROR) {
+      if (result == net::WebSocketParseResult::FRAME_CLOSE ||
+          result == net::WebSocketParseResult::FRAME_ERROR) {
         Close(connection->id());
         return;
       }
-      if (result == WebSocket::FRAME_OK_FINAL)
+      if (result == net::WebSocketParseResult::FRAME_OK_FINAL) {
         delegate_->OnWebSocketMessage(connection->id(), std::move(message));
+      }
       if (HasClosedConnection(connection)) {
         return;
       }

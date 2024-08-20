@@ -1566,6 +1566,19 @@ component("net") {
 
   if (enable_websockets) {
     sources += [
+      "server/http_connection.cc",
+      "server/http_connection.h",
+      "server/http_server.cc",
+      "server/http_server.h",
+      "server/http_server_request_info.cc",
+      "server/http_server_request_info.h",
+      "server/http_server_response_info.cc",
+      "server/http_server_response_info.h",
+      "server/web_socket.cc",
+      "server/web_socket.h",
+      "server/web_socket_encoder.cc",
+      "server/web_socket_encoder.h",
+      "server/web_socket_parse_result.h",
       "websockets/websocket_basic_handshake_stream.cc",
       "websockets/websocket_basic_handshake_stream.h",
       "websockets/websocket_basic_stream.cc",
@@ -2983,7 +2996,12 @@ test("net_unittests") {
   }
 
   if (enable_websockets) {
-    deps += [ "//net/server:tests" ]
+    sources += [
+      "server/http_connection_unittest.cc",
+      "server/http_server_response_info_unittest.cc",
+      "server/http_server_unittest.cc",
+      "server/web_socket_encoder_unittest.cc",
+    ]
   }
 
   if (is_posix) {
@@ -3384,6 +3402,20 @@ if (use_fuzzing_engine) {
   }
 }
 
+if (enable_websockets && use_fuzzing_engine) {
+  fuzzer_test("net_http_server_fuzzer") {
+    sources = [ "//net/server/http_server_fuzzer.cc" ]
+    deps = [
+      "//base",
+      "//net",
+      "//net:net_fuzzer_test_support",
+      "//net:test_support",
+    ]
+    dict = "//net/data/fuzzer_dictionaries/net_http_server_fuzzer.dict"
+    seed_corpus = "//net/data/fuzzer_data/http_server_requests/"
+  }
+}
+
 fuzzer_test("host_port_pair_fuzzer") {
   sources = [ "base/host_port_pair_fuzzer.cc" ]
   deps = [ "//net" ]
@@ -3721,7 +3753,6 @@ if (use_fuzzing_engine) {
     public_deps = [
       ":net_fuzzer_test_support",
       "//net",
-      "//net/server:http_server",
     ]
   }
 

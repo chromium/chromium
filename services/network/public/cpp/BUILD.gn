@@ -165,8 +165,6 @@ component("cpp") {
       "server/http_server_response_info.h",
       "server/web_socket.cc",
       "server/web_socket.h",
-      "server/web_socket_encoder.cc",
-      "server/web_socket_encoder.h",
     ]
   }
 
@@ -188,6 +186,7 @@ component("cpp") {
     "//components/miracle_parameter/common",
     "//components/prefs",
     "//ipc",
+    "//net",
     "//services/proxy_resolver/public/mojom",
   ]
 
@@ -608,10 +607,7 @@ source_set("tests") {
   ]
 
   if (enable_websockets) {
-    sources += [
-      "server/http_server_unittest.cc",
-      "server/web_socket_encoder_unittest.cc",
-    ]
+    sources += [ "server/http_server_unittest.cc" ]
   }
 
   if (is_linux) {

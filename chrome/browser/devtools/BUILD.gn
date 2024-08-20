@@ -173,7 +173,7 @@ static_library("devtools") {
       "//components/viz/host",
       "//components/web_modal",
       "//components/zoom",
-      "//net/server:http_server",
+      "//net",
       "//skia",
       "//third_party/icu",
       "//third_party/leveldatabase",
