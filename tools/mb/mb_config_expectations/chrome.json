@@ -1,18 +1,4 @@
 {
-  "chromeos-volteer-chrome-skylab": {
-    "args_file": "//build/args/chromeos/volteer.gni",
-    "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "amd64",
-      "dcheck_always_on": false,
-      "exclude_unwind_tables": false,
-      "is_chrome_branded": true,
-      "is_chromeos_device": true,
-      "is_official_build": true,
-      "is_skylab": true,
-      "ozone_platform_headless": true,
-      "use_remoteexec": true
-    }
-  },
   "lacros-amd64-generic-chrome": {
     "args_file": "//build/args/chromeos/amd64-generic-crostoolchain.gni",
     "gn_args": {

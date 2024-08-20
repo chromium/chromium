@@ -27,7 +27,6 @@
   # this dict to look up which config to use for a given bot.
   'builder_groups': {
     'chrome': {
-      'chromeos-volteer-chrome-skylab': 'chromeos_volteer_include_unwind_tables_official_skylab_reclient',
       'lacros-amd64-generic-chrome': 'chromeos_amd64-generic_lacros_official_skylab_reclient',
       'lacros-arm-generic-chrome': 'chromeos_arm-generic_lacros_official_skylab_reclient',
       'lacros-arm64-generic-chrome': 'chromeos_arm64-generic_lacros_official_skylab_reclient',
@@ -381,11 +380,6 @@
 
     'chromeos_kevin_include_unwind_tables_official_reclient': [
       'chromeos_kevin_reclient', 'include_unwind_tables', 'official',
-    ],
-
-    'chromeos_volteer_include_unwind_tables_official_skylab_reclient': [
-      'chromeos_device_reclient', 'volteer', 'include_unwind_tables', 'official', 'is_skylab', 'ozone_headless',
-      'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_with_codecs_release_bot_reclient': [
@@ -1237,10 +1231,6 @@
     'v8_release_branch': {
       # V8 flag that disables v8_enable_runtime_call_stats on release branches.
       'gn_args': 'v8_is_on_release_branch=true',
-    },
-
-    'volteer': {
-      'args_file': '//build/args/chromeos/volteer.gni',
     },
 
     # Mainly used by builders that use android emulator.
