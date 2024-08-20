@@ -12,8 +12,11 @@
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/shell.h"
+#include "base/files/file_util.h"
 #include "base/strings/string_util.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time_override.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
@@ -89,6 +92,16 @@ void AddUrlToHistory(Profile* profile,
                                       /*hidden=*/false,
                                       history::SOURCE_BROWSED);
   history::BlockUntilHistoryProcessesPendingRequests(history_service);
+}
+
+bool AddLocalFileToDownloads(Profile* profile, const std::string& file_name) {
+  const base::FilePath mount_path =
+      file_manager::util::GetDownloadsFolderForProfile(profile);
+  base::FilePath absolute_path = mount_path.AppendASCII(file_name);
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    return base::WriteFile(absolute_path, file_name);
+  }
 }
 
 class PickerInteractiveUiTest : public InteractiveAshTest {
@@ -338,6 +351,42 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchBrowsingHistory) {
       PressButton(kHistoryResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context,
                 WaitForWebInputFieldValue(u"https://foo.com/history")));
+}
+
+IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchLocalFile) {
+  ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test.png"));
+  // TODO: b/360229206 - Use a contenteditable input field so the file can be
+  // inserted.
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
+  constexpr std::string_view kFileResultName = "FileResult";
+  views::Textfield* picker_search_field = nullptr;
+
+  RunTestSequence(
+      InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
+                                       WaitForWebInputFieldFocus())),
+      Do([]() { TogglePickerByAccelerator(); }),
+      AfterShow(ash::kPickerSearchFieldTextfieldElementId,
+                [&picker_search_field](ui::TrackedElement* el) {
+                  picker_search_field = AsView<views::Textfield>(el);
+                }),
+      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      WaitForState(kSearchFieldFocusedState, true),
+      EnterText(ash::kPickerSearchFieldTextfieldElementId, u"test"),
+      WaitForShow(ash::kPickerSearchResultsPageElementId),
+      WaitForShow(ash::kPickerSearchResultsListItemElementId),
+      NameDescendantView(
+          ash::kPickerSearchResultsPageElementId, kFileResultName,
+          base::BindLambdaForTesting([](const views::View* view) {
+            if (const auto* list_item_view =
+                    views::AsViewClass<ash::PickerListItemView>(view)) {
+              return list_item_view->GetPrimaryTextForTesting() == u"test.png";
+            }
+            return false;
+          })),
+      PressButton(kFileResultName), WaitForHide(ash::kPickerElementId));
 }
 
 // Searches for 'today', checks the top result is the date, and inserts it
