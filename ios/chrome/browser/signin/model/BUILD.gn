@@ -49,8 +49,6 @@ source_set("model") {
     "pattern_account_restriction.mm",
     "resized_avatar_cache.h",
     "resized_avatar_cache.mm",
-    "signin_browser_state_info_updater.h",
-    "signin_browser_state_info_updater_factory.h",
     "signin_client_factory.cc",
     "signin_client_factory.h",
     "signin_error_controller_factory.cc",
