@@ -77,7 +77,8 @@ const char kSavedTabUrl[] = "https://google.com";
 const char16_t kSavedTabTitle[] = u"Google";
 
 // Returns a saved tab group for test.
-SavedTabGroup TestSavedGroup(const base::Uuid& saved_id) {
+SavedTabGroup TestSavedGroup(
+    const base::Uuid& saved_id = base::Uuid::GenerateRandomV4()) {
   SavedTabGroup saved_group(u"Test title", tab_groups::TabGroupColorId::kBlue,
                             {}, std::nullopt, saved_id, std::nullopt);
   return saved_group;
@@ -729,95 +730,102 @@ TEST_F(TabStripMediatorTest, RemoveTabFromGroup) {
 
 // Tests that closing all non-pinned tabs except a pinned tab works.
 TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptPinned) {
-  AddWebState(/* pinned= */ true);  // 0
-  AddWebState(/* pinned= */ true);  // 1, will be kept
-  const auto web_state_to_keep_identifier =
-      web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier();
-  AddWebState();  // 2
-  AddWebState();  // 3
-  AddWebState();  // 4
-  AddWebState();  // 5
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "a b | c d e f* [ 1 g h ]", browser_->GetBrowserState()));
+  web::WebState* web_state_to_keep = builder.GetWebStateForIdentifier('b');
 
   InitializeMediator();
 
-  ASSERT_EQ(5, web_state_list_->active_index());
-  ASSERT_EQ(6, web_state_list_->count());
+  TabGroupId tab_group_id =
+      builder.GetTabGroupForIdentifier('1')->tab_group_id();
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(tab_group_id))
+      .WillOnce(Return(TestSavedGroup()));
+  EXPECT_CALL(*tab_group_sync_service_,
+              RemoveLocalTabGroupMapping(tab_group_id));
+  EXPECT_CALL(*tab_group_sync_service_, RemoveGroup(tab_group_id)).Times(0);
 
-  TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
-      initWithWebState:web_state_list_->GetWebStateAt(1)];
+  TabSwitcherItem* item =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:web_state_to_keep];
   [mediator_ closeAllItemsExcept:item];
 
-  EXPECT_EQ(1, web_state_list_->active_index());
-  EXPECT_EQ(2, web_state_list_->count());
-
-  // Check that the WebState at index 1 is the one that should have been kept.
-  EXPECT_EQ(web_state_to_keep_identifier,
-            web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier());
-  // Check that the currently selected item is the WebState at index 1.
-  EXPECT_EQ(web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier(),
-            consumer_.selectedItem.identifier);
+  ASSERT_EQ("a b* |", builder.GetWebStateListDescription());
 }
 
 // Tests that closing all non-pinned tabs except a non-active tab works.
 TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptNonActive) {
-  AddWebState(/* pinned= */ true);  // 0
-  AddWebState(/* pinned= */ true);  // 1
-  AddWebState();                    // 2
-  AddWebState();                    // 3, will be kept
-  const auto web_state_to_keep_identifier =
-      web_state_list_->GetWebStateAt(3)->GetUniqueIdentifier();
-  AddWebState();  // 4
-  AddWebState();  // 5
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "a b | c d e f* [ 1 g h ]", browser_->GetBrowserState()));
+  web::WebState* web_state_to_keep = builder.GetWebStateForIdentifier('d');
 
   InitializeMediator();
 
-  ASSERT_EQ(5, web_state_list_->active_index());
-  ASSERT_EQ(6, web_state_list_->count());
+  TabGroupId tab_group_id =
+      builder.GetTabGroupForIdentifier('1')->tab_group_id();
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(tab_group_id))
+      .WillOnce(Return(TestSavedGroup()));
+  EXPECT_CALL(*tab_group_sync_service_,
+              RemoveLocalTabGroupMapping(tab_group_id));
+  EXPECT_CALL(*tab_group_sync_service_, RemoveGroup(tab_group_id)).Times(0);
 
-  TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
-      initWithWebState:web_state_list_->GetWebStateAt(3)];
+  TabSwitcherItem* item =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:web_state_to_keep];
   [mediator_ closeAllItemsExcept:item];
 
-  EXPECT_EQ(2, web_state_list_->active_index());
-  EXPECT_EQ(3, web_state_list_->count());
-
-  // Check that the WebState at index 2 is the one that should have been kept.
-  EXPECT_EQ(web_state_to_keep_identifier,
-            web_state_list_->GetWebStateAt(2)->GetUniqueIdentifier());
-  // Check that the currently selected item is the WebState at index 2.
-  EXPECT_EQ(web_state_list_->GetWebStateAt(2)->GetUniqueIdentifier(),
-            consumer_.selectedItem.identifier);
+  ASSERT_EQ("a b | d*", builder.GetWebStateListDescription());
 }
 
 // Tests that closing all non-pinned tabs except an active tab works.
 TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptActive) {
-  AddWebState(/* pinned= */ true);  // 0
-  AddWebState(/* pinned= */ true);  // 1
-  AddWebState();                    // 2
-  AddWebState();                    // 3
-  AddWebState();                    // 4
-  AddWebState();                    // 5, will be kept
-  const auto web_state_to_keep_identifier =
-      web_state_list_->GetWebStateAt(5)->GetUniqueIdentifier();
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "a b | c d e f* [ 1 g h ]", browser_->GetBrowserState()));
+  web::WebState* web_state_to_keep = builder.GetWebStateForIdentifier('f');
 
   InitializeMediator();
 
-  ASSERT_EQ(5, web_state_list_->active_index());
-  ASSERT_EQ(6, web_state_list_->count());
+  TabGroupId tab_group_id =
+      builder.GetTabGroupForIdentifier('1')->tab_group_id();
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(tab_group_id))
+      .WillOnce(Return(TestSavedGroup()));
+  EXPECT_CALL(*tab_group_sync_service_,
+              RemoveLocalTabGroupMapping(tab_group_id));
+  EXPECT_CALL(*tab_group_sync_service_, RemoveGroup(tab_group_id)).Times(0);
 
-  TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
-      initWithWebState:web_state_list_->GetWebStateAt(5)];
+  TabSwitcherItem* item =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:web_state_to_keep];
   [mediator_ closeAllItemsExcept:item];
 
-  EXPECT_EQ(2, web_state_list_->active_index());
-  EXPECT_EQ(3, web_state_list_->count());
+  ASSERT_EQ("a b | f*", builder.GetWebStateListDescription());
+}
 
-  // Check that the WebState at index 2 is the one that should have been kept.
-  EXPECT_EQ(web_state_to_keep_identifier,
-            web_state_list_->GetWebStateAt(2)->GetUniqueIdentifier());
-  // Check that the currently selected item is the WebState at index 2.
-  EXPECT_EQ(web_state_list_->GetWebStateAt(2)->GetUniqueIdentifier(),
-            consumer_.selectedItem.identifier);
+// Tests that closing all tabs except one grouped tab works.
+TEST_F(TabStripMediatorTest, CloseTabsExceptGroupedTab) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "a b | c d e f* [ 1 g h ]", browser_->GetBrowserState()));
+  web::WebState* web_state_to_keep = builder.GetWebStateForIdentifier('g');
+
+  InitializeMediator();
+
+  TabGroupId tab_group_id =
+      builder.GetTabGroupForIdentifier('1')->tab_group_id();
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(tab_group_id)).Times(0);
+  EXPECT_CALL(*tab_group_sync_service_,
+              RemoveLocalTabGroupMapping(tab_group_id))
+      .Times(0);
+  EXPECT_CALL(*tab_group_sync_service_, RemoveGroup(tab_group_id)).Times(0);
+
+  TabSwitcherItem* item =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:web_state_to_keep];
+  [mediator_ closeAllItemsExcept:item];
+
+  ASSERT_EQ("a b | [ 1 g* ]", builder.GetWebStateListDescription());
 }
 
 // Tests that moving web states works.
