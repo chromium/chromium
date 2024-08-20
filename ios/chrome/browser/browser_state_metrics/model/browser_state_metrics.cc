@@ -27,7 +27,7 @@ bool BrowserStateIsActive(const BrowserStateInfoCache& info_cache, int index) {
 bool CountBrowserStateInformation(ChromeBrowserStateManager* manager,
                                   profile_metrics::Counts* counts) {
   BrowserStateInfoCache* info_cache = manager->GetBrowserStateInfoCache();
-  size_t number_of_browser_states = info_cache->GetNumberOfBrowserStates();
+  size_t number_of_browser_states = info_cache->GetNumberOfProfiles();
   counts->total = number_of_browser_states;
 
   // Ignore other metrics if we have no browser states.

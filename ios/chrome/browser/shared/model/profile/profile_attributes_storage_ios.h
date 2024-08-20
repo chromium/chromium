@@ -44,8 +44,8 @@ class ProfileAttributesStorageIOS {
                        std::string_view user_name);
   void RemoveBrowserState(std::string_view name);
 
-  // Returns the count of known browser states.
-  size_t GetNumberOfBrowserStates() const;
+  // Returns the count of known profiles.
+  size_t GetNumberOfProfiles() const;
 
   // Gets and sets information related to browser states.
   size_t GetIndexOfBrowserStateWithName(std::string_view name) const;

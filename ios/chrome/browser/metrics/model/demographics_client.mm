@@ -48,7 +48,7 @@ int DemographicsClient::GetNumberOfProfilesOnDisk() {
   return GetApplicationContext()
       ->GetChromeBrowserStateManager()
       ->GetBrowserStateInfoCache()
-      ->GetNumberOfBrowserStates();
+      ->GetNumberOfProfiles();
 }
 
 // TODO(crbug.com/355629111): this API needs to be re-designed to work

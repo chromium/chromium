@@ -85,7 +85,7 @@ void ProfileAttributesStorageIOS::RemoveBrowserState(std::string_view name) {
   sorted_keys_.erase(base::ranges::find(sorted_keys_, name));
 }
 
-size_t ProfileAttributesStorageIOS::GetNumberOfBrowserStates() const {
+size_t ProfileAttributesStorageIOS::GetNumberOfProfiles() const {
   return sorted_keys_.size();
 }
 
@@ -211,7 +211,7 @@ void ProfileAttributesStorageIOS::RegisterPrefs(PrefRegistrySimple* registry) {
 
 const base::Value::Dict*
 ProfileAttributesStorageIOS::GetInfoForBrowserStateAtIndex(size_t index) const {
-  DCHECK_LT(index, GetNumberOfBrowserStates());
+  DCHECK_LT(index, GetNumberOfProfiles());
   return prefs_->GetDict(prefs::kBrowserStateInfoCache)
       .FindDict(sorted_keys_[index]);
 }

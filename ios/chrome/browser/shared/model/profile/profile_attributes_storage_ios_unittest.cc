@@ -86,7 +86,7 @@ TEST_F(ProfileAttributesStorageIOSTest, AddBrowserState) {
 
   // There is no duplicate, so there should be exactly as many BrowserState
   // known to the cache as there are test accounts.
-  EXPECT_EQ(cache.GetNumberOfBrowserStates(), std::size(kTestAccounts));
+  EXPECT_EQ(cache.GetNumberOfProfiles(), std::size(kTestAccounts));
 }
 
 // Tests that RemoveBrowserState(...) removes data for a BrowserState.
@@ -99,7 +99,7 @@ TEST_F(ProfileAttributesStorageIOSTest, RemoveBrowserState) {
 
   // There is no duplicate, so there should be exactly as many BrowserState
   // known to the cache as there are test accounts.
-  EXPECT_EQ(cache.GetNumberOfBrowserStates(), std::size(kTestAccounts));
+  EXPECT_EQ(cache.GetNumberOfProfiles(), std::size(kTestAccounts));
 
   for (const TestAccount& account : kTestAccounts) {
     EXPECT_NE(cache.GetIndexOfBrowserStateWithName(account.name),
@@ -122,7 +122,7 @@ TEST_F(ProfileAttributesStorageIOSTest, PrefService) {
     for (const TestAccount& account : kTestAccounts) {
       cache.AddBrowserState(account.name, account.gaia, account.email);
       cache.SetLastActiveTimeOfBrowserStateAtIndex(
-          cache.GetNumberOfBrowserStates() - 1, account.last_active_time);
+          cache.GetNumberOfProfiles() - 1, account.last_active_time);
     }
   }
 

@@ -523,7 +523,7 @@ AccountProfileMapper* ApplicationContextImpl::GetAccountProfileMapper() {
   if (!account_profile_mapper_) {
     ChromeBrowserStateManager* manager = GetChromeBrowserStateManager();
     BrowserStateInfoCache* info_cache = manager->GetBrowserStateInfoCache();
-    size_t profile_count = info_cache->GetNumberOfBrowserStates();
+    size_t profile_count = info_cache->GetNumberOfProfiles();
     if (profile_count == 0) {
       // This case can happens on the first startup.
       // TODO(crbug.com/331783685): AccountProfileMapper needs to listen for

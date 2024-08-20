@@ -73,7 +73,7 @@ enum class PushNotificationLifecycleEvent {
 GaiaIdToPushNotificationPreferenceMap*
 GaiaIdToPushNotificationPreferenceMapFromCache(
     BrowserStateInfoCache* info_cache) {
-  size_t number_of_browser_states = info_cache->GetNumberOfBrowserStates();
+  size_t number_of_browser_states = info_cache->GetNumberOfProfiles();
   NSMutableDictionary* account_preference_map =
       [[NSMutableDictionary alloc] init];
 
