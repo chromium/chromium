@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/values.h"
 #include "chrome/browser/ash/floating_sso/cookie_sync_conversions.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_sync_bridge.h"
@@ -46,7 +47,9 @@ FloatingSsoService::FloatingSsoService(
     syncer::OnceDataTypeStoreFactory create_store_callback)
     : prefs_(prefs),
       cookie_manager_(cookie_manager),
-      bridge_(std::move(change_processor), std::move(create_store_callback)),
+      bridge_(std::make_unique<FloatingSsoSyncBridge>(
+          std::move(change_processor),
+          std::move(create_store_callback))),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
   pref_change_registrar_->Init(prefs_);
   pref_change_registrar_->Add(
@@ -63,10 +66,10 @@ void FloatingSsoService::StartOrStop() {
   is_enabled_for_testing_ = prefs_->FindPreference(::prefs::kFloatingSsoEnabled)
                                 ->GetValue()
                                 ->GetBool();
-
   // TODO(b/355613655): stop listening for cookie changes when cookie sync gets
   // disabled.
   if (is_enabled_for_testing_) {
+    scoped_observation_.Observe(bridge_.get());
     MaybeStartListening();
   }
 }
@@ -101,19 +104,33 @@ void FloatingSsoService::BindToCookieManager() {
 }
 
 void FloatingSsoService::OnCookieChange(const net::CookieChangeInfo& change) {
-  if (!ShouldSyncCookie(change.cookie)) {
+  const net::CanonicalCookie& cookie = change.cookie;
+  if (!ShouldSyncCookie(cookie)) {
     return;
   }
-  std::optional<sync_pb::CookieSpecifics> sync_specifics =
-      ToSyncProto(change.cookie);
+  std::optional<sync_pb::CookieSpecifics> sync_specifics = ToSyncProto(cookie);
   if (!sync_specifics.has_value()) {
     return;
   }
 
+  const auto& in_store_specifics = bridge_->CookieSpecificsInStore();
   switch (change.cause) {
-    case net::CookieChangeCause::INSERTED:
-      bridge_.AddOrUpdateCookie(sync_specifics.value());
+    case net::CookieChangeCause::INSERTED: {
+      // Check if an identical cookie already exists in the bridge's store,
+      // to avoid sending no-op changes to sync.
+      if (auto it = in_store_specifics.find(sync_specifics->unique_key());
+          it != in_store_specifics.end()) {
+        const sync_pb::CookieSpecifics& local_specifics = it->second;
+        std::unique_ptr<net::CanonicalCookie> in_store_cookie =
+            FromSyncProto(local_specifics);
+        if (in_store_cookie &&
+            in_store_cookie->HasEquivalentDataMembers(cookie)) {
+          break;
+        }
+      }
+      bridge_->AddOrUpdateCookie(sync_specifics.value());
       break;
+    }
     // All cases below correspond to deletion of a cookie. When intention is to
     // update the cookie (e.g. in the case of `CookieChangeCause::OVERWRITE`),
     // they will be immediately followed by a `CookieChangeCause::INSERTED`
@@ -124,8 +141,49 @@ void FloatingSsoService::OnCookieChange(const net::CookieChangeInfo& change) {
     case net::CookieChangeCause::EXPIRED:
     case net::CookieChangeCause::EVICTED:
     case net::CookieChangeCause::EXPIRED_OVERWRITE:
-      bridge_.DeleteCookie(sync_specifics.value().unique_key());
+      // Check if the key is present in the bridge's store, to avoid sending
+      // no-op changes to sync.
+      if (auto it = in_store_specifics.find(sync_specifics->unique_key());
+          it != in_store_specifics.end()) {
+        bridge_->DeleteCookie(sync_specifics.value().unique_key());
+      }
       break;
+  }
+}
+
+void FloatingSsoService::OnCookiesAddedOrUpdatedRemotely(
+    const std::vector<net::CanonicalCookie>& cookies) {
+  net::CookieOptions options;
+  // Allow to alter http_only and SameSite cookies since we are restoring this
+  // cookie from another Chrome session.
+  options.set_include_httponly();
+  options.set_same_site_cookie_context(
+      net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+  for (const net::CanonicalCookie& cookie : cookies) {
+    // Sync server might contain changes for cookies which should no longer be
+    // synced due to a change of policies or a change in feature design and
+    // implementation. In that case, ignore them on the client side and let
+    // corresponding sync entities die on the server side based on TTL .
+    if (!ShouldSyncCookie(cookie)) {
+      continue;
+    }
+    cookie_manager_->SetCanonicalCookie(
+        cookie, net::cookie_util::SimulatedCookieSource(cookie, "https"),
+        options, base::DoNothing());
+  }
+}
+
+void FloatingSsoService::OnCookiesRemovedRemotely(
+    const std::vector<net::CanonicalCookie>& cookies) {
+  for (const net::CanonicalCookie& cookie : cookies) {
+    // Sync server might contain changes for cookies which should no longer be
+    // synced due to a change of policies or a change in feature design and
+    // implementation. In that case, ignore them on the client side.
+    if (!ShouldSyncCookie(cookie)) {
+      continue;
+    }
+
+    cookie_manager_->DeleteCanonicalCookie(cookie, base::DoNothing());
   }
 }
 
@@ -139,7 +197,7 @@ void FloatingSsoService::OnCookiesLoaded(const net::CookieList& cookies) {
     if (!sync_specifics.has_value()) {
       continue;
     }
-    bridge_.AddOrUpdateCookie(sync_specifics.value());
+    bridge_->AddOrUpdateCookie(sync_specifics.value());
   }
 }
 
@@ -176,7 +234,19 @@ void FloatingSsoService::OnConnectionError() {
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 FloatingSsoService::GetControllerDelegate() {
-  return bridge_.change_processor()->GetControllerDelegate();
+  return bridge_->change_processor()->GetControllerDelegate();
+}
+
+void FloatingSsoService::SetBridgeForTesting(
+    std::unique_ptr<FloatingSsoSyncBridge> bridge) {
+  bool bridge_is_being_observed = scoped_observation_.IsObserving();
+  if (bridge_is_being_observed) {
+    scoped_observation_.Reset();
+  }
+  bridge_ = std::move(bridge);
+  if (bridge_is_being_observed) {
+    scoped_observation_.Observe(bridge_.get());
+  }
 }
 
 }  // namespace ash::floating_sso
