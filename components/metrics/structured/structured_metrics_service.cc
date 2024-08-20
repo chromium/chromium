@@ -68,6 +68,16 @@ StructuredMetricsService::StructuredMetricsService(
     return;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Because of construction order of the recorder and service, the service
+  // needs to be set on the storage manager after it is created.
+  if (base::FeatureList::IsEnabled(kEventStorageManager)) {
+    StorageManager* storage_manager =
+        static_cast<StorageManager*>(recorder_->event_storage());
+    storage_manager->set_delegate(this);
+  }
+#endif
+
   // Setup the reporting service.
   const UnsentLogStore::UnsentLogStoreLimits storage_limits =
       GetLogStoreLimits();
@@ -345,6 +355,15 @@ void StructuredMetricsService::MaybeStartUpload() {
 void StructuredMetricsService::SetCreateLogsCallbackInTests(
     base::OnceClosure callback) {
   create_log_callback_for_tests_ = std::move(callback);
+}
+
+void StructuredMetricsService::OnFlushed(const FlushedKey& key) {
+  // TODO(b/327269939) Implement telemetry for flushed events.
+}
+
+void StructuredMetricsService::OnDeleted(const FlushedKey& key,
+                                         DeleteReason reason) {
+  // TODO(b/327269939) Implement telemetry for deleted events.
 }
 
 // static:

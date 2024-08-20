@@ -25,6 +25,14 @@ Recorder* Recorder::GetInstance() {
 }
 
 void Recorder::RecordEvent(Event&& event) {
+  // If the recorder is null, this doesn't need to be run on the same sequence.
+  if (recorder_ == nullptr) {
+    // Other values of EventRecordingState are recorded in
+    // StructuredMetricsProvider::OnRecord.
+    LogEventRecordingState(EventRecordingState::kProviderMissing);
+    return;
+  }
+
   // All calls to StructuredMetricsProvider (the observer) must be on the UI
   // sequence, so re-call Record if needed. If a UI task runner hasn't been set
   // yet, ignore this Record.
@@ -43,15 +51,7 @@ void Recorder::RecordEvent(Event&& event) {
   DCHECK(base::CurrentUIThread::IsSet());
 
   delegating_events_processor_.OnEventsRecord(&event);
-
-  // Make a copy of an event that all observers can share.
-  if (recorder_ != nullptr) {
-    recorder_->OnEventRecord(event);
-  } else {
-    // Other values of EventRecordingState are recorded in
-    // StructuredMetricsProvider::OnRecord.
-    LogEventRecordingState(EventRecordingState::kProviderMissing);
-  }
+  recorder_->OnEventRecord(event);
 }
 
 void Recorder::OnSystemProfileInitialized() {

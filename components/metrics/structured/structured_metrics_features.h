@@ -68,8 +68,17 @@ int GetUploadInterval();
 // minutes).
 base::TimeDelta GetExternalMetricsCollectionInterval();
 
-// Retrieves the backup interval for event buffers.
+// Retrieves the interval in which events are periodically backed up to disk
+// while still available in-memory.
 base::TimeDelta GetBackupTimeDelta();
+
+// Returns the percentage of memory size that can be used for storing in-memory
+// events.
+double GetMaxBufferSizeRatio();
+
+// Returns the percentage of writable disk space that can be used for storing
+// flushed events.
+double GetMaxDiskSizeRatio();
 
 }  // namespace metrics::structured
 
