@@ -2,23 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_device_source.h"
+
+#include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
+#include "base/power_monitor/power_observer.h"
 
 namespace base {
 
 namespace {
 
 // The most-recently-seen power source.
-bool g_on_battery = false;
+PowerStateObserver::BatteryPowerStatus g_battery_power_status =
+    PowerStateObserver::BatteryPowerStatus::kUnknown;
 
 }  // namespace
 
 // static
-void PowerMonitorDeviceSource::SetPowerSource(bool on_battery) {
-  if (on_battery != g_on_battery) {
-    g_on_battery = on_battery;
+void PowerMonitorDeviceSource::SetPowerSource(
+    PowerStateObserver::BatteryPowerStatus battery_power_status) {
+  if (battery_power_status != g_battery_power_status) {
+    g_battery_power_status = battery_power_status;
     ProcessPowerEvent(POWER_STATE_EVENT);
   }
 }
@@ -33,8 +37,9 @@ void PowerMonitorDeviceSource::HandleSystemResumed() {
   ProcessPowerEvent(RESUME_EVENT);
 }
 
-bool PowerMonitorDeviceSource::IsOnBatteryPower() {
-  return g_on_battery;
+PowerStateObserver::BatteryPowerStatus
+PowerMonitorDeviceSource::GetBatteryPowerStatus() {
+  return g_battery_power_status;
 }
 
 // static

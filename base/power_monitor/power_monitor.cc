@@ -22,7 +22,7 @@ void PowerMonitor::Initialize(std::unique_ptr<PowerMonitorSource> source) {
   // When a power source is associated with the power monitor, ensure the
   // initial state is propagated to observers, if needed.
   PowerMonitor::NotifyPowerStateChange(
-      PowerMonitor::Source()->IsOnBatteryPower());
+      PowerMonitor::Source()->GetBatteryPowerStatus());
 
   PowerMonitor::PowerMonitor::NotifyThermalStateChange(
       PowerMonitor::Source()->GetCurrentThermalState());
@@ -193,7 +193,7 @@ void PowerMonitor::NotifyPowerStateChange(
   if (power_monitor->battery_power_status_ != battery_power_status) {
     power_monitor->battery_power_status_ = battery_power_status;
     GetInstance()->power_state_observers_->Notify(
-        FROM_HERE, &PowerStateObserver::OnBatteryPowerStateChanged,
+        FROM_HERE, &PowerStateObserver::OnBatteryPowerStatusChange,
         battery_power_status);
   }
 }

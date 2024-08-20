@@ -53,7 +53,8 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
   // power daemon, via D-Bus signals received on the UI thread. base can't
   // directly depend on that code, so this class instead exposes static methods
   // so that events can be passed in.
-  static void SetPowerSource(bool on_battery);
+  static void SetPowerSource(
+      PowerStateObserver::BatteryPowerStatus battery_power_status);
   static void HandleSystemSuspending();
   static void HandleSystemResumed();
   static void ThermalEventReceived(
@@ -108,7 +109,14 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
   // Platform-specific method to check whether the system is currently
   // running on battery power.  Returns true if running on batteries,
   // false otherwise.
-  bool IsOnBatteryPower() override;
+  bool IsOnBatteryPower() final;
+
+  // Platform-specific method to check whether the system is currently
+  // running on battery power. Returns kBatteryPower if running on battery,
+  // kExternalPower if running on external power or kUnknown if the power
+  // state is unknown (for example, during early process lifetime when the
+  // state hasn't been obtained yet).
+  PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus();
 
 #if BUILDFLAG(IS_ANDROID)
   PowerThermalObserver::DeviceThermalState GetCurrentThermalState() override;
@@ -147,7 +155,8 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
   // Observer of thermal state events: critical temperature etc.
   std::unique_ptr<ThermalStateObserverMac> thermal_state_observer_;
 
-  bool is_on_battery_ = false;
+  PowerStateObserver::BatteryPowerStatus battery_power_status_ =
+      PowerStateObserver::BatteryPowerStatus::kUnknown;
 #endif
 
 #if BUILDFLAG(IS_IOS)

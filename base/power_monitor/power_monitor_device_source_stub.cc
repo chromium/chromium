@@ -7,8 +7,9 @@
 
 namespace base {
 
-bool PowerMonitorDeviceSource::IsOnBatteryPower() {
-  return false;
+PowerStateObserver::BatteryPowerStatus
+PowerMonitorDeviceSource::GetBatteryPowerStatus() {
+  return PowerStateObserver::BatteryPowerStatus::kExternalPower;
 }
 
 }  // namespace base

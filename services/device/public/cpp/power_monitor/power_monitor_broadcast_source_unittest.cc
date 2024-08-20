@@ -5,6 +5,7 @@
 #include "services/device/public/cpp/power_monitor/power_monitor_broadcast_source.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/power_monitor_test.h"
@@ -82,7 +83,8 @@ TEST_F(PowerMonitorBroadcastSourceTest, PowerMessageReceiveBroadcast) {
   client()->PowerStateChange(true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer.power_state_changes(), 1);
-  EXPECT_EQ(observer.last_power_state(), true);
+  EXPECT_EQ(observer.last_power_status(),
+            base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
   // Repeated indications the device is on battery power should be suppressed.
   client()->PowerStateChange(true);
@@ -93,7 +95,8 @@ TEST_F(PowerMonitorBroadcastSourceTest, PowerMessageReceiveBroadcast) {
   client()->PowerStateChange(false);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer.power_state_changes(), 2);
-  EXPECT_EQ(observer.last_power_state(), false);
+  EXPECT_EQ(observer.last_power_status(),
+            base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
 
   // Repeated indications the device is off battery power should be suppressed.
   client()->PowerStateChange(false);

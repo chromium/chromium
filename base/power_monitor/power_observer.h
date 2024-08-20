@@ -36,7 +36,7 @@ class BASE_EXPORT PowerStateObserver {
   // as from switching between battery and A/C power.
   virtual void OnPowerStateChange(bool on_battery_power) = 0;
 
-  void OnBatteryPowerStateChanged(BatteryPowerStatus battery_power_status) {
+  void OnBatteryPowerStatusChange(BatteryPowerStatus battery_power_status) {
     OnPowerStateChange(battery_power_status ==
                        BatteryPowerStatus::kBatteryPower);
   }

@@ -5286,6 +5286,7 @@ if (is_android) {
   java_cpp_enum("base_android_java_enums_srcjar") {
     sources = [
       "android/child_process_binding_types.h",
+      "power_monitor/power_observer.h",
       "process/kill.h",
       "task/task_traits.h",
     ]

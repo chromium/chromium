@@ -40,7 +40,7 @@ void PowerMonitorSource::ProcessPowerEvent(PowerEvent event_id) {
   switch (event_id) {
     case POWER_STATE_EVENT:
       PowerMonitor::NotifyPowerStateChange(
-          PowerMonitor::Source()->IsOnBatteryPower());
+          PowerMonitor::Source()->GetBatteryPowerStatus());
       break;
       case RESUME_EVENT:
         PowerMonitor::NotifyResume();

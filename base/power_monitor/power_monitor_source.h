@@ -48,6 +48,12 @@ class BASE_EXPORT PowerMonitorSource {
   // running on battery power.
   virtual bool IsOnBatteryPower() = 0;
 
+  PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() {
+    return IsOnBatteryPower()
+               ? PowerStateObserver::BatteryPowerStatus::kBatteryPower
+               : PowerStateObserver::BatteryPowerStatus::kExternalPower;
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   // Read and return the current remaining battery capacity (microampere-hours).
   virtual int GetRemainingBatteryCapacity();

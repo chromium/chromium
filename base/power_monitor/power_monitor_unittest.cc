@@ -69,21 +69,27 @@ TEST_F(PowerMonitorTest, PowerNotifications) {
   EXPECT_EQ(observers[0].resumes(), 1);
 
   // Pretend the device has gone on battery power
-  source().GeneratePowerStateEvent(true);
+  source().GeneratePowerStateEvent(
+      PowerStateObserver::BatteryPowerStatus::kBatteryPower);
   EXPECT_EQ(observers[0].power_state_changes(), 1);
-  EXPECT_EQ(observers[0].last_power_state(), true);
+  EXPECT_EQ(observers[0].last_power_status(),
+            PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
   // Repeated indications the device is on battery power should be suppressed.
-  source().GeneratePowerStateEvent(true);
+  source().GeneratePowerStateEvent(
+      PowerStateObserver::BatteryPowerStatus::kBatteryPower);
   EXPECT_EQ(observers[0].power_state_changes(), 1);
 
   // Pretend the device has gone off battery power
-  source().GeneratePowerStateEvent(false);
+  source().GeneratePowerStateEvent(
+      PowerStateObserver::BatteryPowerStatus::kExternalPower);
   EXPECT_EQ(observers[0].power_state_changes(), 2);
-  EXPECT_EQ(observers[0].last_power_state(), false);
+  EXPECT_EQ(observers[0].last_power_status(),
+            PowerStateObserver::BatteryPowerStatus::kExternalPower);
 
   // Repeated indications the device is off battery power should be suppressed.
-  source().GeneratePowerStateEvent(false);
+  source().GeneratePowerStateEvent(
+      PowerStateObserver::BatteryPowerStatus::kExternalPower);
   EXPECT_EQ(observers[0].power_state_changes(), 2);
 
   // Send speed limit change notifications.
@@ -186,10 +192,12 @@ TEST_F(PowerMonitorTest, AddPowerStateObserverBeforeAndAfterInitialization) {
   // Simulate power state transitions (e.g. battery on/off).
   EXPECT_EQ(observer1.power_state_changes(), 0);
   EXPECT_EQ(observer2.power_state_changes(), 0);
-  source().GeneratePowerStateEvent(true);
+  source().GeneratePowerStateEvent(
+      PowerStateObserver::BatteryPowerStatus::kBatteryPower);
   EXPECT_EQ(observer1.power_state_changes(), 1);
   EXPECT_EQ(observer2.power_state_changes(), 1);
-  source().GeneratePowerStateEvent(false);
+  source().GeneratePowerStateEvent(
+      PowerStateObserver::BatteryPowerStatus::kExternalPower);
   EXPECT_EQ(observer1.power_state_changes(), 2);
   EXPECT_EQ(observer2.power_state_changes(), 2);
 
@@ -227,14 +235,17 @@ TEST_F(PowerMonitorTest, PowerStateReturnedFromAddObserver) {
   PowerMonitorInitialize();
 
   // An observer is added before the on-battery notification.
-  EXPECT_FALSE(
-      PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(&observer1));
+  EXPECT_NE(PowerMonitor::AddPowerStateObserverAndReturnBatteryPowerStatus(
+                &observer1),
+            PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
-  source().GeneratePowerStateEvent(true);
+  source().GeneratePowerStateEvent(
+      PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
   // An observer is added after the on-battery notification.
-  EXPECT_TRUE(
-      PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(&observer2));
+  EXPECT_EQ(PowerMonitor::AddPowerStateObserverAndReturnBatteryPowerStatus(
+                &observer2),
+            PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
   EXPECT_EQ(observer1.power_state_changes(), 1);
   EXPECT_EQ(observer2.power_state_changes(), 0);

@@ -16,6 +16,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.power_monitor.BatteryPowerStatus;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 
@@ -27,7 +28,7 @@ import java.lang.annotation.RetentionPolicy;
 public class PowerMonitor {
     private static boolean sIsInitRequested;
 
-    @PowerStatus private static int sIsBatteryPower = PowerStatus.UNKNOWN;
+    @PowerStatus private static int sBatteryPowerStatus = PowerStatus.UNKNOWN;
 
     @Retention(RetentionPolicy.SOURCE)
     @interface PowerStatus {
@@ -96,7 +97,7 @@ public class PowerMonitor {
                     TaskTraits.UI_DEFAULT,
                     () -> {
                         // Only update if the status is the default.
-                        if (sIsBatteryPower == PowerStatus.UNKNOWN) {
+                        if (sBatteryPowerStatus == PowerStatus.UNKNOWN) {
                             // If we're not plugged, assume we're running on battery power.
                             onBatteryChargingChanged(chargePlug == 0);
                         }
@@ -110,12 +111,14 @@ public class PowerMonitor {
         ThreadUtils.assertOnUiThread();
         // We can't allow for updating battery status without requesting initialization.
         assert sIsInitRequested;
-        sIsBatteryPower = isBatteryPower ? PowerStatus.BATTERY_POWER : PowerStatus.EXTERNAL_POWER;
+        sBatteryPowerStatus =
+                isBatteryPower ? PowerStatus.BATTERY_POWER : PowerStatus.EXTERNAL_POWER;
         PowerMonitorJni.get().onBatteryChargingChanged();
     }
 
     @CalledByNative
-    private static boolean isBatteryPower() {
+    @BatteryPowerStatus
+    private static int getBatteryPowerStatus() {
         // Creation of the PowerMonitor can be deferred based on the browser startup path.  If the
         // battery power is requested prior to the browser triggering the creation, force it to be
         // created now.
@@ -123,13 +126,13 @@ public class PowerMonitor {
             create();
         }
 
-        return switch (sIsBatteryPower) {
-            // UNKNOWN is for the default state, when we don't have value yet. That happens if
-            // we call isBatteryPower() before the creation is done.
-            // TODO(b/339859756): Propagate the tri-state instead of boolean.
-            case PowerStatus.UNKNOWN, PowerStatus.EXTERNAL_POWER -> false;
-            case PowerStatus.BATTERY_POWER -> true;
-            default -> throw new IllegalStateException("Unexpected value: " + sIsBatteryPower);
+        return switch (sBatteryPowerStatus) {
+                // UNKNOWN is for the default state, when we don't have value yet. That happens if
+                // we call isBatteryPower() before the creation is done.
+            case PowerStatus.UNKNOWN -> BatteryPowerStatus.UNKNOWN;
+            case PowerStatus.EXTERNAL_POWER -> BatteryPowerStatus.EXTERNAL_POWER;
+            case PowerStatus.BATTERY_POWER -> BatteryPowerStatus.BATTERY_POWER;
+            default -> throw new IllegalStateException("Unexpected value: " + sBatteryPowerStatus);
         };
     }
 

@@ -75,15 +75,16 @@ void PowerMonitorDeviceSource::PlatformDestroy() {
   speed_limit_observer_.reset();
 }
 
-// Function to query the system to see if it is currently running on
-// battery power.  Returns true if running on battery.
-bool PowerMonitorDeviceSource::IsOnBatteryPower() {
+PowerStateObserver::BatteryPowerStatus
+PowerMonitorDeviceSource::GetBatteryPowerStatus() {
   SYSTEM_POWER_STATUS status;
   if (!::GetSystemPowerStatus(&status)) {
     DPLOG(ERROR) << "GetSystemPowerStatus failed";
-    return false;
+    return PowerStateObserver::BatteryPowerStatus::kUnknown;
   }
-  return (status.ACLineStatus == 0);
+  return (status.ACLineStatus == 0)
+             ? PowerStateObserver::BatteryPowerStatus::kBatteryPower
+             : PowerStateObserver::BatteryPowerStatus::kExternalPower;
 }
 
 int PowerMonitorDeviceSource::GetInitialSpeedLimit() {
