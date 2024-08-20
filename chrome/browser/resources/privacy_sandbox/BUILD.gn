@@ -13,6 +13,7 @@ build_webui("build") {
   static_files = [
     "privacy_sandbox_dialog.html",
     "privacy_sandbox_combined_dialog.html",
+    "privacy_sandbox_privacy_policy.html",
     "privacy_sandbox_notice_dialog.html",
     "privacy_sandbox_notice_restricted_dialog.html",
     "images/privacy_sandbox_confirmation_banner.svg",
