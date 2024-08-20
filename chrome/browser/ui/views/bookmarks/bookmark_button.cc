@@ -44,9 +44,11 @@ const base::FeatureParam<int> kPrerenderStartDelayOnMouseHoverByMiliseconds{
 const base::FeatureParam<bool> kPrerenderBookmarkBarOnMousePressedTrigger{
     &features::kBookmarkTriggerForPrerender2,
     "prerender_bookmarkbar_on_mouse_pressed_trigger", true};
+// The hover trigger is not enabled as we are aware that this negatively
+// affects other navigations like Omnibox search.
 const base::FeatureParam<bool> kPrerenderBookmarkBarOnMouseHoverTrigger{
     &features::kBookmarkTriggerForPrerender2,
-    "prerender_bookmarkbar_on_mouse_hover_trigger", true};
+    "prerender_bookmarkbar_on_mouse_hover_trigger", false};
 
 // BookmarkButtonBase -----------------------------------------------
 
