@@ -256,6 +256,9 @@ bool HTMLFencedFrameElement::canLoadOpaqueURL(ScriptState* script_state) {
           "removed. Please use navigator.canLoadAdAuctionFencedFrame() "
           "instead."));
 
+  UseCounter::Count(LocalDOMWindow::From(script_state)->document(),
+                    WebFeature::kFencedFrameCanLoadOpaqueURL);
+
   LocalFrame* frame_to_check = LocalDOMWindow::From(script_state)->GetFrame();
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(frame_to_check && context);

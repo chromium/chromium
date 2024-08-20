@@ -4438,6 +4438,7 @@ enum WebFeature {
   kV8AIRewriter_Rewrite_Method = 5069,
   kV8AIRewriter_RewriteStreaming_Method = 5070,
   kV8AIRewriter_Destroy_Method = 5071,
+  kFencedFrameCanLoadOpaqueURL = 5072,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
