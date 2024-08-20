@@ -298,8 +298,7 @@ void UseCounterMetricsRecorder::RecordWebDXFeatures(
   std::set<int32_t> webdx_features;
 
   for (int32_t feature = 1;
-       feature < static_cast<int32_t>(WebDXFeature::kNumberOfFeatures);
-       feature++) {
+       feature <= static_cast<int32_t>(WebDXFeature::kMaxValue); feature++) {
     if (uma_webdx_features_.IsRecordedOrDeferred(
             static_cast<WebDXFeature>(feature))) {
       webdx_features.insert(feature);
@@ -308,7 +307,7 @@ void UseCounterMetricsRecorder::RecordWebDXFeatures(
 
   ukm::UkmRecorder::Get()->RecordWebDXFeatures(
       ukm_source_id, webdx_features,
-      static_cast<size_t>(WebDXFeature::kNumberOfFeatures) - 1);
+      static_cast<size_t>(WebDXFeature::kMaxValue));
 }
 
 const base::flat_map<blink::mojom::WebFeature, blink::mojom::WebDXFeature>&

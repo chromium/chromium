@@ -3579,7 +3579,7 @@ bool Internals::isUseCounted(Document* document, uint32_t feature) {
 }
 
 bool Internals::isWebDXFeatureUseCounted(Document* document, uint32_t feature) {
-  if (feature >= static_cast<int32_t>(WebDXFeature::kNumberOfFeatures)) {
+  if (feature > static_cast<int32_t>(WebDXFeature::kMaxValue)) {
     return false;
   }
   return document->IsWebDXFeatureCounted(static_cast<WebDXFeature>(feature));

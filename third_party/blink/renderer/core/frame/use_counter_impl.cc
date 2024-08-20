@@ -118,8 +118,8 @@ bool UseCounterImpl::IsWebDXFeatureCounted(WebDXFeature webdx_feature) const {
   }
 
   // PageDestruction is reserved as a scaling factor.
-  DCHECK_NE(WebDXFeature::kPageVisits, webdx_feature);
-  DCHECK_GE(WebDXFeature::kNumberOfFeatures, webdx_feature);
+  DCHECK_NE(webdx_feature, WebDXFeature::kPageVisits);
+  DCHECK_LE(webdx_feature, WebDXFeature::kMaxValue);
 
   return feature_tracker_.Test(
       {mojom::blink::UseCounterFeatureType::kWebDXFeature,
@@ -233,8 +233,8 @@ void UseCounterImpl::Count(WebFeature web_feature,
 void UseCounterImpl::CountWebDXFeature(WebDXFeature web_feature,
                                        const LocalFrame* source_frame) {
   // PageVisits is reserved as a scaling factor.
-  DCHECK_NE(WebDXFeature::kPageVisits, web_feature);
-  DCHECK_GE(WebDXFeature::kNumberOfFeatures, web_feature);
+  DCHECK_NE(web_feature, WebDXFeature::kPageVisits);
+  DCHECK_LE(web_feature, WebDXFeature::kMaxValue);
 
   Count({mojom::blink::UseCounterFeatureType::kWebDXFeature,
          static_cast<uint32_t>(web_feature)},

@@ -31,19 +31,17 @@ bool UseCounterFeature::IsValid() const {
       return value_ <= static_cast<UseCounterFeature::EnumValue>(
                            mojom::WebFeature::kMaxValue);
     case mojom::UseCounterFeatureType::kWebDXFeature:
-      return value_ < static_cast<UseCounterFeature::EnumValue>(
-                          mojom::WebDXFeature::kNumberOfFeatures);
+      return value_ <= static_cast<UseCounterFeature::EnumValue>(
+                           mojom::WebDXFeature::kMaxValue);
     case mojom::UseCounterFeatureType::kCssProperty:
     case mojom::UseCounterFeatureType::kAnimatedCssProperty:
-      return value_ < static_cast<UseCounterFeature::EnumValue>(
-                          mojom::CSSSampleId::kMaxValue) +
-                          1;
+      return value_ <= static_cast<UseCounterFeature::EnumValue>(
+                           mojom::CSSSampleId::kMaxValue);
     case mojom::UseCounterFeatureType::kPermissionsPolicyViolationEnforce:
     case mojom::UseCounterFeatureType::kPermissionsPolicyHeader:
     case mojom::UseCounterFeatureType::kPermissionsPolicyIframeAttribute:
-      return value_ < static_cast<UseCounterFeature::EnumValue>(
-                          mojom::PermissionsPolicyFeature::kMaxValue) +
-                          1;
+      return value_ <= static_cast<UseCounterFeature::EnumValue>(
+                           mojom::PermissionsPolicyFeature::kMaxValue);
   }
 }
 

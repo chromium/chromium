@@ -336,8 +336,8 @@ void WorkerOrWorkletGlobalScope::CountWebDXFeature(WebDXFeature feature) {
     return;
   }
 
-  DCHECK_NE(WebDXFeature::kPageVisits, feature);
-  DCHECK_GT(WebDXFeature::kNumberOfFeatures, feature);
+  DCHECK_NE(feature, WebDXFeature::kPageVisits);
+  DCHECK_LE(feature, WebDXFeature::kMaxValue);
   if (used_webdx_features_[static_cast<size_t>(feature)]) {
     return;
   }

@@ -304,7 +304,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   // This is the set of features that this worker has used.
   std::bitset<static_cast<size_t>(WebFeature::kMaxValue) + 1> used_features_;
   // This is the set of WebDXFeatures that this worker has used.
-  std::bitset<static_cast<size_t>(WebDXFeature::kNumberOfFeatures)>
+  std::bitset<static_cast<size_t>(WebDXFeature::kMaxValue) + 1>
       used_webdx_features_;
 
   // This tracks deprecation features that have been used.
