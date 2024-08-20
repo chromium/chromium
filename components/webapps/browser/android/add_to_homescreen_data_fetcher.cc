@@ -25,7 +25,6 @@
 #include "components/favicon_base/favicon_types.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/android/webapps_utils.h"
-#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/common/constants.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
@@ -72,12 +71,7 @@ InstallableParams ParamsToFetchPrimaryIcon() {
 InstallableParams ParamsToPerformInstallableCheck() {
   InstallableParams params;
   params.check_eligibility = true;
-  params.installable_criteria =
-      InstallableCriteria::kImplicitManifestFieldsHTML;
-  if (base::FeatureList::IsEnabled(
-          features::kUniversalInstallRootScopeNoManifest)) {
     params.installable_criteria = InstallableCriteria::kNoManifestAtRootScope;
-  }
   return params;
 }
 

@@ -33,7 +33,6 @@ import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.AddToHomescreenDialogView;
 import org.chromium.components.webapps.AddToHomescreenProperties;
 import org.chromium.components.webapps.AddToHomescreenViewDelegate;
-import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -84,14 +83,9 @@ public class AddToHomescreenInstallTest {
         }
 
         @Override
-        protected AddToHomescreenDialogView initView(
-                AppBannerManager.InstallStringPair installStrings,
-                AddToHomescreenViewDelegate delegate) {
+        protected AddToHomescreenDialogView initView(AddToHomescreenViewDelegate delegate) {
             return new AddToHomescreenDialogView(
-                    getContextForTests(),
-                    getModalDialogManagerForTests(),
-                    installStrings,
-                    delegate) {
+                    getContextForTests(), getModalDialogManagerForTests(), delegate) {
                 @Override
                 protected void setTitle(String title) {
                     if (TextUtils.isEmpty(mTitle)) {
@@ -142,9 +136,7 @@ public class AddToHomescreenInstallTest {
                                             mActivity.getModalDialogManager(),
                                             title,
                                             expectedDialogType)
-                                    .showForAppMenu(
-                                            AppMenuVerbiage.APP_MENU_OPTION_INSTALL,
-                                            /* universalInstall= */ false);
+                                    .showForAppMenu(AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
                     Assert.assertEquals(expectAdded, started);
                 });
 

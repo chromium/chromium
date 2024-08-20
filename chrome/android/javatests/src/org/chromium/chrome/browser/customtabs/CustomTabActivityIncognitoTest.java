@@ -321,8 +321,6 @@ public class CustomTabActivityIncognitoTest {
     @Test
     @MediumTest
     public void doesNotHaveAddToHomeScreenMenuItem() throws Exception {
-        launchAndTestMenuItemIsNotVisible(
-                R.id.add_to_homescreen_id, "Add to home screen not visible");
         launchAndTestMenuItemIsNotVisible(R.id.universal_install, "Install not visible");
     }
 

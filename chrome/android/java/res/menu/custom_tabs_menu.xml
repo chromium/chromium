@@ -55,12 +55,6 @@ found in the LICENSE file.
             android:icon="@drawable/reader_mode_prefs_icon"
             android:visible="false"
             android:orderInCategory="2" />
-        <item android:id="@+id/add_to_homescreen_id"
-            android:title="@string/menu_add_to_homescreen"
-            android:orderInCategory="2" />
-        <item android:id="@+id/install_webapp_id"
-            android:title="@string/menu_install_webapp"
-            android:orderInCategory="2" />
         <item android:id="@+id/universal_install"
             android:title="@string/menu_add_to_homescreen"
             android:orderInCategory="2" />

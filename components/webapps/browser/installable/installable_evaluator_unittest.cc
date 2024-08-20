@@ -219,9 +219,7 @@ TEST_P(InstallableEvaluatorCriteriaUnitTest, CheckStartUrl) {
   manifest()->start_url = GURL("https://www.example.com");
   manifest()->has_valid_specified_start_url = false;
   InstallableStatusCode expected_url_result =
-      base::FeatureList::IsEnabled(features::kUniversalInstallDefaultUrl)
-          ? InstallableStatusCode::NO_ERROR_DETECTED
-          : InstallableStatusCode::START_URL_NOT_VALID;
+      InstallableStatusCode::NO_ERROR_DETECTED;
   TestCheckInstallability(InstallableStatusCode::START_URL_NOT_VALID,
                           expected_url_result,
                           InstallableStatusCode::NO_ERROR_DETECTED);

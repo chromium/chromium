@@ -124,7 +124,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
         assertFalse(isMenuVisible(menu, R.id.bookmark_this_page_id));
         assertFalse(isMenuVisible(menu, R.id.offline_page_id));
         assertFalse(isMenuVisible(menu, R.id.share_row_menu_id));
-        assertFalse(isMenuVisible(menu, R.id.add_to_homescreen_id));
+        assertFalse(isMenuVisible(menu, R.id.universal_install));
         assertFalse(isMenuVisible(menu, R.id.open_in_browser_id));
     }
 }

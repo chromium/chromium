@@ -875,13 +875,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     /** Sets the visibility and labels of the "Add to Home screen" and "Open WebAPK" menu items. */
     protected void prepareAddToHomescreenMenuItem(
             Menu menu, Tab currentTab, boolean shouldShowHomeScreenMenuItem) {
-        MenuItem addTohomescreenItem = menu.findItem(R.id.add_to_homescreen_id);
-        MenuItem installWebAppItem = menu.findItem(R.id.install_webapp_id);
         MenuItem universalInstallItem = menu.findItem(R.id.universal_install);
         MenuItem openWebApkItem = menu.findItem(R.id.open_webapk_id);
 
-        addTohomescreenItem.setVisible(false);
-        installWebAppItem.setVisible(false);
         universalInstallItem.setVisible(false);
         openWebApkItem.setVisible(false);
 
@@ -895,13 +891,12 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 "Android.PrepareMenu.OpenWebApkVisibilityCheck",
                 SystemClock.elapsedRealtime() - addToHomeScreenStart);
 
+        // When Universal Install is active, we only show this menu item if we are browsing
+        // the root page of an already installed app.
         boolean openWebApkItemVisible =
-                resolveInfo != null && resolveInfo.activityInfo.packageName != null;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI)) {
-            // When Universal Install is active, we only show this menu item if we are browsing
-            // the root page of an already installed app.
-            openWebApkItemVisible &= "/".equals(currentTab.getUrl().getPath());
-        }
+                resolveInfo != null
+                        && resolveInfo.activityInfo.packageName != null
+                        && "/".equals(currentTab.getUrl().getPath());
 
         if (openWebApkItemVisible) {
             // This is the 'webapp is already installed' case, so we offer to open the webapp.
@@ -911,19 +906,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             return;
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI)) {
-            universalInstallItem.setVisible(true);
-        } else {
-            AppBannerManager.InstallStringPair installStrings = getAddToHomeScreenTitle(currentTab);
-
-            if (installStrings.titleTextId == AppBannerManager.PWA_PAIR.titleTextId) {
-                installWebAppItem.setTitle(installStrings.titleTextId);
-                installWebAppItem.setVisible(true);
-            } else if (installStrings.titleTextId == AppBannerManager.NON_PWA_PAIR.titleTextId) {
-                addTohomescreenItem.setTitle(installStrings.titleTextId);
-                addTohomescreenItem.setVisible(true);
-            }
-        }
+        universalInstallItem.setVisible(true);
     }
 
     public static ResolveInfo queryWebApkResolveInfo(Context context, Tab currentTab) {
@@ -942,11 +925,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         }
 
         return resolveInfo;
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public AppBannerManager.InstallStringPair getAddToHomeScreenTitle(@NonNull Tab currentTab) {
-        return AppBannerManager.getHomescreenLanguageOption(currentTab.getWebContents());
     }
 
     @Override

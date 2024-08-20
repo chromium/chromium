@@ -19,11 +19,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/favicon/content/large_icon_service_getter.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_types.h"
-#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
@@ -330,8 +328,6 @@ class AddToHomescreenDataFetcherTest
     installable_manager_->SetShouldManifestTimeOut(should_time_out);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
-
  private:
   class NullLargeIconService : public favicon::LargeIconService {
    public:
@@ -607,9 +603,6 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestDisplayMode) {
 
 TEST_F(AddToHomescreenDataFetcherTest,
        UniversalInstallEmptyManifestAtRootScope) {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kUniversalInstallRootScopeNoManifest}, {});
-
   GURL document_url = GURL("https://www.example.com/index.html");
   NavigateAndCommit(document_url);
 
@@ -640,9 +633,6 @@ TEST_F(AddToHomescreenDataFetcherTest,
 
 TEST_F(AddToHomescreenDataFetcherTest,
        UniversalInstallEmptyManifestNotRootScope) {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kUniversalInstallRootScopeNoManifest}, {});
-
   GURL document_url = GURL("https://www.example.com/scope/index.html");
   NavigateAndCommit(document_url);
 

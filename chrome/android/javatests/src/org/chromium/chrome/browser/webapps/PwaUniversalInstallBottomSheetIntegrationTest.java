@@ -35,9 +35,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -51,7 +49,6 @@ import org.chromium.net.test.EmbeddedTestServer;
 /** Test the showing of the PWA Universal Install Bottom Sheet dialog. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Fails because of SurveyClientFactory assert")
-@EnableFeatures({ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PwaUniversalInstallBottomSheetIntegrationTest {
     @Rule

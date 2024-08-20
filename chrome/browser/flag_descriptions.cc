@@ -2194,18 +2194,6 @@ const char kPwaRestoreUiAtStartupDescription[] =
     "When enabled, the PWA Restore UI will be forced to show on startup (even "
     "if the PwaRestoreUi flag is disabled and there are no apps to restore)";
 
-const char kPwaUniversalInstallRootsName[] =
-    "Enable PWA Universal Install on root domains";
-const char kPwaUniversalInstallRootsDescription[] =
-    "Enables installing sites from root domains even though they don't meet "
-    "the installability criteria as PWAs";
-
-const char kPwaUniversalInstallUiName[] =
-    "Enable the PWA Universal Install dialog";
-const char kPwaUniversalInstallUiDescription[] =
-    "When enabled, activates a disambiguation dialog offering Install PWA and "
-    "Add to Home screen";
-
 const char kStartSurfaceReturnTimeName[] = "Start surface return time";
 const char kStartSurfaceReturnTimeDescription[] =
     "Enable showing start surface at startup after specified time has elapsed";

@@ -1233,12 +1233,6 @@ extern const char kPwaRestoreUiDescription[];
 extern const char kPwaRestoreUiAtStartupName[];
 extern const char kPwaRestoreUiAtStartupDescription[];
 
-extern const char kPwaUniversalInstallRootsName[];
-extern const char kPwaUniversalInstallRootsDescription[];
-
-extern const char kPwaUniversalInstallUiName[];
-extern const char kPwaUniversalInstallUiDescription[];
-
 extern const char kStartSurfaceReturnTimeName[];
 extern const char kStartSurfaceReturnTimeDescription[];
 

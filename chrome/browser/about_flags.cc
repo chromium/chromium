@@ -10113,16 +10113,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"pwa-restore-ui-at-startup", flag_descriptions::kPwaRestoreUiAtStartupName,
      flag_descriptions::kPwaRestoreUiAtStartupDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kPwaRestoreUiAtStartup)},
-
-    {"pwa-universal-install-roots",
-     flag_descriptions::kPwaUniversalInstallRootsName,
-     flag_descriptions::kPwaUniversalInstallRootsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         webapps::features::kUniversalInstallRootScopeNoManifest)},
-
-    {"pwa-universal-install-ui", flag_descriptions::kPwaUniversalInstallUiName,
-     flag_descriptions::kPwaUniversalInstallUiDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(webapps::features::kPwaUniversalInstallUi)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"autofill-enable-ranking-formula-address-profiles",
      flag_descriptions::kAutofillEnableRankingFormulaAddressProfilesName,

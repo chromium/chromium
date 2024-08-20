@@ -2696,18 +2696,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             return doPrintShare(this, mActivityTabProvider);
         }
 
-        if (id == R.id.add_to_homescreen_id) {
-            RecordUserAction.record("MobileMenuAddToHomescreen");
-            return doAddToHomescreenOrInstallWebApp(
-                    currentTab, AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN);
-        }
-
-        if (id == R.id.install_webapp_id) {
-            RecordUserAction.record("InstallWebAppFromMenu");
-            return doAddToHomescreenOrInstallWebApp(
-                    currentTab, AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
-        }
-
         if (id == R.id.universal_install) {
             RecordUserAction.record("UniversalInstallFromMenu");
             return doUniversalInstall(
@@ -3049,8 +3037,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             // Install dialog the default and go with that in case of errors. Since Install App is
             // the menu item that would have been shown, if Universal Install was disabled, we
             // fall back to the Install App option.
-            return doAddToHomescreenOrInstallWebApp(
-                    currentTab, AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
+            return doAddToHomescreen(currentTab, AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
         }
 
         ResolveInfo resolveInfo =
@@ -3063,11 +3050,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         this,
                         currentTab.getWebContents(),
                         () -> {
-                            doInstallThroughUniversalInstall(
-                                    currentTab, AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
+                            doAddToHomescreen(currentTab, AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
                         },
                         () -> {
-                            doInstallThroughUniversalInstall(
+                            doAddToHomescreen(
                                     currentTab, AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN);
                         },
                         () -> {
@@ -3082,24 +3068,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return true;
     }
 
-    /**
-     * Returns whether the Add to Home screen or Install Web App action was successfully started.
-     */
-    private boolean doInstallThroughUniversalInstall(Tab currentTab, int menuItemType) {
-        return doAddToHomescreenOrInstallWebAppImpl(
-                currentTab, menuItemType, /* universalInstall= */ true);
-    }
-
-    /**
-     * Returns whether the Add to Home screen or Install Web App action was successfully started.
-     */
-    private boolean doAddToHomescreenOrInstallWebApp(Tab currentTab, int menuItemType) {
-        return doAddToHomescreenOrInstallWebAppImpl(
-                currentTab, menuItemType, /* universalInstall= */ false);
-    }
-
-    private boolean doAddToHomescreenOrInstallWebAppImpl(
-            Tab currentTab, int menuItemType, boolean universalInstall) {
+    private boolean doAddToHomescreen(Tab currentTab, int menuItemType) {
         if (menuItemType == AppMenuVerbiage.APP_MENU_OPTION_INSTALL) {
             PwaBottomSheetController controller =
                     PwaBottomSheetControllerProvider.from(getWindowAndroid());
@@ -3115,8 +3084,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 getWindowAndroid(),
                 getModalDialogManager(),
                 currentTab.getWebContents(),
-                menuItemType,
-                universalInstall);
+                menuItemType);
         return true;
     }
 

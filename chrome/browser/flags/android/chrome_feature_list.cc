@@ -385,7 +385,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &tab_groups::kTabGroupSyncAndroid,
     &tab_groups::kTabGroupPaneAndroid,
     &tab_groups::kTabGroupSyncAutoOpenKillSwitch,
-    &webapps::features::kPwaUniversalInstallUi,
     &visited_url_ranking::features::kVisitedURLRankingService,
     &webapps::features::kWebApkInstallFailureNotification,
     &network::features::kPrivateStateTokens,

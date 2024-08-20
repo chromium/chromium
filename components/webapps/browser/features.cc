@@ -14,10 +14,6 @@ BASE_FEATURE(kAddToHomescreenMessaging,
              "AddToHomescreenMessaging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPwaUniversalInstallUi,
-             "PwaUniversalInstallUi",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables WebAPK Install Failure Notification.
 BASE_FEATURE(kWebApkInstallFailureNotification,
              "WebApkInstallFailureNotification",
@@ -60,21 +56,6 @@ extern const base::FeatureParam<int> kMaxDaysForMLPromotionGuardrailStorage(
     &kWebAppsEnableMLModelForPromotion,
     "max_days_to_store_guardrails",
     kTotalDaysToStoreMLGuardrails);
-
-// Allows installing a web app with fallback manifest values on root scope pages
-// without manifest.
-BASE_FEATURE(kUniversalInstallRootScopeNoManifest,
-             "UniversalInstallRootScopeNoManifest",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-// Allow using default manifest URL.
-BASE_FEATURE(kUniversalInstallDefaultUrl,
-             "UniversalInstallDefaultUrl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace webapps

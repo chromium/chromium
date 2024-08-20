@@ -24,8 +24,6 @@ public class RegularWebPageAppMenuFacility extends PageAppMenuFacility<WebPageSt
         declarePossibleStubMenuItem(items, TRANSLATE_ID);
 
         // At most one of these exist.
-        declarePossibleStubMenuItem(items, ADD_TO_HOME_SCREEN_ID);
-        declarePossibleStubMenuItem(items, INSTALL_WEBAPP_ID);
         declarePossibleStubMenuItem(items, ADD_TO_HOME_SCREEN__UNIVERSAL_INSTALL__ID);
         declarePossibleStubMenuItem(items, OPEN_WEBAPK_ID);
 
