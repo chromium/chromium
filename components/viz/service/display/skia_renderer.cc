@@ -120,7 +120,7 @@ namespace {
 // TODO(crbug.com/347909405): Remove this
 BASE_FEATURE(kDumpWithoutCrashingOnMissingRenderPassBacking,
              "DumpWithoutCrashingOnMissingRenderPassBacking",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Smallest unit that impacts anti-aliasing output. We use this to determine
 // when an exterior edge (with AA) has been clipped (no AA). The specific value
