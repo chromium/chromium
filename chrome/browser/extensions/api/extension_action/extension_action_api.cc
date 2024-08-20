@@ -635,9 +635,9 @@ ExtensionFunction::ResponseAction ActionGetUserSettingsFunction::Run() {
       ToolbarActionsModel::Get(Profile::FromBrowserContext(browser_context()))
           ->IsActionPinned(extension_id());
 
-  // TODO(devlin): Today, no action APIs are compiled. Unfortunately, this
-  // means we miss out on the compiled types, which would be rather helpful
-  // here.
+  // TODO(crbug.com/360916928): Today, no action APIs are compiled.
+  // Unfortunately, this means we miss out on the compiled types, which would be
+  // rather helpful here.
   base::Value::Dict ui_settings;
   ui_settings.Set("isOnToolbar", is_pinned);
 
@@ -648,8 +648,9 @@ ActionOpenPopupFunction::ActionOpenPopupFunction() = default;
 ActionOpenPopupFunction::~ActionOpenPopupFunction() = default;
 
 ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
-  // Unfortunately, the action API types aren't compiled. However, the bindings
-  // should still valid the form of the arguments.
+  // TODO(crbug.com/360916928): Unfortunately, the action API types aren't
+  // compiled. However, the bindings should still valid the form of the
+  // arguments.
   EXTENSION_FUNCTION_VALIDATE(args().size() == 1u);
   EXTENSION_FUNCTION_VALIDATE(extension());
   const base::Value& options = args()[0];
