@@ -78,8 +78,13 @@ def _settings(
         # Computed properties
         is_android = os_type == _os_type.ANDROID,
         is_cros = os_type == _os_type.CROS,
+        is_desktop = os_type != _os_type.ANDROID,
         is_fuchsia = os_type == _os_type.FUCHSIA,
         is_lacros = os_type == _os_type.LACROS,
+        is_linux = os_type == _os_type.LINUX,
+        is_mac = os_type == _os_type.MAC,
+        is_win = os_type == _os_type.WINDOWS,
+        is_win64 = os_type == (_os_type.WINDOWS and browser_config == _browser_config.RELEASE_X64),
     )
 
 def _create_compile_target(*, name):

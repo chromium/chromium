@@ -55,11 +55,17 @@ def register_targets(*, parent_key, builder_group, builder_name, name, targets, 
 _OS_SPECIFIC_ARGS = {
     "android_args": "is_android",
     "chromeos_args": "is_cros",
+    "desktop_args": "is_desktop",
     "lacros_args": "is_lacros",
+    "linux_args": "is_linux",
+    "mac_args": "is_mac",
+    "win_args": "is_win",
+    "win64_args": "is_win64",
 }
 
 _OS_SPECIFIC_SWARMING = {
     "android_swarming": "is_android",
+    "chromeos_swarming": "is_cros",
 }
 
 def _apply_mixin(spec, settings, mixin_values):
