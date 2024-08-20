@@ -1463,6 +1463,9 @@ int AutocompleteMatch::GetSortingOrder() const {
 
 bool AutocompleteMatch::IsMlSignalLoggingEligible() const {
   const auto& ml_config = OmniboxFieldTrial::GetMLConfig();
+  if (answer.has_value()) {
+    return false;
+  }
   return type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
          type == AutocompleteMatchType::HISTORY_URL ||
          type == AutocompleteMatchType::HISTORY_TITLE ||
@@ -1471,15 +1474,30 @@ bool AutocompleteMatch::IsMlSignalLoggingEligible() const {
          type == AutocompleteMatchType::NAVSUGGEST_PERSONALIZED ||
          type == AutocompleteMatchType::TILE_NAVSUGGEST ||
          (ml_config.shortcut_document_signals &&
-          type == AutocompleteMatchType::DOCUMENT_SUGGESTION) ||
+          type == AutocompleteMatchType::DOCUMENT_SUGGESTION &&
+          relevance != 0) ||
          AutocompleteMatch::IsSearchType(type) ||
          AutocompleteMatch::IsVerbatimType();
 }
 
 bool AutocompleteMatch::IsMlScoringEligible() const {
-  if (!scoring_signals.has_value()) {
+  if (!IsMlSignalLoggingEligible() || !scoring_signals.has_value()) {
     return false;
   }
+
+  // Do not apply ML scoring to calculator or answer suggestions as the ML model
+  // currently doesn't provide accurate scores for suggestions that have a low
+  // click-through rate.
+  if (type == AutocompleteMatchType::CALCULATOR || answer.has_value()) {
+    return false;
+  }
+
+  // Do not apply ML scoring to stale suggestions sourced from the
+  // DocumentProvider cache.
+  if (type == AutocompleteMatchType::DOCUMENT_SUGGESTION && relevance == 0) {
+    return false;
+  }
+
   const auto& ml_config = OmniboxFieldTrial::GetMLConfig();
 
   // Search suggestions are conditionally eligible for ML scoring.
@@ -1500,12 +1518,6 @@ bool AutocompleteMatch::IsMlScoringEligible() const {
   if (type == AutocompleteMatchType::NAVSUGGEST ||
       type == AutocompleteMatchType::NAVSUGGEST_PERSONALIZED ||
       type == AutocompleteMatchType::TILE_NAVSUGGEST) {
-    return false;
-  }
-
-  // Do not apply ML scoring to stale suggestions sourced from the
-  // DocumentProvider cache.
-  if (type == AutocompleteMatchType::DOCUMENT_SUGGESTION && relevance == 0) {
     return false;
   }
 
