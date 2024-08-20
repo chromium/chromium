@@ -1340,9 +1340,9 @@ void IOSurfaceImageBacking::WaitForANGLECommandsToBeScheduled() {
 }
 
 void IOSurfaceImageBacking::ClearEGLDisplaysWithPendingCommands(
-    gl::GLDisplayEGL* display_to_exclude) {
-  if (std::move(egl_displays_pending_flush_).contains(display_to_exclude)) {
-    egl_displays_pending_flush_.insert(display_to_exclude);
+    gl::GLDisplayEGL* display_to_keep) {
+  if (std::move(egl_displays_pending_flush_).contains(display_to_keep)) {
+    egl_displays_pending_flush_.insert(display_to_keep);
   }
 }
 
@@ -1623,7 +1623,7 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
   // Note that we don't need to call WaitForANGLECommandsToBeScheduled for other
   // EGLDisplays because it is already done when the previous GL context is made
   // uncurrent. We can simply remove the other EGLDisplays from the list.
-  ClearEGLDisplaysWithPendingCommands(/*display_to_exclude=*/display);
+  ClearEGLDisplaysWithPendingCommands(/*display_to_keep=*/display);
 
   if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
     // If this image could potentially be shared with another Metal device,
@@ -1717,15 +1717,7 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
   CHECK(display);
   CHECK_EQ(display->GetDisplay(), egl_state->egl_display_);
 
-  // Only enqueue shared events if we might ever use this backing on another
-  // Metal device e.g. with WebGPU or Graphite.
-  const bool has_webgpu_usage =
-      usage() &
-      (SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-       SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
-       SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE);
-  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal &&
-      (has_webgpu_usage || gr_context_type_ != GrContextType::kGL)) {
+  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
     id<MTLSharedEvent> shared_event = nil;
     uint64_t signal_value = 0;
     if (display->CreateMetalSharedEvent(&shared_event, &signal_value)) {
