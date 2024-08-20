@@ -69,7 +69,7 @@ const CGFloat kSpacingBelowHeader = 10;
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemClose
                            target:_viewController
-                           action:@selector(dismissCustomizationMenu)];
+                           action:@selector(dismissCustomizationMenuPage)];
   dismissButton.accessibilityIdentifier = kNavigationBarDismissButtonIdentifier;
   _viewController.navigationItem.rightBarButtonItem = dismissButton;
   _viewController.navigationItem.backBarButtonItem.accessibilityIdentifier =

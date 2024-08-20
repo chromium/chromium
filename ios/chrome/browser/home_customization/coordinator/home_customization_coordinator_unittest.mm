@@ -47,31 +47,29 @@ class HomeCustomizationCoordinatorUnitTest : public PlatformTest {
 // Tests that the coordinator is successfully started and presents the right
 // page, then stopped when it's dismissed.
 TEST_F(HomeCustomizationCoordinatorUnitTest, TestPresentMenuPage) {
-  // Test that the main VC and mediator are nil, indicating that the coordinator
-  // has not been started.
+  // Test that the VCs and mediator are nil, indicating that the coordinator has
+  // not been started.
   EXPECT_EQ(nil, coordinator_.mainViewController);
+  EXPECT_EQ(nil, coordinator_.magicStackViewController);
   EXPECT_EQ(nil, coordinator_.mediator);
 
-  // Present the menu and check that the main VC and mediator exist, indicating
-  // that the coordinator is started.
+  // Present the menu at the main page and check that its VC and mediator exist,
+  // but not the Magic Stack page VC.
   [coordinator_ start];
+  [coordinator_ presentCustomizationMenuPage:CustomizationMenuPage::kMain];
   EXPECT_NE(nil, coordinator_.mainViewController);
+  EXPECT_EQ(nil, coordinator_.magicStackViewController);
   EXPECT_NE(nil, coordinator_.mediator);
 
-  // Present the menu at a specified page and check that it opened and navigated
-  // properly.
-  // TODO(crbug.com/350990359): Change this to the Magic Stack VC once it's
-  // implemented.
-  [coordinator_ presentCustomizationMenuAtPage:CustomizationMenuPage::kMain
-                                      animated:NO];
-  EXPECT_NSEQ(
-      NSStringFromClass(
-          [coordinator_.navigationController.visibleViewController class]),
-      NSStringFromClass([coordinator_.mainViewController class]));
+  // Open the Magic Stack pagee and check that its VC now exists.
+  [coordinator_
+      presentCustomizationMenuPage:CustomizationMenuPage::kMagicStack];
+  EXPECT_NE(nil, coordinator_.magicStackViewController);
 
-  // Stop the coordinator and check that the main VC and mediator have been set
-  // back to nil.
+  // Stop the coordinator and check that the VCs and mediator have been set back
+  // to nil.
   [coordinator_ stop];
   EXPECT_EQ(nil, coordinator_.mainViewController);
+  EXPECT_EQ(nil, coordinator_.magicStackViewController);
   EXPECT_EQ(nil, coordinator_.mediator);
 }

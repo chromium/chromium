@@ -154,8 +154,8 @@
 
 - (void)navigateToSubmenuForType:(CustomizationToggleType)type {
   [self.navigationDelegate
-      navigateToPage:[HomeCustomizationHelper menuPageForToggleType:type]
-            animated:YES];
+      presentCustomizationMenuPage:[HomeCustomizationHelper
+                                       menuPageForToggleType:type]];
 }
 
 - (void)navigateToLinkForType:(CustomizationLinkType)type {
@@ -174,6 +174,10 @@
       URL = GURL(kDiscoverLearnMoreURL);
   }
   [self.navigationDelegate navigateToURL:URL];
+}
+
+- (void)dismissMenuPage {
+  [self.navigationDelegate dismissMenuPage];
 }
 
 @end

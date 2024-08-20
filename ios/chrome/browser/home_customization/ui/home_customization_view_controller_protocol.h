@@ -23,7 +23,7 @@
 @property(nonatomic, assign) CustomizationMenuPage page;
 
 // Dismisses the presenting view controller.
-- (void)dismissCustomizationMenu;
+- (void)dismissCustomizationMenuPage;
 
 // Returns the section for a given `sectionIndex`.
 - (NSCollectionLayoutSection*)

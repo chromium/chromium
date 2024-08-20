@@ -8,6 +8,7 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_header_view.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_toggle_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_view_controller_protocol.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
@@ -104,9 +105,8 @@
 
 #pragma mark - HomeCustomizationViewControllerProtocol
 
-- (void)dismissCustomizationMenu {
-  [self.presentingViewController dismissViewControllerAnimated:YES
-                                                    completion:nil];
+- (void)dismissCustomizationMenuPage {
+  [self.mutator dismissMenuPage];
 }
 
 - (NSCollectionLayoutSection*)

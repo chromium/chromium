@@ -559,9 +559,7 @@
 - (void)didNavigateAwayFromNTP {
   [self cancelOmniboxEdit];
   if (IsHomeCustomizationEnabled()) {
-    [_customizationCoordinator dismissCustomizationMenu];
-    [_customizationCoordinator stop];
-    _customizationCoordinator = nil;
+    [self dismissCustomizationMenu];
   }
   [self saveNTPState];
   [self updateNTPIsVisible:NO];
@@ -1782,15 +1780,15 @@
 // Opens the Home customization menu at a specific `page`.
 - (void)openCustomizationMenuAtPage:(CustomizationMenuPage)page
                            animated:(BOOL)animated {
-  if (!_customizationCoordinator) {
-    _customizationCoordinator = [[HomeCustomizationCoordinator alloc]
-        initWithBaseViewController:self.NTPViewController
-                           browser:self.browser];
-    _customizationCoordinator.delegate = self;
-    [_customizationCoordinator start];
+  if (_customizationCoordinator) {
+    return;
   }
-  [_customizationCoordinator presentCustomizationMenuAtPage:page
-                                                   animated:animated];
+  _customizationCoordinator = [[HomeCustomizationCoordinator alloc]
+      initWithBaseViewController:self.NTPViewController
+                         browser:self.browser];
+  _customizationCoordinator.delegate = self;
+  [_customizationCoordinator start];
+  [_customizationCoordinator presentCustomizationMenuPage:page];
   feature_engagement::TrackerFactory::GetForBrowserState(
       self.browser->GetBrowserState())
       ->NotifyEvent(feature_engagement::events::kHomeCustomizationMenuUsed);
@@ -1849,8 +1847,8 @@
 
 #pragma mark - HomeCustomizationDelegate
 
-- (void)handleCustomizationMenuDismissed:
-    (HomeCustomizationCoordinator*)coordinator {
+- (void)dismissCustomizationMenu {
+  [self.NTPViewController dismissViewControllerAnimated:YES completion:nil];
   [_customizationCoordinator stop];
   _customizationCoordinator = nil;
 }
