@@ -42,7 +42,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/session_crashed_bubble.h"
-#include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -575,7 +574,6 @@ bool SessionService::RestoreIfNecessary(const StartupTabs& startup_tabs,
       browser_creator.LaunchBrowser(*command_line, profile(), base::FilePath(),
                                     chrome::startup::IsProcessStartup::kYes,
                                     chrome::startup::IsFirstRun::kNo,
-                                    std::make_unique<OldLaunchModeRecorder>(),
                                     /*restore_tabbed_browser=*/true);
       return true;
     } else {
