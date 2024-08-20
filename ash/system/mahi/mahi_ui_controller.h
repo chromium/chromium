@@ -27,8 +27,6 @@ class View;
 
 namespace ash {
 
-class MahiPanelDragController;
-
 // Communicates with `chromeos::MahiManager` and notifies delegates of updates.
 class ASH_EXPORT MahiUiController : public SessionObserver {
  public:
@@ -127,8 +125,6 @@ class ASH_EXPORT MahiUiController : public SessionObserver {
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
-  MahiPanelDragController* drag_controller() { return drag_controller_.get(); }
-
   views::Widget* mahi_panel_widget() { return mahi_panel_widget_.get(); }
 
  private:
@@ -158,8 +154,6 @@ class ASH_EXPORT MahiUiController : public SessionObserver {
 
   // The current state. Use `VisibilityState::kSummaryAndOutlines` by default.
   VisibilityState visibility_state_ = VisibilityState::kSummaryAndOutlines;
-
-  std::unique_ptr<MahiPanelDragController> drag_controller_;
 
   base::ObserverList<Delegate> delegates_;
 

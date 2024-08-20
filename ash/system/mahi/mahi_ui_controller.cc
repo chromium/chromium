@@ -9,7 +9,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/mahi/mahi_constants.h"
-#include "ash/system/mahi/mahi_panel_drag_controller.h"
 #include "ash/system/mahi/mahi_panel_widget.h"
 #include "ash/system/mahi/mahi_ui_update.h"
 #include "base/functional/bind.h"
@@ -55,8 +54,7 @@ MahiUiController::Delegate::~Delegate() = default;
 
 // MahiUiController ------------------------------------------------------------
 
-MahiUiController::MahiUiController()
-    : drag_controller_(std::make_unique<MahiPanelDragController>(this)) {
+MahiUiController::MahiUiController() {
   // The shell may not be available in tests if using a plain object for the UI
   // controller, which means the session will not be observed.
   if (Shell::HasInstance()) {

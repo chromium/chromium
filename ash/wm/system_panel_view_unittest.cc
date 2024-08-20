@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/wm/system_panel_view.h"
+
 #include "ash/shell.h"
-#include "ash/system/mahi/mahi_ui_controller.h"
-#include "ash/system/mahi/test/mock_mahi_manager.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_layout_builder.h"
@@ -24,43 +20,28 @@ namespace ash {
 
 namespace {
 
-using ::testing::NiceMock;
-using ::testing::Return;
-
 constexpr int kPanelWidth = 200;
 constexpr int kPanelHeight = 300;
 constexpr gfx::Rect kInitialBounds(100, 100, kPanelWidth, kPanelHeight);
 
-class MahiPanelDragControllerTest : public AshTestBase {
- public:
-  MahiPanelDragControllerTest() {
-    ON_CALL(mock_mahi_manager_, IsEnabled).WillByDefault(Return(true));
-  }
-  ~MahiPanelDragControllerTest() override = default;
+std::unique_ptr<views::Widget> CreateWidget() {
+  auto widget = std::make_unique<views::Widget>();
 
-  // AshTestBase:
-  void SetUp() override {
-    AshTestBase::SetUp();
-    ui_controller_.OpenMahiPanel(GetPrimaryDisplay().id(),
-                                 /*mahi_menu_bounds=*/gfx::Rect());
-  }
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  widget->Init(std::move(params));
+  widget->SetContentsView(std::make_unique<SystemPanelView>());
+  widget->Show();
+  return widget;
+}
 
-  void TearDown() override {
-    ui_controller_.CloseMahiPanel();
-    AshTestBase::TearDown();
-  }
+// namespace
 
-  MahiUiController& ui_controller() { return ui_controller_; }
+using SystemPanelViewTest = AshTestBase;
 
- private:
-  base::test::ScopedFeatureList feature_list_{chromeos::features::kMahi};
-  MahiUiController ui_controller_;
-  NiceMock<MockMahiManager> mock_mahi_manager_;
-  chromeos::ScopedMahiManagerSetter scoped_manager_setter_{&mock_mahi_manager_};
-};
-
-TEST_F(MahiPanelDragControllerTest, MouseDragRepositionsPanel) {
-  views::Widget* panel_widget = ui_controller().mahi_panel_widget();
+TEST_F(SystemPanelViewTest, MouseDragRepositionsPanel) {
+  auto panel_widget = CreateWidget();
   panel_widget->SetBounds(kInitialBounds);
 
   GetEventGenerator()->set_current_screen_location(
@@ -72,8 +53,8 @@ TEST_F(MahiPanelDragControllerTest, MouseDragRepositionsPanel) {
             kInitialBounds + kDragOffset);
 }
 
-TEST_F(MahiPanelDragControllerTest, GestureDragRepositionsPanel) {
-  views::Widget* panel_widget = ui_controller().mahi_panel_widget();
+TEST_F(SystemPanelViewTest, GestureDragRepositionsPanel) {
+  auto panel_widget = CreateWidget();
   panel_widget->SetBounds(kInitialBounds);
 
   GetEventGenerator()->set_current_screen_location(
@@ -86,9 +67,9 @@ TEST_F(MahiPanelDragControllerTest, GestureDragRepositionsPanel) {
             kInitialBounds + kDragOffset);
 }
 
-TEST_F(MahiPanelDragControllerTest, MouseDragOutOfTheScreenEdge) {
+TEST_F(SystemPanelViewTest, MouseDragOutOfTheScreenEdge) {
   UpdateDisplay("1000x500");
-  views::Widget* panel_widget = ui_controller().mahi_panel_widget();
+  auto panel_widget = CreateWidget();
   panel_widget->SetBounds(kInitialBounds);
 
   GetEventGenerator()->set_current_screen_location(
@@ -106,7 +87,7 @@ TEST_F(MahiPanelDragControllerTest, MouseDragOutOfTheScreenEdge) {
   EXPECT_EQ(panel_widget->GetWindowBoundsInScreen(), kMaxBounds);
 }
 
-TEST_F(MahiPanelDragControllerTest, MouseDragInMultiScreens) {
+TEST_F(SystemPanelViewTest, MouseDragInMultiScreens) {
   // Adds 3 displays.
   UpdateDisplay("1000x500,1000x500,1000x500");
 
@@ -124,7 +105,7 @@ TEST_F(MahiPanelDragControllerTest, MouseDragInMultiScreens) {
                               display::DisplayPlacement::BOTTOM, 0);
   display_manager()->SetLayoutForCurrentDisplays(builder.Build());
 
-  views::Widget* panel_widget = ui_controller().mahi_panel_widget();
+  auto panel_widget = CreateWidget();
   panel_widget->SetBounds(kInitialBounds);
 
   // The panel is on the first display.
