@@ -22,6 +22,7 @@
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/screen.h"
@@ -269,8 +270,9 @@ MessageBoxDialog::MessageBoxDialog(std::u16string_view title,
       type_(type),
       message_box_view_(new views::MessageBoxView(std::u16string(message))) {
   SetButtons(type_ == chrome::MESSAGE_BOX_TYPE_QUESTION
-                 ? ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL
-                 : ui::DIALOG_BUTTON_OK);
+                 ? static_cast<int>(ui::mojom::DialogButton::kOk) |
+                       static_cast<int>(ui::mojom::DialogButton::kCancel)
+                 : static_cast<int>(ui::mojom::DialogButton::kOk));
 
   SetAcceptCallback(base::BindOnce(&MessageBoxDialog::OnDialogAccepted,
                                    base::Unretained(this)));
@@ -289,14 +291,14 @@ MessageBoxDialog::MessageBoxDialog(std::u16string_view title,
             ? l10n_util::GetStringUTF16(IDS_CONFIRM_MESSAGEBOX_YES_BUTTON_LABEL)
             : l10n_util::GetStringUTF16(IDS_OK);
   }
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, ok_text);
+  SetButtonLabel(ui::mojom::DialogButton::kOk, ok_text);
 
   // Only MESSAGE_BOX_TYPE_QUESTION has a Cancel button.
   if (type_ == chrome::MESSAGE_BOX_TYPE_QUESTION) {
     std::u16string cancel_text(no_text);
     if (cancel_text.empty())
       cancel_text = l10n_util::GetStringUTF16(IDS_CANCEL);
-    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, cancel_text);
+    SetButtonLabel(ui::mojom::DialogButton::kCancel, cancel_text);
   }
 
   if (!checkbox_text.empty())

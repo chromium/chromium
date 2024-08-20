@@ -15,6 +15,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
@@ -81,7 +82,7 @@ DataRemovalConfirmationDialog::DataRemovalConfirmationDialog(
     : profile_(profile), confirm_callback_(std::move(confirm_callback)) {
   SetTitle(l10n_util::GetStringUTF16(IDS_ARC_DATA_REMOVAL_CONFIRMATION_TITLE));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_ARC_DATA_REMOVAL_CONFIRMATION_OK_BUTTON));
 
   auto run_callback = [](DataRemovalConfirmationDialog* dialog, bool accept) {

@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/border.h"
@@ -33,7 +34,7 @@ DisplayChangeDialog::DisplayChangeDialog(
       on_accept_callback_(std::move(on_accept_callback)),
       on_cancel_callback_(std::move(on_cancel_callback)) {
   SetTitle(window_title);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_ASH_CONFIRM_BUTTON));
 
   SetAcceptCallback(base::BindOnce(&DisplayChangeDialog::OnConfirmButtonClicked,

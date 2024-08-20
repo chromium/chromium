@@ -21,6 +21,7 @@
 #include "ui/base/accelerators/test_accelerator_target.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessible_pane_view.h"
@@ -884,7 +885,8 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
  public:
   explicit TestBubbleDialogDelegateView(View* anchor)
       : BubbleDialogDelegateView(anchor, BubbleBorder::NONE) {
-    DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+    DialogDelegate::SetButtons(
+        static_cast<int>(ui::mojom::DialogButton::kNone));
   }
   TestBubbleDialogDelegateView(const TestBubbleDialogDelegateView&) = delete;
   TestBubbleDialogDelegateView& operator=(const TestBubbleDialogDelegateView&) =

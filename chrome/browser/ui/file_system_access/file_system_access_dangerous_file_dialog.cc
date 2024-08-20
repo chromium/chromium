@@ -13,6 +13,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 
 namespace {
 
@@ -59,7 +60,7 @@ std::unique_ptr<ui::DialogModel> CreateFileSystemAccessDangerousFileDialog(
           ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
               IDS_FILE_SYSTEM_ACCESS_DANGEROUS_FILE_DONT_SAVE)))
       .SetCloseActionCallback(std::move(cancel_callbacks.second))
-      .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL);
+      .OverrideDefaultButton(ui::mojom::DialogButton::kCancel);
   return dialog_builder.Build();
 }
 

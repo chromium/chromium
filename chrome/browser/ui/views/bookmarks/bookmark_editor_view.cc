@@ -34,6 +34,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -81,7 +82,8 @@ BookmarkEditorView::BookmarkEditorView(
   SetAcceptCallback(base::BindOnce(&BookmarkEditorView::ApplyEdits,
                                    base::Unretained(this), nullptr));
   SetTitle(details_.GetWindowTitleId());
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_SAVE));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 l10n_util::GetStringUTF16(IDS_SAVE));
   if (show_tree_) {
     new_folder_button_ = SetExtraView(std::make_unique<views::MdTextButton>(
         base::BindRepeating(&BookmarkEditorView::NewFolderButtonPressed,
@@ -110,8 +112,9 @@ BookmarkEditorView::~BookmarkEditorView() {
   bb_model_->RemoveObserver(this);
 }
 
-bool BookmarkEditorView::IsDialogButtonEnabled(ui::DialogButton button) const {
-  if (button == ui::DIALOG_BUTTON_OK) {
+bool BookmarkEditorView::IsDialogButtonEnabled(
+    ui::mojom::DialogButton button) const {
+  if (button == ui::mojom::DialogButton::kOk) {
     if (!bb_model_->loaded())
       return false;
 

@@ -41,6 +41,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -333,7 +334,7 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
   flex_layout->SetOrientation(views::LayoutOrientation::kVertical);
   animated_view->AddChildView(std::move(content_view));
 
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)

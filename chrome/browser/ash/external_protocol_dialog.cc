@@ -21,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/message_box_view.h"
@@ -107,9 +108,10 @@ ExternalProtocolNoHandlersTelSchemeDialog::
     : creation_time_(base::TimeTicks::Now()) {
   DCHECK(parent_window);
   SetOwnedByWidget(true);
-  views::DialogDelegate::SetButtons(ui::DIALOG_BUTTON_OK);
+  views::DialogDelegate::SetButtons(
+      static_cast<int>(ui::mojom::DialogButton::kOk));
   views::DialogDelegate::SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_EXTERNAL_PROTOCOL_CLOSE_BUTTON_TEXT));
 
   message_box_view_ = new views::MessageBoxView();

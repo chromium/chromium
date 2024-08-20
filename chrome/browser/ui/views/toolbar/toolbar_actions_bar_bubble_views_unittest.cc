@@ -15,6 +15,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/color_palette.h"
@@ -188,7 +189,7 @@ TEST_F(ToolbarActionsBarBubbleViewsTest, TestBubbleLayoutNoBodyText) {
 TEST_F(ToolbarActionsBarBubbleViewsTest, TestBubbleDefaultDialogButtons) {
   TestToolbarActionsBarBubbleDelegate delegate(
       kHeadingText, kBodyText, kActionButtonText, kDismissButtonText);
-  delegate.set_default_dialog_button(ui::DIALOG_BUTTON_OK);
+  delegate.set_default_dialog_button(ui::mojom::DialogButton::kOk);
   ShowBubble(&delegate);
 
   ASSERT_TRUE(bubble()->GetOkButton());

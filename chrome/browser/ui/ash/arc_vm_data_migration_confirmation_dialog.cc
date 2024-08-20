@@ -19,6 +19,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/font.h"
@@ -68,12 +69,13 @@ ArcVmDataMigrationConfirmationDialog::ArcVmDataMigrationConfirmationDialog(
   ReportConfirmationDialogShown(days_until_deadline);
 
   if (ArcVmDataMigrationShouldBeDismissible(days_until_deadline)) {
-    SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+               static_cast<int>(ui::mojom::DialogButton::kCancel));
     SetButtonLabel(
-        ui::DIALOG_BUTTON_OK,
+        ui::mojom::DialogButton::kOk,
         l10n_util::GetStringUTF16(
             IDS_ARC_VM_DATA_MIGRATION_DIALOG_UPDATE_NOW_BUTTON_LABEL));
-    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+    SetButtonLabel(ui::mojom::DialogButton::kCancel,
                    l10n_util::GetStringUTF16(
                        IDS_ARC_VM_DATA_MIGRATION_DIALOG_SKIP_BUTTON_LABEL));
     SetAcceptCallback(
@@ -85,8 +87,8 @@ ArcVmDataMigrationConfirmationDialog::ArcVmDataMigrationConfirmationDialog(
                        weak_ptr_factory_.GetWeakPtr(), days_until_deadline,
                        false /* accepted */));
   } else {
-    SetButtons(ui::DIALOG_BUTTON_OK);
-    SetButtonLabel(ui::DIALOG_BUTTON_OK,
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+    SetButtonLabel(ui::mojom::DialogButton::kOk,
                    l10n_util::GetStringUTF16(
                        IDS_ARC_VM_DATA_MIGRATION_DIALOG_UPDATE_BUTTON_LABEL));
     SetAcceptCallback(

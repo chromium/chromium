@@ -12,6 +12,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
@@ -71,7 +72,7 @@ class NativeDialogContainer : public views::DialogDelegateView {
   NativeDialogContainer(std::unique_ptr<views::View> dialog_body,
                         const gfx::Size& size,
                         base::OnceClosure close_callback) {
-    SetButtons(ui::DIALOG_BUTTON_NONE);
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
     SetModalType(kModalType);
     AddChildView(std::move(dialog_body));
     SetLayoutManager(std::make_unique<views::FillLayout>());

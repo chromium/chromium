@@ -41,6 +41,7 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -355,7 +356,7 @@ HatsNextWebDialog::HatsNextWebDialog(
       ->SetZoomLevelForHost(hats_survey_url_.host(),
                             blink::ZoomFactorToZoomLevel(1.0f));
 
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   web_view_ =

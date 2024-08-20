@@ -34,6 +34,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/table_model_observer.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
@@ -233,7 +234,8 @@ bool TaskManagerView::Accept() {
   return false;
 }
 
-bool TaskManagerView::IsDialogButtonEnabled(ui::DialogButton button) const {
+bool TaskManagerView::IsDialogButtonEnabled(
+    ui::mojom::DialogButton button) const {
   const ui::ListSelectionModel::SelectedIndices& selections(
       tab_table_->selection_model().selected_indices());
   for (const auto& selection : selections) {
@@ -314,8 +316,8 @@ TaskManagerView::TaskManagerView()
       tab_table_parent_(nullptr),
       is_always_on_top_(false) {
   set_use_custom_frame(false);
-  SetButtons(ui::DIALOG_BUTTON_OK);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL));
   SetHasWindowSizeControls(true);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

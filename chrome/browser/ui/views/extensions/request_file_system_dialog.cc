@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 
 namespace extensions {
@@ -21,16 +22,16 @@ void ShowRequestFileSystemDialog(
     const std::string& extension_name,
     const std::string& volume_label,
     bool writable,
-    base::OnceCallback<void(ui::DialogButton)> callback) {
+    base::OnceCallback<void(ui::mojom::DialogButton)> callback) {
   DCHECK(callback);
 
   // Split the callback for the accept and cancel actions (the later been
   // further split for cancel and close actions).
   auto split_callback = base::SplitOnceCallback(std::move(callback));
-  auto accept_callback =
-      base::BindOnce(std::move(split_callback.first), ui::DIALOG_BUTTON_OK);
+  auto accept_callback = base::BindOnce(std::move(split_callback.first),
+                                        ui::mojom::DialogButton::kOk);
   auto cancel_callbacks = base::SplitOnceCallback(base::BindOnce(
-      std::move(split_callback.second), ui::DIALOG_BUTTON_CANCEL));
+      std::move(split_callback.second), ui::mojom::DialogButton::kCancel));
 
   const std::u16string app_name = base::UTF8ToUTF16(extension_name);
   // TODO(mtomasz): Improve the dialog contents, so it's easier for the user

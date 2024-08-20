@@ -25,6 +25,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 
 class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
  public:
@@ -118,7 +119,8 @@ IN_PROC_BROWSER_TEST_F(CrostiniUninstallerViewBrowserTest, UninstallFlow) {
 
   ShowUi("default");
   EXPECT_NE(nullptr, ActiveView());
-  EXPECT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
+  EXPECT_EQ(static_cast<int>(ui::mojom::DialogButton::kOk) |
+                static_cast<int>(ui::mojom::DialogButton::kCancel),
             ActiveView()->buttons());
 
   EXPECT_TRUE(HasAcceptButton());
@@ -147,7 +149,8 @@ IN_PROC_BROWSER_TEST_F(CrostiniUninstalledUninstallerViewBrowserTest,
   ShowUi("default");
   EXPECT_NE(nullptr, ActiveView());
   EXPECT_FALSE(ActiveView()->GetWidget()->IsClosed());
-  EXPECT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
+  EXPECT_EQ(static_cast<int>(ui::mojom::DialogButton::kOk) |
+                static_cast<int>(ui::mojom::DialogButton::kCancel),
             ActiveView()->buttons());
 
   EXPECT_TRUE(HasAcceptButton());

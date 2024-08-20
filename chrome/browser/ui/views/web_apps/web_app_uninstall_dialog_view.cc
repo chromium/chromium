@@ -27,6 +27,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
@@ -89,7 +90,7 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
           provider_->registrar_unsafe().GetAppShortName(app_id_))));
 
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON));
   SetAcceptCallback(
       base::BindOnce(&WebAppUninstallDialogDelegateView::OnDialogAccepted,

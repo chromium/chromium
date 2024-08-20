@@ -46,7 +46,7 @@ AuthPanelDebugView::AuthPanelDebugView(const AccountId& account_id,
   //  The overlay consumes all the inputs from the user, so that they can only
   //  interact with the local authentication request view while it is visible.
   // SetModalType(ui::mojom::ModalType::kSystem);
-  // SetButtons(ui::DIALOG_BUTTON_NONE);
+  // SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   // Main view contains all other views aligned vertically and centered.
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())

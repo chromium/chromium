@@ -1051,7 +1051,7 @@ TEST_F(CastDialogViewTest, PopulateDialog) {
   EXPECT_TRUE(dialog_->ShouldShowCloseButton());
   EXPECT_EQ(model.dialog_header(),
             dialog_->GetWindowTitle());
-  EXPECT_EQ(ui::DIALOG_BUTTON_NONE,
+  EXPECT_EQ(static_cast<int>(ui::mojom::DialogButton::kNone),
             dialog_->GetDialogButtons());
 }
 
@@ -1077,7 +1077,7 @@ TEST_F(CastDialogViewTest, PopulateDialog) {
   EXPECT_TRUE(dialog_->ShouldShowCloseButton());
   EXPECT_EQ(model.dialog_header(),
             dialog_->GetWindowTitle());
-  EXPECT_EQ(ui::DIALOG_BUTTON_NONE,
+  EXPECT_EQ(static_cast<int>(ui::mojom::DialogButton::kNone),
             dialog_->GetDialogButtons());
 }
 ```

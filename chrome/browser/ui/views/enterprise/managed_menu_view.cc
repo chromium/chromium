@@ -33,6 +33,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/display/screen.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
@@ -92,13 +93,13 @@ ManagedMenuView::ManagedMenuView(views::Button* anchor_button, Browser* browser)
       browser_(browser) {
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-  SetButtons(ui::DIALOG_BUTTON_OK);
-  SetDefaultButton(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kNone));
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   GetViewAccessibility().SetName(GetAccessibleWindowTitle());
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_LEARN_MORE));
-  SetButtonStyle(ui::DIALOG_BUTTON_OK, ui::ButtonStyle::kTonal);
+  SetButtonStyle(ui::mojom::DialogButton::kOk, ui::ButtonStyle::kTonal);
   SetAcceptCallback(base::BindOnce(&ManagedMenuView::OpenManagementPage,
                                    weak_factory_.GetWeakPtr()));
   SetShowCloseButton(true);

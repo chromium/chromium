@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/input_method/ui/candidate_window_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -190,7 +191,7 @@ InfolistWindow::InfolistWindow(views::View* candidate_window,
       title_font_list_(gfx::Font(kJapaneseFontName, kFontSizeDelta + 15)),
       description_font_list_(
           gfx::Font(kJapaneseFontName, kFontSizeDelta + 11)) {
-  DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+  DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCanActivate(false);
   set_accept_events(false);
   set_margins(gfx::Insets());

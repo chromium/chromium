@@ -27,6 +27,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -44,7 +45,7 @@ ManagePasswordsView::ManagePasswordsView(content::WebContents* web_contents,
                              anchor_view,
                              /*easily_dismissable=*/true),
       controller_(PasswordsModelDelegateFromWebContents(web_contents)) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -177,9 +178,11 @@ ManagePasswordsView::CreatePasswordDetailsView() {
                           base::Unretained(&controller_)),
       base::BindRepeating(
           [](ManagePasswordsView* view) {
-            view->SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+            view->SetButtons(
+                static_cast<int>(ui::mojom::DialogButton::kOk) |
+                static_cast<int>(ui::mojom::DialogButton::kCancel));
             view->SetButtonLabel(
-                ui::DIALOG_BUTTON_OK,
+                ui::mojom::DialogButton::kOk,
                 l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_UPDATE));
             view->GetBubbleFrameView()->SetFootnoteView(
                 view->CreateFooterView());
@@ -190,8 +193,7 @@ ManagePasswordsView::CreatePasswordDetailsView() {
                           base::Unretained(this)),
       base::BindRepeating(
           [](ManagePasswordsView* view, bool is_invalid) {
-            view->SetButtonEnabled(ui::DialogButton::DIALOG_BUTTON_OK,
-                                   !is_invalid);
+            view->SetButtonEnabled(ui::mojom::DialogButton::kOk, !is_invalid);
           },
           base::Unretained(this)),
       base::BindRepeating(
@@ -331,13 +333,13 @@ void ManagePasswordsView::RecreateLayout() {
 
 void ManagePasswordsView::SwitchToReadingMode() {
   password_details_view_->SwitchToReadingMode();
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   RecreateLayout();
 }
 
 void ManagePasswordsView::SwitchToListView() {
   auth_timer_.Stop();
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   controller_.set_details_bubble_credential(std::nullopt);
   RecreateLayout();
 }

@@ -20,6 +20,7 @@
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_utils.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -619,8 +620,8 @@ VIEW_BUILDER_PROPERTY(bool, CenterTitle)
 #endif
 VIEW_BUILDER_PROPERTY(int, Buttons)
 VIEW_BUILDER_PROPERTY(int, DefaultButton)
-VIEW_BUILDER_METHOD(SetButtonLabel, ui::DialogButton, std::u16string)
-VIEW_BUILDER_METHOD(SetButtonEnabled, ui::DialogButton, bool)
+VIEW_BUILDER_METHOD(SetButtonLabel, ui::mojom::DialogButton, std::u16string)
+VIEW_BUILDER_METHOD(SetButtonEnabled, ui::mojom::DialogButton, bool)
 VIEW_BUILDER_METHOD(set_margins, gfx::Insets)
 VIEW_BUILDER_METHOD(set_use_round_corners, bool)
 VIEW_BUILDER_METHOD(set_corner_radius, int)

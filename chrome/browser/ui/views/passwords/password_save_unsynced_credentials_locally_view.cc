@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -30,15 +31,16 @@ PasswordSaveUnsyncedCredentialsLocallyView::
                              anchor_view,
                              /*easily_dismissable=*/false),
       controller_(PasswordsModelDelegateFromWebContents(web_contents)) {
-  SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+             static_cast<int>(ui::mojom::DialogButton::kCancel));
   SetAcceptCallback(
       base::BindOnce(&PasswordSaveUnsyncedCredentialsLocallyView::OnSaveClicked,
                      base::Unretained(this)));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_SAVE_UNSYNCED_CREDENTIALS_BUTTON_GPM));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(
                      IDS_PASSWORD_MANAGER_DISCARD_UNSYNCED_CREDENTIALS_BUTTON));
   SetCancelCallback(base::BindOnce(

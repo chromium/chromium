@@ -16,6 +16,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -53,7 +54,7 @@ SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
       url_(entry.GetURL()),
       device_name_(entry.GetDeviceName()),
       guid_(entry.GetGUID()) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(true);
   SetTitle(
       l10n_util::GetStringUTF16(IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_TITLE));

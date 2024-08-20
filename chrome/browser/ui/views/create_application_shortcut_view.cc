@@ -24,6 +24,7 @@
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/label.h"
@@ -100,7 +101,7 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
       is_extension_(is_extension),
       close_callback_(std::move(close_callback)) {
   SetModalType(ui::mojom::ModalType::kWindow);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_COMMIT));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText));
@@ -171,9 +172,10 @@ gfx::Size CreateChromeApplicationShortcutView::CalculatePreferredSize(
 }
 
 bool CreateChromeApplicationShortcutView::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
-  if (button != ui::DIALOG_BUTTON_OK)
+    ui::mojom::DialogButton button) const {
+  if (button != ui::mojom::DialogButton::kOk) {
     return true;  // It's always possible to cancel out of creating a shortcut.
+  }
 
   if (!shortcut_info_)
     return false;  // Dialog's not ready because app info hasn't been loaded.
@@ -189,7 +191,7 @@ std::u16string CreateChromeApplicationShortcutView::GetWindowTitle() const {
 }
 
 void CreateChromeApplicationShortcutView::OnDialogAccepted() {
-  DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  DCHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
   if (!close_callback_.is_null())
     std::move(close_callback_).Run(/*success=*/shortcut_info_ != nullptr);

@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
@@ -59,7 +60,7 @@ NetworkProfileBubbleView::NetworkProfileBubbleView(
     : BubbleDialogDelegateView(anchor, views::BubbleBorder::TOP_RIGHT),
       navigator_(navigator),
       profile_(profile) {
-  SetButtons(ui::DIALOG_BUTTON_OK);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   auto* learn_more = SetExtraView(
       std::make_unique<views::Link>(l10n_util::GetStringUTF16(IDS_LEARN_MORE)));
   learn_more->SetCallback(base::BindRepeating(

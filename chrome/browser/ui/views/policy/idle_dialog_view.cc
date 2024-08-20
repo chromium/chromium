@@ -21,6 +21,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_palette.h"
@@ -110,11 +111,11 @@ IdleDialogView::IdleDialogView(base::TimeDelta dialog_duration,
       actions_(actions),
       deadline_(base::TimeTicks::Now() + dialog_duration) {
   CHECK(actions.close || actions.clear);
-  SetDefaultButton(ui::DIALOG_BUTTON_OK);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kOk));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_IDLE_DISMISS_BUTTON));
   SetShowIcon(true);
-  SetButtons(ui::DIALOG_BUTTON_OK);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   auto [callback1, callback2] =
       base::SplitOnceCallback(std::move(on_close_by_user));
   SetAcceptCallback(std::move(callback1));

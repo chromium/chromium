@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -86,18 +87,20 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
 
   sheet_->ReInitChildViews();
 
-  int buttons = ui::DIALOG_BUTTON_NONE;
+  int buttons = static_cast<int>(ui::mojom::DialogButton::kNone);
   if (sheet()->model()->IsAcceptButtonVisible()) {
-    buttons |= ui::DIALOG_BUTTON_OK;
+    buttons |= static_cast<int>(ui::mojom::DialogButton::kOk);
   }
   if (sheet()->model()->IsCancelButtonVisible()) {
-    buttons |= ui::DIALOG_BUTTON_CANCEL;
+    buttons |= static_cast<int>(ui::mojom::DialogButton::kCancel);
   }
   SetButtons(buttons);
-  SetDefaultButton((buttons & ui::DIALOG_BUTTON_OK) ? ui::DIALOG_BUTTON_OK
-                                                    : ui::DIALOG_BUTTON_NONE);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, sheet_->model()->GetAcceptButtonLabel());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetDefaultButton(buttons & static_cast<int>(ui::mojom::DialogButton::kOk)
+                       ? static_cast<int>(ui::mojom::DialogButton::kOk)
+                       : static_cast<int>(ui::mojom::DialogButton::kNone));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 sheet_->model()->GetAcceptButtonLabel());
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  sheet_->model()->GetCancelButtonLabel());
   if (model_->step() == Step::kTrustThisComputerAssertion ||
       model_->step() == Step::kTrustThisComputerCreation ||
@@ -108,7 +111,7 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
       model_->step() == Step::kGPMCreateArbitraryPin ||
       model_->step() == Step::kGPMChangePin ||
       model_->step() == Step::kGPMChangeArbitraryPin) {
-    SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, ui::ButtonStyle::kTonal);
+    SetButtonStyle(ui::mojom::DialogButton::kCancel, ui::ButtonStyle::kTonal);
   }
 
   if (ShouldOtherMechanismsButtonBeVisible()) {
@@ -222,13 +225,13 @@ bool AuthenticatorRequestDialogView::Cancel() {
 }
 
 bool AuthenticatorRequestDialogView::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
+    ui::mojom::DialogButton button) const {
   switch (button) {
-    case ui::DIALOG_BUTTON_NONE:
+    case ui::mojom::DialogButton::kNone:
       break;
-    case ui::DIALOG_BUTTON_OK:
+    case ui::mojom::DialogButton::kOk:
       return sheet()->model()->IsAcceptButtonEnabled();
-    case ui::DIALOG_BUTTON_CANCEL:
+    case ui::mojom::DialogButton::kCancel:
       return true;  // Cancel is always enabled if visible.
   }
   NOTREACHED();

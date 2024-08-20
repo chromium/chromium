@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -96,7 +97,7 @@ void ShowCreateDesktopShortcutDialog(
       .AddCancelButton(base::DoNothing())
       .SetDialogDestroyingCallback(base::BindOnce(
           &CreateDesktopShortcutDelegate::OnClose, delegate_weak_ptr))
-      .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE);
+      .OverrideDefaultButton(ui::mojom::DialogButton::kNone);
 
   auto site_view = std::make_unique<SiteIconTextAndOriginView>(
       icon, title,

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog.h"
+
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -11,7 +13,6 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog_coordinator.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -19,6 +20,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget_observer.h"
@@ -89,12 +91,13 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
   auto* incognito_cbd_dialog_view = GetDialogView();
 
   ASSERT_TRUE(GetCoordinator()->IsShowing());
-  ASSERT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
+  ASSERT_EQ(static_cast<int>(ui::mojom::DialogButton::kOk) |
+                static_cast<int>(ui::mojom::DialogButton::kCancel),
             incognito_cbd_dialog_view->buttons());
-  ASSERT_TRUE(
-      incognito_cbd_dialog_view->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
   ASSERT_TRUE(incognito_cbd_dialog_view->IsDialogButtonEnabled(
-      ui::DIALOG_BUTTON_CANCEL));
+      ui::mojom::DialogButton::kOk));
+  ASSERT_TRUE(incognito_cbd_dialog_view->IsDialogButtonEnabled(
+      ui::mojom::DialogButton::kCancel));
 }
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
@@ -158,12 +161,13 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
   auto* incognito_cbd_dialog_view = GetDialogView();
 
   ASSERT_TRUE(GetCoordinator()->IsShowing());
-  ASSERT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
+  ASSERT_EQ(static_cast<int>(ui::mojom::DialogButton::kOk) |
+                static_cast<int>(ui::mojom::DialogButton::kCancel),
             incognito_cbd_dialog_view->buttons());
-  ASSERT_TRUE(
-      incognito_cbd_dialog_view->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
   ASSERT_TRUE(incognito_cbd_dialog_view->IsDialogButtonEnabled(
-      ui::DIALOG_BUTTON_CANCEL));
+      ui::mojom::DialogButton::kOk));
+  ASSERT_TRUE(incognito_cbd_dialog_view->IsDialogButtonEnabled(
+      ui::mojom::DialogButton::kCancel));
 }
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,

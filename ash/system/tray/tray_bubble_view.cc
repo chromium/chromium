@@ -32,6 +32,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
@@ -302,7 +303,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.
   SetPaintClientToLayer(false);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   DCHECK(delegate_);
   DCHECK(params_.parent_window);
   // anchor_widget() is computed by BubbleDialogDelegateView().

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/border.h"
@@ -63,8 +64,8 @@ SessionAbortedDialog::SessionAbortedDialog() {
       l10n_util::GetStringUTF16(IDS_ASH_MULTIPROFILES_SESSION_ABORT_HEADLINE));
   SetShowCloseButton(false);
 
-  SetButtons(ui::DIALOG_BUTTON_OK);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(
                      IDS_ASH_MULTIPROFILES_SESSION_ABORT_BUTTON_LABEL));
   SetAcceptCallback(base::BindOnce(

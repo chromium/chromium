@@ -13,6 +13,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -25,7 +26,7 @@ PasskeySavedConfirmationView::PasskeySavedConfirmationView(
                              anchor_view,
                              /*easily_dismissable=*/true),
       controller_(PasswordsModelDelegateFromWebContents(web_contents)) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowIcon(true);
   SetTitle(controller_.GetTitle());
   SetLayoutManager(std::make_unique<views::FillLayout>());

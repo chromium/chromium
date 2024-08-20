@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 
 namespace gfx {
@@ -68,7 +69,7 @@ class ToolbarActionsBarBubbleDelegate {
   virtual std::u16string GetDismissButtonText() = 0;
 
   // Returns the button that should be set to the default.
-  virtual ui::DialogButton GetDefaultDialogButton() = 0;
+  virtual ui::mojom::DialogButton GetDefaultDialogButton() = 0;
 
   // Returns the id of the action to point to, or the empty string if the
   // bubble should point to the center of the actions container.

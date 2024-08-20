@@ -26,6 +26,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
@@ -105,7 +106,7 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(views::Button* anchor_view,
                                true),
       browser_(browser) {
   SetProperty(views::kElementIdentifierKey, kToolbarChromeLabsBubbleElementId);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(true);
   SetTitle(l10n_util::GetStringUTF16(IDS_WINDOW_TITLE_EXPERIMENTS));
   SetLayoutManager(std::make_unique<views::BoxLayout>())

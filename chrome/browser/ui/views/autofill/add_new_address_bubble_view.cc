@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/autofill/add_new_address_bubble_view.h"
+
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/view_class_properties.h"
 
 namespace autofill {
@@ -28,10 +30,10 @@ AddNewAddressBubbleView::AddNewAddressBubbleView(
   SetTitle(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADD_NEW_ADDRESS_PROMPT_TITLE));
 
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(
                      IDS_AUTOFILL_ADD_NEW_ADDRESS_DIALOG_OK_BUTTON_LABEL));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(
                      IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL));
 

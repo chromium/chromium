@@ -24,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
@@ -351,14 +352,14 @@ void ContentAnalysisDialog::ContentsChanged(
 
   if (new_contents.size() == 0 ||
       new_contents.size() > kMaxBypassJustificationLength) {
-    DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+    DialogDelegate::SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
     if (bypass_justification_text_length_) {
       bypass_justification_text_length_->SetEnabledColor(
           bypass_justification_text_length_->GetColorProvider()->GetColor(
               ui::kColorAlertHighSeverity));
     }
   } else {
-    DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, true);
+    DialogDelegate::SetButtonEnabled(ui::mojom::DialogButton::kOk, true);
     if (bypass_justification_text_length_ && justification_text_label_) {
       bypass_justification_text_length_->SetEnabledColor(
           justification_text_label_->GetEnabledColor());
@@ -650,36 +651,42 @@ void ContentAnalysisDialog::Resize(int height_to_add) {
 void ContentAnalysisDialog::SetupButtons() {
   if (is_warning()) {
     // Include the Ok and Cancel buttons if there is a bypassable warning.
-    DialogDelegate::SetButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
-    DialogDelegate::SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
+    DialogDelegate::SetButtons(
+        static_cast<int>(ui::mojom::DialogButton::kCancel) |
+        static_cast<int>(ui::mojom::DialogButton::kOk));
+    DialogDelegate::SetDefaultButton(
+        static_cast<int>(ui::mojom::DialogButton::kCancel));
 
-    DialogDelegate::SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+    DialogDelegate::SetButtonLabel(ui::mojom::DialogButton::kCancel,
                                    GetCancelButtonText());
     DialogDelegate::SetCancelCallback(
         base::BindOnce(&ContentAnalysisDialog::CancelButtonCallback,
                        weak_ptr_factory_.GetWeakPtr()));
 
-    DialogDelegate::SetButtonLabel(ui::DIALOG_BUTTON_OK,
+    DialogDelegate::SetButtonLabel(ui::mojom::DialogButton::kOk,
                                    GetBypassWarningButtonText());
     DialogDelegate::SetAcceptCallback(
         base::BindOnce(&ContentAnalysisDialog::AcceptButtonCallback,
                        weak_ptr_factory_.GetWeakPtr()));
 
     if (delegate_->BypassRequiresJustification())
-      DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+      DialogDelegate::SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
   } else if (is_failure() || is_pending()) {
     // Include the Cancel button when the scan is pending or failing.
-    DialogDelegate::SetButtons(ui::DIALOG_BUTTON_CANCEL);
-    DialogDelegate::SetDefaultButton(ui::DIALOG_BUTTON_NONE);
+    DialogDelegate::SetButtons(
+        static_cast<int>(ui::mojom::DialogButton::kCancel));
+    DialogDelegate::SetDefaultButton(
+        static_cast<int>(ui::mojom::DialogButton::kNone));
 
-    DialogDelegate::SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+    DialogDelegate::SetButtonLabel(ui::mojom::DialogButton::kCancel,
                                    GetCancelButtonText());
     DialogDelegate::SetCancelCallback(
         base::BindOnce(&ContentAnalysisDialog::CancelButtonCallback,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     // Include no buttons otherwise.
-    DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+    DialogDelegate::SetButtons(
+        static_cast<int>(ui::mojom::DialogButton::kNone));
     DialogDelegate::SetCancelCallback(
         base::BindOnce(&ContentAnalysisDialog::SuccessCallback,
                        weak_ptr_factory_.GetWeakPtr()));

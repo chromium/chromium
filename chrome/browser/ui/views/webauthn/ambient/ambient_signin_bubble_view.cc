@@ -15,6 +15,7 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -47,7 +48,7 @@ AmbientSigninBubbleView::AmbientSigninBubbleView(
   set_close_on_deactivate(false);
   SetShowTitle(true);
   SetTitle(u"Ambient Signin Prototype");
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical);

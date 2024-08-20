@@ -35,6 +35,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/events/event.h"
@@ -93,7 +94,7 @@ QRCodeGeneratorBubble::QRCodeGeneratorBubble(
       web_contents_(web_contents) {
   DCHECK(on_closing_);
 
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetTitle(IDS_BROWSER_SHARING_QR_CODE_DIALOG_TITLE);
 
   base::RecordAction(base::UserMetricsAction("SharingQRCode.DialogLaunched"));

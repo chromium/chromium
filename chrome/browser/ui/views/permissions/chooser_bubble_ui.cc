@@ -17,6 +17,7 @@
 #include "components/permissions/chooser_controller.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/label_button.h"
@@ -73,7 +74,7 @@ class ChooserBubbleUiViewDelegate : public LocationBarBubbleDelegateView,
   std::u16string GetWindowTitle() const override;
 
   // views::DialogDelegate:
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   views::View* GetInitiallyFocusedView() override;
 
   // views::TableViewObserver:
@@ -116,8 +117,9 @@ ChooserBubbleUiViewDelegate::ChooserBubbleUiViewDelegate(
   // | Get help                         |
   // ------------------------------------
 
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, chooser_controller->GetOkButtonLabel());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 chooser_controller->GetOkButtonLabel());
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  chooser_controller->GetCancelButtonLabel());
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -153,7 +155,7 @@ views::View* ChooserBubbleUiViewDelegate::GetInitiallyFocusedView() {
 }
 
 bool ChooserBubbleUiViewDelegate::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
+    ui::mojom::DialogButton button) const {
   return device_chooser_content_view_->IsDialogButtonEnabled(button);
 }
 

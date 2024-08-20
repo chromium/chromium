@@ -13,6 +13,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/image_view.h"
@@ -51,7 +52,7 @@ BluetoothDevicePairConfirmView::BluetoothDevicePairConfirmView(
   };
   SetCancelCallback(base::BindOnce(canceled, base::Unretained(this)));
   SetCloseCallback(base::BindOnce(canceled, base::Unretained(this)));
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, true);
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, true);
   InitControls(device_identifier, pin);
 }
 

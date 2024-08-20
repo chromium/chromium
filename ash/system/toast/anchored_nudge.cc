@@ -22,6 +22,7 @@
 #include "base/i18n/rtl.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -117,7 +118,7 @@ AnchoredNudge::AnchoredNudge(
       anchor_widget_corner_(nudge_data.arrow),
       click_callback_(std::move(nudge_data.click_callback)),
       dismiss_callback_(std::move(nudge_data.dismiss_callback)) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_color(SK_ColorTRANSPARENT);
   set_margins(gfx::Insets());
   set_close_on_deactivate(false);

@@ -31,6 +31,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -441,7 +442,7 @@ PaymentRequestDialogView::PaymentRequestDialogView(
   DCHECK(request);
   DCHECK(request->spec());
 
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetModalType(ui::mojom::ModalType::kChild);
 
   SetCloseCallback(base::BindOnce(&PaymentRequestDialogView::OnDialogClosed,

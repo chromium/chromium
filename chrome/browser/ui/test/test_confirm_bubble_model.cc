@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 
 TestConfirmBubbleModel::TestConfirmBubbleModel(bool* model_deleted,
                                                bool* accept_clicked,
@@ -32,8 +33,8 @@ std::u16string TestConfirmBubbleModel::GetMessageText() const {
 }
 
 std::u16string TestConfirmBubbleModel::GetButtonLabel(
-    ui::DialogButton button) const {
-  return button == ui::DIALOG_BUTTON_OK ? u"OK" : u"Cancel";
+    ui::mojom::DialogButton button) const {
+  return button == ui::mojom::DialogButton::kOk ? u"OK" : u"Cancel";
 }
 
 void TestConfirmBubbleModel::Accept() {

@@ -23,6 +23,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -65,9 +66,10 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
             IDS_BOREALIS_INSTALLER_ERROR_BUTTON_RETRY);
     }
 
-    SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
-    SetButtonLabel(ui::DIALOG_BUTTON_OK, ok_string);
-    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+               static_cast<int>(ui::mojom::DialogButton::kCancel));
+    SetButtonLabel(ui::mojom::DialogButton::kOk, ok_string);
+    SetButtonLabel(ui::mojom::DialogButton::kCancel,
                    l10n_util::GetStringUTF16(IDS_APP_CANCEL));
 
     SetCancelCallback(base::BindOnce(&BorealisLaunchErrorDialog::OnCancelled,

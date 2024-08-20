@@ -10,6 +10,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -29,7 +30,7 @@ CryptoModulePasswordDialogView::CryptoModulePasswordDialogView(
     CryptoModulePasswordCallback callback)
     : callback_(std::move(callback)) {
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_CRYPTO_MODULE_AUTH_DIALOG_OK_BUTTON_LABEL));
   constexpr bool kAccepted = true;
   constexpr bool kCancelled = false;

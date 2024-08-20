@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -27,7 +28,7 @@ AppDialogView::AppDialogView(const ui::ImageModel& image)
 AppDialogView::~AppDialogView() = default;
 
 void AppDialogView::InitializeView(const std::u16string& heading_text) {
-  SetButtons(ui::DIALOG_BUTTON_OK);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),

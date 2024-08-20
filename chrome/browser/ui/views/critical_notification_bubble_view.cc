@@ -23,6 +23,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -46,9 +47,9 @@ CriticalNotificationBubbleView::ScopedSetTimeFormatterForTesting::
 CriticalNotificationBubbleView::CriticalNotificationBubbleView(
     views::View* anchor_view)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT) {
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_CRITICAL_NOTIFICATION_RESTART));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(IDS_CANCEL));
   SetAcceptCallback(
       base::BindOnce(&CriticalNotificationBubbleView::OnDialogAccepted,

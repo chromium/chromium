@@ -73,6 +73,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/events/types/event_type.h"
@@ -274,7 +275,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   set_margins(gfx::Insets());
 
   SetModalType(ui::mojom::ModalType::kNone);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCloseCallback(base::BindOnce(&TabGroupEditorBubbleView::OnBubbleClose,
                                   base::Unretained(this)));
 

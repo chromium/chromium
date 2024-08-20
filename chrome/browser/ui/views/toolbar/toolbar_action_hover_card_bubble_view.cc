@@ -19,6 +19,7 @@
 #include "extensions/common/extension_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/flex_layout.h"
@@ -116,7 +117,7 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
       extensions_features::kExtensionsMenuAccessControl));
 
   // Remove dialog's default buttons.
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   // Remove the accessible role so that hover cards are not read when they
   // appear because tabs handle accessibility text.

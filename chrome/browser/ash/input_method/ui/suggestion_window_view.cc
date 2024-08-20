@@ -21,6 +21,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -194,7 +195,7 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
   // Inner content should not be announced when the window appears since this
   // is handled by AssistiveAccessibilityView to announce a custom string.
   SetAccessibleWindowRole(ax::mojom::Role::kNone);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCanActivate(false);
   set_parent_window(parent);
   set_margins(gfx::Insets());

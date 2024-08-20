@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
 namespace content {
@@ -40,7 +41,7 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
   // SaveCardBubbleViews:
   void Init() override;
   bool Accept() override;
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   void AddedToWidget() override;
 
   // views::TextfieldController:

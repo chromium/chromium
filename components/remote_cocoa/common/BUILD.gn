@@ -26,6 +26,7 @@ mojom("mojo") {
     "//ui/base/cursor/mojom",
     "//ui/base/ime/mojom",
     "//ui/base/mojom",
+    "//ui/base/mojom:ui_base_types",
     "//ui/display/mojom",
     "//ui/events/mojom",
     "//ui/gfx/geometry/mojom",

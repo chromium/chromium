@@ -40,6 +40,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/themed_vector_icon.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
@@ -551,7 +552,7 @@ ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
       browser_(browser),
       anchor_button_(anchor_button),
       close_bubble_helper_(this, browser) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   // TODO(tluk): Remove when fixing https://crbug.com/822075
   // The sign in webview will be clipped on the bottom corners without these
   // margins, see related bug <http://crbug.com/593203>.

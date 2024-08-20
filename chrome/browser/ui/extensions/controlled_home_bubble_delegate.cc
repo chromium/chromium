@@ -27,6 +27,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace {
@@ -175,10 +176,10 @@ std::u16string ControlledHomeBubbleDelegate::GetDismissButtonText() {
   return l10n_util::GetStringUTF16(IDS_EXTENSION_CONTROLLED_KEEP_CHANGES);
 }
 
-ui::DialogButton ControlledHomeBubbleDelegate::GetDefaultDialogButton() {
+ui::mojom::DialogButton ControlledHomeBubbleDelegate::GetDefaultDialogButton() {
   // TODO(estade): we should set a default where appropriate. See
   // http://crbug.com/751279
-  return ui::DIALOG_BUTTON_NONE;
+  return ui::mojom::DialogButton::kNone;
 }
 
 std::string ControlledHomeBubbleDelegate::GetAnchorActionId() {

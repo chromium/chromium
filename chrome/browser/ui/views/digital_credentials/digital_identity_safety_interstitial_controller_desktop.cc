@@ -14,6 +14,7 @@
 #include "content/public/browser/digital_identity_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/widget/widget.h"
 
 using DialogButton = ui::DialogModel::Button;
@@ -101,7 +102,7 @@ void DigitalIdentitySafetyInterstitialControllerDesktop::ShowInterstitialImpl(
           DialogButton::Params()
               .SetLabel(negative_button_label)
               .SetStyle(ui::ButtonStyle::kProminent))
-      .OverrideDefaultButton(ui::DIALOG_BUTTON_CANCEL)
+      .OverrideDefaultButton(ui::mojom::DialogButton::kCancel)
       .SetDialogDestroyingCallback(
           base::BindOnce(&DigitalIdentitySafetyInterstitialControllerDesktop::
                              OnUserDeniedPermission,

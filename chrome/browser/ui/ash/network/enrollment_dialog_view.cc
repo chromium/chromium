@@ -25,6 +25,7 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/views/controls/label.h"
@@ -85,7 +86,7 @@ EnrollmentDialogView::EnrollmentDialogView(const std::string& network_name,
       target_uri_(target_uri) {
   SetTitle(l10n_util::GetStringUTF16(IDS_NETWORK_ENROLLMENT_HANDLER_TITLE));
   DialogDelegate::SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_NETWORK_ENROLLMENT_HANDLER_BUTTON));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText));

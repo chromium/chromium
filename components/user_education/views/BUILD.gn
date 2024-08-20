@@ -27,7 +27,10 @@ source_set("views") {
     ]
   }
 
-  public_deps = [ "//components/user_education/common" ]
+  public_deps = [
+    "//components/user_education/common",
+    "//ui/base/mojom:ui_base_types",
+  ]
 
   deps = [
     "//base",

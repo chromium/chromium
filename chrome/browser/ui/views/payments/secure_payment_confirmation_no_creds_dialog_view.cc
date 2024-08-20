@@ -9,6 +9,7 @@
 #include "components/payments/content/payment_ui_observer.h"
 #include "components/payments/content/secure_payment_confirmation_no_creds_model.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -52,8 +53,8 @@ void SecurePaymentConfirmationNoCredsDialogView::ShowDialog(
   response_callback_ = std::move(response_callback);
   opt_out_callback_ = std::move(opt_out_callback);
 
-  SetButtons(ui::DIALOG_BUTTON_OK);
-  SetDefaultButton(ui::DIALOG_BUTTON_OK);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kOk));
 
   InitChildViews();
 

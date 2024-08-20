@@ -50,6 +50,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/simple_combobox_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -370,7 +371,7 @@ PartialTranslateBubbleView::PartialTranslateBubbleView(
     mouse_handler_ =
         std::make_unique<WebContentMouseHandler>(this, web_contents);
   }
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetFootnoteView(CreateWordmarkView());
   SetProperty(views::kElementIdentifierKey, kIdentifier);
 }

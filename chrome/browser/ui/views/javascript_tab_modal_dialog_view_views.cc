@@ -11,6 +11,7 @@
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -78,13 +79,14 @@ JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
       dialog_callback_(std::move(dialog_callback)),
       dialog_force_closed_callback_(std::move(dialog_force_closed_callback)) {
   SetModalType(ui::mojom::ModalType::kChild);
-  SetDefaultButton(ui::DIALOG_BUTTON_OK);
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kOk));
   const bool is_alert = dialog_type == content::JAVASCRIPT_DIALOG_TYPE_ALERT;
   SetButtons(
       // Alerts only have an OK button, no Cancel, because there is no choice
       // being made.
-      is_alert ? ui::DIALOG_BUTTON_OK
-               : (ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
+      is_alert ? static_cast<int>(ui::mojom::DialogButton::kOk)
+               : static_cast<int>(ui::mojom::DialogButton::kOk) |
+                     static_cast<int>(ui::mojom::DialogButton::kCancel));
 
   SetAcceptCallback(base::BindOnce(
       [](JavaScriptTabModalDialogViewViews* dialog) {

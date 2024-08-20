@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
@@ -49,7 +50,7 @@ std::unique_ptr<views::DialogDelegate> MakeCrostiniAppRestartDelegate(
     std::unique_ptr<views::View> contents) {
   auto delegate = std::make_unique<views::DialogDelegate>();
   delegate->set_internal_name("CrostiniAppRestart");
-  delegate->SetButtons(ui::DIALOG_BUTTON_OK);
+  delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   delegate->SetContentsView(std::move(contents));
   delegate->SetModalType(ui::mojom::ModalType::kSystem);
   delegate->SetOwnedByWidget(true);

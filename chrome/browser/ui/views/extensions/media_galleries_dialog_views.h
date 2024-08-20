@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/media_galleries/media_galleries_dialog_controller.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -44,7 +45,7 @@ class MediaGalleriesDialogViews : public MediaGalleriesDialog,
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
   views::View* GetContentsView() override;
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(views::View* source,

@@ -30,6 +30,7 @@
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/recyclable_compositor_mac.h"
 #include "ui/display/screen.h"
@@ -103,7 +104,7 @@ class BridgedNativeWidgetHostDummy
   void OnImmersiveFullscreenMenuBarRevealChanged(float reveal_amount) override {
   }
   void OnAutohidingMenuBarHeightChanged(int menu_bar_height) override {}
-  void DoDialogButtonAction(ui::DialogButton button) override {}
+  void DoDialogButtonAction(ui::mojom::DialogButton button) override {}
   void OnFocusWindowToolbar() override {}
   void SetRemoteAccessibilityTokens(
       const std::vector<uint8_t>& window_token,
@@ -154,7 +155,7 @@ class BridgedNativeWidgetHostDummy
     bool widget_is_modal = false;
     std::move(callback).Run(widget_is_modal);
   }
-  void GetDialogButtonInfo(ui::DialogButton button,
+  void GetDialogButtonInfo(ui::mojom::DialogButton button,
                            GetDialogButtonInfoCallback callback) override {
     bool exists = false;
     std::u16string label;
@@ -1404,23 +1405,23 @@ void NativeWidgetMacNSWindowHost::OnAutohidingMenuBarHeightChanged(
 }
 
 void NativeWidgetMacNSWindowHost::DoDialogButtonAction(
-    ui::DialogButton button) {
+    ui::mojom::DialogButton button) {
   if (!root_view_) {
     return;
   }
   views::DialogDelegate* dialog =
       root_view_->GetWidget()->widget_delegate()->AsDialogDelegate();
   DCHECK(dialog);
-  if (button == ui::DIALOG_BUTTON_OK) {
+  if (button == ui::mojom::DialogButton::kOk) {
     dialog->AcceptDialog();
   } else {
-    DCHECK_EQ(button, ui::DIALOG_BUTTON_CANCEL);
+    DCHECK_EQ(button, ui::mojom::DialogButton::kCancel);
     dialog->CancelDialog();
   }
 }
 
 bool NativeWidgetMacNSWindowHost::GetDialogButtonInfo(
-    ui::DialogButton button,
+    ui::mojom::DialogButton button,
     bool* button_exists,
     std::u16string* button_label,
     bool* is_button_enabled,
@@ -1430,13 +1431,14 @@ bool NativeWidgetMacNSWindowHost::GetDialogButtonInfo(
       root_view_
           ? root_view_->GetWidget()->widget_delegate()->AsDialogDelegate()
           : nullptr;
-  if (!dialog || !(dialog->buttons() & button)) {
+  if (!dialog || !(dialog->buttons() & static_cast<int>(button))) {
     return true;
   }
   *button_exists = true;
   *button_label = dialog->GetDialogButtonLabel(button);
   *is_button_enabled = dialog->IsDialogButtonEnabled(button);
-  *is_button_default = button == dialog->GetDefaultDialogButton();
+  *is_button_default =
+      static_cast<int>(button) == dialog->GetDefaultDialogButton();
   return true;
 }
 
@@ -1648,7 +1650,7 @@ void NativeWidgetMacNSWindowHost::GetWidgetIsModal(
 }
 
 void NativeWidgetMacNSWindowHost::GetDialogButtonInfo(
-    ui::DialogButton button,
+    ui::mojom::DialogButton button,
     GetDialogButtonInfoCallback callback) {
   bool exists = false;
   std::u16string label;

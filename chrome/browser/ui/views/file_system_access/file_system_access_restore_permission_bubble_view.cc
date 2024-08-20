@@ -16,6 +16,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -42,7 +43,7 @@ FileSystemAccessRestorePermissionBubbleView::
   // To prevent permissions being accepted accidentally, and as a security
   // measure against crbug.com/619429, permission prompts should not be accepted
   // as the default action.
-  SetDefaultButton(ui::DIALOG_BUTTON_NONE);
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCloseOnMainFrameOriginNavigation(true);
   DialogDelegate::SetCloseCallback(base::BindOnce(
       &FileSystemAccessRestorePermissionBubbleView::OnPromptDismissed,
@@ -100,7 +101,7 @@ FileSystemAccessRestorePermissionBubbleView::
           layout_provider->GetInsetsMetric(views::INSETS_DIALOG_BUTTON_ROW)
               .width(),
       buttons_container->GetPreferredSize().height()));
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetExtraView(std::move(buttons_container));
 }
 

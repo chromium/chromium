@@ -20,6 +20,7 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/display.h"
@@ -192,7 +193,7 @@ END_METADATA
 
 CandidateWindowView::CandidateWindowView(gfx::NativeView parent)
     : selected_candidate_index_in_page_(-1) {
-  DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+  DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCanActivate(false);
   DCHECK(parent);
   set_parent_window(parent);

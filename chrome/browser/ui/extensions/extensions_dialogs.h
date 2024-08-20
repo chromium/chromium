@@ -15,6 +15,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -164,7 +165,7 @@ void ShowRequestFileSystemDialog(
     const std::string& extension_name,
     const std::string& volume_label,
     bool writable,
-    base::OnceCallback<void(ui::DialogButton)> callback);
+    base::OnceCallback<void(ui::mojom::DialogButton)> callback);
 
 // Shows the print job confirmation dialog bubble anchored to the toolbar icon
 // for the extension.  If there's no toolbar icon or parent, it will display a

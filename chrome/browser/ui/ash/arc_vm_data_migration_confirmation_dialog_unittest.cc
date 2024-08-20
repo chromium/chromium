@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -103,7 +104,7 @@ TEST_F(ArcVmDataMigrationConfirmationDialogTest, UpdateNeededNow) {
             }
           }));
   // There should be no cancel button.
-  EXPECT_EQ(dialog->buttons(), ui::DIALOG_BUTTON_OK);
+  EXPECT_EQ(dialog->buttons(), static_cast<int>(ui::mojom::DialogButton::kOk));
   dialog->Accept();
   EXPECT_EQ(1, accept_count);
   EXPECT_EQ(0, cancel_count);

@@ -40,6 +40,7 @@
 #include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -322,7 +323,7 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
   AddChildView(std::move(web_view));
 
   set_margins(gfx::Insets());
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 

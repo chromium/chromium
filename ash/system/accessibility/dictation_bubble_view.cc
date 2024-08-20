@@ -24,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/size.h"
@@ -195,7 +196,7 @@ END_METADATA
 }  // namespace
 
 DictationBubbleView::DictationBubbleView() {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_parent_window(
       Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                           kShellWindowId_AccessibilityBubbleContainer));

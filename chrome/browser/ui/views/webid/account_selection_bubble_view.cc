@@ -32,6 +32,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
@@ -252,7 +253,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
                                std::move(url_loader_factory),
                                rp_for_display),
       rp_context_(rp_context) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_fixed_width(kBubbleWidth);
   set_margins(idp_title.has_value()
                   ? gfx::Insets::VH(kTopBottomPadding + kVerticalSpacing, 0)

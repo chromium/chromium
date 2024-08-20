@@ -23,6 +23,7 @@
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -105,7 +106,7 @@ bool CanWindowHeightFitPrivacySandboxPrompt(Browser* browser) {
 void ShowPrivacySandboxDialog(Browser* browser,
                               PrivacySandboxService::PromptType prompt_type) {
   auto delegate = std::make_unique<PrivacySandboxDialogDelegate>(browser);
-  delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
+  delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   delegate->SetModalType(ui::mojom::ModalType::kWindow);
   delegate->SetShowCloseButton(false);
   delegate->SetOwnedByWidget(true);

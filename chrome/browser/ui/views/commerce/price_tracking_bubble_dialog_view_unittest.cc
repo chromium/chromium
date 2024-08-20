@@ -20,6 +20,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/styled_label.h"
@@ -177,10 +178,10 @@ TEST_P(PriceTrackingBubbleDialogViewLayoutUnitTest, FUEBubble) {
                 GetFolderName()));
 
   EXPECT_EQ(
-      bubble->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK),
+      bubble->GetDialogButtonLabel(ui::mojom::DialogButton::kOk),
       l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE_DIALOG_ACTION_BUTTON));
   EXPECT_EQ(
-      bubble->GetDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL),
+      bubble->GetDialogButtonLabel(ui::mojom::DialogButton::kCancel),
       l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE_DIALOG_CANCEL_BUTTON));
 }
 
@@ -209,10 +210,10 @@ TEST_P(PriceTrackingBubbleDialogViewLayoutUnitTest, NormalBubble) {
                   expected_save_label) != std::u16string::npos);
   EXPECT_TRUE(bubble->GetBodyLabelForTesting()->GetFirstLinkForTesting());
 
-  EXPECT_EQ(bubble->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK),
+  EXPECT_EQ(bubble->GetDialogButtonLabel(ui::mojom::DialogButton::kOk),
             l10n_util::GetStringUTF16(
                 IDS_OMNIBOX_TRACKING_PRICE_DIALOG_ACTION_BUTTON));
-  EXPECT_EQ(bubble->GetDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL),
+  EXPECT_EQ(bubble->GetDialogButtonLabel(ui::mojom::DialogButton::kCancel),
             l10n_util::GetStringUTF16(
                 IDS_OMNIBOX_TRACKING_PRICE_DIALOG_UNTRACK_BUTTON));
 }

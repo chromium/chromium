@@ -53,6 +53,7 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -426,7 +427,7 @@ MediaDialogView::MediaDialogView(
   // Enable layer based clipping to ensure children using layers are clipped
   // appropriately.
   SetPaintClientToLayer(true);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetAccessibleTitle(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_DIALOG_NAME));
   DCHECK(service_);

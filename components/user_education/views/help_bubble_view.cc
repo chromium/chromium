@@ -28,6 +28,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -682,7 +683,7 @@ HelpBubbleView::HelpBubbleView(
   SetProperty(views::kElementIdentifierKey, kHelpBubbleElementIdForTesting);
   set_margins(gfx::Insets());
   set_title_margins(gfx::Insets());
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_close_on_deactivate(false);
   set_focus_traversable_from_anchor_view(false);
 

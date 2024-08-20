@@ -32,6 +32,7 @@
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -64,7 +65,7 @@ class TestBubbleView : public views::BubbleDialogDelegateView {
  public:
   explicit TestBubbleView(views::View* anchor_view)
       : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_LEFT) {
-    SetButtons(ui::DIALOG_BUTTON_NONE);
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
     SetPreferredSize(gfx::Size(100, 100));
     SetCanActivate(false);
     set_focus_traversable_from_anchor_view(false);

@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -36,7 +37,7 @@ class TailoredSecurityUnconsentedModal : public views::DialogDelegateView {
   ~TailoredSecurityUnconsentedModal() override;
 
   // views::DialogDelegate implementation:
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   bool ShouldShowCloseButton() const override;
 
  private:

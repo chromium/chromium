@@ -30,6 +30,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_combobox_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -171,8 +172,8 @@ SaveAddressProfileView::SaveAddressProfileView(
 
   SetProperty(views::kElementIdentifierKey, kTopViewId);
   SetTitle(controller_->GetWindowTitle());
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetOkButtonLabel());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kOk, controller_->GetOkButtonLabel());
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(
                      IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL));
 

@@ -47,6 +47,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -252,7 +253,7 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
                                             apps::AppType app_type,
                                             const std::string& app_id) {
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_APP_BUTTON));
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
@@ -565,7 +566,7 @@ void AppUninstallDialogView::InitializeViewForArcApp(
     const std::string& app_id) {
   if (IsArcShortcutApp(profile, app_id)) {
     SetButtonLabel(
-        ui::DIALOG_BUTTON_OK,
+        ui::mojom::DialogButton::kOk,
         l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON));
   } else {
     InitializeViewWithMessage(l10n_util::GetStringUTF16(

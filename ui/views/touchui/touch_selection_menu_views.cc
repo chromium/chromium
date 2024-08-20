@@ -14,6 +14,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
@@ -73,7 +74,7 @@ TouchSelectionMenuViews::TouchSelectionMenuViews(
   DCHECK(owner_);
   DCHECK(client_);
 
-  DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+  DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_shadow(BubbleBorder::STANDARD_SHADOW);
   set_parent_window(context);
   if (::features::IsTouchTextEditingRedesignEnabled()) {

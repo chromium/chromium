@@ -13,6 +13,7 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/style/typography.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -88,7 +89,7 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
   views::Builder<PickerPreviewBubbleView>(this)
       .set_margins(kMargins)
       .set_corner_radius(kPickerBubbleCornerRadius)
-      .SetButtons(ui::DIALOG_BUTTON_NONE)
+      .SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone))
       .SetProperty(views::kElementIdentifierKey, kPickerPreviewBubbleElementId)
       .AddChildren(views::Builder<RoundedPreviewImageView>(
                        std::make_unique<RoundedPreviewImageView>(

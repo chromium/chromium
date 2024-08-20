@@ -28,6 +28,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 
 class AppDialogViewBrowserTest : public DialogBrowserTest {
  public:
@@ -133,7 +134,8 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
     run_loop.Run();
 
     ASSERT_NE(nullptr, ActiveView(name));
-    EXPECT_EQ(ui::DIALOG_BUTTON_OK, ActiveView(name)->buttons());
+    EXPECT_EQ(static_cast<int>(ui::mojom::DialogButton::kOk),
+              ActiveView(name)->buttons());
 
     if (name == "block") {
       bool state_is_set = false;

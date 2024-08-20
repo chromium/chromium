@@ -25,6 +25,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_utils.h"
@@ -113,7 +114,7 @@ SharingDialogView::SharingDialogView(views::View* anchor_view,
                                     web_contents,
                                     /*autosize=*/true),
       data_(std::move(data)) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));

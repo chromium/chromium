@@ -22,6 +22,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
@@ -161,7 +162,7 @@ EnterpriseStartupDialogView::EnterpriseStartupDialogView(
           views::DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING));
 
   set_draggable(true);
-  SetButtons(ui::DIALOG_BUTTON_OK);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Show Google Chrome Enterprise logo only for official build.
   SetExtraView(std::make_unique<LogoView>());

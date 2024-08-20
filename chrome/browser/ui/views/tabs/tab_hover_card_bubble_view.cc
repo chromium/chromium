@@ -34,6 +34,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -360,7 +361,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab,
                                views::BubbleBorder::STANDARD_SHADOW),
       tab_style_(TabStyle::Get()),
       bubble_params_(params) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   // Remove the accessible role so that hover cards are not read when they
   // appear because tabs handle accessibility text.

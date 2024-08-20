@@ -19,6 +19,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
@@ -38,7 +39,7 @@ namespace autofill {
 LocalCardMigrationErrorDialogView::LocalCardMigrationErrorDialogView(
     LocalCardMigrationDialogController* controller)
     : controller_(controller) {
-  SetButtons(ui::DIALOG_BUTTON_CANCEL);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kCancel));
   SetCancelCallback(
       base::BindOnce(&LocalCardMigrationDialogController::OnDoneButtonClicked,
                      base::Unretained(controller_)));

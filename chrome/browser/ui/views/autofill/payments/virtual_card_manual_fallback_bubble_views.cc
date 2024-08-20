@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -60,7 +61,7 @@ VirtualCardManualFallbackBubbleViews::VirtualCardManualFallbackBubbleViews(
   DCHECK(controller_);
   SetShowIcon(true);
   SetShowCloseButton(true);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(

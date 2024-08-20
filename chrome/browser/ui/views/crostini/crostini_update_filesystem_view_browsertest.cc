@@ -20,6 +20,7 @@
 #include "components/crx_file/id_util.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 
 ash::FakeCiceroneClient* GetFakeCiceroneClient() {
   return ash::FakeCiceroneClient::Get();
@@ -86,7 +87,8 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpdateFilesystemViewBrowserTest, HitOK) {
 
   ShowUi("default");
   ExpectView();
-  EXPECT_EQ(ui::DIALOG_BUTTON_OK, ActiveView()->buttons());
+  EXPECT_EQ(static_cast<int>(ui::mojom::DialogButton::kOk),
+            ActiveView()->buttons());
 
   EXPECT_TRUE(HasAcceptButton());
   EXPECT_FALSE(HasCancelButton());

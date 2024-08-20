@@ -502,6 +502,7 @@ component("base") {
     "//base",
     "//skia",
     "//third_party/abseil-cpp:absl",
+    "//ui/base/mojom:ui_base_types",
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]

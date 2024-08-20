@@ -19,6 +19,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/models/tree_node_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -82,7 +83,7 @@ class BookmarkEditorView : public BookmarkEditor,
   ~BookmarkEditorView() override;
 
   // views::DialogDelegateView:
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
 
   // views::View:
   gfx::Size CalculatePreferredSize(

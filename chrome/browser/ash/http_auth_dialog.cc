@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -262,7 +263,7 @@ HttpAuthDialog::HttpAuthDialog(const net::AuthChallengeInfo& auth_info,
   GetAllDialogs().push_back(this);
 
   dialog_delegate_.SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_LOGIN_DIALOG_OK_BUTTON_LABEL));
 
   dialog_delegate_.SetAcceptCallback(base::BindOnce(

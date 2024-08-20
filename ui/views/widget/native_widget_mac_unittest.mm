@@ -29,6 +29,7 @@
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #import "ui/base/test/scoped_fake_full_keyboard_access.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
@@ -2452,7 +2453,7 @@ TEST_F(NativeWidgetMacTest, TouchBar) {
   // Ensure the touchBar is recreated by comparing pointers.
 
   // Remove the cancel button.
-  delegate->SetButtons(ui::DIALOG_BUTTON_OK);
+  delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   delegate->DialogModelChanged();
   EXPECT_TRUE(delegate->GetOkButton());
   EXPECT_FALSE(delegate->GetCancelButton());

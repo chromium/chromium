@@ -15,6 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
@@ -79,10 +80,10 @@ MediaRemotingDialogView::MediaRemotingDialogView(
   DCHECK(pref_service_);
   SetShowCloseButton(true);
   SetTitle(IDS_MEDIA_ROUTER_REMOTING_DIALOG_TITLE);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(
                      IDS_MEDIA_ROUTER_REMOTING_DIALOG_OPTIMIZE_BUTTON));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(
                      IDS_MEDIA_ROUTER_REMOTING_DIALOG_CANCEL_BUTTON));
 

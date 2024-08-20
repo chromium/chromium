@@ -39,6 +39,7 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/ui_base_types.h"
@@ -166,9 +167,10 @@ int ExtensionInstallPrompt::Prompt::GetDialogButtons() const {
   // Extension pending request dialog doesn't have confirm button because there
   // is no user action required.
   if (type_ == EXTENSION_PENDING_REQUEST_PROMPT)
-    return ui::DIALOG_BUTTON_CANCEL;
+    return static_cast<int>(ui::mojom::DialogButton::kCancel);
 
-  return ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL;
+  return static_cast<int>(ui::mojom::DialogButton::kOk) |
+         static_cast<int>(ui::mojom::DialogButton::kCancel);
 }
 
 std::u16string ExtensionInstallPrompt::Prompt::GetAcceptButtonLabel() const {

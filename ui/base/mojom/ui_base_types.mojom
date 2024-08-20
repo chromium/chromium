@@ -4,13 +4,6 @@
 
 module ui.mojom;
 
-// Dialog button identifiers used to specify which buttons to show the user.
-enum DialogButton {
-  NONE,
-  OK,
-  CANCEL,
-};
-
 // Specifies the type of modality applied to a window. Different modal
 // treatments may be handled differently by the window manager.
 enum ModalType {

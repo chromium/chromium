@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/file_system/consent_provider_impl.h"
-
 #include <memory>
 #include <string>
 #include <utility>
@@ -14,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/extensions/api/file_system/consent_provider_impl.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -23,6 +22,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 
 using extensions::file_system_api::ConsentProviderImpl;
 using extensions::mojom::ManifestLocation;
@@ -34,7 +34,7 @@ namespace {
 // accessible fields.
 struct TestDelegateState {
   // Used to assign a fake dialog response.
-  ui::DialogButton dialog_button = ui::DIALOG_BUTTON_NONE;
+  ui::mojom::DialogButton dialog_button = ui::mojom::DialogButton::kNone;
 
   // Used to assign fake result of detection the auto launch kiosk mode.
   bool is_auto_launched = false;
@@ -227,7 +227,7 @@ TEST_F(FileSystemApiConsentProviderTest, ForKioskApps) {
   user_manager_->LoginUser(manual_user->GetAccountId());
   {
     TestDelegateState state;
-    state.dialog_button = ui::DIALOG_BUTTON_OK;
+    state.dialog_button = ui::mojom::DialogButton::kOk;
     ConsentProviderImpl provider(
         std::make_unique<TestingConsentProviderDelegate>(&state));
     EXPECT_TRUE(provider.IsGrantable(*manual_launch_kiosk_app));
@@ -248,7 +248,7 @@ TEST_F(FileSystemApiConsentProviderTest, ForKioskApps) {
   // after rejecting by a user.
   {
     TestDelegateState state;
-    state.dialog_button = ui::DIALOG_BUTTON_CANCEL;
+    state.dialog_button = ui::mojom::DialogButton::kCancel;
     ConsentProviderImpl provider(
         std::make_unique<TestingConsentProviderDelegate>(&state));
     EXPECT_TRUE(provider.IsGrantable(*manual_launch_kiosk_app));

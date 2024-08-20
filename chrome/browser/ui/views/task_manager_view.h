@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/models/table_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/table/table_grouper.h"
@@ -66,7 +67,7 @@ class TaskManagerView : public TableViewDelegate,
   ui::ImageModel GetWindowIcon() override;
   std::string GetWindowName() const override;
   bool Accept() override;
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   void WindowClosing() override;
 
   // views::TableGrouper:

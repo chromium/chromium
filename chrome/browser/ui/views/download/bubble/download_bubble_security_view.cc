@@ -30,6 +30,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -564,14 +565,15 @@ DownloadBubbleSecurityView::content_id() const {
 void DownloadBubbleSecurityView::UpdateButton(
     DownloadBubbleSecurityViewInfo::SubpageButton button_info,
     bool is_secondary_button) {
-  ui::DialogButton button_type =
-      is_secondary_button ? ui::DIALOG_BUTTON_CANCEL : ui::DIALOG_BUTTON_OK;
+  ui::mojom::DialogButton button_type = is_secondary_button
+                                            ? ui::mojom::DialogButton::kCancel
+                                            : ui::mojom::DialogButton::kOk;
 
   base::RepeatingCallback<bool()> callback(base::BindRepeating(
       &HandleButtonClickWithDefaultClose, weak_factory_.GetWeakPtr(),
       button_info.command, is_secondary_button));
 
-  if (button_type == ui::DIALOG_BUTTON_CANCEL) {
+  if (button_type == ui::mojom::DialogButton::kCancel) {
     bubble_delegate_->SetCancelCallbackWithClose(callback);
     bubble_delegate_->SetButtonEnabled(button_type, true);
     views::LabelButton* button = bubble_delegate_->GetCancelButton();
@@ -584,7 +586,7 @@ void DownloadBubbleSecurityView::UpdateButton(
 
   bubble_delegate_->SetButtonLabel(button_type, button_info.label);
   if (button_info.is_prominent) {
-    bubble_delegate_->SetDefaultButton(button_type);
+    bubble_delegate_->SetDefaultButton(static_cast<int>(button_type));
   }
 
   base::UmaHistogramEnumeration(
@@ -594,17 +596,21 @@ void DownloadBubbleSecurityView::UpdateButton(
 }
 
 void DownloadBubbleSecurityView::UpdateButtons() {
-  bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_NONE);
-  bubble_delegate_->SetDefaultButton(ui::DIALOG_BUTTON_NONE);
+  bubble_delegate_->SetButtons(
+      static_cast<int>(ui::mojom::DialogButton::kNone));
+  bubble_delegate_->SetDefaultButton(
+      static_cast<int>(ui::mojom::DialogButton::kNone));
 
   if (info_->has_primary_button()) {
-    bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_OK);
+    bubble_delegate_->SetButtons(
+        static_cast<int>(ui::mojom::DialogButton::kOk));
     UpdateButton(info_->primary_button(), /*is_secondary_button=*/false);
   }
 
   if (info_->has_secondary_button()) {
-    bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_OK |
-                                 ui::DIALOG_BUTTON_CANCEL);
+    bubble_delegate_->SetButtons(
+        static_cast<int>(ui::mojom::DialogButton::kCancel) |
+        static_cast<int>(ui::mojom::DialogButton::kOk));
     UpdateButton(info_->secondary_button(), /*is_secondary_button=*/true);
   }
   // After we have updated the buttons, set the minimum width to avoid the rest
@@ -647,8 +653,10 @@ void DownloadBubbleSecurityView::UpdatePasswordPrompt() {
 
 void DownloadBubbleSecurityView::ClearWideFields() {
   bubble_delegate_->set_fixed_width(0);
-  bubble_delegate_->SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, std::u16string());
-  bubble_delegate_->SetButtonLabel(ui::DIALOG_BUTTON_OK, std::u16string());
+  bubble_delegate_->SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                                   std::u16string());
+  bubble_delegate_->SetButtonLabel(ui::mojom::DialogButton::kOk,
+                                   std::u16string());
   paragraphs_->SetText(std::u16string());
   // Setting an extremely low value here will force the labels to break text
   // into a large number of labels and lay them out, which is wasteful. We set a

@@ -16,10 +16,12 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
+
 PasskeyNotAcceptedBubbleView::PasskeyNotAcceptedBubbleView(
     content::WebContents* web_contents,
     views::View* anchor_view,
@@ -33,7 +35,7 @@ PasskeyNotAcceptedBubbleView::PasskeyNotAcceptedBubbleView(
                             AUTOMATIC_PASSKEY_NOT_ACCEPTED_BUBBLE
                       : password_manager::metrics_util::
                             MANUAL_PASSKEY_NOT_ACCEPTED_BUBBLE) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowIcon(true);
   SetTitle(controller_.GetTitle());
   SetLayoutManager(std::make_unique<views::FillLayout>());

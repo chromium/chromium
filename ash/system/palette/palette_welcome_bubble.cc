@@ -21,6 +21,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -46,7 +47,7 @@ class PaletteWelcomeBubble::WelcomeBubbleView
         l10n_util::GetStringUTF16(IDS_ASH_STYLUS_WARM_WELCOME_BUBBLE_TITLE));
     SetShowTitle(true);
     SetShowCloseButton(true);
-    SetButtons(ui::DIALOG_BUTTON_NONE);
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
     set_close_on_deactivate(true);
     SetCanActivate(false);
     set_accept_events(true);

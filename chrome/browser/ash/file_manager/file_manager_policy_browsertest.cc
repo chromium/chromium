@@ -37,6 +37,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/textarea/textarea.h"
 
 namespace file_manager {
@@ -1021,16 +1022,16 @@ class FileTransferConnectorFilesAppBrowserTest
                 kEnterpriseConnectorsJustificationTextareaId));
     if (bypass_requires_justification) {
       EXPECT_NE(justification_area, nullptr);
-      EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+      EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
       justification_area->InsertText(
           kUserJustification,
           ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-      EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+      EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
     } else {
       EXPECT_EQ(justification_area, nullptr);
-      EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+      EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
     }
 
     // Close the dialog.

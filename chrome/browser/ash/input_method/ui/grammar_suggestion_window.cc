@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/input_method/ui/colors.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -39,7 +40,7 @@ bool ShouldHighlight(const views::Button& button) {
 GrammarSuggestionWindow::GrammarSuggestionWindow(gfx::NativeView parent,
                                                  AssistiveDelegate* delegate)
     : delegate_(delegate) {
-  DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+  DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCanActivate(false);
   DCHECK(parent);
   set_parent_window(parent);

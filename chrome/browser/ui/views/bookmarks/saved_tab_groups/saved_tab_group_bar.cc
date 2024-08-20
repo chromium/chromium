@@ -42,6 +42,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -831,7 +832,7 @@ void SavedTabGroupBar::MaybeShowOverflowMenu() {
   bubble_delegate->set_adjust_if_offscreen(true);
   bubble_delegate->set_close_on_deactivate(true);
   bubble_delegate->SetShowTitle(false);
-  bubble_delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
+  bubble_delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   bubble_delegate->SetShowCloseButton(false);
   bubble_delegate->SetEnableArrowKeyTraversal(true);
   bubble_delegate->SetContentsView(std::move(overflow_menu));

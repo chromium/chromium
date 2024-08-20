@@ -37,6 +37,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/insets.h"
@@ -309,7 +310,7 @@ ZoomBubbleView::ZoomBubbleView(
       auto_close_(reason == AUTOMATIC),
       immersive_mode_controller_(immersive_mode_controller),
       session_id_(chrome::FindBrowserWithTab(web_contents)->session_id()) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   SetNotifyEnterExitOnChild(true);
   if (immersive_mode_controller_)

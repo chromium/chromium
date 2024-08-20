@@ -9,6 +9,7 @@
 #include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 
 namespace arc {
@@ -64,12 +65,13 @@ class LowDiskSpaceDialogViewTest : public CompatModeTestBase {
 TEST_F(LowDiskSpaceDialogViewTest, ConstructDestruct) {
   EXPECT_EQ(0, GetOnCloseCallbackCount());
   // Verify there's only 1 button in the dialog.
-  EXPECT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
+  EXPECT_EQ(static_cast<int>(ui::mojom::DialogButton::kOk) |
+                static_cast<int>(ui::mojom::DialogButton::kCancel),
             dialog_view()->buttons());
   EXPECT_TRUE(
-      dialog_view()->IsDialogButtonEnabled(ui::DialogButton::DIALOG_BUTTON_OK));
-  EXPECT_TRUE(dialog_view()->IsDialogButtonEnabled(
-      ui::DialogButton::DIALOG_BUTTON_CANCEL));
+      dialog_view()->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+  EXPECT_TRUE(
+      dialog_view()->IsDialogButtonEnabled(ui::mojom::DialogButton::kCancel));
 }
 
 TEST_F(LowDiskSpaceDialogViewTest, TestOkButton) {

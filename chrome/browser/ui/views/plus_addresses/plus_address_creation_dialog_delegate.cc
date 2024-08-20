@@ -30,6 +30,7 @@
 #include "content/public/common/referrer.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
@@ -327,7 +328,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
 
   // Avoid using the builtin DialogDelegate buttons so that we can use
   // GetWidget()->Close() to close the UI when ready.
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   // Initialize buttons.
   primary_view->AddChildView(

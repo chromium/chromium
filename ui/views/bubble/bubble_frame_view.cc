@@ -13,6 +13,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
@@ -1041,7 +1042,8 @@ int BubbleFrameView::GetFrameWidthForClientWidth(int client_width) const {
   DialogDelegate* const dialog_delegate =
       GetWidget()->widget_delegate()->AsDialogDelegate();
   bool snapping =
-      dialog_delegate && dialog_delegate->buttons() != ui::DIALOG_BUTTON_NONE;
+      dialog_delegate && dialog_delegate->buttons() !=
+                             static_cast<int>(ui::mojom::DialogButton::kNone);
   return snapping ? LayoutProvider::Get()->GetSnappedDialogWidth(frame_width)
                   : frame_width;
 }

@@ -26,6 +26,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -153,15 +154,16 @@ class BorealisDisallowedDialog : public DialogDelegate {
     set_internal_name("BorealisDisallowedDialog");
     MaybeAction second_action = behaviour->GetAction();
     if (second_action.has_value()) {
-      SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
-      SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+      SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+                 static_cast<int>(ui::mojom::DialogButton::kCancel));
+      SetButtonLabel(ui::mojom::DialogButton::kCancel,
                      l10n_util::GetStringUTF16(IDS_CLOSE));
-      SetButtonLabel(ui::DIALOG_BUTTON_OK,
+      SetButtonLabel(ui::mojom::DialogButton::kOk,
                      std::move(second_action.value().first));
       SetAcceptCallback(std::move(second_action.value().second));
     } else {
-      SetButtons(ui::DIALOG_BUTTON_OK);
-      SetButtonLabel(ui::DIALOG_BUTTON_OK,
+      SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+      SetButtonLabel(ui::mojom::DialogButton::kOk,
                      l10n_util::GetStringUTF16(IDS_CLOSE));
     }
     InitializeView(*behaviour, title_id);

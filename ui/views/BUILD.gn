@@ -602,6 +602,7 @@ component("views") {
     "//ui/base/ime/init",
     "//ui/base/metadata",
     "//ui/base/mojom:mojom",
+    "//ui/base/mojom:ui_base_types",
     "//ui/compositor",
     "//ui/display",
     "//ui/events",

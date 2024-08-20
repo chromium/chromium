@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/layout/fill_layout.h"
 
 PasswordDefaultStoreChangedView::PasswordDefaultStoreChangedView(
@@ -17,9 +18,11 @@ PasswordDefaultStoreChangedView::PasswordDefaultStoreChangedView(
       controller_(PasswordsModelDelegateFromWebContents(web_contents)) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  SetButtons((ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_.GetContinueButtonText());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+             static_cast<int>(ui::mojom::DialogButton::kCancel));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 controller_.GetContinueButtonText());
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  controller_.GetGoToSettingsButtonText());
 
   SetShowIcon(true);

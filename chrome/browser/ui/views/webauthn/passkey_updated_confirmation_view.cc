@@ -11,6 +11,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -27,7 +28,7 @@ PasskeyUpdatedConfirmationView::PasskeyUpdatedConfirmationView(
                             AUTOMATIC_PASSKEY_UPDATED_CONFIRMATION
                       : password_manager::metrics_util::
                             MANUAL_PASSKEY_UPDATED_CONFIRMATION) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowIcon(true);
   SetTitle(controller_.GetTitle());
   SetLayoutManager(std::make_unique<views::FillLayout>());

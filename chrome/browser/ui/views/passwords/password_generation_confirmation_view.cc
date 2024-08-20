@@ -15,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -35,7 +36,7 @@ PasswordGenerationConfirmationView::PasswordGenerationConfirmationView(
               : PasswordBubbleControllerBase::DisplayReason::kUserAction) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowIcon(true);
 
   AddChildView(CreateGooglePasswordManagerLabel(

@@ -19,6 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -245,7 +246,7 @@ void EmbeddedPermissionPromptBaseView::Init() {
     AddRequestLine(request, index++);
   }
 
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   auto buttons_container = std::make_unique<views::View>();
   buttons_container->SetLayoutManager(std::make_unique<views::BoxLayout>(

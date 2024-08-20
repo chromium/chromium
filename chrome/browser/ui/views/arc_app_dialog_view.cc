@@ -19,6 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/insets.h"
@@ -99,8 +100,8 @@ ArcAppDialogView::ArcAppDialogView(Profile* profile,
       app_id_(app_id),
       confirm_callback_(std::move(confirm_callback)) {
   SetTitle(window_title);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, confirm_button_text);
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, cancel_button_text);
+  SetButtonLabel(ui::mojom::DialogButton::kOk, confirm_button_text);
+  SetButtonLabel(ui::mojom::DialogButton::kCancel, cancel_button_text);
   SetAcceptCallback(base::BindOnce(&ArcAppDialogView::OnDialogAccepted,
                                    base::Unretained(this)));
   SetCancelCallback(base::BindOnce(&ArcAppDialogView::OnDialogCancelled,

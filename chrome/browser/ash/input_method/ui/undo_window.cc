@@ -16,6 +16,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -46,7 +47,7 @@ void SetHighlighted(views::View& view, bool highlighted) {
 
 UndoWindow::UndoWindow(gfx::NativeView parent, AssistiveDelegate* delegate)
     : delegate_(delegate) {
-  DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+  DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCanActivate(false);
   DCHECK(parent);
   set_parent_window(parent);

@@ -19,6 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -112,7 +113,7 @@ void RequestSystemProxyCredentialsView::Init() {
   SetBorder(views::CreateEmptyBorder(provider->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText)));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_OK_BUTTON));
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())

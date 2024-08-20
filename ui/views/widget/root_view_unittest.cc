@@ -17,6 +17,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/context_menu_controller.h"
@@ -853,7 +854,8 @@ class RootViewTestDialogDelegate : public DialogDelegateView {
  public:
   RootViewTestDialogDelegate() {
     // Ensure that buttons don't influence the layout.
-    DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+    DialogDelegate::SetButtons(
+        static_cast<int>(ui::mojom::DialogButton::kNone));
   }
 
   RootViewTestDialogDelegate(const RootViewTestDialogDelegate&) = delete;

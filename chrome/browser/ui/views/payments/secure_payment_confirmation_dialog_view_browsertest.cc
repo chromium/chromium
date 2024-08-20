@@ -24,6 +24,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -201,11 +202,11 @@ class SecurePaymentConfirmationDialogViewTest
 
     EXPECT_EQ(model_.verify_button_label(),
               test_delegate_->dialog_view()->GetDialogButtonLabel(
-                  ui::DIALOG_BUTTON_OK));
+                  ui::mojom::DialogButton::kOk));
 
     EXPECT_EQ(model_.cancel_button_label(),
               test_delegate_->dialog_view()->GetDialogButtonLabel(
-                  ui::DIALOG_BUTTON_CANCEL));
+                  ui::mojom::DialogButton::kCancel));
 
     if (ShouldShowHeaderIcon()) {
       EXPECT_TRUE(GetViewByID(

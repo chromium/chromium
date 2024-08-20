@@ -30,6 +30,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
@@ -466,14 +467,15 @@ void IsolatedWebAppInstallerView::SetDialogButtons(
     return;
   }
 
-  int buttons = ui::DIALOG_BUTTON_CANCEL;
+  int buttons = static_cast<int>(ui::mojom::DialogButton::kCancel);
   dialog_delegate->SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(close_button_label_id));
   if (accept_button_label_id.has_value()) {
-    buttons |= ui::DIALOG_BUTTON_OK;
+    buttons = static_cast<int>(ui::mojom::DialogButton::kOk) |
+              static_cast<int>(ui::mojom::DialogButton::kCancel);
     dialog_delegate->SetButtonLabel(
-        ui::DIALOG_BUTTON_OK,
+        ui::mojom::DialogButton::kOk,
         l10n_util::GetStringUTF16(accept_button_label_id.value()));
   }
   dialog_delegate->SetButtons(buttons);

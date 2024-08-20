@@ -7,7 +7,7 @@ module remote_cocoa.mojom;
 import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "ui/base/accelerators/mojom/accelerator.mojom";
-import "ui/base/mojom/ui_base_types.mojom";
+import "ui/base/mojom/dialog_button.mojom";
 import "ui/base/mojom/window_open_disposition.mojom";
 import "ui/display/mojom/display.mojom";
 import "ui/events/mojom/event.mojom";

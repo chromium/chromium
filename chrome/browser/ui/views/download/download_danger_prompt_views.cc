@@ -33,6 +33,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/controls/label.h"
@@ -88,8 +89,9 @@ DownloadDangerPromptViews::DownloadDangerPromptViews(
       done_(std::move(done)) {
   // Note that this prompt is asking whether to cancel a dangerous download, so
   // the accept path is titled "Cancel".
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_CANCEL));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 l10n_util::GetStringUTF16(IDS_CANCEL));
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(IDS_CONFIRM_DOWNLOAD));
   SetModalType(ui::mojom::ModalType::kChild);
 

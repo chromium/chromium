@@ -14,6 +14,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -25,7 +26,7 @@ SaveCardManageCardsBubbleViews::SaveCardManageCardsBubbleViews(
     content::WebContents* web_contents,
     SaveCardBubbleController* controller)
     : SaveCardBubbleViews(anchor_view, web_contents, controller) {
-  SetButtons(ui::DIALOG_BUTTON_OK);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   SetExtraView(
       std::make_unique<views::MdTextButton>(
           base::BindRepeating(

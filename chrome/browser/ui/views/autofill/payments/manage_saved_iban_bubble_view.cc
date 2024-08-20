@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -28,8 +29,9 @@ ManageSavedIbanBubbleView::ManageSavedIbanBubbleView(
     IbanBubbleController* controller)
     : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller) {
-  SetButtons(ui::DIALOG_BUTTON_OK);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller->GetAcceptButtonText());
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 controller->GetAcceptButtonText());
   SetExtraView(
       std::make_unique<views::MdTextButton>(
           base::BindRepeating(

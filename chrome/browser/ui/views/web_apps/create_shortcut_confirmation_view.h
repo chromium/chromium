@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -64,8 +65,8 @@ class CreateShortcutConfirmationView : public views::DialogDelegateView,
   views::View* GetInitiallyFocusedView() override;
   bool ShouldShowCloseButton() const override;
 
-  // Overriden from views::DialogDelegateView:
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  // Overridden from views::DialogDelegateView:
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
 
   // Overridden from views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,

@@ -35,6 +35,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_palette.h"
@@ -94,7 +95,8 @@ SaveCardOfferBubbleViews::SaveCardOfferBubbleViews(
     content::WebContents* web_contents,
     SaveCardBubbleController* controller)
     : SaveCardBubbleViews(anchor_view, web_contents, controller) {
-  SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+             static_cast<int>(ui::mojom::DialogButton::kCancel));
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -153,11 +155,12 @@ bool SaveCardOfferBubbleViews::Accept() {
 }
 
 bool SaveCardOfferBubbleViews::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
-  if (button == ui::DIALOG_BUTTON_CANCEL)
+    ui::mojom::DialogButton button) const {
+  if (button == ui::mojom::DialogButton::kCancel) {
     return true;
+  }
 
-  DCHECK_EQ(ui::DIALOG_BUTTON_OK, button);
+  DCHECK_EQ(ui::mojom::DialogButton::kOk, button);
   if (cardholder_name_textfield_) {
     // Make sure we are not requesting cardholder name and expiration date at
     // the same time.
@@ -456,7 +459,7 @@ void SaveCardOfferBubbleViews::ShowThrobber() {
     return;
   }
 
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetExtraView({nullptr});
 
   CHECK(loading_throbber_);

@@ -10,6 +10,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/border.h"
@@ -158,38 +159,41 @@ DesktopDataControlsDialog::DesktopDataControlsDialog(
   switch (type_) {
     case Type::kClipboardPasteBlock:
     case Type::kClipboardCopyBlock:
-      SetButtons(ui::DIALOG_BUTTON_OK);
-      SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_OK));
+      SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+      SetButtonLabel(ui::mojom::DialogButton::kOk,
+                     l10n_util::GetStringUTF16(IDS_OK));
       break;
 
     case Type::kClipboardPasteWarn:
-      SetButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
+      SetButtons(static_cast<int>(ui::mojom::DialogButton::kCancel) |
+                 static_cast<int>(ui::mojom::DialogButton::kOk));
 
-      SetButtonLabel(ui::DIALOG_BUTTON_OK,
+      SetButtonLabel(ui::mojom::DialogButton::kOk,
                      l10n_util::GetStringUTF16(
                          IDS_DATA_CONTROLS_PASTE_WARN_CANCEL_BUTTON));
 
-      SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, ui::ButtonStyle::kTonal);
-      SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+      SetButtonStyle(ui::mojom::DialogButton::kCancel, ui::ButtonStyle::kTonal);
+      SetButtonLabel(ui::mojom::DialogButton::kCancel,
                      l10n_util::GetStringUTF16(
                          IDS_DATA_CONTROLS_PASTE_WARN_CONTINUE_BUTTON));
       break;
 
     case Type::kClipboardCopyWarn:
-      SetButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
+      SetButtons(static_cast<int>(ui::mojom::DialogButton::kCancel) |
+                 static_cast<int>(ui::mojom::DialogButton::kOk));
 
       SetButtonLabel(
-          ui::DIALOG_BUTTON_OK,
+          ui::mojom::DialogButton::kOk,
           l10n_util::GetStringUTF16(IDS_DATA_CONTROLS_COPY_WARN_CANCEL_BUTTON));
 
-      SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, ui::ButtonStyle::kTonal);
-      SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+      SetButtonStyle(ui::mojom::DialogButton::kCancel, ui::ButtonStyle::kTonal);
+      SetButtonLabel(ui::mojom::DialogButton::kCancel,
                      l10n_util::GetStringUTF16(
                          IDS_DATA_CONTROLS_COPY_WARN_CONTINUE_BUTTON));
       break;
   }
-  SetButtonStyle(ui::DIALOG_BUTTON_OK, ui::ButtonStyle::kProminent);
-  SetDefaultButton(ui::DIALOG_BUTTON_OK);
+  SetButtonStyle(ui::mojom::DialogButton::kOk, ui::ButtonStyle::kProminent);
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kOk));
 
   if (!callbacks_.empty()) {
     DCHECK(type_ == Type::kClipboardPasteWarn ||

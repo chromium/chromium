@@ -33,6 +33,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -64,7 +65,7 @@ ScreenshotCapturedBubble::ScreenshotCapturedBubble(
       image_(image),
       web_contents_(web_contents->GetWeakPtr()),
       profile_(profile) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetTitle(IDS_BROWSER_SHARING_SCREENSHOT_POST_CAPTURE_TITLE);
 }
 

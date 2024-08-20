@@ -17,6 +17,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_palette.h"
@@ -165,31 +166,34 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
 int DialogDelegate::GetDefaultDialogButton() const {
   if (GetParams().default_button.has_value())
     return *GetParams().default_button;
-  if (buttons() & ui::DIALOG_BUTTON_OK) {
-    return ui::DIALOG_BUTTON_OK;
+  if (buttons() & static_cast<int>(ui::mojom::DialogButton::kOk)) {
+    return static_cast<int>(ui::mojom::DialogButton::kOk);
   }
-  if (buttons() & ui::DIALOG_BUTTON_CANCEL) {
-    return ui::DIALOG_BUTTON_CANCEL;
+  if (buttons() & static_cast<int>(ui::mojom::DialogButton::kCancel)) {
+    return static_cast<int>(ui::mojom::DialogButton::kCancel);
   }
-  return ui::DIALOG_BUTTON_NONE;
+  return static_cast<int>(ui::mojom::DialogButton::kNone);
 }
 
 std::u16string DialogDelegate::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  if (!GetParams().button_labels[button].empty())
-    return GetParams().button_labels[button];
+    ui::mojom::DialogButton button) const {
+  if (!GetParams().button_labels[static_cast<size_t>(button)].empty()) {
+    return GetParams().button_labels[static_cast<size_t>(button)];
+  }
 
-  if (button == ui::DIALOG_BUTTON_OK)
+  if (button == ui::mojom::DialogButton::kOk) {
     return l10n_util::GetStringUTF16(IDS_APP_OK);
-  CHECK_EQ(button, ui::DIALOG_BUTTON_CANCEL);
-  return buttons() & ui::DIALOG_BUTTON_OK
+  }
+  CHECK_EQ(button, ui::mojom::DialogButton::kCancel);
+  return buttons() & static_cast<int>(ui::mojom::DialogButton::kOk)
              ? l10n_util::GetStringUTF16(IDS_APP_CANCEL)
              : l10n_util::GetStringUTF16(IDS_APP_CLOSE);
 }
 
 ui::ButtonStyle DialogDelegate::GetDialogButtonStyle(
-    ui::DialogButton button) const {
-  std::optional<ui::ButtonStyle> style = GetParams().button_styles[button];
+    ui::mojom::DialogButton button) const {
+  std::optional<ui::ButtonStyle> style =
+      GetParams().button_styles[static_cast<size_t>(button)];
   if (style.has_value()) {
     return *style;
   }
@@ -198,14 +202,15 @@ ui::ButtonStyle DialogDelegate::GetDialogButtonStyle(
                               : ui::ButtonStyle::kDefault;
 }
 
-bool DialogDelegate::GetIsDefault(ui::DialogButton button) const {
-  return GetDefaultDialogButton() == button &&
-         (button != ui::DIALOG_BUTTON_CANCEL ||
+bool DialogDelegate::GetIsDefault(ui::mojom::DialogButton button) const {
+  return GetDefaultDialogButton() == static_cast<int>(button) &&
+         (button != ui::mojom::DialogButton::kCancel ||
           PlatformStyle::kDialogDefaultButtonCanBeCancel);
 }
 
-bool DialogDelegate::IsDialogButtonEnabled(ui::DialogButton button) const {
-  return params_.enabled_buttons & button;
+bool DialogDelegate::IsDialogButtonEnabled(
+    ui::mojom::DialogButton button) const {
+  return params_.enabled_buttons & static_cast<int>(button);
 }
 
 bool DialogDelegate::ShouldIgnoreButtonPressedEventHandling(
@@ -254,16 +259,19 @@ View* DialogDelegate::GetInitiallyFocusedView() {
   if (!dcv)
     return nullptr;
   int default_button = GetDefaultDialogButton();
-  if (default_button == ui::DIALOG_BUTTON_NONE)
+  if (default_button == static_cast<int>(ui::mojom::DialogButton::kNone)) {
     return nullptr;
+  }
 
   // The default button should be a button we have.
   CHECK(default_button & buttons());
 
-  if (default_button & ui::DIALOG_BUTTON_OK)
+  if (default_button & static_cast<int>(ui::mojom::DialogButton::kOk)) {
     return dcv->ok_button();
-  if (default_button & ui::DIALOG_BUTTON_CANCEL)
+  }
+  if (default_button & static_cast<int>(ui::mojom::DialogButton::kCancel)) {
     return dcv->cancel_button();
+  }
   return nullptr;
 }
 
@@ -419,7 +427,9 @@ void DialogDelegate::SetButtons(int buttons) {
   DialogModelChanged();
 }
 
-void DialogDelegate::SetButtonEnabled(ui::DialogButton button, bool enabled) {
+void DialogDelegate::SetButtonEnabled(ui::mojom::DialogButton dialog_button,
+                                      bool enabled) {
+  int button = static_cast<int>(dialog_button);
   if (!!(params_.enabled_buttons & button) == enabled)
     return;
   if (enabled)
@@ -429,20 +439,21 @@ void DialogDelegate::SetButtonEnabled(ui::DialogButton button, bool enabled) {
   DialogModelChanged();
 }
 
-void DialogDelegate::SetButtonLabel(ui::DialogButton button,
+void DialogDelegate::SetButtonLabel(ui::mojom::DialogButton button,
                                     std::u16string label) {
-  if (params_.button_labels[button] == label)
+  if (params_.button_labels[static_cast<size_t>(button)] == label) {
     return;
-  params_.button_labels[button] = label;
+  }
+  params_.button_labels[static_cast<size_t>(button)] = label;
   DialogModelChanged();
 }
 
-void DialogDelegate::SetButtonStyle(ui::DialogButton button,
+void DialogDelegate::SetButtonStyle(ui::mojom::DialogButton button,
                                     std::optional<ui::ButtonStyle> style) {
-  if (params_.button_styles[button] == style) {
+  if (params_.button_styles[static_cast<size_t>(button)] == style) {
     return;
   }
-  params_.button_styles[button] = style;
+  params_.button_styles[static_cast<size_t>(button)] = style;
   DialogModelChanged();
 }
 
@@ -495,7 +506,7 @@ void DialogDelegate::AcceptDialog() {
   // Copy the dialog widget name onto the stack so it appears in crash dumps.
   DEBUG_ALIAS_FOR_CSTR(last_widget_name, GetWidget()->GetName().c_str(), 64);
 
-  DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  DCHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
   if (already_started_close_ || !Accept())
     return;
 
@@ -509,7 +520,7 @@ void DialogDelegate::CancelDialog() {
   // if the cancel button is available. Otherwise this can be reached through
   // closing the dialog via Esc.
   if (ShouldShowCloseButton())
-    DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_CANCEL));
+    DCHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kCancel));
 
   if (already_started_close_ || !Cancel())
     return;

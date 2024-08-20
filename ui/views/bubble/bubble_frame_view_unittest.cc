@@ -16,6 +16,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
@@ -974,7 +975,7 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
                                  BubbleBorder::NO_SHADOW,
                                  true) {
     SetAnchorRect(gfx::Rect());
-    DialogDelegate::SetButtons(ui::DIALOG_BUTTON_OK);
+    DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   }
 
   TestBubbleDialogDelegateView(const TestBubbleDialogDelegateView&) = delete;
@@ -1047,8 +1048,9 @@ class TestWidthSnapDelegate : public TestBubbleDialogDelegateView {
 
  public:
   TestWidthSnapDelegate(TestAnchor* anchor, bool should_snap) {
-    DialogDelegate::SetButtons(should_snap ? ui::DIALOG_BUTTON_OK
-                                           : ui::DIALOG_BUTTON_NONE);
+    DialogDelegate::SetButtons(
+        should_snap ? static_cast<int>(ui::mojom::DialogButton::kOk)
+                    : static_cast<int>(ui::mojom::DialogButton::kNone));
     SetAnchorView(anchor->widget().GetContentsView());
     set_margins(gfx::Insets());
     BubbleDialogDelegateView::CreateBubble(this);

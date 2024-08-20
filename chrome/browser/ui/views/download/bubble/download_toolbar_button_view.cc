@@ -49,6 +49,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -564,8 +565,10 @@ DownloadBubbleRowView* DownloadToolbarButtonView::ShowPrimaryDialogRow(
     return nullptr;
   }
   DownloadBubbleRowView* row = bubble_contents_->ShowPrimaryPage(content_id);
-  bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_NONE);
-  bubble_delegate_->SetDefaultButton(ui::DIALOG_BUTTON_NONE);
+  bubble_delegate_->SetButtons(
+      static_cast<int>(ui::mojom::DialogButton::kNone));
+  bubble_delegate_->SetDefaultButton(
+      static_cast<int>(ui::mojom::DialogButton::kNone));
   bubble_delegate_->set_margins(GetPrimaryViewMargin());
   return row;
 }
@@ -647,8 +650,9 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
   bubble_delegate->SetShowTitle(false);
   bubble_delegate->set_internal_name(kBubbleName);
   bubble_delegate->SetShowCloseButton(false);
-  bubble_delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
-  bubble_delegate->SetDefaultButton(ui::DIALOG_BUTTON_NONE);
+  bubble_delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  bubble_delegate->SetDefaultButton(
+      static_cast<int>(ui::mojom::DialogButton::kNone));
   bubble_delegate->RegisterWindowClosingCallback(base::BindOnce(
       &DownloadToolbarButtonView::OnBubbleClosing, weak_factory_.GetWeakPtr()));
   auto bubble_contents = std::make_unique<DownloadBubbleContentsView>(

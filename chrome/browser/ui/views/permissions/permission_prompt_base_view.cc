@@ -16,6 +16,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/window/dialog_client_view.h"
 
 namespace {
@@ -44,7 +45,7 @@ PermissionPromptBaseView::PermissionPromptBaseView(
   // To prevent permissions being accepted accidentally, and as a security
   // measure against crbug.com/619429, permission prompts should not be accepted
   // as the default action.
-  SetDefaultButton(ui::DIALOG_BUTTON_NONE);
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kNone));
 }
 
 PermissionPromptBaseView::~PermissionPromptBaseView() = default;

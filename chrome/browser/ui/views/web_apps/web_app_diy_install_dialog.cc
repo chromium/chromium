@@ -32,6 +32,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/image/image_skia.h"
@@ -138,7 +139,7 @@ void ShowDiyAppInstallDialog(
               &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
           .SetDialogDestroyingCallback(base::BindOnce(
               &WebAppInstallDialogDelegate::OnDestroyed, delegate_weak_ptr))
-          .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL)
+          .OverrideDefaultButton(ui::mojom::DialogButton::kCancel)
           .Build();
 
   dialog_model->AddCustomField(std::make_unique<

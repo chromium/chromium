@@ -49,6 +49,7 @@
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -817,7 +818,7 @@ GameDashboardMainMenuView::GameDashboardMainMenuView(
   set_fixed_width(kMainMenuFixedWidth);
   SetAnchorView(context_->game_dashboard_button_widget()->GetContentsView());
   SetArrow(views::BubbleBorder::Arrow::NONE);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(kPaddingHeight, kPaddingWidth),

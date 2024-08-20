@@ -28,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
@@ -310,20 +311,20 @@ TEST_F(IntentPickerBubbleViewTest, ButtonLabels) {
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/std::nullopt);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_INTENT_PICKER_BUBBLE_VIEW_OPEN),
-            bubble_->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK));
+            bubble_->GetDialogButtonLabel(ui::mojom::DialogButton::kOk));
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_INTENT_PICKER_BUBBLE_VIEW_STAY_IN_CHROME),
-      bubble_->GetDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL));
+      bubble_->GetDialogButtonLabel(ui::mojom::DialogButton::kCancel));
 
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
                    BubbleType::kClickToCall,
                    /*initiating_origin=*/std::nullopt);
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_CALL_BUTTON_LABEL),
-            bubble_->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK));
+            bubble_->GetDialogButtonLabel(ui::mojom::DialogButton::kOk));
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_INTENT_PICKER_BUBBLE_VIEW_STAY_IN_CHROME),
-      bubble_->GetDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL));
+      bubble_->GetDialogButtonLabel(ui::mojom::DialogButton::kCancel));
 }
 
 TEST_F(IntentPickerBubbleViewTest, InitiatingOriginView) {

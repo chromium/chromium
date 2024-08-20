@@ -14,6 +14,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_utils.h"
@@ -28,8 +29,9 @@ namespace autofill {
 AutofillErrorDialogViewNativeViews::AutofillErrorDialogViewNativeViews(
     AutofillErrorDialogController* controller)
     : controller_(controller->GetWeakPtr()) {
-  SetButtons(ui::DIALOG_BUTTON_CANCEL);
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller_->GetButtonLabel());
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kCancel));
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                 controller_->GetButtonLabel());
   SetModalType(ui::mojom::ModalType::kChild);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));

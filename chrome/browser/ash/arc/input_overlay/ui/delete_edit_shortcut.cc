@@ -18,6 +18,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
@@ -51,7 +52,7 @@ DeleteEditShortcut::DeleteEditShortcut(DisplayOverlayController* controller,
   set_focus_traversable_from_anchor_view(true);
   set_internal_name(kDeleteEditShortcut);
   set_parent_window(anchor_view->GetWidget()->GetNativeWindow());
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetEnableArrowKeyTraversal(true);
 
   // BubbleDialogDelegate::GetAccessibleWindowRole() is a final method which

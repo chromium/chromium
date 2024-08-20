@@ -14,6 +14,7 @@
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/infobars/core/infobar.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -83,7 +84,8 @@ bool ProcessSharingInfobarDelegate::Accept() {
   }
   auto delegate = std::make_unique<views::DialogDelegate>();
   delegate->set_internal_name("ProcessSharingAppRestart");
-  delegate->SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+  delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+                       static_cast<int>(ui::mojom::DialogButton::kCancel));
   delegate->SetContentsView(MakeRestartView());
   delegate->SetModalType(ui::mojom::ModalType::kSystem);
   delegate->SetOwnedByWidget(true);

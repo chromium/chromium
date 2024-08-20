@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 
 namespace ui {
 namespace ime {
@@ -17,7 +18,7 @@ const gfx::Rect kWindowAnchorRect = gfx::Rect(-100000, -100000, 0, 0);
 
 AnnouncementView::AnnouncementView(gfx::NativeView parent,
                                    const std::u16string& name) {
-  DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+  DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCanActivate(false);
   DCHECK(parent);
   set_parent_window(parent);

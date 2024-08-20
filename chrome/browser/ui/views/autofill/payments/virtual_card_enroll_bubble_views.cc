@@ -21,6 +21,7 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/bubble/tooltip_icon.h"
@@ -41,9 +42,9 @@ VirtualCardEnrollBubbleViews::VirtualCardEnrollBubbleViews(
     : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller) {
   DCHECK(controller);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  controller->GetUiModel().accept_action_text());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  controller->GetUiModel().cancel_action_text());
   SetCancelCallback(base::BindOnce(
       &VirtualCardEnrollBubbleViews::OnDialogDeclined, base::Unretained(this)));
@@ -274,7 +275,7 @@ void VirtualCardEnrollBubbleViews::SwitchToLoadingState() {
   if (loading_progress_row_ == nullptr) {
     return;
   }
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   loading_throbber_->Start();
   loading_progress_row_->SetVisible(true);

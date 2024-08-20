@@ -33,6 +33,7 @@
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
@@ -128,7 +129,7 @@ AccountSelectionModalView::AccountSelectionModalView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kBetweenChildSpacing));
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   title_ = webid::GetTitle(rp_for_display_, idp_title, rp_context);
 }

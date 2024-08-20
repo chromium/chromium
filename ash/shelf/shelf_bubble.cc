@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/shelf/shelf_bubble.h"
+
 #include <memory>
 
 #include "ash/public/cpp/shell_window_ids.h"
@@ -10,6 +11,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 
 namespace {
@@ -70,7 +72,7 @@ ShelfBubble::ShelfBubble(
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.
   SetPaintClientToLayer(false);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   background_animator_.Init(ShelfBackgroundType::kDefaultBg);
   background_animator_.AddObserver(this);
 

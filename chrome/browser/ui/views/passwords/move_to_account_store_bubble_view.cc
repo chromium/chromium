@@ -22,6 +22,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -287,10 +288,10 @@ MoveToAccountStoreBubbleView::MoveToAccountStoreBubbleView(
       /*from_view=*/std::move(computer_view),
       /*to_view=*/std::move(avatar_view)));
 
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(
                      IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_SAVE_BUTTON));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(
                      IDS_PASSWORD_MANAGER_MOVE_BUBBLE_CANCEL_BUTTON));
   SetAcceptCallback(

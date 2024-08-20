@@ -22,6 +22,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
@@ -137,13 +138,15 @@ PasswordReuseModalWarningDialog::PasswordReuseModalWarningDialog(
   if (password_type.account_type() !=
           ReusedPasswordAccountType::SAVED_PASSWORD ||
       show_check_passwords) {
-    SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+               static_cast<int>(ui::mojom::DialogButton::kCancel));
   } else {
-    SetButtons(ui::DIALOG_BUTTON_OK);
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   }
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButtonLabel(password_type_));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 GetOkButtonLabel(password_type_));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON));
 
   // The set_*_callback() methods below need a OnceCallback each and we only have one

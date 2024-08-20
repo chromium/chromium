@@ -35,6 +35,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
@@ -374,10 +375,11 @@ LocalCardMigrationDialogView::LocalCardMigrationDialogView(
     LocalCardMigrationDialogController* controller)
     : controller_(controller) {
   SetButtons(controller_->AllCardsInvalid()
-                 ? ui::DIALOG_BUTTON_OK
-                 : ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButtonLabel());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, GetCancelButtonLabel());
+                 ? static_cast<int>(ui::mojom::DialogButton::kOk)
+                 : static_cast<int>(ui::mojom::DialogButton::kOk) |
+                       static_cast<int>(ui::mojom::DialogButton::kCancel));
+  SetButtonLabel(ui::mojom::DialogButton::kOk, GetOkButtonLabel());
+  SetButtonLabel(ui::mojom::DialogButton::kCancel, GetCancelButtonLabel());
   SetCancelCallback(
       base::BindOnce(&LocalCardMigrationDialogView::OnDialogCancelled,
                      base::Unretained(this)));
@@ -456,7 +458,7 @@ void LocalCardMigrationDialogView::DeleteCard(const std::string& guid) {
 }
 
 void LocalCardMigrationDialogView::OnCardCheckboxToggled() {
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, GetEnableOkButton());
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, GetEnableOkButton());
 }
 
 // TODO(crbug.com/41430966): Figure out a way to avoid two consecutive layouts.
@@ -492,7 +494,7 @@ void LocalCardMigrationDialogView::ConstructView() {
         std::make_unique<LocalCardMigrationOfferView>(controller_, this));
     offer_view_->SetID(DialogViewId::MAIN_CONTENT_VIEW_MIGRATION_OFFER_DIALOG);
     card_list_view_ = offer_view_->card_list_view_;
-    SetButtonEnabled(ui::DIALOG_BUTTON_OK, GetEnableOkButton());
+    SetButtonEnabled(ui::mojom::DialogButton::kOk, GetEnableOkButton());
   } else {
     AddChildView(CreateFeedbackContentView(controller_, this));
   }
