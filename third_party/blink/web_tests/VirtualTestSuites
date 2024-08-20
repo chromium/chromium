@@ -1669,6 +1669,7 @@
   "exclusively with a virtual test suite that never expires.",
   {
     "prefix": "task-tracking",
+    "owners": ["yoavweiss@chromium.org", "shaseley@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/task-tracking"],
     "exclusive_tests": "ALL",
