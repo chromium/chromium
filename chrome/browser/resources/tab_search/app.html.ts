@@ -9,7 +9,7 @@ import type {TabSearchAppElement} from './app.js';
 export function getHtml(this: TabSearchAppElement) {
   // clang-format off
   return html`
-${this.tabOrganizationEnabled_ ? html`
+${(this.tabOrganizationEnabled_ || this.declutterEnabled_) ? html`
   <cr-tabs
       .tabNames="${this.tabNames_}"
       .tabIcons="${this.tabIcons_}"
@@ -18,7 +18,9 @@ ${this.tabOrganizationEnabled_ ? html`
   </cr-tabs>
   <cr-page-selector .selected="${this.selectedTabIndex_}">
     <tab-search-page></tab-search-page>
-    <auto-tab-groups-page></auto-tab-groups-page>
+    ${this.declutterEnabled_
+      ? html`<declutter-page></declutter-page>`
+      : html`<auto-tab-groups-page></auto-tab-groups-page>`}
   </cr-page-selector>
 ` : html`
   <tab-search-page></tab-search-page>

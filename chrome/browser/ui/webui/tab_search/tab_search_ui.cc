@@ -181,6 +181,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
 
   source->AddInteger("tabIndex", TabIndex());
   source->AddBoolean("showTabOrganizationFRE", ShowTabOrganizationFRE());
+  source->AddBoolean("declutterEnabled", features::IsTabstripDeclutter());
 
   ui::Accelerator accelerator(ui::VKEY_A,
                               ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);
