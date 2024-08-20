@@ -77,7 +77,8 @@ TEST(WebSocketFrameHeaderTest, FrameLengthsWithMasking) {
        UINT64_C(0x7FFFFFFFFFFFFFFF)}};
 
   WebSocketMaskingKey masking_key;
-  base::ranges::copy(kMaskingKey, masking_key.key);
+  base::as_writable_byte_span(masking_key.key)
+      .copy_from(base::as_byte_span(kMaskingKey));
 
   for (const auto& test : kTests) {
     WebSocketFrameHeader header(WebSocketFrameHeader::kOpCodeText);
@@ -234,13 +235,13 @@ TEST(WebSocketFrameTest, MaskPayload) {
 
   for (const auto& test : kTests) {
     WebSocketMaskingKey masking_key;
-    base::ranges::copy(test.masking_key, masking_key.key);
+    base::as_writable_byte_span(masking_key.key)
+        .copy_from(base::as_byte_span(test.masking_key));
     std::vector<char> frame_data(test.input, test.input + test.data_length);
     std::vector<char> expected_output(test.output,
                                       test.output + test.data_length);
     MaskWebSocketFramePayload(masking_key, test.frame_offset,
-                              frame_data.empty() ? nullptr : frame_data.data(),
-                              frame_data.size());
+                              base::as_writable_byte_span(frame_data));
     EXPECT_EQ(expected_output, frame_data);
   }
 }
@@ -288,7 +289,8 @@ TEST(WebSocketFrameTest, MaskPayloadAlignment) {
   std::unique_ptr<char, base::AlignedFreeDeleter> scratch(static_cast<char*>(
       base::AlignedAlloc(kScratchBufferSize, kMaxVectorAlignment)));
   WebSocketMaskingKey masking_key;
-  base::ranges::copy(kTestMask, masking_key.key);
+  base::as_writable_byte_span(masking_key.key)
+      .copy_from(base::as_byte_span(kTestMask));
   for (size_t frame_offset = 0; frame_offset < kMaskingKeyLength;
        ++frame_offset) {
     for (size_t alignment = 0; alignment < kMaxVectorAlignment; ++alignment) {
@@ -301,10 +303,10 @@ TEST(WebSocketFrameTest, MaskPayloadAlignment) {
              chunk_start += chunk_size) {
           const size_t this_chunk_size =
               std::min(chunk_size, aligned_len - chunk_start);
-          MaskWebSocketFramePayload(masking_key,
-                                    frame_offset + chunk_start,
-                                    aligned_scratch + chunk_start,
-                                    this_chunk_size);
+          MaskWebSocketFramePayload(
+              masking_key, frame_offset + chunk_start,
+              base::as_writable_bytes(base::make_span(
+                  aligned_scratch + chunk_start, this_chunk_size)));
         }
         // Stop the test if it fails, since we don't want to spew thousands of
         // failures.

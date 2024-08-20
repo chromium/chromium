@@ -49,12 +49,13 @@ class WebSocketFrameTestMaskBenchmark : public ::testing::Test {
                  size_t size) {
     std::vector<char> scratch(payload, payload + size);
     WebSocketMaskingKey masking_key;
-    base::ranges::copy(kMaskingKey, masking_key.key);
+    base::as_writable_byte_span(masking_key.key)
+        .copy_from(base::as_byte_span(kMaskingKey));
     auto reporter = SetUpWebSocketFrameMaskReporter(story);
     base::ElapsedTimer timer;
     for (int x = 0; x < kIterations; ++x) {
-      MaskWebSocketFramePayload(masking_key, x % size, scratch.data(),
-                                scratch.size());
+      MaskWebSocketFramePayload(masking_key, x % size,
+                                base::as_writable_byte_span(scratch));
     }
     reporter.AddResult(kMetricMaskTimeMs, timer.Elapsed().InMillisecondsF());
   }

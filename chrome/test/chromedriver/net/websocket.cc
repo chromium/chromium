@@ -149,8 +149,8 @@ bool WebSocket::Send(const std::string& message) {
                header, &masking_key, base::as_writable_byte_span(header_str))));
 
   std::string masked_message = message;
-  net::MaskWebSocketFramePayload(
-      masking_key, 0, &masked_message[0], masked_message.length());
+  net::MaskWebSocketFramePayload(masking_key, 0,
+                                 base::as_writable_byte_span(masked_message));
   Write(header_str + masked_message);
   return true;
 }
@@ -346,7 +346,7 @@ void WebSocket::OnReadDuringOpen(const char* data, int len) {
     std::vector<char> payload(buffer.begin(), buffer.end());
     if (is_current_frame_masked_) {
       MaskWebSocketFramePayload(current_masking_key_, current_frame_offset_,
-                                payload.data(), payload.size());
+                                base::as_writable_byte_span(payload));
     }
     next_message_ += std::string(payload.data(), payload.size());
     current_frame_offset_ += payload.size();

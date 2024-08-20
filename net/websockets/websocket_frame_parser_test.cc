@@ -111,8 +111,8 @@ TEST(WebSocketFrameParserTest, DecodeMaskedFrame) {
   ASSERT_EQ(static_cast<size_t>(kHelloLength), frame->payload.size());
 
   std::string payload(frame->payload.data(), frame->payload.size());
-  MaskWebSocketFramePayload(header->masking_key, 0, &payload[0],
-                            payload.size());
+  MaskWebSocketFramePayload(header->masking_key, 0,
+                            base::as_writable_byte_span(payload));
   EXPECT_EQ(payload, kHello);
 }
 
@@ -306,8 +306,8 @@ TEST(WebSocketFrameParserTest, DecodePartialMaskedFrame) {
       std::vector<char> payload1(
           frame1->payload.data(),
           frame1->payload.data() + frame1->payload.size());
-      MaskWebSocketFramePayload(header1->masking_key, 0, &payload1[0],
-                                payload1.size());
+      MaskWebSocketFramePayload(header1->masking_key, 0,
+                                base::as_writable_byte_span(payload1));
       EXPECT_EQ(expected1, payload1);
     }
     EXPECT_TRUE(header1->final);
@@ -337,8 +337,8 @@ TEST(WebSocketFrameParserTest, DecodePartialMaskedFrame) {
       std::vector<char> payload2(
           frame2->payload.data(),
           frame2->payload.data() + frame2->payload.size());
-      MaskWebSocketFramePayload(header1->masking_key, cutting_pos, &payload2[0],
-                                payload2.size());
+      MaskWebSocketFramePayload(header1->masking_key, cutting_pos,
+                                base::as_writable_byte_span(payload2));
       EXPECT_EQ(expected2, payload2);
     }
     const WebSocketFrameHeader* header2 = frame2->header.get();

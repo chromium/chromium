@@ -238,8 +238,7 @@ int WebSocketBasicStream::WriteFrames(
       base::span<const char> frame_data =
           base::make_span(frame->payload, frame_size);
       dest.copy_prefix_from(base::as_bytes(frame_data));
-      MaskWebSocketFramePayload(mask, 0, base::as_writable_chars(dest).data(),
-                                frame_size);
+      MaskWebSocketFramePayload(mask, 0, dest.first(frame_size));
       dest = dest.subspan(frame_size);
     }
   }
