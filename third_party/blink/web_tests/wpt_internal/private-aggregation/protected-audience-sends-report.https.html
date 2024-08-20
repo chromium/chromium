@@ -26,7 +26,9 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE);
+      /*expected_payload=*/
+      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
+                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -50,7 +52,9 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE);
+      /*expected_payload=*/
+      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
+                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -74,7 +78,9 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE);
+      /*expected_payload=*/
+      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
+                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -98,7 +104,9 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE);
+      /*expected_payload=*/
+      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
+                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -123,7 +131,9 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ MULTIPLE_CONTRIBUTIONS_EXAMPLE);
+      /*expected_payload=*/
+      buildExpectedPayload(MULTIPLE_CONTRIBUTIONS_EXAMPLE,
+                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -149,7 +159,9 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ MULTIPLE_CONTRIBUTIONS_EXAMPLE);
+      /*expected_payload=*/
+      buildExpectedPayload(MULTIPLE_CONTRIBUTIONS_EXAMPLE,
+                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -197,7 +209,9 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ '1234',
-      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE);
+      /*expected_payload=*/
+      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
+                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -304,7 +318,9 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE);
+      /*expected_payload=*/
+      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
+                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -330,7 +346,9 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ MULTIPLE_CONTRIBUTIONS_EXAMPLE);
+      /*expected_payload=*/
+      buildExpectedPayload(MULTIPLE_CONTRIBUTIONS_EXAMPLE,
+                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -356,7 +374,9 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ MULTIPLE_CONTRIBUTIONS_EXAMPLE);
+      /*expected_payload=*/
+      buildExpectedPayload(MULTIPLE_CONTRIBUTIONS_EXAMPLE,
+                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -369,7 +389,7 @@ private_aggregation_promise_test(async test => {
   const uuid = generateUuid();
   await runReportTest(test, uuid, {
     generateBid: `privateAggregation.enableDebugMode();
-        for (let i = 1n; i <= 21n; i++) {  // Too many contributions
+        for (let i = 1n; i <= ${NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE+1}n; i++) {  // Too many contributions
           privateAggregation.contributeToHistogram({ bucket: i, value: 1 });
         }`
   });
@@ -382,7 +402,8 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ CONTRIBUTIONS_UP_TO_LIMIT_EXAMPLE);
+      /*expected_payload=*/
+      buildPayloadWithSequentialContributions(NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -409,7 +430,9 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ ONE_CONTRIBUTION_HIGHER_VALUE_EXAMPLE);
+      /*expected_payload=*/
+      buildExpectedPayload(ONE_CONTRIBUTION_HIGHER_VALUE_EXAMPLE,
+                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');

@@ -27,7 +27,9 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ ONE_CONTRIBUTION_WITH_FILTERING_ID_EXAMPLE);
+      /*expected_payload=*/
+      buildExpectedPayload(ONE_CONTRIBUTION_WITH_FILTERING_ID_EXAMPLE,
+                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -75,7 +77,9 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE);
+      /*expected_payload=*/
+      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
+                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -101,7 +105,9 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE);
+      /*expected_payload=*/
+      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
+                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -189,7 +195,9 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ MULTIPLE_CONTRIBUTIONS_DIFFERING_IN_FILTERING_ID_EXAMPLE);
+      /*expected_payload=*/
+      buildExpectedPayload(MULTIPLE_CONTRIBUTIONS_DIFFERING_IN_FILTERING_ID_EXAMPLE,
+                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE));
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');

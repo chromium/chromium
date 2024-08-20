@@ -10,7 +10,9 @@ test(() => {
 }, 'decodeBase64ToUint8Array() handles non-ASCII bytes');
 
 test(() => {
-  assert_payload_equals(ONE_CONTRIBUTION_EXAMPLE, ONE_CONTRIBUTION_EXAMPLE);
+  assert_payload_equals(
+      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE, 20),
+      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE, 20));
 }, 'assert_payload_equals() is reflexive');
 
 test(() => {

@@ -29,7 +29,9 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
-      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE,
+      /*expected_payload=*/
+      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
+                       NUM_CONTRIBUTIONS_SHARED_STORAGE),
       /*expected_context_id=*/ 'example-context-id');
 
   const debug_reports = await pollReports(

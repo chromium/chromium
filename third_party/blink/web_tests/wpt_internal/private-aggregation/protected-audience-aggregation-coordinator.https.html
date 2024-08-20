@@ -32,11 +32,12 @@ private_aggregation_promise_test(async test => {
 
   const report = JSON.parse(reports[0]);
   verifyReport(
-      report, /*api=*/ 'protected-audience',
-      /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE,
-      /*context_id=*/ undefined,
-      /*aggregation_coordinator_origin=*/ get_host_info().HTTPS_REMOTE_ORIGIN);
+    report, /*api=*/ 'protected-audience',
+    /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
+    /*expected_payload=*/ buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
+                                           NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE),
+    /*context_id=*/ undefined,
+    /*aggregation_coordinator_origin=*/ get_host_info().HTTPS_REMOTE_ORIGIN);
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -68,7 +69,9 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE,
+      /*expected_payload=*/
+      buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
+                       NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE),
       /*context_id=*/ undefined,
       /*aggregation_coordinator_origin=*/ get_host_info().HTTPS_ORIGIN);
 
@@ -156,7 +159,8 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE,
+      /*expected_payload=*/ buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
+                                            NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE),
       /*context_id=*/ undefined,
       /*aggregation_coordinator_origin=*/ get_host_info().HTTPS_REMOTE_ORIGIN);
 
@@ -190,7 +194,8 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE,
+      /*expected_payload=*/ buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
+                                            NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE),
       /*context_id=*/ undefined,
       /*aggregation_coordinator_origin=*/ get_host_info().HTTPS_ORIGIN);
 
@@ -278,7 +283,8 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE,
+      /*expected_payload=*/ buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
+                                            NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE),
       /*context_id=*/ undefined,
       /*aggregation_coordinator_origin=*/ get_host_info().HTTPS_REMOTE_ORIGIN);
 
@@ -312,7 +318,8 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE,
+      /*expected_payload=*/ buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
+                                            NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE),
       /*context_id=*/ undefined,
       /*aggregation_coordinator_origin=*/ get_host_info().HTTPS_REMOTE_ORIGIN);
 
@@ -346,7 +353,8 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE,
+      /*expected_payload=*/ buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
+                                            NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE),
       /*context_id=*/ undefined,
       /*aggregation_coordinator_origin=*/ get_host_info().HTTPS_ORIGIN);
 
@@ -380,7 +388,8 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_payload=*/ ONE_CONTRIBUTION_EXAMPLE,
+      /*expected_payload=*/ buildExpectedPayload(ONE_CONTRIBUTION_EXAMPLE,
+                                            NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE),
       /*context_id=*/ undefined,
       /*aggregation_coordinator_origin=*/ get_host_info().HTTPS_ORIGIN);
 

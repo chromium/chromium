@@ -19,127 +19,125 @@ function encodeBigInt(num, size) {
   return Uint8Array.from(array);
 }
 
-// The default null contribution with a default filtering ID.
+const NUM_CONTRIBUTIONS_SHARED_STORAGE = 20;
+const NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE = 20;
+
 const NULL_CONTRIBUTION = Object.freeze({
   bucket: encodeBigInt(0n, 16),
   value: encodeBigInt(0n, 4),
   id: encodeBigInt(0n, 1),
 });
 
-// A variant of the default null contribution with a filteringIdMaxBytes of 3.
 const NULL_CONTRIBUTION_WITH_CUSTOM_FILTERING_ID_MAX_BYTES = Object.freeze({
   bucket: encodeBigInt(0n, 16),
   value: encodeBigInt(0n, 4),
   id: encodeBigInt(0n, 3),
 });
 
-// A single contribution {bucket: 1n, value: 2}, with default filtering ID
-const ONE_CONTRIBUTION_EXAMPLE = Object.freeze({
-  operation: 'histogram',
-  data: [{
+const ONE_CONTRIBUTION_EXAMPLE = Object.freeze([{
+  bucket: encodeBigInt(1n, 16),
+  value: encodeBigInt(2n, 4),
+  id: encodeBigInt(0n, 1),
+}]);
+
+const MULTIPLE_CONTRIBUTIONS_EXAMPLE = Object.freeze([
+  {
     bucket: encodeBigInt(1n, 16),
     value: encodeBigInt(2n, 4),
     id: encodeBigInt(0n, 1),
-  }],
-});
+  },
+  {
+    bucket: encodeBigInt(3n, 16),
+    value: encodeBigInt(4n, 4),
+    id: encodeBigInt(0n, 1),
+  },
+]);
 
-// Contributions [{bucket: 1n, value: 2}, {bucket: 3n, value: 4}] with default
-// filtering IDs
-const MULTIPLE_CONTRIBUTIONS_EXAMPLE = Object.freeze({
-  operation: 'histogram',
-  data: [
-    {
-      bucket: encodeBigInt(1n, 16),
-      value: encodeBigInt(2n, 4),
-      id: encodeBigInt(0n, 1),
-    },
-    {
-      bucket: encodeBigInt(3n, 16),
-      value: encodeBigInt(4n, 4),
-      id: encodeBigInt(0n, 1),
-    },
-  ]
-});
+const ONE_CONTRIBUTION_WITH_FILTERING_ID_EXAMPLE = Object.freeze([
+  {
+    bucket: encodeBigInt(1n, 16),
+    value: encodeBigInt(2n, 4),
+    id: encodeBigInt(3n, 1),
+  },
+]);
 
-// A single contribution {bucket: 1n, value: 2, filteringId: 3n}]
-const ONE_CONTRIBUTION_WITH_FILTERING_ID_EXAMPLE = Object.freeze({
-  operation: 'histogram',
-  data: [
-    {
-      bucket: encodeBigInt(1n, 16),
-      value: encodeBigInt(2n, 4),
-      id: encodeBigInt(3n, 1),
-    },
-  ]
-});
-
-// A single contribution {bucket: 1n, value: 2} using a filteringIdMaxBytes of
-// 3.
 const ONE_CONTRIBUTION_WITH_CUSTOM_FILTERING_ID_MAX_BYTES_EXAMPLE =
-    Object.freeze({
-      operation: 'histogram',
-      data: [
-        {
-          bucket: encodeBigInt(1n, 16),
-          value: encodeBigInt(2n, 4),
-          id: encodeBigInt(0n, 3),
-        },
-      ]
-    });
+    Object.freeze([
+      {
+        bucket: encodeBigInt(1n, 16),
+        value: encodeBigInt(2n, 4),
+        id: encodeBigInt(0n, 3),
+      },
+    ]);
 
-// A single contribution {bucket: 1n, value: 2, filteringId: 259n} using a
-// filteringIdMaxBytes of 3.
 const ONE_CONTRIBUTION_WITH_FILTERING_ID_AND_CUSTOM_MAX_BYTES_EXAMPLE =
-    Object.freeze({
-      operation: 'histogram',
-      data: [
-        {
-          bucket: encodeBigInt(1n, 16),
-          value: encodeBigInt(2n, 4),
-          id: encodeBigInt(259n, 3),
-        },
-      ]
-    });
+    Object.freeze([
+      {
+        bucket: encodeBigInt(1n, 16),
+        value: encodeBigInt(2n, 4),
+        id: encodeBigInt(259n, 3),
+      },
+    ]);
 
-// Contributions [{bucket: 1n, value: 2, filteringId: 1n},
-// {bucket: 1n, value: 2, filteringId: 2n}]
-const MULTIPLE_CONTRIBUTIONS_DIFFERING_IN_FILTERING_ID_EXAMPLE = Object.freeze({
-  operation: 'histogram',
-  data: [
-    {
-      bucket: encodeBigInt(1n, 16),
-      value: encodeBigInt(2n, 4),
-      id: encodeBigInt(1n, 1),
-    },
-    {
-      bucket: encodeBigInt(1n, 16),
-      value: encodeBigInt(2n, 4),
-      id: encodeBigInt(2n, 1),
-    },
-  ]
-});
+const MULTIPLE_CONTRIBUTIONS_DIFFERING_IN_FILTERING_ID_EXAMPLE = Object.freeze([
+  {
+    bucket: encodeBigInt(1n, 16),
+    value: encodeBigInt(2n, 4),
+    id: encodeBigInt(1n, 1),
+  },
+  {
+    bucket: encodeBigInt(1n, 16),
+    value: encodeBigInt(2n, 4),
+    id: encodeBigInt(2n, 1),
+  },
+]);
 
-// Contributions [{bucket: i, value: 1} for i from 1 to 20, inclusive.
-const CONTRIBUTIONS_UP_TO_LIMIT_EXAMPLE = Object.freeze({
-  operation: 'histogram',
-  data: Array(20).fill().map((_, i) => ({
-                               bucket: encodeBigInt(BigInt(i + 1), 16),
-                               value: encodeBigInt(1n, 4),
-                               id: encodeBigInt(0n, 1),
-                             })),
-});
+const ONE_CONTRIBUTION_HIGHER_VALUE_EXAMPLE = Object.freeze([
+  {
+    bucket: encodeBigInt(1n, 16),
+    value: encodeBigInt(21n, 4),
+    id: encodeBigInt(0n, 1),
+  },
+]);
 
-// A single contribution {bucket: 1n, value: 21}
-const ONE_CONTRIBUTION_HIGHER_VALUE_EXAMPLE = Object.freeze({
-  operation: 'histogram',
-  data: [
-    {
-      bucket: encodeBigInt(1n, 16),
-      value: encodeBigInt(21n, 4),
-      id: encodeBigInt(0n, 1),
-    },
-  ]
-});
+/**
+ * Returns a frozen payload object suitable for comparison with an object
+ * returned by `CborParser.parse()`. The returned payload's `data` field is a
+ * shallow copy of the `contributions` array, padded with `nullContribution`
+ * until there are `padToNumContributions` elements.
+ */
+function buildExpectedPayload(
+    contributions, padToNumContributions,
+    nullContribution = NULL_CONTRIBUTION) {
+  assert_less_than_equal(
+      contributions.length, padToNumContributions,
+      `Must have fewer than ${padToNumContributions} contributions`);
+
+  const numNulls = padToNumContributions - contributions.length;
+  const contributionsPadded =
+      [...contributions].concat(Array(numNulls).fill(nullContribution));
+
+  return Object.freeze({
+    operation: 'histogram',
+    data: contributionsPadded,
+  });
+}
+
+/**
+ * Returns a frozen payload object with contributions of the form `{bucket: i,
+ * value: 1}` for i from 1 to `numContributions`, inclusive.
+ */
+function buildPayloadWithSequentialContributions(numContributions) {
+  return Object.freeze({
+    operation: 'histogram',
+    data: Array(numContributions).fill().map((_, i) => ({
+                                               bucket: encodeBigInt(
+                                                   BigInt(i) + 1n, 16),
+                                               value: encodeBigInt(1n, 4),
+                                               id: encodeBigInt(0n, 1),
+                                             })),
+  });
+}
 
 /**
  * Returns a `Uint8Array` containing the base64-decoded bytes of `data_base64`.
@@ -374,7 +372,7 @@ const pollReports = async (url, wait_for = 1, timeout = 5000 /*ms*/) => {
  * whether debug mode is expected to be enabled for this report.
  */
 const verifySharedInfo = (shared_info_str, api, is_debug_enabled) => {
-  shared_info = JSON.parse(shared_info_str);
+  const shared_info = JSON.parse(shared_info_str);
   assert_equals(shared_info.api, api);
   if (is_debug_enabled) {
     assert_equals(shared_info.debug_mode, 'enabled');
@@ -408,7 +406,7 @@ const verifySharedInfo = (shared_info_str, api, is_debug_enabled) => {
  * pad the payload with; if undefined is used, default padding will be used.
  */
 const verifyAggregationServicePayloads =
-    (aggregation_service_payloads, expected_payload, pad_with_contribution) => {
+    (aggregation_service_payloads, expected_payload) => {
       assert_equals(aggregation_service_payloads.length, 1);
       const payload_obj = aggregation_service_payloads[0];
 
@@ -423,34 +421,16 @@ const verifyAggregationServicePayloads =
 
       if (expected_payload) {
         assert_own_property(payload_obj, 'debug_cleartext_payload');
-        verifyCleartextPayload(
-            payload_obj.debug_cleartext_payload, expected_payload,
-            pad_with_contribution);
+
+        const payload = CborParser.parse(payload_obj.debug_cleartext_payload);
+
+        // TODO(alexmt): Consider sorting both payloads in order to ignore
+        // ordering.
+        assert_payload_equals(payload, expected_payload);
       }
 
       // Check there are no extra keys
       assert_equals(Object.keys(payload_obj).length, expected_payload ? 3 : 2);
-    };
-
-/**
- * Verifies that a report's debug_cleartext_payload has the expected fields. The
- * `expected_payload` should be the expected list of CBOR-encoded contributions
- * in the debug_cleartext_payload.
- */
-const verifyCleartextPayload =
-    (debug_cleartext_payload, expected_payload,
-     pad_with_contribution = NULL_CONTRIBUTION) => {
-      const payload = CborParser.parse(debug_cleartext_payload);
-
-      // Pad the payload.
-      const num_null_contributions = 20 - expected_payload.data.length;
-      const expected_payload_padded = {...expected_payload};
-      expected_payload_padded.data = expected_payload_padded.data.concat(
-          Array(num_null_contributions).fill(pad_with_contribution));
-
-      // TODO(alexmt): Consider sorting both arguments in order to ignore
-      // ordering.
-      assert_payload_equals(payload, expected_payload_padded);
     };
 
 /**
@@ -463,8 +443,7 @@ const verifyCleartextPayload =
 const verifyReport =
     (report, api, is_debug_enabled, debug_key, expected_payload = undefined,
      context_id = undefined,
-     aggregation_coordinator_origin = get_host_info().HTTPS_ORIGIN,
-     pad_with_contribution = undefined) => {
+     aggregation_coordinator_origin = get_host_info().HTTPS_ORIGIN) => {
       if (debug_key || expected_payload) {
         // A debug key cannot be set without debug mode being enabled and the
         // `expected_payload` should be undefined if debug mode is not enabled.
@@ -483,8 +462,7 @@ const verifyReport =
 
       assert_own_property(report, 'aggregation_service_payloads');
       verifyAggregationServicePayloads(
-          report.aggregation_service_payloads, expected_payload,
-          pad_with_contribution);
+          report.aggregation_service_payloads, expected_payload);
 
       assert_own_property(report, 'aggregation_coordinator_origin');
       assert_equals(
