@@ -12675,6 +12675,7 @@ Called by update_permissions_policy_enum.py.-->
       label="MF_E_MEDIA_EXTENSION_PACKAGE_INTEGRITY_CHECK_FAILED"/>
   <int value="-1072843853"
       label="MF_E_MEDIA_EXTENSION_PACKAGE_LICENSE_INVALID"/>
+  <int value="-1071241984" label="ERROR_GRAPHICS_OPM_NOT_SUPPORTED"/>
   <int value="-805306212" label="STATUS_DEVICE_DATA_ERROR"/>
   <int value="-805305979" label="STATUS_IO_DEVICE_ERROR"/>
   <int value="0" label="S_OK"/>
