@@ -17436,9 +17436,9 @@
             ],
             "experiments": [
                 {
-                    "name": "preload-on-make-contents",
+                    "name": "preload-on-warmup",
                     "params": {
-                        "preload-mode": "preload-on-make-contents",
+                        "preload-mode": "preload-on-warmup",
                         "smart-preload": "true"
                     },
                     "enable_features": [
@@ -17446,8 +17446,9 @@
                     ]
                 },
                 {
-                    "name": "preload-on-warmup",
+                    "name": "preload-on-warmup-delay",
                     "params": {
+                        "delay-preload": "true",
                         "preload-mode": "preload-on-warmup",
                         "smart-preload": "true"
                     },
