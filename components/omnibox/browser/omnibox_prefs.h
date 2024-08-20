@@ -94,19 +94,30 @@ inline constexpr char kZeroSuggestCachedResults[] = "zerosuggest.cachedresults";
 inline constexpr char kZeroSuggestCachedResultsWithURL[] =
     "zerosuggest.cachedresults_with_url";
 
-// Booleans that specify whether to show the various IPH suggestion at the
-// bottom of the Omnibox. These is true until a user deletes (presses the X
-// button on) the suggestion.
-inline constexpr char kShowGeminiIPH[] = "omnibox.show_gemini_iph";
-inline constexpr char kShowFeaturedEnterpriseSiteSearchIPHPrefName[] =
-    "omnibox.show_featured_enterprise_search_iph";
-inline constexpr char kShowHistoryEmbeddingsSettingsPromo[] =
-    "omnibox.show_history_embeddings_settings_promo";
-inline constexpr char kShowHistoryScopePromo[] =
-    "omnibox.show_history_scope_promo";
-inline constexpr char kShowHistoryEmbeddingsScopePromo[] =
-    "omnibox.show_history_embeddings_scope_promo";
+// Booleans that specify whether various IPH suggestions have been dismissed.
+inline constexpr char kDismissedGeminiIph[] = "omnibox.dismissed_gemini_iph";
+inline constexpr char kDismissedFeaturedEnterpriseSiteSearchIphPrefName[] =
+    "omnibox.dismissed_featured_enterprise_search_iph";
+inline constexpr char kDismissedHistoryEmbeddingsSettingsPromo[] =
+    "omnibox.dismissed_history_embeddings_settings_promo";
+inline constexpr char kDismissedHistoryScopePromo[] =
+    "omnibox.dismissed_history_scope_promo";
+inline constexpr char kDismissedHistoryEmbeddingsScopePromo[] =
+    "omnibox.dismissed_history_embeddings_scope_promo";
 
+// How many times the various IPH suggestions were shown.
+inline constexpr char kShownCountGeminiIph[] = "omnibox.shown_count_gemini_iph";
+inline constexpr char kShownCountFeaturedEnterpriseSiteSearchIph[] =
+    "omnibox.shown_count_featured_enterprise_search_iph";
+inline constexpr char kShownCountHistoryEmbeddingsSettingsPromo[] =
+    "omnibox.shown_count_history_embeddings_settings_promo";
+inline constexpr char kShownCountHistoryScopePromo[] =
+    "omnibox.shown_count_history_scope_promo";
+inline constexpr char kShownCountHistoryEmbeddingsScopePromo[] =
+    "omnibox.shown_count_history_embeddings_scope_promo";
+
+// Many of the prefs defined above are registered locally where they're used.
+// New prefs should be added here and ordered the same as they're defined above.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // Returns the stored visibility preference for |suggestion_group_id|.

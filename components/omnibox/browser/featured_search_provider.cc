@@ -8,6 +8,7 @@
 
 #include <climits>
 #include <iterator>
+#include <ranges>
 #include <string>
 #include <vector>
 
@@ -22,6 +23,7 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -43,22 +45,41 @@ namespace {
 
 constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
 
-std::string GetShowIPHPrefNameFor(IphType iph_type) {
+std::string GetIphDismissedPrefNameFor(IphType iph_type) {
   switch (iph_type) {
     case IphType::kNone:
       NOTREACHED();
     case IphType::kGemini:
-      return omnibox::kShowGeminiIPH;
+      return omnibox::kDismissedGeminiIph;
     case IphType::kFeaturedEnterpriseSearch:
-      return omnibox::kShowFeaturedEnterpriseSiteSearchIPHPrefName;
+      return omnibox::kDismissedFeaturedEnterpriseSiteSearchIphPrefName;
     case IphType::kHistoryEmbeddingsSettingsPromo:
-      return omnibox::kShowHistoryEmbeddingsSettingsPromo;
+      return omnibox::kDismissedHistoryEmbeddingsSettingsPromo;
     case IphType::kHistoryEmbeddingsDisclaimer:
       NOTREACHED();  // This is a non-dismissible disclaimer.
     case IphType::kHistoryScopePromo:
-      return omnibox::kShowHistoryScopePromo;
+      return omnibox::kDismissedHistoryScopePromo;
     case IphType::kHistoryEmbeddingsScopePromo:
-      return omnibox::kShowHistoryEmbeddingsScopePromo;
+      return omnibox::kDismissedHistoryEmbeddingsScopePromo;
+  }
+}
+
+std::string GetIphShownCountPrefNameFor(IphType iph_type) {
+  switch (iph_type) {
+    case IphType::kNone:
+      NOTREACHED();
+    case IphType::kGemini:
+      return omnibox::kShownCountGeminiIph;
+    case IphType::kFeaturedEnterpriseSearch:
+      return omnibox::kShownCountFeaturedEnterpriseSiteSearchIph;
+    case IphType::kHistoryEmbeddingsSettingsPromo:
+      return omnibox::kShownCountHistoryEmbeddingsSettingsPromo;
+    case IphType::kHistoryEmbeddingsDisclaimer:
+      NOTREACHED();  // This disclaimer has no show count limit.
+    case IphType::kHistoryScopePromo:
+      return omnibox::kShownCountHistoryScopePromo;
+    case IphType::kHistoryEmbeddingsScopePromo:
+      return omnibox::kShownCountHistoryEmbeddingsScopePromo;
   }
 }
 
@@ -103,7 +124,7 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
                                    bool minimal_changes) {
   matches_.clear();
   if (input.IsZeroSuggest())
-    iph_shown_this_session_ = false;
+    iph_shown_in_omnibox_session_ = false;
 
   AutocompleteInput keyword_input = input;
   const TemplateURL* keyword_turl =
@@ -145,12 +166,12 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
 void FeaturedSearchProvider::DeleteMatch(const AutocompleteMatch& match) {
   // Only `NULL_RESULT_MESSAGE` types from this provider are deletable.
   CHECK(match.deletable);
-  CHECK(match.type == AutocompleteMatchType::NULL_RESULT_MESSAGE);
+  CHECK_EQ(match.type, AutocompleteMatchType::NULL_RESULT_MESSAGE);
 
   // Set the pref so this provider doesn't continue to offer the suggestion.
   PrefService* prefs = client_->GetPrefs();
-  CHECK(match.iph_type != IphType::kNone);
-  prefs->SetBoolean(GetShowIPHPrefNameFor(match.iph_type), false);
+  CHECK_NE(match.iph_type, IphType::kNone);
+  prefs->SetBoolean(GetIphDismissedPrefNameFor(match.iph_type), true);
 
   // Delete `match` from `matches_`.
   std::erase_if(matches_, [&match](const auto& i) {
@@ -277,6 +298,7 @@ void FeaturedSearchProvider::AddIPHMatch(IphType iph_type,
   // Use this suggestion's contents field to display a message to the user that
   // cannot be acted upon.
   match.contents = iph_contents;
+  CHECK_NE(iph_type, IphType::kNone);
   match.iph_type = iph_type;
   match.iph_link_text = iph_link_text;
   match.iph_link_url = iph_link_url;
@@ -294,9 +316,28 @@ void FeaturedSearchProvider::AddIPHMatch(IphType iph_type,
       ACMatchClassification::DIM);
 
   matches_.push_back(match);
-  if (!iph_shown_this_session_) {
-    iph_shown_count_++;
-    iph_shown_this_session_ = true;
+}
+
+void FeaturedSearchProvider::RegisterDisplayedMatches(
+    const AutocompleteResult& result) {
+  auto iph_match = std::ranges::find_if(result, [](const auto& match) {
+    return match.iph_type != IphType::kNone;
+  });
+  IphType iph_type =
+      iph_match == result.end() ? IphType::kNone : iph_match->iph_type;
+
+  // `kHistoryEmbeddingsDisclaimer` has no shown limit.
+  if (!iph_shown_in_omnibox_session_ && iph_type != IphType::kNone &&
+      iph_type != IphType::kHistoryEmbeddingsDisclaimer) {
+    PrefService* prefs = client_->GetPrefs();
+    // `ShouldShowIPH()` shouldn't allow adding IPH matches if there is no
+    // `prefs`.
+    CHECK(prefs);
+    prefs->SetInteger(
+        GetIphShownCountPrefNameFor(iph_type),
+        prefs->GetInteger(GetIphShownCountPrefNameFor(iph_type)) + 1);
+    iph_shown_in_browser_session_count_++;
+    iph_shown_in_omnibox_session_ = true;
   }
 }
 
@@ -370,14 +411,23 @@ bool FeaturedSearchProvider::ShouldShowEnterpriseFeaturedSearchIPHMatch(
 
 bool FeaturedSearchProvider::ShouldShowIPH(IphType iph_type) const {
   PrefService* prefs = client_->GetPrefs();
-  size_t iph_shown_limit =
-      iph_type == IphType::kGemini ||
-              iph_type == IphType::kFeaturedEnterpriseSearch
-          ? OmniboxFieldTrial::kStarterPackIPHPerSessionLimit.Get()
-          : 3;
-  return prefs && prefs->GetBoolean(GetShowIPHPrefNameFor(iph_type)) &&
-         ((iph_shown_limit == INT_MAX) ||
-          (iph_shown_count_ < iph_shown_limit) || iph_shown_this_session_);
+  // Check the IPH hasn't been dismissed.
+  if (!prefs || prefs->GetBoolean(GetIphDismissedPrefNameFor(iph_type)))
+    return false;
+
+  // The limit only applies once per session. E.g., when the user types
+  // '@history a', the `kHistoryEmbeddingsSettingsPromo` IPH might be shown.
+  // When they then type '@history abcdefg', the IPH should continue to be
+  // shown, and not disappear at '@history abcd', and only count as 1 shown.
+  if (iph_shown_in_omnibox_session_)
+    return true;
+
+  // Check the IPH hasn't reached its show limit. Check too many IPHs haven't
+  // been shown this session; don't want to show 3 of type 1, then 3 of type 2
+  // immediately after.
+  size_t iph_shown_count =
+      prefs->GetInteger(GetIphShownCountPrefNameFor(iph_type));
+  return iph_shown_count < 3 && iph_shown_in_browser_session_count_ < 3;
 }
 
 void FeaturedSearchProvider::AddFeaturedEnterpriseSearchIPHMatch() {
