@@ -30,6 +30,9 @@ using sync_pb::UserEventSpecifics;
 using syncer::FakeUserEventService;
 using syncer::SyncService;
 using syncer::SyncServiceObserver;
+using syncer::sync_ui_util::kGetAllNodes;
+using syncer::sync_ui_util::kRequestDataAndRegisterForUpdates;
+using syncer::sync_ui_util::kWriteUserEvent;
 
 namespace {
 
@@ -50,6 +53,7 @@ class TestableSyncInternalsMessageHandler
   }
 
   using ChromeSyncInternalsMessageHandler::AllowJavascript;
+  using ChromeSyncInternalsMessageHandler::GetMessageHandlerMap;
 };
 
 static std::unique_ptr<KeyedService> BuildMockSyncService(
@@ -166,7 +170,10 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
 TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObservers) {
   EXPECT_CALL(*mock_sync_service(), AddObserver);
   EXPECT_CALL(*mock_sync_service(), RemoveObserver).Times(0);
-  handler()->HandleRequestDataAndRegisterForUpdates(base::Value::List());
+  handler()
+      ->GetMessageHandlerMap()
+      .at(kRequestDataAndRegisterForUpdates)
+      .Run(base::Value::List());
   testing::Mock::VerifyAndClearExpectations(mock_sync_service());
 
   EXPECT_CALL(*mock_sync_service(), AddObserver).Times(0);
@@ -177,7 +184,10 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObservers) {
 TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversDisallowJavascript) {
   EXPECT_CALL(*mock_sync_service(), AddObserver);
   EXPECT_CALL(*mock_sync_service(), RemoveObserver).Times(0);
-  handler()->HandleRequestDataAndRegisterForUpdates(base::Value::List());
+  handler()
+      ->GetMessageHandlerMap()
+      .at(kRequestDataAndRegisterForUpdates)
+      .Run(base::Value::List());
   testing::Mock::VerifyAndClearExpectations(mock_sync_service());
 
   EXPECT_CALL(*mock_sync_service(), AddObserver).Times(0);
@@ -196,7 +206,10 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversSyncDisabled) {
   SyncServiceFactory::GetInstance()->SetTestingFactory(
       profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
-  handler()->HandleRequestDataAndRegisterForUpdates(base::Value::List());
+  handler()
+      ->GetMessageHandlerMap()
+      .at(kRequestDataAndRegisterForUpdates)
+      .Run(base::Value::List());
   handler()->DisallowJavascript();
   // Cannot verify observer methods on sync services were not called, because
   // there is no sync service. Rather, we're just making sure the handler hasn't
@@ -209,13 +222,13 @@ TEST_F(SyncInternalsMessageHandlerTest, HandleGetAllNodes) {
   base::OnceCallback<void(base::Value::List)> get_all_nodes_callback;
   ON_CALL(*mock_sync_service(), GetAllNodesForDebugging)
       .WillByDefault(MoveArg<0>(&get_all_nodes_callback));
-  handler()->HandleGetAllNodes(args);
+  handler()->GetMessageHandlerMap().at(kGetAllNodes).Run(args);
   std::move(get_all_nodes_callback).Run(base::Value::List());
   EXPECT_EQ(1, CallCountWithName("cr.webUIResponse"));
 
   base::Value::List args2;
   args2.Append("getAllNodes_1");
-  handler()->HandleGetAllNodes(args2);
+  handler()->GetMessageHandlerMap().at(kGetAllNodes).Run(args2);
   // This  breaks the weak ref the callback is hanging onto. Which results in
   // the call count not incrementing.
   handler()->DisallowJavascript();
@@ -225,14 +238,14 @@ TEST_F(SyncInternalsMessageHandlerTest, HandleGetAllNodes) {
   base::Value::List args3;
   args3.Append("getAllNodes_2");
   handler()->AllowJavascript();
-  handler()->HandleGetAllNodes(args3);
+  handler()->GetMessageHandlerMap().at(kGetAllNodes).Run(args3);
   std::move(get_all_nodes_callback).Run(base::Value::List());
   EXPECT_EQ(2, CallCountWithName("cr.webUIResponse"));
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, SendAboutInfo) {
   handler()->AllowJavascriptForTesting();
-  handler()->OnStateChanged(nullptr);
+  static_cast<syncer::SyncServiceObserver*>(handler())->OnStateChanged(nullptr);
   EXPECT_EQ(1, about_sync_data_delegate_call_count());
   EXPECT_NE(nullptr, last_delegate_sync_service());
 
@@ -268,7 +281,7 @@ TEST_F(SyncInternalsMessageHandlerTest, SendAboutInfoSyncDisabled) {
       profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
   handler()->AllowJavascriptForTesting();
-  handler()->OnStateChanged(nullptr);
+  static_cast<syncer::SyncServiceObserver*>(handler())->OnStateChanged(nullptr);
   EXPECT_EQ(1, about_sync_data_delegate_call_count());
   EXPECT_EQ(nullptr, last_delegate_sync_service());
 
@@ -290,7 +303,7 @@ TEST_F(SyncInternalsMessageHandlerTest, WriteUserEvent) {
   base::Value::List args;
   args.Append("1000000000000000000");
   args.Append("-1");
-  handler()->HandleWriteUserEvent(args);
+  handler()->GetMessageHandlerMap().at(kWriteUserEvent).Run(args);
 
   ASSERT_EQ(1u, fake_user_event_service()->GetRecordedUserEvents().size());
   const UserEventSpecifics& event =
@@ -304,7 +317,7 @@ TEST_F(SyncInternalsMessageHandlerTest, WriteUserEventBadParse) {
   base::Value::List args;
   args.Append("123abc");
   args.Append("abcdefghijklmnopqrstuvwxyz");
-  handler()->HandleWriteUserEvent(args);
+  handler()->GetMessageHandlerMap().at(kWriteUserEvent).Run(args);
 
   ASSERT_EQ(1u, fake_user_event_service()->GetRecordedUserEvents().size());
   const UserEventSpecifics& event =
@@ -318,7 +331,7 @@ TEST_F(SyncInternalsMessageHandlerTest, WriteUserEventBlank) {
   base::Value::List args;
   args.Append("");
   args.Append("");
-  handler()->HandleWriteUserEvent(args);
+  handler()->GetMessageHandlerMap().at(kWriteUserEvent).Run(args);
 
   ASSERT_EQ(1u, fake_user_event_service()->GetRecordedUserEvents().size());
   const UserEventSpecifics& event =
@@ -335,7 +348,7 @@ TEST_F(SyncInternalsMessageHandlerTest, WriteUserEventZero) {
   base::Value::List args;
   args.Append("0");
   args.Append("0");
-  handler()->HandleWriteUserEvent(args);
+  handler()->GetMessageHandlerMap().at(kWriteUserEvent).Run(args);
 
   ASSERT_EQ(1u, fake_user_event_service()->GetRecordedUserEvents().size());
   const UserEventSpecifics& event =
