@@ -76,6 +76,8 @@ class ArcNotificationContentView
   friend class ArcNotificationContentViewTest;
   FRIEND_TEST_ALL_PREFIXES(ArcNotificationContentViewTest,
                            ActivateWhenRemoteInputOpens);
+  FRIEND_TEST_ALL_PREFIXES(ArcNotificationContentViewTest,
+                           AccessibleProperties);
 
   class EventForwarder;
   class MouseEnterExitHandler;
@@ -139,6 +141,10 @@ class ArcNotificationContentView
   // ArcNotificationSurfaceManager::Observer:
   void OnNotificationSurfaceAdded(ArcNotificationSurface* surface) override;
   void OnNotificationSurfaceRemoved(ArcNotificationSurface* surface) override;
+  void OnNotificationSurfaceAXTreeIdChanged(
+      ArcNotificationSurface* surface) override;
+
+  void UpdateAccessibleRole();
 
   // If |item_| is null, we may be about to be destroyed. In this case,
   // we have to be careful about what we do.

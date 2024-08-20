@@ -32,6 +32,13 @@ void ArcNotificationSurfaceManagerImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void ArcNotificationSurfaceManagerImpl::OnNotificationSurfaceAXTreeIdChanged(
+    ArcNotificationSurface* surface) {
+  for (auto& observer : observers_) {
+    observer.OnNotificationSurfaceAXTreeIdChanged(surface);
+  }
+}
+
 exo::NotificationSurface* ArcNotificationSurfaceManagerImpl::GetSurface(
     const std::string& notification_key) const {
   auto it = notification_surface_map_.find(notification_key);

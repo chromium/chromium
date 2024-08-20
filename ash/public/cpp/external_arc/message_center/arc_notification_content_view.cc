@@ -320,6 +320,8 @@ ArcNotificationContentView::ArcNotificationContentView(
   // See the comment in this method and --show-overdraw-feedback for detail.
   layer()->SetFillsBoundsOpaquely(false);
   UpdatePreferredSize();
+
+  UpdateAccessibleRole();
 }
 
 ArcNotificationContentView::~ArcNotificationContentView() {
@@ -482,6 +484,7 @@ void ArcNotificationContentView::SetSurface(ArcNotificationSurface* surface) {
   }
 
   surface_ = surface;
+  UpdateAccessibleRole();
 
   if (surface_) {
     DCHECK(surface_->GetWindow());
@@ -861,10 +864,8 @@ views::FocusTraversable* ArcNotificationContentView::GetFocusTraversable() {
 void ArcNotificationContentView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   if (surface_ && surface_->GetAXTreeId() != ui::AXTreeIDUnknown()) {
-    node_data->role = ax::mojom::Role::kClient;
     GetViewAccessibility().SetChildTreeID(surface_->GetAXTreeId());
   } else {
-    node_data->role = ax::mojom::Role::kButton;
     node_data->AddStringAttribute(
         ax::mojom::StringAttribute::kRoleDescription,
         l10n_util::GetStringUTF8(
@@ -960,6 +961,23 @@ void ArcNotificationContentView::OnNotificationSurfaceRemoved(
     return;
 
   SetSurface(nullptr);
+}
+
+void ArcNotificationContentView::OnNotificationSurfaceAXTreeIdChanged(
+    ArcNotificationSurface* surface) {
+  if (surface->GetNotificationKey() != notification_key_) {
+    return;
+  }
+
+  UpdateAccessibleRole();
+}
+
+void ArcNotificationContentView::UpdateAccessibleRole() {
+  if (surface_ && surface_->GetAXTreeId() != ui::AXTreeIDUnknown()) {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kClient);
+  } else {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  }
 }
 
 BEGIN_METADATA(ArcNotificationContentView)

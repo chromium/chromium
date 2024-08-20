@@ -36,6 +36,8 @@ class ArcNotificationSurfaceManagerImpl
       const std::string& notification_id) const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  void OnNotificationSurfaceAXTreeIdChanged(
+      ArcNotificationSurface* surface) override;
 
   // exo::NotificationSurfaceManager:
   exo::NotificationSurface* GetSurface(
