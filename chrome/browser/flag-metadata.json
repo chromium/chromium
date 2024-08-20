@@ -2453,7 +2453,7 @@
   {
     "name": "enable-accessibility-include-long-click-action",
     "owners": ["mschillaci@google.com", "//ui/accessibility/OWNERS"],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "enable-accessibility-live-caption",
@@ -2493,16 +2493,11 @@
   {
     "name": "enable-accessibility-page-zoom",
     "owners": [ "mschillaci@chromium.org", "aldietz@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "enable-accessibility-page-zoom-enhancements",
     "owners": [ "mschillaci@chromium.org", "aldietz@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "enable-accessibility-performance-filtering",
-    "owners": [ "mschillaci@chromium.org", "aldietz@chromium.org", "//ui/accessibility/OWNERS"],
     "expiry_milestone": 140
   },
   {
@@ -2588,11 +2583,6 @@
   {
     "name": "enable-auto-disable-accessibility",
     "owners": [ "abigailbklein@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "enable-auto-disable-accessibility-v2",
-    "owners": [ "mschillaci@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 130
   },
   {
