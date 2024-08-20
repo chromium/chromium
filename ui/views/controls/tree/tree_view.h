@@ -327,6 +327,10 @@ class VIEWS_EXPORT TreeView : public View,
   // Loads the children of the specified node.
   void LoadChildren(InternalNode* node);
 
+  void UpdateAccessiblePositionalProperties(InternalNode* node);
+  void UpdateAccessiblePositionalPropertiesForNodeAndChildren(
+      InternalNode* node);
+
   // Configures an InternalNode from a node from the model. This is used
   // when a node changes as well as when loading.
   void ConfigureInternalNode(ui::TreeModelNode* model_node, InternalNode* node);
@@ -344,11 +348,6 @@ class VIEWS_EXPORT TreeView : public View,
   // node.
   std::unique_ptr<AXVirtualView> CreateAndSetAccessibilityView(
       InternalNode* node);
-
-  // Populates the accessibility data for a tree item. This is data that can
-  // dynamically change, such as whether a tree item is expanded, and if it's
-  // visible.
-  void PopulateAccessibilityData(InternalNode* node, ui::AXNodeData* data);
 
   void SetAccessibleSelectionForNode(InternalNode* node, bool selected);
 
