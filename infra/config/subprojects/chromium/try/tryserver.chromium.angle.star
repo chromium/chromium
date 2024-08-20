@@ -32,6 +32,7 @@ try_.builder(
     executable = "recipe:angle_chromium_trybot",
     mirrors = [
         "ci/android-angle-chromium-arm64-builder",
+        # (crbug.com/355671260): Switch to pixel2 CI builder once it's stable
         "ci/android-angle-chromium-arm64-nexus5x",
     ],
     builder_config_settings = builder_config.try_settings(
@@ -43,6 +44,7 @@ try_.builder(
             "no_symbols",
         ],
     ),
+    contact_team_email = "angle-team@google.com",
 )
 
 try_.builder(

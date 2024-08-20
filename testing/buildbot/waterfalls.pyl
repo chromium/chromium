@@ -1327,6 +1327,18 @@
           'gpu_telemetry_tests': 'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
         },
       },
+      'android-angle-chromium-arm64-pixel2': {
+        'browser_config': 'android-chromium',
+        'os_type': 'android',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'pie_fleet',
+          'walleye',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
+        },
+      },
       'fuchsia-angle-builder': {
         'additional_compile_targets': [
           'angle_end2end_tests',

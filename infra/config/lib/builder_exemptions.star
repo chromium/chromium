@@ -1158,7 +1158,6 @@ exempted_from_contact_builders = {
         "android-12-x64-dbg",
         "android-12-x64-rel-compilator",
         "android-12l-x64-dbg",
-        "android-angle-chromium-try",
         "android-arm-compile-dbg",
         "android-arm64-all-targets-dbg",
         "android-arm64-rel",

@@ -209,7 +209,6 @@ try/android-10-arm64-rel
 try/android-11-x86-rel
 try/android-12-x64-dbg
 try/android-12l-x64-dbg
-try/android-angle-chromium-try
 try/android-arm-compile-dbg
 try/android-arm64-all-targets-dbg
 try/android-arm64-rel

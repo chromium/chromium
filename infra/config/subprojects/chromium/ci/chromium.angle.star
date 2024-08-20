@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.angle builder group."""
 
+load("//lib/args.star", "args")
 load("//lib/builders.star", "gardener_rotations", "os", "siso")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
@@ -110,6 +111,40 @@ ci.thin_tester(
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Android|Nexus5X|Chromium",
+        short_name = "arm64",
+    ),
+    contact_team_email = "angle-team@google.com",
+)
+
+ci.thin_tester(
+    name = "android-angle-chromium-arm64-pixel2",
+    description_html = "Running Angle chromium tests on Pixel 2",
+    triggered_by = ["android-angle-chromium-arm64-builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "angle_top_of_tree",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_mb",
+        ),
+        build_gs_bucket = "chromium-angle-archive",
+        run_tests_serially = True,
+    ),
+    # TODO(crbug.com/355671260): Enable gardener after stable
+    gardener_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "Android|Pixel2|Chromium",
         short_name = "arm64",
     ),
     contact_team_email = "angle-team@google.com",
