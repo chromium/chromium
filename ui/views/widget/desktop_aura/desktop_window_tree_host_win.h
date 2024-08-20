@@ -285,6 +285,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   // Accessor for DesktopNativeWidgetAura::content_window().
   aura::Window* content_window();
 
+  // Call Windows API to update the window display affinity.
+  void UpdateAllowScreenshots();
+
   HMONITOR last_monitor_from_window_ = nullptr;
 
   std::unique_ptr<HWNDMessageHandler> message_handler_;
@@ -314,7 +317,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   // the property is set on the contained window which has a shorter lifetime.
   bool should_animate_window_close_;
 
-  // When Close()d and animations are being applied to this window, the close
+  // When closed and animations are being applied to this window, the close
   // of the window needs to be deferred to when the close animation is
   // completed. This variable indicates that a Close was converted to a Hide,
   // so that when the Hide is completed the host window should be closed.
@@ -327,6 +330,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
 
   // True if the window should have the frame removed.
   bool remove_standard_frame_;
+
+  // True if the window is allow to take screenshots, by default is true.
+  bool allow_screenshots_ = true;
 
   // Visibility of the cursor. On Windows we can have multiple root windows and
   // the implementation of ::ShowCursor() is based on a counter, so making this

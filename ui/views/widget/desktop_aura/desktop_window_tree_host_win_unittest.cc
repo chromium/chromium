@@ -39,6 +39,27 @@ TEST_F(DesktopWindowTreeHostWinTest, DebuggingId) {
                 ->debugging_id());
 }
 
+TEST_F(DesktopWindowTreeHostWinTest, SetAllowScreenshots) {
+  Widget widget;
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.ownership = Widget::InitParams::CLIENT_OWNS_WIDGET;
+  widget.Init(std::move(params));
+
+  // Set not allow screenshots.
+  widget.SetAllowScreenshots(false);
+
+  // It will not be set because the widget is not shown.
+  EXPECT_TRUE(widget.AreScreenshotsAllowed());
+
+  // Show the widget and should update the allow screenshots.
+  widget.Show();
+  EXPECT_FALSE(widget.AreScreenshotsAllowed());
+
+  // Widget is showing, update should take effect immediately.
+  widget.SetAllowScreenshots(true);
+  EXPECT_TRUE(widget.AreScreenshotsAllowed());
+}
+
 class DesktopWindowTreeHostWinAccessibilityObjectTest
     : public DesktopWidgetTest {
  public:

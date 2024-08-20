@@ -1061,8 +1061,12 @@ void DesktopWindowTreeHostWin::HandleWorkAreaChanged() {
 }
 
 void DesktopWindowTreeHostWin::HandleVisibilityChanged(bool visible) {
-  if (native_widget_delegate_)
+  if (native_widget_delegate_) {
     native_widget_delegate_->OnNativeWidgetVisibilityChanged(visible);
+  }
+  if (visible) {
+    UpdateAllowScreenshots();
+  }
 }
 
 void DesktopWindowTreeHostWin::HandleWindowMinimizedOrRestored(bool restored) {
@@ -1295,13 +1299,21 @@ void DesktopWindowTreeHostWin::SetBoundsInDIP(const gfx::Rect& bounds) {
 }
 
 void DesktopWindowTreeHostWin::SetAllowScreenshots(bool allow) {
-  // When screenshots are not allowed, set the affinity to WDA_MONITOR.
-  // This is used instead of WDA_EXCLUDEFROMCAPTURE because the latter
-  // renders the window with "no content", which appears as a black
-  // rectangle on the screen, whereas the latter completely removes the
-  // window from the screen.  The former is better indication to the user
-  // that the contents of the window are being explicitly not shown.
-  SetWindowDisplayAffinity(GetHWND(), allow ? WDA_NONE : WDA_MONITOR);
+  if (allow_screenshots_ == allow) {
+    return;
+  }
+
+  allow_screenshots_ = allow;
+
+  // If the window is not visible, do not set the window display affinity
+  // because `SetWindowDisplayAffinity` will attempt to compose the window,
+  // resulting in a blank window. Instead, we will update it in the `Show`
+  // function.
+  if (!IsVisible()) {
+    return;
+  }
+
+  UpdateAllowScreenshots();
 }
 
 bool DesktopWindowTreeHostWin::AreScreenshotsAllowed() {
@@ -1376,6 +1388,21 @@ gfx::Rect DesktopWindowTreeHostWin::AdjustedContentBounds(
 
 aura::Window* DesktopWindowTreeHostWin::content_window() {
   return desktop_native_widget_aura_->content_window();
+}
+
+void DesktopWindowTreeHostWin::UpdateAllowScreenshots() {
+  if (AreScreenshotsAllowed() == allow_screenshots_) {
+    return;
+  }
+
+  // When screenshots are not allowed, set the affinity to WDA_MONITOR.
+  // This is used instead of WDA_EXCLUDEFROMCAPTURE because the latter renders
+  // the window with "no content", which appears as a black rectangle on the
+  // screen, whereas the former completely removes the window from the screen.
+  // The former is better indication to the user that the contents of the window
+  // are being explicitly not shown.
+  SetWindowDisplayAffinity(GetHWND(),
+                           allow_screenshots_ ? WDA_NONE : WDA_MONITOR);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
