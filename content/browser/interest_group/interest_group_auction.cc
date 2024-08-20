@@ -169,17 +169,6 @@ bool IsKAnon(const base::flat_set<std::string>& kanon_keys,
   return kanon_keys.contains(key);
 }
 
-// Verifies if the selectedBuyerAndSellerReportingId is present within the
-// matching ad's selectableBuyerAndSellerReportingId array.
-bool IsSelectedReportingIdValid(
-    base::optional_ref<const std::vector<std::string>> selectable_ids,
-    const std::string& selected_id) {
-  if (!selectable_ids.has_value()) {
-    return false;
-  }
-  return base::Contains(*selectable_ids, selected_id);
-}
-
 std::vector<auction_worklet::mojom::KAnonKeyPtr> KAnonKeysToMojom(
     const base::flat_set<std::string>& kanon_keys) {
   std::vector<auction_worklet::mojom::KAnonKeyPtr> result;
@@ -976,8 +965,6 @@ InterestGroupAuction::Bid::Bid(
     base::TimeDelta bid_duration,
     std::optional<uint32_t> bidding_signals_data_version,
     const blink::InterestGroup::Ad* bid_ad,
-    bool selected_buyer_and_seller_reporting_id_required,
-    std::optional<std::string> selected_buyer_and_seller_reporting_id,
     BidState* bid_state,
     InterestGroupAuction* auction)
     : bid_role(bid_role),
@@ -990,10 +977,6 @@ InterestGroupAuction::Bid::Bid(
       modeling_signals(modeling_signals),
       bid_duration(bid_duration),
       bidding_signals_data_version(bidding_signals_data_version),
-      selected_buyer_and_seller_reporting_id_required(
-          std::move(selected_buyer_and_seller_reporting_id_required)),
-      selected_buyer_and_seller_reporting_id(
-          std::move(selected_buyer_and_seller_reporting_id)),
       interest_group(&bid_state->bidder->interest_group),
       bid_ad(bid_ad),
       bid_state(bid_state),
@@ -1530,9 +1513,7 @@ class InterestGroupAuction::BuyerHelper
         std::move(ad_component_descriptors),
         /*modeling_signals=*/std::nullopt,
         /*bid_duration=*/base::Seconds(0),
-        /*bidding_signals_data_version=*/std::nullopt, matching_ad,
-        /*selected_buyer_and_seller_reporting_id_required=*/false,
-        /*selected_buyer_and_seller_reporting_id=*/std::nullopt, bid_state,
+        /*bidding_signals_data_version=*/std::nullopt, matching_ad, bid_state,
         auction_);
   }
 
@@ -2319,34 +2300,12 @@ class InterestGroupAuction::BuyerHelper
       return nullptr;
     }
 
-    // Validate that if the `selected_buyer_and_seller_reporting_id` is
-    // required, but not present, the bid is rejected.
-    if (mojo_bid->selected_buyer_and_seller_reporting_id_required &&
-        !mojo_bid->selected_buyer_and_seller_reporting_id.has_value()) {
-      generate_bid_client_receiver_set_.ReportBadMessage(
-          "Selected buyer and seller reporting id is required, but not "
-          "specified");
-      return nullptr;
-    }
-
-    if (mojo_bid->selected_buyer_and_seller_reporting_id.has_value() &&
-        !IsSelectedReportingIdValid(
-            matching_ad->selectable_buyer_and_seller_reporting_ids,
-            *mojo_bid->selected_buyer_and_seller_reporting_id)) {
-      generate_bid_client_receiver_set_.ReportBadMessage(
-          "Invalid selected buyer and seller reporting id");
-      return nullptr;
-    }
-
     return std::make_unique<Bid>(
         mojo_bid->bid_role, std::move(mojo_bid->ad), mojo_bid->bid,
         std::move(mojo_bid->bid_currency), mojo_bid->ad_cost,
         std::move(ad_descriptor), std::move(ad_component_descriptors),
         std::move(mojo_bid->modeling_signals), mojo_bid->bid_duration,
-        bidding_signals_data_version, matching_ad,
-        std::move(mojo_bid->selected_buyer_and_seller_reporting_id_required),
-        std::move(mojo_bid->selected_buyer_and_seller_reporting_id), &bid_state,
-        auction_);
+        bidding_signals_data_version, matching_ad, &bid_state, auction_);
   }
 
   // Close all Mojo pipes associated with `state`.
@@ -2928,8 +2887,6 @@ InterestGroupAuction::CreateReporter(
   winning_bid_info.bid_duration = winner->bid->bid_duration;
   winning_bid_info.bidding_signals_data_version =
       winner->bid->bidding_signals_data_version;
-  winning_bid_info.selected_buyer_and_seller_reporting_id =
-      winner->bid->selected_buyer_and_seller_reporting_id;
   base::Value::Dict ad_metadata;
   ad_metadata.Set("renderURL", winner->bid->ad_descriptor.url.spec());
   if (winner->bid->bid_ad->metadata) {
@@ -3833,9 +3790,11 @@ base::flat_set<std::string> InterestGroupAuction::GetKAnonKeysToJoin() const {
         *scored_bid->bid->interest_group;
     k_anon_keys_to_join.push_back(blink::HashedKAnonKeyForAdBid(
         interest_group, scored_bid->bid->bid_ad->render_url()));
+    // TODO(crbug.com/334053709): Use the selected_buyer_and_seller_reporting_id
+    // from scored_bid->bid when that field has been added.
     k_anon_keys_to_join.push_back(blink::HashedKAnonKeyForAdNameReporting(
         interest_group, *scored_bid->bid->bid_ad,
-        scored_bid->bid->selected_buyer_and_seller_reporting_id));
+        /*selected_buyer_and_seller_reporting_id=*/std::nullopt));
     for (const blink::AdDescriptor& ad_component_descriptor :
          scored_bid->bid->ad_component_descriptors) {
       k_anon_keys_to_join.push_back(
@@ -4662,10 +4621,7 @@ InterestGroupAuction::CreateBidFromComponentAuctionWinner(
       component_bid->ad_cost, component_bid->ad_descriptor,
       component_bid->ad_component_descriptors, component_bid->modeling_signals,
       component_bid->bid_duration, component_bid->bidding_signals_data_version,
-      component_bid->bid_ad,
-      component_bid->selected_buyer_and_seller_reporting_id_required,
-      component_bid->selected_buyer_and_seller_reporting_id,
-      component_bid->bid_state, component_bid->auction);
+      component_bid->bid_ad, component_bid->bid_state, component_bid->auction);
 }
 
 void InterestGroupAuction::OnScoringDependencyDone() {
@@ -4749,18 +4705,6 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
   ++bids_being_scored_;
   Bid* bid_raw = bid.get();
 
-  // We only pass the buyerAndSellerReportingId, and
-  // selectedBuyerAndSellerReportingIdRequired if there is a
-  // selectedBuyerAndSellerReportingId.
-  std::optional<bool> maybe_selected_buyer_and_seller_reporting_id_required;
-  std::optional<std::string> maybe_buyer_and_seller_reporting_id;
-  if (bid_raw->selected_buyer_and_seller_reporting_id.has_value()) {
-    maybe_selected_buyer_and_seller_reporting_id_required =
-        bid_raw->selected_buyer_and_seller_reporting_id_required;
-    maybe_buyer_and_seller_reporting_id =
-        bid_raw->bid_ad->buyer_and_seller_reporting_id;
-  }
-
   mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient> score_ad_remote;
   score_ad_receivers_.Add(
       this, score_ad_remote.InitWithNewPipeAndPassReceiver(), std::move(bid));
@@ -4780,10 +4724,8 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
       parent_ ? PerBuyerCurrency(config_->seller, *parent_->config_)
               : std::nullopt,
       bid_raw->interest_group->owner, bid_raw->ad_descriptor.url,
-      maybe_selected_buyer_and_seller_reporting_id_required,
-      bid_raw->selected_buyer_and_seller_reporting_id,
-      maybe_buyer_and_seller_reporting_id, bid_raw->GetAdComponentUrls(),
-      bid_raw->bid_duration.InMilliseconds(), bid_raw->ad_descriptor.size,
+      bid_raw->GetAdComponentUrls(), bid_raw->bid_duration.InMilliseconds(),
+      bid_raw->ad_descriptor.size,
       IsOriginInDebugReportCooldownOrLockout(
           config_->seller, debug_report_lockout_and_cooldowns_),
       SellerTimeout(), bid_trace_id, std::move(score_ad_remote));

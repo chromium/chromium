@@ -281,9 +281,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
 
   bids.push_back(auction_worklet::mojom::BidderWorkletBid::New(
       bid_role, "ad", *bid, bid_currency, /*ad_cost=*/std::nullopt,
-      std::move(ad_descriptor),
-      selected_buyer_and_seller_reporting_id_required_,
-      selected_buyer_and_seller_reporting_id_, ad_component_descriptors,
+      std::move(ad_descriptor), ad_component_descriptors,
       /*modeling_signals=*/std::nullopt, duration));
   bids.insert(bids.end(), std::make_move_iterator(further_bids.begin()),
               std::make_move_iterator(further_bids.end()));
@@ -337,15 +335,6 @@ bool MockBidderWorklet::PipeIsClosed() {
   return pipe_closed_;
 }
 
-void MockBidderWorklet::SetSelectedBuyerAndSellerReportingIdRequired(
-    bool required) {
-  selected_buyer_and_seller_reporting_id_required_ = required;
-}
-void MockBidderWorklet::SetSelectedBuyerAndSellerReportingId(
-    std::optional<std::string> selected) {
-  selected_buyer_and_seller_reporting_id_ = std::move(selected);
-}
-
 MockSellerWorklet::ScoreAdParams::ScoreAdParams() = default;
 MockSellerWorklet::ScoreAdParams::ScoreAdParams(ScoreAdParams&&) = default;
 MockSellerWorklet::ScoreAdParams::~ScoreAdParams() = default;
@@ -391,12 +380,6 @@ void MockSellerWorklet::ScoreAd(
     const std::optional<blink::AdCurrency>& component_expect_bid_currency,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
-    const std::optional<bool>
-        browser_signal_selected_buyer_and_seller_reporting_id_required,
-    const std::optional<std::string>&
-        browser_signal_selected_buyer_and_seller_reporting_id,
-    const std::optional<std::string>&
-        browser_signal_buyer_and_seller_reporting_id,
     const std::vector<GURL>& browser_signal_ad_components,
     uint32_t browser_signal_bidding_duration_msecs,
     const std::optional<blink::AdSize>& browser_signal_render_size,

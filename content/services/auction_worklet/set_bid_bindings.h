@@ -31,17 +31,15 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
  public:
   // Bid plus information needed to filter subset of component ads to given
   // target #, considering k-anonymity. This is done entirely by the worklet,
-  // and isn't in the Mojo bid type. This also includes the reporting ids
-  // needed to enforce `selectedBuyerAndSellerReportingIdRequired`.
-  struct CONTENT_EXPORT BidAndWorkletOnlyMetadata {
-    BidAndWorkletOnlyMetadata();
-    BidAndWorkletOnlyMetadata(BidAndWorkletOnlyMetadata&&);
-    BidAndWorkletOnlyMetadata(const BidAndWorkletOnlyMetadata&) = delete;
-    ~BidAndWorkletOnlyMetadata();
+  // and isn't in the Mojo bid type.
+  struct CONTENT_EXPORT BidAndComponentTarget {
+    BidAndComponentTarget();
+    BidAndComponentTarget(BidAndComponentTarget&&);
+    BidAndComponentTarget(const BidAndComponentTarget&) = delete;
+    ~BidAndComponentTarget();
 
-    BidAndWorkletOnlyMetadata& operator=(BidAndWorkletOnlyMetadata&&);
-    BidAndWorkletOnlyMetadata& operator=(const BidAndWorkletOnlyMetadata&) =
-        delete;
+    BidAndComponentTarget& operator=(BidAndComponentTarget&&);
+    BidAndComponentTarget& operator=(const BidAndComponentTarget&) = delete;
 
     mojom::BidderWorkletBidPtr bid;
 
@@ -79,7 +77,7 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
 
   // Note that returned bids do not have their role filled in correctly,
   // it's always kUnenforcedKAnon.
-  std::vector<BidAndWorkletOnlyMetadata> TakeBids();
+  std::vector<BidAndComponentTarget> TakeBids();
 
   mojom::RejectReason reject_reason() const { return reject_reason_; }
 
@@ -115,12 +113,12 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
   // `error_prefix` is the base prefix for errors, `render_prefix` is one for
   // errors in render field, and `components_prefix` is for errors in the
   // adComponents array.
-  base::expected<BidAndWorkletOnlyMetadata, IdlConvert::Status>
-  SemanticCheckBid(AuctionV8Helper::TimeLimitScope& time_limit_scope,
-                   const GenerateBidOutput& idl,
-                   const std::string& error_prefix,
-                   const std::string& render_prefix,
-                   const std::string& components_prefix);
+  base::expected<BidAndComponentTarget, IdlConvert::Status> SemanticCheckBid(
+      AuctionV8Helper::TimeLimitScope& time_limit_scope,
+      const GenerateBidOutput& idl,
+      const std::string& error_prefix,
+      const std::string& render_prefix,
+      const std::string& components_prefix);
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
 
@@ -141,7 +139,7 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
   base::RepeatingCallback<bool(const std::string&)> is_ad_excluded_;
   base::RepeatingCallback<bool(const std::string&)> is_component_ad_excluded_;
 
-  std::vector<BidAndWorkletOnlyMetadata> bids_;
+  std::vector<BidAndComponentTarget> bids_;
 };
 
 }  // namespace auction_worklet

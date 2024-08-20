@@ -259,7 +259,7 @@ std::vector<mojom::BidderWorkletBidPtr> ClassifyBidsAndApplyComponentAdLimits(
     mojom::KAnonymityBidMode kanon_mode,
     const mojom::BidderWorkletNonSharedParams* bidder_worklet_non_shared_params,
     const GURL& script_source_url,
-    std::vector<SetBidBindings::BidAndWorkletOnlyMetadata> bid_info) {
+    std::vector<SetBidBindings::BidAndComponentTarget> bid_info) {
   std::vector<mojom::BidderWorkletBidPtr> bids;
   for (auto& candidate : bid_info) {
     if (kanon_mode == mojom::KAnonymityBidMode::kNone ||
@@ -788,7 +788,7 @@ BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult() =
     default;
 BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult(
     std::unique_ptr<ContextRecycler> context_recycler_for_rerun,
-    std::vector<SetBidBindings::BidAndWorkletOnlyMetadata> bids,
+    std::vector<SetBidBindings::BidAndComponentTarget> bids,
     std::optional<uint32_t> bidding_signals_data_version,
     std::optional<GURL> debug_loss_report_url,
     std::optional<GURL> debug_win_report_url,
@@ -1219,7 +1219,7 @@ void BidderWorklet::V8State::GenerateBid(
       } else {
         restricted_result = SingleGenerateBidResult(
             std::unique_ptr<ContextRecycler>(),
-            std::vector<SetBidBindings::BidAndWorkletOnlyMetadata>(),
+            std::vector<SetBidBindings::BidAndComponentTarget>(),
             /*bidding_signals_data_version=*/std::nullopt,
             /*debug_loss_report_url=*/std::nullopt,
             /*debug_win_report_url=*/std::nullopt,
@@ -1332,7 +1332,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
     errors_out.push_back("generateBid() aborted due to zero timeout.");
     return std::make_optional(SingleGenerateBidResult(
         std::unique_ptr<ContextRecycler>(),
-        std::vector<SetBidBindings::BidAndWorkletOnlyMetadata>(),
+        std::vector<SetBidBindings::BidAndComponentTarget>(),
         /*bidding_signals_data_version=*/std::nullopt,
         /*debug_loss_report_url=*/std::nullopt,
         /*debug_win_report_url=*/std::nullopt,
@@ -1419,7 +1419,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
     if (!fresh_context_recycler) {
       return std::make_optional(SingleGenerateBidResult(
           std::unique_ptr<ContextRecycler>(),
-          std::vector<SetBidBindings::BidAndWorkletOnlyMetadata>(),
+          std::vector<SetBidBindings::BidAndComponentTarget>(),
           /*bidding_signals_data_version=*/std::nullopt,
           /*debug_loss_report_url=*/std::nullopt,
           /*debug_win_report_url=*/std::nullopt,
@@ -1712,7 +1712,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
     // ContextRecycler since this will not be re-run.
     return std::make_optional(SingleGenerateBidResult(
         std::unique_ptr<ContextRecycler>(),
-        std::vector<SetBidBindings::BidAndWorkletOnlyMetadata>(),
+        std::vector<SetBidBindings::BidAndComponentTarget>(),
         /*bidding_signals_data_version=*/std::nullopt,
         context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),
         /*debug_win_report_url=*/std::nullopt,

@@ -423,7 +423,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       SingleGenerateBidResult();
       SingleGenerateBidResult(
           std::unique_ptr<ContextRecycler> context_recycler_for_rerun,
-          std::vector<SetBidBindings::BidAndWorkletOnlyMetadata> bids,
+          std::vector<SetBidBindings::BidAndComponentTarget> bids,
           std::optional<uint32_t> bidding_signals_data_version,
           std::optional<GURL> debug_loss_report_url,
           std::optional<GURL> debug_win_report_url,
@@ -447,7 +447,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       // it's returned here to be available for any re-run for k-anonymity.
       std::unique_ptr<ContextRecycler> context_recycler_for_rerun;
 
-      std::vector<SetBidBindings::BidAndWorkletOnlyMetadata> bids;
+      std::vector<SetBidBindings::BidAndComponentTarget> bids;
       std::optional<uint32_t> bidding_signals_data_version;
       std::optional<GURL> debug_loss_report_url;
       std::optional<GURL> debug_win_report_url;
