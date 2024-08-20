@@ -18,7 +18,6 @@
 #include "components/version_info/channel.h"
 #include "privacy_sandbox_notice_constants.h"
 #include "privacy_sandbox_notice_storage.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tracking_protection_onboarding.h"
 
@@ -40,21 +39,6 @@ using SurfaceType =
 
 using ::testing::Combine;
 using ::testing::Values;
-
-class MockTrackingProtectionObserver
-    : public TrackingProtectionOnboarding::Observer {
- public:
-  MOCK_METHOD(
-      void,
-      OnTrackingProtectionOnboardingUpdated,
-      (TrackingProtectionOnboarding::OnboardingStatus onboarding_status),
-      (override));
-  MOCK_METHOD(
-      void,
-      OnTrackingProtectionSilentOnboardingUpdated,
-      (TrackingProtectionOnboarding::SilentOnboardingStatus onboarding_status),
-      (override));
-};
 
 class TrackingProtectionOnboardingTest : public testing::Test {
  public:
@@ -85,34 +69,6 @@ class TrackingProtectionOnboardingTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
 };
-
-TEST_F(TrackingProtectionOnboardingTest,
-       OnboardingProfileTriggersOnboardingObservers) {
-  MockTrackingProtectionObserver observer;
-  tracking_protection_onboarding()->AddObserver(&observer);
-  EXPECT_CALL(observer,
-              OnTrackingProtectionOnboardingUpdated(
-                  TrackingProtectionOnboarding::OnboardingStatus::kOnboarded));
-
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
-
-TEST_F(TrackingProtectionOnboardingTest,
-       EligibleProfileTriggersOnboardingObservers) {
-  MockTrackingProtectionObserver observer;
-  tracking_protection_onboarding()->AddObserver(&observer);
-  EXPECT_CALL(observer,
-              OnTrackingProtectionOnboardingUpdated(
-                  TrackingProtectionOnboarding::OnboardingStatus::kEligible));
-
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
 
 TEST_F(TrackingProtectionOnboardingTest,
        MaybeMarkEligibleDoesNothingIfProfileNotIneligible) {
@@ -308,28 +264,6 @@ TEST_F(TrackingProtectionOnboardingTest, MaybeResetOnboardingPrefsInCanary) {
   EXPECT_FALSE(prefs()
                    ->FindPreference(prefs::kTrackingProtectionOnboardingStatus)
                    ->HasUserSetting());
-}
-
-TEST_F(TrackingProtectionOnboardingTest,
-       MaybeResetOnboardingPrefsInCanaryTriggersObserver) {
-  // Setup
-  tracking_protection_onboarding_service_ =
-      std::make_unique<TrackingProtectionOnboarding>(
-          prefs(), version_info::Channel::CANARY);
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
-  prefs()->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, true);
-  MockTrackingProtectionObserver observer;
-  tracking_protection_onboarding()->AddObserver(&observer);
-  EXPECT_CALL(observer,
-              OnTrackingProtectionOnboardingUpdated(
-                  TrackingProtectionOnboarding::OnboardingStatus::kIneligible));
-  // Action
-  tracking_protection_onboarding()->MaybeResetModeBOnboardingPrefs();
-
-  // Expectation
-  testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
 TEST_F(TrackingProtectionOnboardingTest, UserActionMetrics) {
@@ -747,36 +681,6 @@ class TrackingProtectionSilentOnboardingTest
     : public TrackingProtectionOnboardingTest {};
 
 TEST_F(TrackingProtectionSilentOnboardingTest,
-       OnboardingProfileTriggersOnboardingObservers) {
-  MockTrackingProtectionObserver observer;
-  tracking_protection_onboarding()->AddObserver(&observer);
-  EXPECT_CALL(
-      observer,
-      OnTrackingProtectionSilentOnboardingUpdated(
-          TrackingProtectionOnboarding::SilentOnboardingStatus::kOnboarded));
-
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionSilentOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
-
-TEST_F(TrackingProtectionSilentOnboardingTest,
-       EligibleProfileTriggersOnboardingObservers) {
-  MockTrackingProtectionObserver observer;
-  tracking_protection_onboarding()->AddObserver(&observer);
-  EXPECT_CALL(
-      observer,
-      OnTrackingProtectionSilentOnboardingUpdated(
-          TrackingProtectionOnboarding::SilentOnboardingStatus::kEligible));
-
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionSilentOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
-
-TEST_F(TrackingProtectionSilentOnboardingTest,
        MaybeMarkEligibleDoesNothingIfProfileNotIneligible) {
   // Setup
   prefs()->SetInteger(
@@ -1017,29 +921,6 @@ TEST_F(TrackingProtectionSilentOnboardingTest,
       prefs()
           ->FindPreference(prefs::kTrackingProtectionSilentOnboardingStatus)
           ->HasUserSetting());
-}
-
-TEST_F(TrackingProtectionSilentOnboardingTest,
-       MaybeResetOnboardingPrefsInCanaryTriggersObserver) {
-  // Setup
-  tracking_protection_onboarding_service_ =
-      std::make_unique<TrackingProtectionOnboarding>(
-          prefs(), version_info::Channel::CANARY);
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionSilentOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
-  prefs()->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, true);
-  MockTrackingProtectionObserver observer;
-  tracking_protection_onboarding()->AddObserver(&observer);
-  EXPECT_CALL(
-      observer,
-      OnTrackingProtectionSilentOnboardingUpdated(
-          TrackingProtectionOnboarding::SilentOnboardingStatus::kIneligible));
-  // Action
-  tracking_protection_onboarding()->MaybeResetModeBOnboardingPrefs();
-
-  // Expectation
-  testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
 class TrackingProtectionSilentOnboardingAccessorTest

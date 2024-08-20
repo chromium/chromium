@@ -6,13 +6,11 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
@@ -362,42 +360,13 @@ TrackingProtectionOnboarding::TrackingProtectionOnboarding(
       is_silent_onboarding_enabled_(is_silent_onboarding_enabled) {
   CHECK(pref_service_);
 
-  pref_change_registrar_.Init(pref_service_);
-  pref_change_registrar_.Add(
-      prefs::kTrackingProtectionOnboardingStatus,
-      base::BindRepeating(
-          &TrackingProtectionOnboarding::OnOnboardingPrefChanged,
-          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      prefs::kTrackingProtectionSilentOnboardingStatus,
-      base::BindRepeating(
-          &TrackingProtectionOnboarding::OnSilentOnboardingPrefChanged,
-          base::Unretained(this)));
-
   RecordHistogramsOnStartup(pref_service_);
 }
 
 TrackingProtectionOnboarding::~TrackingProtectionOnboarding() = default;
 
 void TrackingProtectionOnboarding::Shutdown() {
-  observers_.Clear();
   pref_service_ = nullptr;
-  pref_change_registrar_.Reset();
-}
-
-void TrackingProtectionOnboarding::OnOnboardingPrefChanged() const {
-  // We notify observers of all changes to the onboarding pref.
-  auto onboarding_status = GetOnboardingStatus();
-  for (auto& observer : observers_) {
-    observer.OnTrackingProtectionOnboardingUpdated(onboarding_status);
-  }
-}
-
-void TrackingProtectionOnboarding::OnSilentOnboardingPrefChanged() const {
-  auto onboarding_status = GetSilentOnboardingStatus();
-  for (auto& observer : observers_) {
-    observer.OnTrackingProtectionSilentOnboardingUpdated(onboarding_status);
-  }
 }
 
 void TrackingProtectionOnboarding::MaybeMarkModeBEligible() {
@@ -541,14 +510,6 @@ TrackingProtectionOnboarding::GetSilentOnboardingStatus() const {
     case TrackingProtectionOnboardingStatus::kOnboarded:
       return SilentOnboardingStatus::kOnboarded;
   }
-}
-
-void TrackingProtectionOnboarding::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void TrackingProtectionOnboarding::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
 }
 
 }  // namespace privacy_sandbox

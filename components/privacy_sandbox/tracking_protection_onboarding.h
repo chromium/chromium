@@ -7,9 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/version_info/channel.h"
 
 class PrefService;
@@ -112,18 +110,6 @@ class TrackingProtectionOnboarding : public KeyedService {
     kMaxValue = kOnboarded,
   };
 
-  class Observer {
-   public:
-    // Fired when a profile's tracking protection onboarding state is changed.
-    virtual void OnTrackingProtectionOnboardingUpdated(
-        OnboardingStatus onboarding_status) {}
-
-    // Fired when a profile's tracking protection silent onboarding state is
-    // changed.
-    virtual void OnTrackingProtectionSilentOnboardingUpdated(
-        SilentOnboardingStatus onboarding_status) {}
-  };
-
   TrackingProtectionOnboarding(PrefService* pref_service,
                                version_info::Channel channel,
                                bool is_silent_onboarding_enabled = false);
@@ -131,9 +117,6 @@ class TrackingProtectionOnboarding : public KeyedService {
 
   // KeyedService:
   void Shutdown() override;
-
-  virtual void AddObserver(Observer* observer);
-  virtual void RemoveObserver(Observer* observer);
 
   // To be called by the Mode B experiment service to indicate that the profile
   // is eligible for onboarding.
@@ -174,14 +157,7 @@ class TrackingProtectionOnboarding : public KeyedService {
  private:
   friend class tpcd::experiment::EligibilityServiceTest;
 
-  // Called when the underlying onboarding pref is changed.
-  virtual void OnOnboardingPrefChanged() const;
-  // Called when the underlying silent onboarding pref is changed.
-  virtual void OnSilentOnboardingPrefChanged() const;
-
-  base::ObserverList<Observer>::Unchecked observers_;
   raw_ptr<PrefService> pref_service_;
-  PrefChangeRegistrar pref_change_registrar_;
   version_info::Channel channel_;
   bool is_silent_onboarding_enabled_;
 };
