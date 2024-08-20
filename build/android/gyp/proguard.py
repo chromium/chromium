@@ -454,7 +454,7 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
 def _OutputKeepRules(r8_path, input_paths, libraries, targets_re_string,
                      keep_rules_output):
 
-  cmd = build_utils.JavaCmd() + [
+  cmd = build_utils.JavaCmd(xmx='2G') + [
       '-cp', r8_path, 'com.android.tools.r8.tracereferences.TraceReferences',
       '--map-diagnostics:MissingDefinitionsDiagnostic', 'error', 'warning',
       '--keep-rules', '--output', keep_rules_output
@@ -472,7 +472,7 @@ def _OutputKeepRules(r8_path, input_paths, libraries, targets_re_string,
 
 
 def _CheckForMissingSymbols(options, dex_files, error_title):
-  cmd = build_utils.JavaCmd()
+  cmd = build_utils.JavaCmd(xmx='2G')
 
   if options.dump_inputs:
     cmd += [f'-Dcom.android.tools.r8.dumpinputtodirectory={_DUMP_DIR_NAME}']
