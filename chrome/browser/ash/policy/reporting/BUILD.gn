@@ -64,6 +64,7 @@ static_library("reporting") {
     "//chrome/browser/ash/arc/policy",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/settings",
     "//chrome/browser/policy/messaging_layer/proto:app_install_events_proto",
     "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
     "//chrome/browser/profiles:profile",

@@ -15,3 +15,9 @@ message SessionAffiliatedUser {
   // Email address associated with the account.
   optional string user_email = 1;
 }
+
+message SessionUnaffiliatedUser {
+  // Unique per-device user id. Used to track unaffiliated user activity on a
+  // given device without revealing the identity of the user.
+  optional string user_id = 1;
+}

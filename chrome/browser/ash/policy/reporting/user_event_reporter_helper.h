@@ -63,6 +63,14 @@ class UserEventReporterHelper {
 
   virtual bool IsCurrentUserNew() const;
 
+  virtual std::string GetDeviceDmToken() const;
+
+  // Generates a device-specific user ID for managed devices.
+  // Returns a unique ID based on the user's email if the device is managed.
+  // Otherwise, returns an empty string.
+  virtual std::string GetUniqueUserIdForThisDevice(
+      std::string_view user_email) const;
+
   // Returns the only valid seq task runner for calls to ShouldReportUser and
   // ReportingEnabled.
   static scoped_refptr<base::SequencedTaskRunner> valid_task_runner();

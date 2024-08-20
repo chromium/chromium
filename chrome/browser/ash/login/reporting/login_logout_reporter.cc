@@ -4,14 +4,19 @@
 
 #include "chrome/browser/ash/login/reporting/login_logout_reporter.h"
 
+#include "base/hash/md5.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/policy/messaging_layer/proto/synced/login_logout_event.pb.h"
+#include "chrome/browser/profiles/reporting_util.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
+#include "components/account_id/account_id.h"
 #include "components/policy/core/common/device_local_account_type.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -163,12 +168,17 @@ void LoginLogoutReporter::MaybeReportEvent(LoginLogoutRecord record,
   record.set_event_timestamp_sec(clock_->Now().ToTimeT());
   record.set_session_type(session_type);
   const std::string& user_email = account_id.GetUserEmail();
-  if (session_type == LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION ||
-      session_type == LoginLogoutSessionType::GUEST_SESSION) {
+  if (session_type == PUBLIC_ACCOUNT_SESSION || session_type == GUEST_SESSION) {
     record.set_is_guest_session(true);
-  } else if (session_type == LoginLogoutSessionType::REGULAR_USER_SESSION &&
-             reporter_helper_->ShouldReportUser(user_email)) {
-    record.mutable_affiliated_user()->set_user_email(user_email);
+  } else if (session_type == REGULAR_USER_SESSION) {
+    if (reporter_helper_->ShouldReportUser(user_email)) {
+      record.mutable_affiliated_user()->set_user_email(user_email);
+    } else {
+      // This is an unaffiliated user. We can't report any personal information
+      // about them, so we report a device-unique user id instead.
+      record.mutable_unaffiliated_user()->set_user_id(
+          reporter_helper_->GetUniqueUserIdForThisDevice(user_email));
+    }
   }
   reporter_helper_->ReportEvent(
       std::make_unique<LoginLogoutRecord>(std::move(record)),
