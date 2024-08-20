@@ -268,10 +268,9 @@ constexpr std::optional<size_t> ComputeCborArrayOverheadLen(
 }
 
 // Computes the length in bytes of a TEE-based payload's plaintext CBOR
-// serialization. Safely returns an invalid `base::CheckedNumeric` if the
-// computation would overflow, or if `num_contributions` exceeds the maximum
-// value of uint32_t . See `AggregationServicePayload` for the format's
-// definition.
+// serialization. Returns `std::nullopt` if the computation would overflow or if
+// `num_contributions` exceeds the maximum value of `uint32_t`. See
+// `AggregatableReport::AggregationServicePayload` for the format's definition.
 constexpr std::optional<size_t> ComputeTeeBasedPayloadLengthInBytes(
     size_t num_contributions,
     std::optional<size_t> filtering_id_max_bytes) {
