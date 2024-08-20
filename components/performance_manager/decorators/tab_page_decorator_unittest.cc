@@ -94,13 +94,10 @@ TEST_F(TabPageDecoratorTest, TestDiscarding) {
   EXPECT_NE(handle, nullptr);
   EXPECT_EQ(handle->page_node(), mock_graph.page.get());
 
-  auto new_page_node = TestNodeWrapper<PageNodeImpl>::Create(graph());
+  auto new_page_node = mock_graph.page->GetWeakPtr();
   EXPECT_CALL(*observer_, OnTabAboutToBeDiscarded(
                               mock_graph.page.get(),
                               Truly(TabHandleMatches(new_page_node.get()))))
-      .Times(1);
-  EXPECT_CALL(*observer_,
-              OnBeforeTabRemoved(Truly(TabHandleMatches(new_page_node.get()))))
       .Times(1);
 
   mock_graph.page->OnAboutToBeDiscarded(new_page_node->GetWeakPtr());

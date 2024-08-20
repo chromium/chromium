@@ -1032,4 +1032,12 @@ void FrameTree::FocusOuterFrameTrees() {
   }
 }
 
+void FrameTree::Discard() {
+  root()->set_was_discarded();
+  root()->current_frame_host()->DiscardFrame();
+  NavigationControllerImpl& navigation_controller = controller();
+  navigation_controller.SetNeedsReload();
+  navigation_controller.GetBackForwardCache().Flush();
+}
+
 }  // namespace content

@@ -2962,7 +2962,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, TestWasDiscarded) {
-  web_contents()->SetWasDiscarded(true);
+  web_contents()->Discard();
   NavigateAndCommit(GURL(kTestUrl1));
 
   // Simulate closing the tab.

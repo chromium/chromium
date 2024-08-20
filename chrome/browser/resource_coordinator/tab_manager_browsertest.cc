@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/resource_coordinator/tab_manager.h"
+
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -23,7 +25,6 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
-#include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/resource_coordinator/utils.h"
@@ -742,19 +743,10 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, DiscardedTabHasNoProcess) {
   ASSERT_TRUE(process);
   EXPECT_TRUE(process->IsInitializedAndNotDead());
   EXPECT_NE(base::kNullProcessHandle, process->GetProcess().Handle());
-  int renderer_id = process->GetID();
 
   // Discard the tab. This simulates a tab discard.
   TabLifecycleUnitExternal::FromWebContents(web_contents)
       ->DiscardTab(LifecycleUnitDiscardReason::URGENT);
-  content::WebContents* new_web_contents = tsm()->GetActiveWebContents();
-  EXPECT_NE(new_web_contents, web_contents);
-  web_contents = new_web_contents;
-  content::RenderProcessHost* new_process =
-      web_contents->GetPrimaryMainFrame()->GetProcess();
-  EXPECT_NE(new_process, process);
-  EXPECT_NE(new_process->GetID(), renderer_id);
-  process = new_process;
 
   // The renderer process should be dead after a discard.
   EXPECT_EQ(process, web_contents->GetPrimaryMainFrame()->GetProcess());

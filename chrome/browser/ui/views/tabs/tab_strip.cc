@@ -999,9 +999,11 @@ END_METADATA
 ///////////////////////////////////////////////////////////////////////////////
 // TabStrip, public:
 
-TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
+TabStrip::TabStrip(std::unique_ptr<TabStripController> controller,
+                   TabStripModel* model)
     : controller_(std::move(controller)),
-      hover_card_controller_(std::make_unique<TabHoverCardController>(this)),
+      hover_card_controller_(
+          std::make_unique<TabHoverCardController>(this, model)),
       drag_context_(*AddChildView(std::make_unique<TabDragContextImpl>(this))),
       tab_container_(
           *AddChildViewAt(MakeTabContainer(this,

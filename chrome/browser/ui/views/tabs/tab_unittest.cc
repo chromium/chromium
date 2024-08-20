@@ -245,7 +245,8 @@ class AlertIndicatorButtonTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     controller_ = new FakeBaseTabStripController;
-    tab_strip_ = new TabStrip(std::unique_ptr<TabStripController>(controller_));
+    tab_strip_ =
+        new TabStrip(std::unique_ptr<TabStripController>(controller_), nullptr);
     controller_->set_tab_strip(tab_strip_);
 
     // The tab strip must be added to the view hierarchy for it to create the

@@ -100,8 +100,6 @@ class TabLifecycleUnitSource : public BrowserListObserver,
                      content::WebContents* contents,
                      bool foreground);
   void OnTabDetached(content::WebContents* contents);
-  void OnTabReplaced(content::WebContents* old_contents,
-                     content::WebContents* new_contents);
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

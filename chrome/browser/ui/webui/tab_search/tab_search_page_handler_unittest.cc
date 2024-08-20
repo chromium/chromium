@@ -403,9 +403,9 @@ TEST_F(TabSearchPageHandlerTest, MediaTabsTest) {
           content::WebContents::CreateParams(profile())));
   content::WebContentsTester::For(test_web_contents.get())
       ->SetIsCurrentlyAudible(true);
-  AddTab(browser(), GURL(kTabUrl1));
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  tab_strip_model->DiscardWebContentsAt(0, std::move(test_web_contents));
+  tab_strip_model->AppendWebContents(std::move(test_web_contents),
+                                     /*foreground=*/true);
   NavigateAndCommitActiveTab(GURL(kTabUrl1));
   tab_search::mojom::PageHandler::GetProfileDataCallback callback =
       base::BindLambdaForTesting(
