@@ -9,9 +9,8 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
-
-class ChromeBrowserState;
 
 namespace signin {
 class IdentityManager;
