@@ -222,9 +222,6 @@ BASE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationReadAloudFeature,
 BASE_FEATURE(kIPHAppSpecificHistory,
              "IPH_AppSpecificHistory",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHAddToHomescreenMessageFeature,
-             "IPH_AddToHomescreenMessage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAutoDarkOptOutFeature,
              "IPH_AutoDarkOptOut",
              base::FEATURE_ENABLED_BY_DEFAULT);

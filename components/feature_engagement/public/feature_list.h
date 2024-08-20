@@ -64,8 +64,6 @@ DEFINE_VARIATION_PARAM(
 DEFINE_VARIATION_PARAM(
     kIPHAdaptiveButtonInTopToolbarCustomizationReadAloudFeature,
     "IPH_AdaptiveButtonInTopToolbarCustomization_ReadAloud");
-DEFINE_VARIATION_PARAM(kIPHAddToHomescreenMessageFeature,
-                       "IPH_AddToHomescreenMessage");
 DEFINE_VARIATION_PARAM(kIPHAutoDarkOptOutFeature, "IPH_AutoDarkOptOut");
 DEFINE_VARIATION_PARAM(kIPHAutoDarkUserEducationMessageFeature,
                        "IPH_AutoDarkUserEducationMessage");
@@ -511,7 +509,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
             kIPHAdaptiveButtonInTopToolbarCustomizationAddToBookmarksFeature),
         VARIATION_ENTRY(
             kIPHAdaptiveButtonInTopToolbarCustomizationReadAloudFeature),
-        VARIATION_ENTRY(kIPHAddToHomescreenMessageFeature),
         VARIATION_ENTRY(kIPHAndroidTabDeclutter),
         VARIATION_ENTRY(kIPHAutoDarkOptOutFeature),
         VARIATION_ENTRY(kIPHAutoDarkUserEducationMessageFeature),

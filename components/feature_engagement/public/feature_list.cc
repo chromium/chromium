@@ -28,7 +28,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHAdaptiveButtonInTopToolbarCustomizationAddToBookmarksFeature,
     &kIPHAdaptiveButtonInTopToolbarCustomizationTranslateFeature,
     &kIPHAdaptiveButtonInTopToolbarCustomizationReadAloudFeature,
-    &kIPHAddToHomescreenMessageFeature,
     &kIPHAutoDarkOptOutFeature,
     &kIPHAutoDarkUserEducationMessageFeature,
     &kIPHAutoDarkUserEducationMessageOptInFeature,
