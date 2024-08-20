@@ -22,6 +22,7 @@
 #include "base/token.h"
 #include "base/trace_event/named_trigger.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
+#include "content/browser/tracing/trace_report/trace_report.mojom.h"
 #include "content/browser/tracing/trace_report/trace_report_database.h"
 #include "content/browser/tracing/trace_report/trace_upload_list.h"
 #include "content/browser/tracing/tracing_scenario.h"
@@ -101,7 +102,7 @@ class BackgroundTracingManagerImpl
 
   CONTENT_EXPORT static BackgroundTracingManagerImpl& GetInstance();
 
-  BackgroundTracingManagerImpl();
+  CONTENT_EXPORT BackgroundTracingManagerImpl();
   ~BackgroundTracingManagerImpl() override;
 
   BackgroundTracingManagerImpl(const BackgroundTracingManagerImpl&) = delete;
@@ -121,11 +122,8 @@ class BackgroundTracingManagerImpl
   std::vector<std::string> AddPresetScenarios(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,
       DataFiltering data_filtering) override;
-  std::vector<std::pair<std::string, std::string>> GetAllPresetScenarios()
-      const override;
   bool SetEnabledScenarios(
       std::vector<std::string> enabled_scenarios_hashes) override;
-  std::vector<std::string> GetEnabledScenarios() const override;
 
   bool SetActiveScenario(std::unique_ptr<BackgroundTracingConfig>,
                          DataFiltering data_filtering) override;
@@ -145,6 +143,19 @@ class BackgroundTracingManagerImpl
                                BackgroundTracingRule* observer);
   void RemoveNamedTriggerObserver(const std::string& trigger_name,
                                   BackgroundTracingRule* observer);
+
+  // Returns the list of preset scenario hashes and names that were saved,
+  // whether or not enabled.
+  CONTENT_EXPORT std::vector<trace_report::mojom::ScenarioPtr>
+  GetAllFieldScenarios() const;
+  // Returns the list of field scenario hashes and names that were saved,
+  // whether or not enabled.
+  CONTENT_EXPORT std::vector<trace_report::mojom::ScenarioPtr>
+  GetAllPresetScenarios() const;
+
+  // Returns the list of scenario hashes that are currently enabled. These are
+  // either all preset scenarios or all field scenarios.
+  CONTENT_EXPORT std::vector<std::string> GetEnabledScenarios() const;
 
   bool HasTraceToUpload() override;
   void GetTraceToUpload(

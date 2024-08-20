@@ -1769,6 +1769,7 @@ test("content_browsertests") {
     "//content/browser/attribution_reporting:mojo_bindings",
     "//content/browser/attribution_reporting:registration_result_mojom",
     "//content/browser/background_sync:background_sync_proto",
+    "//content/browser/tracing/trace_report:mojo_bindings",
     "//content/child:for_content_tests",
     "//content/gpu",
     "//content/public/browser",
@@ -1865,9 +1866,7 @@ test("content_browsertests") {
   ]
 
   if (!(is_chromeos_ash && target_cpu == "arm64" && current_cpu == "arm")) {
-    deps += [
-      "//components/variations",
-    ]
+    deps += [ "//components/variations" ]
   }
 
   data_deps = [

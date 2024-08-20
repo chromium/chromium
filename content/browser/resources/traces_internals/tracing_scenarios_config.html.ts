@@ -6,33 +6,58 @@ import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {TracingScenariosConfigElement} from './tracing_scenarios_config.js';
 
-function getConfigHtml(this: TracingScenariosConfigElement) {
+function getPresetConfigHtml(this: TracingScenariosConfigElement) {
   // clang-format off
-  if (this.currentConfig_ === null || this.currentConfig_.length <= 0) {
+  if (this.presetConfig_ === null || this.presetConfig_.length <= 0) {
     return nothing;
   }
 
-  return this.currentConfig_.map((item, index) => html`
-    <div class="config-row">
-      <cr-checkbox ?checked="${item.selected}" data-index="${index}"
-          @checked-changed="${this.valueDidChange_}">
-        <div class="label">${item.scenarioName}</div>
-      </cr-checkbox>
-    </div>`);
+  return html`
+    <h2>Local Scenarios</h2>
+    <div class="config-container">
+    ${this.presetConfig_.map((item, index) => html`
+      <div class="config-row">
+        <cr-checkbox ?checked="${item.selected}" data-index="${index}"
+            @checked-changed="${this.valueDidChange_}">
+          <div class="label">${item.scenarioName}</div>
+        </cr-checkbox>
+      </div>`)}
+    </div>`;
   // clang-format on
 }
 
+function getFieldConfigHtml(this: TracingScenariosConfigElement) {
+  // clang-format off
+  if (this.fieldConfig_ === null || this.fieldConfig_.length <= 0) {
+    return nothing;
+  }
+
+  // Field scenario checkboxes are always disabled because the can't be modified
+  // individually.
+  return html`
+    <h2>Field Scenarios</h2>
+    <div class="config-container">
+    ${this.fieldConfig_.map((item, index) => html`
+      <div class="config-row">
+        <cr-checkbox ?checked="${item.selected}" data-index="${index}" disabled>
+          <div class="label">${item.scenarioName}</div>
+        </cr-checkbox>
+      </div>`)}
+    </div>`;
+  // clang-format on
+}
 
 export function getHtml(this: TracingScenariosConfigElement) {
   // clang-format off
   return html`
-  <h1>Local tracing configuration</h1>
+  <h1>Tracing configuration</h1>
   <h3>
     This configuration is designed for local trace collection, enabling you to
     capture detailed information about application execution on your machine.
   </h3>
   ${this.isLoading_ ? html`<div class="spinner"></div>` : html`
-  <div class="config-container">${getConfigHtml.bind(this)()}</div>
+  ${getFieldConfigHtml.bind(this)()}
+  ${getPresetConfigHtml.bind(this)()}
   <div class="action-panel">
     <cr-button class="cancel-button" ?disabled="${!this.isEdited_}"
         @click="${this.onCancelClick_}">
@@ -40,7 +65,7 @@ export function getHtml(this: TracingScenariosConfigElement) {
     </cr-button>
     <cr-button class="action-button" ?disabled="${!this.hasSelectedConfig_()}"
         @click="${this.clearAllClick_}">
-      Clear All Selected
+      Clear
     </cr-button>
     <cr-button class="action-button" ?disabled="${!this.isEdited_}"
         @click="${this.onConfirmClick_}">

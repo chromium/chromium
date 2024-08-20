@@ -558,11 +558,26 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
   return added_scenarios;
 }
 
-std::vector<std::pair<std::string, std::string>>
+std::vector<trace_report::mojom::ScenarioPtr>
+BackgroundTracingManagerImpl::GetAllFieldScenarios() const {
+  std::vector<trace_report::mojom::ScenarioPtr> result;
+  for (const auto& scenario : field_scenarios_) {
+    auto new_scenario = trace_report::mojom::Scenario::New();
+    new_scenario->hash = scenario->config_hash();
+    new_scenario->scenario_name = scenario->scenario_name();
+    result.push_back(std::move(new_scenario));
+  }
+  return result;
+}
+
+std::vector<trace_report::mojom::ScenarioPtr>
 BackgroundTracingManagerImpl::GetAllPresetScenarios() const {
-  std::vector<std::pair<std::string, std::string>> result;
+  std::vector<trace_report::mojom::ScenarioPtr> result;
   for (const auto& scenario : preset_scenarios_) {
-    result.emplace_back(scenario.first, scenario.second->scenario_name());
+    auto new_scenario = trace_report::mojom::Scenario::New();
+    new_scenario->hash = scenario.first;
+    new_scenario->scenario_name = scenario.second->scenario_name();
+    result.push_back(std::move(new_scenario));
   }
   return result;
 }
