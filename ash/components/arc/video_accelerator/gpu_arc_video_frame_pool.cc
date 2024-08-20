@@ -269,20 +269,14 @@ void GpuArcVideoFramePool::RequestFrames(
   // Send a request for new video frames to our mojo client.
   media::VideoPixelFormat format = fourcc.ToVideoPixelFormat();
 
-  if (pool_client_version_.value() >= kMinVersionForRequestFramesAck) {
-    CHECK(!awaiting_request_frames_ack_);
-    awaiting_request_frames_ack_ = true;
+  CHECK_GE(pool_client_version_.value(), kMinVersionForRequestFramesAck);
+  CHECK(!awaiting_request_frames_ack_);
+  awaiting_request_frames_ack_ = true;
 
-    pool_client_->RequestVideoFrames(
-        format, coded_size, visible_rect, max_num_frames,
-        base::BindOnce(&GpuArcVideoFramePool::OnRequestVideoFramesDone,
-                       weak_this_));
-  } else {
-    // TODO(b/321171964): remove once new RequestVideoFrames() change for all
-    // endpoints (chromium, ARC++, libvda) has reached all channels.
-    pool_client_->DEPRECATED_RequestVideoFrames(format, coded_size,
-                                                visible_rect, max_num_frames);
-  }
+  pool_client_->RequestVideoFrames(
+      format, coded_size, visible_rect, max_num_frames,
+      base::BindOnce(&GpuArcVideoFramePool::OnRequestVideoFramesDone,
+                     weak_this_));
 
   // Let the owner of the video frame pool know new frames were requested.
   request_frames_cb_.Run();
