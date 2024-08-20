@@ -34087,6 +34087,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="99" label="StructuredClone"/>
   <int value="100" label="SlotAssign"/>
   <int value="101" label="Masks"/>
+  <int value="102" label="DeviceOrientationEvents"/>
+  <int value="103" label="DRAFT_Gamepad"/>
+  <int value="104" label="ScreenWakeLock"/>
+  <int value="105" label="WebBluetooth"/>
+  <int value="106" label="WebNfc"/>
+  <int value="107" label="DRAFT_Serial"/>
 </enum>
 
 <enum name="WebFontCacheHit">

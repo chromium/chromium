@@ -155,6 +155,12 @@ enum WebDXFeature {
   kStructuredClone = 99,
   kSlotAssign = 100,
   kMasks = 101,
+  kDeviceOrientationEvents = 102,
+  kDRAFT_Gamepad = 103,
+  kScreenWakeLock = 104,
+  kWebBluetooth = 105,
+  kWebNfc = 106,
+  kDRAFT_Serial = 107,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
