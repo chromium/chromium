@@ -14,8 +14,12 @@
 #include "ash/shell.h"
 #include "base/strings/string_util.h"
 #include "base/time/time_override.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
+#include "components/history/core/browser/history_database_params.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/test/history_service_test_util.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -65,6 +69,20 @@ void TogglePickerByAccelerator() {
   ui_controls::SendKeyPress(/*window=*/nullptr, ui::VKEY_F,
                             /*control=*/false, /*shift=*/false,
                             /*alt=*/false, /*command=*/true);
+}
+
+void AddUrlToHistory(Profile* profile,
+                     GURL url,
+                     base::Time last_visit = base::Time::Now()) {
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  history_service->AddPageWithDetails(url, /*title=*/u"", /*visit_count=*/1,
+                                      /*typed_count=*/1,
+                                      /*last_visit=*/last_visit,
+                                      /*hidden=*/false,
+                                      history::SOURCE_BROWSED);
+  history::BlockUntilHistoryProcessesPendingRequests(history_service);
 }
 
 class PickerInteractiveUiTest : public InteractiveAshTest {
@@ -277,6 +295,43 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchGifs) {
       WaitForShow(ash::kPickerGifElementId),
       PressButton(ash::kPickerGifElementId), WaitForHide(ash::kPickerElementId),
       WaitForShow(ash::kEmojiPickerElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchBrowsingHistory) {
+  AddUrlToHistory(GetActiveUserProfile(), GURL("https://foo.com/history"));
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
+  constexpr std::string_view kHistoryResultName = "HistoryResult";
+  views::Textfield* picker_search_field = nullptr;
+
+  RunTestSequence(
+      InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
+                                       WaitForWebInputFieldFocus())),
+      Do([]() { TogglePickerByAccelerator(); }),
+      AfterShow(ash::kPickerSearchFieldTextfieldElementId,
+                [&picker_search_field](ui::TrackedElement* el) {
+                  picker_search_field = AsView<views::Textfield>(el);
+                }),
+      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      WaitForState(kSearchFieldFocusedState, true),
+      EnterText(ash::kPickerSearchFieldTextfieldElementId, u"foo.com"),
+      WaitForShow(ash::kPickerSearchResultsListItemElementId,
+                  /*transition_only_on_event=*/true),
+      NameDescendantView(
+          ash::kPickerSearchResultsPageElementId, kHistoryResultName,
+          base::BindLambdaForTesting([](const views::View* view) {
+            if (const auto* list_item_view =
+                    views::AsViewClass<ash::PickerListItemView>(view)) {
+              return list_item_view->GetPrimaryTextForTesting() ==
+                     u"foo.com/history";
+            }
+            return false;
+          })),
+      PressButton(kHistoryResultName), WaitForHide(ash::kPickerElementId),
+      InContext(browser_context,
+                WaitForWebInputFieldValue(u"https://foo.com/history")));
 }
 
 // Searches for 'today', checks the top result is the date, and inserts it
