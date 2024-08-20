@@ -5,9 +5,7 @@
 package org.chromium.chrome.browser.ui.android.digital_credentials;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
@@ -31,7 +29,9 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.digital_credentials.DigitalIdentityInterstitialClosedReason;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.webid.DigitalIdentityProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -275,8 +275,9 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
     }
 
     /**
-     * Test that the interstitial is updated to indicate that the credential request has been
-     * canceled if the page navigates while the interstitial is showing.
+     * Test that the DigitalIdentityInterstitialClosedReason.PAGE_NAVIGATED is recorded for
+     * Blink.DigitalIdentityInterstitialClosedReason if the page navigates while the interstitial is
+     * showing.
      */
     @Test
     @LargeTest
@@ -284,7 +285,11 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
         "BackForwardCacheMemoryControls",
         "WebIdentityDigitalCredentials:dialog/high_risk"
     })
-    public void testDialogUpdatedIfPageNavigatesWhileDialogIsUp() throws TimeoutException {
+    public void testCloseReasonUmaRecorded_PageNavigates() throws TimeoutException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Blink.DigitalIdentityRequest.InterstitialClosedReason",
+                        DigitalIdentityInterstitialClosedReason.PAGE_NAVIGATED);
         addModalDialogObserver(
                 R.string.digital_identity_interstitial_high_risk_dialog_text,
                 /* pressButtonOnShow= */ false);
@@ -294,21 +299,38 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
                 () -> {
                     return mModalDialogObserver.wasDialogShown();
                 });
-        assertNull(
-                mModalDialogObserver
-                        .getDialogPropertyModel()
-                        .get(ModalDialogProperties.MESSAGE_PARAGRAPH_2));
 
         // Navigating the page should update the interstitial's UI.
         mActivityTestRule.loadUrl(mTestServer.getURL("/chrome/test/data/android/simple.html"));
-        assertEquals(
-                getActivity()
-                        .getString(
-                                R.string.digital_identity_interstitial_request_aborted_dialog_text,
-                                getPageOriginString()),
-                mModalDialogObserver
-                        .getDialogPropertyModel()
-                        .get(ModalDialogProperties.MESSAGE_PARAGRAPH_2)
-                        .toString());
+
+        histogramWatcher.assertExpected();
+    }
+
+    /**
+     * Test that Blink.DigitalIdentityInterstitialClosedReason UMA is recorded when the interstitial
+     * dialog is closed for a different reason.
+     */
+    @Test
+    @LargeTest
+    @EnableFeatures({
+        "BackForwardCacheMemoryControls",
+        "WebIdentityDigitalCredentials:dialog/high_risk"
+    })
+    public void testCloseReasonUmaRecorded_Other() throws TimeoutException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Blink.DigitalIdentityRequest.InterstitialClosedReason",
+                        DigitalIdentityInterstitialClosedReason.OK_BUTTON);
+        addModalDialogObserver(
+                R.string.digital_identity_interstitial_high_risk_dialog_text,
+                /* pressButtonOnShow= */ true);
+
+        DOMUtils.clickNode(mActivityTestRule.getWebContents(), "request_age_and_name_button");
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    return mModalDialogObserver.wasDialogShown();
+                });
+
+        histogramWatcher.assertExpected();
     }
 }

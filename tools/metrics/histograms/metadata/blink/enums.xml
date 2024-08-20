@@ -217,6 +217,13 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="(obsolete) kImageJXL"/>
 </enum>
 
+<enum name="DigitalIdentityInterstitialClosedReason">
+  <int value="0" label="kOther"/>
+  <int value="1" label="kOkButton"/>
+  <int value="2" label="kCancelButton"/>
+  <int value="3" label="kPageNavigated"/>
+</enum>
+
 <enum name="DigitalIdentityRequestStatus">
   <int value="0" label="kSuccess"/>
   <int value="1" label="kErrorOther"/>

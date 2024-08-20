@@ -60,32 +60,6 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   void Abort() override;
 
  private:
-  // Notifies callback if the passed-in WebContents no longer uses the
-  // passed-in RenderFrameHost or the passed-in RenderFrameHost becomes
-  // inactive.
-  class RenderFrameHostLifecycleObserver : public WebContentsObserver {
-   public:
-    RenderFrameHostLifecycleObserver(
-        const raw_ptr<WebContents> web_contents,
-        raw_ptr<RenderFrameHost> render_frame_host,
-        DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback
-            abort_callback);
-    ~RenderFrameHostLifecycleObserver() override;
-
-   private:
-    // WebContentsObserver:
-    void RenderFrameHostChanged(RenderFrameHost* old_host,
-                                RenderFrameHost* new_host) override;
-    void RenderFrameHostStateChanged(
-        content::RenderFrameHost* rfh,
-        content::RenderFrameHost::LifecycleState old_state,
-        content::RenderFrameHost::LifecycleState new_state) override;
-
-    const raw_ptr<RenderFrameHost> render_frame_host_;
-    DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback
-        abort_callback_;
-  };
-
   DigitalIdentityRequestImpl(
       RenderFrameHost&,
       mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest>);
@@ -130,11 +104,6 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   // request has been aborted.
   DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback
       update_interstitial_on_abort_callback_;
-
-  // Updates interstitial to indicate that credential request was canceled when
-  // page navigation occurs.
-  std::unique_ptr<RenderFrameHostLifecycleObserver>
-      render_frame_host_lifecycle_observer_;
 
   base::WeakPtrFactory<DigitalIdentityRequestImpl> weak_ptr_factory_{this};
 };

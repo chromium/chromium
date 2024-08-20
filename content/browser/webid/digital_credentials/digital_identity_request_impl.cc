@@ -194,40 +194,6 @@ Protocol GetProtocol(const std::optional<std::string>& protocol_name) {
 
 }  // anonymous namespace
 
-DigitalIdentityRequestImpl::RenderFrameHostLifecycleObserver::
-    RenderFrameHostLifecycleObserver(
-        const raw_ptr<WebContents> web_contents,
-        const raw_ptr<RenderFrameHost> render_frame_host,
-        DigitalIdentityInterstitialAbortCallback abort_callback)
-    : WebContentsObserver(web_contents),
-      render_frame_host_(render_frame_host),
-      abort_callback_(std::move(abort_callback)) {}
-
-DigitalIdentityRequestImpl::RenderFrameHostLifecycleObserver::
-    ~RenderFrameHostLifecycleObserver() = default;
-
-void DigitalIdentityRequestImpl::RenderFrameHostLifecycleObserver::
-    RenderFrameHostStateChanged(
-        content::RenderFrameHost* rfh,
-        content::RenderFrameHost::LifecycleState old_state,
-        content::RenderFrameHost::LifecycleState new_state) {
-  if (rfh != render_frame_host_.get() ||
-      new_state == content::RenderFrameHost::LifecycleState::kActive ||
-      !abort_callback_) {
-    return;
-  }
-  std::move(abort_callback_).Run();
-}
-
-void DigitalIdentityRequestImpl::RenderFrameHostLifecycleObserver::
-    RenderFrameHostChanged(RenderFrameHost* old_host,
-                           RenderFrameHost* new_host) {
-  if (old_host != render_frame_host_.get() || !abort_callback_) {
-    return;
-  }
-  std::move(abort_callback_).Run();
-}
-
 // static
 void DigitalIdentityRequestImpl::Create(
     RenderFrameHost& host,
@@ -291,7 +257,6 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   provider_.reset();
-  render_frame_host_lifecycle_observer_.reset();
   update_interstitial_on_abort_callback_.Reset();
 
   base::UmaHistogramEnumeration("Blink.DigitalIdentityRequest.Status",
@@ -357,12 +322,6 @@ void DigitalIdentityRequestImpl::Request(
     CompleteRequest(base::unexpected(RequestStatusForMetrics::kErrorOther));
     return;
   }
-
-  render_frame_host_lifecycle_observer_.reset(
-      new RenderFrameHostLifecycleObserver(
-          web_contents, render_frame_host_ptr,
-          base::BindOnce(&DigitalIdentityRequestImpl::Abort,
-                         weak_ptr_factory_.GetWeakPtr())));
 
   Protocol protocol = GetProtocol(digital_credential_provider->protocol);
   std::optional<std::string> request_json_string =
