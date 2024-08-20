@@ -2011,7 +2011,7 @@
                } ]
             }, {
                "app_scope": "/banners/link_capturing/scope_a/",
-               "browser_type": "TYPE_APP",
+               "browser_type": "TYPE_APP_POPUP",
                "tabs": [ {
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html",
@@ -2088,7 +2088,7 @@
                } ]
             }, {
                "app_scope": "/banners/link_capturing/scope_a/",
-               "browser_type": "TYPE_APP",
+               "browser_type": "TYPE_APP_POPUP",
                "tabs": [ {
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html",
@@ -2615,7 +2615,7 @@
                } ]
             }, {
                "app_scope": "/banners/link_capturing/scope_a/",
-               "browser_type": "TYPE_APP",
+               "browser_type": "TYPE_APP_POPUP",
                "tabs": [ {
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html",
@@ -2692,7 +2692,7 @@
                } ]
             }, {
                "app_scope": "/banners/link_capturing/scope_a/",
-               "browser_type": "TYPE_APP",
+               "browser_type": "TYPE_APP_POPUP",
                "tabs": [ {
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html",

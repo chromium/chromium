@@ -577,9 +577,10 @@ Browser* CreateWebAppWindowMaybeWithHomeTab(
 
 Browser* CreateWebAppWindowFromNavigationParams(
     const webapps::AppId& app_id,
-    const NavigateParams& navigate_params) {
+    const NavigateParams& navigate_params,
+    bool should_create_app_popup = false) {
   Browser::CreateParams app_browser_params = CreateParamsForApp(
-      app_id, /*is_popup=*/false, /*trusted_source=*/true,
+      app_id, should_create_app_popup, /*trusted_source=*/true,
       navigate_params.window_features.bounds,
       navigate_params.initiating_profile, navigate_params.user_gesture);
   Browser* created_browser =
@@ -994,7 +995,8 @@ std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
   if (IsAuxiliaryBrowsingContext(params)) {
     if (current_browser_app_id.has_value()) {
       Browser* app_window = CreateWebAppWindowFromNavigationParams(
-          *current_browser_app_id, params);
+          *current_browser_app_id, params,
+          params.disposition == WindowOpenDisposition::NEW_POPUP);
       return std::pair(app_window, -1);
     }
     return std::nullopt;
