@@ -3258,6 +3258,7 @@ if (!is_android) {
         "//chrome/browser/ui/web_applications:app_service_browser_tests",
         "//chrome/browser/web_applications:app_service_browser_tests",
         "//components/live_caption:live_translate",
+        "//components/plus_addresses:blocklist_data",
       ]
       if (!is_win || target_cpu != "arm64") {
         # SODA doesn't support Windows on Arm64, and Lacros delegates rendering

@@ -63,7 +63,9 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/plus_addresses/blocked_facets.pb.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_blocklist_data.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -1673,7 +1675,7 @@ INSTANTIATE_TEST_SUITE_P(
 class PlusAddressContextMenuManagerTest
     : public SigninBrowserTestBaseT<BaseAutofillContextMenuManagerTest> {
  public:
-  static constexpr char kExcludedDomainEtldPlus1[] = "muh.mah";
+  static constexpr char kExcludedDomainRegex[] = "muh\\.mah$";
   static constexpr char kExcludedDomainUrl[] = "https://muh.mah";
 
   PlusAddressContextMenuManagerTest() {
@@ -1682,10 +1684,9 @@ class PlusAddressContextMenuManagerTest
         /*enabled_features=*/
         {{plus_addresses::features::kPlusAddressesEnabled,
           {{plus_addresses::features::kEnterprisePlusAddressServerUrl.name,
-            "https://foo.bar"},
-           {plus_addresses::features::kPlusAddressExcludedSites.name,
-            kExcludedDomainEtldPlus1}}},
+            "https://foo.bar"}}},
          {plus_addresses::features::kPlusAddressFallbackFromContextMenu, {}},
+         {plus_addresses::features::kPlusAddressBlocklistEnabled, {}},
          {syncer::kSyncPlusAddress, {}}},
         /*disabled_features=*/{});
   }
@@ -1774,6 +1775,11 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest,
 
 // Tests that no Plus Address fallbacks are added on excluded domains.
 IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, ExcludedDomain) {
+  plus_addresses::CompactPlusAddressBlockedFacets blocked_facets;
+  blocked_facets.set_exclusion_pattern(kExcludedDomainRegex);
+  plus_addresses::PlusAddressBlocklistData::GetInstance()
+      .PopulateDataFromComponent(blocked_facets.SerializeAsString());
+
   FormData form = CreateAndAttachClassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
