@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "components/network_time/time_tracker.h"
 #include "url/gurl.h"
 
 class PrefRegistrySimple;
@@ -171,6 +172,8 @@ class NetworkTimeTracker {
 
   base::TimeDelta GetTimerDelayForTesting() const;
 
+  void ClearNetworkTimeForTesting();
+
  private:
   // Checks whether a network time query should be issued, and issues one if so.
   // Upon response, execution resumes in |OnURLFetchComplete|.
@@ -211,29 +214,13 @@ class NetworkTimeTracker {
 
   raw_ptr<PrefService> pref_service_;
 
-  // Network time based on last call to UpdateNetworkTime().
-  mutable base::Time network_time_at_last_measurement_;
-
-  // The estimated local times that correspond with |network_time_|. Assumes
-  // the actual network time measurement was performed midway through the
-  // latency time.  See UpdateNetworkTime(...) implementation for details.  The
-  // tick clock is the one actually used to return values to callers, but both
-  // clocks must agree to within some tolerance.
-  base::Time time_at_last_measurement_;
-  base::TimeTicks ticks_at_last_measurement_;
-
-  // Uncertainty of |network_time_| based on added inaccuracies/resolution.  See
-  // UpdateNetworkTime(...) implementation for details.
-  base::TimeDelta network_time_uncertainty_;
-
   // True if any time query has completed (but not necessarily succeeded) in
   // this NetworkTimeTracker's lifetime.
   bool time_query_completed_;
 
   // The time that was received from the last network time fetch made by
-  // CheckTime(). Unlike |network_time_at_least_measurement_|, this time
-  // is not updated when UpdateNetworkTime() is called. Used for UMA
-  // metrics.
+  // CheckTime(). Unlike the time used inside |tracker_| this time is not
+  // updated when UpdateNetworkTime() is called. Used for UMA metrics.
   base::Time last_fetched_time_;
 
   // Callbacks to run when the in-progress time fetch completes.
@@ -242,6 +229,8 @@ class NetworkTimeTracker {
   base::ThreadChecker thread_checker_;
 
   std::optional<FetchBehavior> fetch_behavior_;
+
+  std::optional<TimeTracker> tracker_;
 };
 
 }  // namespace network_time

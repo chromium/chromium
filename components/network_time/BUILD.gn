@@ -8,6 +8,8 @@ static_library("network_time") {
     "network_time_pref_names.h",
     "network_time_tracker.cc",
     "network_time_tracker.h",
+    "time_tracker.cc",
+    "time_tracker.h",
   ]
 
   deps = [
@@ -24,7 +26,10 @@ static_library("network_time") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "network_time_tracker_unittest.cc" ]
+  sources = [
+    "network_time_tracker_unittest.cc",
+    "time_tracker_unittest.cc",
+  ]
 
   deps = [
     ":network_time",
