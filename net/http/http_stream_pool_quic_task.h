@@ -66,6 +66,7 @@ class HttpStreamPool::QuicTask : public QuicSessionAttempt::Delegate {
   const raw_ptr<Job> job_;
   const QuicSessionAliasKey quic_session_alias_key_;
   const quic::ParsedQuicVersion quic_version_;
+  const NetLogWithSource net_log_;
 
   // TODO(crbug.com/346835898): Support multiple attempts.
   std::unique_ptr<QuicSessionAttempt> session_attempt_;

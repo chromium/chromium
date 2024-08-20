@@ -17,6 +17,8 @@
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_job.h"
+#include "net/log/net_log_source_type.h"
+#include "net/log/net_log_with_source.h"
 #include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_key.h"
 #include "net/quic/quic_session_pool.h"
@@ -29,13 +31,27 @@ HttpStreamPool::QuicTask::QuicTask(Job* job,
     : job_(job),
       quic_session_alias_key_(job_->group()->stream_key().destination(),
                               quic_session_key()),
-      quic_version_(quic_version) {
+      quic_version_(quic_version),
+      net_log_(NetLogWithSource::Make(
+          job->net_log().net_log(),
+          NetLogSourceType::HTTP_STREAM_POOL_QUIC_TASK)) {
   CHECK(job_);
   CHECK(service_endpoint_request());
   CHECK(service_endpoint_request()->EndpointsCryptoReady());
+
+  net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_POOL_QUIC_TASK_ALIVE, [&] {
+    base::Value::Dict dict;
+    dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version_));
+    job_->net_log().source().AddToEventParameters(dict);
+    return dict;
+  });
+  job_->net_log().AddEventReferencingSource(
+      NetLogEventType::HTTP_STREAM_POOL_JOB_QUIC_TASK_BOUND, net_log_.source());
 }
 
-HttpStreamPool::QuicTask::~QuicTask() = default;
+HttpStreamPool::QuicTask::~QuicTask() {
+  net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_QUIC_TASK_ALIVE);
+}
 
 void HttpStreamPool::QuicTask::MaybeAttempt() {
   CHECK(!quic_session_pool()->CanUseExistingSession(
@@ -75,6 +91,9 @@ void HttpStreamPool::QuicTask::MaybeAttempt() {
   std::set<std::string> dns_aliases =
       service_endpoint_request()->GetDnsAliasResults();
 
+  net_log_.AddEvent(NetLogEventType::HTTP_STREAM_POOL_QUIC_ATTEMPT_START,
+                    [&] { return quic_endpoint->ToValue(); });
+
   session_attempt_ = quic_session_pool()->CreateSessionAttempt(
       this, quic_session_key(), std::move(*quic_endpoint), cert_verify_flags,
       dns_resolution_start_time, dns_resolution_end_time,
@@ -98,7 +117,7 @@ const QuicSessionAliasKey& HttpStreamPool::QuicTask::GetKey() {
 }
 
 const NetLogWithSource& HttpStreamPool::QuicTask::GetNetLog() {
-  return job_->net_log();
+  return net_log_;
 }
 
 const HttpStreamKey& HttpStreamPool::QuicTask::stream_key() const {
@@ -164,6 +183,9 @@ std::optional<IPEndPoint> HttpStreamPool::QuicTask::GetPreferredIPEndPoint(
 }
 
 void HttpStreamPool::QuicTask::OnSessionAttemptComplete(int rv) {
+  net_log_.AddEventWithNetErrorCode(
+      NetLogEventType::HTTP_STREAM_POOL_QUIC_ATTEMPT_END, rv);
+
   // TODO(crbug.com/346835898): Attempt other endpoints when failed.
   quic_session_pool()->set_is_quic_known_to_work_on_current_network(rv == OK);
   session_attempt_.reset();

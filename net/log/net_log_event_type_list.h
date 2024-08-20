@@ -1433,6 +1433,34 @@ EVENT_TYPE(HTTP_STREAM_POOL_JOB_ATTEMPT_END)
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_JOB_STREAM_ATTEMPT_DELAY_PASSED)
 
+// Records on an HttpStreamPool::Job's NetLog to indicate that an
+// HttpStreamPool::QuicTask is bound to the job.
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_QUIC_TASK_BOUND)
+
+// Marks the start/end of a HttpStreamPool::QuicTask.
+// For the BEGIN event, the event parameters are:
+//   {
+//     "quic_version": <The known QUIC version>,
+//     "source_dependency": <The source identifier of the parent job>
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_QUIC_TASK_ALIVE)
+
+// Emitted when an HttpStreamPool::QuicTask started a QuicSessionAttempt.
+// The event parameters are:
+//   {
+//     "quic_version": <The QUIC version of the attempt>,
+//     "ip_endpoint": <The IPEndPoint to connect>,
+//     "metadata": <ConnectionEndpointMetadata of the attempt>
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_QUIC_ATTEMPT_START)
+
+// Emitted when an HttpStreamPool::QuicTask received completion from a
+// QuicSessionAttempt. The event parameter is:
+//   {
+//      "net_error": <Net error code integer>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_QUIC_ATTEMPT_END)
+
 // ------------------------------------------------------------------------
 // HttpNetworkTransaction
 // ------------------------------------------------------------------------
