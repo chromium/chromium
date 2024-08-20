@@ -43,7 +43,6 @@ bool ImageToBufferCopier::EnsureDestImage(const gfx::Size& size) {
          gpu::SHARED_IMAGE_USAGE_GLES2_WRITE, "ImageToBufferCopier"},
         gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT);
     CHECK(dest_shared_image_);
-    gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
   }
   return true;
 }
@@ -60,14 +59,13 @@ ImageToBufferCopier::CopyImage(Image* image) {
     return {};
 
   // Bind the write framebuffer to copy image.
-  GLuint dest_texture_id = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(
-      dest_shared_image_->mailbox().name);
-  gl_->BeginSharedImageAccessDirectCHROMIUM(
-      dest_texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+  auto dest_si_texture = dest_shared_image_->CreateGLTexture(gl_);
+  auto dest_scoped_si_access =
+      dest_si_texture->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
 
   GLenum target = GL_TEXTURE_2D;
   {
-    gl_->BindTexture(target, dest_texture_id);
+    gl_->BindTexture(target, dest_scoped_si_access->texture_id());
     gl_->TexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     gl_->TexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     gl_->TexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -88,20 +86,18 @@ ImageToBufferCopier::CopyImage(Image* image) {
   gl_->BeginSharedImageAccessDirectCHROMIUM(
       source_texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
 
-  gl_->CopySubTextureCHROMIUM(source_texture_id, 0, GL_TEXTURE_2D,
-                              dest_texture_id, 0, 0, 0, 0, 0, size.width(),
-                              size.height(), false, false, false);
+  gl_->CopySubTextureCHROMIUM(
+      source_texture_id, 0, GL_TEXTURE_2D, dest_scoped_si_access->texture_id(),
+      0, 0, 0, 0, 0, size.width(), size.height(), false, false, false);
 
   // Cleanup the read framebuffer and texture.
   gl_->EndSharedImageAccessDirectCHROMIUM(source_texture_id);
   gl_->DeleteTextures(1, &source_texture_id);
 
   // Cleanup the draw framebuffer and texture.
-  gl_->EndSharedImageAccessDirectCHROMIUM(dest_texture_id);
-  gl_->DeleteTextures(1, &dest_texture_id);
-
-  gpu::SyncToken sync_token;
-  gl_->GenSyncTokenCHROMIUM(sync_token.GetData());
+  gpu::SyncToken sync_token = gpu::SharedImageTexture::ScopedAccess::EndAccess(
+      std::move(dest_scoped_si_access));
+  dest_si_texture.reset();
 
   static_image->UpdateSyncToken(sync_token);
 
