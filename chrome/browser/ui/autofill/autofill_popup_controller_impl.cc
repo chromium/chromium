@@ -231,11 +231,7 @@ void AutofillPopupControllerImpl::Show(
   should_ignore_mouse_observed_outside_item_bounds_check_ =
       trigger_source_ ==
       AutofillSuggestionTriggerSource::kManualFallbackAddress;
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillPopupMeasureTimeAfterPaint)) {
-    barrier_for_accepting_.reset();
-  }
+  barrier_for_accepting_.reset();
 
   if (view_) {
     OnSuggestionsChanged();
@@ -268,12 +264,6 @@ void AutofillPopupControllerImpl::Show(
     // We only fire the event when a new popup shows. We do not fire the
     // event when suggestions changed.
     FireControlsChangedEvent(true);
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillPopupMeasureTimeAfterPaint)) {
-    barrier_for_accepting_ = NextIdleBarrier::CreateNextIdleBarrierWithDelay(
-        kIgnoreEarlyClicksOnSuggestionsDuration);
   }
 
   if (IsRootPopup()) {
@@ -844,8 +834,6 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
 }
 
 void AutofillPopupControllerImpl::OnPopupPainted() {
-  CHECK(base::FeatureList::IsEnabled(
-      features::kAutofillPopupMeasureTimeAfterPaint));
   if (!barrier_for_accepting_) {
     barrier_for_accepting_ = NextIdleBarrier::CreateNextIdleBarrierWithDelay(
         kIgnoreEarlyClicksOnSuggestionsDuration);

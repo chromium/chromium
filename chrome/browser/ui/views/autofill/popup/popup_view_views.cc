@@ -239,8 +239,7 @@ void PopupViewViews::OnMouseExited(const ui::MouseEvent& event) {
 
 void PopupViewViews::OnPaint(gfx::Canvas* canvas) {
   views::View::OnPaint(canvas);
-  if (controller_ && base::FeatureList::IsEnabled(
-                         features::kAutofillPopupMeasureTimeAfterPaint)) {
+  if (controller_) {
     controller_->OnPopupPainted();
   }
 }
