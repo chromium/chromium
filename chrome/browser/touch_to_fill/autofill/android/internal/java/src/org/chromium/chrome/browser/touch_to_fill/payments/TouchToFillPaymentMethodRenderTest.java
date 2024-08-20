@@ -163,34 +163,38 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* value= */ "FR7630006000011234567890189");
     private static final AutofillSuggestion VISA_SUGGESTION =
             createCreditCardSuggestion(
-                    VISA.getName(), VISA.getNumber(), /* applyDeactivatedStyle= */ false);
+                    VISA.getCardNameForAutofillDisplay(),
+                    VISA.getObfuscatedLastFourDigits(),
+                    /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion MASTERCARD_SUGGESTION =
             createCreditCardSuggestion(
-                    MASTERCARD.getName(),
-                    MASTERCARD.getNumber(),
+                    MASTERCARD.getCardNameForAutofillDisplay(),
+                    MASTERCARD.getObfuscatedLastFourDigits(),
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion SERVER_MASTERCARD_SUGGESTION =
             createCreditCardSuggestion(
-                    SERVER_MASTERCARD.getName(),
-                    SERVER_MASTERCARD.getNumber(),
+                    SERVER_MASTERCARD.getCardNameForAutofillDisplay(),
+                    SERVER_MASTERCARD.getObfuscatedLastFourDigits(),
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion DISCOVER_SUGGESTION =
             createCreditCardSuggestion(
-                    DISCOVER.getName(), DISCOVER.getNumber(), /* applyDeactivatedStyle= */ false);
+                    DISCOVER.getCardNameForAutofillDisplay(),
+                    DISCOVER.getObfuscatedLastFourDigits(),
+                    /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion AMERICAN_EXPRESS_SUGGESTION =
             createCreditCardSuggestion(
-                    AMERICAN_EXPRESS.getName(),
-                    AMERICAN_EXPRESS.getNumber(),
+                    AMERICAN_EXPRESS.getCardNameForAutofillDisplay(),
+                    AMERICAN_EXPRESS.getObfuscatedLastFourDigits(),
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion ACCEPTABLE_MASTERCARD_VIRTUAL_CARD_SUGGESTION =
             createCreditCardSuggestion(
-                    MASTERCARD_VIRTUAL_CARD.getName(),
-                    MASTERCARD_VIRTUAL_CARD.getNumber(),
+                    MASTERCARD_VIRTUAL_CARD.getCardNameForAutofillDisplay(),
+                    MASTERCARD_VIRTUAL_CARD.getObfuscatedLastFourDigits(),
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion NON_ACCEPTABLE_MASTERCARD_VIRTUAL_CARD_SUGGESTION =
             createCreditCardSuggestion(
-                    MASTERCARD_VIRTUAL_CARD.getName(),
-                    MASTERCARD_VIRTUAL_CARD.getNumber(),
+                    MASTERCARD_VIRTUAL_CARD.getCardNameForAutofillDisplay(),
+                    MASTERCARD_VIRTUAL_CARD.getObfuscatedLastFourDigits(),
                     /* applyDeactivatedStyle= */ true);
 
     private BottomSheetController mBottomSheetController;
