@@ -66,7 +66,9 @@ class MODULES_EXPORT RTCEncodedVideoFrame final : public ScriptWrappable {
   // Returns and transfers ownership of the internal WebRTC frame
   // backing this RTCEncodedVideoFrame, neutering all RTCEncodedVideoFrames
   // backed by that internal WebRTC frame.
-  std::unique_ptr<webrtc::TransformableVideoFrameInterface> PassWebRtcFrame();
+  std::unique_ptr<webrtc::TransformableVideoFrameInterface> PassWebRtcFrame(
+      v8::Isolate* isolate,
+      bool detach_frame_data);
 
   void Trace(Visitor*) const override;
 

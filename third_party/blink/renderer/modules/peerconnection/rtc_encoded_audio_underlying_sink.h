@@ -21,7 +21,8 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSink final
  public:
   RTCEncodedAudioUnderlyingSink(
       ScriptState*,
-      scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>);
+      scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>,
+      bool detach_frame_data_on_write);
 
   // UnderlyingSinkBase
   ScriptPromise<IDLUndefined> start(ScriptState*,
@@ -42,6 +43,7 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSink final
  private:
   scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
       transformer_broker_;
+  const bool detach_frame_data_on_write_;
   THREAD_CHECKER(thread_checker_);
 };
 

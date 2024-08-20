@@ -277,7 +277,8 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataOnEmptyFrameFails) {
 
   // Move the WebRTC frame out, as if the frame had been written into
   // an encoded insertable stream's WritableStream to be sent on.
-  encoded_frame->PassWebRtcFrame();
+  encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
+                                 /*detach_frame_data=*/false);
 
   DummyExceptionStateForTesting exception_state;
   encoded_frame->setMetadata(metadata, exception_state);
@@ -554,7 +555,8 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorOnEmptyFrameWorks) {
 
   // Move the WebRTC frame out, as if the frame had been written into
   // an encoded insertable stream's WritableStream to be sent on.
-  encoded_frame->PassWebRtcFrame();
+  encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
+                                 /*detach_frame_data=*/false);
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedVideoFrame* new_frame =
@@ -579,7 +581,8 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorWithMetadataOnEmptyFrameFails) {
   frame_options->setMetadata(encoded_frame->getMetadata());
   // Move the WebRTC frame out, as if the frame had been written into
   // an encoded insertable stream's WritableStream to be sent on.
-  encoded_frame->PassWebRtcFrame();
+  encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
+                                 /*detach_frame_data=*/false);
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
@@ -750,9 +753,26 @@ TEST_F(RTCEncodedVideoFrameTest, ReadingDataOnEmptyFrameGivesDetachedFrame) {
 
   RTCEncodedVideoFrame* encoded_frame =
       MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(frame));
-  encoded_frame->PassWebRtcFrame();
+  encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
+                                 /*detach_frame_data=*/false);
 
   DOMArrayBuffer* data = encoded_frame->data(v8_scope.GetExecutionContext());
+  EXPECT_NE(data, nullptr);
+  EXPECT_TRUE(data->IsDetached());
+}
+
+TEST_F(RTCEncodedVideoFrameTest, PassWebRTCDetachesFrameData) {
+  V8TestingScope v8_scope;
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+
+  RTCEncodedVideoFrame* encoded_frame =
+      MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(frame));
+
+  DOMArrayBuffer* data = encoded_frame->data(v8_scope.GetExecutionContext());
+  encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
+                                 /*detach_frame_data=*/true);
   EXPECT_NE(data, nullptr);
   EXPECT_TRUE(data->IsDetached());
 }

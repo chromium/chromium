@@ -1195,7 +1195,8 @@ RTCInsertableStreams* RTCRtpSender::CreateEncodedAudioStreams(
     // Set up writable.
     audio_to_packetizer_underlying_sink_ =
         MakeGarbageCollected<RTCEncodedAudioUnderlyingSink>(
-            script_state, encoded_audio_transformer_);
+            script_state, encoded_audio_transformer_,
+            /*detach_frame_data_on_write=*/false);
 
     auto set_underlying_sink =
         WTF::CrossThreadBindOnce(&RTCRtpSender::SetAudioUnderlyingSink,
@@ -1333,7 +1334,8 @@ RTCInsertableStreams* RTCRtpSender::CreateEncodedVideoStreams(
     // Set up writable.
     video_to_packetizer_underlying_sink_ =
         MakeGarbageCollected<RTCEncodedVideoUnderlyingSink>(
-            script_state, encoded_video_transformer_);
+            script_state, encoded_video_transformer_,
+            /*detach_frame_data_on_write=*/false);
 
     auto set_underlying_sink =
         WTF::CrossThreadBindOnce(&RTCRtpSender::SetVideoUnderlyingSink,

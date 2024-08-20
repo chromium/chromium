@@ -88,7 +88,8 @@ TEST_F(RTCEncodedAudioFrameTest, SetMetadataOnEmptyFrameFails) {
 
   RTCEncodedAudioFrame* encoded_frame =
       MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
-  encoded_frame->PassWebRtcFrame();
+  encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
+                                 /*detach_frame_data=*/false);
 
   RTCEncodedAudioFrameMetadata* new_metadata = CreateAudioMetadata();
 
@@ -143,7 +144,8 @@ TEST_F(RTCEncodedAudioFrameTest, ConstructorOnEmptyFrameHasEmptyMetadata) {
 
   RTCEncodedAudioFrame* encoded_frame =
       MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
-  encoded_frame->PassWebRtcFrame();
+  encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
+                                 /*detach_frame_data=*/false);
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedAudioFrame* new_frame =
@@ -170,7 +172,8 @@ TEST_F(RTCEncodedAudioFrameTest, ConstructorWithMetadataOnEmptyFrameFails) {
 
   RTCEncodedAudioFrame* encoded_frame =
       MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
-  encoded_frame->PassWebRtcFrame();
+  encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
+                                 /*detach_frame_data=*/false);
 
   RTCEncodedAudioFrameOptions* frame_options =
       RTCEncodedAudioFrameOptions::Create();
@@ -200,7 +203,8 @@ TEST_F(RTCEncodedAudioFrameTest,
 
   RTCEncodedAudioFrame* encoded_frame =
       MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
-  encoded_frame->PassWebRtcFrame();
+  encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
+                                 /*detach_frame_data=*/false);
 
   RTCEncodedAudioFrameMetadata* new_metadata =
       RTCEncodedAudioFrameMetadata::Create();
@@ -322,9 +326,28 @@ TEST_F(RTCEncodedAudioFrameTest, ReadingDataOnEmptyFrameGivesDetachedFrame) {
 
   RTCEncodedAudioFrame* encoded_frame =
       MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
-  encoded_frame->PassWebRtcFrame();
+  encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
+                                 /*detach_frame_data=*/false);
 
   DOMArrayBuffer* data = encoded_frame->data(v8_scope.GetExecutionContext());
+  EXPECT_NE(data, nullptr);
+  EXPECT_TRUE(data->IsDetached());
+}
+
+TEST_F(RTCEncodedAudioFrameTest, PassWebRTCDetachesFrameData) {
+  V8TestingScope v8_scope;
+
+  std::unique_ptr<MockTransformableAudioFrame> frame =
+      std::make_unique<NiceMock<MockTransformableAudioFrame>>();
+  MockMetadata(frame.get());
+
+  EXPECT_CALL(*frame, SetRTPTimestamp(_)).Times(0);
+
+  RTCEncodedAudioFrame* encoded_frame =
+      MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
+  DOMArrayBuffer* data = encoded_frame->data(v8_scope.GetExecutionContext());
+  encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
+                                 /*detach_frame_data=*/true);
   EXPECT_NE(data, nullptr);
   EXPECT_TRUE(data->IsDetached());
 }

@@ -35,7 +35,8 @@ void RTCEncodedUnderlyingSinkWrapper::CreateAudioUnderlyingSink(
   CHECK(!video_to_packetizer_underlying_sink_);
   audio_to_packetizer_underlying_sink_ =
       MakeGarbageCollected<RTCEncodedAudioUnderlyingSink>(
-          script_state_, std::move(encoded_audio_transformer));
+          script_state_, std::move(encoded_audio_transformer),
+          /*detach_frame_data_on_write=*/true);
 }
 
 void RTCEncodedUnderlyingSinkWrapper::CreateVideoUnderlyingSink(
@@ -45,7 +46,8 @@ void RTCEncodedUnderlyingSinkWrapper::CreateVideoUnderlyingSink(
   CHECK(!audio_to_packetizer_underlying_sink_);
   video_to_packetizer_underlying_sink_ =
       MakeGarbageCollected<RTCEncodedVideoUnderlyingSink>(
-          script_state_, std::move(encoded_video_transformer));
+          script_state_, std::move(encoded_video_transformer),
+          /*detach_frame_data_on_write=*/true);
 }
 
 ScriptPromise<IDLUndefined> RTCEncodedUnderlyingSinkWrapper::start(

@@ -18,8 +18,10 @@ using webrtc::TransformableFrameInterface;
 RTCEncodedVideoUnderlyingSink::RTCEncodedVideoUnderlyingSink(
     ScriptState* script_state,
     scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
-        transformer_broker)
-    : transformer_broker_(std::move(transformer_broker)) {
+        transformer_broker,
+    bool detach_frame_data_on_write)
+    : transformer_broker_(std::move(transformer_broker)),
+      detach_frame_data_on_write_(detach_frame_data_on_write) {
   DCHECK(transformer_broker_);
 }
 
@@ -50,7 +52,8 @@ ScriptPromise<IDLUndefined> RTCEncodedVideoUnderlyingSink::write(
     return EmptyPromise();
   }
 
-  auto webrtc_frame = encoded_frame->PassWebRtcFrame();
+  auto webrtc_frame = encoded_frame->PassWebRtcFrame(
+      script_state->GetIsolate(), detach_frame_data_on_write_);
   if (!webrtc_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Empty frame");

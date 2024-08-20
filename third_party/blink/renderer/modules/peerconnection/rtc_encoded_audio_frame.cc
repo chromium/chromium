@@ -8,9 +8,12 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_options.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 
@@ -195,9 +198,21 @@ scoped_refptr<RTCEncodedAudioFrameDelegate> RTCEncodedAudioFrame::Delegate()
 }
 
 std::unique_ptr<webrtc::TransformableAudioFrameInterface>
-RTCEncodedAudioFrame::PassWebRtcFrame() {
+RTCEncodedAudioFrame::PassWebRtcFrame(v8::Isolate* isolate,
+                                      bool detach_frame_data) {
   SyncDelegate();
-  return delegate_->PassWebRtcFrame();
+  auto transformable_audio_frame = delegate_->PassWebRtcFrame();
+  // Detach the `frame_data_` ArrayBuffer if it's been created, as described in
+  // the transfer on step 5 of the encoded transform spec write steps
+  // (https://www.w3.org/TR/webrtc-encoded-transform/#stream-processing)
+  if (detach_frame_data && frame_data_ && !frame_data_->IsDetached()) {
+    CHECK(isolate);
+    ArrayBufferContents contents_to_drop;
+    NonThrowableExceptionState exception_state;
+    CHECK(frame_data_->Transfer(isolate, v8::Local<v8::Value>(),
+                                contents_to_drop, exception_state));
+  }
+  return transformable_audio_frame;
 }
 
 void RTCEncodedAudioFrame::Trace(Visitor* visitor) const {

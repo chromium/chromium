@@ -294,9 +294,21 @@ scoped_refptr<RTCEncodedVideoFrameDelegate> RTCEncodedVideoFrame::Delegate()
 }
 
 std::unique_ptr<webrtc::TransformableVideoFrameInterface>
-RTCEncodedVideoFrame::PassWebRtcFrame() {
+RTCEncodedVideoFrame::PassWebRtcFrame(v8::Isolate* isolate,
+                                      bool detach_frame_data) {
   SyncDelegate();
-  return delegate_->PassWebRtcFrame();
+  auto transformable_video_frame = delegate_->PassWebRtcFrame();
+  // Detach the `frame_data_` ArrayBuffer if it's been created, as described in
+  // the transfer on step 5 of the encoded transform spec write steps
+  // (https://www.w3.org/TR/webrtc-encoded-transform/#stream-processing)
+  if (detach_frame_data && frame_data_ && !frame_data_->IsDetached()) {
+    CHECK(isolate);
+    ArrayBufferContents contents_to_drop;
+    NonThrowableExceptionState exception_state;
+    CHECK(frame_data_->Transfer(isolate, v8::Local<v8::Value>(),
+                                contents_to_drop, exception_state));
+  }
+  return transformable_video_frame;
 }
 
 void RTCEncodedVideoFrame::Trace(Visitor* visitor) const {

@@ -71,7 +71,8 @@ class RTCEncodedAudioUnderlyingSinkTest : public testing::Test {
 
   RTCEncodedAudioUnderlyingSink* CreateSink(ScriptState* script_state) {
     return MakeGarbageCollected<RTCEncodedAudioUnderlyingSink>(
-        script_state, transformer_.GetBroker());
+        script_state, transformer_.GetBroker(),
+        /*detach_frame_data_on_write=*/false);
   }
 
   RTCEncodedAudioStreamTransformer* GetTransformer() { return &transformer_; }

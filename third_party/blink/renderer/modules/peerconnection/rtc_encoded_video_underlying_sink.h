@@ -21,7 +21,8 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSink final
  public:
   RTCEncodedVideoUnderlyingSink(
       ScriptState*,
-      scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>);
+      scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>,
+      bool detach_frame_data_on_write);
 
   // UnderlyingSinkBase
   ScriptPromise<IDLUndefined> start(ScriptState*,
@@ -41,6 +42,7 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSink final
  private:
   scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
       transformer_broker_;
+  const bool detach_frame_data_on_write_;
   THREAD_CHECKER(thread_checker_);
 };
 
