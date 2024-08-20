@@ -319,26 +319,6 @@ WebContentsInteractionTestUtil::DeepQuery KnownNetworksSubpage();
 WebContentsInteractionTestUtil::DeepQuery
 KnownNetworksSubpagePasspointSubsciptions();
 
-// The passpoint subscription list item on the known network subpage passpoint
-// section.
-WebContentsInteractionTestUtil::DeepQuery
-KnownNetworksSubpagePasspointSubscriptionItem();
-
-// The dots button on the subscription item in the passpoint subscriptions
-// section of the Known Networks subpage.
-WebContentsInteractionTestUtil::DeepQuery
-KnownNetworksSubpagePasspointMoreButton();
-
-// The dots menu on the subscription item in the passpoint subscriptions
-// section of the Known Networks subpage.
-WebContentsInteractionTestUtil::DeepQuery
-KnownNetworksSubpagePasspointDotsMenu();
-
-// The Forget button in the dots menu on the subscription item in the passpoint
-// subscriptions section of the Known Networks subpage.
-WebContentsInteractionTestUtil::DeepQuery
-KnownNetworksSubpagePasspointSubscriptionForget();
-
 // The expiration date on the passpoint subscription subpage.
 WebContentsInteractionTestUtil::DeepQuery PasspointSubpageExpirationDate();
 
@@ -358,16 +338,6 @@ WebContentsInteractionTestUtil::DeepQuery PasspointSubpageDomainList();
 
 // The domain item on the passpoint subscription subpage.
 WebContentsInteractionTestUtil::DeepQuery PasspointSubpageDomainListItem();
-
-// The Remove button on the passpoint subscription subpage.
-WebContentsInteractionTestUtil::DeepQuery PasspointSubpageRemoveButton();
-
-// The remove confirmation dialog when removing subscription.
-WebContentsInteractionTestUtil::DeepQuery PasspointSubpageRemoveDialog();
-
-// The confirm button on the subscription removal dialog.
-WebContentsInteractionTestUtil::DeepQuery
-PasspointSubpageRemoveDialogConfirmButton();
 
 }  // namespace wifi
 
