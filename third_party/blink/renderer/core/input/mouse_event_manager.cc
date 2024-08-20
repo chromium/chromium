@@ -127,7 +127,9 @@ enum class DragInitiator { kMouse, kTouch };
 
 MouseEventManager::MouseEventManager(LocalFrame& frame,
                                      ScrollManager& scroll_manager)
-    : frame_(frame), scroll_manager_(scroll_manager) {
+    : frame_(frame),
+      scroll_manager_(scroll_manager),
+      is_mouse_position_unknown_(true) {
   Clear();
 }
 
@@ -138,10 +140,6 @@ void MouseEventManager::Clear() {
   mouse_down_may_start_autoscroll_ = false;
   mouse_down_may_start_drag_ = false;
   captures_dragging_ = false;
-  is_mouse_position_unknown_ = true;
-  last_known_mouse_position_in_root_frame_ = PhysicalOffset();
-  last_known_mouse_position_ = gfx::PointF();
-  last_known_mouse_screen_position_ = gfx::PointF();
   mouse_pressed_ = false;
   click_count_ = 0;
   click_element_ = nullptr;
@@ -151,6 +149,11 @@ void MouseEventManager::Clear() {
   svg_pan_ = false;
   drag_start_pos_in_root_frame_ = PhysicalOffset();
   hover_state_dirty_ = false;
+
+  // We deliberately avoid clearing mouse position fields (last_known_mouse_*
+  // and is_mouse_position_unknown_) so that we can apply hover effects in the
+  // new document after a navigation.  See crbug.com/354649089.
+
   ResetDragSource();
   ClearDragDataTransfer();
 }
@@ -289,6 +292,14 @@ WebInputEventResult MouseEventManager::SetMousePositionAndDispatchMouseEvent(
     const AtomicString& event_type,
     const WebMouseEvent& web_mouse_event) {
   SetElementUnderMouse(target_element, web_mouse_event);
+
+  // Gesture tap should update last known mouse position just like mousemove.
+  // Otherwise, HandleGestureTap and RecomputeMouseHoverState will fight over
+  // SetElementUnderMouse with different ideas about where the mouse is. This
+  // creates flakiness in tests that send taps and listen to mouseout, like
+  // fast/events/touch/gesture/focus-selectionchange-on-tap.html.
+  SetLastKnownMousePosition(web_mouse_event);
+
   return DispatchMouseEvent(
       element_under_mouse_, event_type, web_mouse_event, nullptr, nullptr,
       false, web_mouse_event.id,
