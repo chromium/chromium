@@ -9,7 +9,9 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/ash/services/ime/public/mojom/ime_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -25,7 +27,8 @@ namespace ash {
 namespace input_method {
 
 // The connector of an ImeService which runs in its own process.
-class ImeServiceConnector : public ime::mojom::PlatformAccessProvider {
+class ImeServiceConnector : public ime::mojom::PlatformAccessProvider,
+                            public ProfileObserver {
  public:
   explicit ImeServiceConnector(Profile* profile);
 
@@ -38,6 +41,9 @@ class ImeServiceConnector : public ime::mojom::PlatformAccessProvider {
   void DownloadImeFileTo(const GURL& url,
                          const base::FilePath& file_path,
                          DownloadImeFileToCallback callback) override;
+
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
   // Launch an out-of-process IME service and grant necessary Platform access.
   void SetupImeService(
@@ -57,7 +63,7 @@ class ImeServiceConnector : public ime::mojom::PlatformAccessProvider {
   void HandleDownloadResponse(base::FilePath file_path);
   void NotifyAllDownloadListeners(base::FilePath file_path);
 
-  const raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
@@ -74,6 +80,8 @@ class ImeServiceConnector : public ime::mojom::PlatformAccessProvider {
   mojo::Remote<ime::mojom::ImeService> remote_service_;
   mojo::Receiver<ime::mojom::PlatformAccessProvider> platform_access_receiver_{
       this};
+
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   base::WeakPtrFactory<ImeServiceConnector> weak_ptr_factory_{this};
 };
