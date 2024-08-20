@@ -3412,6 +3412,9 @@ extern const char kUseAngleGL[];
 extern const char kAcceleratedMjpegDecodeName[];
 extern const char kAcceleratedMjpegDecodeDescription[];
 
+extern const char kAccessibilityFilterKeysName[];
+extern const char kAccessibilityFilterKeysDescription[];
+
 extern const char kAdaptiveChargingName[];
 extern const char kAdaptiveChargingDescription[];
 

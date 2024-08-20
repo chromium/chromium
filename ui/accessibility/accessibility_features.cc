@@ -270,6 +270,13 @@ bool IsAccessibilityFlashScreenFeatureEnabled() {
       ::features::kAccessibilityFlashScreenFeature);
 }
 
+BASE_FEATURE(kAccessibilityFilterKeys,
+             "AccessibilityFilterKeys",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityFilterKeysEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilityFilterKeys);
+}
+
 BASE_FEATURE(kAccessibilityShakeToLocate,
              "AccessibilityShakeToLocate",
              base::FEATURE_DISABLED_BY_DEFAULT);

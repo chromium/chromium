@@ -5894,6 +5894,11 @@ const char kAcceleratedMjpegDecodeDescription[] =
     "Enable hardware-accelerated mjpeg decode for captured frame where "
     "available.";
 
+const char kAccessibilityFilterKeysName[] = "Filter keys";
+const char kAccessibilityFilterKeysDescription[] =
+    "Enables settings to filter key presses in various ways, such as slow keys "
+    "and bounce keys.";
+
 const char kAdaptiveChargingForTestingName[] =
     "Show adaptive charging notifications for testing";
 const char kAdaptiveChargingForTestingDescription[] =

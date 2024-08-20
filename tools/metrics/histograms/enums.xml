@@ -20264,6 +20264,7 @@ from previous Chrome versions.
   <int value="-86243376" label="LayoutNG:enabled"/>
   <int value="-85706353" label="VirtualDesksGestures:enabled"/>
   <int value="-85704140" label="ImageServiceSuggestPoweredImages:disabled"/>
+  <int value="-84431403" label="AccessibilityFilterKeys:enabled"/>
   <int value="-83561866" label="TabStripLayoutOptimization:enabled"/>
   <int value="-83431306" label="FSPsInRecents:enabled"/>
   <int value="-83386867" label="NtpTabResumptionModule:enabled"/>
@@ -24355,6 +24356,7 @@ from previous Chrome versions.
   <int value="1631147591" label="PerformanceInterventionUI:enabled"/>
   <int value="1632112977" label="ash-disable-tablet-autohide-titlebars"/>
   <int value="1632176267" label="PDFViewerUpdate:enabled"/>
+  <int value="1632737896" label="AccessibilityFilterKeys:disabled"/>
   <int value="1633456034" label="chrome-home-swipe-logic"/>
   <int value="1634273054" label="OsIntegrationSubManagers:enabled"/>
   <int value="1634572985" label="TotallyEdgeToEdge:disabled"/>

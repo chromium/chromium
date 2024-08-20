@@ -202,6 +202,10 @@ AX_BASE_EXPORT bool IsAccessibilityDisableTrackpadEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFlashScreenFeature);
 AX_BASE_EXPORT bool IsAccessibilityFlashScreenFeatureEnabled();
 
+// Controls whether the filter keys features are available.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFilterKeys);
+AX_BASE_EXPORT bool IsAccessibilityFilterKeysEnabled();
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

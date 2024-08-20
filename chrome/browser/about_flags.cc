@@ -5900,6 +5900,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVirtualKeyboardRoundCornersName,
      flag_descriptions::kVirtualKeyboardRoundCornersDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kVirtualKeyboardRoundCorners)},
+    {"enable-accessibility-filter-keys",
+     flag_descriptions::kAccessibilityFilterKeysName,
+     flag_descriptions::kAccessibilityFilterKeysDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityFilterKeys)},
     {"enable-experimental-accessibility-dictation-context-checking",
      flag_descriptions::kExperimentalAccessibilityDictationContextCheckingName,
      flag_descriptions::
