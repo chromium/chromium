@@ -905,6 +905,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
     /**
      * Updates all internal resources and dimensions.
+     *
      * @param context The current Android {@link Context}.
      */
     public void onContextChanged(Context context) {
@@ -915,8 +916,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     /**
      * Notify the a title has changed.
      *
-     * @param tabId     The id of the tab that has changed.
-     * @param title     The new title.
+     * @param tabId The id of the tab that has changed.
+     * @param title The new title.
      */
     public void tabTitleChanged(int tabId, String title) {
         Tab tab = getTabById(tabId);
@@ -3725,7 +3726,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
         // 6. Kick-off animations and request an update.
         if (animationList != null) {
-            startAnimationList(animationList, getTabGroupMarginAnimatorListener(false));
+            startAnimationList(animationList, getTabGroupMarginAnimatorListener());
         }
         mUpdateHost.requestUpdate();
     }
@@ -3752,7 +3753,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
         // 5. Kick-off animations and request an update.
         if (animationList != null) {
-            startAnimationList(animationList, getTabGroupMarginAnimatorListener(false));
+            startAnimationList(animationList, getTabGroupMarginAnimatorListener());
         }
         mUpdateHost.requestUpdate();
     }
@@ -3839,7 +3840,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         mLastTrailingMargin = 0;
 
         // 7. Request an update.
-        startAnimationList(animationList, getTabGroupMarginAnimatorListener(true));
+        startAnimationList(animationList, getTabGroupMarginAnimatorListener());
         mUpdateHost.requestUpdate();
     }
 
@@ -3900,35 +3901,32 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         return false;
     }
 
-    /**
-     * Sets the new tab strip's start margin and autoscrolls the required amount to make it appear
-     * as though the interacting tab does not move.
-     *
-     * @param startMarginDelta The change in start margin for the tab strip.
-     * @param numMarginsToSlide The number of margins to slide to make it appear as through the
-     *     interacting tab does not move.
-     * @param animationList The list to add the animation to, or {@code null} if not animating.
-     */
+    /** See {@link ScrollDelegate#autoScrollForTabGroupMargins} */
     private void autoScrollForTabGroupMargins(
-            float startMarginDelta, int numMarginsToSlide, List<Animator> animationList) {
-        float delta = (numMarginsToSlide * mTabMarginWidth);
-        float startValue = mScrollDelegate.getScrollOffset() - startMarginDelta;
-        float endValue = startValue - delta;
-
-        // If the current tab width is at its max, this means there are not enough tabs to fill the
-        // visible area on the tab strip. In this case, there is not enough room to auto-scroll for
-        // tab group margins. Allocate additional space to account for this. See
-        // http://crbug.com/1374918 for additional details.
-        if (mCachedTabWidth == mMaxTabWidth) {
-            mScrollDelegate.setReorderMinScrollOffset(
-                    mStripStartMarginForReorder + Math.abs(delta));
-        }
-
-        mScrollDelegate.maybeAnimateScrollOffset(
-                mUpdateHost.getAnimationHandler(), animationList, startValue, endValue);
+            int numMarginsToSlide, float startMarginDelta, List<Animator> animationList) {
+        autoScrollForTabGroupMargins(
+                numMarginsToSlide, startMarginDelta, /* resetOffset= */ false, animationList);
     }
 
-    private AnimatorListener getTabGroupMarginAnimatorListener(boolean resetExtraMinScrollOffset) {
+    /** See {@link ScrollDelegate#autoScrollForTabGroupMargins} */
+    private void autoScrollForTabGroupMargins(
+            int numMarginsToSlide,
+            float startMarginDelta,
+            boolean resetOffset,
+            List<Animator> animationList) {
+        boolean isVisibleAreaFilled = mCachedTabWidth != mMaxTabWidth;
+        mScrollDelegate.autoScrollForTabGroupMargins(
+                mUpdateHost.getAnimationHandler(),
+                resetOffset,
+                numMarginsToSlide,
+                mTabMarginWidth,
+                startMarginDelta,
+                mStripStartMarginForReorder,
+                isVisibleAreaFilled,
+                animationList);
+    }
+
+    private AnimatorListener getTabGroupMarginAnimatorListener() {
         return new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -3938,7 +3936,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             @Override
             public void onAnimationEnd(Animator animation) {
                 mTabGroupMarginAnimRunning = false;
-                if (resetExtraMinScrollOffset) mScrollDelegate.setReorderMinScrollOffset(0.f);
             }
         };
     }
@@ -3989,7 +3986,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         // 3. Adjust the scroll offset accordingly to prevent the interacting tab from shifting away
         // from where the user long-pressed.
         if (autoScroll) {
-            autoScrollForTabGroupMargins(startMarginDelta, numMarginsToSlide, animationList);
+            autoScrollForTabGroupMargins(numMarginsToSlide, startMarginDelta, animationList);
         }
 
         // 4. Begin slide-out and scroll animation. Update tab positions.
@@ -4017,7 +4014,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         // 2. Adjust the scroll offset accordingly to prevent the interacting tab from shifting away
         // from where the user long-pressed.
         if (autoScroll) {
-            autoScrollForTabGroupMargins(startMarginDelta, 0, animationList);
+            autoScrollForTabGroupMargins(0, startMarginDelta, animationList);
         }
     }
 
@@ -4038,7 +4035,10 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         // 2. Adjust the scroll offset accordingly to prevent the interacting tab from shifting away
         // from where the user long-pressed.
         autoScrollForTabGroupMargins(
-                -mStripStartMarginForReorder, numMarginsToSlide, animationList);
+                numMarginsToSlide,
+                -mStripStartMarginForReorder,
+                /* resetOffset= */ true,
+                animationList);
         mStripStartMarginForReorder = 0f;
     }
 
@@ -4832,7 +4832,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             ArrayList<Animator> animationList = new ArrayList<>();
             setTrailingMarginForTab(mInteractingTab, mLastTrailingMargin, animationList);
             mInteractingTab = null;
-            startAnimationList(animationList, getTabGroupMarginAnimatorListener(false));
+            startAnimationList(animationList, getTabGroupMarginAnimatorListener());
 
             // 2.a. Early-out if we just entered the start gap.
             return;
@@ -4865,7 +4865,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             mInteractingTab = hoveredTab;
 
             // 3.c. Animate.
-            startAnimationList(animationList, getTabGroupMarginAnimatorListener(false));
+            startAnimationList(animationList, getTabGroupMarginAnimatorListener());
         }
     }
 
