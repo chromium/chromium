@@ -130,7 +130,7 @@ class HttpCacheDataRemoverTest : public testing::Test {
     request_info.network_anonymization_key =
         net::NetworkAnonymizationKey::CreateSameSite(
             net::SchemefulSite(kOrigin));
-    return *cache_->GenerateCacheKeyForRequest(&request_info);
+    return *net::HttpCache::GenerateCacheKeyForRequest(&request_info);
   }
 
   void RemoveData(mojom::ClearDataFilterPtr filter,
