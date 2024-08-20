@@ -53,7 +53,13 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
    * appropriate.
    */
   changed(evt: TextChangeEvent): void {
-    if (!this.shouldDescribeChange(evt)) {
+    // Temporarily call via prototype during the migration.
+    // Because the tests still use EditableTextBase, they invoke this method via
+    // AutomationEditableText.prototype.changed.call(). The |this| object in that case does not
+    // have a |shouldDescribeChange| method, so we have to reference it explicitly during the
+    // migration.
+    if (!AutomationEditableText.prototype.shouldDescribeChange.call(
+            this, evt)) {
       this.lastChangeDescribed = false;
       return;
     }
@@ -324,6 +330,19 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
 
     this.describeTextChangedHelper(
         prev, evt, prefixLen, suffixLen, '', personality);
+  }
+
+  /**
+   * @param evt The new text changed event to test.
+   * @return True if the event, when compared to the previous text, should
+   *     trigger description.
+   */
+  shouldDescribeChange(evt: TextChangeEvent): boolean {
+    if (evt.value === this.value && evt.start === this.start &&
+        evt.end === this.end) {
+      return false;
+    }
+    return true;
   }
 
   /** Called when the text field has been updated. */
