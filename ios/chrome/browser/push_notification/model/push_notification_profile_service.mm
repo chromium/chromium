@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/push_notification/model/push_notification_browser_state_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_profile_service.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"

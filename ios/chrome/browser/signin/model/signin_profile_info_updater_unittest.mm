@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/signin/model/signin_browser_state_info_updater.h"
+#import "ios/chrome/browser/signin/model/signin_profile_info_updater.h"
 
 #import <memory>
 #import <string>

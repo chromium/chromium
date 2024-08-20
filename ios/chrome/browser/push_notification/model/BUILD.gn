@@ -5,8 +5,8 @@
 source_set("browser_state_service") {
   sources = [
     "push_notification_browser_state_service.h",
-    "push_notification_browser_state_service.mm",
     "push_notification_profile_service.h",
+    "push_notification_profile_service.mm",
   ]
   deps = [
     ":push_notification_client",
@@ -27,8 +27,8 @@ source_set("browser_state_service") {
 source_set("browser_state_service_factory") {
   sources = [
     "push_notification_browser_state_service_factory.h",
-    "push_notification_browser_state_service_factory.mm",
     "push_notification_profile_service_factory.h",
+    "push_notification_profile_service_factory.mm",
   ]
 
   deps = [

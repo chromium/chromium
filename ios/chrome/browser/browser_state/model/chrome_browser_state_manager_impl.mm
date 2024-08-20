@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/page_info/about_this_site_service_factory.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 #import "ios/chrome/browser/profile/model/off_the_record_profile_ios_impl.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_browser_state_service_factory.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_profile_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
