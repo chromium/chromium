@@ -159,7 +159,6 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   void OnGestureProgressed(const ui::BackGestureEvent& gesture);
   void OnGestureCancelled();
   void OnGestureInvoked();
-  void OnNavigationCancelledBeforeStart(NavigationHandle* navigation_handle);
   void OnContentForNavigationEntryShown();
   BackForwardTransitionAnimationManager::AnimationStage
   GetCurrentAnimationStage();
@@ -174,6 +173,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
       NavigationRequest* navigation_request,
       RenderFrameHostImpl* old_host,
       RenderFrameHostImpl* new_host);
+  void OnNavigationCancelledBeforeStart(NavigationHandle* navigation_handle);
 
   // Notifies when the transition needs to be aborted.
   void AbortAnimation();

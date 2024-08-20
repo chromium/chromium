@@ -88,8 +88,6 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
-  SkBitmap MaybeCopyContentAreaAsBitmapSync();
-
   // This is called before the `old_host` is swapped out and before the
   // `new_host` is swapped in.
   //
@@ -120,6 +118,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   // `animator_` invokes this callback to notify the state changes of the
   // current animation.
   void OnAnimationStageChanged();
+
+  SkBitmap MaybeCopyContentAreaAsBitmapSync();
 
   WebContentsViewAndroid* web_contents_view_android() const {
     return web_contents_view_android_;

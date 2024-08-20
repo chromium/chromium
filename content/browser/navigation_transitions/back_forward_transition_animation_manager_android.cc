@@ -197,15 +197,15 @@ void BackForwardTransitionAnimationManagerAndroid::DidStartNavigation(
   MaybeDestroyAnimator();
 }
 
-void BackForwardTransitionAnimationManagerAndroid::DidFinishNavigation(
-    NavigationHandle* navigation_handle) {
-  animator_->DidFinishNavigation(navigation_handle);
-  MaybeDestroyAnimator();
-}
-
 void BackForwardTransitionAnimationManagerAndroid::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
   animator_->ReadyToCommitNavigation(navigation_handle);
+  MaybeDestroyAnimator();
+}
+
+void BackForwardTransitionAnimationManagerAndroid::DidFinishNavigation(
+    NavigationHandle* navigation_handle) {
+  animator_->DidFinishNavigation(navigation_handle);
   MaybeDestroyAnimator();
 }
 

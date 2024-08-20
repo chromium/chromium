@@ -305,38 +305,6 @@ void BackForwardTransitionAnimator::OnGestureInvoked() {
   AdvanceAndProcessState(State::kDisplayingInvokeAnimation);
 }
 
-// TODO(https://crbug.com/357094180): We should cancel the transition if a
-// unrelated request shows a beforeunload dialog.
-void BackForwardTransitionAnimator::OnNavigationCancelledBeforeStart(
-    NavigationHandle* navigation_handle) {
-  if (!tracked_request_ ||
-      tracked_request_->navigation_id != navigation_handle->GetNavigationId()) {
-    // A unrelated request is cancelled before start.
-    return;
-  }
-
-  // For now only a BeforeUnload can defer the start of a navigation.
-  //
-  // NOTE: Even if the renderer acks the BeforeUnload message to proceed the
-  // navigation, the navigation can still fail (see the early out in
-  // BeginNavigationImpl()). However the animator's `navigation_state_` will
-  // remain `NavigationState::kBeforeUnloadDispatched` because we only advance
-  // from `NavigationState::kBeforeUnloadDispatched` to the next state at
-  // `DidStartNavigation()`. In other words, if for any reason the navigation
-  // fails after the renderer's ack, the below CHECK_EQ still holds.
-  CHECK_EQ(navigation_state_, NavigationState::kBeforeUnloadDispatched);
-  navigation_state_ = NavigationState::kCancelledBeforeStart;
-
-  if (state_ == State::kWaitingForBeforeUnloadResponse) {
-    // The cancel animation has already finished.
-    AdvanceAndProcessState(State::kAnimationFinished);
-  } else {
-    // Let the cancel animation finish playing. We will advance to
-    // `State::kAnimationFinished`.
-    CHECK_EQ(state_, State::kDisplayingCancelAnimation);
-  }
-}
-
 void BackForwardTransitionAnimator::OnContentForNavigationEntryShown() {
   // Might be called multiple times if user swipes again before NTP fade
   // has finished.
@@ -787,6 +755,38 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
 
   if (skip_all_animations) {
     AbortAnimation();
+  }
+}
+
+// TODO(https://crbug.com/357094180): We should cancel the transition if a
+// unrelated request shows a beforeunload dialog.
+void BackForwardTransitionAnimator::OnNavigationCancelledBeforeStart(
+    NavigationHandle* navigation_handle) {
+  if (!tracked_request_ ||
+      tracked_request_->navigation_id != navigation_handle->GetNavigationId()) {
+    // A unrelated request is cancelled before start.
+    return;
+  }
+
+  // For now only a BeforeUnload can defer the start of a navigation.
+  //
+  // NOTE: Even if the renderer acks the BeforeUnload message to proceed the
+  // navigation, the navigation can still fail (see the early out in
+  // BeginNavigationImpl()). However the animator's `navigation_state_` will
+  // remain `NavigationState::kBeforeUnloadDispatched` because we only advance
+  // from `NavigationState::kBeforeUnloadDispatched` to the next state at
+  // `DidStartNavigation()`. In other words, if for any reason the navigation
+  // fails after the renderer's ack, the below CHECK_EQ still holds.
+  CHECK_EQ(navigation_state_, NavigationState::kBeforeUnloadDispatched);
+  navigation_state_ = NavigationState::kCancelledBeforeStart;
+
+  if (state_ == State::kWaitingForBeforeUnloadResponse) {
+    // The cancel animation has already finished.
+    AdvanceAndProcessState(State::kAnimationFinished);
+  } else {
+    // Let the cancel animation finish playing. We will advance to
+    // `State::kAnimationFinished`.
+    CHECK_EQ(state_, State::kDisplayingCancelAnimation);
   }
 }
 
