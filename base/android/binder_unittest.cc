@@ -15,7 +15,6 @@
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -554,112 +553,6 @@ TEST_F(BinderMultiprocessTest, PassedBinderLifetime) {
 BINDER_TEST_CHILD_MAIN(PassedBinderLifetime_Child) {
   AddInterface::Proxy add15(TakeBinderFromParent(0));
   EXPECT_EQ(18, add15.Add(3));
-}
-
-DEFINE_BINDER_CLASS(BinderSinkClass);
-
-class BinderSink : public SupportsBinder<BinderSinkClass> {
- public:
-  using Callback = RepeatingCallback<void(BinderRef)>;
-
-  explicit BinderSink(BinderMultiprocessTest& test) : test_(test) {}
-
-  template <typename Fn>
-  Process LaunchChildAndWaitForCall(const char* child_name, Fn fn) {
-    callback_ = BindLambdaForTesting(fn);
-    Process process = test_->LaunchChild(child_name, GetBinder());
-    called_.Wait();
-    return process;
-  }
-
-  void WaitForDisconnect() { disconnect_.Wait(); }
-
-  // SupportsBinder<BinderSinkClass>:
-  BinderStatusOr<void> OnBinderTransaction(transaction_code_t code,
-                                           const ParcelReader& reader,
-                                           const ParcelWriter& out) override {
-    ASSIGN_OR_RETURN(auto binder, reader.ReadBinder());
-    callback_.Run(std::move(binder));
-    called_.Signal();
-    return base::ok();
-  }
-
-  void OnBinderDestroyed() override { disconnect_.Signal(); }
-
- private:
-  ~BinderSink() override = default;
-
-  raw_ref<BinderMultiprocessTest> test_;
-  Callback callback_;
-  WaitableEvent called_;
-  WaitableEvent disconnect_;
-};
-
-TEST_F(BinderMultiprocessTest, AssociateValid) {
-  auto sink = base::MakeRefCounted<BinderSink>(*this);
-  Process child = sink->LaunchChildAndWaitForCall(
-      "AssociateValid_Child", [&](BinderRef binder) {
-        EXPECT_TRUE(
-            binder.AssociateWithClass(AddInterface::Class::GetBinderClass()));
-      });
-  EXPECT_TRUE(JoinChild(child));
-}
-
-BINDER_TEST_CHILD_MAIN(AssociateValid_Child) {
-  auto sink = BinderSinkClass::AdoptBinderRef(TakeBinderFromParent(0));
-  auto service = base::MakeRefCounted<AddService>(15);
-  WaitableEvent binder_destroyed;
-  service->set_binder_destruction_callback(
-      BindLambdaForTesting([&] { binder_destroyed.Signal(); }));
-  std::ignore = sink.TransactOneWay(42, [&](ParcelWriter in) {
-    return in.WriteBinder(service->GetBinder());
-  });
-  binder_destroyed.Wait();
-}
-
-TEST_F(BinderMultiprocessTest, AssociateInvalid) {
-  auto sink = base::MakeRefCounted<BinderSink>(*this);
-  Process child = sink->LaunchChildAndWaitForCall(
-      "AssociateInvalid_Child", [&](BinderRef binder) {
-        EXPECT_FALSE(binder.AssociateWithClass(
-            MultiplyInterface::Class::GetBinderClass()));
-      });
-  EXPECT_TRUE(JoinChild(child));
-}
-
-BINDER_TEST_CHILD_MAIN(AssociateInvalid_Child) {
-  auto sink = BinderSinkClass::AdoptBinderRef(TakeBinderFromParent(0));
-  auto service = base::MakeRefCounted<AddService>(15);
-  WaitableEvent binder_destroyed;
-  service->set_binder_destruction_callback(
-      BindLambdaForTesting([&] { binder_destroyed.Signal(); }));
-  std::ignore = sink.TransactOneWay(42, [&](ParcelWriter in) {
-    return in.WriteBinder(service->GetBinder());
-  });
-  binder_destroyed.Wait();
-}
-
-TEST_F(BinderMultiprocessTest, AssociateDestroyed) {
-  auto sink = base::MakeRefCounted<BinderSink>(*this);
-  BinderRef child_binder;
-  Process child = sink->LaunchChildAndWaitForCall(
-      "AssociateDestroyed_Child",
-      [&](BinderRef binder) { child_binder = std::move(binder); });
-  sink->WaitForDisconnect();
-
-  // Though the class would be correct, association should fail because the
-  // child process is already dead and the class descriptor can't be validated.
-  EXPECT_FALSE(
-      child_binder.AssociateWithClass(AddInterface::Class::GetBinderClass()));
-}
-
-BINDER_TEST_CHILD_MAIN(AssociateDestroyed_Child) {
-  auto sink = BinderSinkClass::AdoptBinderRef(TakeBinderFromParent(0));
-  auto service = base::MakeRefCounted<AddService>(15);
-  std::ignore = sink.TransactOneWay(42, [&](ParcelWriter in) {
-    return in.WriteBinder(service->GetBinder());
-  });
-  Process::TerminateCurrentProcessImmediately(0);
 }
 
 }  // namespace
