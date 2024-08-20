@@ -5,6 +5,8 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import <tuple>
+
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -95,10 +97,14 @@ id<GREYMatcher> KeyboardAccessoryPasswordSuggestion() {
 }
 
 - (void)tearDown {
-  [AutofillAppInterface clearCreditCardStore];
-  [AutofillAppInterface clearProfilesStore];
+  // Close tabs  before clearing the stores in the case the
+  // stores are needed when the tabs are closing (e.g. to upload votes).
+  [[self class] closeAllTabs];
+
   GREYAssertTrue([PasswordManagerAppInterface clearCredentials],
                  @"Clearing credentials wasn't done.");
+  [AutofillAppInterface clearCreditCardStore];
+  [AutofillAppInterface clearProfilesStore];
 
   // Clean up histogram tester.
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
@@ -123,6 +129,10 @@ id<GREYMatcher> KeyboardAccessoryPasswordSuggestion() {
   if ([self isRunningTest:@selector(testOpenExpandedManualFillView)]) {
     config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
   }
+  if ([self isRunningTest:@selector(testFillXframeCreditCardForm)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillAcrossIframesIos);
+  }
   return config;
 }
 
@@ -140,6 +150,17 @@ id<GREYMatcher> KeyboardAccessoryPasswordSuggestion() {
   // Loads simple page. It is on localhost so it is considered a secure context.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/uff_login_forms.html")];
   [ChromeEarlGrey waitForWebStateContainingText:"Single username form."];
+}
+
+// Loads a page with a xframe credit card form hosted on localhost.
+- (void)loadXframePaymentPage {
+  // Loads page with xframe credit card from.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/xframe_credit_card.html")];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:"Autofill Test - Xframe Credit Card"];
+
+  // Allow filling credit card data on the non-https localhost.
+  [AutofillAppInterface considerCreditCardFormSecureForTesting];
 }
 
 // Loads simple credit card page on localhost.
@@ -160,11 +181,30 @@ id<GREYMatcher> KeyboardAccessoryPasswordSuggestion() {
   [ChromeEarlGrey waitForWebStateContainingText:"Profile Autofill"];
 }
 
-// Verifies that field with the html `id` has been filled with `value`.
-- (void)verifyFieldWithIdHasBeenFilled:(std::string)id value:(NSString*)value {
-  NSString* condition = [NSString
-      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
-                       id.c_str(), value];
+// Verifies that html field with the `id_attr` attribute has been filled with
+// `value`.
+- (void)verifyFieldWithIdHasBeenFilled:(std::string)id_attr
+                                 value:(NSString*)value {
+  [self verifyFieldWithIdHasBeenFilled:id_attr iframeId:"" value:value];
+}
+
+// Verifies that the field with the `id_attr` attribute in the frame with the
+// `frameId` attribute is filled with `value`. `id_attr` correspond to the HTML
+// element id attribute. Verifies the main frame when `frameId` is empty.
+// Verfies child frames of the main frame when `frameId` is not empty.
+- (void)verifyFieldWithIdHasBeenFilled:(std::string)id_attr
+                              iframeId:(std::string)frameId
+                                 value:(NSString*)value {
+  NSString* condition =
+      frameId.empty()
+          ? [NSString
+                stringWithFormat:
+                    @"window.document.getElementById('%s').value === '%@'",
+                    id_attr.c_str(), value]
+          : [NSString stringWithFormat:
+                          @"document.getElementById('%s').contentDocument."
+                          @"getElementById('%s').value === '%@'",
+                          frameId.c_str(), id_attr.c_str(), value];
   [ChromeEarlGrey waitForJavaScriptCondition:condition];
 }
 
@@ -391,6 +431,62 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
                              @"Autofill.SuggestionAcceptedIndex.CreditCard"],
       @"Unexpected histogram error for accepted card suggestion index.");
 
+  [AutofillAppInterface clearMockReauthenticationModule];
+}
+
+// Tests that a xframe credit card form can be filled from the keyboard
+// accessory.
+- (void)testFillXframeCreditCardForm {
+  // Mock reauth so it allows filling sensitive information without the need for
+  // real authentication.
+  [AutofillAppInterface setUpMockReauthenticationModule];
+  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kSuccess];
+
+  // Load the xframe payment page.
+  [self loadXframePaymentPage];
+
+  // Tap a credit card field to open the bottom sheet.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
+  id<GREYMatcher> useKeyboardButton = PaymentsBottomSheetUseKeyboardButton();
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:useKeyboardButton];
+
+  // Dismiss the bottom sheet and open the keyboard.
+  [[EarlGrey selectElementWithMatcher:useKeyboardButton]
+      performAction:grey_tap()];
+
+  autofill::CreditCard card = autofill::test::GetCreditCard();
+
+  // Tap on the credit card chip.
+  id<GREYMatcher> cc_chip = grey_text(base::SysUTF16ToNSString(card.GetInfo(
+      autofill::CREDIT_CARD_NAME_FULL, l10n_util::GetLocaleOverride())));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cc_chip];
+  [[EarlGrey selectElementWithMatcher:cc_chip] performAction:grey_tap()];
+
+  // Verify that the credit card fields were filled correctly across frames.
+  std::string locale = l10n_util::GetLocaleOverride();
+  std::vector<std::tuple<autofill::FieldType, std::string, std::string>>
+      fields_to_verify = {
+          std::make_tuple(autofill::CREDIT_CARD_NAME_FULL, "", kFormCardName),
+          std::make_tuple(autofill::CREDIT_CARD_NUMBER, "cc-number-frame",
+                          kFormCardNumber),
+          std::make_tuple(autofill::CREDIT_CARD_EXP_MONTH, "cc-exp-frame",
+                          kFormCardExpirationMonth),
+          std::make_tuple(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                          "cc-exp-frame", kFormCardExpirationYear),
+  };
+  for (const auto& [field_type, frame_id_attr, field_id_attr] :
+       fields_to_verify) {
+    NSString* value =
+        base::SysUTF16ToNSString(card.GetInfo(field_type, locale));
+    [self verifyFieldWithIdHasBeenFilled:field_id_attr
+                                iframeId:frame_id_attr
+                                   value:value];
+  }
+
+  // Cleanup.
   [AutofillAppInterface clearMockReauthenticationModule];
 }
 
