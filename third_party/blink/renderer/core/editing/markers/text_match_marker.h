@@ -35,8 +35,8 @@
 namespace blink {
 
 // A subclass of DocumentMarker used to store information specific to TextMatch
-// markers. We store whether or not the match is active, a LayoutRect used for
-// rendering the marker, and whether or not the LayoutRect is currently
+// markers. We store whether or not the match is active, a PhysicalRect used for
+// rendering the marker, and whether or not the PhysicalRect is currently
 // up-to-date.
 class CORE_EXPORT TextMatchMarker final : public DocumentMarker {
  private:
@@ -60,7 +60,6 @@ class CORE_EXPORT TextMatchMarker final : public DocumentMarker {
   bool Contains(const PhysicalOffset&) const;
   void SetRect(const PhysicalRect&);
   const PhysicalRect& GetRect() const;
-  void NullifyLayoutRect();
 
   void Invalidate();
   bool IsValid() const;

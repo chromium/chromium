@@ -42,8 +42,8 @@ class ResizeObserverUtilities {
       const LayoutObject& layout_object,
       const ComputedStyle& style);
 
-  static DOMRectReadOnly* ZoomAdjustedLayoutRect(PhysicalRect content_rect,
-                                                 const ComputedStyle& style);
+  static DOMRectReadOnly* ZoomAdjustedPhysicalRect(PhysicalRect content_rect,
+                                                   const ComputedStyle& style);
 };
 
 }  // namespace blink

@@ -66,7 +66,7 @@ void ResizeObserverEntry::PopulateFromLayoutBox(
       PhysicalOffset(layout_box.PaddingLeft(), layout_box.PaddingTop()),
       layout_box.ContentSize());
   content_rect_ =
-      ResizeObserverUtilities::ZoomAdjustedLayoutRect(content_rect, style);
+      ResizeObserverUtilities::ZoomAdjustedPhysicalRect(content_rect, style);
 
   gfx::SizeF content_box = ResizeObserverUtilities::ComputeZoomAdjustedBox(
       ResizeObserverBoxOptions::kContentBox, layout_box, style);

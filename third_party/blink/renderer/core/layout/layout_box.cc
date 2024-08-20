@@ -2187,7 +2187,7 @@ ResourcePriority LayoutBox::ComputeResourcePriority() const {
   object_bounds.Move(LocalToAbsolutePoint(PhysicalOffset(), kIgnoreTransforms));
 
   // The object bounds might be empty right now, so intersects will fail since
-  // it doesn't deal with empty rects. Use LayoutRect::contains in that case.
+  // it doesn't deal with empty rects. Use PhysicalRect::Contains in that case.
   bool is_visible;
   if (!object_bounds.IsEmpty())
     is_visible = view_bounds.Intersects(object_bounds);

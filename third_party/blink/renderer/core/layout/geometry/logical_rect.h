@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace WTF {
@@ -42,14 +41,6 @@ struct CORE_EXPORT LogicalRect {
                         int block_offset,
                         int inline_size,
                         int block_size);
-  constexpr explicit LogicalRect(const DeprecatedLayoutRect& source)
-      : LogicalRect({source.X(), source.Y()},
-                    {source.Width(), source.Height()}) {}
-
-  constexpr DeprecatedLayoutRect ToLayoutRect() const {
-    return {offset.inline_offset, offset.block_offset, size.inline_size,
-            size.block_size};
-  }
 
   LogicalOffset offset;
   LogicalSize size;
@@ -124,7 +115,6 @@ struct CORE_EXPORT LogicalRect {
   }
 
   // You can use this function only if we know `rect` is logical. See also:
-  //  * `EnclosingLayoutRect() -> LayoutRect`
   //  * `PhysicalRect::EnclosingRect() -> PhysicalRect`
   static LogicalRect EnclosingRect(const gfx::RectF& rect) {
     const LogicalOffset offset(LayoutUnit::FromFloatFloor(rect.x()),

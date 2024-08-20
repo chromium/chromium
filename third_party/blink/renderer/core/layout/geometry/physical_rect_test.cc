@@ -240,7 +240,7 @@ TEST(PhysicalRectTest, ToEnclosingRect) {
             ToEnclosingRect(fractional_negpos_rect3));
 }
 
-TEST(LayoutRectTest, EdgesOnPixelBoundaries) {
+TEST(PhysicalRectTest, EdgesOnPixelBoundaries) {
   test::TaskEnvironment task_environment;
   EXPECT_TRUE(PhysicalRect().EdgesOnPixelBoundaries());
   EXPECT_TRUE(PhysicalRect(1, 1, 1, 1).EdgesOnPixelBoundaries());
@@ -343,7 +343,7 @@ TEST(PhysicalRectTest, InfiniteIntRect) {
   EXPECT_EQ(ToPixelSnappedRect(PhysicalRect(r)), r);
   for (int i = 0; i < 50; i++) {
     // Modified rect with visible right/bottom can be converted to gfx::RectF
-    // or LayoutRect and back without loss of accuracy.
+    // or PhysicalRect and back without loss of accuracy.
     r.set_width(r.x() + i);
     r.set_height(r.y() + i + 2000);
     EXPECT_EQ(gfx::ToEnclosingRect(gfx::RectF(r)), r);

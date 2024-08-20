@@ -100,7 +100,7 @@ bool SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
   // the visual viewport of the scroll container (through which the scrollable
   // overflow region can be viewed) coincides with its padding box.
   // https://drafts.csswg.org/css-overflow-3/#scrollport. So we use the
-  // LayoutRect of the padding box here. The coordinate is relative to the
+  // PhysicalRect of the padding box here. The coordinate is relative to the
   // container's border box.
   PhysicalRect container_rect(
       snap_container.OverflowClipRect(PhysicalOffset()));
