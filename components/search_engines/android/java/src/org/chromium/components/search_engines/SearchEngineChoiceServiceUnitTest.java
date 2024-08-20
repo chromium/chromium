@@ -22,6 +22,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 
 @SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
@@ -38,15 +40,20 @@ public class SearchEngineChoiceServiceUnitTest {
     }
 
     @Test
+    @DisableFeatures({SearchEnginesFeatures.CLAY_BLOCKING})
     public void testAbstractDelegate() {
-        var service =
-                new SearchEngineChoiceService(
-                        new SearchEngineCountryDelegate(mContext) {
-                            @Override
-                            public Promise<String> getDeviceCountry() {
-                                return Promise.rejected();
-                            }
-                        });
+        var service = new SearchEngineChoiceService(new SearchEngineCountryDelegate(mContext) {});
+
+        // The default implementation should be set to not trigger anything disruptive.
+        assertFalse(service.isDeviceChoiceDialogEligible());
+        assertTrue(service.shouldShowDeviceChoiceDialog().isFulfilled());
+        assertFalse(service.shouldShowDeviceChoiceDialog().getResult());
+    }
+
+    @Test
+    @EnableFeatures({SearchEnginesFeatures.CLAY_BLOCKING})
+    public void testAbstractDelegate_clayEnabled() {
+        var service = new SearchEngineChoiceService(new SearchEngineCountryDelegate(mContext) {});
 
         // The default implementation should be set to not trigger anything disruptive.
         assertFalse(service.isDeviceChoiceDialogEligible());

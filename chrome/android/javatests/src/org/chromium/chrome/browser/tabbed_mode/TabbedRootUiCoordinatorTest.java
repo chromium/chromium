@@ -37,6 +37,7 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
+import org.chromium.components.search_engines.SearchEnginesFeatures;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests for {@link TabbedRootUiCoordinator}. */
@@ -97,7 +98,7 @@ public class TabbedRootUiCoordinatorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.CLAY_BLOCKING)
+    @EnableFeatures(SearchEnginesFeatures.CLAY_BLOCKING)
     public void testDeviceChoiceDialogPlaceholder() {
         verify(mSearchEngineChoiceService, never()).shouldShowDeviceChoiceDialog();
     }

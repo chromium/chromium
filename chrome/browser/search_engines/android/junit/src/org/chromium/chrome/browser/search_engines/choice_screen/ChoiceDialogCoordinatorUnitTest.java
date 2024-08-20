@@ -27,9 +27,13 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
+import org.chromium.components.search_engines.SearchEnginesFeatures;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.SEARCH_ENGINE_CHOICE, ChromeFeatureList.CLAY_BLOCKING})
+@Features.EnableFeatures({
+    ChromeFeatureList.SEARCH_ENGINE_CHOICE,
+    SearchEnginesFeatures.CLAY_BLOCKING
+})
 public class ChoiceDialogCoordinatorUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -54,6 +58,7 @@ public class ChoiceDialogCoordinatorUnitTest {
     }
 
     @Test
+    @Features.EnableFeatures({SearchEnginesFeatures.CLAY_BLOCKING})
     public void testShouldShowDeviceChoiceDialog_doesNotShowWhenNotEligible() {
         doReturn(false).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
 

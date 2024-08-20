@@ -446,7 +446,6 @@ public abstract class ChromeFeatureList {
             "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck";
     public static final String SEARCH_IN_CCT = "SearchInCCT";
     public static final String SEARCH_ENGINE_CHOICE = "SearchEngineChoice";
-    public static final String CLAY_BLOCKING = "ClayBlocking";
     public static final String SHARE_CUSTOM_ACTIONS_IN_CCT = "ShareCustomActionsInCCT";
     public static final String SEARCH_RESUMPTION_MODULE_ANDROID = "SearchResumptionModuleAndroid";
     public static final String SEED_ACCOUNTS_REVAMP = "SeedAccountsRevamp";

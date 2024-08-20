@@ -32,10 +32,10 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.search_engines.SearchEnginesFeatures;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -44,7 +44,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Render tests for {@link ChoiceDialogCoordinator} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@Features.EnableFeatures(ChromeFeatureList.CLAY_BLOCKING)
+@Features.EnableFeatures(SearchEnginesFeatures.CLAY_BLOCKING)
 public class ChoiceScreenRenderTest {
     public @Rule final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()

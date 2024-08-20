@@ -137,6 +137,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.search_engines.SearchEnginesFeatures;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerFactory;
@@ -1207,7 +1208,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @return whether a prompt or promo is actually displayed.
      */
     private boolean maybeShowRequiredPromptsAndPromos(Profile profile, boolean intentWithEffect) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CLAY_BLOCKING)) {
+        if (SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) {
             mChoiceDialogCoordinator =
                     ChoiceDialogCoordinator.maybeShow(mActivity, mModalDialogManagerSupplier.get());
             if (mChoiceDialogCoordinator != null) {

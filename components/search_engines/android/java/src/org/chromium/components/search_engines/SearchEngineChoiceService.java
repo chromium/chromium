@@ -116,6 +116,7 @@ public class SearchEngineChoiceService {
      */
     @MainThread
     public boolean isDeviceChoiceDialogEligible() {
+        if (!SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) return false;
         if (mDelegate == null) return false;
         return mDelegate.isDeviceChoiceDialogEligible();
     }

@@ -20,7 +20,9 @@ public abstract class SearchEngineCountryDelegate {
      * callbacks to handle rejection. The promise is guaranteed to contain a non-null string.
      */
     @MainThread
-    public abstract Promise<String> getDeviceCountry();
+    public Promise<String> getDeviceCountry() {
+        return Promise.rejected();
+    }
 
     /** Proxy for {@link SearchEngineChoiceService#isDeviceChoiceDialogEligible()}. */
     @MainThread
