@@ -24,76 +24,74 @@ import {CommandHandlerInterface} from './input/command_handler_interface.js';
 // option modification.
 /* eslint prefer-const: ["error", {"ignoreReadBeforeAssign": true}] */
 
-const AutomationNode = chrome.automation.AutomationNode;
-const EventType = chrome.automation.EventType;
+type AutomationNode = chrome.automation.AutomationNode;
+import Dir = constants.Dir;
+import EventType = chrome.automation.EventType;
+type Unary = AutomationPredicate.Unary;
+const RoleType = chrome.automation.RoleType;
 
 /**
  * Handles scrolling, based either on a user command or an event firing.
  * Most of the logic is to support ARC++.
  */
 export class AutoScrollHandler {
-  constructor() {
-    /** @private {boolean} */
-    this.isScrolling_ = false;
+  private isScrolling_ = false;
+  private scrollingNode_: AutomationNode | null = null;
+  private rangeBeforeScroll_: CursorRange | null = null;
+  private lastScrolledTime_ = new Date(0);
+  private relatedFocusEventHappened_ = false;
+  private allowWebContentsForTesting_ = false;
 
-    /** @private {AutomationNode} */
-    this.scrollingNode_ = null;
+  static instance: AutoScrollHandler;
 
-    /** @private {CursorRange} */
-    this.rangeBeforeScroll_ = null;
-
-    /** @private {!Date} */
-    this.lastScrolledTime_ = new Date(0);
-
-    /** @private {boolean} */
-    this.relatedFocusEventHappened_ = false;
-
-    /** @private {boolean} */
-    this.allowWebContentsForTesting_ = false;
-  }
-
-  static init() {
+  static init(): void {
     AutoScrollHandler.instance = new AutoScrollHandler();
   }
 
   /**
    * This should be called before any command triggers ChromeVox navigation.
    *
-   * @param {!CursorRange} target The range that is going to be navigated
+   * @param target The range that is going to be navigated
    *     before scrolling.
-   * @param {constants.Dir} dir The direction to navigate.
-   * @param {?AutomationPredicate.Unary} pred The predicate to match.
-   * @param {?CursorUnit} unit The unit to navigate by.
-   * @param {?TtsSpeechProperties} speechProps The optional speech properties
+   * @param dir The direction to navigate.
+   * @param pred The predicate to match.
+   * @param unit The unit to navigate by.
+   * @param speechProps The optional speech properties
    *     given to |navigateTo| to provide feedback from the current command.
-   * @param {AutomationPredicate.Unary} rootPred The predicate that expresses
+   * @param rootPred The predicate that expresses
    *     the current navigation root.
-   * @param {Function} retryCommandFunc The callback used to retry the command
+   * @param retryCommandFunc The callback used to retry the command
    *     with refreshed tree after scrolling.
-   * @return {boolean} True if the given navigation can be executed. False if
-   *     the given navigation shouldn't happen, and AutoScrollHandler handles
-   *     the command instead.
+   * @return True if the given navigation can be executed. False if the given
+   *     navigation shouldn't happen, and AutoScrollHandler handles the command
+   *     instead.
    */
   onCommandNavigation(
-      target, dir, pred, unit, speechProps, rootPred, retryCommandFunc) {
+      target: CursorRange, dir: Dir, pred: Unary | null,
+      unit: CursorUnit | null, speechProps: TtsSpeechProperties | null,
+      rootPred: Unary, retryCommandFunc: Function): boolean {
     if (this.isScrolling_) {
       // Prevent interrupting the current scrolling.
       return false;
     }
 
-    if (!target.start?.node || !ChromeVoxRange.current.start.node) {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (!target.start?.node || !ChromeVoxRange.current!.start.node) {
       return true;
     }
 
     const rangeBeforeScroll = ChromeVoxRange.current;
-    let scrollable = this.findScrollableAncestor_(target);
+    let scrollable: AutomationNode | null | undefined =
+        this.findScrollableAncestor_(target);
 
     // At the beginning or the end of the document, there is a case where the
     // range stays there. It's worth trying scrolling the containing scrollable.
-    if (!scrollable && target.equals(rangeBeforeScroll) &&
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (!scrollable && target.equals(rangeBeforeScroll!) &&
         (unit === CursorUnit.WORD || unit === CursorUnit.CHARACTER)) {
       scrollable =
-          this.tryFindingContainingScrollableIfAtEdge_(target, dir, scrollable);
+          this.tryFindingContainingScrollableIfAtEdge_(
+              target, dir, scrollable ?? undefined);
     }
 
     if (!scrollable) {
@@ -107,7 +105,8 @@ export class AutoScrollHandler {
     this.relatedFocusEventHappened_ = false;
 
     this.scrollForCommandNavigation_(
-            target, dir, pred, unit, speechProps, rootPred, retryCommandFunc)
+            target, dir, pred, unit, speechProps ?? undefined, rootPred,
+            retryCommandFunc)
         .catch(() => this.isScrolling_ = false);
     return false;
   }
@@ -115,29 +114,31 @@ export class AutoScrollHandler {
   /**
    * This function will scroll to find nodes that are offscreen and not in the
    * tree.
-   * @param {!chrome.automation.AutomationNode} bound The current cell node.
-   * @param {!string} command the command handler command.
-   * @param {!CursorRange} target
-   * @param {!constants.Dir} dir the direction of movement
-   * @return {boolean} True if the given navigation can be executed. False if
+   * @param bound The current cell node.
+   * @param command the command handler command.
+   * @param dir the direction of movement
+   * @return True if the given navigation can be executed. False if
    *     the given navigation shouldn't happen, and AutoScrollHandler handles
    *     the command instead.
    */
-  scrollToFindNodes(bound, command, target, dir, postScrollCallback) {
-    if (bound.parent.hasHiddenOffscreenNodes && target) {
+  scrollToFindNodes(
+      bound: AutomationNode, command: Command, target: CursorRange, dir: Dir,
+      postScrollCallback: Function): boolean {
+    if (bound.parent?.hasHiddenOffscreenNodes && target) {
       let pred = null;
       // Handle grids going over edge.
 
-      if (bound.parent.role === chrome.automation.RoleType.GRID) {
+      if (bound.parent?.role === RoleType.GRID) {
+        // TODO(b/314203187): Not null asserted, check that this is correct.
         const currentRow = bound.tableCellRowIndex;
-        const totalRows = bound.parent.tableRowCount;
+        const totalRows = bound.parent!.tableRowCount!;
         const currentCol = bound.tableCellColumnIndex;
-        const totalCols = bound.parent.tableColumnCount;
+        const totalCols = bound.parent!.tableColumnCount!;
         if (command === Command.NEXT_ROW || command === Command.PREVIOUS_ROW) {
-          if (dir === constants.Dir.BACKWARD && currentRow === 0) {
+          if (dir === Dir.BACKWARD && currentRow === 0) {
             return true;
           } else if (
-              dir === constants.Dir.FORWARD && currentRow === (totalRows - 1)) {
+              dir === Dir.FORWARD && currentRow === (totalRows - 1)) {
             return true;
           }
           // Create predicate
@@ -147,10 +148,10 @@ export class AutoScrollHandler {
           });
         } else if (
             command === Command.NEXT_COL || command === Command.PREVIOUS_COL) {
-          if (dir === constants.Dir.BACKWARD && currentCol === 0) {
+          if (dir === Dir.BACKWARD && currentCol === 0) {
             return true;
           } else if (
-              dir === constants.Dir.FORWARD && currentCol === (totalCols - 1)) {
+              dir === Dir.FORWARD && currentCol === (totalCols - 1)) {
             return true;
           }
           // Create predicate
@@ -168,24 +169,21 @@ export class AutoScrollHandler {
     return true;
   }
 
-  /**
-   * @param {!CursorRange} target The range that is going to be navigated
-   *     before scrolling.
-   * @return {?AutomationNode}
-   */
-  findScrollableAncestor_(target) {
+  /** @param target The range that is going to be navigated before scrolling. */
+  private findScrollableAncestor_(target: CursorRange): AutomationNode | null {
     let ancestors;
     if (ChromeVoxRange.current && target.equals(ChromeVoxRange.current)) {
       ancestors = AutomationUtil.getAncestors(target.start.node);
     } else {
+      // TODO(b/314203187): Not null asserted, check that this is correct.
       ancestors = AutomationUtil.getUniqueAncestors(
-          target.start.node, ChromeVoxRange.current.start.node);
+          target.start.node, ChromeVoxRange.current!.start.node);
     }
     // Check if we are in ARC++. Scrolling behavior should only happen there,
     // where additional nodes are not loaded until the user scrolls.
     if (!this.allowWebContentsForTesting_ &&
         !ancestors.find(
-            node => node.role === chrome.automation.RoleType.APPLICATION)) {
+            node => node.role === RoleType.APPLICATION)) {
       return null;
     }
     const scrollable =
@@ -193,49 +191,44 @@ export class AutoScrollHandler {
     return scrollable ?? null;
   }
 
-  /**
-   * @param {!CursorRange} target
-   * @param {constants.Dir} dir
-   * @param {AutomationNode} scrollable
-   * @return {AutomationNode}
-   * @private
-   */
-  tryFindingContainingScrollableIfAtEdge_(target, dir, scrollable) {
+  private tryFindingContainingScrollableIfAtEdge_(
+      target: CursorRange, dir: Dir, scrollable: AutomationNode | undefined):
+      AutomationNode | undefined {
     let current = target.start.node;
     let parent = current.parent;
     while (parent?.root === current.root) {
-      if (!(dir === constants.Dir.BACKWARD && parent.firstChild === current) &&
-          !(dir === constants.Dir.FORWARD && parent.lastChild === current)) {
+      if (!(dir === Dir.BACKWARD && parent?.firstChild === current) &&
+          !(dir === Dir.FORWARD && parent?.lastChild === current)) {
         // Currently on non-edge node. Don't try scrolling.
-        return null;
+        return undefined;
       }
       if (AutomationPredicate.autoScrollable(current)) {
         scrollable = current;
       }
-      current = parent;
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      current = parent!;
       parent = current.parent;
     }
     return scrollable;
   }
 
   /**
-   * @param {!CursorRange} target The range that is going to be navigated
-   *     before scrolling.
-   * @param {constants.Dir} dir The direction to navigate.
-   * @param {?AutomationPredicate.Unary} pred The predicate to match.
-   * @param {?CursorUnit} unit The unit to navigate by.
-   * @param {?TtsSpeechProperties} speechProps The optional speech properties
-   *     given to |navigateTo| to provide feedback for the current command.
-   * @param {AutomationPredicate.Unary} rootPred The predicate that expresses
-   *     the current navigation root.
-   * @param {Function} retryCommandFunc The callback used to retry the command
-   *     with refreshed tree after scrolling.
-   * @private
+   * @param target The range that is going to be navigated before scrolling.
+   * @param dir The direction to navigate.
+   * @param pred The predicate to match.
+   * @param unit The unit to navigate by.
+   * @param speechProps The optional speech properties given to |navigateTo| to
+   *     provide feedback for the current command.
+   * @param rootPred The predicate that expresses the current navigation root.
+   * @param retryCommandFunc The callback used to retry the command with
+   *     refreshed tree after scrolling.
    */
-  async scrollForCommandNavigation_(
-      target, dir, pred, unit, speechProps, rootPred, retryCommandFunc) {
+  private async scrollForCommandNavigation_(
+      target: CursorRange, dir: Dir, pred: Unary | null,
+      unit: CursorUnit | null, speechProps: TtsSpeechProperties | undefined,
+      rootPred: Unary, retryCommandFunc: Function): Promise<void> {
     const scrollResult =
-        await this.scrollInDirection_(this.scrollingNode_, dir);
+        await this.scrollInDirection_(this.scrollingNode_ ?? undefined, dir);
     if (!scrollResult) {
       this.isScrolling_ = false;
       ChromeVoxRange.navigateTo(target, false, speechProps);
@@ -243,7 +236,7 @@ export class AutoScrollHandler {
     }
 
     // Wait for a scrolled event or timeout.
-    await this.waitForScrollEvent_(this.scrollingNode_);
+    await this.waitForScrollEvent_(this.scrollingNode_ ?? undefined);
 
     // When a scrolling animation happens, SCROLL_POSITION_CHANGED event can
     // be dispatched multiple times, and there is a chance that the ui tree is
@@ -271,8 +264,9 @@ export class AutoScrollHandler {
 
     // If the focus has been changed for some reason, do nothing to
     // prevent disturbing the latest navigation.
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     if (!ChromeVoxRange.current ||
-        !this.rangeBeforeScroll_.equals(ChromeVoxRange.current)) {
+        !ChromeVoxRange.current.equals(this.rangeBeforeScroll_!)) {
       return;
     }
 
@@ -280,18 +274,14 @@ export class AutoScrollHandler {
     retryCommandFunc();
   }
 
-  /**
-   * @param {AutomationNode} scrollable
-   * @param {!constants.Dir} dir
-   * @return {!Promise<boolean>}
-   * @private
-   */
-  async scrollInDirection_(scrollable, dir) {
+  private async scrollInDirection_(
+      scrollable: AutomationNode | undefined, dir: Dir): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (!scrollable) {
         reject('Scrollable cannot be null or undefined when scrolling');
+        return;
       }
-      if (dir === constants.Dir.FORWARD) {
+      if (dir === Dir.FORWARD) {
         scrollable.scrollForward(resolve);
       } else {
         scrollable.scrollBackward(resolve);
@@ -299,24 +289,21 @@ export class AutoScrollHandler {
     });
   }
 
-  /**
-   * @param {AutomationNode} scrollable
-   * @return {!Promise}
-   * @private
-   */
-  async waitForScrollEvent_(scrollable) {
+  private async waitForScrollEvent_(
+      scrollable: AutomationNode | undefined): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!scrollable) {
         reject('Scrollable cannot be null when waiting for scroll event');
+        return;
       }
-      let cleanUp;
-      let listener;
-      let timeoutId;
-      const onTimeout = () => {
+      let cleanUp: VoidFunction;
+      let listener: EventHandler;
+      let timeoutId: number;
+      const onTimeout = (): void => {
         cleanUp();
         reject('timeout to wait for scrolled event.');
       };
-      const onScrolled = () => {
+      const onScrolled = (): void => {
         cleanUp();
         resolve();
       };
@@ -325,8 +312,9 @@ export class AutoScrollHandler {
         clearTimeout(timeoutId);
       };
 
+      // TODO(b/314203187): Not null asserted, check that this is correct.
       listener = new EventHandler(
-          scrollable, RELATED_SCROLL_EVENT_TYPES, onScrolled, {capture: true});
+          scrollable!, RELATED_SCROLL_EVENT_TYPES, onScrolled, {capture: true});
       listener.start();
       timeoutId = setTimeout(onTimeout, TIMEOUT_SCROLLED_EVENT_MS);
     });
@@ -341,30 +329,30 @@ export class AutoScrollHandler {
    * the ARC tree. In this case, navigate to the first or the last matching
    * range in the scrollable.
    *
-   * @param {?AutomationPredicate.Unary} pred The predicate to match.
-   * @param {?CursorUnit} unit The unit to navigate by.
-   * @param {constants.Dir} dir The direction to navigate.
-   * @param {AutomationPredicate.Unary} rootPred The predicate that expresses
-   *     the current navigation root.
-   * @param {!AutomationNode} scrollable
-   * @return {?CursorRange}
-   * @private
+   * @param pred The predicate to match.
+   * @param unit The unit to navigate by.
+   * @param dir The direction to navigate.
+   * @param rootPred The predicate that expresses the current navigation root.
    */
-  handleScrollingInAndroidRecyclerView_(pred, unit, dir, rootPred, scrollable) {
+  private handleScrollingInAndroidRecyclerView_(
+      pred: Unary | null, unit: CursorUnit | null, dir: Dir, rootPred: Unary,
+      scrollable: AutomationNode): CursorRange | null {
     let nextRange = null;
     if (!pred && unit) {
       nextRange = CursorRange.fromNode(scrollable).sync(unit, dir);
       if (unit === CursorUnit.NODE) {
+        // TODO(b/314203187): Not null asserted, check that this is correct.
         nextRange = CommandHandlerInterface.instance.skipLabelOrDescriptionFor(
-            nextRange, dir);
+            nextRange!, dir);
       }
     } else if (pred) {
       let node;
-      if (dir === constants.Dir.FORWARD) {
+      if (dir === Dir.FORWARD) {
         node = AutomationUtil.findNextNode(
             scrollable, dir, pred, {root: rootPred, skipInitialSubtree: false});
       } else {
-        node = AutomationUtil.findNodePost(this.scrollingNode_, dir, pred);
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        node = AutomationUtil.findNodePost(this.scrollingNode_!, dir, pred);
       }
       if (node) {
         nextRange = CursorRange.fromNode(node);
@@ -383,15 +371,15 @@ export class AutoScrollHandler {
    * Above two cases interrupt the auto scrolling. So when any of these are
    * happening, this returns false.
    *
-   * @param {AutomationNode} node the node that is the focus event target.
-   * @return {boolean} True if others can handle the event. False if the
-   *     event shouldn't be propagated.
+   * @param node the node that is the focus event target.
+   * @return True if others can handle the event. False if the event shouldn't
+   *     be propagated.
    */
-  onFocusEventNavigation(node) {
+  onFocusEventNavigation(node: AutomationNode | undefined): boolean {
     if (!this.scrollingNode_ || !node) {
       return true;
     }
-    const elapsedTime = new Date() - this.lastScrolledTime_;
+    const elapsedTime = new Date().valueOf() - this.lastScrolledTime_.valueOf();
     if (elapsedTime > TIMEOUT_FOCUS_EVENT_DROP_MS) {
       return true;
     }
@@ -407,18 +395,13 @@ export class AutoScrollHandler {
   }
 }
 
-/** @type {AutoScrollHandler} */
-AutoScrollHandler.instance;
-
 // Variables local to the module.
 
 /**
  * An array of Automation event types that AutoScrollHandler observes when
  * performing a scroll action.
- * @private
- * @const {!Array<EventType>}
  */
-const RELATED_SCROLL_EVENT_TYPES = [
+const RELATED_SCROLL_EVENT_TYPES: EventType[] = [
   // This is sent by ARC++.
   EventType.SCROLL_POSITION_CHANGED,
   // These two events are sent by Web and Views via AXEventGenerator.
@@ -432,14 +415,12 @@ const RELATED_SCROLL_EVENT_TYPES = [
  * TODO(hirokisato): Find an appropriate timeout in our case. TalkBack uses 500
  * milliseconds. See
  * https://github.com/google/talkback/blob/acd0bc7631a3dfbcf183789c7557596a45319e1f/talkback/src/main/java/ScrollEventInterpreter.java#L169
- * @const {number}
  */
 const TIMEOUT_SCROLLED_EVENT_MS = 1500;
 
 /**
  * The timeout that the focused event should be dropped. This is longer than
  * |TIMEOUT_CALLBACK_MS| because a focus event can happen after the scrolling.
- * @const {number}
  */
 const TIMEOUT_FOCUS_EVENT_DROP_MS = 2000;
 
@@ -447,7 +428,6 @@ const TIMEOUT_FOCUS_EVENT_DROP_MS = 2000;
  * The delay in milliseconds to wait to handle a scrolled event after the event
  * is first dispatched in order to wait for UI stabilized. See also
  * https://github.com/google/talkback/blob/6c0b475b7f52469e309e51bfcc13de58f18176ff/talkback/src/main/java/com/google/android/accessibility/talkback/interpreters/AutoScrollInterpreter.java#L42
- * @const {number}
  */
 const DELAY_HANDLE_SCROLLED_MS = 150;
 

@@ -42,6 +42,7 @@ common_tsc_dir =
 # TS files to compile.
 ts_modules = [
   "background/abstract_tts.ts",
+  "background/auto_scroll_handler.ts",
   "background/background.ts",
   "background/braille/braille_background.ts",
   "background/braille/braille_captions_background.ts",
@@ -145,7 +146,6 @@ ts_modules = [
 js_modules = [
   "background/abstract_earcons.js",
   "background/automation_object_constructor_installer.js",
-  "background/auto_scroll_handler.js",
   "background/braille/braille_input_handler.js",
   "background/braille/braille_translator_manager.js",
   "background/braille/spans.js",
