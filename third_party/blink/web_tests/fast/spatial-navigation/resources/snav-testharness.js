@@ -159,7 +159,7 @@
         // Some test pages give focus to arbitrary element as start point.
         // Otherwise, ensure root document as start point.
         if (!focusedElement())
-          document.focus();
+          document.body.focus();
         stepAndAssertMoves(expectedMoves);
       }));
     }
