@@ -1236,10 +1236,6 @@ suite('PlusAddressesTest', function() {
       // Required to show the plus address management entry.
       plusAddressEnabled: true,
       plusAddressManagementUrl: fakeUrl,
-      // Required to show the plus address management entry in the Autofill
-      // section - currently dependent on a field trial config.
-      // TODO: crbug.com/328083944 - Remove.
-      plusAddressSettingInAddressSection: true,
     });
   });
 

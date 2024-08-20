@@ -74,12 +74,6 @@ export class SettingsAutofillPageElement extends
         },
       },
 
-      isPlusAddressAutofillLevelSettingEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('plusAddressEnabled') &&
-            !loadTimeData.getBoolean('plusAddressSettingInAddressSection'),
-      },
-
       plusAddressIcon_: {
         type: String,
         value() {

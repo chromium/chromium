@@ -84,10 +84,9 @@ export class SettingsAutofillSectionElement extends
       showAddressDialog_: Boolean,
       showAddressRemoveConfirmationDialog_: Boolean,
 
-      isPlusAddressAddressLevelSettingEnabled_: {
+      isPlusAddressEnabled_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('plusAddressEnabled') &&
-            loadTimeData.getBoolean('plusAddressSettingInAddressSection'),
+        value: () => loadTimeData.getBoolean('plusAddressEnabled'),
       },
     };
   }
