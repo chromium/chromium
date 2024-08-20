@@ -11,7 +11,7 @@ import type {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoe
 import {PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert.js';
-import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 export class MockElement {
@@ -197,24 +197,26 @@ export function createMockPdfPluginForTest(): MockPdfPluginElement {
       MockPdfPluginElement;
 }
 
-class TestBookmarksElement extends CrLitElement {
+class TestBookmarksElement extends PolymerElement {
   static get is() {
     return 'test-bookmarks';
   }
 
-  override render() {
-    return this.bookmarks.map(
-        item => html`<viewer-bookmark .bookmark="${item}" depth="0">
-             </viewer-bookmark>`);
+  static get template() {
+    return html`
+      <template is="dom-repeat" items="[[bookmarks]]">
+        <viewer-bookmark bookmark="[[item]]" depth="0"></viewer-bookmark>
+      </template>
+    `;
   }
 
-  static override get properties() {
+  static get properties() {
     return {
-      bookmarks: {type: Array},
+      bookmarks: Array,
     };
   }
 
-  bookmarks: Bookmark[] = [];
+  bookmarks: Bookmark[];
 }
 
 declare global {
