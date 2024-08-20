@@ -56,6 +56,8 @@ public class SafetyHubModuleProperties {
 
     public static final PropertyModel.WritableBooleanPropertyKey IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey IS_EXPANDED =
+            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_CONTROLLED_BY_POLICY =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_SIGNED_IN =
@@ -85,6 +87,7 @@ public class SafetyHubModuleProperties {
 
     public static final PropertyKey[] COMMON_SAFETY_HUB_MODULE_KEYS = {
         IS_VISIBLE,
+        IS_EXPANDED,
         IS_CONTROLLED_BY_POLICY,
         IS_SIGNED_IN,
         ACCOUNT_EMAIL,
