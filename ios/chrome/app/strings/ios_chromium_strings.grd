@@ -243,7 +243,7 @@
       <message name="IDS_IOS_DATA_NOT_UPLOADED_DIALOG_BODY" desc="Body of a dialog that is shown when the user starts to sign out; the user chooses to sync some or all data types, but some data hasn't been saved in their Google Account yet (for example, if there was an error). This string follows the heading 'Some Data Isn't Saved Yet', and the user can choose to tap on the buttons 'Cancel' or 'Delete and Sign Out'. If the user chooses to continue to sign out, then any of their data (such as bookmarks, passwords, history, settings, and more) that isn't saved in their account will be deleted. The tone should be helpful and instructive. [iOS only]">
         Some of your Chromium data hasn't been saved in your Google Account yet.
 
-        Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.
+Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE" desc="Description to user about how to reach the default browser setting in their device. [iOS only]">
         To make Chromium your default:
@@ -936,7 +936,7 @@ For more settings that use data to improve your Chromium experience, go to <ph n
       </message>
       <message name="IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_NOT_SAVED_DATA" desc="Body of a dialog shown to users when they sign out of Chrome but Chrome hasn't synced some data yet, which is permanently deleted if the user proceeds.  [iOS only].">
         Some of your Chromium data hasn't been saved in your Google Account yet.
-        Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.
+Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.
       </message>
       <message name="IDS_IOS_SIGNOUT_DIALOG_TITLE_WITHOUT_SYNCING_ACCOUNT" desc="Title of sign-out button, warning the user they’ll have access to less features once signed out. [iOS only].">
         Some Chromium features won’t be available anymore.
@@ -954,7 +954,7 @@ For more settings that use data to improve your Chromium experience, go to <ph n
         Chromium Actions
       </message>
       <message name="IDS_IOS_SUGGESTED_STRONG_PASSWORD_HINT_DISPLAYING_EMAIL" desc="Text shown alongside a suggested password to tell user that generated passwords are recorded by chrome. [Length: unlimited] [iOS only]">
-            You won't need to remember this password. It will be saved to Password Manager for <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
+        You won't need to remember this password. It will be saved to Password Manager for <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
       </message>
       <message name="IDS_IOS_SYNC_ENCRYPTION_PASSPHRASE_HINT_UNO" desc="The information text on how to reset encryption passphrase for sync, shown on the sync encryption settings [Length: 300em] [iOS only]">
         Passphrase encryption doesn’t include payment methods and addresses.
