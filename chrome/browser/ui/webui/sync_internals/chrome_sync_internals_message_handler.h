@@ -13,7 +13,11 @@ class ChromeSyncInternalsMessageHandler
     : public browser_sync::SyncInternalsMessageHandler,
       public content::WebUIMessageHandler {
  public:
-  ChromeSyncInternalsMessageHandler() = default;
+  ChromeSyncInternalsMessageHandler(
+      syncer::SyncService* sync_service,
+      syncer::SyncInvalidationsService* sync_invalidations_service,
+      syncer::UserEventService* user_event_service,
+      const std::string& channel);
 
   ChromeSyncInternalsMessageHandler(const ChromeSyncInternalsMessageHandler&) =
       delete;
@@ -23,10 +27,6 @@ class ChromeSyncInternalsMessageHandler
   ~ChromeSyncInternalsMessageHandler() override = default;
 
   // browser_sync::SyncInternalsMessageHandler overrides.
-  syncer::SyncService* GetSyncService() override;
-  syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
-  syncer::UserEventService* GetUserEventService() override;
-  std::string GetChannel() override;
   void SendEventToPage(std::string_view event_name,
                        base::span<const base::ValueView> args) override;
   void ResolvePageCallback(const base::ValueView callback_id,
@@ -40,7 +40,11 @@ class ChromeSyncInternalsMessageHandler
   // TODO(crbug.com/360321896): Remove when the unit test is testing
   // SyncInternalsMessageHandler instead.
   explicit ChromeSyncInternalsMessageHandler(
-      AboutSyncDataDelegate about_sync_data_delegate);
+      AboutSyncDataDelegate about_sync_data_delegate,
+      syncer::SyncService* sync_service,
+      syncer::SyncInvalidationsService* sync_invalidations_service,
+      syncer::UserEventService* user_event_service,
+      const std::string& channel);
 
  private:
   // When handling a message page from the page, this class might want to reply

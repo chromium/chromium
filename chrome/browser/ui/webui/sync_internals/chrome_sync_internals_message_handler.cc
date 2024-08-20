@@ -10,36 +10,28 @@
 
 #include "base/containers/span.h"
 #include "base/ranges/algorithm.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/sync_invalidations_service_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/sync/user_event_service_factory.h"
-#include "chrome/common/channel_info.h"
 
 ChromeSyncInternalsMessageHandler::ChromeSyncInternalsMessageHandler(
-    AboutSyncDataDelegate about_sync_data_delegate)
-    : SyncInternalsMessageHandler(std::move(about_sync_data_delegate)) {}
+    syncer::SyncService* sync_service,
+    syncer::SyncInvalidationsService* sync_invalidations_service,
+    syncer::UserEventService* user_event_service,
+    const std::string& channel)
+    : SyncInternalsMessageHandler(sync_service,
+                                  sync_invalidations_service,
+                                  user_event_service,
+                                  channel) {}
 
-syncer::SyncService* ChromeSyncInternalsMessageHandler::GetSyncService() {
-  return SyncServiceFactory::GetForProfile(
-      Profile::FromWebUI(web_ui())->GetOriginalProfile());
-}
-
-syncer::SyncInvalidationsService*
-ChromeSyncInternalsMessageHandler::GetSyncInvalidationsService() {
-  return SyncInvalidationsServiceFactory::GetForProfile(
-      Profile::FromWebUI(web_ui())->GetOriginalProfile());
-}
-
-syncer::UserEventService*
-ChromeSyncInternalsMessageHandler::GetUserEventService() {
-  return browser_sync::UserEventServiceFactory::GetForProfile(
-      Profile::FromWebUI(web_ui())->GetOriginalProfile());
-}
-
-std::string ChromeSyncInternalsMessageHandler::GetChannel() {
-  return chrome::GetChannelName(chrome::WithExtendedStable(true));
-}
+ChromeSyncInternalsMessageHandler::ChromeSyncInternalsMessageHandler(
+    AboutSyncDataDelegate about_sync_data_delegate,
+    syncer::SyncService* sync_service,
+    syncer::SyncInvalidationsService* sync_invalidations_service,
+    syncer::UserEventService* user_event_service,
+    const std::string& channel)
+    : SyncInternalsMessageHandler(std::move(about_sync_data_delegate),
+                                  sync_service,
+                                  sync_invalidations_service,
+                                  user_event_service,
+                                  channel) {}
 
 void ChromeSyncInternalsMessageHandler::SendEventToPage(
     std::string_view event_name,

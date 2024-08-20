@@ -44,11 +44,19 @@ class SyncInternalsMessageHandler : public syncer::SyncServiceObserver,
       base::RepeatingCallback<base::Value::Dict(syncer::SyncService* service,
                                                 const std::string& channel)>;
 
-  SyncInternalsMessageHandler();
+  SyncInternalsMessageHandler(
+      syncer::SyncService* sync_service,
+      syncer::SyncInvalidationsService* sync_invalidations_service,
+      syncer::UserEventService* user_event_service,
+      const std::string& channel);
 
   // Constructor used for unit testing to override dependencies.
-  explicit SyncInternalsMessageHandler(
-      AboutSyncDataDelegate about_sync_data_delegate);
+  SyncInternalsMessageHandler(
+      AboutSyncDataDelegate about_sync_data_delegate,
+      syncer::SyncService* sync_service,
+      syncer::SyncInvalidationsService* sync_invalidations_service,
+      syncer::UserEventService* user_event_service,
+      const std::string& channel);
 
   SyncInternalsMessageHandler(const SyncInternalsMessageHandler&) = delete;
   SyncInternalsMessageHandler& operator=(const SyncInternalsMessageHandler&) =
@@ -65,19 +73,6 @@ class SyncInternalsMessageHandler : public syncer::SyncServiceObserver,
   // Disables all messages sent from this class to the page via
   // SendEventToPage() or ResolvePageCallback().
   void DisableMessagesToPage();
-
-  // Gets the SyncService of the underlying original profile. May return
-  // nullptr (e.g. if sync is disabled on the command line).
-  virtual syncer::SyncService* GetSyncService() = 0;
-
-  // Gets the SyncInvalidationsService of the underlying original profile.
-  virtual syncer::SyncInvalidationsService* GetSyncInvalidationsService() = 0;
-
-  // Gets the UserEventService of the underlying original profile.
-  virtual syncer::UserEventService* GetUserEventService() = 0;
-
-  // The version_info::Channel in string form.
-  virtual std::string GetChannel() = 0;
 
   // Sends `event_name` to the page. The page can listen to events via
   // addWebUiListener().
@@ -140,9 +135,6 @@ class SyncInternalsMessageHandler : public syncer::SyncServiceObserver,
   // syncer::InvalidationsListener implementation.
   void OnInvalidationReceived(const std::string& payload) override;
 
-  // Using base::ScopedObservation is important because GetSyncService() and
-  // GetSyncInvalidationsService() are virtual and cannot be invoked on
-  // destruction to remove the observer.
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
   base::ScopedObservation<syncer::SyncService, syncer::ProtocolEventObserver>
@@ -156,7 +148,11 @@ class SyncInternalsMessageHandler : public syncer::SyncServiceObserver,
   bool include_specifics_ = false;
 
   // An abstraction of who creates the about sync info value map.
-  AboutSyncDataDelegate about_sync_data_delegate_;
+  const AboutSyncDataDelegate about_sync_data_delegate_;
+  const raw_ptr<syncer::SyncService> sync_service_;
+  const raw_ptr<syncer::SyncInvalidationsService> sync_invalidations_service_;
+  const raw_ptr<syncer::UserEventService> user_event_service_;
+  const std::string channel_;
 
   base::WeakPtrFactory<SyncInternalsMessageHandler> weak_ptr_factory_{this};
 };

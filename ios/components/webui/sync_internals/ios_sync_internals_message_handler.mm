@@ -9,26 +9,17 @@
 
 #import "base/containers/span.h"
 #import "base/ranges/algorithm.h"
-#import "ios/components/webui/web_ui_provider.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 
-syncer::SyncService* IOSSyncInternalsMessageHandler::GetSyncService() {
-  return web_ui::GetSyncServiceForWebUI(web_ui());
-}
-
-syncer::SyncInvalidationsService*
-IOSSyncInternalsMessageHandler::GetSyncInvalidationsService() {
-  return web_ui::GetSyncInvalidationsServiceForWebUI(web_ui());
-}
-
-syncer::UserEventService*
-IOSSyncInternalsMessageHandler::GetUserEventService() {
-  return web_ui::GetUserEventServiceForWebUI(web_ui());
-}
-
-std::string IOSSyncInternalsMessageHandler::GetChannel() {
-  return web_ui::GetChannelString();
-}
+IOSSyncInternalsMessageHandler::IOSSyncInternalsMessageHandler(
+    syncer::SyncService* sync_service,
+    syncer::SyncInvalidationsService* sync_invalidations_service,
+    syncer::UserEventService* user_event_service,
+    const std::string& channel)
+    : browser_sync::SyncInternalsMessageHandler(sync_service,
+                                                sync_invalidations_service,
+                                                user_event_service,
+                                                channel) {}
 
 void IOSSyncInternalsMessageHandler::SendEventToPage(
     std::string_view event_name,

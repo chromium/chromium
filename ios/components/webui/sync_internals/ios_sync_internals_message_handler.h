@@ -13,7 +13,11 @@ class IOSSyncInternalsMessageHandler
     : public browser_sync::SyncInternalsMessageHandler,
       public web::WebUIIOSMessageHandler {
  public:
-  IOSSyncInternalsMessageHandler() = default;
+  IOSSyncInternalsMessageHandler(
+      syncer::SyncService* sync_service,
+      syncer::SyncInvalidationsService* sync_invalidations_service,
+      syncer::UserEventService* user_event_service,
+      const std::string& channel);
 
   IOSSyncInternalsMessageHandler(const IOSSyncInternalsMessageHandler&) =
       delete;
@@ -23,10 +27,6 @@ class IOSSyncInternalsMessageHandler
   ~IOSSyncInternalsMessageHandler() override = default;
 
   // browser_sync::SyncInternalsMessageHandler overrides.
-  syncer::SyncService* GetSyncService() override;
-  syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
-  syncer::UserEventService* GetUserEventService() override;
-  std::string GetChannel() override;
   void SendEventToPage(std::string_view event_name,
                        base::span<const base::ValueView> args) override;
   void ResolvePageCallback(const base::ValueView callback_id,

@@ -56,18 +56,34 @@ bool GetIncludeSpecificsInitialState() {
 
 }  //  namespace
 
-SyncInternalsMessageHandler::SyncInternalsMessageHandler()
-    : SyncInternalsMessageHandler(base::BindRepeating(
-          &syncer::sync_ui_util::ConstructAboutInformation,
-          syncer::sync_ui_util::IncludeSensitiveData(true))) {
+SyncInternalsMessageHandler::SyncInternalsMessageHandler(
+    syncer::SyncService* sync_service,
+    syncer::SyncInvalidationsService* sync_invalidations_service,
+    syncer::UserEventService* user_event_service,
+    const std::string& channel)
+    : SyncInternalsMessageHandler(
+          base::BindRepeating(&syncer::sync_ui_util::ConstructAboutInformation,
+                              syncer::sync_ui_util::IncludeSensitiveData(true)),
+          sync_service,
+          sync_invalidations_service,
+          user_event_service,
+          channel) {
   // This class serves to display debug information to the user, so it's fine to
   // include sensitive data in ConstructAboutInformation() above.
 }
 
 SyncInternalsMessageHandler::SyncInternalsMessageHandler(
-    AboutSyncDataDelegate about_sync_data_delegate)
+    AboutSyncDataDelegate about_sync_data_delegate,
+    syncer::SyncService* sync_service,
+    syncer::SyncInvalidationsService* sync_invalidations_service,
+    syncer::UserEventService* user_event_service,
+    const std::string& channel)
     : include_specifics_(GetIncludeSpecificsInitialState()),
-      about_sync_data_delegate_(std::move(about_sync_data_delegate)) {}
+      about_sync_data_delegate_(std::move(about_sync_data_delegate)),
+      sync_service_(sync_service),
+      sync_invalidations_service_(sync_invalidations_service),
+      user_event_service_(user_event_service),
+      channel_(channel) {}
 
 SyncInternalsMessageHandler::~SyncInternalsMessageHandler() = default;
 
@@ -127,17 +143,15 @@ void SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates(
   // Checking IsObserving() protects us from double-registering.  This could
   // happen on a page refresh, where the JavaScript gets re-run but the
   // message handler remains unchanged.
-  syncer::SyncService* sync_service = GetSyncService();
-  if (sync_service && !sync_service_observation_.IsObserving()) {
-    sync_service_observation_.Observe(sync_service);
+  if (sync_service_ && !sync_service_observation_.IsObserving()) {
+    sync_service_observation_.Observe(sync_service_);
   }
-  if (sync_service && !protocol_event_observation_.IsObserving()) {
-    protocol_event_observation_.Observe(sync_service);
+  if (sync_service_ && !protocol_event_observation_.IsObserving()) {
+    protocol_event_observation_.Observe(sync_service_);
   }
-  syncer::SyncInvalidationsService* invalidations_service =
-      GetSyncInvalidationsService();
-  if (invalidations_service && !invalidations_observation_.IsObserving()) {
-    invalidations_observation_.Observe(invalidations_service);
+  if (sync_invalidations_service_ &&
+      !invalidations_observation_.IsObserving()) {
+    invalidations_observation_.Observe(sync_invalidations_service_);
   }
 
   SendAboutInfoAndEntityCounts();
@@ -177,13 +191,12 @@ void SyncInternalsMessageHandler::HandleGetAllNodes(
 
   const std::string& callback_id = args[0].GetString();
 
-  syncer::SyncService* service = GetSyncService();
-  if (service) {
+  if (sync_service_) {
     // This opens up the possibility of non-javascript code calling us
     // asynchronously, and potentially at times we're not allowed to call into
     // the javascript side. We guard against this by invalidating this weak ptr
     // should javascript become disallowed.
-    service->GetAllNodesForDebugging(
+    sync_service_->GetAllNodesForDebugging(
         base::BindOnce(&SyncInternalsMessageHandler::OnReceivedAllNodes,
                        weak_ptr_factory_.GetWeakPtr(), callback_id));
   }
@@ -212,25 +225,24 @@ void SyncInternalsMessageHandler::HandleWriteUserEvent(
     event_specifics.set_navigation_id(StringAtIndexToInt64(args, 1u));
   }
 
-  GetUserEventService()->RecordUserEvent(event_specifics);
+  user_event_service_->RecordUserEvent(event_specifics);
 }
 
 void SyncInternalsMessageHandler::HandleRequestStart(
     const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
 
-  syncer::SyncService* service = GetSyncService();
-  if (!service) {
+  if (!sync_service_) {
     return;
   }
 
-  service->SetSyncFeatureRequested();
+  sync_service_->SetSyncFeatureRequested();
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // If the service was previously stopped via StopAndClear(), then the
   // "first-setup-complete" bit was also cleared, and now the service wouldn't
   // fully start up. So set that too.
-  service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+  sync_service_->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -239,22 +251,20 @@ void SyncInternalsMessageHandler::HandleRequestStopClearData(
     const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
 
-  syncer::SyncService* service = GetSyncService();
-  if (!service) {
+  if (!sync_service_) {
     return;
   }
 
-  service->StopAndClear();
+  sync_service_->StopAndClear();
 }
 
 void SyncInternalsMessageHandler::HandleTriggerRefresh(
     const base::Value::List& args) {
-  syncer::SyncService* service = GetSyncService();
-  if (!service) {
+  if (!sync_service_) {
     return;
   }
 
-  service->TriggerRefresh(syncer::DataTypeSet::All());
+  sync_service_->TriggerRefresh(syncer::DataTypeSet::All());
 }
 
 void SyncInternalsMessageHandler::OnReceivedAllNodes(
@@ -298,12 +308,12 @@ void SyncInternalsMessageHandler::OnInvalidationReceived(
 
 void SyncInternalsMessageHandler::SendAboutInfoAndEntityCounts() {
   base::Value::Dict value =
-      about_sync_data_delegate_.Run(GetSyncService(), GetChannel());
+      about_sync_data_delegate_.Run(sync_service_, channel_);
   base::ValueView event_args[] = {value};
   SendEventToPage(syncer::sync_ui_util::kOnAboutInfoUpdated, event_args);
 
-  if (syncer::SyncService* service = GetSyncService()) {
-    service->GetEntityCountsForDebugging(
+  if (sync_service_) {
+    sync_service_->GetEntityCountsForDebugging(
         BindRepeating(&SyncInternalsMessageHandler::OnGotEntityCounts,
                       weak_ptr_factory_.GetWeakPtr()));
   }
