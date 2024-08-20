@@ -5,7 +5,9 @@
 assert(is_win, "This only runs on Windows.")
 
 # Runs mc.exe over a list of sources. The outputs (a header and rc file) are
-# placed in the target gen dir, and compiled.
+# placed in the target gen dir, and compiled. Sources without a BOM will be
+# processed as if they are UTF-16LE. Generated text files will be written in the
+# ANSI codepage.
 #
 # sources
 #   List of message files to process.
@@ -60,7 +62,7 @@ template("message_compiler") {
       "-r",
       rebase_path(target_gen_dir, root_build_dir),
 
-      # Input is Unicode.
+      # Sources without a BOM are UTF-16LE.
       "-u",
     ]
     if (defined(invoker.user_mode_logging) && invoker.user_mode_logging) {
