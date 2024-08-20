@@ -9115,6 +9115,22 @@ void RenderFrameHostImpl::DestroyFencedFrame(FencedFrame& fenced_frame) {
   auto it = base::ranges::find_if(fenced_frames_,
                                   base::MatchesUniquePtr(&fenced_frame));
   CHECK(it != fenced_frames_.end());
+
+  RenderFrameHostImpl* inner_root = (*it)->GetInnerRoot();
+  std::optional<FencedFrameProperties> root_properties =
+      inner_root->frame_tree_node()->GetFencedFrameProperties(
+          FencedFramePropertiesNodeSource::kFrameTreeRoot);
+  if (root_properties.has_value() &&
+      root_properties->HasDisabledNetworkForCurrentFrameTree()) {
+    // When a fenced frame is removed, any nonces used to revoke the frame's
+    // network access no longer need to be tracked.
+    StoragePartitionImpl* storage_partition = inner_root->GetStoragePartition();
+    storage_partition->ClearNoncesInNetworkContextAfterDelay({
+        root_properties->partition_nonce()->GetValueIgnoringVisibility(),
+        inner_root->GetPage().credentialless_iframes_nonce(),
+    });
+  }
+
   fenced_frames_.erase(it);
   // An ancestor's network revocation status could've changed as a result of
   // this fenced frame being removed.

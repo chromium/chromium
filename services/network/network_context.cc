@@ -3254,6 +3254,14 @@ void NetworkContext::RevokeNetworkForNonces(
   }
 }
 
+void NetworkContext::ClearNonces(
+    const std::vector<base::UnguessableToken>& nonces) {
+  for (const auto& nonce : nonces) {
+    network_revocation_nonces_.erase(nonce);
+    network_revocation_exemptions_.erase(nonce);
+  }
+}
+
 void NetworkContext::ExemptUrlFromNetworkRevocationForNonce(
     const GURL& exempted_url,
     const base::UnguessableToken& nonce,

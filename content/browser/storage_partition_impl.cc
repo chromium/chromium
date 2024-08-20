@@ -1219,6 +1219,27 @@ void StoragePartitionImpl::RevokeNetworkForNoncesInNetworkContext(
   network_revocation_nonces_.insert(std::begin(nonces), std::end(nonces));
 }
 
+void StoragePartitionImpl::ClearNoncesInNetworkContextAfterDelay(
+    const std::vector<base::UnguessableToken>& nonces) {
+  GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &StoragePartitionImpl::ClearNoncesInNetworkContextAfterDelayCallback,
+          weak_factory_.GetWeakPtr(), nonces),
+      clear_nonces_in_network_context_delay_);
+}
+
+void StoragePartitionImpl::ClearNoncesInNetworkContextAfterDelayCallback(
+    const std::vector<base::UnguessableToken>& nonces) {
+  GetNetworkContext()->ClearNonces(nonces);
+
+  for (const auto& nonce : nonces) {
+    network_revocation_nonces_.erase(nonce);
+  }
+
+  clear_nonces_in_network_context_callback_for_testing_.Run();
+}
+
 void StoragePartitionImpl::RemoveKeepAliveHandleFromMap(
     blink::LocalFrameToken frame_token,
     NavigationStateKeepAlive* keep_alive) {
@@ -3168,6 +3189,13 @@ void StoragePartitionImpl::SetNetworkContextForTesting(
 void StoragePartitionImpl::OverrideDeleteStaleSessionOnlyCookiesDelayForTesting(
     const base::TimeDelta& delay) {
   delete_stale_session_only_cookies_delay_ = delay;
+}
+
+void StoragePartitionImpl::SetClearNoncesInNetworkContextParamsForTesting(
+    const base::TimeDelta& delay,
+    base::RepeatingClosure callback) {
+  clear_nonces_in_network_context_delay_ = delay;
+  clear_nonces_in_network_context_callback_for_testing_ = callback;
 }
 
 base::WeakPtr<StoragePartitionImpl> StoragePartitionImpl::GetWeakPtr() {

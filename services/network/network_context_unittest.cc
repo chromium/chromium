@@ -9499,6 +9499,42 @@ TEST_F(NetworkContextTest, ExemptUrlFromNetworkRevocationForNonceTest) {
       nonce, GURL(kBarHttpsUrl)));
 }
 
+TEST_F(NetworkContextTest, ClearNoncesTest) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  const base::UnguessableToken nonce1 = base::UnguessableToken::Create();
+  const base::UnguessableToken nonce2 = base::UnguessableToken::Create();
+  const base::UnguessableToken nonce3 = base::UnguessableToken::Create();
+
+  const GURL kFooHttpsUrl = GURL("https://foo.com");
+
+  // Revoke nonce1 and nonce3 but not nonce2.
+  {
+    base::test::TestFuture<void> revoked;
+    network_context->RevokeNetworkForNonces(
+        {nonce1, nonce3}, base::BindOnce(revoked.GetCallback()));
+    EXPECT_TRUE(revoked.Wait());
+    EXPECT_FALSE(
+        network_context->IsNetworkForNonceAndUrlAllowed(nonce1, kFooHttpsUrl));
+    EXPECT_TRUE(
+        network_context->IsNetworkForNonceAndUrlAllowed(nonce2, kFooHttpsUrl));
+    EXPECT_FALSE(
+        network_context->IsNetworkForNonceAndUrlAllowed(nonce3, kFooHttpsUrl));
+  }
+
+  // Clear nonce1 and nonce3.
+  {
+    network_context->ClearNonces({nonce1, nonce3});
+    EXPECT_TRUE(
+        network_context->IsNetworkForNonceAndUrlAllowed(nonce1, kFooHttpsUrl));
+    EXPECT_TRUE(
+        network_context->IsNetworkForNonceAndUrlAllowed(nonce2, kFooHttpsUrl));
+    EXPECT_TRUE(
+        network_context->IsNetworkForNonceAndUrlAllowed(nonce3, kFooHttpsUrl));
+  }
+}
+
 // Verify that the Prefetch() method triggers a network request.
 TEST_F(NetworkContextTest, Prefetch) {
   base::test::ScopedFeatureList feature_list;
