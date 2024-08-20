@@ -140,6 +140,7 @@ static_library("ash") {
     "//chrome/browser/resources/chromeos/set_time_dialog:resources_grit",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/ash/account_manager",
+    "//chrome/browser/ui/webui/ash/add_supervision",
     "//chrome/browser/ui/webui/ash/cellular_setup",
     "//chrome/browser/ui/webui/ash/set_time_dialog",
     "//chrome/browser/ui/webui/ash/sys_internals",
@@ -200,6 +201,7 @@ static_library("ash") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ui/webui/ash/account_manager",
+    "//chrome/browser/ui/webui/ash/add_supervision",
     "//chrome/browser/ui/webui/ash/cellular_setup",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/set_time_dialog",
@@ -241,6 +243,7 @@ source_set("unit_tests") {
     "//ui/gfx:test_support",
 
     # Gather unit tests from subdirectories:
+    "//chrome/browser/ui/webui/ash/add_supervision:unit_tests",
     "//chrome/browser/ui/webui/ash/cloud_upload:unit_tests",
     "//chrome/browser/ui/webui/ash/emoji:unit_tests",
     "//chrome/browser/ui/webui/ash/enterprise_reporting:unit_tests",
@@ -308,6 +311,7 @@ source_set("browser_tests") {
     "//url",
 
     # Gather browser tests from subdirectories:
+    "//chrome/browser/ui/webui/ash/add_supervision:browser_tests",
     "//chrome/browser/ui/webui/ash/app_install:browser_tests",
     "//chrome/browser/ui/webui/ash/cloud_upload:browser_tests",
     "//chrome/browser/ui/webui/ash/crostini_upgrader:browser_tests",
