@@ -17076,7 +17076,9 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PlusAddressAffiliations",
+                        "PlusAddressAndSingleFieldFormFill",
                         "PlusAddressFallbackFromContextMenu",
+                        "PlusAddressLoadingStatesAndroid",
                         "PlusAddressOfferCreationOnSingleUsernameForms",
                         "PlusAddressRefresh",
                         "PlusAddressSettingsRefreshDesktop",
