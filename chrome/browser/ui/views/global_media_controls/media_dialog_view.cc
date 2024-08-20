@@ -76,7 +76,7 @@ using media_session::mojom::MediaSessionAction;
 
 namespace {
 
-static constexpr int kHorizontalMarginDip = 16;
+static constexpr int kHorizontalMarginDip = 20;
 static constexpr int kImageWidthDip = 20;
 static constexpr int kVerticalMarginDip = 10;
 
@@ -311,10 +311,10 @@ void MediaDialogView::UpdateBubbleSize() {
     target_language_combobox_->SetPreferredSize(
         gfx::Size(width - 2 * (kImageWidthDip + kHorizontalMarginDip +
                                ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                   views::DISTANCE_RELATED_LABEL_HORIZONTAL)),
+                                   DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL)),
                   target_language_combobox_->GetPreferredSize().height()));
 
-    separator_->SetPreferredLength(width);
+    separator_->SetPreferredLength(width - 2 * kHorizontalMarginDip);
     caption_settings_button_->SetPreferredSize(
         gfx::Size(width, live_caption_height));
   }
@@ -470,7 +470,7 @@ void MediaDialogView::Init() {
   }
   SetLayoutManager(std::make_unique<views::BoxLayout>(
                        views::BoxLayout::Orientation::kVertical))
-      ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kStart);
+      ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kCenter);
 
   InitializeLiveCaptionSection();
   if (media::IsLiveTranslateEnabled()) {
@@ -594,12 +594,9 @@ void MediaDialogView::InitializeLiveCaptionSection() {
       live_caption_container->SetLayoutManager(
           std::make_unique<views::BoxLayout>(
               views::BoxLayout::Orientation::kHorizontal,
-              gfx::Insets::TLBR(
-                  kVerticalMarginDip, kHorizontalMarginDip, kVerticalMarginDip,
-                  kHorizontalMarginDip -
-                      live_caption_button_->GetVisualHorizontalMargin()),
+              gfx::Insets::VH(kVerticalMarginDip, kHorizontalMarginDip),
               ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
+                  DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL)));
   live_caption_container_layout->SetFlexForView(live_caption_title_, 1);
   live_caption_container_ = AddChildView(std::move(live_caption_container));
 }
@@ -641,12 +638,9 @@ void MediaDialogView::InitializeLiveTranslateSection() {
       live_translate_container->SetLayoutManager(
           std::make_unique<views::BoxLayout>(
               views::BoxLayout::Orientation::kHorizontal,
-              gfx::Insets::TLBR(
-                  kVerticalMarginDip, kHorizontalMarginDip, kVerticalMarginDip,
-                  kHorizontalMarginDip -
-                      live_translate_button->GetVisualHorizontalMargin()),
+              gfx::Insets::VH(kVerticalMarginDip, kHorizontalMarginDip),
               ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
+                  DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL)));
   live_translate_container_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
   live_translate_container_layout->SetFlexForView(live_translate_label_wrapper_,
@@ -690,7 +684,7 @@ void MediaDialogView::InitializeCaptionSettingsSection() {
   auto caption_settings_button = std::make_unique<RichHoverButton>(
       base::BindRepeating(&MediaDialogView::OnSettingsButtonPressed,
                           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsChromeRefreshIcon,
                                      ui::kColorIcon, kImageWidthDip),
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_CAPTION_SETTINGS),
       std::u16string(), std::u16string(), std::u16string(),
