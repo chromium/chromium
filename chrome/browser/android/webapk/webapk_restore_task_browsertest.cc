@@ -37,7 +37,7 @@ class TestWebContentsManager : public WebApkRestoreWebContentsManager {
   const base::WeakPtr<content::WebContents> test_web_contents_;
 };
 
-class WebApkRestoreTaskBrowserTest : public PlatformBrowserTest {
+class WebApkRestoreTaskBrowserTest : public AndroidBrowserTest {
  public:
   WebApkRestoreTaskBrowserTest() = default;
 

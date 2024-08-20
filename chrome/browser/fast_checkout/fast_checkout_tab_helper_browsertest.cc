@@ -43,7 +43,7 @@ std::unique_ptr<net::test_server::HttpResponse> CreateFakeResponse(
 
 }  // namespace
 
-class FastCheckoutTabHelperBrowserTest : public PlatformBrowserTest {
+class FastCheckoutTabHelperBrowserTest : public AndroidBrowserTest {
  public:
   void SetUpOnMainThread() override {
     Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
