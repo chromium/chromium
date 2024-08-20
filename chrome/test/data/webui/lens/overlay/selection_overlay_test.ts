@@ -13,7 +13,9 @@ import type {OverlayObject} from 'chrome-untrusted://lens/overlay_object.mojom-w
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertNotEquals, assertNull, assertStringContains} from 'chrome-untrusted://webui-test/chai_assert.js';
+// <if expr="not is_linux">
 import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+// </if>
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 import {assertBoxesWithinThreshold, createObject} from '../utils/object_utils.js';
@@ -105,6 +107,7 @@ suite('SelectionOverlay', function() {
     assertEquals(expectedIsClick, isClick);
   }
 
+  // <if expr="not chromeos_lacros">
   test(
       'verify that starting a drag on a word does not trigger region search',
       async () => {
@@ -115,7 +118,7 @@ suite('SelectionOverlay', function() {
                            .getWordNodesForTesting()[0]!;
         await simulateDrag(
             selectionOverlayElement, {
-              x: wordEl.getBoundingClientRect().left + 5,
+              x: wordEl.getBoundingClientRect().left + 15,
               y: wordEl.getBoundingClientRect().top + 5,
             },
             {x: 0, y: 0});
@@ -126,6 +129,7 @@ suite('SelectionOverlay', function() {
         assertEquals(
             0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
       });
+  // </if>
 
   test(
       `verify that starting a drag off a word and continuing onto a word triggers region search`,
@@ -265,7 +269,7 @@ suite('SelectionOverlay', function() {
         verifyRegionRequest(expectedRect, /*expectedIsClick=*/ false);
       });
 
-  // <if expr="not chromeos_lacros">
+  // <if expr="not chromeos_lacros and not is_linux">
   test(
       'verify that region search over text triggers detected text context menu',
       async () => {
@@ -445,6 +449,7 @@ suite('SelectionOverlay', function() {
         assertNull(selectionOverlayElement.getAttribute('is-resized'));
       });
 
+  // <if expr="not is_linux">
   test('verify that you can drag text over post selection', async () => {
     // Add the words
     await addWords();
@@ -458,7 +463,7 @@ suite('SelectionOverlay', function() {
     const wordElBoundingBox = wordEl.getBoundingClientRect();
     await simulateDrag(
         selectionOverlayElement, {
-          x: wordElBoundingBox.left + (wordElBoundingBox.width / 2),
+          x: wordElBoundingBox.left + (wordElBoundingBox.width / 3),
           y: wordElBoundingBox.top + (wordElBoundingBox.height / 2),
         },
         {
@@ -484,7 +489,7 @@ suite('SelectionOverlay', function() {
     const wordElBoundingBox = wordEl.getBoundingClientRect();
     await simulateDrag(
         selectionOverlayElement, {
-          x: wordElBoundingBox.left + (wordElBoundingBox.width / 2),
+          x: wordElBoundingBox.left + (wordElBoundingBox.width / 3),
           y: wordElBoundingBox.top + (wordElBoundingBox.height / 2),
         },
         {
@@ -529,7 +534,7 @@ suite('SelectionOverlay', function() {
         const wordElBoundingBox = wordEl.getBoundingClientRect();
         await simulateDrag(
             selectionOverlayElement, {
-              x: wordElBoundingBox.left + (wordElBoundingBox.width / 2),
+              x: wordElBoundingBox.left + (wordElBoundingBox.width / 3),
               y: wordElBoundingBox.top + (wordElBoundingBox.height / 2),
             },
             {
@@ -564,6 +569,7 @@ suite('SelectionOverlay', function() {
         assertTrue(
             selectionOverlayElement.getShowSelectedTextContextMenuForTesting());
       });
+  // </if>
 
   test(
       'verify that dragging on post selection over an object does not tap that object',

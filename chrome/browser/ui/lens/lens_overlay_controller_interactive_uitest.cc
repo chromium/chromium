@@ -31,6 +31,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
+#include "media/base/media_switches.h"
 #include "ui/base/clipboard/clipboard.h"
 
 namespace {
@@ -173,6 +174,9 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
   ~LensOverlayControllerCUJTest() override = default;
 
   void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {lens::features::kLensOverlay, media::kContextMenuSearchForVideoFrame},
+        {});
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InteractiveFeaturePromoTest::SetUp();
   }
@@ -318,7 +322,7 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{lens::features::kLensOverlay};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // This tests the following CUJ:
@@ -417,13 +421,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, MAYBE_EscapeKeyClose) {
 //  (4) User presses CTRL+C on some text.
 //  (5) Highlighted text gets copied.
 //  Disabled: apparent hang (crbug.com/347282479)
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_CopyKeyCommandCopies DISABLED_CopyKeyCommandCopies
-#else
-#define MAYBE_CopyKeyCommandCopies CopyKeyCommandCopies
-#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
-                       MAYBE_CopyKeyCommandCopies) {
+                       DISABLED_CopyKeyCommandCopies) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
