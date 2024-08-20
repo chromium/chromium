@@ -305,6 +305,8 @@ class AutofillCapturedSitesInteractiveTest
     recipe_replayer_ =
         std::make_unique<captured_sites_test_utils::TestRecipeReplayer>(
             browser(), this);
+    profile_controller_ =
+        std::make_unique<captured_sites_test_utils::ProfileDataController>();
 
     SetServerUrlLoader(std::make_unique<test::ServerUrlLoader>(
         std::make_unique<test::ServerCacheReplayer>(
@@ -494,8 +496,7 @@ class AutofillCapturedSitesInteractiveTest
   std::unique_ptr<captured_sites_test_utils::TestRecipeReplayer>
       recipe_replayer_;
   std::unique_ptr<captured_sites_test_utils::ProfileDataController>
-      profile_controller_ =
-          std::make_unique<captured_sites_test_utils::ProfileDataController>();
+      profile_controller_;
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<test::ServerUrlLoader> server_url_loader_;
