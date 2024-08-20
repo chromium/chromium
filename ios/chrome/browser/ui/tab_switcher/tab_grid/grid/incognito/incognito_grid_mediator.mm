@@ -50,8 +50,6 @@
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
   // YES if incognito is disabled.
   BOOL _incognitoDisabled;
-  // YES if parental supervision is enabled.
-  BOOL _isSubjectToParentalControl;
   // Whether this grid is currently selected.
   BOOL _selected;
   // Identity manager providing AccountInfo capabilities to determine
@@ -279,12 +277,9 @@
   if (base::FeatureList::IsEnabled(
           supervised_user::
               kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS)) {
-    BOOL isSubjectToParentalControl =
-        (capabilityUpdateState ==
-         supervised_user::CapabilityUpdateState::kSetToTrue);
-    if (_isSubjectToParentalControl != isSubjectToParentalControl) {
-      _isSubjectToParentalControl = isSubjectToParentalControl;
-      _incognitoDisabled = [self isIncognitoModeDisabled];
+    BOOL isDisabled = [self isIncognitoModeDisabled];
+    if (_incognitoDisabled != isDisabled) {
+      _incognitoDisabled = isDisabled;
       [self.incognitoDelegate shouldDisableIncognito:_incognitoDisabled];
     }
 
