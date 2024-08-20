@@ -44,7 +44,7 @@
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
-#include "chrome/browser/ui/ash/clipboard_history_test_util.h"
+#include "chrome/browser/ui/ash/clipboard/clipboard_history_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"

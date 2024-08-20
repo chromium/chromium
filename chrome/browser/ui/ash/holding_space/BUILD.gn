@@ -55,6 +55,7 @@ static_library("holding_space") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/clipboard",
     "//chrome/browser/ui/ash/thumbnail_loader",
     "//chromeos/dbus/power",
     "//components/drive",

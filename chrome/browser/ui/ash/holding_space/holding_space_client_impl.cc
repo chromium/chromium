@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/clipboard_util.h"
+#include "chrome/browser/ui/ash/clipboard/clipboard_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"

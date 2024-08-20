@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_CLIPBOARD_IMAGE_MODEL_FACTORY_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_CLIPBOARD_IMAGE_MODEL_FACTORY_IMPL_H_
+#ifndef CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_IMAGE_MODEL_FACTORY_IMPL_H_
+#define CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_IMAGE_MODEL_FACTORY_IMPL_H_
 
 #include <list>
 #include <memory>
@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ui/ash/clipboard_image_model_request.h"
+#include "chrome/browser/ui/ash/clipboard/clipboard_image_model_request.h"
 
 // Implements the singleton ClipboardImageModelFactory.
 class ClipboardImageModelFactoryImpl : public ash::ClipboardImageModelFactory {
@@ -65,4 +65,4 @@ class ClipboardImageModelFactoryImpl : public ash::ClipboardImageModelFactory {
   base::WeakPtrFactory<ClipboardImageModelFactoryImpl> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_CLIPBOARD_IMAGE_MODEL_FACTORY_IMPL_H_
+#endif  // CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_IMAGE_MODEL_FACTORY_IMPL_H_

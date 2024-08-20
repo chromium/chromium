@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_CLIPBOARD_HISTORY_URL_TITLE_FETCHER_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_CLIPBOARD_HISTORY_URL_TITLE_FETCHER_IMPL_H_
+#ifndef CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_HISTORY_URL_TITLE_FETCHER_IMPL_H_
+#define CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_HISTORY_URL_TITLE_FETCHER_IMPL_H_
 
 #include "ash/clipboard/clipboard_history_url_title_fetcher.h"
 
@@ -40,4 +40,4 @@ class ClipboardHistoryUrlTitleFetcherImpl
   base::CancelableTaskTracker task_tracker_;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_CLIPBOARD_HISTORY_URL_TITLE_FETCHER_IMPL_H_
+#endif  // CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_HISTORY_URL_TITLE_FETCHER_IMPL_H_

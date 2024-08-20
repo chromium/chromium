@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_CLIPBOARD_UTIL_H_
-#define CHROME_BROWSER_UI_ASH_CLIPBOARD_UTIL_H_
+#ifndef CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_UTIL_H_
+#define CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_UTIL_H_
 
 #include <stdint.h>
 
@@ -34,4 +34,4 @@ void DecodeImageFileAndCopyToClipboard(
 
 }  // namespace clipboard_util
 
-#endif  // CHROME_BROWSER_UI_ASH_CLIPBOARD_UTIL_H_
+#endif  // CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_UTIL_H_
