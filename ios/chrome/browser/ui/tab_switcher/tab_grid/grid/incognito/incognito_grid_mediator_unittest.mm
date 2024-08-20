@@ -55,7 +55,8 @@ TEST_F(IncognitoGridMediatorTest, CloseAllItemsCommand) {
 }
 
 // Checks that opening a new regular tab from the toolbar is done when allowed.
-TEST_F(IncognitoGridMediatorTest, OpenNewTab_OpenIfAllowedByPolicy) {
+// TODO(crbug.com/361080595): Flaky on various bots.
+TEST_F(IncognitoGridMediatorTest, DISABLED_OpenNewTab_OpenIfAllowedByPolicy) {
   // Disconnect the existing mediator first as we will re-create it.
   [mediator_ disconnect];
 
