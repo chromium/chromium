@@ -157,7 +157,7 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
   // Updates the permissions of the keys residing on |token_id| in chaps. If
   // this method is called while an update is already running, it will cancel
   // the running update and start a new one.
-  void UpdateKeyPermissionsInChaps();
+  void UpdateArcKeyPermissionsInChaps();
 
   void StartOneTimeMigration();
   void OnOneTimeMigrationDone(chromeos::platform_keys::Status migration_status);

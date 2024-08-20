@@ -78,9 +78,9 @@ chaps::KeyPermissions CreateKeyPermissions(bool corporate_usage_allowed,
   return key_permissions;
 }
 
-void OnKeyPermissionsInChapsUpdated(Status update_status) {
+void OnArcKeyPermissionsInChapsUpdated(Status update_status) {
   if (update_status != Status::kSuccess) {
-    LOG(ERROR) << "Updating key permissions in chaps failed.";
+    LOG(ERROR) << "Updating arc key permissions in chaps failed.";
   }
 }
 
@@ -318,7 +318,7 @@ void KeyPermissionsManagerImpl::OnGotTokens(
     // On initialization, ARC usage allowance for corporate keys may be
     // different than after the one-time migration ends, so we trigger an update
     // in chaps.
-    UpdateKeyPermissionsInChaps();
+    UpdateArcKeyPermissionsInChaps();
   }
 }
 
@@ -434,7 +434,7 @@ void KeyPermissionsManagerImpl::Shutdown() {
   pref_service_ = nullptr;
 }
 
-void KeyPermissionsManagerImpl::UpdateKeyPermissionsInChaps() {
+void KeyPermissionsManagerImpl::UpdateArcKeyPermissionsInChaps() {
   if (!IsOneTimeMigrationDone()) {
     // This function will always be called after the one-time migration is done.
     return;
@@ -444,7 +444,7 @@ void KeyPermissionsManagerImpl::UpdateKeyPermissionsInChaps() {
       std::make_unique<KeyPermissionsInChapsUpdater>(
           KeyPermissionsInChapsUpdater::Mode::kUpdateArcUsageFlag, this);
   key_permissions_in_chaps_updater_->Update(
-      base::BindOnce(&OnKeyPermissionsInChapsUpdated));
+      base::BindOnce(&OnArcKeyPermissionsInChapsUpdated));
 }
 
 void KeyPermissionsManagerImpl::StartOneTimeMigration() {
@@ -490,7 +490,7 @@ void KeyPermissionsManagerImpl::OnOneTimeMigrationDone(
 
   // Double-check keys permissions after the migration is done just in case any
   // ARC updates happened during the migration.
-  UpdateKeyPermissionsInChaps();
+  UpdateArcKeyPermissionsInChaps();
 }
 
 bool KeyPermissionsManagerImpl::IsOneTimeMigrationDone() const {
@@ -512,7 +512,7 @@ void KeyPermissionsManagerImpl::OnArcUsageAllowanceForCorporateKeysChanged(
   }
 
   arc_usage_allowed_for_corporate_keys_ = allowed;
-  UpdateKeyPermissionsInChaps();
+  UpdateArcKeyPermissionsInChaps();
 }
 
 void KeyPermissionsManagerImpl::OnReadyForQueries() {
