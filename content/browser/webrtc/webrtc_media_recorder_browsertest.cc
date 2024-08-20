@@ -54,7 +54,13 @@ class WebRtcMediaRecorderTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, Start) {
+// TODO(crbug/361123384): Re-enable.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Start DISABLED_Start
+#else
+#define MAYBE_Start Start
+#endif
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_Start) {
   MakeTypicalCall("testStartAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
