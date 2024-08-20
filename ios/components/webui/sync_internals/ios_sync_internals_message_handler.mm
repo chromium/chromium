@@ -16,10 +16,11 @@ IOSSyncInternalsMessageHandler::IOSSyncInternalsMessageHandler(
     syncer::SyncInvalidationsService* sync_invalidations_service,
     syncer::UserEventService* user_event_service,
     const std::string& channel)
-    : browser_sync::SyncInternalsMessageHandler(sync_service,
-                                                sync_invalidations_service,
-                                                user_event_service,
-                                                channel) {}
+    : message_handler_(this,
+                       sync_service,
+                       sync_invalidations_service,
+                       user_event_service,
+                       channel) {}
 
 void IOSSyncInternalsMessageHandler::SendEventToPage(
     std::string_view event_name,
@@ -42,7 +43,8 @@ void IOSSyncInternalsMessageHandler::ResolvePageCallback(
 }
 
 void IOSSyncInternalsMessageHandler::RegisterMessages() {
-  for (const auto& [message, handler] : GetMessageHandlerMap()) {
+  for (const auto& [message, handler] :
+       message_handler_.GetMessageHandlerMap()) {
     web_ui()->RegisterMessageCallback(message, handler);
   }
 }

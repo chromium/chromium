@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
@@ -30,21 +31,40 @@ struct TypeEntitiesCount;
 
 namespace browser_sync {
 
-// Abstract class with the common logic for the chrome://sync-internals page.
-// See also the concrete classes ChromeSyncInternalsMessageHandler and
-// IOSSyncInternalsMessageHandler.
+// Class with the common logic for the chrome://sync-internals page. See also
+// ChromeSyncInternalsMessageHandler and IOSSyncInternalsMessageHandler.
 class SyncInternalsMessageHandler : public syncer::SyncServiceObserver,
                                     public syncer::ProtocolEventObserver,
                                     public syncer::InvalidationsListener {
- protected:
+ public:
+  // Interface that abstracts the platform-specific bits, namely interactions
+  // with the page.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Sends `event_name` to the page. The page can listen to events via
+    // addWebUiListener().
+    virtual void SendEventToPage(std::string_view event_name,
+                                 base::span<const base::ValueView> args) = 0;
+
+    // A page can send a message to this class which includes a `callback_id`.
+    // This method is then be used to reply to the page with `response`.
+    virtual void ResolvePageCallback(const base::ValueView callback_id,
+                                     const base::ValueView response) = 0;
+  };
+
   // Handler for a message from the page.
   using PageMessageHandler =
       base::RepeatingCallback<void(const base::Value::List&)>;
-  using AboutSyncDataDelegate =
+
+  using GetAboutSyncDataCb =
       base::RepeatingCallback<base::Value::Dict(syncer::SyncService* service,
                                                 const std::string& channel)>;
 
+  // `delegate` must be non-null and outlive this object.
   SyncInternalsMessageHandler(
+      Delegate* delegate,
       syncer::SyncService* sync_service,
       syncer::SyncInvalidationsService* sync_invalidations_service,
       syncer::UserEventService* user_event_service,
@@ -52,7 +72,8 @@ class SyncInternalsMessageHandler : public syncer::SyncServiceObserver,
 
   // Constructor used for unit testing to override dependencies.
   SyncInternalsMessageHandler(
-      AboutSyncDataDelegate about_sync_data_delegate,
+      Delegate* delegate,
+      GetAboutSyncDataCb get_about_sync_data_cb,
       syncer::SyncService* sync_service,
       syncer::SyncInvalidationsService* sync_invalidations_service,
       syncer::UserEventService* user_event_service,
@@ -73,16 +94,6 @@ class SyncInternalsMessageHandler : public syncer::SyncServiceObserver,
   // Disables all messages sent from this class to the page via
   // SendEventToPage() or ResolvePageCallback().
   void DisableMessagesToPage();
-
-  // Sends `event_name` to the page. The page can listen to events via
-  // addWebUiListener().
-  virtual void SendEventToPage(std::string_view event_name,
-                               base::span<const base::ValueView> args) = 0;
-
-  // A page can send a message to this class which includes a `callback_id`.
-  // This method is then be used to reply to the page with `response`.
-  virtual void ResolvePageCallback(const base::ValueView callback_id,
-                                   const base::ValueView response) = 0;
 
  private:
   // Synchronously fetches updated aboutInfo and sends it to the page in the
@@ -147,8 +158,9 @@ class SyncInternalsMessageHandler : public syncer::SyncServiceObserver,
   // human readable format.
   bool include_specifics_ = false;
 
+  const raw_ptr<Delegate> delegate_;
   // An abstraction of who creates the about sync info value map.
-  const AboutSyncDataDelegate about_sync_data_delegate_;
+  const GetAboutSyncDataCb get_about_sync_data_cb_;
   const raw_ptr<syncer::SyncService> sync_service_;
   const raw_ptr<syncer::SyncInvalidationsService> sync_invalidations_service_;
   const raw_ptr<syncer::UserEventService> user_event_service_;

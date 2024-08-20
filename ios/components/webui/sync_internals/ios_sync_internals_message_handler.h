@@ -10,7 +10,7 @@
 
 // iOS-specific implementation of SyncInternalsMessageHandler.
 class IOSSyncInternalsMessageHandler
-    : public browser_sync::SyncInternalsMessageHandler,
+    : public browser_sync::SyncInternalsMessageHandler::Delegate,
       public web::WebUIIOSMessageHandler {
  public:
   IOSSyncInternalsMessageHandler(
@@ -34,6 +34,9 @@ class IOSSyncInternalsMessageHandler
 
   // web::WebUIIOSMessageHandler overrides.
   void RegisterMessages() override;
+
+ private:
+  browser_sync::SyncInternalsMessageHandler message_handler_;
 };
 
 #endif  // IOS_COMPONENTS_WEBUI_SYNC_INTERNALS_IOS_SYNC_INTERNALS_MESSAGE_HANDLER_H_

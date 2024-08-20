@@ -43,23 +43,11 @@ MATCHER_P(ValueViewMatchesDict, dict, "") {
   return value.is_dict() && value.GetDict() == dict;
 }
 
-class TestableSyncInternalsMessageHandler : public SyncInternalsMessageHandler {
+class MockDelegate : public SyncInternalsMessageHandler::Delegate {
  public:
-  TestableSyncInternalsMessageHandler(
-      AboutSyncDataDelegate about_sync_data_delegate,
-      syncer::SyncService* sync_service,
-      syncer::SyncInvalidationsService* sync_invalidations_service,
-      syncer::UserEventService* user_event_service)
-      : SyncInternalsMessageHandler(std::move(about_sync_data_delegate),
-                                    sync_service,
-                                    sync_invalidations_service,
-                                    user_event_service,
-                                    kChannel) {}
+  MockDelegate() = default;
+  ~MockDelegate() override = default;
 
-  using SyncInternalsMessageHandler::DisableMessagesToPage;
-  using SyncInternalsMessageHandler::GetMessageHandlerMap;
-
-  // TODO(crbug.com/360321896): Move the virtual methods to a different class.
   MOCK_METHOD(void,
               SendEventToPage,
               (std::string_view, base::span<const base::ValueView>),
@@ -85,6 +73,8 @@ class SyncInternalsMessageHandlerTest : public testing::Test {
 
   ~SyncInternalsMessageHandlerTest() override = default;
 
+  MockDelegate* mock_delegate() { return &mock_delegate_; }
+
   syncer::MockSyncService* mock_sync_service() { return &mock_sync_service_; }
 
   syncer::MockSyncInvalidationsService* mock_sync_invalidations_service() {
@@ -95,10 +85,10 @@ class SyncInternalsMessageHandlerTest : public testing::Test {
     return &fake_user_event_service_;
   }
 
-  TestableSyncInternalsMessageHandler* handler() { return handler_.get(); }
+  SyncInternalsMessageHandler* handler() { return handler_.get(); }
 
-  int about_sync_data_delegate_call_count() const {
-    return about_sync_data_delegate_call_count_;
+  int get_about_sync_data_call_count() const {
+    return get_about_sync_data_dall_count_;
   }
 
   void ResetHandler() { handler_.reset(); }
@@ -111,22 +101,25 @@ class SyncInternalsMessageHandlerTest : public testing::Test {
   // Returns copies of the same constant dictionary, |kAboutInformation|.
   base::Value::Dict ConstructFakeAboutInformation(syncer::SyncService* service,
                                                   const std::string& channel) {
-    ++about_sync_data_delegate_call_count_;
+    ++get_about_sync_data_dall_count_;
     return kAboutInformation.Clone();
   }
 
+  MockDelegate mock_delegate_;
   syncer::MockSyncService mock_sync_service_;
   syncer::MockSyncInvalidationsService mock_sync_invalidations_service_;
   syncer::FakeUserEventService fake_user_event_service_;
-  std::unique_ptr<TestableSyncInternalsMessageHandler> handler_ =
-      std::make_unique<TestableSyncInternalsMessageHandler>(
+  std::unique_ptr<SyncInternalsMessageHandler> handler_ =
+      std::make_unique<SyncInternalsMessageHandler>(
+          &mock_delegate_,
           base::BindRepeating(
               &SyncInternalsMessageHandlerTest::ConstructFakeAboutInformation,
               base::Unretained(this)),
           &mock_sync_service_,
           &mock_sync_invalidations_service_,
-          &fake_user_event_service_);
-  int about_sync_data_delegate_call_count_ = 0;
+          &fake_user_event_service_,
+          kChannel);
+  int get_about_sync_data_dall_count_ = 0;
 };
 
 TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObservers) {
@@ -165,12 +158,13 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversDisableMessages) {
 
 TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversSyncDisabled) {
   // Simulate completely disabling sync by flag or other mechanism.
-  auto handler = std::make_unique<TestableSyncInternalsMessageHandler>(
+  auto handler = std::make_unique<SyncInternalsMessageHandler>(
+      mock_delegate(),
       base::BindLambdaForTesting([&](syncer::SyncService*, const std::string&) {
         return kAboutInformation.Clone();
       }),
       /*sync_service=*/nullptr, mock_sync_invalidations_service(),
-      fake_user_event_service());
+      fake_user_event_service(), kChannel);
   handler->GetMessageHandlerMap()
       .at(kRequestDataAndRegisterForUpdates)
       .Run(base::Value::List());
@@ -188,9 +182,9 @@ TEST_F(SyncInternalsMessageHandlerTest, HandleGetAllNodes) {
       ->GetMessageHandlerMap()
       .at(kGetAllNodes)
       .Run(base::Value::List().Append("getAllNodes_0"));
-  EXPECT_CALL(*handler(), ResolvePageCallback);
+  EXPECT_CALL(*mock_delegate(), ResolvePageCallback);
   std::move(get_all_nodes_callback).Run(base::Value::List());
-  testing::Mock::VerifyAndClearExpectations(handler());
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
 
   handler()
       ->GetMessageHandlerMap()
@@ -199,26 +193,27 @@ TEST_F(SyncInternalsMessageHandlerTest, HandleGetAllNodes) {
   // This  breaks the weak ref the callback is hanging onto. Which results in
   // the call count not incrementing.
   handler()->DisableMessagesToPage();
-  EXPECT_CALL(*handler(), ResolvePageCallback).Times(0);
+  EXPECT_CALL(*mock_delegate(), ResolvePageCallback).Times(0);
   std::move(get_all_nodes_callback).Run(base::Value::List());
-  testing::Mock::VerifyAndClearExpectations(handler());
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
 
   handler()
       ->GetMessageHandlerMap()
       .at(kGetAllNodes)
       .Run(base::Value::List().Append("getAllNodes_2"));
-  EXPECT_CALL(*handler(), ResolvePageCallback);
+  EXPECT_CALL(*mock_delegate(), ResolvePageCallback);
   std::move(get_all_nodes_callback).Run(base::Value::List());
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, SendAboutInfo) {
-  EXPECT_CALL(*handler(), SendEventToPage(kOnAboutInfoUpdated,
-                                          ElementsAre(ValueViewMatchesDict(
-                                              std::cref(kAboutInformation)))));
-  EXPECT_CALL(*handler(), SendEventToPage(kOnEntityCountsUpdated, _));
+  EXPECT_CALL(
+      *mock_delegate(),
+      SendEventToPage(kOnAboutInfoUpdated, ElementsAre(ValueViewMatchesDict(
+                                               std::cref(kAboutInformation)))));
+  EXPECT_CALL(*mock_delegate(), SendEventToPage(kOnEntityCountsUpdated, _));
   static_cast<syncer::SyncServiceObserver*>(handler())->OnStateChanged(
       mock_sync_service());
-  EXPECT_EQ(1, about_sync_data_delegate_call_count());
+  EXPECT_EQ(1, get_about_sync_data_call_count());
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, WriteUserEvent) {

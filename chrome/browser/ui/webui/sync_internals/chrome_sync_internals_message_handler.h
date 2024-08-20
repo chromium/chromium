@@ -10,7 +10,7 @@
 
 // Chrome-specific implementation of SyncInternalsMessageHandler.
 class ChromeSyncInternalsMessageHandler
-    : public browser_sync::SyncInternalsMessageHandler,
+    : public browser_sync::SyncInternalsMessageHandler::Delegate,
       public content::WebUIMessageHandler {
  public:
   ChromeSyncInternalsMessageHandler(
@@ -39,8 +39,12 @@ class ChromeSyncInternalsMessageHandler
  private:
   // When handling a message page from the page, this class might want to reply
   // back, which requires javascript to be enabled. This wrapper ensures it.
-  void AllowJavascriptAndHandleMessage(const PageMessageHandler& handler,
-                                       const base::Value::List& args);
+  void AllowJavascriptAndHandleMessage(
+      const browser_sync::SyncInternalsMessageHandler::PageMessageHandler&
+          handler,
+      const base::Value::List& args);
+
+  browser_sync::SyncInternalsMessageHandler message_handler_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SYNC_INTERNALS_CHROME_SYNC_INTERNALS_MESSAGE_HANDLER_H_

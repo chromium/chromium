@@ -16,10 +16,11 @@ ChromeSyncInternalsMessageHandler::ChromeSyncInternalsMessageHandler(
     syncer::SyncInvalidationsService* sync_invalidations_service,
     syncer::UserEventService* user_event_service,
     const std::string& channel)
-    : SyncInternalsMessageHandler(sync_service,
-                                  sync_invalidations_service,
-                                  user_event_service,
-                                  channel) {}
+    : message_handler_(this,
+                       sync_service,
+                       sync_invalidations_service,
+                       user_event_service,
+                       channel) {}
 
 void ChromeSyncInternalsMessageHandler::SendEventToPage(
     std::string_view event_name,
@@ -42,7 +43,8 @@ void ChromeSyncInternalsMessageHandler::ResolvePageCallback(
 }
 
 void ChromeSyncInternalsMessageHandler::RegisterMessages() {
-  for (const auto& [message, handler] : GetMessageHandlerMap()) {
+  for (const auto& [message, handler] :
+       message_handler_.GetMessageHandlerMap()) {
     web_ui()->RegisterMessageCallback(
         message,
         base::BindRepeating(
@@ -52,11 +54,12 @@ void ChromeSyncInternalsMessageHandler::RegisterMessages() {
 }
 
 void ChromeSyncInternalsMessageHandler::OnJavascriptDisallowed() {
-  DisableMessagesToPage();
+  message_handler_.DisableMessagesToPage();
 }
 
 void ChromeSyncInternalsMessageHandler::AllowJavascriptAndHandleMessage(
-    const PageMessageHandler& handler,
+    const browser_sync::SyncInternalsMessageHandler::PageMessageHandler&
+        handler,
     const base::Value::List& args) {
   AllowJavascript();
   handler.Run(args);

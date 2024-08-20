@@ -57,11 +57,13 @@ bool GetIncludeSpecificsInitialState() {
 }  //  namespace
 
 SyncInternalsMessageHandler::SyncInternalsMessageHandler(
+    Delegate* delegate,
     syncer::SyncService* sync_service,
     syncer::SyncInvalidationsService* sync_invalidations_service,
     syncer::UserEventService* user_event_service,
     const std::string& channel)
     : SyncInternalsMessageHandler(
+          delegate,
           base::BindRepeating(&syncer::sync_ui_util::ConstructAboutInformation,
                               syncer::sync_ui_util::IncludeSensitiveData(true)),
           sync_service,
@@ -73,13 +75,15 @@ SyncInternalsMessageHandler::SyncInternalsMessageHandler(
 }
 
 SyncInternalsMessageHandler::SyncInternalsMessageHandler(
-    AboutSyncDataDelegate about_sync_data_delegate,
+    Delegate* delegate,
+    GetAboutSyncDataCb get_about_sync_data_cb,
     syncer::SyncService* sync_service,
     syncer::SyncInvalidationsService* sync_invalidations_service,
     syncer::UserEventService* user_event_service,
     const std::string& channel)
     : include_specifics_(GetIncludeSpecificsInitialState()),
-      about_sync_data_delegate_(std::move(about_sync_data_delegate)),
+      delegate_(delegate),
+      get_about_sync_data_cb_(std::move(get_about_sync_data_cb)),
       sync_service_(sync_service),
       sync_invalidations_service_(sync_invalidations_service),
       user_event_service_(user_event_service),
@@ -169,7 +173,8 @@ void SyncInternalsMessageHandler::HandleRequestListOfTypes(
   }
   event_details.Set(syncer::sync_ui_util::kTypes, std::move(type_list));
   base::ValueView event_args[] = {event_details};
-  SendEventToPage(syncer::sync_ui_util::kOnReceivedListOfTypes, event_args);
+  delegate_->SendEventToPage(syncer::sync_ui_util::kOnReceivedListOfTypes,
+                             event_args);
 }
 
 void SyncInternalsMessageHandler::HandleRequestIncludeSpecificsInitialState(
@@ -181,8 +186,9 @@ void SyncInternalsMessageHandler::HandleRequestIncludeSpecificsInitialState(
             GetIncludeSpecificsInitialState());
 
   base::ValueView event_args[] = {value};
-  SendEventToPage(syncer::sync_ui_util::kOnReceivedIncludeSpecificsInitialState,
-                  event_args);
+  delegate_->SendEventToPage(
+      syncer::sync_ui_util::kOnReceivedIncludeSpecificsInitialState,
+      event_args);
 }
 
 void SyncInternalsMessageHandler::HandleGetAllNodes(
@@ -270,7 +276,7 @@ void SyncInternalsMessageHandler::HandleTriggerRefresh(
 void SyncInternalsMessageHandler::OnReceivedAllNodes(
     const std::string& callback_id,
     base::Value::List nodes) {
-  ResolvePageCallback(callback_id, nodes);
+  delegate_->ResolvePageCallback(callback_id, nodes);
 }
 
 void SyncInternalsMessageHandler::OnStateChanged(syncer::SyncService* sync) {
@@ -281,7 +287,8 @@ void SyncInternalsMessageHandler::OnProtocolEvent(
     const syncer::ProtocolEvent& event) {
   base::Value::Dict dict = event.ToValue(include_specifics_);
   base::ValueView event_args[] = {dict};
-  SendEventToPage(syncer::sync_ui_util::kOnProtocolEvent, event_args);
+  delegate_->SendEventToPage(syncer::sync_ui_util::kOnProtocolEvent,
+                             event_args);
 }
 
 void SyncInternalsMessageHandler::OnInvalidationReceived(
@@ -303,14 +310,16 @@ void SyncInternalsMessageHandler::OnInvalidationReceived(
   }
 
   base::ValueView event_args[] = {data_types_list};
-  SendEventToPage(syncer::sync_ui_util::kOnInvalidationReceived, event_args);
+  delegate_->SendEventToPage(syncer::sync_ui_util::kOnInvalidationReceived,
+                             event_args);
 }
 
 void SyncInternalsMessageHandler::SendAboutInfoAndEntityCounts() {
   base::Value::Dict value =
-      about_sync_data_delegate_.Run(sync_service_, channel_);
+      get_about_sync_data_cb_.Run(sync_service_, channel_);
   base::ValueView event_args[] = {value};
-  SendEventToPage(syncer::sync_ui_util::kOnAboutInfoUpdated, event_args);
+  delegate_->SendEventToPage(syncer::sync_ui_util::kOnAboutInfoUpdated,
+                             event_args);
 
   if (sync_service_) {
     sync_service_->GetEntityCountsForDebugging(
@@ -332,7 +341,8 @@ void SyncInternalsMessageHandler::OnGotEntityCounts(
   event_details.Set(syncer::sync_ui_util::kEntityCounts,
                     std::move(count_dictionary));
   base::ValueView event_args[] = {event_details};
-  SendEventToPage(syncer::sync_ui_util::kOnEntityCountsUpdated, event_args);
+  delegate_->SendEventToPage(syncer::sync_ui_util::kOnEntityCountsUpdated,
+                             event_args);
 }
 
 }  // namespace browser_sync
