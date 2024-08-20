@@ -21,7 +21,8 @@ namespace ash {
 std::unique_ptr<message_center::Notification> CreateSimpleNotification(
     const std::string& id,
     bool has_image = false,
-    const GURL& origin_url = GURL());
+    const GURL& origin_url = GURL(),
+    bool has_inline_reply = false);
 
 }  // namespace ash
 

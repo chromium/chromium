@@ -14,10 +14,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
@@ -238,6 +240,25 @@ void TrayBubbleView::RerouteEventHandler::OnKeyEvent(ui::KeyEvent* event) {
     tray_bubble_view_->GetWidget()->OnKeyEvent(event);
 
     if (event->handled()) {
+      return;
+    }
+  }
+
+  // For shelf pod bubble that is anchored to the shelf corner, popup
+  // notifications and the bubble can be shown at the same time. If the keyboard
+  // happens inside the popup collection, we need to let the keyboard event pass
+  // there to make sure notification popups can receive keyboard events.
+  if (target &&
+      tray_bubble_view_->GetBubbleType() == TrayBubbleType::kShelfPodBubble &&
+      tray_bubble_view_->IsAnchoredToShelfCorner()) {
+    auto* popup_collection = RootWindowController::ForWindow(target)
+                                 ->shelf()
+                                 ->GetStatusAreaWidget()
+                                 ->notification_center_tray()
+                                 ->popup_collection();
+
+    if (popup_collection->popup_collection_bounds().Contains(
+            target->GetActualBoundsInScreen())) {
       return;
     }
   }

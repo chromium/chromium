@@ -1524,6 +1524,11 @@ views::Label* AshNotificationView::GetTitleRowLabelForTest() {
   return title_row_->title_view();
 }
 
+message_center::NotificationInputContainer*
+AshNotificationView::GetInlineReplyForTest() {
+  return inline_reply();
+}
+
 void AshNotificationView::OnNotificationRemoved(
     const std::string& notification_id,
     bool by_user) {

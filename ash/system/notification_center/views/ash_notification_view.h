@@ -152,6 +152,8 @@ class ASH_EXPORT AshNotificationView
 
   views::Label* GetTitleRowLabelForTest();
 
+  message_center::NotificationInputContainer* GetInlineReplyForTest();
+
   // View containing all grouped notifications, propagates size changes
   // to the parent notification view.
   class GroupedNotificationsContainer : public views::BoxLayoutView {
