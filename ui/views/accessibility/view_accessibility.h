@@ -298,6 +298,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // cache.
   void RemoveExpandCollapseState();
 
+  void SetIsVertical(bool vertical);
+
   void SetIsDefault(bool is_default);
 
   // Sets/gets whether or not this view should be marked as "enabled" for the

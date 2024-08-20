@@ -1270,6 +1270,15 @@ void ViewAccessibility::RemoveExpandCollapseState() {
   SetState(ax::mojom::State::kCollapsed, false);
 }
 
+void ViewAccessibility::SetIsVertical(bool vertical) {
+  CHECK(!data_.HasState(ax::mojom::State::kHorizontal));
+  if (data_.HasState(ax::mojom::State::kVertical)) {
+    return;
+  }
+
+  SetState(ax::mojom::State::kVertical, vertical);
+}
+
 void ViewAccessibility::SetTextSelStart(int32_t text_sel_start) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kTextSelStart, text_sel_start);
 }

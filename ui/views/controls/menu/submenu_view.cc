@@ -64,6 +64,9 @@ SubmenuView::SubmenuView(MenuItemView* parent) : parent_menu_item_(parent) {
   CHECK(parent_menu_item_);
   // We'll delete ourselves, otherwise the ScrollView would delete us on close.
   set_owned_by_client();
+
+  // Menus in Chrome are always traversed in a vertical direction.
+  GetViewAccessibility().SetIsVertical(true);
 }
 
 SubmenuView::~SubmenuView() {
@@ -301,8 +304,6 @@ void SubmenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (parent_menu_item_)
     parent_menu_item_->GetAccessibleNodeData(node_data);
   node_data->role = ax::mojom::Role::kMenu;
-  // Menus in Chrome are always traversed in a vertical direction.
-  node_data->AddState(ax::mojom::State::kVertical);
 }
 
 void SubmenuView::PaintChildren(const PaintInfo& paint_info) {
