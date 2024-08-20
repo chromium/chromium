@@ -4624,47 +4624,47 @@
   {
     "name": "fedcm-authz",
     "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "fedcm-button-mode",
     "owners": [ "yigu@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "fedcm-idp-registration",
     "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "fedcm-metrics-endpoint",
     "owners": ["yigu@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "fedcm-multi-idp",
     "owners": ["npm@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "fedcm-selective-disclosure",
     "owners": ["goto@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "fedcm-use-other-account",
     "owners": [ "cbiesinger@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "fedcm-with-storage-access-api",
     "owners": [ "cfredric@chromium.org", "web-identity-eng@google.com", "potassium-auth-embeds@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "fedcm-without-well-known-enforcement",
     "owners": ["yigu@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "feed-ablation",
