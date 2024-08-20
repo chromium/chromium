@@ -1571,28 +1571,6 @@ reviewer.
 </histogram>
 
 <histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkEligible"
-    enum="Boolean" expires_after="2025-02-10">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records a boolean for whether or not the MaybeMarkEligible function changed
-    the user to eligible.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkIneligible"
-    enum="Boolean" expires_after="2025-02-10">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records a boolean for whether or not the MaybeMarkIneligible function
-    changed the user to ineligible.
-  </summary>
-</histogram>
-
-<histogram
     name="PrivacySandbox.TrackingProtection.OnboardingStartup.AckedSince"
     units="ms" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>
@@ -1643,28 +1621,6 @@ reviewer.
   <summary>
     Records the time it takes while waiting to be onboarded to 3PCD. This occurs
     once per profile during the startup of onboarding.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.SilentOnboarding.MaybeMarkEligible"
-    enum="Boolean" expires_after="2024-12-08">
-  <owner>linnan@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records a boolean for whether or not the MaybeMarkSilentEligible function
-    changed the user to eligible.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.SilentOnboarding.MaybeMarkIneligible"
-    enum="Boolean" expires_after="2025-02-10">
-  <owner>linnan@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records a boolean for whether or not the MaybeMarkSilentIneligible function
-    changed the user to ineligible.
   </summary>
 </histogram>
 

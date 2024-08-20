@@ -201,18 +201,6 @@ void RecordHistogramsOnStartup(PrefService* pref_service) {
   RecordHistogramsSilentOnboardingOnStartup(pref_service);
 }
 
-void RecordSilentOnboardingMarkEligibleHistogram(bool result) {
-  base::UmaHistogramBoolean(
-      "PrivacySandbox.TrackingProtection.SilentOnboarding.MaybeMarkEligible",
-      result);
-}
-
-void RecordSilentOnboardingMarkIneligibleHistogram(bool result) {
-  base::UmaHistogramBoolean(
-      "PrivacySandbox.TrackingProtection.SilentOnboarding.MaybeMarkIneligible",
-      result);
-}
-
 }  // namespace
 
 TrackingProtectionOnboarding::TrackingProtectionOnboarding(
@@ -231,70 +219,6 @@ TrackingProtectionOnboarding::~TrackingProtectionOnboarding() = default;
 
 void TrackingProtectionOnboarding::Shutdown() {
   pref_service_ = nullptr;
-}
-
-void TrackingProtectionOnboarding::MaybeMarkModeBEligible() {
-  auto status = GetInternalModeBOnboardingStatus(pref_service_);
-  if (status != TrackingProtectionOnboardingStatus::kIneligible) {
-    base::UmaHistogramBoolean(
-        "PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkEligible",
-        false);
-    return;
-  }
-  pref_service_->SetTime(prefs::kTrackingProtectionEligibleSince,
-                         base::Time::Now());
-  pref_service_->SetInteger(
-      prefs::kTrackingProtectionOnboardingStatus,
-      static_cast<int>(
-          TrackingProtectionOnboarding::OnboardingStatus::kEligible));
-  base::UmaHistogramBoolean(
-      "PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkEligible", true);
-}
-
-void TrackingProtectionOnboarding::MaybeMarkModeBIneligible() {
-  auto status = GetInternalModeBOnboardingStatus(pref_service_);
-  if (status != TrackingProtectionOnboardingStatus::kEligible) {
-    base::UmaHistogramBoolean(
-        "PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkIneligible",
-        false);
-    return;
-  }
-  pref_service_->ClearPref(prefs::kTrackingProtectionEligibleSince);
-  pref_service_->SetInteger(
-      prefs::kTrackingProtectionOnboardingStatus,
-      static_cast<int>(
-          TrackingProtectionOnboarding::OnboardingStatus::kIneligible));
-  base::UmaHistogramBoolean(
-      "PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkIneligible", true);
-}
-
-void TrackingProtectionOnboarding::MaybeMarkModeBSilentEligible() {
-  auto status = GetInternalModeBSilentOnboardingStatus(pref_service_);
-  if (status != TrackingProtectionOnboardingStatus::kIneligible) {
-    RecordSilentOnboardingMarkEligibleHistogram(false);
-    return;
-  }
-  pref_service_->SetTime(prefs::kTrackingProtectionSilentEligibleSince,
-                         base::Time::Now());
-  pref_service_->SetInteger(
-      prefs::kTrackingProtectionSilentOnboardingStatus,
-      static_cast<int>(
-          TrackingProtectionOnboarding::SilentOnboardingStatus::kEligible));
-  RecordSilentOnboardingMarkEligibleHistogram(true);
-}
-
-void TrackingProtectionOnboarding::MaybeMarkModeBSilentIneligible() {
-  auto status = GetInternalModeBSilentOnboardingStatus(pref_service_);
-  if (status != TrackingProtectionOnboardingStatus::kEligible) {
-    RecordSilentOnboardingMarkIneligibleHistogram(false);
-    return;
-  }
-  pref_service_->ClearPref(prefs::kTrackingProtectionSilentEligibleSince);
-  pref_service_->SetInteger(
-      prefs::kTrackingProtectionSilentOnboardingStatus,
-      static_cast<int>(
-          TrackingProtectionOnboarding::SilentOnboardingStatus::kIneligible));
-  RecordSilentOnboardingMarkIneligibleHistogram(true);
 }
 
 void TrackingProtectionOnboarding::MaybeResetModeBOnboardingPrefs() {

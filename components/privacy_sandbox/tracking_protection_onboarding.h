@@ -118,22 +118,6 @@ class TrackingProtectionOnboarding : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  // To be called by the Mode B experiment service to indicate that the profile
-  // is eligible for onboarding.
-  void MaybeMarkModeBEligible();
-
-  // To be called by the Mode B experiment service to indicate that the profile
-  // is no longer eligible for onboarding.
-  void MaybeMarkModeBIneligible();
-
-  // To be called by the experiment service to indicate that the profile is
-  // eligible for silent onboarding.
-  void MaybeMarkModeBSilentEligible();
-
-  // To be called by the experiment service to indicate that the profile is no
-  // longer eligible for silent onboarding.
-  void MaybeMarkModeBSilentIneligible();
-
   // To be called by the Mode B experiment service in BETA, DEV and CANARY only
   // to reset the user's prefs for testing.
   void MaybeResetModeBOnboardingPrefs();
