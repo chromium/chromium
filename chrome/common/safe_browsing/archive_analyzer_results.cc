@@ -5,6 +5,11 @@
 // This file contains the archive file analysis implementation for download
 // protection, which runs in a sandboxed utility process.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 
 #include "base/files/file.h"
