@@ -25,6 +25,10 @@ extern const char kContentLanguagesDisableObserversParam[];
 // language.
 BASE_DECLARE_FEATURE(kCctAutoTranslate);
 
+// This feature enables opening language settings in a new tab when the user
+// clicks "Open language settings" in the Translate bubble menu.
+BASE_DECLARE_FEATURE(kTranslateOpenSettings);
+
 }  // namespace language
 
 #endif  // COMPONENTS_LANGUAGE_CORE_COMMON_LANGUAGE_EXPERIMENTS_H_

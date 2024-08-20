@@ -11944,6 +11944,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kHidGetFeatureReportFix)},
 #endif  // BUILDFLAG(IS_WIN)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"translate-open-settings", flag_descriptions::kTranslateOpenSettingsName,
+     flag_descriptions::kTranslateOpenSettingsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(language::kTranslateOpenSettings)},
+#endif
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_WIN)
     {"classify-url-on-process-response-event",

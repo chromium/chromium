@@ -3248,6 +3248,11 @@ extern const char kWebAppUniversalInstallDescription[];
 extern const char kShortcutsNotAppsName[];
 extern const char kShortcutsNotAppsDescription[];
 
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kTranslateOpenSettingsName[];
+extern const char kTranslateOpenSettingsDescription[];
+#endif
+
 extern const char kUserDisplayModeSyncBrowserMitigationName[];
 extern const char kUserDisplayModeSyncBrowserMitigationDescription[];
 

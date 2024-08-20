@@ -330,6 +330,12 @@ void TranslateBubbleView::ShowOptionsMenu(views::Button* source) {
   options_menu_model_->SetElementIdentifierAt(
       options_menu_model_->GetItemCount() - 1, kChangeSourceLanguage);
 
+  if (base::FeatureList::IsEnabled(language::kTranslateOpenSettings)) {
+    options_menu_model_->AddItem(
+        OptionsMenuItem::OPEN_LANGUAGE_SETTINGS,
+        l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_OPEN_LANGUAGE_SETTINGS));
+  }
+
   options_menu_runner_ = std::make_unique<views::MenuRunner>(
       options_menu_model_.get(), views::MenuRunner::COMBOBOX);
   gfx::Rect screen_bounds = source->GetAnchorBoundsInScreen();

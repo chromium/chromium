@@ -8976,6 +8976,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "translate-open-settings",
+    "owners": [ "perrier@chromium.org", "taox4@illinois.edu", "chrome-language@google.com" ],
+    "expiry_milestone": 133
+  },
+  {
     "name": "trusted-vault-frequent-degraded-recoverability-polling",
     "owners": [
       "mmoskvitin@google.com",

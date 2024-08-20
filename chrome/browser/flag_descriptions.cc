@@ -5602,6 +5602,12 @@ const char kShortcutsNotAppsDescription[] =
     "Changes the 'create shortcut' 3-dot menu option to put a fire-and-forget "
     "link on the desktop, instead of an app.";
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kTranslateOpenSettingsName[] = "Translate Open Settings";
+const char kTranslateOpenSettingsDescription[] =
+    "Add an option to the translate bubble menu to open language settings.";
+#endif
+
 const char kUserDisplayModeSyncBrowserMitigationName[] =
     "Web App User Display Mode Sync Browser Mitigation";
 const char kUserDisplayModeSyncBrowserMitigationDescription[] =

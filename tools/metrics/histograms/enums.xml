@@ -18287,6 +18287,7 @@ from previous Chrome versions.
   <int value="-931935394"
       label="WebAppSyncGeneratedIconBackgroundFix:disabled"/>
   <int value="-931494909" label="DefaultLinkCapturingInBrowser:disabled"/>
+  <int value="-930676269" label="TranslateOpenSettings:enabled"/>
   <int value="-930478115" label="CameraAppDocScanDlc:enabled"/>
   <int value="-930168768" label="IsolatedWebAppAutomaticUpdates:disabled"/>
   <int value="-929944930"
@@ -20765,6 +20766,7 @@ from previous Chrome versions.
   <int value="116712802" label="AudioSelectionImprovement:enabled"/>
   <int value="117076190" label="DriveFsBidirectionalNativeMessaging:disabled"/>
   <int value="117497596" label="SidePanelDragAndDrop:disabled"/>
+  <int value="118551757" label="TranslateOpenSettings:disabled"/>
   <int value="118917235" label="MediaSessionEnterPictureInPicture:disabled"/>
   <int value="118991027" label="enable-accelerated-fixed-root-background"/>
   <int value="119185738"

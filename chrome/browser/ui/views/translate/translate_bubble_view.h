@@ -58,7 +58,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
     NEVER_TRANSLATE_LANGUAGE,
     NEVER_TRANSLATE_SITE,
     CHANGE_TARGET_LANGUAGE,
-    CHANGE_SOURCE_LANGUAGE
+    CHANGE_SOURCE_LANGUAGE,
+    OPEN_LANGUAGE_SETTINGS
   };
 
   // Element IDs for ui::ElementTracker.
