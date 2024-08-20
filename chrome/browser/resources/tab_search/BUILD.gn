@@ -26,7 +26,7 @@ build_webui("build") {
   non_web_component_files = [
     "app.html.ts",
     "app.ts",
-    "infinite_list.ts",
+    "selectable_lazy_list.ts",
     "search.ts",
     "tab_data.ts",
     "tab_group_color_helper.ts",
@@ -65,7 +65,7 @@ build_webui("build") {
 
   css_files = [
     "app.css",
-    "infinite_list.css",
+    "selectable_lazy_list.css",
     "tab_search_page.css",
     "tab_group_shared_vars.css",
     "auto_tab_groups/auto_tab_groups_failure.css",

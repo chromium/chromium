@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import './infinite_list.js';
+import './selectable_lazy_list.js';
 import './strings.m.js';
 import './tab_search_group_item.js';
 import './tab_search_item.js';
@@ -22,10 +22,10 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
-import type {InfiniteList} from './infinite_list.js';
-import {NO_SELECTION, selectorNavigationKeys} from './infinite_list.js';
 import type {SearchOptions} from './search.js';
 import {search} from './search.js';
+import type {SelectableLazyListElement} from './selectable_lazy_list.js';
+import {NO_SELECTION, selectorNavigationKeys} from './selectable_lazy_list.js';
 import {ariaLabel, getHostname, getTabGroupTitle, getTitle, type ItemData, normalizeURL, TabData, TabGroupData, TabItemType, tokenEquals, tokenToString} from './tab_data.js';
 import type {ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
@@ -57,7 +57,7 @@ export interface TabSearchPageElement {
     searchField: HTMLElement,
     searchInput: HTMLInputElement,
     searchWrapper: HTMLElement,
-    tabsList: InfiniteList,
+    tabsList: SelectableLazyListElement,
   };
 }
 
@@ -317,8 +317,8 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
       this.availableHeight_ =
           activeWindow ? activeWindow!.height : profileData.windows[0]!.height;
 
-      // The infinite-list produces viewport-filled events whenever a data or
-      // scroll position change triggers the the viewport fill logic.
+      // The selectable-list produces viewport-filled events whenever a data
+      // or scroll position change triggers the the viewport fill logic.
       listenOnce(this.$.tabsList, 'viewport-filled', () => {
         // Push notifySearchUiReadyToShow() to the event loop to allow reflow
         // to occur following the DOM update.

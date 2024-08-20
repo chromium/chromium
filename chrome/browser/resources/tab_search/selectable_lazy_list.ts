@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'infinite-list' is a component optimized for showing a list of
- * items that overflows the view and requires scrolling. For performance
- * reasons, the DOM items are incrementally added to the view as the user
- * scrolls through the list.
+ * @fileoverview 'selectable-lazy-list' is a component optimized for showing a
+ * list of items that overflows the view and requires scrolling. For
+ * performance reasons, the DOM items are incrementally added to the view as
+ * the user scrolls through the list.
  * The component expects a `max-height` property to be specified in order to
  * determine how many HTML elements to render initially.
  * Each list item's HTML element is creating using the `template` property,
@@ -29,23 +29,23 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {CrLitElement, html, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues, TemplateResult} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './infinite_list.css.js';
+import {getCss} from './selectable_lazy_list.css.js';
 
 export const NO_SELECTION: number = -1;
 
 export const selectorNavigationKeys: readonly string[] =
     Object.freeze(['ArrowUp', 'ArrowDown', 'Home', 'End']);
 
-export interface InfiniteList {
+export interface SelectableLazyListElement {
   $: {
     container: HTMLElement,
     slot: HTMLSlotElement,
   };
 }
 
-export class InfiniteList<T = object> extends CrLitElement {
+export class SelectableLazyListElement<T = object> extends CrLitElement {
   static get is() {
-    return 'infinite-list';
+    return 'selectable-lazy-list';
   }
 
   static override get styles() {
@@ -492,8 +492,8 @@ export class InfiniteList<T = object> extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'infinite-list': InfiniteList;
+    'selectable-lazy-list': SelectableLazyListElement;
   }
 }
 
-customElements.define(InfiniteList.is, InfiniteList);
+customElements.define(SelectableLazyListElement.is, SelectableLazyListElement);

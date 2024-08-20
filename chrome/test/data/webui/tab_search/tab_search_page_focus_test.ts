@@ -4,7 +4,7 @@
 
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import type {ProfileData, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {InfiniteList, TabSearchApiProxyImpl, TabSearchItemElement} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {SelectableLazyListElement, TabSearchApiProxyImpl, TabSearchItemElement} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -17,7 +17,7 @@ suite('TabSearchAppFocusTest', () => {
   let tabSearchPage: TabSearchPageElement;
   let testProxy: TestTabSearchApiProxy;
 
-  disableAnimationBehavior(InfiniteList, 'scrollTo');
+  disableAnimationBehavior(SelectableLazyListElement, 'scrollTo');
   disableAnimationBehavior(TabSearchItemElement, 'scrollIntoView');
 
   async function setupTest(

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import {InfiniteList, TabData, TabItemType, TabSearchItemElement, TitleItem} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {SelectableLazyListElement, TabData, TabItemType, TabSearchItemElement, TitleItem} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -27,7 +27,7 @@ class TestApp extends CrLitElement {
 
   override render() {
     return html`
-    <infinite-list max-height="${this.maxHeight_}"
+    <selectable-lazy-list max-height="${this.maxHeight_}"
         .isSelectable=${(item: any) => item.constructor.name === 'TabData'}
         .template=${(item: any) => {
       switch (item.constructor.name) {
@@ -43,7 +43,7 @@ class TestApp extends CrLitElement {
           return '';
       }
     }}
-    </infinite-list>`;
+    </selectable-lazy-list>`;
   }
 
   private maxHeight_: number = SAMPLE_AVAIL_HEIGHT;
@@ -51,10 +51,10 @@ class TestApp extends CrLitElement {
 
 customElements.define('test-app', TestApp);
 
-suite('InfiniteListTest', () => {
-  let infiniteList: InfiniteList;
+suite('SelectableLazyListTest', () => {
+  let selectableList: SelectableLazyListElement;
 
-  disableAnimationBehavior(InfiniteList, 'scrollTo');
+  disableAnimationBehavior(SelectableLazyListElement, 'scrollTo');
   disableAnimationBehavior(TabSearchItemElement, 'scrollIntoView');
 
   async function setupTest(sampleData: Array<TabData|TitleItem>) {
@@ -62,17 +62,18 @@ suite('InfiniteListTest', () => {
     const testApp = document.createElement('test-app');
     document.body.appendChild(testApp);
 
-    infiniteList = testApp.shadowRoot!.querySelector('infinite-list')!;
-    infiniteList.items = sampleData;
+    selectableList =
+        testApp.shadowRoot!.querySelector('selectable-lazy-list')!;
+    selectableList.items = sampleData;
     await microtasksFinished();
   }
 
   function queryRows(): NodeListOf<HTMLElement> {
-    return infiniteList.querySelectorAll('tab-search-item');
+    return selectableList.querySelectorAll('tab-search-item');
   }
 
   function queryClassElements(className: string): NodeListOf<HTMLElement> {
-    return infiniteList.querySelectorAll('.' + className);
+    return selectableList.querySelectorAll('.' + className);
   }
 
   function sampleTabItems(siteNames: string[]): TabData[] {
@@ -86,10 +87,10 @@ suite('InfiniteListTest', () => {
     const tabItems = sampleTabItems(sampleSiteNames(5));
     await setupTest(tabItems);
 
-    assertEquals(0, infiniteList.scrollTop);
+    assertEquals(0, selectableList.scrollTop);
 
     const paddingBottomStyle =
-        getComputedStyle(infiniteList).getPropertyValue('padding-bottom');
+        getComputedStyle(selectableList).getPropertyValue('padding-bottom');
     assertTrue(paddingBottomStyle.endsWith('px'));
 
     const paddingBottom = Number.parseInt(
@@ -103,7 +104,7 @@ suite('InfiniteListTest', () => {
         itemHeightStyle.substring(0, itemHeightStyle.length - 2), 10);
     assertEquals(
         tabItemHeight * tabItems.length + paddingBottom,
-        infiniteList.scrollHeight);
+        selectableList.scrollHeight);
   });
 
   test('ListUpdates', async () => {
@@ -112,7 +113,7 @@ suite('InfiniteListTest', () => {
 
     // Ensure that on updating the list with an array smaller in size
     // than the viewport item count, all the array items are rendered.
-    infiniteList.items = sampleTabItems(sampleSiteNames(3));
+    selectableList.items = sampleTabItems(sampleSiteNames(3));
     await microtasksFinished();
     assertEquals(3, queryRows().length);
 
@@ -120,7 +121,7 @@ suite('InfiniteListTest', () => {
     // the viewport item count, only a chunk of array items are rendered.
     const tabItems =
         sampleTabItems(sampleSiteNames(2 * SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT));
-    infiniteList.items = tabItems;
+    selectableList.items = tabItems;
     await microtasksFinished();
     assertGT(tabItems.length, queryRows().length);
   });
@@ -130,46 +131,46 @@ suite('InfiniteListTest', () => {
     const tabItems = sampleTabItems(sampleSiteNames(itemCount));
     await setupTest(tabItems);
 
-    assertEquals(0, infiniteList.scrollTop);
+    assertEquals(0, selectableList.scrollTop);
 
     // Assert that upon changing the selected index to a non previously rendered
     // item, this one is rendered on the view.
-    await infiniteList.setSelected(itemCount - 1);
+    await selectableList.setSelected(itemCount - 1);
     let domTabItems = queryRows();
-    const selectedTabItem = domTabItems[infiniteList.selected];
+    const selectedTabItem = domTabItems[selectableList.selected];
     assertNotEquals(null, selectedTabItem);
     assertEquals(25, domTabItems.length);
 
     // Assert that the view scrolled to show the selected item.
-    const afterSelectionScrollTop = infiniteList.scrollTop;
+    const afterSelectionScrollTop = selectableList.scrollTop;
     assertNotEquals(0, afterSelectionScrollTop);
 
     // Assert that on replacing the list items, the currently selected index
     // value is still rendered on the view.
-    infiniteList.items = sampleTabItems(sampleSiteNames(itemCount));
+    selectableList.items = sampleTabItems(sampleSiteNames(itemCount));
     await microtasksFinished();
     domTabItems = queryRows();
-    const theSelectedTabItem = domTabItems[infiniteList.selected];
+    const theSelectedTabItem = domTabItems[selectableList.selected];
     assertNotEquals(null, theSelectedTabItem);
 
     // Assert the selected item is still visible in the view.
-    assertEquals(afterSelectionScrollTop, infiniteList.scrollTop);
+    assertEquals(afterSelectionScrollTop, selectableList.scrollTop);
   });
 
   test('SelectedIndexValidAfterItemRemoval', async () => {
     const numTabItems = 5;
     const tabItems = sampleTabItems(sampleSiteNames(numTabItems));
     await setupTest(tabItems);
-    await infiniteList.setSelected(numTabItems - 1);
+    await selectableList.setSelected(numTabItems - 1);
 
     // Assert that on having the last item selected and removing this last item
     // the selected index moves up to the last item available and that in
     // the case there are no more items, the selected index is -1.
     for (let i = numTabItems - 1; i >= 0; i--) {
-      infiniteList.items = tabItems.slice(0, i);
+      selectableList.items = tabItems.slice(0, i);
       await microtasksFinished();
       assertEquals(i, queryRows().length);
-      assertEquals(i - 1, infiniteList.selected);
+      assertEquals(i - 1, selectableList.selected);
     }
   });
 
@@ -178,17 +179,17 @@ suite('InfiniteListTest', () => {
     await setupTest(tabItems);
 
     // Assert that the tabs are in a overflowing state.
-    assertGT(infiniteList.scrollHeight, infiniteList.clientHeight);
+    assertGT(selectableList.scrollHeight, selectableList.clientHeight);
 
-    await infiniteList.setSelected(0);
+    await selectableList.setSelected(0);
     for (let i = 0; i < tabItems.length; i++) {
-      await infiniteList.navigate('ArrowDown');
+      await selectableList.navigate('ArrowDown');
       await microtasksFinished();
 
       const selectedIndex = ((i + 1) % tabItems.length);
-      assertEquals(selectedIndex, infiniteList.selected);
+      assertEquals(selectedIndex, selectableList.selected);
       assertTabItemAndNeighborsInViewBounds(
-          infiniteList, queryRows(), selectedIndex);
+          selectableList, queryRows(), selectedIndex);
     }
   });
 
@@ -197,16 +198,16 @@ suite('InfiniteListTest', () => {
     await setupTest(tabItems);
 
     // Assert that the tabs are in a overflowing state.
-    assertGT(infiniteList.scrollHeight, infiniteList.clientHeight);
+    assertGT(selectableList.scrollHeight, selectableList.clientHeight);
 
-    await infiniteList.setSelected(0);
+    await selectableList.setSelected(0);
     for (let i = tabItems.length; i > 0; i--) {
-      await infiniteList.navigate('ArrowUp');
+      await selectableList.navigate('ArrowUp');
 
       const selectIndex = (i - 1 + tabItems.length) % tabItems.length;
-      assertEquals(selectIndex, infiniteList.selected);
+      assertEquals(selectIndex, selectableList.selected);
       assertTabItemAndNeighborsInViewBounds(
-          infiniteList, queryRows(), selectIndex);
+          selectableList, queryRows(), selectIndex);
     }
   });
 
@@ -223,27 +224,27 @@ suite('InfiniteListTest', () => {
     assertEquals(2, queryClassElements(SAMPLE_SECTION_CLASS).length);
     assertEquals(4, queryRows().length);
 
-    await infiniteList.setSelected(1);
+    await selectableList.setSelected(1);
 
     const itemCount = 2 * tabItems.length + 2;
     for (let i = 1; i < itemCount; i++) {
       if (listItems[i] instanceof TitleItem) {
         // Title items should be skipped.
-        assertEquals(i + 1, infiniteList.selected);
+        assertEquals(i + 1, selectableList.selected);
         continue;
       }
-      await infiniteList.navigate('ArrowDown');
+      await selectableList.navigate('ArrowDown');
       // Navigation increments by 1 in most cases, or by 2 to skip over a title
       // item.
       const expectedIndex =
           listItems[(i + 1) % itemCount] instanceof TitleItem ? i + 2 : i + 1;
-      assertEquals(expectedIndex % itemCount, infiniteList.selected);
-      assertTrue(!!infiniteList.selectedItem);
-      const item = infiniteList.selectedItem as TabSearchItemElement;
+      assertEquals(expectedIndex % itemCount, selectableList.selected);
+      assertTrue(!!selectableList.selectedItem);
+      const item = selectableList.selectedItem as TabSearchItemElement;
       assertTrue(item.data instanceof TabData);
     }
 
-    infiniteList.items = [];
+    selectableList.items = [];
     await microtasksFinished();
     assertEquals(0, queryClassElements(SAMPLE_SECTION_CLASS).length);
     assertEquals(0, queryRows().length);
@@ -254,7 +255,7 @@ suite('InfiniteListTest', () => {
     await setupTest(tabItems);
 
     // Assert that the tabs are in an overflowing state.
-    assertGT(infiniteList.scrollHeight, infiniteList.clientHeight);
+    assertGT(selectableList.scrollHeight, selectableList.clientHeight);
 
     // Assert that not all tab items are shown.
     const initialRows = queryRows().length;
@@ -263,12 +264,12 @@ suite('InfiniteListTest', () => {
     // fillCurrentViewHeight() should only render enough items to fill the
     // view. Since the view height has not changed, no new items should
     // render.
-    await infiniteList.fillCurrentViewHeight();
+    await selectableList.fillCurrentViewHeight();
     await microtasksFinished();
     assertEquals(initialRows, queryRows().length);
 
     // ensureAllDomItemsAvailable() should render everything.
-    await infiniteList.ensureAllDomItemsAvailable();
+    await selectableList.ensureAllDomItemsAvailable();
     await microtasksFinished();
     assertEquals(tabItems.length, queryRows().length);
   });
@@ -279,16 +280,16 @@ suite('InfiniteListTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(testApp);
 
-    infiniteList = testApp.shadowRoot!.querySelector('infinite-list')!;
-    infiniteList.items = sampleTabItems(sampleSiteNames(10));
+    selectableList = testApp.shadowRoot!.querySelector('selectable-lazy-list')!;
+    selectableList.items = sampleTabItems(sampleSiteNames(10));
     await microtasksFinished();
 
-    // infinite-list will try to render one item, and then return early
+    // selectable-lazy-list will try to render one item, and then return early
     // since the DOM item height cannot be estimated. List item and container
     // are not visible.
     assertEquals(1, queryRows().length);
     let firstItem = queryRows()[0]!;
-    assertFalse(isVisible(infiniteList.$.container));
+    assertFalse(isVisible(selectableList.$.container));
     assertFalse(isVisible(firstItem));
 
     testApp.style.display = '';
@@ -296,11 +297,11 @@ suite('InfiniteListTest', () => {
 
     // After the client is rendered and calls fillCurrentViewHeight(), the
     // container and item should be visible.
-    await infiniteList.fillCurrentViewHeight();
+    await selectableList.fillCurrentViewHeight();
     await microtasksFinished();
     assertGT(queryRows().length, 1);
     firstItem = queryRows()[0]!;
     assertTrue(isVisible(firstItem));
-    assertTrue(isVisible(infiniteList.$.container));
+    assertTrue(isVisible(selectableList.$.container));
   });
 });
