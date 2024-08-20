@@ -87,6 +87,7 @@ source_set("first_run_provider") {
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/screen:screen_provider",
     "//ios/chrome/browser/ui/screen:screen_provider_protected",

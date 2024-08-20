@@ -7,9 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/ui/screen/screen_provider.h"
-
-class ChromeBrowserState;
 
 // The class that provides a list of first run screens.
 @interface FirstRunScreenProvider : ScreenProvider
