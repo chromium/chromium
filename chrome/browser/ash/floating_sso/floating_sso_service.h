@@ -7,12 +7,15 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/model/data_type_store.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace syncer {
@@ -25,7 +28,8 @@ class PrefService;
 namespace ash::floating_sso {
 
 class FloatingSsoService : public KeyedService,
-                           public network::mojom::CookieChangeListener {
+                           public network::mojom::CookieChangeListener,
+                           public FloatingSsoSyncBridge::Observer {
  public:
   FloatingSsoService(
       PrefService* prefs,
@@ -43,13 +47,26 @@ class FloatingSsoService : public KeyedService,
   // network::mojom::CookieChangeListener:
   void OnCookieChange(const net::CookieChangeInfo& change) override;
 
+  // FloatingSsoSyncBridge::Observer:
+  void OnCookiesAddedOrUpdatedRemotely(
+      const std::vector<net::CanonicalCookie>& cookies) override;
+  void OnCookiesRemovedRemotely(
+      const std::vector<net::CanonicalCookie>& cookies) override;
+
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate();
 
-  FloatingSsoSyncBridge* GetBridgeForTesting() { return &bridge_; }
+  FloatingSsoSyncBridge* GetBridgeForTesting() { return bridge_.get(); }
 
   // TODO: b/346354327 - temporary flag used for testing. Remove after
   // actual behavior is implemented.
   bool is_enabled_for_testing_ = false;
+
+  // TODO: b/360878519 - pass the bridge to the constructor instead and move
+  // bridge creation to the factory. This is currently blocked by browser tests
+  // relying on the same factory code to construct FloatingSsoService. Once we
+  // rewrite them as unit tests which explicitly construct the service, we can
+  // get rid of this test-only method.
+  void SetBridgeForTesting(std::unique_ptr<FloatingSsoSyncBridge> bridge);
 
  private:
   // Check if the feature is enabled based on the corresponding enterprise
@@ -66,7 +83,10 @@ class FloatingSsoService : public KeyedService,
 
   raw_ptr<PrefService> prefs_ = nullptr;
   const raw_ptr<network::mojom::CookieManager> cookie_manager_;
-  FloatingSsoSyncBridge bridge_;
+  std::unique_ptr<FloatingSsoSyncBridge> bridge_;
+  base::ScopedObservation<FloatingSsoSyncBridge,
+                          FloatingSsoSyncBridge::Observer>
+      scoped_observation_{this};
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Whether we connect for the first time to the cookie manager or we are

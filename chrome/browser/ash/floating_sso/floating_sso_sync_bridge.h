@@ -11,6 +11,8 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_store_base.h"
@@ -26,10 +28,22 @@ class MetadataChangeList;
 class ModelError;
 }  // namespace syncer
 
+namespace net {
+class CanonicalCookie;
+}  // namespace net
+
 namespace ash::floating_sso {
 
 class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnCookiesAddedOrUpdatedRemotely(
+        const std::vector<net::CanonicalCookie>& cookies) = 0;
+    virtual void OnCookiesRemovedRemotely(
+        const std::vector<net::CanonicalCookie>& cookies) = 0;
+  };
+
   using CookieSpecificsEntries =
       std::map<std::string, sync_pb::CookieSpecifics>;
 
@@ -56,11 +70,15 @@ class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
       const std::string& storage_key,
       const syncer::EntityData& remote_data) const override;
 
-  void AddOrUpdateCookie(const sync_pb::CookieSpecifics& specifics);
-  void DeleteCookie(const std::string& storage_key);
+  // Methods to notify about local changes. Made virtual for mocking in tests.
+  virtual void AddOrUpdateCookie(const sync_pb::CookieSpecifics& specifics);
+  virtual void DeleteCookie(const std::string& storage_key);
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Assumes that the `store_` is initialized.
-  const CookieSpecificsEntries& CookieSpecificsEntriesForTest() const;
+  const CookieSpecificsEntries& CookieSpecificsInStore() const;
   bool IsInitialDataReadFinishedForTest() const;
   void SetOnCommitCallbackForTest(base::RepeatingClosure callback);
 
@@ -90,6 +108,9 @@ class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
   // processor are not ready.
   std::map<std::string, sync_pb::CookieSpecifics> deferred_cookie_additions_;
   std::set<std::string> deferred_cookie_deletions_;
+
+  // Observers which are notified about all incoming remote changes.
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<FloatingSsoSyncBridge> weak_ptr_factory_{this};
 };
