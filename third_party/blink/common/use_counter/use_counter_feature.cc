@@ -28,8 +28,8 @@ bool UseCounterFeature::SetTypeAndValue(mojom::UseCounterFeatureType type,
 bool UseCounterFeature::IsValid() const {
   switch (type_) {
     case mojom::UseCounterFeatureType::kWebFeature:
-      return value_ < static_cast<UseCounterFeature::EnumValue>(
-                          mojom::WebFeature::kNumberOfFeatures);
+      return value_ <= static_cast<UseCounterFeature::EnumValue>(
+                           mojom::WebFeature::kMaxValue);
     case mojom::UseCounterFeatureType::kWebDXFeature:
       return value_ < static_cast<UseCounterFeature::EnumValue>(
                           mojom::WebDXFeature::kNumberOfFeatures);

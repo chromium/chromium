@@ -76,10 +76,11 @@ const std::array<WebFeature, 2> kUnknownFeatures = {
 // expected future blocking of this resource. 'counter' determines which
 // Use counter should be used to count this. 'is_worker_global_scope' is used
 // for choosing 'counter' value.
-bool AllowMimeTypeAsScript(const String& mime_type,
-                           bool same_origin,
-                           AllowedByNosniff::MimeTypeCheck mime_type_check_mode,
-                           WebFeature& counter) {
+static bool AllowMimeTypeAsScript(
+    const String& mime_type,
+    bool same_origin,
+    AllowedByNosniff::MimeTypeCheck mime_type_check_mode,
+    std::optional<WebFeature>& counter) {
   using MimeTypeCheck = AllowedByNosniff::MimeTypeCheck;
 
   // If strict mime type checking for workers is enabled, we'll treat all
@@ -194,8 +195,7 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
 
   // For any MIME type, we can do three things: accept/reject it, print a
   // warning into the console, and count it using a use counter.
-  const WebFeature kWebFeatureNone = WebFeature::kNumberOfFeatures;
-  WebFeature counter = kWebFeatureNone;
+  std::optional<WebFeature> counter;
   bool allow = AllowMimeTypeAsScript(mime_type, same_origin,
                                      mime_type_check_mode, counter);
 
@@ -209,8 +209,8 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
 
   // The code above has made a decision and handed down the result in accept
   // and counter.
-  if (counter != kWebFeatureNone) {
-    use_counter.CountUse(counter);
+  if (counter.has_value()) {
+    use_counter.CountUse(*counter);
   }
   if (!allow) {
     console_logger->AddConsoleMessage(

@@ -77,9 +77,7 @@ FilterOperation::OperationType FilterOperationResolver::FilterOperationForType(
 
 static void CountFilterUse(FilterOperation::OperationType operation_type,
                            const Document& document) {
-  // This variable is always reassigned, but MSVC thinks it might be left
-  // uninitialized.
-  WebFeature feature = WebFeature::kNumberOfFeatures;
+  std::optional<WebFeature> feature;
   switch (operation_type) {
     case FilterOperation::OperationType::kNone:
     case FilterOperation::OperationType::kBoxReflect:
@@ -128,7 +126,8 @@ static void CountFilterUse(FilterOperation::OperationType operation_type,
       feature = WebFeature::kCSSFilterDropShadow;
       break;
   };
-  document.CountUse(feature);
+  DCHECK(feature.has_value());
+  document.CountUse(*feature);
 }
 
 double FilterOperationResolver::ResolveNumericArgumentForFunction(

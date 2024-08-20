@@ -3090,7 +3090,7 @@ TEST(ServiceWorkerDatabaseTest, InvalidWebFeature) {
       static_cast<uint32_t>(blink::mojom::WebFeature::kBackgroundSync));
   // Add an out of range feature.
   data.add_used_features(
-      static_cast<uint32_t>(blink::mojom::WebFeature::kNumberOfFeatures) + 11);
+      static_cast<uint32_t>(blink::mojom::WebFeature::kMaxValue) + 12);
   data.add_used_features(
       static_cast<uint32_t>(blink::mojom::WebFeature::kNetInfoType));
 

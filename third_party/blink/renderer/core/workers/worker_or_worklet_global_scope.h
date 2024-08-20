@@ -302,8 +302,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   WorkerReportingProxy& reporting_proxy_;
 
   // This is the set of features that this worker has used.
-  std::bitset<static_cast<size_t>(WebFeature::kNumberOfFeatures)>
-      used_features_;
+  std::bitset<static_cast<size_t>(WebFeature::kMaxValue) + 1> used_features_;
   // This is the set of WebDXFeatures that this worker has used.
   std::bitset<static_cast<size_t>(WebDXFeature::kNumberOfFeatures)>
       used_webdx_features_;

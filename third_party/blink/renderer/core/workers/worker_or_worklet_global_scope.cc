@@ -279,8 +279,8 @@ void WorkerOrWorkletGlobalScope::CountUse(WebFeature feature) {
   if (IsContextDestroyed())
     return;
 
-  DCHECK_NE(WebFeature::kPageVisits, feature);
-  DCHECK_GT(WebFeature::kNumberOfFeatures, feature);
+  DCHECK_NE(feature, WebFeature::kPageVisits);
+  DCHECK_LE(feature, WebFeature::kMaxValue);
   if (used_features_[static_cast<size_t>(feature)])
     return;
   used_features_.set(static_cast<size_t>(feature));

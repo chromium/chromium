@@ -3572,8 +3572,9 @@ void Internals::setVisualViewportOffset(int css_x, int css_y) {
 }
 
 bool Internals::isUseCounted(Document* document, uint32_t feature) {
-  if (feature >= static_cast<int32_t>(WebFeature::kNumberOfFeatures))
+  if (feature > static_cast<int32_t>(WebFeature::kMaxValue)) {
     return false;
+  }
   return document->IsUseCounted(static_cast<WebFeature>(feature));
 }
 
@@ -3597,8 +3598,9 @@ bool Internals::isAnimatedCSSPropertyUseCounted(Document* document,
 }
 
 void Internals::clearUseCounter(Document* document, uint32_t feature) {
-  if (feature >= static_cast<int32_t>(WebFeature::kNumberOfFeatures))
+  if (feature > static_cast<int32_t>(WebFeature::kMaxValue)) {
     return;
+  }
   document->ClearUseCounterForTesting(static_cast<WebFeature>(feature));
 }
 
@@ -3645,7 +3647,7 @@ ScriptPromise<IDLUndefined> Internals::observeUseCounter(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
-  if (feature >= static_cast<int32_t>(WebFeature::kNumberOfFeatures)) {
+  if (feature > static_cast<int32_t>(WebFeature::kMaxValue)) {
     resolver->Reject();
     return promise;
   }

@@ -34,7 +34,7 @@ class BLINK_COMMON_EXPORT UseCounterFeatureTracker {
   void Set(const UseCounterFeature&, bool);
 
   // Track what features have been recorded.
-  std::bitset<static_cast<size_t>(mojom::WebFeature::kNumberOfFeatures)>
+  std::bitset<static_cast<size_t>(mojom::WebFeature::kMaxValue) + 1>
       web_features_;
   std::bitset<static_cast<size_t>(mojom::WebDXFeature::kNumberOfFeatures)>
       webdx_features_;

@@ -2416,7 +2416,7 @@ WebFeature FeatureForWebKitCustomPseudoElement(const AtomicString& name) {
 static void RecordUsageAndDeprecationsOneSelector(
     const CSSSelector* selector,
     const CSSParserContext* context) {
-  WebFeature feature = WebFeature::kNumberOfFeatures;
+  std::optional<WebFeature> feature;
   switch (selector->GetPseudoType()) {
     case CSSSelector::kPseudoAny:
       feature = WebFeature::kCSSSelectorPseudoAny;
@@ -2495,11 +2495,11 @@ static void RecordUsageAndDeprecationsOneSelector(
     default:
       break;
   }
-  if (feature != WebFeature::kNumberOfFeatures) {
-    if (Deprecation::IsDeprecated(feature)) {
-      context->CountDeprecation(feature);
+  if (feature.has_value()) {
+    if (Deprecation::IsDeprecated(*feature)) {
+      context->CountDeprecation(*feature);
     } else {
-      context->Count(feature);
+      context->Count(*feature);
     }
   }
   if (selector->Relation() == CSSSelector::kIndirectAdjacent) {
