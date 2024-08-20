@@ -211,6 +211,11 @@ BASE_FEATURE(kWebApkBackupAndRestoreBackend,
 
 BASE_FEATURE(kSyncEnableModelTypeLocalDataBatchUploaders,
              "SyncEnableModelTypeLocalDataBatchUploaders",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_IOS)
+);
 
 }  // namespace syncer
