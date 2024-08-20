@@ -189,6 +189,7 @@
   },
   {
     "prefix": "attribution-reporting-debug-mode",
+    "owners": ["johnidel@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/attribution-reporting"],
     "exclusive_tests": "ALL",
