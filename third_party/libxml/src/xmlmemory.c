@@ -395,6 +395,8 @@ xmlMemoryDump(void)
  * xmlInitMemory:
  *
  * DEPRECATED: Alias for xmlInitParser.
+ *
+ * Returns 0.
  */
 int
 xmlInitMemory(void) {
@@ -406,8 +408,6 @@ xmlInitMemory(void) {
  * xmlInitMemoryInternal:
  *
  * Initialize the memory layer.
- *
- * Returns 0 on success
  */
 void
 xmlInitMemoryInternal(void) {

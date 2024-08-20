@@ -20,7 +20,7 @@ else:
 # Modules we want to skip in API test
 #
 skipped_modules = [ "SAX", "xlink", "threads", "globals",
-  "xmlmemory", "xmlversion", "xmlexports",
+  "xmlmemory", "xmlversion", "xmlexports", "nanoftp",
 ]
 
 #
@@ -104,8 +104,8 @@ skipped_functions = [
 "xmlReaderNewFd", "xmlReaderForFd",
 "xmlIORead", "xmlReadIO", "xmlCtxtReadIO",
 "htmlIORead", "htmlReadIO", "htmlCtxtReadIO",
-"xmlReaderNewIO", "xmlBufferDump", "xmlNanoFTPConnect",
-"xmlNanoFTPConnectTo", "xmlNanoHTTPMethod", "xmlNanoHTTPMethodRedir",
+"xmlReaderNewIO", "xmlBufferDump",
+"xmlNanoHTTPMethod", "xmlNanoHTTPMethodRedir",
 # Complex I/O APIs
 "xmlCreateIOParserCtxt", "xmlParserInputBufferCreateIO",
 "xmlRegisterInputCallbacks", "xmlReaderForIO",
@@ -122,7 +122,7 @@ skipped_functions = [
 "xmlTextReaderReadInnerXml", "xmlTextReaderReadOuterXml",
 "xmlTextReaderReadString",
 # destructor
-"xmlListDelete", "xmlOutputBufferClose", "xmlNanoFTPClose", "xmlNanoHTTPClose",
+"xmlListDelete", "xmlOutputBufferClose", "xmlNanoHTTPClose",
 # deprecated
 "xmlCatalogGetPublic", "xmlCatalogGetSystem", "xmlEncodeEntities",
 "xmlNewGlobalNs", "xmlHandleEntity", "xmlNamespaceParseNCName",
@@ -155,13 +155,6 @@ skipped_functions = [
 # Legacy
 "xmlCleanupPredefinedEntities", "xmlInitializePredefinedEntities",
 "xmlSetFeature", "xmlGetFeature", "xmlGetFeaturesList",
-# location sets
-"xmlXPtrLocationSetAdd",
-"xmlXPtrLocationSetCreate",
-"xmlXPtrLocationSetDel",
-"xmlXPtrLocationSetMerge",
-"xmlXPtrLocationSetRemove",
-"xmlXPtrWrapLocationSet",
 ]
 
 #
@@ -169,7 +162,7 @@ skipped_functions = [
 # and hence generate errors on memory allocation tests
 #
 skipped_memcheck = [ "xmlLoadCatalog", "xmlAddEncodingAlias",
-   "xmlSchemaInitTypes", "xmlNanoFTPProxy", "xmlNanoFTPScanProxy",
+   "xmlSchemaInitTypes",
    "xmlNanoHTTPScanProxy", "xmlResetLastError", "xmlCatalogConvert",
    "xmlCatalogRemove", "xmlLoadCatalogs", "xmlCleanupCharEncodingHandlers",
    "xmlInitCharEncodingHandlers", "xmlCatalogCleanup",
@@ -213,16 +206,14 @@ extra_pre_call = {
 extra_post_call = {
    "xmlAddChild": 
        "if (ret_val == NULL) { xmlFreeNode(cur) ; cur = NULL ; }",
-   "xmlAddEntity":
-       "if (ret_val != NULL) { xmlFreeNode(ret_val) ; ret_val = NULL; }",
    "xmlAddChildList": 
        "if (ret_val == NULL) { xmlFreeNodeList(cur) ; cur = NULL ; }",
    "xmlAddSibling":
-       "if (ret_val == NULL) { xmlFreeNode(elem) ; elem = NULL ; }",
+       "if (ret_val == NULL) { xmlFreeNode(cur) ; cur = NULL ; }",
    "xmlAddNextSibling":
-       "if (ret_val == NULL) { xmlFreeNode(elem) ; elem = NULL ; }",
+       "if (ret_val == NULL) { xmlFreeNode(cur) ; cur = NULL ; }",
    "xmlAddPrevSibling": 
-       "if (ret_val == NULL) { xmlFreeNode(elem) ; elem = NULL ; }",
+       "if (ret_val == NULL) { xmlFreeNode(cur) ; cur = NULL ; }",
    "xmlDocSetRootElement": 
        "if (doc == NULL) { xmlFreeNode(root) ; root = NULL ; }",
    "xmlReplaceNode": 
@@ -259,7 +250,7 @@ extra_post_call = {
    "xmlCopyNamespaceList": "if (ret_val != NULL) xmlFreeNsList(ret_val);",
    "xmlNewTextWriter": "if (ret_val != NULL) out = NULL;",
    "xmlNewTextWriterPushParser": "if (ctxt != NULL) {xmlFreeDoc(ctxt->myDoc); ctxt->myDoc = NULL;} if (ret_val != NULL) ctxt = NULL;",
-   "xmlNewIOInputStream": "if (ret_val != NULL) input = NULL;",
+   "xmlNewIOInputStream": "if (ret_val != NULL) buf = NULL;",
    "htmlParseChunk": "if (ctxt != NULL) {xmlFreeDoc(ctxt->myDoc); ctxt->myDoc = NULL;}",
    "htmlParseDocument": "if (ctxt != NULL) {xmlFreeDoc(ctxt->myDoc); ctxt->myDoc = NULL;}",
    "xmlParseDocument": "if (ctxt != NULL) {xmlFreeDoc(ctxt->myDoc); ctxt->myDoc = NULL;}",
@@ -348,12 +339,6 @@ def type_convert(str, name, info, module, function, pos):
                 return('fileoutput')
             return('filepath')
     if res == 'void_ptr':
-        if module == 'nanoftp' and name == 'ctx':
-            return('xmlNanoFTPCtxtPtr')
-        if function == 'xmlNanoFTPNewCtxt' or \
-           function == 'xmlNanoFTPConnectTo' or \
-           function == 'xmlNanoFTPOpen':
-            return('xmlNanoFTPCtxtPtr')
         if module == 'nanohttp' and name == 'ctx':
             return('xmlNanoHTTPCtxtPtr')
         if function == 'xmlNanoHTTPMethod' or \

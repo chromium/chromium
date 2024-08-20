@@ -156,6 +156,9 @@ struct _xmlTextReader {
     int                parserFlags;	/* the set of options set */
     /* Structured error handling */
     xmlStructuredErrorFunc sErrorFunc;  /* callback function */
+
+    xmlResourceLoader resourceLoader;
+    void *resourceCtxt;
 };
 
 #define NODE_IS_EMPTY		0x1
@@ -1446,6 +1449,9 @@ node_found:
             if ((reader->errorFunc != NULL) || (reader->sErrorFunc != NULL))
                 xmlXIncludeSetErrorHandler(reader->xincctxt,
                         xmlTextReaderStructuredRelay, reader);
+            if (reader->resourceLoader != NULL)
+                xmlXIncludeSetResourceLoader(reader->xincctxt,
+                        reader->resourceLoader, reader->resourceCtxt);
 	}
 	/*
 	 * expand that node and process it
@@ -4784,6 +4790,47 @@ xmlTextReaderSetStructuredErrorHandler(xmlTextReaderPtr reader,
 }
 
 /**
+ * xmlTextReaderGetErrorHandler:
+ * @reader:  the xmlTextReaderPtr used
+ * @f:	the callback function or NULL is no callback has been registered
+ * @arg:    a user argument
+ *
+ * Retrieve the error callback function and user argument.
+ */
+void
+xmlTextReaderGetErrorHandler(xmlTextReaderPtr reader,
+                             xmlTextReaderErrorFunc * f, void **arg)
+{
+    if (f != NULL)
+        *f = reader->errorFunc;
+    if (arg != NULL)
+        *arg = reader->errorFuncArg;
+}
+
+/**
+ * xmlTextReaderSetResourceLoader:
+ * @reader:  thr reader
+ * @loader:  resource loader
+ * @data:  user data which will be passed to the loader
+ *
+ * Register a callback function that will be called to load external
+ * resources like entities.
+ *
+ * Available since 2.14.0.
+ */
+void
+xmlTextReaderSetResourceLoader(xmlTextReaderPtr reader,
+                               xmlResourceLoader loader, void *data) {
+    if ((reader == NULL) || (reader->ctxt == NULL))
+        return;
+
+    reader->resourceLoader = loader;
+    reader->resourceCtxt = data;
+
+    xmlCtxtSetResourceLoader(reader->ctxt, loader, data);
+}
+
+/**
  * xmlTextReaderIsValid:
  * @reader:  the xmlTextReaderPtr used
  *
@@ -4807,23 +4854,6 @@ xmlTextReaderIsValid(xmlTextReaderPtr reader)
     return (0);
 }
 
-/**
- * xmlTextReaderGetErrorHandler:
- * @reader:  the xmlTextReaderPtr used
- * @f:	the callback function or NULL is no callback has been registered
- * @arg:    a user argument
- *
- * Retrieve the error callback function and user argument.
- */
-void
-xmlTextReaderGetErrorHandler(xmlTextReaderPtr reader,
-                             xmlTextReaderErrorFunc * f, void **arg)
-{
-    if (f != NULL)
-        *f = reader->errorFunc;
-    if (arg != NULL)
-        *arg = reader->errorFuncArg;
-}
 /************************************************************************
  *									*
  *	New set (2.6.0) of simpler and more flexible APIs		*
@@ -5042,6 +5072,14 @@ xmlTextReaderSetMaxAmplification(xmlTextReaderPtr reader, unsigned maxAmpl)
     xmlCtxtSetMaxAmplification(reader->ctxt, maxAmpl);
 }
 
+/**
+ * xmlTextReaderGetLastError:
+ * @reader: an XML reader
+ *
+ * Available since 2.13.0.
+ *
+ * Returns the last error.
+ */
 const xmlError *
 xmlTextReaderGetLastError(xmlTextReaderPtr reader)
 {

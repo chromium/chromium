@@ -1,10 +1,11 @@
 NEWS file for libxml2
 
-v2.13.0: not released yet
+v2.13.0: Jun 12 2024
 
 ### Major changes
 
-Most of the core code should now report malloc failures reliably.
+Most of the core code should now report malloc failures reliably. Some
+API functions were extended with versions that report malloc failures.
 
 New API functions for error handling were added:
 
@@ -18,12 +19,309 @@ resorting to global handlers.
 A few error messages were improved and consolidated. Please update
 downstream test suites accordingly.
 
+A new parser option XML_PARSE_NO_XXE can be used to disable loading
+of external entities or DTDs. This is most useful in connection with
+XML_PARSE_NOENT.
+
 Support for HTTP POST was removed.
 
-Support for zlib and liblzma is now disabled by default and has to be
-enabled by passing --with-zlib or --with-lzma to configure. In legacy
-mode (--with-legacy) compression support is enabled by default as
-before.
+Support for zlib, liblzma and HTTP is now disabled by default and has
+to be enabled by passing --with-zlib, --with-lzma or --with-html to
+configure. In legacy mode (--with-legacy) these options are enabled
+by default as before.
+
+Support for FTP and xpointer() XPath extensions will be removed in
+the next release.
+
+Several more legacy symbols were deprecated. Users of the old "SAX1"
+API functions are encouraged to upgrade to the new "SAX2" API,
+available since version 2.6.0 from 2003.
+
+Some deprecated global variables were made const:
+
+- htmlDefaultSAXHandler
+- oldXMLWDcompatibility
+- xmlDefaultSAXHandler
+- xmlDefaultSAXLocator
+- xmlParserDebugEntities
+
+### Deprecations and removals
+
+- threads: Deprecate remaining ThrDef functions
+- unicode: Deprecate most xmlUCSIs* functions
+- memory: Remove memory debugging
+- tree: Deprecate xmlRegisterNodeDefault
+- tree: Deprecate xmlSetCompressMode
+- html: Deprecate htmlHandleOmittedElem
+- valid: Deprecate internal validation functions
+- valid: Deprecate old DTD serialization API
+- nanohttp: Deprecate public API
+- Remove VMS support
+- Remove Trio
+
+### Bug fixes
+
+- parser: Fix base URI of internal parameter entities
+- tree: Handle predefined entities in xmlBufGetEntityRefContent
+- schemas: Allow unlimited length decimals, integers etc. (Tomáš Ženčák)
+- reader: Fix preservation of attributes
+- parser: Always decode entities in namespace URIs
+- relaxng: Fix tree corruption in xmlRelaxNGParseNameClass (Seiya Nakata)
+- schemas: Fix ADD_ANNOTATION
+- tree: Fix tree iteration in xmlDOMWrapRemoveNode
+- tree: Declare namespace on clone in xmlDOMWrapCloneNode
+- tree: Fix xmlAddSibling with last sibling
+- tree: Fix xmlDocSetRootElement with multiple top-level elements
+- catalog: Fetch XML catalog before dumping
+- html: Don't close fd in htmlCtxtReadFd
+
+### Improvements
+
+- parser: Fix "Truncated multi-byte sequence" error
+- Add missing _cplusplus processing clause (Sadaf Ebrahimi)
+- parser: Rework handling of undeclared entities
+- SAX2: Warn if URI resolution failed
+- parser: Don't report error on invalid URI
+- xmllint: Clean up option handling
+- xmllint: Rework parsing
+- parser: Don't create undeclared entity refs in substitution mode
+- Make some globals const
+- reader: Make xmlTextReaderReadString non-recursive
+- reader: Rework xmlTextReaderRead{Inner,Outer}Xml
+- Remove redundant size check (Niels Dossche)
+- Remove redundant NULL check on cur (Niels Dossche)
+- Remove always-false check old == cur (Niels Dossche)
+- Remove redundant NULL check on cur (Niels Dossche)
+- tree: Don't return empty localname in xmlSplitQName{2,3}
+- xinclude: Don't try to fix base of non-elements
+- tree: Don't coalesce text nodes in xmlAdd{Prev,Next}Sibling
+- SAX2: Optimize appending children
+- tree: Align xmlAddChild with other node insertion functions
+- html: Use binary search in htmlEntityValueLookup
+- io: Allocate output buffer with XML_BUFFER_ALLOC_IO
+- encoding: Don't shrink input too early in xmlCharEncOutput
+- tree: Tighten source doc check in xmlDOMWrapAdoptNode
+- tree: Check destParent->doc in xmlDOMWrapCloneNode
+- tree: Refactor text node updates
+- tree: Refactor node insertion
+- tree: Refactor element creation and parsing of attribute values
+- tree: Simplify xmlNodeGetContent, xmlBufGetNodeContent
+- buf: Don't use default buffer size for small strings
+- string: Fix xmlStrncatNew(NULL, "")
+- entities: Don't allow null name in xmlNewEntity
+- html: Fix quadratic behavior in htmlNodeDump
+- tree: Rewrite xmlSetTreeDoc
+- valid: Rework xmlAddID
+- tree: Remove unused node types
+- tree: Make namespace comparison more consistent
+- tree: Don't allow NULL name in xmlSetNsProp
+- tree: Rework xmlNodeListGetString
+- tree: Rework xmlTextMerge
+- tree: Rework xmlNodeSetName
+- tree: Simplify xmlAddChild with text parent
+- tree: Disallow setting content of entity reference nodes
+- tree: Rework xmlReconciliateNs
+- schemas: fix spurious warning about truncated snprintf output
+  (Benjamin Gilbert)
+- xmlschemastypes: Remove unreachable if statement (Maks Mishin)
+- relaxng: Remove useless if statement (Maks Mishin)
+- tree: Check for integer overflow in xmlStringGetNodeList
+- http: Improve error message for HTTPS redirects
+- catalog: Remove Windows hack
+- save: Move DTD serialization code to xmlsave.c
+- parser: Report fatal error if document entity couldn't be loaded
+- xpath: Fix return of empty node-set in xmlXPathNodeCollectAndTest
+- SAX2: Limit entity URI length to 2000 bytes
+- parser: Account for full size of non-well-formed entities
+- parser: Pop inputs if parsing DTD failed
+- parser: Fix quadratic behavior when copying entities
+- writer: Implement xmlTextWriterClose
+- parser: Avoid duplicate namespace errors
+- parser: Add XML_PARSE_NO_XXE parser option
+- parser: Make xmlParseContent more useful
+- error: Make xmlFormatError public
+- encoding: Check whether encoding handlers support input/output
+- SAX2: Enforce size limit in xmlSAX2Text with XML_PARSE_HUGE
+- parser: Lower maximum entity nesting depth
+- parser: Set depth limit to 2048 with XML_PARSE_HUGE
+- parser: Implement xmlCtxtSetOptions
+- parser: Always prefer option members over bitmask
+- parser: Don't modify SAX2 handler if XML_PARSE_SAX1 is set
+- parser: Rework parsing of attribute and entity values
+- save: Output U+FFFD replacement characters
+- parser: Simplify entity size accounting
+- parser: Avoid unwanted expansion of parameter entities
+- parser: Always copy content from entity to target
+- parser: Simplify control flow in xmlParseReference
+- parser: Remove xmlSetEntityReferenceFunc feature
+- parser: Push general entity input streams on the stack
+- parser: Move progressive flag into input struct
+- parser: Fix in-parameter-entity and in-external-dtd checks
+- xpath: Rewrite substring-before and substring-after
+- xinclude: Only set xml:base if necessary
+- xinclude: Allow empty nodesets
+- parser: Rework general entity parsing
+- io: Fix close error handling
+- io: Fix read/write error handling
+- io: More refactoring and unescaping fixes
+- io: Move some code from xmlIO.c to parserInternals.c
+- uri: Clean up special parsing modes
+- xinclude: Rework xml:base fixup
+- parser: Also set document properties when push parsing
+- include: Move non-generated parts from xmlversion.h.in
+- io: Remove support for HTTP POST
+- dict: Move local RNG state to global state
+- dict: Get random seed from system PRNG
+- io: Don't use "-" to read from stdin
+- io: Rework initialization
+- io: Consolidate error messages
+- xzlib: Fix harmless unsigned integer overflow
+- io: Always use unbuffered input
+- io: Fix detection of compressed streams
+- io: Pass error codes from xmlFileOpenReal to xmlNewInputFromFile
+- io: Rework default callbacks
+- error: Stop printing some errors by default
+- xpath: Don't free nodes of XSLT result value trees
+- valid: Fix handling of enumerations
+- parser: Allow recovery in xmlParseInNodeContext
+- encoding: Support ASCII in xmlLookupCharEncodingHandler
+- include: Remove useless 'const' from function arguments
+- Avoid EDG -Wignored-qualifiers warnings on wrong 'const *' to '* const'
+  conversions (makise-homura)
+- Avoid EDG deprecation warnings for LCC compiler (makise-homura)
+- Avoid EDG -Woverflow warnings on truncating conversions by manually
+  truncating operand (makise-homura)
+- Avoid EDG -Wtype-limits warnings on unsigned comparisons with zero by
+  conversion from unsigned int to int (makise-homura)
+- Avoid using no_sanitize attribute on EDG even if compiler shows as GCC
+  (makise-homura)
+
+### Build systems
+
+- meson: convert boolean options to feature option (Rosen Penev)
+- meson: Pass LIBXML_STATIC in dependency (Andrew Potter)
+- meson: fix compilation with local binaries (Rosen Penev)
+- meson: don't use dl dependency on old meson (Rosen Penev)
+- meson: fix usage as a subproject (Rosen Penev)
+- autotools: Fix pthread detection on FreeBSD
+- build: Remove --with-fexceptions configuration option
+- autotools: Remove --with-coverage configuration option
+- build: Disable HTTP support by default
+- Stop defining _REENTRANT
+- doc: Don't install example code
+- meson: Initial commit (Vincent Torri)
+- build: Disable support for compression libraries by default
+- Set LIBXML2_FOUND if it has been properly configured (Michele Bianchi)
+- Makefile.am: omit $(top_builddir) from DEPS and LDADDS (Mike Dalessio)
+
+### Test suite
+
+- runtest: Work around broken EUC-JP support in musl iconv
+- runtest: Check for IBM-1141 encoding handler
+- fuzz: Add xmllint fuzzer
+- fuzz: Add fuzzer for XML reader API
+- fuzz: New tree API fuzzer
+- tests: Remove testOOM
+- Don't let gentest.py cast types to 'const somethingPtr' to avoid
+  -Wignored-qualifiers (makise-homura)
+
+
+v2.12.8: Jun 12 2024
+
+### Regressions
+
+- parser: Fix performance regression when parsing namespaces
+
+
+v2.12.7: May 13 2024
+
+### Security
+
+- [CVE-2024-34459] Fix buffer overread with `xmllint --htmlout`
+
+### Regressions
+
+- xmllint: Fix --pedantic option
+- save: Handle invalid parent pointers in xhtmlNodeDumpOutput
+
+
+v2.12.6: Mar 15 2024
+
+### Regressions
+
+- parser: Fix detection of duplicate attributes in XML namespace
+- xmlreader: Fix xmlTextReaderConstEncoding
+- html: Fix htmlCreatePushParserCtxt with encoding
+- xmllint: Return error code if XPath returns empty nodeset
+
+
+v2.12.5: Feb 4 2024
+
+### Security
+
+- [CVE-2024-25062] xmlreader: Don't expand XIncludes when backtracking
+
+### Regressions
+
+- parser: Fix crash in xmlParseInNodeContext with HTML documents
+
+
+v2.12.4: Jan 15 2024
+
+### Regressions
+
+- parser: Fix regression parsing standalone declarations
+- autotools: Readd --with-xptr-locs configuration option
+- parser: Fix build --without-output
+- parser: Don't grow or shrink pull parser memory buffers
+- io: Fix memory lifetime issue with input buffers
+
+
+v2.12.3: Dec 12 2023
+
+### Regressions
+
+- parser: Fix namespaces redefined from default attributes
+
+### Build fixes
+
+- include: Rename XML_EMPTY helper macro
+- include: Move declaration of xmlInitGlobals
+- include: Add missing includes
+- include: Move globals from xmlsave.h to parser.h
+- include: Readd circular dependency between tree.h and parser.h
+
+
+v2.12.2: Dec 5 2023
+
+### Regressions
+
+- parser: Fix invalid free in xmlParseBalancedChunkMemoryRecover
+- globals: Disable TLS in static Windows builds
+- html: Reenable buggy detection of XML declarations
+- tree: Fix regression when copying DTDs
+- parser: Make CRLF increment line number
+
+### Build fixes
+
+- build: Disable compiler TLS by default
+- cmake: Update config.h.cmake.in
+- tests: Fix tests --with-valid --without-xinclude
+
+
+v2.12.1: Nov 23 2023
+
+### Regressions
+
+- hash: Fix deletion of entries during scan
+- parser: Only enable SAX2 if there are SAX2 element handlers
+
+### Build fixes
+
+- autotools: Stop checking for snprintf
+- dict: Fix '__thread' before 'static'
+- fix: pthread weak references in globals.c (Mike Dalessio)
+- tests: Fix build with older MSVC
 
 
 v2.12.0: Nov 16 2023

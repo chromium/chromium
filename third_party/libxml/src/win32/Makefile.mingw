@@ -52,9 +52,6 @@ LDFLAGS += -Wl,--major-image-version,$(LIBXML_MAJOR_VERSION)
 LDFLAGS += -Wl,--minor-image-version,$(LIBXML_MINOR_VERSION)
 LDFLAGS += -Wl,-L,$(BINDIR) -Wl,-L,$(LIBPREFIX)
 LIBS =
-ifeq ($(WITH_FTP),1)
-LIBS += -lwsock32 -lws2_32
-endif 
 ifeq ($(WITH_HTTP),1)
 LIBS += -lwsock32 -lws2_32
 endif 
@@ -108,7 +105,6 @@ XML_OBJS = $(XML_INTDIR)/buf.o\
 	$(XML_INTDIR)/HTMLtree.o\
 	$(XML_INTDIR)/legacy.o\
 	$(XML_INTDIR)/list.o\
-	$(XML_INTDIR)/nanoftp.o\
 	$(XML_INTDIR)/nanohttp.o\
 	$(XML_INTDIR)/parser.o\
 	$(XML_INTDIR)/parserInternals.o\
@@ -155,7 +151,6 @@ XML_OBJS_A = $(XML_INTDIR_A)/buf.o\
 	$(XML_INTDIR_A)/HTMLtree.o\
 	$(XML_INTDIR_A)/legacy.o\
 	$(XML_INTDIR_A)/list.o\
-	$(XML_INTDIR_A)/nanoftp.o\
 	$(XML_INTDIR_A)/nanohttp.o\
 	$(XML_INTDIR_A)/parser.o\
 	$(XML_INTDIR_A)/parserInternals.o\

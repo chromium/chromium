@@ -128,7 +128,16 @@
 /*
  * Originally declared in xmlversion.h which is generated
  */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 XMLPUBFUN void xmlCheckVersion(int version);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __XML_EXPORTS_H__ */
 

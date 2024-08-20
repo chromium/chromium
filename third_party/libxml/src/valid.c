@@ -512,11 +512,13 @@ xmlValidBuildAContentModel(xmlElementContentPtr content,
 		oldstate = ctxt->state;
 	    }
 	    do {
-		xmlValidBuildAContentModel(content->c1, ctxt, name);
+		if (xmlValidBuildAContentModel(content->c1, ctxt, name) == 0)
+                    return(0);
 		content = content->c2;
 	    } while ((content->type == XML_ELEMENT_CONTENT_SEQ) &&
 		     (content->ocur == XML_ELEMENT_CONTENT_ONCE));
-	    xmlValidBuildAContentModel(content, ctxt, name);
+	    if (xmlValidBuildAContentModel(content, ctxt, name) == 0)
+                return(0);
 	    oldend = ctxt->state;
 	    ctxt->state = xmlAutomataNewEpsilon(ctxt->am, oldend, NULL);
 	    switch (ocur) {
@@ -554,13 +556,15 @@ xmlValidBuildAContentModel(xmlElementContentPtr content,
 	     */
 	    do {
 		ctxt->state = oldstate;
-		xmlValidBuildAContentModel(content->c1, ctxt, name);
+		if (xmlValidBuildAContentModel(content->c1, ctxt, name) == 0)
+                    return(0);
 		xmlAutomataNewEpsilon(ctxt->am, ctxt->state, oldend);
 		content = content->c2;
 	    } while ((content->type == XML_ELEMENT_CONTENT_OR) &&
 		     (content->ocur == XML_ELEMENT_CONTENT_ONCE));
 	    ctxt->state = oldstate;
-	    xmlValidBuildAContentModel(content, ctxt, name);
+	    if (xmlValidBuildAContentModel(content, ctxt, name) == 0)
+                return(0);
 	    xmlAutomataNewEpsilon(ctxt->am, ctxt->state, oldend);
 	    ctxt->state = xmlAutomataNewEpsilon(ctxt->am, oldend, NULL);
 	    switch (ocur) {
@@ -624,7 +628,8 @@ xmlValidBuildContentModel(xmlValidCtxtPtr ctxt, xmlElementPtr elem) {
 	return(0);
     }
     ctxt->state = xmlAutomataGetInitState(ctxt->am);
-    xmlValidBuildAContentModel(elem->content, ctxt, elem->name);
+    if (xmlValidBuildAContentModel(elem->content, ctxt, elem->name) == 0)
+        goto done;
     xmlAutomataSetFinalState(ctxt->am, ctxt->state);
     elem->contModel = xmlAutomataCompile(ctxt->am);
     if (elem->contModel == NULL) {
@@ -2393,6 +2398,8 @@ done:
  * @value:  the attribute (ID) value
  *
  * Register a new id declaration
+ *
+ * Available since 2.13.0.
  *
  * Returns 1 on success, 0 if the ID already exists, -1 if a memory
  * allocation fails.

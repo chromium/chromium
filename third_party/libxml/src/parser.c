@@ -564,12 +564,6 @@ xmlHasFeature(xmlFeature feature)
 #else
             return(0);
 #endif
-        case XML_WITH_FTP:
-#ifdef LIBXML_FTP_ENABLED
-            return(1);
-#else
-            return(0);
-#endif
         case XML_WITH_HTTP:
 #ifdef LIBXML_HTTP_ENABLED
             return(1);
@@ -739,7 +733,8 @@ xmlSBufGrow(xmlSBuf *buf, unsigned len) {
     unsigned cap;
 
     if (len >= UINT_MAX / 2 - buf->size) {
-        buf->code = XML_ERR_RESOURCE_LIMIT;
+        if (buf->code == XML_ERR_OK)
+            buf->code = XML_ERR_RESOURCE_LIMIT;
         return(-1);
     }
 
@@ -762,7 +757,8 @@ xmlSBufGrow(xmlSBuf *buf, unsigned len) {
 static void
 xmlSBufAddString(xmlSBuf *buf, const xmlChar *str, unsigned len) {
     if (buf->max - buf->size < len) {
-        buf->code = XML_ERR_RESOURCE_LIMIT;
+        if (buf->code == XML_ERR_OK)
+            buf->code = XML_ERR_RESOURCE_LIMIT;
         return;
     }
 
@@ -786,7 +782,8 @@ xmlSBufAddChar(xmlSBuf *buf, int c) {
     xmlChar *end;
 
     if (buf->max - buf->size < 4) {
-        buf->code = XML_ERR_RESOURCE_LIMIT;
+        if (buf->code == XML_ERR_OK)
+            buf->code = XML_ERR_RESOURCE_LIMIT;
         return;
     }
 
@@ -1522,7 +1519,7 @@ xmlParserNsStartElement(xmlParserNsData *nsdb) {
 static int
 xmlParserNsLookup(xmlParserCtxtPtr ctxt, const xmlHashedString *prefix,
                   xmlParserNsBucket **bucketPtr) {
-    xmlParserNsBucket *bucket;
+    xmlParserNsBucket *bucket, *tombstone;
     unsigned index, hashValue;
 
     if (prefix->name == NULL)
@@ -1534,10 +1531,13 @@ xmlParserNsLookup(xmlParserCtxtPtr ctxt, const xmlHashedString *prefix,
     hashValue = prefix->hashValue;
     index = hashValue & (ctxt->nsdb->hashSize - 1);
     bucket = &ctxt->nsdb->hash[index];
+    tombstone = NULL;
 
     while (bucket->hashValue) {
-        if ((bucket->hashValue == hashValue) &&
-            (bucket->index != INT_MAX)) {
+        if (bucket->index == INT_MAX) {
+            if (tombstone == NULL)
+                tombstone = bucket;
+        } else if (bucket->hashValue == hashValue) {
             if (ctxt->nsTab[bucket->index * 2] == prefix->name) {
                 if (bucketPtr != NULL)
                     *bucketPtr = bucket;
@@ -1554,7 +1554,7 @@ xmlParserNsLookup(xmlParserCtxtPtr ctxt, const xmlHashedString *prefix,
     }
 
     if (bucketPtr != NULL)
-        *bucketPtr = bucket;
+        *bucketPtr = tombstone ? tombstone : bucket;
     return(INT_MAX);
 }
 
@@ -1795,7 +1795,7 @@ xmlParserNsPush(xmlParserCtxtPtr ctxt, const xmlHashedString *prefix,
             unsigned hv = ctxt->nsdb->hash[i].hashValue;
             unsigned newIndex;
 
-            if (hv == 0)
+            if ((hv == 0) || (ctxt->nsdb->hash[i].index == INT_MAX))
                 continue;
             newIndex = hv & (newSize - 1);
 
@@ -2523,9 +2523,6 @@ xmlPopInput(xmlParserCtxtPtr ctxt) {
  * @input:  an XML parser input fragment (entity, XML fragment ...).
  *
  * Push an input stream onto the stack.
- *
- * This makes the parser use an input returned from advanced functions
- * like xmlNewInputURL or xmlNewInputMemory.
  *
  * Returns -1 in case of error or the index in the input stack
  */
@@ -7847,11 +7844,19 @@ xmlParsePEReference(xmlParserCtxtPtr ctxt)
                 return;
             }
 
+            if (ctxt->input_id >= INT_MAX) {
+                xmlFatalErr(ctxt, XML_ERR_RESOURCE_LIMIT,
+                            "Input ID overflow\n");
+                return;
+            }
+
 	    input = xmlNewEntityInputStream(ctxt, entity);
 	    if (xmlPushInput(ctxt, input) < 0) {
                 xmlFreeInputStream(input);
 		return;
             }
+
+            input->id = ++ctxt->input_id;
 
             entity->flags |= XML_ENT_EXPANDING;
 
@@ -7872,9 +7877,7 @@ xmlParsePEReference(xmlParserCtxtPtr ctxt)
  * @ctxt:  an XML parser context
  * @entity: an unloaded system entity
  *
- * Load the original content of the given system entity from the
- * ExternalID/SystemID given. This is to be used for Included in Literal
- * http://www.w3.org/TR/REC-xml/#inliteral processing of entities references
+ * Load the content of an entity.
  *
  * Returns 0 in case of success and -1 in case of failure
  */
@@ -7884,6 +7887,7 @@ xmlLoadEntityContent(xmlParserCtxtPtr ctxt, xmlEntityPtr entity) {
     xmlParserInputPtr *oldinputTab;
     const xmlChar *oldencoding;
     xmlChar *content = NULL;
+    xmlResourceType rtype;
     size_t length, i;
     int oldinputNr, oldinputMax;
     int ret = -1;
@@ -7898,8 +7902,13 @@ xmlLoadEntityContent(xmlParserCtxtPtr ctxt, xmlEntityPtr entity) {
         return(-1);
     }
 
-    input = xmlLoadExternalEntity((char *) entity->URI,
-           (char *) entity->ExternalID, ctxt);
+    if (entity->etype == XML_EXTERNAL_PARAMETER_ENTITY)
+        rtype = XML_RESOURCE_PARAMETER_ENTITY;
+    else
+        rtype = XML_RESOURCE_GENERAL_ENTITY;
+
+    input = xmlLoadResource(ctxt, (char *) entity->URI,
+                            (char *) entity->ExternalID, rtype);
     if (input == NULL)
         return(-1);
 
@@ -10578,6 +10587,7 @@ xmlParseDocument(xmlParserCtxtPtr ctxt) {
 	        xmlFatalErr(ctxt, XML_ERR_DOCUMENT_END, NULL);
         } else if ((ctxt->input->buf != NULL) &&
                    (ctxt->input->buf->encoder != NULL) &&
+                   (ctxt->input->buf->error == 0) &&
                    (!xmlBufIsEmpty(ctxt->input->buf->raw))) {
             xmlFatalErrMsg(ctxt, XML_ERR_INVALID_CHAR,
                            "Truncated multi-byte sequence at EOF\n");
@@ -11583,6 +11593,7 @@ xmlParseChunk(xmlParserCtxtPtr ctxt, const char *chunk, int size,
             }
         } else if ((ctxt->input->buf != NULL) &&
                    (ctxt->input->buf->encoder != NULL) &&
+                   (ctxt->input->buf->error == 0) &&
                    (!xmlBufIsEmpty(ctxt->input->buf->raw))) {
             xmlFatalErrMsg(ctxt, XML_ERR_INVALID_CHAR,
                            "Truncated multi-byte sequence at EOF\n");
@@ -11620,7 +11631,8 @@ xmlParseChunk(xmlParserCtxtPtr ctxt, const char *chunk, int size,
  * @filename is used as base URI to fetch external entities and for
  * error reports.
  *
- * Returns the new parser context or NULL in case of error.
+ * Returns the new parser context or NULL if a memory allocation
+ * failed.
  */
 
 xmlParserCtxtPtr
@@ -11636,7 +11648,7 @@ xmlCreatePushParserCtxt(xmlSAXHandlerPtr sax, void *user_data,
     ctxt->options &= ~XML_PARSE_NODICT;
     ctxt->dictNames = 1;
 
-    input = xmlNewInputPush(ctxt, filename, chunk, size, NULL);
+    input = xmlInputCreatePush(filename, chunk, size);
     if (input == NULL) {
 	xmlFreeParserCtxt(ctxt);
 	return(NULL);
@@ -11670,8 +11682,6 @@ xmlStopParser(xmlParserCtxtPtr ctxt) {
  * @ioclose:  an I/O close function (optional)
  * @ioctx:  an I/O handler
  * @enc:  the charset encoding if known (deprecated)
- *
- * DEPRECATED: Use xmlNewParserCtxt and xmlCtxtReadIO.
  *
  * Create a parser context for using the XML parser with an existing
  * I/O stream
@@ -12132,10 +12142,10 @@ error:
 
 /**
  * xmlParseCtxtExternalEntity:
- * @ctx:  the existing parsing context
+ * @ctxt:  the existing parsing context
  * @URL:  the URL for the entity to load
  * @ID:  the System ID for the entity to load
- * @lst:  the return value for the set of parsed nodes
+ * @listOut:  the return value for the set of parsed nodes
  *
  * Parse an external general entity within an existing parsing context
  * An external general parsed entity is well-formed if it matches the
@@ -12159,14 +12169,15 @@ xmlParseCtxtExternalEntity(xmlParserCtxtPtr ctxt, const xmlChar *URL,
     if (ctxt == NULL)
         return(XML_ERR_ARGUMENT);
 
-    input = xmlLoadExternalEntity((char *)URL, (char *)ID, ctxt);
+    input = xmlLoadResource(ctxt, (char *) URL, (char *) ID,
+                            XML_RESOURCE_GENERAL_ENTITY);
     if (input == NULL)
         return(ctxt->errNo);
 
     xmlCtxtInitializeLate(ctxt);
 
     list = xmlCtxtParseContent(ctxt, input, /* hasTextDecl */ 1, 1);
-    if (*listOut != NULL)
+    if (listOut != NULL)
         *listOut = list;
     else
         xmlFreeNodeList(list);
@@ -12184,7 +12195,7 @@ xmlParseCtxtExternalEntity(xmlParserCtxtPtr ctxt, const xmlChar *URL,
  * @depth:  Used for loop detection, use 0
  * @URL:  the URL for the entity to load
  * @ID:  the System ID for the entity to load
- * @lst:  the return value for the set of parsed nodes
+ * @list:  the return value for the set of parsed nodes
  *
  * DEPRECATED: Use xmlParseCtxtExternalEntity.
  *
@@ -12461,7 +12472,7 @@ xmlParseInNodeContext(xmlNodePtr node, const char *data, int datalen,
  * @user_data:  The user data returned on SAX callbacks (possibly NULL)
  * @depth:  Used for loop detection, use 0
  * @string:  the input string in UTF8 or ISO-Latin (zero terminated)
- * @list:  the return value for the set of parsed nodes
+ * @listOut:  the return value for the set of parsed nodes
  * @recover: return nodes even if the data is broken (use 0)
  *
  * Parse a well-balanced chunk of an XML document
@@ -12599,7 +12610,7 @@ xmlParseEntity(const char *filename) {
  * @ID:  the entity PUBLIC ID
  * @base:  a possible base for the target URI
  *
- * DEPRECATED: Use xmlNewInputURL.
+ * DEPRECATED: Don't use.
  *
  * Create a parser context for an external entity
  * Automatic support for ZLIB/Compress compressed document is provided
@@ -12625,7 +12636,8 @@ xmlCreateEntityParserCtxt(const xmlChar *URL, const xmlChar *ID,
             URL = uri;
     }
 
-    input = xmlLoadExternalEntity((char *)URL, (char *)ID, ctxt);
+    input = xmlLoadResource(ctxt, (char *) URL, (char *) ID,
+                            XML_RESOURCE_UNKNOWN);
     if (input == NULL)
         goto error;
 
@@ -12673,7 +12685,7 @@ xmlCreateURLParserCtxt(const char *filename, int options)
     xmlCtxtUseOptions(ctxt, options);
     ctxt->linenumbers = 1;
 
-    input = xmlLoadExternalEntity(filename, NULL, ctxt);
+    input = xmlLoadResource(ctxt, filename, NULL, XML_RESOURCE_MAIN_DOCUMENT);
     if (input == NULL) {
 	xmlFreeParserCtxt(ctxt);
 	return(NULL);
@@ -13337,10 +13349,14 @@ xmlCtxtResetPush(xmlParserCtxtPtr ctxt, const char *chunk,
 
     xmlCtxtReset(ctxt);
 
-    input = xmlNewInputPush(ctxt, filename, chunk, size, encoding);
+    input = xmlInputCreatePush(filename, chunk, size);
     if (input == NULL)
         return(1);
+
     inputPush(ctxt, input);
+
+    if (encoding != NULL)
+        xmlSwitchEncodingName(ctxt, encoding);
 
     return(0);
 }
@@ -13509,7 +13525,7 @@ xmlCtxtSetOptionsInternal(xmlParserCtxtPtr ctxt, int options, int keepMask)
  *
  * XML_PARSE_NONET
  *
- * Disable network access with the builtin HTTP and FTP clients.
+ * Disable network access with the builtin HTTP client.
  *
  * XML_PARSE_NODICT
  *
@@ -13574,6 +13590,13 @@ xmlCtxtSetOptionsInternal(xmlParserCtxtPtr ctxt, int options, int keepMask)
  * XML_PARSE_BIG_LINES
  *
  * Enable reporting of line numbers larger than 65535.
+ *
+ * XML_PARSE_NO_UNZIP
+ *
+ * Disables input decompression. Setting this option is recommended
+ * to avoid zip bombs.
+ *
+ * Available since 2.14.0.
  *
  * Returns 0 in case of success, the set of unknown or unimplemented options
  *         in case of error.
@@ -13658,6 +13681,8 @@ xmlCtxtSetMaxAmplification(xmlParserCtxtPtr ctxt, unsigned maxAmpl)
  *
  * Parse an XML document and return the resulting document tree.
  * Takes ownership of the input object.
+ *
+ * Available since 2.13.0.
  *
  * Returns the resulting document tree or NULL
  */
@@ -13929,8 +13954,6 @@ xmlCtxtReadDoc(xmlParserCtxtPtr ctxt, const xmlChar *str,
  *
  * Parse an XML file from the filesystem, the network or a user-defined
  * resource loader.
- *
- * See xmlNewInputURL and xmlCtxtUseOptions for details.
  *
  * Returns the resulting document tree
  */

@@ -392,26 +392,6 @@ XMLPUBFUN int
 	xmlIOHTTPClose			(void * context);
 #endif /* LIBXML_HTTP_ENABLED */
 
-/**
- * Default 'ftp://' protocol callbacks
- */
-#if defined(LIBXML_FTP_ENABLED)
-XML_DEPRECATED
-XMLPUBFUN int
-	xmlIOFTPMatch			(const char *filename);
-XML_DEPRECATED
-XMLPUBFUN void *
-	xmlIOFTPOpen			(const char *filename);
-XML_DEPRECATED
-XMLPUBFUN int
-	xmlIOFTPRead			(void * context,
-					 char * buffer,
-					 int len);
-XML_DEPRECATED
-XMLPUBFUN int
-	xmlIOFTPClose			(void * context);
-#endif /* defined(LIBXML_FTP_ENABLED) */
-
 XMLPUBFUN xmlParserInputBufferCreateFilenameFunc
 	xmlParserInputBufferCreateFilenameDefault(
 		xmlParserInputBufferCreateFilenameFunc func);

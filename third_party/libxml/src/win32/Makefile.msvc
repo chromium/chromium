@@ -54,7 +54,7 @@ LD = link.exe
 LDFLAGS = /nologo /VERSION:$(LIBXML_MAJOR_VERSION).$(LIBXML_MINOR_VERSION)
 LDFLAGS = $(LDFLAGS) /LIBPATH:$(BINDIR) /LIBPATH:$(LIBPREFIX)
 LIBS =
-!if "$(WITH_FTP)" == "1" || "$(WITH_HTTP)" == "1"
+!if "$(WITH_HTTP)" == "1"
 LIBS = $(LIBS) wsock32.lib ws2_32.lib
 !endif 
 !if "$(WITH_ICONV)" == "1"
@@ -118,7 +118,6 @@ XML_OBJS = $(XML_INTDIR)\buf.obj\
 	$(XML_INTDIR)\HTMLtree.obj\
 	$(XML_INTDIR)\legacy.obj\
 	$(XML_INTDIR)\list.obj\
-	$(XML_INTDIR)\nanoftp.obj\
 	$(XML_INTDIR)\nanohttp.obj\
 	$(XML_INTDIR)\parser.obj\
 	$(XML_INTDIR)\parserInternals.obj\
@@ -163,7 +162,6 @@ XML_OBJS_A = $(XML_INTDIR_A)\buf.obj\
 	$(XML_INTDIR_A)\HTMLtree.obj\
 	$(XML_INTDIR_A)\legacy.obj\
 	$(XML_INTDIR_A)\list.obj\
-	$(XML_INTDIR_A)\nanoftp.obj\
 	$(XML_INTDIR_A)\nanohttp.obj\
 	$(XML_INTDIR_A)\parser.obj\
 	$(XML_INTDIR_A)\parserInternals.obj\
@@ -208,7 +206,6 @@ XML_OBJS_A_DLL = $(XML_INTDIR_A_DLL)\buf.obj\
 	$(XML_INTDIR_A_DLL)\HTMLtree.obj\
 	$(XML_INTDIR_A_DLL)\legacy.obj\
 	$(XML_INTDIR_A_DLL)\list.obj\
-	$(XML_INTDIR_A_DLL)\nanoftp.obj\
 	$(XML_INTDIR_A_DLL)\nanohttp.obj\
 	$(XML_INTDIR_A_DLL)\parser.obj\
 	$(XML_INTDIR_A_DLL)\parserInternals.obj\
