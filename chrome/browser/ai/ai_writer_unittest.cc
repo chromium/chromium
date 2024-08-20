@@ -181,19 +181,20 @@ class AIWriterTest : public ChromeRenderViewHostTestHarness {
 TEST_F(AIWriterTest, CreateWriterNoService) {
   SetupNullOptimizationGuideKeyedService();
 
-  MockCreateWriterClient mock_create_write_client;
-  base::RunLoop run_roop;
-  EXPECT_CALL(mock_create_write_client, OnResult(_))
+  MockCreateWriterClient mock_create_writer_client;
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_create_writer_client, OnResult(_))
       .WillOnce(testing::Invoke(
           [&](mojo::PendingRemote<::blink::mojom::AIWriter> writer) {
             EXPECT_FALSE(writer);
-            run_roop.Quit();
+            run_loop.Quit();
           }));
 
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
-  ai_manager->CreateWriter(kSharedContextString,
-                           mock_create_write_client.BindNewPipeAndPassRemote());
-  run_roop.Run();
+  ai_manager->CreateWriter(
+      kSharedContextString,
+      mock_create_writer_client.BindNewPipeAndPassRemote());
+  run_loop.Run();
 }
 
 TEST_F(AIWriterTest, CreateWriterStartSessionError) {
@@ -204,19 +205,20 @@ TEST_F(AIWriterTest, CreateWriterStartSessionError) {
               const std::optional<optimization_guide::SessionConfigParams>&
                   config_params) { return nullptr; }));
 
-  MockCreateWriterClient mock_create_write_client;
-  base::RunLoop run_roop;
-  EXPECT_CALL(mock_create_write_client, OnResult(_))
+  MockCreateWriterClient mock_create_writer_client;
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_create_writer_client, OnResult(_))
       .WillOnce(testing::Invoke(
           [&](mojo::PendingRemote<::blink::mojom::AIWriter> writer) {
             EXPECT_FALSE(writer);
-            run_roop.Quit();
+            run_loop.Quit();
           }));
 
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
-  ai_manager->CreateWriter(kSharedContextString,
-                           mock_create_write_client.BindNewPipeAndPassRemote());
-  run_roop.Run();
+  ai_manager->CreateWriter(
+      kSharedContextString,
+      mock_create_writer_client.BindNewPipeAndPassRemote());
+  run_loop.Run();
 }
 
 TEST_F(AIWriterTest, SimpleWrite) {
@@ -252,26 +254,26 @@ TEST_F(AIWriterTest, SimpleWrite) {
 
   mojo::Remote<blink::mojom::AIWriter> writer_remote;
   {
-    MockCreateWriterClient mock_create_write_client;
-    base::RunLoop run_roop;
-    EXPECT_CALL(mock_create_write_client, OnResult(_))
+    MockCreateWriterClient mock_create_writer_client;
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_create_writer_client, OnResult(_))
         .WillOnce(testing::Invoke(
             [&](mojo::PendingRemote<::blink::mojom::AIWriter> writer) {
               EXPECT_TRUE(writer);
               writer_remote =
                   mojo::Remote<blink::mojom::AIWriter>(std::move(writer));
-              run_roop.Quit();
+              run_loop.Quit();
             }));
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
         kSharedContextString,
-        mock_create_write_client.BindNewPipeAndPassRemote());
-    run_roop.Run();
+        mock_create_writer_client.BindNewPipeAndPassRemote());
+    run_loop.Run();
   }
   MockResponder mock_responder;
 
-  base::RunLoop run_roop;
+  base::RunLoop run_loop;
   EXPECT_CALL(mock_responder, OnResponse(_, _, _))
       .WillOnce(
           testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus status,
@@ -287,12 +289,12 @@ TEST_F(AIWriterTest, SimpleWrite) {
                               std::optional<uint64_t> current_tokens) {
             EXPECT_EQ(status,
                       blink::mojom::ModelStreamingResponseStatus::kComplete);
-            run_roop.Quit();
+            run_loop.Quit();
           }));
 
   writer_remote->Write(kInputString, kContextString,
                        mock_responder.BindNewPipeAndPassRemote());
-  run_roop.Run();
+  run_loop.Run();
 }
 
 TEST_F(AIWriterTest, WriteError) {
@@ -331,26 +333,26 @@ TEST_F(AIWriterTest, WriteError) {
 
   mojo::Remote<blink::mojom::AIWriter> writer_remote;
   {
-    MockCreateWriterClient mock_create_write_client;
-    base::RunLoop run_roop;
-    EXPECT_CALL(mock_create_write_client, OnResult(_))
+    MockCreateWriterClient mock_create_writer_client;
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_create_writer_client, OnResult(_))
         .WillOnce(testing::Invoke(
             [&](mojo::PendingRemote<::blink::mojom::AIWriter> writer) {
               EXPECT_TRUE(writer);
               writer_remote =
                   mojo::Remote<blink::mojom::AIWriter>(std::move(writer));
-              run_roop.Quit();
+              run_loop.Quit();
             }));
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
         kSharedContextString,
-        mock_create_write_client.BindNewPipeAndPassRemote());
-    run_roop.Run();
+        mock_create_writer_client.BindNewPipeAndPassRemote());
+    run_loop.Run();
   }
   MockResponder mock_responder;
 
-  base::RunLoop run_roop;
+  base::RunLoop run_loop;
   EXPECT_CALL(mock_responder, OnResponse(_, _, _))
       .WillOnce(testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus
                                         status,
@@ -359,12 +361,12 @@ TEST_F(AIWriterTest, WriteError) {
         EXPECT_EQ(
             status,
             blink::mojom::ModelStreamingResponseStatus::kErrorPermissionDenied);
-        run_roop.Quit();
+        run_loop.Quit();
       }));
 
   writer_remote->Write(kInputString, kContextString,
                        mock_responder.BindNewPipeAndPassRemote());
-  run_roop.Run();
+  run_loop.Run();
 }
 
 TEST_F(AIWriterTest, WriteMultipleResponse) {
@@ -402,26 +404,26 @@ TEST_F(AIWriterTest, WriteMultipleResponse) {
 
   mojo::Remote<blink::mojom::AIWriter> writer_remote;
   {
-    MockCreateWriterClient mock_create_write_client;
-    base::RunLoop run_roop;
-    EXPECT_CALL(mock_create_write_client, OnResult(_))
+    MockCreateWriterClient mock_create_writer_client;
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_create_writer_client, OnResult(_))
         .WillOnce(testing::Invoke(
             [&](mojo::PendingRemote<::blink::mojom::AIWriter> writer) {
               EXPECT_TRUE(writer);
               writer_remote =
                   mojo::Remote<blink::mojom::AIWriter>(std::move(writer));
-              run_roop.Quit();
+              run_loop.Quit();
             }));
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
         kSharedContextString,
-        mock_create_write_client.BindNewPipeAndPassRemote());
-    run_roop.Run();
+        mock_create_writer_client.BindNewPipeAndPassRemote());
+    run_loop.Run();
   }
   MockResponder mock_responder;
 
-  base::RunLoop run_roop;
+  base::RunLoop run_loop;
   EXPECT_CALL(mock_responder, OnResponse(_, _, _))
       .WillOnce(
           testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus status,
@@ -445,12 +447,12 @@ TEST_F(AIWriterTest, WriteMultipleResponse) {
                               std::optional<uint64_t> current_tokens) {
             EXPECT_EQ(status,
                       blink::mojom::ModelStreamingResponseStatus::kComplete);
-            run_roop.Quit();
+            run_loop.Quit();
           }));
 
   writer_remote->Write(kInputString, kContextString,
                        mock_responder.BindNewPipeAndPassRemote());
-  run_roop.Run();
+  run_loop.Run();
 }
 
 TEST_F(AIWriterTest, MultipleWrite) {
@@ -500,26 +502,26 @@ TEST_F(AIWriterTest, MultipleWrite) {
 
   mojo::Remote<blink::mojom::AIWriter> writer_remote;
   {
-    MockCreateWriterClient mock_create_write_client;
-    base::RunLoop run_roop;
-    EXPECT_CALL(mock_create_write_client, OnResult(_))
+    MockCreateWriterClient mock_create_writer_client;
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_create_writer_client, OnResult(_))
         .WillOnce(testing::Invoke(
             [&](mojo::PendingRemote<::blink::mojom::AIWriter> writer) {
               EXPECT_TRUE(writer);
               writer_remote =
                   mojo::Remote<blink::mojom::AIWriter>(std::move(writer));
-              run_roop.Quit();
+              run_loop.Quit();
             }));
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
         kSharedContextString,
-        mock_create_write_client.BindNewPipeAndPassRemote());
-    run_roop.Run();
+        mock_create_writer_client.BindNewPipeAndPassRemote());
+    run_loop.Run();
   }
   {
     MockResponder mock_responder;
-    base::RunLoop run_roop;
+    base::RunLoop run_loop;
     EXPECT_CALL(mock_responder, OnResponse(_, _, _))
         .WillOnce(testing::Invoke(
             [&](blink::mojom::ModelStreamingResponseStatus status,
@@ -535,16 +537,16 @@ TEST_F(AIWriterTest, MultipleWrite) {
                 std::optional<uint64_t> current_tokens) {
               EXPECT_EQ(status,
                         blink::mojom::ModelStreamingResponseStatus::kComplete);
-              run_roop.Quit();
+              run_loop.Quit();
             }));
 
     writer_remote->Write(kInputString, kContextString,
                          mock_responder.BindNewPipeAndPassRemote());
-    run_roop.Run();
+    run_loop.Run();
   }
   {
     MockResponder mock_responder;
-    base::RunLoop run_roop;
+    base::RunLoop run_loop;
     EXPECT_CALL(mock_responder, OnResponse(_, _, _))
         .WillOnce(testing::Invoke(
             [&](blink::mojom::ModelStreamingResponseStatus status,
@@ -560,19 +562,19 @@ TEST_F(AIWriterTest, MultipleWrite) {
                 std::optional<uint64_t> current_tokens) {
               EXPECT_EQ(status,
                         blink::mojom::ModelStreamingResponseStatus::kComplete);
-              run_roop.Quit();
+              run_loop.Quit();
             }));
 
     writer_remote->Write("input string 2", "test context 2",
                          mock_responder.BindNewPipeAndPassRemote());
-    run_roop.Run();
+    run_loop.Run();
   }
 }
 
 TEST_F(AIWriterTest, ResponderDisconnected) {
   SetupMockOptimizationGuideKeyedService();
 
-  base::RunLoop run_roop_for_callback;
+  base::RunLoop run_loop_for_callback;
   optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
       streaming_callback;
   EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
@@ -598,29 +600,29 @@ TEST_F(AIWriterTest, ResponderDisconnected) {
                             callback) {
                   CheckComposeRequestUserInput(request_metadata, kInputString);
                   streaming_callback = std::move(callback);
-                  run_roop_for_callback.Quit();
+                  run_loop_for_callback.Quit();
                 }));
         return session;
       }));
 
   mojo::Remote<blink::mojom::AIWriter> writer_remote;
   {
-    MockCreateWriterClient mock_create_write_client;
-    base::RunLoop run_roop;
-    EXPECT_CALL(mock_create_write_client, OnResult(_))
+    MockCreateWriterClient mock_create_writer_client;
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_create_writer_client, OnResult(_))
         .WillOnce(testing::Invoke(
             [&](mojo::PendingRemote<::blink::mojom::AIWriter> writer) {
               EXPECT_TRUE(writer);
               writer_remote =
                   mojo::Remote<blink::mojom::AIWriter>(std::move(writer));
-              run_roop.Quit();
+              run_loop.Quit();
             }));
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
         kSharedContextString,
-        mock_create_write_client.BindNewPipeAndPassRemote());
-    run_roop.Run();
+        mock_create_writer_client.BindNewPipeAndPassRemote());
+    run_loop.Run();
   }
   std::unique_ptr<MockResponder> mock_responder =
       std::make_unique<MockResponder>();
@@ -631,7 +633,7 @@ TEST_F(AIWriterTest, ResponderDisconnected) {
   // interface in AIWriter.
   task_environment()->RunUntilIdle();
 
-  run_roop_for_callback.Run();
+  run_loop_for_callback.Run();
   ASSERT_TRUE(streaming_callback);
   streaming_callback.Run(CreateExecutionResult("Result text",
                                                /*is_complete=*/true));
@@ -641,7 +643,7 @@ TEST_F(AIWriterTest, ResponderDisconnected) {
 TEST_F(AIWriterTest, WriterDisconnected) {
   SetupMockOptimizationGuideKeyedService();
 
-  base::RunLoop run_roop_for_callback;
+  base::RunLoop run_loop_for_callback;
   optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
       streaming_callback;
   EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
@@ -667,33 +669,33 @@ TEST_F(AIWriterTest, WriterDisconnected) {
                             callback) {
                   CheckComposeRequestUserInput(request_metadata, kInputString);
                   streaming_callback = std::move(callback);
-                  run_roop_for_callback.Quit();
+                  run_loop_for_callback.Quit();
                 }));
         return session;
       }));
 
   mojo::Remote<blink::mojom::AIWriter> writer_remote;
   {
-    MockCreateWriterClient mock_create_write_client;
-    base::RunLoop run_roop;
-    EXPECT_CALL(mock_create_write_client, OnResult(_))
+    MockCreateWriterClient mock_create_writer_client;
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_create_writer_client, OnResult(_))
         .WillOnce(testing::Invoke(
             [&](mojo::PendingRemote<::blink::mojom::AIWriter> writer) {
               EXPECT_TRUE(writer);
               writer_remote =
                   mojo::Remote<blink::mojom::AIWriter>(std::move(writer));
-              run_roop.Quit();
+              run_loop.Quit();
             }));
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
         kSharedContextString,
-        mock_create_write_client.BindNewPipeAndPassRemote());
-    run_roop.Run();
+        mock_create_writer_client.BindNewPipeAndPassRemote());
+    run_loop.Run();
   }
 
   MockResponder mock_responder;
-  base::RunLoop run_roop_for_response;
+  base::RunLoop run_loop_for_response;
   EXPECT_CALL(mock_responder, OnResponse(_, _, _))
       .WillOnce(testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus
                                         status,
@@ -703,13 +705,13 @@ TEST_F(AIWriterTest, WriterDisconnected) {
         EXPECT_EQ(
             status,
             blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
-        run_roop_for_response.Quit();
+        run_loop_for_response.Quit();
       }));
 
   writer_remote->Write(kInputString, kContextString,
                        mock_responder.BindNewPipeAndPassRemote());
 
-  run_roop_for_callback.Run();
+  run_loop_for_callback.Run();
 
   // Disconnect the writer handle.
   writer_remote.reset();
@@ -720,5 +722,5 @@ TEST_F(AIWriterTest, WriterDisconnected) {
   ASSERT_TRUE(streaming_callback);
   streaming_callback.Run(CreateExecutionResult("Result text",
                                                /*is_complete=*/true));
-  run_roop_for_response.Run();
+  run_loop_for_response.Run();
 }
