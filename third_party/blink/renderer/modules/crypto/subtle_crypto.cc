@@ -680,7 +680,7 @@ ScriptPromise<DOMArrayBuffer> SubtleCrypto::deriveBits(
     ScriptState* script_state,
     const V8AlgorithmIdentifier* raw_algorithm,
     CryptoKey* base_key,
-    unsigned length_bits,
+    std::optional<unsigned> length_bits,
     ExceptionState& exception_state) {
   // Method described by:
   // https://w3c.github.io/webcrypto/Overview.html#dfn-SubtleCrypto-method-deriveBits

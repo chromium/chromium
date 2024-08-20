@@ -329,7 +329,7 @@ struct UnwrapKeyState : public BaseState {
 struct DeriveBitsState : public BaseState {
   DeriveBitsState(const blink::WebCryptoAlgorithm& algorithm,
                   const blink::WebCryptoKey& base_key,
-                  unsigned int length_bits,
+                  std::optional<unsigned int> length_bits,
                   const blink::WebCryptoResult& result,
                   scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : BaseState(result, std::move(task_runner)),
@@ -339,7 +339,7 @@ struct DeriveBitsState : public BaseState {
 
   const blink::WebCryptoAlgorithm algorithm;
   const blink::WebCryptoKey base_key;
-  const unsigned int length_bits;
+  const std::optional<unsigned int> length_bits;
 
   std::vector<uint8_t> derived_bytes;
 };
@@ -812,7 +812,7 @@ void WebCryptoImpl::UnwrapKey(
 void WebCryptoImpl::DeriveBits(
     const blink::WebCryptoAlgorithm& algorithm,
     const blink::WebCryptoKey& base_key,
-    unsigned int length_bits,
+    std::optional<unsigned int> length_bits,
     blink::WebCryptoResult result,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   if (result.Cancelled())

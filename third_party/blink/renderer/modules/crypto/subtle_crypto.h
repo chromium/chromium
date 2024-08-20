@@ -113,7 +113,7 @@ class SubtleCrypto final : public ScriptWrappable {
   ScriptPromise<DOMArrayBuffer> deriveBits(ScriptState*,
                                            const V8AlgorithmIdentifier*,
                                            CryptoKey*,
-                                           unsigned,
+                                           std::optional<unsigned>,
                                            ExceptionState&);
   ScriptPromise<IDLAny> deriveKey(ScriptState*,
                                   const V8AlgorithmIdentifier*,

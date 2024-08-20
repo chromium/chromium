@@ -46,7 +46,7 @@ typedef (object or DOMString) AlgorithmIdentifier;
 
     [CallWith=ScriptState, MeasureAs=SubtleCryptoGenerateKey, RaisesException] Promise<any> generateKey(AlgorithmIdentifier algorithm, boolean extractable, sequence<KeyUsage> keyUsages);
     [CallWith=ScriptState, MeasureAs=SubtleCryptoDeriveKey, RaisesException] Promise<any> deriveKey(AlgorithmIdentifier algorithm, CryptoKey baseKey, AlgorithmIdentifier derivedKeyType, boolean extractable, sequence<KeyUsage> keyUsages);
-    [CallWith=ScriptState, MeasureAs=SubtleCryptoDeriveBits, RaisesException] Promise<ArrayBuffer> deriveBits(AlgorithmIdentifier algorithm, CryptoKey baseKey, unsigned long length);
+    [CallWith=ScriptState, MeasureAs=SubtleCryptoDeriveBits, RaisesException] Promise<ArrayBuffer> deriveBits(AlgorithmIdentifier algorithm, CryptoKey baseKey, optional unsigned long? length = null);
 
     [CallWith=ScriptState, MeasureAs=SubtleCryptoImportKey, RaisesException] Promise<CryptoKey> importKey(KeyFormat format, (BufferSource or JsonWebKey) keyData, AlgorithmIdentifier algorithm, boolean extractable, sequence<KeyUsage> keyUsages);
     [CallWith=ScriptState, MeasureAs=SubtleCryptoExportKey, RaisesException] Promise<any> exportKey(KeyFormat format, CryptoKey key);
