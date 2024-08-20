@@ -14,7 +14,6 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
@@ -27,6 +26,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
@@ -125,36 +125,49 @@ public class TabGroupListCoordinator {
 
     @VisibleForTesting
     static FaviconResolver buildFaviconResolver(Context context, Profile profile) {
+        TabListFaviconProvider fallbackProvider =
+                new TabListFaviconProvider(
+                        context, /* isTabStrip= */ false, R.dimen.default_favicon_corner_radius);
         return (GURL url, Callback<Drawable> callback) -> {
             if (UrlUtilities.isInternalScheme(url)) {
-                // Do not bother resizing, the view will use a fixed size. No resizing should allow
-                // caching/sharing of this drawable.
-                callback.onResult(AppCompatResources.getDrawable(context, R.drawable.chromelogo16));
+                callback.onResult(
+                        fallbackProvider
+                                .getRoundedChromeFavicon(/* isIncognito= */ false)
+                                .getDefaultDrawable());
             } else {
-                resolveForeignFavicon(context, profile, url, callback);
+                resolveForeignFavicon(context, profile, fallbackProvider, url, callback);
             }
         };
     }
 
     private static void resolveForeignFavicon(
-            Context context, Profile profile, GURL url, Callback<Drawable> callback) {
+            Context context,
+            Profile profile,
+            TabListFaviconProvider fallbackProvider,
+            GURL url,
+            Callback<Drawable> callback) {
         Resources resources = context.getResources();
         int faviconSizePixels = resources.getDimensionPixelSize(R.dimen.tab_grid_favicon_size);
         FaviconImageCallback faviconImageCallback =
-                (Bitmap bitmap, GURL ignored) -> onForeignFavicon(context, callback, bitmap);
+                (Bitmap bitmap, GURL ignored) ->
+                        onForeignFavicon(context, fallbackProvider, callback, bitmap);
         new FaviconHelper()
                 .getForeignFaviconImageForURL(
                         profile, url, faviconSizePixels, faviconImageCallback);
     }
 
     private static void onForeignFavicon(
-            Context context, Callback<Drawable> callback, Bitmap bitmap) {
+            Context context,
+            TabListFaviconProvider fallbackProvider,
+            Callback<Drawable> callback,
+            Bitmap bitmap) {
         Resources resources = context.getResources();
         final Drawable drawable;
         if (bitmap == null) {
-            // Do not bother resizing, the view will use a fixed size. No resizing should allow
-            // caching/sharing of this drawable.
-            drawable = AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp);
+            drawable =
+                    fallbackProvider
+                            .getDefaultFavicon(/* isIncognito= */ false)
+                            .getDefaultDrawable();
         } else {
             int cornerRadiusPixels =
                     resources.getDimensionPixelSize(R.dimen.default_favicon_corner_radius);
