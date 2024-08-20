@@ -146,14 +146,6 @@ class TrackingProtectionOnboarding : public KeyedService {
   // enum defined above.
   SilentOnboardingStatus GetSilentOnboardingStatus() const;
 
-  // To be Called by UI code when the user has been shown the notice.
-  void NoticeShown(SurfaceType surface, NoticeType notice_type);
-
-  // To be called by UI code when the user has taken action on the notice.
-  void NoticeActionTaken(SurfaceType surface,
-                         NoticeType notice_type,
-                         NoticeAction action);
-
  private:
   friend class tpcd::experiment::EligibilityServiceTest;
 

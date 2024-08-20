@@ -1571,50 +1571,6 @@ reviewer.
 </histogram>
 
 <histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.DidNoticeActionAckowledge"
-    enum="Boolean" expires_after="2025-02-10">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records a boolean for whether or not the NoticeActionTaken function marked
-    the user to have acknowledged the onboarding notice.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.DidNoticeShownOnboard"
-    enum="Boolean" expires_after="2025-02-10">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records a boolean for whether or not the NoticeShown function changed the
-    user from eligible to onboarded.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.EligibleToOnboardedDuration"
-    units="ms" expires_after="2024-09-30">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the duration it takes while being eligible up till onboarding to
-    3PCD. This occurs once during the process of onboarding.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.LastShownToAckedDuration"
-    units="ms" expires_after="2025-02-10">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the duration it takes to acknowledge the notice from the last time
-    it was shown. This occurs once during the process of onboarding.
-  </summary>
-</histogram>
-
-<histogram
     name="PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkEligible"
     enum="Boolean" expires_after="2025-02-10">
   <owner>jacobstanley@google.com</owner>
@@ -1633,17 +1589,6 @@ reviewer.
   <summary>
     Records a boolean for whether or not the MaybeMarkIneligible function
     changed the user to ineligible.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.OnboardedToAckedDuration"
-    units="ms" expires_after="2025-02-10">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the time it takes to acknowledge the notice for 3PCD after being
-    onboarded. This occurs once during the process of onboarding.
   </summary>
 </histogram>
 
@@ -1698,28 +1643,6 @@ reviewer.
   <summary>
     Records the time it takes while waiting to be onboarded to 3PCD. This occurs
     once per profile during the startup of onboarding.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.SilentOnboarding.DidNoticeShownOnboard"
-    enum="Boolean" expires_after="2025-02-10">
-  <owner>linnan@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records a boolean for whether or not the NoticeShown function changed the
-    user from eligible to silent onboarded.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.SilentOnboarding.EligibleToOnboardedDuration"
-    units="ms" expires_after="2024-12-08">
-  <owner>linnan@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the duration it takes while being eligible up till silent onboarding
-    to 3PCD control groups. This occurs once during the process of onboarding.
   </summary>
 </histogram>
 

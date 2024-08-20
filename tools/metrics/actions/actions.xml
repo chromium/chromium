@@ -42225,54 +42225,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="TrackingProtection.Notice.Closed">
-  <owner>boujane@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <description>
-    User Closed the Tracking Protection onboarding notice.
-  </description>
-</action>
-
-<action name="TrackingProtection.Notice.DismissedOther">
-  <owner>boujane@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <description>
-    User dismissed the Tracking Protection onboarding notice some other way.
-  </description>
-</action>
-
-<action name="TrackingProtection.Notice.GotItClicked">
-  <owner>boujane@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <description>
-    User clicked 'Got it' on the Tracking Protection onboarding notice.
-  </description>
-</action>
-
-<action name="TrackingProtection.Notice.LearnMoreClicked">
-  <owner>boujane@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <description>
-    User clicked 'Learn More' on the Tracking Protection onboarding notice.
-  </description>
-</action>
-
-<action name="TrackingProtection.Notice.SettingsClicked">
-  <owner>boujane@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <description>
-    User clicked 'Settings' on the Tracking Protection onboarding notice.
-  </description>
-</action>
-
-<action name="TrackingProtection.Notice.Shown" not_user_triggered="true">
-  <owner>boujane@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <description>
-    User is shown the Tracking Protection onboarding notice.
-  </description>
-</action>
-
 <action name="TrackingProtection.UserBypass.Animated">
   <owner>alvingo@google.com</owner>
   <owner>koilos@google.com</owner>

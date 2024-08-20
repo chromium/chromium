@@ -289,14 +289,10 @@ class ThirdPartyCookieDeprecationObserverBaseBrowserTest
         static_cast<int>(content_settings::CookieControlsMode::kOff));
   }
   void SetUpTrackingProtectionOnboard() {
-    onboarding_service()->MaybeMarkModeBEligible();
-    onboarding_service()->NoticeShown(
-        privacy_sandbox::TrackingProtectionOnboarding::SurfaceType::kBrApp,
-        privacy_sandbox::TrackingProtectionOnboarding::NoticeType::
-            kModeBOnboarding);
-    EXPECT_EQ(onboarding_service()->GetOnboardingStatus(),
-              privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-                  kOnboarded);
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kTrackingProtectionOnboardingStatus,
+        static_cast<int>(privacy_sandbox::TrackingProtectionOnboarding::
+                             OnboardingStatus::kOnboarded));
     // Enable 3pcd as it's no longer done through the onboarding service.
     browser()->profile()->GetPrefs()->SetBoolean(
         prefs::kTrackingProtection3pcdEnabled, true);
