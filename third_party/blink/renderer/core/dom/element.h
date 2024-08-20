@@ -1565,8 +1565,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   TextDirection ParentDirectionality() const;
   bool RecalcSelfOrAncestorHasDirAuto();
-  std::optional<TextDirection> ResolveAutoDirectionality(
-      bool& is_deferred) const;
+  std::optional<TextDirection> ResolveAutoDirectionality() const;
 
  private:
   friend class AXObject;

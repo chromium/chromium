@@ -2664,16 +2664,14 @@ HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(
 }
 
 bool HTMLElement::CalculateAndAdjustAutoDirectionality() {
-  bool is_deferred = false;
   TextDirection text_direction;
-  std::optional<TextDirection> resolve_result =
-      ResolveAutoDirectionality(is_deferred);
+  std::optional<TextDirection> resolve_result = ResolveAutoDirectionality();
   if (resolve_result) {
     text_direction = *resolve_result;
   } else {
     text_direction = TextDirection::kLtr;
   }
-  if (CachedDirectionality() != text_direction && !is_deferred) {
+  if (CachedDirectionality() != text_direction) {
     UpdateDirectionalityAndDescendant(text_direction);
 
     const ComputedStyle* style = GetComputedStyle();

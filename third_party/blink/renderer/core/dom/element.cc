@@ -4683,19 +4683,18 @@ void Element::UpdateDescendantHasDirAutoAttribute(bool has_dir_auto) {
   }
 }
 
-std::optional<TextDirection> Element::ResolveAutoDirectionality(
-    bool& is_deferred) const {
-  is_deferred = false;
+std::optional<TextDirection> Element::ResolveAutoDirectionality() const {
   if (const TextControlElement* text_element =
           HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(this)) {
     return BidiParagraph::BaseDirectionForStringOrLtr(text_element->Value());
   }
 
   auto include_in_traversal = [](Element* element) -> bool {
-    // Skip bdi, script, style and text form controls.
+    // Skip bdi, script, style and textarea.
     if (element->HasTagName(html_names::kBdiTag) ||
-        IsA<HTMLScriptElement>(*element) || IsA<HTMLStyleElement>(*element) ||
-        element->IsTextControl() ||
+        element->HasTagName(html_names::kScriptTag) ||
+        element->HasTagName(html_names::kStyleTag) ||
+        element->HasTagName(html_names::kTextareaTag) ||
         element->ShadowPseudoId() ==
             shadow_element_names::kPseudoInputPlaceholder) {
       return false;
@@ -4710,6 +4709,38 @@ std::optional<TextDirection> Element::ResolveAutoDirectionality(
       }
     }
     return true;
+  };
+
+  // https://html.spec.whatwg.org/multipage/dom.html#contained-text-auto-directionality
+  auto contained_text_auto_directionality =
+      [&include_in_traversal](
+          const Element* subtree_root) -> std::optional<TextDirection> {
+    Node* node = NodeTraversal::FirstChild(*subtree_root);
+    while (node) {
+      if (auto* element = DynamicTo<Element>(node)) {
+        if (!include_in_traversal(element)) {
+          node = NodeTraversal::NextSkippingChildren(*node, subtree_root);
+          continue;
+        }
+      }
+
+      if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(node)) {
+        if (ShadowRoot* root = slot->ContainingShadowRoot()) {
+          return root->host().CachedDirectionality();
+        }
+      }
+
+      if (node->IsTextNode()) {
+        if (const std::optional<TextDirection> text_direction =
+                BidiParagraph::BaseDirectionForString(
+                    node->textContent(true))) {
+          return *text_direction;
+        }
+      }
+
+      node = NodeTraversal::Next(*node, subtree_root);
+    }
+    return std::nullopt;
   };
 
   if (const HTMLSlotElement* slot_this =
@@ -4730,7 +4761,7 @@ std::optional<TextDirection> Element::ResolveAutoDirectionality(
           if (include_in_traversal(slotted_element) ||
               !RuntimeEnabledFeatures::DirAutoFixSlotExclusionsEnabled()) {
             std::optional<TextDirection> slotted_child_result =
-                slotted_element->ResolveAutoDirectionality(is_deferred);
+                contained_text_auto_directionality(slotted_element);
             if (slotted_child_result) {
               return slotted_child_result;
             }
@@ -4741,31 +4772,7 @@ std::optional<TextDirection> Element::ResolveAutoDirectionality(
     }
   }
 
-  Node* node = NodeTraversal::FirstChild(*this);
-  while (node) {
-    if (auto* element = DynamicTo<Element>(node)) {
-      if (!include_in_traversal(element)) {
-        node = NodeTraversal::NextSkippingChildren(*node, this);
-        continue;
-      }
-    }
-
-    if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(node)) {
-      if (ShadowRoot* root = slot->ContainingShadowRoot()) {
-        return root->host().CachedDirectionality();
-      }
-    }
-
-    if (node->IsTextNode()) {
-      if (const std::optional<TextDirection> text_direction =
-              BidiParagraph::BaseDirectionForString(node->textContent(true))) {
-        return *text_direction;
-      }
-    }
-
-    node = NodeTraversal::Next(*node, this);
-  }
-  return std::nullopt;
+  return contained_text_auto_directionality(this);
 }
 
 void Element::AdjustDirectionalityIfNeededAfterChildrenChanged(
