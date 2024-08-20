@@ -120,6 +120,10 @@ extern const base::FeatureParam<base::TimeDelta> kEmbeddingsServiceTimeout;
 // of words and phrases.
 extern const base::FeatureParam<std::string> kFilterTerms;
 
+// Comma-separated list of decimal integer hash values to decode as a set of
+// uint32_t. These can match against either one or two word phrases.
+extern const base::FeatureParam<std::string> kFilterHashes;
+
 // Whether the history embeddings feature is enabled. This only checks if the
 // feature flags are enabled and does not check the user's opt-in preference.
 // See chrome/browser/history_embeddings/history_embeddings_utils.h.
