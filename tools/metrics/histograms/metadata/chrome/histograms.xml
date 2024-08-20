@@ -124,7 +124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.TrustTokenGetter.Action"
-    enum="KAnonymityTrustTokenGetterAction" expires_after="2024-12-15">
+    enum="KAnonymityTrustTokenGetterAction" expires_after="2025-02-16">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
