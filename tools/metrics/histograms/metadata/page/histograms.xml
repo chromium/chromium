@@ -2247,6 +2247,33 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients{ObservedNavigation}.Leakage2.TimeToAbandonFromNavigationStart.{NavigationMilestone}.{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
+    units="ms" expires_after="2024-12-08">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The Duration from the navigation start time to the time that a navigation
+    gets abandoned after the milestone {NavigationMilestone} on a main frame
+    navigation for {ObservedNavigation} with {RTTBucketSuffix} connection. Only
+    the abandonments due to backgrounding and hiding are non-terminal, and other
+    abandonments are terminal. This means this metric might be recorded multiple
+    times if the navigation is only abandoned non-terminally before, but only
+    once for each abandonment reason. &quot;This is logged after non-terminal
+    abandonment of pages which were {BackgroundSuffix} and {HiddenSuffix}&quot;
+    {NonSRPSuffix} is added if the navigation involves a non-SRP URL but then
+    redirected to SRP URL. The milestone recorded will be the latest milestone
+    (if there are multiple milestones reached before the abandonment). The
+    metric is emitted when the navigation gets abandoned.
+  </summary>
+  <token key="BackgroundSuffix" variants="BackgroundSuffix"/>
+  <token key="HiddenSuffix" variants="HiddenSuffix"/>
+  <token key="NavigationMilestone" variants="NavigationMilestone"/>
+  <token key="NonSRPSuffix" variants="NonSRPSuffix"/>
+  <token key="ObservedNavigation" variants="ObservedNavigation"/>
+  <token key="RTTBucketSuffix" variants="RTTBucketSuffix"/>
+</histogram>
+
+<histogram
     name="PageLoad.Clients{ObservedNavigation}.Leakage2.{NavigationMilestone}ToAbandon{NavigationAbandonReason}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
     units="ms" expires_after="2025-02-10">
   <owner>rakina@chromium.org</owner>

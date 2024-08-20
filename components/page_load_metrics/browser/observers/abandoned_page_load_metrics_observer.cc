@@ -65,6 +65,8 @@ const char kAbandonedPageLoadMetricsHistogramPrefix[] =
 
 const char kMilestoneToAbandon[] = "ToAbandon";
 const char kLastMilestoneBeforeAbandon[] = "LastMilestoneBeforeAbandon";
+const char kTimeToAbandonFromNavigationStart[] =
+    "TimeToAbandonFromNavigationStart";
 
 const char kAbandonReasonNewReloadNavigation[] = "NewReloadNavigation";
 const char kAbandonReasonNewHistoryNavigation[] = "NewHistoryNavigation";
@@ -311,6 +313,14 @@ AbandonedPageLoadMetricsObserver::GetMilestoneHistogramNameWithoutPrefixSuffix(
          NavigationMilestoneToString(milestone);
 }
 
+std::string AbandonedPageLoadMetricsObserver::
+    GetTimeToAbandonFromNavigationStartWithoutPrefixSuffix(
+        NavigationMilestone milestone) {
+  return std::string(internal::kAbandonedPageLoadMetricsHistogramPrefix) +
+         internal::kTimeToAbandonFromNavigationStart +
+         NavigationMilestoneToString(milestone);
+}
+
 void AbandonedPageLoadMetricsObserver::LogMilestoneHistogram(
     NavigationMilestone milestone,
     base::TimeTicks event_time,
@@ -352,6 +362,11 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
                 milestone, std::nullopt) +
             suffix,
         event_time - relative_start_time);
+    PAGE_LOAD_HISTOGRAM(
+        GetHistogramPrefix() +
+            GetTimeToAbandonFromNavigationStartWithoutPrefixSuffix(milestone) +
+            suffix,
+        event_time - navigation_start_time_);
     base::UmaHistogramEnumeration(
         GetHistogramPrefix() +
             GetAbandonReasonAtMilestoneHistogramNameWithoutPrefixSuffix(

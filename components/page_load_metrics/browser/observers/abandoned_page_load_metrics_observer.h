@@ -100,6 +100,8 @@ class AbandonedPageLoadMetricsObserver
   static std::string
   GetLastMilestoneBeforeAbandonHistogramNameWithoutPrefixSuffix(
       std::optional<AbandonReason> abandon_reason);
+  static std::string GetTimeToAbandonFromNavigationStartWithoutPrefixSuffix(
+      NavigationMilestone milestone);
 
   AbandonedPageLoadMetricsObserver();
   ~AbandonedPageLoadMetricsObserver() override;
