@@ -2117,6 +2117,12 @@ const char kCastEnableStreamingWithHiDPIDescription[] =
     "reduce performance on some platforms and also improve quality of video "
     "frames.";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kFlexFirmwareUpdateName[] = "ChromeOS Flex Firmware Updates";
+const char kFlexFirmwareUpdateDescription[] =
+    "Allow firmware updates from LVFS to be installed on ChromeOS Flex.";
+#endif
+
 const char kGpuRasterizationName[] = "GPU rasterization";
 const char kGpuRasterizationDescription[] = "Use GPU to rasterize web content.";
 

@@ -4809,6 +4809,11 @@
     ],
     "expiry_milestone": 130
   },
+    {
+    "name": "flex-firmware-update",
+    "owners": [ "nicholasbishop@google.com", "chromeos-flex-eng@google.com" ],
+    "expiry_milestone": 136
+  },
   {
     "name": "fluent-overlay-scrollbars",
     "owners": [

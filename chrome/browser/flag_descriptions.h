@@ -1198,6 +1198,11 @@ extern const char kContextualPageActionsReaderModeDescription[];
 extern const char kContextualPageActionsShareModelName[];
 extern const char kContextualPageActionsShareModelDescription[];
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kFlexFirmwareUpdateName[];
+extern const char kFlexFirmwareUpdateDescription[];
+#endif
+
 extern const char kGpuRasterizationName[];
 extern const char kGpuRasterizationDescription[];
 
