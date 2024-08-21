@@ -5,19 +5,20 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AMBIENT_AMBIENT_SIGNIN_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AMBIENT_AMBIENT_SIGNIN_BUBBLE_VIEW_H_
 
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-
-struct AuthenticatorRequestDialogModel;
 
 namespace content {
 class WebContents;
 }  // namespace content
 
-namespace views {
-class Label;
-}  // namespace views
+namespace password_manager {
+class PasskeyCredential;
+}
 
 namespace ambient_signin {
 
@@ -28,9 +29,16 @@ class AmbientSigninBubbleView : public views::BubbleDialogDelegateView {
  public:
   explicit AmbientSigninBubbleView(content::WebContents* web_contents,
                                    views::View* anchor_view,
-                                   AmbientSigninController* controller,
-                                   AuthenticatorRequestDialogModel* model);
+                                   AmbientSigninController* controller);
   ~AmbientSigninBubbleView() override;
+
+  AmbientSigninBubbleView(const AmbientSigninBubbleView&) = delete;
+  AmbientSigninBubbleView& operator=(const AmbientSigninBubbleView&) = delete;
+
+  // Provide passkeys for display and show the bubble. This must be called
+  // before any of the methods below are called.
+  void ShowPasskeys(
+      const std::vector<password_manager::PasskeyCredential>& credentials);
 
   void Show();
   void Update();
@@ -44,7 +52,9 @@ class AmbientSigninBubbleView : public views::BubbleDialogDelegateView {
   // views::BubbleDialogDelegateView:
   gfx::Rect GetBubbleBounds() override;
 
-  std::vector<std::unique_ptr<views::Label>> labels_;
+  std::unique_ptr<views::View> CreatePasskeyRow(
+      const password_manager::PasskeyCredential& passkey);
+
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<AmbientSigninController> controller_;
   base::WeakPtr<views::Widget> widget_;

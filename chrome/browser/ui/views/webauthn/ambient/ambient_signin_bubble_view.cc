@@ -11,26 +11,30 @@
 #include "base/i18n/rtl.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/webauthn/ambient/ambient_signin_controller.h"
-#include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
-
-struct AuthenticatorRequestDialogModel;
 
 using content::WebContents;
 
 namespace ambient_signin {
 
+namespace {
+
 inline constexpr int kRightMargin = 40;
 inline constexpr int kTopMargin = 16;
+
+}  // namespace
 
 BEGIN_METADATA(AmbientSigninBubbleView)
 END_METADATA
@@ -38,8 +42,7 @@ END_METADATA
 AmbientSigninBubbleView::AmbientSigninBubbleView(
     WebContents* web_contents,
     View* anchor_view,
-    AmbientSigninController* controller,
-    AuthenticatorRequestDialogModel* model)
+    AmbientSigninController* controller)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::Arrow::TOP_RIGHT),
       web_contents_(web_contents),
@@ -47,23 +50,25 @@ AmbientSigninBubbleView::AmbientSigninBubbleView(
   set_fixed_width(375);
   set_close_on_deactivate(false);
   SetShowTitle(true);
-  SetTitle(u"Ambient Signin Prototype");
+  SetTitle(u"Select a passkey to sign in");
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical);
   layout->set_cross_axis_alignment(views::LayoutAlignment::kStart);
   SetLayoutManager(std::move(layout));
-
-  for (const auto& cred : model->creds) {
-    auto label = std::make_unique<views::Label>(
-        base::UTF8ToUTF16(cred.user.name.value_or("")));
-    AddChildView(label.get());
-    labels_.push_back(std::move(label));
-  }
 }
 
 AmbientSigninBubbleView::~AmbientSigninBubbleView() = default;
+
+void AmbientSigninBubbleView::ShowPasskeys(
+    const std::vector<password_manager::PasskeyCredential>& credentials) {
+  for (const auto& passkey : credentials) {
+    AddChildView(CreatePasskeyRow(passkey));
+  }
+
+  Show();
+}
 
 void AmbientSigninBubbleView::Show() {
   if (!widget_) {
@@ -85,12 +90,23 @@ void AmbientSigninBubbleView::Hide() {
 }
 
 void AmbientSigninBubbleView::Close() {
-  widget_->CloseNow();
+  widget_->Close();
 }
 
 void AmbientSigninBubbleView::NotifyWidgetDestroyed() {
   widget_->RemoveObserver(controller_);
   BubbleDialogDelegateView::OnWidgetDestroying(widget_.get());
+}
+
+std::unique_ptr<views::View> AmbientSigninBubbleView::CreatePasskeyRow(
+    const password_manager::PasskeyCredential& passkey) {
+  auto row = std::make_unique<HoverButton>(
+      base::BindRepeating(&AmbientSigninController::OnPasskeySelected,
+                          controller_->GetWeakPtr(), passkey.credential_id()),
+      /*icon_view=*/nullptr,
+      /*title=*/base::UTF8ToUTF16(passkey.username()),
+      /*subtitle=*/passkey.GetAuthenticatorLabel());
+  return row;
 }
 
 // The implementation below is heavily influenced by AccountSelectionBubbleView

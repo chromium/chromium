@@ -15,17 +15,21 @@
 
 struct AuthenticatorRequestDialogModel;
 
+namespace base {
+class CallbackListSubscription;
+}  // namespace base
+
 namespace content {
 class RenderFrameHost;
 }  // namespace content
 
+namespace password_manager {
+class PasskeyCredential;
+}
+
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
-
-namespace base {
-class CallbackListSubscription;
-}  // namespace base
 
 namespace ambient_signin {
 
@@ -40,10 +44,22 @@ class AmbientSigninController
       public AuthenticatorRequestDialogModel::Observer,
       public views::WidgetObserver {
  public:
+  using CredentialSelectionCallback =
+      base::OnceCallback<void(const std::vector<uint8_t>)>;
+
   ~AmbientSigninController() override;
 
   // Adds and shows the WebAuthn credentials in the Ambient UI.
-  void AddAndShowWebAuthnMethods(AuthenticatorRequestDialogModel* model);
+  void AddAndShowWebAuthnMethods(
+      AuthenticatorRequestDialogModel* model,
+      const std::vector<password_manager::PasskeyCredential>& credentials,
+      CredentialSelectionCallback callback);
+
+  // Called when the user selects a passkey shown in the bubble.
+  void OnPasskeySelected(const std::vector<uint8_t>& account_id,
+                         const ui::Event& event);
+
+  base::WeakPtr<AmbientSigninController> GetWeakPtr();
 
  private:
   // content::DocumentUserData<AmbientSigninController>:
@@ -56,6 +72,7 @@ class AmbientSigninController
 
   // AuthenticatorRequestDialogModel::Observer
   void OnRequestComplete() override;
+  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
 
   // tabs::TabInterface related overrides:
   void TabWillEnterBackground(tabs::TabInterface* tab_interface);
@@ -63,6 +80,9 @@ class AmbientSigninController
 
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
   raw_ptr<AmbientSigninBubbleView> ambient_signin_bubble_view_;
+  CredentialSelectionCallback passkey_selection_callback_;
+
+  raw_ptr<AuthenticatorRequestDialogModel> model_;
 
   base::WeakPtrFactory<AmbientSigninController> weak_ptr_factory_{this};
 };

@@ -2029,6 +2029,25 @@ void AuthenticatorRequestDialogController::StartConditionalMediationRequest() {
       break;
   }
   ReportConditionalUiPasskeyCount(credentials.size());
+
+  if (base::FeatureList::IsEnabled(device::kWebAuthnAmbientSignin) &&
+      !credentials.empty()) {
+    auto* controller =
+        ambient_signin::AmbientSigninController::GetOrCreateForCurrentDocument(
+            render_frame_host);
+    controller->AddAndShowWebAuthnMethods(
+        model(), credentials,
+        base::BindOnce(
+            [](base::WeakPtr<AuthenticatorRequestDialogController> controller,
+               std::vector<uint8_t> credential_id) {
+              if (!controller) {
+                return;
+              }
+              controller->OnAccountPreselected(std::move(credential_id));
+            },
+            weak_factory_.GetWeakPtr()));
+  }
+
   auto* webauthn_credentials_delegate_factory =
       ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents)
           ->GetDelegateForFrame(render_frame_host);
@@ -2036,15 +2055,6 @@ void AuthenticatorRequestDialogController::StartConditionalMediationRequest() {
     // May be null on tests.
     webauthn_credentials_delegate_factory->OnCredentialsReceived(
         std::move(credentials), offer_passkey_from_another_device);
-  }
-  if (base::FeatureList::IsEnabled(device::kWebAuthnAmbientSignin)) {
-    auto* controller =
-        ambient_signin::AmbientSigninController::GetOrCreateForCurrentDocument(
-            render_frame_host);
-    // TODO(crbug.com/358119268): Autofill conditional UI filters some
-    // credentials. Do the same for the Ambient UI.
-    controller->AddAndShowWebAuthnMethods(model());
-    model()->AddObserver(controller);
   }
   SetCurrentStep(Step::kConditionalMediation);
 }
