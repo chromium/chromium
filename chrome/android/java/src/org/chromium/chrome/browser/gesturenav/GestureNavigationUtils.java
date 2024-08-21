@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
+
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -12,6 +15,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.UiUtils;
 
 /** A set of helper functions related to gesture navigation. */
 public class GestureNavigationUtils {
@@ -26,6 +30,12 @@ public class GestureNavigationUtils {
     public static boolean allowTransition(@Nullable Tab tab, boolean forward) {
         if (tab == null) return false;
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) return false;
+        // If in gesture mode, only U and above support transition.
+        if (tab.getWindowAndroid().getWindow() == null) return false;
+        if (VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE
+                && UiUtils.isGestureNavigationMode(tab.getWindowAndroid().getWindow())) {
+            return false;
+        }
         if (!allowTransitionFromNativePages() && tab.isNativePage()) return false;
         if (!allowTransitionToNativePages() && navigateToNativePage(tab, forward)) return false;
         return true;

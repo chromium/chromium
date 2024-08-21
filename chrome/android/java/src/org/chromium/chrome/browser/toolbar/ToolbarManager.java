@@ -412,14 +412,15 @@ public class ToolbarManager
             }
             mBackGestureInProgress = false;
             int res = BackPressResult.SUCCESS;
-            // When enabled, the content/ native will trigger the navigation; otherwise,
-            // the back gesture should be consumed by ToolbarManager.
-            if (!GestureNavigationUtils.allowTransition(
-                    mActivityTabProvider.get(), /* forward= */ false)) {
+
+            if (mHandler != null) {
+                mHandler.onBackInvoked();
+            } else {
+                assert !GestureNavigationUtils.allowTransition(
+                                mActivityTabProvider.get(), /* forward= */ false)
+                        : "No gesture handler when transition is disallowed.";
                 res = ToolbarManager.this.handleBackPress();
             }
-
-            if (mHandler != null) mHandler.onBackInvoked();
             mHandler = null;
             return res;
         }
