@@ -38,4 +38,7 @@ declare_args() {
 
   # Refers to the separate branding required for the reven build.
   is_reven = false
+
+  # Build Mojo Proxy binary, to be used as a IPCZ <=> Mojo Core translation layer.
+  build_mojo_proxy = false
 }
