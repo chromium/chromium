@@ -2342,10 +2342,12 @@ void OverviewGrid::RefreshGridBounds(bool animate) {
                               /*ignored_items=*/{}, animate);
 
   if (informed_restore_widget_) {
-    InformedRestoreContentsView* contents_view =
-        views::AsViewClass<InformedRestoreContentsView>(
-            informed_restore_widget_->GetContentsView());
+    auto* contents_view = views::AsViewClass<InformedRestoreContentsView>(
+        informed_restore_widget_->GetContentsView());
     CHECK(contents_view);
+    contents_view->UpdatePrimaryContainerPreferredWidth(
+        root_window_, /*is_landscape=*/std::nullopt);
+
     gfx::Rect pine_bounds = GetGridEffectiveBounds();
     pine_bounds.ClampToCenteredSize(contents_view->GetPreferredSize());
     informed_restore_widget_->SetBounds(pine_bounds);
