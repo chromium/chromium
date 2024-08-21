@@ -117,6 +117,16 @@ void PrefetchBrowserTestBase::RegisterRequestHandler(
 void PrefetchBrowserTestBase::NavigateToURLAndWaitTitle(
     const GURL& url,
     const std::string& title) {
+  // If the current page already has the specified title, then the
+  // `WaitAndGetTitle()` call may return to early (for instance, before
+  // resources that might change the title have a chance to load. Callers of
+  // this method likely want the navigation to complete first, so check for
+  // this case beforehand to avoid surprises!
+  EXPECT_FALSE(EvalJs(shell()->web_contents(),
+                      JsReplace("document.title === $1;", title))
+                   .ExtractBool())
+      << "Title already matches prior to the navigation";
+
   std::u16string title16 = base::ASCIIToUTF16(title);
   TitleWatcher title_watcher(shell()->web_contents(), title16);
   // Execute the JavaScript code to trigger the followup navigation from the

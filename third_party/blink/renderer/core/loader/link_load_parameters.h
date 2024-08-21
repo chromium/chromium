@@ -51,6 +51,13 @@ struct CORE_EXPORT LinkLoadParameters {
   String image_srcset;
   String image_sizes;
   String blocking;
+  // `recursive_prefetch_token` is set for preloads that were promoted to
+  // prefetches because the Link preload header was received on a prefetch
+  // response, recursively. The `base::UnguessableToken` value corresponds to
+  // the initial top-level document prefetch and is used to ensure that the
+  // prefetched resources get stored in the correct HTTP cache partition (which
+  // is required for them to actually be used if the top-level document gets
+  // navigated to).
   std::optional<base::UnguessableToken> recursive_prefetch_token;
   Reason reason;
 };

@@ -701,12 +701,25 @@ void PreloadHelper::PrefetchIfNeeded(const LinkLoadParameters& params,
 
   ResourceRequest resource_request(params.href);
 
+  bool as_document = EqualIgnoringASCIICase(params.as, "document");
+
+  // If this corresponds to a preload that we promoted to a prefetch, and the
+  // preload had `as="document"`, don't proceed because the original preload
+  // statement was invalid.
+  if (as_document && params.recursive_prefetch_token) {
+    document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        String("Link header with rel=preload and as=document is unsupported")));
+    return;
+  }
+
   // Later a security check is done asserting that the initiator of a
   // cross-origin prefetch request is same-origin with the origin that the
   // browser process is aware of. However, since opaque request initiators are
   // always cross-origin with every other origin, we must not request
   // cross-origin prefetches from opaque requestors.
-  if (EqualIgnoringASCIICase(params.as, "document") &&
+  if (as_document &&
       !document.GetExecutionContext()->GetSecurityOrigin()->IsOpaque()) {
     resource_request.SetPrefetchMaybeForTopLevelNavigation(true);
 

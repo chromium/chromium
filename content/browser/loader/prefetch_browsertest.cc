@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/loader/prefetch_browsertest_base.h"
@@ -822,9 +823,8 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
   WaitUntilLoaded(cross_origin_preload_url);
 
   // When SplitCache is enabled and the prefetch resource and its headers are
-  // fetched with a modified NetworkAnonymizationKey, the preload header
-  // resource must not be reusable by any other origin but its parent
-  // prefetch's.
+  // fetched with a modified IsolationInfo, the preload header resource must
+  // not be reusable by any other origin but its parent prefetch's.
   // TODO(crbug.com/40093267): When SplitCache is enabled by default, get rid of
   // the below conditional.
   if (IsSplitCacheEnabled()) {
@@ -859,13 +859,15 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
 
     // We won't need this server again.
     EXPECT_TRUE(other_cross_origin_server->ShutdownAndWaitUntilComplete());
-  } else if (split_cache_test_case_ ==
-             SplitCacheTestCase::kEnabledTriplePlusCredsBool) {
-    // The navigation is requested with credentials, but the preload is
+  }
+
+  if (split_cache_test_case_ ==
+      SplitCacheTestCase::kEnabledTriplePlusCredsBool) {
+    // The navigation is requested with credentials, but the prefetch is
     // requested anonymously. As a result of "SplitCacheByIncludeCredentials",
     // those aren't considered the same for the HTTP cache. Early return.
     // See the variant of this test in:
-    // PrefetchBrowserTest.CrossOriginWithPreloadAnonymous
+    // PrefetchBrowserTest.CrossOriginWithPreloadCredentialled
     return;
   }
 
@@ -873,9 +875,75 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
   EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
   EXPECT_TRUE(cross_origin_server_->ShutdownAndWaitUntilComplete());
 
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), "document.title = 'not done';"));
+
   // Subsequent navigation to the target URL wouldn't hit the network for
   // the target URL. The target content should still be read correctly.
   NavigateToURLAndWaitTitle(cross_origin_target_url, "done");
+}
+
+// Regression test for crbug.com/357325599 - If a Link header with
+// rel="preload" has as="document" (which is invalid), we shouldn't attempt to
+// treat this as a rel="prefetch" as="document" and instead should just ignore
+// the header.
+// TODO(crbug.com/40256279): De-flake and enable.
+IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
+                       DISABLED_CrossOriginWithInvalidPreloadAsDocument) {
+  const char* target_path = "/target.html";
+  const char* preload_path = "/preload.js";
+  RegisterResponse(
+      target_path,
+      ResponseEntry("<head><title>Prefetch Target</title><script "
+                    "src=\"./preload.js\"></script></head>",
+                    "text/html",
+                    {{"link", "</preload.js>;rel=\"preload\";as=\"document\""},
+                     {"access-control-allow-origin", "*"}}));
+  RegisterResponse(preload_path,
+                   ResponseEntry("document.title=\"done\";", "text/javascript",
+                                 {{"cache-control", "public, max-age=600"}}));
+
+  auto target_request_counter =
+      RequestCounter::CreateAndMonitor(cross_origin_server_.get(), target_path);
+  auto preload_request_counter = RequestCounter::CreateAndMonitor(
+      cross_origin_server_.get(), preload_path);
+  RegisterRequestHandler(cross_origin_server_.get());
+  base::RunLoop preload_waiter_second_request;
+  auto preload_request_counter_second_request =
+      RequestCounter::CreateAndMonitor(cross_origin_server_.get(), preload_path,
+                                       &preload_waiter_second_request);
+
+  ASSERT_TRUE(cross_origin_server_->Start());
+
+  const GURL cross_origin_target_url =
+      cross_origin_server_->GetURL("3p.example", target_path);
+
+  const char* prefetch_path = "/prefetch.html";
+  RegisterResponse(prefetch_path,
+                   ResponseEntry(base::StringPrintf(
+                       "<body><link rel='prefetch' href='%s' as='document' "
+                       "crossorigin='anonymous'></body>",
+                       cross_origin_target_url.spec().c_str())));
+  RegisterRequestHandler(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_EQ(0, GetPrefetchURLLoaderCallCount());
+
+  // Loading a page that prefetches the target URL would increment
+  // `target_request_counter` but not `preload_request_counter` because the
+  // preload header should be ignored.
+  base::test::TestFuture<void> prefetch_future;
+  RegisterPrefetchLoaderCallback(prefetch_future.GetCallback());
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(prefetch_path)));
+  EXPECT_TRUE(prefetch_future.Wait());
+  EXPECT_EQ(1, target_request_counter->GetRequestCount());
+  EXPECT_EQ(1, GetPrefetchURLLoaderCallCount());
+  EXPECT_EQ(0, preload_request_counter->GetRequestCount());
+
+  // Subsequent navigation to the target URL should result in the preloaded JS
+  // being served from the network.
+  NavigateToURLAndWaitTitle(cross_origin_target_url, "done");
+  EXPECT_EQ(1, preload_request_counter->GetRequestCount());
 }
 
 // Variants of this test:
