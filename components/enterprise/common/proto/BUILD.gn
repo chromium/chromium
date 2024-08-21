@@ -2,9 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-proto_library("connectors_proto") {
+fuzzable_proto_library("connectors_proto") {
   proto_in_dir = "//"
   sources = [ "connectors.proto" ]
 

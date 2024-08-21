@@ -747,6 +747,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
         EXPECT_FALSE(request_proto.has_email());
         EXPECT_FALSE(request_proto.has_browser_dm_token());
         EXPECT_FALSE(request_proto.has_profile_dm_token());
+        EXPECT_FALSE(request_proto.has_client_reporting_metadata());
 
         // Cookies should be removed when token is set.
         EXPECT_EQ(request.credentials_mode,
@@ -799,6 +800,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
         EXPECT_FALSE(request_proto.has_email());
         EXPECT_FALSE(request_proto.has_browser_dm_token());
         EXPECT_FALSE(request_proto.has_profile_dm_token());
+        EXPECT_FALSE(request_proto.has_client_reporting_metadata());
 
         EXPECT_FALSE(
             request.headers.HasHeader(net::HttpRequestHeaders::kAuthorization));

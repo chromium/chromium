@@ -160,6 +160,7 @@ static_library("safe_browsing") {
       "//chrome/common/safe_browsing:proto",
       "//components/autofill/core/browser",
       "//components/content_settings/core/browser",
+      "//components/enterprise/common/proto:connectors_proto",
       "//components/no_state_prefetch/browser",
       "//components/omnibox/browser",
       "//components/password_manager/content/browser",

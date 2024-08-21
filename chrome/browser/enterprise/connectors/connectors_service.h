@@ -89,6 +89,11 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   std::optional<std::string> GetProfileDmToken() const;
 #endif
 
+  // Obtain a ClientMetadata instance corresponding to the current
+  // OnSecurityEvent policy value.  `is_cloud` is true when using a cloud-
+  // based service provider and false when using a local service provider.
+  std::unique_ptr<ClientMetadata> BuildClientMetadata(bool is_cloud);
+
   // Returns the profile email if real-time URL check is set for the profile,
   // the device ID if it is set for the device, or an empty string if it is
   // unset.
@@ -127,11 +132,6 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
 
   // Returns ClientMetadata populated with minimum required information
   std::unique_ptr<ClientMetadata> GetBasicClientMetadata(Profile* profile);
-
-  // Obtain a ClientMetadata instance corresponding to the current
-  // OnSecurityEvent policy value.  `is_cloud` is true when using a cloud-
-  // based service provider and false when using a local service provider.
-  std::unique_ptr<ClientMetadata> BuildClientMetadata(bool is_cloud);
 
   raw_ptr<content::BrowserContext> context_;
   std::unique_ptr<ConnectorsManager> connectors_manager_;

@@ -36,6 +36,7 @@ static_library("url_lookup_service") {
     ":policy_engine",
     ":url_lookup_service_base",
     "//base:base",
+    "//components/enterprise/common/proto:connectors_proto",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
@@ -64,6 +65,7 @@ static_library("url_lookup_service_base") {
   deps = [
     "//base:base",
     "//build:chromeos_buildflags",
+    "//components/enterprise/common/proto:connectors_proto",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
@@ -92,6 +94,7 @@ static_library("test_support") {
   public_deps = [
     ":url_lookup_service_base",
     "//base",
+    "//components/enterprise/common/proto:connectors_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//net/traffic_annotation:test_support",

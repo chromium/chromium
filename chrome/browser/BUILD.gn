@@ -8934,6 +8934,7 @@ static_library("test_support") {
     "//chrome/common/notifications",
     "//chrome/common/safe_browsing:proto",
     "//components/consent_auditor:test_support",
+    "//components/enterprise/common/proto:connectors_proto",
     "//components/invalidation/impl",
     "//components/invalidation/impl:test_support",
     "//components/lookalikes/core",
@@ -9131,7 +9132,6 @@ static_library("test_support") {
     ]
     deps += [
       "//chrome/browser/safe_browsing",
-      "//components/enterprise/common/proto:connectors_proto",
       "//components/safe_browsing/core/browser/db:test_database_manager",
     ]
   }
