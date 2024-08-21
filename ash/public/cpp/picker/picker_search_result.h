@@ -39,11 +39,13 @@ struct ASH_PUBLIC_EXPORT PickerTextResult {
   ui::ImageModel icon;
   Source source;
 
-  PickerTextResult(std::u16string primary_text,
-                   std::u16string secondary_text,
-                   ui::ImageModel icon,
-                   Source source);
-
+  explicit PickerTextResult(
+      std::u16string_view text,
+      PickerTextResult::Source source = PickerTextResult::Source::kUnknown);
+  explicit PickerTextResult(std::u16string_view primary_text,
+                            std::u16string_view secondary_text,
+                            ui::ImageModel icon,
+                            Source source);
   PickerTextResult(const PickerTextResult&);
   PickerTextResult& operator=(const PickerTextResult&);
   ~PickerTextResult();
@@ -56,6 +58,13 @@ struct ASH_PUBLIC_EXPORT PickerSearchRequestResult {
   std::u16string secondary_text;
   ui::ImageModel icon;
 
+  explicit PickerSearchRequestResult(std::u16string_view primary_text,
+                                     std::u16string_view secondary_text,
+                                     ui::ImageModel icon);
+  PickerSearchRequestResult(const PickerSearchRequestResult&);
+  PickerSearchRequestResult& operator=(const PickerSearchRequestResult&);
+  ~PickerSearchRequestResult();
+
   bool operator==(const PickerSearchRequestResult&) const;
 };
 
@@ -65,6 +74,20 @@ struct ASH_PUBLIC_EXPORT PickerEmojiResult {
   Type type;
   std::u16string text;
   std::u16string name;
+
+  static PickerEmojiResult Emoji(std::u16string_view text,
+                                 std::u16string name = u"");
+  static PickerEmojiResult Symbol(std::u16string_view text,
+                                  std::u16string name = u"");
+  static PickerEmojiResult Emoticon(std::u16string_view text,
+                                    std::u16string name = u"");
+
+  explicit PickerEmojiResult(Type type,
+                             std::u16string_view text,
+                             std::u16string name);
+  PickerEmojiResult(const PickerEmojiResult&);
+  PickerEmojiResult& operator=(const PickerEmojiResult&);
+  ~PickerEmojiResult();
 
   bool operator==(const PickerEmojiResult&) const;
 };
@@ -87,12 +110,12 @@ struct ASH_PUBLIC_EXPORT PickerClipboardResult {
   std::optional<ui::ImageModel> display_image;
   bool is_recent;
 
-  PickerClipboardResult(base::UnguessableToken item_id,
-                        DisplayFormat display_format,
-                        size_t file_count,
-                        std::u16string display_text,
-                        std::optional<ui::ImageModel> display_image,
-                        bool is_recent);
+  explicit PickerClipboardResult(base::UnguessableToken item_id,
+                                 DisplayFormat display_format,
+                                 size_t file_count,
+                                 std::u16string display_text,
+                                 std::optional<ui::ImageModel> display_image,
+                                 bool is_recent);
   PickerClipboardResult(const PickerClipboardResult&);
   PickerClipboardResult& operator=(const PickerClipboardResult&);
   ~PickerClipboardResult();
@@ -106,10 +129,10 @@ struct ASH_PUBLIC_EXPORT PickerBrowsingHistoryResult {
   ui::ImageModel icon;
   bool best_match;
 
-  PickerBrowsingHistoryResult(GURL url,
-                              std::u16string title,
-                              ui::ImageModel icon,
-                              bool best_match);
+  explicit PickerBrowsingHistoryResult(GURL url,
+                                       std::u16string title,
+                                       ui::ImageModel icon,
+                                       bool best_match = false);
   PickerBrowsingHistoryResult(const PickerBrowsingHistoryResult&);
   PickerBrowsingHistoryResult& operator=(const PickerBrowsingHistoryResult&);
   ~PickerBrowsingHistoryResult();
@@ -118,9 +141,16 @@ struct ASH_PUBLIC_EXPORT PickerBrowsingHistoryResult {
 };
 
 struct ASH_PUBLIC_EXPORT PickerLocalFileResult {
-  base::FilePath file_path;
   std::u16string title;
+  base::FilePath file_path;
   bool best_match;
+
+  explicit PickerLocalFileResult(std::u16string title,
+                                 base::FilePath file_path,
+                                 bool best_match = false);
+  PickerLocalFileResult(const PickerLocalFileResult&);
+  PickerLocalFileResult& operator=(const PickerLocalFileResult&);
+  ~PickerLocalFileResult();
 
   bool operator==(const PickerLocalFileResult&) const;
 };
@@ -132,11 +162,11 @@ struct ASH_PUBLIC_EXPORT PickerDriveFileResult {
   base::FilePath file_path;
   bool best_match;
 
-  PickerDriveFileResult(std::optional<std::string> id,
-                        std::u16string title,
-                        GURL url,
-                        base::FilePath file_path,
-                        bool best_match);
+  explicit PickerDriveFileResult(std::optional<std::string> id,
+                                 std::u16string title,
+                                 GURL url,
+                                 base::FilePath file_path,
+                                 bool best_match = false);
   PickerDriveFileResult(const PickerDriveFileResult&);
   PickerDriveFileResult& operator=(const PickerDriveFileResult&);
   ~PickerDriveFileResult();
@@ -146,6 +176,11 @@ struct ASH_PUBLIC_EXPORT PickerDriveFileResult {
 
 struct ASH_PUBLIC_EXPORT PickerCategoryResult {
   PickerCategory category;
+
+  explicit PickerCategoryResult(PickerCategory category);
+  PickerCategoryResult(const PickerCategoryResult&);
+  PickerCategoryResult& operator=(const PickerCategoryResult&);
+  ~PickerCategoryResult();
 
   bool operator==(const PickerCategoryResult&) const;
 };
@@ -180,6 +215,11 @@ struct ASH_PUBLIC_EXPORT PickerNewWindowResult {
 
   Type type;
 
+  explicit PickerNewWindowResult(Type type);
+  PickerNewWindowResult(const PickerNewWindowResult&);
+  PickerNewWindowResult& operator=(const PickerNewWindowResult&);
+  ~PickerNewWindowResult();
+
   bool operator==(const PickerNewWindowResult&) const;
 };
 
@@ -193,6 +233,11 @@ struct ASH_PUBLIC_EXPORT PickerCapsLockResult {
   bool enabled;
   Shortcut shortcut;
 
+  explicit PickerCapsLockResult(bool enabled, Shortcut shortcut);
+  PickerCapsLockResult(const PickerCapsLockResult&);
+  PickerCapsLockResult& operator=(const PickerCapsLockResult&);
+  ~PickerCapsLockResult();
+
   bool operator==(const PickerCapsLockResult&) const;
 };
 
@@ -204,6 +249,11 @@ struct ASH_PUBLIC_EXPORT PickerCaseTransformResult {
   };
 
   Type type;
+
+  explicit PickerCaseTransformResult(Type type);
+  PickerCaseTransformResult(const PickerCaseTransformResult&);
+  PickerCaseTransformResult& operator=(const PickerCaseTransformResult&);
+  ~PickerCaseTransformResult();
 
   bool operator==(const PickerCaseTransformResult&) const;
 };
