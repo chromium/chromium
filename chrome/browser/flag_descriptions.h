@@ -216,9 +216,6 @@ extern const char kForceStartupSigninPromoDescription[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kForestFeatureName[];
 extern const char kForestFeatureDescription[];
-
-extern const char kForestKeyName[];
-extern const char kForestKeyDescription[];
 #endif
 
 extern const char kAvifGainmapHdrImagesName[];

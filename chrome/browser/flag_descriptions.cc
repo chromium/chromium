@@ -259,9 +259,6 @@ const char kForceStartupSigninPromoDescription[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kForestFeatureName[] = "Forest";
 const char kForestFeatureDescription[] = "Enable Forest experiment.";
-
-const char kForestKeyName[] = "Forest key";
-const char kForestKeyDescription[] = "Enable Forest key experiment.";
 #endif
 
 const char kFontationsFontBackendName[] = "Enable Fontations font backend";

@@ -466,12 +466,7 @@
   {
     "name": "ash-forest-feature",
     "owners": [ "sammiequon@chromium.org", "cros-forest@google.com"],
-    "expiry_milestone": 129
-  },
-  {
-    "name": "ash-forest-feature-key",
-    "owners": [ "sammiequon@chromium.org", "cros-forest@google.com"],
-    "expiry_milestone": 129
+    "expiry_milestone": 135
   },
   {
     "name": "ash-limit-shelf-items-to-active-desk",

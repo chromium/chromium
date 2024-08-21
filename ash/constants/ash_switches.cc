@@ -713,9 +713,6 @@ const char kForceShowReleaseTrack[] = "force-show-release-track";
 // screen off) is used even if the device is in laptop mode.
 const char kForceTabletPowerButton[] = "force-tablet-power-button";
 
-// Supply secret key for the Forest feature.
-const char kForestFeatureKey[] = "forest-feature-key";
-
 // Specifies the device's form factor. If provided, this flag overrides the
 // value from the LSB release info. Possible values are: "CHROMEBASE",
 // "CHROMEBIT", "CHROMEBOOK", "REFERENCE", "CHROMEBOX"

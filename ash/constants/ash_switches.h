@@ -229,7 +229,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceLoginManagerInTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceShowCursor[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceShowReleaseTrack[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceTabletPowerButton[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForestFeatureKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFormFactor[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGrowthCampaigns[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
