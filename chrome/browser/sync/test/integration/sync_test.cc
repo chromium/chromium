@@ -70,6 +70,7 @@
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
+#include "components/sync/engine/sync_protocol_error.h"
 #include "components/sync/engine/sync_scheduler_impl.h"
 #include "components/sync/invalidations/sync_invalidations_service_impl.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
@@ -752,9 +753,11 @@ void SyncTest::TearDownOnMainThread() {
         // On Android, however, browser process is not shutdown after test run.
         // As a result, these backend tasks could keep running and cause timeout
         // error during test shutdown.
-        // To fix this issue, we explicitly call SyncServiceImpl::StopAndClear
-        // to cancel any ongoing sync engine's backend tasks.
-        GetSyncService(index)->StopAndClear();
+        // To fix this issue, we explicitly mimic a dashboard reset to cancel
+        // any ongoing sync engine's backend tasks.
+        GetSyncService(index)->OnActionableProtocolError(
+            {.error_type = syncer::NOT_MY_BIRTHDAY,
+             .action = syncer::DISABLE_SYNC_ON_CLIENT});
       }
 #endif  // BUILDFLAG(IS_ANDROID)
 

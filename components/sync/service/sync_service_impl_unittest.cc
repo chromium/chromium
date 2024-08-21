@@ -938,45 +938,6 @@ TEST_F(SyncServiceImplTest, SignOutRevokeAccessToken) {
 }
 #endif
 
-TEST_F(SyncServiceImplTest, StopAndClearWillClearDataAndSwitchToTransportMode) {
-  PopulatePrefsForInitialSyncFeatureSetupComplete();
-  SignInWithSyncConsent();
-  InitializeService();
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_EQ(SyncService::TransportState::ACTIVE,
-            service()->GetTransportState());
-  ASSERT_TRUE(
-      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
-
-  service()->StopAndClear();
-
-  EXPECT_FALSE(
-      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
-
-  // Even though Sync-the-feature is disabled, there's still an (unconsented)
-  // signed-in account, so Sync-the-transport should still be running.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(SyncService::TransportState::ACTIVE,
-            service()->GetTransportState());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Ash, sync-the-feature remains on. Note however that this is not a
-  // common scenario, because in most case StopAndClear() would be issued from
-  // a codepath that would prevent either sync-the-feature (e.g. dashboard
-  // reset) or sync-the-transport (e.g. unrecoverable error) from starting.
-  EXPECT_TRUE(service()->IsSyncFeatureEnabled());
-  EXPECT_TRUE(service()->IsSyncFeatureActive());
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  // Except for Ash, StopAndClear() turns sync-the-feature off because
-  // IsInitialSyncFeatureSetupComplete() becomes false.
-  EXPECT_FALSE(
-      service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
-  EXPECT_FALSE(service()->IsSyncFeatureEnabled());
-  EXPECT_FALSE(service()->IsSyncFeatureActive());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
 // Verify that sync transport data is cleared when the service is initializing
 // and account is signed out.
 // This code path doesn't exist on ChromeOS-Ash, since signout is not possible.
@@ -999,7 +960,7 @@ TEST_F(SyncServiceImplTest, ClearTransportDataOnInitializeWhenSignedOut) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-TEST_F(SyncServiceImplTest, StopSyncAndClearTwiceDoesNotCrash) {
+TEST_F(SyncServiceImplTest, DashboardResetTwiceDoesNotCrash) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
   InitializeService();
@@ -1008,27 +969,16 @@ TEST_F(SyncServiceImplTest, StopSyncAndClearTwiceDoesNotCrash) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
-  // Disable sync.
-  service()->StopAndClear();
+  // Disable sync via dashboard (https://chrome.google.com/sync).
+  service()->OnActionableProtocolError(
+      {.error_type = NOT_MY_BIRTHDAY, .action = DISABLE_SYNC_ON_CLIENT});
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Ash, sync-the-feature remains on. Note however that this is not a
-  // common scenario, because in most case StopAndClear() would be issued from
-  // a codepath that would prevent either sync-the-feature (e.g. dashboard
-  // reset) or sync-the-transport (e.g. unrecoverable error) from starting.
-  ASSERT_TRUE(service()->IsSyncFeatureEnabled());
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  // Except for Ash, StopAndClear() turns sync-the-feature off because
-  // IsInitialSyncFeatureSetupComplete() becomes false.
-  ASSERT_FALSE(
-      service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
+  // Sync-the-feature is off.
   ASSERT_FALSE(service()->IsSyncFeatureEnabled());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Calling StopAndClear while already stopped should not crash. This may
-  // (under some circumstances) happen when the user enables sync again but hits
-  // the cancel button at the end of the process.
-  service()->StopAndClear();
+  // Resetting a second time should not crash.
+  service()->OnActionableProtocolError(
+      {.error_type = NOT_MY_BIRTHDAY, .action = DISABLE_SYNC_ON_CLIENT});
 }
 
 // Verify that credential errors get returned from GetAuthError().
@@ -1229,7 +1179,8 @@ TEST_F(SyncServiceImplTest, ResetLocalSyncData) {
 }
 
 // Test that when SyncServiceImpl receives actionable error
-// DISABLE_SYNC_ON_CLIENT it disables sync and signs out.
+// DISABLE_SYNC_ON_CLIENT it disables sync and restarts the engine in transport
+// mode.
 TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
@@ -1238,6 +1189,8 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
 
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
+  ASSERT_TRUE(
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
   ASSERT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_count());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1263,6 +1216,8 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   client_cmd.action = DISABLE_SYNC_ON_CLIENT;
   service()->OnActionableProtocolError(client_cmd);
 
+  EXPECT_FALSE(
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Ash does not support signout.
   // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
@@ -1797,13 +1752,13 @@ TEST_F(SyncServiceImplTest,
   ShutdownAndReleaseService();
 }
 
-TEST_F(SyncServiceImplTest,
-       ShouldStopListeningPermanentlyOnDisableSyncAndClearData) {
+TEST_F(SyncServiceImplTest, ShouldStopListeningPermanentlyOnDashboardReset) {
   SignInWithSyncConsent();
   InitializeService();
   base::RunLoop().RunUntilIdle();
   EXPECT_CALL(*sync_invalidations_service(), StopListeningPermanently());
-  service()->StopAndClear();
+  service()->OnActionableProtocolError(
+      {.error_type = NOT_MY_BIRTHDAY, .action = DISABLE_SYNC_ON_CLIENT});
 }
 
 TEST_F(SyncServiceImplTest, ShouldCallStopUponResetEngineIfAlreadyShutDown) {
@@ -1837,9 +1792,13 @@ TEST_F(SyncServiceImplTest, ShouldCallStopUponResetEngineIfAlreadyShutDown) {
             service()->GetTransportState());
 
   EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_count());
+  // Mimic resetting sync via the dashboard.
   // Clearing metadata should work even if the engine is not running.
-  service()->StopAndClear();
-  EXPECT_EQ(1, get_controller(BOOKMARKS)->model()->clear_metadata_count());
+  // On mobile the account is also removed from the device, so there are 2
+  // clear counts.
+  service()->OnActionableProtocolError(
+      {.error_type = NOT_MY_BIRTHDAY, .action = DISABLE_SYNC_ON_CLIENT});
+  EXPECT_GE(get_controller(BOOKMARKS)->model()->clear_metadata_count(), 1);
 }
 
 TEST_F(SyncServiceImplTest, ShouldReturnErrorDownloadStatus) {

@@ -9,6 +9,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/pref_names.h"
+#include "components/sync/engine/sync_protocol_error.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_data_type_controller.h"
 #include "components/sync/test/fake_sync_engine.h"
@@ -430,7 +431,7 @@ TEST_F(SyncServiceImplStartupTest, StartAshFirstTime) {
 }
 #endif
 
-TEST_F(SyncServiceImplStartupTest, DisableSync) {
+TEST_F(SyncServiceImplStartupTest, ResetSyncViaDashboard) {
   SetSyncFeatureEnabledPrefs();
   SignInWithSyncConsent();
   CreateSyncService();
@@ -440,34 +441,33 @@ TEST_F(SyncServiceImplStartupTest, DisableSync) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
 
-  // On StopAndClear(), the sync service will immediately start up again in
-  // transport mode.
-  sync_service()->StopAndClear();
+  // Mimic sync reset via the https://chrome.google.com/sync dashboard.
+  // Sync-the-feature should be disabled. On desktop, the sync service will
+  // immediately start up again in transport mode. On mobile the account is
+  // removed and transport is disabled. InitialSyncFeatureSetupComplete is reset
+  // on all platforms but Ash.
+  sync_service()->OnActionableProtocolError(
+      {.error_type = NOT_MY_BIRTHDAY, .action = DISABLE_SYNC_ON_CLIENT});
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(SyncService::TransportState::ACTIVE,
+  auto expected_transport_state_after_reset = SyncService::TransportState::
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+      DISABLED;
+#else
+      ACTIVE;
+#endif
+  EXPECT_EQ(expected_transport_state_after_reset,
             sync_service()->GetTransportState());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Ash, sync-the-feature remains on. Note however that this is not a
-  // common scenario, because in most case StopAndClear() would be issued from
-  // a codepath that would prevent either sync-the-feature (e.g. dashboard
-  // reset) or sync-the-transport (e.g. unrecoverable error) from starting.
-  EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
-  EXPECT_TRUE(sync_service()->IsSyncFeatureActive());
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  // Except for Ash, StopAndClear() turns sync-the-feature off because
-  // IsInitialSyncFeatureSetupComplete() becomes false.
-  EXPECT_FALSE(
+  EXPECT_EQ(
+      BUILDFLAG(IS_CHROMEOS_ASH),
       sync_service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
-  EXPECT_FALSE(sync_service()->IsSyncFeatureActive());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Call StopAndClear() again while the sync service is already in transport
-  // mode. It should immediately start up again in transport mode.
-  sync_service()->StopAndClear();
+  // Reset sync again while the sync service is already in transport mode. It
+  // should immediately start up again in transport mode.
+  sync_service()->OnActionableProtocolError(
+      {.error_type = NOT_MY_BIRTHDAY, .action = DISABLE_SYNC_ON_CLIENT});
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(SyncService::TransportState::ACTIVE,
+  EXPECT_EQ(expected_transport_state_after_reset,
             sync_service()->GetTransportState());
 }
 

@@ -140,7 +140,6 @@ class TestSyncService : public SyncService {
   DataTypeSet GetPreferredDataTypes() const override;
   DataTypeSet GetActiveDataTypes() const override;
   DataTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
-  void StopAndClear() override;
   void OnDataTypeRequestsSyncStartup(DataType type) override;
   void TriggerRefresh(const DataTypeSet& types) override;
   void DataTypePreconditionChanged(DataType type) override;

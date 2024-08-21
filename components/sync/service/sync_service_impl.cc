@@ -517,7 +517,7 @@ ShutdownReason SyncServiceImpl::ShutdownReasonForResetEngineReason(
     case ResetEngineReason::kUnrecoverableError:
     case ResetEngineReason::kDisabledAccount:
     case ResetEngineReason::kResetLocalData:
-    case ResetEngineReason::kStopAndClear:
+    case ResetEngineReason::kUpgradeClientError:
     case ResetEngineReason::kNotSignedIn:
     case ResetEngineReason::kEnterprisePolicy:
     case ResetEngineReason::kDisableSyncOnClient:
@@ -530,7 +530,7 @@ bool SyncServiceImpl::ShouldClearTransportDataForAccount(
   switch (reset_reason) {
     case ResetEngineReason::kShutdown:
     case ResetEngineReason::kDisabledAccount:
-    case ResetEngineReason::kStopAndClear:
+    case ResetEngineReason::kUpgradeClientError:
     case ResetEngineReason::kCredentialsChanged:
     case ResetEngineReason::kNotSignedIn:
     case ResetEngineReason::kEnterprisePolicy:
@@ -1155,7 +1155,7 @@ void SyncServiceImpl::OnActionableProtocolError(
   switch (error.action) {
     case UPGRADE_CLIENT:
       if (IsSetupInProgress()) {
-        StopAndClear();
+        StopAndClear(ResetEngineReason::kUpgradeClientError);
       }
       // Trigger an unrecoverable error to stop syncing.
       OnUnrecoverableErrorImpl(FROM_HERE,
@@ -2210,10 +2210,6 @@ void SyncServiceImpl::SendExplicitPassphraseToPlatformClient() {
       env, ConvertToJavaCoreAccountInfo(env, GetAccountInfo()),
       base::android::ToJavaByteArray(env, bytes));
 #endif  // BUILDFLAG(IS_ANDROID)
-}
-
-void SyncServiceImpl::StopAndClear() {
-  StopAndClear(ResetEngineReason::kStopAndClear);
 }
 
 void SyncServiceImpl::StopAndClear(ResetEngineReason reset_engine_reason) {

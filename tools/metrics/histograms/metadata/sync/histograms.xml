@@ -1569,6 +1569,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded whenever the sync engine is restarted. The recorded value is the
     calling site of ResetEngine.
+
+    Before 08/2024, the bucket &quot;Upgrade client error&quot; used to record
+    other events too (any call to the old StopAndClear() API, removed in
+    crbug.com/40797392).
   </summary>
 </histogram>
 

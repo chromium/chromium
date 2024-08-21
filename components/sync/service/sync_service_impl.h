@@ -128,7 +128,6 @@ class SyncServiceImpl : public SyncService,
   DataTypeSet GetPreferredDataTypes() const override;
   DataTypeSet GetActiveDataTypes() const override;
   DataTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
-  void StopAndClear() override;
   void OnDataTypeRequestsSyncStartup(DataType type) override;
   void TriggerRefresh(const DataTypeSet& types) override;
   void DataTypePreconditionChanged(DataType type) override;
@@ -271,7 +270,7 @@ class SyncServiceImpl : public SyncService,
     kUnrecoverableError = 1,
     kDisabledAccount = 2,
     // kRequestedPrefChange = 3,
-    kStopAndClear = 4,
+    kUpgradeClientError = 4,
     // kSetSyncAllowedByPlatform = 5,
     kCredentialsChanged = 6,
     kResetLocalData = 7,

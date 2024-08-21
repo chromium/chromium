@@ -81,9 +81,9 @@ void TestSyncService::MimicDashboardClear() {
   // Clearing sync from the dashboard results in
   // IsSyncFeatureDisabledViaDashboard() returning true.
   user_settings_.SetSyncFeatureDisabledViaDashboard(true);
+#else
+  SetSignedIn(signin::ConsentLevel::kSignin);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  StopAndClear();
 }
 
 void TestSyncService::SetAllowedByEnterprisePolicy(bool allowed) {
@@ -298,12 +298,6 @@ DataTypeSet TestSyncService::GetTypesWithPendingDownloadForInitialSync() const {
     return DataTypeSet();
   }
   return Difference(GetPreferredDataTypes(), failed_data_types_);
-}
-
-void TestSyncService::StopAndClear() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  SetSignedIn(signin::ConsentLevel::kSignin);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void TestSyncService::OnDataTypeRequestsSyncStartup(DataType type) {}

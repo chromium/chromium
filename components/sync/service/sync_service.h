@@ -437,10 +437,6 @@ class SyncService : public KeyedService {
   // ACTIONS / STATE CHANGE REQUESTS
   //////////////////////////////////////////////////////////////////////////////
 
-  // Stops and disables Sync-the-feature and clears all local data.
-  // Sync-the-transport may remain active after calling this.
-  virtual void StopAndClear() = 0;
-
   // Called when a datatype (SyncableService) has a need for sync to start
   // ASAP, presumably because a local change event has occurred but we're
   // still in deferred start mode, meaning the SyncableService hasn't been
