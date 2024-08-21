@@ -9077,16 +9077,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "use-multi-plane-format-for-hardware-video",
-    "owners": [ "hitawala@chromium.org", "vasilyt@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "use-multi-plane-format-for-software-video",
-    "owners": [ "hitawala@chromium.org", "vasilyt@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "use-network-framework-for-local-discovery",
     "owners": [ "muyaoxu@google.com", "openscreen-eng@google.com" ],
     "expiry_milestone": 140
@@ -9135,11 +9125,6 @@
     "name": "use-winrt-midi-api",
     "owners": [ "//third_party/blink/renderer/modules/webaudio/OWNERS", "toyoshim@chromium.org", "mjwilson@chromium.org" ],
     "expiry_milestone": 130
-  },
-  {
-    "name": "use-write-pixels-yuv",
-    "owners": [ "hitawala@chromium.org", "vasilyt@chromium.org" ],
-    "expiry_milestone": 135
   },
   {
     "name": "use-xps-for-printing",
