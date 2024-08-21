@@ -31,12 +31,12 @@ constexpr int kPanelWidth = 200;
 constexpr int kPanelHeight = 300;
 constexpr gfx::Rect kInitialBounds(100, 100, kPanelWidth, kPanelHeight);
 
-class MahiPanelDragControllerTest : public AshTestBase {
+class MahiPanelDragBehaviorTest : public AshTestBase {
  public:
-  MahiPanelDragControllerTest() {
+  MahiPanelDragBehaviorTest() {
     ON_CALL(mock_mahi_manager_, IsEnabled).WillByDefault(Return(true));
   }
-  ~MahiPanelDragControllerTest() override = default;
+  ~MahiPanelDragBehaviorTest() override = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -59,7 +59,7 @@ class MahiPanelDragControllerTest : public AshTestBase {
   chromeos::ScopedMahiManagerSetter scoped_manager_setter_{&mock_mahi_manager_};
 };
 
-TEST_F(MahiPanelDragControllerTest, MouseDragRepositionsPanel) {
+TEST_F(MahiPanelDragBehaviorTest, MouseDragRepositionsPanel) {
   views::Widget* panel_widget = ui_controller().mahi_panel_widget();
   panel_widget->SetBounds(kInitialBounds);
 
@@ -72,7 +72,7 @@ TEST_F(MahiPanelDragControllerTest, MouseDragRepositionsPanel) {
             kInitialBounds + kDragOffset);
 }
 
-TEST_F(MahiPanelDragControllerTest, GestureDragRepositionsPanel) {
+TEST_F(MahiPanelDragBehaviorTest, GestureDragRepositionsPanel) {
   views::Widget* panel_widget = ui_controller().mahi_panel_widget();
   panel_widget->SetBounds(kInitialBounds);
 
@@ -86,7 +86,7 @@ TEST_F(MahiPanelDragControllerTest, GestureDragRepositionsPanel) {
             kInitialBounds + kDragOffset);
 }
 
-TEST_F(MahiPanelDragControllerTest, MouseDragOutOfTheScreenEdge) {
+TEST_F(MahiPanelDragBehaviorTest, MouseDragOutOfTheScreenEdge) {
   UpdateDisplay("1000x500");
   views::Widget* panel_widget = ui_controller().mahi_panel_widget();
   panel_widget->SetBounds(kInitialBounds);
@@ -106,7 +106,7 @@ TEST_F(MahiPanelDragControllerTest, MouseDragOutOfTheScreenEdge) {
   EXPECT_EQ(panel_widget->GetWindowBoundsInScreen(), kMaxBounds);
 }
 
-TEST_F(MahiPanelDragControllerTest, MouseDragInMultiScreens) {
+TEST_F(MahiPanelDragBehaviorTest, MouseDragInMultiScreens) {
   // Adds 3 displays.
   UpdateDisplay("1000x500,1000x500,1000x500");
 

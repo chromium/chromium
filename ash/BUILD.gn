@@ -4144,7 +4144,7 @@ test("ash_unittests") {
     "system/magic_boost/magic_boost_disclaimer_view_unittest.cc",
     "system/mahi/mahi_content_source_button_unittest.cc",
     "system/mahi/mahi_nudge_controller_unittest.cc",
-    "system/mahi/mahi_panel_drag_controller_unittest.cc",
+    "system/mahi/mahi_panel_drag_behavior_unittest.cc",
     "system/mahi/mahi_panel_view_unittest.cc",
     "system/mahi/mahi_panel_widget_unittest.cc",
     "system/mahi/mahi_ui_controller_unittest.cc",
