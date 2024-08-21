@@ -7112,7 +7112,7 @@
   {
     "name": "pdf-ocr",
     "owners": [ "rhalavati@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "pdf-oopif",
