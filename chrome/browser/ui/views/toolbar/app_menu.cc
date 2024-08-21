@@ -308,12 +308,6 @@ class InMenuButton : public LabelButton {
         gfx::Insets::TLBR(0, kHorizontalPadding, 0, kHorizontalPadding)));
     label()->SetFontList(MenuConfig::instance().font_list);
 
-    GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
-  }
-
-  // views::LabelButton:
-  void OnThemeChanged() override {
-    LabelButton::OnThemeChanged();
     SetTextColorId(views::Button::STATE_DISABLED,
                    ui::kColorMenuItemForegroundDisabled);
     SetTextColorId(views::Button::STATE_HOVERED,
@@ -321,6 +315,8 @@ class InMenuButton : public LabelButton {
     SetTextColorId(views::Button::STATE_PRESSED,
                    ui::kColorMenuItemForegroundSelected);
     SetTextColorId(views::Button::STATE_NORMAL, ui::kColorMenuItemForeground);
+
+    GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
   }
 };
 
@@ -684,6 +680,7 @@ class AppMenu::ZoomView : public AppMenuView {
     zoom_label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
     zoom_label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
         0, kZoomLabelHorizontalPadding, 0, kZoomLabelHorizontalPadding)));
+    zoom_label->SetEnabledColorId(ui::kColorMenuItemForeground);
 
     // Need to set a font list for the zoom label width calculations.
     zoom_label->SetFontList(MenuConfig::instance().font_list);
@@ -787,14 +784,6 @@ class AppMenu::ZoomView : public AppMenuView {
     bounds.set_width(fullscreen_button_->GetPreferredSize().width() +
                      kFullscreenPadding);
     fullscreen_button_->SetBoundsRect(bounds);
-  }
-
-  void OnThemeChanged() override {
-    AppMenuView::OnThemeChanged();
-
-    const ui::ColorProvider* color_provider = GetColorProvider();
-    zoom_label_->SetEnabledColor(
-        color_provider->GetColor(ui::kColorMenuItemForeground));
   }
 
  private:
