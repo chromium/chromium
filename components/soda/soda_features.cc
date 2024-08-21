@@ -16,6 +16,6 @@ BASE_FEATURE(kFeatureManagementCrosSodaConchLanguages,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCrosSodaConchLanguages,
              "CrosSodaConchLanguages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 }  // namespace speech
