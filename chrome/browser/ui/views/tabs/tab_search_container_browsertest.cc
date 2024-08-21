@@ -50,7 +50,14 @@ class TabSearchContainerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, TogglesActionUIState) {
+// TODO(crbug.com/338649929): Flaky on Windows 10 builds.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TogglesActionUIState DISABLED_TogglesActionUIState
+#else
+#define MAYBE_TogglesActionUIState TogglesActionUIState
+#endif
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       MAYBE_TogglesActionUIState) {
   ASSERT_FALSE(
       tab_search_container()->expansion_animation_for_testing()->IsShowing());
 
@@ -66,8 +73,16 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, TogglesActionUIState) {
       tab_search_container()->expansion_animation_for_testing()->IsShowing());
 }
 
+// TODO(crbug.com/338649929): Flaky on Windows 10 builds.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TogglesActionUIStateOnlyInCorrectBrowser \
+  DISABLED_TogglesActionUIStateOnlyInCorrectBrowser
+#else
+#define MAYBE_TogglesActionUIStateOnlyInCorrectBrowser \
+  TogglesActionUIStateOnlyInCorrectBrowser
+#endif
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       TogglesActionUIStateOnlyInCorrectBrowser) {
+                       MAYBE_TogglesActionUIStateOnlyInCorrectBrowser) {
   const Browser* const second_browser = CreateBrowser(browser()->profile());
   TabSearchContainer* const second_search_container =
       BrowserView::GetBrowserViewForBrowser(second_browser)
@@ -97,8 +112,16 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
       second_search_container->expansion_animation_for_testing()->IsShowing());
 }
 
+// TODO(crbug.com/338649929): Flaky on Windows 10 builds.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DoesntShowIfTabStripModalUIExists \
+  DISABLED_DoesntShowIfTabStripModalUIExists
+#else
+#define MAYBE_DoesntShowIfTabStripModalUIExists \
+  DoesntShowIfTabStripModalUIExists
+#endif
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       DoesntShowIfTabStripModalUIExists) {
+                       MAYBE_DoesntShowIfTabStripModalUIExists) {
   ASSERT_FALSE(
       tab_search_container()->expansion_animation_for_testing()->IsShowing());
 
