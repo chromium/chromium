@@ -1415,6 +1415,14 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="4" label="No dialog: auto_cancel was true"/>
 </enum>
 
+<enum name="BGTaskSchedulerErrorType">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Error code unavailable"/>
+  <int value="3" label="Error code not permitted"/>
+  <int value="4" label="Error code too many pensing task requests"/>
+</enum>
+
 <enum name="BidderSignalsOriginRelation">
   <int value="0" label="No trusted signals requested"/>
   <int value="1" label="Same-origin trusted signals requested"/>

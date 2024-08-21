@@ -8,9 +8,11 @@
 
 #import "base/ios/block_types.h"
 #import "base/logging.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/background_refresh/app_refresh_provider.h"
+#import "ios/chrome/app/background_refresh/background_refresh_metrics.h"
 #import "ios/chrome/app/background_refresh_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -50,24 +52,26 @@
   request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:delay];
   NSError* error = nil;
   [BGTaskScheduler.sharedScheduler submitTaskRequest:request error:&error];
-
+  BGTaskSchedulerErrorActions action = BGTaskSchedulerErrorActions::kUnknown;
   if (error) {
     BGTaskSchedulerErrorCode code = (BGTaskSchedulerErrorCode)error.code;
     switch (code) {
       case BGTaskSchedulerErrorCodeUnavailable:
-        LOG(ERROR) << "REFRESH: BGTaskScheduler unavailable";
+        action = BGTaskSchedulerErrorActions::kErrorCodeUnavailable;
         break;
       case BGTaskSchedulerErrorCodeNotPermitted:
-        LOG(ERROR) << "REFRESH: BGTaskScheduler not permitted";
+        action = BGTaskSchedulerErrorActions::kErrorCodeNotPermitted;
         break;
       case BGTaskSchedulerErrorCodeTooManyPendingTaskRequests:
-        LOG(ERROR) << "REFRESH: BGTaskScheduler Too many pending requests";
+        action =
+            BGTaskSchedulerErrorActions::kErrorCodeTooManyPendingTaskRequests;
         break;
     }
-    LOG(ERROR) << "REFRESH: Unknown error";
   } else {
-    LOG(ERROR) << "REFRESH: Scheduled without a problem!";
+    action = BGTaskSchedulerErrorActions::kSuccess;
   }
+
+  base::UmaHistogramEnumeration(kBGTaskSchedulerErrorHistogram, action);
 
   // Time-saving debug mode.
   if (delay == 0.0) {

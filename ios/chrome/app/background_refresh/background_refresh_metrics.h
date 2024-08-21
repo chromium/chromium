@@ -27,4 +27,19 @@ enum class InitStageDuringBackgroundRefreshActions {
   kMaxValue = kInitStageFinal,
 };
 
+// Histogram name to track task request submission errors when there are some
+// tasks to be run in background.
+extern const char kBGTaskSchedulerErrorHistogram[];
+
+// Enum for the IOS.BackgroundRefresh.BGTaskSchedulerError histogram.
+// Keep in sync with "BGTaskSchedulerErrorType".
+enum class BGTaskSchedulerErrorActions {
+  kUnknown = 0,
+  kSuccess = 1,
+  kErrorCodeUnavailable = 2,
+  kErrorCodeNotPermitted = 3,
+  kErrorCodeTooManyPendingTaskRequests = 4,
+  kMaxValue = kErrorCodeTooManyPendingTaskRequests,
+};
+
 #endif  // IOS_CHROME_APP_BACKGROUND_REFRESH_BACKGROUND_REFRESH_METRICS_H_

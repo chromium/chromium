@@ -6,3 +6,6 @@
 
 const char kInitStageDuringBackgroundRefreshHistogram[] =
     "IOS.BackgroundRefresh.InitStage";
+
+const char kBGTaskSchedulerErrorHistogram[] =
+    "IOS.BackgroundRefresh.BGTaskSchedulerError";
