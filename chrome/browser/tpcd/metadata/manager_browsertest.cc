@@ -82,7 +82,7 @@ using ThirdPartyCookieAllowMechanism =
     content_settings::CookieSettingsBase::ThirdPartyCookieAllowMechanism;
 }  // namespace
 
-class ManagerBrowserTest : public PlatformBrowserTest {
+class ManagerBrowserTest : public InProcessBrowserTest {
  public:
   ManagerBrowserTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     CHECK(fake_install_dir_.CreateUniqueTempDir());

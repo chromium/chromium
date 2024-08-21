@@ -37,7 +37,7 @@ constexpr char kCaseId[] = "case-id";
 constexpr char kEmail[] = "test@test.com";
 constexpr char kIssueDescription[] = "fake issue description";
 
-class SupportToolUtilTest : public PlatformBrowserTest {
+class SupportToolUtilTest : public InProcessBrowserTest {
  public:
   SupportToolUtilTest() = default;
 
@@ -49,7 +49,7 @@ class SupportToolUtilTest : public PlatformBrowserTest {
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
     policy::PushProfilePolicyConnectorProviderForTesting(&policy_provider_);
-    PlatformBrowserTest::SetUpInProcessBrowserTestFixture();
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
  protected:

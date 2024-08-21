@@ -26,7 +26,7 @@
 
 namespace {
 
-class FirstPartySetsBrowserTestBase : public PlatformBrowserTest {
+class FirstPartySetsBrowserTestBase : public InProcessBrowserTest {
  public:
   GURL kUrlB = GURL("https://b.test");
 
@@ -40,7 +40,7 @@ class FirstPartySetsBrowserTestBase : public PlatformBrowserTest {
 
  private:
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    PlatformBrowserTest::SetUpDefaultCommandLine(command_line);
+    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
     command_line->RemoveSwitch(switches::kDisableComponentUpdate);
   }
 

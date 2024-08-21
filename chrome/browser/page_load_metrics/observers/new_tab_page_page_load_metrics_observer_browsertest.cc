@@ -20,7 +20,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class NewTabPagePageLoadMetricsBrowserTest : public PlatformBrowserTest {
+class NewTabPagePageLoadMetricsBrowserTest : public InProcessBrowserTest {
  public:
   NewTabPagePageLoadMetricsBrowserTest()
       : prerender_helper_(base::BindRepeating(
@@ -38,7 +38,7 @@ class NewTabPagePageLoadMetricsBrowserTest : public PlatformBrowserTest {
  private:
   void SetUp() override {
     prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
-    PlatformBrowserTest::SetUp();
+    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {

@@ -29,7 +29,7 @@ constexpr char kUserBypassDisabledHost[] = "b.test";
 constexpr char kArbitraryPage[] = "/title1.html";
 }  // anonymous namespace
 
-class UserBypassWebContentsObserverBrowserTest : public PlatformBrowserTest {
+class UserBypassWebContentsObserverBrowserTest : public InProcessBrowserTest {
  public:
   UserBypassWebContentsObserverBrowserTest()
       : scoped_feature_list_(net::features::kThirdPartyStoragePartitioning),
@@ -43,14 +43,14 @@ class UserBypassWebContentsObserverBrowserTest : public PlatformBrowserTest {
       const UserBypassWebContentsObserverBrowserTest&) = delete;
 
   void SetUpOnMainThread() override {
-    PlatformBrowserTest::SetUpOnMainThread();
+    InProcessBrowserTest::SetUpOnMainThread();
 
     host_resolver()->AddRule(kUserBypassEnabledHost, "127.0.0.1");
     host_resolver()->AddRule(kUserBypassDisabledHost, "127.0.0.1");
 
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server()->AddDefaultHandlers(
-        PlatformBrowserTest::GetChromeTestDataDir());
+        InProcessBrowserTest::GetChromeTestDataDir());
     ASSERT_TRUE(https_server()->Start());
 
     UserBypassWebContentsObserver::CreateForWebContents(GetActiveWebContents());

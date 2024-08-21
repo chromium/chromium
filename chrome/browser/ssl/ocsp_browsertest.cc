@@ -44,7 +44,7 @@ static const char kOCSPTestCertPolicy[] = "1.3.6.1.4.1.11129.2.4.1";
 
 }  // namespace
 
-class OCSPBrowserTest : public PlatformBrowserTest,
+class OCSPBrowserTest : public InProcessBrowserTest,
                         public network::mojom::SSLConfigClient {
  public:
   OCSPBrowserTest() = default;

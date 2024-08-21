@@ -76,7 +76,7 @@ std::string FeaturesStatusesToString(
 }  // namespace
 
 class PermissionElementOriginTrialBrowserTest
-    : public PlatformBrowserTest,
+    : public InProcessBrowserTest,
       public testing::WithParamInterface<
           testing::tuple<BaseFeatureStatus, BlinkFeatureStatus>> {
  protected:
@@ -96,7 +96,7 @@ class PermissionElementOriginTrialBrowserTest
   ~PermissionElementOriginTrialBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    PlatformBrowserTest::SetUpCommandLine(command_line);
+    InProcessBrowserTest::SetUpCommandLine(command_line);
     // Add the public key following:
     // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/origin_trials_integration.md#manual-testing.
     command_line->AppendSwitchASCII(
@@ -117,7 +117,7 @@ class PermissionElementOriginTrialBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    PlatformBrowserTest::SetUpOnMainThread();
+    InProcessBrowserTest::SetUpOnMainThread();
     url_loader_interceptor_.emplace(base::BindRepeating(
         &PermissionElementOriginTrialBrowserTest::InterceptRequest,
         base::Unretained(this)));

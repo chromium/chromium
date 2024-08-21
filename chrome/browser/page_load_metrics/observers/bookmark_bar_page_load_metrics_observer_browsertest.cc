@@ -20,7 +20,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class BookmarkBarPageLoadMetricsBrowserTest : public PlatformBrowserTest {
+class BookmarkBarPageLoadMetricsBrowserTest : public InProcessBrowserTest {
  public:
   BookmarkBarPageLoadMetricsBrowserTest()
       : prerender_helper_(base::BindRepeating(
@@ -29,7 +29,7 @@ class BookmarkBarPageLoadMetricsBrowserTest : public PlatformBrowserTest {
 
   void SetUp() override {
     prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
-    PlatformBrowserTest::SetUp();
+    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {

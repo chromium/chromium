@@ -90,7 +90,7 @@ void ReadExportedPolicyFile(base::Value::Dict* policies,
   *policies = std::move(dict_value->GetDict());
 }
 
-class PolicyDataCollectorBrowserTest : public PlatformBrowserTest {
+class PolicyDataCollectorBrowserTest : public InProcessBrowserTest {
  public:
   PolicyDataCollectorBrowserTest() = default;
 
