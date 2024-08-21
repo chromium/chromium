@@ -4,9 +4,6 @@
 
 #include "ash/system/unified/unified_system_tray_controller.h"
 
-#include <algorithm>
-#include <memory>
-
 #include "ash/capture_mode/capture_mode_feature_pod_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
@@ -68,7 +65,6 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "ash/wm/lock_state_controller.h"
-#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -80,8 +76,6 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
-
-using global_media_controls::GlobalMediaControlsEntryPoint;
 
 namespace ash {
 
@@ -123,16 +117,9 @@ UnifiedSystemTrayController::CreateQuickSettingsView(int max_height) {
 
   if (!Shell::Get()->session_controller()->IsScreenLocked() &&
       !MediaTray::IsPinnedToShelf()) {
-    if (base::FeatureList::IsEnabled(
-            media::kGlobalMediaControlsCrOSUpdatedUI)) {
-      media_view_controller_ =
-          std::make_unique<QuickSettingsMediaViewController>(this);
-      qs_view->AddMediaView(media_view_controller_->CreateView());
-    } else {
-      media_controls_controller_ =
-          std::make_unique<UnifiedMediaControlsController>(this);
-      qs_view->AddMediaControlsView(media_controls_controller_->CreateView());
-    }
+    media_view_controller_ =
+        std::make_unique<QuickSettingsMediaViewController>(this);
+    qs_view->AddMediaView(media_view_controller_->CreateView());
   }
 
   volume_slider_controller_ =
@@ -362,15 +349,6 @@ void UnifiedSystemTrayController::CloseBubble() {
 
 void UnifiedSystemTrayController::OnAudioSettingsButtonClicked() {
   ShowAudioDetailedView();
-}
-
-void UnifiedSystemTrayController::ShowMediaControls() {
-  quick_settings_view_->ShowMediaControls();
-}
-
-void UnifiedSystemTrayController::OnMediaControlsViewClicked() {
-  ShowMediaControlsDetailedView(
-      GlobalMediaControlsEntryPoint::kQuickSettingsMiniPlayer);
 }
 
 void UnifiedSystemTrayController::SetShowMediaView(bool show_media_view) {
