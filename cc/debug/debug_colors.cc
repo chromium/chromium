@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/debug/debug_colors.h"
 
 #include "base/check_op.h"
@@ -142,12 +137,13 @@ DebugColors::TintCompositedContentColorTransformMatrix() {
   // new_G =     0.7 G
   // new_B =             0.7 B
   // clang-format off
-  static constexpr float kColorTransform[] = {1.0f, 0.0f, 0.0f, 0.0f,
+  static constexpr auto kColorTransform = std::to_array<float>({
+                                              1.0f, 0.0f, 0.0f, 0.0f,
                                               0.3f, 0.7f, 0.0f, 0.0f,
                                               0.3f, 0.0f, 0.7f, 0.0f,
-                                              0.0f, 0.0f, 0.0f, 1.0f};
+                                              0.0f, 0.0f, 0.0f, 1.0f});
   // clang-format on
-  return base::span<const float>(kColorTransform, sizeof(kColorTransform));
+  return base::span<const float>(kColorTransform);
 }
 
 // Compressed tile borders are blue.
