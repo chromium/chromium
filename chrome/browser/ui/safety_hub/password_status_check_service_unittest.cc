@@ -768,9 +768,22 @@ TEST_P(PasswordStatusCheckServiceParameterizedCardTest, PasswordCardState) {
     EXPECT_EQ(header, l10n_util::GetPluralStringFUTF16(
                           IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT,
                           compromised_count));
+
+    // Check the subheader string (singular version).
     EXPECT_EQ(subheader,
-              l10n_util::GetStringUTF16(
-                  IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS));
+              l10n_util::GetPluralStringFUTF16(
+                  IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS, 1));
+    // Check the subheader string (plural version) by adding one more
+    // compromised password.
+    profile_store().AddLogin(MakeForm(kUsername3, kPassword, kOrigin2, true));
+    RunUntilIdle();
+    card = service()->GetPasswordCardData(signed_in());
+    subheader =
+        base::UTF8ToUTF16(*card.FindString(safety_hub::kCardSubheaderKey));
+    EXPECT_EQ(subheader,
+              l10n_util::GetPluralStringFUTF16(
+                  IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS, 2));
+
     EXPECT_EQ(state, static_cast<int>(SafetyHubCardState::kWarning));
     return;
   }

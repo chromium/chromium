@@ -151,8 +151,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
        IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_DESCRIPTION},
       {"compromisedPasswordsEmpty",
        IDS_PASSWORD_MANAGER_UI_NO_COMPROMISED_PASSWORDS},
-      {"compromisedPasswordsTitle",
-       IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS},
       {"compromisedRowWithError",
        IDS_PASSWORD_MANAGER_UI_CHECKUP_COMPROMISED_SECTION},
       {"confirm", IDS_PASSWORD_MANAGER_UI_CONFIRM},
@@ -624,6 +622,9 @@ void AddPluralStrings(content::WebUI* web_ui) {
   plural_string_handler->AddLocalizedString(
       "compromisedPasswords",
       IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT);
+  plural_string_handler->AddLocalizedString(
+      "compromisedPasswordsTitle",
+      IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS);
   plural_string_handler->AddLocalizedString(
       "deviceOnlyPasswordsIconTooltip",
       IDS_PASSWORD_MANAGER_UI_DEVICE_ONLY_PASSWORDS_ICON_TOOLTIP);

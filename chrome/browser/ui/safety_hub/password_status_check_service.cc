@@ -179,8 +179,9 @@ base::Value::Dict GetCompromisedPasswordCardData(int compromised_count) {
                  IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT,
                  compromised_count));
   result.Set(safety_hub::kCardSubheaderKey,
-             l10n_util::GetStringUTF16(
-                 IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS));
+             l10n_util::GetPluralStringFUTF16(
+                 IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS,
+                 compromised_count));
   result.Set(safety_hub::kCardStateKey,
              static_cast<int>(safety_hub::SafetyHubCardState::kWarning));
   return result;

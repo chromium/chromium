@@ -65,9 +65,15 @@ suite('CheckupDetailsSectionTest', function() {
             assertEquals(type + 'Passwords', params.messageName);
             assertEquals(2, params.itemCount);
 
-            assertEquals(
-                loadTimeData.getString(`${type}PasswordsTitle`),
-                section.$.subtitle.textContent!.trim());
+            if (type === CheckupSubpage.COMPROMISED) {
+              // getPluralString() should be called 2 times: 1 for page title,
+              // and 1 more for page subtitle.
+              assertEquals(2, pluralString.getCallCount('getPluralString'));
+            } else {
+              assertEquals(
+                  loadTimeData.getString(`${type}PasswordsTitle`),
+                  section.$.subtitle.textContent!.trim());
+            }
             assertEquals(
                 loadTimeData.getString(`${type}PasswordsDescription`),
                 section.$.description.textContent!.trim());
