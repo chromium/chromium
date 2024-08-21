@@ -158,7 +158,7 @@ TEST_F(HashPrefixMapTest, ReadFileNotSorted) {
   hash_file->set_file_size(8);
 
   MmapHashPrefixMap map(GetBasePath());
-  EXPECT_EQ(map.ReadFromDisk(file_format), MMAP_FAILURE);
+  EXPECT_EQ(map.ReadFromDisk(file_format), READ_FAILURE_NOT_SORTED);
 }
 
 TEST_F(HashPrefixMapTest, ReadMultipleFiles) {

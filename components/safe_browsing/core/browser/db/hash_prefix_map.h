@@ -63,6 +63,9 @@ enum ApplyUpdateResult {
   // There was a failure trying to map the file.
   MMAP_FAILURE = 12,
 
+  // The hash prefixes were not sorted when reading from dis.
+  READ_FAILURE_NOT_SORTED = 13,
+
   // Memory space for histograms is determined by the max.  ALWAYS
   // ADD NEW VALUES BEFORE THIS ONE.
   APPLY_UPDATE_RESULT_MAX

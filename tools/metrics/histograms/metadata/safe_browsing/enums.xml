@@ -481,6 +481,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="UNEXPECTED_COMPRESSION_TYPE_REMOVALS_FAILURE"/>
   <int value="11" label="CHECKSUM_MISMATCH_FAILURE"/>
   <int value="12" label="MMAP_FAILURE"/>
+  <int value="13" label="READ_FAILURE_NOT_SORTED"/>
 </enum>
 
 <enum name="SafeBrowsingV4DecodeResult">

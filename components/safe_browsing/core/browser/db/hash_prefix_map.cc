@@ -418,16 +418,13 @@ ApplyUpdateResult MmapHashPrefixMap::ReadFromDisk(
     if (!file_info.Initialize(hash_file)) {
       return MMAP_FAILURE;
     }
-    static const base::FeatureParam<bool> kCheckMapSorted{
-        &kMmapSafeBrowsingDatabase, "check-sb-map-sorted", true};
-    if (kCheckMapSorted.Get()) {
+
       HashPrefixesView prefixes = file_info.GetView();
       uint32_t end = prefixes.size() / prefix_size;
       if (!std::is_sorted(PrefixIterator(prefixes, 0, prefix_size),
                           PrefixIterator(prefixes, end, prefix_size))) {
-        return MMAP_FAILURE;
+        return READ_FAILURE_NOT_SORTED;
       }
-    }
   }
   return APPLY_UPDATE_SUCCESS;
 }
