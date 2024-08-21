@@ -22,8 +22,6 @@ EnumTraits<mojo_base::mojom::ThreadType, base::ThreadType>::ToMojom(
       return mojo_base::mojom::ThreadType::kResourceEfficient;
     case base::ThreadType::kDefault:
       return mojo_base::mojom::ThreadType::kDefault;
-    case base::ThreadType::kCompositing:
-      return mojo_base::mojom::ThreadType::kCompositing;
     case base::ThreadType::kDisplayCritical:
       return mojo_base::mojom::ThreadType::kDisplayCritical;
     case base::ThreadType::kRealtimeAudio:
@@ -49,9 +47,6 @@ bool EnumTraits<mojo_base::mojom::ThreadType, base::ThreadType>::FromMojom(
       return true;
     case mojo_base::mojom::ThreadType::kDefault:
       *out = base::ThreadType::kDefault;
-      return true;
-    case mojo_base::mojom::ThreadType::kCompositing:
-      *out = base::ThreadType::kCompositing;
       return true;
     case mojo_base::mojom::ThreadType::kDisplayCritical:
       *out = base::ThreadType::kDisplayCritical;

@@ -579,7 +579,8 @@ int BrowserMainLoop::EarlyInitialization() {
   // SetCurrentThreadType relies on CurrentUIThread on some platforms. The
   // MessagePumpForUI needs to be bound to the main thread by this point.
   DCHECK(base::CurrentUIThread::IsSet());
-  base::PlatformThread::SetCurrentThreadType(base::ThreadType::kCompositing);
+  base::PlatformThread::SetCurrentThreadType(
+      base::ThreadType::kDisplayCritical);
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_ANDROID)

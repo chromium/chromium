@@ -173,7 +173,6 @@ void SetThreadLatencySensitivity(ProcessId process_id,
     case ThreadType::kResourceEfficient:
     case ThreadType::kDefault:
       break;
-    case ThreadType::kCompositing:
     case ThreadType::kDisplayCritical:
       // Compositing and display critical threads need a boost for consistent 60
       // fps.
@@ -268,8 +267,6 @@ void SetThreadRTPrioFromType(ProcessId process_id,
       prio = PlatformThreadChromeOS::kRealTimeAudioPrio;
       policy = SCHED_RR;
       break;
-    case ThreadType::kCompositing:
-      [[fallthrough]];
     case ThreadType::kDisplayCritical:
       if (!PlatformThreadChromeOS::IsDisplayThreadsRtFeatureEnabled()) {
         return;

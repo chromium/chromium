@@ -639,7 +639,7 @@ void RenderThreadImpl::Init() {
       discardable_memory_allocator_.get());
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  ChildProcess::current()->SetIOThreadType(base::ThreadType::kCompositing);
+  ChildProcess::current()->SetIOThreadType(base::ThreadType::kDisplayCritical);
 #endif
 
   process_foregrounded_count_ = 0;
@@ -1641,9 +1641,9 @@ RenderThreadImpl::GetMediaSequencedTaskRunner() {
 #if BUILDFLAG(IS_FUCHSIA)
     // Start IO thread on Fuchsia to make that thread usable for FIDL.
     base::Thread::Options options(base::MessagePumpType::IO, 0);
-    // TODO(crbug.com/40250424): Use kCompositing to address media latency on
-    // Fuchsia until alignment on new media thread types is achieved.
-    options.thread_type = base::ThreadType::kCompositing;
+    // TODO(crbug.com/40250424): Use kDisplayCritical to address media latency
+    // on Fuchsia until alignment on new media thread types is achieved.
+    options.thread_type = base::ThreadType::kDisplayCritical;
 #else
     base::Thread::Options options;
 #endif

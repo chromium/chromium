@@ -116,10 +116,8 @@ enum class ThreadType : int {
   // platform default. In Chrome, this is suitable for handling user
   // interactions (input), only display and audio can get a higher priority.
   kDefault,
-  // Suitable for threads which are critical to compositing the foreground
-  // content.
-  kCompositing,
-  // Suitable for display critical threads.
+  // Suitable for display critical threads, ie. threads critical to compositing
+  // and presenting the foreground content.
   kDisplayCritical,
   // Suitable for low-latency, glitch-resistant audio.
   kRealtimeAudio,

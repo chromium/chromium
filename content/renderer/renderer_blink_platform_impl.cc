@@ -1094,7 +1094,7 @@ RendererBlinkPlatformImpl::VideoFrameCompositorTaskRunner() {
       video_frame_compositor_thread_ =
           std::make_unique<base::Thread>("VideoFrameCompositor");
       video_frame_compositor_thread_->StartWithOptions(
-          base::Thread::Options(base::ThreadType::kCompositing));
+          base::Thread::Options(base::ThreadType::kDisplayCritical));
     }
 
     return video_frame_compositor_thread_->task_runner();

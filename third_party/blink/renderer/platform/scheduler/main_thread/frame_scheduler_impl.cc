@@ -48,7 +48,7 @@ using perfetto::protos::pbzero::RendererMainThreadTaskExecution;
 
 namespace {
 
-// When enabled, the main thread's type is reduced from `kCompositing` to
+// When enabled, the main thread's type is reduced from `kDisplayCritical` to
 // `kDefault` when WebRTC is in use within the renderer. This is a simple
 // workaround meant to be merged to higher channels while we're working on a
 // more refined solution. See crbug.com/1513904.
@@ -761,7 +761,7 @@ void FrameSchedulerImpl::OnStartedUsingNonStickyFeature(
   if (feature == SchedulingPolicy::Feature::kWebRTC &&
       base::FeatureList::IsEnabled(kRendererMainIsDefaultThreadTypeForWebRTC) &&
       base::PlatformThread::GetCurrentThreadType() ==
-          base::ThreadType::kCompositing) {
+          base::ThreadType::kDisplayCritical) {
     base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);
   }
 }

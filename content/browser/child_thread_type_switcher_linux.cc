@@ -30,9 +30,10 @@ void SetThreadTypeOnLauncherThread(base::ProcessId peer_pid,
   }
 
   if (peer_tid == peer_pid && thread_type != base::ThreadType::kDefault &&
-      thread_type != base::ThreadType::kCompositing) {
+      thread_type != base::ThreadType::kDisplayCritical) {
+    // TODO(crbug.com/40226692): Consider reporting with ReceivedBadMessage().
     DLOG(WARNING) << "Changing main thread type to another value than "
-                  << "kDefault or kCompositing isn't allowed";
+                  << "kDefault or kDisplayCritical isn't allowed";
     return;
   }
 

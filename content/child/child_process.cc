@@ -122,7 +122,7 @@ ChildProcess::ChildProcess(base::ThreadType io_thread_type,
 #if BUILDFLAG(IS_ANDROID)
   // TODO(reveman): Remove this in favor of setting it explicitly for each type
   // of process.
-  thread_options.thread_type = base::ThreadType::kCompositing;
+  thread_options.thread_type = base::ThreadType::kDisplayCritical;
 #endif
   CHECK(io_thread_->StartWithOptions(std::move(thread_options)));
   io_thread_runner_ = io_thread_->task_runner();
@@ -191,7 +191,7 @@ void ChildProcess::SetIOThreadType(base::ThreadType thread_type) {
   if (SandboxedProcessThreadTypeHandler* sandboxed_process_thread_type_handler =
           SandboxedProcessThreadTypeHandler::Get()) {
     sandboxed_process_thread_type_handler->HandleThreadTypeChange(
-        io_thread_->GetThreadId(), base::ThreadType::kCompositing);
+        io_thread_->GetThreadId(), base::ThreadType::kDisplayCritical);
   }
 }
 #endif

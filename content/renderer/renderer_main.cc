@@ -273,14 +273,14 @@ int RendererMain(MainFunctionParams parameters) {
       if (base::FeatureList::IsEnabled(
               features::kMainThreadCompositingPriority)) {
         base::PlatformThread::SetCurrentThreadType(
-            base::ThreadType::kCompositing);
+            base::ThreadType::kDisplayCritical);
       }
     }
 #else
     if (base::FeatureList::IsEnabled(
             features::kMainThreadCompositingPriority)) {
       base::PlatformThread::SetCurrentThreadType(
-          base::ThreadType::kCompositing);
+          base::ThreadType::kDisplayCritical);
     } else {
       base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);
     }

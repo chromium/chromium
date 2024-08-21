@@ -24,7 +24,7 @@ namespace {
 
 std::unique_ptr<base::Thread> CreateAndStartIOThread() {
   base::Thread::Options thread_options(base::MessagePumpType::IO, 0);
-  thread_options.thread_type = base::ThreadType::kCompositing;
+  thread_options.thread_type = base::ThreadType::kDisplayCritical;
   auto io_thread = std::make_unique<base::Thread>("VizDemoGpuIOThread");
   CHECK(io_thread->StartWithOptions(std::move(thread_options)));
   return io_thread;

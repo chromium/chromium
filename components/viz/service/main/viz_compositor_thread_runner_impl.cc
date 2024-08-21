@@ -43,7 +43,7 @@ namespace {
 const char kThreadName[] = "VizCompositorThread";
 
 std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
-  const base::ThreadType thread_type = base::ThreadType::kCompositing;
+  const base::ThreadType thread_type = base::ThreadType::kDisplayCritical;
 #if BUILDFLAG(IS_ANDROID)
   auto thread = std::make_unique<base::android::JavaHandlerThread>(kThreadName,
                                                                    thread_type);

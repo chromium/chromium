@@ -576,7 +576,7 @@ BASE_FEATURE(kLogJsConsoleMessages,
 #endif
 );
 
-// Uses ThreadType::kCompositing for the main thread
+// Uses ThreadType::kDisplayCritical for the main thread
 BASE_FEATURE(kMainThreadCompositingPriority,
              "MainThreadCompositingPriority",
              base::FEATURE_ENABLED_BY_DEFAULT);

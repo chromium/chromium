@@ -56,15 +56,6 @@ FilePath ThreadTypeToCgroupDirectory(const FilePath& cgroup_filepath,
       return cgroup_filepath.Append(FILE_PATH_LITERAL("non-urgent"));
     case ThreadType::kDefault:
       return cgroup_filepath;
-    case ThreadType::kCompositing:
-#if BUILDFLAG(IS_CHROMEOS)
-      // On ChromeOS, kCompositing is also considered urgent.
-      return cgroup_filepath.Append(FILE_PATH_LITERAL("urgent"));
-#else
-      // TODO(crbug.com/40226692): Experiment with bringing IS_LINUX inline with
-      // IS_CHROMEOS.
-      return cgroup_filepath;
-#endif
     case ThreadType::kDisplayCritical:
     case ThreadType::kRealtimeAudio:
       return cgroup_filepath.Append(FILE_PATH_LITERAL("urgent"));
@@ -104,13 +95,6 @@ const ThreadPriorityToNiceValuePairForTest
     kThreadPriorityToNiceValueMapForTest[7] = {
         {ThreadPriorityForTest::kRealtimeAudio, -10},
         {ThreadPriorityForTest::kDisplay, -8},
-#if BUILDFLAG(IS_CHROMEOS)
-        {ThreadPriorityForTest::kCompositing, -8},
-#else
-        // TODO(crbug.com/40226692): Experiment with bringing IS_LINUX inline
-        // with IS_CHROMEOS.
-        {ThreadPriorityForTest::kCompositing, -1},
-#endif
         {ThreadPriorityForTest::kNormal, 0},
         {ThreadPriorityForTest::kResourceEfficient, 1},
         {ThreadPriorityForTest::kUtility, 2},
@@ -119,21 +103,12 @@ const ThreadPriorityToNiceValuePairForTest
 
 // These nice values are shared with ChromeOS platform code
 // (platform_thread_cros.cc) and have to be unique as ChromeOS has a unique
-// type -> nice value mapping. An exception is kCompositing and
-// kDisplayCritical where aliasing is OK as they have the same scheduler
-// attributes (cpusets, latency_sensitive etc) including nice value.
+// type -> nice value mapping.
 // The uniqueness of the nice value per-type helps to change and restore the
 // scheduling params of threads when their process toggles between FG and BG.
 const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[7] = {
     {ThreadType::kBackground, 10},       {ThreadType::kUtility, 2},
     {ThreadType::kResourceEfficient, 1}, {ThreadType::kDefault, 0},
-#if BUILDFLAG(IS_CHROMEOS)
-    {ThreadType::kCompositing, -8},
-#else
-    // TODO(crbug.com/40226692): Experiment with bringing IS_LINUX inline with
-    // IS_CHROMEOS.
-    {ThreadType::kCompositing, -1},
-#endif
     {ThreadType::kDisplayCritical, -8},  {ThreadType::kRealtimeAudio, -10},
 };
 

@@ -299,12 +299,12 @@ std::unique_ptr<BrowserProcessIOThread> BrowserTaskExecutor::CreateIOThread() {
 // does not.
 #if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(base::kAboveNormalCompositingBrowserWin)) {
-    options.thread_type = base::ThreadType::kCompositing;
+    options.thread_type = base::ThreadType::kDisplayCritical;
   }
 #else
   // Up the priority of the |io_thread_| as some of its IPCs relate to
   // display tasks.
-  options.thread_type = base::ThreadType::kCompositing;
+  options.thread_type = base::ThreadType::kDisplayCritical;
 #endif
   if (!io_thread->StartWithOptions(std::move(options)))
     LOG(FATAL) << "Failed to start BrowserThread:IO";

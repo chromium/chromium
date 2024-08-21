@@ -15,7 +15,7 @@ namespace content {
 RenderProcess::RenderProcess(
     std::unique_ptr<base::ThreadPoolInstance::InitParams>
         thread_pool_init_params)
-    : ChildProcess(base::ThreadType::kCompositing,
+    : ChildProcess(base::ThreadType::kDisplayCritical,
                    std::move(thread_pool_init_params)) {}
 
 }  // namespace content
