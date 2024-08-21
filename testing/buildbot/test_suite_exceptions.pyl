@@ -2636,6 +2636,11 @@
       'Linux MSan Tests',
     ],
     'modifications': {
+      'Android FYI Release (Motorola Moto G Power 5G)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.moto_g_power_5g.gl_tests.filter',
+        ],
+      },
       'Dawn Linux x64 Experimental Release (Intel UHD 630)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux.uhd_630.gl_tests_passthrough.filter',
@@ -2714,6 +2719,11 @@
   },
   'gl_tests_validating': {
     'modifications': {
+      'Android FYI Release (Motorola Moto G Power 5G)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.moto_g_power_5g.gl_tests.filter',
+        ],
+      },
       'Android FYI Release (Samsung A13)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.samsung_a13.gl_tests.filter',

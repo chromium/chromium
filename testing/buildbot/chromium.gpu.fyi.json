@@ -1014,6 +1014,7 @@
         "args": [
           "--use-cmd-decoder=passthrough",
           "--use-gl=angle",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.moto_g_power_5g.gl_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1047,6 +1048,7 @@
       {
         "args": [
           "--use-cmd-decoder=validating",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.moto_g_power_5g.gl_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
