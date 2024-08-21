@@ -15,6 +15,7 @@
 #include "content/browser/devtools/browser_devtools_agent_host.h"
 #include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_issue_storage.h"
+#include "content/browser/devtools/devtools_preload_storage.h"
 #include "content/browser/devtools/protocol/audits.h"
 #include "content/browser/devtools/protocol/audits_handler.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
@@ -735,6 +736,12 @@ void DidUpdatePrefetchStatus(
     return;
   }
 
+  // We update DevToolsPreloadStorage, even if there are no active DevTools
+  // sessions, to persist the latest status update.
+  DevToolsPreloadStorage::GetOrCreateForCurrentDocument(
+      ftn->current_frame_host())
+      ->UpdatePrefetchStatus(prefetch_url, status, prefetch_status, request_id);
+
   std::string initiating_frame_id =
       ftn->current_frame_host()->devtools_frame_token().ToString();
   DispatchToAgents(ftn, &protocol::PreloadHandler::DidUpdatePrefetchStatus,
@@ -756,6 +763,14 @@ void DidUpdatePrerenderStatus(
   if (!ftn) {
     return;
   }
+
+  // We update DevToolsPreloadStorage, even if there are no active DevTools
+  // sessions, to persist the latest status update.
+  DevToolsPreloadStorage::GetOrCreateForCurrentDocument(
+      ftn->current_frame_host())
+      ->UpdatePrerenderStatus(prerender_url, target_hint, status,
+                              prerender_status, disallowed_mojo_interface,
+                              mismatched_headers);
 
   DispatchToAgents(ftn, &protocol::PreloadHandler::DidUpdatePrerenderStatus,
                    initiator_devtools_navigation_token, prerender_url,

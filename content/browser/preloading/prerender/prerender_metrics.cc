@@ -253,6 +253,15 @@ PrerenderMismatchedHeaders::PrerenderMismatchedHeaders(
 PrerenderMismatchedHeaders::~PrerenderMismatchedHeaders() = default;
 
 PrerenderMismatchedHeaders::PrerenderMismatchedHeaders(
+    const PrerenderMismatchedHeaders& other) = default;
+
+PrerenderMismatchedHeaders::PrerenderMismatchedHeaders(
+    PrerenderMismatchedHeaders&& other) = default;
+
+PrerenderMismatchedHeaders& PrerenderMismatchedHeaders::operator=(
+    const PrerenderMismatchedHeaders& other) = default;
+
+PrerenderMismatchedHeaders& PrerenderMismatchedHeaders::operator=(
     PrerenderMismatchedHeaders&& other) = default;
 
 std::string GeneratePrerenderHistogramSuffix(

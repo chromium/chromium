@@ -26,8 +26,11 @@ struct CONTENT_EXPORT PrerenderMismatchedHeaders {
 
   ~PrerenderMismatchedHeaders();
 
+  PrerenderMismatchedHeaders(const PrerenderMismatchedHeaders& other);
   PrerenderMismatchedHeaders(PrerenderMismatchedHeaders&& other);
 
+  PrerenderMismatchedHeaders& operator=(
+      const PrerenderMismatchedHeaders& other);
   PrerenderMismatchedHeaders& operator=(PrerenderMismatchedHeaders&& other);
 
   std::string header_name;

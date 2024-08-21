@@ -50,6 +50,7 @@ var TestRunner = class {
       'requestId',
       'openerFrameId',
       'issueId',
+      'initiatingFrameId'
     ];
   }
 

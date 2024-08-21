@@ -1,0 +1,9 @@
+Tests that Preload.preloadingAttemptSourcesUpdated and Preload.ruleSetUpdated is
+     dispatched after the Preload domain is enabled.
+got rule set: 
+          {"prefetch": [{
+            "urls": ["/subresource.js"]
+          }]}
+        
+got preloading attempt sources: 1
+

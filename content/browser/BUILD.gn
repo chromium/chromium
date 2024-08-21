@@ -828,6 +828,8 @@ source_set("browser") {
     "devtools/devtools_manager.h",
     "devtools/devtools_pipe_handler.cc",
     "devtools/devtools_pipe_handler.h",
+    "devtools/devtools_preload_storage.cc",
+    "devtools/devtools_preload_storage.h",
     "devtools/devtools_renderer_channel.cc",
     "devtools/devtools_renderer_channel.h",
     "devtools/devtools_session.cc",

@@ -563,6 +563,30 @@ void DocumentSpeculationRules::InitiatePreview(const KURL& url) {
   }
 }
 
+void DocumentSpeculationRules::QueueUpdateSpeculationCandidates(
+    bool force_style_update) {
+  const bool microtask_already_queued = IsMicrotaskQueued();
+
+  bool needs_microtask = true;
+  if (force_style_update) {
+    SetPendingUpdateState(
+        PendingUpdateState::kMicrotaskQueuedWithForcedStyleUpdate);
+  } else if (pending_update_state_ == PendingUpdateState::kNoUpdate) {
+    SetPendingUpdateState(PendingUpdateState::kMicrotaskQueued);
+  } else {
+    // An update of some kind is already scheduled, whether on a microtask or
+    // the next style update. That's sufficient.
+    needs_microtask = false;
+  }
+
+  auto* execution_context = GetSupplementable()->GetExecutionContext();
+  if (needs_microtask && !microtask_already_queued && execution_context) {
+    execution_context->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
+        &DocumentSpeculationRules::UpdateSpeculationCandidatesMicrotask,
+        WrapWeakPersistent(this)));
+  }
+}
+
 void DocumentSpeculationRules::Trace(Visitor* visitor) const {
   Supplement::Trace(visitor);
   visitor->Trace(rule_sets_);
@@ -586,30 +610,6 @@ mojom::blink::SpeculationHost* DocumentSpeculationRules::GetHost() {
             execution_context->GetTaskRunner(TaskType::kInternalDefault)));
   }
   return host_.get();
-}
-
-void DocumentSpeculationRules::QueueUpdateSpeculationCandidates(
-    bool force_style_update) {
-  const bool microtask_already_queued = IsMicrotaskQueued();
-
-  bool needs_microtask = true;
-  if (force_style_update) {
-    SetPendingUpdateState(
-        PendingUpdateState::kMicrotaskQueuedWithForcedStyleUpdate);
-  } else if (pending_update_state_ == PendingUpdateState::kNoUpdate) {
-    SetPendingUpdateState(PendingUpdateState::kMicrotaskQueued);
-  } else {
-    // An update of some kind is already scheduled, whether on a microtask or
-    // the next style update. That's sufficient.
-    needs_microtask = false;
-  }
-
-  auto* execution_context = GetSupplementable()->GetExecutionContext();
-  if (needs_microtask && !microtask_already_queued && execution_context) {
-    execution_context->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
-        &DocumentSpeculationRules::UpdateSpeculationCandidatesMicrotask,
-        WrapWeakPersistent(this)));
-  }
 }
 
 void DocumentSpeculationRules::UpdateSpeculationCandidatesMicrotask() {

@@ -394,7 +394,7 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
 
   session->CreateAndAppend<InspectorPerformanceTimelineAgent>(inspected_frames);
 
-  session->CreateAndAppend<InspectorPreloadAgent>();
+  session->CreateAndAppend<InspectorPreloadAgent>(inspected_frames);
 
   // Call session init callbacks registered from higher layers.
   CoreInitializer::GetInstance().InitInspectorAgentSession(
