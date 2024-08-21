@@ -260,6 +260,10 @@ void GpuArcVideoFramePool::WillResetDecoder() {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (has_error_) {
+    return;
+  }
+
   // GpuArcVideoDecoder should ensure WillResetDecoder() is not called while a
   // reset is in progress.
   CHECK(!decoder_is_resetting_);
@@ -280,6 +284,11 @@ void GpuArcVideoFramePool::WillResetDecoder() {
 void GpuArcVideoFramePool::OnDecoderResetDone() {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (has_error_) {
+    return;
+  }
+
   decoder_is_resetting_ = false;
 }
 
