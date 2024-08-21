@@ -10054,6 +10054,16 @@ void RenderFrameHostImpl::BeginNavigation(
     }
   }
 
+  //  TODO(crbug.com/40496584):Resolved an issue where creating RPHI would cause
+  //  a crash when the browser context was shut down. We are actively exploring
+  //  the appropriate long-term solution. Please remove this condition once the
+  //  final fix is implemented.
+  BrowserContext* browser_context =
+      frame_tree_node()->navigator().controller().GetBrowserContext();
+  if (browser_context->ShutdownStarted()) {
+    return;
+  }
+
   // See `owner_` invariants about `lifecycle_state_`.
   // `IsInactiveAndDisallowActivation()` check cause both pending deletion and
   // bfcached states to return early.

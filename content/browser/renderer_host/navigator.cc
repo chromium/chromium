@@ -788,6 +788,14 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
   FrameTreeNode* frame_tree_node = request->frame_tree_node();
   DCHECK_EQ(&(frame_tree_node->frame_tree()), &controller_.frame_tree());
 
+  //  TODO(crbug.com/40496584):Resolved an issue where creating RPHI would cause
+  //  a crash when the browser context was shut down. We are actively exploring
+  //  the appropriate long-term solution. Please remove this condition once the
+  //  final fix is implemented.
+  if (controller_.GetBrowserContext()->ShutdownStarted()) {
+    return;
+  }
+
   metrics_data_ = std::make_unique<NavigationMetricsData>(
       request->common_params().navigation_start, request->common_params().url,
       GetPageUkmSourceId(*frame_tree_node->current_frame_host()),
