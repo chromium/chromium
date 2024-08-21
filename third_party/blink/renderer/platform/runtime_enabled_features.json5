@@ -1375,12 +1375,6 @@
       copied_from_base_feature_if: "overridden",
     },
     {
-      // Shipping in M121.  Flag should be removed after M121 has been
-      // shipping to stable for a few weeks.
-      name: "DirnameMoreInputTypes",
-      status: "stable",
-    },
-    {
       // Disables anti-aliasing for the Ahem font. Anti-aliasing this font breaks a
       // significant amount of WPT test expectations.
       name: "DisableAhemAntialias",
