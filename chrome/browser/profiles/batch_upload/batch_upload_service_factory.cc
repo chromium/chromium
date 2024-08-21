@@ -4,11 +4,27 @@
 
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_selections.h"
+#include "components/signin/public/base/signin_switches.h"
+
+namespace {
+
+ProfileSelections CreateBatchUploadProfileSelections() {
+  if (base::FeatureList::IsEnabled(switches::kBatchUploadDesktop)) {
+    return ProfileSelections::BuildForRegularProfile();
+  }
+
+  return ProfileSelections::BuildNoProfilesSelected();
+}
+
+}  // namespace
 
 BatchUploadServiceFactory::BatchUploadServiceFactory()
-    : ProfileKeyedServiceFactory("BatchUpload") {}
+    : ProfileKeyedServiceFactory("BatchUpload",
+                                 CreateBatchUploadProfileSelections()) {}
 
 BatchUploadServiceFactory::~BatchUploadServiceFactory() = default;
 

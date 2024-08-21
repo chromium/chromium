@@ -179,6 +179,12 @@ BASE_FEATURE(kAlwaysLoadDeviceAccounts,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+BASE_FEATURE(kBatchUploadDesktop,
+             "BatchUploadDesktop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 }  // namespace switches
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
