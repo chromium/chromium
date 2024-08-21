@@ -1239,7 +1239,6 @@ crbug.com/1098801 external/wpt/css/css-text/overflow-wrap/overflow-wrap-normal-k
 crbug.com/359926563 external/wpt/css/css-inline/text-box-trim/text-box-trim-float-clear-br-003.html [ Failure ]
 crbug.com/359926563 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-004.html [ Failure ]
 crbug.com/359926563 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-005.html [ Failure ]
-crbug.com/359926563 external/wpt/css/css-inline/text-box-trim/text-box-trim-height-002.html [ Failure ]
 
 # LayoutNG ref-tests that need to be updated (cannot be rebaselined).
 crbug.com/591099 [ Win ] virtual/text-antialias/ellipsis-with-self-painting-layer.html [ Failure ]
