@@ -10,6 +10,7 @@
 ] interface MLBuffer {
   readonly attribute MLOperandDataType dataType;
   readonly attribute FrozenArray<unsigned long> shape;
+  readonly attribute MLBufferUsageFlags usage;
 
   void destroy();
 };

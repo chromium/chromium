@@ -310,7 +310,8 @@ TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTest) {
           mojom::BufferInfo::New(
               *OperandDescriptor::Create(OperandDataType::kUint8,
                                          std::array<uint32_t, 2>{2, 2}),
-              MLBufferUsage()));
+              MLBufferUsage{MLBufferUsageFlags::kWriteTo,
+                            MLBufferUsageFlags::kReadFrom}));
   if (buffer_result.has_value()) {
     webnn_buffer_remote = std::move(buffer_result.value().webnn_buffer_remote);
   }
@@ -353,7 +354,7 @@ TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTooLargeTest) {
           mojom::BufferInfo::New(
               *OperandDescriptor::Create(OperandDataType::kUint8,
                                          std::array<uint32_t, 2>{2, 2}),
-              MLBufferUsage()));
+              MLBufferUsage{MLBufferUsageFlags::kWriteTo}));
   if (buffer_result.has_value()) {
     webnn_buffer_remote = std::move(buffer_result.value().webnn_buffer_remote);
   }

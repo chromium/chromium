@@ -378,12 +378,27 @@ void ContextImplDml::CreateBufferImpl(
   // CPU will directly read/write to this heap if the GPU isn't using it.
   ComPtr<ID3D12Resource> buffer;
   if (adapter_->IsUMA()) {
-    // TODO(crbug.com/40278771): consider introducing buffer usages for INPUT or
-    // OUTPUT since using upload-equivelent custom heaps everywhere could be
-    // inefficient.
-    hr = CreateCustomUploadBuffer(
-        adapter_->d3d12_device(), aligned_buffer_byte_size,
-        L"WebNN_Custom_Upload_Buffer_External", buffer);
+    // Create a buffer configured with memory properties based on
+    // usage.
+    if (buffer_info->usage.Has(MLBufferUsageFlags::kWriteTo)) {
+      // Upload buffer is used when the buffer mostly CPU writes but
+      // could also CPU read. A upload buffer provides less bandwidth for CPU
+      // reads in favor of GPU writes being optimal.
+      hr = CreateCustomUploadBuffer(
+          adapter_->d3d12_device(), aligned_buffer_byte_size,
+          L"WebNN_Custom_Upload_Buffer_External", buffer);
+    } else if (buffer_info->usage.Has(MLBufferUsageFlags::kReadFrom)) {
+      // Readback buffer is used when the buffer only requires CPU reads.
+      hr = CreateCustomReadbackBuffer(
+          adapter_->d3d12_device(), aligned_buffer_byte_size,
+          L"WebNN_Custom_Readback_Buffer_External", buffer);
+    } else {
+      // Default buffer is used when the buffer has no need for CPU access
+      // in favor of any GPU access being optimal.
+      hr = CreateDefaultBuffer(adapter_->d3d12_device(),
+                               aligned_buffer_byte_size,
+                               L"WebNN_Default_Buffer_External", buffer);
+    }
   } else {
     // Create a default buffer that can be accessed only by GPU.
     // The CPU must use a staging buffer to read/write to this buffer.

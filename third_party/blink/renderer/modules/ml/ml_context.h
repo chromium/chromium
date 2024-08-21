@@ -164,6 +164,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   void DidCreateWebNNBuffer(ScopedMLTrace scoped_trace,
                             ScriptPromiseResolver<blink::MLBuffer>* resolver,
                             webnn::OperandDescriptor validated_descriptor,
+                            webnn::MLBufferUsage usage,
                             webnn::mojom::blink::CreateBufferResultPtr result);
 
   V8MLDeviceType device_type_;

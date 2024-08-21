@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_usage.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
@@ -776,6 +777,8 @@ MLBuffer* CreateMLBufferForOperand(V8TestingScope& scope,
   auto* desc = MLBufferDescriptor::Create();
   desc->setDataType(operand->dataType());
   desc->setDimensions(operand->shape());
+  desc->setUsage(V8MLBufferUsage::Constant::kWriteTo |
+                 V8MLBufferUsage::Constant::kReadFrom);
 
   ScriptPromiseTester tester(
       scope.GetScriptState(),
@@ -1324,6 +1327,8 @@ TEST_F(MLGraphTest, WriteWebNNBufferTest) {
   auto* desc = MLBufferDescriptor::Create();
   desc->setDataType(V8MLOperandDataType::Enum::kUint8);
   desc->setDimensions(kBufferShape);
+  desc->setUsage(V8MLBufferUsage::Constant::kWriteTo |
+                 V8MLBufferUsage::Constant::kReadFrom);
 
   ScriptPromiseTester buffer_tester(
       script_state,
@@ -1417,6 +1422,7 @@ TEST_F(MLGraphTest, WriteWebNNBufferThenDestroyTest) {
   auto* desc = MLBufferDescriptor::Create();
   desc->setDataType(V8MLOperandDataType::Enum::kUint8);
   desc->setDimensions({2, 2});
+  desc->setUsage(V8MLBufferUsage::Constant::kWriteTo);
 
   ScriptPromiseTester buffer_tester(
       script_state,
@@ -1459,6 +1465,7 @@ TEST_F(MLGraphTest, ReadWebNNBufferThenDestroyTest) {
   auto* desc = MLBufferDescriptor::Create();
   desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
   desc->setDimensions({2, 2});
+  desc->setUsage(V8MLBufferUsage::Constant::kReadFrom);
 
   ScriptPromiseTester create_buffer_tester(
       script_state,

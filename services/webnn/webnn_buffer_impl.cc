@@ -16,8 +16,8 @@ WebNNBufferImpl::WebNNBufferImpl(
     WebNNContextImpl* context,
     mojom::BufferInfoPtr buffer_info)
     : context_(context),
-      // TODO(crbug.com/343638938): Use buffer_info->usage.
       descriptor_(std::move(buffer_info->descriptor)),
+      usage_(std::move(buffer_info->usage)),
       receiver_(this, std::move(receiver)) {
   // Safe to use base::Unretained because `this` owns `receiver_`.
   receiver_.set_disconnect_handler(
@@ -27,11 +27,21 @@ WebNNBufferImpl::WebNNBufferImpl(
 WebNNBufferImpl::~WebNNBufferImpl() = default;
 
 void WebNNBufferImpl::ReadBuffer(ReadBufferCallback callback) {
+  if (!usage().Has(MLBufferUsageFlags::kReadFrom)) {
+    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+    return;
+  }
+
   // Call ReadBufferImpl() implemented by a backend.
   ReadBufferImpl(std::move(callback));
 }
 
 void WebNNBufferImpl::WriteBuffer(mojo_base::BigBuffer src_buffer) {
+  if (!usage().Has(MLBufferUsageFlags::kWriteTo)) {
+    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+    return;
+  }
+
   // TODO(https://crbug.com/40278771): Generate error using MLContext.
   if (PackedByteLength() < src_buffer.size()) {
     receiver_.ReportBadMessage(kBadMessageInvalidBuffer);

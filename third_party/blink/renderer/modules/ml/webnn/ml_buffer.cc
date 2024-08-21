@@ -21,10 +21,12 @@ MLBuffer::MLBuffer(
     ExecutionContext* execution_context,
     MLContext* context,
     webnn::OperandDescriptor descriptor,
+    webnn::MLBufferUsage usage,
     webnn::mojom::blink::CreateBufferSuccessPtr create_buffer_success,
     base::PassKey<MLContext> /*pass_key*/)
     : ml_context_(context),
       descriptor_(std::move(descriptor)),
+      usage_(usage),
       webnn_handle_(std::move(create_buffer_success->buffer_handle)),
       remote_buffer_(execution_context) {
   remote_buffer_.Bind(
@@ -52,6 +54,10 @@ Vector<uint32_t> MLBuffer::shape() const {
   return Vector<uint32_t>(descriptor_.shape());
 }
 
+uint32_t MLBuffer::usage() const {
+  return static_cast<uint32_t>(usage_.ToEnumBitmask());
+}
+
 void MLBuffer::destroy() {
   // Calling OnConnectionError() will disconnect and destroy the buffer in
   // the service. The remote buffer must remain unbound after calling
@@ -69,6 +75,10 @@ webnn::OperandDataType MLBuffer::DataType() const {
 
 const std::vector<uint32_t>& MLBuffer::Shape() const {
   return descriptor_.shape();
+}
+
+const webnn::MLBufferUsage& MLBuffer::Usage() const {
+  return usage_;
 }
 
 uint64_t MLBuffer::PackedByteLength() const {

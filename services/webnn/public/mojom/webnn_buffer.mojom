@@ -12,6 +12,10 @@ import "services/webnn/public/mojom/webnn_error.mojom";
 // the concept of an enum set (see https://crbug.com/40130879#comment11).
 struct BufferUsage {
   bool web_gpu_interop;
+  // This buffer can be used with readBuffer().
+  bool read_from;
+  // This buffer can be used with writeBuffer().
+  bool write_to;
 };
 
 // Description of the WebNNBuffer to create.

@@ -13,10 +13,14 @@ enum class MLBufferUsageFlags {
   // This buffer may be imported/rented to WebGPU.
   kWebGpuInterop,
 
-  // TODO(crbug.com/343638938): Add more usage flags.
+  // This buffer can be used with readBuffer().
+  kReadFrom,
+
+  // This buffer can be used with writeBuffer().
+  kWriteTo,
 
   kMinValue = kWebGpuInterop,
-  kMaxValue = kWebGpuInterop,
+  kMaxValue = kWriteTo,
 };
 
 using MLBufferUsage = base::EnumSet<MLBufferUsageFlags,

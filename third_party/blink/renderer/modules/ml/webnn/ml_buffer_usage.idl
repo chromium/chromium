@@ -1,0 +1,18 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.w3.org/TR/webnn/#api-mlbuffer
+
+typedef unsigned long MLFlagsConstant;
+
+typedef [EnforceRange] unsigned long MLBufferUsageFlags;
+[
+    RuntimeEnabled=MachineLearningNeuralNetwork,
+    Exposed=(Window, DedicatedWorker),
+    SecureContext
+] namespace MLBufferUsage {
+    const MLFlagsConstant WEBGPU_INTEROP = 1;
+    const MLFlagsConstant READ_FROM = 2;
+    const MLFlagsConstant WRITE_TO = 4;
+};

@@ -17,6 +17,14 @@ struct StructTraits<webnn::mojom::BufferUsageDataView, webnn::MLBufferUsage> {
     return usage.Has(webnn::MLBufferUsageFlags::kWebGpuInterop);
   }
 
+  static bool write_to(const webnn::MLBufferUsage& usage) {
+    return usage.Has(webnn::MLBufferUsageFlags::kWriteTo);
+  }
+
+  static bool read_from(const webnn::MLBufferUsage& usage) {
+    return usage.Has(webnn::MLBufferUsageFlags::kReadFrom);
+  }
+
   static bool Read(webnn::mojom::BufferUsageDataView data,
                    webnn::MLBufferUsage* out) {
     out->Clear();
@@ -24,6 +32,15 @@ struct StructTraits<webnn::mojom::BufferUsageDataView, webnn::MLBufferUsage> {
     if (data.web_gpu_interop()) {
       out->Put(webnn::MLBufferUsageFlags::kWebGpuInterop);
     }
+
+    if (data.read_from()) {
+      out->Put(webnn::MLBufferUsageFlags::kReadFrom);
+    }
+
+    if (data.write_to()) {
+      out->Put(webnn::MLBufferUsageFlags::kWriteTo);
+    }
+
     return true;
   }
 };

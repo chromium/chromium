@@ -644,9 +644,14 @@ ScriptPromise<MLBuffer> MLContext::createBuffer(
                     return ScriptPromise<MLBuffer>();
                   });
 
-  // TODO(crbug.com/343638938): Pass real buffer usages.
-  auto buffer_info = webnn::mojom::blink::BufferInfo::New(
-      validated_descriptor, webnn::MLBufferUsage());
+  // WebNN bitfield values have the same value as enums.
+  webnn::MLBufferUsage usage;
+  if (descriptor->hasUsage()) {
+    usage = webnn::MLBufferUsage::FromEnumBitmask(descriptor->usage());
+  }
+
+  auto buffer_info =
+      webnn::mojom::blink::BufferInfo::New(validated_descriptor, usage);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLBuffer>>(
       script_state, exception_state.GetContext());
@@ -657,7 +662,7 @@ ScriptPromise<MLBuffer> MLContext::createBuffer(
       std::move(buffer_info),
       WTF::BindOnce(&MLContext::DidCreateWebNNBuffer, WrapPersistent(this),
                     std::move(scoped_trace), WrapPersistent(resolver),
-                    std::move(validated_descriptor)));
+                    std::move(validated_descriptor), usage));
 
   return resolver->Promise();
 }
@@ -726,6 +731,12 @@ ScriptPromise<DOMArrayBuffer> MLContext::readBuffer(
     return EmptyPromise();
   }
 
+  if (!src_buffer->Usage().Has(webnn::MLBufferUsageFlags::kReadFrom)) {
+    exception_state.ThrowTypeError(
+        "The source buffer doesn't have read access.");
+    return EmptyPromise();
+  }
+
   return src_buffer->ReadBufferImpl(script_state, exception_state);
 }
 
@@ -785,6 +796,12 @@ void MLContext::WriteWebNNBuffer(ScriptState* script_state,
   if (dst_buffer->context() != this) {
     exception_state.ThrowTypeError(
         "The destination buffer wasn't created with this context.");
+    return;
+  }
+
+  if (!dst_buffer->Usage().Has(webnn::MLBufferUsageFlags::kWriteTo)) {
+    exception_state.ThrowTypeError(
+        "The destination buffer doesn't have write access.");
     return;
   }
 
@@ -876,6 +893,7 @@ void MLContext::DidCreateWebNNBuffer(
     ScopedMLTrace scoped_trace,
     ScriptPromiseResolver<blink::MLBuffer>* resolver,
     webnn::OperandDescriptor validated_descriptor,
+    webnn::MLBufferUsage usage,
     webnn::mojom::blink::CreateBufferResultPtr result) {
   pending_resolvers_.erase(resolver);
 
@@ -894,7 +912,7 @@ void MLContext::DidCreateWebNNBuffer(
 
   auto* buffer = MakeGarbageCollected<MLBuffer>(
       resolver->GetExecutionContext(), this, std::move(validated_descriptor),
-      std::move(result->get_success()), base::PassKey<MLContext>());
+      usage, std::move(result->get_success()), base::PassKey<MLContext>());
   buffers_.insert(buffer);
 
   resolver->Resolve(buffer);

@@ -11,6 +11,7 @@
 #include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_usage.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -40,6 +41,7 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   MLBuffer(ExecutionContext* execution_context,
            MLContext* context,
            webnn::OperandDescriptor descriptor,
+           webnn::MLBufferUsage usage,
            webnn::mojom::blink::CreateBufferSuccessPtr create_buffer_success,
            base::PassKey<MLContext> pass_key);
   MLBuffer(const MLBuffer&) = delete;
@@ -52,6 +54,8 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   // ml_buffer.idl
   V8MLOperandDataType dataType() const;
   Vector<uint32_t> shape() const;
+  uint32_t usage() const;
+
   void destroy();
 
   // Convenience methods for accessing native types, which avoid a copy
@@ -59,6 +63,7 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   const webnn::OperandDescriptor& Descriptor() const;
   webnn::OperandDataType DataType() const;
   const std::vector<uint32_t>& Shape() const;
+  const webnn::MLBufferUsage& Usage() const;
 
   uint64_t PackedByteLength() const;
 
@@ -104,6 +109,9 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
 
   // Represents a valid MLBufferDescriptor.
   const webnn::OperandDescriptor descriptor_;
+
+  // Represents a valid MLBufferUsage.
+  const webnn::MLBufferUsage usage_;
 
   // Identifies this `WebNNBuffer` mojo instance in the service process.
   const blink::WebNNBufferToken webnn_handle_;

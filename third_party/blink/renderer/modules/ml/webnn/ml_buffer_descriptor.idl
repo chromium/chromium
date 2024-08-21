@@ -7,5 +7,5 @@
 typedef [EnforceRange] unsigned long long MLSize64;
 
 dictionary MLBufferDescriptor : MLOperandDescriptor {
-  // TODO(crbug.com/343638938): Add buffer usage flags.
+  MLBufferUsageFlags usage;
 };
