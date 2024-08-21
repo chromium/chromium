@@ -3661,6 +3661,19 @@ TEST(Table, ReentrantCallsFail) {
 #endif
 }
 
+TEST(Table, DestroyedCallsFail) {
+#ifdef NDEBUG
+  GTEST_SKIP() << "Destroyed checks only enabled in debug mode.";
+#else
+  absl::optional<IntTable> t;
+  t.emplace({1});
+  IntTable* t_ptr = &*t;
+  EXPECT_TRUE(t_ptr->contains(1));
+  t.reset();
+  EXPECT_DEATH_IF_SUPPORTED(t_ptr->contains(1), "");
+#endif
+}
+
 }  // namespace
 }  // namespace container_internal
 ABSL_NAMESPACE_END

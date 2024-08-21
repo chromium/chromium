@@ -190,6 +190,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <functional>
 #include <initializer_list>
 #include <iterator>
 #include <limits>
@@ -210,9 +211,11 @@
 #include "absl/container/internal/common.h"  // IWYU pragma: export // for node_handle
 #include "absl/container/internal/compressed_tuple.h"
 #include "absl/container/internal/container_memory.h"
+#include "absl/container/internal/hash_function_defaults.h"
 #include "absl/container/internal/hash_policy_traits.h"
 #include "absl/container/internal/hashtable_debug_hooks.h"
 #include "absl/container/internal/hashtablez_sampler.h"
+#include "absl/hash/hash.h"
 #include "absl/memory/memory.h"
 #include "absl/meta/type_traits.h"
 #include "absl/numeric/bits.h"
@@ -540,8 +543,8 @@ ABSL_DLL extern const ctrl_t kEmptyGroup[32];
 // classes of bugs.
 enum InvalidCapacity : size_t {
   kAboveMaxValidCapacity = ~size_t{} - 100,
-  // Used for reentrancy assertions.
-  kInvalidReentrance,
+  kReentrance,
+  kDestroyed,
 };
 
 // Returns a pointer to a control byte group that can be used by empty tables.
@@ -1462,7 +1465,7 @@ class CommonFields : public CommonFieldsGenerationInfo {
     return;
 #endif
     const size_t cap = capacity();
-    set_capacity(kInvalidReentrance);
+    set_capacity(InvalidCapacity::kReentrance);
     f();
     set_capacity(cap);
   }
@@ -2858,7 +2861,12 @@ class raw_hash_set {
         typename AllocTraits::propagate_on_container_move_assignment());
   }
 
-  ~raw_hash_set() { destructor_impl(); }
+  ~raw_hash_set() {
+    destructor_impl();
+#ifndef NDEBUG
+    common().set_capacity(InvalidCapacity::kDestroyed);
+#endif
+  }
 
   iterator begin() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (ABSL_PREDICT_FALSE(empty())) return end();
@@ -3875,17 +3883,29 @@ class raw_hash_set {
   }
 
   // Asserts that the capacity is not a sentinel invalid value.
-  // TODO(b/296061262): also add asserts for moved-from and destroyed states.
+  // TODO(b/296061262): also add asserts for moved-from state.
   void AssertNotDebugCapacity() const {
-    assert(capacity() != kInvalidReentrance &&
+    assert(capacity() != InvalidCapacity::kReentrance &&
            "reentrant container access during element construction/destruction "
            "is not allowed.");
+    assert(capacity() != InvalidCapacity::kDestroyed &&
+           "use of destroyed hash table.");
   }
 
   // Asserts that hash and equal functors provided by the user are consistent,
   // meaning that `eq(k1, k2)` implies `hash(k1)==hash(k2)`.
   template <class K>
   void AssertHashEqConsistent(const K& key) {
+    // If the hash/eq functors are known to be consistent, then skip validation.
+    if (std::is_same<hasher, absl::container_internal::StringHash>::value &&
+        std::is_same<key_equal, absl::container_internal::StringEq>::value) {
+      return;
+    }
+    if (std::is_scalar<key_type>::value &&
+        std::is_same<hasher, absl::Hash<key_type>>::value &&
+        std::is_same<key_equal, std::equal_to<key_type>>::value) {
+      return;
+    }
     if (empty()) return;
 
     const size_t hash_of_arg = hash_ref()(key);
@@ -3897,21 +3917,8 @@ class raw_hash_set {
 
       const size_t hash_of_slot =
           PolicyTraits::apply(HashElement{hash_ref()}, element);
-      const bool is_hash_equal = hash_of_arg == hash_of_slot;
-      if (!is_hash_equal) {
-        // In this case, we're going to crash. Do a couple of other checks for
-        // idempotence issues. Recalculating hash/eq here is also convenient for
-        // debugging with gdb/lldb.
-        ABSL_ATTRIBUTE_UNUSED const size_t once_more_hash_arg = hash_ref()(key);
-        assert(hash_of_arg == once_more_hash_arg && "hash is not idempotent.");
-        ABSL_ATTRIBUTE_UNUSED const size_t once_more_hash_slot =
-            PolicyTraits::apply(HashElement{hash_ref()}, element);
-        assert(hash_of_slot == once_more_hash_slot &&
-               "hash is not idempotent.");
-        ABSL_ATTRIBUTE_UNUSED const bool once_more_eq =
-            PolicyTraits::apply(EqualElement<K>{key, eq_ref()}, element);
-        assert(is_key_equal == once_more_eq && "equality is not idempotent.");
-      }
+      ABSL_ATTRIBUTE_UNUSED const bool is_hash_equal =
+          hash_of_arg == hash_of_slot;
       assert((!is_key_equal || is_hash_equal) &&
              "eq(k1, k2) must imply that hash(k1) == hash(k2). "
              "hash/eq functors are inconsistent.");
