@@ -201,10 +201,8 @@ void RecordHistogramsOnStartup(PrefService* pref_service) {
 }  // namespace
 
 TrackingProtectionOnboarding::TrackingProtectionOnboarding(
-    PrefService* pref_service,
-    bool is_silent_onboarding_enabled)
-    : pref_service_(pref_service),
-      is_silent_onboarding_enabled_(is_silent_onboarding_enabled) {
+    PrefService* pref_service)
+    : pref_service_(pref_service) {
   CHECK(pref_service_);
 
   RecordHistogramsOnStartup(pref_service_);

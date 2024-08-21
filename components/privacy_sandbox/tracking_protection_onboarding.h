@@ -73,8 +73,7 @@ class TrackingProtectionOnboarding : public KeyedService {
     kMaxValue = kOnboarded,
   };
 
-  TrackingProtectionOnboarding(PrefService* pref_service,
-                               bool is_silent_onboarding_enabled = false);
+  explicit TrackingProtectionOnboarding(PrefService* pref_service);
   ~TrackingProtectionOnboarding() override;
 
   // KeyedService:
@@ -90,7 +89,6 @@ class TrackingProtectionOnboarding : public KeyedService {
 
  private:
   raw_ptr<PrefService> pref_service_;
-  bool is_silent_onboarding_enabled_;
 };
 
 }  // namespace privacy_sandbox
