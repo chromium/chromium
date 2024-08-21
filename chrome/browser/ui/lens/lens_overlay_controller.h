@@ -388,6 +388,15 @@ class LensOverlayController : public LensSearchboxClient,
   // hides the widget associated with the bubble.
   void HidePreselectionBubble();
 
+  // Shows the feedback page.
+  void FeedbackRequestedByEvent(int event_flags);
+
+  // Shows the info page.
+  void InfoRequestedByEvent(int event_flags);
+
+  // Shows My Activity.
+  void ActivityRequestedByEvent(int event_flags);
+
   // Testing function to issue a Lens region selection request.
   void IssueLensRegionRequestForTesting(lens::mojom::CenterRotatedBoxPtr region,
                                         bool is_click);

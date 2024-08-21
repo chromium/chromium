@@ -1781,6 +1781,17 @@ void LensOverlayController::ActivityRequestedByOverlay(
           WindowOpenDisposition::NEW_FOREGROUND_TAB));
 }
 
+void LensOverlayController::ActivityRequestedByEvent(int event_flags) {
+  // The tab is expected to be in the foreground.
+  if (!tab_->IsInForeground()) {
+    return;
+  }
+  tab_->GetBrowserWindowInterface()->OpenGURL(
+      GURL(lens::features::GetLensOverlayActivityURL()),
+      ui::DispositionFromEventFlags(event_flags,
+                                    WindowOpenDisposition::NEW_FOREGROUND_TAB));
+}
+
 void LensOverlayController::AddBackgroundBlur() {
   // We do not blur unless the overlay is currently active.
   if (state_ != State::kOverlay && state_ != State::kOverlayAndResults) {
@@ -1818,6 +1829,10 @@ void LensOverlayController::FeedbackRequestedByOverlay() {
       /*extra_diagnostics=*/std::string());
 }
 
+void LensOverlayController::FeedbackRequestedByEvent(int event_flags) {
+  FeedbackRequestedByOverlay();
+}
+
 void LensOverlayController::GetOverlayInvocationSource(
     GetOverlayInvocationSourceCallback callback) {
   std::move(callback).Run(GetInvocationSourceString());
@@ -1836,6 +1851,17 @@ void LensOverlayController::InfoRequestedByOverlay(
           click_modifiers->ctrl_key, click_modifiers->meta_key,
           click_modifiers->shift_key,
           WindowOpenDisposition::NEW_FOREGROUND_TAB));
+}
+
+void LensOverlayController::InfoRequestedByEvent(int event_flags) {
+  // The tab is expected to be in the foreground.
+  if (!tab_->IsInForeground()) {
+    return;
+  }
+  tab_->GetBrowserWindowInterface()->OpenGURL(
+      GURL(lens::features::GetLensOverlayHelpCenterURL()),
+      ui::DispositionFromEventFlags(event_flags,
+                                    WindowOpenDisposition::NEW_FOREGROUND_TAB));
 }
 
 void LensOverlayController::IssueLensRegionRequest(
