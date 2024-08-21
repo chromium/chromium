@@ -793,7 +793,8 @@ public class PasswordManagerHelper {
         }
     }
 
-    public @PasswordAccessLossWarningType int getAccessLossWarningType(PrefService prefService) {
+    public static @PasswordAccessLossWarningType int getAccessLossWarningType(
+            PrefService prefService) {
         // TODO(crbug.com/323149739): Enable this feature flag in SafetyCheckMediatorTest and
         // PasswordManagerHelperTest in all tests before launch.
         if (!ChromeFeatureList.isEnabled(

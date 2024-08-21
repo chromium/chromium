@@ -6,9 +6,14 @@ package org.chromium.chrome.browser.password_manager.settings;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
@@ -41,6 +46,7 @@ public class PasswordsPreference extends ChromeBasePreference implements Profile
         // This preference is the only one of its type in the preferences group so it will not
         // be recycled.
         PrefService prefService = UserPrefs.get(mProfile);
+        setUpPasswordAccessLossWarning(holder);
         if (!prefService.isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE)) {
             return;
         }
@@ -57,5 +63,19 @@ public class PasswordsPreference extends ChromeBasePreference implements Profile
                                 .password_saving_on_by_administrator
                         : org.chromium.chrome.browser.password_manager.R.string
                                 .password_saving_off_by_administrator);
+    }
+
+    public void setUpPasswordAccessLossWarning(PreferenceViewHolder holder) {
+        assert mProfile != null : "Profile is not set!";
+        PrefService prefService = UserPrefs.get(mProfile);
+        if (PasswordManagerHelper.getAccessLossWarningType(prefService)
+                == PasswordAccessLossWarningType.NONE) return;
+
+        TextView summaryView = (TextView) holder.findViewById(android.R.id.summary);
+        summaryView.setText(R.string.access_loss_pref_desc);
+        // ChromeBasePreference sets summary text view to be not visible by default if it's empty.
+        // So explicitly setting it to visible here.
+        summaryView.setVisibility(View.VISIBLE);
+        setWidgetLayoutResource(R.layout.passwords_preference_error_widget);
     }
 }

@@ -952,6 +952,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_ACCESS_LOSS_EXPORT_DIALOG_POSITIVE_BUTTON_TEXT" desc="The text on the button, confirming the user's agreement to export passwords and remove them from Chrome's database.">
         Export and delete
       </message>
+      <message name="IDS_ACCESS_LOSS_PREF_DESC" desc="The subtitle of the Google Password Manager item in Chrome main settings. Displayed only if the UPM is not functioning properly.">
+        Some passwords will stop working soon
+      </message>
 
       <!-- Lock Screen Fragment -->
       <message name="IDS_LOCKSCREEN_DESCRIPTION_COPY" desc="When a user attempts to copy a password for a particular website into clipboard in Chrome's settings, Chrome launches a lock screen to verify the user's identity and displays the following explanation.">
