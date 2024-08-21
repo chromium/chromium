@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -58,6 +59,13 @@ class HeapProfilerController {
   // Returns true if heap profiling is enabled and was successfully started,
   // false otherwise.
   bool StartIfEnabled();
+
+  // Get the synthetic field trial configuration. If a synthetic field trial
+  // should be registered, returns true and writes the field trial details to
+  // `trial_name` and `group_name`. Otherwise, returns false and does not modify
+  // `trial_name` and `group_name`. Must only be called in the browser process.
+  bool GetSyntheticFieldTrial(std::string& trial_name,
+                              std::string& group_name) const;
 
   // Uses the exact parameter values for the sampling interval and time between
   // samples, instead of a distribution around those values. This must be called
@@ -186,7 +194,10 @@ class HeapProfilerController {
       size_t process_index);
 
   const ProcessType process_type_;
-  const bool profiling_enabled_;
+  bool profiling_enabled_;
+
+  // Group name for the synthetic field trial, or nullopt for none.
+  std::optional<std::string> synthetic_field_trial_group_;
 
   // Stores the time the HeapProfilerController was created, which will be close
   // to the process creation time. This is used instead of
