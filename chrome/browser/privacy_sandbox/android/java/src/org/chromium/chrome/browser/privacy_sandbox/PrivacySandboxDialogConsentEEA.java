@@ -7,14 +7,19 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
+import org.chromium.ui.widget.TextViewWithLeading;
 
 /** Dialog in the form of a consent shown for the Privacy Sandbox. */
 public class PrivacySandboxDialogConsentEEA extends ChromeDialog
@@ -34,6 +39,7 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     private ButtonCompat mMoreButton;
     private LinearLayout mActionButtons;
     private ScrollView mScrollView;
+    private TextViewWithLeading mLearnMoreText;
 
     private boolean mAreAnimationsDisabled;
 
@@ -150,6 +156,22 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
                         () -> {
                             mScrollView.scrollTo(0, mDropdownElement.getTop());
                         });
+                mLearnMoreText = mContentView.findViewById(R.id.privacy_sandbox_learn_more_text);
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)) {
+                    mLearnMoreText.setText(
+                            SpanApplier.applySpans(
+                                    getContext()
+                                            .getResources()
+                                            .getString(
+                                                    R.string
+                                                            .privacy_sandbox_m1_notice_learn_more_v2_clank),
+                                    new SpanApplier.SpanInfo(
+                                            "<link>",
+                                            "</link>",
+                                            new NoUnderlineClickableSpan(
+                                                    getContext(), this::onPrivacyPolicyClicked))));
+                    mLearnMoreText.setMovementMethod(LinkMovementMethod.getInstance());
+                }
             }
 
             mExpandArrowView.setChecked(isDropdownExpanded());
@@ -177,6 +199,10 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
             mMoreButton.setVisibility(View.GONE);
             mActionButtons.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void onPrivacyPolicyClicked(View view) {
+        // TODO: Open ThinWebView
     }
 
     private void dismissAndMaybeShowNotice() {
