@@ -63,8 +63,7 @@ TEST_F(PickerSuggestionsControllerTest,
   NiceMock<MockPickerClient> client;
   EXPECT_CALL(client, GetSuggestedEditorResults)
       .WillRepeatedly(RunCallbackArgWith(std::vector<PickerSearchResult>{
-          PickerSearchResult::Editor(PickerEditorResult::Mode::kRewrite, u"",
-                                     {}, {}),
+          PickerEditorResult(PickerEditorResult::Mode::kRewrite, u"", {}, {}),
       }));
   PickerSuggestionsController controller(&client);
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
@@ -119,7 +118,7 @@ TEST_F(PickerSuggestionsControllerTest,
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(
       callback,
-      Run(Contains(PickerSearchResult::CapsLock(
+      Run(Contains(PickerCapsLockResult(
           /*enabled=*/true, PickerCapsLockResult::Shortcut::kAltSearch))))
       .Times(1);
 
@@ -139,7 +138,7 @@ TEST_F(PickerSuggestionsControllerTest,
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(
       callback,
-      Run(Contains(PickerSearchResult::CapsLock(
+      Run(Contains(PickerCapsLockResult(
           /*enabled=*/false, PickerCapsLockResult::Shortcut::kAltSearch))))
       .Times(1);
 
@@ -159,11 +158,11 @@ TEST_F(PickerSuggestionsControllerTest,
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(callback, Run(IsSupersetOf({
-                            PickerSearchResult::CaseTransform(
+                            PickerCaseTransformResult(
                                 PickerCaseTransformResult::Type::kUpperCase),
-                            PickerSearchResult::CaseTransform(
+                            PickerCaseTransformResult(
                                 PickerCaseTransformResult::Type::kLowerCase),
-                            PickerSearchResult::CaseTransform(
+                            PickerCaseTransformResult(
                                 PickerCaseTransformResult::Type::kTitleCase),
                         })))
       .Times(1);
@@ -182,13 +181,13 @@ TEST_F(PickerSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
-  EXPECT_CALL(callback, Run(Contains(PickerSearchResult::CaseTransform(
+  EXPECT_CALL(callback, Run(Contains(PickerCaseTransformResult(
                             PickerCaseTransformResult::Type::kUpperCase))))
       .Times(0);
-  EXPECT_CALL(callback, Run(Contains(PickerSearchResult::CaseTransform(
+  EXPECT_CALL(callback, Run(Contains(PickerCaseTransformResult(
                             PickerCaseTransformResult::Type::kLowerCase))))
       .Times(0);
-  EXPECT_CALL(callback, Run(Contains(PickerSearchResult::CaseTransform(
+  EXPECT_CALL(callback, Run(Contains(PickerCaseTransformResult(
                             PickerCaseTransformResult::Type::kTitleCase))))
       .Times(0);
 
@@ -201,24 +200,24 @@ TEST_F(PickerSuggestionsControllerTest,
   EXPECT_CALL(client, GetSuggestedLinkResults(1, _))
       .WillRepeatedly(
           WithArg<1>(RunCallbackArgWith(std::vector<PickerSearchResult>{
-              PickerSearchResult::BrowsingHistory(GURL("a.com"), u"a",
-                                                  /*icon=*/{}),
-              PickerSearchResult::BrowsingHistory(GURL("b.com"), u"b",
-                                                  /*icon=*/{}),
+              PickerBrowsingHistoryResult(GURL("a.com"), u"a",
+                                          /*icon=*/{}),
+              PickerBrowsingHistoryResult(GURL("b.com"), u"b",
+                                          /*icon=*/{}),
           })));
   EXPECT_CALL(client, GetRecentDriveFileResults(5, _))
       .WillRepeatedly(
           WithArg<1>(RunCallbackArgWith(std::vector<PickerSearchResult>{
-              PickerSearchResult::DriveFile(/*id=*/{}, u"a", GURL("a.com"),
-                                            /*file_path=*/{}),
-              PickerSearchResult::DriveFile(/*id=*/{}, u"b", GURL("b.com"),
-                                            /*file_path=*/{}),
+              PickerDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
+                                    /*file_path=*/{}),
+              PickerDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
+                                    /*file_path=*/{}),
           })));
   EXPECT_CALL(client, GetRecentLocalFileResults(1, _))
       .WillRepeatedly(
           WithArg<1>(RunCallbackArgWith(std::vector<PickerSearchResult>{
-              PickerSearchResult::LocalFile(u"a", /*file_path=*/{}),
-              PickerSearchResult::LocalFile(u"b", /*file_path=*/{}),
+              PickerLocalFileResult(u"a", /*file_path=*/{}),
+              PickerLocalFileResult(u"b", /*file_path=*/{}),
           })));
   PickerSuggestionsController controller(&client);
   input_method::FakeImeKeyboard keyboard;
@@ -246,8 +245,8 @@ TEST_F(PickerSuggestionsControllerTest,
 
 TEST_F(PickerSuggestionsControllerTest, GetSuggestionsForLinkCategory) {
   const std::vector<PickerSearchResult> suggested_links = {
-      PickerSearchResult::BrowsingHistory(GURL("a.com"), u"a", /*icon=*/{}),
-      PickerSearchResult::BrowsingHistory(GURL("b.com"), u"b", /*icon=*/{}),
+      PickerBrowsingHistoryResult(GURL("a.com"), u"a", /*icon=*/{}),
+      PickerBrowsingHistoryResult(GURL("b.com"), u"b", /*icon=*/{}),
   };
   NiceMock<MockPickerClient> client;
   EXPECT_CALL(client, GetSuggestedLinkResults)
@@ -263,10 +262,10 @@ TEST_F(PickerSuggestionsControllerTest, GetSuggestionsForLinkCategory) {
 
 TEST_F(PickerSuggestionsControllerTest, GetSuggestionsForDriveFileCategory) {
   const std::vector<PickerSearchResult> suggested_files = {
-      PickerSearchResult::DriveFile(/*id=*/{}, u"a", GURL("a.com"),
-                                    /*file_path=*/{}),
-      PickerSearchResult::DriveFile(/*id=*/{}, u"b", GURL("b.com"),
-                                    /*file_path=*/{}),
+      PickerDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
+                            /*file_path=*/{}),
+      PickerDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
+                            /*file_path=*/{}),
   };
   NiceMock<MockPickerClient> client;
   EXPECT_CALL(client, GetRecentDriveFileResults)
@@ -282,8 +281,8 @@ TEST_F(PickerSuggestionsControllerTest, GetSuggestionsForDriveFileCategory) {
 
 TEST_F(PickerSuggestionsControllerTest, GetSuggestionsForLocalFileCategory) {
   const std::vector<PickerSearchResult> suggested_files = {
-      PickerSearchResult::LocalFile(u"a", /*file_path=*/{}),
-      PickerSearchResult::LocalFile(u"b", /*file_path=*/{}),
+      PickerLocalFileResult(u"a", /*file_path=*/{}),
+      PickerLocalFileResult(u"b", /*file_path=*/{}),
   };
   NiceMock<MockPickerClient> client;
   EXPECT_CALL(client, GetRecentLocalFileResults)

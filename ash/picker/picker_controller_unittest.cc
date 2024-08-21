@@ -550,8 +550,7 @@ TEST_F(PickerControllerTest, InsertResultDoesNothingWhenWidgetIsClosed) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
 
-  controller().CloseWidgetThenInsertResultOnNextFocus(
-      PickerSearchResult::Text(u"abc"));
+  controller().CloseWidgetThenInsertResultOnNextFocus(PickerTextResult(u"abc"));
   ui::FakeTextInputClient input_field(ui::TEXT_INPUT_TYPE_TEXT);
   input_method->SetFocusedTextInputClient(&input_field);
   absl::Cleanup focused_input_field_reset = [input_method] {
@@ -567,8 +566,7 @@ TEST_F(PickerControllerTest, InsertTextResultInsertsIntoInputFieldAfterFocus) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
 
-  controller().CloseWidgetThenInsertResultOnNextFocus(
-      PickerSearchResult::Text(u"abc"));
+  controller().CloseWidgetThenInsertResultOnNextFocus(PickerTextResult(u"abc"));
   views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
       controller().widget_for_testing());
   ui::FakeTextInputClient input_field(ui::TEXT_INPUT_TYPE_TEXT);
@@ -589,11 +587,10 @@ TEST_F(PickerControllerTest,
       GetFirstClipboardItemId();
   ASSERT_TRUE(clipboard_item_id.has_value());
 
-  controller().CloseWidgetThenInsertResultOnNextFocus(
-      PickerSearchResult::Clipboard(
-          *clipboard_item_id, PickerClipboardResult::DisplayFormat::kText,
-          /*file_count=*/0,
-          /*display_text=*/u"", /*display_image=*/{}, /*is_recent=*/false));
+  controller().CloseWidgetThenInsertResultOnNextFocus(PickerClipboardResult(
+      *clipboard_item_id, PickerClipboardResult::DisplayFormat::kText,
+      /*file_count=*/0,
+      /*display_text=*/u"", /*display_image=*/{}, /*is_recent=*/false));
   views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
       controller().widget_for_testing());
   ClipboardPasteWaiter waiter;
@@ -610,8 +607,8 @@ TEST_F(PickerControllerTest,
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
 
   controller().CloseWidgetThenInsertResultOnNextFocus(
-      PickerSearchResult::BrowsingHistory(GURL("http://foo.com"), u"Foo",
-                                          ui::ImageModel{}));
+      PickerBrowsingHistoryResult(GURL("http://foo.com"), u"Foo",
+                                  ui::ImageModel{}));
   views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
       controller().widget_for_testing());
   ui::FakeTextInputClient input_field(input_method,
@@ -624,8 +621,7 @@ TEST_F(PickerControllerTest,
 TEST_F(PickerControllerTest, InsertResultClosesWidgetImmediately) {
   controller().ToggleWidget();
 
-  controller().CloseWidgetThenInsertResultOnNextFocus(
-      PickerSearchResult::Text(u"abc"));
+  controller().CloseWidgetThenInsertResultOnNextFocus(PickerTextResult(u"abc"));
 
   EXPECT_TRUE(controller().widget_for_testing()->IsClosed());
 }
@@ -635,8 +631,7 @@ TEST_F(PickerControllerTest, InsertResultDelaysWidgetCloseForAccessibility) {
   Shell::Get()->accessibility_controller()->SetSpokenFeedbackEnabled(
       true, A11Y_NOTIFICATION_NONE);
 
-  controller().CloseWidgetThenInsertResultOnNextFocus(
-      PickerSearchResult::Text(u"abc"));
+  controller().CloseWidgetThenInsertResultOnNextFocus(PickerTextResult(u"abc"));
 
   EXPECT_FALSE(controller().widget_for_testing()->IsClosed());
   views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
@@ -649,7 +644,7 @@ TEST_F(PickerControllerTest, OpenBrowsingHistoryResult) {
   EXPECT_CALL(mock_new_window_delegate(), OpenUrl(GURL("http://foo.com"), _, _))
       .Times(1);
 
-  controller().OpenResult(PickerSearchResult::BrowsingHistory(
+  controller().OpenResult(PickerBrowsingHistoryResult(
       GURL("http://foo.com"), u"Foo", ui::ImageModel{}));
 }
 
@@ -659,7 +654,7 @@ TEST_F(PickerControllerTest, OpenDriveFileResult) {
   EXPECT_CALL(mock_new_window_delegate(), OpenUrl(GURL("http://foo.com"), _, _))
       .Times(1);
 
-  controller().OpenResult(PickerSearchResult::DriveFile(
+  controller().OpenResult(PickerDriveFileResult(
       /*id=*/std::nullopt, u"title", GURL("http://foo.com"), base::FilePath()));
 }
 
@@ -670,7 +665,7 @@ TEST_F(PickerControllerTest, OpenLocalFileResult) {
       .Times(1);
 
   controller().OpenResult(
-      PickerSearchResult::LocalFile(u"title", base::FilePath("abc.png")));
+      PickerLocalFileResult(u"title", base::FilePath("abc.png")));
 }
 
 TEST_F(PickerControllerTest, OpenNewGoogleDocOpensGoogleDocs) {
@@ -681,13 +676,13 @@ TEST_F(PickerControllerTest, OpenNewGoogleDocOpensGoogleDocs) {
       .Times(1);
 
   controller().OpenResult(
-      PickerSearchResult::NewWindow(PickerNewWindowResult::Type::kDoc));
+      PickerNewWindowResult(PickerNewWindowResult::Type::kDoc));
 }
 
 TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOnCapsLock) {
   controller().ToggleWidget();
 
-  controller().OpenResult(PickerSearchResult::CapsLock(
+  controller().OpenResult(PickerCapsLockResult(
       /*enabled=*/true, PickerCapsLockResult::Shortcut::kAltSearch));
 
   input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
@@ -698,7 +693,7 @@ TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOnCapsLock) {
 TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOffCapsLock) {
   controller().ToggleWidget();
 
-  controller().OpenResult(PickerSearchResult::CapsLock(
+  controller().OpenResult(PickerCapsLockResult(
       /*enabled=*/false, PickerCapsLockResult::Shortcut::kAltSearch));
 
   input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
@@ -715,8 +710,8 @@ TEST_F(PickerControllerTest, OpenUpperCaseResultCommitsUpperCase) {
   input_field.SetTextAndSelection(u"aBc DeF", gfx::Range(0, 7));
 
   controller().ToggleWidget();
-  controller().OpenResult(PickerSearchResult::CaseTransform(
-      PickerCaseTransformResult::Type::kUpperCase));
+  controller().OpenResult(
+      PickerCaseTransformResult(PickerCaseTransformResult::Type::kUpperCase));
   input_method->SetFocusedTextInputClient(&input_field);
 
   EXPECT_EQ(input_field.text(), u"ABC DEF");
@@ -731,8 +726,8 @@ TEST_F(PickerControllerTest, OpenLowerCaseResultCommitsLowerCase) {
   input_field.SetTextAndSelection(u"aBc DeF", gfx::Range(0, 7));
 
   controller().ToggleWidget();
-  controller().OpenResult(PickerSearchResult::CaseTransform(
-      PickerCaseTransformResult::Type::kLowerCase));
+  controller().OpenResult(
+      PickerCaseTransformResult(PickerCaseTransformResult::Type::kLowerCase));
   input_method->SetFocusedTextInputClient(&input_field);
 
   EXPECT_EQ(input_field.text(), u"abc def");
@@ -747,8 +742,8 @@ TEST_F(PickerControllerTest, OpenTitleCaseResultCommitsTitleCase) {
   input_field.SetTextAndSelection(u"aBc DeF", gfx::Range(0, 7));
 
   controller().ToggleWidget();
-  controller().OpenResult(PickerSearchResult::CaseTransform(
-      PickerCaseTransformResult::Type::kTitleCase));
+  controller().OpenResult(
+      PickerCaseTransformResult(PickerCaseTransformResult::Type::kTitleCase));
   input_method->SetFocusedTextInputClient(&input_field);
 
   EXPECT_EQ(input_field.text(), u"Abc Def");
@@ -858,9 +853,9 @@ TEST_F(PickerControllerTest, SuggestedEmojiReturnsDefaultEmojisWhenEmpty) {
   EXPECT_THAT(
       controller().GetSuggestedEmoji(),
       ElementsAre(
-          PickerSearchResult::Emoji(u"🙂"), PickerSearchResult::Emoji(u"😂"),
-          PickerSearchResult::Emoji(u"🤔"), PickerSearchResult::Emoji(u"😢"),
-          PickerSearchResult::Emoji(u"👏"), PickerSearchResult::Emoji(u"👍")));
+          PickerEmojiResult::Emoji(u"🙂"), PickerEmojiResult::Emoji(u"😂"),
+          PickerEmojiResult::Emoji(u"🤔"), PickerEmojiResult::Emoji(u"😢"),
+          PickerEmojiResult::Emoji(u"👏"), PickerEmojiResult::Emoji(u"👍")));
 }
 
 TEST_F(PickerControllerTest,
@@ -876,9 +871,9 @@ TEST_F(PickerControllerTest,
   EXPECT_THAT(
       controller().GetSuggestedEmoji(),
       ElementsAre(
-          PickerSearchResult::Emoji(u"abc"), PickerSearchResult::Emoji(u"xyz"),
-          PickerSearchResult::Emoji(u"🙂"), PickerSearchResult::Emoji(u"😂"),
-          PickerSearchResult::Emoji(u"🤔"), PickerSearchResult::Emoji(u"😢")));
+          PickerEmojiResult::Emoji(u"abc"), PickerEmojiResult::Emoji(u"xyz"),
+          PickerEmojiResult::Emoji(u"🙂"), PickerEmojiResult::Emoji(u"😂"),
+          PickerEmojiResult::Emoji(u"🤔"), PickerEmojiResult::Emoji(u"😢")));
 }
 
 TEST_F(PickerControllerTest, AddsNewRecentEmoji) {
@@ -890,14 +885,14 @@ TEST_F(PickerControllerTest, AddsNewRecentEmoji) {
 
   controller().ToggleWidget();
   controller().CloseWidgetThenInsertResultOnNextFocus(
-      PickerSearchResult::Emoji(u"def"));
+      PickerEmojiResult::Emoji(u"def"));
 
   EXPECT_THAT(
       controller().GetSuggestedEmoji(),
       ElementsAre(
-          PickerSearchResult::Emoji(u"def"), PickerSearchResult::Emoji(u"abc"),
-          PickerSearchResult::Emoji(u"xyz"), PickerSearchResult::Emoji(u"🙂"),
-          PickerSearchResult::Emoji(u"😂"), PickerSearchResult::Emoji(u"🤔")));
+          PickerEmojiResult::Emoji(u"def"), PickerEmojiResult::Emoji(u"abc"),
+          PickerEmojiResult::Emoji(u"xyz"), PickerEmojiResult::Emoji(u"🙂"),
+          PickerEmojiResult::Emoji(u"😂"), PickerEmojiResult::Emoji(u"🤔")));
 }
 
 TEST_F(PickerControllerTest, AddsExistingRecentEmoji) {
@@ -909,54 +904,54 @@ TEST_F(PickerControllerTest, AddsExistingRecentEmoji) {
 
   controller().ToggleWidget();
   controller().CloseWidgetThenInsertResultOnNextFocus(
-      PickerSearchResult::Emoji(u"xyz"));
+      PickerEmojiResult::Emoji(u"xyz"));
 
   EXPECT_THAT(
       controller().GetSuggestedEmoji(),
       ElementsAre(
-          PickerSearchResult::Emoji(u"xyz"), PickerSearchResult::Emoji(u"abc"),
-          PickerSearchResult::Emoji(u"🙂"), PickerSearchResult::Emoji(u"😂"),
-          PickerSearchResult::Emoji(u"🤔"), PickerSearchResult::Emoji(u"😢")));
+          PickerEmojiResult::Emoji(u"xyz"), PickerEmojiResult::Emoji(u"abc"),
+          PickerEmojiResult::Emoji(u"🙂"), PickerEmojiResult::Emoji(u"😂"),
+          PickerEmojiResult::Emoji(u"🤔"), PickerEmojiResult::Emoji(u"😢")));
 }
 
 TEST_F(PickerControllerTest, AddsRecentEmojiEmptyHistory) {
   controller().ToggleWidget();
   controller().CloseWidgetThenInsertResultOnNextFocus(
-      PickerSearchResult::Emoji(u"abc"));
+      PickerEmojiResult::Emoji(u"abc"));
 
   EXPECT_THAT(
       controller().GetSuggestedEmoji(),
       ElementsAre(
-          PickerSearchResult::Emoji(u"abc"), PickerSearchResult::Emoji(u"🙂"),
-          PickerSearchResult::Emoji(u"😂"), PickerSearchResult::Emoji(u"🤔"),
-          PickerSearchResult::Emoji(u"😢"), PickerSearchResult::Emoji(u"👏")));
+          PickerEmojiResult::Emoji(u"abc"), PickerEmojiResult::Emoji(u"🙂"),
+          PickerEmojiResult::Emoji(u"😂"), PickerEmojiResult::Emoji(u"🤔"),
+          PickerEmojiResult::Emoji(u"😢"), PickerEmojiResult::Emoji(u"👏")));
 }
 
 TEST_F(PickerControllerTest, RecentlyAddedEmojiHasCorrectType) {
   controller().ToggleWidget();
   controller().CloseWidgetThenInsertResultOnNextFocus(
-      PickerSearchResult::Emoji(u"abc"));
+      PickerEmojiResult::Emoji(u"abc"));
 
   EXPECT_THAT(controller().GetSuggestedEmoji(),
-              Contains(PickerSearchResult::Emoji(u"abc")));
+              Contains(PickerEmojiResult::Emoji(u"abc")));
 }
 
 TEST_F(PickerControllerTest, RecentlyAddedSymbolHasCorrectType) {
   controller().ToggleWidget();
   controller().CloseWidgetThenInsertResultOnNextFocus(
-      PickerSearchResult::Symbol(u"abc"));
+      PickerEmojiResult::Symbol(u"abc"));
 
   EXPECT_THAT(controller().GetSuggestedEmoji(),
-              Contains(PickerSearchResult::Symbol(u"abc")));
+              Contains(PickerEmojiResult::Symbol(u"abc")));
 }
 
 TEST_F(PickerControllerTest, RecentlyAddedEmoticonHasCorrectType) {
   controller().ToggleWidget();
   controller().CloseWidgetThenInsertResultOnNextFocus(
-      PickerSearchResult::Emoticon(u"abc"));
+      PickerEmojiResult::Emoticon(u"abc"));
 
   EXPECT_THAT(controller().GetSuggestedEmoji(),
-              Contains(PickerSearchResult::Emoticon(u"abc")));
+              Contains(PickerEmojiResult::Emoticon(u"abc")));
 }
 
 TEST_F(PickerControllerTest, AddRecentEmojiWithFocus) {
@@ -969,10 +964,10 @@ TEST_F(PickerControllerTest, AddRecentEmojiWithFocus) {
 
   controller().ToggleWidget();
   controller().CloseWidgetThenInsertResultOnNextFocus(
-      PickerSearchResult::Emoji(u"abc"));
+      PickerEmojiResult::Emoji(u"abc"));
 
   EXPECT_THAT(controller().GetSuggestedEmoji(),
-              Contains(PickerSearchResult::Emoji(u"abc")));
+              Contains(PickerEmojiResult::Emoji(u"abc")));
 }
 
 TEST_F(PickerControllerTest, DoesNotAddRecentEmojiWithFocusIfIncognito) {
@@ -985,10 +980,10 @@ TEST_F(PickerControllerTest, DoesNotAddRecentEmojiWithFocusIfIncognito) {
 
   controller().ToggleWidget();
   controller().CloseWidgetThenInsertResultOnNextFocus(
-      PickerSearchResult::Emoji(u"abc"));
+      PickerEmojiResult::Emoji(u"abc"));
 
   EXPECT_THAT(controller().GetSuggestedEmoji(),
-              Not(Contains(PickerSearchResult::Emoji(u"abc"))));
+              Not(Contains(PickerEmojiResult::Emoji(u"abc"))));
 }
 
 TEST_F(PickerControllerTest,
@@ -1016,12 +1011,12 @@ TEST_F(PickerControllerTest,
   controller().ToggleWidget();
 
   EXPECT_THAT(controller().GetSuggestedEmoji(),
-              ElementsAre(PickerSearchResult::Symbol(u"symbol1"),
-                          PickerSearchResult::Emoticon(u"emoticon1"),
-                          PickerSearchResult::Emoji(u"emoji1"),
-                          PickerSearchResult::Symbol(u"symbol2"),
-                          PickerSearchResult::Emoji(u"emoji2"),
-                          PickerSearchResult::Emoticon(u"emoticon2")));
+              ElementsAre(PickerEmojiResult::Symbol(u"symbol1"),
+                          PickerEmojiResult::Emoticon(u"emoticon1"),
+                          PickerEmojiResult::Emoji(u"emoji1"),
+                          PickerEmojiResult::Symbol(u"symbol2"),
+                          PickerEmojiResult::Emoji(u"emoji2"),
+                          PickerEmojiResult::Emoticon(u"emoticon2")));
 }
 
 TEST_F(PickerControllerTest, SearchesCapsLockOnWhenCapsLockIsOff) {
@@ -1034,7 +1029,7 @@ TEST_F(PickerControllerTest, SearchesCapsLockOnWhenCapsLockIsOff) {
   EXPECT_THAT(
       search_future.Take(),
       Contains(Property(&PickerSearchResultsSection::results,
-                        Contains(PickerSearchResult::CapsLock(
+                        Contains(PickerCapsLockResult(
                             /*enabled=*/true,
                             PickerCapsLockResult::Shortcut::kAltLauncher)))));
 }
@@ -1050,7 +1045,7 @@ TEST_F(PickerControllerTest, SearchesCapsLockOffWhenCapsLockIsOn) {
   EXPECT_THAT(
       search_future.Take(),
       Contains(Property(&PickerSearchResultsSection::results,
-                        Contains(PickerSearchResult::CapsLock(
+                        Contains(PickerCapsLockResult(
                             /*enabled=*/false,
                             PickerCapsLockResult::Shortcut::kAltLauncher)))));
 }
@@ -1110,7 +1105,7 @@ TEST_F(PickerControllerTest, IsValidDuringWidgetClose) {
   views::test::WidgetVisibleWaiter(controller().widget_for_testing()).Wait();
 
   controller().ToggleWidget();
-  controller().GetActionForResult(PickerSearchResult::Text(u"a"));
+  controller().GetActionForResult(PickerTextResult(u"a"));
   controller().IsGifsEnabled();
   controller().GetAvailableCategories();
 }
@@ -1223,27 +1218,27 @@ INSTANTIATE_TEST_SUITE_P(
     PickerControllerActionTest,
     testing::ValuesIn<ActionTestCase>({
         {
-            .result = PickerSearchResult::Text(u""),
+            .result = PickerTextResult(u""),
             .no_selection_action = PickerActionType::kInsert,
             .has_selection_action = PickerActionType::kInsert,
         },
         {
-            .result = PickerSearchResult::Emoji(u""),
+            .result = PickerEmojiResult::Emoji(u""),
             .no_selection_action = PickerActionType::kInsert,
             .has_selection_action = PickerActionType::kInsert,
         },
         {
-            .result = PickerSearchResult::Symbol(u""),
+            .result = PickerEmojiResult::Symbol(u""),
             .no_selection_action = PickerActionType::kInsert,
             .has_selection_action = PickerActionType::kInsert,
         },
         {
-            .result = PickerSearchResult::Emoticon(u""),
+            .result = PickerEmojiResult::Emoticon(u""),
             .no_selection_action = PickerActionType::kInsert,
             .has_selection_action = PickerActionType::kInsert,
         },
         {
-            .result = PickerSearchResult::Clipboard(
+            .result = PickerClipboardResult(
                 base::UnguessableToken::Create(),
                 PickerClipboardResult::DisplayFormat::kFile,
                 0,
@@ -1254,54 +1249,52 @@ INSTANTIATE_TEST_SUITE_P(
             .has_selection_action = PickerActionType::kInsert,
         },
         {
-            .result = PickerSearchResult::BrowsingHistory({}, u"", {}),
+            .result = PickerBrowsingHistoryResult({}, u"", {}),
             .unfocused_action = PickerActionType::kOpen,
             .no_selection_action = PickerActionType::kInsert,
             .has_selection_action = PickerActionType::kInsert,
         },
         {
-            .result = PickerSearchResult::LocalFile(u"", {}),
+            .result = PickerLocalFileResult(u"", {}),
             .unfocused_action = PickerActionType::kOpen,
             .no_selection_action = PickerActionType::kInsert,
             .has_selection_action = PickerActionType::kInsert,
         },
         {
-            .result = PickerSearchResult::DriveFile(std::nullopt, u"", {}, {}),
+            .result = PickerDriveFileResult(std::nullopt, u"", {}, {}),
             .unfocused_action = PickerActionType::kOpen,
             .no_selection_action = PickerActionType::kInsert,
             .has_selection_action = PickerActionType::kInsert,
         },
         {
-            .result = PickerSearchResult::Category(PickerCategory::kEmojisGifs),
+            .result = PickerCategoryResult(PickerCategory::kEmojisGifs),
             .unfocused_action = PickerActionType::kDo,
             .no_selection_action = PickerActionType::kDo,
             .has_selection_action = PickerActionType::kDo,
         },
         {
-            .result = PickerSearchResult::Category(PickerCategory::kEmojis),
+            .result = PickerCategoryResult(PickerCategory::kEmojis),
             .unfocused_action = PickerActionType::kDo,
             .no_selection_action = PickerActionType::kDo,
             .has_selection_action = PickerActionType::kDo,
         },
         {
-            .result = PickerSearchResult::SearchRequest(u"", u"", {}),
+            .result = PickerSearchRequestResult(u"", u"", {}),
             .unfocused_action = PickerActionType::kDo,
             .no_selection_action = PickerActionType::kDo,
             .has_selection_action = PickerActionType::kDo,
         },
         {
-            .result =
-                PickerSearchResult::Editor(PickerEditorResult::Mode::kWrite,
-                                           u"",
-                                           {},
-                                           {}),
+            .result = PickerEditorResult(PickerEditorResult::Mode::kWrite,
+                                         u"",
+                                         {},
+                                         {}),
             .unfocused_action = PickerActionType::kCreate,
             .no_selection_action = PickerActionType::kCreate,
             .has_selection_action = PickerActionType::kCreate,
         },
         {
-            .result = PickerSearchResult::NewWindow(
-                PickerNewWindowResult::Type::kDoc),
+            .result = PickerNewWindowResult(PickerNewWindowResult::Type::kDoc),
             .unfocused_action = PickerActionType::kDo,
         },
     }));

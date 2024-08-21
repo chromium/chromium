@@ -83,7 +83,7 @@ void PickerClipboardHistoryProvider::OnFetchHistory(
     if (std::optional<PickerClipboardResult::DisplayFormat> display_format =
             GetDisplayFormat(item);
         display_format.has_value()) {
-      results.push_back(PickerSearchResult::Clipboard(
+      results.push_back(PickerClipboardResult(
           item.id(), *display_format, item.file_count(), item.display_text(),
           item.display_image(),
           (clock_->Now() - item.time_copied()) < kRecencyThreshold));

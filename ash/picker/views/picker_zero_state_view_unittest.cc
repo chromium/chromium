@@ -165,7 +165,7 @@ TEST_F(PickerZeroStateViewTest, ShowsSuggestedResults) {
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
-            std::move(callback).Run({PickerSearchResult::DriveFile(
+            std::move(callback).Run({PickerDriveFileResult(
                 /*id=*/std::nullopt,
                 /*title=*/u"test drive file",
                 /*url=*/GURL(), base::FilePath())});
@@ -203,11 +203,11 @@ TEST_F(PickerZeroStateViewTest, DisplayingCapsLockResultSetsCapsLockDisplayed) {
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run(
-                {PickerSearchResult::DriveFile(
+                {PickerDriveFileResult(
                      /*id=*/std::nullopt,
                      /*title=*/u"test drive file",
                      /*url=*/GURL(), base::FilePath()),
-                 PickerSearchResult::CapsLock(
+                 PickerCapsLockResult(
                      /*enabled=*/true,
                      PickerCapsLockResult::Shortcut::kAltSearch)});
           });
@@ -231,10 +231,10 @@ TEST_F(PickerZeroStateViewTest,
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run(
-                {PickerSearchResult::CapsLock(
+                {PickerCapsLockResult(
                      /*enabled=*/true,
                      PickerCapsLockResult::Shortcut::kAltSearch),
-                 PickerSearchResult::DriveFile(
+                 PickerDriveFileResult(
                      /*id=*/std::nullopt,
                      /*title=*/u"test drive file",
                      /*url=*/GURL(), base::FilePath())});
@@ -274,10 +274,10 @@ TEST_F(PickerZeroStateViewTest, PutsCapsLockInMoreCategoryForBottomCase) {
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run(
-                {PickerSearchResult::CapsLock(
+                {PickerCapsLockResult(
                      /*enabled=*/true,
                      PickerCapsLockResult::Shortcut::kAltSearch),
-                 PickerSearchResult::DriveFile(
+                 PickerDriveFileResult(
                      /*id=*/std::nullopt,
                      /*title=*/u"test drive file",
                      /*url=*/GURL(), base::FilePath())});
@@ -329,13 +329,13 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItemsWithoutSubmenu) {
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run({
-                PickerSearchResult::Editor(
+                PickerEditorResult(
                     PickerEditorResult::Mode::kRewrite,
                     /*display_name=*/u"a",
                     /*category=*/
                     chromeos::editor_menu::PresetQueryCategory::kUnknown,
                     "query_a"),
-                PickerSearchResult::Editor(
+                PickerEditorResult(
                     PickerEditorResult::Mode::kRewrite,
                     /*display_name=*/u"b",
                     /*category=*/
@@ -368,13 +368,13 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run({
-                PickerSearchResult::Editor(
+                PickerEditorResult(
                     PickerEditorResult::Mode::kRewrite,
                     /*display_name=*/u"a",
                     /*category=*/
                     chromeos::editor_menu::PresetQueryCategory::kShorten,
                     "shorten"),
-                PickerSearchResult::Editor(
+                PickerEditorResult(
                     PickerEditorResult::Mode::kRewrite,
                     /*display_name=*/u"b",
                     /*category=*/
@@ -406,17 +406,14 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
 TEST_F(PickerZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
-      .WillOnce(
-          [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
-            std::move(callback).Run({
-                PickerSearchResult::CaseTransform(
-                    PickerCaseTransformResult::kUpperCase),
-                PickerSearchResult::CaseTransform(
-                    PickerCaseTransformResult::kLowerCase),
-                PickerSearchResult::CaseTransform(
-                    PickerCaseTransformResult::kTitleCase),
-            });
-          });
+      .WillOnce([](MockZeroStateViewDelegate::SuggestedResultsCallback
+                       callback) {
+        std::move(callback).Run({
+            PickerCaseTransformResult(PickerCaseTransformResult::kUpperCase),
+            PickerCaseTransformResult(PickerCaseTransformResult::kLowerCase),
+            PickerCaseTransformResult(PickerCaseTransformResult::kTitleCase),
+        });
+      });
   PickerZeroStateView view(&mock_delegate, {}, kPickerWidth, &asset_fetcher_,
                            &submenu_controller_, &preview_controller_);
 
@@ -454,7 +451,7 @@ TEST_F(PickerZeroStateViewTest, RequestsPseudoFocusAfterGettingSuggestedItems) {
 
   EXPECT_CALL(mock_delegate, RequestPseudoFocus(_));
 
-  suggested_results_callback.Run({PickerSearchResult::DriveFile(
+  suggested_results_callback.Run({PickerDriveFileResult(
       /*id=*/std::nullopt,
       /*title=*/u"test drive file",
       /*url=*/GURL(), base::FilePath())});

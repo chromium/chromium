@@ -26,7 +26,7 @@ std::optional<PickerSearchResult> PickerEditorSearch(
   CHECK(!query.empty());
   string_matching::TokenizedString tokenized_query{std::u16string(query)};
   return tokenized_query.tokens().size() >= kMinWordsNeededForEditorMatch
-             ? std::make_optional(PickerSearchResult::Editor(
+             ? std::make_optional(PickerEditorResult(
                    mode, /*display_name=*/u"", /*category=*/std::nullopt,
                    /*preset_query_id=*/std::nullopt))
              : std::nullopt;

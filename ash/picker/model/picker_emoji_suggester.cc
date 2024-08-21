@@ -87,17 +87,17 @@ std::vector<PickerSearchResult> PickerEmojiSuggester::GetSuggestedEmoji()
   for (const auto& item : recent_emojis) {
     switch (item.category) {
       case ui::EmojiPickerCategory::kEmojis:
-        results.push_back(PickerSearchResult::Emoji(
+        results.push_back(PickerEmojiResult::Emoji(
             base::UTF8ToUTF16(item.text),
             base::UTF8ToUTF16(get_name_.Run(item.text))));
         break;
       case ui::EmojiPickerCategory::kEmoticons:
-        results.push_back(PickerSearchResult::Emoticon(
+        results.push_back(PickerEmojiResult::Emoticon(
             base::UTF8ToUTF16(item.text),
             base::UTF8ToUTF16(get_name_.Run(item.text))));
         break;
       case ui::EmojiPickerCategory::kSymbols:
-        results.push_back(PickerSearchResult::Symbol(
+        results.push_back(PickerEmojiResult::Symbol(
             base::UTF8ToUTF16(item.text),
             base::UTF8ToUTF16(get_name_.Run(item.text))));
         break;

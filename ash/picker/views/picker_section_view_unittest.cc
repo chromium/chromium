@@ -138,10 +138,10 @@ TEST_F(PickerSectionViewTest, AddsResults) {
   PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                  &submenu_controller);
 
-  section_view.AddResult(PickerSearchResult::Text(u"Result"),
-                         &preview_controller, base::DoNothing());
+  section_view.AddResult(PickerTextResult(u"Result"), &preview_controller,
+                         base::DoNothing());
   section_view.AddResult(
-      PickerSearchResult::LocalFile(u"title", base::FilePath("abc.png")),
+      PickerLocalFileResult(u"title", base::FilePath("abc.png")),
       &preview_controller, base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
@@ -160,8 +160,8 @@ TEST_F(PickerSectionViewTest,
                                  &submenu_controller);
 
   section_view.AddResult(
-      PickerSearchResult::BrowsingHistory(GURL("https://www.example.com/foo"),
-                                          u"Example Foo", /*icon=*/{}),
+      PickerBrowsingHistoryResult(GURL("https://www.example.com/foo"),
+                                  u"Example Foo", /*icon=*/{}),
       &preview_controller, base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
@@ -182,8 +182,8 @@ TEST_F(PickerSectionViewTest,
                                  &submenu_controller);
 
   section_view.AddResult(
-      PickerSearchResult::BrowsingHistory(GURL("https://www.example.com/foo"),
-                                          /*title=*/u"", /*icon=*/{}),
+      PickerBrowsingHistoryResult(GURL("https://www.example.com/foo"),
+                                  /*title=*/u"", /*icon=*/{}),
       &preview_controller, base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
@@ -204,12 +204,12 @@ TEST_F(PickerSectionViewTest,
                                  &submenu_controller);
 
   section_view.AddResult(
-      PickerSearchResult::Clipboard(base::UnguessableToken(),
-                                    PickerClipboardResult::DisplayFormat::kFile,
-                                    /*file_count=*/1,
-                                    /*display_text=*/u"image.png",
-                                    /*display_image=*/{},
-                                    /*is_recent=*/false),
+      PickerClipboardResult(base::UnguessableToken(),
+                            PickerClipboardResult::DisplayFormat::kFile,
+                            /*file_count=*/1,
+                            /*display_text=*/u"image.png",
+                            /*display_image=*/{},
+                            /*is_recent=*/false),
       &preview_controller, base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
@@ -235,12 +235,12 @@ TEST_F(PickerSectionViewTest,
                                  &submenu_controller);
 
   section_view.AddResult(
-      PickerSearchResult::Clipboard(base::UnguessableToken(),
-                                    PickerClipboardResult::DisplayFormat::kFile,
-                                    /*file_count=*/2,
-                                    /*display_text=*/u"2 files",
-                                    /*display_image=*/{},
-                                    /*is_recent=*/false),
+      PickerClipboardResult(base::UnguessableToken(),
+                            PickerClipboardResult::DisplayFormat::kFile,
+                            /*file_count=*/2,
+                            /*display_text=*/u"2 files",
+                            /*display_image=*/{},
+                            /*is_recent=*/false),
       &preview_controller, base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
@@ -265,7 +265,7 @@ TEST_F(PickerSectionViewTest, CapsLockResultShowsShortcutHint) {
                                  &submenu_controller);
 
   section_view.AddResult(
-      PickerSearchResult::CapsLock(
+      PickerCapsLockResult(
           /*enabled=*/true, PickerCapsLockResult::Shortcut::kAltSearch),
       &preview_controller, base::DoNothing());
 
@@ -313,9 +313,9 @@ TEST_P(PickerSectionViewUrlFormattingTest, AddingHistoryResultFormatsUrl) {
   PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                  &submenu_controller);
 
-  section_view.AddResult(PickerSearchResult::BrowsingHistory(
-                             GetParam().first, u"title", /*icon=*/{}),
-                         &preview_controller, base::DoNothing());
+  section_view.AddResult(
+      PickerBrowsingHistoryResult(GetParam().first, u"title", /*icon=*/{}),
+      &preview_controller, base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
       section_view.item_views_for_testing();

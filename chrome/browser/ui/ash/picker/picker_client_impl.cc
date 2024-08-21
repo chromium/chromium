@@ -88,8 +88,8 @@ std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentLocalImages(
   std::vector<ash::PickerSearchResult> results;
   results.reserve(files.size());
   for (PickerFileSuggester::LocalFile& file : files) {
-    results.push_back(ash::PickerSearchResult::LocalFile(std::move(file.title),
-                                                         std::move(file.path)));
+    results.push_back(ash::PickerLocalFileResult(std::move(file.title),
+                                                 std::move(file.path)));
   }
   return results;
 }
@@ -99,9 +99,9 @@ std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentDriveFiles(
   std::vector<ash::PickerSearchResult> results;
   results.reserve(files.size());
   for (PickerFileSuggester::DriveFile& file : files) {
-    results.push_back(ash::PickerSearchResult::DriveFile(
-        std::move(file.id), std::move(file.title), std::move(file.url),
-        file.local_path));
+    results.push_back(
+        ash::PickerDriveFileResult(std::move(file.id), std::move(file.title),
+                                   std::move(file.url), file.local_path));
   }
   return results;
 }
@@ -148,11 +148,11 @@ std::vector<ash::PickerSearchResult> ConvertSearchResults(
 
         if (std::optional<GURL> result_url = result->url();
             result_url.has_value()) {
-          picker_results.push_back(ash::PickerSearchResult::BrowsingHistory(
+          picker_results.push_back(ash::PickerBrowsingHistoryResult(
               *result_url, result->title(), result->icon().icon,
               result->best_match()));
         } else {
-          picker_results.push_back(ash::PickerSearchResult::Text(
+          picker_results.push_back(ash::PickerTextResult(
               result->title(), ash::PickerTextResult::Source::kOmnibox));
         }
         break;
@@ -160,13 +160,13 @@ std::vector<ash::PickerSearchResult> ConvertSearchResults(
       case ash::AppListSearchResultType::kFileSearch: {
         // TODO: b/322926411 - Move this filtering to the search provider.
         if (IsSupportedLocalFileFormat(result->filePath())) {
-          picker_results.push_back(ash::PickerSearchResult::LocalFile(
+          picker_results.push_back(ash::PickerLocalFileResult(
               result->title(), result->filePath(), result->best_match()));
         }
         break;
       }
       case ash::AppListSearchResultType::kDriveSearch:
-        picker_results.push_back(ash::PickerSearchResult::DriveFile(
+        picker_results.push_back(ash::PickerDriveFileResult(
             result->DriveId(), result->title(), *result->url(),
             result->filePath(), result->best_match()));
         break;
@@ -219,7 +219,7 @@ std::vector<ash::PickerSearchResult> GetEditorResultsFromPanelContext(
   std::vector<ash::PickerSearchResult> results;
   for (const crosapi::mojom::EditorPanelPresetTextQueryPtr& query :
        panel_context->preset_text_queries) {
-    results.push_back(ash::PickerSearchResult::Editor(
+    results.push_back(ash::PickerEditorResult(
         ash::PickerEditorResult::Mode::kRewrite, base::UTF8ToUTF16(query->name),
         FromMojoPresetQueryCategory(query->category), query->text_query_id));
   }

@@ -258,83 +258,47 @@ struct ASH_PUBLIC_EXPORT PickerCaseTransformResult {
   bool operator==(const PickerCaseTransformResult&) const;
 };
 
-// Represents a search result, which might be text or other types of media.
-class ASH_PUBLIC_EXPORT PickerSearchResult {
- public:
-  using Data = std::variant<PickerTextResult,
-                            PickerSearchRequestResult,
-                            PickerEmojiResult,
-                            PickerClipboardResult,
-                            PickerBrowsingHistoryResult,
-                            PickerLocalFileResult,
-                            PickerDriveFileResult,
-                            PickerCategoryResult,
-                            PickerEditorResult,
-                            PickerNewWindowResult,
-                            PickerCapsLockResult,
-                            PickerCaseTransformResult>;
+using PickerSearchResultData = std::variant<PickerTextResult,
+                                            PickerSearchRequestResult,
+                                            PickerEmojiResult,
+                                            PickerClipboardResult,
+                                            PickerBrowsingHistoryResult,
+                                            PickerLocalFileResult,
+                                            PickerDriveFileResult,
+                                            PickerCategoryResult,
+                                            PickerEditorResult,
+                                            PickerNewWindowResult,
+                                            PickerCapsLockResult,
+                                            PickerCaseTransformResult>;
 
+// Represents a search result, which might be text or other types of media.
+// TODO: b/328537508 - Remove the `data` member and replace this with
+// PickerSearchResultData directly.
+class ASH_PUBLIC_EXPORT PickerSearchResult : public PickerSearchResultData {
+ public:
+  using Data = PickerSearchResultData;
+
+  // These are temporary implicit constructors for migration.
+  // TODO: b/328537508 - Replace this class completely with the variant.
+  PickerSearchResult(PickerTextResult data);
+  PickerSearchResult(PickerSearchRequestResult data);
+  PickerSearchResult(PickerEmojiResult data);
+  PickerSearchResult(PickerClipboardResult data);
+  PickerSearchResult(PickerBrowsingHistoryResult data);
+  PickerSearchResult(PickerLocalFileResult data);
+  PickerSearchResult(PickerDriveFileResult data);
+  PickerSearchResult(PickerCategoryResult data);
+  PickerSearchResult(PickerEditorResult data);
+  PickerSearchResult(PickerNewWindowResult data);
+  PickerSearchResult(PickerCapsLockResult data);
+  PickerSearchResult(PickerCaseTransformResult data);
   PickerSearchResult(const PickerSearchResult&);
   PickerSearchResult& operator=(const PickerSearchResult&);
   PickerSearchResult(PickerSearchResult&&);
   PickerSearchResult& operator=(PickerSearchResult&&);
   ~PickerSearchResult();
 
-  static PickerSearchResult BrowsingHistory(const GURL& url,
-                                            std::u16string title,
-                                            ui::ImageModel icon,
-                                            bool best_match = false);
-  static PickerSearchResult Text(
-      std::u16string_view text,
-      PickerTextResult::Source source = PickerTextResult::Source::kUnknown);
-  static PickerSearchResult Text(
-      std::u16string_view primary_text,
-      std::u16string_view secondary_text,
-      ui::ImageModel icon,
-      PickerTextResult::Source source = PickerTextResult::Source::kUnknown);
-  static PickerSearchResult SearchRequest(std::u16string_view primary_text,
-                                          std::u16string_view secondary_text,
-                                          ui::ImageModel icon);
-  static PickerSearchResult Emoji(std::u16string_view emoji,
-                                  std::u16string name = u"");
-  static PickerSearchResult Symbol(std::u16string_view symbol,
-                                   std::u16string name = u"");
-  static PickerSearchResult Emoticon(std::u16string_view emoticon,
-                                     std::u16string name = u"");
-  static PickerSearchResult Clipboard(
-      base::UnguessableToken item_id,
-      PickerClipboardResult::DisplayFormat display_format,
-      size_t file_count,
-      std::u16string display_text,
-      std::optional<ui::ImageModel> display_image,
-      bool is_recent);
-  static PickerSearchResult LocalFile(std::u16string title,
-                                      base::FilePath file_path,
-                                      bool best_match = false);
-  static PickerSearchResult DriveFile(std::optional<std::string> id,
-                                      std::u16string title,
-                                      const GURL& url,
-                                      base::FilePath file_path,
-                                      bool best_match = false);
-  static PickerSearchResult Category(PickerCategory category);
-  static PickerSearchResult Editor(
-      PickerEditorResult::Mode mode,
-      std::u16string display_name,
-      std::optional<chromeos::editor_menu::PresetQueryCategory> category,
-      std::optional<std::string> preset_query_id);
-  static PickerSearchResult NewWindow(PickerNewWindowResult::Type type);
-  static PickerSearchResult CapsLock(bool enabled,
-                                     PickerCapsLockResult::Shortcut shortcut);
-  static PickerSearchResult CaseTransform(PickerCaseTransformResult::Type type);
-
   const Data& data() const;
-
-  bool operator==(const PickerSearchResult&) const;
-
- private:
-  explicit PickerSearchResult(Data data);
-
-  Data data_;
 };
 
 }  // namespace ash

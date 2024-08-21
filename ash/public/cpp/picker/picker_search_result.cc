@@ -231,6 +231,42 @@ PickerCaseTransformResult::~PickerCaseTransformResult() = default;
 bool PickerCaseTransformResult::operator==(
     const PickerCaseTransformResult&) const = default;
 
+PickerSearchResult::PickerSearchResult(PickerTextResult data)
+    : PickerSearchResultData(std::move(data)) {}
+
+PickerSearchResult::PickerSearchResult(PickerSearchRequestResult data)
+    : PickerSearchResultData(std::move(data)) {}
+
+PickerSearchResult::PickerSearchResult(PickerEmojiResult data)
+    : PickerSearchResultData(std::move(data)) {}
+
+PickerSearchResult::PickerSearchResult(PickerClipboardResult data)
+    : PickerSearchResultData(std::move(data)) {}
+
+PickerSearchResult::PickerSearchResult(PickerBrowsingHistoryResult data)
+    : PickerSearchResultData(std::move(data)) {}
+
+PickerSearchResult::PickerSearchResult(PickerLocalFileResult data)
+    : PickerSearchResultData(std::move(data)) {}
+
+PickerSearchResult::PickerSearchResult(PickerDriveFileResult data)
+    : PickerSearchResultData(std::move(data)) {}
+
+PickerSearchResult::PickerSearchResult(PickerCategoryResult data)
+    : PickerSearchResultData(std::move(data)) {}
+
+PickerSearchResult::PickerSearchResult(PickerEditorResult data)
+    : PickerSearchResultData(std::move(data)) {}
+
+PickerSearchResult::PickerSearchResult(PickerNewWindowResult data)
+    : PickerSearchResultData(std::move(data)) {}
+
+PickerSearchResult::PickerSearchResult(PickerCapsLockResult data)
+    : PickerSearchResultData(std::move(data)) {}
+
+PickerSearchResult::PickerSearchResult(PickerCaseTransformResult data)
+    : PickerSearchResultData(std::move(data)) {}
+
 PickerSearchResult::~PickerSearchResult() = default;
 
 PickerSearchResult::PickerSearchResult(const PickerSearchResult&) = default;
@@ -243,115 +279,8 @@ PickerSearchResult::PickerSearchResult(PickerSearchResult&&) = default;
 PickerSearchResult& PickerSearchResult::operator=(PickerSearchResult&&) =
     default;
 
-PickerSearchResult PickerSearchResult::Text(std::u16string_view text,
-                                            PickerTextResult::Source source) {
-  return PickerSearchResult(PickerTextResult(text, source));
-}
-
-PickerSearchResult PickerSearchResult::Text(std::u16string_view primary_text,
-                                            std::u16string_view secondary_text,
-                                            ui::ImageModel icon,
-                                            PickerTextResult::Source source) {
-  return PickerSearchResult(
-      PickerTextResult(primary_text, secondary_text, std::move(icon), source));
-}
-
-PickerSearchResult PickerSearchResult::SearchRequest(
-    std::u16string_view primary_text,
-    std::u16string_view secondary_text,
-    ui::ImageModel icon) {
-  return PickerSearchResult(
-      PickerSearchRequestResult(primary_text, secondary_text, std::move(icon)));
-}
-
-PickerSearchResult PickerSearchResult::Emoji(std::u16string_view emoji,
-                                             std::u16string name) {
-  return PickerSearchResult(PickerEmojiResult::Emoji(emoji, std::move(name)));
-}
-
-PickerSearchResult PickerSearchResult::Symbol(std::u16string_view symbol,
-                                              std::u16string name) {
-  return PickerSearchResult(PickerEmojiResult::Symbol(symbol, std::move(name)));
-}
-
-PickerSearchResult PickerSearchResult::Emoticon(std::u16string_view emoticon,
-                                                std::u16string name) {
-  return PickerSearchResult(
-      PickerEmojiResult::Emoticon(emoticon, std::move(name)));
-}
-
-PickerSearchResult PickerSearchResult::Clipboard(
-    base::UnguessableToken item_id,
-    PickerClipboardResult::DisplayFormat display_format,
-    size_t file_count,
-    std::u16string display_text,
-    std::optional<ui::ImageModel> display_image,
-    bool is_recent) {
-  return PickerSearchResult(PickerClipboardResult(
-      item_id, display_format, file_count, std::move(display_text),
-      std::move(display_image), is_recent));
-}
-
-PickerSearchResult PickerSearchResult::BrowsingHistory(const GURL& url,
-                                                       std::u16string title,
-                                                       ui::ImageModel icon,
-                                                       bool best_match) {
-  return PickerSearchResult(PickerBrowsingHistoryResult(
-      url, std::move(title), std::move(icon), best_match));
-}
-
-PickerSearchResult PickerSearchResult::LocalFile(std::u16string title,
-                                                 base::FilePath file_path,
-                                                 bool best_match) {
-  return PickerSearchResult(PickerLocalFileResult(
-      std::move(title), std::move(file_path), best_match));
-}
-
-PickerSearchResult PickerSearchResult::DriveFile(std::optional<std::string> id,
-                                                 std::u16string title,
-                                                 const GURL& url,
-                                                 base::FilePath file_path,
-                                                 bool best_match) {
-  return PickerSearchResult(PickerDriveFileResult(
-      std::move(id), std::move(title), url, std::move(file_path), best_match));
-}
-
-PickerSearchResult PickerSearchResult::Category(PickerCategory category) {
-  return PickerSearchResult(PickerCategoryResult(category));
-}
-
-PickerSearchResult PickerSearchResult::Editor(
-    PickerEditorResult::Mode mode,
-    std::u16string display_name,
-    std::optional<chromeos::editor_menu::PresetQueryCategory> category,
-    std::optional<std::string> text_query_id) {
-  return PickerSearchResult(PickerEditorResult(mode, std::move(display_name),
-                                               std::move(category),
-                                               std::move(text_query_id)));
-}
-
-PickerSearchResult PickerSearchResult::NewWindow(
-    PickerNewWindowResult::Type type) {
-  return PickerSearchResult(PickerNewWindowResult(type));
-}
-
-PickerSearchResult PickerSearchResult::CapsLock(
-    bool enabled,
-    PickerCapsLockResult::Shortcut shortcut) {
-  return PickerSearchResult(PickerCapsLockResult(enabled, shortcut));
-}
-
-PickerSearchResult PickerSearchResult::CaseTransform(
-    PickerCaseTransformResult::Type type) {
-  return PickerSearchResult(PickerCaseTransformResult(type));
-}
-
-bool PickerSearchResult::operator==(const PickerSearchResult&) const = default;
-
 const PickerSearchResult::Data& PickerSearchResult::data() const {
-  return data_;
+  return *this;
 }
-
-PickerSearchResult::PickerSearchResult(Data data) : data_(std::move(data)) {}
 
 }  // namespace ash

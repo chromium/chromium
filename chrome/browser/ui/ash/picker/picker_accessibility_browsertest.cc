@@ -355,9 +355,9 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
           /*delegate=*/nullptr, /*picker_width=*/1000,
           /*is_gifs_enabled=*/true));
   view->SetSearchResults({
-      ash::PickerSearchResult::Emoji(u"😊", u"happy"),
-      ash::PickerSearchResult::Symbol(u"♬", u"music"),
-      ash::PickerSearchResult::Emoticon(u"(°□°)", u"surprise"),
+      ash::PickerEmojiResult::Emoji(u"😊", u"happy"),
+      ash::PickerEmojiResult::Symbol(u"♬", u"music"),
+      ash::PickerEmojiResult::Emoticon(u"(°□°)", u"surprise"),
   });
 
   sm_.Call([view]() { view->GetItemsForTesting()[0]->RequestFocus(); });
@@ -636,7 +636,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   auto* view =
       widget->SetContentsView(std::make_unique<ash::PickerEmojiBarView>(
           /*delegate=*/nullptr, /*picker_width=*/1000));
-  view->SetSearchResults({ash::PickerSearchResult::Emoji(u"😊", u"happy")});
+  view->SetSearchResults({ash::PickerEmojiResult::Emoji(u"😊", u"happy")});
 
   sm_.Call([view]() { view->GetItemsForTesting().front()->RequestFocus(); });
 
@@ -655,7 +655,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   auto* view =
       widget->SetContentsView(std::make_unique<ash::PickerEmojiBarView>(
           /*delegate=*/nullptr, /*picker_width=*/1000));
-  view->SetSearchResults({ash::PickerSearchResult::Symbol(u"♬", u"music")});
+  view->SetSearchResults({ash::PickerEmojiResult::Symbol(u"♬", u"music")});
 
   sm_.Call([view]() { view->GetItemsForTesting().front()->RequestFocus(); });
 
@@ -675,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
       widget->SetContentsView(std::make_unique<ash::PickerEmojiBarView>(
           /*delegate=*/nullptr, /*picker_width=*/1000));
   view->SetSearchResults(
-      {ash::PickerSearchResult::Emoticon(u"(°□°)", u"surprise")});
+      {ash::PickerEmojiResult::Emoticon(u"(°□°)", u"surprise")});
 
   sm_.Call([view]() { view->GetItemsForTesting().front()->RequestFocus(); });
 
@@ -765,7 +765,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Call([&controller]() {
     controller.ToggleWidget();
     controller.CloseWidgetThenInsertResultOnNextFocus(
-        ash::PickerSearchResult::Text(u"abc"));
+        ash::PickerTextResult(u"abc"));
   });
 
   sm_.ExpectSpeechPattern("Picker");

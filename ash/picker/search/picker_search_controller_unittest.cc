@@ -168,7 +168,7 @@ TEST_F(PickerSearchControllerTest, DoesNotPublishResultsDuringBurnIn) {
                           base::Unretained(&search_results_callback)));
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerSearchResult::BrowsingHistory(
+      {ash::PickerBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
   task_environment().FastForwardBy(base::Milliseconds(99));
@@ -203,7 +203,7 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromOmniboxSearch) {
 
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerSearchResult::BrowsingHistory(
+      {ash::PickerBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
   task_environment().FastForwardBy(kBurnInPeriod);
@@ -272,7 +272,7 @@ TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {
   after_start_search.Call();
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerSearchResult::BrowsingHistory(
+      {ash::PickerBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
   controller.StartSearch(
@@ -293,7 +293,7 @@ TEST_F(PickerSearchControllerTest, RecordsOmniboxMetricsBeforeBurnIn) {
   task_environment().FastForwardBy(kBeforeBurnIn);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerSearchResult::BrowsingHistory(
+      {ash::PickerBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
 
@@ -313,7 +313,7 @@ TEST_F(PickerSearchControllerTest, RecordsOmniboxMetricsAfterBurnIn) {
   task_environment().FastForwardBy(kAfterBurnIn);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerSearchResult::BrowsingHistory(
+      {ash::PickerBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
 
@@ -390,7 +390,7 @@ TEST_F(PickerSearchControllerTest,
   task_environment().FastForwardBy(kBeforeBurnIn);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kFileSearch,
-      {ash::PickerSearchResult::Text(u"monorail_cat.jpg")});
+      {ash::PickerTextResult(u"monorail_cat.jpg")});
   controller.StopSearch();
 
   histogram.ExpectTotalCount("Ash.Picker.Search.OmniboxProvider.QueryTime", 0);
@@ -432,7 +432,7 @@ TEST_F(
                           base::Unretained(&search_results_callback)));
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerSearchResult::BrowsingHistory(
+      {ash::PickerBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
   controller.StopSearch();
@@ -462,7 +462,7 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromFileSearch) {
                           base::Unretained(&search_results_callback)));
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kFileSearch,
-      {ash::PickerSearchResult::Text(u"monorail_cat.jpg")});
+      {ash::PickerTextResult(u"monorail_cat.jpg")});
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
@@ -478,7 +478,7 @@ TEST_F(PickerSearchControllerTest, RecordsFileMetricsBeforeBurnIn) {
   task_environment().FastForwardBy(kBeforeBurnIn);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kFileSearch,
-      {ash::PickerSearchResult::Text(u"monorail_cat.jpg")});
+      {ash::PickerTextResult(u"monorail_cat.jpg")});
 
   histogram.ExpectUniqueTimeSample("Ash.Picker.Search.FileProvider.QueryTime",
                                    kBeforeBurnIn, 1);
@@ -496,7 +496,7 @@ TEST_F(PickerSearchControllerTest, RecordsFileMetricsAfterBurnIn) {
   task_environment().FastForwardBy(kAfterBurnIn);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kFileSearch,
-      {ash::PickerSearchResult::Text(u"monorail_cat.jpg")});
+      {ash::PickerTextResult(u"monorail_cat.jpg")});
 
   histogram.ExpectUniqueTimeSample("Ash.Picker.Search.FileProvider.QueryTime",
                                    kAfterBurnIn, 1);
@@ -570,7 +570,7 @@ TEST_F(PickerSearchControllerTest,
   task_environment().FastForwardBy(kBeforeBurnIn);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerSearchResult::BrowsingHistory(
+      {ash::PickerBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
   controller.StopSearch();
@@ -600,7 +600,7 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromDriveSearch) {
                           base::Unretained(&search_results_callback)));
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kDriveSearch,
-      {ash::PickerSearchResult::Text(u"catrbug_135117.jpg")});
+      {ash::PickerTextResult(u"catrbug_135117.jpg")});
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
@@ -616,7 +616,7 @@ TEST_F(PickerSearchControllerTest, RecordsDriveMetricsBeforeBurnIn) {
   task_environment().FastForwardBy(kBeforeBurnIn);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kDriveSearch,
-      {ash::PickerSearchResult::Text(u"catrbug_135117.jpg")});
+      {ash::PickerTextResult(u"catrbug_135117.jpg")});
 
   histogram.ExpectUniqueTimeSample("Ash.Picker.Search.DriveProvider.QueryTime",
                                    kBeforeBurnIn, 1);
@@ -634,7 +634,7 @@ TEST_F(PickerSearchControllerTest, RecordsDriveMetricsAfterBurnIn) {
   task_environment().FastForwardBy(kAfterBurnIn);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kDriveSearch,
-      {ash::PickerSearchResult::Text(u"catrbug_135117.jpg")});
+      {ash::PickerTextResult(u"catrbug_135117.jpg")});
 
   histogram.ExpectUniqueTimeSample("Ash.Picker.Search.DriveProvider.QueryTime",
                                    kAfterBurnIn, 1);
@@ -708,7 +708,7 @@ TEST_F(PickerSearchControllerTest,
   task_environment().FastForwardBy(kBeforeBurnIn);
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerSearchResult::BrowsingHistory(
+      {ash::PickerBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
   controller.StopSearch();
@@ -756,14 +756,13 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
                           base::Unretained(&search_results_callback)));
   task_environment().FastForwardBy(kBeforeBurnIn);
 
-  client().cros_search_callback().Run(
-      ash::AppListSearchResultType::kOmnibox,
-      {ash::PickerSearchResult::Text(u"omnibox")});
+  client().cros_search_callback().Run(ash::AppListSearchResultType::kOmnibox,
+                                      {ash::PickerTextResult(u"omnibox")});
   client().cros_search_callback().Run(ash::AppListSearchResultType::kFileSearch,
-                                      {ash::PickerSearchResult::Text(u"file")});
+                                      {ash::PickerTextResult(u"file")});
   client().cros_search_callback().Run(
       ash::AppListSearchResultType::kDriveSearch,
-      {ash::PickerSearchResult::Text(u"drive")});
+      {ash::PickerTextResult(u"drive")});
   task_environment().FastForwardBy(kBurnInPeriod - kBeforeBurnIn);
 }
 
@@ -822,7 +821,7 @@ TEST_F(PickerSearchControllerTest, ShowResultsEvenAfterBurnIn) {
   task_environment().FastForwardBy(kBurnInPeriod);
   std::move(client().cros_search_callback())
       .Run(ash::AppListSearchResultType::kOmnibox,
-           {ash::PickerSearchResult::Text(u"test")});
+           {ash::PickerTextResult(u"test")});
 }
 
 TEST_F(PickerSearchControllerTest, OnlyStartCrosSearchForCertainCategories) {
@@ -868,7 +867,7 @@ TEST_F(PickerSearchControllerTest,
 
   task_environment().FastForwardBy(kBeforeBurnIn);
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox,
-                                      {PickerSearchResult::Text(u"cat")});
+                                      {PickerTextResult(u"cat")});
 }
 
 TEST_F(PickerSearchControllerTest,
@@ -894,7 +893,7 @@ TEST_F(PickerSearchControllerTest,
 
   task_environment().FastForwardBy(kBurnInPeriod);
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox,
-                                      {PickerSearchResult::Text(u"cat")});
+                                      {PickerTextResult(u"cat")});
 }
 
 TEST_F(PickerSearchControllerTest,
@@ -914,7 +913,7 @@ TEST_F(PickerSearchControllerTest,
 
   task_environment().FastForwardBy(kBeforeBurnIn);
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox,
-                                      {PickerSearchResult::Text(u"cat")});
+                                      {PickerTextResult(u"cat")});
   controller.StopSearch();
 }
 
@@ -932,7 +931,7 @@ TEST_F(PickerSearchControllerTest,
 
   task_environment().FastForwardBy(kBeforeBurnIn);
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox,
-                                      {PickerSearchResult::Text(u"cat")});
+                                      {PickerTextResult(u"cat")});
   controller.StopSearch();
 }
 
@@ -951,7 +950,7 @@ TEST_F(PickerSearchControllerTest,
 
   task_environment().FastForwardBy(kBurnInPeriod);
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox,
-                                      {PickerSearchResult::Text(u"cat")});
+                                      {PickerTextResult(u"cat")});
   controller.StopSearch();
 }
 
@@ -966,7 +965,7 @@ TEST_F(PickerSearchControllerTest, StopSearchDoesNotCallOldCallbackAfterwards) {
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox,
-                                      {PickerSearchResult::Text(u"cat")});
+                                      {PickerTextResult(u"cat")});
   controller.StopSearch();
   task_environment().FastForwardBy(kBurnInPeriod);
 }

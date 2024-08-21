@@ -131,7 +131,7 @@ TEST_P(PickerSearchAggregatorTest, DoesNotPublishResultsDuringBurnIn) {
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(GetParam().source,
-                                       {PickerSearchResult::Text(u"test")},
+                                       {PickerTextResult(u"test")},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(base::Milliseconds(99));
 }
@@ -147,7 +147,7 @@ TEST_P(PickerSearchAggregatorTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(GetParam().source,
-                                       {PickerSearchResult::Text(u"test")},
+                                       {PickerTextResult(u"test")},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(base::Milliseconds(99));
   aggregator.HandleNoMoreResults(/*interrupted=*/true);
@@ -169,7 +169,7 @@ TEST_P(PickerSearchAggregatorTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(GetParam().source,
-                                       {PickerSearchResult::Text(u"test")},
+                                       {PickerTextResult(u"test")},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(base::Milliseconds(99));
   aggregator.HandleNoMoreResults(/*interrupted=*/false);
@@ -197,7 +197,7 @@ TEST_P(PickerSearchAggregatorTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(GetParam().source,
-                                       {PickerSearchResult::Text(u"test")},
+                                       {PickerTextResult(u"test")},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
 }
@@ -223,7 +223,7 @@ TEST_P(PickerSearchAggregatorTest, PublishesResultsPostBurnIn) {
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(GetParam().source,
-                                       {PickerSearchResult::Text(u"test")},
+                                       {PickerTextResult(u"test")},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
 }
@@ -311,7 +311,7 @@ TEST_P(PickerSearchAggregatorTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(GetParam().source,
-                                       {PickerSearchResult::Text(u"test")},
+                                       {PickerTextResult(u"test")},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(base::Milliseconds(99));
   aggregator.HandleNoMoreResults(/*interrupted=*/false);
@@ -336,7 +336,7 @@ TEST_P(PickerSearchAggregatorTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(GetParam().source,
-                                       {PickerSearchResult::Text(u"test")},
+                                       {PickerTextResult(u"test")},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
   aggregator.HandleNoMoreResults(/*interrupted=*/false);
@@ -364,7 +364,7 @@ TEST_P(PickerSearchAggregatorNamedSectionTest,
 
   task_environment().FastForwardBy(kBurnInPeriod);
   aggregator.HandleSearchSourceResults(GetParam().source,
-                                       {PickerSearchResult::Text(u"test")},
+                                       {PickerTextResult(u"test")},
                                        /*has_more_results=*/false);
   aggregator.HandleNoMoreResults(/*interrupted=*/false);
 }
@@ -381,7 +381,7 @@ TEST_P(PickerSearchAggregatorTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(GetParam().source,
-                                       {PickerSearchResult::Text(u"test")},
+                                       {PickerTextResult(u"test")},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(base::Milliseconds(99));
   aggregator.HandleNoMoreResults(/*interrupted=*/true);
@@ -399,7 +399,7 @@ TEST_P(PickerSearchAggregatorTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(GetParam().source,
-                                       {PickerSearchResult::Text(u"test")},
+                                       {PickerTextResult(u"test")},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
   aggregator.HandleNoMoreResults(/*interrupted=*/true);
@@ -418,7 +418,7 @@ TEST_P(PickerSearchAggregatorTest,
 
   task_environment().FastForwardBy(kBurnInPeriod);
   aggregator.HandleSearchSourceResults(GetParam().source,
-                                       {PickerSearchResult::Text(u"test")},
+                                       {PickerTextResult(u"test")},
                                        /*has_more_results=*/false);
   aggregator.HandleNoMoreResults(/*interrupted=*/true);
 }
@@ -557,38 +557,37 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
-                                       {PickerSearchResult::Text(u"omnibox")},
+                                       {PickerTextResult(u"omnibox")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kClipboard,
-      {PickerSearchResult::Clipboard(
-          base::UnguessableToken::Create(),
-          PickerClipboardResult::DisplayFormat::kText,
-          /*file_count=*/0, u"clipboard", std::nullopt,
-          /*is_recent=*/false)},
+      {PickerClipboardResult(base::UnguessableToken::Create(),
+                             PickerClipboardResult::DisplayFormat::kText,
+                             /*file_count=*/0, u"clipboard", std::nullopt,
+                             /*is_recent=*/false)},
       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDate,
-                                       {PickerSearchResult::Text(u"date")},
+                                       {PickerTextResult(u"date")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kAction,
-                                       {PickerSearchResult::Text(u"category")},
+                                       {PickerTextResult(u"category")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kLocalFile,
-      {PickerSearchResult::LocalFile(u"local", base::FilePath("fake_path"),
-                                     /*best_match=*/false)},
+      {PickerLocalFileResult(u"local", base::FilePath("fake_path"),
+                             /*best_match=*/false)},
       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
-                                       {PickerSearchResult::Text(u"drive")},
+                                       {PickerTextResult(u"drive")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kMath,
-                                       {PickerSearchResult::Text(u"math")},
+                                       {PickerTextResult(u"math")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kEditorWrite,
-                                       {PickerSearchResult::Text(u"write")},
+                                       {PickerTextResult(u"write")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kEditorRewrite,
-                                       {PickerSearchResult::Text(u"rewrite")},
+                                       {PickerTextResult(u"rewrite")},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
 }
@@ -642,23 +641,22 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
-                                       {PickerSearchResult::Text(u"omnibox")},
+                                       {PickerTextResult(u"omnibox")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kClipboard,
-      {PickerSearchResult::Clipboard(
-          base::UnguessableToken::Create(),
-          PickerClipboardResult::DisplayFormat::kText,
-          /*file_count=*/0, u"clipboard", std::nullopt,
-          /*is_recent=*/false)},
+      {PickerClipboardResult(base::UnguessableToken::Create(),
+                             PickerClipboardResult::DisplayFormat::kText,
+                             /*file_count=*/0, u"clipboard", std::nullopt,
+                             /*is_recent=*/false)},
       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kLocalFile,
-      {PickerSearchResult::LocalFile(u"local", base::FilePath("fake_path"),
-                                     /*best_match=*/true)},
+      {PickerLocalFileResult(u"local", base::FilePath("fake_path"),
+                             /*best_match=*/true)},
       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kEditorWrite,
-                                       {PickerSearchResult::Text(u"write")},
+                                       {PickerTextResult(u"write")},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
 }
@@ -712,23 +710,22 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
-                                       {PickerSearchResult::Text(u"omnibox")},
+                                       {PickerTextResult(u"omnibox")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kClipboard,
-      {PickerSearchResult::Clipboard(
-          base::UnguessableToken::Create(),
-          PickerClipboardResult::DisplayFormat::kText,
-          /*file_count=*/0, u"clipboard", std::nullopt,
-          /*is_recent=*/true)},
+      {PickerClipboardResult(base::UnguessableToken::Create(),
+                             PickerClipboardResult::DisplayFormat::kText,
+                             /*file_count=*/0, u"clipboard", std::nullopt,
+                             /*is_recent=*/true)},
       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kLocalFile,
-      {PickerSearchResult::LocalFile(u"local", base::FilePath("fake_path"),
-                                     /*best_match=*/true)},
+      {PickerLocalFileResult(u"local", base::FilePath("fake_path"),
+                             /*best_match=*/true)},
       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kEditorWrite,
-                                       {PickerSearchResult::Text(u"write")},
+                                       {PickerTextResult(u"write")},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
 }
@@ -819,31 +816,31 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
 
   task_environment().FastForwardBy(kBurnInPeriod);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
-                                       {PickerSearchResult::Text(u"omnibox")},
+                                       {PickerTextResult(u"omnibox")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
-                                       {PickerSearchResult::Text(u"drive")},
+                                       {PickerTextResult(u"drive")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDate,
-                                       {PickerSearchResult::Text(u"date")},
+                                       {PickerTextResult(u"date")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kAction,
-                                       {PickerSearchResult::Text(u"category")},
+                                       {PickerTextResult(u"category")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kClipboard,
-                                       {PickerSearchResult::Text(u"clipboard")},
+                                       {PickerTextResult(u"clipboard")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile,
-                                       {PickerSearchResult::Text(u"local")},
+                                       {PickerTextResult(u"local")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kMath,
-                                       {PickerSearchResult::Text(u"math")},
+                                       {PickerTextResult(u"math")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kEditorWrite,
-                                       {PickerSearchResult::Text(u"write")},
+                                       {PickerTextResult(u"write")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kEditorRewrite,
-                                       {PickerSearchResult::Text(u"rewrite")},
+                                       {PickerTextResult(u"rewrite")},
                                        /*has_more_results=*/false);
 }
 
@@ -861,13 +858,13 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                           base::Unretained(&search_results_callback)));
 
   aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
-                                       {PickerSearchResult::Text(u"omnibox")},
+                                       {PickerTextResult(u"omnibox")},
                                        /*has_more_results=*/true);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile,
-                                       {PickerSearchResult::Text(u"local")},
+                                       {PickerTextResult(u"local")},
                                        /*has_more_results=*/true);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
-                                       {PickerSearchResult::Text(u"drive")},
+                                       {PickerTextResult(u"drive")},
                                        /*has_more_results=*/true);
   task_environment().FastForwardBy(kBurnInPeriod);
 }
@@ -890,13 +887,13 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
 
   task_environment().FastForwardBy(kBurnInPeriod);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
-                                       {PickerSearchResult::Text(u"omnibox")},
+                                       {PickerTextResult(u"omnibox")},
                                        /*has_more_results=*/true);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile,
-                                       {PickerSearchResult::Text(u"local")},
+                                       {PickerTextResult(u"local")},
                                        /*has_more_results=*/true);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
-                                       {PickerSearchResult::Text(u"drive")},
+                                       {PickerTextResult(u"drive")},
                                        /*has_more_results=*/true);
 }
 
@@ -955,32 +952,32 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kDrive,
       {
-          PickerSearchResult::DriveFile(/*id=*/std::nullopt, /*title=*/u"",
-                                        GURL(), base::FilePath()),
-          PickerSearchResult::DriveFile("driveid1", /*title=*/u"", GURL(),
-                                        base::FilePath()),
-          PickerSearchResult::DriveFile("driveid2", /*title=*/u"", GURL(),
-                                        base::FilePath()),
-          PickerSearchResult::DriveFile("driveid3", /*title=*/u"", GURL(),
-                                        base::FilePath()),
+          PickerDriveFileResult(/*id=*/std::nullopt, /*title=*/u"", GURL(),
+                                base::FilePath()),
+          PickerDriveFileResult("driveid1", /*title=*/u"", GURL(),
+                                base::FilePath()),
+          PickerDriveFileResult("driveid2", /*title=*/u"", GURL(),
+                                base::FilePath()),
+          PickerDriveFileResult("driveid3", /*title=*/u"", GURL(),
+                                base::FilePath()),
       },
       /*has_more_results=*/true);
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kOmnibox,
       {
-          PickerSearchResult::BrowsingHistory(GURL("https://example.com"), u"",
-                                              ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
+          PickerBrowsingHistoryResult(GURL("https://example.com"), u"",
+                                      ui::ImageModel()),
+          PickerBrowsingHistoryResult(
               GURL("https://docs.google.com/notmatched"), u"",
               ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
-              GURL("https://docs.google.com/driveid1"), u"", ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
+          PickerBrowsingHistoryResult(GURL("https://docs.google.com/driveid1"),
+                                      u"", ui::ImageModel()),
+          PickerBrowsingHistoryResult(
               GURL("https://docs.google.com/driveid1?edit"), u"",
               ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
-              GURL("https://drive.google.com/driveid2"), u"", ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
+          PickerBrowsingHistoryResult(GURL("https://drive.google.com/driveid2"),
+                                      u"", ui::ImageModel()),
+          PickerBrowsingHistoryResult(
               GURL("https://drive.google.com/notmatched"), u"",
               ui::ImageModel()),
       },
@@ -1043,19 +1040,19 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kOmnibox,
       {
-          PickerSearchResult::BrowsingHistory(GURL("https://example.com"), u"",
-                                              ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
+          PickerBrowsingHistoryResult(GURL("https://example.com"), u"",
+                                      ui::ImageModel()),
+          PickerBrowsingHistoryResult(
               GURL("https://docs.google.com/notmatched"), u"",
               ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
-              GURL("https://docs.google.com/driveid1"), u"", ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
+          PickerBrowsingHistoryResult(GURL("https://docs.google.com/driveid1"),
+                                      u"", ui::ImageModel()),
+          PickerBrowsingHistoryResult(
               GURL("https://docs.google.com/driveid1?edit"), u"",
               ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
-              GURL("https://drive.google.com/driveid2"), u"", ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
+          PickerBrowsingHistoryResult(GURL("https://drive.google.com/driveid2"),
+                                      u"", ui::ImageModel()),
+          PickerBrowsingHistoryResult(
               GURL("https://drive.google.com/notmatched"), u"",
               ui::ImageModel()),
       },
@@ -1063,14 +1060,14 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kDrive,
       {
-          PickerSearchResult::DriveFile(/*id=*/std::nullopt, /*title=*/u"",
-                                        GURL(), base::FilePath()),
-          PickerSearchResult::DriveFile("driveid1", /*title=*/u"", GURL(),
-                                        base::FilePath()),
-          PickerSearchResult::DriveFile("driveid2", /*title=*/u"", GURL(),
-                                        base::FilePath()),
-          PickerSearchResult::DriveFile("driveid3", /*title=*/u"", GURL(),
-                                        base::FilePath()),
+          PickerDriveFileResult(/*id=*/std::nullopt, /*title=*/u"", GURL(),
+                                base::FilePath()),
+          PickerDriveFileResult("driveid1", /*title=*/u"", GURL(),
+                                base::FilePath()),
+          PickerDriveFileResult("driveid2", /*title=*/u"", GURL(),
+                                base::FilePath()),
+          PickerDriveFileResult("driveid3", /*title=*/u"", GURL(),
+                                base::FilePath()),
       },
       /*has_more_results=*/true);
   task_environment().FastForwardBy(kBurnInPeriod);
@@ -1135,33 +1132,33 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kDrive,
       {
-          PickerSearchResult::DriveFile(/*id=*/std::nullopt, /*title=*/u"",
-                                        GURL(), base::FilePath()),
-          PickerSearchResult::DriveFile("driveid1", /*title=*/u"", GURL(),
-                                        base::FilePath()),
-          PickerSearchResult::DriveFile("driveid2", /*title=*/u"", GURL(),
-                                        base::FilePath()),
-          PickerSearchResult::DriveFile("driveid3", /*title=*/u"", GURL(),
-                                        base::FilePath()),
+          PickerDriveFileResult(/*id=*/std::nullopt, /*title=*/u"", GURL(),
+                                base::FilePath()),
+          PickerDriveFileResult("driveid1", /*title=*/u"", GURL(),
+                                base::FilePath()),
+          PickerDriveFileResult("driveid2", /*title=*/u"", GURL(),
+                                base::FilePath()),
+          PickerDriveFileResult("driveid3", /*title=*/u"", GURL(),
+                                base::FilePath()),
       },
       /*has_more_results=*/true);
   task_environment().FastForwardBy(kBurnInPeriod);
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kOmnibox,
       {
-          PickerSearchResult::BrowsingHistory(GURL("https://example.com"), u"",
-                                              ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
+          PickerBrowsingHistoryResult(GURL("https://example.com"), u"",
+                                      ui::ImageModel()),
+          PickerBrowsingHistoryResult(
               GURL("https://docs.google.com/notmatched"), u"",
               ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
-              GURL("https://docs.google.com/driveid1"), u"", ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
+          PickerBrowsingHistoryResult(GURL("https://docs.google.com/driveid1"),
+                                      u"", ui::ImageModel()),
+          PickerBrowsingHistoryResult(
               GURL("https://docs.google.com/driveid1?edit"), u"",
               ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
-              GURL("https://drive.google.com/driveid2"), u"", ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
+          PickerBrowsingHistoryResult(GURL("https://drive.google.com/driveid2"),
+                                      u"", ui::ImageModel()),
+          PickerBrowsingHistoryResult(
               GURL("https://drive.google.com/notmatched"), u"",
               ui::ImageModel()),
       },
@@ -1228,32 +1225,32 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kDrive,
       {
-          PickerSearchResult::DriveFile(/*id=*/std::nullopt, /*title=*/u"",
-                                        GURL(), base::FilePath()),
-          PickerSearchResult::DriveFile("driveid1", /*title=*/u"", GURL(),
-                                        base::FilePath()),
-          PickerSearchResult::DriveFile("driveid2", /*title=*/u"", GURL(),
-                                        base::FilePath()),
-          PickerSearchResult::DriveFile("driveid3", /*title=*/u"", GURL(),
-                                        base::FilePath()),
+          PickerDriveFileResult(/*id=*/std::nullopt, /*title=*/u"", GURL(),
+                                base::FilePath()),
+          PickerDriveFileResult("driveid1", /*title=*/u"", GURL(),
+                                base::FilePath()),
+          PickerDriveFileResult("driveid2", /*title=*/u"", GURL(),
+                                base::FilePath()),
+          PickerDriveFileResult("driveid3", /*title=*/u"", GURL(),
+                                base::FilePath()),
       },
       /*has_more_results=*/true);
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kOmnibox,
       {
-          PickerSearchResult::BrowsingHistory(GURL("https://example.com"), u"",
-                                              ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
+          PickerBrowsingHistoryResult(GURL("https://example.com"), u"",
+                                      ui::ImageModel()),
+          PickerBrowsingHistoryResult(
               GURL("https://docs.google.com/notmatched"), u"",
               ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
-              GURL("https://docs.google.com/driveid1"), u"", ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
+          PickerBrowsingHistoryResult(GURL("https://docs.google.com/driveid1"),
+                                      u"", ui::ImageModel()),
+          PickerBrowsingHistoryResult(
               GURL("https://docs.google.com/driveid1?edit"), u"",
               ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
-              GURL("https://drive.google.com/driveid2"), u"", ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
+          PickerBrowsingHistoryResult(GURL("https://drive.google.com/driveid2"),
+                                      u"", ui::ImageModel()),
+          PickerBrowsingHistoryResult(
               GURL("https://drive.google.com/notmatched"), u"",
               ui::ImageModel()),
       },
@@ -1323,19 +1320,19 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kOmnibox,
       {
-          PickerSearchResult::BrowsingHistory(GURL("https://example.com"), u"",
-                                              ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
+          PickerBrowsingHistoryResult(GURL("https://example.com"), u"",
+                                      ui::ImageModel()),
+          PickerBrowsingHistoryResult(
               GURL("https://docs.google.com/notmatched"), u"",
               ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
-              GURL("https://docs.google.com/driveid1"), u"", ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
+          PickerBrowsingHistoryResult(GURL("https://docs.google.com/driveid1"),
+                                      u"", ui::ImageModel()),
+          PickerBrowsingHistoryResult(
               GURL("https://docs.google.com/driveid1?edit"), u"",
               ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
-              GURL("https://drive.google.com/driveid2"), u"", ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
+          PickerBrowsingHistoryResult(GURL("https://drive.google.com/driveid2"),
+                                      u"", ui::ImageModel()),
+          PickerBrowsingHistoryResult(
               GURL("https://drive.google.com/notmatched"), u"",
               ui::ImageModel()),
       },
@@ -1344,14 +1341,14 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kDrive,
       {
-          PickerSearchResult::DriveFile(/*id=*/std::nullopt, /*title=*/u"",
-                                        GURL(), base::FilePath()),
-          PickerSearchResult::DriveFile("driveid1", /*title=*/u"", GURL(),
-                                        base::FilePath()),
-          PickerSearchResult::DriveFile("driveid2", /*title=*/u"", GURL(),
-                                        base::FilePath()),
-          PickerSearchResult::DriveFile("driveid3", /*title=*/u"", GURL(),
-                                        base::FilePath()),
+          PickerDriveFileResult(/*id=*/std::nullopt, /*title=*/u"", GURL(),
+                                base::FilePath()),
+          PickerDriveFileResult("driveid1", /*title=*/u"", GURL(),
+                                base::FilePath()),
+          PickerDriveFileResult("driveid2", /*title=*/u"", GURL(),
+                                base::FilePath()),
+          PickerDriveFileResult("driveid3", /*title=*/u"", GURL(),
+                                base::FilePath()),
       },
       /*has_more_results=*/true);
 }
@@ -1420,19 +1417,19 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kOmnibox,
       {
-          PickerSearchResult::BrowsingHistory(GURL("https://example.com"), u"",
-                                              ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
+          PickerBrowsingHistoryResult(GURL("https://example.com"), u"",
+                                      ui::ImageModel()),
+          PickerBrowsingHistoryResult(
               GURL("https://docs.google.com/notmatched"), u"",
               ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
-              GURL("https://docs.google.com/driveid1"), u"", ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
+          PickerBrowsingHistoryResult(GURL("https://docs.google.com/driveid1"),
+                                      u"", ui::ImageModel()),
+          PickerBrowsingHistoryResult(
               GURL("https://docs.google.com/driveid1?edit"), u"",
               ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
-              GURL("https://drive.google.com/driveid2"), u"", ui::ImageModel()),
-          PickerSearchResult::BrowsingHistory(
+          PickerBrowsingHistoryResult(GURL("https://drive.google.com/driveid2"),
+                                      u"", ui::ImageModel()),
+          PickerBrowsingHistoryResult(
               GURL("https://drive.google.com/notmatched"), u"",
               ui::ImageModel()),
       },
@@ -1440,14 +1437,14 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kDrive,
       {
-          PickerSearchResult::DriveFile(/*id=*/std::nullopt, /*title=*/u"",
-                                        GURL(), base::FilePath()),
-          PickerSearchResult::DriveFile("driveid1", /*title=*/u"", GURL(),
-                                        base::FilePath()),
-          PickerSearchResult::DriveFile("driveid2", /*title=*/u"", GURL(),
-                                        base::FilePath()),
-          PickerSearchResult::DriveFile("driveid3", /*title=*/u"", GURL(),
-                                        base::FilePath()),
+          PickerDriveFileResult(/*id=*/std::nullopt, /*title=*/u"", GURL(),
+                                base::FilePath()),
+          PickerDriveFileResult("driveid1", /*title=*/u"", GURL(),
+                                base::FilePath()),
+          PickerDriveFileResult("driveid2", /*title=*/u"", GURL(),
+                                base::FilePath()),
+          PickerDriveFileResult("driveid3", /*title=*/u"", GURL(),
+                                base::FilePath()),
       },
       /*has_more_results=*/true);
 }

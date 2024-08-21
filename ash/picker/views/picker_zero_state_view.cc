@@ -110,7 +110,7 @@ PickerZeroStateView::PickerZeroStateView(
       continue;
     }
 
-    auto result = PickerSearchResult::Category(category);
+    auto result = PickerCategoryResult(category);
     GetOrCreateSectionView(category)->AddResult(
         std::move(result), preview_controller_,
         base::BindRepeating(&PickerZeroStateView::OnCategorySelected,

@@ -44,15 +44,15 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
              PickerNewWindowResult::Type::kSlide,
              PickerNewWindowResult::Type::kChrome,
          }) {
-      new_window_results.push_back(PickerSearchResult::NewWindow(type));
+      new_window_results.push_back(PickerNewWindowResult(type));
     }
     callback.Run(std::move(new_window_results));
   }
 
   if (model.GetMode() == PickerModeType::kUnfocused ||
       model.GetMode() == PickerModeType::kNoSelection) {
-    callback.Run({PickerSearchResult::CapsLock(
-        !model.is_caps_lock_enabled(), GetPickerShortcutForCapsLock())});
+    callback.Run({PickerCapsLockResult(!model.is_caps_lock_enabled(),
+                                       GetPickerShortcutForCapsLock())});
   }
 
   if (base::Contains(model.GetAvailableCategories(),
@@ -67,7 +67,7 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
              PickerCaseTransformResult::Type::kLowerCase,
              PickerCaseTransformResult::Type::kTitleCase,
          }) {
-      case_transform_results.push_back(PickerSearchResult::CaseTransform(type));
+      case_transform_results.push_back(PickerCaseTransformResult(type));
     }
     callback.Run(std::move(case_transform_results));
   }

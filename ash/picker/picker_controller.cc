@@ -490,9 +490,9 @@ void PickerController::OpenResult(const PickerSearchResult& result) {
             session_metrics_->SetOutcome(
                 PickerSessionMetrics::SessionOutcome::kFormat);
             std::u16string_view selected_text = model_->selected_text();
-            InsertResultOnNextFocus(PickerSearchResult::Text(
-                TransformText(selected_text, data.type),
-                PickerTextResult::Source::kCaseTransform));
+            InsertResultOnNextFocus(
+                PickerTextResult(TransformText(selected_text, data.type),
+                                 PickerTextResult::Source::kCaseTransform));
           },
       },
       result.data());

@@ -72,7 +72,7 @@ void PickerLinkSuggester::OnGetBrowsingHistory(SuggestedLinksCallback callback,
     // Fallback to placeholder icon if favicon service is not available.
     std::vector<ash::PickerSearchResult> picker_search_results;
     for (const auto& result : filtered_results) {
-      picker_search_results.push_back(ash::PickerSearchResult::BrowsingHistory(
+      picker_search_results.push_back(ash::PickerBrowsingHistoryResult(
           result.url(), result.title(),
           ui::ImageModel::FromVectorIcon(ash::kOmniboxGenericIcon,
                                          cros_tokens::kCrosSysOnSurface),
@@ -86,7 +86,7 @@ void PickerLinkSuggester::OnGetFaviconImage(
     history::URLResult result,
     base::OnceCallback<void(ash::PickerSearchResult)> callback,
     const favicon_base::FaviconImageResult& favicon_image_result) {
-  std::move(callback).Run(ash::PickerSearchResult::BrowsingHistory(
+  std::move(callback).Run(ash::PickerBrowsingHistoryResult(
       result.url(), result.title(),
       favicon_image_result.image.IsEmpty()
           ? ui::ImageModel::FromVectorIcon(ash::kOmniboxGenericIcon,
