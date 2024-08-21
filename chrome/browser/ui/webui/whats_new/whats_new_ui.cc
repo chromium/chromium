@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 
 #include "base/feature_list.h"
@@ -45,7 +40,7 @@ void CreateAndAddWhatsNewUIHtmlSource(Profile* profile, bool enable_staging) {
       profile, chrome::kChromeUIWhatsNewHost);
 
   webui::SetupWebUIDataSource(
-      source, base::make_span(kWhatsNewResources, kWhatsNewResourcesSize),
+      source, base::span<const webui::ResourcePath>(kWhatsNewResources),
       IDR_WHATS_NEW_WHATS_NEW_HTML);
 
   static constexpr webui::LocalizedString kStrings[] = {
