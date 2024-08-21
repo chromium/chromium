@@ -136,14 +136,7 @@ FieldRendererId GetFieldRendererId(const blink::WebElement& e);
 base::i18n::TextDirection GetTextDirectionForElement(
     const blink::WebFormControlElement& element);
 
-// Returns all the form control elements
-// - owned by `form_element` if `!form_element.IsNull()`;
-// - owned by no form otherwise.
-std::vector<blink::WebFormControlElement> GetOwnedFormControls(
-    const blink::WebDocument& document,
-    const blink::WebFormElement& form_element);
-
-// Returns all the autofillable form control elements
+// Returns all connected, autofillable form control elements
 // - owned by `form_element` if `!form_element.IsNull()`;
 // - owned by no form otherwise.
 std::vector<blink::WebFormControlElement> GetOwnedAutofillableFormControls(
@@ -280,6 +273,9 @@ void TraverseDomForFourDigitCombinations(
 // The following functions exist in as internal helper functions in
 // form_autofill_util.cc and are exposed here just for testing purposes. Check
 // the wrapped functions in the .cc file for documentation.
+std::vector<blink::WebFormControlElement> GetOwnedFormControlsForTesting(
+    const blink::WebDocument& document,
+    const blink::WebFormElement& form_element);
 blink::WebNode NextWebNodeForTesting(const blink::WebNode& current_node,
                                      bool forward);
 std::u16string GetAriaLabelForTesting(const blink::WebDocument& document,

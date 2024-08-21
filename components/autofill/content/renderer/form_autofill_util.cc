@@ -1771,6 +1771,42 @@ void GetDataListSuggestions(const WebInputElement& element,
   }
 }
 
+// Returns whether `node` has a shadow-tree-including ancestor that is a
+// `<form>`.
+bool HasFormAncestor(WebNode node) {
+  node = node.ParentOrShadowHostNode();
+  while (node) {
+    if (HasTagName<kForm>(node)) {
+      return true;
+    }
+    node = node.ParentOrShadowHostNode();
+  }
+  return false;
+}
+
+// Returns all connected form control elements
+// - owned by `form_element` if `!form_element.IsNull()`;
+// - owned by no form otherwise.
+std::vector<WebFormControlElement> GetOwnedFormControls(
+    const WebDocument& document,
+    const WebFormElement& form_element) {
+  std::vector<WebFormControlElement> form_controls;
+  if (form_element) {
+    form_controls =
+        form_element.GetFormControlElements().ReleaseVector();  // nocheck
+  } else {
+    form_controls =
+        document.UnassociatedFormControls().ReleaseVector();  // nocheck
+    // A form control element may be unassociated inside its Shadow DOM, but
+    // owned (in the Autofill sense) by a <form> containing the shadow host.
+    std::erase_if(form_controls, [](const WebFormControlElement& e) {
+      return e.OwnerShadowHost() && HasFormAncestor(e);
+    });
+  }
+  std::erase_if(form_controls, std::not_fn(&WebNode::IsConnected));
+  return form_controls;
+}
+
 // Fills out a FormField object from a given autofillable WebFormControlElement.
 // |extract_options|: See the enum ExtractOption above for details. Field
 // properties will be copied from |field_data_manager|, if the argument is not
@@ -2114,19 +2150,6 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   return form;
 }
 
-// Returns whether `node` has a shadow-tree-including ancestor that is a
-// `<form>`.
-bool HasFormAncestor(WebNode node) {
-  node = node.ParentOrShadowHostNode();
-  while (node) {
-    if (HasTagName<kForm>(node)) {
-      return true;
-    }
-    node = node.ParentOrShadowHostNode();
-  }
-  return false;
-}
-
 }  // namespace
 
 InferredLabel::InferredLabel(std::u16string label, LabelSource source)
@@ -2319,22 +2342,6 @@ base::i18n::TextDirection GetTextDirectionForElement(
     direction = base::i18n::RIGHT_TO_LEFT;
   }
   return direction;
-}
-
-std::vector<WebFormControlElement> GetOwnedFormControls(
-    const WebDocument& document,
-    const WebFormElement& form_element) {
-  if (form_element) {
-    return form_element.GetFormControlElements().ReleaseVector();  // nocheck
-  }
-  std::vector<WebFormControlElement> unowned_form_controls =
-      document.UnassociatedFormControls().ReleaseVector();  // nocheck
-  // A form control element may be unassociated inside its Shadow DOM, but
-  // owned (in the Autofill sense) by a <form> containing the shadow host.
-  std::erase_if(unowned_form_controls, [](const WebFormControlElement& e) {
-    return e.OwnerShadowHost() && HasFormAncestor(e);
-  });
-  return unowned_form_controls;
 }
 
 std::vector<WebFormControlElement> GetOwnedAutofillableFormControls(
@@ -2864,6 +2871,13 @@ void InferLabelForElementsForTesting(  // IN-TEST
     base::span<const blink::WebFormControlElement> control_elements,
     std::vector<FormFieldData>& fields) {
   InferLabelForElements(control_elements, fields);
+}
+
+std::vector<blink::WebFormControlElement>
+GetOwnedFormControlsForTesting(  // IN-TEST
+    const blink::WebDocument& document,
+    const blink::WebFormElement& form_element) {
+  return GetOwnedFormControls(document, form_element);
 }
 
 WebNode NextWebNodeForTesting(  // IN-TEST
