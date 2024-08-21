@@ -11,7 +11,7 @@
     box-shadow: var(--cr-card-shadow);
   }
 
-  h2, h3 {
+  h2 {
     font-weight: 400;
   }
 
@@ -80,6 +80,18 @@
     top: 0;
   }
 
+  .section-title {
+    color: var(--cr-primary-text-color);
+    font-size: 108%;
+    font-weight: 400;
+    letter-spacing: .25px;
+    margin-bottom: 12px;
+    margin-top: var(--cr-section-vertical-margin);
+    outline: none;
+    padding-bottom: 4px;
+    padding-top: 8px;
+  }
+
 </style>
 
 <cr-toolbar id="toolbar"
@@ -140,7 +152,7 @@
         </certificate-list-v2>
       </if>
 
-      <h3>[[i18n("certificateManagerV2Platform")]]</h3>
+      <h3 class="section-title">[[i18n("certificateManagerV2Platform")]]</h3>
 
       <div class="card">
         <cr-link-row id="viewOsImportedClientCerts"
@@ -164,7 +176,7 @@
 
       <!-- TODO(crbug.com/40928765): Allow user modifications of trust settings
         here when allowed by enterprise.  -->
-      <h3>[[i18n("certificateManagerV2Platform")]]</h3>
+      <h3 class="section-title">[[i18n("certificateManagerV2Platform")]]</h3>
       <div class="card">
         <div class="cr-row">
           <div class="cr-padded-text">
@@ -203,7 +215,7 @@
 
       <template is="dom-if" if="[[showCustomSection_(certManagementMetadata_)]]">
         <div id="customCertsSection">
-          <h3>[[i18n("certificateManagerV2CustomCertsTitle")]]</h3>
+          <h3 class="section-title">[[i18n("certificateManagerV2CustomCertsTitle")]]</h3>
           <cr-link-row id="adminCertsInstalledLinkRow"
               start-icon="cr:domain"
               class="card"
