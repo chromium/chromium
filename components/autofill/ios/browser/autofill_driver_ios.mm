@@ -139,7 +139,20 @@ bool AutofillDriverIOS::IsInAnyMainFrame() const {
 bool AutofillDriverIOS::HasSharedAutofillPermission() const {
   // Give the shared-autofill permission to the main frame of the webstate by
   // default.
-  return IsInAnyMainFrame();
+  if (IsInAnyMainFrame()) {
+    return true;
+  }
+
+  // Also propagate that permission to the direct children of the main
+  // frame on the same origin as the main frame.
+  if (parent_ && parent_->web_frame() && parent_->IsInAnyMainFrame() &&
+      web_frame()) {
+    return parent_->web_frame()->GetSecurityOrigin() ==
+           web_frame()->GetSecurityOrigin();
+  }
+
+  // Return false as share-autofill is not allowed.
+  return false;
 }
 
 bool AutofillDriverIOS::CanShowAutofillUi() const {
