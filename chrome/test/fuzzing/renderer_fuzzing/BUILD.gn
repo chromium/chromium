@@ -74,6 +74,9 @@ if (renderer_ipc_fuzzing_enabled) {
     }
     write_file("$target_gen_dir/metadata", _metafiles)
 
+    inputs +=
+        [ "//chrome/test/fuzzing/renderer_fuzzing/ipc_fuzzing/testcase.h.tmpl" ]
+
     script = "//chrome/test/fuzzing/renderer_fuzzing/ipc_fuzzing/generate_testcase.py"
     args = [
       "-p",

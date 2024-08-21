@@ -428,7 +428,7 @@ class MojoLPMGenerator(abc.ABC):
   """
 
   @abc.abstractmethod
-  def render(self, action_set: MojoLPMActionSet):
+  def render(self, action_list: typing.List[MojoLPMActionSet]):
     """Renders the given actions.
     """
 
@@ -456,22 +456,29 @@ class MojoLPMProtoGenerator(MojoLPMJinjaGenerator):
   dependencies. It uses jinja2 with a template file under the hood.
   """
 
-  def __init__(self, filepath: pathlib.PurePosixPath):
+  def __init__(self, filepath: pathlib.PurePosixPath, ensure_remote: bool):
     super().__init__(filepath, "mojolpm_generator.proto.tmpl")
+    self._ensure_remote = ensure_remote
 
-  def render(self, action_set: MojoLPMActionSet):
+  def render(self, action_list: typing.List[MojoLPMActionSet]):
+    all_actions_set = MojoLPMActionSet()
+    for action_set in action_list:
+      all_actions_set.update(action_set)
     new_messages = [
-        a.mojolpm_proto_type for a in action_set.actions
+        a.mojolpm_proto_type for a in all_actions_set.actions
         if a.type == MojoLPMActionType.NEW_ACTION
     ]
+    actions_list = [[{
+        "proto_type": a.mojolpm_proto_type,
+        "proto_identifier": a.proto_identifier,
+        "is_new_action": a.type == MojoLPMActionType.NEW_ACTION,
+    } for a in action_set.actions] for action_set in action_list]
     context = {
-        "imports": [format_dep_for_proto(t) for t in action_set.deps],
-        "new_messages":
-        new_messages,
-        "actions": [[a.mojolpm_proto_type, a.proto_identifier]
-                    for a in action_set.actions],
-        "basename":
-        self.filepath.name,
+        "imports": [format_dep_for_proto(t) for t in all_actions_set.deps],
+        "new_messages": new_messages,
+        "actions_list": actions_list,
+        "basename": self.filepath.name,
+        "ensure_remote": self._ensure_remote,
     }
     proto_file = self.filepath.with_suffix('.proto')
     with pathlib.Path(proto_file).open(mode="w") as f:
@@ -483,43 +490,54 @@ class MojoLPMCppGenerator(MojoLPMJinjaGenerator):
   dependencies. It uses jinja2 with a template file under the hood.
   """
 
-  def __init__(self, filepath: pathlib.PurePosixPath):
+  def __init__(self, filepath: pathlib.PurePosixPath, ensure_remote: bool):
     super().__init__(filepath, "mojolpm_generator.h.tmpl")
+    self._ensure_remote = ensure_remote
 
-  def render(self, action_set: MojoLPMActionSet):
-    actions = []
-    new_actions = []
-    for a in action_set.actions:
-      if a.type == MojoLPMActionType.NEW_ACTION:
-        new_actions.append({
-            "case_name":
-            "k" + snake_to_camel_case(a.proto_identifier),
-            "cpp_name":
-            a.cpp_identifier,
-            "mojo_name":
-            a.proto_identifier,
-        })
-      else:
-        actions.append({
-            "case_name":
-            "k" + snake_to_camel_case(a.proto_identifier),
-            "mojolpm_func":
-            "mojolpm::Handle" + a.type.value,
-            "mojo_name":
-            a.proto_identifier,
-        })
+  def render(self, action_list: typing.List[MojoLPMActionSet]):
+    all_actions_set = MojoLPMActionSet()
+    for action_set in action_list:
+      all_actions_set.update(action_set)
+
+    actions_list = []
+    for action_set in action_list:
+      actions = []
+      for a in action_set.actions:
+        if a.type == MojoLPMActionType.NEW_ACTION:
+          actions.append({
+              "case_name":
+              "k" + snake_to_camel_case(a.proto_identifier),
+              "cpp_name":
+              a.cpp_identifier,
+              "mojo_name":
+              a.proto_identifier,
+              "is_new_action":
+              True,
+          })
+        else:
+          actions.append({
+              "case_name":
+              "k" + snake_to_camel_case(a.proto_identifier),
+              "mojolpm_func":
+              "mojolpm::Handle" + a.type.value,
+              "mojo_name":
+              a.proto_identifier,
+              "is_new_action":
+              False,
+          })
+      actions_list.append(actions)
     if self.filepath.parts[0] == 'gen':
       rebased_path = self.filepath.relative_to('gen')
     else:
       rebased_path = self.filepath
     context = {
-        'imports': [format_dep_for_cpp(t) for t in action_set.deps],
-        "new_actions": new_actions,
-        "actions": actions,
+        'imports': [format_dep_for_cpp(t) for t in all_actions_set.deps],
+        "actions_list": actions_list,
         "filename": rebased_path.with_suffix('.h').as_posix(),
         "proto_filename": rebased_path.with_suffix('.pb.h').as_posix(),
         "basename": snake_to_camel_case(self.filepath.name),
         "proto_namespace": f'mojolpmgenerator::{self.filepath.name}',
+        "ensure_remote": self._ensure_remote,
     }
     with pathlib.Path(self.filepath.with_suffix('.h')).open(mode='w') as f:
       f.write(self.template.render(context))
@@ -530,9 +548,9 @@ class MojoLPMGeneratorMultiplexer(MojoLPMGenerator):
   def __init__(self, generators: typing.List[MojoLPMGenerator]):
     self._generators = generators
 
-  def render(self, action_set: MojoLPMActionSet):
+  def render(self, action_list: typing.List[MojoLPMActionSet]):
     for generator in self._generators:
-      generator.render(action_set)
+      generator.render(action_list)
 
 
 def build_handle_actions(handle_type: MojomHandleType,
@@ -736,14 +754,22 @@ def main():
                       required=True,
                       help="output file format. Files with extensions '.h' and"
                       " '.proto' will be created.")
+  parser.add_argument(
+      '-e',
+      '--ensure-remote',
+      action='store_true',
+      default=False,
+      help="For every listed remotes, ensure the 'new' action is called before"
+      " any other actions related to the remote.")
 
   args = parser.parse_args()
   output_file = pathlib.PurePosixPath(args.output_file_format)
 
-  generator = MojoLPMGeneratorMultiplexer(
-      [MojoLPMProtoGenerator(output_file),
-       MojoLPMCppGenerator(output_file)])
-  actions = MojoLPMActionSet()
+  generator = MojoLPMGeneratorMultiplexer([
+      MojoLPMProtoGenerator(output_file, args.ensure_remote),
+      MojoLPMCppGenerator(output_file, args.ensure_remote)
+  ])
+  actions: typing.List[MojoLPMActionSet] = []
   if args.file:
     interfaces = get_interface_list_from_file(args.file)
   else:
@@ -758,7 +784,7 @@ def main():
       m = module.Module.Load(f)
       for interface in m.interfaces:
         if interface_name in (interface.mojom_name, interface.qualified_name):
-          actions.update(build(interface, remote_type))
+          actions.append(build(interface, remote_type))
           break
   generator.render(actions)
 

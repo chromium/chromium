@@ -44,12 +44,70 @@ class {{classname}} :
  protected:
   virtual void HandleRunThreadAction(uint32_t id,
                                      base::OnceClosure done_closure);
-{% for action in new_actions %}
+{% for actions in actions_list %}
+{%  for action in actions|selectattr("is_new_action") %}
   virtual void HandleNew{{action['cpp_name']}}Action(
       uint32_t id,
       base::OnceClosure done_closure) = 0;
+{%  endfor %}
+{% endfor %}
+ private:
+{% for action in actions_list %}
+  void HandleRemote{{loop.index}}(const {{proto_namespace}}::Remote{{loop.index}}&,
+                                  base::OnceClosure);
+{% endfor %}
+{% for action in actions_list %}
+  void HandleRemoteAction{{loop.index}}(const {{proto_namespace}}::RemoteAction{{loop.index}}&,
+                                  base::OnceClosure);
 {% endfor %}
 };
+
+{% for actions in actions_list %}
+{% set current_action = "RemoteAction" + loop.index|string %}
+void {{classname}}::Handle{{current_action}}(const {{proto_namespace}}::{{current_action}}& action,
+                                               base::OnceClosure done_closure) {
+{% set all_switch_actions = actions -%}
+{% if ensure_remote %}
+{% set all_switch_actions = actions|rejectattr("is_new_action")|list -%}
+{% endif %}
+{% if all_switch_actions|length > 0 %}
+  switch (action.action_case()) {
+{% for action in all_switch_actions|rejectattr("is_new_action") %}
+    case {{proto_namespace}}::{{current_action}}::{{action['case_name']}}:
+      {{action['mojolpm_func']}}(action.{{action['mojo_name']}}());
+      break;
+{% endfor %}
+{% for action in all_switch_actions|selectattr("is_new_action") %}
+    case {{proto_namespace}}::{{current_action}}::{{action['case_name']}}:
+      HandleNew{{action['cpp_name']}}Action(action.{{action['mojo_name']}}().id(),
+                                            std::move(done_closure));
+      return;
+{% endfor %}
+    case {{proto_namespace}}::{{current_action}}::ACTION_NOT_SET:
+      break;
+  }
+{% endif %}
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
+}
+{% endfor %}
+
+
+{% for actions in actions_list %}
+void {{classname}}::HandleRemote{{loop.index}}(const {{proto_namespace}}::Remote{{loop.index}}& action,
+                                               base::OnceClosure done_closure) {
+{% if ensure_remote %}
+{% for action in actions|selectattr("is_new_action") %}
+  HandleNew{{action['cpp_name']}}Action(action.{{action['mojo_name']}}().id(),
+                                        base::DoNothing());
+{% endfor %}
+{% set all_switch_actions = actions|rejectattr("is_new_action")|list -%}
+{% endif %}
+  for (const auto& sub_action : action.remote_{{loop.index}}()) {
+    HandleRemoteAction{{loop.index}}(sub_action, base::DoNothing());
+  }
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
+}
+{% endfor %}
 
 void {{classname}}::SetUp(base::OnceClosure done_closure) {
   GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
@@ -65,15 +123,9 @@ void {{classname}}::RunAction(const ProtoAction& action,
     case ProtoAction::kRunThreadAction:
       HandleRunThreadAction(action.run_thread_action().id(), std::move(done_closure));
       return;
-{% for action in actions %}
-    case ProtoAction::{{action['case_name']}}:
-      {{action['mojolpm_func']}}(action.{{action['mojo_name']}}());
-      break;
-{% endfor %}
-{% for action in new_actions %}
-    case ProtoAction::{{action['case_name']}}:
-      HandleNew{{action['cpp_name']}}Action(action.{{action['mojo_name']}}().id(),
-                                            std::move(done_closure));
+{% for action in actions_list %}
+    case ProtoAction::kAction{{loop.index}}:
+      HandleRemote{{loop.index}}(action.action_{{loop.index}}(), std::move(done_closure));
       return;
 {% endfor %}
     case ProtoAction::ACTION_NOT_SET:

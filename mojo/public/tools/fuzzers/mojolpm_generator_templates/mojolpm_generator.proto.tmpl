@@ -16,11 +16,44 @@ message {{new_message}} {
 }
 {% endfor %}
 
+{% for actions in actions_list %}
+message RemoteAction{{loop.index}} {
+{% set new_actions = [] -%}
+{% if ensure_remote %}
+{% set oneof_actions = actions|rejectattr("is_new_action")|list -%}
+{% else %}
+{% set oneof_actions = actions -%}
+{% endif %}
+{% for action in new_actions %}
+  required {{action['proto_type']}} {{action['proto_identifier']}} = {{loop.index}};
+{% endfor %}
+{% if oneof_actions|length > 0 %}
+  oneof action {
+{%    for action in oneof_actions %}
+    {{action['proto_type']}} {{action['proto_identifier']}} = {{loop.index + 1}};
+{%    endfor %}
+  }
+{% endif %}
+}
+{% endfor %}
+
+{% for actions in actions_list %}
+message Remote{{loop.index}} {
+{% if ensure_remote %}
+{% for action in actions|selectattr("is_new_action") %}
+  required {{action['proto_type']}} {{action['proto_identifier']}} = {{loop.index}};
+{% endfor %}
+{% endif %}
+  repeated RemoteAction{{loop.index}} remote_{{loop.index}} = {{loop.index + 1}};
+}
+{% endfor %}
+
+
 message Action {
     oneof action {
         RunThreadAction run_thread_action = 1;
-{% for action in actions %}
-        {{action[0]}} {{action[1]}} = {{loop.index + 1}};
+{% for action_set in actions_list %}
+        Remote{{loop.index}} action_{{loop.index}} = {{loop.index + 1}};
 {% endfor %}
     }
 }
