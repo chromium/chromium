@@ -36,6 +36,11 @@ message LensOverlayObjectsRequest {
   // Required. Image Data to process.
   ImageData image_data = 3;
 
+  // Optional. Data payload of the request.
+  // TODO(b/359638436): Mark required when clients have migrated to use Payload
+  // field.
+  Payload payload = 4;
+
   reserved 2;
 }
 
@@ -67,7 +72,24 @@ message LensOverlayInteractionRequest {
 }
 
 message LensOverlayInteractionResponse {
-  optional string encoded_response = 3;
+  string encoded_response = 3;
 
   reserved 1, 2;
+}
+
+// Next ID: 5
+message Payload {
+  // Currently unset, use image_data in ObjectsRequest.
+  // TODO(b/359638436): Move ObjectsRequest clients onto Payload.ImageData.
+  ImageData image_data = 2;
+
+  // Data for non-image payloads. May be sent with or without an image in the
+  // image_data field. If content_data is set, content_type must also be set.
+  bytes content_data = 3;
+
+  // The media type/MIME type of the data represented i content_data, e.g.
+  // "application/pdf". If content_type is set, content_data should also be set.
+  string content_type = 4;
+
+  reserved 1;
 }
