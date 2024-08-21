@@ -7087,7 +7087,7 @@
   {
     "name": "password-suggestion-bottom-sheet-v2",
     "owners": ["atsvirchkova@google.com", "vasilii@chromium.org", "derinel@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 133
   },
   {
     "name": "payment-link-detection",
