@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/fwupd_download_client_impl.h"
+#include "chrome/browser/ash/fwupd/fwupd_download_client_impl.h"
 
 #include "base/check_is_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

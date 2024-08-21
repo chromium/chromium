@@ -825,6 +825,7 @@ static_library("ash") {
     "//chrome/browser/ash/floating_sso",
     "//chrome/browser/ash/floating_workspace",
     "//chrome/browser/ash/fusebox",
+    "//chrome/browser/ash/fwupd",
     "//chrome/browser/ash/geolocation",
     "//chrome/browser/ash/growth",
     "//chrome/browser/ash/guest_os",
