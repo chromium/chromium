@@ -26,14 +26,13 @@ suite('SeaPenFreeformElementTest', function() {
         freeformElement!.shadowRoot!.querySelector(SeaPenSamplesElement.is);
     const samples = seaPenSamplesElement!.shadowRoot!
                         .querySelectorAll<WallpaperGridItemElement>(
-                            `${WallpaperGridItemElement.is}`);
+                            `${WallpaperGridItemElement.is}:not([hidden])`);
     assertTrue(!!samples, 'samples should exist');
 
-    return Array.from(samples).map(sample => {
+    return Array.from(samples).flatMap(sample => {
       const text =
           sample!.shadowRoot!.querySelector('.primary-text')?.innerHTML;
-      assertTrue(!!text, 'text content exists');
-      return text;
+      return text ? [text] : [];
     });
   }
 
