@@ -29,7 +29,7 @@ _GSUTIL = os.path.join(_DIR_SOURCE_ROOT, 'third_party/depot_tools/gsutil.py')
 _RESOURCE_SIZES = os.path.join(_DIR_SOURCE_ROOT,
                                'build/android/resource_sizes.py')
 _AAPT2 = os.path.join(_DIR_SOURCE_ROOT,
-                      'third_party/android_build_tools/aapt2/aapt2')
+                      'third_party/android_build_tools/aapt2/cipd/aapt2')
 _KEYSTORE = os.path.join(_DIR_SOURCE_ROOT,
                          'build/android/chromium-debug.keystore')
 _KEYSTORE_PASSWORD = 'chromium'

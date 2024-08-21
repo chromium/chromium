@@ -127,7 +127,7 @@ def __android_compile_resources_handler(ctx, cmd):
     #   https://crsrc.org/c/build/config/android/internal_rules.gni;l=2163;drc=1b15af251f8a255e44f2e3e3e7990e67e87dcc3b
     #   https://crsrc.org/c/build/config/android/system_image.gni;l=58;drc=39debde76e509774287a655285d8556a9b8dc634
     # Sample args:
-    #   --aapt2-path ../../third_party/android_build_tools/aapt2/aapt2
+    #   --aapt2-path ../../third_party/android_build_tools/aapt2/cipd/aapt2
     #   --android-manifest gen/chrome/android/trichrome_library_system_stub_apk__manifest.xml
     #   --arsc-package-name=org.chromium.trichromelibrary
     #   --arsc-path obj/chrome/android/trichrome_library_system_stub_apk.ap_
