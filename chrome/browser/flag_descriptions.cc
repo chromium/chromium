@@ -244,13 +244,6 @@ const char kDeprecateUnloadDescription[] =
     "explicity disabled by Permissions-Policy, even during the gradual "
     "rollout of their deprecation.";
 
-const char kDefaultBrowserPromptRefreshName[] =
-    "Default Browser Prompt Refresh";
-const char kDefaultBrowserPromptRefreshDescription[] =
-    "If enabled, the default browser info bar will be potentially shown again "
-    "after it has been declined, depending on the time that the info bar was "
-    "last declined, and how many times it has been declined.";
-
 const char kDeferRendererTasksAfterInputName[] =
     "Defer Renderer Tasks After Input";
 const char kDeferRendererTasksAfterInputDescription[] =

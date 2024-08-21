@@ -177,9 +177,6 @@ extern const char kDataSharingDescription[];
 extern const char kDeprecateUnloadName[];
 extern const char kDeprecateUnloadDescription[];
 
-extern const char kDefaultBrowserPromptRefreshName[];
-extern const char kDefaultBrowserPromptRefreshDescription[];
-
 extern const char kDeferRendererTasksAfterInputName[];
 extern const char kDeferRendererTasksAfterInputDescription[];
 

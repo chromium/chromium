@@ -1968,11 +1968,6 @@
     "owners": [ "gayane@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 130
   },
-  {
-    "name": "default-browser-prompt-refresh",
-    "owners": [ "agale@chromium.org", "charlesmeng@chromium.org" ],
-    "expiry_milestone": 130
-  },
   {  "name": "default-browser-video-in-settings",
      "owners": [ "gayane@google.com", "bling-flags@google.com" ],
      "expiry_milestone": 130
@@ -2172,14 +2167,6 @@
     "owners": [ "ydago@chromium.org", "//chrome/browser/data_saver/OWNERS" ],
     // This is a web-developer facing flag and should not be removed.
     "expiry_milestone": 116
-  },
-  {
-    "name": "discard-ring-improvements",
-    "owners": [
-      "agale@chromium.org",
-      "chrome-performance-ui-team@google.com"
-    ],
-    "expiry_milestone": 130
   },
   {
     "name": "disconnect-wifi-on-ethernet-connected",
@@ -5983,14 +5970,6 @@
     // capture a memlog without disturbing the situation under test by
     // restarting to apply a switch. It should not be removed.
     "expiry_milestone": -1
-  },
-  {
-    "name": "memory-saver-aggressiveness",
-    "owners": [
-      "agale@chromium.org",
-      "chrome-performance-ui-team@google.com"
-    ],
-    "expiry_milestone": 130
   },
   {
     "name": "messages-for-android-ads-blocked",

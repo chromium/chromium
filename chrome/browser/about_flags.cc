@@ -3888,36 +3888,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam kDefaultBrowserPromptRefreshAggressive[] = {
-    {"max_prompt_count", "-1"},
-    {"reprompt_duration", "7d"},
-    {"reprompt_duration_multiplier", "1"}};
-const FeatureEntry::FeatureParam kDefaultBrowserPromptRefreshTesting[] = {
-    {"max_prompt_count", "3"},
-    {"reprompt_duration", "5m"},
-    {"reprompt_duration_multiplier", "2"}};
-const FeatureEntry::FeatureParam kDefaultBrowserPromptRefreshAppMenu[] = {
-    {"show_info_bar", "true"},      {"show_app_menu_chip", "true"},
-    {"show_app_menu_item", "true"}, {"max_prompt_count", "-1"},
-    {"reprompt_duration", "7d"},    {"reprompt_duration_multiplier", "1"}};
-const FeatureEntry::FeatureParam kDefaultBrowserPromptRefreshAppMenuItem[] = {
-    {"show_info_bar", "true"},      {"show_app_menu_chip", "false"},
-    {"show_app_menu_item", "true"}, {"max_prompt_count", "3"},
-    {"reprompt_duration", "7d"},    {"reprompt_duration_multiplier", "1"}};
-const FeatureEntry::FeatureVariation kDefaultBrowserPromptRefreshVariations[] =
-    {{"- Aggressive (1 week reprompt with no backoff)",
-      kDefaultBrowserPromptRefreshAggressive,
-      std::size(kDefaultBrowserPromptRefreshAggressive), nullptr},
-     {"- For Testing (5 minute reprompt with 2x backoff, max 3 times)",
-      kDefaultBrowserPromptRefreshTesting,
-      std::size(kDefaultBrowserPromptRefreshTesting), nullptr},
-     {"- App Menu Chip (1 week reprompt with no backoff)",
-      kDefaultBrowserPromptRefreshAppMenu,
-      std::size(kDefaultBrowserPromptRefreshAppMenu), nullptr},
-     {"- App Menu Item (1 week reprompt with no backoff)",
-      kDefaultBrowserPromptRefreshAppMenuItem,
-      std::size(kDefaultBrowserPromptRefreshAppMenuItem), nullptr}};
-
 const FeatureEntry::FeatureParam
     kPrerender2WarmUpCompositorTriggerPointDidCommitLoad[] = {
         {"trigger_point", "did_commit_load"}};
@@ -11590,13 +11560,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kAuthenticateUsingUserConsentVerifierApi)},
 #endif
-
-    {"default-browser-prompt-refresh",
-     flag_descriptions::kDefaultBrowserPromptRefreshName,
-     flag_descriptions::kDefaultBrowserPromptRefreshDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kDefaultBrowserPromptRefresh,
-                                    kDefaultBrowserPromptRefreshVariations,
-                                    "DefaultBrowserPromptRefresh")},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"ash-forest-feature", flag_descriptions::kForestFeatureName,
