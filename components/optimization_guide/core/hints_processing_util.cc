@@ -77,8 +77,6 @@ std::string GetStringNameForOptimizationType(
       return "PriceInsights";
     case proto::OptimizationType::V8_COMPILE_HINTS:
       return "V8CompileHints";
-    case proto::OptimizationType::PAGE_INSIGHTS:
-      return "PageInsights";
     case proto::OptimizationType::SHOPPING_PAGE_TYPES:
       return "ShoppingPageTypes";
     case proto::OptimizationType::SHOPPING_DISCOUNTS:
