@@ -15,7 +15,6 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
-#include "chrome/browser/extensions/chrome_extension_browser_constants.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -23,6 +22,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
+#include "chrome/browser/extensions/permissions_url_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -497,13 +497,16 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
     }
     case PAGE_ACCESS_PERMISSIONS_PAGE:
       LogPageAccessAction(command_id);
-      OpenUrl(*browser_,
-              GURL(chrome_extension_constants::kExtensionsSitePermissionsURL));
+      OpenUrl(
+          *browser_,
+          GURL(extension_permissions_constants::kExtensionsSitePermissionsURL));
       break;
     case PAGE_ACCESS_LEARN_MORE:
       LogPageAccessAction(command_id);
-      OpenUrl(*browser_,
-              GURL(chrome_extension_constants::kRuntimeHostPermissionsHelpURL));
+      OpenUrl(
+          *browser_,
+          GURL(
+              extension_permissions_constants::kRuntimeHostPermissionsHelpURL));
 
       break;
     default:

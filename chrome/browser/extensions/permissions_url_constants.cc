@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/chrome_extension_browser_constants.h"
+#include "chrome/browser/extensions/permissions_url_constants.h"
 
-namespace chrome_extension_constants {
+namespace extension_permissions_constants {
 
 // The link to the help article for runtime host permissions.
 const char kRuntimeHostPermissionsHelpURL[] =
@@ -22,4 +22,4 @@ const char kExtensionsSitePermissionsURL[] =
 const char kShowAccessRequestsInToolbarHelpURL[] =
     "https://support.google.com/chrome_webstore/answer/2664769";
 
-}  // namespace chrome_extension_constants
+}  // namespace extension_permissions_constants
