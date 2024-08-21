@@ -15,7 +15,6 @@ namespace blink {
 class CSSParserContext;
 class CSSParserTokenStream;
 class CSSValue;
-struct CSSTokenizedValue;
 
 class AtRuleDescriptorParser {
   STATIC_ONLY(AtRuleDescriptorParser);

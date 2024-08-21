@@ -18,16 +18,6 @@
 
 namespace blink {
 
-namespace {
-
-CSSValue* ParseCSSWideValue(CSSParserTokenRange range) {
-  range.ConsumeWhitespace();
-  CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(range);
-  return range.AtEnd() ? value : nullptr;
-}
-
-}  // namespace
-
 bool CSSVariableParser::IsValidVariableName(const CSSParserToken& token) {
   if (token.GetType() != kIdentToken) {
     return false;
@@ -40,15 +30,28 @@ bool CSSVariableParser::IsValidVariableName(StringView string) {
   return string.length() >= 3 && string[0] == '-' && string[1] == '-';
 }
 
-CSSValue* CSSVariableParser::ParseDeclarationIncludingCSSWide(
-    const CSSTokenizedValue& tokenized_value,
+const CSSValue* CSSVariableParser::ParseDeclarationIncludingCSSWide(
+    CSSParserTokenStream& stream,
     bool is_animation_tainted,
     const CSSParserContext& context) {
-  if (CSSValue* css_wide = ParseCSSWideValue(tokenized_value.range)) {
+  stream.EnsureLookAhead();
+  bool important_ignored;
+  if (const CSSValue* css_wide = CSSPropertyParser::ConsumeCSSWideKeyword(
+          stream, /*allow_important_annotation=*/true, important_ignored)) {
     return css_wide;
   }
-  return ParseDeclarationValue(tokenized_value.text, is_animation_tainted,
-                               context);
+  CSSVariableData* variable_data = ConsumeUnparsedDeclaration(
+      stream,
+      /*allow_important_annotation=*/true, is_animation_tainted,
+      /*must_contain_variable_reference=*/false,
+      /*restricted_value=*/false,
+      /*comma_ends_declaration=*/false, important_ignored,
+      context.GetExecutionContext());
+  if (!variable_data) {
+    return nullptr;
+  }
+  return MakeGarbageCollected<CSSUnparsedDeclarationValue>(variable_data,
+                                                           &context);
 }
 
 CSSUnparsedDeclarationValue* CSSVariableParser::ParseDeclarationValue(

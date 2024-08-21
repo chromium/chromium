@@ -559,7 +559,6 @@ blink_core_sources_css = [
   "parser/css_selector_parser.h",
   "parser/css_supports_parser.cc",
   "parser/css_supports_parser.h",
-  "parser/css_tokenized_value.h",
   "parser/css_tokenizer.cc",
   "parser/css_tokenizer.h",
   "parser/css_tokenizer_input_stream.cc",

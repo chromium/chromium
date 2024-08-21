@@ -2862,43 +2862,6 @@ void CSSParserImpl::ConsumeDeclarationValue(CSSParserTokenStream& stream,
                                 rule_type);
 }
 
-bool CSSParserImpl::RemoveImportantAnnotationIfPresent(
-    CSSTokenizedValue& tokenized_value) {
-  if (tokenized_value.range.size() == 0) {
-    return false;
-  }
-  const CSSParserToken* first = tokenized_value.range.begin();
-  const CSSParserToken* last = tokenized_value.range.end() - 1;
-  while (last >= first && last->GetType() == kWhitespaceToken) {
-    --last;
-  }
-  if (last >= first && last->GetType() == kIdentToken &&
-      EqualIgnoringASCIICase(last->Value(), "important")) {
-    --last;
-    while (last >= first && last->GetType() == kWhitespaceToken) {
-      --last;
-    }
-    if (last >= first && last->GetType() == kDelimiterToken &&
-        last->Delimiter() == '!') {
-      tokenized_value.range = tokenized_value.range.MakeSubRange(first, last);
-
-      // Truncate the text to remove the delimiter and everything after it.
-      if (!tokenized_value.text.empty()) {
-        DCHECK_NE(tokenized_value.text.ToString().find('!'), kNotFound);
-        unsigned truncated_length = tokenized_value.text.length() - 1;
-        while (tokenized_value.text[truncated_length] != '!') {
-          --truncated_length;
-        }
-        tokenized_value.text =
-            StringView(tokenized_value.text, 0, truncated_length);
-      }
-      return true;
-    }
-  }
-
-  return false;
-}
-
 std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ConsumeKeyframeKeyList(
     const CSSParserContext* context,
     CSSParserTokenRange range) {

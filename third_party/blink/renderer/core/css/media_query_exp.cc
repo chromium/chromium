@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
-#include "third_party/blink/renderer/core/css/parser/css_tokenized_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -427,14 +426,18 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
   CSSParserContext::ParserModeOverridingScope scope(context, kHTMLStandardMode);
 
   if (CSSVariableParser::IsValidVariableName(media_feature)) {
+    // Parse style queries for container queries, e.g. “style(--foo: bar)”.
+    // (These look like a declaration, but are really a test as part of
+    // a media query expression.) !important, if present, is stripped
+    // and ignored.
     base::span span = range.RemainingSpan();
     StringView original_string =
         offsets.StringForTokens(span.data(), span.data() + span.size());
-    CSSTokenizedValue tokenized_value{range, original_string};
-    CSSParserImpl::RemoveImportantAnnotationIfPresent(tokenized_value);
+    CSSTokenizer tokenizer(original_string);
+    CSSParserTokenStream stream(tokenizer);
     if (const CSSValue* value =
-            CSSVariableParser::ParseDeclarationIncludingCSSWide(
-                tokenized_value, false, context)) {
+            CSSVariableParser::ParseDeclarationIncludingCSSWide(stream, false,
+                                                                context)) {
       while (!range.AtEnd()) {
         range.Consume();
       }

@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
-#include "third_party/blink/renderer/core/css/parser/css_tokenized_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -164,8 +163,6 @@ class CORE_EXPORT CSSParserImpl {
       const String&,
       wtf_size_t offset,
       const CSSParserContext*);
-
-  static bool RemoveImportantAnnotationIfPresent(CSSTokenizedValue&);
 
   CSSParserMode GetMode() const;
 

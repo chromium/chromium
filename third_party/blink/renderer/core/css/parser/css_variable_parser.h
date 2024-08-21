@@ -18,13 +18,13 @@ class CSSParserContext;
 class CSSParserTokenStream;
 class CSSUnparsedDeclarationValue;
 class CSSVariableData;
-struct CSSTokenizedValue;
 
 class CORE_EXPORT CSSVariableParser {
  public:
-  static CSSValue* ParseDeclarationIncludingCSSWide(const CSSTokenizedValue&,
-                                                    bool is_animation_tainted,
-                                                    const CSSParserContext&);
+  static const CSSValue* ParseDeclarationIncludingCSSWide(
+      CSSParserTokenStream&,
+      bool is_animation_tainted,
+      const CSSParserContext&);
   static CSSUnparsedDeclarationValue* ParseDeclarationValue(
       StringView,
       bool is_animation_tainted,
