@@ -1194,6 +1194,9 @@ void ReadableByteStreamController::PullInto(
       case DOMArrayBufferView::kTypeUint32:
         ctor = &CreateAsArrayBufferView<DOMUint32Array>;
         break;
+      case DOMArrayBufferView::kTypeFloat16:
+        ctor = &CreateAsArrayBufferView<DOMFloat16Array>;
+        break;
       case DOMArrayBufferView::kTypeFloat32:
         ctor = &CreateAsArrayBufferView<DOMFloat32Array>;
         break;

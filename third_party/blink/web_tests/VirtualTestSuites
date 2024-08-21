@@ -3589,5 +3589,28 @@
     "expires": "Jul 18, 2025",
     "owners": ["vogelheim@google.com"],
     "exclusive_tests": "ALL"
+  },
+  {
+    "prefix": "float16array-enabled",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/FileAPI/blob/Blob-constructor.any.js",
+      "external/wpt/IndexedDB/idb-binary-key-roundtrip.htm",
+      "external/wpt/IndexedDB/structured-clone.any.js",
+      "external/wpt/WebCryptoAPI/getRandomValues.any.js",
+      "external/wpt/compression/decompression-buffersource.tentative.any.js",
+      "external/wpt/encoding/encodeInto.any.js",
+      "external/wpt/fetch/api/basic/request-headers.any.js",
+      "external/wpt/fetch/api/basic/request-upload.any.js",
+      "external/wpt/fetch/api/response/response-clone.any.js",
+      "external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-simple-success.https.html",
+      "external/wpt/websockets/Send-binary-arraybufferview-float16.any.js",
+      "external/wpt/workers/semantics/interface-objects/001.worker.js",
+      "external/wpt/workers/semantics/interface-objects/003.any.js",
+      "external/wpt/xhr/send-data-sharedarraybuffer.any.js"
+    ],
+    "args": ["--js-flags=--js-float16array"],
+    "owners": ["syg@chromium.org"],
+    "expires": "Jan 1, 2025"
   }
 ]

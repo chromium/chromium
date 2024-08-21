@@ -33,6 +33,7 @@ class CORE_EXPORT DOMArrayBufferView : public ScriptWrappable {
     kTypeUint16,
     kTypeInt32,
     kTypeUint32,
+    kTypeFloat16,
     kTypeFloat32,
     kTypeFloat64,
     kTypeBigInt64,
@@ -67,40 +68,30 @@ class CORE_EXPORT DOMArrayBufferView : public ScriptWrappable {
     switch (GetType()) {
       case kTypeInt8:
         return "Int8";
-        break;
       case kTypeUint8:
         return "UInt8";
-        break;
       case kTypeUint8Clamped:
         return "UInt8Clamped";
-        break;
       case kTypeInt16:
         return "Int16";
-        break;
       case kTypeUint16:
         return "UInt16";
-        break;
       case kTypeInt32:
         return "Int32";
-        break;
       case kTypeUint32:
         return "Uint32";
-        break;
       case kTypeBigInt64:
         return "BigInt64";
-        break;
       case kTypeBigUint64:
         return "BigUint64";
-        break;
+      case kTypeFloat16:
+        return "Float16";
       case kTypeFloat32:
         return "Float32";
-        break;
       case kTypeFloat64:
         return "Float64";
-        break;
       case kTypeDataView:
         return "DataView";
-        break;
     }
   }
 
