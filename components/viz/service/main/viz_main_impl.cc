@@ -130,6 +130,8 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
       gpu_init_->gpu_feature_info(), gpu_init_->gpu_info_for_hardware_gpu(),
       gpu_init_->gpu_feature_info_for_hardware_gpu(),
       gpu_init_->gpu_extra_info(), std::move(init_params));
+  gpu_service_->SetRequestBeginFrameForGpuServiceCB(base::BindRepeating(
+      &VizMainImpl::RequestBeginFrameForGpuService, base::Unretained(this)));
   VizDebugger::GetInstance();
 }
 
@@ -311,6 +313,11 @@ void VizMainImpl::CreateFrameSinkManagerInternal(
 
   viz_compositor_thread_runner_->CreateFrameSinkManager(std::move(params),
                                                         gpu_service_.get());
+}
+
+void VizMainImpl::RequestBeginFrameForGpuService(bool toggle) {
+  DCHECK(gpu_thread_task_runner_->BelongsToCurrentThread());
+  viz_compositor_thread_runner_->RequestBeginFrameForGpuService(toggle);
 }
 
 #if BUILDFLAG(USE_VIZ_DEBUGGER)

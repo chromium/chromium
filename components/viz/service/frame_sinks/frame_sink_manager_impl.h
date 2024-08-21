@@ -34,6 +34,7 @@
 #include "components/viz/service/frame_sinks/root_compositor_frame_sink_impl.h"
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_manager.h"
 #include "components/viz/service/frame_sinks/video_detector.h"
+#include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/service/hit_test/hit_test_aggregator_delegate.h"
 #include "components/viz/service/hit_test/hit_test_manager.h"
 #include "components/viz/service/surfaces/surface_manager.h"
@@ -89,6 +90,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     std::optional<uint32_t> activation_deadline_in_frames =
         kDefaultActivationDeadlineInFrames;
     raw_ptr<OutputSurfaceProvider> output_surface_provider = nullptr;
+    raw_ptr<GpuServiceImpl> gpu_service = nullptr;
     raw_ptr<GmbVideoFramePoolContextProvider> gmb_context_provider = nullptr;
     uint32_t restart_id = BeginFrameSource::kNotRestartableId;
     bool run_all_compositor_stages_before_draw = false;
@@ -344,6 +346,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     return copy_output_request_result_size_for_testing_;
   }
 
+  void RequestBeginFrameForGpuService(bool toggle);
+
  private:
   friend class FrameSinkManagerTest;
   friend class CompositorFrameSinkSupportTestBase;
@@ -423,6 +427,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // Provides an output surface for CreateRootCompositorFrameSink().
   const raw_ptr<OutputSurfaceProvider> output_surface_provider_;
 
+  raw_ptr<GpuServiceImpl> gpu_service_ = nullptr;
+
   const raw_ptr<GmbVideoFramePoolContextProvider> gmb_context_provider_;
 
   SurfaceManager surface_manager_;
@@ -457,6 +463,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // that is implicitly using this frame sink must be reachable by the
   // parent in the dag.
   base::flat_map<BeginFrameSource*, FrameSinkId> registered_sources_;
+
+  // Store the BeginFrameSource of root compositor frame sink.
+  raw_ptr<BeginFrameSource> root_begin_frame_source_ = nullptr;
+  FrameSinkId root_frame_sink_id_;
 
   // Contains FrameSinkId hierarchy and BeginFrameSource mapping.
   base::flat_map<FrameSinkId, FrameSinkSourceMapping> frame_sink_source_map_;

@@ -20,9 +20,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "components/chromeos_camera/common/dmabuf.mojom.h"
 #include "components/chromeos_camera/dmabuf_utils.h"
 #include "media/base/bitstream_buffer.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -64,17 +66,44 @@ namespace chromeos_camera {
 // static
 void MojoMjpegDecodeAcceleratorService::Create(
     mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
-        receiver) {
+        receiver,
+    base::RepeatingCallback<void(MjpegDecodeOnBeginFrameCB)> cb) {
   auto* jpeg_decoder = new MojoMjpegDecodeAcceleratorService();
+  jpeg_decoder->set_begin_frame_cb_ = std::move(cb);
   mojo::MakeSelfOwnedReceiver(base::WrapUnique(jpeg_decoder),
                               std::move(receiver));
 }
+
+struct MojoMjpegDecodeAcceleratorService::DecodeTask {
+  DecodeTask(int32_t task_id,
+             base::ScopedFD src_dmabuf_fd,
+             size_t src_size,
+             off_t src_offset,
+             scoped_refptr<media::VideoFrame> dst_frame)
+      : task_id(task_id),
+        src_dmabuf_fd(std::move(src_dmabuf_fd)),
+        src_size(src_size),
+        src_offset(src_offset),
+        dst_frame(dst_frame) {}
+  int32_t task_id;
+  base::ScopedFD src_dmabuf_fd;
+  size_t src_size;
+  off_t src_offset;
+  scoped_refptr<media::VideoFrame> dst_frame;
+};
 
 MojoMjpegDecodeAcceleratorService::MojoMjpegDecodeAcceleratorService()
     : accelerator_initialized_(false), weak_this_factory_(this) {}
 
 MojoMjpegDecodeAcceleratorService::~MojoMjpegDecodeAcceleratorService() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(media::kVSyncMjpegDecoding)) {
+    set_begin_frame_cb_.Run(std::nullopt);
+    vsync_driven_decoding_ = false;
+  }
+#endif
+
   accelerator_.reset();
 }
 
@@ -112,6 +141,16 @@ void MojoMjpegDecodeAcceleratorService::InitializeInternal(
                  std::move(init_cb), /*last_initialize_result=*/false);
     return;
   }
+
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(media::kVSyncMjpegDecoding)) {
+    vsync_driven_decoding_ = true;
+    set_begin_frame_cb_.Run(base::BindRepeating(
+        &MojoMjpegDecodeAcceleratorService::DecodeWithDmaBufOnBeginFrame,
+        weak_this_factory_.GetWeakPtr()));
+  }
+#endif
+
   accelerator_->InitializeAsync(
       this, base::BindOnce(&MojoMjpegDecodeAcceleratorService::OnInitialize,
                            weak_this_factory_.GetWeakPtr(),
@@ -281,9 +320,28 @@ void MojoMjpegDecodeAcceleratorService::DecodeWithDmaBuf(
     return;
   }
   DCHECK(accelerator_);
-  accelerator_->Decode(task_id, src_handle.TakeFD(),
-                       base::strict_cast<size_t>(src_size),
-                       base::strict_cast<off_t>(src_offset), std::move(frame));
+  if (!vsync_driven_decoding_) {
+    accelerator_->Decode(
+        task_id, src_handle.TakeFD(), base::strict_cast<size_t>(src_size),
+        base::strict_cast<off_t>(src_offset), std::move(frame));
+  } else {
+    // Stores task to pending_tasks_ and wait for VSync event to process.
+    input_queue_.emplace_back(
+        task_id, src_handle.TakeFD(), base::strict_cast<size_t>(src_size),
+        base::strict_cast<off_t>(src_offset), std::move(frame));
+  }
+}
+
+void MojoMjpegDecodeAcceleratorService::DecodeWithDmaBufOnBeginFrame() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  for (auto& input : input_queue_) {
+    accelerator_->Decode(input.task_id, std::move(input.src_dmabuf_fd),
+                         input.src_size, input.src_offset,
+                         std::move(input.dst_frame));
+  }
+
+  input_queue_.clear();
 }
 
 void MojoMjpegDecodeAcceleratorService::Uninitialize() {

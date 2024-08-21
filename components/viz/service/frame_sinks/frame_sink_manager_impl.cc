@@ -80,6 +80,7 @@ operator=(FrameSinkData&& other) = default;
 FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
     : shared_bitmap_manager_(params.shared_bitmap_manager),
       output_surface_provider_(params.output_surface_provider),
+      gpu_service_(params.gpu_service),
       gmb_context_provider_(params.gmb_context_provider),
       surface_manager_(this,
                        params.activation_deadline_in_frames,
@@ -205,8 +206,12 @@ void FrameSinkManagerImpl::CreateRootCompositorFrameSink(
   DCHECK(!base::Contains(root_sink_map_, params->frame_sink_id));
   DCHECK(output_surface_provider_);
 
-  // We are transfering ownership of |params| so remember FrameSinkId here.
+  // We are transferring ownership of |params| so remember FrameSinkId here.
   FrameSinkId frame_sink_id = params->frame_sink_id;
+
+  if (root_sink_map_.empty()) {
+    root_frame_sink_id_ = frame_sink_id;
+  }
 
   // Creating RootCompositorFrameSinkImpl can fail and return null.
   auto root_compositor_frame_sink = RootCompositorFrameSinkImpl::Create(
@@ -531,6 +536,10 @@ void FrameSinkManagerImpl::RegisterBeginFrameSource(
 
   registered_sources_[source] = frame_sink_id;
   RecursivelyAttachBeginFrameSource(frame_sink_id, source);
+
+  if (frame_sink_id == root_frame_sink_id_) {
+    root_begin_frame_source_ = source;
+  }
 }
 
 void FrameSinkManagerImpl::UnregisterBeginFrameSource(
@@ -540,6 +549,10 @@ void FrameSinkManagerImpl::UnregisterBeginFrameSource(
 
   FrameSinkId frame_sink_id = registered_sources_[source];
   registered_sources_.erase(source);
+
+  if (frame_sink_id == root_frame_sink_id_) {
+    root_begin_frame_source_ = nullptr;
+  }
 
   if (frame_sink_source_map_.count(frame_sink_id) == 0u)
     return;
@@ -1016,6 +1029,16 @@ void FrameSinkManagerImpl::EnableFrameSinkManagerTestApi(
     mojo::PendingReceiver<mojom::FrameSinkManagerTestApi> receiver) {
   CHECK(!test_api_receiver_.is_bound());
   test_api_receiver_.Bind(std::move(receiver));
+}
+
+void FrameSinkManagerImpl::RequestBeginFrameForGpuService(bool toggle) {
+  if (root_begin_frame_source_ && gpu_service_) {
+    if (toggle) {
+      root_begin_frame_source_->AddObserver(gpu_service_);
+    } else {
+      root_begin_frame_source_->RemoveObserver(gpu_service_);
+    }
+  }
 }
 
 }  // namespace viz

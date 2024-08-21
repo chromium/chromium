@@ -157,6 +157,7 @@ class VizMainImpl : public mojom::VizMain {
 
  private:
   void CreateFrameSinkManagerInternal(mojom::FrameSinkManagerParamsPtr params);
+  void RequestBeginFrameForGpuService(bool toggle);
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner() const {
     return io_thread_ ? io_thread_->task_runner()
