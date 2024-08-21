@@ -26,6 +26,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/zlib/google/compression_utils.h"
 
 namespace updater::test {
 namespace {
@@ -122,7 +123,30 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
   if (base::StartsWith(request.relative_url, proxy_pac_path())) {
     VLOG(1) << "PAC proxy settings: [ " << response_body << "]";
   }
-  response->set_content(response_body);
+
+  if (gzip_response_) {
+    if (!request.headers.contains("Accept-Encoding") ||
+        request.headers["Accept-Encoding"].find("gzip") == std::string::npos) {
+      VLOG(0) << "gzip `Accept-Encoding` not found in request.";
+      ADD_FAILURE() << "gzip `Accept-Encoding` not found in request, "
+                    << SerializeRequest(request);
+      response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+      return response;
+    }
+
+    std::string compressed_body;
+    if (!compression::GzipCompress(response_body, &compressed_body)) {
+      VLOG(0) << "gzip compression failed.";
+      ADD_FAILURE() << "gzip compression failed, " << SerializeRequest(request);
+      response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+      return response;
+    }
+    response->AddCustomHeader("Content-Encoding", "gzip");
+    response->set_content(compressed_body);
+  } else {
+    response->set_content(response_body);
+  }
+
   request_matcher_groups_.pop_front();
   responses_.pop_front();
   return response;
