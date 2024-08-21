@@ -113,7 +113,6 @@ source_set("common") {
     "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
     "//gpu/ipc/common:common",
-    "//gpu/vulkan/init:init",
     "//media",
     "//media/gpu:buffer_validation",
     "//media/gpu:buildflags",
@@ -135,7 +134,10 @@ source_set("common") {
       "vulkan_overlay_adaptor.cc",
       "vulkan_overlay_adaptor.h",
     ]
-    deps += [ "//gpu/command_buffer/service:gles2" ]
+    deps += [
+      "//gpu/command_buffer/service:gles2",
+      "//gpu/vulkan/init:init",
+    ]
   }
 
   if (is_chromeos) {
