@@ -58,6 +58,7 @@
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/separator.h"
@@ -443,6 +444,19 @@ void SidePanelCoordinator::UpdatePinState() {
   MaybeEndPinPromo(/*pinned=*/true);
 }
 
+void SidePanelCoordinator::OpenMoreInfoMenu() {
+  more_info_menu_model_ = current_entry_->GetMoreInfoMenuModel();
+  CHECK(more_info_menu_model_);
+  menu_runner_ = std::make_unique<views::MenuRunner>(
+      more_info_menu_model_.get(), views::MenuRunner::HAS_MNEMONICS);
+  menu_runner_->RunMenuAt(header_more_info_button_->GetWidget(),
+                          static_cast<views::MenuButtonController*>(
+                              header_more_info_button_->button_controller()),
+                          header_more_info_button_->GetAnchorBoundsInScreen(),
+                          views::MenuAnchorPosition::kTopRight,
+                          ui::MENU_SOURCE_NONE);
+}
+
 std::optional<SidePanelEntry::Id> SidePanelCoordinator::GetCurrentEntryId()
     const {
   return current_entry_
@@ -707,6 +721,8 @@ void SidePanelCoordinator::PopulateSidePanel(
   }
   UpdateNewTabButtonState();
   UpdateHeaderPinButtonState();
+  header_more_info_button_->SetVisible(
+      current_entry_->SupportsMoreInfoButton());
 
   // Notify the observers when the side panel is opened (made visible). However,
   // the observers are not renotified when the side panel entry changes.
@@ -793,6 +809,28 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
       views::View::FocusBehavior::ALWAYS);
   // The icon is later set as visible for side panels that support it.
   header_open_in_new_tab_button_->SetVisible(false);
+
+  header_more_info_button_ = header->AddChildView(CreateControlButton(
+      header.get(),
+      // Callback will not be used since a button controller is being set.
+      base::RepeatingClosure(), kHelpMenuIcon,
+      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_HEADER_MORE_INFO_BUTTON_TOOLTIP),
+      kSidePanelMoreInfoButtonElementId,
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));
+  header_more_info_button_->SetFocusBehavior(
+      views::View::FocusBehavior::ALWAYS);
+  // The icon is later set as visible for side panels that support it.
+  header_more_info_button_->SetVisible(false);
+  // A menu button controller is used so that the button remains pressed while
+  // the menu is open.
+  header_more_info_button_->SetButtonController(
+      std::make_unique<views::MenuButtonController>(
+          header_more_info_button_,
+          base::BindRepeating(&SidePanelCoordinator::OpenMoreInfoMenu,
+                              base::Unretained(this)),
+          std::make_unique<views::Button::DefaultButtonControllerDelegate>(
+              header_more_info_button_)));
 
   auto* header_close_button = header->AddChildView(CreateControlButton(
       header.get(),

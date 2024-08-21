@@ -15,18 +15,19 @@
 #include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
 #include "ui/actions/actions.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/view_observer.h"
 
 class BrowserView;
@@ -37,6 +38,7 @@ class ActionItem;
 
 namespace views {
 class ImageButton;
+class MenuRunner;
 class ToggleImageButton;
 class View;
 }  // namespace views
@@ -108,6 +110,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   views::ToggleImageButton* GetHeaderPinButtonForTesting() {
     return header_pin_button_;
+  }
+
+  views::ImageButton* GetHeaderMoreInfoButtonForTesting() {
+    return header_more_info_button_;
   }
 
   SidePanelEntry* GetLoadingEntryForTesting() const;
@@ -207,6 +213,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   void ShowPinPromo();
   void MaybeEndPinPromo(bool pinned);
 
+  // Opens the more info menu. This is called by the header button, when it's
+  // visible.
+  void OpenMoreInfoMenu();
+
   // SidePanelRegistryObserver:
   void OnEntryRegistered(SidePanelRegistry* registry,
                          SidePanelEntry* entry) override;
@@ -266,6 +276,16 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // Used to update the visibility of the pin header button.
   raw_ptr<views::ToggleImageButton, AcrossTasksDanglingUntriaged>
       header_pin_button_ = nullptr;
+
+  // Used to update the visibility of the more info button.
+  raw_ptr<views::ImageButton, AcrossTasksDanglingUntriaged>
+      header_more_info_button_ = nullptr;
+
+  // Model for the more info menu.
+  std::unique_ptr<ui::MenuModel> more_info_menu_model_;
+
+  // Runner for the more info menu.
+  std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // Provides delay on pinning promo.
   base::OneShotTimer pin_promo_timer_;

@@ -9141,6 +9141,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
           is_accessibility_with_no_ui="true">
         Pinned! You can access Google Lens again from the new button on the toolbar
       </message>
+      <message name="IDS_SIDE_PANEL_HEADER_MORE_INFO_BUTTON_TOOLTIP" desc="The tooltip for the side panel more info button.">
+        More info
+      </message>
 
       <!-- Bookmarks strings -->
       <message name="IDS_BOOKMARKS_SORT_BY_TYPE" desc="Menu item label for selecting the bookmarks sort type.">
