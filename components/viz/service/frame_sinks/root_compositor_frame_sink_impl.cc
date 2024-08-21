@@ -886,7 +886,9 @@ void RootCompositorFrameSinkImpl::SetMaxVSyncAndVrr(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  interval_decider_use_fixed_intervals_ = !max_vsync_interval.has_value();
+  if (!use_preferred_interval_) {
+    interval_decider_use_fixed_intervals_ = !max_vsync_interval.has_value();
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   UpdateFrameIntervalDeciderSettings();
 }
