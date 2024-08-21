@@ -190,13 +190,6 @@ class MEDIA_EXPORT VideoResourceUpdater
       const gfx::ColorSpace& input_frame_color_space,
       bool& texture_needs_rgb_conversion_out);
 
-  // Get the subplane shared image format used for creating
-  // SoftwarePlaneResource per plane for multiplanar formats.
-  std::optional<viz::SharedImageFormat> GetSoftwareSubplaneFormat(
-      VideoPixelFormat input_frame_format,
-      const gfx::ColorSpace& input_frame_color_space,
-      viz::SharedImageFormat output_si_format);
-
   // Transfer RGB pixels from the video frame to software resource through
   // canvas via PaintCanvasVideoRenderer.
   void TransferRGBPixelsToPaintCanvas(scoped_refptr<VideoFrame> video_frame,
@@ -207,15 +200,6 @@ class MEDIA_EXPORT VideoResourceUpdater
   bool WriteRGBPixelsToTexture(scoped_refptr<VideoFrame> video_frame,
                                PlaneResource* plane_resource,
                                viz::SharedImageFormat output_si_format);
-
-  // Write/copy YUV pixels per plane from video frame to hardware resource
-  // through WritePixels or TexSubImage2D. Also perform bit downshifting for
-  // channel format mismatch between input frame and supported shared image
-  // format.
-  bool WriteYUVPixelsPerPlaneToPerTexture(scoped_refptr<VideoFrame> video_frame,
-                                          HardwarePlaneResource* plane_resource,
-                                          size_t bits_per_channel,
-                                          size_t plane_index);
 
   // Write/copy YUV pixels for all planes from video frame to hardware resource
   // through WritePixelsYUV. Also perform bit downshifting for
