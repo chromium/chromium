@@ -706,6 +706,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("IncreaseCoookieAccesCacheSize"),
         Flag.baseFeature("AvoidScheduleWorkDuringNativeEventProcessing"),
         Flag.baseFeature("AvoidEntryCreationForNoStore"),
+        Flag.baseFeature("ChangeDiskCacheSize"),
         Flag.baseFeature("BatchNativeEventsInMessagePumpEpoll"),
         Flag.baseFeature(
                 VizFeatures.ON_BEGIN_FRAME_THROTTLE_VIDEO,
