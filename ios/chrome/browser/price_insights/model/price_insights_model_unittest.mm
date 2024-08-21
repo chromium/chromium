@@ -154,6 +154,35 @@ TEST_F(PriceInsightsModelTest, TestFetchConfigurationNoTitleNoClusterTitle) {
   EXPECT_EQ(nullptr, config);
 }
 
+// Tests that fetching the configuration for the price insights model returns no
+// data when product info is available without tracking.
+TEST_F(PriceInsightsModelTest, TestFetchConfigurationProductInfoNoTracking) {
+  base::RunLoop run_loop;
+
+  std::optional<commerce::ProductInfo> info;
+  info.emplace();
+  info->title = kTestTitle;
+  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
+  shopping_service_->SetIsShoppingListEligible(false);
+
+  EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
+  EXPECT_CALL(*shopping_service_, GetPriceInsightsInfoForUrl(_, _)).Times(1);
+
+  price_insights_model_->FetchConfigurationForWebState(
+      web_state_.get(),
+      base::BindOnce(&PriceInsightsModelTest::FetchConfigurationCallback,
+                     base::Unretained(this))
+          .Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+
+  PriceInsightsItemConfiguration* config =
+      static_cast<PriceInsightsItemConfiguration*>(
+          returned_configuration_.get());
+
+  EXPECT_EQ(nullptr, config);
+}
+
 // Test that GetProductInfoForUrl return data when the configuration is fetched.
 TEST_F(PriceInsightsModelTest, TestFetchProductInfo) {
   base::RunLoop run_loop;
@@ -161,10 +190,11 @@ TEST_F(PriceInsightsModelTest, TestFetchProductInfo) {
   std::optional<commerce::ProductInfo> info;
   info.emplace();
   info->title = kTestTitle;
+  info->product_cluster_id = 12345L;
   shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
 
   EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
-  EXPECT_CALL(*shopping_service_, IsSubscribed(_, _)).Times(0);
+  EXPECT_CALL(*shopping_service_, IsSubscribed(_, _)).Times(1);
 
   price_insights_model_->FetchConfigurationForWebState(
       web_state_.get(),
@@ -416,10 +446,17 @@ TEST_F(PriceInsightsModelTest, TestFetchProductInfoWithPriceTrackUnavailable) {
   std::optional<commerce::ProductInfo> info;
   info.emplace();
   info->title = kTestTitle;
-  info->product_cluster_id = 12345L;
   shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
   shopping_service_->SetIsSubscribedCallbackValue(false);
   shopping_service_->SetIsShoppingListEligible(false);
+
+  std::optional<commerce::PriceInsightsInfo> price_info;
+  price_info.emplace();
+  price_info->product_cluster_id = 123u;
+  price_info->catalog_history_prices.emplace_back("2021-01-01", 3330000);
+  price_info->catalog_history_prices.emplace_back("2021-01-02", 4440000);
+  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
+      std::move(price_info));
 
   EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
   EXPECT_CALL(*shopping_service_, IsSubscribed(_, _)).Times(0);
