@@ -4,9 +4,17 @@
 
 package org.chromium.components.search_engines;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.content.Context;
 
@@ -19,45 +27,178 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
+import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.Promise;
-import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.components.search_engines.SearchEngineCountryDelegate.DeviceChoiceEventType;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 @SmallTest
-@RunWith(BaseRobolectricTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class SearchEngineChoiceServiceUnitTest {
+    @Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {{true}, {false}});
+    }
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private @Mock Context mContext;
-    private @Mock SearchEngineCountryDelegate mSearchEngineCountryDelegate;
+    private @Mock SearchEngineCountryDelegate mDelegate;
+
+    private final boolean mIsClayBlockingEnabled;
+
+    public SearchEngineChoiceServiceUnitTest(boolean isClayBlockingEnabled) {
+        this.mIsClayBlockingEnabled = isClayBlockingEnabled;
+    }
 
     @Before
     public void setUp() {
-        doReturn(Promise.rejected()).when(mSearchEngineCountryDelegate).getDeviceCountry();
+        var testFeatures = new FeatureList.TestValues();
+        testFeatures.addFeatureFlagOverride(
+                SearchEnginesFeatures.CLAY_BLOCKING, mIsClayBlockingEnabled);
+        FeatureList.setTestValues(testFeatures);
+
+        doReturn(Promise.rejected()).when(mDelegate).getDeviceCountry();
     }
 
     @Test
-    @DisableFeatures({SearchEnginesFeatures.CLAY_BLOCKING})
     public void testAbstractDelegate() {
         var service = new SearchEngineChoiceService(new SearchEngineCountryDelegate(mContext) {});
 
         // The default implementation should be set to not trigger anything disruptive.
+        assertTrue(service.getDeviceCountry().isRejected());
+
         assertFalse(service.isDeviceChoiceDialogEligible());
-        assertTrue(service.shouldShowDeviceChoiceDialog().isFulfilled());
-        assertFalse(service.shouldShowDeviceChoiceDialog().getResult());
+        assertFalse(service.getIsDeviceChoiceRequiredSupplier().get());
+
+        var shouldShowDeviceDialogPromise = service.shouldShowDeviceChoiceDialog();
+        ShadowLooper.runUiThreadTasks();
+        if (mIsClayBlockingEnabled) {
+            assertTrue(shouldShowDeviceDialogPromise.isFulfilled());
+            assertFalse(shouldShowDeviceDialogPromise.getResult());
+        } else {
+            assertTrue(shouldShowDeviceDialogPromise.isRejected());
+        }
     }
 
     @Test
-    @EnableFeatures({SearchEnginesFeatures.CLAY_BLOCKING})
-    public void testAbstractDelegate_clayEnabled() {
-        var service = new SearchEngineChoiceService(new SearchEngineCountryDelegate(mContext) {});
+    public void testGetDeviceCountry_rejected() {
+        reset(mDelegate);
+        doReturn(Promise.rejected()).when(mDelegate).getDeviceCountry();
 
-        // The default implementation should be set to not trigger anything disruptive.
+        var service = new SearchEngineChoiceService(mDelegate);
+
+        assertTrue(service.getDeviceCountry().isRejected());
+        verify(mDelegate, times(1)).getDeviceCountry();
+
+        // Even if it changes, the device country is not fetched again afterwards.
+        reset(mDelegate);
+        assertTrue(service.getDeviceCountry().isRejected());
+        verifyNoInteractions(mDelegate);
+    }
+
+    @Test
+    public void testGetDeviceCountry_fulfilled() {
+        reset(mDelegate);
+        doReturn(Promise.fulfilled("countryCode")).when(mDelegate).getDeviceCountry();
+
+        var service = new SearchEngineChoiceService(mDelegate);
+
+        var deviceCountryPromise = service.getDeviceCountry();
+        assertTrue(deviceCountryPromise.isFulfilled());
+        assertEquals("countryCode", deviceCountryPromise.getResult());
+        verify(mDelegate, times(1)).getDeviceCountry();
+
+        // Even if it changes, the device country is not fetched again afterwards.
+        reset(mDelegate);
+        assertEquals("countryCode", service.getDeviceCountry().getResult());
+        verifyNoInteractions(mDelegate);
+    }
+
+    @Test
+    public void testIsDeviceDialogChoiceEligible() {
+        var service = new SearchEngineChoiceService(mDelegate);
+
+        doReturn(false).when(mDelegate).isDeviceChoiceDialogEligible();
         assertFalse(service.isDeviceChoiceDialogEligible());
-        assertTrue(service.shouldShowDeviceChoiceDialog().isFulfilled());
-        assertFalse(service.shouldShowDeviceChoiceDialog().getResult());
+        verify(mDelegate, times(mIsClayBlockingEnabled ? 1 : 0)).isDeviceChoiceDialogEligible();
+
+        doReturn(true).when(mDelegate).isDeviceChoiceDialogEligible();
+        if (mIsClayBlockingEnabled) {
+            assertTrue(service.isDeviceChoiceDialogEligible());
+            verify(mDelegate, times(2)).isDeviceChoiceDialogEligible();
+        } else {
+            assertFalse(service.isDeviceChoiceDialogEligible());
+            verify(mDelegate, never()).isDeviceChoiceDialogEligible();
+        }
+    }
+
+    @Test
+    public void testGetIsDeviceChoiceRequiredSupplier() {
+        var service = new SearchEngineChoiceService(mDelegate);
+
+        ObservableSupplier<Boolean> fakeSupplier = new ObservableSupplierImpl<>();
+
+        doReturn(fakeSupplier).when(mDelegate).getIsDeviceChoiceRequiredSupplier();
+        var actualSupplier = service.getIsDeviceChoiceRequiredSupplier();
+
+        if (mIsClayBlockingEnabled) {
+            assertSame(fakeSupplier, actualSupplier);
+            verify(mDelegate).getIsDeviceChoiceRequiredSupplier();
+        } else {
+            assertNotSame(fakeSupplier, actualSupplier);
+            assertFalse(actualSupplier.get());
+            verify(mDelegate, never()).getIsDeviceChoiceRequiredSupplier();
+        }
+    }
+
+    @Test
+    public void testShouldShowDeviceChoiceDialog() {
+        var service = new SearchEngineChoiceService(mDelegate);
+
+        ObservableSupplierImpl<Boolean> fakeSupplier = new ObservableSupplierImpl<>();
+
+        doReturn(fakeSupplier).when(mDelegate).getIsDeviceChoiceRequiredSupplier();
+        var promise = service.shouldShowDeviceChoiceDialog();
+        ShadowLooper.runUiThreadTasks();
+
+        if (mIsClayBlockingEnabled) {
+            assertTrue(promise.isPending());
+            verify(mDelegate).getIsDeviceChoiceRequiredSupplier();
+
+            fakeSupplier.set(true);
+            ShadowLooper.runUiThreadTasks();
+            assertTrue(promise.isFulfilled());
+            assertTrue(promise.getResult());
+        } else {
+            assertTrue(promise.isRejected());
+            verify(mDelegate, never()).getIsDeviceChoiceRequiredSupplier();
+        }
+    }
+
+    @Test
+    public void testNotifyDeviceChoiceBlockShown() {
+        var service = new SearchEngineChoiceService(mDelegate);
+
+        service.notifyDeviceChoiceBlockShown();
+        verify(mDelegate, times(mIsClayBlockingEnabled ? 1 : 0))
+                .log(DeviceChoiceEventType.BLOCK_SHOWN);
+    }
+
+    @Test
+    public void testNotifyDeviceChoiceBlockCleared() {
+        var service = new SearchEngineChoiceService(mDelegate);
+
+        service.notifyDeviceChoiceBlockCleared();
+        verify(mDelegate, times(mIsClayBlockingEnabled ? 1 : 0))
+                .log(DeviceChoiceEventType.BLOCK_CLEARED);
     }
 }
