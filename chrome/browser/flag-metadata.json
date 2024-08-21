@@ -7416,7 +7416,7 @@
     ],
     // This is a debug flag to opt-in to providing debug information
     // to operators of Bidding And Auction API Trusted Servers.
-    "expiry_milestone": 130
+    "expiry_milestone": -1
   },
   {
     "name": "pull-to-refresh",
