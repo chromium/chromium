@@ -123,6 +123,9 @@ _OS_SPECIFIC_FILTER['win'] = [
     'SupportIPv4AndIPv6.testSupportIPv4AndIPv6',
     # Flaky on Win7 bots: crbug.com/1132559
     'ChromeDriverTest.testTakeElementScreenshotInIframe',
+    # TODO(https://crbug.com/360058651): Flaky on win11.
+    'ChromeDriverTest.testClickElementObscuredByScrollBar',
+    'ChromeDriverTest.testClickElementAlmostObscuredByScrollBar',
 ]
 _OS_SPECIFIC_FILTER['linux'] = [
 ]
