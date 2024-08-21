@@ -30,6 +30,9 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER;
+
 import android.app.Activity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -153,6 +156,7 @@ public class TabGridDialogMediatorUnitTest {
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
+    @Captor private ArgumentCaptor<PropertyModel> mCollaborationActivityMessageCardCaptor;
 
     private final ObservableSupplierImpl<TabModelFilter> mCurrentTabModelFilterSupplier =
             new ObservableSupplierImpl<>();
@@ -1634,6 +1638,73 @@ public class TabGridDialogMediatorUnitTest {
                 .thenReturn(false);
         mMediator.showOrUpdateCollaborationActivityMessageCard();
         verify(mDialogController).addMessageCardItem(/* position= */ eq(0), any());
+    }
+
+    @Test
+    public void testCollaborationActivityMessageCard_Dismiss() {
+        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
+        when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
+                .thenReturn(false);
+
+        mMediator.showOrUpdateCollaborationActivityMessageCard();
+        verify(mDialogController)
+                .addMessageCardItem(
+                        /* position= */ eq(0), mCollaborationActivityMessageCardCaptor.capture());
+
+        mCollaborationActivityMessageCardCaptor
+                .getValue()
+                .get(MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER)
+                .dismiss(MessageType.COLLABORATION_ACTIVITY);
+
+        verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
+    }
+
+    @Test
+    public void testCollaborationActivityMessageCard_ClickNoCollaboration() {
+        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
+        when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
+                .thenReturn(false);
+
+        mMediator.showOrUpdateCollaborationActivityMessageCard();
+        verify(mDialogController)
+                .addMessageCardItem(
+                        /* position= */ eq(0), mCollaborationActivityMessageCardCaptor.capture());
+
+        mCollaborationActivityMessageCardCaptor
+                .getValue()
+                .get(MESSAGE_SERVICE_ACTION_PROVIDER)
+                .review();
+
+        verify(mDataSharingTabManager, never()).showRecentActivity(any());
+        verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
+    }
+
+    @Test
+    public void testCollaborationActivityMessageCard_Click() {
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+        mMediator.onReset(tabGroup);
+
+        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
+        when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
+                .thenReturn(false);
+
+        mMediator.showOrUpdateCollaborationActivityMessageCard();
+        verify(mDialogController)
+                .addMessageCardItem(
+                        /* position= */ eq(0), mCollaborationActivityMessageCardCaptor.capture());
+
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.title = GROUP_TITLE;
+        savedTabGroup.collaborationId = COLLABORATION_ID1;
+        when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(savedTabGroup);
+
+        mCollaborationActivityMessageCardCaptor
+                .getValue()
+                .get(MESSAGE_SERVICE_ACTION_PROVIDER)
+                .review();
+
+        verify(mDataSharingTabManager).showRecentActivity(COLLABORATION_ID1);
     }
 
     private Tab prepareTab(int id, String title) {

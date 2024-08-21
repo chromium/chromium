@@ -146,6 +146,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
         mJniMocker.mock(TabGroupSyncFeaturesJni.TEST_HOOKS, mTabGroupSyncFeaturesJniMock);
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
 
         TrackerFactory.setTrackerForTests(mTracker);
 
@@ -391,7 +392,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     public void testOpenInvitationModal() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
-        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         DataSharingServiceFactory.setForTesting(mDataSharingService);
 
         DialogController controller = showTabGridDialogWithTabs();

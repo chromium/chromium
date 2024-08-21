@@ -178,6 +178,7 @@ public class TabGridDialogMediator
     private final String mComponentName;
     private final Runnable mShowColorPickerPopupRunnable;
     private final ActionConfirmationManager mActionConfirmationManager;
+    private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final DataSharingTabManager mDataSharingTabManager;
 
     private TabGridDialogMenuCoordinator mTabGridDialogMenuCoordinator;
@@ -227,6 +228,11 @@ public class TabGridDialogMediator
                         .getTabModel()
                         .getProfile()
                         .getOriginalProfile();
+        if (TabGroupSyncFeatures.isTabGroupSyncEnabled(mOriginalProfile)) {
+            mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mOriginalProfile);
+        } else {
+            mTabGroupSyncService = null;
+        }
 
         mTabModelObserver =
                 new TabModelObserver() {
@@ -873,7 +879,7 @@ public class TabGridDialogMediator
                     mActionConfirmationManager,
                     tabId,
                     hideTabGroups,
-                    TabGroupSyncFeatures.isTabGroupSyncEnabled(mOriginalProfile),
+                    mTabGroupSyncService != null,
                     /* didCloseCallback= */ null);
         } else if (menuId == R.id.delete_shared_group) {
             RecordUserAction.record("TabGridDialogMenu.DeleteShared");
@@ -892,15 +898,12 @@ public class TabGridDialogMediator
 
     private View.OnClickListener getMenuButtonClickListener() {
         assert mTabListEditorControllerSupplier != null;
-        boolean isTabGroupSyncEnabled =
-                TabGroupSyncFeatures.isTabGroupSyncEnabled(mOriginalProfile);
+        boolean isTabGroupSyncEnabled = mTabGroupSyncService != null;
 
         IdentityManager identityManager = null;
-        TabGroupSyncService tabGroupSyncService = null;
         DataSharingService dataSharingService = null;
         if (isTabGroupSyncEnabled && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
             identityManager = IdentityServicesProvider.get().getIdentityManager(mOriginalProfile);
-            tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mOriginalProfile);
             dataSharingService = DataSharingServiceFactory.getForProfile(mOriginalProfile);
         }
         if (mTabGridDialogMenuCoordinator == null) {
@@ -911,7 +914,7 @@ public class TabGridDialogMediator
                             () -> mCurrentTabId,
                             isTabGroupSyncEnabled,
                             identityManager,
-                            tabGroupSyncService,
+                            mTabGroupSyncService,
                             dataSharingService);
         }
 
@@ -1166,10 +1169,13 @@ public class TabGridDialogMediator
         }
 
         if (mCollaborationActivityPropertyModel == null) {
-            // TODO(crbug.com/348731400): Provide real action and dismiss handlers.
             mCollaborationActivityPropertyModel =
                     new CollaborationActivityMessageCardViewModel(
-                            mActivity, () -> {}, (unused) -> {});
+                            mActivity,
+                            this::showRecentActivityOrDismissActivityMessageCard,
+                            (unused) -> {
+                                removeCollaborationActivityMessageCard();
+                            });
         }
         mCollaborationActivityPropertyModel.updateDescriptionText(
                 mActivity, tabsAdded, tabsChanged, tabsClosed);
@@ -1177,6 +1183,20 @@ public class TabGridDialogMediator
         if (!mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY)) {
             mDialogController.addMessageCardItem(
                     /* position= */ 0, mCollaborationActivityPropertyModel.getPropertyModel());
+        }
+    }
+
+    private void showRecentActivityOrDismissActivityMessageCard() {
+        @Nullable
+        String collaborationId =
+                TabShareUtils.getCollaborationIdOrNull(
+                        mCurrentTabId,
+                        mCurrentTabModelFilterSupplier.get().getTabModel(),
+                        mTabGroupSyncService);
+        if (TabShareUtils.isCollaborationIdValid(collaborationId)) {
+            mDataSharingTabManager.showRecentActivity(collaborationId);
+        } else {
+            removeCollaborationActivityMessageCard();
         }
     }
 }
