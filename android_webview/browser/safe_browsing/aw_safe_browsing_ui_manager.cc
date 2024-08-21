@@ -83,19 +83,6 @@ void AwSafeBrowsingUIManager::DisplayBlockingPage(
   safe_browsing::BaseUIManager::DisplayBlockingPage(resource);
 }
 
-scoped_refptr<network::SharedURLLoaderFactory>
-AwSafeBrowsingUIManager::GetURLLoaderFactoryOnSBThread() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!shared_url_loader_factory_on_sb_) {
-    CreateURLLoaderFactoryForSB(
-        url_loader_factory_on_sb_.BindNewPipeAndPassReceiver());
-    shared_url_loader_factory_on_sb_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            url_loader_factory_on_sb_.get());
-  }
-  return shared_url_loader_factory_on_sb_;
-}
-
 int AwSafeBrowsingUIManager::GetErrorUiType(
     content::WebContents* web_contents) const {
   UIManagerClient* client = UIManagerClient::FromWebContents(web_contents);
@@ -128,17 +115,6 @@ AwSafeBrowsingUIManager::CreateBlockingPage(
           this, contents, blocked_url, unsafe_resource, nullptr,
           blocked_page_shown_timestamp);
   return blocking_page;
-}
-
-void AwSafeBrowsingUIManager::CreateURLLoaderFactoryForSB(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto url_loader_factory_params =
-      network::mojom::URLLoaderFactoryParams::New();
-  url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
-  url_loader_factory_params->is_orb_enabled = false;
-  network_context_->GetNetworkContext()->CreateURLLoaderFactory(
-      std::move(receiver), std::move(url_loader_factory_params));
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
