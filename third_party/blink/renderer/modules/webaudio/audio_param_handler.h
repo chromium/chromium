@@ -123,8 +123,12 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   float Value();
   void SetValue(float);
 
-  AutomationRate GetAutomationRate() const { return automation_rate_; }
+  AutomationRate GetAutomationRate() const {
+    base::AutoLock rate_locker(RateLock());
+    return automation_rate_;
+  }
   void SetAutomationRate(AutomationRate automation_rate) {
+    base::AutoLock rate_locker(RateLock());
     automation_rate_ = automation_rate;
   }
 
@@ -163,6 +167,8 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
     return intrinsic_value_.load(std::memory_order_relaxed);
   }
 
+  base::Lock& RateLock() const { return rate_lock_; }
+
  private:
   AudioParamHandler(BaseAudioContext&,
                     AudioParamType,
@@ -195,8 +201,12 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
 
   float default_value_;
 
+  // Protects `automation_rate_`.
+  mutable base::Lock rate_lock_;
+
   // The automation rate of the AudioParam (k-rate or a-rate)
   AutomationRate automation_rate_;
+
   // `rate_mode_` determines if the user can change the automation rate to a
   // different value.
   const AutomationRateMode rate_mode_;
