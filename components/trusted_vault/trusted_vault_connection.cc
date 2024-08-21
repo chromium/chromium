@@ -43,20 +43,28 @@ GpmPinMetadata::~GpmPinMetadata() = default;
 
 bool GpmPinMetadata::operator==(const GpmPinMetadata&) const = default;
 
-PrecomputedMemberKeys::PrecomputedMemberKeys(
-    int in_version,
-    std::vector<uint8_t> in_wrapped_key,
-    std::vector<uint8_t> in_proof)
+MemberKeys::MemberKeys(int in_version,
+                       std::vector<uint8_t> in_wrapped_key,
+                       std::vector<uint8_t> in_proof)
     : version(in_version),
       wrapped_key(std::move(in_wrapped_key)),
       proof(std::move(in_proof)) {}
 
-PrecomputedMemberKeys::PrecomputedMemberKeys(PrecomputedMemberKeys&&) = default;
+MemberKeys::MemberKeys(MemberKeys&&) = default;
 
-PrecomputedMemberKeys& PrecomputedMemberKeys::operator=(
-    PrecomputedMemberKeys&&) = default;
+MemberKeys& MemberKeys::operator=(MemberKeys&&) = default;
 
-PrecomputedMemberKeys::~PrecomputedMemberKeys() = default;
+MemberKeys::~MemberKeys() = default;
+
+VaultMember::VaultMember(std::unique_ptr<SecureBoxPublicKey> public_key,
+                         std::vector<MemberKeys> member_keys)
+    : public_key(std::move(public_key)), member_keys(std::move(member_keys)) {}
+
+VaultMember::VaultMember(VaultMember&&) = default;
+
+VaultMember& VaultMember::operator=(VaultMember&&) = default;
+
+VaultMember::~VaultMember() = default;
 
 DownloadAuthenticationFactorsRegistrationStateResult::
     DownloadAuthenticationFactorsRegistrationStateResult() = default;

@@ -231,8 +231,9 @@ struct GPMEnclaveController::DownloadedAccountState {
       : state(result.state),
         gpm_pin_metadata(std::move(result.gpm_pin_metadata)),
         lskf_expiries(std::move(result.lskf_expiries)) {
-    std::ranges::transform(result.icloud_keys, std::back_inserter(icloud_keys),
-                           &trusted_vault::SecureBoxPublicKey::ExportToBytes);
+    std::ranges::transform(
+        result.icloud_keys, std::back_inserter(icloud_keys),
+        [](const auto& key) { return key.public_key->ExportToBytes(); });
   }
 
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::State

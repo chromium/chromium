@@ -4,6 +4,7 @@
 
 #include "components/trusted_vault/trusted_vault_connection_impl.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -84,7 +85,7 @@ trusted_vault_pb::SharedMemberKey CreateSharedMemberKey(
 }
 
 trusted_vault_pb::SharedMemberKey CreateSharedMemberKey(
-    const PrecomputedMemberKeys& precomputed) {
+    const MemberKeys& precomputed) {
   trusted_vault_pb::SharedMemberKey shared_member_key;
   shared_member_key.set_epoch(precomputed.version);
 
@@ -188,7 +189,7 @@ void AddSharedMemberKeysFromSource(
                   trusted_vault_key_and_version, public_key);
             }
           },
-          [request](const PrecomputedMemberKeys& precomputed) {
+          [request](const MemberKeys& precomputed) {
             *request->add_shared_member_key() =
                 CreateSharedMemberKey(precomputed);
           }},
@@ -452,9 +453,28 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
         std::unique_ptr<SecureBoxPublicKey> public_key =
             SecureBoxPublicKey::CreateByImport(
                 ProtoStringToBytes(member.public_key()));
-        if (public_key) {
-          result_.icloud_keys.push_back(std::move(public_key));
+        if (!public_key) {
+          continue;
         }
+        const auto& membership = std::ranges::find_if(
+            member.memberships(),
+            [&security_domain_name](const auto& membership) {
+              return membership.security_domain() == security_domain_name;
+            });
+        CHECK(membership != member.memberships().end())
+            << "iCloud member should have been tested for membership above";
+        std::vector<MemberKeys> member_keys;
+        std::ranges::transform(
+            membership->keys(), std::back_inserter(member_keys),
+            [](const auto& key) {
+              return MemberKeys(key.epoch(),
+                                std::vector<uint8_t>(key.wrapped_key().begin(),
+                                                     key.wrapped_key().end()),
+                                std::vector<uint8_t>(key.member_proof().begin(),
+                                                     key.member_proof().end()));
+            });
+        result_.icloud_keys.emplace_back(std::move(public_key),
+                                         std::move(member_keys));
       } else if (member.member_type() ==
                      trusted_vault_pb::SecurityDomainMember::
                          MEMBER_TYPE_LOCKSCREEN_KNOWLEDGE_FACTOR &&

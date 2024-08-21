@@ -1059,8 +1059,8 @@ ParseVaultAndMemberResponse(const int32_t key_version,
   }
   const std::vector<uint8_t>& member_proof = it->second.GetBytestring();
 
-  auto member_keys_source = trusted_vault::PrecomputedMemberKeys(
-      key_version, wrapped_sds, member_proof);
+  auto member_keys_source =
+      trusted_vault::MemberKeys(key_version, wrapped_sds, member_proof);
 
   return std::make_pair(std::move(*vault), std::move(member_keys_source));
 }
