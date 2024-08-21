@@ -440,8 +440,9 @@ crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreen
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 
 crbug.com/328649150 [ sonoma amd angle-opengl ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker [ Failure ]
-crbug.com/354152172 [ mac amd angle-opengl ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
-crbug.com/354152172 [ mac intel angle-opengl ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
+crbug.com/354152172 [ amd-0x67ef angle-opengl mac ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
+crbug.com/354152172 [ angle-opengl asan intel mac release ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
+crbug.com/354152172 [ angle-opengl intel mac no-asan ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
 
 crbug.com/354748635 [ mac amd-0x7340 angle-opengl ] Pixel_OffscreenCanvasAccelerated2DWorker [ Failure ]
 
@@ -475,24 +476,24 @@ crbug.com/345146895 [ chromeos cros-chrome chromeos-board-amd64-generic renderer
 # Failures on fuchsia
 crbug.com/40935289 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_WebGLFloat [ Failure ]
 crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_AV1 [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_BackdropFilter [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_Context_Loss_MP4 [ Failure ]
-crbug.com/40935289 [ fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_Context_Loss_VP9 [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_BackdropFilter [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_Context_Loss_MP4 [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_HEVC [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4 [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_180 [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_270 [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_90 [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
-crbug.com/40935289 [ fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_VP9 [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4 [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_180 [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_270 [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_90 [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
+crbug.com/40935289 [ angle-vulkan arm fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_VP9 [ Failure ]
 
 
 # Tab change tests failing to find foreground tabs
-crbug.com/338574386 [ mac angle-metal apple-angle-metal-renderer:-apple-m1 passthrough ] Pixel_Canvas2DTabSwitch [ Failure ]
-crbug.com/338574386 [ mac angle-metal apple-angle-metal-renderer:-apple-m1 passthrough ] Pixel_Canvas2DTabSwitch_SoftwareCompositing [ Failure ]
-crbug.com/338574386 [ mac angle-metal apple-angle-metal-renderer:-apple-m1 passthrough ] Pixel_WebGLReadPixelsTabSwitch [ Failure ]
-crbug.com/338574386 [ mac angle-metal apple-angle-metal-renderer:-apple-m1 passthrough ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
+crbug.com/338574386 [ angle-metal apple-angle-metal-renderer:-apple-m1 graphite-disabled mac passthrough ] Pixel_Canvas2DTabSwitch [ Failure ]
+crbug.com/338574386 [ angle-metal apple-angle-metal-renderer:-apple-m1 graphite-disabled mac passthrough ] Pixel_Canvas2DTabSwitch_SoftwareCompositing [ Failure ]
+crbug.com/338574386 [ angle-metal apple-angle-metal-renderer:-apple-m1 graphite-disabled mac passthrough ] Pixel_WebGLReadPixelsTabSwitch [ Failure ]
+crbug.com/338574386 [ angle-metal apple-angle-metal-renderer:-apple-m1 graphite-disabled mac passthrough ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
