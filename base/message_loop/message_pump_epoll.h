@@ -137,6 +137,7 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
   void HandleWakeUp();
 
   void BeginNativeWorkBatch();
+  void RecordPeriodicMetrics();
 
   // Null if Run() is not currently executing. Otherwise it's a pointer into the
   // stack of the innermost nested Run() invocation.
@@ -157,6 +158,9 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
 
   // An eventfd object used to wake the pump's thread when scheduling new work.
   ScopedFD wake_event_;
+
+  // Tracks when we should next record periodic metrics.
+  base::TimeTicks next_metrics_time_;
 
   // WatchFileDescriptor() must be called from this thread, and so must
   // FdWatchController::StopWatchingFileDescriptor().

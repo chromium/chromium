@@ -47,6 +47,8 @@ MessagePumpEpoll::MessagePumpEpoll() {
   epoll_event wake{.events = EPOLLIN, .data = {.ptr = &wake_event_}};
   int rv = epoll_ctl(epoll_.get(), EPOLL_CTL_ADD, wake_event_.get(), &wake);
   PCHECK(rv == 0);
+
+  next_metrics_time_ = base::TimeTicks::Now() + base::Minutes(1);
 }
 
 MessagePumpEpoll::~MessagePumpEpoll() = default;
@@ -117,6 +119,10 @@ void MessagePumpEpoll::Run(Delegate* delegate) {
       break;
     }
 
+    if (next_work_info.recent_now > next_metrics_time_) {
+      RecordPeriodicMetrics();
+    }
+
     // Reset the native work flag before processing IO events.
     native_work_started_ = false;
 
@@ -151,10 +157,15 @@ void MessagePumpEpoll::Run(Delegate* delegate) {
       break;
     }
 
+    TimeDelta next_metrics_delay =
+        next_metrics_time_ - next_work_info.recent_now;
     TimeDelta timeout = TimeDelta::Max();
     DCHECK(!next_work_info.delayed_run_time.is_null());
     if (!next_work_info.delayed_run_time.is_max()) {
       timeout = next_work_info.remaining_delay();
+    }
+    if (timeout > next_metrics_delay) {
+      timeout = next_metrics_delay;
     }
     delegate->BeforeWait();
     WaitForEpollEvents(timeout);
@@ -162,6 +173,12 @@ void MessagePumpEpoll::Run(Delegate* delegate) {
       break;
     }
   }
+}
+
+void MessagePumpEpoll::RecordPeriodicMetrics() {
+  UMA_HISTOGRAM_COUNTS_1000("MessagePumpEpoll.WatchedFileDescriptors",
+                            (int)entries_.size());
+  next_metrics_time_ += base::Minutes(1);
 }
 
 void MessagePumpEpoll::Quit() {
