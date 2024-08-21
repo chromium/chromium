@@ -191,8 +191,6 @@
 }
 
 - (void)removeTabResumptionModule {
-  base::UmaHistogramEnumeration(kMagicStackModuleDisabledHistogram,
-                                ContentSuggestionsModuleType::kTabResumption);
   [self.delegate magicStackRankingModel:self
                           didRemoveItem:_tabResumptionMediator.itemConfig];
 }

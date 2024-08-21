@@ -112,8 +112,6 @@ source_set("commands") {
 
 source_set("metrics") {
   sources = [
-    "content_suggestions_metrics_constants.h",
-    "content_suggestions_metrics_constants.mm",
     "content_suggestions_metrics_recorder.h",
     "content_suggestions_metrics_recorder.mm",
   ]
@@ -140,6 +138,8 @@ source_set("constants") {
   sources = [
     "content_suggestions_constants.h",
     "content_suggestions_constants.mm",
+    "content_suggestions_metrics_constants.h",
+    "content_suggestions_metrics_constants.mm",
   ]
   deps = [
     "//base",
