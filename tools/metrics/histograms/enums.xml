@@ -340,6 +340,8 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="AllowlistNonEmptyAndAllowNewUsersNotPresent"/>
 </enum>
 
+<!-- LINT.IfChange(AmbientSearchEntryPoint) -->
+
 <enum name="AmbientSearchEntryPoint">
   <summary>
     The entry point that initiated an ambient search query. (e.g. Context Menu
@@ -372,7 +374,10 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="19"
       label="Context menu item for 'Search Video Frame with Web' (Video
              Frame)"/>
+  <int value="20" label="Lens Overlay (Image)"/>
 </enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/ui/lens/lens_entrypoint.h:IOSLensEntrypoint) -->
 
 <enum name="AnchorElementPreloaderType">
   <int value="0" label="kUnspecified"/>
