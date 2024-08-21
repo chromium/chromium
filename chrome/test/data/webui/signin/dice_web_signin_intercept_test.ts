@@ -9,8 +9,7 @@ import type {DiceWebSigninInterceptAppElement} from 'chrome://signin-dice-web-in
 import type {InterceptionParameters} from 'chrome://signin-dice-web-intercept.top-chrome/dice_web_signin_intercept_browser_proxy.js';
 import {DiceWebSigninInterceptBrowserProxyImpl} from 'chrome://signin-dice-web-intercept.top-chrome/dice_web_signin_intercept_browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestDiceWebSigninInterceptBrowserProxy} from './test_dice_web_signin_intercept_browser_proxy.js';
 
@@ -51,7 +50,6 @@ suite('DiceWebSigninInterceptTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('dice-web-signin-intercept-app');
     document.body.append(app);
-    await waitAfterNextRender(app);
     return browserProxy.whenCalled('pageLoaded');
   });
 
@@ -80,7 +78,7 @@ suite('DiceWebSigninInterceptTest', function() {
     assertEquals(expectedUrl, img.src);
   }
 
-  test('ClickAccept', function() {
+  test('ClickAccept', async function() {
     assertTrue(isChildVisible(app, '#acceptButton'));
     const spinner = app.shadowRoot!.querySelector('paper-spinner-lite')!;
     const acceptButton = app.$.acceptButton;
@@ -90,6 +88,7 @@ suite('DiceWebSigninInterceptTest', function() {
     assertFalse(cancelButton.disabled);
 
     acceptButton.click();
+    await microtasksFinished();
 
     // Buttons are disabled and the spinner is active.
     assertTrue(acceptButton.disabled);
@@ -104,7 +103,7 @@ suite('DiceWebSigninInterceptTest', function() {
     return browserProxy.whenCalled('cancel');
   });
 
-  test('TextValues', function() {
+  test('TextValues', async function() {
     // Initial values.
     checkTextValues(
         'header_text', 'body_title', 'body_text', 'confirm_label',
@@ -119,12 +118,13 @@ suite('DiceWebSigninInterceptTest', function() {
       confirmButtonLabel: 'new_confirm_label',
       cancelButtonLabel: 'new_cancel_label',
     });
+    await microtasksFinished();
     checkTextValues(
         'new_header_text', 'new_body_title', 'new_body_text',
         'new_confirm_label', 'new_cancel_label');
   });
 
-  test('Avatars', function() {
+  test('Avatars', async function() {
     const avatarSelector = '#avatarContainer>img';
     const badgeSelector = '#badge';
 
@@ -133,7 +133,7 @@ suite('DiceWebSigninInterceptTest', function() {
     checkImageUrl(avatarSelector, AVATAR_URL_1);
     assertFalse(isChildVisible(app, '#badge'));
 
-    const parameters = {
+    let parameters = {
       ...PARAMETERS,
       interceptedAccount: {pictureUrl: AVATAR_URL_2, avatarBadge: ''},
       primaryAccount: {pictureUrl: AVATAR_URL_1, avatarBadge: ''},
@@ -142,18 +142,21 @@ suite('DiceWebSigninInterceptTest', function() {
 
     // Update urls.
     fireParametersChanged(parameters);
-
-
+    await microtasksFinished();
 
     assertTrue(isChildVisible(app, avatarSelector));
     checkImageUrl(avatarSelector, AVATAR_URL_2);
 
     // Update Management for intercepted account.
+    parameters = structuredClone(parameters);
     parameters.interceptedAccount.avatarBadge = AVATAR_BADGE_SOURCE;
     fireParametersChanged(parameters);
+    await microtasksFinished();
     assertTrue(isChildVisible(app, badgeSelector));
+    parameters = structuredClone(parameters);
     parameters.interceptedAccount.avatarBadge = '';
     fireParametersChanged(parameters);
+    await microtasksFinished();
     assertFalse(isChildVisible(app, badgeSelector));
   });
 
@@ -169,7 +172,7 @@ suite('DiceWebSigninInterceptTest', function() {
           {avatarBadge: AVATAR_BADGE_SOURCE, pictureUrl: AVATAR_URL_1},
     };
     fireParametersChanged(parameters);
-    await waitAfterNextRender(app);
+    await microtasksFinished();
     assertFalse(isChildVisible(app, '#managedDisclaimer'));
 
     // Update showManagedDisclaimer and check that the disclaimer is shown.
@@ -181,12 +184,13 @@ suite('DiceWebSigninInterceptTest', function() {
       showManagedDisclaimer: true,
     };
     fireParametersChanged(parameters);
-    await waitAfterNextRender(app);
+    await microtasksFinished();
 
     const managedDisclaimerElement =
         app.shadowRoot!.querySelector('#managedDisclaimer')!;
     assertTrue(isVisible(managedDisclaimerElement));
-    assertEquals('managed_disclaimer', managedDisclaimerElement.textContent);
+    assertEquals(
+        'managed_disclaimer', managedDisclaimerElement.textContent!.trim());
   });
 });
 
@@ -204,7 +208,6 @@ suite('DiceWebSigninInterceptTestV2', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('dice-web-signin-intercept-app');
     document.body.append(app);
-    await waitAfterNextRender(app);
     return browserProxy.whenCalled('pageLoaded');
   });
 
@@ -214,7 +217,7 @@ suite('DiceWebSigninInterceptTestV2', function() {
     assertEquals(expectedUrl, img.src);
   }
 
-  test('AvatarsV2', function() {
+  test('AvatarsV2', async function() {
     const interceptedAvatarSelector = '#avatarIntercepted>img';
     const primaryAvatarSelector = '#avatarPrimary>img';
     const interceptedBadgeSelector = '#avatarIntercepted>.work-badge';
@@ -231,33 +234,42 @@ suite('DiceWebSigninInterceptTestV2', function() {
     assertFalse(isChildVisible(app, interceptedBadgeSelector));
 
     // Update urls.
-    const parameters = {
+    let parameters = {
       ...PARAMETERS,
       interceptedAccount: {pictureUrl: AVATAR_URL_2, avatarBadge: ''},
       primaryAccount: {pictureUrl: AVATAR_URL_1, avatarBadge: ''},
     };
     fireParametersChanged(parameters);
+    await microtasksFinished();
     checkImageUrl(interceptedAvatarSelector, AVATAR_URL_2);
     checkImageUrl(primaryAvatarSelector, AVATAR_URL_1);
 
     // Update Managed account information back and forth..
+    parameters = structuredClone(parameters);
     parameters.interceptedAccount.avatarBadge = AVATAR_BADGE_SOURCE;
     fireParametersChanged(parameters);
+    await microtasksFinished();
     assertTrue(isChildVisible(app, interceptedBadgeSelector));
     assertFalse(isChildVisible(app, primaryBadgeSelector));
 
+    parameters = structuredClone(parameters);
     parameters.primaryAccount.avatarBadge = AVATAR_BADGE_SOURCE;
     fireParametersChanged(parameters);
+    await microtasksFinished();
     assertTrue(isChildVisible(app, interceptedBadgeSelector));
     assertTrue(isChildVisible(app, primaryBadgeSelector));
 
+    parameters = structuredClone(parameters);
     parameters.interceptedAccount.avatarBadge = '';
     fireParametersChanged(parameters);
+    await microtasksFinished();
     assertFalse(isChildVisible(app, interceptedBadgeSelector));
     assertTrue(isChildVisible(app, primaryBadgeSelector));
 
+    parameters = structuredClone(parameters);
     parameters.primaryAccount.avatarBadge = '';
     fireParametersChanged(parameters);
+    await microtasksFinished();
     assertFalse(isChildVisible(app, interceptedBadgeSelector));
     assertFalse(isChildVisible(app, primaryBadgeSelector));
   });
@@ -273,11 +285,12 @@ suite('DiceWebSigninInterceptTestV2', function() {
       showManagedDisclaimer: true,
     };
     fireParametersChanged(parameters);
-    await waitAfterNextRender(app);
+    await microtasksFinished();
 
     const managedDisclaimerElement =
         app.shadowRoot!.querySelector('#managedDisclaimer')!;
     assertTrue(isVisible(managedDisclaimerElement));
-    assertEquals('managed_disclaimer', managedDisclaimerElement.textContent);
+    assertEquals(
+        'managed_disclaimer', managedDisclaimerElement.textContent!.trim());
   });
 });

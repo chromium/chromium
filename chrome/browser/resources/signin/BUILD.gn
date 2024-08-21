@@ -115,6 +115,12 @@ build_webui("build") {
       "signin_reauth/signin_reauth_app.css",
     ]
   }
+  if (enable_dice_support) {
+    css_files += [
+      "dice_web_signin_intercept/chrome_signin/chrome_signin_app.css",
+      "dice_web_signin_intercept/dice_web_signin_intercept_app.css",
+    ]
+  }
 
   html_to_wrapper_template = "detect"
 
