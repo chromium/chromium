@@ -25,192 +25,204 @@ enum class PresetQueryCategory;
 
 namespace ash {
 
+struct ASH_PUBLIC_EXPORT PickerTextResult {
+  enum class Source {
+    kUnknown,  // This should only be used for tests.
+    kDate,
+    kMath,
+    kCaseTransform,
+    kOmnibox,
+  };
+
+  std::u16string primary_text;
+  std::u16string secondary_text;
+  ui::ImageModel icon;
+  Source source;
+
+  PickerTextResult(std::u16string primary_text,
+                   std::u16string secondary_text,
+                   ui::ImageModel icon,
+                   Source source);
+
+  PickerTextResult(const PickerTextResult&);
+  PickerTextResult& operator=(const PickerTextResult&);
+  ~PickerTextResult();
+
+  bool operator==(const PickerTextResult&) const;
+};
+
+struct ASH_PUBLIC_EXPORT PickerSearchRequestResult {
+  std::u16string primary_text;
+  std::u16string secondary_text;
+  ui::ImageModel icon;
+
+  bool operator==(const PickerSearchRequestResult&) const;
+};
+
+struct ASH_PUBLIC_EXPORT PickerEmojiResult {
+  enum class Type { kEmoji, kSymbol, kEmoticon };
+
+  Type type;
+  std::u16string text;
+  std::u16string name;
+
+  bool operator==(const PickerEmojiResult&) const;
+};
+
+struct ASH_PUBLIC_EXPORT PickerClipboardResult {
+  enum class DisplayFormat {
+    kFile,
+    kText,
+    kImage,
+    kHtml,
+    kUrl,
+  };
+
+  // Unique ID that specifies which item in the clipboard this refers to.
+  base::UnguessableToken item_id;
+  DisplayFormat display_format;
+  // If this is 1, `display_text` should be the filename of the file.
+  size_t file_count;
+  std::u16string display_text;
+  std::optional<ui::ImageModel> display_image;
+  bool is_recent;
+
+  PickerClipboardResult(base::UnguessableToken item_id,
+                        DisplayFormat display_format,
+                        size_t file_count,
+                        std::u16string display_text,
+                        std::optional<ui::ImageModel> display_image,
+                        bool is_recent);
+  PickerClipboardResult(const PickerClipboardResult&);
+  PickerClipboardResult& operator=(const PickerClipboardResult&);
+  ~PickerClipboardResult();
+
+  bool operator==(const PickerClipboardResult&) const;
+};
+
+struct ASH_PUBLIC_EXPORT PickerBrowsingHistoryResult {
+  GURL url;
+  std::u16string title;
+  ui::ImageModel icon;
+  bool best_match;
+
+  PickerBrowsingHistoryResult(GURL url,
+                              std::u16string title,
+                              ui::ImageModel icon,
+                              bool best_match);
+  PickerBrowsingHistoryResult(const PickerBrowsingHistoryResult&);
+  PickerBrowsingHistoryResult& operator=(const PickerBrowsingHistoryResult&);
+  ~PickerBrowsingHistoryResult();
+
+  bool operator==(const PickerBrowsingHistoryResult&) const;
+};
+
+struct ASH_PUBLIC_EXPORT PickerLocalFileResult {
+  base::FilePath file_path;
+  std::u16string title;
+  bool best_match;
+
+  bool operator==(const PickerLocalFileResult&) const;
+};
+
+struct ASH_PUBLIC_EXPORT PickerDriveFileResult {
+  std::optional<std::string> id;
+  std::u16string title;
+  GURL url;
+  base::FilePath file_path;
+  bool best_match;
+
+  PickerDriveFileResult(std::optional<std::string> id,
+                        std::u16string title,
+                        GURL url,
+                        base::FilePath file_path,
+                        bool best_match);
+  PickerDriveFileResult(const PickerDriveFileResult&);
+  PickerDriveFileResult& operator=(const PickerDriveFileResult&);
+  ~PickerDriveFileResult();
+
+  bool operator==(const PickerDriveFileResult&) const;
+};
+
+struct ASH_PUBLIC_EXPORT PickerCategoryResult {
+  PickerCategory category;
+
+  bool operator==(const PickerCategoryResult&) const;
+};
+
+struct ASH_PUBLIC_EXPORT PickerEditorResult {
+  enum class Mode { kWrite, kRewrite };
+
+  Mode mode;
+  std::u16string display_name;
+  std::optional<chromeos::editor_menu::PresetQueryCategory> category;
+  std::optional<std::string> preset_query_id;
+
+  PickerEditorResult(
+      Mode mode,
+      std::u16string display_name,
+      std::optional<chromeos::editor_menu::PresetQueryCategory> category,
+      std::optional<std::string> preset_query_id);
+  PickerEditorResult(const PickerEditorResult&);
+  PickerEditorResult& operator=(const PickerEditorResult&);
+  ~PickerEditorResult();
+
+  bool operator==(const PickerEditorResult&) const;
+};
+
+struct ASH_PUBLIC_EXPORT PickerNewWindowResult {
+  enum Type {
+    kDoc,
+    kSheet,
+    kSlide,
+    kChrome,
+  };
+
+  Type type;
+
+  bool operator==(const PickerNewWindowResult&) const;
+};
+
+struct ASH_PUBLIC_EXPORT PickerCapsLockResult {
+  enum class Shortcut {
+    kAltLauncher,
+    kAltSearch,
+    kFnRightAlt,
+  };
+
+  bool enabled;
+  Shortcut shortcut;
+
+  bool operator==(const PickerCapsLockResult&) const;
+};
+
+struct ASH_PUBLIC_EXPORT PickerCaseTransformResult {
+  enum Type {
+    kUpperCase,
+    kLowerCase,
+    kTitleCase,
+  };
+
+  Type type;
+
+  bool operator==(const PickerCaseTransformResult&) const;
+};
+
 // Represents a search result, which might be text or other types of media.
-// TODO(b/310088338): Support result types beyond just literal text and gifs.
 class ASH_PUBLIC_EXPORT PickerSearchResult {
  public:
-  struct TextData {
-    enum class Source {
-      kUnknown,  // This should only be used for tests.
-      kDate,
-      kMath,
-      kCaseTransform,
-      kOmnibox,
-    };
-
-    std::u16string primary_text;
-    std::u16string secondary_text;
-    ui::ImageModel icon;
-    Source source;
-
-    TextData(std::u16string primary_text,
-             std::u16string secondary_text,
-             ui::ImageModel icon,
-             Source source);
-
-    TextData(const TextData&);
-    TextData& operator=(const TextData&);
-    ~TextData();
-
-    bool operator==(const TextData&) const;
-  };
-
-  struct SearchRequestData {
-    std::u16string primary_text;
-    std::u16string secondary_text;
-    ui::ImageModel icon;
-
-    bool operator==(const SearchRequestData&) const;
-  };
-
-  struct EmojiData {
-    enum class Type { kEmoji, kSymbol, kEmoticon };
-
-    Type type;
-    std::u16string text;
-    std::u16string name;
-
-    bool operator==(const EmojiData&) const;
-  };
-
-  struct ClipboardData {
-    enum class DisplayFormat {
-      kFile,
-      kText,
-      kImage,
-      kHtml,
-      kUrl,
-    };
-
-    // Unique ID that specifies which item in the clipboard this refers to.
-    base::UnguessableToken item_id;
-    DisplayFormat display_format;
-    // If this is 1, `display_text` should be the filename of the file.
-    size_t file_count;
-    std::u16string display_text;
-    std::optional<ui::ImageModel> display_image;
-    bool is_recent;
-
-    ClipboardData(base::UnguessableToken item_id,
-                  DisplayFormat display_format,
-                  size_t file_count,
-                  std::u16string display_text,
-                  std::optional<ui::ImageModel> display_image,
-                  bool is_recent);
-    ClipboardData(const ClipboardData&);
-    ClipboardData& operator=(const ClipboardData&);
-    ~ClipboardData();
-
-    bool operator==(const ClipboardData&) const;
-  };
-
-  struct BrowsingHistoryData {
-    GURL url;
-    std::u16string title;
-    ui::ImageModel icon;
-    bool best_match;
-
-    BrowsingHistoryData(GURL url,
-                        std::u16string title,
-                        ui::ImageModel icon,
-                        bool best_match);
-    BrowsingHistoryData(const BrowsingHistoryData&);
-    BrowsingHistoryData& operator=(const BrowsingHistoryData&);
-    ~BrowsingHistoryData();
-
-    bool operator==(const BrowsingHistoryData&) const;
-  };
-
-  struct LocalFileData {
-    base::FilePath file_path;
-    std::u16string title;
-    bool best_match;
-
-    bool operator==(const LocalFileData&) const;
-  };
-
-  struct DriveFileData {
-    std::optional<std::string> id;
-    std::u16string title;
-    GURL url;
-    base::FilePath file_path;
-    bool best_match;
-
-    DriveFileData(std::optional<std::string> id,
-                  std::u16string title,
-                  GURL url,
-                  base::FilePath file_path,
-                  bool best_match);
-    DriveFileData(const DriveFileData&);
-    DriveFileData& operator=(const DriveFileData&);
-    ~DriveFileData();
-
-    bool operator==(const DriveFileData&) const;
-  };
-
-  struct CategoryData {
-    PickerCategory category;
-
-    bool operator==(const CategoryData&) const;
-  };
-
-  struct EditorData {
-    enum class Mode { kWrite, kRewrite };
-
-    Mode mode;
-    std::u16string display_name;
-    std::optional<chromeos::editor_menu::PresetQueryCategory> category;
-    std::optional<std::string> preset_query_id;
-
-    EditorData(
-        Mode mode,
-        std::u16string display_name,
-        std::optional<chromeos::editor_menu::PresetQueryCategory> category,
-        std::optional<std::string> preset_query_id);
-    EditorData(const EditorData&);
-    EditorData& operator=(const EditorData&);
-    ~EditorData();
-
-    bool operator==(const EditorData&) const;
-  };
-
-  struct NewWindowData {
-    enum Type {
-      kDoc,
-      kSheet,
-      kSlide,
-      kChrome,
-    };
-
-    Type type;
-
-    bool operator==(const NewWindowData&) const;
-  };
-
-  struct CapsLockData {
-    enum class Shortcut {
-      kAltLauncher,
-      kAltSearch,
-      kFnRightAlt,
-    };
-
-    bool enabled;
-    Shortcut shortcut;
-
-    bool operator==(const CapsLockData&) const;
-  };
-
-  struct CaseTransformData {
-    enum Type {
-      kUpperCase,
-      kLowerCase,
-      kTitleCase,
-    };
-
-    Type type;
-
-    bool operator==(const CaseTransformData&) const;
-  };
+  using TextData = PickerTextResult;
+  using SearchRequestData = PickerSearchRequestResult;
+  using EmojiData = PickerEmojiResult;
+  using ClipboardData = PickerClipboardResult;
+  using BrowsingHistoryData = PickerBrowsingHistoryResult;
+  using LocalFileData = PickerLocalFileResult;
+  using DriveFileData = PickerDriveFileResult;
+  using CategoryData = PickerCategoryResult;
+  using EditorData = PickerEditorResult;
+  using NewWindowData = PickerNewWindowResult;
+  using CapsLockData = PickerCapsLockResult;
+  using CaseTransformData = PickerCaseTransformResult;
 
   using Data = std::variant<TextData,
                             SearchRequestData,
