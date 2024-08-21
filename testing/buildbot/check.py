@@ -147,7 +147,10 @@ def main():
   parser = argparse.ArgumentParser(description=sys.modules[__name__].__doc__)
   parser.parse_args()
 
-  with open(os.path.join(THIS_DIR, 'gn_isolate_map.pyl')) as fp:
+  gn_isolate_map_pyl_path = os.path.normpath(
+      os.path.join(THIS_DIR, '..', '..', 'infra', 'config', 'generated',
+                   'testing', 'gn_isolate_map.pyl'))
+  with open(gn_isolate_map_pyl_path) as fp:
     gn_isolate_map = ast.literal_eval(fp.read())
     ninja_targets = {k: v['label'] for k, v in gn_isolate_map.items()}
 
