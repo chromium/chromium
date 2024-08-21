@@ -9473,17 +9473,17 @@
   {
     "name": "webxr-hand-input",
     "owners": [ "//components/webxr/OWNERS", "xr-dev@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 136
   },
   {
     "name": "webxr-incubations",
     "owners": [ "//third_party/blink/renderer/modules/xr/OWNERS", "xr-dev@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 142
   },
   {
     "name": "webxr-internals",
     "owners": [ "//components/webxr/OWNERS", "xr-dev@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 142
   },
   {
     "name": "webxr-runtime",
