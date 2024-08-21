@@ -943,10 +943,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   base::Token web_contents_1_token =
       web_contents_listener_map.at(web_contents_1).saved_tab_group_tab_id();
 
-  std::unique_ptr<content::WebContents> replacement_web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-  browser->tab_strip_model()->DiscardWebContentsAt(
-      0, std::move(replacement_web_contents));
+  browser->tab_strip_model()->DiscardWebContentsAt(0);
 
   // Expect after moving the first tab to the right of the second, that the
   // group updated the positions of the tabs accordingly.

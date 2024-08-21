@@ -565,14 +565,13 @@ TEST_F(TabStripPageHandlerTest, TabMovedAndPinned) {
               })));
 }
 
-TEST_F(TabStripPageHandlerTest, TabReplaced) {
+TEST_F(TabStripPageHandlerTest, TabDiscarded) {
   AddTab(browser(), GURL("http://foo"));
   int expected_previous_id = extensions::ExtensionTabUtil::GetTabId(
       browser()->tab_strip_model()->GetWebContentsAt(0));
 
   web_ui()->ClearTrackedCalls();
-  browser()->tab_strip_model()->DiscardWebContentsAt(
-      0, content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  browser()->tab_strip_model()->DiscardWebContentsAt(0);
   int expected_new_id = extensions::ExtensionTabUtil::GetTabId(
       browser()->tab_strip_model()->GetWebContentsAt(0));
 

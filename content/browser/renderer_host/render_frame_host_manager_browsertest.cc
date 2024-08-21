@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/renderer_host/render_frame_host_manager_browsertest.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -38,7 +40,6 @@
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/renderer_host/render_frame_host_manager_browsertest.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -1559,7 +1560,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   GURL discarded_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), discarded_url));
   // Discard the page.
-  shell()->web_contents()->SetWasDiscarded(true);
+  shell()->web_contents()->Discard();
   // Reload the discarded page, but pretend that it's slow to commit.
   TestNavigationManager first_reload(shell()->web_contents(), discarded_url);
   shell()->web_contents()->GetController().LoadOriginalRequestURL();
