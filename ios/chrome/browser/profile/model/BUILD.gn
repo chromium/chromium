@@ -16,6 +16,7 @@ source_set("model") {
     "//base",
     "//components/prefs",
     "//ios/chrome/browser/net/model:net_types",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
   ]
 }
