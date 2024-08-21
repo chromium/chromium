@@ -405,7 +405,6 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
-#include "chrome/browser/ash/policy/core/dm_token_storage.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client_impl.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/external_data/handlers/device_wallpaper_image_external_data_handler.h"
@@ -1049,6 +1048,12 @@ constexpr char kObsoleteUserReceivedGMSCoreError[] =
 constexpr char kSafeBrowsingEsbOptInWithFriendlierSettings[] =
     "safebrowsing.esb_opt_in_with_friendlier_settings";
 
+// Deprecated 08/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kDeviceDMTokenV1[] = "device_dm_token";
+constexpr char kDeviceDMTokenV2[] = "device_dm_token_v2";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1130,6 +1135,12 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Deprecated 07/2024.
   registry->RegisterStringPref(kFirstRunStudyGroup, std::string());
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Deprecated 08/2024.
+  registry->RegisterStringPref(kDeviceDMTokenV1, std::string());
+  registry->RegisterStringPref(kDeviceDMTokenV2, std::string());
 #endif
 }
 
@@ -1678,7 +1689,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
       registry);
   policy::DeviceStatusCollector::RegisterPrefs(registry);
   policy::DeviceWallpaperImageExternalDataHandler::RegisterPrefs(registry);
-  policy::DMTokenStorage::RegisterPrefs(registry);
   policy::EnrollmentRequisitionManager::RegisterPrefs(registry);
   policy::EuiccStatusUploader::RegisterLocalStatePrefs(registry);
   policy::MinimumVersionPolicyHandler::RegisterPrefs(registry);
@@ -2347,6 +2357,12 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Added 07/2024.
   local_state->ClearPref(kFirstRunStudyGroup);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 08/2024.
+  local_state->ClearPref(kDeviceDMTokenV1);
+  local_state->ClearPref(kDeviceDMTokenV2);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

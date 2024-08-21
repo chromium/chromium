@@ -2958,12 +2958,6 @@ inline constexpr char kDeviceEnrollmentAutoStart[] = "enrollment.auto_start";
 // Whether the user may exit enrollment.
 inline constexpr char kDeviceEnrollmentCanExit[] = "enrollment.can_exit";
 
-// DM token fetched from the DM server during enrollment. Stored for Active
-// Directory devices only. The versions are used to distinguish different token
-// formats.
-inline constexpr char kDeviceDMTokenV1[] = "device_dm_token";
-inline constexpr char kDeviceDMTokenV2[] = "device_dm_token_v2";
-
 // A string pref with initial locale set in VPD or manifest.
 inline constexpr char kInitialLocale[] = "intl.initial_locale";
 
