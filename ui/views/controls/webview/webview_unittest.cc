@@ -26,6 +26,7 @@
 #include "content/test/test_content_browser_client.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
@@ -456,6 +457,17 @@ TEST_F(WebViewUnitTest, WebViewClearsWebContentsOnDestruction) {
   EXPECT_EQ(web_contents.get(), web_view()->web_contents());
   web_contents.reset();
   EXPECT_EQ(nullptr, web_view()->web_contents());
+}
+
+TEST_F(WebViewUnitTest, AccessibleProperties) {
+  const std::unique_ptr<content::WebContents> web_contents =
+      CreateWebContents();
+  auto web_view = std::make_unique<WebView>(web_contents->GetBrowserContext());
+  web_view->SetWebContents(web_contents.get());
+
+  ui::AXNodeData data;
+  web_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kWebView);
 }
 
 }  // namespace views

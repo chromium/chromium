@@ -158,9 +158,6 @@ class WEBVIEW_EXPORT WebView : public View,
     ~ScopedWebContentsCreatorForTesting();
   };
 
-  // View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
  protected:
   // Called when letterboxing (scaling the native view to preserve aspect
   // ratio) is enabled or disabled.

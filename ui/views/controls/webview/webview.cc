@@ -71,6 +71,12 @@ WebView::WebView(content::BrowserContext* browser_context) {
   set_suppress_default_focus_handling();
   ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
   SetBrowserContext(browser_context);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kWebView);
+  // A webview does not need an accessible name as the document title is
+  // provided via other means. Providing it here would be redundant.
+  // Mark the name as explicitly empty so that accessibility_checks pass.
+  GetViewAccessibility().SetName(
+      std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 }
 
 WebView::~WebView() {
@@ -416,14 +422,6 @@ void WebView::ResizeDueToAutoResize(content::WebContents* source,
   }
 
   SetPreferredSize(new_size);
-}
-
-void WebView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kWebView;
-  // A webview does not need an accessible name as the document title is
-  // provided via other means. Providing it here would be redundant.
-  // Mark the name as explicitly empty so that accessibility_checks pass.
-  node_data->SetNameExplicitlyEmpty();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
