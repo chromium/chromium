@@ -573,6 +573,7 @@ void OpenNewWindowForFirstRun(
     const std::vector<GURL>& first_run_urls,
     chrome::startup::IsProcessStartup process_startup,
     chrome::startup::IsFirstRun is_first_run,
+    std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder,
     bool proceed) {
   if (!proceed)
     return;
@@ -580,7 +581,8 @@ void OpenNewWindowForFirstRun(
   StartupBrowserCreator browser_creator;
   browser_creator.AddFirstRunTabs(first_run_urls);
   browser_creator.LaunchBrowser(command_line, profile, cur_dir, process_startup,
-                                is_first_run, /*restore_tabbed_browser=*/true);
+                                is_first_run, std::move(launch_mode_recorder),
+                                /*restore_tabbed_browser=*/true);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -685,6 +687,7 @@ void StartupBrowserCreator::LaunchBrowser(
     const base::FilePath& cur_dir,
     chrome::startup::IsProcessStartup process_startup,
     chrome::startup::IsFirstRun is_first_run,
+    std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder,
     bool restore_tabbed_browser) {
   TRACE_EVENT0("ui", "StartupBrowserCreator::LaunchBrowser");
   SCOPED_UMA_HISTOGRAM_TIMER("Startup.StartupBrowserCreator.LaunchBrowser");
@@ -711,7 +714,7 @@ void StartupBrowserCreator::LaunchBrowser(
           FirstRunService::EntryPoint::kProcessStartup,
           base::BindOnce(&OpenNewWindowForFirstRun, command_line, profile,
                          cur_dir, first_run_tabs_, process_startup,
-                         is_first_run));
+                         is_first_run, std::move(launch_mode_recorder)));
       return;
     }
 #endif
@@ -721,7 +724,7 @@ void StartupBrowserCreator::LaunchBrowser(
                in_synchronous_profile_launch_
                    ? chrome::startup::IsProcessStartup::kYes
                    : chrome::startup::IsProcessStartup::kNo,
-               restore_tabbed_browser);
+               std::move(launch_mode_recorder), restore_tabbed_browser);
   }
   in_synchronous_profile_launch_ = false;
   profile_launch_observer.Get().AddLaunched(profile);
@@ -799,7 +802,8 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
       }
 #endif
       LaunchBrowser(command_line, profile_to_open, cur_dir, process_startup,
-                    is_first_run, restore_tabbed_browser);
+                    is_first_run, std::make_unique<OldLaunchModeRecorder>(),
+                    restore_tabbed_browser);
       return;
     }
 
@@ -1255,6 +1259,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   // Delegate to the notification system; do not open a browser window here.
   if (command_line.HasSwitch(switches::kNotificationLaunchId)) {
     if (NotificationPlatformBridgeWin::HandleActivation(command_line)) {
+      OldLaunchModeRecorder().SetLaunchMode(
+          OldLaunchMode::kWinPlatformNotification);
       return true;
     }
     return false;
@@ -1283,6 +1289,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     if (!StartGCPWSignin(command_line, incognito_profile))
       return false;
 
+    OldLaunchModeRecorder().SetLaunchMode(
+        OldLaunchMode::kCredentialProviderSignIn);
     return true;
   }
 #endif  // BUILDFLAG(IS_WIN)
@@ -1409,6 +1417,9 @@ void StartupBrowserCreator::ProcessLastOpenedProfiles(
     LaunchBrowser((profile == last_used_profile) ? command_line
                                                  : command_line_without_urls,
                   profile, cur_dir, process_startup, is_first_run,
+                  profile == last_used_profile
+                      ? std::make_unique<OldLaunchModeRecorder>()
+                      : nullptr,
                   /*restore_tabbed_browser=*/true);
     // We've launched at least one browser.
     process_startup = chrome::startup::IsProcessStartup::kNo;

@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/startup/infobar_utils.h"
+#include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
@@ -168,11 +169,22 @@ void StartupBrowserCreatorImpl::MaybeToggleFullscreen(Browser* browser) {
 void StartupBrowserCreatorImpl::Launch(
     Profile* profile,
     chrome::startup::IsProcessStartup process_startup,
+    std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder,
     bool restore_tabbed_browser) {
   DCHECK(profile);
   profile_ = profile;
 
-  DetermineURLsAndLaunch(process_startup, restore_tabbed_browser);
+  LaunchResult launch_result =
+      DetermineURLsAndLaunch(process_startup, restore_tabbed_browser);
+
+  // Check the true process command line for --try-chrome-again=N rather than
+  // the one parsed for startup URLs and such.
+  if (launch_mode_recorder) {
+    launch_mode_recorder->SetLaunchMode(launch_result ==
+                                                LaunchResult::kWithGivenUrls
+                                            ? OldLaunchMode::kWithUrls
+                                            : OldLaunchMode::kToBeDecided);
+  }
 
   if (command_line_->HasSwitch(switches::kInstallChromeApp)) {
     install_chrome_app::InstallChromeApp(
@@ -330,7 +342,8 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
   return browser;
 }
 
-void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
+StartupBrowserCreatorImpl::LaunchResult
+StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
     chrome::startup::IsProcessStartup process_startup,
     bool restore_tabbed_browser) {
   if (StartupBrowserCreator::ShouldLoadProfileWithoutWindow(*command_line_)) {
@@ -338,7 +351,7 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
     // TODO(crbug.com/40216113): Remove by M104.
     NOTREACHED_IN_MIGRATION();
     base::debug::DumpWithoutCrashing();
-    return;
+    return LaunchResult::kNormally;
   }
 
   const bool is_incognito_or_guest = profile_->IsOffTheRecord();
@@ -401,9 +414,9 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
 
   // Return immediately if we start an async restore, since the remainder of
   // that process is self-contained.
-  if (MaybeAsyncRestore(tabs, process_startup, is_post_crash_launch)) {
-    return;
-  }
+  if (MaybeAsyncRestore(tabs, process_startup, is_post_crash_launch))
+    return result.launch_result;
+
   BrowserOpenBehaviorOptions behavior_options = 0;
   if (process_startup == chrome::startup::IsProcessStartup::kYes)
     behavior_options |= PROCESS_STARTUP;
@@ -439,6 +452,7 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
   // Finally, add info bars.
   AddInfoBarsIfNecessary(browser, profile_, *command_line_, is_first_run_,
                          /*is_web_app=*/false);
+  return result.launch_result;
 }
 
 StartupBrowserCreatorImpl::DetermineStartupTabsResult::

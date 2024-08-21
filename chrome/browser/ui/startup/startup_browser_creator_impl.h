@@ -18,6 +18,7 @@
 #include "url/gurl.h"
 
 class Browser;
+class OldLaunchModeRecorder;
 class Profile;
 class StartupBrowserCreator;
 class StartupTabProvider;
@@ -64,6 +65,7 @@ class StartupBrowserCreatorImpl {
   // crbug.com/1463906.
   void Launch(Profile* profile,
               chrome::startup::IsProcessStartup process_startup,
+              std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder,
               bool restore_tabbed_browser);
 
   // Convenience for OpenTabsInBrowser that converts |urls| into a set of
@@ -156,8 +158,9 @@ class StartupBrowserCreatorImpl {
   // `restore_tabbed_browser` should only be flipped false by Ash full
   // restore code path, suppressing restoring a normal browser when there were
   // only PWAs open in previous session. See crbug.com/1463906.
-  void DetermineURLsAndLaunch(chrome::startup::IsProcessStartup process_startup,
-                              bool restore_tabbed_browser);
+  LaunchResult DetermineURLsAndLaunch(
+      chrome::startup::IsProcessStartup process_startup,
+      bool restore_tabbed_browser);
 
   // Returns a tuple of
   // - the tabs to be shown on startup, based on the policy functions in

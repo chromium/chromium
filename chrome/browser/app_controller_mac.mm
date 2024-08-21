@@ -83,6 +83,7 @@
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
+#include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
@@ -199,7 +200,7 @@ void LaunchBrowserStartup(Profile* profile) {
   browser_creator.LaunchBrowser(
       *base::CommandLine::ForCurrentProcess(), profile, base::FilePath(),
       chrome::startup::IsProcessStartup::kNo, chrome::startup::IsFirstRun::kYes,
-      /*restore_tabbed_browser=*/true);
+      nullptr, /*restore_tabbed_browser=*/true);
 }
 
 // Creates an empty browser window with the given profile and returns a pointer

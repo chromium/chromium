@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_types.h"
@@ -147,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
                                    chrome::startup::IsFirstRun::kNo);
-  launch.Launch(profile, chrome::startup::IsProcessStartup::kNo,
+  launch.Launch(profile, chrome::startup::IsProcessStartup::kNo, nullptr,
                 /*restore_tabbed_browser=*/true);
 
   // This should have created a new browser window.  |browser()| is still
@@ -197,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetFirstRunTest,
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, &browser_creator,
                                    chrome::startup::IsFirstRun::kYes);
   launch.Launch(browser()->profile(), chrome::startup::IsProcessStartup::kYes,
-                /*restore_tabbed_browser=*/true);
+                nullptr, /*restore_tabbed_browser=*/true);
 
   // This should have created a new browser window.
   Browser* new_browser = FindOneOtherBrowser(browser());
@@ -234,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
     StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
                                      chrome::startup::IsFirstRun::kNo);
     launch.Launch(browser()->profile(), chrome::startup::IsProcessStartup::kNo,
-                  /*restore_tabbed_browser=*/true);
+                  nullptr, /*restore_tabbed_browser=*/true);
   }
 
   // This should have created a new browser window.  |browser()| is still
@@ -274,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
     StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
                                      chrome::startup::IsFirstRun::kNo);
     launch.Launch(other_profile_ptr, chrome::startup::IsProcessStartup::kNo,
-                  /*restore_tabbed_browser=*/true);
+                  nullptr, /*restore_tabbed_browser=*/true);
   }
 
   Browser* other_profile_browser =

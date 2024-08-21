@@ -122,6 +122,7 @@
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
+#include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
@@ -2462,6 +2463,7 @@ void UserSessionManager::LaunchBrowser(Profile* profile) {
   browser_creator.LaunchBrowser(
       *base::CommandLine::ForCurrentProcess(), profile, base::FilePath(),
       chrome::startup::IsProcessStartup::kYes, first_run,
+      std::make_unique<OldLaunchModeRecorder>(),
       /*restore_tabbed_browser=*/true);
   if (!has_recorded_first_web_contents_metrics_) {
     has_recorded_first_web_contents_metrics_ = true;

@@ -27842,6 +27842,86 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
+<enum name="OldLaunchMode">
+  <int value="1" label="(DEPRECATED) LM_AS_WEBAPP_WINDOW">
+    Launched as an installed web application in a standalone window
+  </int>
+  <int value="2" label="LM_WITH_URLS">Launched with urls in the cmd line</int>
+  <int value="3" label="LM_OTHER">
+    Fallback value when no other LM_ condition is satisfied
+  </int>
+  <int value="4" label="LM_SHORTCUT_NONAME">
+    Launched from shortcut but the path to the shortcut cannot be determined
+  </int>
+  <int value="5" label="LM_SHORTCUT_UNKNOWN">
+    Launched from user-defined shortcut
+  </int>
+  <int value="6" label="LM_SHORTCUT_QUICKLAUNCH">
+    Launched from the quick launch bar (pre-Win7; obsolete)
+  </int>
+  <int value="7" label="LM_SHORTCUT_DESKTOP">
+    Launched from a desktop shortcut
+  </int>
+  <int value="8" label="LM_SHORTCUT_TASKBAR">
+    Launched from the taskbar (Win7 and higher)
+  </int>
+  <int value="9" label="LM_USER_EXPERIMENT">
+    Launched from the installer as part of a retention experiment
+  </int>
+  <int value="10" label="LM_OTHER_OS">
+    Launch mode result bucket for OSes with no coverage
+  </int>
+  <int value="11" label="LM_MAC_UNDOCKED_DISK_LAUNCH">
+    Mac - undocked launch from disk
+  </int>
+  <int value="12" label="LM_MAC_DOCKED_DISK_LAUNCH">
+    Mac - docked launch from disk
+  </int>
+  <int value="13" label="LM_MAC_UNDOCKED_DMG_LAUNCH">
+    Mac - undocked launch from a disk image
+  </int>
+  <int value="14" label="LM_MAC_DOCKED_DMG_LAUNCH">
+    Mac - docked launch from a disk image
+  </int>
+  <int value="15" label="LM_MAC_DOCK_STATUS_ERROR">
+    Mac - error determining Chrome's Dock status
+  </int>
+  <int value="16" label="LM_MAC_DMG_STATUS_ERROR">
+    Mac - error determining Chrome's disk image status
+  </int>
+  <int value="17" label="LM_MAC_DOCK_DMG_STATUS_ERROR">
+    Mac - error determining Chrome's Dock and disk image statuses
+  </int>
+  <int value="18" label="LM_WIN_PLATFORM_NOTIFICATION">
+    Launched from toast notification activation (Win10-RS1 and higher)
+  </int>
+  <int value="19" label="LM_SHORTCUT_START_MENU">
+    Launched from a Start Menu shortcut (Windows).
+  </int>
+  <int value="20" label="LM_GCPW_LOGON">
+    Launched as a logon stub for the Google Credential Provider for Windows
+    (Windows).
+  </int>
+  <int value="21" label="LM_AS_WEBAPP_TAB">
+    Launched as an installed web application in a browser tab
+  </int>
+  <int value="22" label="LM_UNKNOWN_WEBAPP">
+    The requested web application was not installed
+  </int>
+  <int value="23" label="LM_AS_WEBAPP_WINDOW_BY_URL">
+    Launched installed web app in standalone window from command line, using
+    --app flag.
+  </int>
+  <int value="24" label="LM_AS_WEBAPP_WINDOW_BY_APP_ID">
+    Launched installed web app in standalone window from command line, using
+    --app-id flag.
+  </int>
+  <int value="25" label="LM_AS_WEBAPP_WINDOW_OTHER">
+    Launched installed web app in standalone window by any method other than
+    command line or a platform shortcut.
+  </int>
+</enum>
+
 <enum name="OmniboxSearchEngineType">
   <int value="0" label="Other"/>
   <int value="1" label="AOL"/>
