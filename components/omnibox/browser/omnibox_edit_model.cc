@@ -237,7 +237,6 @@ OmniboxEditModel::State::State(
     bool is_keyword_hint,
     OmniboxEventProto::KeywordModeEntryMethod keyword_mode_entry_method,
     OmniboxFocusState focus_state,
-    OmniboxFocusSource focus_source,
     const AutocompleteInput& autocomplete_input)
     : user_input_in_progress(user_input_in_progress),
       user_text(user_text),
@@ -245,7 +244,6 @@ OmniboxEditModel::State::State(
       is_keyword_hint(is_keyword_hint),
       keyword_mode_entry_method(keyword_mode_entry_method),
       focus_state(focus_state),
-      focus_source(focus_source),
       autocomplete_input(autocomplete_input) {}
 
 OmniboxEditModel::State::State(const State& other) = default;
@@ -310,7 +308,7 @@ OmniboxEditModel::State OmniboxEditModel::GetStateForTabSwitch() const {
     user_text = user_text_;
   }
   return State(user_input_in_progress_, user_text, keyword_, is_keyword_hint_,
-               keyword_mode_entry_method_, focus_state_, focus_source_, input_);
+               keyword_mode_entry_method_, focus_state_, input_);
 }
 
 void OmniboxEditModel::RestoreState(const State* state) {
@@ -341,7 +339,6 @@ void OmniboxEditModel::RestoreState(const State* state) {
                                    state->focus_state == OMNIBOX_FOCUS_NONE;
   if (!saved_focus_state_invalid) {
     SetFocusState(state->focus_state, OMNIBOX_FOCUS_CHANGE_TAB_SWITCH);
-    focus_source_ = state->focus_source;
   }
 
   // Restore any user editing.
@@ -1115,7 +1112,6 @@ void OmniboxEditModel::OnKillFocus() {
   UMA_HISTOGRAM_BOOLEAN(kOmniboxFocusResultedInNavigation,
                         focus_resulted_in_navigation_);
   SetFocusState(OMNIBOX_FOCUS_NONE, OMNIBOX_FOCUS_CHANGE_EXPLICIT);
-  focus_source_ = OmniboxFocusSource::INVALID;
   last_omnibox_focus_ = base::TimeTicks();
   paste_state_ = NONE;
   control_key_state_ = UP;
@@ -1441,19 +1437,6 @@ bool OmniboxEditModel::OnAfterPossibleChange(
     paste_state_ = NONE;
 
   if (state_changes.text_differs || state_changes.selection_differs) {
-    // Record current focus state for this input if we haven't already.
-    if (focus_source_ == OmniboxFocusSource::INVALID) {
-      // We should generally expect the omnibox to have focus at this point, but
-      // it doesn't always on Linux. This is because, unlike other platforms,
-      // right clicking in the omnibox on Linux doesn't focus it. So pasting via
-      // right-click can change the contents without focusing the omnibox.
-      // TODO(samarth): fix Linux focus behavior and add a DCHECK here to
-      // check that the omnibox does have focus.
-      focus_source_ = (focus_state_ == OMNIBOX_FOCUS_INVISIBLE)
-                          ? OmniboxFocusSource::FAKEBOX
-                          : OmniboxFocusSource::OMNIBOX;
-    }
-
     // Restore caret visibility whenever the user changes text or selection in
     // the omnibox.
     SetFocusState(OMNIBOX_FOCUS_VISIBLE, OMNIBOX_FOCUS_CHANGE_TYPING);
