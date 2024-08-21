@@ -178,8 +178,7 @@ bool FilePathWatcherFSEvents::WatchWithChangeInfo(
   callback_ = callback;
 
   FSEventStreamEventId start_event = kFSEventStreamEventIdSinceNow;
-  StartEventStream(start_event, path);
-  return true;
+  return StartEventStream(start_event, path);
 }
 
 void FilePathWatcherFSEvents::Cancel() {
@@ -204,6 +203,15 @@ void FilePathWatcherFSEvents::FSEventsCallback(
   FilePathWatcherFSEvents* watcher =
       reinterpret_cast<FilePathWatcherFSEvents*>(event_watcher);
   bool root_changed = watcher->ResolveTargetPath();
+  if (watcher->resolved_target_.empty()) {
+    RecordCallbackErrorUma(
+        WatchWithChangeInfoResult::kFSEventsResolvedTargetError);
+    watcher->task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&FilePathWatcherFSEvents::ReportError,
+                       watcher->weak_factory_.GetWeakPtr(), watcher->target_));
+  }
+
   FSEventStreamEventId root_change_at = FSEventStreamGetLatestEventId(stream);
   CFArrayRef cf_event_paths = base::apple::CFCast<CFArrayRef>(event_paths);
   std::map<FSEventStreamEventId, ChangeEvent> events;
@@ -263,7 +271,22 @@ void FilePathWatcherFSEvents::FSEventsCallback(
                            return;
                          }
                          FilePathWatcherFSEvents* watcher = weak_watcher.get();
-                         watcher->UpdateEventStream(root_change_at);
+                         WatchWithChangeInfoResult update_stream_result =
+                             watcher->UpdateEventStream(root_change_at);
+
+                         if (update_stream_result ==
+                             WatchWithChangeInfoResult::
+                                 kFSEventsEventStreamStartError) {
+                           // Failed to re-initialize the FSEvents event stream.
+                           RecordCallbackErrorUma(update_stream_result);
+                           watcher->task_runner()->PostTask(
+                               FROM_HERE,
+                               base::BindOnce(
+                                   &FilePathWatcherFSEvents::ReportError,
+                                   watcher->weak_factory_.GetWeakPtr(),
+                                   watcher->target_));
+                         }
+
                        },
                        watcher->weak_factory_.GetWeakPtr(), root_change_at));
   }
@@ -513,12 +536,12 @@ void FilePathWatcherFSEvents::DispatchEvents(
   }
 }
 
-void FilePathWatcherFSEvents::UpdateEventStream(
+WatchWithChangeInfoResult FilePathWatcherFSEvents::UpdateEventStream(
     FSEventStreamEventId start_event) {
   // It can happen that the watcher gets canceled while tasks that call this
   // function are still in flight, so abort if this situation is detected.
   if (resolved_target_.empty()) {
-    return;
+    return WatchWithChangeInfoResult::kFSEventsResolvedTargetError;
   }
 
   if (fsevent_stream_) {
@@ -547,22 +570,16 @@ void FilePathWatcherFSEvents::UpdateEventStream(
           kFSEventStreamCreateFlagUseExtendedData);
   FSEventStreamSetDispatchQueue(fsevent_stream_, queue_.get());
 
-  if (!FSEventStreamStart(fsevent_stream_)) {
-    task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&FilePathWatcherFSEvents::ReportError,
-                                  weak_factory_.GetWeakPtr(), target_));
+  if (FSEventStreamStart(fsevent_stream_)) {
+    return WatchWithChangeInfoResult::kSuccess;
   }
+  return WatchWithChangeInfoResult::kFSEventsEventStreamStartError;
 }
 
 bool FilePathWatcherFSEvents::ResolveTargetPath() {
   base::FilePath resolved = ResolvePath(target_).StripTrailingSeparators();
   bool changed = resolved != resolved_target_;
   resolved_target_ = resolved;
-  if (resolved_target_.empty()) {
-    task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&FilePathWatcherFSEvents::ReportError,
-                                  weak_factory_.GetWeakPtr(), target_));
-  }
   return changed;
 }
 
@@ -580,13 +597,18 @@ void FilePathWatcherFSEvents::DestroyEventStream() {
   fsevent_stream_ = nullptr;
 }
 
-void FilePathWatcherFSEvents::StartEventStream(FSEventStreamEventId start_event,
+bool FilePathWatcherFSEvents::StartEventStream(FSEventStreamEventId start_event,
                                                const base::FilePath& path) {
   DCHECK(resolved_target_.empty());
 
   target_ = path;
   ResolveTargetPath();
-  UpdateEventStream(start_event);
+  WatchWithChangeInfoResult stream_start_result =
+      UpdateEventStream(start_event);
+
+  RecordWatchWithChangeInfoResultUma(stream_start_result);
+
+  return stream_start_result == WatchWithChangeInfoResult::kSuccess;
 }
 
 }  // namespace content
