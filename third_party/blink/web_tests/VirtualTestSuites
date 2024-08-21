@@ -388,15 +388,6 @@
     "expires": "Jul 1, 2025"
   },
   {
-    "prefix": "mse-1mb-buffers",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["http/tests/media/media-source/stream_memory_tests"],
-    "exclusive_tests": ["http/tests/media/media-source/stream_memory_tests/mediasource-appendbuffer-quota-exceeded-1mb-buffers.html"],
-    "args": ["--mse-audio-buffer-size-limit-mb=1",
-             "--mse-video-buffer-size-limit-mb=1"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "composite-clip-path-animation",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/css/css-masking/clip-path/animations",

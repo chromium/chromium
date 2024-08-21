@@ -1780,8 +1780,6 @@ crbug.com/1218723 http/tests/devtools/network/network-prefetch.js [ Failure ]
 crbug.com/1051044 external/wpt/css/filter-effects/effect-reference-feimage-001.html [ Failure Pass ]
 crbug.com/1051044 external/wpt/css/filter-effects/effect-reference-feimage-003.html [ Failure Pass ]
 
-crbug.com/524160 [ Debug Linux ] http/tests/media/media-source/stream_memory_tests/mediasource-appendbuffer-quota-exceeded-default-buffers.html [ Timeout ]
-
 # based on Builder Win7 Tests (1) and flakyness dashboard
 crbug.com/1325545 [ Win ] external/wpt/cookie-store/cookieListItem_attributes.https.any.html [ Failure Pass ]
 crbug.com/1325515 [ Win ] external/wpt/cookie-store/cookieListItem_attributes.https.any.serviceworker.html [ Failure Pass ]
