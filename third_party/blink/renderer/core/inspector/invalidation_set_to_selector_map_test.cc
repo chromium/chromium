@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
 
 #include "base/test/trace_event_analyzer.h"
+#include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -45,7 +47,6 @@ TEST_F(InvalidationSetToSelectorMapTest, TrackerLifetime) {
 
   StartTracing();
   SetBodyInnerHTML(R"HTML(<div id=d>D</div>)HTML");
-  UpdateAllLifecyclePhasesForTest();
   EXPECT_NE(GetInstance(), nullptr);
   GetElementById("d")->setAttribute(html_names::kStyleAttr,
                                     AtomicString("color: red"));
@@ -78,7 +79,6 @@ TEST_F(InvalidationSetToSelectorMapTest, ClassMatch) {
       <div class=x>Child</div>
     </div>
   )HTML");
-  UpdateAllLifecyclePhasesForTest();
 
   GetElementById("parent")->setAttribute(html_names::kClassAttr,
                                          AtomicString("b"));
@@ -120,7 +120,6 @@ TEST_F(InvalidationSetToSelectorMapTest, ClassMatchWithMultipleInvalidations) {
       <div class=x>Child</div>
     </div>
   )HTML");
-  UpdateAllLifecyclePhasesForTest();
 
   GetElementById("parent")->setAttribute(html_names::kClassAttr,
                                          AtomicString("b"));
@@ -163,7 +162,6 @@ TEST_F(InvalidationSetToSelectorMapTest, ClassMatchWithCombine) {
       <div class=x>Child</div>
     </div>
   )HTML");
-  UpdateAllLifecyclePhasesForTest();
 
   GetElementById("parent")->setAttribute(html_names::kClassAttr,
                                          AtomicString("b"));
@@ -210,7 +208,6 @@ TEST_F(InvalidationSetToSelectorMapTest, SelfInvalidation) {
       <div class=x>Child</div>
     </div>
   )HTML");
-  UpdateAllLifecyclePhasesForTest();
 
   GetElementById("parent")->setAttribute(html_names::kClassAttr,
                                          AtomicString("b"));
@@ -260,7 +257,6 @@ TEST_F(InvalidationSetToSelectorMapTest, SubtreeInvalidation) {
       <div class=x>Child</div>
     </div>
   )HTML");
-  UpdateAllLifecyclePhasesForTest();
 
   GetElementById("parent")->setAttribute(html_names::kClassAttr,
                                          AtomicString("b"));
@@ -287,6 +283,43 @@ TEST_F(InvalidationSetToSelectorMapTest, SubtreeInvalidation) {
     }
   }
   EXPECT_EQ(found_event_count, 1u);
+}
+
+TEST_F(InvalidationSetToSelectorMapTest, InvalidationSetRemoval) {
+  StartTracing();
+  SetBodyInnerHTML(R"HTML(<div id=d>D</div>)HTML");
+  EXPECT_NE(GetInstance(), nullptr);
+
+  StyleRule* style_rule = To<StyleRule>(
+      css_test_helpers::ParseRule(GetDocument(), ".a .b { color: red; }"));
+  AtomicString class_name("b");
+
+  using SelectorFeatureType = InvalidationSetToSelectorMap::SelectorFeatureType;
+  using IndexedSelector = InvalidationSetToSelectorMap::IndexedSelector;
+  using IndexedSelectorList = InvalidationSetToSelectorMap::IndexedSelectorList;
+
+  InvalidationSetToSelectorMap::BeginSelector(style_rule, 0);
+  InvalidationSet* invalidation_set =
+      DescendantInvalidationSet::Create().release();
+  InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
+      invalidation_set, SelectorFeatureType::kClass, class_name);
+  InvalidationSetToSelectorMap::EndSelector();
+
+  const IndexedSelectorList* result = InvalidationSetToSelectorMap::Lookup(
+      invalidation_set, SelectorFeatureType::kClass, class_name);
+  EXPECT_TRUE(
+      result->Contains(MakeGarbageCollected<IndexedSelector>(style_rule, 0)));
+
+  // Release the invalidation set but retain the pointer so we can confirm that
+  // looking it up no longer returns any results.
+  EXPECT_TRUE(invalidation_set->HasOneRef());
+  invalidation_set->Release();
+
+  result = InvalidationSetToSelectorMap::Lookup(
+      invalidation_set, SelectorFeatureType::kClass, class_name);
+  EXPECT_EQ(result, nullptr);
+
+  StopTracing();
 }
 
 }  // namespace blink

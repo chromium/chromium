@@ -273,6 +273,7 @@ void InvalidationSet::Combine(const InvalidationSet& other) {
 }
 
 void InvalidationSet::Destroy() const {
+  InvalidationSetToSelectorMap::RemoveEntriesForInvalidationSet(this);
   if (auto* invalidation_set = DynamicTo<DescendantInvalidationSet>(this)) {
     delete invalidation_set;
   } else {

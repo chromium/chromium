@@ -33,7 +33,7 @@ String InvalidationSetToSelectorMap::IndexedSelector::GetSelectorText() const {
 }
 
 // static
-CORE_EXPORT void InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded() {
+void InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded() {
   DEFINE_STATIC_LOCAL(
       const unsigned char*, is_tracing_enabled,
       (TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT(
@@ -164,6 +164,17 @@ InvalidationSetToSelectorMap::CombineScope::CombineScope(
 
 InvalidationSetToSelectorMap::CombineScope::~CombineScope() {
   InvalidationSetToSelectorMap::EndInvalidationSetCombine();
+}
+
+// static
+void InvalidationSetToSelectorMap::RemoveEntriesForInvalidationSet(
+    const InvalidationSet* invalidation_set) {
+  const InvalidationSetToSelectorMap* instance = GetInstanceReference().Get();
+  if (instance == nullptr) {
+    return;
+  }
+
+  instance->invalidation_set_map_->erase(invalidation_set);
 }
 
 // static
