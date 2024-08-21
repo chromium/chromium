@@ -65,6 +65,7 @@ class InspectUI : public content::WebUIController,
   void UpdatePortForwardingConfig();
   void UpdateTCPDiscoveryEnabled();
   void UpdateTCPDiscoveryConfig();
+  void UpdateBubbleLockingCheckbox();
 
   void SetPortForwardingDefaults();
 

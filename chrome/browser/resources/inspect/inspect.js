@@ -738,6 +738,8 @@ function initSettings() {
 
   $('launch-ui-devtools')
       .addEventListener('click', sendCommand.bind(null, 'launch-ui-devtools'));
+  checkboxSendsCommand('bubble-locking-checkbox', 'set-bubble-locking');
+
   $('port-forwarding-config-open')
       .addEventListener('click', openPortForwardingConfig);
   $('tcp-discovery-config-open').addEventListener('click', openTargetsConfig);
@@ -926,6 +928,10 @@ function updateTCPDiscoveryEnabled(enabled) {
 function updateTCPDiscoveryConfig(config) {
   window.targetDiscoveryConfig = config;
   $('tcp-discovery-config-open').disabled = !config;
+}
+
+function updateBubbleLockingCheckbox(enabled) {
+  updateCheckbox('bubble-locking-checkbox', enabled);
 }
 
 function appendRow(list, lineFactory, key, value) {
@@ -1163,6 +1169,7 @@ Object.assign(window, {
   updatePortForwardingConfig,
   updateTCPDiscoveryEnabled,
   updateTCPDiscoveryConfig,
+  updateBubbleLockingCheckbox,
   populateNativeUITargets,
   populateTargets,
   populatePortStatus,
