@@ -17,6 +17,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/pref_names.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_store.h"
 #include "net/cookies/cookie_change_dispatcher.h"
@@ -56,22 +57,15 @@ FloatingSsoService::FloatingSsoService(
       ::prefs::kFloatingSsoEnabled,
       base::BindRepeating(&FloatingSsoService::StartOrStop,
                           base::Unretained(this)));
+  pref_change_registrar_->Add(
+      syncer::prefs::internal::kSyncCookies,
+      base::BindRepeating(&FloatingSsoService::StartOrStop,
+                          base::Unretained(this)));
+  pref_change_registrar_->Add(
+      syncer::prefs::internal::kSyncManaged,
+      base::BindRepeating(&FloatingSsoService::StartOrStop,
+                          base::Unretained(this)));
   StartOrStop();
-}
-
-void FloatingSsoService::StartOrStop() {
-  // TODO: b/346354255 - subscribe to cookie changes to commit them to Sync when
-  // needed. Remove `is_enabled_for_testing_` after we can can observe
-  // meaningful behavior in tests.
-  is_enabled_for_testing_ = prefs_->FindPreference(::prefs::kFloatingSsoEnabled)
-                                ->GetValue()
-                                ->GetBool();
-  // TODO(b/355613655): stop listening for cookie changes when cookie sync gets
-  // disabled.
-  if (is_enabled_for_testing_) {
-    scoped_observation_.Observe(bridge_.get());
-    MaybeStartListening();
-  }
 }
 
 FloatingSsoService::~FloatingSsoService() = default;
@@ -79,6 +73,29 @@ FloatingSsoService::~FloatingSsoService() = default;
 void FloatingSsoService::Shutdown() {
   pref_change_registrar_.reset();
   prefs_ = nullptr;
+}
+
+void FloatingSsoService::StartOrStop() {
+  if (IsFloatingSsoEnabled()) {
+    scoped_observation_.Observe(bridge_.get());
+    MaybeStartListening();
+  } else {
+    scoped_observation_.Reset();
+    StopListening();
+  }
+}
+
+bool FloatingSsoService::IsFloatingSsoEnabled() {
+  // FloatingSsoEnabled policy.
+  bool floating_sso_enabled = prefs_->GetBoolean(::prefs::kFloatingSsoEnabled);
+  // User selection in the Sync settings.
+  bool sync_cookies_user_selection =
+      prefs_->GetBoolean(syncer::prefs::internal::kSyncCookies);
+  // kSyncManaged maps to SyncDisabled policy.
+  bool sync_disabled =
+      prefs_->GetBoolean(syncer::prefs::internal::kSyncManaged);
+
+  return floating_sso_enabled && sync_cookies_user_selection && !sync_disabled;
 }
 
 void FloatingSsoService::MaybeStartListening() {
@@ -91,13 +108,22 @@ void FloatingSsoService::MaybeStartListening() {
   }
 }
 
+void FloatingSsoService::StopListening() {
+  if (receiver_.is_bound()) {
+    // In case cookie listening will resume in the same session, make sure the
+    // accumulated cookie list will be fetched.
+    fetch_accumulated_cookies_ = true;
+    receiver_.reset();
+  }
+}
+
 void FloatingSsoService::BindToCookieManager() {
   cookie_manager_->AddGlobalChangeListener(
       receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(
       &FloatingSsoService::OnConnectionError, base::Unretained(this)));
 
-  if (is_initial_cookie_manager_bind_) {
+  if (fetch_accumulated_cookies_) {
     cookie_manager_->GetAllCookies(base::BindOnce(
         &FloatingSsoService::OnCookiesLoaded, base::Unretained(this)));
   }
@@ -227,7 +253,9 @@ bool FloatingSsoService::IsFloatingWorkspaceEnabled() const {
 }
 
 void FloatingSsoService::OnConnectionError() {
-  is_initial_cookie_manager_bind_ = false;
+  // Don't fetch the accumulated cookies because we will try to reconnect right
+  // away.
+  fetch_accumulated_cookies_ = false;
   receiver_.reset();
   MaybeStartListening();
 }

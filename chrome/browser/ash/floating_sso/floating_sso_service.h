@@ -56,10 +56,7 @@ class FloatingSsoService : public KeyedService,
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate();
 
   FloatingSsoSyncBridge* GetBridgeForTesting() { return bridge_.get(); }
-
-  // TODO: b/346354327 - temporary flag used for testing. Remove after
-  // actual behavior is implemented.
-  bool is_enabled_for_testing_ = false;
+  bool IsBoundToCookieManagerForTesting() { return receiver_.is_bound(); }
 
   // TODO: b/360878519 - pass the bridge to the constructor instead and move
   // bridge creation to the factory. This is currently blocked by browser tests
@@ -74,7 +71,9 @@ class FloatingSsoService : public KeyedService,
   // apply cookies from Sync if needed. If not, stop all of the above.
   void StartOrStop();
 
+  bool IsFloatingSsoEnabled();
   void MaybeStartListening();
+  void StopListening();
   void BindToCookieManager();
   void OnCookiesLoaded(const net::CookieList& cookies);
   bool ShouldSyncCookie(const net::CanonicalCookie& cookie) const;
@@ -89,9 +88,11 @@ class FloatingSsoService : public KeyedService,
       scoped_observation_{this};
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
-  // Whether we connect for the first time to the cookie manager or we are
-  // reconnecting after a disconnect.
-  bool is_initial_cookie_manager_bind_ = true;
+  // We fetch the accumulated cookies the first time the service is started, as
+  // well when the service stops listening and resumes due to setting changes.
+  // We do not fetch accumulated cookies when the connection to the cookie
+  // manager is disrupted because we attempt to reconnect right away.
+  bool fetch_accumulated_cookies_ = true;
 
   mojo::Receiver<network::mojom::CookieChangeListener> receiver_{this};
 };
