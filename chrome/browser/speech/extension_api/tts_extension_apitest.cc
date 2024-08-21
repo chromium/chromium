@@ -305,7 +305,7 @@ class TtsApiTest : public ExtensionApiTest,
 
   void AddNetworkSpeechSynthesisExtension() {
     ExtensionHostTestHelper host_helper(profile());
-    host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
+    host_helper.RestrictToType(mojom::ViewType::kOffscreenDocument);
     ExtensionService* service =
         extensions::ExtensionSystem::Get(profile())->extension_service();
     service->component_loader()->AddNetworkSpeechSynthesisExtension();

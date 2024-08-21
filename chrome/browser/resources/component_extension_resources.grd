@@ -12,6 +12,9 @@
   </outputs>
   <release seq="1">
     <includes>
+      <include name="IDR_NETWORK_SPEECH_SYNTHESIS_AUDIO_HTML" file="network_speech_synthesis/audio.html" type="BINDATA" />
+      <include name="IDR_NETWORK_SPEECH_SYNTHESIS_AUDIO_JS" file="network_speech_synthesis/audio.js" type="BINDATA" />
+      <include name="IDR_NETWORK_SPEECH_SYNTHESIS_SERVICE_WORKER_JS" file="network_speech_synthesis/service_worker.js" type="BINDATA" />
       <include name="IDR_NETWORK_SPEECH_SYNTHESIS_JS" file="network_speech_synthesis/tts_extension.js" type="BINDATA" />
       <include name="IDR_READING_MODE_GDOC_HELPER_CONTENT_JS" file="reading_mode_gdocs_helper/content.js" type="BINDATA" />
       <include name="IDR_READING_MODE_GDOC_HELPER_GDOCS_SCRIPT_JS" file="reading_mode_gdocs_helper/gdocs_script.js" type="BINDATA" />
