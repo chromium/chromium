@@ -243,15 +243,6 @@ void ChromeAutofillClientIOS::ShowAutofillSettings(
   NOTREACHED_IN_MIGRATION();
 }
 
-payments::MandatoryReauthManager*
-ChromeAutofillClientIOS::GetOrCreatePaymentsMandatoryReauthManager() {
-  if (!payments_reauth_manager_) {
-    payments_reauth_manager_ =
-        std::make_unique<payments::MandatoryReauthManager>(this);
-  }
-  return payments_reauth_manager_.get();
-}
-
 void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,

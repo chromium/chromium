@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
+#include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
@@ -846,6 +847,16 @@ ChromePaymentsAutofillClient::CreateCreditCardInternalAuthenticator(
 #else
   return std::make_unique<content::InternalAuthenticatorImpl>(rfh);
 #endif
+}
+
+payments::MandatoryReauthManager*
+ChromePaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
+  if (!payments_mandatory_reauth_manager_) {
+    payments_mandatory_reauth_manager_ =
+        std::make_unique<payments::MandatoryReauthManager>(&client_.get());
+  }
+
+  return payments_mandatory_reauth_manager_.get();
 }
 
 #if BUILDFLAG(IS_ANDROID)

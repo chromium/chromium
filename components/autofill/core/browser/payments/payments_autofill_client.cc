@@ -235,4 +235,9 @@ PaymentsAutofillClient::CreateCreditCardInternalAuthenticator(
 }
 #endif
 
+payments::MandatoryReauthManager*
+PaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
+  return nullptr;
+}
+
 }  // namespace autofill::payments

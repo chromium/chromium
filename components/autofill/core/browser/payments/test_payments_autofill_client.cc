@@ -9,12 +9,14 @@
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
+#include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -233,6 +235,15 @@ TestPaymentsAutofillClient::CreateCreditCardInternalAuthenticator(
 }
 #endif
 
+MockMandatoryReauthManager*
+TestPaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
+  if (!mock_payments_mandatory_reauth_manager_) {
+    mock_payments_mandatory_reauth_manager_ = std::make_unique<
+        testing::NiceMock<payments::MockMandatoryReauthManager>>();
+  }
+  return mock_payments_mandatory_reauth_manager_.get();
+}
+
 bool TestPaymentsAutofillClient::GetMandatoryReauthOptInPromptWasShown() {
   return mandatory_reauth_opt_in_prompt_was_shown_;
 }
@@ -255,5 +266,27 @@ MockMerchantPromoCodeManager*
 TestPaymentsAutofillClient::GetMockMerchantPromoCodeManager() {
   return &mock_merchant_promo_code_manager_;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void TestPaymentsAutofillClient::
+    SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive() {
+  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+    return;
+  }
+
+  payments::MockMandatoryReauthManager& mandatory_reauth_manager =
+      *GetOrCreatePaymentsMandatoryReauthManager();
+
+  ON_CALL(mandatory_reauth_manager, GetAuthenticationMethod)
+      .WillByDefault(testing::Return(
+          payments::MandatoryReauthAuthenticationMethod::kBiometric));
+
+  ON_CALL(mandatory_reauth_manager, Authenticate)
+      .WillByDefault(testing::WithArg<0>(
+          testing::Invoke([](base::OnceCallback<void(bool)> callback) {
+            std::move(callback).Run(true);
+          })));
+}
+#endif
 
 }  // namespace autofill::payments

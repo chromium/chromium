@@ -72,7 +72,6 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_data_importer.h"
-#include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -470,16 +469,6 @@ void ChromeAutofillClient::ShowAutofillSettings(
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-}
-
-payments::MandatoryReauthManager*
-ChromeAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
-  if (!payments_mandatory_reauth_manager_) {
-    payments_mandatory_reauth_manager_ =
-        std::make_unique<payments::MandatoryReauthManager>(this);
-  }
-
-  return payments_mandatory_reauth_manager_.get();
 }
 
 void ChromeAutofillClient::ShowEditAddressProfileDialog(

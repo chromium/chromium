@@ -868,7 +868,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     // Mandatory re-auth is required for credit card autofill on automotive, so
     // the authenticator response needs to be properly mocked.
 #if BUILDFLAG(IS_ANDROID)
-    autofill_client_.SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive();
+    payments_client().SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive();
 #endif
   }
 
