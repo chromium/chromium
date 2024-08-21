@@ -25,7 +25,6 @@ items:
   value: 2
 owners:
 - fsandrade@chromium.org
-- file://chrome/browser/ash/authpolicy/OWNERS
 schema:
   enum:
   - 0
