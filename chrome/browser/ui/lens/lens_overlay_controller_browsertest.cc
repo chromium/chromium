@@ -124,7 +124,7 @@ constexpr char kCheckSearchboxInput[] =
     "(function() {const root = "
     "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot;"
     "const searchboxInputLoaded = "
-    "  root.getElementById('realbox').shadowRoot.getElementById('input').value "
+    "  root.getElementById('searchbox').shadowRoot.getElementById('input').value "
     "  === $1; return  searchboxInputLoaded;})();";
 
 constexpr char kRequestNotificationsScript[] = R"(
@@ -141,7 +141,7 @@ constexpr char kCheckSidePanelResultsLoadedScript[] =
     "const iframeSrcLoaded = "
     "  root.getElementById('results').src.includes('q=' + $1);"
     "const searchboxInputLoaded = "
-    "  root.getElementById('realbox').shadowRoot.getElementById('input').value "
+    "  root.getElementById('searchbox').shadowRoot.getElementById('input').value "
     "  === $1; return iframeSrcLoaded && searchboxInputLoaded;})();";
 
 constexpr char kCheckSidePanelTranslateResultsLoadedScript[] =
@@ -152,16 +152,16 @@ constexpr char kCheckSidePanelTranslateResultsLoadedScript[] =
     "const stickPresent = "
     "  root.getElementById('results').src.includes('stick=');"
     "const searchboxInputLoaded = "
-    "  root.getElementById('realbox').shadowRoot.getElementById('input').value "
+    "  root.getElementById('searchbox').shadowRoot.getElementById('input').value "
     "  === $1; return iframeSrcLoaded && stickPresent && "
     "  searchboxInputLoaded;})();";
 
 constexpr char kCheckSidePanelThumbnailShownScript[] =
     "(function() {const appRoot = "
     "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot;"
-    "const realboxRoot = appRoot.getElementById('realbox').shadowRoot;"
-    "const thumbContainer = realboxRoot.getElementById('thumbnailContainer');"
-    "const thumbnailRoot = realboxRoot.getElementById('thumbnail').shadowRoot;"
+    "const searchboxRoot = appRoot.getElementById('searchbox').shadowRoot;"
+    "const thumbContainer = searchboxRoot.getElementById('thumbnailContainer');"
+    "const thumbnailRoot = searchboxRoot.getElementById('thumbnail').shadowRoot;"
     "const imageSrc = thumbnailRoot.getElementById('image').src;"
     "return window.getComputedStyle(thumbContainer).display !== 'none' && "
     "       imageSrc.startsWith('data:image/jpeg');})();";

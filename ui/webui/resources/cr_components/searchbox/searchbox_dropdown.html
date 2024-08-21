@@ -1,18 +1,18 @@
-<style include="cr-icons realbox-dropdown-shared-style">
+<style include="cr-icons searchbox-dropdown-shared-style">
   :host {
     user-select: none;
   }
 
   #content {
-    background-color: var(--color-realbox-results-background);
-    border-radius: calc(0.5 * var(--cr-realbox-height));
-    box-shadow: var(--cr-realbox-shadow);
+    background-color: var(--color-searchbox-results-background);
+    border-radius: calc(0.5 * var(--cr-searchbox-height));
+    box-shadow: var(--cr-searchbox-shadow);
     display: flex;
     gap: 16px;
     margin-bottom: 8px;
     overflow: hidden;
     padding-bottom: 8px;
-    padding-top: var(--cr-realbox-height);
+    padding-top: var(--cr-searchbox-height);
   }
 
   @media (forced-colors: active) {
@@ -26,7 +26,7 @@
   }
 
   cr-searchbox-match {
-    color: var(--color-realbox-results-foreground);
+    color: var(--color-searchbox-results-foreground);
   }
 
   .header {
@@ -48,7 +48,7 @@
   }
 
   .header .text {
-    color: var(--color-realbox-results-foreground-dimmed);
+    color: var(--color-searchbox-results-foreground-dimmed);
     font-size: .875em;
     font-weight: 500;
     overflow: hidden;
@@ -63,7 +63,7 @@
 
   .header:focus-within:not(:focus) cr-icon-button {
       --cr-icon-button-fill-color:
-          var(--color-realbox-results-icon-selected);
+          var(--color-searchbox-results-icon-selected);
   }
 
   @media (forced-colors: active) {
@@ -78,7 +78,7 @@
   }
 
   .secondary-side {
-    display: var(--cr-realbox-secondary-side-display, none);
+    display: var(--cr-searchbox-secondary-side-display, none);
     min-width: 0;
     padding-block-end: 8px;
     padding-inline-end: 16px;

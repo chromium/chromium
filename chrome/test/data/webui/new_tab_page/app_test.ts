@@ -93,7 +93,7 @@ suite('NewTabPageAppTest', () => {
 
     test('open voice search event opens voice search overlay', async () => {
       // Act.
-      $$(app, '#realbox')!.dispatchEvent(new Event('open-voice-search'));
+      $$(app, '#searchbox')!.dispatchEvent(new Event('open-voice-search'));
       await microtasksFinished();
 
       // Assert.
@@ -996,20 +996,20 @@ suite('NewTabPageAppTest', () => {
       await callbackRouterRemote.$.flushForTesting();
 
       // Act.
-      $$(app, '#realbox')!.dispatchEvent(new Event('open-lens-search'));
+      $$(app, '#searchbox')!.dispatchEvent(new Event('open-lens-search'));
       await microtasksFinished();
 
       // Assert.
       const dialog = app.shadowRoot!.querySelector('ntp-lens-upload-dialog');
       assertTrue(!!dialog);
-      assertStyle($$(app, '#realbox')!, 'visibility', 'hidden');
+      assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
 
       // Act.
       dialog.closeDialog();
       await microtasksFinished();
 
       // Assert.
-      assertStyle($$(app, '#realbox')!, 'visibility', 'visible');
+      assertStyle($$(app, '#searchbox')!, 'visibility', 'visible');
     });
   });
 

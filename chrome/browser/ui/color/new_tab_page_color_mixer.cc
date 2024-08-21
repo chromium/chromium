@@ -341,38 +341,38 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageTextLight] =
       IncreaseLightness(kColorNewTabPageText, 0.40);
 
-  mixer[kColorRealboxAnswerIconBackground] = {SkColorSetRGB(0xD3, 0xE3, 0xFD)};
-  mixer[kColorRealboxAnswerIconForeground] = {SkColorSetRGB(0x04, 0x1E, 0x49)};
-  mixer[kColorRealboxBackground] = {SK_ColorWHITE};
-  mixer[kColorRealboxBackgroundHovered] = {SK_ColorWHITE};
-  mixer[kColorRealboxBorder] = {
+  mixer[kColorSearchboxAnswerIconBackground] = {SkColorSetRGB(0xD3, 0xE3, 0xFD)};
+  mixer[kColorSearchboxAnswerIconForeground] = {SkColorSetRGB(0x04, 0x1E, 0x49)};
+  mixer[kColorSearchboxBackground] = {SK_ColorWHITE};
+  mixer[kColorSearchboxBackgroundHovered] = {SK_ColorWHITE};
+  mixer[kColorSearchboxBorder] = {
       key.contrast_mode == ui::ColorProviderKey::ContrastMode::kHigh
           ? kColorLocationBarBorder
           : gfx::kGoogleGrey300};
-  mixer[kColorRealboxForeground] = {SK_ColorBLACK};
-  mixer[kColorRealboxPlaceholder] = {gfx::kGoogleGrey700};
-  mixer[kColorRealboxResultsBackground] = {SK_ColorWHITE};
-  mixer[kColorRealboxResultsBackgroundHovered] =
+  mixer[kColorSearchboxForeground] = {SK_ColorBLACK};
+  mixer[kColorSearchboxPlaceholder] = {gfx::kGoogleGrey700};
+  mixer[kColorSearchboxResultsBackground] = {SK_ColorWHITE};
+  mixer[kColorSearchboxResultsBackgroundHovered] =
       ui::SetAlpha(gfx::kGoogleGrey900,
                    /* 10% opacity */ 0.1 * SK_AlphaOPAQUE);
-  mixer[kColorRealboxResultsButtonHover] = {
-      kColorRealboxResultsBackgroundHovered};
+  mixer[kColorSearchboxResultsButtonHover] = {
+      kColorSearchboxResultsBackgroundHovered};
 
-  mixer[kColorRealboxResultsActionChip] = {SkColorSetRGB(0xA8, 0xC7, 0xFA)};
-  mixer[kColorRealboxResultsActionChipIcon] = {SkColorSetRGB(0x0B, 0x57, 0xD0)};
-  mixer[kColorRealboxResultsActionChipFocusOutline] = {
+  mixer[kColorSearchboxResultsActionChip] = {SkColorSetRGB(0xA8, 0xC7, 0xFA)};
+  mixer[kColorSearchboxResultsActionChipIcon] = {SkColorSetRGB(0x0B, 0x57, 0xD0)};
+  mixer[kColorSearchboxResultsActionChipFocusOutline] = {
       SkColorSetRGB(0x0B, 0x57, 0xD0)};
-  mixer[kColorRealboxResultsDimSelected] = {gfx::kGoogleGrey700};
-  mixer[kColorRealboxResultsFocusIndicator] = {gfx::kGoogleBlue600};
-  mixer[kColorRealboxResultsForeground] = {SK_ColorBLACK};
-  mixer[kColorRealboxResultsForegroundDimmed] = {gfx::kGoogleGrey700};
-  mixer[kColorRealboxResultsIconSelected] = {gfx::kGoogleGrey700};
-  mixer[kColorRealboxResultsUrl] = {gfx::kGoogleBlue700};
-  mixer[kColorRealboxResultsUrlSelected] = {gfx::kGoogleBlue700};
-  mixer[kColorRealboxSearchIconBackground] = {gfx::kGoogleGrey700};
-  mixer[kColorRealboxResultsIcon] = {gfx::kGoogleGrey700};
-  mixer[kColorRealboxResultsIconFocusedOutline] = {gfx::kGoogleBlue600};
-  mixer[kColorRealboxShadow] =
+  mixer[kColorSearchboxResultsDimSelected] = {gfx::kGoogleGrey700};
+  mixer[kColorSearchboxResultsFocusIndicator] = {gfx::kGoogleBlue600};
+  mixer[kColorSearchboxResultsForeground] = {SK_ColorBLACK};
+  mixer[kColorSearchboxResultsForegroundDimmed] = {gfx::kGoogleGrey700};
+  mixer[kColorSearchboxResultsIconSelected] = {gfx::kGoogleGrey700};
+  mixer[kColorSearchboxResultsUrl] = {gfx::kGoogleBlue700};
+  mixer[kColorSearchboxResultsUrlSelected] = {gfx::kGoogleBlue700};
+  mixer[kColorSearchboxSearchIconBackground] = {gfx::kGoogleGrey700};
+  mixer[kColorSearchboxResultsIcon] = {gfx::kGoogleGrey700};
+  mixer[kColorSearchboxResultsIconFocusedOutline] = {gfx::kGoogleBlue600};
+  mixer[kColorSearchboxShadow] =
       ui::SetAlpha(gfx::kGoogleGrey900,
                    (dark_mode ? /* % opacity */ 0.32 : 0.28) * SK_AlphaOPAQUE);
   mixer[kColorNewTabPageWallpaperSearchButtonBackground] =

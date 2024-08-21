@@ -1,11 +1,11 @@
 <style include="cr-icons searchbox-shared-style">
   .results-pane {
     border: none;
-     /* Viewport height minus the realbox height and margin. */
+     /* Viewport height minus the searchbox height and margin. */
     height: calc(100vh - 76px);
     inset-inline-start: 0;
      /*
-      * We need to offset by the realbox height and margin since we are in a
+      * We need to offset by the searchbox height and margin since we are in a
       * fixed position.
       */
     inset-block-start: 76px;
@@ -100,29 +100,30 @@
     color: #E8EAED;
   }
 
-  #realbox {
+  #searchbox {
     margin-block-start: 16px;
     margin-inline-end: 14px;
     margin-block-end: 8px;
     margin-inline-start: 14px;
   }
 
-  :host([is-back-arrow-visible]) #realbox {
+  :host([is-back-arrow-visible]) #searchbox {
     margin-block-start: 16px;
     margin-inline-end: 14px;
     margin-block-end: 8px;
     margin-inline-start: 0px;
   }
 
-  :host([is-back-arrow-visible]) #realboxContainer {
-    --cr-realbox-min-width: min(calc(100vw - 60px), 768px);
+  :host([is-back-arrow-visible]) #searchboxContainer {
+    --cr-searchbox-min-width: min(calc(100vw - 60px), 768px);
   }
 
-  #realboxContainer {
+  #searchboxContainer {
     position: fixed;
   }
 
-  :host([dark-mode]) #realboxContainer {
+
+  :host([dark-mode]) #searchboxContainer {
     background-color: #1F1F1F;
   }
 
@@ -136,13 +137,13 @@
     color: #70757A;
   }
 </style>
-<div id="realboxContainer">
+<div id="searchboxContainer">
   <template is="dom-if" if="[[isBackArrowVisible]]">
     <cr-icon-button id="backButton" class="action-icon icon-arrow-back"
         on-click="onBackArrowClick" aria-label="$i18n{backButton}">
     </cr-icon-button>
   </template>
-  <cr-searchbox id="realbox"></cr-searchbox>
+  <cr-searchbox id="searchbox"></cr-searchbox>
 </div>
 
 <!-- Network error UI that is initially hidden -->

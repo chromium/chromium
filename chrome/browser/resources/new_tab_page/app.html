@@ -15,8 +15,8 @@
       .dark="${this.isThemeDark_()}" .backgroundColor="${this.backgroundColor_}"
       ?hidden="${!this.logoEnabled_}">
   </ntp-logo>
-  <div id="realboxContainer">
-    <cr-searchbox id="realbox" ?is-dark="${this.isThemeDark_()}"
+  <div id="searchboxContainer">
+    <cr-searchbox id="searchbox" ?is-dark="${this.isThemeDark_()}"
         ?color-source-is-baseline="${this.colorSourceIsBaseline}"
         @open-lens-search="${this.onOpenLensSearch_}"
         @open-voice-search="${this.onOpenVoiceSearch_}" ?shown="${this.realboxShown_}"

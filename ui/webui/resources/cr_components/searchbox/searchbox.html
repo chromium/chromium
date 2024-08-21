@@ -1,40 +1,39 @@
 <style include="cr-icons">
   :host {
-    /* Embedders should define --cr-realbox-min-width. */
-    --cr-realbox-shadow: 0 1px 6px 0 var(--color-realbox-shadow);
-    --cr-realbox-width: var(--cr-realbox-min-width);
-
-    --cr-realbox-border-radius: calc(0.5 * var(--cr-realbox-height));
-    --cr-realbox-icon-width: 26px;
-    --cr-realbox-inner-icon-margin: 8px;
-    --cr-realbox-voice-icon-offset: 16px;
-    --cr-realbox-voice-search-button-width: 0px;
-    border-radius: var(--cr-realbox-border-radius);
-    box-shadow: var(--cr-realbox-shadow);
+    /* Embedders should define --cr-searchbox-min-width. */
+    --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
+    --cr-searchbox-width: var(--cr-searchbox-min-width);
+    --cr-searchbox-border-radius: calc(0.5 * var(--cr-searchbox-height));
+    --cr-searchbox-icon-width: 26px;
+    --cr-searchbox-inner-icon-margin: 8px;
+    --cr-searchbox-voice-icon-offset: 16px;
+    --cr-searchbox-voice-search-button-width: 0px;
+    border-radius: var(--cr-searchbox-border-radius);
+    box-shadow: var(--cr-searchbox-shadow);
     font-size: 16px;
-    height: var(--cr-realbox-height);
-    width: var(--cr-realbox-width);
+    height: var(--cr-searchbox-height);
+    width: var(--cr-searchbox-width);
   }
 
   /* Side panel searchbox should not have a shadow when dropdown isn't visible */
   :host([is-lens-searchbox_]:not([dropdown-is-visible])) {
-    --cr-realbox-shadow: none;
+    --cr-searchbox-shadow: none;
   }
 
   :host([show-thumbnail]) {
-    --cr-realbox-thumbnail-icon-offset: 50px;
+    --cr-searchbox-thumbnail-icon-offset: 50px;
   }
 
   :host([realbox-chrome-refresh-theming][dropdown-is-visible]) {
-    --cr-realbox-shadow: 0 0 12px 4px var(--color-realbox-shadow)
+    --cr-searchbox-shadow: 0 0 12px 4px var(--color-searchbox-shadow)
   }
 
   :host([realbox-chrome-refresh-theming]:not([realbox-steady-state-shadow]):not([dropdown-is-visible])) {
-    --cr-realbox-shadow: none;
+    --cr-searchbox-shadow: none;
   }
 
   :host-context([realbox-width-behavior_='revert']):host([can-show-secondary-side]:not([dropdown-is-visible])) {
-    --cr-realbox-width: var(--cr-realbox-min-width);
+    --cr-searchbox-width: var(--cr-searchbox-min-width);
   }
 
   /**
@@ -42,19 +41,19 @@
    * shown.
    */
   :host([can-show-secondary-side][has-secondary-side]) {
-    --cr-realbox-secondary-side-display: block;
+    --cr-searchbox-secondary-side-display: block;
   }
 
   :host([is-dark]) {
-    --cr-realbox-shadow: 0 2px 6px 0 var(--color-realbox-shadow);
+    --cr-searchbox-shadow: 0 2px 6px 0 var(--color-searchbox-shadow);
   }
 
   :host([realbox-voice-search-enabled_]) {
-    --cr-realbox-voice-search-button-width: var(--cr-realbox-icon-width);
+    --cr-searchbox-voice-search-button-width: var(--cr-searchbox-icon-width);
   }
 
   :host([realbox-lens-search-enabled_]) {
-    --cr-realbox-voice-icon-offset: 53px;
+    --cr-searchbox-voice-icon-offset: 53px;
   }
 
   @media (forced-colors: active) {
@@ -73,11 +72,11 @@
 
   :host([match-searchbox]:not([dropdown-is-visible]):hover) {
     border: 1px solid transparent;
-    box-shadow: var(--cr-realbox-shadow);
+    box-shadow: var(--cr-searchbox-shadow);
   }
 
   :host([match-searchbox]:not([is-dark]):not([dropdown-is-visible]):not(:hover)) {
-    border: 1px solid var(--color-realbox-border);
+    border: 1px solid var(--color-searchbox-border);
   }
 
   #inputWrapper {
@@ -86,29 +85,29 @@
   }
 
   input {
-    background-color: var(--color-realbox-background);
+    background-color: var(--color-searchbox-background);
     border: none;
-    border-radius: var(--cr-realbox-border-radius);
-    color: var(--color-realbox-foreground);
+    border-radius: var(--cr-searchbox-border-radius);
+    color: var(--color-searchbox-foreground);
     font-family: inherit;
     font-size: inherit;
     height: 100%;
     outline: none;
     /* Always include offset and margin padding, even if the voice search button
      * is not being shown. */
-    padding-inline-end: calc(var(--cr-realbox-voice-icon-offset) + var(--cr-realbox-voice-search-button-width) + var(--cr-realbox-inner-icon-margin));
-    padding-inline-start: calc(52px + var(--cr-realbox-thumbnail-icon-offset, 0px));
+    padding-inline-end: calc(var(--cr-searchbox-voice-icon-offset) + var(--cr-searchbox-voice-search-button-width) + var(--cr-searchbox-inner-icon-margin));
+    padding-inline-start: calc(52px + var(--cr-searchbox-thumbnail-icon-offset, 0px));
     position: relative;
     width: 100%;
   }
 
   :host-context([is-back-arrow-visible]) input {
-    padding-inline-start: calc(22px + var(--cr-realbox-thumbnail-icon-offset, 0px));
+    padding-inline-start: calc(22px + var(--cr-searchbox-thumbnail-icon-offset, 0px));
   }
 
   :host([realbox-chrome-refresh-theming]) input::selection {
-    background-color: var(--color-realbox-selection-background);
-    color: var(--color-realbox-selection-foreground)
+    background-color: var(--color-searchbox-selection-background);
+    color: var(--color-searchbox-selection-foreground)
   }
 
   input::-webkit-search-decoration,
@@ -127,7 +126,7 @@
   }
 
   input::placeholder {
-    color: var(--color-realbox-placeholder);
+    color: var(--color-searchbox-placeholder);
   }
 
   input:focus::placeholder {
@@ -140,7 +139,7 @@
 
   input:focus,
   :host([dropdown-is-visible]) input {
-    background-color: var(--color-realbox-results-background);
+    background-color: var(--color-searchbox-results-background);
   }
 
   /* TODO(b/328294049): Switch all hard-coded colors to CSS color tokens. */
@@ -155,19 +154,19 @@
   }
 
   :host([realbox-chrome-refresh-theming]:not([realbox-steady-state-shadow]):not([dropdown-is-visible])) input {
-    background-color: var(--color-realbox-background);
+    background-color: var(--color-searchbox-background);
   }
 
   :host([realbox-chrome-refresh-theming]:not([realbox-steady-state-shadow]):not([dropdown-is-visible])) input:hover,
   input:hover {
-    background-color: var(--color-realbox-background-hovered);
+    background-color: var(--color-searchbox-background-hovered);
   }
 
   cr-searchbox-icon {
     height: 100%;
-    left: var(--cr-realbox-icon-left-position);
+    left: var(--cr-searchbox-icon-left-position);
     position: absolute;
-    top: var(--cr-realbox-icon-top-position);
+    top: var(--cr-searchbox-icon-top-position);
     pointer-events: none;
   }
 
@@ -180,7 +179,7 @@
     right: 12px;
   }
 
-  .realbox-icon-button {
+  .searchbox-icon-button {
     background-color: transparent;
     background-position: center;
     background-repeat: no-repeat;
@@ -194,30 +193,30 @@
     pointer-events: auto;
     position: absolute;
     right: 16px;
-    width: var(--cr-realbox-icon-width);
+    width: var(--cr-searchbox-icon-width);
   }
 
-  :host([realbox-chrome-refresh-theming]) .realbox-icon-button {
+  :host([realbox-chrome-refresh-theming]) .searchbox-icon-button {
     position: static;
   }
 
   /* When voice/lens icons are monochrome, they are webkit mask images.
    * Webkit mask images hide borders so container rules are created to
    * show focus borders on these icons. */
-  .realbox-icon-button-container {
+  .searchbox-icon-button-container {
     border-radius: 2px;
     height: 100%;
     position: absolute;
     right: 16px;
-    top: var(--cr-realbox-icon-top-position);
+    top: var(--cr-searchbox-icon-top-position);
     z-index: 100;
   }
 
-  .realbox-icon-button-container.voice {
-    right: var(--cr-realbox-voice-icon-offset);
+  .searchbox-icon-button-container.voice {
+    right: var(--cr-searchbox-voice-icon-offset);
   }
 
-  :host-context(.focus-outline-visible) .realbox-icon-button-container:focus-within {
+  :host-context(.focus-outline-visible) .searchbox-icon-button-container:focus-within {
     box-shadow: var(--ntp-focus-shadow);
   }
 
@@ -235,7 +234,7 @@
     -webkit-mask-position: center;
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 21px 21px;
-    background-color: var(--color-realbox-lens-voice-icon-background);
+    background-color: var(--color-searchbox-lens-voice-icon-background);
   }
 
   :host([realbox-chrome-refresh-theming]:not([color-source-is-baseline])) #voiceSearchButton {
@@ -255,34 +254,34 @@
   }
 
   :host([realbox-lens-search-enabled_]):host-context([dir='rtl']) #voiceSearchButton {
-    left: var(--cr-realbox-voice-icon-offset);
+    left: var(--cr-searchbox-voice-icon-offset);
     right: unset;
   }
 
   :host([realbox-lens-search-enabled_]) #voiceSearchButton {
-    right: var(--cr-realbox-voice-icon-offset);
+    right: var(--cr-searchbox-voice-icon-offset);
   }
 
-  :host-context([dir='rtl']) .realbox-icon-button {
+  :host-context([dir='rtl']) .searchbox-icon-button {
     left: 16px;
     right: unset;
   }
 
-  :host-context([dir='rtl']) .realbox-icon-button-container {
+  :host-context([dir='rtl']) .searchbox-icon-button-container {
     left: 16px;
     right: unset;
   }
 
-  :host([realbox-lens-search-enabled_]):host-context([dir='rtl']) .realbox-icon-button-container.voice {
-    left: var(--cr-realbox-voice-icon-offset);
+  :host([realbox-lens-search-enabled_]):host-context([dir='rtl']) .searchbox-icon-button-container.voice {
+    left: var(--cr-searchbox-voice-icon-offset);
     right: unset;
   }
 
-  :host-context(.focus-outline-visible) .realbox-icon-button:focus {
+  :host-context(.focus-outline-visible) .searchbox-icon-button:focus {
     box-shadow: var(--ntp-focus-shadow);
   }
 
-  :-webkit-any(input, cr-searchbox-icon, .realbox-icon-button) {
+  :-webkit-any(input, cr-searchbox-icon, .searchbox-icon-button) {
     z-index: 100;
   }
 
@@ -301,7 +300,7 @@
 
   #thumbnailContainer {
     align-content: center;
-    inset-block-start: var(--cr-realbox-icon-top-position);
+    inset-block-start: var(--cr-searchbox-icon-top-position);
     inset-inline-start: 48px;
     height: 100%;
     outline: none;
@@ -340,16 +339,16 @@
   </template>
   <template is="dom-if" if="[[realboxChromeRefreshTheming]]">
     <template is="dom-if" if="[[realboxVoiceSearchEnabled_]]">
-      <div class="realbox-icon-button-container voice">
-        <button id="voiceSearchButton" class="realbox-icon-button"
+      <div class="searchbox-icon-button-container voice">
+        <button id="voiceSearchButton" class="searchbox-icon-button"
             on-click="onVoiceSearchClick_"
             title="[[i18n('voiceSearchButtonLabel')]]">
         </button>
       </div>
     </template>
     <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
-      <div class="realbox-icon-button-container lens">
-          <button id="lensSearchButton" class="realbox-icon-button"
+      <div class="searchbox-icon-button-container lens">
+          <button id="lensSearchButton" class="searchbox-icon-button"
               on-click="onLensSearchClick_"
               title="[[i18n('lensSearchButtonLabel')]]">
           </button>
@@ -358,13 +357,13 @@
   </template>
   <template is="dom-if" if="[[!realboxChromeRefreshTheming]]">
     <template is="dom-if" if="[[realboxVoiceSearchEnabled_]]">
-      <button id="voiceSearchButton" class="realbox-icon-button"
+      <button id="voiceSearchButton" class="searchbox-icon-button"
           on-click="onVoiceSearchClick_"
           title="[[i18n('voiceSearchButtonLabel')]]">
       </button>
     </template>
     <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
-      <button id="lensSearchButton" class="realbox-icon-button"
+      <button id="lensSearchButton" class="searchbox-icon-button"
           on-click="onLensSearchClick_"
           title="[[i18n('lensSearchButtonLabel')]]">
       </button>

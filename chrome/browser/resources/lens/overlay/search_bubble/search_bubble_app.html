@@ -1,6 +1,6 @@
 <style include="cr-icons searchbox-shared-style">
 :host {
-  --cr-realbox-min-width: 332px;
+  --cr-searchbox-min-width: 332px;
 }
 
 #container {
@@ -38,20 +38,20 @@
   margin-left: 16px;
 }
 
-#realboxContainer {
+#searchboxContainer {
   flex-basis: 100%;
   justify-content: center;
-  --cr-realbox-height: 52px;
-  --cr-realbox-icon-left-position: 10px;
-  --cr-realbox-icon-top-position: 1px;
-  --cr-realbox-icon-size-in-searchbox: 24px;
+  --cr-searchbox-height: 52px;
+  --cr-searchbox-icon-left-position: 10px;
+  --cr-searchbox-icon-top-position: 1px;
+  --cr-searchbox-icon-size-in-searchbox: 24px;
 }
 </style>
 <div id="container">
   <div id="header"></div>
   <cr-icon-button id="closeButton" class="icon-clear" title="$i18n{close}"
     on-click="onClose_"></cr-icon-button>
-  <div id="realboxContainer">
+  <div id="searchboxContainer">
     <cr-searchbox id="realbox"></cr-searchbox>
   </div>
 </div>
