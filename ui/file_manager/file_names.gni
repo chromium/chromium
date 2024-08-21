@@ -13,18 +13,6 @@ image_loader_ts = [
   "image_loader/scheduler.ts",
 ]
 
-static_js_files = [
-  # Files app Foreground:
-  "file_manager/foreground/js/mock_navigation_list_model.js",
-  "file_manager/foreground/js/navigation_list_model.js",
-
-  # Files app UI:
-  "file_manager/foreground/js/ui/directory_tree.js",
-  "file_manager/foreground/js/ui/tree.js",
-]
-
-# END: static_js_files.
-
 ts_files = [
   # Common:
   "file_manager/common/js/api.ts",
@@ -508,7 +496,6 @@ checked_in_dts_files = [
   "file_manager/definitions/file_error.d.ts",
   "file_manager/definitions/file_manager.d.ts",
   "file_manager/definitions/navigator_connection.d.ts",
-  "file_manager/foreground/js/ui/tree.d.ts",
 ]
 
 other_dts_files = [
@@ -530,13 +517,6 @@ generated_js_files = [
 ]
 
 # END: generated_js_files.
-
-# Test files:
-unittest_files = [
-  # Foreground:
-  "file_manager/foreground/js/ui/directory_tree_unittest.js",
-  "file_manager/foreground/js/navigation_list_model_unittest.js",
-]
 
 # Files that don't have the generated HTML, but are used for tests.
 unittest_harness = [

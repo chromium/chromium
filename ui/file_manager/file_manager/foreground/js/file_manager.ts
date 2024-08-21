@@ -24,13 +24,14 @@ import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/f
 import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import type {FilesAppState} from '../../common/js/files_app_state.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
-import {isDlpEnabled, isGuestOsEnabled, isMaterializedViewsEnabled, isNewDirectoryTreeEnabled, isSkyvaultV2Enabled} from '../../common/js/flags.js';
+import {isDlpEnabled, isGuestOsEnabled, isMaterializedViewsEnabled, isSkyvaultV2Enabled} from '../../common/js/flags.js';
 import {recordEnum, recordInterval, startInterval} from '../../common/js/metrics.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {str} from '../../common/js/translations.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
 import {getLastVisitedURL, isInGuestMode, runningInBrowser} from '../../common/js/util.js';
-import {AllowedPaths, ARCHIVE_OPENED_EVENT_TYPE, RootType, VolumeType} from '../../common/js/volume_manager_types.js';
+import type {VolumeType} from '../../common/js/volume_manager_types.js';
+import {AllowedPaths, ARCHIVE_OPENED_EVENT_TYPE, RootType} from '../../common/js/volume_manager_types.js';
 import {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
 import {NudgeType} from '../../containers/nudge_container.js';
 import {getMyFiles} from '../../state/ducks/all_entries.js';
@@ -43,9 +44,8 @@ import {updatePreferences} from '../../state/ducks/preferences.js';
 import {getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
 import {driveRootEntryListKey, trashRootKey} from '../../state/ducks/volumes.js';
-import {DialogType, PropStatus, SearchLocation} from '../../state/state.js';
+import {DialogType, SearchLocation} from '../../state/state.js';
 import {getEmptyState, getEntry, getStore, getVolume} from '../../state/store.js';
-import {isXfTree} from '../../widgets/xf_tree_util.js';
 
 import {ActionsController} from './actions_controller.js';
 import {AndroidAppListModel} from './android_app_list_model.js';
@@ -78,7 +78,6 @@ import {ThumbnailModel} from './metadata/thumbnail_model.js';
 import {MetadataBoxController} from './metadata_box_controller.js';
 import {MetadataUpdateController} from './metadata_update_controller.js';
 import {NamingController} from './naming_controller.js';
-import {NavigationListModel, NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
 import {NavigationUma} from './navigation_uma.js';
 import {OneDriveController} from './one_drive_controller.js';
 import {ProvidersModel} from './providers_model.js';
@@ -93,7 +92,6 @@ import {TaskController} from './task_controller.js';
 import {ToolbarController} from './toolbar_controller.js';
 import {CommandButton} from './ui/commandbutton.js';
 import {contextMenuHandler} from './ui/context_menu_handler.js';
-import {DirectoryTree} from './ui/directory_tree.js';
 import {FileGrid} from './ui/file_grid.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
@@ -328,19 +326,9 @@ export class FileManager {
   private bulkPinningInitialized_: boolean = false;
 
   /**
-   * A fake Drive placeholder item.
-   */
-  private fakeDriveItem_: null|NavigationModelFakeItem = null;
-
-  /**
    * Whether Trash is enabled or not, retrieved from user preferences.
    */
   trashEnabled: boolean = false;
-
-  /**
-   * A fake Trash placeholder item.
-   */
-  private fakeTrashItem_: null|NavigationModelFakeItem = null;
 
   /**
    * A fake entry for Recents.
@@ -670,8 +658,7 @@ export class FileManager {
     }
 
     this.fileTransferController_ = new FileTransferController(
-        this.document, this.ui.listContainer,
-        this.ui.directoryTree as DirectoryTree,
+        this.document, this.ui.listContainer, this.ui.directoryTree!,
         this.ui.showConfirmationDialog.bind(this.ui), this.progressCenter,
         this.metadataModel, this.directoryModel, this.volumeManager,
         this.selectionHandler, this.ui.toast);
@@ -1052,7 +1039,7 @@ export class FileManager {
 
     // Create directory tree naming controller.
     this.directoryTreeNamingController_ = new DirectoryTreeNamingController(
-        this.directoryModel_, this.ui_.directoryTree as DirectoryTree,
+        this.directoryModel_, this.ui_.directoryTree,
         this.ui_.directoryTreeContainer, this.ui_.alertDialog);
 
     // Create spinner controller.
@@ -1113,34 +1100,13 @@ export class FileManager {
     assert(this.androidAppListModel_);
     assert(this.crostini_);
 
-    const directoryTree =
-        this.dialogDom_.querySelector<DirectoryTree>('#directory-tree');
-    assert(directoryTree);
+    const treeContainerDiv = this.dialogDom_.querySelector<HTMLDivElement>(
+        '.dialog-navigation-list-contents');
+    assert(treeContainerDiv);
 
-    if (isNewDirectoryTreeEnabled()) {
-      const treeContainer = directoryTree.parentElement!;
-      directoryTree.remove();
-      const directoryTreeContainer =
-          new DirectoryTreeContainer(treeContainer, this.directoryModel_);
-      this.ui_.initDirectoryTree(directoryTreeContainer);
-    } else {
-      const fakeEntriesVisible =
-          this.dialogType !== DialogType.SELECT_SAVEAS_FILE;
-
-      DirectoryTree.decorate(
-          directoryTree, this.directoryModel_, this.volumeManager_,
-          this.metadataModel_, fakeEntriesVisible);
-
-      directoryTree.dataModel = new NavigationListModel(
-          this.volumeManager_, this.folderShortcutsModel_,
-          fakeEntriesVisible && !isFolderDialogType(this.launchParams_.type) ?
-              new NavigationModelFakeItem(
-                  str('RECENT_ROOT_LABEL'), NavigationModelItemType.RECENT,
-                  this.recentEntry_) :
-              null,
-          this.directoryModel_, this.androidAppListModel_, this.dialogType);
-      this.ui_.initDirectoryTree(directoryTree);
-    }
+    const directoryTreeContainer =
+        new DirectoryTreeContainer(treeContainerDiv, this.directoryModel_);
+    this.ui_.initDirectoryTree(directoryTreeContainer);
 
     // If 'media-store-files-only' volume filter is enabled, then Android ARC
     // SelectFile opened files app to pick files from volumes that are indexed
@@ -1172,12 +1138,7 @@ export class FileManager {
     // multiple VMs.
     chrome.fileManagerPrivate.onCrostiniChanged.addListener(
         this.onCrostiniChanged_.bind(this));
-    this.crostiniController_ = new CrostiniController(
-        this.crostini_,
-        // TODO(b/285977941): `DirectoryTree` is only used when FileExperimental
-        // flag is off, remove it after the tree replacement.
-        this.ui_.directoryTree as DirectoryTree,
-        this.volumeManager_.isDisabled(VolumeType.CROSTINI));
+    this.crostiniController_ = new CrostiniController(this.crostini_);
     await this.crostiniController_.redraw();
     // Never show toast in an open-file dialog.
     const maybeShowToast = this.dialogType === DialogType.FULL_PAGE;
@@ -1185,10 +1146,7 @@ export class FileManager {
         maybeShowToast, this.ui_.toast);
 
     if (isGuestOsEnabled()) {
-      this.guestOsController_ = new GuestOsController(
-          // TODO(b/285977941): `DirectoryTree` is only used when
-          // FileExperimental flag is off, remove it after the tree replacement.
-          this.ui_.directoryTree as DirectoryTree, this.volumeManager_);
+      this.guestOsController_ = new GuestOsController();
       await this.guestOsController_.refresh();
     }
   }
@@ -1319,13 +1277,6 @@ export class FileManager {
     const searchQuery = this.launchParams_.searchQuery;
     if (searchQuery) {
       startInterval('Load.ProcessInitialSearchQuery');
-      if (!isNewDirectoryTreeEnabled()) {
-        this.store_.dispatch(updateSearch({
-          query: searchQuery,
-          status: PropStatus.STARTED,
-          options: getDefaultSearchOptions(),
-        }));
-      }
       assert(this.spinnerController_);
       // Show a spinner, as the crossover search function call could be slow.
       const hideSpinnerCallback = this.spinnerController_.show();
@@ -1445,20 +1396,15 @@ export class FileManager {
     // are enabled.
     if (!nextCurrentDirEntry && this.localUserFilesAllowed) {
       assert(this.ui.directoryTree);
-      if (isXfTree(this.ui.directoryTree)) {
-        const myFiles = getMyFiles(this.store_.getState());
-        // When MyFiles volume is mounted, we rely on the current directory
-        // change to make it as selected (controlled by DirectoryModel),
-        // that's why we can't set MyFiles entry list as the current directory
-        // here.
-        // TODO(b/308504417): MyFiles entry list should be selected before
-        // MyFiles volume mounts.
-        if (myFiles && myFiles.myFilesVolume) {
-          nextCurrentDirEntry = myFiles.myFilesEntry;
-        }
-      } else if (this.ui.directoryTree?.dataModel.myFilesModel) {
-        nextCurrentDirEntry =
-            this.ui.directoryTree.dataModel.myFilesModel.entry;
+      const myFiles = getMyFiles(this.store_.getState());
+      // When MyFiles volume is mounted, we rely on the current directory
+      // change to make it as selected (controlled by DirectoryModel),
+      // that's why we can't set MyFiles entry list as the current directory
+      // here.
+      // TODO(b/308504417): MyFiles entry list should be selected before
+      // MyFiles volume mounts.
+      if (myFiles && myFiles.myFilesVolume) {
+        nextCurrentDirEntry = myFiles.myFilesEntry;
       }
     }
 
@@ -1633,11 +1579,9 @@ export class FileManager {
       return;
     }
 
-    let redraw = false;
     if (this.driveEnabled_ !== prefs.driveEnabled) {
       this.driveEnabled_ = prefs.driveEnabled;
       this.toggleDriveRootOnPreferencesUpdate_();
-      redraw = true;
     }
 
     if (this.bulkPinningAvailable_ !== prefs.driveFsBulkPinningAvailable) {
@@ -1656,7 +1600,6 @@ export class FileManager {
       this.toolbarController_.moveToTrashCommand.disabled = !this.trashEnabled;
       this.toolbarController_.moveToTrashCommand.canExecuteChange(
           this.ui.listContainer.currentList);
-      redraw = true;
     }
 
     if (this.localUserFilesAllowed !== prefs.localUserFilesAllowed) {
@@ -1669,9 +1612,6 @@ export class FileManager {
     await this.updateOfficePrefs_(prefs);
 
     assert(this.ui.directoryTree);
-    if (redraw && !isXfTree(this.ui.directoryTree)) {
-      this.ui.directoryTree.redraw(false);
-    }
   }
 
   private async onDriveConnectionStatusChanged_() {
@@ -1729,26 +1669,20 @@ export class FileManager {
    */
   private toggleTrashRootOnPreferencesUpdate_() {
     assert(this.ui_);
+    let trashRoot: TrashRootEntry|null =
+        getEntry(this.store_.getState(), trashRootKey) as TrashRootEntry | null;
     if (this.trashEnabled) {
-      if (!this.fakeTrashItem_) {
-        this.fakeTrashItem_ = new NavigationModelFakeItem(
-            str('TRASH_ROOT_LABEL'), NavigationModelItemType.TRASH,
-            new TrashRootEntry());
+      if (!trashRoot) {
+        trashRoot = new TrashRootEntry();
       }
-      this.store_.dispatch(addUiEntry(this.fakeTrashItem_.entry as FakeEntry));
+      this.store_.dispatch(addUiEntry(trashRoot));
       assert(this.ui_.directoryTree);
-      if (!isXfTree(this.ui_.directoryTree)) {
-        this.ui_.directoryTree!.dataModel.fakeTrashItem = this.fakeTrashItem_;
-      }
       return;
     }
 
     this.store_.dispatch(removeUiEntry(trashRootKey));
     assert(this.ui_.directoryTree);
-    if (!isXfTree(this.ui_.directoryTree)) {
-      this.ui_.directoryTree!.dataModel.fakeTrashItem = null;
-    }
-    this.navigateAwayFromDisabledRoot_(this.fakeTrashItem_?.entry || null);
+    this.navigateAwayFromDisabledRoot_(trashRoot || null);
   }
 
   /**
@@ -1766,29 +1700,11 @@ export class FileManager {
         this.store_.dispatch(addUiEntry(driveFakeRoot));
       }
       assert(this.ui.directoryTree);
-      if (!isXfTree(this.ui.directoryTree)) {
-        // TODO(b/285977941): Remove the old FakeEntry based drive root.
-        const driveFakeRoot = new FakeEntryImpl(
-            str('DRIVE_DIRECTORY_LABEL'), RootType.DRIVE_FAKE_ROOT);
-        if (!this.fakeDriveItem_) {
-          this.fakeDriveItem_ = new NavigationModelFakeItem(
-              str('DRIVE_DIRECTORY_LABEL'), NavigationModelItemType.DRIVE,
-              driveFakeRoot);
-          this.fakeDriveItem_.disabled =
-              this.volumeManager.isDisabled(VolumeType.DRIVE);
-        }
-        this.ui.directoryTree!.dataModel.fakeDriveItem = this.fakeDriveItem_;
-      }
       return;
     }
     this.store_.dispatch(removeUiEntry(driveRootEntryListKey));
     assert(this.ui.directoryTree);
-    if (!isXfTree(this.ui.directoryTree)) {
-      this.ui.directoryTree!.dataModel.fakeDriveItem = null;
-      this.navigateAwayFromDisabledRoot_(this.fakeDriveItem_?.entry || null);
-    } else {
-      this.navigateAwayFromDisabledRoot_(driveFakeRoot);
-    }
+    this.navigateAwayFromDisabledRoot_(driveFakeRoot);
   }
 
   /**

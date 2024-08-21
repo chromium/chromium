@@ -24,8 +24,6 @@ import {handleTreeSlotChange, isTreeItem} from './xf_tree_util.js';
  * this is because we need to make sure only one item is being selected or
  * focused.
  *
- * TODO(b/285977941): Remove the closure annotation here.
- * @constructor
  */
 @customElement('xf-tree')
 export class XfTree extends XfBase {

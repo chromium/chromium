@@ -77,10 +77,6 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DirectoryModelTest) {
   RunTestURL("foreground/js/directory_model_unittest.js");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DirectoryTreeTest) {
-  RunTestURL("foreground/js/ui/directory_tree_unittest.js");
-}
-
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DriveBulkPinningBanner) {
   RunTestURL("foreground/js/ui/banners/drive_bulk_pinning_banner_unittest.js");
 }
@@ -229,10 +225,6 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MultiMenu) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MultiMetadataProvider) {
   RunTestURL("foreground/js/metadata/multi_metadata_provider_unittest.js");
-}
-
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, NavigationListModelTest) {
-  RunTestURL("foreground/js/navigation_list_model_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, PathComponent) {

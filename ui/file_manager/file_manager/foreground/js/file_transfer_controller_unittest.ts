@@ -20,6 +20,7 @@ import {cacheEntries} from '../../state/ducks/all_entries.js';
 import {setUpFileManagerOnWindow, setupStore} from '../../state/for_tests.js';
 import {DialogType} from '../../state/state.js';
 import {getFileData} from '../../state/store.js';
+import type {XfTree} from '../../widgets/xf_tree.js';
 import type {FilesToast} from '../elements/files_toast.js';
 
 import {FakeFileSelectionHandler} from './fake_file_selection_handler.js';
@@ -31,7 +32,6 @@ import {MockMetadataModel} from './metadata/mock_metadata.js';
 import {createFakeDirectoryModel} from './mock_directory_model.js';
 import type {A11yAnnounce} from './ui/a11y_announce.js';
 import {Command} from './ui/command.js';
-import type {DirectoryTree} from './ui/directory_tree.js';
 import {FileGrid} from './ui/file_grid.js';
 import {FileListSelectionModel} from './ui/file_list_selection_model.js';
 import {FileTable} from './ui/file_table.js';
@@ -49,7 +49,7 @@ class TestFileTransferController extends FileTransferController {
 
 let listContainer: ListContainer;
 let fileTransferController: TestFileTransferController;
-let directoryTree: DirectoryTree;
+let directoryTree: XfTree;
 let selectionHandler: FakeFileSelectionHandler;
 let volumeManager: VolumeManager;
 
@@ -144,7 +144,7 @@ export function setUp() {
 
   // Setup DirectoryTree elements.
   directoryTree =
-      document.querySelector('#directory-tree') as unknown as DirectoryTree;
+      document.querySelector('#directory-tree') as unknown as XfTree;
 
   const filesToast =
       document.querySelector('files-toast') as unknown as FilesToast;

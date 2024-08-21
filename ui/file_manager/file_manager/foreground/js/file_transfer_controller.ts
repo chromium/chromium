@@ -10,7 +10,7 @@ import type {ProgressCenter} from '../../background/js/progress_center.js';
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {getDirectory, getDisallowedTransfers, getFile, getParentEntry, grantAccess, startIOTask} from '../../common/js/api.js';
-import {getFocusedTreeItem, htmlEscape, isDirectoryTree, isDirectoryTreeItem, queryRequiredElement} from '../../common/js/dom_utils.js';
+import {getFocusedTreeItem, htmlEscape, queryRequiredElement} from '../../common/js/dom_utils.js';
 import {convertURLsToEntries, entriesToURLs, getRootType, getTeamDriveName, getTreeItemEntry, isNonModifiable, isRecentRoot, isSameEntry, isSharedDriveEntry, isSiblingEntry, isTeamDriveRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
 import {getIcon, isEncrypted} from '../../common/js/file_type.js';
 import {getFileTypeForName} from '../../common/js/file_types_base.js';
@@ -25,8 +25,8 @@ import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import type {FileKey} from '../../state/state.js';
 import {getFileData, getStore} from '../../state/store.js';
 import type {XfTree} from '../../widgets/xf_tree.js';
-import {XfTreeItem} from '../../widgets/xf_tree_item.js';
-import {isTreeItem} from '../../widgets/xf_tree_util.js';
+import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
+import {isTreeItem, isXfTree} from '../../widgets/xf_tree_util.js';
 import type {FilesToast} from '../elements/files_toast.js';
 
 import type {DirectoryModel} from './directory_model.js';
@@ -34,7 +34,6 @@ import type {FileSelectionHandler} from './file_selection.js';
 import {EventType} from './file_selection.js';
 import type {MetadataModel} from './metadata/metadata_model.js';
 import type {Command} from './ui/command.js';
-import type {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
 import {DragSelector} from './ui/drag_selector.js';
 import type {FileGrid} from './ui/file_grid.js';
 import type {FileTableList} from './ui/file_table_list.js';
@@ -42,7 +41,6 @@ import type {Grid} from './ui/grid.js';
 import type {List} from './ui/list.js';
 import type {ListContainer} from './ui/list_container.js';
 import type {ListItem} from './ui/list_item.js';
-import {TreeItem} from './ui/tree.js';
 
 /**
  * Global (placed in the window object) variable name to hold internal
@@ -336,7 +334,7 @@ export class FileTransferController {
 
   constructor(
       private document_: Document, private listContainer_: ListContainer,
-      directoryTree: DirectoryTree,
+      directoryTree: XfTree,
       private confirmationCallback_: ConfirmationCallback,
       private progressCenter_: ProgressCenter,
       /**
@@ -389,7 +387,7 @@ export class FileTransferController {
     list.addEventListener('drop', this.onDrop_.bind(this, false));
   }
 
-  private attachTreeDropTarget_(tree: DirectoryTree|XfTree) {
+  private attachTreeDropTarget_(tree: XfTree) {
     tree.addEventListener('dragover', this.onDragOver_.bind(this, true, tree));
     tree.addEventListener('dragenter', this.onDragEnterTree_.bind(this, tree));
     tree.addEventListener('dragleave', this.onDragLeave_.bind(this));
@@ -884,8 +882,7 @@ export class FileTransferController {
   }
 
   private onDragOver_(
-      onlyIntoDirectories: boolean, _: List|DirectoryTree|XfTree,
-      event: DragEvent) {
+      onlyIntoDirectories: boolean, _: List|XfTree, event: DragEvent) {
     event.preventDefault();
     let entry: DirectoryEntry|FilesAppDirEntry|null|undefined =
         this.destinationEntry_;
@@ -917,7 +914,7 @@ export class FileTransferController {
     }
   }
 
-  private onDragEnterTree_(_: DirectoryTree|XfTree, event: DragEvent) {
+  private onDragEnterTree_(_: XfTree, event: DragEvent) {
     event.preventDefault();  // Required to prevent the cursor flicker.
 
     if (!event.relatedTarget) {
@@ -929,7 +926,7 @@ export class FileTransferController {
 
     this.lastEnteredTarget_ = event.target as HTMLElement;
     let item = event.target as Element;
-    while (item && !(item instanceof TreeItem || item instanceof XfTreeItem)) {
+    while (item && !(isTreeItem(item))) {
       item = item.parentNode as Element;
     }
 
@@ -1013,7 +1010,7 @@ export class FileTransferController {
    */
   private changeToDropTargetDirectory_() {
     // Do custom action.
-    if (isDirectoryTreeItem(this.dropTarget_)) {
+    if (isTreeItem(this.dropTarget_)) {
       this.dropTarget_.doDropTargetAction();
     }
     if (!this.destinationEntry_) {
@@ -1157,7 +1154,7 @@ export class FileTransferController {
 
     // If current focus is on DirectoryTree, write selected item of
     // DirectoryTree to system clipboard.
-    if (document.activeElement && isDirectoryTree(document.activeElement)) {
+    if (document.activeElement && isXfTree(document.activeElement)) {
       const focusedItem = getFocusedTreeItem(document.activeElement);
       this.cutOrCopyFromDirectoryTree(
           focusedItem, clipboardData, effectAllowed);
@@ -1179,8 +1176,7 @@ export class FileTransferController {
    * Performs cut or copy operation dispatched from directory tree.
    */
   cutOrCopyFromDirectoryTree(
-      focusedItem: DirectoryItem|XfTreeItem|null,
-      clipboardData: DataTransfer|null,
+      focusedItem: XfTreeItem|null, clipboardData: DataTransfer|null,
       effectAllowed: DataTransfer['effectAllowed']) {
     if (focusedItem === null) {
       return;

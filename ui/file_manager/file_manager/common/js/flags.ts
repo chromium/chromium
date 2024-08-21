@@ -62,13 +62,6 @@ export function isDriveFsBulkPinningEnabled() {
   return isFlagEnabled('DRIVE_FS_BULK_PINNING');
 }
 
-/**
- * Whether the new directory tree flag is enabled.
- */
-export function isNewDirectoryTreeEnabled() {
-  return true;
-}
-
 export function isArcUsbStorageUIEnabled() {
   return isFlagEnabled('ARC_USB_STORAGE_UI_ENABLED');
 }

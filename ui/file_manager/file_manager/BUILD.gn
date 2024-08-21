@@ -26,7 +26,6 @@ generate_grd("build_static_grdp") {
     "foreground/css/list.css",
     "foreground/css/menu.css",
     "foreground/css/table.css",
-    "foreground/css/tree.css",
 
     # Images:
     "foreground/images/common/dragger.svg",

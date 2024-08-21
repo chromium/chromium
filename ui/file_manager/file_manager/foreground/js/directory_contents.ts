@@ -755,7 +755,7 @@ export class MediaViewContentScanner extends ContentScanner {
  * crostini is shown which uses this CrostiniMounter as its ContentScanner.
  *
  * When the sshfs mount completes, it will show up as a disk volume.
- * NavigationListModel.reorderNavigationItems_ will detect that crostini
+ * `refreshNavigationRootsReducer` will detect that crostini
  * is mounted as a disk volume and hide the fake root item while the
  * disk volume exists.
  */
@@ -782,7 +782,7 @@ export class CrostiniMounter extends ContentScanner {
  *
  * When FilesApp starts, the related placeholder root entry is shown which uses
  * this GuestOsMounter as its ContentScanner. When the mount succeeds it will
- * show up as a disk volume. NavigationListModel.reorderNavigationItems_ will
+ * show up as a disk volume. `refreshNavigationRootsReducer` will
  * detect thew new volume and hide the placeholder root item while the disk
  * volume exists.
  */
