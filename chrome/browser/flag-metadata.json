@@ -4816,7 +4816,7 @@
       "gerchiko@microsoft.com",
       "yshalivskyy@microsoft.com"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 150
   },
   {
     "name": "fluent-scrollbars",
@@ -4825,7 +4825,7 @@
       "gerchiko@microsoft.com",
       "yshalivskyy@microsoft.com"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 150
   },
   {
     "name": "focus-follows-cursor",
@@ -9572,7 +9572,7 @@
   {
     "name": "windows-scrolling-personality",
     "owners": [ "arakeri@microsoft.com", "gastonr@microsoft.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 150
   },
   {
     "name": "windows11-mica-titlebar",
