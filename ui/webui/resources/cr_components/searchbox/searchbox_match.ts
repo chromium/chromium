@@ -78,11 +78,6 @@ export class SearchboxMatchElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
-      expandedStateIconsChromeRefresh: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxCr23ExpandedStateLayout'),
-      },
-
       hasAction: {
         type: Boolean,
         computed: `computeHasAction_(match.actions)`,
@@ -135,12 +130,6 @@ export class SearchboxMatchElement extends PolymerElement {
         value: -1,
       },
 
-      realboxConsistentRowHeight: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxCr23ConsistentRowHeight'),
-        reflectToAttribute: true,
-      },
-
       renderType: {
         type: String,
         reflectToAttribute: true,
@@ -156,6 +145,12 @@ export class SearchboxMatchElement extends PolymerElement {
       //========================================================================
       // Private properties
       //========================================================================
+
+      isLensSearchbox_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isLensSearchbox'),
+        reflectToAttribute: true,
+      },
 
       /** Rendered match contents based on autocomplete provided styling. */
       contentsHtml_: {
@@ -195,7 +190,6 @@ export class SearchboxMatchElement extends PolymerElement {
   }
 
   override ariaLabel: string;
-  expandedStateIconsChromeRefresh: boolean;
   hasAction: boolean;
   hasOutsetActionFocusRing: boolean;
   hasImage: boolean;
@@ -364,7 +358,7 @@ export class SearchboxMatchElement extends PolymerElement {
   }
 
   private computeHasOutsetActionFocusRing_() {
-    return this.expandedStateIconsChromeRefresh && this.hasAction;
+    return this.hasAction;
   }
 
   private computeTailSuggestPrefix_(): string {

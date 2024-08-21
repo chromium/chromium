@@ -7162,33 +7162,6 @@ const FeatureEntry kFeatureEntries[] = {
          omnibox_feature_configs::RealboxContextualAndTrendingSuggestions::
              kRealboxContextualAndTrendingSuggestions)},
 
-    {"ntp-realbox-cr23-all", flag_descriptions::kNtpRealboxCr23AllName,
-     flag_descriptions::kNtpRealboxCr23AllDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kRealboxCr23All)},
-
-    {"ntp-realbox-cr23-consistent-row-height",
-     flag_descriptions::kNtpRealboxCr23ConsistentRowHeightName,
-     flag_descriptions::kNtpRealboxCr23ConsistentRowHeightDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kRealboxCr23ConsistentRowHeight)},
-
-    {"ntp-realbox-cr23-expanded-state-icons",
-     flag_descriptions::kNtpRealboxCr23ExpandedStateIconsName,
-     flag_descriptions::kNtpRealboxCr23ExpandedStateIconsDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kRealboxCr23ExpandedStateIcons)},
-
-    {"ntp-realbox-cr23-expanded-state-layout",
-     flag_descriptions::kNtpRealboxCr23ExpandedStateLayoutName,
-     flag_descriptions::kNtpRealboxCr23ExpandedStateLayoutDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kRealboxCr23ExpandedStateLayout)},
-
-    {"ntp-realbox-cr23-hover-fill-shape",
-     flag_descriptions::kNtpRealboxCr23HoverFillShapeName,
-     flag_descriptions::kNtpRealboxCr23HoverFillShapeDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kRealboxCr23HoverFillShape)},
-
     {"ntp-realbox-cr23-theming", flag_descriptions::kNtpRealboxCr23ThemingName,
      flag_descriptions::kNtpRealboxCr23ThemingDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kRealboxCr23Theming,

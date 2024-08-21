@@ -55,12 +55,6 @@ export class SearchboxIconElement extends PolymerElement {
         value: '',
       },
 
-      expandedStateIconsChromeRefresh: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxCr23ExpandedStateIcons'),
-        reflectToAttribute: true,
-      },
-
       /**  Whether icon should have a background. */
       hasIconContainerBackground: {
         type: Boolean,
@@ -145,7 +139,6 @@ export class SearchboxIconElement extends PolymerElement {
 
   backgroundImage: string;
   defaultIcon: string;
-  expandedStateIconsChromeRefresh: boolean;
   hasIconContainerBackground: boolean;
   inSearchbox: boolean;
   isAnswer: boolean;
@@ -204,16 +197,7 @@ export class SearchboxIconElement extends PolymerElement {
   }
 
   private computeIconStyle_(): string {
-    if (this.expandedStateIconsChromeRefresh) {
-      if (this.showBackgroundImage_()) {
-        return `background-image: ${this.backgroundImage};` +
-            `background-color: transparent;`;
-      } else {
-        return `-webkit-mask-image: ${this.maskImage};`;
-      }
-    }
-
-    if (this.backgroundImage) {
+    if (this.showBackgroundImage_()) {
       return `background-image: ${this.backgroundImage};` +
           `background-color: transparent;`;
     } else {
@@ -291,7 +275,7 @@ export class SearchboxIconElement extends PolymerElement {
   // TODO(niharm): Refactor logic in C++ and send via mojom in
   // "chrome/browser/ui/webui/realbox/realbox_handler.cc".
   private computeHasIconContainerBackground_(): boolean {
-    if (this.expandedStateIconsChromeRefresh && this.match) {
+    if (this.match) {
       return this.match.type === PEDAL ||
           this.match.type === HISTORY_CLUSTER_MATCH_TYPE ||
           this.match.type === CALCULATOR ||

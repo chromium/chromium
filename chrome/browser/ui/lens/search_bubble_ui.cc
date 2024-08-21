@@ -57,7 +57,6 @@ SearchBubbleUI::SearchBubbleUI(content::WebUI* web_ui)
       lens::LensOverlayShouldUseDarkMode(
           ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))));
   source->AddBoolean("isLensSearchbox", true);
-  source->AddBoolean("realboxCr23HoverFillShape", false);
   source->AddResourcePaths(
       base::make_span(kLensSharedResources, kLensSharedResourcesSize));
 }

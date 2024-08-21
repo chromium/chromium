@@ -5,10 +5,6 @@
   }
 
   #action {
-    margin-inline-end: 8px;
-  }
-
-  :host-context([expanded-state-layout-chrome-refresh]) #action {
     margin-inline-end: 2px;
   }
 
@@ -47,30 +43,24 @@
     padding-bottom: 12px;
   }
 
-  :host([has-outset-action-focus-ring]:not([realbox-consistent-row-height])) .container {
+  :host([has-outset-action-focus-ring]) .container {
     height: 38px;
     padding-top: 3px;
     padding-bottom: 3px;
   }
 
-  :host([realbox-consistent-row-height]) .container {
-    height: 38px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-  }
-
-  :host-context([chrome-refresh-hover-shape])  .container:not(.actions) {
+  :host(:not[is-lens-searchbox_]) .container:not(.actions) {
     margin-inline-end: 16px;
     border-top-right-radius: 24px;
     border-bottom-right-radius: 24px;
   }
 
-  :host-context([chrome-refresh-hover-shape]):host-context([has-secondary-side]):host-context([can-show-secondary-side]) .container:not(.actions) {
+  :host-context([has-secondary-side]):host-context([can-show-secondary-side]) .container:not(.actions) {
     margin-inline-end: 0px;
   }
 
-  :host-context([chrome-refresh-hover-shape]) .container:not(.actions):hover,
-  :host-context([chrome-refresh-hover-shape]):host(:is(:focus-visible, [selected]))  .container:not(.actions) {
+  .container:not(.actions):hover,
+  :host(:is(:focus-visible, [selected]))  .container:not(.actions) {
     background-color: var(--color-realbox-results-background-hovered);
   }
 
@@ -116,10 +106,6 @@
     height: 100%;
     margin-inline-start: -15px; /* -1 * (.container padding + width / 2) */
     position: absolute;
-    width: 6px;
-  }
-
-  :host-context([expanded-state-layout-chrome-refresh]) #focus-indicator {
     width: 7px;
   }
 
@@ -230,7 +216,7 @@
   }
 
   :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image]),
-  :host-context([chrome-refresh-hover-shape]):host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image]) .container {
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image]) .container {
     border-radius: 16px;
   }
 
@@ -312,20 +298,12 @@
   </div>
   <div class="actions container" aria-hidden="true">
     <template is="dom-repeat" items="[[match.actions]]">
-      <template is="dom-if" if="[[expandedStateIconsChromeRefresh]]">
-        <div id="actions-focus-border">
-          <cr-searchbox-action id="action" action="[[item]]"
-            action-index="[[actionIndex_(item)]]"
-            on-execute-action="onExecuteAction_" tabindex="1">
-          </cr-searchbox-action>
-        </div>
-      </template>
-      <template is="dom-if" if="[[!expandedStateIconsChromeRefresh]]">
+      <div id="actions-focus-border">
         <cr-searchbox-action id="action" action="[[item]]"
           action-index="[[actionIndex_(item)]]"
           on-execute-action="onExecuteAction_" tabindex="1">
         </cr-searchbox-action>
-      </template>
+      </div>
     </template>
   </div>
   <cr-icon-button id="remove" class="action-icon icon-clear"

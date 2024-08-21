@@ -56,35 +56,6 @@ BASE_FEATURE(kCustomizeChromeWallpaperSearchInspirationCard,
              "CustomizeChromeWallpaperSearchInspirationCard",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, all NTP "realbox" Chrome Refresh features will be enabled
-BASE_FEATURE(kRealboxCr23All,
-             "NtpRealboxCr23All",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, NTP "realbox" will have consistent row height. Includes changing
-// entity sizes and inlining subtitles.
-BASE_FEATURE(kRealboxCr23ConsistentRowHeight,
-             "NtpRealboxCr23ConsistentRowHeight",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, NTP "realbox" expanded state icon CR23 updates will appear.
-// Includes CR23 icons as well as backgrounds for AiS and pedal suggestions and
-// updated entity corner radii.
-BASE_FEATURE(kRealboxCr23ExpandedStateIcons,
-             "NtpRealboxCr23ExpandedStateIcons",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, NTP "realbox" expanded state layout CR23 updates will
-// appear.
-BASE_FEATURE(kRealboxCr23ExpandedStateLayout,
-             "NtpRealboxCr23ExpandedStateLayout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, NTP "realbox" will use CR23 hover fill shape.
-BASE_FEATURE(kRealboxCr23HoverFillShape,
-             "NtpRealboxCr23HoverFillShape",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, NTP "realbox" will be themed for CR23. Includes realbox
 // matching omnibox theme and increased realbox shadow.
 BASE_FEATURE(kRealboxCr23Theming,

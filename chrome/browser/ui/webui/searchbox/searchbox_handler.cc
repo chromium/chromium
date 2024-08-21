@@ -330,12 +330,8 @@ std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
               : base::JoinString({match.contents, headline_substr}, u" "),
           subhead_text);
       mojom_match->image_url = answer_data.image().url();
-      if (base::FeatureList::IsEnabled(
-              ntp_features::kRealboxCr23ExpandedStateIcons) ||
-          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All)) {
-        mojom_match->is_weather_answer_suggestion =
-            match.answer_type == omnibox::ANSWER_TYPE_WEATHER;
-      }
+      mojom_match->is_weather_answer_suggestion =
+          match.answer_type == omnibox::ANSWER_TYPE_WEATHER;
     } else if (match.answer.has_value()) {
       const auto& additional_text =
           GetAdditionalText(match.answer->first_line());
@@ -345,12 +341,8 @@ std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
                           : match.contents,
           ImageLineToString16(match.answer->second_line()));
       mojom_match->image_url = match.ImageUrl().spec();
-      if (base::FeatureList::IsEnabled(
-              ntp_features::kRealboxCr23ExpandedStateIcons) ||
-          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All)) {
-        mojom_match->is_weather_answer_suggestion =
-            match.answer_type == omnibox::ANSWER_TYPE_WEATHER;
-      }
+      mojom_match->is_weather_answer_suggestion =
+          match.answer_type == omnibox::ANSWER_TYPE_WEATHER;
     }
     mojom_match->is_rich_suggestion =
         !mojom_match->image_url.empty() ||
@@ -482,12 +474,6 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddLocalizedStrings(kStrings);
 
   source->AddBoolean(
-      "realboxCr23ExpandedStateIcons",
-      base::FeatureList::IsEnabled(
-          ntp_features::kRealboxCr23ExpandedStateIcons) ||
-          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
-
-  source->AddBoolean(
       "realboxMatchSearchboxTheme",
       base::FeatureList::IsEnabled(ntp_features::kRealboxMatchSearchboxTheme));
 
@@ -496,11 +482,7 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddString("realboxWidthBehavior",
                     redesigned_modules_enabled ? "wide" : "");
   source->AddBoolean("realboxIsTall", redesigned_modules_enabled);
-  if ((base::FeatureList::IsEnabled(
-           ntp_features::kRealboxCr23ExpandedStateIcons) ||
-       base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All))) {
-    DefineChromeRefreshRealboxIcons();
-  }
+  DefineChromeRefreshRealboxIcons();
   source->AddString(
       "realboxDefaultIcon",
       base::FeatureList::IsEnabled(ntp_features::kRealboxUseGoogleGIcon)
@@ -518,21 +500,8 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       "realboxLensDirectUpload",
       base::FeatureList::IsEnabled(ntp_features::kNtpLensDirectUpload));
   source->AddBoolean(
-      "realboxCr23ExpandedStateLayout",
-      base::FeatureList::IsEnabled(
-          ntp_features::kRealboxCr23ExpandedStateLayout) ||
-          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
-  source->AddBoolean("realboxCr23ConsistentRowHeight",
-                     base::FeatureList::IsEnabled(
-                         ntp_features::kRealboxCr23ConsistentRowHeight));
-  source->AddBoolean(
-      "realboxCr23HoverFillShape",
-      base::FeatureList::IsEnabled(ntp_features::kRealboxCr23HoverFillShape) ||
-          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
-  source->AddBoolean(
       "realboxCr23Theming",
-      base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming) ||
-          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
+      base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming));
   source->AddBoolean("realboxCr23SteadyStateShadow",
                      ntp_features::kNtpRealboxCr23SteadyStateShadow.Get());
 }

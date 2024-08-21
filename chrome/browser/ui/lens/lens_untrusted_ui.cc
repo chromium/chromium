@@ -195,7 +195,6 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   // Add required resources for the searchbox.
   SearchboxHandler::SetupWebUIDataSource(html_source,
                                          Profile::FromWebUI(web_ui));
-  html_source->AddBoolean("realboxCr23HoverFillShape", false);
   html_source->AddString(
       "realboxDefaultIcon",
       "//resources/cr_components/searchbox/icons/google_g.svg");

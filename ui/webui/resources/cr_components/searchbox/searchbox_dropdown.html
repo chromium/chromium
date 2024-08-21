@@ -11,12 +11,8 @@
     gap: 16px;
     margin-bottom: 8px;
     overflow: hidden;
-    padding-bottom: 18px;
-    padding-top: var(--cr-realbox-height);
-  }
-
-  :host([expanded-state-layout-chrome-refresh]) #content {
     padding-bottom: 8px;
+    padding-top: var(--cr-realbox-height);
   }
 
   @media (forced-colors: active) {
@@ -68,11 +64,6 @@
   .header:focus-within:not(:focus) cr-icon-button {
       --cr-icon-button-fill-color:
           var(--color-realbox-results-icon-selected);
-  }
-
-  :host(:not([chrome-refresh-hover-shape])) cr-searchbox-match:-webkit-any(:hover, :focus-within, [selected]) {
-    background-color:
-        var(--color-realbox-results-background-hovered);
   }
 
   @media (forced-colors: active) {

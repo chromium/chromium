@@ -4,7 +4,6 @@
 
 import '//resources/cr_elements/cr_shared_style.css.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -111,15 +110,7 @@ class SearchboxActionElement extends PolymerElement {
   }
 
   private onActionMouseDown_(e: Event) {
-    if (loadTimeData.getBoolean('realboxCr23ExpandedStateLayout')) {
-      e.preventDefault();  // Prevents default browser action (focus).
-    }
-  }
-
-  private showCr23ActionIcon_(): boolean {
-    // Action icons are webkit-mask-image when chrome refresh expanded state
-    // layout is enabled.
-    return loadTimeData.getBoolean('realboxCr23ExpandedStateLayout');
+    e.preventDefault();  // Prevents default browser action (focus).
   }
 
   //============================================================================

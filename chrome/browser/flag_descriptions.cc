@@ -5392,31 +5392,6 @@ const char kNtpRealboxContextualAndTrendingSuggestionsDescription[] =
     "Allows NTP Realbox's second column to display contextual and trending "
     "text suggestions.";
 
-const char kNtpRealboxCr23AllName[] = "Realbox Chrome Refresh 2023";
-const char kNtpRealboxCr23AllDescription[] =
-    "Enables all NTP Realbox Chrome Refresh features";
-
-const char kNtpRealboxCr23ConsistentRowHeightName[] =
-    "Realbox Chrome Refresh Consistent Row Height";
-const char kNtpRealboxCr23ConsistentRowHeightDescription[] =
-    "Realbox rows will have a consistent height";
-
-const char kNtpRealboxCr23ExpandedStateIconsName[] =
-    "Realbox Chrome Refresh Expanded State Icons";
-const char kNtpRealboxCr23ExpandedStateIconsDescription[] =
-    "CR23 Icons, AiS and Pedal backgrounds, CR23 entity rounded corner radii "
-    "in Realbox expanded state";
-
-const char kNtpRealboxCr23ExpandedStateLayoutName[] =
-    "Realbox Chrome Refresh Expanded State Layout";
-const char kNtpRealboxCr23ExpandedStateLayoutDescription[] =
-    "CR23 layout for Realbox in expanded state";
-
-const char kNtpRealboxCr23HoverFillShapeName[] =
-    "Realbox Chrome Refresh Hover Fill Shape";
-const char kNtpRealboxCr23HoverFillShapeDescription[] =
-    "CR23 hover fill shape in realbox";
-
 const char kNtpRealboxCr23ThemingName[] = "Chrome Refresh Themed Realbox";
 const char kNtpRealboxCr23ThemingDescription[] =
     "CR23 theming will be applied in Realbox when enabled.";
