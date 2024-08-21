@@ -91,8 +91,6 @@ struct WebXrSharedBuffer {
   WebXrSharedBuffer();
   ~WebXrSharedBuffer();
 
-  uint32_t texture_target() const { return GL_TEXTURE_2D; }
-
   gfx::Size size = {0, 0};
 
   // This owns a single reference to an AHardwareBuffer object.
