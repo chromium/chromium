@@ -167,8 +167,8 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
           ellipse->RadiusY(), center.y(), box_height);
       gfx::PointF logical_center = converter.ToLogical(center);
 
-      shape =
-          std::make_unique<EllipseShape>(logical_center, radius_x, radius_y);
+      shape = std::make_unique<EllipseShape>(logical_center, radius_x, radius_y,
+                                             writing_mode);
       break;
     }
 

@@ -3867,7 +3867,7 @@
       status: "stable",
     },
     {
-      // crbug.com/359616076 and crbug.com/360158400
+      // crbug.com/359616076, crbug.com/360158400, and crbug.com/360903551.
       name: "ShapeOutsideWritingModeFix",
       status: "stable",
     },

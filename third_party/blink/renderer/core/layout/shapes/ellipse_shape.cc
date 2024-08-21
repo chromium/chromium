@@ -29,6 +29,8 @@
 
 #include "third_party/blink/renderer/core/layout/shapes/ellipse_shape.h"
 
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+
 namespace blink {
 
 static inline float EllipseXIntercept(float y, float rx, float ry) {
@@ -36,10 +38,21 @@ static inline float EllipseXIntercept(float y, float rx, float ry) {
   return rx * sqrt(1 - (y * y) / (ry * ry));
 }
 
-LogicalRect EllipseShape::ShapeMarginLogicalBoundingBox() const {
-  DCHECK_GE(ShapeMargin(), 0);
+std::pair<float, float> EllipseShape::InlineAndBlockRadiiIncludingMargin()
+    const {
   float margin_radius_x = radius_x_ + ShapeMargin();
   float margin_radius_y = radius_y_ + ShapeMargin();
+  if (!RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled() ||
+      IsHorizontalWritingMode(writing_mode_)) {
+    return {margin_radius_x, margin_radius_y};
+  }
+  return {margin_radius_y, margin_radius_x};
+}
+
+LogicalRect EllipseShape::ShapeMarginLogicalBoundingBox() const {
+  DCHECK_GE(ShapeMargin(), 0);
+  auto [margin_radius_x, margin_radius_y] =
+      InlineAndBlockRadiiIncludingMargin();
   return LogicalRect(LayoutUnit(center_.x() - margin_radius_x),
                      LayoutUnit(center_.y() - margin_radius_y),
                      LayoutUnit(margin_radius_x * 2),
@@ -48,8 +61,8 @@ LogicalRect EllipseShape::ShapeMarginLogicalBoundingBox() const {
 
 LineSegment EllipseShape::GetExcludedInterval(LayoutUnit logical_top,
                                               LayoutUnit logical_height) const {
-  float margin_radius_x = radius_x_ + ShapeMargin();
-  float margin_radius_y = radius_y_ + ShapeMargin();
+  auto [margin_radius_x, margin_radius_y] =
+      InlineAndBlockRadiiIncludingMargin();
   if (!margin_radius_x || !margin_radius_y)
     return LineSegment();
 
