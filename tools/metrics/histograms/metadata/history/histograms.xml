@@ -1851,6 +1851,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.DatabaseIterationSkippedMissizedEmbeddings"
+    units="rows" expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
+  <summary>
+    Number of database statement iteration rows skipped due to embeddings having
+    unexpected dimensions. If a row is skipped, only one counter is incremented
+    to reflect the reason; the check order is: passages, embeddings, mismatches.
+    Logged once for each full iteration, which happens when the database is
+    queried; this may include a time range or not, and may exhaust all rows or
+    stop early if a new query is initiated.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.DatabaseIterationSkippedPassages"
     units="rows" expires_after="2024-12-31">
   <owner>orinj@chromium.org</owner>
