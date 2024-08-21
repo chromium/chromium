@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListProperties.ON_IS_SCROLLED_CHANGED;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -14,6 +16,7 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Consumer;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
@@ -69,6 +72,7 @@ public class TabGroupListCoordinator {
      * @param paneManager Used to switch to show detailed tab group UI.
      * @param tabGroupUiActionHandler Used to open hidden tab groups.
      * @param modalDialogManager Used to show confirmation dialogs.
+     * @param onIsScrolledChanged To be invoked whenever the scrolled state changes.
      */
     public TabGroupListCoordinator(
             Context context,
@@ -76,9 +80,12 @@ public class TabGroupListCoordinator {
             ProfileProvider profileProvider,
             PaneManager paneManager,
             TabGroupUiActionHandler tabGroupUiActionHandler,
-            ModalDialogManager modalDialogManager) {
+            ModalDialogManager modalDialogManager,
+            Consumer<Boolean> onIsScrolledChanged) {
         ModelList modelList = new ModelList();
-        PropertyModel propertyModel = new PropertyModel(TabGroupListProperties.ALL_KEYS);
+        PropertyModel.Builder builder = new PropertyModel.Builder(TabGroupListProperties.ALL_KEYS);
+        builder.with(ON_IS_SCROLLED_CHANGED, onIsScrolledChanged);
+        PropertyModel propertyModel = builder.build();
 
         ViewBuilder<TabGroupRowView> layoutBuilder =
                 new LayoutViewBuilder<>(R.layout.tab_group_row);

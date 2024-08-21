@@ -54,6 +54,8 @@ public class TabGroupsPane implements Pane {
             new ObservableSupplierImpl<>();
     private final ObservableSupplier<FullButtonData> mEmptyActionButtonSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mHairlineVisibilitySupplier =
+            new ObservableSupplierImpl<>();
 
     private TabGroupListCoordinator mTabGroupListCoordinator;
 
@@ -139,7 +141,8 @@ public class TabGroupsPane implements Pane {
                             mProfileProviderSupplier.get(),
                             mPaneManagerSupplier.get(),
                             mTabGroupUiActionHandlerSupplier.get(),
-                            mModalDialogManagerSupplier.get());
+                            mModalDialogManagerSupplier.get(),
+                            mHairlineVisibilitySupplier::set);
             mRootView.addView(mTabGroupListCoordinator.getView());
         } else if (loadHint == LoadHint.COLD && mTabGroupListCoordinator != null) {
             destroy();
@@ -161,8 +164,7 @@ public class TabGroupsPane implements Pane {
     @NonNull
     @Override
     public ObservableSupplier<Boolean> getHairlineVisibilitySupplier() {
-        // TODO(crbug.com/353993190): Implement this.
-        return new ObservableSupplierImpl<Boolean>();
+        return mHairlineVisibilitySupplier;
     }
 
     @Nullable
