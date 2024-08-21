@@ -1069,7 +1069,12 @@ void AXRelationCache::RemoveOwnedRelation(AXID obj_id) {
     }
     if (AXObject* owner = ObjectFromAXID(owner_id)) {
       if (object_cache_->lifecycle().StateAllowsImmediateTreeUpdates()) {
-        object_cache_->ChildrenChangedWithCleanLayout(owner);
+        // Currently in CommitAXUpdates(). Changing the children of the owner
+        // here could interfere with the execution of RemoveSubtree().
+        // The next call AXRelationCache::ProcessUpdatesWithCleanLayout()
+        // will refresh this owner before the tree is frozen.
+        owner_ids_to_update_.insert(owner_id);
+        object_cache_->MarkAXObjectDirtyWithCleanLayout(owner);
       } else {
         object_cache_->ChildrenChanged(owner);
       }
