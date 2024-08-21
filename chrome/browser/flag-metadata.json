@@ -1379,8 +1379,8 @@
   },
   {
     "name": "cct-google-bottom-bar",
-    "owners": [ "jinsukkim@chromium.org", "kgrosu@google.com", "twellington@chromium.org", "edmundw@google.com", "pemilia@google.com" ],
-    "expiry_milestone": 130
+    "owners": [ "jinsukkim@chromium.org", "kgrosu@google.com", "twellington@chromium.org", "edmundw@google.com", "tivi@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "cct-google-bottom-bar-variant-layouts",
