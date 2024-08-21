@@ -8470,6 +8470,16 @@
     "expiry_milestone": 136
   },
   {
+    "name": "sys-ui-holdback-drive-integration",
+    "owners": ["newcomer@chromium.org"],
+    "expiry_milestone": 135
+  },
+  {
+    "name": "sys-ui-holdback-focus-mode",
+    "owners": ["newcomer@chromium.org"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "sys-ui-holdback-forest",
     "owners": ["newcomer@chromium.org"],
     "expiry_milestone": 135

@@ -7834,8 +7834,18 @@ const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "
     "networks.";
 
-const char kSysUIShouldHoldbackForestName[] = "Holdback for Forest on chromeOS";
-const char kSysUIShouldHoldbackForestDescription[] =
+const char kSysUiShouldHoldbackDriveIntegrationName[] =
+    "Holdback for Drive Integration on chromeOS";
+const char kSysUiShouldHoldbackDriveIntegrationDescription[] =
+    "Enables holdback for Drive Integration.";
+
+const char kSysUiShouldHoldbackFocusModeName[] =
+    "Holdback for Focus Mode on chromeOS";
+const char kSysUiShouldHoldbackFocusModeDescription[] =
+    "Enables holdback for Focus Mode.";
+
+const char kSysUiShouldHoldbackForestName[] = "Holdback for Forest on chromeOS";
+const char kSysUiShouldHoldbackForestDescription[] =
     "Enables holdback for Forest.";
 
 const char kSysUiShouldHoldbackGifRecordingName[] =
