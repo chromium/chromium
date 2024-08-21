@@ -54,7 +54,7 @@ export class RecordingTitle extends ReactiveLitElement {
     recording-title-suggestion {
       position: absolute;
       position-anchor: --title-textfield;
-      inset-area: bottom span-right;
+      position-area: bottom span-right;
       margin-top: 4.5px;
       max-width: 402px;
       min-width: 360px;

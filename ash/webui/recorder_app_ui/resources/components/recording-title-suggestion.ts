@@ -103,9 +103,9 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
       --background-color: var(--cros-sys-app_base_shaded);
 
       bottom: -8px;
-      inset-area: top span-left;
       position: absolute;
       position-anchor: --footer;
+      position-area: top span-left;
       z-index: 1;
 
       &::part(bottom-left-corner) {

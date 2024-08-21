@@ -183,7 +183,7 @@ export class PlaybackPage extends ReactiveLitElement {
         margin-bottom: 4px;
         position: absolute;
         position-anchor: --waveform;
-        inset-area: top;
+        position-area: top;
       }
     }
 

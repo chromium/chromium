@@ -224,7 +224,7 @@ select::-internal-select-autofill-preview[popover] {
 select::-internal-select-autofill-preview[popover]:popover-open {
   display: grid;
   align-items: center;
-  inset-area: center;
+  position-area: center;
   height: calc(anchor-size(height) - 2px);
   width: calc(anchor-size(width) - 2px);
   margin: 0;
