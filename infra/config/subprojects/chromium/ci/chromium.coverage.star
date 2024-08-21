@@ -10,7 +10,7 @@ load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/xcode.star", "xcode")
 load("//project.star", "settings")
-load("//lib/builder_health_indicators.star", "blank_low_value_thresholds", "health_spec", "modified_default")
+load("//lib/builder_health_indicators.star", "health_spec")
 
 # crbug/1408581 - The code coverage CI builders are expected to be triggered
 # off the same ref every 24 hours. This poller is configured with a schedule
@@ -733,52 +733,6 @@ coverage_builder(
     ],
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
-    use_clang_coverage = True,
-)
-
-coverage_builder(
-    name = "linux-lacros-code-coverage",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "chromeos",
-                "use_clang_coverage",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "lacros_on_linux",
-            "release_builder",
-            "remoteexec",
-            "also_build_ash_chrome",
-            "clang",
-            "use_clang_coverage",
-            "no_symbols",
-            "x64",
-        ],
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "lacros",
-            short_name = "lnx",
-        ),
-    ],
-    coverage_test_types = ["overall", "unit"],
-    health_spec = modified_default({
-        "Low Value": blank_low_value_thresholds,
-    }),
-    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
     use_clang_coverage = True,
 )
 

@@ -208,7 +208,6 @@
     "linux-code-coverage": "ci/linux-code-coverage/gn-args.json",
     "linux-fuzz-coverage": "ci/linux-fuzz-coverage/gn-args.json",
     "linux-js-code-coverage": "ci/linux-js-code-coverage/gn-args.json",
-    "linux-lacros-code-coverage": "ci/linux-lacros-code-coverage/gn-args.json",
     "mac-code-coverage": "ci/mac-code-coverage/gn-args.json",
     "win10-code-coverage": "ci/win10-code-coverage/gn-args.json"
   },
@@ -809,7 +808,6 @@
     "linux-headless-shell-rel": "try/linux-headless-shell-rel/gn-args.json",
     "linux-js-code-coverage": "try/linux-js-code-coverage/gn-args.json",
     "linux-js-coverage-rel": "try/linux-js-coverage-rel/gn-args.json",
-    "linux-lacros-code-coverage": "try/linux-lacros-code-coverage/gn-args.json",
     "linux-layout-tests-edit-ng": "try/linux-layout-tests-edit-ng/gn-args.json",
     "linux-libfuzzer-asan-rel": "try/linux-libfuzzer-asan-rel/gn-args.json",
     "linux-multiscreen-fyi-rel": "try/linux-multiscreen-fyi-rel/gn-args.json",

@@ -914,13 +914,6 @@ try_.builder(
     execution_timeout = 20 * time.hour,
 )
 
-try_.builder(
-    name = "linux-lacros-code-coverage",
-    mirrors = ["ci/linux-lacros-code-coverage"],
-    gn_args = "ci/linux-lacros-code-coverage",
-    execution_timeout = 20 * time.hour,
-)
-
 # This builder serves a different purpose than try/linux-js-coverage-rel
 # See the note on linux-js-coverage-rel builder above to understand more.
 try_.builder(
