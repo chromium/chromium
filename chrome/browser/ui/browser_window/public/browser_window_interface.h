@@ -48,7 +48,10 @@ class BrowserWindowInterface : public content::PageNavigator {
   // the instance itself remains the same.
   virtual views::WebView* GetWebView() = 0;
 
-  // Returns the profile that semantically owns this browser window.
+  // Returns the profile that semantically owns this browser window. This value
+  // is never null, and never changes for the lifetime of a given browser
+  // window. All tabs contained in a browser window have the same
+  // profile/BrowserContext as the browser window itself.
   virtual Profile* GetProfile() = 0;
 
   // Opens a URL, with the given disposition. This is a convenience wrapper
