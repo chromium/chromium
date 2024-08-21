@@ -757,6 +757,7 @@ Called by update_extension_histograms.py.-->
   <int value="557" label="ACCESSIBILITY_PRIVATE_ON_CHROMEVOX_FOCUS_CHANGED"/>
   <int value="558"
       label="ACCESSIBILITY_PRIVATE_ON_TOGGLE_GESTURE_INFO_FOR_SETTINGS"/>
+  <int value="559" label="ACTION_ON_USER_SETTINGS_CHANGED"/>
 </enum>
 
 <enum name="ExtensionForceInstalledPreInstalledDeprecatedSite">

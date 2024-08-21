@@ -317,6 +317,21 @@ void ExtensionActionAPI::Shutdown() {
     observer.OnExtensionActionAPIShuttingDown();
 }
 
+void ExtensionActionAPI::OnActionPinnedStateChanged(
+    const ExtensionId& extension_id,
+    bool is_pinned) {
+  // TODO(crbug.com/360916928): Today, no action APIs are compiled.
+  // Unfortunately, this means we miss out on the compiled types, which would be
+  // rather helpful here.
+  base::Value::List args;
+  base::Value::Dict change;
+  change.Set("isOnToolbar", is_pinned);
+  args.Append(std::move(change));
+  DispatchEventToExtension(browser_context_, extension_id,
+                           events::ACTION_ON_USER_SETTINGS_CHANGED,
+                           "action.onUserSettingsChanged", std::move(args));
+}
+
 //
 // ExtensionActionFunction
 //

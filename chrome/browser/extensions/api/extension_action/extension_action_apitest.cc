@@ -1719,6 +1719,49 @@ IN_PROC_BROWSER_TEST_F(ActionAPITest, TestGetUserSettings) {
   EXPECT_EQ(R"({"isOnToolbar":true})", get_response());
 }
 
+// Tests dispatching the onUserSettingsChanged event to listeners when the user
+// pins or unpins the extension action.
+IN_PROC_BROWSER_TEST_F(ActionAPITest, OnUserSettingsChanged) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "onUserSettingsChanged Test",
+           "manifest_version": 3,
+           "version": "1",
+           "background": {"service_worker": "worker.js"},
+           "action": {}
+         })";
+  constexpr char kWorker[] =
+      R"(chrome.action.onUserSettingsChanged.addListener(change => {
+           chrome.test.sendMessage(JSON.stringify(change));
+         });)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kWorker);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  ToolbarActionsModel* const toolbar_model =
+      ToolbarActionsModel::Get(profile());
+  ASSERT_FALSE(toolbar_model->IsActionPinned(extension->id()));
+
+  auto change_visibility_and_get_response = [extension,
+                                             toolbar_model](bool pinned_state) {
+    ExtensionTestMessageListener listener;
+    listener.set_extension_id(extension->id());
+    toolbar_model->SetActionVisibility(extension->id(), pinned_state);
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+    return listener.message();
+  };
+
+  EXPECT_EQ(R"({"isOnToolbar":true})",
+            change_visibility_and_get_response(/*pinned_state=*/true));
+
+  EXPECT_EQ(R"({"isOnToolbar":false})",
+            change_visibility_and_get_response(/*pinned_state=*/false));
+}
+
 // Tests that invalid badge text colors return an API error to the caller.
 IN_PROC_BROWSER_TEST_F(ActionAPITest, TestBadgeTextColorErrors) {
   content::WebContents* web_contents =
