@@ -140,6 +140,10 @@ const base::FeatureParam<std::string> kFilterHashes(&kHistoryEmbeddings,
                                                     "FilterHashes",
                                                     "");
 
+const base::FeatureParam<bool> kEnableSidePanel(&kHistoryEmbeddings,
+                                                "EnableSidePanel",
+                                                false);
+
 bool IsHistoryEmbeddingsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)
   return chromeos::features::IsFeatureManagementHistoryEmbeddingEnabled() &&

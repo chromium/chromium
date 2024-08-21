@@ -124,6 +124,10 @@ extern const base::FeatureParam<std::string> kFilterTerms;
 // uint32_t. These can match against either one or two word phrases.
 extern const base::FeatureParam<std::string> kFilterHashes;
 
+// Specifies whether the history clusters side panel UI also searches and shows
+// history embeddings.
+extern const base::FeatureParam<bool> kEnableSidePanel;
+
 // Whether the history embeddings feature is enabled. This only checks if the
 // feature flags are enabled and does not check the user's opt-in preference.
 // See chrome/browser/history_embeddings/history_embeddings_utils.h.
