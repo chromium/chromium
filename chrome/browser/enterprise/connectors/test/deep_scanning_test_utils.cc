@@ -885,21 +885,6 @@ EventReportValidator EventReportValidatorHelper::CreateValidator() {
   return EventReportValidator(client_.get());
 }
 
-void SetAnalysisConnector(PrefService* prefs,
-                          AnalysisConnector connector,
-                          const std::string& pref_value,
-                          bool machine_scope) {
-  ScopedListPrefUpdate settings_list(prefs, ConnectorPref(connector));
-  if (!settings_list->empty()) {
-    settings_list->clear();
-  }
-
-  settings_list->Append(*base::JSONReader::Read(pref_value));
-  prefs->SetInteger(
-      ConnectorScopePref(connector),
-      machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);
-}
-
 base::Value::List CreateOptInEventsList(
     const std::map<std::string, std::vector<std::string>>&
         enabled_opt_in_events) {
@@ -917,6 +902,22 @@ base::Value::List CreateOptInEventsList(
     enabled_opt_in_events_list.Append(std::move(event_value));
   }
   return enabled_opt_in_events_list;
+}
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+void SetAnalysisConnector(PrefService* prefs,
+                          AnalysisConnector connector,
+                          const std::string& pref_value,
+                          bool machine_scope) {
+  ScopedListPrefUpdate settings_list(prefs, ConnectorPref(connector));
+  if (!settings_list->empty()) {
+    settings_list->clear();
+  }
+
+  settings_list->Append(*base::JSONReader::Read(pref_value));
+  prefs->SetInteger(
+      ConnectorScopePref(connector),
+      machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);
 }
 
 void SetOnSecurityEventReporting(
@@ -962,6 +963,7 @@ void ClearAnalysisConnector(PrefService* prefs, AnalysisConnector connector) {
   settings_list->clear();
   prefs->ClearPref(ConnectorScopePref(connector));
 }
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 void SetProfileDMToken(Profile* profile, const std::string& dm_token) {

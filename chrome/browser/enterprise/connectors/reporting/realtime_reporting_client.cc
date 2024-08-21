@@ -501,9 +501,8 @@ void RealtimeReportingClient::ReportEventWithTimestamp(
 }
 
 std::string RealtimeReportingClient::GetProfileUserName() const {
-  std::string username = identity_manager_
-                             ? safe_browsing::GetProfileEmail(identity_manager_)
-                             : std::string();
+  std::string username =
+      identity_manager_ ? GetProfileEmail(identity_manager_) : std::string();
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   if (username.empty()) {

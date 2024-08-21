@@ -18,7 +18,6 @@
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
-#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -49,8 +48,12 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/url_constants.h"
 #include "device_management_backend.pb.h"
-#include "extensions/browser/extension_registry_factory.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
+#include "extensions/browser/extension_registry_factory.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
@@ -461,7 +464,7 @@ std::string ConnectorsService::GetRealTimeUrlCheckIdentifier() const {
     return std::string();
   }
 
-  return safe_browsing::GetProfileEmail(identity_manager);
+  return GetProfileEmail(identity_manager);
 }
 
 ConnectorsManager* ConnectorsService::ConnectorsManagerForTesting() {
@@ -630,7 +633,9 @@ ConnectorsServiceFactory::ConnectorsServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "ConnectorsService",
           BrowserContextDependencyManager::GetInstance()) {
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
+#endif
 }
 
 ConnectorsServiceFactory::~ConnectorsServiceFactory() = default;
@@ -650,12 +655,14 @@ KeyedService* ConnectorsServiceFactory::BuildServiceInstanceFor(
 
 content::BrowserContext* ConnectorsServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   // Do not construct the connectors service if the extensions are disabled for
   // the given context.
   if (extensions::ChromeContentBrowserClientExtensionsPart::
           AreExtensionsDisabledForProfile(context)) {
     return nullptr;
   }
+#endif
 
   // On Chrome OS, settings from the primary/main profile apply to all
   // profiles, besides incognito.

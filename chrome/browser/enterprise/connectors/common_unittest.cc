@@ -24,6 +24,7 @@ namespace enterprise_connectors {
 
 namespace {
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 struct CustomMessageTestCase {
   TriggeredRule::Action action;
   std::string message;
@@ -97,9 +98,11 @@ class BaseTest : public testing::Test {
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
 };
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 }  // namespace
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 class EnterpriseConnectorsResultShouldAllowDataUseTest
     : public BaseTest,
       public testing::WithParamInterface<bool> {
@@ -321,4 +324,6 @@ INSTANTIATE_TEST_SUITE_P(
                 {.action = TriggeredRule::BLOCK,
                  .message = kTestEscapedHtmlMessage}},
             /*expected_message=*/kTestUnescapedHtmlMessage)));
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
 }  // namespace enterprise_connectors

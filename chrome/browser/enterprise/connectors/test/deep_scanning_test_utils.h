@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/data_controls/core/browser/verdict.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
@@ -290,6 +291,7 @@ class EventReportValidatorHelper {
   signin::IdentityTestEnvironment identity_test_environment_;
 };
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 // Helper functions that set Connector policies for testing.
 void SetAnalysisConnector(PrefService* prefs,
                           AnalysisConnector connector,
@@ -304,6 +306,7 @@ void SetOnSecurityEventReporting(
             std::map<std::string, std::vector<std::string>>(),
     bool machine_scope = true);
 void ClearAnalysisConnector(PrefService* prefs, AnalysisConnector connector);
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Helper function to set the profile DM token. It installs a

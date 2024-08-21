@@ -6666,8 +6666,12 @@ static_library("browser") {
     sources += [
       "enterprise/connectors/analysis/analysis_service_settings.cc",
       "enterprise/connectors/analysis/analysis_service_settings.h",
+      "enterprise/connectors/common.cc",
+      "enterprise/connectors/common.h",
       "enterprise/connectors/connectors_manager.cc",
       "enterprise/connectors/connectors_manager.h",
+      "enterprise/connectors/connectors_service.cc",
+      "enterprise/connectors/connectors_service.h",
     ]
     deps += [ "//components/enterprise/connectors/core" ]
   }
@@ -6687,10 +6691,6 @@ static_library("browser") {
       "enterprise/connectors/analysis/page_print_analysis_request.h",
       "enterprise/connectors/analysis/request_handler_base.cc",
       "enterprise/connectors/analysis/request_handler_base.h",
-      "enterprise/connectors/common.cc",
-      "enterprise/connectors/common.h",
-      "enterprise/connectors/connectors_service.cc",
-      "enterprise/connectors/connectors_service.h",
       "enterprise/connectors/reporting/browser_crash_event_router.cc",
       "enterprise/connectors/reporting/browser_crash_event_router.h",
       "enterprise/connectors/reporting/crash_reporting_context.cc",

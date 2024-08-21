@@ -9589,7 +9589,9 @@ test("unit_tests") {
     # on Android.
     sources += [
       "../browser/enterprise/connectors/analysis/analysis_service_settings_unittest.cc",
+      "../browser/enterprise/connectors/common_unittest.cc",
       "../browser/enterprise/connectors/connectors_manager_unittest.cc",
+      "../browser/enterprise/connectors/connectors_service_unittest.cc",
     ]
     deps += [ "//components/enterprise/connectors/core" ]
   }
@@ -9600,8 +9602,6 @@ test("unit_tests") {
       "../browser/enterprise/connectors/analysis/content_analysis_downloads_delegate_unittest.cc",
       "../browser/enterprise/connectors/analysis/files_request_handler_unittest.cc",
       "../browser/enterprise/connectors/analysis/page_print_analysis_request_unittest.cc",
-      "../browser/enterprise/connectors/common_unittest.cc",
-      "../browser/enterprise/connectors/connectors_service_unittest.cc",
       "../browser/enterprise/connectors/reporting/crash_reporting_context_unittest.cc",
       "../browser/enterprise/connectors/reporting/extension_install_event_router_unittest.cc",
       "../browser/enterprise/connectors/reporting/extension_telemetry_event_router_unittest.cc",

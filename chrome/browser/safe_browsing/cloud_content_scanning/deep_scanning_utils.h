@@ -21,10 +21,6 @@ namespace enterprise_connectors {
 class ContentAnalysisResponse;
 }  // namespace enterprise_connectors
 
-namespace signin {
-class IdentityManager;
-}  // namespace signin
-
 namespace safe_browsing {
 
 // Access points used to record UMA metrics and specify which code location is
@@ -149,12 +145,6 @@ std::string EventResultToString(EventResult result);
 std::string BinaryUploadServiceResultToString(
     const BinaryUploadService::Result& result,
     bool success);
-
-// Returns the email address of the unconsented account signed in to the profile
-// or an empty string if no account is signed in.  If either |profile| or
-// |identity_manager| is null then the empty string is returned.
-std::string GetProfileEmail(Profile* profile);
-std::string GetProfileEmail(signin::IdentityManager* identity_manager);
 
 // Helper enum and function to manipulate crash keys relevant to scanning.
 // If a key would be set to 0, it is unset.

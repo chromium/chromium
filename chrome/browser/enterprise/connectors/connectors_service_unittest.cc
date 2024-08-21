@@ -44,6 +44,13 @@ namespace {
 
 constexpr char kEmptySettingsPref[] = "[]";
 
+constexpr char kNormalReportingSettingsPref[] = R"([
+  {
+    "service_provider": "google"
+  }
+])";
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 constexpr char kWildcardAnalysisSettingsPref[] = R"([
   {
     "service_provider": "google",
@@ -53,20 +60,16 @@ constexpr char kWildcardAnalysisSettingsPref[] = R"([
   }
 ])";
 
-constexpr char kNormalReportingSettingsPref[] = R"([
-  {
-    "service_provider": "google"
-  }
-])";
-
 constexpr char kCustomMessage[] = "Custom Admin Message";
 constexpr char kCustomUrl[] = "https://learn.more.com";
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 constexpr char kFakeDmToken[] = "fake-token";
 #if !BUILDFLAG(IS_CHROMEOS)
 constexpr char kFakeDeviceId[] = "fake-device-id";
 #endif
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 std::string CreateCustomUIPref(const char* custom_message,
                                const char* custom_url,
                                bool bypass_enabled) {
@@ -106,6 +109,8 @@ std::string CreateCustomUIPref(const char* custom_message,
       custom_messages_section.c_str(), bypass_enabled_section.c_str());
   return pref;
 }
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
 }  // namespace
 
 class ConnectorsServiceTest : public testing::Test {
@@ -137,6 +142,7 @@ class ConnectorsServiceTest : public testing::Test {
 #endif
 };
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 // Test to make sure that HasExtraUiToDisplay returns the right value to
 // show the extra UI from opt in features like custom message, URL and bypass
 // on Download.
@@ -171,6 +177,7 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(CreateCustomUIPref(nullptr, kCustomUrl, false), true),
         std::make_tuple(CreateCustomUIPref(nullptr, nullptr, true), true),
         std::make_tuple(CreateCustomUIPref(nullptr, nullptr, false), false)));
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 // Tests to make sure getting reporting settings work with both the feature flag
 // and the OnSecurityEventEnterpriseConnector policy. The parameter for these
@@ -215,6 +222,11 @@ class ConnectorsServiceReportingFeatureTest
 };
 
 TEST_P(ConnectorsServiceReportingFeatureTest, Test) {
+  // TODO(b/344593927): Re-enable this test for Android.
+#if BUILDFLAG(IS_ANDROID)
+  ASSERT_FALSE(pref_service()->FindPreference(
+      "enterprise_connectors.on_security_event"));
+#else
   if (policy_value() != 0) {
     profile_->GetPrefs()->Set(pref(), *base::JSONReader::Read(pref_value()));
     profile_->GetPrefs()->SetInteger(scope_pref(),
@@ -232,6 +244,7 @@ TEST_P(ConnectorsServiceReportingFeatureTest, Test) {
                  ->ConnectorsManagerForTesting()
                  ->GetReportingConnectorsSettingsForTesting()
                  .empty());
+#endif
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -274,6 +287,7 @@ TEST_P(ConnectorsServiceReportingFeatureTest,
 }
 #endif
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 TEST_P(ConnectorsServiceReportingFeatureTest, CheckTelemetryPolicyObserver) {
   ConnectorsService* connectors_service =
       ConnectorsServiceFactory::GetForBrowserContext(profile_);
@@ -305,6 +319,7 @@ TEST_P(ConnectorsServiceReportingFeatureTest, CheckTelemetryPolicyObserver) {
                                     {kExtensionTelemetryEvent}, {});
   EXPECT_TRUE(future.WaitAndClear());
 }
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 INSTANTIATE_TEST_SUITE_P(
     ,
@@ -344,6 +359,7 @@ TEST_F(ConnectorsServiceTest, RealtimeURLCheck) {
 #endif
 }
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 class ConnectorsServiceExemptURLsTest
     : public ConnectorsServiceTest,
       public testing::WithParamInterface<AnalysisConnector> {
@@ -451,6 +467,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     ConnectorsServiceExemptURLsTest,
     testing::Values(FILE_ATTACHED, FILE_DOWNLOADED, BULK_DATA_ENTRY, PRINT));
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

@@ -559,7 +559,7 @@ void DeepScanningRequest::PopulateRequest(FileAnalysisRequest* request,
   }
 
   request->set_analysis_connector(enterprise_connectors::FILE_DOWNLOADED);
-  request->set_email(GetProfileEmail(profile));
+  request->set_email(enterprise_connectors::GetProfileEmail(profile));
 
   if (item_->GetURL().is_valid()) {
     request->set_url(item_->GetURL().spec());

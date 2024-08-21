@@ -939,7 +939,7 @@ void ContentAnalysisDelegate::PrepareRequest(
   }
 
   request->set_analysis_connector(connector);
-  request->set_email(safe_browsing::GetProfileEmail(profile_));
+  request->set_email(GetProfileEmail(profile_));
   request->set_url(data_.url.spec());
   request->set_tab_url(data_.url);
   request->set_per_profile_request(data_.settings.per_profile);

@@ -5,7 +5,6 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -23,12 +22,22 @@
 #include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
+#include "components/prefs/pref_service.h"
+#endif
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
+
 using safe_browsing::BinaryUploadService;
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 namespace enterprise_connectors {
 
 namespace {
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
   switch (action) {
     case TriggeredRule::ACTION_UNSPECIFIED:
@@ -49,9 +58,11 @@ bool ShouldAllowDeepScanOnLargeOrEncryptedFiles(
          (result == BinaryUploadService::Result::FILE_ENCRYPTED &&
           !block_password_protected_files);
 }
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 }  // namespace
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
                               BinaryUploadService::Result upload_result) {
   bool default_action_allow_data_use =
@@ -148,6 +159,7 @@ safe_browsing::EventResult CalculateEventResult(
              : (should_warn ? safe_browsing::EventResult::WARNED
                             : safe_browsing::EventResult::BLOCKED);
 }
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 const char SavePackageScanningData::kKey[] =
     "enterprise_connectors.save_package_scanning_key";
@@ -214,6 +226,35 @@ bool ShouldPromptReviewForDownload(
   return false;
 }
 
+std::string GetProfileEmail(Profile* profile) {
+  if (!profile) {
+    return std::string();
+  }
+
+  std::string email =
+      GetProfileEmail(IdentityManagerFactory::GetForProfile(profile));
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (email.empty()) {
+    email = profile->GetPrefs()->GetString(
+        enterprise_signin::prefs::kProfileUserEmail);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  return email;
+}
+
+std::string GetProfileEmail(signin::IdentityManager* identity_manager) {
+  // If the profile is not signed in, GetPrimaryAccountInfo() returns an
+  // empty account info.
+  return identity_manager
+             ? identity_manager
+                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                   .email
+             : std::string();
+}
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 void ShowDownloadReviewDialog(const std::u16string& filename,
                               Profile* profile,
                               download::DownloadItem* download_item,
@@ -301,6 +342,7 @@ bool ResultIsFailClosed(BinaryUploadService::Result result) {
          result == BinaryUploadService::Result::TOO_MANY_REQUESTS ||
          result == BinaryUploadService::Result::UNKNOWN;
 }
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 Profile* GetMainProfileLacros() {

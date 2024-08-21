@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -238,7 +239,7 @@ bool ChromeEnterpriseRealTimeUrlLookupService::CanSendRTSampleRequest() const {
 }
 
 std::string ChromeEnterpriseRealTimeUrlLookupService::GetUserEmail() const {
-  return GetProfileEmail(profile_);
+  return enterprise_connectors::GetProfileEmail(profile_);
 }
 
 std::string ChromeEnterpriseRealTimeUrlLookupService::GetBrowserDMTokenString()
