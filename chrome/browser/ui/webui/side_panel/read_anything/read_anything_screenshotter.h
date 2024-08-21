@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SNAPSHOTTER_H_
-#define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SNAPSHOTTER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SCREENSHOTTER_H_
+#define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SCREENSHOTTER_H_
 
 #include <memory>
 
@@ -17,17 +17,19 @@
 // screenshot of an active WebContents. This screenshot functionality will be
 // enabled only by a command-line switch and should not be used for user-facing
 // features.
-class ReadAnythingSnapshotter : public paint_preview::PaintPreviewBaseService {
+class ReadAnythingScreenshotter
+    : public paint_preview::PaintPreviewBaseService {
  public:
-  ReadAnythingSnapshotter();
-  ReadAnythingSnapshotter(const ReadAnythingSnapshotter&) = delete;
-  ReadAnythingSnapshotter& operator=(const ReadAnythingSnapshotter&) = delete;
-  ~ReadAnythingSnapshotter() override;
+  ReadAnythingScreenshotter();
+  ReadAnythingScreenshotter(const ReadAnythingScreenshotter&) = delete;
+  ReadAnythingScreenshotter& operator=(const ReadAnythingScreenshotter&) =
+      delete;
+  ~ReadAnythingScreenshotter() override;
 
-  void RequestSnapshot(const raw_ptr<content::WebContents> web_contents);
+  void RequestScreenshot(const raw_ptr<content::WebContents> web_contents);
 
  private:
-  void OnSnapshotCaptured(
+  void OnScreenshotCaptured(
       paint_preview::PaintPreviewBaseService::CaptureStatus status,
       std::unique_ptr<paint_preview::CaptureResult> result);
   void OnCompositorServiceDisconnected();
@@ -52,7 +54,7 @@ class ReadAnythingSnapshotter : public paint_preview::PaintPreviewBaseService {
                   base::OnTaskRunnerDeleter>
       paint_preview_compositor_client_;
 
-  base::WeakPtrFactory<ReadAnythingSnapshotter> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ReadAnythingScreenshotter> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SNAPSHOTTER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SCREENSHOTTER_H_

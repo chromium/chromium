@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_snapshotter.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_screenshotter.h"
 
 #include <string>
 
@@ -51,7 +51,7 @@ void WriteBitmapToPng(const SkBitmap& bitmap) {
 
 }  // namespace
 
-ReadAnythingSnapshotter::ReadAnythingSnapshotter()
+ReadAnythingScreenshotter::ReadAnythingScreenshotter()
     : paint_preview::PaintPreviewBaseService(
           /*file_mixin=*/nullptr,  // in-memory captures
           /*policy=*/nullptr,      // all content is deemed amenable
@@ -60,15 +60,16 @@ ReadAnythingSnapshotter::ReadAnythingSnapshotter()
                                         base::OnTaskRunnerDeleter(nullptr)),
       paint_preview_compositor_client_(nullptr,
                                        base::OnTaskRunnerDeleter(nullptr)) {
-  paint_preview_compositor_service_ = paint_preview::StartCompositorService(
-      base::BindOnce(&ReadAnythingSnapshotter::OnCompositorServiceDisconnected,
-                     weak_ptr_factory_.GetWeakPtr()));
+  paint_preview_compositor_service_ =
+      paint_preview::StartCompositorService(base::BindOnce(
+          &ReadAnythingScreenshotter::OnCompositorServiceDisconnected,
+          weak_ptr_factory_.GetWeakPtr()));
   CHECK(paint_preview_compositor_service_);
 }
 
-ReadAnythingSnapshotter::~ReadAnythingSnapshotter() = default;
+ReadAnythingScreenshotter::~ReadAnythingScreenshotter() = default;
 
-void ReadAnythingSnapshotter::RequestSnapshot(
+void ReadAnythingScreenshotter::RequestScreenshot(
     const raw_ptr<content::WebContents> web_contents) {
   if (!web_contents) {
     VLOG(2) << "The given web contents no longer valid";
@@ -83,24 +84,24 @@ void ReadAnythingSnapshotter::RequestSnapshot(
   capture_params.max_per_capture_size = kMaxScreenshotFileSize;
   CapturePaintPreview(
       capture_params,
-      base::BindOnce(&ReadAnythingSnapshotter::OnSnapshotCaptured,
+      base::BindOnce(&ReadAnythingScreenshotter::OnScreenshotCaptured,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ReadAnythingSnapshotter::OnSnapshotCaptured(
+void ReadAnythingScreenshotter::OnScreenshotCaptured(
     paint_preview::PaintPreviewBaseService::CaptureStatus status,
     std::unique_ptr<paint_preview::CaptureResult> result) {
   if (status != PaintPreviewBaseService::CaptureStatus::kOk ||
       !result->capture_success) {
     VLOG(2) << base::StringPrintf(
-        "Failed to capture a snapshot (CaptureStatus=%d)",
+        "Failed to capture a screenshot (CaptureStatus=%d)",
         static_cast<int>(status));
     return;
   }
   if (!paint_preview_compositor_client_) {
     paint_preview_compositor_client_ =
         paint_preview_compositor_service_->CreateCompositor(
-            base::BindOnce(&ReadAnythingSnapshotter::SendCompositeRequest,
+            base::BindOnce(&ReadAnythingScreenshotter::SendCompositeRequest,
                            weak_ptr_factory_.GetWeakPtr(),
                            PrepareCompositeRequest(std::move(result))));
   } else {
@@ -109,7 +110,7 @@ void ReadAnythingSnapshotter::OnSnapshotCaptured(
 }
 
 paint_preview::mojom::PaintPreviewBeginCompositeRequestPtr
-ReadAnythingSnapshotter::PrepareCompositeRequest(
+ReadAnythingScreenshotter::PrepareCompositeRequest(
     std::unique_ptr<paint_preview::CaptureResult> capture_result) {
   paint_preview::mojom::PaintPreviewBeginCompositeRequestPtr
       begin_composite_request =
@@ -127,7 +128,7 @@ ReadAnythingSnapshotter::PrepareCompositeRequest(
   return begin_composite_request;
 }
 
-void ReadAnythingSnapshotter::SendCompositeRequest(
+void ReadAnythingScreenshotter::SendCompositeRequest(
     paint_preview::mojom::PaintPreviewBeginCompositeRequestPtr
         begin_composite_request) {
   if (!begin_composite_request) {
@@ -138,17 +139,17 @@ void ReadAnythingSnapshotter::SendCompositeRequest(
   CHECK(paint_preview_compositor_client_);
   paint_preview_compositor_client_->BeginMainFrameComposite(
       std::move(begin_composite_request),
-      base::BindOnce(&ReadAnythingSnapshotter::OnCompositeFinished,
+      base::BindOnce(&ReadAnythingScreenshotter::OnCompositeFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ReadAnythingSnapshotter::OnCompositorServiceDisconnected() {
+void ReadAnythingScreenshotter::OnCompositorServiceDisconnected() {
   VLOG(2) << "Compositor service is disconnected";
   paint_preview_compositor_client_.reset();
   paint_preview_compositor_service_.reset();
 }
 
-void ReadAnythingSnapshotter::OnCompositeFinished(
+void ReadAnythingScreenshotter::OnCompositeFinished(
     paint_preview::mojom::PaintPreviewCompositor::BeginCompositeStatus status,
     paint_preview::mojom::PaintPreviewBeginCompositeResponsePtr response) {
   if (status != paint_preview::mojom::PaintPreviewCompositor::
@@ -164,15 +165,15 @@ void ReadAnythingSnapshotter::OnCompositeFinished(
   RequestBitmapForMainFrame();
 }
 
-void ReadAnythingSnapshotter::RequestBitmapForMainFrame() {
+void ReadAnythingScreenshotter::RequestBitmapForMainFrame() {
   // Passing an empty `gfx::Rect` allows us to get a bitmap for the full page.
   paint_preview_compositor_client_->BitmapForMainFrame(
       gfx::Rect(), /*scale_factor=*/1.0,
-      base::BindOnce(&ReadAnythingSnapshotter::OnBitmapReceived,
+      base::BindOnce(&ReadAnythingScreenshotter::OnBitmapReceived,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ReadAnythingSnapshotter::OnBitmapReceived(
+void ReadAnythingScreenshotter::OnBitmapReceived(
     paint_preview::mojom::PaintPreviewCompositor::BitmapStatus status,
     const SkBitmap& bitmap) {
   if (status != paint_preview::mojom::PaintPreviewCompositor::BitmapStatus::

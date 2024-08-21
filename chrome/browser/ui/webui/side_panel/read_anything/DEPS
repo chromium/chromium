@@ -9,7 +9,7 @@ specific_include_rules = {
     "+components/paint_preview/common/recording_map.h",
     "+components/paint_preview/public/paint_preview_compositor_service.h",
   ],
-  "read_anything_snapshotter\.*": [
+  "read_anything_screenshotter\.*": [
     "+components/paint_preview/common/recording_map.h",
     "+components/paint_preview/public/paint_preview_compositor_service.h",
   ],

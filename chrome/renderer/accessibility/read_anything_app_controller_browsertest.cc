@@ -69,7 +69,7 @@ class MockReadAnythingUntrustedPageHandler
                int focus_offset),
               (override));
   MOCK_METHOD(void, OnCollapseSelection, (), (override));
-  MOCK_METHOD(void, OnSnapshotRequested, (), (override));
+  MOCK_METHOD(void, OnScreenshotRequested, (), (override));
   MOCK_METHOD(void, OnCopy, (), (override));
   MOCK_METHOD(void,
               OnLineSpaceChange,
@@ -4332,6 +4332,10 @@ class ReadAnythingAppControllerScreen2xDataCollectionModeTest
         content::RenderFrame::FromWebFrame(GetMainFrame());
     controller_ = ReadAnythingAppController::Install(render_frame);
 
+    // Set the page handler for testing.
+    controller_->page_handler_.reset();
+    controller_->page_handler_.Bind(page_handler_.BindNewPipeAndPassRemote());
+
     // Set distiller for testing.
     std::unique_ptr<AXTreeDistiller> distiller =
         std::make_unique<MockAXTreeDistiller>(render_frame);
@@ -4359,6 +4363,7 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   // distiller_->Distill(). However, with the data collection mode enabled,
   // Distill() is not called immediately.
   EXPECT_CALL(*distiller_, Distill).Times(0);
+  EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(0);
   SetScreenAIServiceReady();
   OnActiveAXTreeIDChanged(tree_id_);
   Mock::VerifyAndClearExpectations(distiller_);
@@ -4369,6 +4374,7 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   // When the AXTreeID changes, and 30s pass, the controller calls
   // distiller_->Distill().
   EXPECT_CALL(*distiller_, Distill).Times(1);
+  EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(1);
   SetScreenAIServiceReady();
   OnActiveAXTreeIDChanged(tree_id_);
   task_environment_.FastForwardBy(base::Seconds(31));
@@ -4383,6 +4389,7 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   task_environment_.FastForwardBy(base::Seconds(31));
 
   EXPECT_CALL(*distiller_, Distill).Times(1);
+  EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(1);
   SetScreenAIServiceReady();
   Mock::VerifyAndClearExpectations(distiller_);
 }
@@ -4392,6 +4399,7 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   // When the AXTreeID changes, and 30s pass, the controller does not call
   // distiller_->Distill() as the screenAI service is not ready.
   EXPECT_CALL(*distiller_, Distill).Times(0);
+  EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(0);
   OnActiveAXTreeIDChanged(tree_id_);
   task_environment_.FastForwardBy(base::Seconds(31));
   Mock::VerifyAndClearExpectations(distiller_);
@@ -4412,6 +4420,7 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   // When the load complete event is received, and the tree is stable for 10s,
   // the controller calls distiller_->Distill().
   EXPECT_CALL(*distiller_, Distill).Times(1);
+  EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(1);
   SetScreenAIServiceReady();
   ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
   OnActiveAXTreeIDChanged(tree_id_);
@@ -4441,6 +4450,7 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   // When the load complete event is received, and the tree remains unstable,
   // the controller does not call distiller_->Distill().
   EXPECT_CALL(*distiller_, Distill).Times(0);
+  EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(0);
   SetScreenAIServiceReady();
 
   ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
@@ -4475,6 +4485,7 @@ TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
   // When the load complete event is received, even if the tree remains
   // unstable, the controller does not calls distiller_->Distill() after 30s.
   EXPECT_CALL(*distiller_, Distill).Times(1);
+  EXPECT_CALL(page_handler_, OnScreenshotRequested).Times(1);
   SetScreenAIServiceReady();
 
   ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);

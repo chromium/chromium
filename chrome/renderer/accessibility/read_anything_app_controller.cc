@@ -590,10 +590,16 @@ void ReadAnythingAppController::Distill() {
   // specific URL. The caller monitors for a dump of the distilled proto written
   // to a local file. Distill should only be called once the page is finished
   // loading, so we have the proto representing the entire webpage.
-  if (features::IsDataCollectionModeForScreen2xEnabled() &&
-      (!model_.PageFinishedLoadingForDataCollection() ||
-       !model_.ScreenAIServiceReadyForDataColletion())) {
-    return;
+  if (features::IsDataCollectionModeForScreen2xEnabled()) {
+    if (!model_.PageFinishedLoadingForDataCollection() ||
+        !model_.ScreenAIServiceReadyForDataColletion()) {
+      return;
+    }
+    // Request a screenshot of the active page when no more distillations are
+    // required. Send a screenshot request to its browser controller using
+    // `PaintPreview` to take a whole-page screenshot of the active web
+    // contents.
+    page_handler_->OnScreenshotRequested();
   }
 
   model_.set_requires_distillation(false);
@@ -699,16 +705,6 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   model_.UnserializePendingUpdates(tree_id);
   if (model_.requires_distillation()) {
     Distill();
-  } else {
-    // Request a screenshot of the active page when no more distillations are
-    // required.
-    if (features::IsDataCollectionModeForScreen2xEnabled() &&
-        model_.PageFinishedLoadingForDataCollection()) {
-      // Send a snapshot request to its browser controller using `PaintPreview`
-      // to take a whole-page snapshot of the active web contents.
-      page_handler_->OnSnapshotRequested();
-      model_.SetPageFinishedLoadingForDataCollection(false);
-    }
   }
 }
 

@@ -344,7 +344,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 
 ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
   translate_observation_.Reset();
-  web_snapshotter_.reset();
+  web_screenshotter_.reset();
   main_observer_.reset();
   pdf_observer_.reset();
   LogTextStyle();
@@ -613,7 +613,7 @@ void ReadAnythingUntrustedPageHandler::OnCollapseSelection() {
   }
 }
 
-void ReadAnythingUntrustedPageHandler::OnSnapshotRequested() {
+void ReadAnythingUntrustedPageHandler::OnScreenshotRequested() {
   if (!features::IsDataCollectionModeForScreen2xEnabled()) {
     return;
   }
@@ -622,11 +622,11 @@ void ReadAnythingUntrustedPageHandler::OnSnapshotRequested() {
     return;
   }
 
-  if (!web_snapshotter_) {
-    web_snapshotter_ = std::make_unique<ReadAnythingSnapshotter>();
+  if (!web_screenshotter_) {
+    web_screenshotter_ = std::make_unique<ReadAnythingScreenshotter>();
   }
-  VLOG(2) << "Requesting a snapshot for the main web contents";
-  web_snapshotter_->RequestSnapshot(main_observer_->web_contents());
+  VLOG(2) << "Requesting a screenshot for the main web contents";
+  web_screenshotter_->RequestScreenshot(main_observer_->web_contents());
 }
 
 void ReadAnythingUntrustedPageHandler::SetDefaultLanguageCode(

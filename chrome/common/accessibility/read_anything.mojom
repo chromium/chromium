@@ -185,8 +185,8 @@ interface UntrustedPageHandler {
   // Informs the browser to collapse the selection made in the WebUI.
   OnCollapseSelection();
 
-  // Requests the browser to take a snapshot of the active web contents.
-  OnSnapshotRequested();
+  // Requests the browser to take a screenshot of the active web contents.
+  OnScreenshotRequested();
 
   // Informs the browser controller that the side page was scrolled to the end.
   // The browser controller responds by scrolling the main page to show the
