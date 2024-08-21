@@ -28,9 +28,14 @@ build_webui("build") {
     "help_bubble_mixin_lit.ts",
     "help_bubble_proxy.ts",
     "help_bubble_controller.ts",
+    "new_badge.ts",
+    "new_badge.html.ts",
   ]
 
-  css_files = [ "help_bubble.css" ]
+  css_files = [
+    "help_bubble.css",
+    "new_badge.css",
+  ]
 
   icons_html_files = [ "help_bubble_icons.html" ]
 
