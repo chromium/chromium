@@ -233,11 +233,6 @@ bool IsUnobscured(const FocusCandidate& candidate) {
   if (!local_main_frame)
     return false;
 
-  // TODO(crbug.com/955952): We cannot evaluate visibility for media element
-  // using hit test since attached media controls cover media element.
-  if (candidate.visible_node->IsMediaElement())
-    return true;
-
   PhysicalRect viewport_rect(
       local_main_frame->GetPage()->GetVisualViewport().VisibleContentRect());
   PhysicalRect interesting_rect =
