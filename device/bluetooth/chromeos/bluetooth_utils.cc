@@ -163,6 +163,60 @@ std::string GetTransportName(BluetoothTransport transport) {
   }
 }
 
+bool IsUserError(std::optional<ConnectionFailureReason> failure_reason) {
+  if (!failure_reason.has_value()) {
+    return false;
+  }
+
+  switch (failure_reason.value()) {
+    case ConnectionFailureReason::kNotFound:
+      return true;
+    case ConnectionFailureReason::kAuthCanceled:
+      [[fallthrough]];
+    case ConnectionFailureReason::kAuthRejected:
+      [[fallthrough]];
+    case ConnectionFailureReason::kUnknownError:
+      [[fallthrough]];
+    case ConnectionFailureReason::kAuthFailed:
+      [[fallthrough]];
+    case ConnectionFailureReason::kAuthTimeout:
+      [[fallthrough]];
+    case ConnectionFailureReason::kUnknownConnectionError:
+      [[fallthrough]];
+    case ConnectionFailureReason::kUnsupportedDevice:
+      [[fallthrough]];
+    case ConnectionFailureReason::kNotConnectable:
+      [[fallthrough]];
+    case ConnectionFailureReason::kSystemError:
+      [[fallthrough]];
+    case ConnectionFailureReason::kFailed:
+      [[fallthrough]];
+    case ConnectionFailureReason::kInprogress:
+      [[fallthrough]];
+    case ConnectionFailureReason::kBluetoothDisabled:
+      [[fallthrough]];
+    case ConnectionFailureReason::kDeviceNotReady:
+      [[fallthrough]];
+    case ConnectionFailureReason::kAlreadyConnected:
+      [[fallthrough]];
+    case ConnectionFailureReason::kDeviceAlreadyExists:
+      [[fallthrough]];
+    case ConnectionFailureReason::kInvalidArgs:
+      [[fallthrough]];
+    case ConnectionFailureReason::kNonAuthTimeout:
+      [[fallthrough]];
+    case ConnectionFailureReason::kNoMemory:
+      [[fallthrough]];
+    case ConnectionFailureReason::kJniEnvironment:
+      [[fallthrough]];
+    case ConnectionFailureReason::kJniThreadAttach:
+      [[fallthrough]];
+    case ConnectionFailureReason::kWakelock:
+      return false;
+  }
+  NOTREACHED_IN_MIGRATION();
+}
+
 void EmitFilteredFailureReason(ConnectionFailureReason failure_reason,
                                const std::string& transport_name) {
   switch (failure_reason) {
@@ -433,10 +487,16 @@ void RecordPairingResult(std::optional<ConnectionFailureReason> failure_reason,
   bool success = !failure_reason.has_value();
   std::string result_histogram_name_prefix =
       "Bluetooth.ChromeOS.Pairing.Result";
+  std::string result_histogram_user_errors_filtered_name =
+      result_histogram_name_prefix + "." + "UserErrorsFiltered";
 
   base::UmaHistogramBoolean(result_histogram_name_prefix, success);
   base::UmaHistogramBoolean(result_histogram_name_prefix + "." + transport_name,
                             success);
+  if (!IsUserError(failure_reason)) {
+    base::UmaHistogramBoolean(result_histogram_user_errors_filtered_name,
+                              success);
+  }
 
   std::string duration_histogram_name_prefix =
       "Bluetooth.ChromeOS.Pairing.Duration";
