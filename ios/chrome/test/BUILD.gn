@@ -361,6 +361,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/shared/model/browser_state:unit_tests",
     "//ios/chrome/browser/shared/model/prefs:unit_tests",
     "//ios/chrome/browser/shared/model/profile:unit_tests",
+    "//ios/chrome/browser/shared/model/profile/test:unit_tests",
     "//ios/chrome/browser/shared/model/url:unit_tests",
     "//ios/chrome/browser/shared/model/web_state_list:unit_tests",
     "//ios/chrome/browser/shared/public/commands:unit_tests",

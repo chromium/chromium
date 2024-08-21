@@ -19,3 +19,16 @@ source_set("test") {
     "//ios/chrome/test:test_support",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "test_profile_manager_ios_unittest.cc" ]
+  deps = [
+    ":test",
+    "//base",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

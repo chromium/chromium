@@ -59,7 +59,6 @@ source_set("unit_tests") {
   sources = [
     "chrome_browser_state_unittest.cc",
     "incognito_session_tracker_unittest.mm",
-    "test_chrome_browser_state_manager_unittest.cc",
   ]
   deps = [
     ":browser_state",
