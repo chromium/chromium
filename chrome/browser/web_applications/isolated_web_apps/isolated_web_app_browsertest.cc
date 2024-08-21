@@ -383,6 +383,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_NE(app_browser, browser());
   EXPECT_TRUE(
       AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
+  EXPECT_TRUE(app_browser->app_controller()->HasMinimalUiButtons());
   EXPECT_EQ(content::WebExposedIsolationLevel::kIsolatedApplication,
             app_frame->GetWebExposedIsolationLevel());
 }
