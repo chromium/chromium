@@ -86,6 +86,13 @@ void LayerTreeImplTestBase::CalcDrawProps(const gfx::Size& viewport_size) {
   UpdateDrawProperties(host_impl()->active_tree());
 }
 
+void LayerTreeImplTestBase::AppendQuads(LayerImpl* layer_impl) {
+  AppendQuadsData data;
+  render_pass_->quad_list.clear();
+  render_pass_->shared_quad_state_list.clear();
+  layer_impl->AppendQuads(render_pass_.get(), &data);
+}
+
 void LayerTreeImplTestBase::AppendQuadsWithOcclusion(
     LayerImpl* layer_impl,
     const gfx::Rect& occluded) {

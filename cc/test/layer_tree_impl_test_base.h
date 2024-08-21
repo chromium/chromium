@@ -53,6 +53,7 @@ class LayerTreeImplTestBase {
   }
 
   void CalcDrawProps(const gfx::Size& viewport_size);
+  void AppendQuads(LayerImpl* layer_impl);
   void AppendQuadsWithOcclusion(LayerImpl* layer_impl,
                                 const gfx::Rect& occluded);
   void AppendQuadsForPassWithOcclusion(
