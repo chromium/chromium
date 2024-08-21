@@ -4,10 +4,6 @@
     width: 100%;
   }
 
-  .hidden {
-    display: none;
-  }
-
   #backgroundScrim {
     background-color: rgba(0, 0 ,0, 0.3);
     inset: 0;
@@ -125,6 +121,10 @@
     mask-image: url("learn_more.svg");
   }
 
+  :host(:not([is-image-rendered])) lens-selection-overlay {
+    display: none;
+  }
+
   .app-container :not(lens-selection-overlay) {
     transition: opacity 150ms linear;
   }
@@ -185,8 +185,6 @@
       on-pointerenter="handlePointerEnterBackgroundScrim"
       on-pointerleave="handlePointerLeaveBackgroundScrim"></div>
   <lens-selection-overlay id="selectionOverlay" theme="[[theme]]"
-      screenshot-data-uri="[[screenshotDataUri]]"
-      class$="[[getSelectionOverlayClass(screenshotDataUri)]]"
       on-pointerenter="handlePointerEnterSelectionOverlay"
       on-pointerleave="handlePointerLeaveSelectionOverlay">
   </lens-selection-overlay>

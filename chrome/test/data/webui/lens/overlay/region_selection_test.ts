@@ -62,8 +62,8 @@ suite('ManualRegionSelection', function() {
     document.body.appendChild(selectionOverlayElement);
 
     // Set image size manually in order to force the selection overlay visible.
-    selectionOverlayElement.$.backgroundImage.style.height = '100vh';
-    selectionOverlayElement.$.backgroundImage.style.width = '100vw';
+    selectionOverlayElement.$.backgroundImageCanvas.style.height = '100vh';
+    selectionOverlayElement.$.backgroundImageCanvas.style.width = '100vw';
     metrics = fakeMetricsPrivate();
 
     return waitAfterNextRender(selectionOverlayElement);
@@ -199,10 +199,10 @@ suite('ManualRegionSelection', function() {
     await assertClickSendsRequest(pointInOverlay, expectedRect);
 
     // Resize the selection overlay but keep its proportions.
-    selectionOverlayElement.$.backgroundImage.style.display = 'block';
-    selectionOverlayElement.$.backgroundImage.style.width =
+    selectionOverlayElement.$.backgroundImageCanvas.style.display = 'block';
+    selectionOverlayElement.$.backgroundImageCanvas.style.width =
         'calc(100vw - 100px)';
-    selectionOverlayElement.$.backgroundImage.style.height =
+    selectionOverlayElement.$.backgroundImageCanvas.style.height =
         'calc(100vh - 100px)';
     await waitAfterNextRender(selectionOverlayElement);
 

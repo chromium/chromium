@@ -25,6 +25,8 @@ import type {OverlayObject} from './overlay_object.mojom-webui.js';
 import {Polygon_CoordinateType} from './polygon.mojom-webui.js';
 import type {Vertex} from './polygon.mojom-webui.js';
 import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
+import {ScreenshotBitmapBrowserProxyImpl} from './screenshot_bitmap_browser_proxy.js';
+import {renderScreenshot} from './screenshot_utils.js';
 import type {CursorData} from './selection_overlay.js';
 import {CursorType, focusShimmerOnRegion, type GestureEvent, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import {toPercent} from './values_converter.js';
@@ -152,7 +154,7 @@ function toCssPolygonVertex(object: OverlayObject, vertex: Vertex): string {
 
 export interface ObjectLayerElement {
   $: {
-    highlightImg: HTMLImageElement,
+    highlightImgCanvas: HTMLCanvasElement,
     objectsContainer: DomRepeat,
     objectSelectionCanvas: HTMLCanvasElement,
   };
@@ -189,7 +191,6 @@ export class ObjectLayerElement extends PolymerElement {
         type: Object,
         value: getFallbackTheme,
       },
-      screenshotDataUri: String,
     };
   }
 
@@ -199,8 +200,6 @@ export class ObjectLayerElement extends PolymerElement {
   private canvasPhysicalHeight: number;
   private canvasPhysicalWidth: number;
   private context: CanvasRenderingContext2D;
-  // The data URI of the current overlay screenshot.
-  private screenshotDataUri: string;
   // The objects rendered in this layer.
   private renderedObjects: OverlayObject[];
   // The last post selection made. Updated by events from the post selection
@@ -234,6 +233,11 @@ export class ObjectLayerElement extends PolymerElement {
     // Set up listener to receive objects from C++.
     this.objectsReceivedListenerId = this.router.objectsReceived.addListener(
         this.onObjectsReceived.bind(this));
+
+    ScreenshotBitmapBrowserProxyImpl.getInstance().fetchScreenshot(
+        (screenshot: ImageBitmap) => {
+          renderScreenshot(this.$.highlightImgCanvas, screenshot);
+        });
   }
 
   override disconnectedCallback() {
@@ -426,7 +430,7 @@ export class ObjectLayerElement extends PolymerElement {
     context.filter = 'none';
     context.clip();
     context.drawImage(
-        this.$.highlightImg, 0, 0, this.canvasWidth, this.canvasHeight);
+        this.$.highlightImgCanvas, 0, 0, this.canvasWidth, this.canvasHeight);
     context.restore();
 
     // Stroke the path on top of the image.

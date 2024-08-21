@@ -10,12 +10,13 @@ import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens/geometry.
 import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import type {OverlayObject} from 'chrome-untrusted://lens/overlay_object.mojom-webui.js';
+import {ScreenshotBitmapBrowserProxyImpl} from 'chrome-untrusted://lens/screenshot_bitmap_browser_proxy.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertNotEquals, assertNull, assertStringContains} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
+import {fakeScreenshotBitmap, waitForScreenshotRendered} from '../utils/image_utils.js';
 import {assertBoxesWithinThreshold, createObject} from '../utils/object_utils.js';
 import {getImageBoundingRect, simulateClick, simulateDrag} from '../utils/selection_utils.js';
 import {createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
@@ -422,28 +423,45 @@ suite('SelectionOverlay', function() {
   });
 
   test('verify that resizing renders image with padding', async () => {
+    // Resize to be the same size as screenshot.
     selectionOverlayElement.style.display = 'block';
-    selectionOverlayElement.style.width = '50px';
-    selectionOverlayElement.style.height = '50px';
-    await waitAfterNextRender(selectionOverlayElement);
-    assertNotEquals(null, selectionOverlayElement.getAttribute('is-resized'));
+    selectionOverlayElement.style.width = '100px';
+    selectionOverlayElement.style.height = '100px';
 
-    // Verify resizing back no longer renders with padding
-    selectionOverlayElement.style.width = '100%';
-    selectionOverlayElement.style.height = '100%';
+    // ScreenshotBitmapBrowserProxy assumes only one screenshot will be sent. We
+    // need to reset it to allow a new screenshot to be fetched.
+    ScreenshotBitmapBrowserProxyImpl.setInstance(
+        new ScreenshotBitmapBrowserProxyImpl());
+    selectionOverlayElement.fetchNewScreenshotForTesting();
+
+    // Send a fake screenshot of size 100x100.
+    testBrowserProxy.page.screenshotDataReceived(
+        fakeScreenshotBitmap(100, 100));
+    await waitForScreenshotRendered(selectionOverlayElement);
     await waitAfterNextRender(selectionOverlayElement);
-    assertNull(selectionOverlayElement.getAttribute('is-resized'));
+
+    // Resize to smaller than the screenshot and verify margins.
+    selectionOverlayElement.style.width = '90px';
+    selectionOverlayElement.style.height = '90px';
+    await waitAfterNextRender(selectionOverlayElement);
+
+    // Size should now be 90px - 48px margin.
+    let imageSize =
+        selectionOverlayElement.$.backgroundImageCanvas.getBoundingClientRect();
+    assertEquals(42, imageSize.width);
+    assertEquals(42, imageSize.height);
+
+    // Resize back to same size as screenshot and verify no margins.
+    selectionOverlayElement.style.width = '100px';
+    selectionOverlayElement.style.height = '100px';
+    await waitAfterNextRender(selectionOverlayElement);
+
+    // Size should now be back to fullscreen.
+    imageSize =
+        selectionOverlayElement.$.backgroundImageCanvas.getBoundingClientRect();
+    assertEquals(100, imageSize.width);
+    assertEquals(100, imageSize.height);
   });
-
-  test(
-      'verify that resizing within threshold does not rerender image',
-      async () => {
-        selectionOverlayElement.style.display = 'block';
-        selectionOverlayElement.style.width =
-            `${selectionOverlayElement.getBoundingClientRect().width - 4}px`;
-        await waitAfterNextRender(selectionOverlayElement);
-        assertNull(selectionOverlayElement.getAttribute('is-resized'));
-      });
 
   test('verify that you can drag text over post selection', async () => {
     // Add the words

@@ -20,7 +20,8 @@ function createPointerEvent(
 
 export function getImageBoundingRect(
     selectionOverlayElement: SelectionOverlayElement) {
-  return selectionOverlayElement.$.backgroundImage.getBoundingClientRect();
+  return selectionOverlayElement.$.backgroundImageCanvas
+      .getBoundingClientRect();
 }
 
 export function simulateClick(

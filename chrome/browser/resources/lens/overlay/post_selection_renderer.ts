@@ -14,6 +14,8 @@ import {UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {recordLensOverlayInteraction} from './metrics_utils.js';
 import {getTemplate} from './post_selection_renderer.html.js';
+import {ScreenshotBitmapBrowserProxyImpl} from './screenshot_bitmap_browser_proxy.js';
+import {renderScreenshot} from './screenshot_utils.js';
 import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import type {GestureEvent} from './selection_utils.js';
 import {toPercent, toPixels} from './values_converter.js';
@@ -57,6 +59,7 @@ function clamp(value: number, min: number, max: number): number {
 
 export interface PostSelectionRendererElement {
   $: {
+    backgroundImageCanvas: HTMLCanvasElement,
     postSelection: HTMLElement,
   };
 }
@@ -87,9 +90,12 @@ export class PostSelectionRendererElement extends PolymerElement {
       left: Number,
       height: Number,
       width: Number,
-      screenshotDataUri: String,
       currentDragTarget: Number,
       cornerIds: Array,
+      canvasHeight: Number,
+      canvasWidth: Number,
+      canvasPhysicalHeight: Number,
+      canvasPhysicalWidth: Number,
     };
   }
 
@@ -99,13 +105,16 @@ export class PostSelectionRendererElement extends PolymerElement {
   private left: number = 0;
   private height: number = 0;
   private width: number = 0;
-  // The data URI of the current overlay screenshot.
-  private screenshotDataUri: string;
   // What is currently being dragged by the user.
   private currentDragTarget: DragTarget = DragTarget.NONE;
   // IDs used to generate the corner hitbox divs.
   private cornerIds: string[] =
       ['topLeft', 'topRight', 'bottomRight', 'bottomLeft'];
+  private canvasHeight: number;
+  private canvasWidth: number;
+  private canvasPhysicalHeight: number;
+  private canvasPhysicalWidth: number;
+  private context: CanvasRenderingContext2D;
   // Listener IDs for events tracked from the browser.
   private listenerIds: number[];
   // The original bounds from the start of a drag.
@@ -120,6 +129,10 @@ export class PostSelectionRendererElement extends PolymerElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    ScreenshotBitmapBrowserProxyImpl.getInstance().fetchScreenshot(
+        (screenshot: ImageBitmap) => {
+          renderScreenshot(this.$.backgroundImageCanvas, screenshot);
+        });
     this.eventTracker_.add(
         document, 'render-post-selection',
         (e: CustomEvent<PostSelectionBoundingBox>) => {
@@ -154,6 +167,14 @@ export class PostSelectionRendererElement extends PolymerElement {
     this.listenerIds.forEach(
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
+  }
+
+  setCanvasSizeTo(width: number, height: number) {
+    // Resetting the canvas width and height also clears the canvas.
+    this.canvasWidth = width;
+    this.canvasHeight = height;
+    this.canvasPhysicalWidth = width * window.devicePixelRatio;
+    this.canvasPhysicalHeight = height * window.devicePixelRatio;
   }
 
   clearSelection() {

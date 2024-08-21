@@ -16,6 +16,8 @@ import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {recordLensOverlayInteraction} from './metrics_utils.js';
 import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
 import {getTemplate} from './region_selection.html.js';
+import {ScreenshotBitmapBrowserProxyImpl} from './screenshot_bitmap_browser_proxy.js';
+import {renderScreenshot} from './screenshot_utils.js';
 import {focusShimmerOnRegion, type GestureEvent, GestureState, getRelativeCoordinate, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import type {Point} from './selection_utils.js';
 
@@ -30,7 +32,7 @@ interface NormalizedRectangle {
 
 export interface RegionSelectionElement {
   $: {
-    highlightImg: HTMLImageElement,
+    highlightImgCanvas: HTMLCanvasElement,
     regionSelectionCanvas: HTMLCanvasElement,
   };
 }
@@ -90,6 +92,15 @@ export class RegionSelectionElement extends PolymerElement {
     super.ready();
 
     this.context = this.$.regionSelectionCanvas.getContext('2d')!;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    ScreenshotBitmapBrowserProxyImpl.getInstance().fetchScreenshot(
+        (screenshot: ImageBitmap) => {
+          renderScreenshot(this.$.highlightImgCanvas, screenshot);
+        });
   }
 
   private computeShaderLayerColorHexes_() {
@@ -197,7 +208,7 @@ export class RegionSelectionElement extends PolymerElement {
     this.context.save();
     this.context.clip();
     this.context.drawImage(
-        this.$.highlightImg, 0, 0, this.canvasWidth, this.canvasHeight);
+        this.$.highlightImgCanvas, 0, 0, this.canvasWidth, this.canvasHeight);
     this.context.restore();
 
     // Stroke the path on top of the image.

@@ -30,13 +30,17 @@ import type {OverlayShimmerElement} from './overlay_shimmer.js';
 import type {OverlayShimmerCanvasElement} from './overlay_shimmer_canvas.js';
 import type {PostSelectionRendererElement} from './post_selection_renderer.js';
 import type {RegionSelectionElement} from './region_selection.js';
+import {ScreenshotBitmapBrowserProxyImpl} from './screenshot_bitmap_browser_proxy.js';
+import {renderScreenshot} from './screenshot_utils.js';
 import {getTemplate} from './selection_overlay.html.js';
 import {CursorType, DRAG_THRESHOLD, DragFeature, emptyGestureEvent, focusShimmerOnRegion, GestureState, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import type {GestureEvent, OverlayShimmerFocusedRegion} from './selection_utils.js';
 import type {TextLayerElement} from './text_layer.js';
 import {toPercent} from './values_converter.js';
 
-const RESIZE_THRESHOLD = 8;
+// The amount of margins in pixels to add to the screenshot when the window is
+// resized.
+const SCREENSHOT_FULLSIZE_MARGIN_PIXEL = 24;
 
 // The size of our custom cursor.
 export const CURSOR_SIZE_PIXEL = 32;
@@ -84,7 +88,7 @@ export interface DetectedTextContextMenuData {
 
 export interface SelectionOverlayElement {
   $: {
-    backgroundImage: HTMLImageElement,
+    backgroundImageCanvas: HTMLCanvasElement,
     cursor: HTMLElement,
     detectedTextContextMenu: HTMLElement,
     initialFlashScrim: HTMLDivElement,
@@ -145,7 +149,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       selectedTextContextMenuY: Number,
       detectedTextContextMenuX: Number,
       detectedTextContextMenuY: Number,
-      screenshotDataUri: String,
+      canvasHeight: Number,
+      canvasWidth: Number,
       isPointerInside: Boolean,
       currentGesture: emptyGestureEvent(),
       disableShimmer: {
@@ -193,14 +198,16 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private selectedTextContextMenuY: number;
   private detectedTextContextMenuX: number;
   private detectedTextContextMenuY: number;
+  // Width and height values for rendering the background image canvas as the
+  // proper dimensions.
+  private canvasHeight: number;
+  private canvasWidth: number;
   private highlightedText: string = '';
   private contentLanguage: string = '';
   private textSelectionStartIndex: number = -1;
   private textSelectionEndIndex: number = -1;
   private detectedTextStartIndex: number = -1;
   private detectedTextEndIndex: number = -1;
-  // The data URI of the current overlay screenshot.
-  private screenshotDataUri: string;
   private isPointerInside = false;
   private isPointerInsideContextMenu = false;
   // The current gesture event. The coordinate values are only accurate if a
@@ -235,8 +242,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // Used to listen for changes in the window.devicePixelRatio. Stored as a
   // variable so we can easily add and remove the listener.
   private matchMedia?: MediaQueryList;
-  private initialWidth: number = 0;
-  private initialHeight: number = 0;
   private cursorOffsetX: number = 3;
   private cursorOffsetY: number = 6;
   private hasInitialFlashAnimationEnded = false;
@@ -255,6 +260,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         this.handleCopy();
       }),
     ];
+    ScreenshotBitmapBrowserProxyImpl.getInstance().fetchScreenshot(
+        this.screenshotDataReceived.bind(this));
     this.eventTracker_.add(
         document, 'shimmer-fade-out-complete', (e: CustomEvent<boolean>) => {
           this.shimmerFadeOutComplete = e.detail;
@@ -503,27 +510,19 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     }
   }
 
-  private onImageLoad() {
-    this.isScreenshotRendered = true;
-    // The image is loaded, but not necessarily rendered to the user. To avoid
-    // adding the background scrim too early and it being noticeable to the
-    // user, we wait for two animation frames before notifying that the image is
-    // visible.
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        this.onImageRendered();
-      });
-    });
-  }
-
   private onImageRendered() {
     // Let the parent know it is safe to blur the background.
     this.dispatchEvent(new CustomEvent(
         'screenshot-rendered', {bubbles: true, composed: true}));
 
     // Tell the browser to blur the background on next animation frame.
+    // TODO(b/352622136): Using requestAnimationFrame is not a reliable way to
+    // make the user not see the background blur. Instead, we should wait for
+    // a paint on the browser side.
     requestAnimationFrame(() => {
-      this.browserProxy.handler.addBackgroundBlur();
+      requestAnimationFrame(() => {
+        this.browserProxy.handler.addBackgroundBlur();
+      });
     });
   }
 
@@ -648,18 +647,48 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   }
 
   private handleResize() {
+    // If the screenshot is not rendered yet, there is nothing to do yet.
+    if (!this.isScreenshotRendered) {
+      return;
+    }
+
     const newRect = this.getBoundingClientRect();
 
-    if (this.initialHeight === 0 || this.initialWidth === 0) {
-      this.initialWidth = newRect.width;
-      this.initialHeight = newRect.height;
+    // Set our own canvas size while preserving the canvas aspect ratio.
+    const screenshotHeight = this.$.backgroundImageCanvas.height;
+    const screenshotWidth = this.$.backgroundImageCanvas.width;
+    const doesScreenshotFillContainer =
+        newRect.width === (screenshotWidth / window.devicePixelRatio) &&
+        newRect.height === (screenshotHeight / window.devicePixelRatio);
+
+    // Apply margins if the page is resized and not closing.
+    const margins = !doesScreenshotFillContainer && !this.isClosing ?
+        SCREENSHOT_FULLSIZE_MARGIN_PIXEL * 2 :
+        0;
+    const containerWidth = newRect.width - margins;
+    const containerHeight = newRect.height - margins;
+
+    // Get the aspect ratio to force the image to conform to.
+    const aspectRatio = this.$.backgroundImageCanvas.width /
+        this.$.backgroundImageCanvas.height;
+
+    // Calculate potential dimensions based on width and height
+    const widthBasedHeight = Math.round(containerWidth / aspectRatio);
+    const heightBasedWidth = Math.round(containerHeight * aspectRatio);
+
+    // Choose dimensions that fit within the container while preserving aspect
+    // ratio
+    if (widthBasedHeight <= containerHeight) {
+      // Width-based dimensions fit
+      this.canvasHeight = widthBasedHeight;
+      this.canvasWidth = containerWidth;
+    } else {
+      // Height-based dimensions fit
+      this.canvasWidth = heightBasedWidth;
+      this.canvasHeight = containerHeight;
     }
-    // We allow a buffer threshold when determining if the page has been
-    // resized so that subtle one pixel adjustments don't trigger an entire
-    // page reflow.
-    this.isResized =
-        Math.abs(newRect.height - this.initialHeight) >= RESIZE_THRESHOLD ||
-        Math.abs(newRect.width - this.initialWidth) >= RESIZE_THRESHOLD;
+
+    this.isResized = !doesScreenshotFillContainer;
     if (this.isResized) {
       this.isInitialSize = false;
       // The flash animation is cut short but animationend is never called if
@@ -672,13 +701,14 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private handleSelectionElementsResize() {
     const selectionOverlayBounds =
         this.$.selectionOverlay.getBoundingClientRect();
-    this.$.regionSelectionLayer.setCanvasSizeTo(
-        selectionOverlayBounds.width, selectionOverlayBounds.height);
-    this.$.objectSelectionLayer.setCanvasSizeTo(
-        selectionOverlayBounds.width, selectionOverlayBounds.height);
+    const height = selectionOverlayBounds.height;
+    const width = selectionOverlayBounds.width;
+
+    this.$.regionSelectionLayer.setCanvasSizeTo(width, height);
+    this.$.postSelectionRenderer.setCanvasSizeTo(width, height);
+    this.$.objectSelectionLayer.setCanvasSizeTo(width, height);
     if (this.useShimmerCanvas) {
-      this.$.overlayShimmerCanvas.setCanvasSizeTo(
-          selectionOverlayBounds.width, selectionOverlayBounds.height);
+      this.$.overlayShimmerCanvas.setCanvasSizeTo(width, height);
     }
   }
 
@@ -807,6 +837,22 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         this.$.overlayShimmer.startAnimation();
       }
     }
+  }
+
+  private async screenshotDataReceived(screenshotBitmap: ImageBitmap) {
+    renderScreenshot(this.$.backgroundImageCanvas, screenshotBitmap);
+    // Start the canvas as the same dimensions as the image. Our resize handler
+    // will adjust as needed.
+    this.canvasWidth = this.$.backgroundImageCanvas.width;
+    this.canvasHeight = this.$.backgroundImageCanvas.height;
+
+    this.isScreenshotRendered = true;
+    this.onImageRendered();
+  }
+
+  fetchNewScreenshotForTesting() {
+    ScreenshotBitmapBrowserProxyImpl.getInstance().fetchScreenshot(
+        this.screenshotDataReceived.bind(this));
   }
 
   getShowDetectedTextContextMenuForTesting() {
