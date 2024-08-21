@@ -27,6 +27,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/public/tooltip_observer.h"
 
@@ -103,7 +104,8 @@ const gfx::RenderText* TooltipAura::GetRenderTextForTest() const {
 
 void TooltipAura::GetAccessibleNodeDataForTest(ui::AXNodeData* node_data) {
   DCHECK(widget_);
-  widget_->GetTooltipView()->GetAccessibleNodeData(node_data);
+  widget_->GetTooltipView()->GetViewAccessibility().GetAccessibleNodeData(
+      node_data);
 }
 
 gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
