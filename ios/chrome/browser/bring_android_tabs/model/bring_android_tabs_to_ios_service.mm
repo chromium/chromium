@@ -24,7 +24,6 @@
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/bring_android_tabs/model/metrics.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"

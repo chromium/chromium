@@ -8,7 +8,6 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/content_settings/core/common/features.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/ntp/incognito/incognito_view.h"

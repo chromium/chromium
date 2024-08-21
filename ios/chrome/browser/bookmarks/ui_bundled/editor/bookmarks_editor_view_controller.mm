@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/bookmarks/ui_bundled/cells/bookmark_text_field_item.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_mutator.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"

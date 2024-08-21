@@ -383,7 +383,6 @@ source_set("eg_app_support+eg2") {
     "//components/ukm",
     "//components/ukm:ukm_test_helper",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/test/app:test_support",
     "//ios/testing:nserror_support",

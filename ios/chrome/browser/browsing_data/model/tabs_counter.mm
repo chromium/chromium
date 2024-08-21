@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/sessions/model/session_restoration_service_tmpl.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/browser_state.h"
 #import "net/base/completion_repeating_callback.h"

@@ -17,7 +17,6 @@
 #import "components/ukm/ukm_test_helper.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/test/app/histogram_test_util.h"
 #import "ios/testing/nserror_util.h"
 #import "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"

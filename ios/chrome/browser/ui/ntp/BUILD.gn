@@ -227,7 +227,6 @@ source_set("ntp_internal") {
     "//ios/chrome/browser/overscroll_actions/ui_bundled",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/search_engines/model",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/utils",
