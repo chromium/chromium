@@ -422,6 +422,10 @@
 // Adds typed URL into HistoryService.
 + (void)addHistoryServiceTypedURL:(NSString*)URL;
 
+// Adds typed URL into HistoryService at timestamp `visitTimestamp`.
++ (void)addHistoryServiceTypedURL:(NSString*)URL
+                   visitTimestamp:(base::Time)visitTimestamp;
+
 // Deletes typed URL from HistoryService.
 + (void)deleteHistoryServiceTypedURL:(NSString*)URL;
 

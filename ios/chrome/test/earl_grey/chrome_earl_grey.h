@@ -267,6 +267,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Adds typed URL into HistoryService.
 - (void)addHistoryServiceTypedURL:(const GURL&)URL;
 
+// Adds typed URL into HistoryService at timestamp `visitTimestamp`.
+- (void)addHistoryServiceTypedURL:(const GURL&)URL
+                   visitTimestamp:(base::Time)visitTimestamp;
+
 // Deletes typed URL from HistoryService.
 - (void)deleteHistoryServiceTypedURL:(const GURL&)URL;
 

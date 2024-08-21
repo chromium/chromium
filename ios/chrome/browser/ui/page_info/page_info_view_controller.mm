@@ -8,6 +8,10 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/time/time.h"
+#import "components/page_info/core/page_info_history_data_source.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permission_info.h"
@@ -43,13 +47,15 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSecurityContent,
   SectionIdentifierPermissions,
   SectionIdentifierAboutThisSite,
+  SectionIdentifierLastVisited
 };
 
 typedef NS_ENUM(NSInteger, ItemIdentifier) {
-  ItemIdentifierSecurityHeader,
+  ItemIdentifierSecurity,
   ItemIdentifierPermissionsCamera,
   ItemIdentifierPermissionsMicrophone,
-  ItemIdentifierAboutThisSiteHeader
+  ItemIdentifierAboutThisSite,
+  ItemIdentifierLastVisited
 };
 
 // The minimum scale factor of the title label showing the URL.
@@ -76,6 +82,7 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
 @implementation PageInfoViewController {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
   PageInfoAboutThisSiteInfo* _aboutThisSiteInfo;
+  NSString* _lastVisitedTimestamp;
 }
 
 #pragma mark - UIViewController
@@ -169,7 +176,7 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot
       appendSectionsWithIdentifiers:@[ @(SectionIdentifierSecurityContent) ]];
-  [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierSecurityHeader) ]];
+  [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierSecurity) ]];
 
   // Permissions section.
   for (NSNumber* permission in self.permissionsInfo.allKeys) {
@@ -178,6 +185,14 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
 
   if (IsAboutThisSiteFeatureEnabled()) {
     [self updateSnapshotForAboutThisSite:snapshot];
+  }
+
+  // Append cell for the Last Visited row only if the `kPageInfoLastVisitedIOS`
+  // flag is enabled and the Last Visited timestamp is available.
+  if (IsPageInfoLastVisitedIOSEnabled() && _lastVisitedTimestamp) {
+    [snapshot
+        appendSectionsWithIdentifiers:@[ @(SectionIdentifierLastVisited) ]];
+    [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierLastVisited) ]];
   }
 
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
@@ -191,18 +206,22 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
   ItemIdentifier itemType = static_cast<ItemIdentifier>(
       [_dataSource itemIdentifierForIndexPath:indexPath].integerValue);
   switch (itemType) {
-    case ItemIdentifierSecurityHeader:
+    case ItemIdentifierSecurity:
       if (IsRevampPageInfoIosEnabled()) {
         [self.pageInfoPresentationHandler showSecurityPage];
       }
       break;
-    case ItemIdentifierAboutThisSiteHeader:
+    case ItemIdentifierAboutThisSite:
       if (IsRevampPageInfoIosEnabled()) {
         [self.pageInfoPresentationHandler
             showAboutThisSitePage:_aboutThisSiteInfo.moreAboutURL];
       }
       break;
-    default:
+    case ItemIdentifierLastVisited:
+      // TODO(crbug.com/358341532): Handle the tap on the Last Visited row.
+      break;
+    case ItemIdentifierPermissionsCamera:
+    case ItemIdentifierPermissionsMicrophone:
       break;
   }
 
@@ -233,6 +252,7 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
   switch (sectionIdentifier) {
     case SectionIdentifierSecurityContent:
     case SectionIdentifierAboutThisSite:
+    case SectionIdentifierLastVisited:
       return nil;
     case SectionIdentifierPermissions: {
       if (IsRevampPageInfoIosEnabled()) {
@@ -323,7 +343,7 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
                            indexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(ItemIdentifier)itemIdentifier {
   switch (itemIdentifier) {
-    case ItemIdentifierSecurityHeader: {
+    case ItemIdentifierSecurity: {
       TableViewDetailIconCell* cell =
           DequeueTableViewCell<TableViewDetailIconCell>(tableView);
       cell.textLabel.text = l10n_util::GetNSString(
@@ -399,7 +419,7 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
 
       return cell;
     }
-    case ItemIdentifierAboutThisSiteHeader: {
+    case ItemIdentifierAboutThisSite: {
       TableViewDetailIconCell* cell =
           DequeueTableViewCell<TableViewDetailIconCell>(tableView);
       cell.textLabel.text =
@@ -426,6 +446,25 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
           initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
                             kExternalLinkSymbol)];
       cell.accessoryView.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
+      return cell;
+    }
+    case ItemIdentifierLastVisited: {
+      TableViewDetailIconCell* cell =
+          DequeueTableViewCell<TableViewDetailIconCell>(tableView);
+      cell.textLabel.text = l10n_util::GetNSString(IDS_PAGE_INFO_HISTORY);
+
+      cell.detailText = _lastVisitedTimestamp;
+      cell.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
+      [cell setIconImage:DefaultSymbolTemplateWithPointSize(
+                             kClockSymbol, kPageInfoSymbolPointSize)
+                tintColor:UIColor.whiteColor
+          backgroundColor:[UIColor colorNamed:kBlue500Color]
+             cornerRadius:kColorfulBackgroundSymbolCornerRadius];
+
+      if (IsRevampPageInfoIosEnabled()) {
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      }
+
       return cell;
     }
   }
@@ -476,7 +515,7 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
   [snapshot insertSectionsWithIdentifiers:@[ @(SectionIdentifierAboutThisSite) ]
                afterSectionWithIdentifier:@(afterSectionWithIdentifier)];
 
-  [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierAboutThisSiteHeader) ]
+  [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierAboutThisSite) ]
              intoSectionWithIdentifier:@(SectionIdentifierAboutThisSite)];
 }
 
@@ -582,7 +621,29 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
 #pragma mark - PageInfoHistoryConsumer
 
 - (void)setLastVisitedTimestamp:(base::Time)lastVisited {
-  // TODO(crbug.com/358032417): Present the Last Visited Row on Page Info.
+  CHECK(IsPageInfoLastVisitedIOSEnabled());
+  std::string timestamp = base::UTF16ToUTF8(
+      page_info::PageInfoHistoryDataSource::FormatLastVisitedTimestamp(
+          lastVisited));
+  _lastVisitedTimestamp = [NSString stringWithUTF8String:timestamp.c_str()];
+
+  NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
+      [_dataSource snapshot];
+
+  // It was observed that the Last Visited timestamp is usually available before
+  // the view is displayed. If that is the case, then we can just store the
+  // value of the timestamp and rely on `loadModel` to display the Last Visited
+  // row.
+  if (!_dataSource || !snapshot) {
+    return;
+  }
+
+  // Append cell for the Last Visited row.
+  [snapshot appendSectionsWithIdentifiers:@[ @(SectionIdentifierLastVisited) ]];
+  [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierLastVisited) ]];
+
+  // Update the UI.
+  [_dataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
 @end

@@ -364,14 +364,14 @@ BOOL VerifyHistoryOnSyncServer(const std::multiset<GURL>& expected_urls,
   return result == testing::AssertionSuccess();
 }
 
-void AddTypedURLToClient(const GURL& url) {
+void AddTypedURLToClient(const GURL& url, base::Time visitTimestamp) {
   ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();
   history::HistoryService* historyService =
       ios::HistoryServiceFactory::GetForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
 
-  historyService->AddPage(url, base::Time::Now(), 0, 1, GURL(),
+  historyService->AddPage(url, visitTimestamp, 0, 1, GURL(),
                           history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
                           history::SOURCE_BROWSED, false);
 }

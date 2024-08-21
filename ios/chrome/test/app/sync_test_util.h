@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "components/sync/base/data_type.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
 #include "url/gurl.h"
@@ -118,8 +119,9 @@ BOOL VerifySessionsOnSyncServer(const std::multiset<std::string>& expected_urls,
 BOOL VerifyHistoryOnSyncServer(const std::multiset<GURL>& expected_urls,
                                NSError** error);
 
-// Adds typed URL to HistoryService.
-void AddTypedURLToClient(const GURL& url);
+// Adds typed URL to HistoryService at timestamp `visitTimestamp`.
+void AddTypedURLToClient(const GURL& url,
+                         base::Time visitTimestamp = base::Time::Now());
 
 // Injects a HISTORY visit into the fake sync server.
 void AddHistoryVisitToFakeSyncServer(const GURL& url);

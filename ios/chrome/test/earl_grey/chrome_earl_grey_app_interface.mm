@@ -873,6 +873,12 @@ NSString* SerializedValue(const base::Value* value) {
   chrome_test_util::AddTypedURLToClient(GURL(base::SysNSStringToUTF8(URL)));
 }
 
++ (void)addHistoryServiceTypedURL:(NSString*)URL
+                   visitTimestamp:(base::Time)visitTimestamp {
+  chrome_test_util::AddTypedURLToClient(GURL(base::SysNSStringToUTF8(URL)),
+                                        visitTimestamp);
+}
+
 + (void)deleteHistoryServiceTypedURL:(NSString*)URL {
   chrome_test_util::DeleteTypedUrlFromClient(
       GURL(base::SysNSStringToUTF8(URL)));
