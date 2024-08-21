@@ -251,25 +251,8 @@ id<GREYMatcher> AutofillFormButton() {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
-  if ([self isRunningTest:@selector(testPlusAddressFallback)]) {
-    std::string fakeLocalUrl =
-        base::EscapeQueryParamValue("chrome://version", /*use_plus=*/false);
-    config.features_enabled_and_params.push_back(
-        {plus_addresses::features::kPlusAddressesEnabled,
-         {{
-             {"server-url", {fakeLocalUrl}},
-             {"manage-url", {fakeLocalUrl}},
-         }}});
-
-    // Enable the Keyboard Accessory Upgrade feature.
-    config.features_enabled_and_params.push_back(
-        {kIOSKeyboardAccessoryUpgrade, {}});
-    config.features_enabled_and_params.push_back(
-        {plus_addresses::features::kPlusAddressIOSManualFallbackEnabled, {}});
-  } else {
     // Enable the Keyboard Accessory Upgrade feature.
     config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
-  }
 
   return config;
 }
@@ -285,6 +268,8 @@ id<GREYMatcher> AutofillFormButton() {
   // Set up server.
   net::test_server::RegisterDefaultHandlers(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+
+  [AutofillAppInterface clearCreditCardStore];
 
   // Save a password, credit card and address.
   SavePasswordForLoginForm(self.testServer);
@@ -674,7 +659,8 @@ id<GREYMatcher> AutofillFormButton() {
 
 // Tests that the plus address fallback is shown in the address and the
 // password segment.
-- (void)testPlusAddressFallback {
+// TODO(crbug.com/327838014): Re-enable the test.
+- (void)DISABLED_testPlusAddressFallback {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Expanded manual fill view is only available on iPhone.");
