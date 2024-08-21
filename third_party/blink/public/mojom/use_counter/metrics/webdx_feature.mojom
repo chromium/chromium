@@ -51,6 +51,8 @@ module blink.mojom;
 // counter kDRAFT_Sprocket. Once the community group has agreed on the
 // identifier name, remove DRAFT_ from the use counter name here, and update the
 // name itself if necessary.
+//
+// LINT.IfChange(WebDXFeature)
 
 enum WebDXFeature {
   kPageVisits = 0,
@@ -167,3 +169,5 @@ enum WebDXFeature {
   // Also, run update_use_counter_feature_enum.py in
   // chromium/src/tools/metrics/histograms/ to update the UMA mapping.
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:WebDXFeatureObserver)

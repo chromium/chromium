@@ -15,6 +15,9 @@ module blink.mojom;
 //
 // A WebFeature conceptually represents some particular web-exposed API
 // or code path which can be used/triggered by a web page.
+//
+// LINT.IfChange(WebFeature)
+
 enum WebFeature {
   kOBSOLETE_PageDestruction = 0,
   kWorkerStart = 4,
@@ -4448,3 +4451,5 @@ enum WebFeature {
   // Also, run update_use_counter_feature_enum.py in
   // chromium/src/tools/metrics/histograms/ to update the UMA mapping.
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:FeatureObserver)

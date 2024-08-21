@@ -10,6 +10,9 @@ module blink.mojom;
 //
 // DO NOT renumber or delete existing entries only comment them otherwise the
 // labels in enums.xml will be lost.
+//
+// LINT.IfChange(CSSSampleId)
+
 enum CSSSampleId {
     kInvalid = 0,
 
@@ -864,3 +867,5 @@ enum CSSSampleId {
     // 2. Run the src/tools/metrics/histograms/update_use_counter_css.py script
     //    to update the UMA histogram names.
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:MappedCSSProperties)
