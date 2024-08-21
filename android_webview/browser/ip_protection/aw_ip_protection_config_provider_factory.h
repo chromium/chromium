@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ANDROID_WEBVIEW_BROWSER_AW_IP_PROTECTION_CONFIG_PROVIDER_FACTORY_H_
-#define ANDROID_WEBVIEW_BROWSER_AW_IP_PROTECTION_CONFIG_PROVIDER_FACTORY_H_
+#ifndef ANDROID_WEBVIEW_BROWSER_IP_PROTECTION_AW_IP_PROTECTION_CONFIG_PROVIDER_FACTORY_H_
+#define ANDROID_WEBVIEW_BROWSER_IP_PROTECTION_AW_IP_PROTECTION_CONFIG_PROVIDER_FACTORY_H_
 
 #include "android_webview/browser/aw_browser_context.h"
-#include "android_webview/browser/aw_ip_protection_config_provider.h"
+#include "android_webview/browser/ip_protection/aw_ip_protection_config_provider.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -41,4 +41,4 @@ class AwIpProtectionConfigProviderFactory
 
 }  // namespace android_webview
 
-#endif  // ANDROID_WEBVIEW_BROWSER_AW_IP_PROTECTION_CONFIG_PROVIDER_FACTORY_H_
+#endif  // ANDROID_WEBVIEW_BROWSER_IP_PROTECTION_AW_IP_PROTECTION_CONFIG_PROVIDER_FACTORY_H_

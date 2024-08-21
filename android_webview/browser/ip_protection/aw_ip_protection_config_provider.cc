@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/browser/aw_ip_protection_config_provider.h"
+#include "android_webview/browser/ip_protection/aw_ip_protection_config_provider.h"
 
 #include <memory>
 #include <optional>
@@ -11,7 +11,7 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_process.h"
-#include "android_webview/browser/aw_ip_protection_config_provider_factory.h"
+#include "android_webview/browser/ip_protection/aw_ip_protection_config_provider_factory.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"

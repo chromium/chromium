@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/browser/aw_ip_protection_config_provider_factory.h"
+#include "android_webview/browser/ip_protection/aw_ip_protection_config_provider_factory.h"
 
 #include "android_webview/browser/aw_browser_context.h"
-#include "android_webview/browser/aw_ip_protection_config_provider.h"
+#include "android_webview/browser/ip_protection/aw_ip_protection_config_provider.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
