@@ -36,6 +36,8 @@ class Ocr : public mojom::Ocr {
         .Run(screen_ai::mojom::VisualAnnotation::New());
   }
 
+  void Reset() { receiver_.reset(); }
+
  private:
   mojo::Receiver<mojom::Ocr> receiver_{this};
 };
@@ -66,6 +68,13 @@ TEST_F(PdfProgressiveSearchifierTest, ProgressiveSearchifier) {
       }));
   run_loop.Run();
   EXPECT_FALSE(result_pdf.empty());
+}
+
+TEST_F(PdfProgressiveSearchifierTest, PerformOcrFailure) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1, 1);
+  ocr_.Reset();
+  searchifier_.AddPage(bitmap, 0);
 }
 
 }  // namespace pdf
