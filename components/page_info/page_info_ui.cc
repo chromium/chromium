@@ -303,15 +303,6 @@ ContentSetting GetEffectiveSetting(ContentSettingsType type,
   return effective_setting;
 }
 
-void SetTargetContentSetting(PageInfo::PermissionInfo& permission,
-                             ContentSetting target_setting) {
-  // If content setting's default setting matches target setting, set
-  // default setting to avoid crearing a site exception.
-  permission.setting = permission.default_setting == target_setting
-                           ? CONTENT_SETTING_DEFAULT
-                           : target_setting;
-}
-
 void CreateOppositeToDefaultSiteException(
     PageInfo::PermissionInfo& permission,
     ContentSetting opposite_to_block_setting) {
@@ -902,12 +893,12 @@ void PageInfoUI::ToggleBetweenAllowAndBlock(
   switch (permission.setting) {
     case CONTENT_SETTING_ALLOW:
       DCHECK_EQ(opposite_to_block_setting, CONTENT_SETTING_ALLOW);
-      SetTargetContentSetting(permission, CONTENT_SETTING_BLOCK);
+      permission.setting = CONTENT_SETTING_BLOCK;
       permission.is_one_time = false;
       permission.is_in_use = false;
       break;
     case CONTENT_SETTING_BLOCK:
-      SetTargetContentSetting(permission, opposite_to_block_setting);
+      permission.setting = opposite_to_block_setting;
       permission.is_one_time = false;
       permission.is_in_use = false;
       break;
@@ -926,7 +917,7 @@ void PageInfoUI::ToggleBetweenAllowAndBlock(
     }
     case CONTENT_SETTING_ASK:
       DCHECK_EQ(opposite_to_block_setting, CONTENT_SETTING_ASK);
-      SetTargetContentSetting(permission, CONTENT_SETTING_BLOCK);
+      permission.setting = CONTENT_SETTING_BLOCK;
       break;
     default:
       NOTREACHED_IN_MIGRATION();

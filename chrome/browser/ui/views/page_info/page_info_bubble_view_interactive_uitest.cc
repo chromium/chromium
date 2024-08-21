@@ -2,22 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
-
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_main_view.h"
+#include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "ui/events/test/test_event.h"
+#include "ui/views/controls/button/toggle_button.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 
 namespace {
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+const char kFirstPermissionRow[] = "FirstPermissionRow";
 
 // Clicks the location icon to open the page info bubble.
 void OpenPageInfoBubble(Browser* browser) {
@@ -127,13 +142,13 @@ class ViewFocusTracker : public FocusTracker, public views::ViewObserver {
 
 }  // namespace
 
-class PageInfoBubbleViewInteractiveUiTest : public InProcessBrowserTest {
+class PageInfoBubbleViewFocusInteractiveUiTest : public InProcessBrowserTest {
  public:
-  PageInfoBubbleViewInteractiveUiTest() = default;
-  PageInfoBubbleViewInteractiveUiTest(
-      const PageInfoBubbleViewInteractiveUiTest& test) = delete;
-  PageInfoBubbleViewInteractiveUiTest& operator=(
-      const PageInfoBubbleViewInteractiveUiTest& test) = delete;
+  PageInfoBubbleViewFocusInteractiveUiTest() = default;
+  PageInfoBubbleViewFocusInteractiveUiTest(
+      const PageInfoBubbleViewFocusInteractiveUiTest& test) = delete;
+  PageInfoBubbleViewFocusInteractiveUiTest& operator=(
+      const PageInfoBubbleViewFocusInteractiveUiTest& test) = delete;
 
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
@@ -166,7 +181,7 @@ class PageInfoBubbleViewInteractiveUiTest : public InProcessBrowserTest {
 
 // Test that when the PageInfo bubble is closed, focus is returned to the web
 // contents pane.
-IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewFocusInteractiveUiTest,
                        MAYBE_FocusReturnsToContentOnClose) {
   WebContentsFocusTracker web_contents_focus_tracker(web_contents());
   web_contents()->Focus();
@@ -198,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
 // displayed, focus is NOT returned to the web contents pane, but rather returns
 // to the location bar so accessibility users must tab through the reload prompt
 // before getting back to web contents (see https://crbug.com/910067).
-IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewFocusInteractiveUiTest,
                        MAYBE_FocusDoesNotReturnToContentsOnReloadPrompt) {
   WebContentsFocusTracker web_contents_focus_tracker(web_contents());
   ViewFocusTracker location_bar_focus_tracker(
@@ -220,4 +235,303 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
   web_contents_focus_tracker.WaitForFocus(false);
   EXPECT_TRUE(location_bar_focus_tracker.focused());
   EXPECT_FALSE(web_contents_focus_tracker.focused());
+}
+
+class PageInfoBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
+ public:
+  PageInfoBubbleViewInteractiveUiTest() = default;
+  ~PageInfoBubbleViewInteractiveUiTest() override = default;
+  PageInfoBubbleViewInteractiveUiTest(
+      const PageInfoBubbleViewInteractiveUiTest&) = delete;
+  void operator=(const PageInfoBubbleViewInteractiveUiTest&) = delete;
+
+  void SetUp() override {
+    content_settings::ContentSettingsRegistry::GetInstance()->ResetForTest();
+    content_settings::ContentSettingsRegistry::GetInstance();
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server()->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+
+    ASSERT_TRUE(https_server()->InitializeAndListen());
+    InteractiveBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    content::SetupCrossSiteRedirector(https_server());
+    https_server()->StartAcceptingConnections();
+  }
+
+  void TearDownOnMainThread() override {
+    EXPECT_TRUE(https_server()->ShutdownAndWaitUntilComplete());
+    InteractiveBrowserTest::TearDownOnMainThread();
+  }
+
+  net::EmbeddedTestServer* https_server() { return https_server_.get(); }
+
+  ui::ElementContext context() const {
+    return browser()->window()->GetElementContext();
+  }
+
+  // Navigates a tab to `GetURL()` and opens PageInfo.
+  auto NavigateAndOpenPageInfo() {
+    return Steps(InstrumentTab(kWebContentsElementId),
+                 NavigateWebContents(kWebContentsElementId, GetURL()),
+                 PressButton(kLocationIconElementId));
+  }
+
+  auto TogglePermission(ElementSpecifier row) {
+    return WithElement(
+        row, base::BindOnce([](ui::TrackedElement* el) {
+          views::test::InteractionTestUtilSimulatorViews::PressButton(
+              static_cast<views::Button*>(AsView<PermissionToggleRowView>(el)
+                                              ->toggle_button_for_testing()));
+        }));
+  }
+
+  auto CheckContentSettings(ContentSettingsType type, ContentSetting setting) {
+    return CheckResult(
+        base::BindLambdaForTesting([type, this]() {
+          return host_content_settings_map()->GetContentSetting(GetURL(),
+                                                                GetURL(), type);
+        }),
+        setting,
+        "Checking if the content setting value matches the expectation");
+  }
+
+ protected:
+  GURL GetURL() {
+    return https_server()->GetURL("a.test", "/permissions/requests.html");
+  }
+
+  HostContentSettingsMap* host_content_settings_map() {
+    return HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  }
+
+  void SetPermission(ContentSettingsType type, ContentSetting setting) {
+    host_content_settings_map()->SetContentSettingDefaultScope(
+        GetURL(), GetURL(), type, setting);
+  }
+
+  void SetBroadException(ContentSettingsType type, ContentSetting setting) {
+    host_content_settings_map()->SetContentSettingCustomScope(
+        ContentSettingsPattern::FromString("https://*"),
+        ContentSettingsPattern::Wildcard(), type, setting);
+  }
+
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
+                       ToggleTest_DefaultAsk) {
+  ASSERT_EQ(host_content_settings_map()->GetDefaultContentSetting(
+                ContentSettingsType::NOTIFICATIONS),
+            CONTENT_SETTING_ASK);
+  // Set Notifications permission to Allow so it becomes visible in PageInfo.
+  SetPermission(ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW);
+
+  RunTestSequenceInContext(
+      context(), NavigateAndOpenPageInfo(),
+      CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
+                        &PageInfoMainView::GetVisiblePermissionsCountForTesting,
+                        1),
+      // A view with permissions in PageInfo
+      WaitForShow(PageInfoMainView::kPermissionsElementId),
+      // Set id to the first children of `kPermissionsElementId` -
+      // permissions view in PageInfo.
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kFirstPermissionRow, 0u),
+      // Verify the row label is Notifications
+      CheckViewProperty(
+          kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
+          l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_NOTIFICATIONS)),
+      // Verify the toggle is on.
+      CheckViewProperty(
+          kFirstPermissionRow,
+          &PermissionToggleRowView::GetToggleButtonStateForTesting, true),
+      // Verify the content setting is Allow.
+      CheckContentSettings(ContentSettingsType::NOTIFICATIONS,
+                           CONTENT_SETTING_ALLOW),
+      // Toggle the button to block.
+      TogglePermission(kFirstPermissionRow),
+      // Verify the toggle is off.
+      CheckViewProperty(
+          kFirstPermissionRow,
+          &PermissionToggleRowView::GetToggleButtonStateForTesting, false),
+      // Verify the content setting is Block.
+      CheckContentSettings(ContentSettingsType::NOTIFICATIONS,
+                           CONTENT_SETTING_BLOCK),
+      // Return to allow.
+      TogglePermission(kFirstPermissionRow),
+      // Verify the toggle is back on.
+      CheckViewProperty(
+          kFirstPermissionRow,
+          &PermissionToggleRowView::GetToggleButtonStateForTesting, true),
+      // Verify the content setting is Allow.
+      CheckContentSettings(ContentSettingsType::NOTIFICATIONS,
+                           CONTENT_SETTING_ALLOW));
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
+                       ToggleTest_DefaultBlock) {
+  // Set Notifications permission to blocked by default.
+  host_content_settings_map()->SetDefaultContentSetting(
+      ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_BLOCK);
+
+  RunTestSequenceInContext(
+      context(), NavigateAndOpenPageInfo(),
+      CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
+                        &PageInfoMainView::GetVisiblePermissionsCountForTesting,
+                        1),
+      // A view with permissions in PageInfo
+      WaitForShow(PageInfoMainView::kPermissionsElementId),
+      // Set id to the first children of `kPermissionsElementId` -
+      // permissions view in PageInfo.
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kFirstPermissionRow, 0u),
+      // Verify the row label is Notifications
+      CheckViewProperty(
+          kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
+          l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_NOTIFICATIONS)),
+      // Verify the toggle is off.
+      CheckViewProperty(
+          kFirstPermissionRow,
+          &PermissionToggleRowView::GetToggleButtonStateForTesting, false),
+      // Verify the content setting is Block.
+      CheckContentSettings(ContentSettingsType::NOTIFICATIONS,
+                           CONTENT_SETTING_BLOCK),
+      // Verify that the subtitle for the block (default) state.
+      CheckViewProperty(kFirstPermissionRow,
+                        &PermissionToggleRowView::GetRowSubTitleForTesting,
+                        u"Not allowed (default)"),
+      // Toggle the button to block.
+      TogglePermission(kFirstPermissionRow),
+      // Verify the toggle is on.
+      CheckViewProperty(
+          kFirstPermissionRow,
+          &PermissionToggleRowView::GetToggleButtonStateForTesting, true),
+      // Verify the content setting is Allow.
+      CheckContentSettings(ContentSettingsType::NOTIFICATIONS,
+                           CONTENT_SETTING_ALLOW),
+      // Go to block (not default!).
+      TogglePermission(kFirstPermissionRow),
+      // Verify the toggle is back off.
+      CheckViewProperty(
+          kFirstPermissionRow,
+          &PermissionToggleRowView::GetToggleButtonStateForTesting, false),
+      // Verify the content setting is Block.
+      CheckContentSettings(ContentSettingsType::NOTIFICATIONS,
+                           CONTENT_SETTING_BLOCK),
+      // Verify that the subtitle is empty (for the block state).
+      CheckViewProperty(kFirstPermissionRow,
+                        &PermissionToggleRowView::GetRowSubTitleForTesting,
+                        u""));
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
+                       BroadExceptionToggleTest_DefaultAllow) {
+  ASSERT_EQ(host_content_settings_map()->GetDefaultContentSetting(
+                ContentSettingsType::IMAGES),
+            CONTENT_SETTING_ALLOW);
+  // Set up a broad content setting exception for IMAGES.
+  SetBroadException(ContentSettingsType::IMAGES, CONTENT_SETTING_BLOCK);
+
+  RunTestSequenceInContext(
+      context(), NavigateAndOpenPageInfo(),
+      CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
+                        &PageInfoMainView::GetVisiblePermissionsCountForTesting,
+                        1),
+      // A view with permissions in PageInfo.
+      WaitForShow(PageInfoMainView::kPermissionsElementId),
+      // Set id to the first children of `kPermissionsElementId` -
+      // permissions view in PageInfo.
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kFirstPermissionRow, 0u),
+      // Verify the row label is Images
+      CheckViewProperty(
+          kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
+          l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_IMAGES)),
+      // Verify the toggle is off.
+      CheckViewProperty(
+          kFirstPermissionRow,
+          &PermissionToggleRowView::GetToggleButtonStateForTesting, false),
+      // Verify the content setting is Block.
+      CheckContentSettings(ContentSettingsType::IMAGES, CONTENT_SETTING_BLOCK),
+      // Toggle the button to allow.
+      TogglePermission(kFirstPermissionRow),
+      // Verify the toggle is on.
+      CheckViewProperty(
+          kFirstPermissionRow,
+          &PermissionToggleRowView::GetToggleButtonStateForTesting, true),
+      // Verify the content setting is Allow.
+      CheckContentSettings(ContentSettingsType::IMAGES, CONTENT_SETTING_ALLOW),
+      // Verify that the subtitle is empty (for "Allowed" state, as opposed to
+      // "Allowed (default)").
+      CheckViewProperty(kFirstPermissionRow,
+                        &PermissionToggleRowView::GetRowSubTitleForTesting,
+                        u""),
+      // Return to block.
+      TogglePermission(kFirstPermissionRow),
+      // Verify the toggle is off.
+      CheckViewProperty(
+          kFirstPermissionRow,
+          &PermissionToggleRowView::GetToggleButtonStateForTesting, false),
+      // Verify the content setting is Block.
+      CheckContentSettings(ContentSettingsType::IMAGES, CONTENT_SETTING_BLOCK));
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
+                       BroadExceptionToggleTest_DefaultBlock) {
+  // Set Images permission to blocked by default.
+  host_content_settings_map()->SetDefaultContentSetting(
+      ContentSettingsType::IMAGES, CONTENT_SETTING_BLOCK);
+
+  RunTestSequenceInContext(
+      context(), NavigateAndOpenPageInfo(),
+      CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
+                        &PageInfoMainView::GetVisiblePermissionsCountForTesting,
+                        1),
+      // A view with permissions in PageInfo.
+      WaitForShow(PageInfoMainView::kPermissionsElementId),
+      // Set id to the first children of `kPermissionsElementId` -
+      // permissions view in PageInfo.
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kFirstPermissionRow, 0u),
+      // Verify the row label is Images
+      CheckViewProperty(
+          kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
+          l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_IMAGES)),
+      // Verify the toggle is off.
+      CheckViewProperty(
+          kFirstPermissionRow,
+          &PermissionToggleRowView::GetToggleButtonStateForTesting, false),
+      // Verify the content setting is Block.
+      CheckContentSettings(ContentSettingsType::IMAGES, CONTENT_SETTING_BLOCK),
+      // Verify that the subtitle for the block (default) state.
+      CheckViewProperty(kFirstPermissionRow,
+                        &PermissionToggleRowView::GetRowSubTitleForTesting,
+                        u"Not allowed (default)"),
+      // Toggle the button to allow.
+      TogglePermission(kFirstPermissionRow),
+      // Verify the toggle is on.
+      CheckViewProperty(
+          kFirstPermissionRow,
+          &PermissionToggleRowView::GetToggleButtonStateForTesting, true),
+      // Verify the content setting is Allow.
+      CheckContentSettings(ContentSettingsType::IMAGES, CONTENT_SETTING_ALLOW),
+      // Go to block (not default!).
+      TogglePermission(kFirstPermissionRow),
+      // Verify the toggle is off.
+      CheckViewProperty(
+          kFirstPermissionRow,
+          &PermissionToggleRowView::GetToggleButtonStateForTesting, false),
+      // Verify the content setting is Block.
+      CheckContentSettings(ContentSettingsType::IMAGES, CONTENT_SETTING_BLOCK),
+      // Verify that the subtitle is empty (for the block state).
+      CheckViewProperty(kFirstPermissionRow,
+                        &PermissionToggleRowView::GetRowSubTitleForTesting,
+                        u""));
 }
