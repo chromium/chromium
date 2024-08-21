@@ -4,6 +4,8 @@
   "bump-patch-for-minor-pre-major": true,
   "prerelease": true,
   "packages": {
-    ".": {}
+    ".": {
+      "prerelease-type": "alpha"
+    }
   }
 }
