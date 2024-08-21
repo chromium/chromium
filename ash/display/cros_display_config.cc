@@ -5,7 +5,7 @@
 #include "ash/display/cros_display_config.h"
 
 #include <optional>
-#include <strstream>
+#include <sstream>
 #include <utility>
 
 #include "ash/constants/ash_features.h"

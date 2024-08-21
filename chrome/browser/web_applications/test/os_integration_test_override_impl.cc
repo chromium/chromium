@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 
-#include <codecvt>
 #include <map>
 #include <memory>
 #include <optional>

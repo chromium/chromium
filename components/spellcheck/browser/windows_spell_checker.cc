@@ -12,7 +12,6 @@
 #include <wrl/client.h>
 
 #include <algorithm>
-#include <codecvt>
 #include <locale>
 #include <string>
 
