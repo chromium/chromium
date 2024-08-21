@@ -568,12 +568,10 @@ BASE_FEATURE(kCrOSDspBasedAgcAllowed,
              "CrOSDspBasedAgcAllowed",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIgnoreUiGains,
-             "IgnoreUiGains",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIgnoreUiGains, "IgnoreUiGains", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kShowForceRespectUiGainsToggle,
              "ShowForceRespectUiGainsToggle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCrOSSystemVoiceIsolationOption,
              "CrOSSystemVoiceIsolationOption",

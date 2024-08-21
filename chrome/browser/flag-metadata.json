@@ -5255,7 +5255,7 @@
   {
     "name": "ignore-ui-gains",
     "owners": ["eddyhsu@chromium.org"],
-    "expiry_milestone": 130
+    "expiry_milestone": 132
   },
   {
     "name": "image-descriptions-alternative-routing",
@@ -8253,7 +8253,7 @@
   {
     "name": "show-force-respect-ui-gains-toggle",
     "owners": ["eddyhsu@chromium.org"],
-    "expiry_milestone": 130
+    "expiry_milestone": 132
   },
   {
     "name": "show-metered-toggle",
