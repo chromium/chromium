@@ -100,6 +100,10 @@ UIImage* CloseButtonImage(BOOL highlighted) {
   // The header view at the top of the panel.
   UIVisualEffectView* _headerView;
 
+  // Background for the header when the Reduce Transparency accessibility
+  // setting is on.
+  UIView* _headerViewAccessibilityBackground;
+
   // The button to close the view.
   UIButton* _closeButton;
 
@@ -162,6 +166,16 @@ UIImage* CloseButtonImage(BOOL highlighted) {
         constraintEqualToAnchor:_headerView.trailingAnchor],
     [self.view.topAnchor constraintEqualToAnchor:_headerView.topAnchor],
   ]];
+
+  _headerViewAccessibilityBackground = [[UIView alloc] init];
+  _headerViewAccessibilityBackground.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  _headerViewAccessibilityBackground.backgroundColor =
+      [UIColor colorNamed:kGrey100Color];
+  [_headerView.contentView addSubview:_headerViewAccessibilityBackground];
+  AddSameConstraints(_headerView, _headerViewAccessibilityBackground);
+  _headerViewAccessibilityBackground.hidden =
+      !UIAccessibilityIsReduceTransparencyEnabled();
 
   [self createDragHandleView];
   [_headerView.contentView addSubview:_dragHandleView];
@@ -227,6 +241,12 @@ UIImage* CloseButtonImage(BOOL highlighted) {
   [self.view layoutIfNeeded];
   [self.sheetDisplayController
       setContentHeight:[self preferredHeightForContent]];
+
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(accessibilityReduceTransparencySettingDidChange)
+             name:UIAccessibilityReduceTransparencyStatusDidChangeNotification
+           object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -249,17 +269,17 @@ UIImage* CloseButtonImage(BOOL highlighted) {
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
 
-  // One of UIVisualEffectView's subviews has a white-ish background color,
-  // which is not desired for this feature.
-  for (UIView* subview in _headerView.subviews) {
-    // Replace any non-nil backgrounds with clear.
-    if (subview.backgroundColor) {
-      subview.backgroundColor = UIColor.clearColor;
-    }
-  }
+  [self addAccessibilityTransparencyWorkaround];
 
   [self setCollectionViewContentInset];
   [self setCollectionViewScrollIndicatorInsets];
+}
+
+- (void)accessibilityReduceTransparencySettingDidChange {
+  [self addAccessibilityTransparencyWorkaround];
+
+  _headerViewAccessibilityBackground.hidden =
+      !UIAccessibilityIsReduceTransparencyEnabled();
 }
 
 - (void)viewSafeAreaInsetsDidChange {
@@ -332,6 +352,17 @@ UIImage* CloseButtonImage(BOOL highlighted) {
   [super traitCollectionDidChange:previousTraitCollection];
 
   [self.traitCollectionDelegate traitCollectionDidChangeForViewController:self];
+}
+
+// Removes the white-ish background color of one of UIVisualEffectView's
+// subviews that is not desired for this feature.
+- (void)addAccessibilityTransparencyWorkaround {
+  for (UIView* subview in _headerView.subviews) {
+    // Replace any non-nil backgrounds with clear.
+    if (subview.backgroundColor) {
+      subview.backgroundColor = UIColor.clearColor;
+    }
+  }
 }
 
 #pragma mark - Public methods
