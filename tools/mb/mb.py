@@ -82,9 +82,8 @@ class MetaBuildWrapper:
     self.chromium_src_dir = CHROMIUM_SRC_DIR
     self.default_config = os.path.join(self.chromium_src_dir, 'tools', 'mb',
                                        'mb_config.pyl')
-    self.default_isolate_map = os.path.join(self.chromium_src_dir, 'infra',
-                                            'config', 'generated', 'testing',
-                                            'gn_isolate_map.pyl')
+    self.default_isolate_map = os.path.join(self.chromium_src_dir, 'testing',
+                                            'buildbot', 'gn_isolate_map.pyl')
     self.executable = sys.executable
     self.platform = sys.platform
     self.sep = os.sep
@@ -1524,7 +1523,8 @@ class MetaBuildWrapper:
           else:
             labels.append(isolate_map[target]['label'])
         else:
-          err += f'target "{target}" not found in gn_isolate_map.pyl\n'
+          err += ('target "%s" not found in '
+                  '//testing/buildbot/gn_isolate_map.pyl\n' % target)
 
     return err, labels
 

@@ -2,10 +2,7 @@
 # Instead:
 # 1. Modify //infra/config/targets/mixins.star
 # 2. Run //infra/config/main.star
-
-# The copy of this file in //testing/buildbot is not read by generate_buildbot_json.py,
-# but must be present for downstream uses. It can be kept in sync by running
-# //infra/config/scripts/sync-pyl-files.py.
+# 3. Run //infra/config/scripts/sync-pyl-files.py
 
 {
   '10-x86-emulator': {
