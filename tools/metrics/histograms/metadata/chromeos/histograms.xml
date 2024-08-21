@@ -2308,9 +2308,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.KeyPermissionsManager.Migration"
-    enum="KeyPermissionsManagerMigrationStatus" expires_after="2024-09-01">
-  <owner>omorsi@google.com</owner>
-  <owner>pmarko@google.com</owner>
+    enum="KeyPermissionsManagerMigrationStatus" expires_after="2025-09-01">
+  <owner>miersh@google.com</owner>
+  <owner>chromeos-commercial-networking@google.com</owner>
   <summary>
     Counts the number of times the migration started as well as the number of
     times it succeeded and failed. It also counts the number of necessary
