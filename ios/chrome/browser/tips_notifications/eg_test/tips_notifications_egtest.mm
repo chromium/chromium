@@ -25,6 +25,8 @@
 
 namespace {
 
+constexpr base::TimeDelta kWaitForNotificationTimeout = base::Seconds(10);
+
 // Wait for a view that contains a partial match to the given `text`, then tap
 // it.
 void WaitForThenTapText(NSString* text) {
@@ -60,9 +62,10 @@ void TapNotification() {
   auto notification =
       springboardApplication.otherElements[@"Notification"].firstMatch;
   BOOL notificationAppeared = [notification
-      waitForExistenceWithTimeout:base::test::ios::kWaitForUIElementTimeout
-                                      .InSecondsF()];
-  [notification tap];
+      waitForExistenceWithTimeout:kWaitForNotificationTimeout.InSecondsF()];
+  if (notificationAppeared) {
+    [notification tap];
+  }
   XCTAssert(notificationAppeared, @"A notification did not appear");
 }
 
@@ -88,7 +91,7 @@ void MaybeDismissNotification() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  std::string triggerTime = "2.5s";
+  std::string triggerTime = "3s";
 
   if ([self isRunningTest:@selector(testToggleTipsNotificationsMenuItem)]) {
     triggerTime = "72h";
@@ -181,8 +184,7 @@ void MaybeDismissNotification() {
 }
 
 // Tests triggering and interacting with each of the Tips notifications.
-// TODO(crbug.com/361075026): Test is flaky on various bots.
-- (void)DISABLED_testTriggerNotifications {
+- (void)testTriggerNotifications {
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -198,6 +200,7 @@ void MaybeDismissNotification() {
 
   // Wait for and tap the What's New notification.
   TapNotification();
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Verify that the What's New screen is showing.
   id<GREYMatcher> whatsNewView = grey_accessibilityID(@"kWhatsNewListViewId");
@@ -213,6 +216,7 @@ void MaybeDismissNotification() {
   if ([ChromeEarlGrey isIPhoneIdiom]) {
     // Wait for and tap the Omnibox Position notification.
     TapNotification();
+    [ChromeEarlGreyUI waitForAppToIdle];
 
     // Verify that the Omnibox Position view is showing.
     id<GREYMatcher> omniboxPositionView = grey_accessibilityID(
@@ -227,6 +231,7 @@ void MaybeDismissNotification() {
 
   // Wait for and tap the Default Browser Notification.
   TapNotification();
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Verify that the Default Browser Promo is visible.
   id<GREYMatcher> defaultBrowserView =
@@ -240,6 +245,7 @@ void MaybeDismissNotification() {
 
   // Wait for and tap the Docking promo notification.
   TapNotification();
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Verify the Docking promo is showing.
   id<GREYMatcher> dockingPromoView =
@@ -253,6 +259,7 @@ void MaybeDismissNotification() {
 
   // Wait for and tap the Signin notification.
   TapNotification();
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Verify the signin screen is showing.
   id<GREYMatcher> signinView =
