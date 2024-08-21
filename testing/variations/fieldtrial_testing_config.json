@@ -4065,6 +4065,31 @@
             ]
         }
     ],
+    "ChangeDiskCacheSize": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "percent_relative_size": "400"
+                    },
+                    "enable_features": [
+                        "ChangeDiskCacheSize"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChangeFrameRateOfLoadingTabAnimation": [
         {
             "platforms": [
