@@ -6,11 +6,16 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "components/qr_code_generator/bitmap_generator.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/test/skia_gold_pixel_diff.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/test/base/android/android_browser_test.h"
+#else
+#include "chrome/test/base/in_process_browser_test.h"
+#endif
 
 namespace qrcode_generator {
 namespace {
