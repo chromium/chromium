@@ -3780,6 +3780,13 @@
       status: "experimental",
     },
     {
+      // selection.isCollapsed should return false if anchor and focus nodes
+      // are different, including in shadow tree.
+      // https://crbug.com/40400558
+      name: "SelectionIsCollapsedShadowDOMSupport",
+      status: "experimental",
+    },
+    {
       // Maintain author-defined ::selection highlight colors, even if they
       // match the text color.
       name: "SelectionRespectsColors",
