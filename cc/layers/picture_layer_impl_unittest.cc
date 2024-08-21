@@ -2726,9 +2726,20 @@ TEST_F(PictureLayerImplTest, RequiredTilesWithGpuRasterization) {
 
   active_layer()->HighResTiling()->UpdateAllRequiredStateForTesting();
 
-  // High res tiling should have 128 tiles (4x16 tile grid, plus another
-  // factor of 2 for half-width tiles).
-  EXPECT_EQ(128u, active_layer()->HighResTiling()->AllTilesForTesting().size());
+  EXPECT_EQ(ALLOW_PREPAINT_ONLY,
+            host_impl()->global_tile_state().memory_limit_policy);
+  if (!features::IsCCSlimmingEnabled()) {
+    // High res tiling should have 128 tiles (4x16 tile grid, plus another
+    // factor of 2 for half-width tiles).
+    EXPECT_EQ(128u,
+              active_layer()->HighResTiling()->AllTilesForTesting().size());
+  } else {
+    // Due to optimization in PictureLayerTiling::ComputeTilePriorityRects(),
+    // since the memory limit policy is ALLOW_PREPAINT_ONLY, |live_tiles_rect|
+    // does not include |eventually_rect|.
+    EXPECT_EQ(15u,
+              active_layer()->HighResTiling()->AllTilesForTesting().size());
+  }
 
   // Visible viewport should be covered by 8 tiles (4 high, half-width.
   // No other tiles should be required for activation.

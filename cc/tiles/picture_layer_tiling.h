@@ -195,9 +195,7 @@ class CC_EXPORT PictureLayerTiling {
   void CreateAllTilesForTesting() {
     CreateAllTilesForTesting(tiling_data_.tiling_rect());
   }
-  void CreateAllTilesForTesting(const gfx::Rect& live_tiles_rect) {
-    SetLiveTilesRect(live_tiles_rect);
-  }
+  void CreateAllTilesForTesting(const gfx::Rect& rect_to_raster);
   const TilingData& TilingDataForTesting() const { return tiling_data_; }
   std::vector<Tile*> AllTilesForTesting() const {
     std::vector<Tile*> all_tiles;
@@ -228,7 +226,8 @@ class CC_EXPORT PictureLayerTiling {
   void SetTilePriorityRectsForTesting(const gfx::Rect& visible_rect,
                                       const gfx::Rect& skewport_rect,
                                       const gfx::Rect& soon_border_rect,
-                                      const gfx::Rect& eventually_rect);
+                                      const gfx::Rect& eventually_rect,
+                                      bool evicts_tiles = false);
 
   using TileMap = std::unordered_map<TileIndex, std::unique_ptr<Tile>>;
 
@@ -252,7 +251,7 @@ class CC_EXPORT PictureLayerTiling {
 
   void ComputeTilePriorityRects(
       const gfx::Rect& visible_rect_in_layer_space,
-      const gfx::Rect& skewport_in_layer_space,
+      const gfx::Rect& skewport_rect_in_layer_space,
       const gfx::Rect& soon_border_rect_in_layer_space,
       const gfx::Rect& eventually_rect_in_layer_space,
       float ideal_contents_scale,
@@ -362,23 +361,16 @@ class CC_EXPORT PictureLayerTiling {
   }
 
   void SetLiveTilesRect(const gfx::Rect& live_tiles_rect);
-  void VerifyLiveTilesRect() const;
+  void VerifyTiles() const;
   Tile* CreateTile(const Tile::CreateInfo& info);
   // Removes the tile at i, j and returns it. Returns nullptr if the tile did
   // not exist.
   std::unique_ptr<Tile> TakeTileAt(int i, int j);
   bool TilingMatchesTileIndices(const PictureLayerTiling* twin) const;
 
-  void SetRect(const gfx::Rect& rect_in_layer_space,
-               PriorityRectType rect_type);
-
-  // Save the required data for computing tile priorities later.
-  void SetTilePriorityRects(float content_to_screen_scale,
-                            const gfx::Rect& visible_rect,
-                            const gfx::Rect& skewport_rect,
-                            const gfx::Rect& soon_border_rect,
-                            const gfx::Rect& eventually_rect,
-                            const Occlusion& occlusion_in_layer_space);
+  void SetPriorityRect(const gfx::Rect& rect_in_layer_space,
+                       PriorityRectType rect_type,
+                       bool evicts_tiles = false);
 
   bool IsTileOccludedOnCurrentTree(const Tile* tile) const;
   Tile::CreateInfo CreateInfoForTile(int i, int j) const;
@@ -473,6 +465,8 @@ class CC_EXPORT PictureLayerTiling {
   gfx::Rect live_tiles_rect_;
 
   bool can_require_tiles_for_activation_ = false;
+
+  gfx::Rect tiling_rect_in_layer_space_;
 
   // Iteration rects in content space.
   gfx::Rect current_visible_rect_;

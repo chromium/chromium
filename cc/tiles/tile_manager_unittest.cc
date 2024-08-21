@@ -1749,12 +1749,7 @@ TEST_F(TileManagerTilePriorityQueueTest, NoRasterTasksforSolidColorTiles) {
   PictureLayerTiling* tiling =
       tiling_set->AddTiling(gfx::AxisTransform2d(), raster_source);
   tiling->set_resolution(HIGH_RESOLUTION);
-  tiling->CreateAllTilesForTesting();
-  tiling->SetTilePriorityRectsForTesting(
-      gfx::Rect(layer_bounds),   // Visible rect.
-      gfx::Rect(layer_bounds),   // Skewport rect.
-      gfx::Rect(layer_bounds),   // Soon rect.
-      gfx::Rect(layer_bounds));  // Eventually rect.
+  tiling->CreateAllTilesForTesting(gfx::Rect(layer_bounds));
 
   host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
 
@@ -2138,12 +2133,7 @@ TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
 
     auto* tiling = tiling_set->AddTiling(gfx::AxisTransform2d(), raster);
     tiling->set_resolution(resolutions[i]);
-    tiling->CreateAllTilesForTesting();
-    tiling->SetTilePriorityRectsForTesting(
-        gfx::Rect(size),   // Visible rect.
-        gfx::Rect(size),   // Skewport rect.
-        gfx::Rect(size),   // Soon rect.
-        gfx::Rect(size));  // Eventually rect.
+    tiling->CreateAllTilesForTesting(gfx::Rect(size));
 
     // SMOOTHNESS_TAKES_PRIORITY ensures that we will actually raster
     // LOW_RESOLUTION tiles, otherwise they are skipped.
@@ -2595,11 +2585,7 @@ TEST_F(InvalidResourceTileManagerTest, InvalidResource) {
   auto* tiling = active_layer()->picture_layer_tiling_set()->AddTiling(
       gfx::AxisTransform2d(), std::move(raster));
   tiling->set_resolution(HIGH_RESOLUTION);
-  tiling->CreateAllTilesForTesting();
-  tiling->SetTilePriorityRectsForTesting(gfx::Rect(size),   // Visible rect.
-                                         gfx::Rect(size),   // Skewport rect.
-                                         gfx::Rect(size),   // Soon rect.
-                                         gfx::Rect(size));  // Eventually rect.
+  tiling->CreateAllTilesForTesting(gfx::Rect(size));
 
   base::RunLoop run_loop;
   EXPECT_CALL(MockHostImpl(), NotifyAllTileTasksCompleted())
@@ -3311,12 +3297,7 @@ TEST_F(CheckerImagingTileManagerTest,
       pending_layer()->picture_layer_tiling_set();
   PictureLayerTiling* tiling = tiling_set->tiling_at(0);
   tiling->set_resolution(HIGH_RESOLUTION);
-  tiling->CreateAllTilesForTesting();
-  tiling->SetTilePriorityRectsForTesting(
-      gfx::Rect(layer_bounds),   // Visible rect.
-      gfx::Rect(layer_bounds),   // Skewport rect.
-      gfx::Rect(layer_bounds),   // Soon rect.
-      gfx::Rect(layer_bounds));  // Eventually rect.
+  tiling->CreateAllTilesForTesting(gfx::Rect(layer_bounds));
   tiling->set_can_require_tiles_for_activation(true);
 
   // PrepareTiles and synchronously run all tasks added to the TaskGraph. Since
@@ -3360,12 +3341,7 @@ TEST_F(EmptyCacheTileManagerTest, AtRasterOnScreenTileRasterTasks) {
       pending_layer()->picture_layer_tiling_set();
   PictureLayerTiling* pending_tiling = tiling_set->tiling_at(0);
   pending_tiling->set_resolution(HIGH_RESOLUTION);
-  pending_tiling->CreateAllTilesForTesting();
-  pending_tiling->SetTilePriorityRectsForTesting(
-      gfx::Rect(layer_bounds),   // Visible rect.
-      gfx::Rect(layer_bounds),   // Skewport rect.
-      gfx::Rect(layer_bounds),   // Soon rect.
-      gfx::Rect(layer_bounds));  // Eventually rect.
+  pending_tiling->CreateAllTilesForTesting(gfx::Rect(layer_bounds));
 
   host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
   // There will be a tile raster task and an image decode task.
@@ -3437,12 +3413,7 @@ TEST_F(CheckerImagingTileManagerTest, BuildsImageDecodeQueueAsExpected) {
       pending_layer()->picture_layer_tiling_set();
   PictureLayerTiling* pending_tiling = tiling_set->tiling_at(0);
   pending_tiling->set_resolution(HIGH_RESOLUTION);
-  pending_tiling->CreateAllTilesForTesting();
-  pending_tiling->SetTilePriorityRectsForTesting(
-      gfx::Rect(layer_bounds),   // Visible rect.
-      gfx::Rect(layer_bounds),   // Skewport rect.
-      gfx::Rect(layer_bounds),   // Soon rect.
-      gfx::Rect(layer_bounds));  // Eventually rect.
+  pending_tiling->CreateAllTilesForTesting(gfx::Rect(layer_bounds));
 
   // PrepareTiles and make sure we account correctly for tiles that have been
   // scheduled with checkered images.
@@ -3720,11 +3691,6 @@ TEST_F(CheckerImagingTileManagerMemoryTest, AddsAllNowTilesToImageDecodeQueue) {
   // Use a rect that only rasterizes the bottom 2 rows of tiles.
   gfx::Rect rect_to_raster(0, 500, 900, 900);
   pending_tiling->CreateAllTilesForTesting(rect_to_raster);
-  pending_tiling->SetTilePriorityRectsForTesting(
-      rect_to_raster,   // Visible rect.
-      rect_to_raster,   // Skewport rect.
-      rect_to_raster,   // Soon rect.
-      rect_to_raster);  // Eventually rect.
 
   // PrepareTiles, rasterize all scheduled tiles and activate while no images
   // have been decoded.
@@ -3836,12 +3802,7 @@ TEST_F(SynchronousRasterTileManagerTest, AlwaysUseImageCache) {
       pending_layer()->picture_layer_tiling_set();
   PictureLayerTiling* pending_tiling = tiling_set->tiling_at(0);
   pending_tiling->set_resolution(HIGH_RESOLUTION);
-  pending_tiling->CreateAllTilesForTesting();
-  pending_tiling->SetTilePriorityRectsForTesting(
-      gfx::Rect(layer_bounds),   // Visible rect.
-      gfx::Rect(layer_bounds),   // Skewport rect.
-      gfx::Rect(layer_bounds),   // Soon rect.
-      gfx::Rect(layer_bounds));  // Eventually rect.
+  pending_tiling->CreateAllTilesForTesting(gfx::Rect(layer_bounds));
 
   host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
   static_cast<SynchronousTaskGraphRunner*>(task_graph_runner())->RunUntilIdle();
@@ -4015,12 +3976,7 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
         pending_layer()->picture_layer_tiling_set();
     PictureLayerTiling* pending_tiling = tiling_set->tiling_at(0);
     pending_tiling->set_resolution(HIGH_RESOLUTION);
-    pending_tiling->CreateAllTilesForTesting();
-    pending_tiling->SetTilePriorityRectsForTesting(
-        gfx::Rect(kLayerBounds),   // Visible rect.
-        gfx::Rect(kLayerBounds),   // Skewport rect.
-        gfx::Rect(kLayerBounds),   // Soon rect.
-        gfx::Rect(kLayerBounds));  // Eventually rect.
+    pending_tiling->CreateAllTilesForTesting(gfx::Rect(kLayerBounds));
 
     host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
     ASSERT_TRUE(host_impl()->tile_manager()->HasScheduledTileTasksForTesting());

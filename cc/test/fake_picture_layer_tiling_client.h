@@ -70,6 +70,10 @@ class FakePictureLayerTilingClient : public PictureLayerTilingClient {
     return tile_manager_.get();
   }
 
+  void set_memory_limit_policy(TileMemoryLimitPolicy policy) {
+    global_tile_state_.memory_limit_policy = policy;
+  }
+
  protected:
   FakeTileManagerClient tile_manager_client_;
   std::unique_ptr<ResourcePool> resource_pool_;

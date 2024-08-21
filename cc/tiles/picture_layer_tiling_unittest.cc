@@ -62,6 +62,12 @@ class TestablePictureLayerTiling : public PictureLayerTiling {
     return PriorityRectType::VISIBLE_RECT;
   }
 
+  void SetEventuallyRect(const gfx::Rect& rect) {
+    SetPriorityRect(EnclosingLayerRectFromContentsRect(rect),
+                    PriorityRectType::EVENTUALLY_RECT,
+                    /*evicts_tiles=*/true);
+  }
+
   using PictureLayerTiling::has_eventually_rect_tiles;
   using PictureLayerTiling::has_skewport_rect_tiles;
   using PictureLayerTiling::has_soon_border_rect_tiles;
@@ -148,7 +154,7 @@ class PictureLayerTilingIteratorTest : public testing::Test {
   }
 
   void SetLiveRectAndVerifyTiles(const gfx::Rect& live_tiles_rect) {
-    tiling_->SetLiveTilesRect(live_tiles_rect);
+    tiling_->CreateAllTilesForTesting(live_tiles_rect);
 
     std::vector<Tile*> tiles = tiling_->AllTilesForTesting();
     for (auto iter = tiles.begin(); iter != tiles.end(); ++iter) {
@@ -1475,6 +1481,116 @@ TEST_F(PictureLayerTilingIteratorTest, TilingSizeChange) {
   EXPECT_TRUE(tiling_->has_skewport_rect_tiles());
   EXPECT_TRUE(tiling_->has_soon_border_rect_tiles());
   EXPECT_TRUE(tiling_->has_eventually_rect_tiles());
+}
+
+TEST_F(PictureLayerTilingIteratorTest, LiveTilesRectChange) {
+  EXPECT_EQ(TileMemoryLimitPolicy::ALLOW_ANYTHING,
+            client_.global_tile_state().memory_limit_policy);
+  gfx::Size tile_size(100, 100);
+  gfx::Size layer_size(800, 600);
+
+  InitializeFilled(tile_size, 1.f, layer_size);
+
+  gfx::Rect visible_rect(0, 0, 100, 100);
+  gfx::Rect skewport_rect(0, 0, 200, 200);
+  gfx::Rect soon_border_rect(0, 0, 300, 300);
+  gfx::Rect eventually_rect(0, 0, 400, 400);
+  tiling_->ComputeTilePriorityRects(
+      gfx::Rect(visible_rect),      // visible rect
+      gfx::Rect(skewport_rect),     // skewport
+      gfx::Rect(soon_border_rect),  // soon border rect
+      gfx::Rect(eventually_rect),   // eventually rect
+      1.f,                          // current contents scale
+      Occlusion());
+
+  // memory limit policy is ALLOW_ANYTHING.
+  EXPECT_EQ(eventually_rect, tiling_->live_tiles_rect());
+  for (int i = 0; i < 4; ++i) {
+    for (int j = 0; j < 4; ++j) {
+      Tile* tile = tiling_->TileAt(i, j);
+      EXPECT_TRUE(tile);
+      EXPECT_FALSE(tile->IsReadyToDraw());
+    }
+  }
+
+  gfx::Rect new_live_tiles_rect(0, 0, 200, 200);
+  tiling_->SetLiveTilesRect(new_live_tiles_rect);
+  // Changing live_tiles_rect does not evict tiles.
+  for (int i = 0; i < 4; ++i) {
+    for (int j = 0; j < 4; ++j) {
+      Tile* tile = tiling_->TileAt(i, j);
+      EXPECT_TRUE(tile);
+    }
+  }
+
+  EXPECT_FALSE(tiling_->all_tiles_done());
+  tiling_->set_all_tiles_done(true);
+  EXPECT_TRUE(tiling_->all_tiles_done());
+
+  gfx::Rect expanded_live_tiles_rect(0, 0, 300, 200);
+  tiling_->SetLiveTilesRect(expanded_live_tiles_rect);
+  // Now we expand the live_tiles_rect, and a tile that was outside
+  // the previous live_tiles_rect is now included. That tile is
+  // not ready to draw, thus set clearing all_tiles_done.
+  EXPECT_FALSE(tiling_->all_tiles_done());
+
+  gfx::Rect new_eventually_rect(0, 0, 400, 250);
+  tiling_->SetEventuallyRect(new_eventually_rect);
+  for (int i = 0; i < 4; ++i) {
+    for (int j = 0; j < 4; ++j) {
+      Tile* tile = tiling_->TileAt(i, j);
+      if (j == 3) {
+        EXPECT_FALSE(tile);
+      } else {
+        EXPECT_TRUE(tile);
+      }
+    }
+  }
+}
+
+TEST_F(PictureLayerTilingIteratorTest,
+       ComputeTilePriorityRectsAllowPrepaintOnly) {
+  client_.set_memory_limit_policy(TileMemoryLimitPolicy::ALLOW_PREPAINT_ONLY);
+  EXPECT_EQ(TileMemoryLimitPolicy::ALLOW_PREPAINT_ONLY,
+            client_.global_tile_state().memory_limit_policy);
+  gfx::Size tile_size(100, 100);
+  gfx::Size layer_size(800, 600);
+
+  InitializeFilled(tile_size, 1.f, layer_size);
+
+  gfx::Rect visible_rect(0, 0, 100, 100);
+  gfx::Rect skewport_rect(0, 0, 200, 200);
+  gfx::Rect soon_border_rect(0, 0, 400, 280);
+  gfx::Rect eventually_rect(0, 0, 400, 400);
+  tiling_->ComputeTilePriorityRects(
+      gfx::Rect(visible_rect),      // visible rect
+      gfx::Rect(skewport_rect),     // skewport
+      gfx::Rect(soon_border_rect),  // soon border rect
+      gfx::Rect(eventually_rect),   // eventually rect
+      1.f,                          // current contents scale
+      Occlusion());
+  if (features::IsCCSlimmingEnabled()) {
+    EXPECT_EQ(soon_border_rect, tiling_->live_tiles_rect());
+  } else {
+    EXPECT_EQ(eventually_rect, tiling_->live_tiles_rect());
+  }
+
+  // The difference between soon_border_rect and eventually_rect is the last
+  // column.
+  for (int i = 0; i < 4; ++i) {
+    for (int j = 0; j < 4; ++j) {
+      Tile* tile = tiling_->TileAt(i, j);
+      if (j == 3) {
+        if (features::IsCCSlimmingEnabled()) {
+          EXPECT_FALSE(tile);
+        } else {
+          EXPECT_TRUE(tile);
+        }
+      } else {
+        EXPECT_TRUE(tile);
+      }
+    }
+  }
 }
 
 }  // namespace

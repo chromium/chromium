@@ -234,7 +234,7 @@ class CC_EXPORT PictureLayerTilingSet {
   scoped_refptr<RasterSource> raster_source_;
 
   gfx::Rect visible_rect_in_layer_space_;
-  gfx::Rect skewport_in_layer_space_;
+  gfx::Rect skewport_rect_in_layer_space_;
   gfx::Rect soon_border_rect_in_layer_space_;
   gfx::Rect eventually_rect_in_layer_space_;
 
