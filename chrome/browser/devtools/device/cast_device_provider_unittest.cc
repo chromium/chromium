@@ -36,9 +36,30 @@ void DummyCallback(bool* was_run, const DeviceInfo& device_info) {
 
 }  // namespace
 
-TEST(CastDeviceProviderTest, ServiceDiscovery) {
-  scoped_refptr<CastDeviceProvider> device_provider_ = new CastDeviceProvider();
+class CastDeviceProviderTest : public ::testing::Test {
+ public:
+  CastDeviceProviderTest() = default;
+  ~CastDeviceProviderTest() override = default;
 
+  void SetUp() override {
+    device_provider_ = base::MakeRefCounted<CastDeviceProvider>();
+  }
+
+  void SimulateAddDeviceToHostnameMap() {
+    device_provider_->service_hostname_map_["host_name"] = "test_ip";
+  }
+
+  const std::map<std::string, std::string>& service_hostname_map() {
+    return device_provider_->service_hostname_map_;
+  }
+
+  CastDeviceProvider* device_provider() { return device_provider_.get(); }
+
+ private:
+  scoped_refptr<CastDeviceProvider> device_provider_;
+};
+
+TEST_F(CastDeviceProviderTest, ServiceDiscovery) {
   // Create a cast service.
   const std::string cast_display_name = "FakeCast1337";
   const std::string cast_service_type = "_googlecast._tcp.local";
@@ -54,7 +75,7 @@ TEST(CastDeviceProviderTest, ServiceDiscovery) {
   cast_service.metadata.push_back("fn=" + cast_display_name);
   ASSERT_TRUE(cast_service.ip_address.AssignFromIPLiteral("192.168.1.101"));
 
-  device_provider_->OnDeviceChanged(cast_service_type, true, cast_service);
+  device_provider()->OnDeviceChanged(cast_service_type, true, cast_service);
 
   BrowserInfo exp_browser_info;
   exp_browser_info.socket_name = "9222";
@@ -68,7 +89,7 @@ TEST(CastDeviceProviderTest, ServiceDiscovery) {
 
   bool was_run = false;
   // Callback should be run, and the queried service should match the expected.
-  device_provider_->QueryDeviceInfo(
+  device_provider()->QueryDeviceInfo(
       cast_service.address.host(),
       base::BindOnce(&CompareDeviceInfo, &was_run, expected));
   ASSERT_TRUE(was_run);
@@ -89,24 +110,36 @@ TEST(CastDeviceProviderTest, ServiceDiscovery) {
   ASSERT_TRUE(other_service.ip_address.AssignFromIPLiteral("10.64.1.101"));
 
   // Callback should not be run, since this service is not yet discovered.
-  device_provider_->QueryDeviceInfo(other_service.address.host(),
-                                    base::BindOnce(&DummyCallback, &was_run));
+  device_provider()->QueryDeviceInfo(other_service.address.host(),
+                                     base::BindOnce(&DummyCallback, &was_run));
   ASSERT_FALSE(was_run);
 
-  device_provider_->OnDeviceChanged(cast_service_type, true, other_service);
+  device_provider()->OnDeviceChanged(cast_service_type, true, other_service);
 
   // Callback should not be run, since non-cast services are not discovered by
   // this device provider.
-  device_provider_->QueryDeviceInfo(other_service.address.host(),
-                                    base::BindOnce(&DummyCallback, &was_run));
+  device_provider()->QueryDeviceInfo(other_service.address.host(),
+                                     base::BindOnce(&DummyCallback, &was_run));
   ASSERT_FALSE(was_run);
 
   // Remove the cast service.
-  device_provider_->OnDeviceRemoved(cast_service_type,
-                                    cast_service.service_name);
+  device_provider()->OnDeviceRemoved(cast_service_type,
+                                     cast_service.service_name);
 
   // Callback should not be run, since the cast service has been removed.
-  device_provider_->QueryDeviceInfo(cast_service.address.host(),
-                                    base::BindOnce(&DummyCallback, &was_run));
+  device_provider()->QueryDeviceInfo(cast_service.address.host(),
+                                     base::BindOnce(&DummyCallback, &was_run));
   ASSERT_FALSE(was_run);
+}
+
+TEST_F(CastDeviceProviderTest, OnPermissionRejected) {
+  SimulateAddDeviceToHostnameMap();
+  EXPECT_FALSE(service_hostname_map().empty());
+  device_provider()->OnPermissionRejected();
+  EXPECT_TRUE(service_hostname_map().empty());
+
+  SimulateAddDeviceToHostnameMap();
+  EXPECT_FALSE(service_hostname_map().empty());
+  device_provider()->OnDeviceCacheFlushed("service_type");
+  EXPECT_TRUE(service_hostname_map().empty());
 }
