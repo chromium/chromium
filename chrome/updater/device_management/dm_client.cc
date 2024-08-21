@@ -177,9 +177,7 @@ class DMFetch : public base::RefCountedThreadSafe<DMFetch> {
 
 DMFetch::DMFetch(std::unique_ptr<DMClient::Configurator> config,
                  scoped_refptr<device_management_storage::DMStorage> storage)
-    : config_(std::move(config)),
-      storage_(storage),
-      network_fetcher_(config_->CreateNetworkFetcher()) {}
+    : config_(std::move(config)), storage_(std::move(storage)) {}
 
 DMFetch::~DMFetch() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -211,6 +209,8 @@ void DMFetch::PostRequest(const std::string& request_type,
                           const std::string& request_data,
                           Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  network_fetcher_ = config_->CreateNetworkFetcher();
   callback_ = std::move(callback);
 
   const bool is_registering = token_type == TokenType::kEnrollmentToken;
