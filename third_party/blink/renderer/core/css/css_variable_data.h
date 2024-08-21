@@ -69,14 +69,9 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
         has_line_height_units);
   }
 
-  // Second-fastest; scans through all the tokens to determine the has_* data.
+  // This tokenizes the string to determine the has_* data.
   // (The tokens are not used apart from that; only the original string is
-  // stored.) The tokens must correspond to the given string.
-  static CSSVariableData* Create(CSSTokenizedValue value,
-                                 bool is_animation_tainted,
-                                 bool needs_variable_resolution);
-
-  // Like the previous, but also needs to tokenize the string.
+  // stored.)
   static CSSVariableData* Create(const String& original_text,
                                  bool is_animation_tainted,
                                  bool needs_variable_resolution);
@@ -134,7 +129,6 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
   static const size_t kMaxVariableBytes = 2097152;
 
  private:
-
   // We'd like to use bool for the booleans, but this causes the struct to
   // balloon in size on Windows:
   // https://randomascii.wordpress.com/2010/06/06/bit-field-packing-with-visual-c/

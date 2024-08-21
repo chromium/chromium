@@ -144,8 +144,7 @@ const CSSValue* CSSUnparsedValue::ToCSSValue() const {
   // TODO(crbug.com/985028): We should probably propagate the CSSParserContext
   // to here.
   return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
-      CSSVariableData::Create({range, original_text},
-                              false /* is_animation_tainted */,
+      CSSVariableData::Create(original_text, false /* is_animation_tainted */,
                               false /* needs_variable_resolution */));
 }
 

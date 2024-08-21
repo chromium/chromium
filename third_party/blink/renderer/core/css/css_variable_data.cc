@@ -67,20 +67,6 @@ void CSSVariableData::ExtractFeatures(const CSSParserToken& token,
   has_line_height_units |= IsLineHeightUnitToken(token);
 }
 
-CSSVariableData* CSSVariableData::Create(CSSTokenizedValue value,
-                                         bool is_animation_tainted,
-                                         bool needs_variable_resolution) {
-  bool has_font_units = false;
-  bool has_root_font_units = false;
-  bool has_line_height_units = false;
-  while (!value.range.AtEnd()) {
-    ExtractFeatures(value.range.Consume(), has_font_units, has_root_font_units,
-                    has_line_height_units);
-  }
-  return Create(value.text, is_animation_tainted, needs_variable_resolution,
-                has_font_units, has_root_font_units, has_line_height_units);
-}
-
 CSSVariableData* CSSVariableData::Create(const String& original_text,
                                          bool is_animation_tainted,
                                          bool needs_variable_resolution) {
