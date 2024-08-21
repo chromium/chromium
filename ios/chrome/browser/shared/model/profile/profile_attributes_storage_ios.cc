@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/functional/callback.h"
 #include "base/i18n/case_conversion.h"
 #include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
@@ -21,6 +22,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#include "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 
 namespace {
 const char kActiveTimeKey[] = "active_time";
@@ -87,6 +89,46 @@ void ProfileAttributesStorageIOS::RemoveBrowserState(std::string_view name) {
 
 size_t ProfileAttributesStorageIOS::GetNumberOfProfiles() const {
   return sorted_keys_.size();
+}
+
+ProfileAttributesIOS
+ProfileAttributesStorageIOS::GetAttributesForProfileAtIndex(
+    size_t index) const {
+  DCHECK_LT(index, sorted_keys_.size());
+  const std::string& profile_name = sorted_keys_[index];
+  return ProfileAttributesIOS(
+      profile_name,
+      prefs_->GetDict(prefs::kBrowserStateInfoCache).FindDict(profile_name));
+}
+
+ProfileAttributesIOS
+ProfileAttributesStorageIOS::GetAttributesForProfileWithName(
+    std::string_view name) const {
+  const size_t index = GetIndexOfBrowserStateWithName(name);
+  return GetAttributesForProfileAtIndex(index);
+}
+
+void ProfileAttributesStorageIOS::UpdateAttributesForProfileAtIndex(
+    size_t index,
+    ProfileAttributesCallback callback) {
+  DCHECK_LT(index, sorted_keys_.size());
+  const std::string& name = sorted_keys_[index];
+  const base::Value::Dict* values =
+      prefs_->GetDict(prefs::kBrowserStateInfoCache).FindDict(name);
+
+  base::Value::Dict updated_values =
+      std::move(callback).Run(ProfileAttributesIOS(name, values)).GetStorage();
+  if (!values || *values != updated_values) {
+    ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
+    update->Set(name, std::move(updated_values));
+  }
+}
+
+void ProfileAttributesStorageIOS::UpdateAttributesForProfileWithName(
+    std::string_view name,
+    ProfileAttributesCallback callback) {
+  const size_t index = GetIndexOfBrowserStateWithName(name);
+  UpdateAttributesForProfileAtIndex(index, std::move(callback));
 }
 
 size_t ProfileAttributesStorageIOS::GetIndexOfBrowserStateWithName(

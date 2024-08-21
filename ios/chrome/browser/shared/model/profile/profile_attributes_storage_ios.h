@@ -12,25 +12,30 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 
 class PrefRegistrySimple;
 class PrefService;
+class ProfileAttributesIOS;
 
 // TODO(crbug.com/359492423): Remove this forward declaration and typedef when
 // no usage of BrowserStateInfoCache remains.
 class ProfileAttributesStorageIOS;
 using BrowserStateInfoCache = ProfileAttributesStorageIOS;
 
-// This class saves various information about browser states to local
-// preferences.
+// This class saves various information about profiles to local preferences.
 // TODO(crbug.com/359522668): Update the API of this class to refer to "Profile"
 // instead of "BrowserState".
 
 class ProfileAttributesStorageIOS {
  public:
+  // Callback that can modify and then return a ProfileAttributesIOS.
+  using ProfileAttributesCallback =
+      base::OnceCallback<ProfileAttributesIOS(ProfileAttributesIOS)>;
+
   explicit ProfileAttributesStorageIOS(PrefService* prefs);
 
   ProfileAttributesStorageIOS(const ProfileAttributesStorageIOS&) = delete;
@@ -46,6 +51,25 @@ class ProfileAttributesStorageIOS {
 
   // Returns the count of known profiles.
   size_t GetNumberOfProfiles() const;
+
+  // Retrieves the information for profile at `index`.
+  ProfileAttributesIOS GetAttributesForProfileAtIndex(size_t index) const;
+
+  // Retrieves the information for profile with `name`.
+  ProfileAttributesIOS GetAttributesForProfileWithName(
+      std::string_view name) const;
+
+  // Convenience method to modify the attributes for a profile at `index`.
+  // The callback is invoked synchronously and can modify the attributes
+  // and the data will be saved to the preferences if changed.
+  void UpdateAttributesForProfileAtIndex(size_t index,
+                                         ProfileAttributesCallback callback);
+
+  // Convenience method to modify the attributes for a profile with `name`.
+  // The callback is invoked synchronously and can modify the attributes
+  // and the data will be saved to the preferences if changed.
+  void UpdateAttributesForProfileWithName(std::string_view name,
+                                          ProfileAttributesCallback callback);
 
   // Gets and sets information related to browser states.
   size_t GetIndexOfBrowserStateWithName(std::string_view name) const;

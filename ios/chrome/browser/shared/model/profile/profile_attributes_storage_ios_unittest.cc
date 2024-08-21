@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 
-#import "base/time/time.h"
-#import "components/prefs/testing_pref_service.h"
-#import "testing/platform_test.h"
+#include "base/time/time.h"
+#include "components/prefs/testing_pref_service.h"
+#include "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#include "testing/platform_test.h"
 
 namespace {
 
@@ -55,7 +56,8 @@ constexpr TestAccount kTestAccounts[] = {
 class ProfileAttributesStorageIOSTest : public PlatformTest {
  public:
   ProfileAttributesStorageIOSTest() {
-    BrowserStateInfoCache::RegisterPrefs(testing_pref_service_.registry());
+    ProfileAttributesStorageIOS::RegisterPrefs(
+        testing_pref_service_.registry());
   }
 
   PrefService* pref_service() { return &testing_pref_service_; }
@@ -66,122 +68,176 @@ class ProfileAttributesStorageIOSTest : public PlatformTest {
 
 // Tests that AddBrowserState(...) inserts data for a BrowserState.
 TEST_F(ProfileAttributesStorageIOSTest, AddBrowserState) {
-  BrowserStateInfoCache cache(pref_service());
+  ProfileAttributesStorageIOS storage(pref_service());
 
   for (const TestAccount& account : kTestAccounts) {
-    EXPECT_EQ(cache.GetIndexOfBrowserStateWithName(account.name),
+    EXPECT_EQ(storage.GetIndexOfBrowserStateWithName(account.name),
               std::string::npos);
 
-    cache.AddBrowserState(account.name, account.gaia, account.email);
+    storage.AddBrowserState(account.name, account.gaia, account.email);
 
-    const size_t index = cache.GetIndexOfBrowserStateWithName(account.name);
+    const size_t index = storage.GetIndexOfBrowserStateWithName(account.name);
     EXPECT_NE(index, std::string::npos);
 
-    EXPECT_EQ(cache.GetNameOfBrowserStateAtIndex(index), account.name);
-    EXPECT_EQ(cache.GetGAIAIdOfBrowserStateAtIndex(index), account.gaia);
-    EXPECT_EQ(cache.GetUserNameOfBrowserStateAtIndex(index), account.email);
-    EXPECT_EQ(cache.BrowserStateIsAuthenticatedAtIndex(index),
+    EXPECT_EQ(storage.GetNameOfBrowserStateAtIndex(index), account.name);
+    EXPECT_EQ(storage.GetGAIAIdOfBrowserStateAtIndex(index), account.gaia);
+    EXPECT_EQ(storage.GetUserNameOfBrowserStateAtIndex(index), account.email);
+    EXPECT_EQ(storage.BrowserStateIsAuthenticatedAtIndex(index),
               account.authenticated);
   }
 
   // There is no duplicate, so there should be exactly as many BrowserState
-  // known to the cache as there are test accounts.
-  EXPECT_EQ(cache.GetNumberOfProfiles(), std::size(kTestAccounts));
+  // known to the storage as there are test accounts.
+  EXPECT_EQ(storage.GetNumberOfProfiles(), std::size(kTestAccounts));
 }
 
 // Tests that RemoveBrowserState(...) removes data for a BrowserState.
 TEST_F(ProfileAttributesStorageIOSTest, RemoveBrowserState) {
-  BrowserStateInfoCache cache(pref_service());
+  ProfileAttributesStorageIOS storage(pref_service());
 
   for (const TestAccount& account : kTestAccounts) {
-    cache.AddBrowserState(account.name, account.gaia, account.email);
+    storage.AddBrowserState(account.name, account.gaia, account.email);
   }
 
   // There is no duplicate, so there should be exactly as many BrowserState
-  // known to the cache as there are test accounts.
-  EXPECT_EQ(cache.GetNumberOfProfiles(), std::size(kTestAccounts));
+  // known to the storage as there are test accounts.
+  EXPECT_EQ(storage.GetNumberOfProfiles(), std::size(kTestAccounts));
 
   for (const TestAccount& account : kTestAccounts) {
-    EXPECT_NE(cache.GetIndexOfBrowserStateWithName(account.name),
+    EXPECT_NE(storage.GetIndexOfBrowserStateWithName(account.name),
               std::string::npos);
 
-    cache.RemoveBrowserState(account.name);
+    storage.RemoveBrowserState(account.name);
 
-    EXPECT_EQ(cache.GetIndexOfBrowserStateWithName(account.name),
+    EXPECT_EQ(storage.GetIndexOfBrowserStateWithName(account.name),
               std::string::npos);
   }
 }
 
-// Test the BrowserStateInfoCache saves the data to PrefService and can
+// Test the ProfileAttributesStorageIOS saves the data to PrefService and can
 // later load it correctly.
 TEST_F(ProfileAttributesStorageIOSTest, PrefService) {
-  // Add data to a first BrowserStateInfoCache, it should store the
+  // Add data to a first ProfileAttributesStorageIOS, it should store the
   // data in the PrefService.
   {
-    BrowserStateInfoCache cache(pref_service());
+    ProfileAttributesStorageIOS storage(pref_service());
     for (const TestAccount& account : kTestAccounts) {
-      cache.AddBrowserState(account.name, account.gaia, account.email);
-      cache.SetLastActiveTimeOfBrowserStateAtIndex(
-          cache.GetNumberOfProfiles() - 1, account.last_active_time);
+      storage.AddBrowserState(account.name, account.gaia, account.email);
+      storage.SetLastActiveTimeOfBrowserStateAtIndex(
+          storage.GetNumberOfProfiles() - 1, account.last_active_time);
     }
   }
 
-  // Create a new BrowserStateInfoCache and check that it loads the
+  // Create a new ProfileAttributesStorageIOS and check that it loads the
   // data from the PrefService correctly.
-  const BrowserStateInfoCache cache(pref_service());
+  const ProfileAttributesStorageIOS storage(pref_service());
 
   for (const TestAccount& account : kTestAccounts) {
-    const size_t index = cache.GetIndexOfBrowserStateWithName(account.name);
+    const size_t index = storage.GetIndexOfBrowserStateWithName(account.name);
     EXPECT_NE(index, std::string::npos);
 
-    EXPECT_EQ(cache.GetNameOfBrowserStateAtIndex(index), account.name);
-    EXPECT_EQ(cache.GetGAIAIdOfBrowserStateAtIndex(index), account.gaia);
-    EXPECT_EQ(cache.GetUserNameOfBrowserStateAtIndex(index), account.email);
-    EXPECT_EQ(cache.BrowserStateIsAuthenticatedAtIndex(index),
+    EXPECT_EQ(storage.GetNameOfBrowserStateAtIndex(index), account.name);
+    EXPECT_EQ(storage.GetGAIAIdOfBrowserStateAtIndex(index), account.gaia);
+    EXPECT_EQ(storage.GetUserNameOfBrowserStateAtIndex(index), account.email);
+    EXPECT_EQ(storage.BrowserStateIsAuthenticatedAtIndex(index),
               account.authenticated);
-    EXPECT_EQ(cache.GetLastActiveTimeOfBrowserStateAtIndex(index),
+    EXPECT_EQ(storage.GetLastActiveTimeOfBrowserStateAtIndex(index),
               account.last_active_time);
   }
 }
 
 // Tests that the saved browser state can be retrieve with the scene ID.
 TEST_F(ProfileAttributesStorageIOSTest, MapBrowserStateAndSceneID) {
-  BrowserStateInfoCache cache(pref_service());
+  ProfileAttributesStorageIOS storage(pref_service());
 
   std::string sceneID = "Test Scene ID";
 
-  ASSERT_EQ(cache.GetBrowserStateNameForSceneID(sceneID), std::string());
+  ASSERT_EQ(storage.GetBrowserStateNameForSceneID(sceneID), std::string());
 
   for (const TestAccount& account : kTestAccounts) {
-    EXPECT_NE(cache.GetBrowserStateNameForSceneID(sceneID), account.name);
-    cache.SetBrowserStateForSceneID(sceneID, account.name);
-    EXPECT_EQ(cache.GetBrowserStateNameForSceneID(sceneID), account.name);
+    EXPECT_NE(storage.GetBrowserStateNameForSceneID(sceneID), account.name);
+    storage.SetBrowserStateForSceneID(sceneID, account.name);
+    EXPECT_EQ(storage.GetBrowserStateNameForSceneID(sceneID), account.name);
   }
 
-  cache.ClearBrowserStateForSceneID(sceneID);
-  EXPECT_EQ(cache.GetBrowserStateNameForSceneID(sceneID), std::string());
+  storage.ClearBrowserStateForSceneID(sceneID);
+  EXPECT_EQ(storage.GetBrowserStateNameForSceneID(sceneID), std::string());
 }
 
 TEST_F(ProfileAttributesStorageIOSTest, SetAndGetLastActiveTime) {
-  BrowserStateInfoCache cache(pref_service());
+  ProfileAttributesStorageIOS storage(pref_service());
 
   for (const TestAccount& account : kTestAccounts) {
-    cache.AddBrowserState(account.name, account.gaia, account.email);
+    storage.AddBrowserState(account.name, account.gaia, account.email);
   }
 
   // The last-active time is initially unset.
-  EXPECT_EQ(cache.GetLastActiveTimeOfBrowserStateAtIndex(0), base::Time());
+  EXPECT_EQ(storage.GetLastActiveTimeOfBrowserStateAtIndex(0), base::Time());
 
   // Once set, it can be queried again.
   const base::Time time0 = base::Time::UnixEpoch() + base::Minutes(1);
-  cache.SetLastActiveTimeOfBrowserStateAtIndex(0, time0);
-  EXPECT_EQ(cache.GetLastActiveTimeOfBrowserStateAtIndex(0), time0);
+  storage.SetLastActiveTimeOfBrowserStateAtIndex(0, time0);
+  EXPECT_EQ(storage.GetLastActiveTimeOfBrowserStateAtIndex(0), time0);
 
   // Different BrowserStates do not affect each other.
   const base::Time time1 = base::Time::UnixEpoch() + base::Minutes(2);
-  EXPECT_EQ(cache.GetLastActiveTimeOfBrowserStateAtIndex(1), base::Time());
-  cache.SetLastActiveTimeOfBrowserStateAtIndex(1, time1);
-  EXPECT_EQ(cache.GetLastActiveTimeOfBrowserStateAtIndex(1), time1);
-  EXPECT_NE(cache.GetLastActiveTimeOfBrowserStateAtIndex(0),
-            cache.GetLastActiveTimeOfBrowserStateAtIndex(1));
+  EXPECT_EQ(storage.GetLastActiveTimeOfBrowserStateAtIndex(1), base::Time());
+  storage.SetLastActiveTimeOfBrowserStateAtIndex(1, time1);
+  EXPECT_EQ(storage.GetLastActiveTimeOfBrowserStateAtIndex(1), time1);
+  EXPECT_NE(storage.GetLastActiveTimeOfBrowserStateAtIndex(0),
+            storage.GetLastActiveTimeOfBrowserStateAtIndex(1));
+}
+
+// Tests that settings and getting the attributes using ProfileAttributesIOS
+// works as expected, and they are correctly stored in the local preferences
+// when committed.
+// Note that this implicitly tests UpdateAttributesForProfileAtIndex(...).
+TEST_F(ProfileAttributesStorageIOSTest, UpdateAttributesForProfileWithName) {
+  {
+    ProfileAttributesStorageIOS storage(pref_service());
+
+    for (const TestAccount& account : kTestAccounts) {
+      storage.AddBrowserState(account.name, "", "");
+
+      storage.UpdateAttributesForProfileWithName(
+          account.name,
+          base::BindOnce(
+              [](const TestAccount& account, ProfileAttributesIOS attr) {
+                attr.SetLastActiveTime(account.last_active_time);
+                attr.SetAuthenticationInfo(account.gaia, account.email);
+                return attr;
+              },
+              account));
+    }
+  }
+
+  ProfileAttributesStorageIOS storage(pref_service());
+  for (const TestAccount& account : kTestAccounts) {
+    const size_t index = storage.GetIndexOfBrowserStateWithName(account.name);
+    ASSERT_NE(index, std::string::npos);
+
+    ProfileAttributesIOS attr = storage.GetAttributesForProfileAtIndex(index);
+    EXPECT_EQ(attr.GetProfileName(), account.name);
+    EXPECT_EQ(attr.GetGaiaId(), account.gaia);
+    EXPECT_EQ(attr.GetUserName(), account.email);
+    EXPECT_EQ(attr.IsAuthenticated(), account.authenticated);
+    EXPECT_EQ(attr.GetLastActiveTime(), account.last_active_time);
+  }
+}
+
+// Tests that GetAttributesForProfileWithName(...) works as expected.
+// Note that this implicitly tests GetAttributesForProfileAtIndex(...).
+TEST_F(ProfileAttributesStorageIOSTest, GetAttributesForProfileWithName) {
+  ProfileAttributesStorageIOS storage(pref_service());
+
+  for (const TestAccount& account : kTestAccounts) {
+    storage.AddBrowserState(account.name, account.gaia, account.email);
+    ProfileAttributesIOS attr =
+        storage.GetAttributesForProfileWithName(account.name);
+
+    EXPECT_EQ(attr.GetProfileName(), account.name);
+    EXPECT_EQ(attr.GetGaiaId(), account.gaia);
+    EXPECT_EQ(attr.GetUserName(), account.email);
+    EXPECT_EQ(attr.IsAuthenticated(), account.authenticated);
+  }
 }

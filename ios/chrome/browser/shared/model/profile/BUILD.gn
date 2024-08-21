@@ -4,6 +4,8 @@
 
 source_set("profile") {
   sources = [
+    "profile_attributes_ios.cc",
+    "profile_attributes_ios.h",
     "profile_attributes_storage_ios.cc",
     "profile_attributes_storage_ios.h",
     "profile_ios.h",
@@ -22,7 +24,10 @@ source_set("profile") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "profile_attributes_storage_ios_unittest.cc" ]
+  sources = [
+    "profile_attributes_ios_unittest.cc",
+    "profile_attributes_storage_ios_unittest.cc",
+  ]
   deps = [
     ":profile",
     "//base",
