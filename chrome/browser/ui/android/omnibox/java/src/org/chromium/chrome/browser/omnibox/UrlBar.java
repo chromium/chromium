@@ -272,6 +272,19 @@ public class UrlBar extends AutocompleteEditText {
         updateUrlDirection();
     }
 
+    @Override
+    public void clearFocus() {
+        // When the url bar has its focus cleared, it triggers changes in the
+        // view hierarchy which can cause the url bar to be refocused
+        // incorrectly, e.g. if a tab modal dialog is showing. Temporarily
+        // prevent the url bar from being focused to avoid this.
+        setFocusable(false);
+        setFocusableInTouchMode(false);
+        super.clearFocus();
+        setFocusable(true);
+        setFocusableInTouchMode(true);
+    }
+
     public void destroy() {
         setAllowFocus(false);
         mUrlBarDelegate = null;

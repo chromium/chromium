@@ -70,6 +70,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
+import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.javascript_dialogs.JavascriptTabModalDialog;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
@@ -628,6 +629,7 @@ public class TabsTest {
     @Feature({"Android-TabSwitcher"})
     public void testRequestFocusOnCloseTab() throws Exception {
         final View urlBar = sActivityTestRule.getActivity().findViewById(R.id.url_bar);
+        final OmniboxTestUtils omnibox = new OmniboxTestUtils(sActivityTestRule.getActivity());
         final TabModel model =
                 sActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
         final Tab oldTab = TabModelUtils.getCurrentTab(model);
@@ -671,8 +673,7 @@ public class TabsTest {
         Assert.assertTrue("oldTab should have focus.", focusListener.hasFocus());
 
         // Focus on the URL bar.
-        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> urlBar.requestFocus());
+        omnibox.requestFocus();
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
         Assert.assertEquals(
@@ -708,7 +709,7 @@ public class TabsTest {
                         .isKeyboardShowing(sActivityTestRule.getActivity(), urlBar));
 
         // Ensure the keyboard is hidden so we are in a clean-slate for next test.
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> urlBar.clearFocus());
+        omnibox.clearFocus();
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         InstrumentationRegistry.getInstrumentation()
                 .runOnMainSync(() -> oldTab.getView().requestFocus());
