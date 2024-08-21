@@ -1483,7 +1483,7 @@
     "name": "chrome-wide-echo-cancellation",
     "owners": [ "olka@chromium.org", "saza@chromium.org", "fhernqvist@chromium.org" ],
     // TODO(http://crubg.com/1372451): remove when we have a proper solution.
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "classify-url-on-process-response-event",
