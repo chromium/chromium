@@ -9,8 +9,6 @@ import androidx.annotation.StringDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.safety_hub.SafetyHubModuleProperties.ModuleOption;
-import org.chromium.chrome.browser.safety_hub.SafetyHubModuleProperties.ModuleState;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -184,30 +182,13 @@ public class SafetyHubMetricUtils {
         int MAX_VALUE = SHOW_SIGN_IN_PROMO;
     }
 
-    public static String getDashboardModuleTypeForModuleOption(@ModuleOption int option) {
-        switch (option) {
-            case ModuleOption.UPDATE_CHECK:
-                return DashboardModuleType.UPDATE_CHECK;
-            case ModuleOption.ACCOUNT_PASSWORDS:
-                return DashboardModuleType.PASSWORDS;
-            case ModuleOption.SAFE_BROWSING:
-                return DashboardModuleType.SAFE_BROWSING;
-            case ModuleOption.UNUSED_PERMISSIONS:
-                return DashboardModuleType.REVOKED_PERMISSIONS;
-            case ModuleOption.NOTIFICATION_REVIEW:
-                return DashboardModuleType.NOTIFICATION_REVIEW;
-            default:
-                throw new IllegalArgumentException();
-        }
-    }
-
     public static void recordExternalInteractions(@ExternalInteractions int value) {
         RecordHistogram.recordEnumeratedHistogram(
                 EXTERNAL_INTERACTIONS_HISTOGRAM_NAME, value, ExternalInteractions.MAX_VALUE);
     }
 
     static void recordModuleState(
-            @ModuleState int state,
+            @SafetyHubModuleProperties.ModuleState int state,
             @DashboardModuleType String moduleType,
             @LifecycleEvent String lifecycleEvent) {
         StringJoiner joiner = new StringJoiner(".");
@@ -216,7 +197,8 @@ public class SafetyHubMetricUtils {
         joiner.add(lifecycleEvent);
         String histogramName = joiner.toString();
 
-        RecordHistogram.recordEnumeratedHistogram(histogramName, state, ModuleState.MAX_VALUE);
+        RecordHistogram.recordEnumeratedHistogram(
+                histogramName, state, SafetyHubModuleProperties.ModuleState.MAX_VALUE);
     }
 
     static void recordRevokedPermissionsInteraction(@PermissionsModuleInteractions int value) {

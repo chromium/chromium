@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
-import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.getDashboardModuleTypeForModuleOption;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordDashboardInteractions;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordModuleState;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordNotificationsInteraction;
@@ -138,23 +137,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         // Notify the magic stack to dismiss the active module.
         if (ChromeFeatureList.sSafetyHubMagicStack.isEnabled()) {
             MagicStackBridge.getForProfile(getProfile()).dismissActiveModule();
-        }
-    }
-
-    private PropertyModel getModulePropertyModel(@ModuleOption int option) {
-        switch (option) {
-            case ModuleOption.UPDATE_CHECK:
-                return mUpdateCheckPropertyModel;
-            case ModuleOption.ACCOUNT_PASSWORDS:
-                return mPasswordCheckPropertyModel;
-            case ModuleOption.SAFE_BROWSING:
-                return mSafeBrowsingPropertyModel;
-            case ModuleOption.UNUSED_PERMISSIONS:
-                return mPermissionsModel;
-            case ModuleOption.NOTIFICATION_REVIEW:
-                return mNotificationsModel;
-            default:
-                throw new IllegalArgumentException();
         }
     }
 
@@ -542,54 +524,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         updateSafeBrowsingPreference();
         updatePermissionsPreference();
         updateNotificationsReviewPreference();
-
-        updateAllModulesExpandState();
-    }
-
-    private void updateAllModulesExpandState() {
-        boolean hasNonManagedWarningState = hasNonManagedWarningState();
-
-        for (@ModuleOption int i = ModuleOption.OPTION_FIRST; i < ModuleOption.NUM_ENTRIES; i++) {
-            updateModuleExpandState(i, hasNonManagedWarningState);
-        }
-    }
-
-    private boolean hasNonManagedWarningState() {
-        for (@ModuleOption int i = ModuleOption.OPTION_FIRST; i < ModuleOption.NUM_ENTRIES; i++) {
-            PropertyModel propertyModel = getModulePropertyModel(i);
-            @ModuleState int moduleState = getModuleState(propertyModel, i);
-            boolean managed = propertyModel.get(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
-
-            if (moduleState == ModuleState.WARNING && !managed) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void updateModuleExpandState(
-            @ModuleOption int option, boolean hasNonManagedWarningState) {
-        PropertyModel propertyModel = getModulePropertyModel(option);
-        @ModuleState int moduleState = getModuleState(propertyModel, option);
-        boolean managed = propertyModel.get(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
-
-        switch (moduleState) {
-            case ModuleState.WARNING:
-                propertyModel.set(
-                        SafetyHubModuleProperties.IS_EXPANDED,
-                        !managed || !hasNonManagedWarningState);
-                break;
-            case ModuleState.UNAVAILABLE:
-            case ModuleState.INFO:
-                propertyModel.set(
-                        SafetyHubModuleProperties.IS_EXPANDED, !hasNonManagedWarningState);
-                break;
-            case ModuleState.SAFE:
-                propertyModel.set(SafetyHubModuleProperties.IS_EXPANDED, false);
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
     }
 
     public void setDelegate(SafetyHubModuleDelegate safetyHubModuleDelegate) {
@@ -605,8 +539,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mBrowserStateModule.set(
                 SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                 sitesWithUnusedPermissionsCount);
-
-        updateAllModulesExpandState();
     }
 
     private void updateNotificationsReviewPreference() {
@@ -618,8 +550,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mBrowserStateModule.set(
                 SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
                 notificationPermissionsForReviewCount);
-
-        updateAllModulesExpandState();
     }
 
     private void updateSafeBrowsingPreference() {
@@ -629,8 +559,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 SafetyHubUtils.isSafeBrowsingManaged(getProfile()));
         mSafeBrowsingPropertyModel.set(SafetyHubModuleProperties.SAFE_BROWSING_STATE, state);
         mBrowserStateModule.set(SafetyHubModuleProperties.SAFE_BROWSING_STATE, state);
-
-        updateAllModulesExpandState();
     }
 
     private void updatePasswordCheckPreference() {
@@ -680,23 +608,37 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
         mBrowserStateModule.set(
                 SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
-
-        updateAllModulesExpandState();
     }
 
     private void updateUpdateCheckPreference() {
         UpdateStatusProvider.UpdateStatus updateStatus = mDelegate.getUpdateStatus();
         mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
         mBrowserStateModule.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
-
-        updateAllModulesExpandState();
     }
 
     private void recordAllModulesState(@LifecycleEvent String event) {
-        for (@ModuleOption int i = ModuleOption.OPTION_FIRST; i < ModuleOption.NUM_ENTRIES; i++) {
-            @ModuleState int moduleState = getModuleState(getModulePropertyModel(i), i);
-            recordModuleState(moduleState, getDashboardModuleTypeForModuleOption(i), event);
-        }
+        @ModuleState
+        int updateState = getModuleState(mUpdateCheckPropertyModel, ModuleOption.UPDATE_CHECK);
+        recordModuleState(updateState, DashboardModuleType.UPDATE_CHECK, event);
+
+        @ModuleState
+        int passwordState =
+                getModuleState(mPasswordCheckPropertyModel, ModuleOption.ACCOUNT_PASSWORDS);
+        recordModuleState(passwordState, DashboardModuleType.PASSWORDS, event);
+
+        @ModuleState
+        int safeBrowsingState =
+                getModuleState(mSafeBrowsingPropertyModel, ModuleOption.SAFE_BROWSING);
+        recordModuleState(safeBrowsingState, DashboardModuleType.SAFE_BROWSING, event);
+
+        @ModuleState
+        int permissionsState = getModuleState(mPermissionsModel, ModuleOption.UNUSED_PERMISSIONS);
+        recordModuleState(permissionsState, DashboardModuleType.REVOKED_PERMISSIONS, event);
+
+        @ModuleState
+        int notificationsState =
+                getModuleState(mNotificationsModel, ModuleOption.NOTIFICATION_REVIEW);
+        recordModuleState(notificationsState, DashboardModuleType.NOTIFICATION_REVIEW, event);
 
         @ModuleState
         int browserState =
