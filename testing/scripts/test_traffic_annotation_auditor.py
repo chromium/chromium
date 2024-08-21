@@ -76,7 +76,8 @@ def main_run(args):
   errors_file, errors_filename = tempfile.mkstemp()
   os.close(errors_file)
 
-  build_path = os.path.join(args.paths['checkout'], 'out', args.build_config_fs)
+  build_path = args.build_dir or os.path.join(args.paths['checkout'], 'out',
+                                              args.build_config_fs)
   command_line = [
       sys.executable,
       os.path.join(common.SRC_DIR, 'tools', 'traffic_annotation', 'scripts',
