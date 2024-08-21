@@ -14,6 +14,7 @@
 #include "storage/browser/blob/blob_url_loader_factory.h"
 #include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/blob/blob_url_utils.h"
+#include "storage/browser/blob/features.h"
 #include "url/url_util.h"
 
 namespace storage {
@@ -122,9 +123,21 @@ void BlobURLStoreImpl::ResolveAsURLLoaderFactory(
     std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
+  if (base::FeatureList::IsEnabled(
+          features::kBlockCrossPartitionBlobUrlFetching) &&
+      !registry_->IsUrlMapped(BlobUrlUtils::ClearUrlFragment(url),
+                              storage_key_)) {
+    BlobURLLoaderFactory::Create(mojo::NullRemote(), url, std::move(receiver));
+    std::move(callback).Run(std::nullopt, std::nullopt);
+    return;
+  }
 
   BlobURLLoaderFactory::Create(registry_->GetBlobFromUrl(url), url,
                                std::move(receiver));
+  // When a fragment URL is present, registry_->GetUnsafeAgentClusterID(url) and
+  // registry_->GetUnsafeTopLevelSite(url) will return nullopt because their
+  // implementations don't remove the fragment and only support fragmentless
+  // URLs (crbug.com/40775506).
   std::move(callback).Run(registry_->GetUnsafeAgentClusterID(url),
                           registry_->GetUnsafeTopLevelSite(url));
 }

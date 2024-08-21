@@ -1150,6 +1150,16 @@
     "owners": ["arichiv@chromium.org", "bingler@chromium.org"]
   },
 
+  {
+    "prefix": "block-cross-partition-blob-url-fetching",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/FileAPI/BlobURL/cross-partition.tentative.https.html"],
+    "args": ["--enable-features=BlockCrossPartitionBlobUrlFetching"],
+    "expires": "Feb 4, 2025",
+    "owners": ["janiceliu@chromium.org"]
+  },
+
   "isInputPending requires threaded compositing and layerized iframes, so ",
   "these tests are run exclusively with a virtual test suite that never ",
   "expires.",
