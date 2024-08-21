@@ -183,14 +183,6 @@ extern const char kDefaultBrowserPromptRefreshDescription[];
 extern const char kDeferRendererTasksAfterInputName[];
 extern const char kDeferRendererTasksAfterInputDescription[];
 
-#if BUILDFLAG(IS_ANDROID)
-extern const char kDesynchronizedCanvas2DName[];
-extern const char kDesynchronizedCanvas2DDescription[];
-
-extern const char kDesynchronizedWebglName[];
-extern const char kDesynchronizedWebglDescription[];
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kDemoModeComponentUpdaterTestTagName[];
 extern const char kDemoModeComponentUpdaterTestTagDescription[];

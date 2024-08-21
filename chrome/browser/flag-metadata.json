@@ -2035,16 +2035,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "desynchronized-canvas-2d",
-    "owners": [ "vasilyt@chromium.org", "vikassoni@chromium.org", "boliu@chromium.org"],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "desynchronized-webgl",
-    "owners": [ "vasilyt@chromium.org", "vikassoni@chromium.org", "boliu@chromium.org"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "device-force-scheduled-reboot",
     "owners": [ "sanjaperisic@chromium.org"],
     "expiry_milestone": 105

@@ -16184,7 +16184,6 @@ from previous Chrome versions.
   <int value="-1817209284" label="PayWithGoogleV1:enabled"/>
   <int value="-1816838390"
       label="AllowEapDefaultCasWithoutSubjectVerification:enabled"/>
-  <int value="-1816807065" label="LowLatencyWebGLImageChromium:disabled"/>
   <int value="-1816654207" label="SharedZstd:disabled"/>
   <int value="-1816215700" label="FocusModeYTM:disabled"/>
   <int value="-1816066138" label="CastAllowAllIPs:enabled"/>
@@ -17461,7 +17460,6 @@ from previous Chrome versions.
   <int value="-1280673966" label="PluginVmFullscreen:disabled"/>
   <int value="-1280274244" label="OmniboxClosePopupWithEscape:disabled"/>
   <int value="-1279151596" label="TreatBootstrapAsDefault:enabled"/>
-  <int value="-1279017866" label="LowLatencyCanvas2dImageChromium:enabled"/>
   <int value="-1278796760" label="QueryInOmnibox:enabled"/>
   <int value="-1277216823" label="ClearUndecryptablePasswords:disabled"/>
   <int value="-1276912933" label="enable-quick-unlock-pin"/>
@@ -19714,7 +19712,6 @@ from previous Chrome versions.
   <int value="-329174540" label="CoralFeature:disabled"/>
   <int value="-328361990" label="enable-experimental-extension-apis"/>
   <int value="-328339709" label="WebFeedAwareness:enabled"/>
-  <int value="-328273788" label="LowLatencyWebGLImageChromium:enabled"/>
   <int value="-327520505" label="RelatedSearchesAlternateUx:enabled"/>
   <int value="-327272022" label="AutofillRejectCompanyBirthyearName:enabled"/>
   <int value="-326535569" label="WebNotesStylize:disabled"/>
@@ -20336,7 +20333,6 @@ from previous Chrome versions.
   <int value="-72590181" label="DrawCutoutEdgeToEdge:enabled"/>
   <int value="-72581685" label="FilesDriveShortcuts:disabled"/>
   <int value="-72455054" label="WebVrAutopresent:disabled"/>
-  <int value="-71915981" label="LowLatencyCanvas2dImageChromium:disabled"/>
   <int value="-70595606" label="ash-enable-unified-desktop"/>
   <int value="-70434056" label="UseGles2ForOopR:enabled"/>
   <int value="-69427025" label="OfflinePagesPrefetchingUI:enabled"/>

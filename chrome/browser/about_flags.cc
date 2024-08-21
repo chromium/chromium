@@ -11636,15 +11636,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kDefaultBrowserPromptRefreshVariations,
                                     "DefaultBrowserPromptRefresh")},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"desynchronized-canvas-2d", flag_descriptions::kDesynchronizedCanvas2DName,
-     flag_descriptions::kDesynchronizedCanvas2DDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(blink::features::kLowLatencyCanvas2dImageChromium)},
-    {"desynchronized-webgl", flag_descriptions::kDesynchronizedWebglName,
-     flag_descriptions::kDesynchronizedWebglDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(blink::features::kLowLatencyWebGLImageChromium)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"ash-forest-feature", flag_descriptions::kForestFeatureName,
      flag_descriptions::kForestFeatureDescription, kOsCrOS,
