@@ -233,6 +233,23 @@ void CastDeviceSelectorView::OnPermissionRejected() {
           media_router::MediaRouterUiPermissionRejectedViewEvents::
               kGmcDialogErrorShown);
 
+  size_t offset;
+  std::u16string settings_text_for_link = l10n_util::GetStringUTF16(
+      IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK);
+  std::u16string label_text = l10n_util::GetStringFUTF16(
+      IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LABEL,
+      settings_text_for_link, &offset);
+
+  // TODO(crbug.com/359973625): Do not set the accessibility name for
+  // `permission_rejected_view_` once AXPlatformNodeCocoa::AXBoundsForRange is
+  // implemented.
+  permission_rejected_view_->GetViewAccessibility().SetRole(
+      ax::mojom::Role::kGroup);
+  permission_rejected_view_->GetViewAccessibility().SetName(
+      label_text, ax::mojom::NameFrom::kRelatedElement);
+  permission_rejected_view_->SetFocusBehavior(
+      views::View::FocusBehavior::ACCESSIBLE_ONLY);
+
   auto* permission_rejected_label_ = permission_rejected_view_->AddChildView(
       std::make_unique<views::StyledLabel>());
   permission_rejected_label_->SetBorder(
@@ -240,13 +257,7 @@ void CastDeviceSelectorView::OnPermissionRejected() {
   permission_rejected_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   permission_rejected_label_->SetDefaultEnabledColorId(
       media_color_theme_.secondary_foreground_color_id);
-
-  size_t offset;
-  std::u16string settings_text_for_link = l10n_util::GetStringUTF16(
-      IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK);
-  permission_rejected_label_->SetText(l10n_util::GetStringFUTF16(
-      IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LABEL,
-      settings_text_for_link, &offset));
+  permission_rejected_label_->SetText(label_text);
 
 #if BUILDFLAG(IS_MAC)
   base::RepeatingClosure open_settings_cb = base::BindRepeating([]() {
