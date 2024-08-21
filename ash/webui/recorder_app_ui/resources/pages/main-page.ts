@@ -13,7 +13,13 @@ import '../components/recording-info-dialog.js';
 import '../components/secondary-button.js';
 import '../components/settings-menu.js';
 
-import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
+import {
+  createRef,
+  css,
+  html,
+  nothing,
+  ref,
+} from 'chrome://resources/mwc/lit/index.js';
 
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {ExportDialog} from '../components/export-dialog.js';
@@ -21,6 +27,7 @@ import {MicSelectionMenu} from '../components/mic-selection-menu.js';
 import {RecordingFileList} from '../components/recording-file-list.js';
 import {RecordingInfoDialog} from '../components/recording-info-dialog.js';
 import {SettingsMenu} from '../components/settings-menu.js';
+import {i18n} from '../core/i18n.js';
 import {
   useMicrophoneManager,
   useRecordingDataManager,
@@ -29,6 +36,7 @@ import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {navigateTo} from '../core/state/route.js';
 import {settings} from '../core/state/settings.js';
 import {assertExists, assertInstanceof} from '../core/utils/assert.js';
+import {isObjectEmpty} from '../core/utils/utils.js';
 
 /**
  * Main page of Recorder App.
@@ -92,7 +100,34 @@ export class MainPage extends ReactiveLitElement {
         --cra-icon-button-container-width: 136px;
       }
 
+      anchor-name: --record-button;
       margin: 0;
+    }
+
+    #start-record-nudge {
+      align-items: center;
+      display: flex;
+      flex-flow: column;
+      inset-area: top span-all;
+      position: absolute;
+      position-anchor: --record-button;
+
+      & > div {
+        background: var(--cros-sys-primary);
+        border-radius: var(--border-radius-rounded-with-short-side);
+        color: var(--cros-sys-on_primary);
+        font: var(--cros-body-1-font);
+      }
+
+      & > .dot {
+        height: 8px;
+        margin: 4px;
+        width: 8px;
+      }
+
+      & > .text {
+        padding: 8px 16px;
+      }
     }
   `;
 
@@ -175,15 +210,30 @@ export class MainPage extends ReactiveLitElement {
     );
   }
 
+  private renderStartRecordNudge() {
+    if (!isObjectEmpty(this.recordingMetadataMap.value)) {
+      return nothing;
+    }
+    return html`
+      <div id="start-record-nudge">
+        <div class="text">${i18n.mainStartRecordNudge}</div>
+        <div class="dot"></div>
+      </div>
+    `;
+  }
+
   private renderRecordButton() {
-    return html`<cra-icon-button
-      id="record-button"
-      shape="circle"
-      @click=${this.onClickRecordButton}
-      ${ref(this.startRecordingButton)}
-    >
-      <cra-icon slot="icon" name="circle_fill"></cra-icon>
-    </cra-icon-button>`;
+    return [
+      this.renderStartRecordNudge(),
+      html`<cra-icon-button
+        id="record-button"
+        shape="circle"
+        @click=${this.onClickRecordButton}
+        ${ref(this.startRecordingButton)}
+      >
+        <cra-icon slot="icon" name="circle_fill"></cra-icon>
+      </cra-icon-button>`,
+    ];
   }
 
   private renderMicSelectionButton() {

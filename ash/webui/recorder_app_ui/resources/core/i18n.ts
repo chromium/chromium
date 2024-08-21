@@ -31,6 +31,7 @@ const noArgStrings = [
   'genAiErrorTitleSuggestionTrustAndSafetyLabel',
   'genAiExperimentBadge',
   'genAiLearnMoreLink',
+  'mainStartRecordNudge',
   'micSelectionMenuChromebookAudioOption',
   'onboardingDialogSpeakerLabelAllowButton',
   'onboardingDialogSpeakerLabelDeferButton',

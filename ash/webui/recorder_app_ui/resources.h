@@ -29,6 +29,7 @@ const webui::LocalizedString kLocalizedStrings[] = {
      IDS_RECORDER_GEN_AI_ERROR_TITLE_SUGGESTION_TRUST_AND_SAFETY_LABEL},
     {"genAiExperimentBadge", IDS_RECORDER_GEN_AI_EXPERIMENT_BADGE},
     {"genAiLearnMoreLink", IDS_RECORDER_GEN_AI_LEARN_MORE_LINK},
+    {"mainStartRecordNudge", IDS_RECORDER_MAIN_START_RECORD_NUDGE},
     {"micSelectionMenuChromebookAudioOption",
      IDS_RECORDER_MIC_SELECTION_MENU_CHROMEBOOK_AUDIO_OPTION},
     {"onboardingDialogSpeakerLabelAllowButton",

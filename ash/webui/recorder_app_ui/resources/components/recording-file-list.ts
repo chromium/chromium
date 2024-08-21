@@ -42,6 +42,7 @@ import {
   getYesterday,
   isInThisMonth,
 } from '../core/utils/datetime.js';
+import {isObjectEmpty} from '../core/utils/utils.js';
 
 import {CraMenu} from './cra/cra-menu.js';
 import {RecordingFileListItem} from './recording-file-list-item.js';
@@ -148,7 +149,7 @@ export class RecordingFileList extends ReactiveLitElement {
 
   get firstRecordingForTest(): RecordingFileListItem {
     return assertExists(
-      this.shadowRoot?.querySelector('recording-file-list-item')
+      this.shadowRoot?.querySelector('recording-file-list-item'),
     );
   }
 
@@ -376,7 +377,7 @@ export class RecordingFileList extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
-    if (Object.keys(this.recordingMetadataMap).length === 0) {
+    if (isObjectEmpty(this.recordingMetadataMap)) {
       return html`
         <div class="illustration-container">
           <cra-image
