@@ -70,7 +70,7 @@ body {
   --md-focus-ring-width: 2px;
 
   /*
-   * From go/cros-tokens
+   * Elevation from go/cros-tokens
    */
   --cros-sys-app_elevation1: 0 4px 4px 0 rgba(var(--cros-sys-shadow-rgb), 0.2),
     0 0 4px 0 rgba(var(--cros-sys-shadow-rgb), 0.1);
@@ -78,4 +78,14 @@ body {
     0 0 12px 0 rgba(var(--cros-sys-shadow-rgb), 0.1);
   --cros-sys-app_elevation5: 0 24px 24px 0 rgba(var(--cros-sys-shadow-rgb), 0.2),
     0 0 24px 0 rgba(var(--cros-sys-shadow-rgb), 0.1);
+
+  /*
+   * Ref velocity from go/cros-tokens
+   */
+  --cros-ref-motion-easing-emphasized-accelerate: cubic-bezier(
+    0.3,
+    0,
+    0.8,
+    0.15
+  );
 }

@@ -229,7 +229,15 @@ export class RecordPage extends ReactiveLitElement {
       & > svg {
         color: var(--cros-sys-on_error_container);
         height: 12px;
+        transition:
+          color 500ms var(--cros-ref-motion-easing-emphasized-accelerate),
+          opacity 500ms var(--cros-ref-motion-easing-emphasized-accelerate);
         width: 12px;
+
+        .paused & {
+          color: var(--cros-sys-secondary);
+          opacity: 0.5;
+        }
       }
 
       & > span {
@@ -242,6 +250,15 @@ export class RecordPage extends ReactiveLitElement {
       display: flex;
       flex-flow: row;
       gap: 24px;
+    }
+
+    #pause-button {
+      transition: opacity 500ms
+        var(--cros-ref-motion-easing-emphasized-accelerate);
+
+      .paused & {
+        opacity: 0.5;
+      }
     }
 
     #stop-record {
@@ -349,6 +366,10 @@ export class RecordPage extends ReactiveLitElement {
 
   private readonly micMuted = signal(false);
 
+  private readonly recordingPaused = signal(false);
+
+  private readonly recordingControlQueue = new AsyncJobQueue('enqueue');
+
   get stopRecordingButtonForTest(): HTMLButtonElement {
     return assertExists(this.stopRecordingButton.value);
   }
@@ -358,16 +379,20 @@ export class RecordPage extends ReactiveLitElement {
       return;
     }
 
-    let session: RecordingSession;
+    const session = await RecordingSession.create({
+      micId: assertExists(this.micId),
+      includeSystemAudio: this.includeSystemAudio,
+      platformHandler: this.platformHandler,
+      speakerLabelEnabled:
+        settings.value.speakerLabelEnabled === SpeakerLabelEnableState.ENABLED,
+    });
 
     try {
-      session = await RecordingSession.create({
-        micId: assertExists(this.micId),
-        includeSystemAudio: this.includeSystemAudio,
-        platformHandler: this.platformHandler,
-        speakerLabelEnabled: settings.value.speakerLabelEnabled ===
-          SpeakerLabelEnableState.ENABLED,
-      });
+      // Don't enable SODA if it's unavailable. All UI to enable transcription
+      // are gated behind transcriptionAvailable.
+      await session.start(
+        this.transcriptionEnabled.value && this.transcriptionAvailable.value,
+      );
     } catch (e) {
       if (e instanceof DOMException &&
           e.message.includes('Permission denied')) {
@@ -381,11 +406,6 @@ export class RecordPage extends ReactiveLitElement {
       return;
     }
 
-    // Don't enable SODA if it's unavailable. All UI to enable transcription
-    // are gated behind transcriptionAvailable.
-    await session.start(
-      this.transcriptionEnabled.value && this.transcriptionAvailable.value,
-    );
     this.transcriptionEnableDispose = effect(() => {
       // TODO(pihsun): This is a bit fragile now since this relies on the
       // startNewSodaSession and stopSodaSession both calls AsyncJobQueue,
@@ -469,12 +489,13 @@ export class RecordPage extends ReactiveLitElement {
     return id;
   }
 
-  private async onStopRecording() {
-    // TODO(pihsun): Make this function sync since it's called as event handler.
-    const id = await this.stopRecording();
-    if (id !== null) {
-      navigateTo(`/playback?id=${id}`);
-    }
+  private onStopRecording() {
+    this.recordingControlQueue.push(async () => {
+      const id = await this.stopRecording();
+      if (id !== null) {
+        navigateTo(`/playback?id=${id}`);
+      }
+    });
   }
 
   private readonly onVisibilityChange = () => {
@@ -545,6 +566,14 @@ export class RecordPage extends ReactiveLitElement {
     this.deleteDialog.value?.show();
   }
 
+  private onPauseButtonClick() {
+    this.recordingControlQueue.push(async () => {
+      this.recordingPaused.update((s) => !s);
+      // TODO(pihsun): Animate when paused state change.
+      await this.recordingSession.value?.setPaused(this.recordingPaused.value);
+    });
+  }
+
   private async deleteRecording() {
     // TODO(pihsun): Make this function sync since it's called as event handler.
     await this.cancelRecording();
@@ -577,8 +606,6 @@ export class RecordPage extends ReactiveLitElement {
     if (this.recordingSession.value === null) {
       return nothing;
     }
-    // TODO: b/344789835 - Query backend for transcription availability.
-    // TODO: b/344789835 - Add state when transcription is disabled.
     // TODO: b/336963138 - Animation while opening/closing the panel.
     const session = this.recordingSession.value;
     const {transcription} = session.progress.value;
@@ -680,10 +707,20 @@ export class RecordPage extends ReactiveLitElement {
     navigateTo('/');
   }
 
+  private onSaveClick() {
+    this.recordingControlQueue.push(async () => {
+      await this.saveAndExitRecording();
+    });
+  }
+
   private onBackClick() {
-    // TODO: b/336963138 - This should directly save and exit when the
-    // recording is paused.
-    this.exitDialog?.show();
+    this.recordingControlQueue.push(async () => {
+      if (this.recordingPaused.value) {
+        await this.saveAndExitRecording();
+      } else {
+        this.exitDialog?.show();
+      }
+    });
   }
 
   private closeExitDialog() {
@@ -707,7 +744,7 @@ export class RecordPage extends ReactiveLitElement {
         ></cra-button>
         <cra-button
           .label=${i18n.recordExitDialogSaveAndExitButton}
-          @click=${this.saveAndExitRecording}
+          @click=${this.onSaveClick}
         ></cra-button>
       </div>
     </cra-dialog>`;
@@ -774,6 +811,10 @@ export class RecordPage extends ReactiveLitElement {
       'show-transcription': this.transcriptionShown.value,
     };
 
+    const footerClasses = {
+      paused: this.recordingPaused.value,
+    };
+
     return html`
       <div id="main-area">
         ${this.renderHeader()}
@@ -786,15 +827,14 @@ export class RecordPage extends ReactiveLitElement {
           </div>
         </div>
       </div>
-      <div id="footer">
+      <div id="footer" class=${classMap(footerClasses)}>
         <div id="timer">${this.renderTimer()}</div>
         <div id="actions">
           <secondary-button @click=${this.onDeleteButtonClick}>
             <cra-icon slot="icon" name="delete"></cra-icon>
           </secondary-button>
           ${this.renderStopRecordButton()}
-          <secondary-button>
-            <!-- TODO: b/336963138 - Implements pause -->
+          <secondary-button id="pause-button" @click=${this.onPauseButtonClick}>
             <cra-icon slot="icon" name="pause"></cra-icon>
           </secondary-button>
         </div>
