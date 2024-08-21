@@ -35,7 +35,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.base.WindowAndroid;
@@ -231,8 +230,7 @@ public class SigninAndHistorySyncCoordinator implements SigninAccountPickerCoord
     /** Implements {@link SigninAccountPickerCoordinator.Delegate}. */
     @Override
     public void onSignInComplete() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                && SyncFeatureMap.isEnabled(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
                 && mSigninAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
             Profile profile = mProfileSupplier.get();
             SyncService syncService = SyncServiceFactory.getForProfile(profile);
