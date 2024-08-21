@@ -23,8 +23,6 @@ using ::privacy_sandbox::tracking_protection::
 using ::privacy_sandbox::tracking_protection::
     TrackingProtectionOnboardingStatus;
 
-using NoticeType = privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
-
 TrackingProtectionOnboardingStatus GetInternalModeBOnboardingStatus(
     PrefService* pref_service) {
   return static_cast<TrackingProtectionOnboardingStatus>(

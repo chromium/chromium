@@ -30,12 +30,6 @@ using ::privacy_sandbox::tracking_protection::
 using ::privacy_sandbox::tracking_protection::
     TrackingProtectionOnboardingAckAction;
 
-using NoticeType = ::privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
-using NoticeAction =
-    ::privacy_sandbox::TrackingProtectionOnboarding::NoticeAction;
-using SurfaceType =
-    ::privacy_sandbox::TrackingProtectionOnboarding::SurfaceType;
-
 using ::testing::Combine;
 using ::testing::Values;
 

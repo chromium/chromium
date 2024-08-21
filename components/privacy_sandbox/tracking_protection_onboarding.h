@@ -36,38 +36,6 @@ class TrackingProtectionOnboarding : public KeyedService {
     kMaxValue = kOnboarded,
   };
 
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
-  enum class NoticeAction {
-    // Other action taken - notice dismissed due to other actions.
-    kOther = 0,
-    // Using the GotIt button.
-    kGotIt = 1,
-    // Using the Settings button.
-    kSettings = 2,
-    // Using the LearnMore button - only on Clank.
-    kLearnMore = 3,
-    // The X button on desktop / swipe away on Clank.
-    kClosed = 4,
-    kMaxValue = kClosed,
-  };
-
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
-  enum class NoticeType {
-    kNone,
-    // The notice in question is a Mode B Onboarding Notice.
-    kModeBOnboarding,
-    // The notice in question is a silent Mode B Onboarding Notice.
-    kModeBSilentOnboarding,
-  };
-
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
-  enum class SurfaceType {
-    kDesktop = 0,
-    kBrApp = 1,
-    kAGACCT = 2,
-    kMaxValue = kAGACCT,
-  };
-
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   // Enum value to indicate the state of onboarding on startup.

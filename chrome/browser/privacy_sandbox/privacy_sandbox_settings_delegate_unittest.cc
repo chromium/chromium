@@ -49,8 +49,6 @@ namespace {
 
 using ::privacy_sandbox::tracking_protection::
     TrackingProtectionOnboardingStatus;
-using NoticeType = privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
-using SurfaceType = privacy_sandbox::TrackingProtectionOnboarding::SurfaceType;
 
 constexpr char kTestEmail[] = "test@test.com";
 
