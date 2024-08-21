@@ -714,6 +714,21 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    public void checkReadability_offline() {
+        DeviceConditions.sForceConnectionTypeForTesting = true;
+        assertFalse(mController.isReadable(mTab));
+    }
+
+    @Test
+    public void testNetworkConnectionTypeChangedNotifiesReadabilityChanged() {
+        Runnable runnable = Mockito.mock(Runnable.class);
+        mController.addReadabilityUpdateListener(runnable);
+
+        mController.onConnectionTypeChanged(0);
+        verify(runnable, times(1)).run();
+    }
+
+    @Test
     public void isReadable_cacheSharedBetweenInstances() {
         // Check readability
         mController.maybeCheckReadability(mTab);
