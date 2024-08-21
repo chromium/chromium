@@ -179,7 +179,7 @@ cros_events::PickerResultSource GetResultSource(
             return cros_events::PickerResultSource::CASE_TRANSFORM;
           },
       },
-      result->data());
+      *result);
 }
 
 cros_events::PickerResultType GetResultType(
@@ -240,7 +240,7 @@ cros_events::PickerResultType GetResultType(
             return cros_events::PickerResultType::TEXT;
           },
       },
-      result->data());
+      *result);
 }
 
 }  // namespace
@@ -297,7 +297,7 @@ void PickerSessionMetrics::OnFinishSession() {
   if (caps_lock_displayed_) {
     UpdateCapLockPrefs(
         selected_result_.has_value() &&
-        std::holds_alternative<PickerCapsLockResult>(selected_result_->data()));
+        std::holds_alternative<PickerCapsLockResult>(*selected_result_));
   }
   base::UmaHistogramEnumeration("Ash.Picker.Session.Outcome", outcome_);
   metrics::structured::StructuredMetricsClient::Record(

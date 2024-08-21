@@ -1059,12 +1059,10 @@ TEST_F(PickerControllerTest, DoesNotSearchCaseTransformWhenNoSelectedText) {
   base::MockCallback<PickerController::SearchResultsCallback> callback;
 
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
-  EXPECT_CALL(
-      callback,
-      Run(Contains(Property(
-          &PickerSearchResultsSection::results,
-          Contains(Property(&PickerSearchResult::data,
-                            VariantWith<PickerCaseTransformResult>(_)))))))
+  EXPECT_CALL(callback,
+              Run(Contains(Property(
+                  &PickerSearchResultsSection::results,
+                  Contains(VariantWith<PickerCaseTransformResult>(_))))))
       .Times(0);
 
   controller().ToggleWidget();
@@ -1081,14 +1079,12 @@ TEST_F(PickerControllerTest, SearchesCaseTransformWhenSelectedText) {
   base::MockCallback<PickerController::SearchResultsCallback> callback;
 
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
-  EXPECT_CALL(
-      callback,
-      Run(Contains(Property(
-          &PickerSearchResultsSection::results,
-          Contains(Property(&PickerSearchResult::data,
-                            VariantWith<PickerCaseTransformResult>(Field(
-                                &PickerCaseTransformResult::type,
-                                PickerCaseTransformResult::kUpperCase))))))))
+  EXPECT_CALL(callback,
+              Run(Contains(Property(
+                  &PickerSearchResultsSection::results,
+                  Contains(VariantWith<PickerCaseTransformResult>(
+                      Field(&PickerCaseTransformResult::type,
+                            PickerCaseTransformResult::kUpperCase)))))))
       .Times(1);
 
   controller().ToggleWidget();

@@ -178,17 +178,14 @@ TEST_P(PickerSearchAggregatorTest,
 TEST_P(PickerSearchAggregatorTest,
        PublishesResultsInCorrectSectionAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
-  EXPECT_CALL(
-      search_results_callback,
-      Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
-                   GetParam().section_type),
-          Property("results", &PickerSearchResultsSection::results,
-                   ElementsAre(Property(
-                       "data", &PickerSearchResult::data,
-                       VariantWith<PickerTextResult>(Field(
-                           "primary_text", &PickerTextResult::primary_text,
-                           u"test")))))))))
+  EXPECT_CALL(search_results_callback,
+              Call(ElementsAre(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           GetParam().section_type),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(VariantWith<PickerTextResult>(Field(
+                               "primary_text", &PickerTextResult::primary_text,
+                               u"test"))))))))
       .Times(1);
 
   PickerSearchAggregator aggregator(
@@ -204,17 +201,14 @@ TEST_P(PickerSearchAggregatorTest,
 
 TEST_P(PickerSearchAggregatorTest, PublishesResultsPostBurnIn) {
   MockSearchResultsCallback search_results_callback;
-  EXPECT_CALL(
-      search_results_callback,
-      Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
-                   GetParam().section_type),
-          Property("results", &PickerSearchResultsSection::results,
-                   ElementsAre(Property(
-                       "data", &PickerSearchResult::data,
-                       VariantWith<PickerTextResult>(Field(
-                           "primary_text", &PickerTextResult::primary_text,
-                           u"test")))))))))
+  EXPECT_CALL(search_results_callback,
+              Call(ElementsAre(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           GetParam().section_type),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(VariantWith<PickerTextResult>(Field(
+                               "primary_text", &PickerTextResult::primary_text,
+                               u"test"))))))))
       .Times(1);
 
   PickerSearchAggregator aggregator(
@@ -477,78 +471,56 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(
-          AllOf(
-              Property("type", &PickerSearchResultsSection::type,
-                       PickerSectionType::kNone),
-              Property("results", &PickerSearchResultsSection::results,
-                       ElementsAre(Property("data", &PickerSearchResult::data,
-                                            VariantWith<PickerTextResult>(Field(
-                                                "primary_text",
-                                                &PickerTextResult::primary_text,
-                                                u"date"))),
-                                   Property("data", &PickerSearchResult::data,
-                                            VariantWith<PickerTextResult>(Field(
-                                                "primary_text",
-                                                &PickerTextResult::primary_text,
-                                                u"category"))),
-                                   Property("data", &PickerSearchResult::data,
-                                            VariantWith<PickerTextResult>(Field(
-                                                "primary_text",
-                                                &PickerTextResult::primary_text,
-                                                u"math")))))),
-          AllOf(
-              Property("type", &PickerSearchResultsSection::type,
-                       PickerSectionType::kLinks),
-              Property("results", &PickerSearchResultsSection::results,
-                       ElementsAre(Property(
-                           "data", &PickerSearchResult::data,
-                           VariantWith<PickerTextResult>(Field(
-                               "primary_text", &PickerTextResult::primary_text,
-                               u"omnibox")))))),
-          AllOf(
-              Property("type", &PickerSearchResultsSection::type,
-                       PickerSectionType::kDriveFiles),
-              Property("results", &PickerSearchResultsSection::results,
-                       ElementsAre(Property(
-                           "data", &PickerSearchResult::data,
-                           VariantWith<PickerTextResult>(Field(
-                               "primary_text", &PickerTextResult::primary_text,
-                               u"drive")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kLocalFiles),
-                Property("results", &PickerSearchResultsSection::results,
-                         ElementsAre(Property(
-                             "data", &PickerSearchResult::data,
-                             VariantWith<PickerLocalFileResult>(
-                                 Field("title", &PickerLocalFileResult::title,
-                                       u"local")))))),
-          AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kClipboard),
+                         PickerSectionType::kNone),
                 Property("results", &PickerSearchResultsSection::results,
                          ElementsAre(
-                             Property("data", &PickerSearchResult::data,
-                                      VariantWith<PickerClipboardResult>(Field(
-                                          "display_text",
-                                          &PickerClipboardResult::display_text,
-                                          u"clipboard")))))),
+                             VariantWith<PickerTextResult>(Field(
+                                 "primary_text",
+                                 &PickerTextResult::primary_text, u"date")),
+                             VariantWith<PickerTextResult>(Field(
+                                 "primary_text",
+                                 &PickerTextResult::primary_text, u"category")),
+                             VariantWith<PickerTextResult>(Field(
+                                 "primary_text",
+                                 &PickerTextResult::primary_text, u"math"))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kLinks),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(VariantWith<PickerTextResult>(Field(
+                             "primary_text", &PickerTextResult::primary_text,
+                             u"omnibox"))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kDriveFiles),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(VariantWith<PickerTextResult>(Field(
+                             "primary_text", &PickerTextResult::primary_text,
+                             u"drive"))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kLocalFiles),
+                Property(
+                    "results", &PickerSearchResultsSection::results,
+                    ElementsAre(VariantWith<PickerLocalFileResult>(Field(
+                        "title", &PickerLocalFileResult::title, u"local"))))),
           AllOf(
               Property("type", &PickerSearchResultsSection::type,
-                       PickerSectionType::kEditorWrite),
+                       PickerSectionType::kClipboard),
               Property("results", &PickerSearchResultsSection::results,
-                       ElementsAre(Property(
-                           "data", &PickerSearchResult::data,
-                           VariantWith<PickerTextResult>(Field(
-                               "primary_text", &PickerTextResult::primary_text,
-                               u"write")))))),
-          AllOf(
-              Property("type", &PickerSearchResultsSection::type,
-                       PickerSectionType::kEditorRewrite),
-              Property("results", &PickerSearchResultsSection::results,
-                       ElementsAre(Property(
-                           "data", &PickerSearchResult::data,
-                           VariantWith<PickerTextResult>(Field(
-                               "primary_text", &PickerTextResult::primary_text,
-                               u"rewrite")))))))))
+                       ElementsAre(VariantWith<PickerClipboardResult>(Field(
+                           "display_text", &PickerClipboardResult::display_text,
+                           u"clipboard"))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kEditorWrite),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(VariantWith<PickerTextResult>(Field(
+                             "primary_text", &PickerTextResult::primary_text,
+                             u"write"))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kEditorRewrite),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(VariantWith<PickerTextResult>(Field(
+                             "primary_text", &PickerTextResult::primary_text,
+                             u"rewrite"))))))))
       .Times(1);
 
   PickerSearchAggregator aggregator(
@@ -600,39 +572,29 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
       Call(ElementsAre(
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kLocalFiles),
-                Property("results", &PickerSearchResultsSection::results,
-                         ElementsAre(Property(
-                             "data", &PickerSearchResult::data,
-                             VariantWith<PickerLocalFileResult>(
-                                 Field("title", &PickerLocalFileResult::title,
-                                       u"local")))))),
-          AllOf(
-              Property("type", &PickerSearchResultsSection::type,
-                       PickerSectionType::kLinks),
-              Property("results", &PickerSearchResultsSection::results,
-                       ElementsAre(Property(
-                           "data", &PickerSearchResult::data,
-                           VariantWith<PickerTextResult>(Field(
-                               "primary_text", &PickerTextResult::primary_text,
-                               u"omnibox")))))),
+                Property(
+                    "results", &PickerSearchResultsSection::results,
+                    ElementsAre(VariantWith<PickerLocalFileResult>(Field(
+                        "title", &PickerLocalFileResult::title, u"local"))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kClipboard),
+                         PickerSectionType::kLinks),
                 Property("results", &PickerSearchResultsSection::results,
-                         ElementsAre(
-                             Property("data", &PickerSearchResult::data,
-                                      VariantWith<PickerClipboardResult>(Field(
-                                          "display_text",
-                                          &PickerClipboardResult::display_text,
-                                          u"clipboard")))))),
+                         ElementsAre(VariantWith<PickerTextResult>(Field(
+                             "primary_text", &PickerTextResult::primary_text,
+                             u"omnibox"))))),
           AllOf(
               Property("type", &PickerSearchResultsSection::type,
-                       PickerSectionType::kEditorWrite),
+                       PickerSectionType::kClipboard),
               Property("results", &PickerSearchResultsSection::results,
-                       ElementsAre(Property(
-                           "data", &PickerSearchResult::data,
-                           VariantWith<PickerTextResult>(Field(
-                               "primary_text", &PickerTextResult::primary_text,
-                               u"write")))))))))
+                       ElementsAre(VariantWith<PickerClipboardResult>(Field(
+                           "display_text", &PickerClipboardResult::display_text,
+                           u"clipboard"))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kEditorWrite),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(VariantWith<PickerTextResult>(Field(
+                             "primary_text", &PickerTextResult::primary_text,
+                             u"write"))))))))
       .Times(1);
 
   PickerSearchAggregator aggregator(
@@ -669,39 +631,29 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
       Call(ElementsAre(
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kLocalFiles),
-                Property("results", &PickerSearchResultsSection::results,
-                         ElementsAre(Property(
-                             "data", &PickerSearchResult::data,
-                             VariantWith<PickerLocalFileResult>(
-                                 Field("title", &PickerLocalFileResult::title,
-                                       u"local")))))),
+                Property(
+                    "results", &PickerSearchResultsSection::results,
+                    ElementsAre(VariantWith<PickerLocalFileResult>(Field(
+                        "title", &PickerLocalFileResult::title, u"local"))))),
+          AllOf(
+              Property("type", &PickerSearchResultsSection::type,
+                       PickerSectionType::kClipboard),
+              Property("results", &PickerSearchResultsSection::results,
+                       ElementsAre(VariantWith<PickerClipboardResult>(Field(
+                           "display_text", &PickerClipboardResult::display_text,
+                           u"clipboard"))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kClipboard),
+                         PickerSectionType::kLinks),
                 Property("results", &PickerSearchResultsSection::results,
-                         ElementsAre(
-                             Property("data", &PickerSearchResult::data,
-                                      VariantWith<PickerClipboardResult>(Field(
-                                          "display_text",
-                                          &PickerClipboardResult::display_text,
-                                          u"clipboard")))))),
-          AllOf(
-              Property("type", &PickerSearchResultsSection::type,
-                       PickerSectionType::kLinks),
-              Property("results", &PickerSearchResultsSection::results,
-                       ElementsAre(Property(
-                           "data", &PickerSearchResult::data,
-                           VariantWith<PickerTextResult>(Field(
-                               "primary_text", &PickerTextResult::primary_text,
-                               u"omnibox")))))),
-          AllOf(
-              Property("type", &PickerSearchResultsSection::type,
-                       PickerSectionType::kEditorWrite),
-              Property("results", &PickerSearchResultsSection::results,
-                       ElementsAre(Property(
-                           "data", &PickerSearchResult::data,
-                           VariantWith<PickerTextResult>(Field(
-                               "primary_text", &PickerTextResult::primary_text,
-                               u"write")))))))))
+                         ElementsAre(VariantWith<PickerTextResult>(Field(
+                             "primary_text", &PickerTextResult::primary_text,
+                             u"omnibox"))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kEditorWrite),
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(VariantWith<PickerTextResult>(Field(
+                             "primary_text", &PickerTextResult::primary_text,
+                             u"write"))))))))
       .Times(1);
 
   PickerSearchAggregator aggregator(
@@ -736,77 +688,59 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   testing::InSequence seq;
   EXPECT_CALL(search_results_callback, Call(_)).Times(0);
   // Suggested section do not appear post burn-in.
-  EXPECT_CALL(
-      search_results_callback,
-      Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
-                   PickerSectionType::kLinks),
-          Property("results", &PickerSearchResultsSection::results,
-                   ElementsAre(Property(
-                       "data", &PickerSearchResult::data,
-                       VariantWith<PickerTextResult>(Field(
-                           "primary_text", &PickerTextResult::primary_text,
-                           u"omnibox")))))))))
+  EXPECT_CALL(search_results_callback,
+              Call(ElementsAre(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kLinks),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(VariantWith<PickerTextResult>(Field(
+                               "primary_text", &PickerTextResult::primary_text,
+                               u"omnibox"))))))))
       .Times(1);
-  EXPECT_CALL(
-      search_results_callback,
-      Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
-                   PickerSectionType::kDriveFiles),
-          Property("results", &PickerSearchResultsSection::results,
-                   ElementsAre(Property(
-                       "data", &PickerSearchResult::data,
-                       VariantWith<PickerTextResult>(Field(
-                           "primary_text", &PickerTextResult::primary_text,
-                           u"drive")))))))))
+  EXPECT_CALL(search_results_callback,
+              Call(ElementsAre(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kDriveFiles),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(VariantWith<PickerTextResult>(Field(
+                               "primary_text", &PickerTextResult::primary_text,
+                               u"drive"))))))))
       .Times(1);
-  EXPECT_CALL(
-      search_results_callback,
-      Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
-                   PickerSectionType::kClipboard),
-          Property("results", &PickerSearchResultsSection::results,
-                   ElementsAre(Property(
-                       "data", &PickerSearchResult::data,
-                       VariantWith<PickerTextResult>(Field(
-                           "primary_text", &PickerTextResult::primary_text,
-                           u"clipboard")))))))))
+  EXPECT_CALL(search_results_callback,
+              Call(ElementsAre(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kClipboard),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(VariantWith<PickerTextResult>(Field(
+                               "primary_text", &PickerTextResult::primary_text,
+                               u"clipboard"))))))))
       .Times(1);
-  EXPECT_CALL(
-      search_results_callback,
-      Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
-                   PickerSectionType::kLocalFiles),
-          Property("results", &PickerSearchResultsSection::results,
-                   ElementsAre(Property(
-                       "data", &PickerSearchResult::data,
-                       VariantWith<PickerTextResult>(Field(
-                           "primary_text", &PickerTextResult::primary_text,
-                           u"local")))))))))
+  EXPECT_CALL(search_results_callback,
+              Call(ElementsAre(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kLocalFiles),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(VariantWith<PickerTextResult>(Field(
+                               "primary_text", &PickerTextResult::primary_text,
+                               u"local"))))))))
       .Times(1);
-  EXPECT_CALL(
-      search_results_callback,
-      Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
-                   PickerSectionType::kEditorWrite),
-          Property("results", &PickerSearchResultsSection::results,
-                   ElementsAre(Property(
-                       "data", &PickerSearchResult::data,
-                       VariantWith<PickerTextResult>(Field(
-                           "primary_text", &PickerTextResult::primary_text,
-                           u"write")))))))))
+  EXPECT_CALL(search_results_callback,
+              Call(ElementsAre(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kEditorWrite),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(VariantWith<PickerTextResult>(Field(
+                               "primary_text", &PickerTextResult::primary_text,
+                               u"write"))))))))
       .Times(1);
-  EXPECT_CALL(
-      search_results_callback,
-      Call(ElementsAre(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
-                   PickerSectionType::kEditorRewrite),
-          Property("results", &PickerSearchResultsSection::results,
-                   ElementsAre(Property(
-                       "data", &PickerSearchResult::data,
-                       VariantWith<PickerTextResult>(Field(
-                           "primary_text", &PickerTextResult::primary_text,
-                           u"rewrite")))))))))
+  EXPECT_CALL(search_results_callback,
+              Call(ElementsAre(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kEditorRewrite),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(VariantWith<PickerTextResult>(Field(
+                               "primary_text", &PickerTextResult::primary_text,
+                               u"rewrite"))))))))
       .Times(1);
 
   PickerSearchAggregator aggregator(
@@ -906,42 +840,32 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kDriveFiles),
                 Property("results", &PickerSearchResultsSection::results,
-                         ElementsAre(
-                             Property("data", &PickerSearchResult::data,
-                                      VariantWith<PickerDriveFileResult>(Field(
-                                          "id", &PickerDriveFileResult::id,
-                                          std::nullopt))),
-                             Property("data", &PickerSearchResult::data,
-                                      VariantWith<PickerDriveFileResult>(Field(
-                                          "id", &PickerDriveFileResult::id,
-                                          Optional(Eq("driveid1"))))),
-                             Property("data", &PickerSearchResult::data,
-                                      VariantWith<PickerDriveFileResult>(Field(
-                                          "id", &PickerDriveFileResult::id,
-                                          Optional(Eq("driveid2"))))),
-                             Property("data", &PickerSearchResult::data,
-                                      VariantWith<PickerDriveFileResult>(Field(
-                                          "id", &PickerDriveFileResult::id,
-                                          Optional(Eq("driveid3")))))))),
+                         ElementsAre(VariantWith<PickerDriveFileResult>(
+                                         Field("id", &PickerDriveFileResult::id,
+                                               std::nullopt)),
+                                     VariantWith<PickerDriveFileResult>(
+                                         Field("id", &PickerDriveFileResult::id,
+                                               Optional(Eq("driveid1")))),
+                                     VariantWith<PickerDriveFileResult>(
+                                         Field("id", &PickerDriveFileResult::id,
+                                               Optional(Eq("driveid2")))),
+                                     VariantWith<PickerDriveFileResult>(
+                                         Field("id", &PickerDriveFileResult::id,
+                                               Optional(Eq("driveid3"))))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kLinks),
-                Property(
-                    "results", &PickerSearchResultsSection::results,
-                    ElementsAre(
-                        Property("data", &PickerSearchResult::data,
-                                 VariantWith<PickerBrowsingHistoryResult>(Field(
-                                     "url", &PickerBrowsingHistoryResult::url,
-                                     GURL("https://example.com")))),
-                        Property(
-                            "data", &PickerSearchResult::data,
-                            VariantWith<PickerBrowsingHistoryResult>(Field(
-                                "url", &PickerBrowsingHistoryResult::url,
-                                GURL("https://docs.google.com/notmatched")))),
-                        Property("data", &PickerSearchResult::data,
-                                 VariantWith<PickerBrowsingHistoryResult>(Field(
-                                     "url", &PickerBrowsingHistoryResult::url,
-                                     GURL("https://drive.google.com/"
-                                          "notmatched"))))))))))
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(
+                             VariantWith<PickerBrowsingHistoryResult>(
+                                 Field("url", &PickerBrowsingHistoryResult::url,
+                                       GURL("https://example.com"))),
+                             VariantWith<PickerBrowsingHistoryResult>(Field(
+                                 "url", &PickerBrowsingHistoryResult::url,
+                                 GURL("https://docs.google.com/notmatched"))),
+                             VariantWith<PickerBrowsingHistoryResult>(
+                                 Field("url", &PickerBrowsingHistoryResult::url,
+                                       GURL("https://drive.google.com/"
+                                            "notmatched")))))))))
       .Times(1);
 
   PickerSearchAggregator aggregator(
@@ -994,42 +918,32 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kDriveFiles),
                 Property("results", &PickerSearchResultsSection::results,
-                         ElementsAre(
-                             Property("data", &PickerSearchResult::data,
-                                      VariantWith<PickerDriveFileResult>(Field(
-                                          "id", &PickerDriveFileResult::id,
-                                          std::nullopt))),
-                             Property("data", &PickerSearchResult::data,
-                                      VariantWith<PickerDriveFileResult>(Field(
-                                          "id", &PickerDriveFileResult::id,
-                                          Optional(Eq("driveid1"))))),
-                             Property("data", &PickerSearchResult::data,
-                                      VariantWith<PickerDriveFileResult>(Field(
-                                          "id", &PickerDriveFileResult::id,
-                                          Optional(Eq("driveid2"))))),
-                             Property("data", &PickerSearchResult::data,
-                                      VariantWith<PickerDriveFileResult>(Field(
-                                          "id", &PickerDriveFileResult::id,
-                                          Optional(Eq("driveid3")))))))),
+                         ElementsAre(VariantWith<PickerDriveFileResult>(
+                                         Field("id", &PickerDriveFileResult::id,
+                                               std::nullopt)),
+                                     VariantWith<PickerDriveFileResult>(
+                                         Field("id", &PickerDriveFileResult::id,
+                                               Optional(Eq("driveid1")))),
+                                     VariantWith<PickerDriveFileResult>(
+                                         Field("id", &PickerDriveFileResult::id,
+                                               Optional(Eq("driveid2")))),
+                                     VariantWith<PickerDriveFileResult>(
+                                         Field("id", &PickerDriveFileResult::id,
+                                               Optional(Eq("driveid3"))))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kLinks),
-                Property(
-                    "results", &PickerSearchResultsSection::results,
-                    ElementsAre(
-                        Property("data", &PickerSearchResult::data,
-                                 VariantWith<PickerBrowsingHistoryResult>(Field(
-                                     "url", &PickerBrowsingHistoryResult::url,
-                                     GURL("https://example.com")))),
-                        Property(
-                            "data", &PickerSearchResult::data,
-                            VariantWith<PickerBrowsingHistoryResult>(Field(
-                                "url", &PickerBrowsingHistoryResult::url,
-                                GURL("https://docs.google.com/notmatched")))),
-                        Property("data", &PickerSearchResult::data,
-                                 VariantWith<PickerBrowsingHistoryResult>(Field(
-                                     "url", &PickerBrowsingHistoryResult::url,
-                                     GURL("https://drive.google.com/"
-                                          "notmatched"))))))))))
+                Property("results", &PickerSearchResultsSection::results,
+                         ElementsAre(
+                             VariantWith<PickerBrowsingHistoryResult>(
+                                 Field("url", &PickerBrowsingHistoryResult::url,
+                                       GURL("https://example.com"))),
+                             VariantWith<PickerBrowsingHistoryResult>(Field(
+                                 "url", &PickerBrowsingHistoryResult::url,
+                                 GURL("https://docs.google.com/notmatched"))),
+                             VariantWith<PickerBrowsingHistoryResult>(
+                                 Field("url", &PickerBrowsingHistoryResult::url,
+                                       GURL("https://drive.google.com/"
+                                            "notmatched")))))))))
       .Times(1);
 
   PickerSearchAggregator aggregator(
@@ -1084,44 +998,34 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                    PickerSectionType::kDriveFiles),
           Property(
               "results", &PickerSearchResultsSection::results,
-              ElementsAre(Property("data", &PickerSearchResult::data,
-                                   VariantWith<PickerDriveFileResult>(
-                                       Field("id", &PickerDriveFileResult::id,
-                                             std::nullopt))),
-                          Property("data", &PickerSearchResult::data,
-                                   VariantWith<PickerDriveFileResult>(
-                                       Field("id", &PickerDriveFileResult::id,
-                                             Optional(Eq("driveid1"))))),
-                          Property("data", &PickerSearchResult::data,
-                                   VariantWith<PickerDriveFileResult>(
-                                       Field("id", &PickerDriveFileResult::id,
-                                             Optional(Eq("driveid2"))))),
-                          Property("data", &PickerSearchResult::data,
-                                   VariantWith<PickerDriveFileResult>(
-                                       Field("id", &PickerDriveFileResult::id,
-                                             Optional(Eq("driveid3")))))))))))
+              ElementsAre(VariantWith<PickerDriveFileResult>(Field(
+                              "id", &PickerDriveFileResult::id, std::nullopt)),
+                          VariantWith<PickerDriveFileResult>(
+                              Field("id", &PickerDriveFileResult::id,
+                                    Optional(Eq("driveid1")))),
+                          VariantWith<PickerDriveFileResult>(
+                              Field("id", &PickerDriveFileResult::id,
+                                    Optional(Eq("driveid2")))),
+                          VariantWith<PickerDriveFileResult>(
+                              Field("id", &PickerDriveFileResult::id,
+                                    Optional(Eq("driveid3"))))))))))
       .Times(1);
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(AllOf(
           Property("type", &PickerSearchResultsSection::type,
                    PickerSectionType::kLinks),
-          Property(
-              "results", &PickerSearchResultsSection::results,
-              ElementsAre(
-                  Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerBrowsingHistoryResult>(
-                               Field("url", &PickerBrowsingHistoryResult::url,
-                                     GURL("https://example.com")))),
-                  Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerBrowsingHistoryResult>(Field(
-                               "url", &PickerBrowsingHistoryResult::url,
-                               GURL("https://docs.google.com/notmatched")))),
-                  Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerBrowsingHistoryResult>(
-                               Field("url", &PickerBrowsingHistoryResult::url,
-                                     GURL("https://drive.google.com/"
-                                          "notmatched"))))))))))
+          Property("results", &PickerSearchResultsSection::results,
+                   ElementsAre(VariantWith<PickerBrowsingHistoryResult>(Field(
+                                   "url", &PickerBrowsingHistoryResult::url,
+                                   GURL("https://example.com"))),
+                               VariantWith<PickerBrowsingHistoryResult>(Field(
+                                   "url", &PickerBrowsingHistoryResult::url,
+                                   GURL("https://docs.google.com/notmatched"))),
+                               VariantWith<PickerBrowsingHistoryResult>(Field(
+                                   "url", &PickerBrowsingHistoryResult::url,
+                                   GURL("https://drive.google.com/"
+                                        "notmatched")))))))))
       .Times(1);
 
   PickerSearchAggregator aggregator(
@@ -1176,44 +1080,34 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                    PickerSectionType::kDriveFiles),
           Property(
               "results", &PickerSearchResultsSection::results,
-              ElementsAre(Property("data", &PickerSearchResult::data,
-                                   VariantWith<PickerDriveFileResult>(
-                                       Field("id", &PickerDriveFileResult::id,
-                                             std::nullopt))),
-                          Property("data", &PickerSearchResult::data,
-                                   VariantWith<PickerDriveFileResult>(
-                                       Field("id", &PickerDriveFileResult::id,
-                                             Optional(Eq("driveid1"))))),
-                          Property("data", &PickerSearchResult::data,
-                                   VariantWith<PickerDriveFileResult>(
-                                       Field("id", &PickerDriveFileResult::id,
-                                             Optional(Eq("driveid2"))))),
-                          Property("data", &PickerSearchResult::data,
-                                   VariantWith<PickerDriveFileResult>(
-                                       Field("id", &PickerDriveFileResult::id,
-                                             Optional(Eq("driveid3")))))))))))
+              ElementsAre(VariantWith<PickerDriveFileResult>(Field(
+                              "id", &PickerDriveFileResult::id, std::nullopt)),
+                          VariantWith<PickerDriveFileResult>(
+                              Field("id", &PickerDriveFileResult::id,
+                                    Optional(Eq("driveid1")))),
+                          VariantWith<PickerDriveFileResult>(
+                              Field("id", &PickerDriveFileResult::id,
+                                    Optional(Eq("driveid2")))),
+                          VariantWith<PickerDriveFileResult>(
+                              Field("id", &PickerDriveFileResult::id,
+                                    Optional(Eq("driveid3"))))))))))
       .Times(1);
   EXPECT_CALL(
       search_results_callback,
       Call(ElementsAre(AllOf(
           Property("type", &PickerSearchResultsSection::type,
                    PickerSectionType::kLinks),
-          Property(
-              "results", &PickerSearchResultsSection::results,
-              ElementsAre(
-                  Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerBrowsingHistoryResult>(
-                               Field("url", &PickerBrowsingHistoryResult::url,
-                                     GURL("https://example.com")))),
-                  Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerBrowsingHistoryResult>(Field(
-                               "url", &PickerBrowsingHistoryResult::url,
-                               GURL("https://docs.google.com/notmatched")))),
-                  Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerBrowsingHistoryResult>(
-                               Field("url", &PickerBrowsingHistoryResult::url,
-                                     GURL("https://drive.google.com/"
-                                          "notmatched"))))))))))
+          Property("results", &PickerSearchResultsSection::results,
+                   ElementsAre(VariantWith<PickerBrowsingHistoryResult>(Field(
+                                   "url", &PickerBrowsingHistoryResult::url,
+                                   GURL("https://example.com"))),
+                               VariantWith<PickerBrowsingHistoryResult>(Field(
+                                   "url", &PickerBrowsingHistoryResult::url,
+                                   GURL("https://docs.google.com/notmatched"))),
+                               VariantWith<PickerBrowsingHistoryResult>(Field(
+                                   "url", &PickerBrowsingHistoryResult::url,
+                                   GURL("https://drive.google.com/"
+                                        "notmatched")))))))))
       .Times(1);
 
   PickerSearchAggregator aggregator(
@@ -1268,32 +1162,25 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                    PickerSectionType::kLinks),
           Property(
               "results", &PickerSearchResultsSection::results,
-              ElementsAre(
-                  Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerBrowsingHistoryResult>(
-                               Field("url", &PickerBrowsingHistoryResult::url,
-                                     GURL("https://example.com")))),
-                  Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerBrowsingHistoryResult>(Field(
-                               "url", &PickerBrowsingHistoryResult::url,
-                               GURL("https://docs.google.com/notmatched")))),
-                  Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerBrowsingHistoryResult>(Field(
-                               "url", &PickerBrowsingHistoryResult::url,
-                               GURL("https://docs.google.com/driveid1")))),
-                  Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerBrowsingHistoryResult>(Field(
-                               "url", &PickerBrowsingHistoryResult::url,
-                               GURL("https://docs.google.com/driveid1?edit")))),
-                  Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerBrowsingHistoryResult>(Field(
-                               "url", &PickerBrowsingHistoryResult::url,
-                               GURL("https://drive.google.com/driveid2")))),
-                  Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerBrowsingHistoryResult>(
-                               Field("url", &PickerBrowsingHistoryResult::url,
-                                     GURL("https://drive.google.com/"
-                                          "notmatched"))))))))))
+              ElementsAre(VariantWith<PickerBrowsingHistoryResult>(
+                              Field("url", &PickerBrowsingHistoryResult::url,
+                                    GURL("https://example.com"))),
+                          VariantWith<PickerBrowsingHistoryResult>(Field(
+                              "url", &PickerBrowsingHistoryResult::url,
+                              GURL("https://docs.google.com/notmatched"))),
+                          VariantWith<PickerBrowsingHistoryResult>(
+                              Field("url", &PickerBrowsingHistoryResult::url,
+                                    GURL("https://docs.google.com/driveid1"))),
+                          VariantWith<PickerBrowsingHistoryResult>(Field(
+                              "url", &PickerBrowsingHistoryResult::url,
+                              GURL("https://docs.google.com/driveid1?edit"))),
+                          VariantWith<PickerBrowsingHistoryResult>(
+                              Field("url", &PickerBrowsingHistoryResult::url,
+                                    GURL("https://drive.google.com/driveid2"))),
+                          VariantWith<PickerBrowsingHistoryResult>(
+                              Field("url", &PickerBrowsingHistoryResult::url,
+                                    GURL("https://drive.google.com/"
+                                         "notmatched")))))))))
       .Times(1);
   EXPECT_CALL(
       search_results_callback,
@@ -1302,14 +1189,11 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                    PickerSectionType::kDriveFiles),
           Property(
               "results", &PickerSearchResultsSection::results,
-              ElementsAre(Property("data", &PickerSearchResult::data,
-                                   VariantWith<PickerDriveFileResult>(
-                                       Field("id", &PickerDriveFileResult::id,
-                                             std::nullopt))),
-                          Property("data", &PickerSearchResult::data,
-                                   VariantWith<PickerDriveFileResult>(
-                                       Field("id", &PickerDriveFileResult::id,
-                                             Optional(Eq("driveid3")))))))))))
+              ElementsAre(VariantWith<PickerDriveFileResult>(Field(
+                              "id", &PickerDriveFileResult::id, std::nullopt)),
+                          VariantWith<PickerDriveFileResult>(
+                              Field("id", &PickerDriveFileResult::id,
+                                    Optional(Eq("driveid3"))))))))))
       .Times(1);
 
   PickerSearchAggregator aggregator(
@@ -1364,32 +1248,25 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                    PickerSectionType::kLinks),
           Property(
               "results", &PickerSearchResultsSection::results,
-              ElementsAre(
-                  Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerBrowsingHistoryResult>(
-                               Field("url", &PickerBrowsingHistoryResult::url,
-                                     GURL("https://example.com")))),
-                  Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerBrowsingHistoryResult>(Field(
-                               "url", &PickerBrowsingHistoryResult::url,
-                               GURL("https://docs.google.com/notmatched")))),
-                  Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerBrowsingHistoryResult>(Field(
-                               "url", &PickerBrowsingHistoryResult::url,
-                               GURL("https://docs.google.com/driveid1")))),
-                  Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerBrowsingHistoryResult>(Field(
-                               "url", &PickerBrowsingHistoryResult::url,
-                               GURL("https://docs.google.com/driveid1?edit")))),
-                  Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerBrowsingHistoryResult>(Field(
-                               "url", &PickerBrowsingHistoryResult::url,
-                               GURL("https://drive.google.com/driveid2")))),
-                  Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerBrowsingHistoryResult>(
-                               Field("url", &PickerBrowsingHistoryResult::url,
-                                     GURL("https://drive.google.com/"
-                                          "notmatched"))))))))))
+              ElementsAre(VariantWith<PickerBrowsingHistoryResult>(
+                              Field("url", &PickerBrowsingHistoryResult::url,
+                                    GURL("https://example.com"))),
+                          VariantWith<PickerBrowsingHistoryResult>(Field(
+                              "url", &PickerBrowsingHistoryResult::url,
+                              GURL("https://docs.google.com/notmatched"))),
+                          VariantWith<PickerBrowsingHistoryResult>(
+                              Field("url", &PickerBrowsingHistoryResult::url,
+                                    GURL("https://docs.google.com/driveid1"))),
+                          VariantWith<PickerBrowsingHistoryResult>(Field(
+                              "url", &PickerBrowsingHistoryResult::url,
+                              GURL("https://docs.google.com/driveid1?edit"))),
+                          VariantWith<PickerBrowsingHistoryResult>(
+                              Field("url", &PickerBrowsingHistoryResult::url,
+                                    GURL("https://drive.google.com/driveid2"))),
+                          VariantWith<PickerBrowsingHistoryResult>(
+                              Field("url", &PickerBrowsingHistoryResult::url,
+                                    GURL("https://drive.google.com/"
+                                         "notmatched")))))))))
       .Times(1);
   EXPECT_CALL(
       search_results_callback,
@@ -1398,14 +1275,11 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                    PickerSectionType::kDriveFiles),
           Property(
               "results", &PickerSearchResultsSection::results,
-              ElementsAre(Property("data", &PickerSearchResult::data,
-                                   VariantWith<PickerDriveFileResult>(
-                                       Field("id", &PickerDriveFileResult::id,
-                                             std::nullopt))),
-                          Property("data", &PickerSearchResult::data,
-                                   VariantWith<PickerDriveFileResult>(
-                                       Field("id", &PickerDriveFileResult::id,
-                                             Optional(Eq("driveid3")))))))))))
+              ElementsAre(VariantWith<PickerDriveFileResult>(Field(
+                              "id", &PickerDriveFileResult::id, std::nullopt)),
+                          VariantWith<PickerDriveFileResult>(
+                              Field("id", &PickerDriveFileResult::id,
+                                    Optional(Eq("driveid3"))))))))))
       .Times(1);
 
   PickerSearchAggregator aggregator(

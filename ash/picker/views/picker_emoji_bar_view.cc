@@ -97,7 +97,7 @@ std::u16string GetTooltipForEmojiResult(const PickerEmojiResult& data) {
 std::unique_ptr<PickerItemView> CreateItemView(
     const PickerSearchResult& result,
     base::RepeatingClosure select_result_callback) {
-  const auto* data = std::get_if<PickerEmojiResult>(&result.data());
+  const auto* data = std::get_if<PickerEmojiResult>(&result);
   CHECK(data);
 
   std::unique_ptr<PickerItemView> item_view;

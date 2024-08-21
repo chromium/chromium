@@ -50,9 +50,7 @@ TEST_F(PickerSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
-  EXPECT_CALL(callback,
-              Run(Contains(Property(&PickerSearchResult::data,
-                                    VariantWith<PickerNewWindowResult>(_)))))
+  EXPECT_CALL(callback, Run(Contains(VariantWith<PickerNewWindowResult>(_))))
       .Times(1);
 
   controller.GetSuggestions(model, callback.Get());
@@ -74,13 +72,10 @@ TEST_F(PickerSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
-  EXPECT_CALL(
-      callback,
-      Run(AllOf(Not(IsEmpty()),
-                Each(Property("data", &PickerSearchResult::data,
-                              VariantWith<PickerEditorResult>(Field(
-                                  &PickerEditorResult::mode,
-                                  PickerEditorResult::Mode::kRewrite)))))))
+  EXPECT_CALL(callback, Run(AllOf(Not(IsEmpty()),
+                                  Each(VariantWith<PickerEditorResult>(Field(
+                                      &PickerEditorResult::mode,
+                                      PickerEditorResult::Mode::kRewrite))))))
       .Times(1);
 
   controller.GetSuggestions(model, callback.Get());
@@ -96,9 +91,7 @@ TEST_F(PickerSuggestionsControllerTest,
                     &keyboard, PickerModel::EditorStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
-  EXPECT_CALL(callback,
-              Run(Contains(Property(&PickerSearchResult::data,
-                                    VariantWith<PickerNewWindowResult>(_)))))
+  EXPECT_CALL(callback, Run(Contains(VariantWith<PickerNewWindowResult>(_))))
       .Times(0);
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
 
@@ -226,18 +219,12 @@ TEST_F(PickerSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run).Times(AnyNumber());
-  EXPECT_CALL(
-      callback,
-      Run(ElementsAre(Property(&PickerSearchResult::data,
-                               VariantWith<PickerBrowsingHistoryResult>(_)))))
-      .Times(1);
   EXPECT_CALL(callback,
-              Run(ElementsAre(Property(&PickerSearchResult::data,
-                                       VariantWith<PickerDriveFileResult>(_)))))
+              Run(ElementsAre(VariantWith<PickerBrowsingHistoryResult>(_))))
       .Times(1);
-  EXPECT_CALL(callback,
-              Run(ElementsAre(Property(&PickerSearchResult::data,
-                                       VariantWith<PickerLocalFileResult>(_)))))
+  EXPECT_CALL(callback, Run(ElementsAre(VariantWith<PickerDriveFileResult>(_))))
+      .Times(1);
+  EXPECT_CALL(callback, Run(ElementsAre(VariantWith<PickerLocalFileResult>(_))))
       .Times(1);
 
   controller.GetSuggestions(model, callback.Get());
@@ -339,10 +326,8 @@ TEST_F(PickerSuggestionsControllerTest, GetSuggestionsForClipboardCategory) {
 
   EXPECT_THAT(
       future.Take(),
-      ElementsAre(Property("data", &PickerSearchResult::data,
-                           VariantWith<PickerClipboardResult>(FieldsAre(
-                               _, PickerClipboardResult::DisplayFormat::kText,
-                               _, u"abc", _, _)))));
+      ElementsAre(VariantWith<PickerClipboardResult>(FieldsAre(
+          _, PickerClipboardResult::DisplayFormat::kText, _, u"abc", _, _))));
 }
 
 }  // namespace

@@ -83,7 +83,7 @@ const char* SearchSourceToHistogram(PickerSearchSource source) {
   std::vector<PickerSearchResult*> results_to_remove;
 
   for (PickerSearchResult& link : omnibox_results) {
-    auto* link_data = std::get_if<PickerBrowsingHistoryResult>(&link.data());
+    auto* link_data = std::get_if<PickerBrowsingHistoryResult>(&link);
     if (link_data == nullptr) {
       deduped_results.push_back(std::move(link));
       continue;

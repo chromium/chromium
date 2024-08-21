@@ -37,18 +37,14 @@ base::Time TimeFromDateString(const std::string& time_string) {
 MATCHER(ResultMatchesDate, "") {
   const auto& [actual_result, expected_result] = arg;
   return ExplainMatchResult(
-      AllOf(Property("data", &PickerSearchResult::data,
-                     VariantWith<PickerTextResult>(
-                         Field("text", &PickerTextResult::primary_text,
-                               expected_result.primary_text))),
-            Property("data", &PickerSearchResult::data,
-                     VariantWith<PickerTextResult>(
-                         Field("text", &PickerTextResult::secondary_text,
-                               expected_result.secondary_text))),
-            Property("data", &PickerSearchResult::data,
-                     VariantWith<PickerTextResult>(
-                         Field("source", &PickerTextResult::source,
-                               expected_result.source)))),
+      AllOf(VariantWith<PickerTextResult>(Field("text",
+                                                &PickerTextResult::primary_text,
+                                                expected_result.primary_text)),
+            VariantWith<PickerTextResult>(
+                Field("text", &PickerTextResult::secondary_text,
+                      expected_result.secondary_text)),
+            VariantWith<PickerTextResult>(Field(
+                "source", &PickerTextResult::source, expected_result.source))),
       actual_result, result_listener);
 }
 
@@ -215,14 +211,11 @@ TEST(PickerSuggestedDateResults, ReturnsSuggestedResults) {
   EXPECT_THAT(results, Not(IsEmpty()));
   EXPECT_THAT(
       results,
-      Each(Property(
-          "data", &PickerSearchResult::data,
-          VariantWith<PickerSearchRequestResult>(AllOf(
-              Field("primary_text", &PickerSearchRequestResult::primary_text,
-                    Not(IsEmpty())),
-              Field("secondary_text",
-                    &PickerSearchRequestResult::secondary_text,
-                    Not(IsEmpty())))))));
+      Each(VariantWith<PickerSearchRequestResult>(AllOf(
+          Field("primary_text", &PickerSearchRequestResult::primary_text,
+                Not(IsEmpty())),
+          Field("secondary_text", &PickerSearchRequestResult::secondary_text,
+                Not(IsEmpty()))))));
 }
 }  // namespace
 }  // namespace ash

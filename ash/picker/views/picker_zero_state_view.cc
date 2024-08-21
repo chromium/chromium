@@ -268,7 +268,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
           .Build();
 
   for (const PickerSearchResult& result : results) {
-    if (std::holds_alternative<PickerCapsLockResult>(result.data())) {
+    if (std::holds_alternative<PickerCapsLockResult>(result)) {
       delegate_->SetCapsLockDisplayed(true);
       switch (delegate_->GetCapsLockPosition()) {
         case PickerCapsLockPosition::kTop:
@@ -288,12 +288,12 @@ void PickerZeroStateView::OnFetchSuggestedResults(
                              GetOrCreateSectionView(PickerCategoryType::kMore));
           break;
       }
-    } else if (std::holds_alternative<PickerNewWindowResult>(result.data())) {
+    } else if (std::holds_alternative<PickerNewWindowResult>(result)) {
       new_window_submenu->AddEntry(
           result, base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                                       weak_ptr_factory_.GetWeakPtr(), result));
     } else if (const auto* editor_data =
-                   std::get_if<PickerEditorResult>(&result.data())) {
+                   std::get_if<PickerEditorResult>(&result)) {
       auto callback =
           base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                               weak_ptr_factory_.GetWeakPtr(), result);
@@ -309,8 +309,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
           tone_submenu->AddEntry(result, std::move(callback));
           break;
       }
-    } else if (std::holds_alternative<PickerCaseTransformResult>(
-                   result.data())) {
+    } else if (std::holds_alternative<PickerCaseTransformResult>(result)) {
       case_transform_submenu->AddEntry(
           result, base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                                       weak_ptr_factory_.GetWeakPtr(), result));

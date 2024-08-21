@@ -258,48 +258,18 @@ struct ASH_PUBLIC_EXPORT PickerCaseTransformResult {
   bool operator==(const PickerCaseTransformResult&) const;
 };
 
-using PickerSearchResultData = std::variant<PickerTextResult,
-                                            PickerSearchRequestResult,
-                                            PickerEmojiResult,
-                                            PickerClipboardResult,
-                                            PickerBrowsingHistoryResult,
-                                            PickerLocalFileResult,
-                                            PickerDriveFileResult,
-                                            PickerCategoryResult,
-                                            PickerEditorResult,
-                                            PickerNewWindowResult,
-                                            PickerCapsLockResult,
-                                            PickerCaseTransformResult>;
-
-// Represents a search result, which might be text or other types of media.
-// TODO: b/328537508 - Remove the `data` member and replace this with
-// PickerSearchResultData directly.
-class ASH_PUBLIC_EXPORT PickerSearchResult : public PickerSearchResultData {
- public:
-  using Data = PickerSearchResultData;
-
-  // These are temporary implicit constructors for migration.
-  // TODO: b/328537508 - Replace this class completely with the variant.
-  PickerSearchResult(PickerTextResult data);
-  PickerSearchResult(PickerSearchRequestResult data);
-  PickerSearchResult(PickerEmojiResult data);
-  PickerSearchResult(PickerClipboardResult data);
-  PickerSearchResult(PickerBrowsingHistoryResult data);
-  PickerSearchResult(PickerLocalFileResult data);
-  PickerSearchResult(PickerDriveFileResult data);
-  PickerSearchResult(PickerCategoryResult data);
-  PickerSearchResult(PickerEditorResult data);
-  PickerSearchResult(PickerNewWindowResult data);
-  PickerSearchResult(PickerCapsLockResult data);
-  PickerSearchResult(PickerCaseTransformResult data);
-  PickerSearchResult(const PickerSearchResult&);
-  PickerSearchResult& operator=(const PickerSearchResult&);
-  PickerSearchResult(PickerSearchResult&&);
-  PickerSearchResult& operator=(PickerSearchResult&&);
-  ~PickerSearchResult();
-
-  const Data& data() const;
-};
+using PickerSearchResult = std::variant<PickerTextResult,
+                                        PickerSearchRequestResult,
+                                        PickerEmojiResult,
+                                        PickerClipboardResult,
+                                        PickerBrowsingHistoryResult,
+                                        PickerLocalFileResult,
+                                        PickerDriveFileResult,
+                                        PickerCategoryResult,
+                                        PickerEditorResult,
+                                        PickerNewWindowResult,
+                                        PickerCapsLockResult,
+                                        PickerCaseTransformResult>;
 
 }  // namespace ash
 

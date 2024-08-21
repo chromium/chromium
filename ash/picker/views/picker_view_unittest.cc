@@ -2862,10 +2862,8 @@ TEST_F(PickerViewTest, EnterOnZeroState) {
 
   EXPECT_THAT(
       delegate.last_inserted_result(),
-      Optional(Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerTextResult>(Field(
-                            "primary text", &PickerTextResult::primary_text,
-                            u"zero state")))));
+      Optional(VariantWith<PickerTextResult>(Field(
+          "primary text", &PickerTextResult::primary_text, u"zero state"))));
 }
 
 // TODO: b/351920494 - Insert the first new result instead of doing nothing.
@@ -2950,10 +2948,8 @@ TEST_F(PickerViewTest, EnterOnSearchResults) {
 
   EXPECT_THAT(
       delegate.last_inserted_result(),
-      Optional(Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerTextResult>(Field(
-                            "primary text", &PickerTextResult::primary_text,
-                            u"first search")))));
+      Optional(VariantWith<PickerTextResult>(Field(
+          "primary text", &PickerTextResult::primary_text, u"first search"))));
 }
 
 // TODO: b/351920494 - Insert the first new result instead of doing nothing.

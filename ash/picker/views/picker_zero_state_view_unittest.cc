@@ -180,12 +180,10 @@ TEST_F(PickerZeroStateViewTest, ShowsSuggestedResults) {
       &submenu_controller_, &preview_controller_));
   widget->Show();
 
-  EXPECT_CALL(mock_delegate,
-              SelectZeroStateResult(
-                  Property("data", &ash::PickerSearchResult::data,
-                           VariantWith<ash::PickerDriveFileResult>(Field(
-                               "title", &ash::PickerDriveFileResult::title,
-                               u"test drive file")))))
+  EXPECT_CALL(
+      mock_delegate,
+      SelectZeroStateResult(VariantWith<ash::PickerDriveFileResult>(Field(
+          "title", &ash::PickerDriveFileResult::title, u"test drive file"))))
       .Times(1);
 
   ASSERT_THAT(
@@ -254,10 +252,8 @@ TEST_F(PickerZeroStateViewTest,
   task_environment()->RunUntilIdle();
 
   EXPECT_CALL(mock_delegate,
-              SelectZeroStateResult(Property(
-                  "data", &ash::PickerSearchResult::data,
-                  VariantWith<ash::PickerCapsLockResult>(Field(
-                      "enabled", &ash::PickerCapsLockResult::enabled, true)))))
+              SelectZeroStateResult(VariantWith<ash::PickerCapsLockResult>(
+                  Field("enabled", &ash::PickerCapsLockResult::enabled, true))))
       .Times(1);
 
   PickerItemView* item_view =
@@ -295,10 +291,8 @@ TEST_F(PickerZeroStateViewTest, PutsCapsLockInMoreCategoryForBottomCase) {
   widget->Show();
 
   EXPECT_CALL(mock_delegate,
-              SelectZeroStateResult(Property(
-                  "data", &ash::PickerSearchResult::data,
-                  VariantWith<ash::PickerCapsLockResult>(Field(
-                      "enabled", &ash::PickerCapsLockResult::enabled, true)))))
+              SelectZeroStateResult(VariantWith<ash::PickerCapsLockResult>(
+                  Field("enabled", &ash::PickerCapsLockResult::enabled, true))))
       .Times(1);
 
   PickerItemView* item_view = view->category_section_views_for_testing()

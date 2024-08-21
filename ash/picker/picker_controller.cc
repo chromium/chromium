@@ -213,7 +213,7 @@ InsertionContent GetInsertionContentForResult(
             return std::monostate();
           },
       },
-      result.data());
+      result);
 }
 
 std::vector<PickerSearchResultsSection> CreateSingleSectionForCategoryResults(
@@ -495,7 +495,7 @@ void PickerController::OpenResult(const PickerSearchResult& result) {
                                  PickerTextResult::Source::kCaseTransform));
           },
       },
-      result.data());
+      result);
 }
 
 void PickerController::ShowEmojiPicker(ui::EmojiPickerCategory category,
@@ -575,7 +575,7 @@ PickerActionType PickerController::GetActionForResult(
           [&](const PickerCaseTransformResult& data) {
             return PickerActionType::kDo;
           }},
-      result.data());
+      result);
 }
 
 std::vector<PickerSearchResult> PickerController::GetSuggestedEmoji() {
@@ -699,7 +699,7 @@ void PickerController::InsertResultOnNextFocus(
 
   // Update emoji history in prefs the result is an emoji/symbol/emoticon.
   CHECK(model_);
-  if (auto* data = std::get_if<PickerEmojiResult>(&result.data());
+  if (auto* data = std::get_if<PickerEmojiResult>(&result);
       data != nullptr && model_->should_do_learning()) {
     emoji_history_model_->UpdateRecentEmoji(
         EmojiResultTypeToCategory(data->type), base::UTF16ToUTF8(data->text));

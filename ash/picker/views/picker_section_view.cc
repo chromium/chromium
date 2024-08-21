@@ -335,7 +335,7 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
             return item_view;
           },
       },
-      result.data());
+      result);
 }
 
 void PickerSectionView::AddTitleLabel(const std::u16string& title_text) {
