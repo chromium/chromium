@@ -86,7 +86,7 @@ public abstract class RequestGenerator {
             serializer.startTag(null, "os");
             serializer.attribute(null, "platform", "android");
             serializer.attribute(null, "version", Build.VERSION.RELEASE);
-            serializer.attribute(null, "arch", "arm");
+            serializer.attribute(null, "arch", BuildInfo.getArch());
             serializer.endTag(null, "os");
 
             // Set up <app version="" ...>
