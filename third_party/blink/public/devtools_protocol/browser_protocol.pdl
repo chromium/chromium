@@ -8077,6 +8077,7 @@ domain Page
       otp-credentials
       payment
       picture-in-picture
+      popins
       private-aggregation
       private-state-token-issuance
       private-state-token-redemption
