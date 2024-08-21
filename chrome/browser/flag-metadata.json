@@ -1053,7 +1053,7 @@
   {
     "name": "bluetooth-floss-availability-check",
     "owners": [ "howardchung@google.com", "chromeos-bt-team@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 136
   },
   {
     "name": "bluetooth-floss-coredump",
@@ -1068,12 +1068,12 @@
   {
     "name": "bluetooth-use-floss",
     "owners": ["abhishekpandit@chromium.org", "chromeos-bt-champs@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 136
   },
   {
     "name": "bluetooth-use-llprivacy",
     "owners": ["jiangzp@chromium.org", "chromeos-bt-champs@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 136
   },
   {
     "name": "bluetooth-wifi-qs-pod-refresh",
