@@ -186,10 +186,12 @@ void UDPSocketEventDispatcher::DispatchEvent(void* browser_context_id,
                                              std::unique_ptr<Event> event) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context_id)) {
+    return;
+  }
+
   content::BrowserContext* context =
       reinterpret_cast<content::BrowserContext*>(browser_context_id);
-  if (!extensions::ExtensionsBrowserClient::Get()->IsValidContext(context))
-    return;
   EventRouter* router = EventRouter::Get(context);
   if (router) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

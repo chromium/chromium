@@ -70,7 +70,8 @@ class WarningService : public KeyedService, public ExtensionRegistryObserver {
 
   // Notifies the WarningService of browser_context |browser_context_id| that
   // new |warnings| occurred and triggers a warning badge.
-  static void NotifyWarningsOnUI(void* profile_id, const WarningSet& warnings);
+  static void NotifyWarningsOnUI(void* browser_context_id,
+                                 const WarningSet& warnings);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
