@@ -150,8 +150,8 @@ struct SlotSpanMetadata {
       uintptr_t address);
   PA_ALWAYS_INLINE static SlotSpanMetadata* FromObjectInnerPtr(void* ptr);
 
-  PA_ALWAYS_INLINE ReadOnlyPartitionSuperPageExtentEntry* ToSuperPageExtent()
-      const;
+  PA_ALWAYS_INLINE PartitionSuperPageExtentEntry<MetadataKind::kReadOnly>*
+  ToSuperPageExtent() const;
 
   // Checks if it is feasible to store raw_size.
   PA_ALWAYS_INLINE bool CanStoreRawSize() const { return can_store_raw_size_; }
@@ -256,6 +256,7 @@ inline constexpr SlotSpanMetadata::SlotSpanMetadata() noexcept
 inline SlotSpanMetadata::SlotSpanMetadata(const SlotSpanMetadata&) = default;
 
 // Metadata of a non-first partition page in a slot span.
+template <MetadataKind kind>
 struct SubsequentPageMetadata {
   // Raw size is the size needed to satisfy the allocation (requested size +
   // extras). If available, it can be used to report better statistics or to
@@ -267,7 +268,7 @@ struct SubsequentPageMetadata {
   // - there is more than one partition page in the slot span (the metadata of
   //   the first one is used to store slot information, but the second one is
   //   available for extra information)
-  size_t raw_size;
+  MaybeConstT<kind, size_t> raw_size;
 };
 
 // Each partition page has metadata associated with it. The metadata of the
@@ -277,18 +278,20 @@ struct SubsequentPageMetadata {
 // "Pack" the union so that common page metadata still fits within
 // kPageMetadataSize. (SlotSpanMetadata is also "packed".)
 #pragma pack(push, 1)
-struct PartitionPageMetadata {
+template <MetadataKind kind>
+struct PartitionPageMetadataBase {
   union {
     SlotSpanMetadata slot_span_metadata;
 
-    SubsequentPageMetadata subsequent_page_metadata;
+    SubsequentPageMetadata<kind> subsequent_page_metadata;
 
     // sizeof(PartitionPageMetadata) must always be:
     // - a power of 2 (for fast modulo operations)
     // - below kPageMetadataSize
     //
     // This makes sure that this is respected no matter the architecture.
-    char optional_padding[kPageMetadataSize - sizeof(uint8_t) - sizeof(bool)];
+    MaybeConstT<kind, char>
+        optional_padding[kPageMetadataSize - sizeof(uint8_t) - sizeof(bool)];
   };
 
   // The first PartitionPage of the slot span holds its metadata. This offset
@@ -302,7 +305,8 @@ struct PartitionPageMetadata {
   static constexpr uint16_t kMaxSlotSpanMetadataBits = 6;
   static constexpr uint16_t kMaxSlotSpanMetadataOffset =
       (1 << kMaxSlotSpanMetadataBits) - 1;
-  uint8_t slot_span_metadata_offset : kMaxSlotSpanMetadataBits;
+  MaybeConstT<kind, uint8_t> slot_span_metadata_offset
+      : kMaxSlotSpanMetadataBits;
 
   // |is_valid| tells whether the page is part of a slot span. If |false|,
   // |has_valid_span_after_this| tells whether it's an unused region in between
@@ -310,15 +314,75 @@ struct PartitionPageMetadata {
   // Note, |is_valid| has been added for clarity, but if we ever need to save
   // this bit, it can be inferred from:
   //   |!slot_span_metadata_offset && slot_span_metadata->bucket|.
-  bool is_valid : 1;
-  bool has_valid_span_after_this : 1;
-  uint8_t unused;
+  MaybeConstT<kind, bool> is_valid : 1;
+  MaybeConstT<kind, bool> has_valid_span_after_this : 1;
+  MaybeConstT<kind, uint8_t> unused;
+};
 
-  PA_ALWAYS_INLINE static PartitionPageMetadata* FromAddr(uintptr_t address);
+template <MetadataKind kind>
+struct PartitionPageMetadata;
+
+template <>
+struct PartitionPageMetadata<MetadataKind::kReadOnly>
+    : public PartitionPageMetadataBase<MetadataKind::kReadOnly> {
+  PA_ALWAYS_INLINE static PartitionPageMetadata<MetadataKind::kReadOnly>*
+  FromAddr(uintptr_t address);
+
+  PA_ALWAYS_INLINE PartitionPageMetadata<MetadataKind::kWritable>* ToWritable(
+      PartitionRoot* root) {
+    return ToWritableInternal(root);
+  }
+
+  // In order to resolve circular dependencies, i.e. ToWritable() needs
+  // PartitionRoot, define template method: ToWritableInternal() here and
+  // ToWritable() uses it.
+  template <typename T>
+  PartitionPageMetadata<MetadataKind::kWritable>* ToWritableInternal(
+      [[maybe_unused]] T* root) {
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+    return reinterpret_cast<PartitionPageMetadata<MetadataKind::kWritable>*>(
+        reinterpret_cast<intptr_t>(this) + root->ShadowPoolOffset());
+#else
+    return reinterpret_cast<PartitionPageMetadata<MetadataKind::kWritable>*>(
+        this);
+#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
+  }
+};
+
+template <>
+struct PartitionPageMetadata<MetadataKind::kWritable>
+    : public PartitionPageMetadataBase<MetadataKind::kWritable> {
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+  PA_ALWAYS_INLINE PartitionPageMetadata<MetadataKind::kReadOnly>* ToReadOnly(
+      PartitionRoot* root) {
+    return ToReadOnlyInternal(root);
+  }
+
+  // In order to resolve circular dependencies, i.e. ToReadOnly() needs
+  // PartitionRoot, define template method: ToReadOnlyInternal() here and
+  // ToReadOnly() uses it.
+  template <typename T>
+  PartitionPageMetadata<MetadataKind::kReadOnly>* ToReadOnlyInternal(
+      [[maybe_unused]] T* root) {
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+    return reinterpret_cast<PartitionPageMetadata<MetadataKind::kReadOnly>*>(
+        reinterpret_cast<intptr_t>(this) + root->ShadowPoolOffset());
+#else
+    return reinterpret_cast<PartitionPageMetadata<MetadataKind::kReadOnly>*>(
+        this);
+#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
+  }
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 };
 #pragma pack(pop)
-static_assert(sizeof(PartitionPageMetadata) == kPageMetadataSize,
+
+static_assert(sizeof(PartitionPageMetadata<MetadataKind::kWritable>) ==
+                  kPageMetadataSize,
               "PartitionPage must be able to fit in a metadata slot");
+static_assert(sizeof(PartitionPageMetadata<MetadataKind::kReadOnly>) ==
+                  sizeof(PartitionPageMetadata<MetadataKind::kWritable>),
+              "The size of PartitionPageMetadata<MetadataKind::kWritable> must "
+              "be equal to PartitionPageMetadata<MetadataKind::kReadOnly>.");
 
 // Certain functions rely on PartitionPageMetadata being either SlotSpanMetadata
 // or SubsequentPageMetadata, and therefore freely casting between each other.
@@ -327,39 +391,55 @@ static_assert(sizeof(PartitionPageMetadata) == kPageMetadataSize,
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #endif
-static_assert(offsetof(PartitionPageMetadata, slot_span_metadata) == 0, "");
-static_assert(offsetof(PartitionPageMetadata, subsequent_page_metadata) == 0,
-              "");
+static_assert(offsetof(PartitionPageMetadata<MetadataKind::kReadOnly>,
+                       slot_span_metadata) == 0,
+              "slot_span_metadata must be placed at the beginning of "
+              "PartitionPageMetadata<MetadataKind::kReadOnly>.");
+static_assert(offsetof(PartitionPageMetadata<MetadataKind::kReadOnly>,
+                       subsequent_page_metadata) == 0,
+              "subsequent_page_metadata must be placed at the beginning of "
+              "PartitionPageMetadata<MetadataKind::kReadOnly>.");
+static_assert(offsetof(PartitionPageMetadata<MetadataKind::kWritable>,
+                       slot_span_metadata) == 0,
+              "slot_span_metadata must be placed at the beginning of "
+              "PartitionPageMetadata<MetadataKind::kWritable>.");
+static_assert(offsetof(PartitionPageMetadata<MetadataKind::kWritable>,
+                       subsequent_page_metadata) == 0,
+              "subsequent_page_metadata must be placed at the beginning of "
+              "PartitionPageMetadata<MetadataKind::kWritable>.");
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
 
-PA_ALWAYS_INLINE PartitionPageMetadata* PartitionSuperPageToMetadataArea(
-    uintptr_t super_page) {
+PA_ALWAYS_INLINE PartitionPageMetadata<MetadataKind::kReadOnly>*
+PartitionSuperPageToMetadataArea(uintptr_t super_page) {
   // This can't be just any super page, but it has to be the first super page of
   // the reservation, as we assume here that the metadata is near its beginning.
   PA_DCHECK(IsReservationStart(super_page));
   PA_DCHECK(!(super_page & kSuperPageOffsetMask));
   // The metadata area is exactly one system page (the guard page) into the
   // super page.
-  return reinterpret_cast<PartitionPageMetadata*>(super_page +
-                                                  SystemPageSize());
+  return reinterpret_cast<PartitionPageMetadata<MetadataKind::kReadOnly>*>(
+      super_page + SystemPageSize());
 }
 
-PA_ALWAYS_INLINE const SubsequentPageMetadata* GetSubsequentPageMetadata(
-    const PartitionPageMetadata* page_metadata) {
+PA_ALWAYS_INLINE const SubsequentPageMetadata<MetadataKind::kReadOnly>*
+GetSubsequentPageMetadata(
+    const PartitionPageMetadata<MetadataKind::kReadOnly>* page_metadata) {
   return &(page_metadata + 1)->subsequent_page_metadata;
 }
 
-PA_ALWAYS_INLINE SubsequentPageMetadata* GetSubsequentPageMetadata(
-    PartitionPageMetadata* page_metadata) {
+PA_ALWAYS_INLINE SubsequentPageMetadata<MetadataKind::kWritable>*
+GetSubsequentPageMetadata(
+    PartitionPageMetadata<MetadataKind::kWritable>* page_metadata) {
   return &(page_metadata + 1)->subsequent_page_metadata;
 }
 
-PA_ALWAYS_INLINE ReadOnlyPartitionSuperPageExtentEntry*
+PA_ALWAYS_INLINE PartitionSuperPageExtentEntry<MetadataKind::kReadOnly>*
 PartitionSuperPageToExtent(uintptr_t super_page) {
   // The very first entry of the metadata is the super page extent entry.
-  return reinterpret_cast<ReadOnlyPartitionSuperPageExtentEntry*>(
+  return reinterpret_cast<
+      PartitionSuperPageExtentEntry<MetadataKind::kReadOnly>*>(
       PartitionSuperPageToMetadataArea(super_page));
 }
 
@@ -393,7 +473,7 @@ PA_ALWAYS_INLINE size_t SuperPagePayloadSize(uintptr_t super_page) {
   return SuperPagePayloadEnd(super_page) - SuperPagePayloadBegin(super_page);
 }
 
-PA_ALWAYS_INLINE ReadOnlyPartitionSuperPageExtentEntry*
+PA_ALWAYS_INLINE PartitionSuperPageExtentEntry<MetadataKind::kReadOnly>*
 SlotSpanMetadata::ToSuperPageExtent() const {
   uintptr_t super_page = reinterpret_cast<uintptr_t>(this) & kSuperPageBaseMask;
   return PartitionSuperPageToExtent(super_page);
@@ -419,8 +499,8 @@ PA_ALWAYS_INLINE bool IsWithinSuperPagePayload(uintptr_t address) {
 // While it is generally valid for |ptr| to be in the middle of an allocation,
 // care has to be taken with direct maps that span multiple super pages. This
 // function's behavior is undefined if |ptr| lies in a subsequent super page.
-PA_ALWAYS_INLINE PartitionPageMetadata* PartitionPageMetadata::FromAddr(
-    uintptr_t address) {
+PA_ALWAYS_INLINE PartitionPageMetadata<MetadataKind::kReadOnly>*
+PartitionPageMetadata<MetadataKind::kReadOnly>::FromAddr(uintptr_t address) {
   uintptr_t super_page = address & kSuperPageBaseMask;
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
@@ -473,7 +553,8 @@ SlotSpanMetadata::ToSlotSpanStart(const SlotSpanMetadata* slot_span) {
 // partition page.
 PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromAddr(
     uintptr_t address) {
-  auto* page_metadata = PartitionPageMetadata::FromAddr(address);
+  auto* page_metadata =
+      PartitionPageMetadata<MetadataKind::kReadOnly>::FromAddr(address);
   PA_DCHECK(page_metadata->is_valid);
   // Partition pages in the same slot span share the same SlotSpanMetadata
   // object (located in the first PartitionPageMetadata object of that span).
@@ -540,17 +621,22 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObjectInnerPtr(
   return FromObjectInnerAddr(ObjectInnerPtr2Addr(ptr));
 }
 
+// TODO(crbug.com/40238514): SlotSpanMetadata<kWritable> will implement
+// SetRawSize().
 PA_ALWAYS_INLINE void SlotSpanMetadata::SetRawSize(size_t raw_size) {
   PA_DCHECK(CanStoreRawSize());
-  auto* subsequent_page_metadata =
-      GetSubsequentPageMetadata(reinterpret_cast<PartitionPageMetadata*>(this));
+  auto* subsequent_page_metadata = GetSubsequentPageMetadata(
+      reinterpret_cast<PartitionPageMetadata<MetadataKind::kWritable>*>(this));
   subsequent_page_metadata->raw_size = raw_size;
 }
 
+// TODO(crbug.com/40238514): SlotSpanMetadata<kReadOnly> will implement
+// SetRawSize().
 PA_ALWAYS_INLINE size_t SlotSpanMetadata::GetRawSize() const {
   PA_DCHECK(CanStoreRawSize());
   const auto* subsequent_page_metadata = GetSubsequentPageMetadata(
-      reinterpret_cast<const PartitionPageMetadata*>(this));
+      reinterpret_cast<const PartitionPageMetadata<MetadataKind::kReadOnly>*>(
+          this));
   return subsequent_page_metadata->raw_size;
 }
 
@@ -729,10 +815,12 @@ void IterateSlotSpans(uintptr_t super_page,
 #endif
 
   auto* const first_page_metadata =
-      PartitionPageMetadata::FromAddr(SuperPagePayloadBegin(super_page));
-  auto* const last_page_metadata = PartitionPageMetadata::FromAddr(
-      SuperPagePayloadEnd(super_page) - PartitionPageSize());
-  PartitionPageMetadata* page_metadata = nullptr;
+      PartitionPageMetadata<MetadataKind::kReadOnly>::FromAddr(
+          SuperPagePayloadBegin(super_page));
+  auto* const last_page_metadata =
+      PartitionPageMetadata<MetadataKind::kReadOnly>::FromAddr(
+          SuperPagePayloadEnd(super_page) - PartitionPageSize());
+  PartitionPageMetadata<MetadataKind::kReadOnly>* page_metadata = nullptr;
   SlotSpanMetadata* slot_span = nullptr;
   for (page_metadata = first_page_metadata;
        page_metadata <= last_page_metadata;) {
@@ -760,7 +848,8 @@ void IterateSlotSpans(uintptr_t super_page,
   // Just a quick check that the search ended at a valid slot span and there
   // was no unnecessary iteration over gaps afterwards.
   PA_DCHECK(page_metadata ==
-            reinterpret_cast<PartitionPageMetadata*>(slot_span) +
+            reinterpret_cast<PartitionPageMetadata<MetadataKind::kReadOnly>*>(
+                slot_span) +
                 slot_span->bucket->get_pages_per_slot_span());
 }
 

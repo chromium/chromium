@@ -357,8 +357,8 @@ void MakeSuperPageExtentEntriesShared(PartitionRoot* root,
   }
 
   // For normal-bucketed.
-  for (const internal::ReadOnlyPartitionSuperPageExtentEntry* extent =
-           root->first_extent;
+  for (const internal::PartitionSuperPageExtentEntry<MetadataKind::kReadOnly>*
+           extent = root->first_extent;
        extent != nullptr; extent = extent->next) {
     //  The page which contains the extent is in-used and shared mapping.
     uintptr_t super_page = SuperPagesBeginFromExtent(extent);
@@ -371,8 +371,8 @@ void MakeSuperPageExtentEntriesShared(PartitionRoot* root,
   }
 
   // For direct-mapped.
-  for (const internal::ReadOnlyPartitionDirectMapExtent* extent =
-           root->direct_map_list;
+  for (const internal::PartitionDirectMapExtent<MetadataKind::kReadOnly>*
+           extent = root->direct_map_list;
        extent != nullptr; extent = extent->next_extent) {
     internal::PartitionAddressSpace::MapMetadata(
         reinterpret_cast<uintptr_t>(extent) & internal::kSuperPageBaseMask,

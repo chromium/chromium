@@ -206,12 +206,14 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   using SlotSpanMetadata = internal::SlotSpanMetadata;
   using Bucket = internal::PartitionBucket;
   using FreeListEntry = internal::PartitionFreelistEntry;
-  using WritableSuperPageExtentEntry =
-      internal::WritablePartitionSuperPageExtentEntry;
-  using ReadOnlySuperPageExtentEntry =
-      internal::ReadOnlyPartitionSuperPageExtentEntry;
-  using WritableDirectMapExtent = internal::WritablePartitionDirectMapExtent;
-  using ReadOnlyDirectMapExtent = internal::ReadOnlyPartitionDirectMapExtent;
+  using WritableSuperPageExtentEntry = internal::PartitionSuperPageExtentEntry<
+      internal::MetadataKind::kWritable>;
+  using ReadOnlySuperPageExtentEntry = internal::PartitionSuperPageExtentEntry<
+      internal::MetadataKind::kReadOnly>;
+  using WritableDirectMapExtent =
+      internal::PartitionDirectMapExtent<internal::MetadataKind::kWritable>;
+  using ReadOnlyDirectMapExtent =
+      internal::PartitionDirectMapExtent<internal::MetadataKind::kReadOnly>;
 
   enum class BucketDistribution : uint8_t { kNeutral, kDenser };
 
@@ -1081,7 +1083,8 @@ PartitionAllocGetDirectMapSlotStartAndSizeInBRPPool(uintptr_t address) {
   // there may be padding for alignment. The first page metadata holds an offset
   // to where direct map metadata, and thus direct map start, are located.
   auto* first_page_metadata =
-      PartitionPageMetadata::FromAddr(reservation_start + PartitionPageSize());
+      PartitionPageMetadata<MetadataKind::kReadOnly>::FromAddr(
+          reservation_start + PartitionPageSize());
   auto* page_metadata =
       first_page_metadata + first_page_metadata->slot_span_metadata_offset;
   PA_DCHECK(page_metadata->is_valid);
@@ -1090,7 +1093,8 @@ PartitionAllocGetDirectMapSlotStartAndSizeInBRPPool(uintptr_t address) {
   uintptr_t slot_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   auto* direct_map_metadata =
-      ReadOnlyPartitionDirectMapMetadata::FromSlotSpanMetadata(slot_span);
+      PartitionDirectMapMetadata<MetadataKind::kReadOnly>::FromSlotSpanMetadata(
+          slot_span);
   size_t padding_for_alignment =
       direct_map_metadata->direct_map_extent.padding_for_alignment;
   PA_DCHECK(padding_for_alignment ==

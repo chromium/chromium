@@ -12,17 +12,15 @@
 
 namespace partition_alloc::internal {
 
-struct ReadOnlyPartitionDirectMapExtent;
-struct WritablePartitionDirectMapExtent;
-struct WritablePartitionDirectMapMetadata;
+template <MetadataKind kind>
+struct PartitionDirectMapExtent;
 
-template <const MetadataKind kind>
-struct PartitionDirectMapExtent {
-  using ReadOnlyType = ReadOnlyPartitionDirectMapExtent;
-  using WritableType = WritablePartitionDirectMapExtent;
-
-  MaybeConstT<kind, ReadOnlyPartitionDirectMapExtent*> next_extent;
-  MaybeConstT<kind, ReadOnlyPartitionDirectMapExtent*> prev_extent;
+template <MetadataKind kind>
+struct PartitionDirectMapExtentBase {
+  MaybeConstT<kind, PartitionDirectMapExtent<MetadataKind::kReadOnly>*>
+      next_extent;
+  MaybeConstT<kind, PartitionDirectMapExtent<MetadataKind::kReadOnly>*>
+      prev_extent;
   MaybeConstT<kind, const PartitionBucket*> bucket;
 
   // Size of the entire reservation, including guard pages, meta-data,
@@ -35,16 +33,21 @@ struct PartitionDirectMapExtent {
   MaybeConstT<kind, size_t> padding_for_alignment;
 };
 
-struct ReadOnlyPartitionDirectMapExtent
-    : public PartitionDirectMapExtent<MetadataKind::kReadOnly> {
-  PA_ALWAYS_INLINE static ReadOnlyPartitionDirectMapExtent*
+template <MetadataKind kind>
+struct PartitionDirectMapExtent;
+
+template <>
+struct PartitionDirectMapExtent<MetadataKind::kReadOnly>
+    : public PartitionDirectMapExtentBase<MetadataKind::kReadOnly> {
+  PA_ALWAYS_INLINE static PartitionDirectMapExtent<MetadataKind::kReadOnly>*
   FromSlotSpanMetadata(SlotSpanMetadata* slot_span);
 
-  PA_ALWAYS_INLINE WritablePartitionDirectMapExtent* ToWritable(
-      const PartitionRoot* root);
+  PA_ALWAYS_INLINE PartitionDirectMapExtent<MetadataKind::kWritable>*
+  ToWritable(const PartitionRoot* root);
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
-  PA_ALWAYS_INLINE ReadOnlyPartitionDirectMapExtent* ToReadOnly();
+  PA_ALWAYS_INLINE PartitionDirectMapExtent<MetadataKind::kReadOnly>*
+  ToReadOnly();
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
  private:
@@ -52,39 +55,36 @@ struct ReadOnlyPartitionDirectMapExtent
   // PartitionRoot, define template method: ToWritableInternal() and
   // ToWritable() uses it.
   template <typename T>
-  WritablePartitionDirectMapExtent* ToWritableInternal(
+  PartitionDirectMapExtent<MetadataKind::kWritable>* ToWritableInternal(
       [[maybe_unused]] T* root);
 };
 
-struct WritablePartitionDirectMapExtent
-    : public PartitionDirectMapExtent<MetadataKind::kWritable> {
+template <>
+struct PartitionDirectMapExtent<MetadataKind::kWritable>
+    : public PartitionDirectMapExtentBase<MetadataKind::kWritable> {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
-  PA_ALWAYS_INLINE ReadOnlyPartitionDirectMapExtent* ToReadOnly(
-      const PartitionRoot* root);
+  PA_ALWAYS_INLINE PartitionDirectMapExtent<MetadataKind::kReadOnly>*
+  ToReadOnly(const PartitionRoot* root);
 
  private:
   // In order to resolve circular dependencies, i.e. ToReadOnly() needs
   // PartitionRoot, define template method: ToReadOnlyInternal() and
   // ToReadOnly() uses it.
   template <typename T>
-  ReadOnlyPartitionDirectMapExtent* ToReadOnlyInternal(
+  PartitionDirectMapExtent<MetadataKind::kReadOnly>* ToReadOnlyInternal(
       [[maybe_unused]] T* root);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 };
 
-struct ReadOnlyPartitionDirectMapMetadata;
-struct WritablePartitionDirectMapMetadata;
-
 // Metadata page for direct-mapped allocations.
-template <const MetadataKind kind>
-struct PartitionDirectMapMetadata {
+template <MetadataKind kind>
+struct PartitionDirectMapMetadataBase {
   // |page_metadata| and |second_page_metadata| are needed to match the
   // layout of normal buckets (specifically, of single-slot slot spans), with
   // the caveat that only the first subsequent page is needed (for
   // SubsequentPageMetadata) and others aren't used for direct map.
-  // TODO(crbug.com/40238514): Will be ReadOnlyPartitionPageMetadata.
-  MaybeConstT<kind, PartitionPageMetadata> page_metadata;
-  MaybeConstT<kind, PartitionPageMetadata> second_page_metadata;
+  PartitionPageMetadata<kind> page_metadata;
+  PartitionPageMetadata<kind> second_page_metadata;
 
   // The following fields are metadata specific to direct map allocations. All
   // these fields will easily fit into the precalculated metadata region,
@@ -92,22 +92,24 @@ struct PartitionDirectMapMetadata {
   // super page.
   MaybeConstT<kind, PartitionBucket> bucket;
 
-  std::conditional_t<kind == MetadataKind::kReadOnly,
-                     ReadOnlyPartitionDirectMapExtent,
-                     WritablePartitionDirectMapExtent>
-      direct_map_extent;
+  PartitionDirectMapExtent<kind> direct_map_extent;
 };
 
-struct ReadOnlyPartitionDirectMapMetadata
-    : public PartitionDirectMapMetadata<MetadataKind::kReadOnly> {
-  PA_ALWAYS_INLINE static ReadOnlyPartitionDirectMapMetadata*
+template <MetadataKind kind>
+struct PartitionDirectMapMetadata;
+
+template <>
+struct PartitionDirectMapMetadata<MetadataKind::kReadOnly>
+    : public PartitionDirectMapMetadataBase<MetadataKind::kReadOnly> {
+  PA_ALWAYS_INLINE static PartitionDirectMapMetadata<MetadataKind::kReadOnly>*
   FromSlotSpanMetadata(SlotSpanMetadata* slot_span);
 
-  PA_ALWAYS_INLINE WritablePartitionDirectMapMetadata* ToWritable(
-      const PartitionRoot* root);
+  PA_ALWAYS_INLINE PartitionDirectMapMetadata<MetadataKind::kWritable>*
+  ToWritable(const PartitionRoot* root);
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
-  PA_ALWAYS_INLINE ReadOnlyPartitionDirectMapMetadata* ToReadOnly();
+  PA_ALWAYS_INLINE PartitionDirectMapMetadata<MetadataKind::kReadOnly>*
+  ToReadOnly();
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
  private:
@@ -115,120 +117,133 @@ struct ReadOnlyPartitionDirectMapMetadata
   // PartitionRoot, define template method: ToWritableInternal() and
   // ToWritable() uses it.
   template <typename T>
-  WritablePartitionDirectMapMetadata* ToWritableInternal(
+  PartitionDirectMapMetadata<MetadataKind::kWritable>* ToWritableInternal(
       [[maybe_unused]] T* root);
 };
 
-struct WritablePartitionDirectMapMetadata
-    : public PartitionDirectMapMetadata<MetadataKind::kWritable> {
+template <>
+struct PartitionDirectMapMetadata<MetadataKind::kWritable>
+    : public PartitionDirectMapMetadataBase<MetadataKind::kWritable> {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
-  PA_ALWAYS_INLINE ReadOnlyPartitionDirectMapMetadata* ToReadOnly(
-      const PartitionRoot* root);
+  PA_ALWAYS_INLINE PartitionDirectMapMetadata<MetadataKind::kReadOnly>*
+  ToReadOnly(const PartitionRoot* root);
 
  private:
   // In order to resolve circular dependencies, i.e. ToReadOnly() needs
   // PartitionRoot, define template method: ToReadOnlyInternal() and
   // ToReadOnly() uses it.
   template <typename T>
-  ReadOnlyPartitionDirectMapMetadata* ToReadOnlyInternal(
+  PartitionDirectMapMetadata<MetadataKind::kReadOnly>* ToReadOnlyInternal(
       [[maybe_unused]] T* root);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 };
 
-PA_ALWAYS_INLINE ReadOnlyPartitionDirectMapMetadata*
-ReadOnlyPartitionDirectMapMetadata::FromSlotSpanMetadata(
+PA_ALWAYS_INLINE PartitionDirectMapMetadata<MetadataKind::kReadOnly>*
+PartitionDirectMapMetadata<MetadataKind::kReadOnly>::FromSlotSpanMetadata(
     SlotSpanMetadata* slot_span) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
   // |*slot_span| is the first field of |PartitionDirectMapMetadata|, just cast.
   auto* metadata =
-      reinterpret_cast<ReadOnlyPartitionDirectMapMetadata*>(slot_span);
+      reinterpret_cast<PartitionDirectMapMetadata<MetadataKind::kReadOnly>*>(
+          slot_span);
   PA_DCHECK(&metadata->page_metadata.slot_span_metadata == slot_span);
   return metadata;
 }
 
-PA_ALWAYS_INLINE ReadOnlyPartitionDirectMapExtent*
-ReadOnlyPartitionDirectMapExtent::FromSlotSpanMetadata(
+PA_ALWAYS_INLINE PartitionDirectMapExtent<MetadataKind::kReadOnly>*
+PartitionDirectMapExtent<MetadataKind::kReadOnly>::FromSlotSpanMetadata(
     SlotSpanMetadata* slot_span) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
-  return &ReadOnlyPartitionDirectMapMetadata::FromSlotSpanMetadata(slot_span)
+  return &PartitionDirectMapMetadata<
+              MetadataKind::kReadOnly>::FromSlotSpanMetadata(slot_span)
               ->direct_map_extent;
 }
 
-PA_ALWAYS_INLINE WritablePartitionDirectMapMetadata*
-ReadOnlyPartitionDirectMapMetadata::ToWritable(const PartitionRoot* root) {
+PA_ALWAYS_INLINE PartitionDirectMapMetadata<MetadataKind::kWritable>*
+PartitionDirectMapMetadata<MetadataKind::kReadOnly>::ToWritable(
+    const PartitionRoot* root) {
   return ToWritableInternal(root);
 }
 
 template <typename T>
-WritablePartitionDirectMapMetadata*
-ReadOnlyPartitionDirectMapMetadata::ToWritableInternal(
+PartitionDirectMapMetadata<MetadataKind::kWritable>*
+PartitionDirectMapMetadata<MetadataKind::kReadOnly>::ToWritableInternal(
     [[maybe_unused]] T* root) {
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
-  return reinterpret_cast<WritablePartitionDirectMapMetadata*>(
+  return reinterpret_cast<PartitionDirectMapMetadata<MetadataKind::kWritable>*>(
       reinterpret_cast<intptr_t>(this) + root->ShadowPoolOffset());
 #else
-  return reinterpret_cast<WritablePartitionDirectMapMetadata*>(this);
+  return reinterpret_cast<PartitionDirectMapMetadata<MetadataKind::kWritable>*>(
+      this);
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 }
 
-PA_ALWAYS_INLINE WritablePartitionDirectMapExtent*
-ReadOnlyPartitionDirectMapExtent::ToWritable(const PartitionRoot* root) {
+PA_ALWAYS_INLINE PartitionDirectMapExtent<MetadataKind::kWritable>*
+PartitionDirectMapExtent<MetadataKind::kReadOnly>::ToWritable(
+    const PartitionRoot* root) {
   return ToWritableInternal(root);
 }
 
 template <typename T>
-WritablePartitionDirectMapExtent*
-ReadOnlyPartitionDirectMapExtent::ToWritableInternal([[maybe_unused]] T* root) {
+PartitionDirectMapExtent<MetadataKind::kWritable>*
+PartitionDirectMapExtent<MetadataKind::kReadOnly>::ToWritableInternal(
+    [[maybe_unused]] T* root) {
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
-  return reinterpret_cast<WritablePartitionDirectMapExtent*>(
+  return reinterpret_cast<PartitionDirectMapExtent<MetadataKind::kWritable>*>(
       reinterpret_cast<intptr_t>(this) + root->ShadowPoolOffset());
 #else
-  return reinterpret_cast<WritablePartitionDirectMapExtent*>(this);
+  return reinterpret_cast<PartitionDirectMapExtent<MetadataKind::kWritable>*>(
+      this);
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 }
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
-PA_ALWAYS_INLINE ReadOnlyPartitionDirectMapMetadata*
-ReadOnlyPartitionDirectMapMetadata::ToReadOnly() {
+PA_ALWAYS_INLINE PartitionDirectMapMetadata<MetadataKind::kReadOnly>*
+PartitionDirectMapMetadata<MetadataKind::kReadOnly>::ToReadOnly() {
   return this;
 }
 
-PA_ALWAYS_INLINE ReadOnlyPartitionDirectMapMetadata*
-WritablePartitionDirectMapMetadata::ToReadOnly(const PartitionRoot* root) {
+PA_ALWAYS_INLINE PartitionDirectMapMetadata<MetadataKind::kReadOnly>*
+PartitionDirectMapMetadata<MetadataKind::kWritable>::ToReadOnly(
+    const PartitionRoot* root) {
   return ToReadOnlyInternal(root);
 }
 
 template <typename T>
-ReadOnlyPartitionDirectMapMetadata*
-WritablePartitionDirectMapMetadata::ToReadOnlyInternal(
+PartitionDirectMapMetadata<MetadataKind::kReadOnly>*
+PartitionDirectMapMetadata<MetadataKind::kWritable>::ToReadOnlyInternal(
     [[maybe_unused]] T* root) {
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
-  return reinterpret_cast<ReadOnlyPartitionDirectMapMetadata*>(
+  return reinterpret_cast<PartitionDirectMapMetadata<MetadataKind::kReadOnly>*>(
       reinterpret_cast<intptr_t>(this) - root->ShadowPoolOffset());
 #else
   // must be no-op.
-  return reinterpret_cast<ReadOnlyPartitionDirectMapMetadata*>(this);
+  return reinterpret_cast<PartitionDirectMapMetadata<MetadataKind::kReadOnly>*>(
+      this);
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 }
 
-PA_ALWAYS_INLINE ReadOnlyPartitionDirectMapExtent*
-ReadOnlyPartitionDirectMapExtent::ToReadOnly() {
+PA_ALWAYS_INLINE PartitionDirectMapExtent<MetadataKind::kReadOnly>*
+PartitionDirectMapExtent<MetadataKind::kReadOnly>::ToReadOnly() {
   return this;
 }
 
-PA_ALWAYS_INLINE ReadOnlyPartitionDirectMapExtent*
-WritablePartitionDirectMapExtent::ToReadOnly(const PartitionRoot* root) {
+PA_ALWAYS_INLINE PartitionDirectMapExtent<MetadataKind::kReadOnly>*
+PartitionDirectMapExtent<MetadataKind::kWritable>::ToReadOnly(
+    const PartitionRoot* root) {
   return ToReadOnlyInternal(root);
 }
 
 template <typename T>
-ReadOnlyPartitionDirectMapExtent*
-WritablePartitionDirectMapExtent::ToReadOnlyInternal([[maybe_unused]] T* root) {
+PartitionDirectMapExtent<MetadataKind::kReadOnly>*
+PartitionDirectMapExtent<MetadataKind::kWritable>::ToReadOnlyInternal(
+    [[maybe_unused]] T* root) {
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
-  return reinterpret_cast<ReadOnlyPartitionDirectMapExtent*>(
+  return reinterpret_cast<PartitionDirectMapExtent<MetadataKind::kReadOnly>*>(
       reinterpret_cast<intptr_t>(this) - root->ShadowPoolOffset());
 #else
-  return reinterpret_cast<ReadOnlyPartitionDirectMapExtent*>(this);
+  return reinterpret_cast<PartitionDirectMapExtent<MetadataKind::kReadOnly>*>(
+      this);
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 }
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)

@@ -36,7 +36,8 @@ PA_ALWAYS_INLINE void PartitionDirectUnmap(SlotSpanMetadata* slot_span) {
   auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
   PartitionRootLock(root).AssertAcquired();
   auto* extent =
-      ReadOnlyPartitionDirectMapExtent::FromSlotSpanMetadata(slot_span);
+      PartitionDirectMapExtent<MetadataKind::kReadOnly>::FromSlotSpanMetadata(
+          slot_span);
 
   // Maintain the doubly-linked list of all direct mappings.
   if (extent->prev_extent) {
@@ -89,7 +90,8 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::RegisterEmpty() {
       base::bits::AlignUp(GetProvisionedSize(), SystemPageSize());
 
   // TODO(crbug.com/40238514): SlotSpanMetadata::RegisterEmpty() will be
-  // WritableSlotSpanMetadata::RegisterEmpty(). So ToWritable() will be removed.
+  // SlotSpanMetadata<kWritable>::RegisterEmpty(). So ToWritable() will be
+  // removed.
   ToSuperPageExtent()->ToWritable(root)->DecrementNumberOfNonemptySlotSpans();
 
   // If the slot span is already registered as empty, don't do anything. This
@@ -316,11 +318,11 @@ void SlotSpanMetadata::SortFreelist() {
 void SlotSpanMetadata::IncrementNumberOfNonemptySlotSpans() {
   // TODO(crbug.com/40238514):
   // SlotSpanMetadata::IncrementNumberOfNonemptySlotSpans() will be
-  // WritableSlotSpanMetadata::IncrementNumberOfNonemptySlotSpans(). So
+  // SlotSpanMetadata<kWritable>::IncrementNumberOfNonemptySlotSpans(). So
   // we will remove |root| and |ToWritable()| after introducing
-  // WritableSlotSpanMetadata.
+  // SlotSpanMetadata<kWritable>.
   auto* root = PartitionRoot::FromSlotSpanMetadata(this);
-  WritablePartitionSuperPageExtentEntry* extent =
+  PartitionSuperPageExtentEntry<MetadataKind::kWritable>* extent =
       ToSuperPageExtent()->ToWritable(root);
   extent->IncrementNumberOfNonemptySlotSpans();
 }

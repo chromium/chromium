@@ -12,7 +12,8 @@
 
 namespace partition_alloc::internal {
 
-struct WritablePartitionSuperPageExtentEntry;
+template <MetadataKind kind>
+struct PartitionSuperPageExtentEntry;
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
 
@@ -39,7 +40,7 @@ void DCheckIsValidSlotSpan(internal::SlotSpanMetadata* slot_span)
 
 PA_EXPORT_IF_DCHECK_IS_ON()
 void DCheckNumberOfPartitionPagesInSuperPagePayload(
-    WritablePartitionSuperPageExtentEntry* entry,
+    PartitionSuperPageExtentEntry<MetadataKind::kWritable>* entry,
     const PartitionRoot* root,
     size_t number_of_nonempty_slot_spans) PA_EMPTY_BODY_IF_DCHECK_IS_OFF();
 

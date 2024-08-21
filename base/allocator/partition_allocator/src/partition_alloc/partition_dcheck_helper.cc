@@ -35,10 +35,10 @@ void DCheckIsValidObjectAddress(internal::SlotSpanMetadata* slot_span,
 }
 
 void DCheckNumberOfPartitionPagesInSuperPagePayload(
-    WritablePartitionSuperPageExtentEntry* entry,
+    PartitionSuperPageExtentEntry<MetadataKind::kWritable>* entry,
     const PartitionRoot* root,
     size_t number_of_nonempty_slot_spans) {
-  ReadOnlyPartitionSuperPageExtentEntry* readonly_entry =
+  PartitionSuperPageExtentEntry<MetadataKind::kReadOnly>* readonly_entry =
       entry->ToReadOnly(root);
   uintptr_t entry_address = reinterpret_cast<uintptr_t>(readonly_entry);
   uintptr_t super_page =
