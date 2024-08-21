@@ -2279,7 +2279,7 @@ template("mojom") {
       action(generator_ts_target_name) {
         script = mojom_generator_script
         inputs = mojom_generator_sources + jinja2_sources
-        sources = sources_list
+        sources = sources_list + [ type_mappings_path ]
         deps = [
           ":$parser_target_name",
           ":$type_mappings_target_name",
