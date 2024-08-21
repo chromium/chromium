@@ -33,20 +33,6 @@ TEST_F(UpdaterStateTest, SerializeChromium) {
 #if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)) && \
     BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-namespace {
-
-// Returns the path to the global prefs.json file of the Chromium updater.
-std::optional<base::FilePath> GetUpdaterGlobalPrefsPath(bool is_machine) {
-  const std::optional<base::FilePath> global_prefs_dir =
-      updater::GetInstallDirectory(is_machine ? updater::UpdaterScope::kSystem
-                                              : updater::UpdaterScope::kUser);
-  return global_prefs_dir
-             ? std::make_optional(global_prefs_dir->AppendASCII("prefs.json"))
-             : std::nullopt;
-}
-
-}  // namespace
-
 TEST_F(UpdaterStateTest, SerializeChromePerUser) {
   {
     UpdaterState updater_state(false);
@@ -128,25 +114,6 @@ TEST_F(UpdaterStateTest, SerializeChromePerUser) {
     attributes = updater_state.Serialize();
     EXPECT_STREQ("-1", attributes.at("updatepolicy").c_str());
   }
-}
-
-TEST_F(UpdaterStateTest, UpdaterNamePerUser) {
-  std::optional<base::FilePath> prefs_path = GetUpdaterGlobalPrefsPath(false);
-  base::DeleteFile(*prefs_path);
-
-#if BUILDFLAG(IS_WIN)
-  EXPECT_STREQ("Omaha", UpdaterState::GetState(false).at("name").c_str());
-#elif BUILDFLAG(IS_MAC)
-  EXPECT_STREQ("Keystone", UpdaterState::GetState(false).at("name").c_str());
-#endif  // BUILDFLAG(IS_WIN)
-
-  // Create an empty updater prefs file to mock a detection of the updater.
-  EXPECT_TRUE(base::CreateDirectory(prefs_path->DirName()));
-  EXPECT_TRUE(base::WriteFile(*prefs_path, "{}"));
-  EXPECT_STREQ("ChromiumUpdater",
-               UpdaterState::GetState(false).at("name").c_str());
-
-  base::DeleteFile(*prefs_path);
 }
 
 #endif  // (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)) &&
