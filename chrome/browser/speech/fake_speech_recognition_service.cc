@@ -41,6 +41,7 @@ void FakeSpeechRecognitionService::BindRecognizer(
   recognizer_client_remote_.set_disconnect_handler(base::BindOnce(
       &FakeSpeechRecognitionService::OnRecognizerClientDisconnected,
       base::Unretained(this)));
+  recognition_options_ = std::move(options);
   std::move(callback).Run(is_multichannel_supported_);
 }
 
@@ -68,6 +69,7 @@ void FakeSpeechRecognitionService::BindAudioSourceFetcher(
   recognizer_client_remote_.set_disconnect_handler(base::BindOnce(
       &FakeSpeechRecognitionService::OnRecognizerClientDisconnected,
       base::Unretained(this)));
+  recognition_options_ = std::move(options);
   std::move(callback).Run(is_multichannel_supported_);
 }
 

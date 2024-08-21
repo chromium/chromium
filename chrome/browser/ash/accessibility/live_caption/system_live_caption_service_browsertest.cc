@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service_factory.h"
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
@@ -29,6 +30,7 @@
 #include "content/public/test/browser_test.h"
 #include "media/audio/audio_system.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,6 +42,8 @@ namespace ash {
 namespace {
 static constexpr int kDefaultSampleRateMs = 16000;
 static constexpr int kDefaultPollingTimesHz = 10;
+static constexpr char kAlternativeLanguageName[] = "es-ES";
+static constexpr char kDefaultLanguageName[] = "en-US";
 }  // namespace
 
 // We need to swap out the device audio system for a fake one.
@@ -96,7 +100,8 @@ class SystemLiveCaptionServiceTest : public InProcessBrowserTest {
   SystemLiveCaptionServiceTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kOnDeviceSpeechRecognition,
-                              features::kSystemLiveCaption},
+                              features::kSystemLiveCaption,
+                              media::kLiveCaptionMultiLanguage},
         /*disabled_features=*/{});
   }
 
@@ -153,9 +158,15 @@ class SystemLiveCaptionServiceTest : public InProcessBrowserTest {
         ->caption_bubble_controller_for_testing();
   }
 
-  void SetLiveCaptionsPref(Profile* profile, bool enabled) {
+  void SetLiveCaptionsPref(bool enabled) {
     primary_profile_->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
                                              enabled);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetLanguagePref(const std::string& language) {
+    primary_profile_->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
+                                            language);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -169,9 +180,10 @@ class SystemLiveCaptionServiceTest : public InProcessBrowserTest {
   // Meet the preconditions for live captioning so that our logic-under-test
   // starts executing.
   void StartLiveCaptioning() {
-    SetLiveCaptionsPref(primary_profile_, /*enabled=*/true);
+    SetLiveCaptionsPref(/*enabled=*/true);
     speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
-        speech::LanguageCode::kEnUs);
+        speech::GetLanguageCode(primary_profile_->GetPrefs()->GetString(
+            prefs::kLiveCaptionLanguageCode)));
     speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
     // Events must propogate, so we wait after install.
     base::RunLoop().RunUntilIdle();
@@ -198,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, Triggering) {
   EXPECT_FALSE(fake_speech_recognition_service_->is_capturing_audio());
 
   // Enable feature.
-  SetLiveCaptionsPref(primary_profile_, /*enabled=*/true);
+  SetLiveCaptionsPref(/*enabled=*/true);
 
   // We should still be waiting for SODA to be installed.
   EXPECT_FALSE(fake_speech_recognition_service_->is_capturing_audio());
@@ -230,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, Triggering) {
   EXPECT_TRUE(fake_speech_recognition_service_->is_capturing_audio());
 
   // Now turn off live captioning.
-  SetLiveCaptionsPref(primary_profile_, /*enabled=*/false);
+  SetLiveCaptionsPref(/*enabled=*/false);
 
   // This should stop audio fetching.
   EXPECT_FALSE(fake_speech_recognition_service_->is_capturing_audio());
@@ -239,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, Triggering) {
 // Test that feature is gated on successful SODA install.
 IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, SodaError) {
   // Enable feature so that we start listening for SODA install status.
-  SetLiveCaptionsPref(primary_profile_, /*enabled=*/true);
+  SetLiveCaptionsPref(/*enabled=*/true);
 
   // Fake successful base binary install but failed language install.
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
@@ -259,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, SodaIrrelevantError) {
           primary_profile_);
   live_caption_service->OnNonChromeOutputStarted();
   // Enable feature so that we start listening for SODA install status.
-  SetLiveCaptionsPref(primary_profile_, /*enabled=*/true);
+  SetLiveCaptionsPref(/*enabled=*/true);
 
   // Fake successful base binary install.
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
@@ -409,6 +421,81 @@ IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, ServiceError) {
   ASSERT_NE(nullptr, primary_bubble);
   EXPECT_TRUE(primary_bubble->IsWidgetVisibleForTesting());
   EXPECT_TRUE(primary_bubble->IsGenericErrorMessageVisibleForTesting());
+}
+
+// Tests that the System Live Caption Service uses the correct language as set
+// by the kLiveCaptionLanguageCode preference.
+IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, UsesCorrectLanguage) {
+  SetLanguagePref(kAlternativeLanguageName);
+  StartLiveCaptioning();
+
+  // retrieve the recognition options struct passed to the recognition service.
+  // we use this to assert that the correct language was passed to the service.
+  media::mojom::SpeechRecognitionOptions* recognition_options =
+      fake_speech_recognition_service_->get_speech_recognition_options();
+
+  // Should now be processing system audio.
+  EXPECT_TRUE(fake_speech_recognition_service_->is_capturing_audio());
+
+  // Assert language is correct.
+  ASSERT_NE(recognition_options, nullptr);
+  EXPECT_EQ(std::string(kAlternativeLanguageName),
+            recognition_options->language.value());
+}
+
+// When a language changes in the middle of a session the service must switch
+// out the speech recognition client for a new one with the selected language.
+// This tests that while there are non chrome outputs running that the session
+// restarts automatically.
+IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest,
+                       SwitchesLanguageCorrectly) {
+  StartLiveCaptioning();
+
+  // retrieve the recognition options struct passed to the recognition service.
+  // we use this to assert that the correct language was passed to the service.
+  media::mojom::SpeechRecognitionOptions* recognition_options =
+      fake_speech_recognition_service_->get_speech_recognition_options();
+
+  // Should now be processing system audio.
+  EXPECT_TRUE(fake_speech_recognition_service_->is_capturing_audio());
+
+  // Assert language is correct.
+  ASSERT_NE(recognition_options, nullptr);
+  ASSERT_TRUE(recognition_options->language.has_value());
+  EXPECT_EQ(std::string(kDefaultLanguageName),
+            recognition_options->language.value());
+
+  // This should restart the recognizer with the correct language.  The
+  // language pack will be installed by the live caption controller and then
+  // the SODA Installer will notify the SystemLiveCaptionService.
+  SetLanguagePref(kAlternativeLanguageName);
+
+  // For this test case we want to switch while output is running so that we
+  // restart the session without explicitly calling OnNonChromeOutputStarted.
+  SystemLiveCaptionServiceFactory::GetInstance()
+      ->GetForProfile(primary_profile_)
+      ->set_num_non_chrome_output_streams_for_testing(
+          /*num_output_streams=*/1);
+
+  // Until SODA installs we should do nothing.
+  EXPECT_FALSE(fake_speech_recognition_service_->is_capturing_audio());
+
+  // Emulate successful SODA installation from LiveCaptionController.
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
+      speech::GetLanguageCode(kAlternativeLanguageName));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(fake_speech_recognition_service_->is_capturing_audio());
+
+  // We destroy the old options struct when resetting the speech recogntion
+  // client.
+  recognition_options =
+      fake_speech_recognition_service_->get_speech_recognition_options();
+
+  ASSERT_NE(recognition_options, nullptr);
+  ASSERT_TRUE(recognition_options->language.has_value());
+  EXPECT_EQ(std::string(kAlternativeLanguageName),
+            recognition_options->language.value());
 }
 
 }  // namespace ash

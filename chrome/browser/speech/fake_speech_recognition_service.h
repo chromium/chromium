@@ -99,6 +99,10 @@ class FakeSpeechRecognitionService
 
   std::string device_id() { return device_id_; }
 
+  media::mojom::SpeechRecognitionOptions* get_speech_recognition_options() {
+    return recognition_options_.get();
+  }
+
   const std::optional<::media::AudioParameters>& audio_parameters() {
     return audio_parameters_;
   }
@@ -122,6 +126,8 @@ class FakeSpeechRecognitionService
   std::string device_id_;
   // The audio parameters used to capture audio.
   std::optional<::media::AudioParameters> audio_parameters_;
+
+  media::mojom::SpeechRecognitionOptionsPtr recognition_options_;
 
   base::OnceClosure recognition_started_closure_;
 
