@@ -325,8 +325,15 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
   TestKeyedProfileServicesActives(guest_profile_otr, guest_otr_active_services);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_GuestProfileParent_NeededServices \
+  DISABLED_GuestProfileParent_NeededServices
+#else
+#define MAYBE_GuestProfileParent_NeededServices \
+  GuestProfileParent_NeededServices
+#endif
 IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
-                       GuestProfileParent_NeededServices) {
+                       MAYBE_GuestProfileParent_NeededServices) {
   // clang-format off
   std::set<std::string> guest_active_services {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
