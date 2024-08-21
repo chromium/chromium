@@ -15,7 +15,6 @@
 #include "base/values.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/extensions/api/preference/preference_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/content_settings.h"
@@ -44,7 +43,6 @@ using content::BrowserThread;
 namespace Clear = extensions::api::content_settings::ContentSetting::Clear;
 namespace Get = extensions::api::content_settings::ContentSetting::Get;
 namespace Set = extensions::api::content_settings::ContentSetting::Set;
-namespace pref_helpers = extensions::preference_helpers;
 
 namespace {
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/preference/preference_helpers.h"
+#include "chrome/browser/extensions/preference/preference_helpers.h"
 
 #include <memory>
 #include <utility>
