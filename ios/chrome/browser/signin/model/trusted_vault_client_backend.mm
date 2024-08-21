@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend.h"
 
+BASE_FEATURE(kTrustedVaultSecurityDomainKillSwitch,
+             "TrustedVaultSecurityDomainKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 TrustedVaultClientBackend::TrustedVaultClientBackend() = default;
 
 TrustedVaultClientBackend::~TrustedVaultClientBackend() = default;

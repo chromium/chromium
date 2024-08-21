@@ -135,6 +135,10 @@ using l10n_util::GetNSStringF;
   // domain path.
   std::string security_domain_path_string =
       GetSecurityDomainPath(trusted_vault::SecurityDomainId::kChromeSync);
+  if (!base::FeatureList::IsEnabled(kTrustedVaultSecurityDomainKillSwitch)) {
+    security_domain_path_string = trusted_vault::kSyncSecurityDomainName;
+  }
+
   switch (self.intent) {
     case SigninTrustedVaultDialogIntentFetchKeys:
       _dialogCancelCallback =

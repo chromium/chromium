@@ -31,12 +31,18 @@ IOSTrustedVaultClient::~IOSTrustedVaultClient() = default;
 void IOSTrustedVaultClient::AddObserver(Observer* observer) {
   std::string security_domain_path_string =
       GetSecurityDomainPath(security_domain_path_);
+  if (!base::FeatureList::IsEnabled(kTrustedVaultSecurityDomainKillSwitch)) {
+    security_domain_path_string = trusted_vault::kSyncSecurityDomainName;
+  }
   backend_->AddObserver(observer, security_domain_path_string);
 }
 
 void IOSTrustedVaultClient::RemoveObserver(Observer* observer) {
   std::string security_domain_path_string =
       GetSecurityDomainPath(security_domain_path_);
+  if (!base::FeatureList::IsEnabled(kTrustedVaultSecurityDomainKillSwitch)) {
+    security_domain_path_string = trusted_vault::kSyncSecurityDomainName;
+  }
   backend_->RemoveObserver(observer, security_domain_path_string);
 }
 
@@ -46,6 +52,9 @@ void IOSTrustedVaultClient::FetchKeys(
         callback) {
   std::string security_domain_path_string =
       GetSecurityDomainPath(security_domain_path_);
+  if (!base::FeatureList::IsEnabled(kTrustedVaultSecurityDomainKillSwitch)) {
+    security_domain_path_string = trusted_vault::kSyncSecurityDomainName;
+  }
   backend_->FetchKeys(IdentityForAccount(account_info),
                       security_domain_path_string, std::move(callback));
 }
@@ -63,6 +72,9 @@ void IOSTrustedVaultClient::MarkLocalKeysAsStale(
     base::OnceCallback<void(bool)> callback) {
   std::string security_domain_path_string =
       GetSecurityDomainPath(security_domain_path_);
+  if (!base::FeatureList::IsEnabled(kTrustedVaultSecurityDomainKillSwitch)) {
+    security_domain_path_string = trusted_vault::kSyncSecurityDomainName;
+  }
   backend_->MarkLocalKeysAsStale(
       IdentityForAccount(account_info), security_domain_path_string,
       // Since false positives are allowed in the API, always invoke `callback`
@@ -75,6 +87,9 @@ void IOSTrustedVaultClient::GetIsRecoverabilityDegraded(
     base::OnceCallback<void(bool)> callback) {
   std::string security_domain_path_string =
       GetSecurityDomainPath(security_domain_path_);
+  if (!base::FeatureList::IsEnabled(kTrustedVaultSecurityDomainKillSwitch)) {
+    security_domain_path_string = trusted_vault::kSyncSecurityDomainName;
+  }
   backend_->GetDegradedRecoverabilityStatus(IdentityForAccount(account_info),
                                             security_domain_path_string,
                                             std::move(callback));
@@ -93,6 +108,9 @@ void IOSTrustedVaultClient::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
   std::string security_domain_path_string =
       GetSecurityDomainPath(security_domain_path_);
+  if (!base::FeatureList::IsEnabled(kTrustedVaultSecurityDomainKillSwitch)) {
+    security_domain_path_string = trusted_vault::kSyncSecurityDomainName;
+  }
   backend_->ClearLocalData(IdentityForAccount(account_info),
                            security_domain_path_string, base::DoNothing());
 }

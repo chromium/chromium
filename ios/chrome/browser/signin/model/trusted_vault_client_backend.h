@@ -10,11 +10,17 @@
 #import <string>
 #import <vector>
 
+#import "base/feature_list.h"
 #import "base/functional/callback_forward.h"
 #import "base/ios/block_types.h"
 #import "base/observer_list.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/trusted_vault/trusted_vault_client.h"
+
+// TODO(crbug.com/361196003): Keychain iOS is expecting 'chromesync', but is
+// currently being sent users/me/securitydomains/chromesync. Fix this with a
+// temporary bandaid behind a kill switch. Revert and fix properly.
+BASE_DECLARE_FEATURE(kTrustedVaultSecurityDomainKillSwitch);
 
 @protocol SystemIdentity;
 
