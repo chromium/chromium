@@ -1196,7 +1196,7 @@ std::string BuildDigitalIdentityValidJsRequestDictionary() {
   return R"({
     digital: {
       providers: [{
-        protocol: "urn:openid.net:oid4vp",
+        protocol: "openid4vp",
         request: JSON.stringify({
           // Based on https://github.com/openid/OpenID4VP/issues/125
           client_id: "client.example.org",
@@ -1259,7 +1259,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
   std::string_view request = R"(
   {
    "providers": [ {
-      "protocol": "urn:openid.net:oid4vp",
+      "protocol": "openid4vp",
       "request": "{
         \"client_id\": \"client.example.org\",
         \"client_id_scheme\": \"web-origin\",
