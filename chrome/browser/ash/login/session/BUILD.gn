@@ -71,7 +71,6 @@ static_library("session") {
     "//chrome/browser/screen_ai:screen_ai_dlc_installer",
     "//chrome/browser/ui/webui/ash",
     "//chrome/browser/ui/webui/ash/login",
-    "//chrome/browser/ui/webui/ash/settings/pages/privacy",
     "//chrome/common",
     "//chrome/common:channel_info",
     "//chrome/common:chrome_features",

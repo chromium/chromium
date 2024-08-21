@@ -48,8 +48,11 @@ static_library("privacy") {
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/eche_app",
     "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/privacy_hub",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
@@ -70,6 +73,8 @@ static_library("privacy") {
     "//ui/chromeos",
     "//url",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
 }
 
 source_set("unit_tests") {

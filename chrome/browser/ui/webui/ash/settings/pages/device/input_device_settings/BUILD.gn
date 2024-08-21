@@ -45,6 +45,7 @@ static_library("input_device_settings") {
     "//ash/constants",
     "//ash/public/cpp:accelerator_actions",
     "//chrome/app:generated_resources",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/profiles:profile",
     "//chromeos/dbus/power:power_manager_proto",

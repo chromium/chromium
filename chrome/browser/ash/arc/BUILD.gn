@@ -78,8 +78,6 @@ static_library("arc") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources:component_extension_resources_grit",
     "//chrome/browser/ui/webui/ash",
-    "//chrome/browser/ui/webui/ash/settings/pages/about",
-    "//chrome/browser/ui/webui/ash/settings/pages/apps",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",
@@ -139,8 +137,6 @@ static_library("arc") {
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/platform_keys/key_permissions",
-    "//chrome/browser/ui/webui/ash/settings/pages/about",
-    "//chrome/browser/ui/webui/ash/settings/pages/apps",
   ]
 }
 

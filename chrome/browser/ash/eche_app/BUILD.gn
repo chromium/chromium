@@ -42,7 +42,6 @@ static_library("eche_app") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/secure_channel",
     "//chrome/browser/ash/system_web_apps/types",
-    "//chrome/browser/ui/webui/ash/settings/pages/privacy",
     "//chrome/common:channel_info",
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/components/phonehub",
@@ -61,10 +60,7 @@ static_library("eche_app") {
     "//url",
   ]
 
-  allow_circular_includes_from = [
-    "//chrome/browser/ash/login/session",
-    "//chrome/browser/ui/webui/ash/settings/pages/privacy",
-  ]
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
 }
 
 source_set("browser_tests") {

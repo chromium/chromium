@@ -1308,7 +1308,6 @@ source_set("extensions") {
       "//chrome/browser/ui/ash/shelf/app_service",
       "//chrome/browser/ui/ash/thumbnail_loader",
       "//chrome/browser/ui/webui/ash",
-      "//chrome/browser/ui/webui/ash/cloud_upload",
       "//chrome/browser/ui/webui/ash/login",
       "//chrome/browser/ui/webui/ash/settings/pages/a11y",
       "//chromeos/ash/components/attestation",

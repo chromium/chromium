@@ -78,6 +78,7 @@ static_library("cloud_upload") {
     "//base:i18n",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/file_manager/virtual_tasks",
@@ -85,6 +86,7 @@ static_library("cloud_upload") {
     "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/ash/system_web_apps/apps/help_app",
     "//chrome/browser/chromeos/upload_office_to_cloud",
+    "//chrome/browser/extensions",
     "//chrome/browser/resources/chromeos/cloud_upload:resources",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/webui",
@@ -113,6 +115,7 @@ static_library("cloud_upload") {
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/ash/system_web_apps/apps/help_app",
+    "//chrome/browser/extensions",
     "//chrome/browser/ui/webui/ash/settings/pages/files",
   ]
 }
