@@ -216,6 +216,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   SkSurface* GetSkSurface() const;
   bool IsGpuContextLost() const;
+  virtual bool IsSharedBitmapGpuChannelLost() const;
   virtual bool WritePixels(const SkImageInfo& orig_info,
                            const void* pixels,
                            size_t row_bytes,
@@ -377,6 +378,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   virtual void OnFlushForImage(cc::PaintImage::ContentId content_id);
   void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
+
+  CanvasResourceHost* resource_host() { return resource_host_; }
 
  private:
   friend class FlushForImageListener;

@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -183,7 +184,8 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
 
 // * Renders to a shared memory bitmap.
 // * Uses SharedBitmaps to pass frames directly to the compositor.
-class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap {
+class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap,
+                                           public BitmapGpuChannelLostObserver {
  public:
   CanvasResourceProviderSharedBitmap(
       const SkImageInfo& info,
@@ -199,23 +201,39 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap {
             shared_image_interface_provider
                 ? shared_image_interface_provider->GetWeakPtr()
                 : nullptr) {
-    DCHECK(!features::IsCanvasSharedBitmapConversionEnabled() ||
-           shared_image_interface_provider_);
     DCHECK(ResourceDispatcher());
     type_ = kSharedBitmap;
+
+    if (shared_image_interface_provider_) {
+      shared_image_interface_provider_->AddGpuChannelLostObserver(this);
+    }
   }
-  ~CanvasResourceProviderSharedBitmap() override = default;
+
+  ~CanvasResourceProviderSharedBitmap() override {
+    if (shared_image_interface_provider_) {
+      shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
+    }
+  }
+
+  // BitmapGpuChannelLostObserver implementation.
+  void OnGpuChannelLost() override { resource_host()->NotifyGpuContextLost(); }
 
   bool IsValid() const final {
-    bool invalid_shared_image_interface =
-        features::IsCanvasSharedBitmapConversionEnabled() &&
-        !shared_image_interface_provider_;
-    return !invalid_shared_image_interface && GetSkSurface();
+    return !IsSharedBitmapGpuChannelLost() && GetSkSurface();
   }
 
   bool SupportsDirectCompositing() const override { return true; }
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
+
+  bool IsSharedBitmapGpuChannelLost() const override {
+    if (!features::IsCanvasSharedBitmapConversionEnabled()) {
+      return false;
+    }
+
+    return !shared_image_interface_provider_ ||
+           !shared_image_interface_provider_->SharedImageInterface();
+  }
 
  private:
   scoped_refptr<CanvasResource> CreateResource() final {
@@ -1709,6 +1727,10 @@ bool CanvasResourceProvider::IsGpuContextLost() const {
   auto* raster_interface = RasterInterface();
   return !raster_interface ||
          raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
+}
+
+bool CanvasResourceProvider::IsSharedBitmapGpuChannelLost() const {
+  return false;
 }
 
 bool CanvasResourceProvider::WritePixels(const SkImageInfo& orig_info,

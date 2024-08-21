@@ -58,7 +58,6 @@
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_data.h"
-#include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_v8_value_converter.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
@@ -524,13 +523,6 @@ class BLINK_PLATFORM_EXPORT Platform {
   virtual gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() {
     return nullptr;
   }
-
-  // Returns the newly created WebGraphicsSharedImageInterfaceProvider. Returns
-  // null if the provider cannot be created. This function establishes the
-  // CpuChannel and creates `ClientSharedImageInterface` before the provider is
-  // created.
-  virtual std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
-  CreateSharedImageInterfaceProvider();
 
   // When true, animations will run on a compositor thread independently from
   // the blink main thread.

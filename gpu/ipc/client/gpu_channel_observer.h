@@ -5,6 +5,8 @@
 #ifndef GPU_IPC_CLIENT_GPU_CHANNEL_OBSERVER_H_
 #define GPU_IPC_CLIENT_GPU_CHANNEL_OBSERVER_H_
 
+#include "gpu/gpu_export.h"
+
 namespace gpu {
 
 class GPU_EXPORT GpuChannelLostObserver {

@@ -11,10 +11,13 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgraphics_shared_image_interface_provider_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -193,12 +196,12 @@ void SharedGpuContext::CreateContextProviderIfNeeded(
   }
 }
 
-static void CreateSharedImageInterfaceProviderOnMainThread(
-    std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>* provider,
+static void CreateGpuChannelOnMainThread(
+    scoped_refptr<gpu::GpuChannelHost>* gpu_channel,
     base::WaitableEvent* waitable_event) {
   DCHECK(IsMainThread());
 
-  *provider = Platform::Current()->CreateSharedImageInterfaceProvider();
+  *gpu_channel = Platform::Current()->EstablishGpuChannelSync();
   waitable_event->Signal();
 }
 
@@ -211,28 +214,40 @@ void SharedGpuContext::CreateSharedImageInterfaceProviderIfNeeded() {
 
   // Use the current |shared_image_interface_provider_|.
   if (shared_image_interface_provider_ &&
-      !shared_image_interface_provider_->SharedImageInterface()) {
+      shared_image_interface_provider_->SharedImageInterface()) {
     return;
   }
 
   // Delete and recreate |shared_image_interface_provider_|.
   shared_image_interface_provider_.reset();
 
+  scoped_refptr<gpu::GpuChannelHost> gpu_channel;
   if (IsMainThread()) {
-    shared_image_interface_provider_ =
-        Platform::Current()->CreateSharedImageInterfaceProvider();
+    gpu_channel = Platform::Current()->EstablishGpuChannelSync();
   } else {
     base::WaitableEvent waitable_event;
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
         Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted());
     PostCrossThreadTask(
         *task_runner, FROM_HERE,
-        CrossThreadBindOnce(
-            &CreateSharedImageInterfaceProviderOnMainThread,
-            CrossThreadUnretained(&shared_image_interface_provider_),
-            CrossThreadUnretained(&waitable_event)));
+        CrossThreadBindOnce(&CreateGpuChannelOnMainThread,
+                            CrossThreadUnretained(&gpu_channel),
+                            CrossThreadUnretained(&waitable_event)));
     waitable_event.Wait();
   }
+
+  if (!gpu_channel) {
+    return;
+  }
+
+  auto shared_image_interface = gpu_channel->CreateClientSharedImageInterface();
+  if (!shared_image_interface) {
+    return;
+  }
+
+  shared_image_interface_provider_ =
+      std::make_unique<WebGraphicsSharedImageInterfaceProviderImpl>(
+          std::move(shared_image_interface));
 }
 
 // static
