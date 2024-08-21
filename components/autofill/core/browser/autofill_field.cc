@@ -128,9 +128,7 @@ bool AreCollapsibleLogEvents(const AutofillField::FieldLogEventType& event1,
 // want to prioritize local heuristics over the autocomplete type.
 bool PreferHeuristicOverHtml(FieldType heuristic_type,
                              HtmlFieldType html_type) {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillLocalHeuristicsOverrides) &&
-         base::Contains(kAutofillHeuristicsVsHtmlOverrides,
+  return base::Contains(kAutofillHeuristicsVsHtmlOverrides,
                         std::make_pair(heuristic_type, html_type));
 }
 
@@ -141,9 +139,7 @@ bool PreferHeuristicOverHtml(FieldType heuristic_type,
 // can help the server to "learn" the correct classification for these fields.
 bool PreferHeuristicOverServer(FieldType heuristic_type,
                                FieldType server_type) {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillLocalHeuristicsOverrides) &&
-         base::Contains(kAutofillHeuristicsVsServerOverrides,
+  return base::Contains(kAutofillHeuristicsVsServerOverrides,
                         std::make_pair(heuristic_type, server_type));
 }
 

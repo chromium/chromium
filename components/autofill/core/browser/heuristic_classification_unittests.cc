@@ -566,8 +566,6 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
       features::kAutofillEnableParsingOfStreetLocation,
       features::kAutofillEnableRationalizationEngineForMX,
-      // Allow local heuristics to take precedence.
-      features::kAutofillLocalHeuristicsOverrides,
       // Other improvements.
       features::kAutofillDefaultToCityAndNumber,
       features::kAutofillPreferLabelsInSomeCountries,

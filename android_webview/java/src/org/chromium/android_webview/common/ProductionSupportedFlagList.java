@@ -345,11 +345,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, Autofill heuristics will prioritize filling phone numbers in "
                         + "local format, not in international format."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_LOCAL_HEURISTICS_OVERRIDES,
-                "When enabled, When enabled, some local heuristic predictions will take "
-                        + "precedence over the autocomplete attribute and server predictions, "
-                        + "when determining a field's overall type."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_EMAIL_HEURISTIC_ONLY_ADDRESS_FORMS,
                 "When enabled, Autofill supports forms consisting of only email fields."),
         Flag.baseFeature(
