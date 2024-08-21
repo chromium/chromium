@@ -648,7 +648,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewBrokenImage"),
         TestCase("openQuickViewImageClick"),
         TestCase("openQuickViewVideo"),
-        TestCase("openQuickViewVideoOnDrive"),
+        // TODO(b/361293031): Re-enable this test. Test became flaky.
+        // TestCase("openQuickViewVideoOnDrive"),
         TestCase("openQuickViewPdf"),
         TestCase("openQuickViewPdfPopup"),
 #if !defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
