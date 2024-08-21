@@ -113,7 +113,7 @@ BASE_FEATURE(kBlockNotificationPromptsIfDisabledOnAppLevel,
 
 BASE_FEATURE(kPermissionDedicatedCpssSettingAndroid,
              "PermissionDedicatedCpssSettingAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, permissions grants with a durable session model will have
 // an expiration date set.
