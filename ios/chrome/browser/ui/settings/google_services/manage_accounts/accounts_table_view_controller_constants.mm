@@ -14,3 +14,5 @@ NSString* const kSettingsAccountsTableViewSignoutCellId =
     @"SettingsAccountsTableViewSignoutCellId";
 NSString* const kSettingsAccountsTableViewDoneButtonId =
     @"SettingsAccountsTableViewDoneButtonId";
+NSString* const kSettingsAccountsRemoveAccountButtonAccessibilityIdentifier =
+    @"SettingsAccountsRemoveAccountButtonAccessibilityIdentifier";

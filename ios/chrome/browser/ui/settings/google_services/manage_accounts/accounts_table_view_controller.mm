@@ -139,6 +139,9 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:ItemTypeRemoveAccount];
   item.text = l10n_util::GetNSString(IDS_IOS_REMOVE_GOOGLE_ACCOUNT_TITLE);
+  item.accessibilityIdentifier =
+      [kSettingsAccountsRemoveAccountButtonAccessibilityIdentifier
+          stringByAppendingString:identityViewItem.accessibilityIdentifier];
   item.textColor = [UIColor colorNamed:kBlueColor];
   return item;
 }
