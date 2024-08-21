@@ -10808,6 +10808,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5070" label="V8AIRewriter_RewriteStreaming_Method"/>
   <int value="5071" label="V8AIRewriter_Destroy_Method"/>
   <int value="5072" label="FencedFrameCanLoadOpaqueURL"/>
+  <int value="5073"
+      label="V8Performance_Memory_AttributeGetter_NotLockedToSite"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
