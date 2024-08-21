@@ -118,16 +118,14 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   base::TimeTicks first_early_hints_time() { return first_early_hints_time_; }
 
   // Encodes the given |payload| in the chunked format to |output|.
-  // Returns the number of bytes written to |output|. |output_size| should
+  // Returns the number of bytes written to |output|. output.size() should
   // be large enough to store the encoded chunk, which is payload.size() +
-  // kChunkHeaderFooterSize. Returns ERR_INVALID_ARGUMENT if |output_size|
+  // kChunkHeaderFooterSize. Returns ERR_INVALID_ARGUMENT if output.size()
   // is not large enough.
   //
   // The output will look like: "HEX\r\n[payload]\r\n"
-  // where HEX is a length in hexdecimal (without the "0x" prefix).
-  static int EncodeChunk(std::string_view payload,
-                         char* output,
-                         size_t output_size);
+  // where HEX is a length in hexadecimal (without the "0x" prefix).
+  static int EncodeChunk(std::string_view payload, base::span<uint8_t> output);
 
   // Returns true if request headers and body should be merged (i.e. the
   // sum is small enough and the body is in memory, and not chunked).

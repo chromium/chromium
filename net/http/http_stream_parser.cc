@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/http_stream_parser.h"
 
 #include <algorithm>
@@ -17,13 +12,16 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
@@ -54,13 +52,10 @@ const size_t kRequestBodyBufferSize = 1 << 14;  // 16KB
 
 std::string GetResponseHeaderLines(const HttpResponseHeaders& headers) {
   std::string raw_headers = headers.raw_headers();
-  const char* null_separated_headers = raw_headers.c_str();
-  const char* header_line = null_separated_headers;
   std::string cr_separated_headers;
-  while (header_line[0] != 0) {
-    cr_separated_headers += header_line;
-    cr_separated_headers += "\n";
-    header_line += strlen(header_line) + 1;
+  base::StringTokenizer tokenizer(raw_headers, std::string(1, '\0'));
+  while (tokenizer.GetNext()) {
+    base::StrAppend(&cr_separated_headers, {tokenizer.token_piece(), "\n"});
   }
   return cr_separated_headers;
 }
@@ -553,9 +548,7 @@ int HttpStreamParser::DoSendRequestReadBodyComplete(int result) {
     // Encode the buffer as 1 chunk.
     const std::string_view payload(request_body_read_buf_->data(), result);
     request_body_send_buf_->Clear();
-    result = EncodeChunk(payload,
-                         request_body_send_buf_->data(),
-                         request_body_send_buf_->capacity());
+    result = EncodeChunk(payload, request_body_send_buf_->span());
   }
 
   if (result == 0) {  // Reached the end.
@@ -1208,27 +1201,24 @@ void HttpStreamParser::OnConnectionClose() {
 }
 
 int HttpStreamParser::EncodeChunk(std::string_view payload,
-                                  char* output,
-                                  size_t output_size) {
-  if (output_size < payload.size() + kChunkHeaderFooterSize)
+                                  base::span<uint8_t> output) {
+  if (output.size() < payload.size() + kChunkHeaderFooterSize) {
     return ERR_INVALID_ARGUMENT;
+  }
 
-  char* cursor = output;
+  auto span_writer = base::SpanWriter(output);
   // Add the header.
-  const int num_chars = base::snprintf(output, output_size,
-                                       "%X\r\n",
-                                       static_cast<int>(payload.size()));
-  cursor += num_chars;
+  const std::string header =
+      base::StringPrintf("%X\r\n", static_cast<int>(payload.size()));
+  span_writer.Write(base::as_byte_span(header));
   // Add the payload if any.
   if (payload.size() > 0) {
-    memcpy(cursor, payload.data(), payload.size());
-    cursor += payload.size();
+    span_writer.Write(base::as_byte_span(payload));
   }
   // Add the trailing CRLF.
-  memcpy(cursor, "\r\n", 2);
-  cursor += 2;
+  span_writer.Write(base::byte_span_from_cstring("\r\n"));
 
-  return cursor - output;
+  return span_writer.num_written();
 }
 
 // static

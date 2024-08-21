@@ -289,8 +289,8 @@ TEST(HttpStreamParser, EncodeChunk_EmptyPayload) {
 
   const std::string_view kPayload = "";
   const std::string_view kExpected = "0\r\n\r\n";
-  const int num_bytes_written =
-      HttpStreamParser::EncodeChunk(kPayload, output, sizeof(output));
+  const int num_bytes_written = HttpStreamParser::EncodeChunk(
+      kPayload, base::as_writable_byte_span(output));
   ASSERT_EQ(kExpected.size(), static_cast<size_t>(num_bytes_written));
   EXPECT_EQ(kExpected, std::string_view(output, num_bytes_written));
 }
@@ -301,8 +301,8 @@ TEST(HttpStreamParser, EncodeChunk_ShortPayload) {
   const std::string kPayload("foo\x00\x11\x22", 6);
   // 11 = payload size + sizeof("6") + CRLF x 2.
   const std::string kExpected("6\r\nfoo\x00\x11\x22\r\n", 11);
-  const int num_bytes_written =
-      HttpStreamParser::EncodeChunk(kPayload, output, sizeof(output));
+  const int num_bytes_written = HttpStreamParser::EncodeChunk(
+      kPayload, base::as_writable_byte_span(output));
   ASSERT_EQ(kExpected.size(), static_cast<size_t>(num_bytes_written));
   EXPECT_EQ(kExpected, std::string_view(output, num_bytes_written));
 }
@@ -313,8 +313,8 @@ TEST(HttpStreamParser, EncodeChunk_LargePayload) {
   const std::string kPayload(1000, '\xff');  // '\xff' x 1000.
   // 3E8 = 1000 in hex.
   const std::string kExpected = "3E8\r\n" + kPayload + "\r\n";
-  const int num_bytes_written =
-      HttpStreamParser::EncodeChunk(kPayload, output, sizeof(output));
+  const int num_bytes_written = HttpStreamParser::EncodeChunk(
+      kPayload, base::as_writable_byte_span(output));
   ASSERT_EQ(kExpected.size(), static_cast<size_t>(num_bytes_written));
   EXPECT_EQ(kExpected, std::string_view(output, num_bytes_written));
 }
@@ -325,8 +325,8 @@ TEST(HttpStreamParser, EncodeChunk_FullPayload) {
   const std::string kPayload(kMaxPayloadSize, '\xff');
   // 3F4 = 1012 in hex.
   const std::string kExpected = "3F4\r\n" + kPayload + "\r\n";
-  const int num_bytes_written =
-      HttpStreamParser::EncodeChunk(kPayload, output, sizeof(output));
+  const int num_bytes_written = HttpStreamParser::EncodeChunk(
+      kPayload, base::as_writable_byte_span(output));
   ASSERT_EQ(kExpected.size(), static_cast<size_t>(num_bytes_written));
   EXPECT_EQ(kExpected, std::string_view(output, num_bytes_written));
 }
@@ -336,8 +336,8 @@ TEST(HttpStreamParser, EncodeChunk_TooLargePayload) {
 
   // The payload is one byte larger the output buffer size.
   const std::string kPayload(kMaxPayloadSize + 1, '\xff');
-  const int num_bytes_written =
-      HttpStreamParser::EncodeChunk(kPayload, output, sizeof(output));
+  const int num_bytes_written = HttpStreamParser::EncodeChunk(
+      kPayload, base::as_writable_byte_span(output));
   ASSERT_THAT(num_bytes_written, IsError(ERR_INVALID_ARGUMENT));
 }
 
