@@ -244,7 +244,9 @@ ValueAndSize SerializeInterestGroup(base::Time start_time,
     group_obj[cbor::Value("biddingSignalsKeys")] =
         cbor::Value(std::move(bidding_signal_keys));
   }
-  if (group->interest_group.user_bidding_signals) {
+  if (!group->interest_group.auction_server_request_flags.Has(
+          blink::AuctionServerRequestFlagsEnum::kOmitUserBiddingSignals) &&
+      group->interest_group.user_bidding_signals) {
     group_obj[cbor::Value("userBiddingSignals")] =
         cbor::Value(*group->interest_group.user_bidding_signals);
     group_elements_size +=

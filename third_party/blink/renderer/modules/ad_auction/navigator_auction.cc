@@ -1024,6 +1024,8 @@ bool CopyAuctionServerRequestFlagsFromIdlToMojo(
       output.auction_server_request_flags->omit_ads = true;
     } else if (flag == "include-full-ads") {
       output.auction_server_request_flags->include_full_ads = true;
+    } else if (flag == "omit-user-bidding-signals") {
+      output.auction_server_request_flags->omit_user_bidding_signals = true;
     }
   }
   return true;

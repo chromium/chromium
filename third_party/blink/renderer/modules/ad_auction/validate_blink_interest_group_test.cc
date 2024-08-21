@@ -171,6 +171,8 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     blink_interest_group->auction_server_request_flags =
         mojom::blink::AuctionServerRequestFlags::New();
     blink_interest_group->auction_server_request_flags->omit_ads = true;
+    blink_interest_group->auction_server_request_flags
+        ->omit_user_bidding_signals = true;
 
     blink_interest_group->aggregation_coordinator_origin = kCoordinatorOrigin;
 

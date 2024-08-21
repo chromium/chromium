@@ -558,8 +558,13 @@ TEST(InterestGroupMojomTraitsTest,
   SerializeAndDeserializeAndCompare(interest_group);
 
   interest_group.auction_server_request_flags = {
+      blink::AuctionServerRequestFlagsEnum::kOmitUserBiddingSignals};
+  SerializeAndDeserializeAndCompare(interest_group);
+
+  interest_group.auction_server_request_flags = {
       blink::AuctionServerRequestFlagsEnum::kOmitAds,
-      blink::AuctionServerRequestFlagsEnum::kIncludeFullAds};
+      blink::AuctionServerRequestFlagsEnum::kIncludeFullAds,
+      blink::AuctionServerRequestFlagsEnum::kOmitUserBiddingSignals};
   SerializeAndDeserializeAndCompare(interest_group);
 }
 

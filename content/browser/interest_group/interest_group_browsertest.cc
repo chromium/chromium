@@ -352,6 +352,10 @@ base::Value::List AuctionServerRequestFlagsToList(
   if (flags.Has(blink::AuctionServerRequestFlagsEnum::kIncludeFullAds)) {
     result.Append("include-full-ads");
   }
+  if (flags.Has(
+          blink::AuctionServerRequestFlagsEnum::kOmitUserBiddingSignals)) {
+    result.Append("omit-user-bidding-signals");
+  }
   return result;
 }
 
@@ -3648,7 +3652,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                     /*name=*/"cars")
                     .SetAuctionServerRequestFlags(
                         {blink::AuctionServerRequestFlagsEnum::kOmitAds,
-                         blink::AuctionServerRequestFlagsEnum::kIncludeFullAds})
+                         blink::AuctionServerRequestFlagsEnum::kIncludeFullAds,
+                         blink::AuctionServerRequestFlagsEnum::
+                             kOmitUserBiddingSignals})
                     .Build()));
 
   scoped_refptr<StorageInterestGroups> groups =
@@ -3660,6 +3666,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       blink::AuctionServerRequestFlagsEnum::kOmitAds));
   EXPECT_TRUE(group.auction_server_request_flags.Has(
       blink::AuctionServerRequestFlagsEnum::kIncludeFullAds));
+  EXPECT_TRUE(group.auction_server_request_flags.Has(
+      blink::AuctionServerRequestFlagsEnum::kOmitUserBiddingSignals));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,

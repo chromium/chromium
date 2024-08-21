@@ -317,6 +317,9 @@ base::Value SerializeIntoValue(const AuctionServerRequestFlags& flags) {
       case AuctionServerRequestFlagsEnum::kIncludeFullAds:
         result.Append("include-full-ads");
         break;
+      case AuctionServerRequestFlagsEnum::kOmitUserBiddingSignals:
+        result.Append("omit-user-bidding-signals");
+        break;
     }
   }
   return base::Value(std::move(result));
