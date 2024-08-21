@@ -27,6 +27,7 @@ build_webui("build") {
 
   css_files = [
     "description_citation.css",
+    "description_section.css",
     "disclosure/app.css",
     "horizontal_carousel.css",
     "loading_state.css",
@@ -40,6 +41,8 @@ build_webui("build") {
   non_web_component_files = [
     "description_citation.html.ts",
     "description_citation.ts",
+    "description_section.html.ts",
+    "description_section.ts",
     "disclosure/app.html.ts",
     "disclosure/app.ts",
     "drag_and_drop_manager.ts",

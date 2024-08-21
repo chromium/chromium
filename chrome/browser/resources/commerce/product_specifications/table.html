@@ -2,14 +2,13 @@
   :host {
     --column-width: 220px;
     --last-column-overflow-x: visible;
-    --table-font-size: 12px;
     --table-gap: 8px;
   }
 
   #table {
     container-type: inline-size;
     display: grid;
-    font-size: var(--table-font-size);
+    font-size: 12px;
     gap: var(--table-gap);
     grid-auto-flow: column;
     grid-template-columns: repeat(var(--num-columns), var(--column-width));
@@ -108,30 +107,6 @@
   .col:not([is-first-column]) .detail-title span {
     visibility: hidden;
   }
-
-  .detail-description,
-  .detail-summary {
-    margin-inline-end: 24px;
-  }
-
-  .detail-summary {
-    font-size: 0; /* Hide spaces between summary texts. */
-    line-height: var(--table-font-size);
-    white-space: nowrap;
-  }
-
-  .detail-summary-text {
-    font-size: var(--table-font-size);
-    white-space: pre-line;
-  }
-
-  .description-chip {
-    background-color: var(--color-product-specifications-detail-chip-background);
-    border-radius: 6px;
-    display: inline-block;
-    margin: 4px 0;
-    padding: 4px 6px;
-  }
 </style>
 
 <div id="table" on-pointerleave="onHideOpenTabButton_">
@@ -176,37 +151,15 @@
           <div class="detail-title">
             <span>[[detail.title]]</span>
           </div>
-          <div class="detail-text" hidden$="[[!detail.text]]">
-            [[detail.text]]
-          </div>
-          <div class="detail-description"
-              hidden$="[[!showDescription_(detail.title, rowIndex,
-                  columns)]]">
-            <template is="dom-repeat" items="[[detail.description]]"
-                as="description">
-              <div class="description-chip">
-                <template is="dom-if" if="[[description.label]]">
-                  <b>[[description.label]]</b>:
-                </template>
-                [[description.description]]
-              </div>
-            </template>
-          </div>
+          <template is="dom-if" if="[[contentIsString_(detail.content)]]">
+            <div class="detail-text">[[detail.content]]</div>
+          </template>
           <template is="dom-if"
-              if="[[showSummary_(detail.title, rowIndex, columns)]]">
-            <div class="detail-summary">
-              <template is="dom-repeat" items="[[detail.summary]]"
-                  as="summaryItem" index-as="summaryIndex">
-                <span class="detail-summary-text">[[summaryItem.text]]</span>
-                <template is="dom-repeat" items="[[summaryItem.urls]]"
-                    as="urlInfo" index-as="urlIndex">
-                  <description-citation url="[[urlInfo.url.url]]"
-                      index="[[computeCitationIndex_(detail.summary,
-                          summaryIndex, urlIndex)]]">
-                  </description-citation>
-                </template>
-              </template>
-            </div>
+              if="[[contentIsProductDescription_(detail.content)]]">
+            <description-section
+                description="[[filterProductDescription_(detail.content,
+                    detail.title, rowIndex)]]">
+            </description-section>
           </template>
         </div>
       </template>

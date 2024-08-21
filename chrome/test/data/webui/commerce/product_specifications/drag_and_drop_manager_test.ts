@@ -47,9 +47,10 @@ suite('ProductSpecificationsTableTest', () => {
         productDetails: [
           {
             title: 'foo',
-            text: null,
-            description: [{label: '', description: 'bar'}],
-            summary: [],
+            content: {
+              attributes: [{label: '', value: 'bar'}],
+              summary: [],
+            },
           },
         ],
       });

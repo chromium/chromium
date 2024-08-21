@@ -77,6 +77,11 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DescriptionCitation) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DescriptionSection) {
+  RunTest("commerce/product_specifications/description_section_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DisclosureApp) {
   RunTest("commerce/product_specifications/disclosure_app_test.js",
           "mocha.run()");

@@ -363,31 +363,31 @@ suite('AppTest', () => {
               imageUrl: info1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', text: '$100', description: [], summary: []},
+              {title: 'price', content: '$100'},
               {
                 title: 'summary',
-                text: null,
-                description: [],
-                summary: [{
-                  text: 'product summary',
-                  urls: [],
-                }],
+                content: {
+                  attributes: [],
+                  summary: [{
+                    text: 'product summary',
+                    urls: [],
+                  }],
+                },
               },
               {
                 title: detailTitle,
-                text: null,
-                description: [
-                  {label: 'label', description: 'bar, baz'},
-                ],
-                summary: [{
-                  text: 'summary',
-                  urls: [{
-                    url: {url: 'http://example.com/citation'},
-                    title: '',
-                    faviconUrl: {url: ''},
-                    thumbnailUrl: {url: ''},
+                content: {
+                  attributes: [{label: 'label', value: 'bar, baz'}],
+                  summary: [{
+                    text: 'summary',
+                    urls: [{
+                      url: {url: 'http://example.com/citation'},
+                      title: '',
+                      faviconUrl: {url: ''},
+                      thumbnailUrl: {url: ''},
+                    }],
                   }],
-                }],
+                },
               },
             ],
           },
@@ -403,9 +403,9 @@ suite('AppTest', () => {
             // `productDetails` should have empty strings for `description` and
             // summary`.
             productDetails: [
-              {title: 'price', text: null, description: [], summary: []},
-              {title: 'summary', text: null, description: [], summary: []},
-              {title: detailTitle, text: null, description: [], summary: []},
+              {title: 'price', content: null},
+              {title: 'summary', content: {attributes: [], summary: []}},
+              {title: detailTitle, content: null},
             ],
           },
         ],
@@ -474,13 +474,14 @@ suite('AppTest', () => {
               imageUrl: info1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', text: null, description: [], summary: []},
-              {title: 'summary', text: null, description: [], summary: []},
+              {title: 'price', content: null},
+              {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: detailTitle,
-                text: null,
-                description: [{label: '', description: 'bar'}],
-                summary: [],
+                content: {
+                  attributes: [{label: '', value: 'bar'}],
+                  summary: [],
+                },
               },
             ],
           },
@@ -595,13 +596,14 @@ suite('AppTest', () => {
               imageUrl: info1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', text: null, description: [], summary: []},
-              {title: 'summary', text: null, description: [], summary: []},
+              {title: 'price', content: null},
+              {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: detailTitle,
-                text: null,
-                description: [{label: '', description: 'desc 1'}],
-                summary: [],
+                content: {
+                  attributes: [{label: '', value: 'desc 1'}],
+                  summary: [],
+                },
               },
             ],
           },
@@ -612,13 +614,14 @@ suite('AppTest', () => {
               imageUrl: info2.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', text: null, description: [], summary: []},
-              {title: 'summary', text: null, description: [], summary: []},
+              {title: 'price', content: null},
+              {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: detailTitle,
-                text: null,
-                description: [{label: '', description: 'desc 2'}],
-                summary: [],
+                content: {
+                  attributes: [{label: '', value: 'desc 2'}],
+                  summary: [],
+                },
               },
             ],
           },
@@ -761,13 +764,14 @@ suite('AppTest', () => {
               imageUrl: info2.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', text: null, description: [], summary: []},
-              {title: 'summary', text: null, description: [], summary: []},
+              {title: 'price', content: null},
+              {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: rowTitle,
-                text: null,
-                description: [{label: '', description: 'desc 2'}],
-                summary: [],
+                content: {
+                  attributes: [{label: '', value: 'desc 2'}],
+                  summary: [],
+                },
               },
             ],
           },
@@ -778,13 +782,14 @@ suite('AppTest', () => {
               imageUrl: info1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', text: null, description: [], summary: []},
-              {title: 'summary', text: null, description: [], summary: []},
+              {title: 'price', content: null},
+              {title: 'summary', content: {attributes: [], summary: []}},
               {
                 title: rowTitle,
-                text: null,
-                description: [{label: '', description: 'desc 1'}],
-                summary: [],
+                content: {
+                  attributes: [{label: '', value: 'desc 1'}],
+                  summary: [],
+                },
               },
             ],
           },

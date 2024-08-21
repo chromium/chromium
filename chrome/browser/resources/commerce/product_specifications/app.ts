@@ -28,11 +28,12 @@ import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.moj
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
+import type {ProductDescription} from './description_section.js';
 import type {HeaderElement} from './header.js';
 import type {NewColumnSelectorElement} from './new_column_selector.js';
 import type {ProductSelectorElement} from './product_selector.js';
 import {Router} from './router.js';
-import type {ProductInfo, ProductSpecifications, ProductSpecificationsDescriptionText, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
+import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
 import {UserFeedback} from './shopping_service.mojom-webui.js';
 import type {TableElement} from './table.js';
 import type {UrlListEntry} from './utils.js';
@@ -48,17 +49,11 @@ interface LoadingState {
   urlCount: number;
 }
 
-interface Description {
-  label: string;
-  description: string;
-}
+export type Content = string|ProductDescription|null;
 
 interface ProductDetail {
   title: string;
-  // Only one of `text` or `description` will be set at a time.
-  text: string|null;
-  description: Description[];
-  summary: ProductSpecificationsDescriptionText[];
+  content: Content;
 }
 
 export interface TableColumn {
@@ -90,39 +85,42 @@ function getProductDetails(
   // specifications backend.
   productDetails.push({
     title: loadTimeData.getString('priceRowTitle'),
-    text: productInfo?.currentPrice || null,
-    description: [],
-    summary: [],
+    content: productInfo?.currentPrice || null,
   });
 
   // The second row is the product-level summary.
   productDetails.push({
     title: loadTimeData.getString('productSummaryRowTitle'),
-    text: null,
-    description: [],
-    summary: product?.summary || [],
+    content: {
+      attributes: [],
+      summary: product?.summary || [],
+    },
   });
 
   productSpecs.productDimensionMap.forEach((title: string, key: bigint) => {
     if (!product) {
-      // Fill missing product details with strings to ensure uniform table row
-      // count.
-      productDetails.push({title, text: null, description: [], summary: []});
+      // Fill in missing product details to ensure uniform table row count.
+      productDetails.push({title, content: null});
     } else {
       const value = product.productDimensionValues.get(key);
-      const description =
+      const attributes =
           (value?.specificationDescriptions || []).flatMap(description => {
             return {
               label: description.label,
-              description:
-                  description.options.flatMap(option => option.descriptions)
-                      .flatMap(desc => desc.text)
-                      .join(', '),
+              value: description.options.flatMap(option => option.descriptions)
+                         .flatMap(desc => desc.text)
+                         .join(', '),
             };
           }) ||
           [];
       const summary = value?.summary || [];
-      productDetails.push({title, text: null, description, summary});
+      productDetails.push({
+        title,
+        content: {
+          attributes,
+          summary,
+        },
+      });
     }
   });
   return productDetails;

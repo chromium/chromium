@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
-import './description_citation.js';
+import './description_section.js';
 import './product_selector.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
@@ -19,9 +19,9 @@ import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browse
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {TableColumn} from './app.js';
+import type {Content, TableColumn} from './app.js';
+import type {ProductDescription} from './description_section.js';
 import {DragAndDropManager} from './drag_and_drop_manager.js';
-import type {ProductSpecificationsDescriptionText} from './shopping_service.mojom-webui.js';
 import {getTemplate} from './table.html.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -180,19 +180,9 @@ export class TableElement extends PolymerElement {
   }
 
   private showRow_(title: string, rowIndex: number): boolean {
-    return this.showDescription_(title, rowIndex) ||
-        this.showSummary_(title, rowIndex) || this.rowHasText_(title, rowIndex);
-  }
-
-  private computeCitationIndex_(
-      summaries: ProductSpecificationsDescriptionText[], summaryIndex: number,
-      urlIndex: number): number {
-    // Citations should start from 1.
-    let citationIndex = 1;
-    for (let i = 0; i < summaryIndex; i++) {
-      citationIndex += summaries[i].urls.length;
-    }
-    return citationIndex + urlIndex;
+    return this.rowHasNonEmptyAttributes_(title, rowIndex) ||
+        this.rowHasNonEmptySummary_(title, rowIndex) ||
+        this.rowHasText_(title, rowIndex);
   }
 
   private rowHasText_(title: string, rowIndex: number): boolean {
@@ -200,37 +190,65 @@ export class TableElement extends PolymerElement {
         column => column.productDetails && column.productDetails[rowIndex]);
 
     return rowDetails.some(
-        detail => detail && detail.title === title && detail.text);
+        detail => detail && detail.title === title &&
+            this.contentIsString_(detail.content));
   }
 
-  private showDescription_(title: string, rowIndex: number): boolean {
+  private rowHasNonEmptyAttributes_(title: string, rowIndex: number): boolean {
     const rowDetails = this.columns.map(
         column => column.productDetails && column.productDetails[rowIndex]);
 
     return rowDetails.some(detail => {
-      if (!detail || detail.title !== title) {
+      if (!detail || detail.title !== title ||
+          !this.contentIsProductDescription_(detail.content)) {
         return false;
       }
-      if (detail.text) {
-        // If we're showing text, we shouldn't have any description data.
-        assert(detail.description.length === 0);
-        return false;
-      }
-      return detail.description && detail.description.some(desc => {
-        return desc.description.length > 0 && desc.description !== 'N/A';
+      return detail.content && detail.content.attributes.some(attr => {
+        return attr.value.length > 0 && attr.value !== 'N/A';
       });
     });
   }
 
-  private showSummary_(title: string, rowIndex: number): boolean {
+  private rowHasNonEmptySummary_(title: string, rowIndex: number): boolean {
     const rowDetails = this.columns.map(
         column => column.productDetails && column.productDetails[rowIndex]);
 
     return rowDetails.some(detail => {
-      return detail && detail.title === title && detail.summary &&
-          detail.summary.length > 0 &&
-          detail.summary.some((summaryObj) => summaryObj.text !== 'N/A');
+      return detail && detail.title === title && detail.content &&
+          this.contentIsProductDescription_(detail.content) &&
+          detail.content.summary.length > 0 &&
+          detail.content.summary.some(
+              (summaryObj) => summaryObj.text !== 'N/A');
     });
+  }
+
+  private filterProductDescription_(
+      productDesc: ProductDescription, title: string,
+      rowIndex: number): ProductDescription {
+    // Hide product descriptions when all attributes/summaries in this row are
+    // missing or marked "N/A".
+    return {
+      attributes: this.rowHasNonEmptyAttributes_(title, rowIndex) ?
+          productDesc.attributes :
+          [],
+      summary: this.rowHasNonEmptySummary_(title, rowIndex) ?
+          productDesc.summary :
+          [],
+    };
+  }
+
+  private contentIsString_(content: Content): content is string {
+    return (content && typeof content === 'string') as boolean;
+  }
+
+  private contentIsProductDescription_(content: Content):
+      content is ProductDescription {
+    if (content) {
+      const description = content as ProductDescription;
+      return description.attributes && description.summary &&
+          (description.attributes.length > 0 || description.summary.length > 0);
+    }
+    return false;
   }
 
   // This method provides a string that is intended to be used primarily in CSS.
