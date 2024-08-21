@@ -239,7 +239,7 @@ class SafeBrowsingDatabaseManager
   // protocol manager.  This may be called multiple times during the life of the
   // DatabaseManager. All subclasses should override this method and call the
   // base class method at the top of it. This should be called on the UI thread.
-  virtual void StartOnSBThread(
+  virtual void StartOnUIThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config);
 
@@ -257,7 +257,7 @@ class SafeBrowsingDatabaseManager
   // Called to stop or shutdown operations. All subclasses should override this
   // method and call the base class method at the bottom of it. This should be
   // called on the UI thread.
-  virtual void StopOnSBThread(bool shutdown);
+  virtual void StopOnUIThread(bool shutdown);
 
   // Called to check if database is ready or not.
   virtual bool IsDatabaseReady() const = 0;
@@ -335,7 +335,7 @@ class SafeBrowsingDatabaseManager
   // extensions that have been blocklisted since.
   void NotifyDatabaseUpdateFinished();
 
-  // Created and destroyed via StartOnSBThread/StopOnSBThread.
+  // Created and destroyed via StartOnUIThread/StopOnUIThread.
   std::unique_ptr<V4GetHashProtocolManager> v4_get_hash_protocol_manager_;
 
   // A list of parties to be notified about database updates.

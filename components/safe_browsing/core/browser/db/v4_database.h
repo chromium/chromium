@@ -109,7 +109,7 @@ class V4Database {
   // the database creation is complete, it runs the NewDatabaseReadyCallback on
   // the same thread as it was called.
   // NOTE: Within |new_db_callback| the client should invoke
-  // V4Database::InitializeOnIOSequence() on the IO thread.
+  // V4Database::InitializeOnUIThread() on the UI thread.
   static void Create(
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
       const base::FilePath& base_path,
@@ -117,10 +117,10 @@ class V4Database {
       NewDatabaseReadyCallback new_db_callback);
 
   // Initialize state that lives on the UI thread.
-  void InitializeOnSBThread();
+  void InitializeOnUIThread();
 
   // Destroy state that lives on the UI thread.
-  void StopOnSBThread();
+  void StopOnUIThread();
 
   V4Database(const V4Database&) = delete;
   V4Database& operator=(const V4Database&) = delete;
@@ -246,7 +246,7 @@ class V4Database {
   void RecordDatabaseUpdateLatency();
 
   // Used to verify that certain methods are called on the client-designated SB
-  // sequence (see InitializeOnSBThread()).
+  // sequence (see InitializeOnUIThread()).
   SEQUENCE_CHECKER(sb_sequence_checker_);
 
   const scoped_refptr<base::SequencedTaskRunner> db_task_runner_;

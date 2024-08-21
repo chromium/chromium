@@ -352,16 +352,16 @@ RemoteSafeBrowsingDatabaseManager::GetNonBrowseUrlThreatSource() const {
   return safe_browsing::ThreatSource::REMOTE;
 }
 
-void RemoteSafeBrowsingDatabaseManager::StartOnSBThread(
+void RemoteSafeBrowsingDatabaseManager::StartOnUIThread(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const V4ProtocolConfig& config) {
   VLOG(1) << "RemoteSafeBrowsingDatabaseManager starting";
-  SafeBrowsingDatabaseManager::StartOnSBThread(url_loader_factory, config);
+  SafeBrowsingDatabaseManager::StartOnUIThread(url_loader_factory, config);
   SafeBrowsingApiHandlerBridge::GetInstance().PopulateArtificialDatabase();
   enabled_ = true;
 }
 
-void RemoteSafeBrowsingDatabaseManager::StopOnSBThread(bool shutdown) {
+void RemoteSafeBrowsingDatabaseManager::StopOnUIThread(bool shutdown) {
   // |shutdown| is not used.
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   DVLOG(1) << "RemoteSafeBrowsingDatabaseManager stopping";
@@ -376,7 +376,7 @@ void RemoteSafeBrowsingDatabaseManager::StopOnSBThread(bool shutdown) {
   SafeBrowsingApiHandlerBridge::GetInstance().ClearArtificialDatabase();
   enabled_ = false;
 
-  SafeBrowsingDatabaseManager::StopOnSBThread(shutdown);
+  SafeBrowsingDatabaseManager::StopOnUIThread(shutdown);
 }
 
 bool RemoteSafeBrowsingDatabaseManager::IsDatabaseReady() const {

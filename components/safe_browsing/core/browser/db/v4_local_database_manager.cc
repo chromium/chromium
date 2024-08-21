@@ -560,10 +560,10 @@ ThreatSource V4LocalDatabaseManager::GetNonBrowseUrlThreatSource() const {
   return ThreatSource::LOCAL_PVER4;
 }
 
-void V4LocalDatabaseManager::StartOnSBThread(
+void V4LocalDatabaseManager::StartOnUIThread(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const V4ProtocolConfig& config) {
-  SafeBrowsingDatabaseManager::StartOnSBThread(url_loader_factory, config);
+  SafeBrowsingDatabaseManager::StartOnUIThread(url_loader_factory, config);
 
   db_updated_callback_ = base::BindRepeating(
       &V4LocalDatabaseManager::DatabaseUpdated, weak_factory_.GetWeakPtr());
@@ -577,7 +577,7 @@ void V4LocalDatabaseManager::StartOnSBThread(
   current_local_database_manager_ = this;
 }
 
-void V4LocalDatabaseManager::StopOnSBThread(bool shutdown) {
+void V4LocalDatabaseManager::StopOnUIThread(bool shutdown) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   enabled_ = false;
@@ -596,7 +596,7 @@ void V4LocalDatabaseManager::StopOnSBThread(bool shutdown) {
   // This operation happens on the task_runner on which v4_database_ operates
   // and doesn't block the IO thread.
   if (v4_database_) {
-    v4_database_->StopOnSBThread();
+    v4_database_->StopOnUIThread();
   }
   v4_database_.reset();
 
@@ -608,7 +608,7 @@ void V4LocalDatabaseManager::StopOnSBThread(bool shutdown) {
 
   weak_factory_.InvalidateWeakPtrs();
 
-  SafeBrowsingDatabaseManager::StopOnSBThread(shutdown);
+  SafeBrowsingDatabaseManager::StopOnUIThread(shutdown);
 }
 
 bool V4LocalDatabaseManager::IsDatabaseReady() const {
@@ -627,10 +627,10 @@ void V4LocalDatabaseManager::DatabaseReadyForChecks(
   base::UmaHistogramTimes("SafeBrowsing.V4DatabaseInitializationTime",
                           base::Time::Now() - start_time);
 
-  v4_database->InitializeOnSBThread();
+  v4_database->InitializeOnUIThread();
 
   // The following check is needed because it is possible that by the time the
-  // database is ready, StopOnSBThread has been called.
+  // database is ready, StopOnUIThread has been called.
   if (enabled_) {
     v4_database_ = std::move(v4_database);
 
@@ -776,7 +776,7 @@ AsyncMatch V4LocalDatabaseManager::HandleAllowlistCheck(
   AsyncMatch match;
 
   if (GetPrefixMatchesIsAsync() && !callback.is_null()) {
-    // If StopOnSBThread is called weak_factory_ will get invalidated and
+    // If StopOnUIThread is called weak_factory_ will get invalidated and
     // HandleAllowlistCheckContinuation won't be called. We still want to run
     // the callback though. See comment in CheckUrlForHighConfidenceAllowlist
     // on why this returns true.
@@ -982,7 +982,7 @@ void V4LocalDatabaseManager::ScheduleFullHashCheck(
                                   weak_factory_.GetWeakPtr(), std::move(check),
                                   full_hash_infos));
   } else {
-    // Post on the SB thread to enforce async behavior.
+    // Post on the UI thread to enforce async behavior.
     ui_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&V4LocalDatabaseManager::PerformFullHashCheck,
@@ -1195,9 +1195,9 @@ void V4LocalDatabaseManager::SetupDatabase() {
   DCHECK(!list_infos_.empty());
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
-  // Do not create the database on the SB thread since this may be an expensive
+  // Do not create the database on the UI thread since this may be an expensive
   // operation. Instead, do that on the task_runner and when the new database
-  // has been created, swap it out on the SB thread.
+  // has been created, swap it out on the UI thread.
   NewDatabaseReadyCallback db_ready_callback =
       base::BindOnce(&V4LocalDatabaseManager::DatabaseReadyForChecks,
                      weak_factory_.GetWeakPtr(), base::Time::Now());

@@ -72,12 +72,12 @@ class SafeBrowsingDatabaseManagerTest : public testing::Test {
 
     db_manager_ = new TestSafeBrowsingDatabaseManager(
         base::SequencedTaskRunner::GetCurrentDefault());
-    db_manager_->StartOnSBThread(test_shared_loader_factory_,
+    db_manager_->StartOnUIThread(test_shared_loader_factory_,
                                  GetTestV4ProtocolConfig());
   }
 
   void TearDown() override {
-    db_manager_->StopOnSBThread(false);
+    db_manager_->StopOnUIThread(false);
     db_manager_ = nullptr;
     base::RunLoop().RunUntilIdle();
   }

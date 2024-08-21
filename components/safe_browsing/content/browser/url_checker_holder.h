@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_URL_CHECKER_ON_SB_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_URL_CHECKER_ON_SB_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_URL_CHECKER_HOLDER_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_URL_CHECKER_HOLDER_H_
 
 #include <memory>
 
@@ -29,10 +29,8 @@ class UrlCheckerDelegate;
 class RealTimeUrlLookupServiceBase;
 class HashRealTimeService;
 
-// UrlCheckerOnSB handles calling methods on SafeBrowsingUrlCheckerImpl.
-// TODO(http://crbug.com/824843): Remove this if safe browsing is moved to the
-// UI thread.
-class UrlCheckerOnSB final {
+// UrlCheckerHolder handles calling methods on SafeBrowsingUrlCheckerImpl.
+class UrlCheckerHolder final {
  public:
   struct StartParams {
     StartParams(net::HttpRequestHeaders headers,
@@ -69,7 +67,7 @@ class UrlCheckerOnSB final {
   using GetDelegateCallback =
       base::RepeatingCallback<scoped_refptr<UrlCheckerDelegate>()>;
 
-  UrlCheckerOnSB(
+  UrlCheckerHolder(
       GetDelegateCallback delegate_getter,
       int frame_tree_node_id,
       std::optional<int64_t> navigation_id,
@@ -85,7 +83,7 @@ class UrlCheckerOnSB final {
       bool is_async_check,
       SessionID tab_id);
 
-  ~UrlCheckerOnSB();
+  ~UrlCheckerHolder();
 
   // Starts the initial safe browsing check.
   void Start(const StartParams& params);
@@ -110,7 +108,7 @@ class UrlCheckerOnSB final {
 
   void AddUrlInRedirectChainForTesting(const GURL& url);
 
-  base::WeakPtr<UrlCheckerOnSB> AsWeakPtr() {
+  base::WeakPtr<UrlCheckerHolder> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
@@ -146,9 +144,9 @@ class UrlCheckerOnSB final {
   base::TimeTicks creation_time_;
   bool is_async_check_ = false;
   SessionID tab_id_;
-  base::WeakPtrFactory<UrlCheckerOnSB> weak_factory_{this};
+  base::WeakPtrFactory<UrlCheckerHolder> weak_factory_{this};
 };
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_URL_CHECKER_ON_SB_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_URL_CHECKER_HOLDER_H_

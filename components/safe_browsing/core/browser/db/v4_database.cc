@@ -176,18 +176,18 @@ V4Database::V4Database(
   // This method executes on the DB sequence, whereas
   // |sb_sequence_checker_| is meant to verify methods that should
   // execute on the UI sequence. Detach that sequence checker here; it
-  // will be bound to the UI sequence in InitializeOnSBThread().
+  // will be bound to the UI sequence in InitializeOnUIThread().
   DETACH_FROM_SEQUENCE(sb_sequence_checker_);
 }
 
-void V4Database::InitializeOnSBThread() {
+void V4Database::InitializeOnUIThread() {
   // This invocation serves to bind |sb_sequence_checker_| to the IO sequence
   // after its having been detached from the DB sequence in this object's
   // constructor.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sb_sequence_checker_);
 }
 
-void V4Database::StopOnSBThread() {
+void V4Database::StopOnUIThread() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sb_sequence_checker_);
   weak_factory_on_io_.InvalidateWeakPtrs();
 }

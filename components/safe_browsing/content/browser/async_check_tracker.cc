@@ -23,8 +23,8 @@ constexpr int kNavigationTimestampsSizeThreshold = 10000;
 
 // Navigation timestamps that are older than this interval are considered
 // expired and may be cleaned up. This interval must be much larger than the
-// life time of UrlCheckerOnSB so that IsMainPageLoadPending returns the correct
-// result when the check completes.
+// life time of UrlCheckerHolder so that IsMainPageLoadPending returns the
+// correct result when the check completes.
 constexpr base::TimeDelta kNavigationTimestampExpiration = base::Seconds(180);
 
 }  // namespace
@@ -89,7 +89,7 @@ AsyncCheckTracker::~AsyncCheckTracker() {
 }
 
 void AsyncCheckTracker::TransferUrlChecker(
-    std::unique_ptr<UrlCheckerOnSB> checker) {
+    std::unique_ptr<UrlCheckerHolder> checker) {
   std::optional<int64_t> navigation_id = checker->navigation_id();
   CHECK(navigation_id.has_value());
   int64_t id = navigation_id.value();
@@ -107,7 +107,7 @@ void AsyncCheckTracker::TransferUrlChecker(
 
 void AsyncCheckTracker::PendingCheckerCompleted(
     int64_t navigation_id,
-    UrlCheckerOnSB::OnCompleteCheckResult result) {
+    UrlCheckerHolder::OnCompleteCheckResult result) {
   DVLOG(1) << __func__ << " : navigation id: " << navigation_id
            << " proceed: " << result.proceed
            << " has_post_commit_interstitial_skipped: "

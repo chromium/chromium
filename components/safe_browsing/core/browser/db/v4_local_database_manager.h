@@ -93,10 +93,10 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
       CheckBrowseUrlType check_type) const override;
   safe_browsing::ThreatSource GetNonBrowseUrlThreatSource() const override;
 
-  void StartOnSBThread(
+  void StartOnUIThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config) override;
-  void StopOnSBThread(bool shutdown) override;
+  void StopOnUIThread(bool shutdown) override;
   bool IsDatabaseReady() const override;
 
   // The stores/lists to always get full hashes for, regardless of which store
@@ -113,7 +113,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
 
  protected:
   // Construct V4LocalDatabaseManager.
-  // Must be initialized by calling StartOnSBThread() before using.
+  // Must be initialized by calling StartOnUIThread() before using.
   V4LocalDatabaseManager(
       const base::FilePath& base_path,
       ExtendedReportingLevelCallback extended_reporting_level_callback,
@@ -345,12 +345,12 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
       std::unique_ptr<PendingCheck> check,
       FullHashToStoreAndHashPrefixesMap results);
 
-  // Called on StopOnSBThread, it responds to the clients that are (1) waiting
+  // Called on StopOnUIThread, it responds to the clients that are (1) waiting
   // for the database to become available with the verdict as SAFE, or (2)
   // waiting for a full hash response from the SafeBrowsing service.
   void RespondSafeToQueuedAndPendingChecks();
 
-  // Called on StopOnSBThread, it drops all the requests, as if they were
+  // Called on StopOnUIThread, it drops all the requests, as if they were
   // complete. This is used to get to a safe state for shutdown.
   void DropQueuedAndPendingChecks();
 

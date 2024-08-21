@@ -85,7 +85,7 @@ class TestUrlCheckerClient {
     url_checker_ = safe_browsing_service_->CreateUrlChecker(
         network::mojom::RequestDestination::kDocument, &web_state_,
         safe_browsing_client_);
-    CheckUrlOnSBThread(url);
+    CheckUrlOnUIThread(url);
   }
 
   void CheckUrlWithSyncChecker(const GURL& url) {
@@ -93,7 +93,7 @@ class TestUrlCheckerClient {
     url_checker_ = safe_browsing_service_->CreateSyncChecker(
         network::mojom::RequestDestination::kDocument, &web_state_,
         safe_browsing_client_);
-    CheckUrlOnSBThread(url);
+    CheckUrlOnUIThread(url);
   }
 
   void CheckUrlWithAsyncChecker(const GURL& url) {
@@ -101,7 +101,7 @@ class TestUrlCheckerClient {
     url_checker_ = safe_browsing_service_->CreateAsyncChecker(
         network::mojom::RequestDestination::kDocument, &web_state_,
         safe_browsing_client_);
-    CheckUrlOnSBThread(url);
+    CheckUrlOnUIThread(url);
   }
 
   bool result_pending() const { return result_pending_; }
@@ -113,7 +113,7 @@ class TestUrlCheckerClient {
   }
 
  private:
-  void CheckUrlOnSBThread(const GURL& url) {
+  void CheckUrlOnUIThread(const GURL& url) {
     url_checker_->CheckUrl(
         url, "GET",
         base::BindOnce(&TestUrlCheckerClient::OnCheckUrlResult,
@@ -195,12 +195,12 @@ class SafeBrowsingServiceTest : public PlatformTest {
   }
 
   void MarkUrlAsMalware(const GURL& bad_url) {
-    MarkUrlAsMalwareOnSBThread(bad_url);
+    MarkUrlAsMalwareOnUIThread(bad_url);
   }
 
   // Adds the given `safe_url` to the allowlist used by real-time checks.
   void MarkUrlAsRealTimeSafe(const GURL& safe_url) {
-    MarkUrlAsSafeOnSBThread(safe_url);
+    MarkUrlAsSafeOnUIThread(safe_url);
   }
 
   // Caches the given `bad_url` as unsafe in the VerdictCacheManager used by
@@ -239,7 +239,7 @@ class SafeBrowsingServiceTest : public PlatformTest {
   web::FakeWebState web_state_;
 
  private:
-  void MarkUrlAsMalwareOnSBThread(const GURL& bad_url) {
+  void MarkUrlAsMalwareOnUIThread(const GURL& bad_url) {
     safe_browsing::FullHashInfo full_hash_info =
         safe_browsing::GetFullHashInfoWithMetadata(
             bad_url, safe_browsing::GetUrlMalwareId(),
@@ -249,7 +249,7 @@ class SafeBrowsingServiceTest : public PlatformTest {
     v4_get_hash_factory_->AddToFullHashCache(full_hash_info);
   }
 
-  void MarkUrlAsSafeOnSBThread(const GURL& bad_url) {
+  void MarkUrlAsSafeOnUIThread(const GURL& bad_url) {
     safe_browsing::FullHashInfo full_hash_info =
         safe_browsing::GetFullHashInfoWithMetadata(
             bad_url, safe_browsing::GetUrlMalwareId(),

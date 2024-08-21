@@ -94,16 +94,16 @@ TestSafeBrowsingDatabaseManager::GetNonBrowseUrlThreatSource() const {
   return safe_browsing::ThreatSource::UNKNOWN;
 }
 
-void TestSafeBrowsingDatabaseManager::StartOnSBThread(
+void TestSafeBrowsingDatabaseManager::StartOnUIThread(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const V4ProtocolConfig& config) {
-  SafeBrowsingDatabaseManager::StartOnSBThread(url_loader_factory, config);
+  SafeBrowsingDatabaseManager::StartOnUIThread(url_loader_factory, config);
   enabled_ = true;
 }
 
-void TestSafeBrowsingDatabaseManager::StopOnSBThread(bool shutdown) {
+void TestSafeBrowsingDatabaseManager::StopOnUIThread(bool shutdown) {
   enabled_ = false;
-  SafeBrowsingDatabaseManager::StopOnSBThread(shutdown);
+  SafeBrowsingDatabaseManager::StopOnUIThread(shutdown);
 }
 
 bool TestSafeBrowsingDatabaseManager::IsDatabaseReady() const {

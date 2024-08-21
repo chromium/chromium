@@ -53,7 +53,7 @@ void StartSafeBrowsingDBManagerInternal(
       safe_browsing::GetV4ProtocolConfig(client_name,
                                          /*disable_auto_update=*/false);
 
-  safe_browsing_db_manager->StartOnSBThread(shared_url_loader_factory, config);
+  safe_browsing_db_manager->StartOnUIThread(shared_url_loader_factory, config);
 }
 
 }  // namespace
@@ -146,7 +146,7 @@ void SafeBrowsingServiceImpl::ShutDown() {
       base::BindOnce(&IOThreadEnabler::ShutDown, io_thread_enabler_));
   if (enabled_) {
     enabled_ = false;
-    safe_browsing_db_manager_->StopOnSBThread(true);
+    safe_browsing_db_manager_->StopOnUIThread(true);
   }
   network_context_client_.reset();
 }
@@ -355,7 +355,7 @@ void SafeBrowsingServiceImpl::UpdateSafeBrowsingEnabledState() {
     StartSafeBrowsingDBManagerInternal(safe_browsing_db_manager_,
                                        shared_url_loader_factory_);
   } else {
-    safe_browsing_db_manager_->StopOnSBThread(false);
+    safe_browsing_db_manager_->StopOnUIThread(false);
   }
 }
 

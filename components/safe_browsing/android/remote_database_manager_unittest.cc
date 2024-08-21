@@ -119,7 +119,7 @@ class RemoteDatabaseManagerTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
     db_ = new RemoteSafeBrowsingDatabaseManager();
-    db_->StartOnSBThread(test_shared_loader_factory_,
+    db_->StartOnUIThread(test_shared_loader_factory_,
                          GetTestV4ProtocolConfig());
 
     url_interceptor_ = std::make_unique<TestUrlCheckInterceptor>();
@@ -128,7 +128,7 @@ class RemoteDatabaseManagerTest : public testing::Test {
   }
 
   void TearDown() override {
-    db_->StopOnSBThread(/*shutdown=*/false);
+    db_->StopOnUIThread(/*shutdown=*/false);
     db_ = nullptr;
   }
 

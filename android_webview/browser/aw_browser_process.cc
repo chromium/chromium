@@ -174,7 +174,7 @@ AwBrowserProcess::GetSafeBrowsingDBManager() {
   if (!safe_browsing_db_manager_started_) {
     // V4ProtocolConfig is not used. Just create one with empty values..
     safe_browsing::V4ProtocolConfig config("", false, "", "");
-    safe_browsing_db_manager_->StartOnSBThread(
+    safe_browsing_db_manager_->StartOnUIThread(
         GetSafeBrowsingUIManager()->GetURLLoaderFactory(), config);
     safe_browsing_db_manager_started_ = true;
   }

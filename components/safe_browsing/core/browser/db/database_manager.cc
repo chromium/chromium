@@ -116,7 +116,7 @@ void SafeBrowsingDatabaseManager::OnThreatMetadataResponse(
   api_checks_.erase(it);
 }
 
-void SafeBrowsingDatabaseManager::StartOnSBThread(
+void SafeBrowsingDatabaseManager::StartOnUIThread(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const V4ProtocolConfig& config) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
@@ -127,7 +127,7 @@ void SafeBrowsingDatabaseManager::StartOnSBThread(
 
 // |shutdown| not used. Destroys the v4 protocol managers. This may be called
 // multiple times during the life of the DatabaseManager.
-void SafeBrowsingDatabaseManager::StopOnSBThread(bool shutdown) {
+void SafeBrowsingDatabaseManager::StopOnUIThread(bool shutdown) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   // Delete pending checks, calling back any clients with empty metadata.

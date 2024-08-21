@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/url_checker_on_sb.h"
+#include "components/safe_browsing/content/browser/url_checker_holder.h"
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -22,7 +22,7 @@
 
 namespace safe_browsing {
 
-UrlCheckerOnSB::OnCompleteCheckResult::OnCompleteCheckResult(
+UrlCheckerHolder::OnCompleteCheckResult::OnCompleteCheckResult(
     bool proceed,
     bool showed_interstitial,
     bool has_post_commit_interstitial_skipped,
@@ -35,7 +35,7 @@ UrlCheckerOnSB::OnCompleteCheckResult::OnCompleteCheckResult(
       performed_check(performed_check),
       all_checks_completed(all_checks_completed) {}
 
-UrlCheckerOnSB::StartParams::StartParams(
+UrlCheckerHolder::StartParams::StartParams(
     net::HttpRequestHeaders headers,
     int load_flags,
     bool has_user_gesture,
@@ -47,11 +47,11 @@ UrlCheckerOnSB::StartParams::StartParams(
       url(url),
       method(method) {}
 
-UrlCheckerOnSB::StartParams::StartParams(const StartParams& other) = default;
+UrlCheckerHolder::StartParams::StartParams(const StartParams& other) = default;
 
-UrlCheckerOnSB::StartParams::~StartParams() = default;
+UrlCheckerHolder::StartParams::~StartParams() = default;
 
-UrlCheckerOnSB::UrlCheckerOnSB(
+UrlCheckerHolder::UrlCheckerHolder(
     GetDelegateCallback delegate_getter,
     int frame_tree_node_id,
     std::optional<int64_t> navigation_id,
@@ -82,14 +82,14 @@ UrlCheckerOnSB::UrlCheckerOnSB(
       is_async_check_(is_async_check),
       tab_id_(tab_id) {}
 
-UrlCheckerOnSB::~UrlCheckerOnSB() {
+UrlCheckerHolder::~UrlCheckerHolder() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::UmaHistogramMediumTimes(
       "SafeBrowsing.BrowserThrottle.CheckerOnIOLifetime",
       base::TimeTicks::Now() - creation_time_);
 }
 
-void UrlCheckerOnSB::Start(const StartParams& params) {
+void UrlCheckerHolder::Start(const StartParams& params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   scoped_refptr<UrlCheckerDelegate> url_checker_delegate =
       std::move(delegate_getter_).Run();
@@ -111,44 +111,44 @@ void UrlCheckerOnSB::Start(const StartParams& params) {
   CheckUrl(params.url, params.method);
 }
 
-void UrlCheckerOnSB::CheckUrl(const GURL& url, const std::string& method) {
+void UrlCheckerHolder::CheckUrl(const GURL& url, const std::string& method) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(url_checker_);
   pending_checks_++;
   redirect_chain_.push_back(url);
   url_checker_->CheckUrl(url, method,
-                         base::BindOnce(&UrlCheckerOnSB::OnCheckUrlResult,
+                         base::BindOnce(&UrlCheckerHolder::OnCheckUrlResult,
                                         base::Unretained(this)));
 }
 
-void UrlCheckerOnSB::SwapCompleteCallback(OnCompleteCheckCallback callback) {
+void UrlCheckerHolder::SwapCompleteCallback(OnCompleteCheckCallback callback) {
   complete_callback_ = std::move(callback);
 }
 
-const std::vector<GURL>& UrlCheckerOnSB::GetRedirectChain() {
+const std::vector<GURL>& UrlCheckerHolder::GetRedirectChain() {
   return redirect_chain_;
 }
 
-void UrlCheckerOnSB::SetUrlCheckerForTesting(
+void UrlCheckerHolder::SetUrlCheckerForTesting(
     std::unique_ptr<SafeBrowsingUrlCheckerImpl> checker) {
   url_checker_for_testing_ = std::move(checker);
 }
 
-bool UrlCheckerOnSB::IsRealTimeCheckForTesting() {
+bool UrlCheckerHolder::IsRealTimeCheckForTesting() {
   return url_real_time_lookup_enabled_ ||
          hash_realtime_selection_ !=
              hash_realtime_utils::HashRealTimeSelection::kNone;
 }
 
-bool UrlCheckerOnSB::IsAsyncCheckForTesting() {
+bool UrlCheckerHolder::IsAsyncCheckForTesting() {
   return is_async_check_;
 }
 
-void UrlCheckerOnSB::AddUrlInRedirectChainForTesting(const GURL& url) {
+void UrlCheckerHolder::AddUrlInRedirectChainForTesting(const GURL& url) {
   redirect_chain_.push_back(url);
 }
 
-void UrlCheckerOnSB::OnCheckUrlResult(
+void UrlCheckerHolder::OnCheckUrlResult(
     bool proceed,
     bool showed_interstitial,
     bool has_post_commit_interstitial_skipped,
