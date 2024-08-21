@@ -194,8 +194,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   // If this stays as the default `YES`, then cells aren't highlighted
   // immediately on touch, but after a short delay.
   collectionView.delaysContentTouches = NO;
-  collectionView.alwaysBounceVertical =
-      base::FeatureList::IsEnabled(kTabGridAlwaysBounce);
+  collectionView.alwaysBounceVertical = YES;
 
   [self createRegistrations];
 

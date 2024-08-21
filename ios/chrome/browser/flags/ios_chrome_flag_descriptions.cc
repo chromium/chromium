@@ -1097,12 +1097,6 @@ const char kEnableSessionSerializationOptimizationsDescription[] =
     "and the ability to load only the minimum amount of data when restoring "
     "the session from disk.";
 
-const char kTabGridAlwaysBounceName[] =
-    "Let the tab grid bounce even if the content fits the screen";
-const char kTabGridAlwaysBounceDescription[] =
-    "When enabled, the Tab Grid bounces (aka overscrolls) even if all tabs are "
-    "fully visible on screen.";
-
 const char kTabGridNewTransitionsName[] = "Enable new TabGrid transitions";
 const char kTabGridNewTransitionsDescription[] =
     "When enabled, the new Tab Grid to Browser (and vice versa) transitions"

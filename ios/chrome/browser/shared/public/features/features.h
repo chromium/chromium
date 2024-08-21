@@ -325,10 +325,6 @@ BASE_DECLARE_FEATURE(kOnlyAccessClipboardAsync);
 // Feature flag to try using the page theme color in the top toolbar
 BASE_DECLARE_FEATURE(kThemeColorInTopToolbar);
 
-// Feature flag enabling the Tab Grid to always bounce (even when the content
-// fits the screen already).
-BASE_DECLARE_FEATURE(kTabGridAlwaysBounce);
-
 // Whether the Safety Check module should be shown in the Magic Stack.
 bool IsSafetyCheckMagicStackEnabled();
 

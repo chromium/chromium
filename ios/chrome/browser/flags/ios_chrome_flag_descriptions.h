@@ -978,11 +978,6 @@ extern const char kEnableLensOverlayDescription[];
 extern const char kEnableSessionSerializationOptimizationsName[];
 extern const char kEnableSessionSerializationOptimizationsDescription[];
 
-// Title and description for the flag to let the Tab Grid always bounce (even
-// when the content fits the screen already).
-extern const char kTabGridAlwaysBounceName[];
-extern const char kTabGridAlwaysBounceDescription[];
-
 // Title and description for the flag to enable the new transitions in the
 // TabGrid.
 extern const char kTabGridNewTransitionsName[];
