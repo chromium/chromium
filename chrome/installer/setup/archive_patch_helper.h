@@ -21,7 +21,7 @@ namespace installer {
 // uncompressed and extracted. Installation proceeds directly if the
 // uncompressed archive is found after this step. Otherwise, the patch is
 // applied to the previous version's uncompressed archive using either
-// Courgette's ensemble patching or bspatch.
+// Zucchini's patching or bspatch.
 //
 // Chrome's installer itself may also be deployed as a patch against the
 // previous version's saved installer binary. The same process is followed to
@@ -46,8 +46,8 @@ class ArchivePatchHelper {
   // Uncompresses |compressed_archive| in |working_directory| then applies the
   // extracted patch file to |patch_source|, writing the result to |target|.
   // Ensemble patching via Zucchini is attempted first (if it is enabled). If
-  // that fails Courgette is attempted with fallback to bspatch. Returns false
-  // if uncompression or all patching steps fail.
+  // that fails bspatch is attempted. Returns false if uncompression or all
+  // patching steps fail.
   static bool UncompressAndPatch(const base::FilePath& working_directory,
                                  const base::FilePath& compressed_archive,
                                  const base::FilePath& patch_source,
@@ -60,16 +60,12 @@ class ArchivePatchHelper {
   bool Uncompress(base::FilePath* last_uncompressed_file);
 
   // Performs ensemble patching on the uncompressed version of
-  // |compressed_archive| in |working_directory| as specified in the
-  // constructor using files from |patch_source|. Ensemble patching via
-  // Zucchini is attempted first (if it is enabled). If that fails patching via
-  // Courgette is attempted. Courgette falls back to bspatch if unsuccessful.
-  // The uncompressed patch file is unconditionally deleted at the end.
+  // |compressed_archive| in |working_directory| as specified in the constructor
+  // using files from |patch_source|. Ensemble patching via Zucchini is
+  // attempted first (if it is enabled). Zucchini falls back to bspatch if
+  // unsuccessful. The uncompressed patch file is unconditionally deleted at the
+  // end.
   bool ApplyAndDeletePatch();
-
-  // Attempts to use Courgette to apply last_uncompressed_file() to
-  // patch_source() to generate target(). Returns false if patching fails.
-  bool CourgetteEnsemblePatch();
 
   // Attempts to use Zucchini to apply last_uncompressed_file() to
   // patch_source() to generate target(). Returns false if patching fails.

@@ -44,21 +44,6 @@ base::FilePath ArchivePatchHelperTest::data_dir_;
 
 }  // namespace
 
-// Test that patching works.
-TEST_F(ArchivePatchHelperTest, CourgettePatching) {
-  base::FilePath src = data_dir_.AppendASCII("archive1.7z");
-  base::FilePath patch = data_dir_.AppendASCII("courgette_archive.diff");
-  base::FilePath dest = test_dir_.GetPath().AppendASCII("archive2.7z");
-  installer::ArchivePatchHelper archive_helper(
-      test_dir_.GetPath(), base::FilePath(), src, dest,
-      installer::UnPackConsumer::SETUP_EXE_PATCH);
-  archive_helper.set_last_uncompressed_file(patch);
-  EXPECT_TRUE(archive_helper.CourgetteEnsemblePatch() ||
-              archive_helper.BinaryPatch());
-  base::FilePath base = data_dir_.AppendASCII("archive2.7z");
-  EXPECT_TRUE(base::ContentsEqual(dest, base));
-}
-
 TEST_F(ArchivePatchHelperTest, ZucchiniPatching) {
   base::FilePath src = data_dir_.AppendASCII("archive1.7z");
   base::FilePath patch = data_dir_.AppendASCII("zucchini_archive.diff");

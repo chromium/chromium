@@ -76,9 +76,6 @@ const char kForceConfigureUserSettings[] = "force-configure-user-settings";
 // confirmation from user.
 const char kForceUninstall[] = "force-uninstall";
 
-// See description for kPatch.
-const char kInputFile[] = "input-file";
-
 // Specify the path to the Chrome archive for install. If not specified,
 // chrome.packed.7z or chrome.7z in the same directory as setup.exe
 // is used.
@@ -117,14 +114,6 @@ const char kNonce[] = "nonce";
 
 // Notify the installer that the OS has been upgraded.
 const char kOnOsUpgrade[] = "on-os-upgrade";
-
-// Applies a binary patch to a file. The input, patch, and the output file are
-// specified as command line arguments following the --patch switch.
-// Ex: --patch=zucchini --input_file='input' --patch_file='patch'
-//        --output_file='output'
-const char kOutputFile[] = "output-file";
-const char kPatch[] = "patch";
-const char kPatchFile[] = "patch-file";
 
 // Provide the previous version that patch is for.
 const char kPreviousVersion[] = "previous-version";

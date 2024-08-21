@@ -1023,28 +1023,6 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
                   << setup_exe.value();
     }
     *exit_code = InstallUtil::GetInstallReturnCode(status);
-  } else if (cmd_line.HasSwitch(installer::switches::kPatch)) {
-    const std::string patch_type_str(
-        cmd_line.GetSwitchValueASCII(installer::switches::kPatch));
-    const base::FilePath input_file(
-        cmd_line.GetSwitchValuePath(installer::switches::kInputFile));
-    const base::FilePath patch_file(
-        cmd_line.GetSwitchValuePath(installer::switches::kPatchFile));
-    const base::FilePath output_file(
-        cmd_line.GetSwitchValuePath(installer::switches::kOutputFile));
-
-    if (patch_type_str == installer::kZucchini) {
-      *exit_code =
-          installer::ZucchiniPatchFiles(input_file, patch_file, output_file);
-    } else if (patch_type_str == installer::kCourgette) {
-      *exit_code =
-          installer::CourgettePatchFiles(input_file, patch_file, output_file);
-    } else if (patch_type_str == installer::kBsdiff) {
-      *exit_code =
-          installer::BsdiffPatchFiles(input_file, patch_file, output_file);
-    } else {
-      *exit_code = installer::PATCH_INVALID_ARGUMENTS;
-    }
   } else if (cmd_line.HasSwitch(installer::switches::kReenableAutoupdates)) {
     // setup.exe has been asked to attempt to reenable updates for Chrome.
     bool updates_enabled = GoogleUpdateSettings::ReenableAutoupdates();

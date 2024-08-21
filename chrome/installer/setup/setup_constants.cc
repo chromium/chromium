@@ -19,10 +19,6 @@ const wchar_t kInstallSourceChromeDir[] = L"Chrome-bin";
 const wchar_t kMediaPlayerRegPath[] =
     L"Software\\Microsoft\\MediaPlayer\\ShimInclusionList";
 
-const char kCourgette[] = "courgette";
-const char kBsdiff[] = "bsdiff";
-const char kZucchini[] = "zucchini";
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const wchar_t kOsUpdateHandlerExe[] = L"os_update_handler.exe";
 #endif
