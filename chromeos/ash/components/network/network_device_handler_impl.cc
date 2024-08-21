@@ -314,7 +314,6 @@ void NetworkDeviceHandlerImpl::DeviceListChanged() {
   ApplyCellularAllowRoamingToShill();
   ApplyMACAddressRandomizationToShill();
   ApplyUsbEthernetMacAddressSourceToShill();
-  ApplyUseAttachApnToShill();
   ApplyWakeOnWifiAllowedToShill();
 }
 
@@ -457,25 +456,6 @@ void NetworkDeviceHandlerImpl::ApplyUsbEthernetMacAddressSourceToShill() {
           primary_enabled_usb_ethernet_device_path_,
           primary_enabled_usb_ethernet_device_state->mac_address(),
           usb_ethernet_mac_address_source_, network_handler::ErrorCallback()));
-}
-
-void NetworkDeviceHandlerImpl::ApplyUseAttachApnToShill() {
-  NetworkStateHandler::DeviceStateList list;
-  network_state_handler_->GetDeviceListByType(NetworkTypePattern::Cellular(),
-                                              &list);
-  if (list.empty()) {
-    NET_LOG(DEBUG) << "No cellular device available.";
-    return;
-  }
-  for (NetworkStateHandler::DeviceStateList::const_iterator it = list.begin();
-       it != list.end(); ++it) {
-    const DeviceState* device_state = *it;
-
-    SetDevicePropertyInternal(device_state->path(),
-                              shill::kUseAttachAPNProperty,
-                              /*value=*/base::Value(true), base::DoNothing(),
-                              network_handler::ErrorCallback());
-  }
 }
 
 void NetworkDeviceHandlerImpl::OnSetUsbEthernetMacAddressSourceError(
