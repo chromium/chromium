@@ -165,7 +165,7 @@ public class ArchivedTabModelOrchestratorTest {
         runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
         runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
 
-        assertEquals(2, mTaskRunner.mDelayedTasks.size());
+        CriteriaHelper.pollUiThread(() -> 2 == mTaskRunner.mDelayedTasks.size());
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
     }
@@ -203,7 +203,7 @@ public class ArchivedTabModelOrchestratorTest {
         runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
         runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
 
-        assertEquals(1, mTaskRunner.mDelayedTasks.size());
+        CriteriaHelper.pollUiThread(() -> 1 == mTaskRunner.mDelayedTasks.size());
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
 
@@ -238,7 +238,7 @@ public class ArchivedTabModelOrchestratorTest {
 
         runOnUiThreadBlocking(() -> mOrchestrator.maybeRescueArchivedTabs());
 
-        assertEquals(2, mRegularTabModel.getCount());
+        CriteriaHelper.pollUiThread(() -> 2 == mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
     }
 
@@ -294,7 +294,7 @@ public class ArchivedTabModelOrchestratorTest {
         runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
         runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
 
-        assertEquals(1, mTaskRunner.mDelayedTasks.size());
+        CriteriaHelper.pollUiThread(() -> 1 == mTaskRunner.mDelayedTasks.size());
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
 
