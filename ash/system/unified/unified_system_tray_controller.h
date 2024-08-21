@@ -89,6 +89,9 @@ class ASH_EXPORT UnifiedSystemTrayController
 
   // Show user selector view. Called from the view.
   void ShowUserChooserView();
+  // Show the detailed view of Quick Share, formerly Nearby Share. Called from
+  // the view.
+  void ShowNearbyShareDetailedView();
   // Show the detailed view of network. Called from the view.
   void ShowNetworkDetailedView();
   // Show the detailed view of hotspot. Called from the view.
