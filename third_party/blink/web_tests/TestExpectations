@@ -8009,3 +8009,4 @@ crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/construct
 crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/constructor.https.html [ Failure Pass ]
 crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Pass ]
 crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/enrollment.https.html [ Failure Pass ]
+crbug.com/361277938 http/tests/devtools/elements/styles-2/pseudo-elements.js [ Failure Pass ]
