@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <functional>
 #include <string>
-#include <vector>
 
 #include "third_party/dawn/include/dawn/dawn_proc_table.h"
 #include "third_party/dawn/include/dawn/webgpu.h"
@@ -41,6 +40,15 @@ using ChromeMLCancel = uintptr_t;
 // Opaque handle to an instance of a ChromeMLTS model.
 using ChromeMLTSModel = uintptr_t;
 
+// Type of the backend to run the model.
+enum ModelBackendType {
+  // The default WebGPU backend.
+  kGpuBackend = 0,
+  // The APU accelerator backend. Only available on devices with APU, and need
+  // special APU model files.
+  kApuBackend = 1,
+};
+
 // A contiguous byte span.
 struct ChromeMLByteSpan {
   uint8_t* data;
@@ -50,12 +58,26 @@ struct ChromeMLByteSpan {
 // Describes a ChromeML model's underlying tensors.
 struct ChromeMLModelData {
   // File holding the weights data. The file will be owned by the inference
-  // library and closed once weight loading is complete.
+  // library and closed once weight loading is complete. kApuBackend provides
+  // the `model_path` and not this field.
   PlatformFile weights_file;
+
+  // Null-terminated model path pointing to the model to use. Only kApuBackend
+  // provides this field. Other backends provide model through the
+  // `weights_file` field.
+  const char* model_path = nullptr;
+
+  // Null-terminated sentencepiece model path. kApuBackend models have a
+  // separate sentencepiece model file and require this to be set. Other
+  // backends have the sentencepiece model wrapped into the `weights_file`.
+  const char* sentencepiece_model_path = nullptr;
 };
 
 // Describes a model to use with ChromeML.
 struct ChromeMLModelDescriptor {
+  // The backend to run this model.
+  ModelBackendType backend_type;
+
   // The model data to use.
   const ChromeMLModelData* model_data;
 
