@@ -99,6 +99,16 @@ class GpuArcVideoFramePool : public mojom::VideoFramePool,
       gfx::GpuMemoryBufferHandle gmb_handle,
       media::VideoPixelFormat pixel_format) const;
 
+  // Submits a RequestFrames() call to |pool_client_|.
+  void HandleRequestFrames(const media::Fourcc& fourcc,
+                           const gfx::Size& coded_size,
+                           const gfx::Rect& visible_rect,
+                           size_t max_num_frames);
+
+  // Checks if it's time to submit the next previously deferred RequestFrames()
+  // call to the remote end.
+  void CallPendingRequestFrames();
+
   void OnRequestVideoFramesDone();
 
   void Stop();
@@ -132,8 +142,29 @@ class GpuArcVideoFramePool : public mojom::VideoFramePool,
 
   // If true, this pool is waiting from ACK message from the client after
   // calling mojom::VideoFramePoolClient::RequestVideoFrames().
-  bool awaiting_request_frames_ack_ = false;
+  bool awaiting_request_frames_ack_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
   static constexpr uint32_t kMinVersionForRequestFramesAck = 1;
+
+  // This queue tracks calls to RequestFrames() that can't be submitted to the
+  // remote end yet because we're still waiting for an ACK for a previous
+  // |pool_client_|->RequestVideoFrames() call.
+  //
+  // The reason to hold off calling RequestVideoFrames() while waiting on an ACK
+  // for a previous call is a specific corner case: suppose we get a Reset()
+  // while waiting for an ACK. In that case, we'll unblock the underlying
+  // VdaVideoFramePool by calling |notify_layout_changed_cb_| with
+  // kResetRequired. Then the decoder might produce another request for frames.
+  // However, we are still waiting for an incoming ACK for the first request
+  // (the one that was aborted). Until then, it's expected that we don't submit
+  // the second request. This expectation was inferred from
+  // https://crrev.com/c/3070325 which does something analogous but for the
+  // legacy VDA stack.
+  //
+  // This queue is intended to be used together with
+  // |awaiting_request_frames_ack_|.
+  std::queue<base::OnceClosure> pending_frame_requests_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // When |decoder_is_resetting_| is true, the decoder is in the middle of a
   // Reset() so we should reject requests for frames.

@@ -304,8 +304,6 @@ void GpuArcVideoFramePool::RequestFrames(
     return;
   }
 
-  coded_size_ = coded_size;
-
   notify_layout_changed_cb_ = std::move(notify_layout_changed_cb);
   import_frame_cb_ = std::move(import_frame_cb);
 
@@ -320,17 +318,58 @@ void GpuArcVideoFramePool::RequestFrames(
     return;
   }
 
-  // Send a request for new video frames to our mojo client.
-  media::VideoPixelFormat format = fourcc.ToVideoPixelFormat();
+  pending_frame_requests_.push(
+      base::BindOnce(&GpuArcVideoFramePool::HandleRequestFrames, weak_this_,
+                     fourcc, coded_size, visible_rect, max_num_frames));
+  CallPendingRequestFrames();
+}
 
+void GpuArcVideoFramePool::HandleRequestFrames(const media::Fourcc& fourcc,
+                                               const gfx::Size& coded_size,
+                                               const gfx::Rect& visible_rect,
+                                               size_t max_num_frames) {
+  DVLOGF(4);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Pending calls to HandleRequestFrames() are cleared when an error is
+  // detected (see logic in Stop()) and new ones are not scheduled after that
+  // (see logic in RequestFrames()).
+  CHECK(!has_error_);
+
+  // Calls to HandleRequestFrames() are scheduled only if the client version is
+  // known (see the logic in RequestFrames()). If the |pool_client_version_|
+  // becomes nullopt (see Stop()), pending calls are dropped.
+  CHECK(pool_client_version_);
+
+  // HandleRequestFrames() should only be called if we're not waiting for an ACK
+  // for a previous request for frames.
   CHECK_GE(pool_client_version_.value(), kMinVersionForRequestFramesAck);
   CHECK(!awaiting_request_frames_ack_);
   awaiting_request_frames_ack_ = true;
 
+  coded_size_ = coded_size;
+
   pool_client_->RequestVideoFrames(
-      format, coded_size, visible_rect, max_num_frames,
+      /*format=*/fourcc.ToVideoPixelFormat(), coded_size, visible_rect,
+      max_num_frames,
       base::BindOnce(&GpuArcVideoFramePool::OnRequestVideoFramesDone,
                      weak_this_));
+}
+
+void GpuArcVideoFramePool::CallPendingRequestFrames() {
+  DVLOGF(4);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!has_error_);
+
+  if (awaiting_request_frames_ack_ || pending_frame_requests_.empty()) {
+    // Either we're still waiting for an ACK for a previous call to
+    // |pool_client_|->RequestVideoFrames() or there are no more RequestFrames()
+    // to be submitted to the remote end.
+    return;
+  }
+
+  std::move(pending_frame_requests_.front()).Run();
+  pending_frame_requests_.pop();
 }
 
 void GpuArcVideoFramePool::OnRequestVideoFramesDone() {
@@ -346,6 +385,10 @@ void GpuArcVideoFramePool::OnRequestVideoFramesDone() {
 
   CHECK(awaiting_request_frames_ack_);
   awaiting_request_frames_ack_ = false;
+
+  // Continue any queued requests for video frames that were made while waiting
+  // for the current request for video frames to complete.
+  CallPendingRequestFrames();
 }
 
 media::VideoFrame::StorageType GpuArcVideoFramePool::GetFrameStorageType()
@@ -476,6 +519,8 @@ void GpuArcVideoFramePool::Stop() {
   weak_this_factory_.InvalidateWeakPtrs();
 
   pool_client_version_.reset();
+
+  pending_frame_requests_ = {};
 
   if (notify_layout_changed_cb_) {
     std::move(notify_layout_changed_cb_)
