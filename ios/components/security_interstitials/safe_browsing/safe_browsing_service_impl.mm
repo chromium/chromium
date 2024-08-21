@@ -146,8 +146,7 @@ void SafeBrowsingServiceImpl::ShutDown() {
   web::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&IOThreadEnabler::ShutDown, io_thread_enabler_));
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread) &&
-      enabled_) {
+  if (enabled_) {
     enabled_ = false;
     safe_browsing_db_manager_->StopOnSBThread(true);
   }
@@ -349,22 +348,16 @@ void SafeBrowsingServiceImpl::SetUpURLLoaderFactory(
 void SafeBrowsingServiceImpl::UpdateSafeBrowsingEnabledState() {
   bool enabled =
       pref_change_registrar_->prefs()->GetBoolean(prefs::kSafeBrowsingEnabled);
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    if (enabled_ == enabled) {
-      return;
-    }
+  if (enabled_ == enabled) {
+    return;
+  }
 
-    enabled_ = enabled;
-    if (enabled_) {
-      StartSafeBrowsingDBManagerInternal(safe_browsing_db_manager_,
-                                         shared_url_loader_factory_);
-    } else {
-      safe_browsing_db_manager_->StopOnSBThread(false);
-    }
+  enabled_ = enabled;
+  if (enabled_) {
+    StartSafeBrowsingDBManagerInternal(safe_browsing_db_manager_,
+                                       shared_url_loader_factory_);
   } else {
-    web::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&IOThreadEnabler::SetSafeBrowsingEnabled,
-                                  io_thread_enabler_, enabled));
+    safe_browsing_db_manager_->StopOnSBThread(false);
   }
 }
 
@@ -386,17 +379,11 @@ void SafeBrowsingServiceImpl::IOThreadEnabler::Initialize(
   network_context_ = std::make_unique<network::NetworkContext>(
       /*network_service=*/nullptr, std::move(network_context_receiver),
       url_request_context_.get(), cors_exempt_header_list);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    SetUpURLLoaderFactory(safe_browsing_service);
-  }
 }
 
 void SafeBrowsingServiceImpl::IOThreadEnabler::ShutDown() {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
   shutting_down_ = true;
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    SetSafeBrowsingEnabled(false);
-  }
   url_loader_factory_.reset();
   network_context_.reset();
   shared_url_loader_factory_.reset();
@@ -406,7 +393,6 @@ void SafeBrowsingServiceImpl::IOThreadEnabler::ShutDown() {
 void SafeBrowsingServiceImpl::IOThreadEnabler::SetSafeBrowsingEnabled(
     bool enabled) {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
-  DCHECK(!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread));
   if (enabled_ == enabled)
     return;
 

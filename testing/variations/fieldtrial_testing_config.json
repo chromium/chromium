@@ -13972,25 +13972,6 @@
             ]
         }
     ],
-    "MmapSafeBrowsingDatabase": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240116",
-                    "params": {
-                        "MmapSafeBrowsingDatabaseAsync": "true"
-                    },
-                    "enable_features": [
-                        "MmapSafeBrowsingDatabase",
-                        "SafeBrowsingOnUIThread"
-                    ]
-                }
-            ]
-        }
-    ],
     "MojoChannelAssociatedCrashesOnSendError": [
         {
             "platforms": [

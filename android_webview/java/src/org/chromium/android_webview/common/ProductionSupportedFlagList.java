@@ -642,7 +642,6 @@ public final class ProductionSupportedFlagList {
                 "CreateWarningShownClientSafeBrowsingReports",
                 "When enabled, WARNING_SHOWN client reports will be sent when a warning is "
                         + "shown to the user"),
-        Flag.baseFeature("SafeBrowsingOnUIThread"),
         Flag.baseFeature(
                 BlinkFeatures.ANDROID_EXTENDED_KEYBOARD_SHORTCUTS,
                 "Enables WebView to use the extended keyboard shortcuts added for Android U"),

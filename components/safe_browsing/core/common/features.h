@@ -221,9 +221,6 @@ BASE_DECLARE_FEATURE(kSafeBrowsingCallNewGmsApiOnStartup);
 BASE_DECLARE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck);
 #endif
 
-// Run Safe Browsing code on UI thread.
-BASE_DECLARE_FEATURE(kSafeBrowsingOnUIThread);
-
 // Enable adding copy/paste navigation to the referrer chain.
 BASE_DECLARE_FEATURE(kSafeBrowsingReferrerChainWithCopyPasteNavigation);
 

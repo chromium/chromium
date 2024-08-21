@@ -173,10 +173,10 @@ V4Database::V4Database(
       db_task_runner_(db_task_runner),
       pending_store_updates_(0) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
-  // This method executes on the DB sequence, whereas |sb_sequence_checker_|
-  // is meant to verify methods that should execute on the IO sequence (or UI
-  // if kSafeBrowsingOnUIThread is enabled). Detach that sequence checker here;
-  // it will be bound to the SB sequence in InitializeOnSBThread().
+  // This method executes on the DB sequence, whereas
+  // |sb_sequence_checker_| is meant to verify methods that should
+  // execute on the UI sequence. Detach that sequence checker here; it
+  // will be bound to the UI sequence in InitializeOnSBThread().
   DETACH_FROM_SEQUENCE(sb_sequence_checker_);
 }
 

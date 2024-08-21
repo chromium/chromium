@@ -140,9 +140,7 @@ class SafeBrowsingQueryManager
                            SafeBrowsingClient* client);
 
   // Queries the Safe Browsing database using SafeBrowsingUrlCheckerImpls. This
-  // class may be constructed on the UI thread but otherwise must only be used
-  // and destroyed on the IO thread. If kSafeBrowsingOnUIThread is enabled this
-  // is used and destroyed on the UI thread.
+  // class must be constructed and used on the UI thread.
   class UrlCheckerClient final {
    public:
     UrlCheckerClient();
@@ -207,8 +205,7 @@ class SafeBrowsingQueryManager
   raw_ptr<web::WebState> web_state_ = nullptr;
   // The safe browsing client.
   raw_ptr<SafeBrowsingClient> client_ = nullptr;
-  // The checker client.  Used to communicate with the database on the IO
-  // thread. If kSafeBrowsingOnUIThread is enabled it'll be used on the UI
+  // The checker client.  Used to communicate with the database on the UI
   // thread.
   std::unique_ptr<UrlCheckerClient> url_checker_client_;
   // The results for each active query.

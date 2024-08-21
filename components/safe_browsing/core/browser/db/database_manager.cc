@@ -28,9 +28,7 @@ SafeBrowsingDatabaseManager::SafeBrowsingDatabaseManager(
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner)
     : base::RefCountedDeleteOnSequence<SafeBrowsingDatabaseManager>(
-          base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
-              ? ui_task_runner
-              : std::move(io_task_runner)),
+          ui_task_runner),
       ui_task_runner_(std::move(ui_task_runner)) {}
 
 SafeBrowsingDatabaseManager::~SafeBrowsingDatabaseManager() {

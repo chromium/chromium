@@ -132,12 +132,8 @@ void PasswordProtectionRequest::CheckAllowlist() {
   // check is required.
   auto result_callback =
       base::BindOnce(&OnAllowlistCheckDoneOnSB, ui_task_runner(), AsWeakPtr());
-  auto task_runner =
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? ui_task_runner()
-          : io_task_runner_;
   tracker_.PostTask(
-      task_runner.get(), FROM_HERE,
+      ui_task_runner().get(), FROM_HERE,
       base::BindOnce(&AllowlistCheckerClient::StartCheckCsdAllowlist,
                      password_protection_service_->database_manager(),
                      main_frame_url_, std::move(result_callback)));

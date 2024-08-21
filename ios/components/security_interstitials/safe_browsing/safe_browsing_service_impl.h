@@ -69,6 +69,8 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
   // thread, but all of its other methods should only be called on the IO
   // thread. If kSafeBrowsingOnUIThread is enabled then it will be used on the
   // UI thread.
+  // TODO(crbug.com/359420122): Remove unused code from this class now
+  // that kSafeBrowsingOnUIThread has launched.
   class IOThreadEnabler : public base::RefCountedThreadSafe<IOThreadEnabler> {
    public:
     IOThreadEnabler(scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
@@ -167,8 +169,7 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
       safe_browsing_db_manager_;
 
-  // This tracks whether the service is running. Only used if
-  // kSafeBrowsingOnUIThread is enabled.
+  // This tracks whether the service is running.
   bool enabled_ = false;
 
   // This watches for changes to the Safe Browsing opt-out preference.

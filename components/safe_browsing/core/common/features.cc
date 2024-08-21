@@ -257,11 +257,6 @@ BASE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kSafeBrowsingOnUIThread,
-             "SafeBrowsingOnUIThread",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
-
 BASE_FEATURE(kSafeBrowsingReferrerChainWithCopyPasteNavigation,
              "SafeBrowsingReferrerChainWithCopyPasteNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);

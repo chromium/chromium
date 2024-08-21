@@ -116,12 +116,10 @@ class V4Database {
       const ListInfos& list_infos,
       NewDatabaseReadyCallback new_db_callback);
 
-  // Initialize state that lives on the IO thread or UI thread if
-  // kSafeBrowsingOnUIThread is enabled.
+  // Initialize state that lives on the UI thread.
   void InitializeOnSBThread();
 
-  // Destroy state that lives on the IO thread or UI thread if
-  // kSafeBrowsingOnUIThread is enabled.
+  // Destroy state that lives on the UI thread.
   void StopOnSBThread();
 
   V4Database(const V4Database&) = delete;
