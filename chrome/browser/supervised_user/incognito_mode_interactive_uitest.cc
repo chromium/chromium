@@ -24,6 +24,8 @@ namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 
+// TODO(b/301587955): Fix placement of supervised_user/e2e test files and their
+// dependencies.
 class IncognitoModeInSupervisedContextUiTest
     : public InteractiveBrowserTestT<FamilyLiveTest> {
  public:

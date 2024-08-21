@@ -27,6 +27,8 @@ static constexpr std::string_view kPermissionRequestUrl =
 
 // All tests in this unit are subject to flakiness because they interact with a
 // system that can be externally modified during execution.
+// TODO(b/301587955): Fix placement of supervised_user/e2e test files and their
+// dependencies.
 class UrlFilterUiTest : public InteractiveFamilyLiveTest {
  public:
   UrlFilterUiTest()

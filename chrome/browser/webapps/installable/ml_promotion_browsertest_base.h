@@ -30,6 +30,8 @@ class MockSegmentationPlatformService;
 
 namespace webapps {
 
+// TODO(b/287255120) : Also add this as a dependency on Android for building
+// test code.
 class MLPromotionBrowserTestBase : public PlatformBrowserTest {
  public:
   MLPromotionBrowserTestBase();

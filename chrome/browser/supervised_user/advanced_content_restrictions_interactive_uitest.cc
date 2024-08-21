@@ -40,6 +40,8 @@ FamilyLinkToggleState GetSwitchTargetState(auto test_param) {
 }
 
 // Live test for the Family Link Advanced Settings parental controls switches.
+// TODO(b/301587955): Fix placement of supervised_user/e2e test files and their
+// dependencies.
 class SupervisedUserFamilyLinkSwitchTest
     : public InteractiveFamilyLiveTest,
       public testing::WithParamInterface<
