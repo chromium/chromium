@@ -96,6 +96,8 @@ void RedirectHeuristicTabHelper::MaybeRecordRedirectHeuristic(
   const size_t sites_passed_count =
       first_party_site_index - third_party_site_index;
 
+  CHECK(dips_service_);
+  CHECK(!dips_service_->storage()->is_null());
   dips_service_->storage()
       ->AsyncCall(&DIPSStorage::LastInteractionTime)
       .WithArgs(details.url)
@@ -199,6 +201,8 @@ void RedirectHeuristicTabHelper::CreateAllRedirectHeuristicGrants(
                   weak_factory_.GetWeakPtr(), url, first_party_url,
                   grant_duration));
 
+      CHECK(dips_service_);
+      CHECK(!dips_service_->storage()->is_null());
       dips_service_->storage()
           ->AsyncCall(&DIPSStorage::LastInteractionTime)
           .WithArgs(url)

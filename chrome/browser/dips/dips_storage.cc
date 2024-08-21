@@ -268,6 +268,7 @@ bool DIPSStorage::DidSiteHaveInteractionSince(const GURL& url,
 }
 
 std::optional<base::Time> DIPSStorage::LastInteractionTime(const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const DIPSState state = Read(url);
   if (!state.user_interaction_times().has_value()) {
     return std::nullopt;
