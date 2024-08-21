@@ -2232,7 +2232,19 @@ void HttpNetworkTransactionTestBase::PreconnectErrorResendRequestTest(
   // Wait for the preconnect to complete.
   // TODO(davidben): Some way to wait for an idle socket count might be handy.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, GetIdleSocketCountInTransportSocketPool(session.get()));
+  if (use_spdy && base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    // When the HappyEyeballsV3 feature is enabled, we immediately create a SPDY
+    // session, but it becomes unavailable after getting an error.
+    EXPECT_EQ(0, GetIdleSocketCountInTransportSocketPool(session.get()));
+    SpdySessionKey spdy_sesion_key(
+        HostPortPair::FromURL(request.url), PRIVACY_MODE_DISABLED,
+        ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+        /*disable_cert_verification_network_fetches=*/false);
+    EXPECT_FALSE(HasSpdySession(session->spdy_session_pool(), spdy_sesion_key));
+  } else {
+    EXPECT_EQ(1, GetIdleSocketCountInTransportSocketPool(session.get()));
+  }
 
   // Make the request.
   TestCompletionCallback callback;
