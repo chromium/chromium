@@ -527,7 +527,9 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, ActivateActionElementFromMenu) {
 
 // TODO(crbug.com/360465388): Lacros failures are because resize doesn't
 // actually stick.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug/361296257): ActionItemsOverflowAndReappear is flaky on
+// linux64-rel-ready.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ActionItemsOverflowAndReappear \
   DISABLED_ActionItemsOverflowAndReappear
 #else
