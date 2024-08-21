@@ -932,7 +932,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getValidatedFontName",
                  &ReadAnythingAppController::GetValidatedFontName)
       .SetMethod("onScrolledToBottom",
-                 &ReadAnythingAppController::OnScrolledToBottom);
+                 &ReadAnythingAppController::OnScrolledToBottom)
+      .SetProperty("isDocsLoadMoreButtonVisible",
+                   &ReadAnythingAppController::IsDocsLoadMoreButtonVisible);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -1788,4 +1790,9 @@ void ReadAnythingAppController::OnScrolledToBottom() {
     page_handler_->ScrollToTargetNode(model_.active_tree_id(),
                                       *model_.display_node_ids().rbegin());
   }
+}
+
+bool ReadAnythingAppController::IsDocsLoadMoreButtonVisible() const {
+  return (features::IsReadAnythingDocsLoadMoreButtonEnabled() &&
+          IsGoogleDocs());
 }

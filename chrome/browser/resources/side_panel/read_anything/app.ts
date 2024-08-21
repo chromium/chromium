@@ -6,6 +6,7 @@ import './read_anything_toolbar.js';
 import './strings.m.js';
 import '//read-anything-side-panel.top-chrome/shared/sp_empty_state.js';
 import '//read-anything-side-panel.top-chrome/shared/sp_shared_style.css.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
@@ -191,6 +192,7 @@ export class AppElement extends AppElementBase {
   private previousRootId_: number;
 
   private isReadAloudEnabled_: boolean;
+  private isDocsLoadMoreButtonVisible_: boolean;
 
   // If the speech engine is considered "loaded." If it is, we should display
   // the play / pause buttons normally. Otherwise, we should disable the
@@ -387,19 +389,9 @@ export class AppElement extends AppElementBase {
       this.previousHighlights_ = [];
     };
 
-    // TODO (b/356186008): Write a test for this scrolling behavior.
     this.$.containerParent.onscroll = () => {
       chrome.readingMode.onScroll(this.scrollingOnSelection_);
       this.scrollingOnSelection_ = false;
-
-      // If user scrolls to the bottom of the Reading Mode side panel,
-      // attempt to scroll the main page
-      if (Math.abs(
-              this.$.containerParent.scrollHeight -
-              this.$.containerParent.clientHeight -
-              this.$.containerParent.scrollTop) <= 1) {
-        chrome.readingMode.onScrolledToBottom();
-      }
     };
 
     // Pass copy commands to main page. Copy commands will not work if they are
@@ -685,6 +677,9 @@ export class AppElement extends AppElementBase {
     // when toggling.
     this.loadImages_();
 
+    this.isDocsLoadMoreButtonVisible_ =
+        chrome.readingMode.isDocsLoadMoreButtonVisible;
+
     container.scrollTop = 0;
     this.hasContent_ = true;
     container.appendChild(node);
@@ -850,6 +845,10 @@ export class AppElement extends AppElementBase {
     for (const canvas of document.querySelectorAll('canvas')) {
       canvas.style.display = chrome.readingMode.imagesEnabled ? '' : 'none';
     }
+  }
+
+  private onDocsLoadMoreButtonClick() {
+    chrome.readingMode.onScrolledToBottom();
   }
 
   updateVoicePackStatusFromInstallResponse(lang: string, status: string) {

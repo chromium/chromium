@@ -112,6 +112,19 @@
     font-size: 1em;
   }
 
+  #docs-load-more-button {
+    background: var(--color-sys-tonal-container);
+    margin: 0 auto;
+    border-width: 0px;
+    width: 10em;
+    max-width: 100%;
+    height: 3em;
+    font-size: var(--font-size);
+    color: var(--cr-primary-text-color);
+    display: flex;
+    justify-content: center;
+  }
+
   /* Not using :host because AppElement does not use ShadowDOM. */
   :host(:not([images-enabled])) figure {
     display: none;
@@ -158,6 +171,11 @@
     <div id="container"
         class$="user-select-disabled-when-speech-active-[[speechPlayingState.isSpeechActive]]">
     </div>
+    <cr-button id="docs-load-more-button" tabindex="0"
+        on-click="onDocsLoadMoreButtonClick"
+        hidden="[[!isDocsLoadMoreButtonVisible_]]">
+        Load More
+    </cr-button>
   </div>
   <div id="empty-state-container" hidden="[[hasContent_]]">
     <sp-empty-state image-path="[[emptyStateImagePath_]]"

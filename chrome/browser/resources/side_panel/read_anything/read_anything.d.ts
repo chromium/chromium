@@ -250,6 +250,9 @@ declare namespace chrome {
     // Called when the Read Anything panel is scrolled all the way down.
     function onScrolledToBottom(): void;
 
+    // Whether the Google Docs load more button is visible.
+    let isDocsLoadMoreButtonVisible: boolean;
+
     ////////////////////////////////////////////////////////////////
     // Implemented in read_anything/app.ts and called by native c++.
     ////////////////////////////////////////////////////////////////

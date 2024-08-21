@@ -224,6 +224,7 @@ class ReadAnythingAppController
   std::string GetValidatedFontName(const std::string& font) const;
   std::vector<std::string> GetAllFonts();
   void OnScrolledToBottom();
+  bool IsDocsLoadMoreButtonVisible() const;
 
   // The language code that should be used to determine which voices are
   // supported for speech.
