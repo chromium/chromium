@@ -129,7 +129,8 @@ class GPU_GLES2_EXPORT SharedContextState
 
   void FlushAndSubmit(bool sync_to_cpu);
   void FlushWriteAccess(SkiaImageRepresentation::ScopedWriteAccess* access);
-  void SubmitIfNecessary(std::vector<GrBackendSemaphore> signal_semaphores);
+  void SubmitIfNecessary(std::vector<GrBackendSemaphore> signal_semaphores,
+                         bool need_graphite_submit);
 
   // Returns true if context state is using GL, either for Skia to run on
   // or if there is no skia context and context state exists for WebGL fallback

@@ -819,8 +819,9 @@ void SharedContextState::FlushWriteAccess(
 }
 
 void SharedContextState::SubmitIfNecessary(
-    std::vector<GrBackendSemaphore> signal_semaphores) {
-  if (graphite_context()) {
+    std::vector<GrBackendSemaphore> signal_semaphores,
+    bool need_graphite_submit) {
+  if (graphite_context() && need_graphite_submit) {
     // It's necessary to submit before dropping a scoped access since we want
     // the Dawn texture to be alive on submit.
     // NOTE: Graphite uses Dawn and the Graphite SharedImage representation does

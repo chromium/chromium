@@ -282,9 +282,18 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
   }
 
   void ApplyEndAccessState() {
-    for (auto& accessor : read_accessors_) {
-      accessor.second.scoped_read_access->ApplyBackendSurfaceEndState();
+    for (auto& [mailbox, access] : read_accessors_) {
+      access.scoped_read_access->ApplyBackendSurfaceEndState();
     }
+  }
+
+  bool NeedGraphiteContextSubmit() {
+    bool need_graphite_submit = false;
+    for (auto& [mailbox, access] : read_accessors_) {
+      need_graphite_submit |=
+          access.scoped_read_access->NeedGraphiteContextSubmit();
+    }
+    return need_graphite_submit;
   }
 
  private:
@@ -2115,7 +2124,9 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
   }
 
   shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
-  shared_context_state_->SubmitIfNecessary(std::move(end_semaphores));
+  shared_context_state_->SubmitIfNecessary(
+      std::move(end_semaphores),
+      dest_scoped_access->NeedGraphiteContextSubmit());
 
   if (!dest_shared_image->IsCleared()) {
     dest_shared_image->SetClearedRect(
@@ -2358,7 +2369,9 @@ bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
   }
 
   shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
-  shared_context_state_->SubmitIfNecessary(std::move(end_semaphores));
+  shared_context_state_->SubmitIfNecessary(
+      std::move(end_semaphores),
+      dest_scoped_access->NeedGraphiteContextSubmit());
 
   return written;
 }
@@ -2667,7 +2680,9 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
     // Perform ApplyBackendSurfaceEndState() on the ScopedReadAccess before
     // exiting.
     source_scoped_access->ApplyBackendSurfaceEndState();
-    shared_context_state_->SubmitIfNecessary(std::move(end_semaphores));
+    shared_context_state_->SubmitIfNecessary(
+        std::move(end_semaphores),
+        source_scoped_access->NeedGraphiteContextSubmit());
     return;
   }
 
@@ -3208,7 +3223,11 @@ void RasterDecoderImpl::DoEndRasterCHROMIUM() {
       // image layout transitions as necessary. Transitioning layout back to
       // desired need to be happening after.
       paint_op_shared_image_provider_->ApplyEndAccessState();
-      shared_context_state_->SubmitIfNecessary(std::move(end_semaphores_));
+      bool need_graphite_submit =
+          paint_op_shared_image_provider_->NeedGraphiteContextSubmit() ||
+          scoped_shared_image_write_->NeedGraphiteContextSubmit();
+      shared_context_state_->SubmitIfNecessary(std::move(end_semaphores_),
+                                               need_graphite_submit);
     } else {
       DCHECK(end_semaphores_.empty());
     }

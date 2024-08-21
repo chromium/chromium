@@ -718,7 +718,10 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
       gpu::AddCleanupTaskForGraphiteRecording(std::move(on_finished), &info);
     }
     graphite_context()->insertRecording(info);
-    graphite_context()->submit();
+    if (local_scoped_access &&
+        local_scoped_access->NeedGraphiteContextSubmit()) {
+      graphite_context()->submit();
+    }
     skia_representation->SetCleared();
     return;
   }
@@ -1103,9 +1106,11 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
     return;
   }
 
-  if (graphite_context() && !graphite_context()->submit()) {
-    DLOG(ERROR) << "CopyOutputRGBA graphite_context->submit() failed";
-    return;
+  if (graphite_context() && scoped_write->NeedGraphiteContextSubmit()) {
+    if (!graphite_context()->submit()) {
+      DLOG(ERROR) << "CopyOutputRGBA graphite_context->submit() failed";
+      return;
+    }
   }
 
   representation->SetCleared();
@@ -1511,9 +1516,12 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     return;
   }
 
-  if (graphite_context() && !graphite_context()->submit()) {
-    DLOG(ERROR) << "CopyOutputNV12 graphite_context->submit() failed";
-    return;
+  if (graphite_context() &&
+      mailbox_access_data.scoped_write->NeedGraphiteContextSubmit()) {
+    if (!graphite_context()->submit()) {
+      DLOG(ERROR) << "CopyOutputNV12 graphite_context->submit() failed";
+      return;
+    }
   }
 
   if (should_wait_for_gpu_work) {
