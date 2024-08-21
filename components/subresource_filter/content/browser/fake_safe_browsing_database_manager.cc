@@ -15,8 +15,7 @@
 
 FakeSafeBrowsingDatabaseManager::FakeSafeBrowsingDatabaseManager()
     : safe_browsing::TestSafeBrowsingDatabaseManager(
-          content::GetUIThreadTaskRunner({}),
-          content::GetIOThreadTaskRunner({})) {}
+          content::GetUIThreadTaskRunner({})) {}
 
 void FakeSafeBrowsingDatabaseManager::AddBlocklistedUrl(
     const GURL& url,

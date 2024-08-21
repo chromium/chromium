@@ -705,8 +705,7 @@ class SafeBrowsingBlockingPageBrowserTest
     factory_.SetTestUIManager(
         new FakeSafeBrowsingUIManager(std::move(blocking_page_factory)));
     factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({}),
-        content::GetIOThreadTaskRunner({})));
+        content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
     ThreatDetails::RegisterFactory(&details_factory_);
   }
@@ -2535,8 +2534,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
     factory_.SetTestUIManager(new FakeSafeBrowsingUIManager(
         std::make_unique<TestSafeBrowsingBlockingPageFactory>()));
     factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({}),
-        content::GetIOThreadTaskRunner({})));
+        content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
     ThreatDetails::RegisterFactory(&details_factory_);
   }
@@ -3160,8 +3158,7 @@ class SafeBrowsingBlockingPageEnhancedProtectionMessageTest
     factory_.SetTestUIManager(new FakeSafeBrowsingUIManager(
         std::make_unique<TestSafeBrowsingBlockingPageFactory>()));
     factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({}),
-        content::GetIOThreadTaskRunner({})));
+        content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
     ThreatDetails::RegisterFactory(&details_factory_);
   }
@@ -3307,8 +3304,7 @@ class SafeBrowsingBlockingPageAsyncChecksTestBase
     factory_.SetTestUIManager(new FakeSafeBrowsingUIManager(
         std::make_unique<TestSafeBrowsingBlockingPageFactory>()));
     factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({}),
-        content::GetIOThreadTaskRunner({})));
+        content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
   }
 
@@ -4211,8 +4207,7 @@ class SafeBrowsingBlockingPageRealTimeUrlCheckTest
     factory_.SetTestUIManager(new FakeSafeBrowsingUIManager(
         std::make_unique<TestSafeBrowsingBlockingPageFactory>()));
     factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({}),
-        content::GetIOThreadTaskRunner({})));
+        content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
   }
 
@@ -4323,8 +4318,7 @@ class SafeBrowsingBlockingPageHashRealTimeCheckTest
     factory_.SetTestUIManager(new FakeSafeBrowsingUIManager(
         std::make_unique<TestSafeBrowsingBlockingPageFactory>()));
     factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({}),
-        content::GetIOThreadTaskRunner({})));
+        content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
   }
 

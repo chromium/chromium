@@ -464,8 +464,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // The database that manages the stores containing the hash prefix updates.
-  // All writes to this variable must happen on the IO thread only unless
-  // kSafeBrowsingOnUIThread is enabled in which case it'll be UI thread.
+  // All writes to this variable must happen on the UI thread.
   std::unique_ptr<V4Database, base::OnTaskRunnerDeleter> v4_database_;
 
   // The protocol manager that downloads the hash prefix updates.

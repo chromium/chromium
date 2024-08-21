@@ -25,18 +25,16 @@ SafeBrowsingDatabaseManager::Client::GetWeakPtr() {
 }
 
 SafeBrowsingDatabaseManager::SafeBrowsingDatabaseManager(
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : base::RefCountedDeleteOnSequence<SafeBrowsingDatabaseManager>(
-          ui_task_runner),
-      ui_task_runner_(std::move(ui_task_runner)) {}
+          std::move(ui_task_runner)) {}
 
 SafeBrowsingDatabaseManager::~SafeBrowsingDatabaseManager() {
   DCHECK(!v4_get_hash_protocol_manager_);
 }
 
 bool SafeBrowsingDatabaseManager::CancelApiCheck(Client* client) {
-  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   auto it = FindClientApiCheck(client);
   if (it != api_checks_.end()) {
     api_checks_.erase(it);
@@ -48,7 +46,7 @@ bool SafeBrowsingDatabaseManager::CancelApiCheck(Client* client) {
 
 bool SafeBrowsingDatabaseManager::CheckApiBlocklistUrl(const GURL& url,
                                                        Client* client) {
-  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   // Make sure we can check this url and that the service is enabled.
   if (!IsDatabaseReady() ||
@@ -77,7 +75,7 @@ bool SafeBrowsingDatabaseManager::CheckApiBlocklistUrl(const GURL& url,
 
 SafeBrowsingDatabaseManager::ApiCheckSet::iterator
 SafeBrowsingDatabaseManager::FindClientApiCheck(Client* client) {
-  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   for (auto it = api_checks_.begin(); it != api_checks_.end(); ++it) {
     if ((*it)->client() == client) {
       return it;
@@ -105,7 +103,7 @@ std::unique_ptr<StoreStateMap> SafeBrowsingDatabaseManager::GetStoreStateMap() {
 void SafeBrowsingDatabaseManager::OnThreatMetadataResponse(
     std::unique_ptr<SafeBrowsingApiCheck> check,
     const ThreatMetadata& md) {
-  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(check);
 
   // If the check is not in |api_checks_| then the request was cancelled by the
@@ -121,7 +119,7 @@ void SafeBrowsingDatabaseManager::OnThreatMetadataResponse(
 void SafeBrowsingDatabaseManager::StartOnSBThread(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const V4ProtocolConfig& config) {
-  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   v4_get_hash_protocol_manager_ = V4GetHashProtocolManager::Create(
       url_loader_factory, GetStoresForFullHashRequests(), config);
@@ -130,7 +128,7 @@ void SafeBrowsingDatabaseManager::StartOnSBThread(
 // |shutdown| not used. Destroys the v4 protocol managers. This may be called
 // multiple times during the life of the DatabaseManager.
 void SafeBrowsingDatabaseManager::StopOnSBThread(bool shutdown) {
-  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   // Delete pending checks, calling back any clients with empty metadata.
   for (const SafeBrowsingApiCheck* check : api_checks_) {

@@ -283,9 +283,8 @@ class SafeBrowsingDatabaseManager
     raw_ptr<Client> client_;
   };
 
-  SafeBrowsingDatabaseManager(
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+  explicit SafeBrowsingDatabaseManager(
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   virtual ~SafeBrowsingDatabaseManager();
 
@@ -317,23 +316,15 @@ class SafeBrowsingDatabaseManager
   void OnThreatMetadataResponse(std::unique_ptr<SafeBrowsingApiCheck> check,
                                 const ThreatMetadata& md);
 
-  scoped_refptr<base::SequencedTaskRunner> ui_task_runner() {
-    return ui_task_runner_;
-  }
-
-  // SafeBrowsingDatabaseManager passes its |io_task_runner| construction
+  // SafeBrowsingDatabaseManager passes its |ui_task_runner| construction
   // parameter to its RefCountedDeleteOnSequence base class, which exposes its
-  // passed-in task runner as owning_task_runner(). Expose that |io_task_runner|
-  // parameter internally as io_task_runner() for clarity.
-  // TODO(crbug.com/359420122): Clean up this code now that
-  // kSafeBrowsingOnUIThread has launched.
-  scoped_refptr<base::SequencedTaskRunner> sb_task_runner() {
+  // passed-in task runner as owning_task_runner(). Expose that |ui_task_runner|
+  // parameter internally as ui_task_runner() for clarity.
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner() {
     return owning_task_runner();
   }
 
   typedef std::set<raw_ptr<SafeBrowsingApiCheck, SetExperimental>> ApiCheckSet;
-
-  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
   // In-progress checks. This set owns the SafeBrowsingApiCheck pointers and is
   // responsible for deleting them when removing from the set.

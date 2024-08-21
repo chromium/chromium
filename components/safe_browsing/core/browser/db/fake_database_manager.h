@@ -21,9 +21,8 @@ namespace safe_browsing {
 // features may test their interaction with Safe Browsing.
 class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  public:
-  FakeSafeBrowsingDatabaseManager(
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+  explicit FakeSafeBrowsingDatabaseManager(
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   void AddDangerousUrl(const GURL& dangerous_url, SBThreatType threat_type);
   void AddDangerousUrlPattern(const GURL& dangerous_url,

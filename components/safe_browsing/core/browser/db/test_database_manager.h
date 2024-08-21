@@ -21,9 +21,8 @@ namespace safe_browsing {
 // non-abstract methods in the base class are not overridden.
 class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
  public:
-  TestSafeBrowsingDatabaseManager(
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+  explicit TestSafeBrowsingDatabaseManager(
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   // SafeBrowsingDatabaseManager implementation:
   void CancelCheck(Client* client) override;

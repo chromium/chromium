@@ -107,8 +107,7 @@ class MockSafeBrowsingTokenFetcher : public SafeBrowsingTokenFetcher {
 class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  public:
   MockSafeBrowsingDatabaseManager()
-      : TestSafeBrowsingDatabaseManager(content::GetUIThreadTaskRunner({}),
-                                        content::GetIOThreadTaskRunner({})) {}
+      : TestSafeBrowsingDatabaseManager(content::GetUIThreadTaskRunner({})) {}
   MockSafeBrowsingDatabaseManager(const MockSafeBrowsingDatabaseManager&) =
       delete;
   MockSafeBrowsingDatabaseManager& operator=(

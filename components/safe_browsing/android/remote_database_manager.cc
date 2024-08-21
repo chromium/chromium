@@ -142,8 +142,7 @@ void RemoteSafeBrowsingDatabaseManager::ClientRequest::CompleteCheck() {
 //
 
 RemoteSafeBrowsingDatabaseManager::RemoteSafeBrowsingDatabaseManager()
-    : SafeBrowsingDatabaseManager(content::GetUIThreadTaskRunner({}),
-                                  content::GetIOThreadTaskRunner({})),
+    : SafeBrowsingDatabaseManager(content::GetUIThreadTaskRunner({})),
       enabled_(false) {}
 
 RemoteSafeBrowsingDatabaseManager::~RemoteSafeBrowsingDatabaseManager() {
@@ -151,7 +150,7 @@ RemoteSafeBrowsingDatabaseManager::~RemoteSafeBrowsingDatabaseManager() {
 }
 
 void RemoteSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
-  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(enabled_);
   for (auto itr = current_requests_.begin(); itr != current_requests_.end();
        ++itr) {
@@ -172,7 +171,7 @@ bool RemoteSafeBrowsingDatabaseManager::CheckBrowseUrl(
     const SBThreatTypeSet& threat_types,
     Client* client,
     CheckBrowseUrlType check_type) {
-  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(!threat_types.empty());
   DCHECK(SBThreatTypeSetIsValidForCheckBrowseUrl(threat_types));
   if (!enabled_) {
@@ -211,7 +210,7 @@ bool RemoteSafeBrowsingDatabaseManager::CheckBrowseUrl(
 bool RemoteSafeBrowsingDatabaseManager::CheckDownloadUrl(
     const std::vector<GURL>& url_chain,
     Client* client) {
-  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   if (!enabled_) {
     return true;
@@ -264,10 +263,10 @@ std::optional<
 RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     const GURL& url,
     base::OnceCallback<void(bool)> callback) {
-  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   if (!enabled_ || !CanCheckUrl(url)) {
-    sb_task_runner()->PostTask(FROM_HERE,
+    ui_task_runner()->PostTask(FROM_HERE,
                                base::BindOnce(std::move(callback), false));
     return std::nullopt;
   }
@@ -277,7 +276,7 @@ RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
   // Note that if the allowlist is unavailable, we say that is a match.
   bool is_match = match_result == IsInAllowlistResult::kInAllowlist ||
                   match_result == IsInAllowlistResult::kAllowlistUnavailable;
-  sb_task_runner()->PostTask(FROM_HERE,
+  ui_task_runner()->PostTask(FROM_HERE,
                              base::BindOnce(std::move(callback), is_match));
   return std::nullopt;
 }
@@ -285,7 +284,7 @@ RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
 bool RemoteSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
     const GURL& url,
     Client* client) {
-  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   if (!enabled_ || !CanCheckUrl(url)) {
     return true;
@@ -313,7 +312,7 @@ bool RemoteSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
 AsyncMatch RemoteSafeBrowsingDatabaseManager::CheckCsdAllowlistUrl(
     const GURL& url,
     Client* client) {
-  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   // If this URL's scheme isn't supported, call is safe.
   if (!CanCheckUrl(url)) {
@@ -330,7 +329,7 @@ void RemoteSafeBrowsingDatabaseManager::MatchDownloadAllowlistUrl(
     const GURL& url,
     base::OnceCallback<void(bool)> callback) {
   NOTREACHED_IN_MIGRATION();
-  sb_task_runner()->PostTask(FROM_HERE,
+  ui_task_runner()->PostTask(FROM_HERE,
                              base::BindOnce(std::move(callback), true));
 }
 
@@ -364,7 +363,7 @@ void RemoteSafeBrowsingDatabaseManager::StartOnSBThread(
 
 void RemoteSafeBrowsingDatabaseManager::StopOnSBThread(bool shutdown) {
   // |shutdown| is not used.
-  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   DVLOG(1) << "RemoteSafeBrowsingDatabaseManager stopping";
 
   // Call back and delete any remaining clients. OnRequestDone() modifies

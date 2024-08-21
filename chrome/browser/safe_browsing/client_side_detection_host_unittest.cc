@@ -202,8 +202,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  public:
   MockSafeBrowsingDatabaseManager()
       : safe_browsing::TestSafeBrowsingDatabaseManager(
-            content::GetUIThreadTaskRunner({}),
-            content::GetIOThreadTaskRunner({})) {}
+            content::GetUIThreadTaskRunner({})) {}
 
   MockSafeBrowsingDatabaseManager(const MockSafeBrowsingDatabaseManager&) =
       delete;
@@ -225,7 +224,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_allowlist_match_, url));
 
-    sb_task_runner()->PostTask(
+    ui_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), urls_allowlist_match_[url]));
     return std::nullopt;

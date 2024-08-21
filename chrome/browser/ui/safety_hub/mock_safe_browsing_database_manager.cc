@@ -6,7 +6,6 @@
 
 MockSafeBrowsingDatabaseManager::MockSafeBrowsingDatabaseManager()
     : safe_browsing::TestSafeBrowsingDatabaseManager(
-          base::SequencedTaskRunner::GetCurrentDefault(),
           base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 MockSafeBrowsingDatabaseManager::~MockSafeBrowsingDatabaseManager() = default;

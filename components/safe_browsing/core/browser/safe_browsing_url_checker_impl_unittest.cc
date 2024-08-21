@@ -51,7 +51,6 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  public:
   MockSafeBrowsingDatabaseManager()
       : TestSafeBrowsingDatabaseManager(
-            base::SequencedTaskRunner::GetCurrentDefault(),
             base::SequencedTaskRunner::GetCurrentDefault()) {}
   // SafeBrowsingDatabaseManager implementation.
   // Checks the threat type of |gurl| previously set by |SetThreatTypeForUrl|.
@@ -104,7 +103,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     DCHECK(base::Contains(urls_allowlist_match_, url));
     DCHECK(base::Contains(urls_allowlist_logging_details_, url));
 
-    sb_task_runner()->PostTask(
+    ui_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), urls_allowlist_match_[url]));
     return urls_allowlist_logging_details_[url];

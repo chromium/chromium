@@ -71,7 +71,6 @@ class SafeBrowsingDatabaseManagerTest : public testing::Test {
             &test_url_loader_factory_);
 
     db_manager_ = new TestSafeBrowsingDatabaseManager(
-        base::SequencedTaskRunner::GetCurrentDefault(),
         base::SequencedTaskRunner::GetCurrentDefault());
     db_manager_->StartOnSBThread(test_shared_loader_factory_,
                                  GetTestV4ProtocolConfig());
