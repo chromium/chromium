@@ -1727,6 +1727,7 @@
   "forced frame updates, but still pass in the full browser.",
   {
     "prefix": "no-forced-frame-updates",
+    "owners": ["nrosenthal@chromium.org", "xiaochengh@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "dom/domparsing/document-render-blocking-no-block.html",
