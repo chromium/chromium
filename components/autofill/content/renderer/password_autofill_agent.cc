@@ -784,11 +784,6 @@ void PasswordAutofillAgent::PasswordValueGatekeeper::ShowValue(
 bool PasswordAutofillAgent::TextDidChangeInTextField(
     const WebInputElement& element) {
   CHECK(element);
-  auto iter = web_input_to_password_info_.find(FieldRef(element));
-  if (iter != web_input_to_password_info_.end()) {
-    iter->second.password_was_edited_last = false;
-  }
-
   // Show the popup with the list of available usernames.
   return ShowSuggestions(element,
                          AutofillSuggestionTriggerSource::kTextFieldDidChange);
@@ -801,11 +796,6 @@ void PasswordAutofillAgent::NotifyPasswordManagerAboutFieldModification(
   if (element.FormControlTypeForAutofill() == kInputPassword) {
     auto iter = password_to_username_.find(FieldRef(element));
     if (iter != password_to_username_.end()) {
-      if (WebInputElement username_input =
-              iter->second.GetField().DynamicTo<WebInputElement>()) {
-        web_input_to_password_info_[FieldRef(username_input)]
-            .password_was_edited_last = true;
-      }
       // Note that the suggested value of `mutable_element` was reset when its
       // value changed.
       // TODO(crbug.com/41132785): Do this through const WebInputElement.
@@ -876,7 +866,6 @@ void PasswordAutofillAgent::FillPasswordSuggestion(
 
   ClearPreviewedForm();
 
-  password_info->password_was_edited_last = false;
   if (element.FormControlTypeForAutofill() == kInputPassword) {
     CHECK(password_element);
     password_info->password_field_suggestion_was_accepted = true;

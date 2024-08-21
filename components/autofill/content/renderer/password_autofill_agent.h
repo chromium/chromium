@@ -286,9 +286,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   struct PasswordInfo {
     FieldRef password_field;
     PasswordFormFillData fill_data;
-    // The user manually edited the password more recently than the username was
-    // changed.
-    bool password_was_edited_last = false;
     // The user accepted a suggestion from a dropdown on a password field.
     bool password_field_suggestion_was_accepted = false;
   };
