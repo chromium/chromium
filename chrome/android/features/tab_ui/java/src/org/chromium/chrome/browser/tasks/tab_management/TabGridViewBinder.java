@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,6 +25,7 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
@@ -166,25 +168,7 @@ class TabGridViewBinder {
         } else if (TabProperties.ACCESSIBILITY_DELEGATE == propertyKey) {
             view.setAccessibilityDelegate(model.get(TabProperties.ACCESSIBILITY_DELEGATE));
         } else if (TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER == propertyKey) {
-            fetchPriceDrop(
-                    model,
-                    (priceDrop) -> {
-                        PriceCardView priceCardView =
-                                (PriceCardView) view.fastFindViewById(R.id.price_info_box_outer);
-                        if (priceDrop == null) {
-                            priceCardView.setVisibility(View.GONE);
-                            return;
-                        }
-                        priceCardView.setPriceStrings(priceDrop.price, priceDrop.previousPrice);
-                        priceCardView.setVisibility(View.VISIBLE);
-                        priceCardView.setContentDescription(
-                                view.getResources()
-                                        .getString(
-                                                R.string.accessibility_tab_price_card,
-                                                priceDrop.previousPrice,
-                                                priceDrop.price));
-                    },
-                    true);
+            fetchPriceDrop(model, (priceDrop) -> onPriceDropFetched(view, model, priceDrop), true);
         } else if (TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP == propertyKey) {
             if (model.get(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP)) {
                 PriceCardView priceCardView =
@@ -222,6 +206,8 @@ class TabGridViewBinder {
                     view,
                     model.get(TabProperties.IS_INCOGNITO),
                     model.get(TabProperties.IS_SELECTED));
+        } else if (TabProperties.TAB_CARD_LABEL_DATA == propertyKey) {
+            updateTabCardLabel(view, model.get(TabProperties.TAB_CARD_LABEL_DATA));
         }
     }
 
@@ -252,6 +238,9 @@ class TabGridViewBinder {
                     view,
                     model.get(TabProperties.IS_INCOGNITO),
                     model.get(TabProperties.IS_SELECTED));
+        } else if (TabProperties.TAB_CARD_LABEL_DATA == propertyKey) {
+            // Ignore this data for tab card labels in selectable mode.
+            updateTabCardLabel(view, /* tabCardLabelData= */ null);
         }
     }
 
@@ -305,6 +294,55 @@ class TabGridViewBinder {
                             }
                             callback.onResult(shoppingPersistedTabData.getPriceDrop());
                         });
+    }
+
+    private static void onPriceDropFetched(
+            ViewLookupCachingFrameLayout rootView,
+            PropertyModel model,
+            @Nullable ShoppingPersistedTabData.PriceDrop priceDrop) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
+            // TODO(crbug.com/361169665): Do activity updates or price drops take priority. Assume
+            // activity updates win for now.
+            if (model.get(TabProperties.TAB_CARD_LABEL_DATA) != null) return;
+
+            if (priceDrop == null) {
+                updateTabCardLabel(rootView, null);
+                return;
+            }
+
+            TextResolver contentDescriptionResolver =
+                    (context) -> {
+                        return context.getResources()
+                                .getString(
+                                        R.string.accessibility_tab_price_card,
+                                        priceDrop.previousPrice,
+                                        priceDrop.price);
+                    };
+            PriceDropTextResolver priceDropResolver =
+                    new PriceDropTextResolver(priceDrop.price, priceDrop.previousPrice);
+            TabCardLabelData labelData =
+                    new TabCardLabelData(
+                            TabCardLabelType.PRICE_DROP,
+                            priceDropResolver,
+                            /* asyncImageFactory= */ null,
+                            contentDescriptionResolver);
+            updateTabCardLabel(rootView, labelData);
+        } else {
+            PriceCardView priceCardView =
+                    (PriceCardView) rootView.fastFindViewById(R.id.price_info_box_outer);
+            if (priceDrop == null) {
+                priceCardView.setVisibility(View.GONE);
+                return;
+            }
+            priceCardView.setPriceStrings(priceDrop.price, priceDrop.previousPrice);
+            priceCardView.setVisibility(View.VISIBLE);
+            priceCardView.setContentDescription(
+                    rootView.getResources()
+                            .getString(
+                                    R.string.accessibility_tab_price_card,
+                                    priceDrop.previousPrice,
+                                    priceDrop.price));
+        }
     }
 
     private static void updateThumbnail(ViewLookupCachingFrameLayout view, PropertyModel model) {
@@ -451,6 +489,20 @@ class TabGridViewBinder {
         if (isSelected) {
             ((AnimatedVectorDrawableCompat) actionButton.getDrawable()).start();
         }
+    }
+
+    private static void updateTabCardLabel(
+            ViewLookupCachingFrameLayout rootView, @Nullable TabCardLabelData tabCardLabelData) {
+        @Nullable ViewStub stub = (ViewStub) rootView.fastFindViewById(R.id.tab_card_label_stub);
+        TabCardLabelView labelView;
+        if (stub != null) {
+            if (tabCardLabelData == null) return;
+
+            labelView = (TabCardLabelView) stub.inflate();
+        } else {
+            labelView = (TabCardLabelView) rootView.fastFindViewById(R.id.tab_card_label);
+        }
+        labelView.setData(tabCardLabelData);
     }
 
     static void setThumbnailFeatureForTesting(ThumbnailFetcher fetcher) {

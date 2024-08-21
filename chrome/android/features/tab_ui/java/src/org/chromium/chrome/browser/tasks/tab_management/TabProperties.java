@@ -155,6 +155,9 @@ public class TabProperties {
     public static final WritableBooleanPropertyKey HAS_NOTIFICATION_BUBBLE =
             new WritableBooleanPropertyKey();
 
+    public static final WritableObjectPropertyKey<TabCardLabelData> TAB_CARD_LABEL_DATA =
+            new WritableObjectPropertyKey<>(/* skipEquality= */ true);
+
     public static final PropertyKey[] ALL_KEYS_TAB_GRID =
             new PropertyKey[] {
                 TAB_ACTION_STATE,
@@ -190,7 +193,8 @@ public class TabProperties {
                 TAB_GROUP_INFO,
                 VISIBILITY,
                 USE_SHRINK_CLOSE_ANIMATION,
-                HAS_NOTIFICATION_BUBBLE
+                HAS_NOTIFICATION_BUBBLE,
+                TAB_CARD_LABEL_DATA,
             };
 
     public static final PropertyKey[] ALL_KEYS_TAB_STRIP =
@@ -214,7 +218,7 @@ public class TabProperties {
                 TAB_LONG_CLICK_LISTENER,
                 CHECKED_DRAWABLE_STATE_LIST,
                 SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
-                IS_SELECTED
+                IS_SELECTED,
             };
 
     public static final PropertyKey[] TAB_GRID_CLOSABLE_KEYS =
@@ -224,6 +228,6 @@ public class TabProperties {
                 TAB_LONG_CLICK_LISTENER,
                 CONTENT_DESCRIPTION_STRING,
                 ACTION_BUTTON_DESCRIPTION_STRING,
-                IS_SELECTED
+                IS_SELECTED,
             };
 }

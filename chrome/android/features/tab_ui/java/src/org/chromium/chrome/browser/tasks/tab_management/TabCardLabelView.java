@@ -26,7 +26,7 @@ import org.chromium.ui.UiUtils;
 public class TabCardLabelView extends LinearLayout {
     private static final String TAG = "TabCardLabelView";
 
-    private Integer mCurrentLabelType;
+    private TabCardLabelData mLastData;
     private TextView mLabelText;
     private AsyncImageView mIconView;
 
@@ -44,21 +44,25 @@ public class TabCardLabelView extends LinearLayout {
 
     /** Set the {@link TabCardLabelData} to use. Setting null clears out the view and hides it. */
     void setData(@Nullable TabCardLabelData data) {
+        if (mLastData == data) return;
+
         if (data == null) {
             reset();
         } else {
             setLabelType(data.labelType);
             setAsyncImageFactory(data.asyncImageFactory);
             setTextResolver(data.textResolver);
+            setContentDescriptionResolver(data.contentDescriptionResolver);
             setVisibility(View.VISIBLE);
         }
+        mLastData = data;
     }
 
     private void reset() {
         setVisibility(View.GONE);
         setAsyncImageFactory(null);
         mLabelText.setText(null);
-        mCurrentLabelType = null;
+        setContentDescriptionResolver(null);
         mIconView.setUnavailableDrawable(null);
         mIconView.setWaitingDrawable(null);
     }
@@ -67,15 +71,25 @@ public class TabCardLabelView extends LinearLayout {
         mLabelText.setText(textResolver.resolve(getContext()));
     }
 
+    private void setContentDescriptionResolver(@Nullable TextResolver contentDescriptionResolver) {
+        @Nullable CharSequence contentDescription = null;
+        if (contentDescriptionResolver != null) {
+            contentDescription = contentDescriptionResolver.resolve(getContext());
+        }
+        setContentDescription(contentDescription);
+        mLabelText.setImportantForAccessibility(
+                contentDescription == null
+                        ? View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
+                        : View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+    }
+
     private void setAsyncImageFactory(@Nullable AsyncImageView.Factory factory) {
         mIconView.setVisibility(factory == null ? View.GONE : View.VISIBLE);
         mIconView.setAsyncImageDrawable(factory, null);
     }
 
     private void setLabelType(@TabCardLabelType int labelType) {
-        if (mCurrentLabelType != null && labelType == mCurrentLabelType) return;
-
-        mCurrentLabelType = labelType;
+        if (mLastData != null && labelType == mLastData.labelType) return;
 
         Context context = getContext();
         if (labelType == TabCardLabelType.ACTIVITY_UPDATE) {

@@ -8,12 +8,17 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -23,7 +28,9 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Size;
+import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 
@@ -38,9 +45,15 @@ import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -54,16 +67,23 @@ public final class TabGridViewBinderUnitTest {
     @Mock private ThumbnailFetcher mFetcher;
     @Mock private TabThumbnailView mThumbnailView;
     @Mock private ImageView mFaviconView;
-    @Captor private ArgumentCaptor<Callback<Drawable>> mCallbackCaptor;
+    @Mock private ViewStub mTabCardLabelStub;
+    @Mock private TabCardLabelView mTabCardLabelView;
     @Mock private TypedArray mTypedArray;
-
     @Mock private TabFavicon mTabFavicon;
+    @Mock private PriceCardView mPriceCardView;
     @Mock private Drawable mDrawable;
+    @Mock private TabCardLabelData mTabCardLabelData;
+    @Mock private ShoppingPersistedTabDataFetcher mShoppingPersistedTabDataFetcher;
+    @Mock private ShoppingPersistedTabData mShoppingPersistedTabData;
+
+    @Captor private ArgumentCaptor<Callback<Drawable>> mCallbackCaptor;
 
     private Context mContext;
     private PropertyModel mModel;
     private LayoutParams mLayoutParams;
     private BitmapDrawable mBitmapDrawable;
+    private PriceDrop mPriceDrop = new PriceDrop("$7", "$89");
 
     @Before
     public void setUp() {
@@ -80,8 +100,21 @@ public final class TabGridViewBinderUnitTest {
                         .build();
         when(mViewGroup.fastFindViewById(R.id.tab_thumbnail)).thenReturn(mThumbnailView);
         when(mViewGroup.fastFindViewById(R.id.tab_favicon)).thenReturn(mFaviconView);
+        when(mViewGroup.fastFindViewById(R.id.price_info_box_outer)).thenReturn(mPriceCardView);
+        when(mViewGroup.fastFindViewById(R.id.tab_card_label_stub)).thenReturn(mTabCardLabelStub);
+        doAnswer(
+                        (ignored) -> {
+                            when(mViewGroup.fastFindViewById(R.id.tab_card_label_stub))
+                                    .thenReturn(null);
+                            when(mViewGroup.fastFindViewById(R.id.tab_card_label))
+                                    .thenReturn(mTabCardLabelView);
+                            return mTabCardLabelView;
+                        })
+                .when(mTabCardLabelStub)
+                .inflate();
         when(mFaviconView.getContext()).thenReturn(mContext);
         when(mViewGroup.getContext()).thenReturn(mContext);
+        when(mViewGroup.getResources()).thenReturn(mContext.getResources());
 
         // mModel, view and bitmap all use the same initial values.
         mLayoutParams = new LayoutParams(INIT_WIDTH, INIT_HEIGHT);
@@ -91,6 +124,14 @@ public final class TabGridViewBinderUnitTest {
 
         LayoutParams thumbnailParams = new LayoutParams(INIT_WIDTH, INIT_HEIGHT);
         when(mThumbnailView.getLayoutParams()).thenReturn(thumbnailParams);
+
+        when(mShoppingPersistedTabData.getPriceDrop()).thenReturn(mPriceDrop);
+        doCallback(
+                        (Callback<ShoppingPersistedTabData> callback) -> {
+                            callback.onResult(mShoppingPersistedTabData);
+                        })
+                .when(mShoppingPersistedTabDataFetcher)
+                .fetch(any());
     }
 
     @Test
@@ -269,6 +310,68 @@ public final class TabGridViewBinderUnitTest {
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.FAVICON_FETCHER);
 
         verify(mFaviconView).setImageDrawable(null);
+    }
+
+    @Test
+    public void testBindTabCardLabelData() {
+        mModel.set(TabProperties.TAB_CARD_LABEL_DATA, null);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_CARD_LABEL_DATA);
+
+        verify(mTabCardLabelStub, never()).inflate();
+
+        mModel.set(TabProperties.TAB_CARD_LABEL_DATA, mTabCardLabelData);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_CARD_LABEL_DATA);
+
+        verify(mTabCardLabelStub).inflate();
+        verify(mTabCardLabelView).setData(mTabCardLabelData);
+
+        mModel.set(TabProperties.TAB_CARD_LABEL_DATA, mTabCardLabelData);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_CARD_LABEL_DATA);
+
+        verify(mTabCardLabelStub).inflate();
+        verify(mTabCardLabelView, times(2)).setData(mTabCardLabelData);
+    }
+
+    @Test
+    public void testBindTabCardLabelData_IgnoredForSelection() {
+        mModel.set(TabProperties.TAB_ACTION_STATE, TabActionState.SELECTABLE);
+        mModel.set(TabProperties.TAB_CARD_LABEL_DATA, null);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_CARD_LABEL_DATA);
+
+        verify(mTabCardLabelStub, never()).inflate();
+
+        mModel.set(TabProperties.TAB_CARD_LABEL_DATA, mTabCardLabelData);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_CARD_LABEL_DATA);
+
+        verify(mTabCardLabelStub, never()).inflate();
+        verify(mTabCardLabelView, never()).setData(any());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testPriceDrop_PriceCardView() {
+        mModel.set(
+                TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
+                mShoppingPersistedTabDataFetcher);
+        TabGridViewBinder.bindTab(
+                mModel, mViewGroup, TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER);
+
+        verify(mPriceCardView).setPriceStrings(mPriceDrop.price, mPriceDrop.previousPrice);
+        verify(mPriceCardView).setVisibility(View.VISIBLE);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testPriceDrop_TabCardLabelView() {
+        mModel.set(
+                TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
+                mShoppingPersistedTabDataFetcher);
+        TabGridViewBinder.bindTab(
+                mModel, mViewGroup, TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER);
+
+        verify(mTabCardLabelStub).inflate();
+        verify(mTabCardLabelView)
+                .setData(argThat((data) -> TabCardLabelType.PRICE_DROP == data.labelType));
     }
 
     private void assertImageMatrix(

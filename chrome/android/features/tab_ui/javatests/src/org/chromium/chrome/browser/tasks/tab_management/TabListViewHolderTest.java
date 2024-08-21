@@ -36,6 +36,7 @@ import android.graphics.drawable.VectorDrawable;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -63,6 +64,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -748,6 +750,19 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testPriceStringPriceDrop_TabCardLabel() {
+        Tab tab = MockTab.createAndInitialize(1, mProfile);
+        MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
+        fetcher.setPriceStrings(EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
+        testPriceString(
+                tab, fetcher, View.VISIBLE, EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testPriceStringPriceDrop() {
         Tab tab = MockTab.createAndInitialize(1, mProfile);
         MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
@@ -759,6 +774,19 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testPriceStringNullPriceDrop_TabCardLabel() {
+        Tab tab = MockTab.createAndInitialize(1, mProfile);
+        MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
+        fetcher.setNullPriceDrop();
+        testPriceString(
+                tab, fetcher, View.GONE, EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testPriceStringNullPriceDrop() {
         Tab tab = MockTab.createAndInitialize(1, mProfile);
         MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
@@ -770,6 +798,22 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testPriceStringPriceDropThenNull_TabCardLabel() {
+        Tab tab = MockTab.createAndInitialize(1, mProfile);
+        MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
+        fetcher.setPriceStrings(EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
+        testPriceString(
+                tab, fetcher, View.VISIBLE, EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
+        fetcher.setNullPriceDrop();
+        testPriceString(
+                tab, fetcher, View.GONE, EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testPriceStringPriceDropThenNull() {
         Tab tab = MockTab.createAndInitialize(1, mProfile);
         MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
@@ -784,6 +828,22 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testPriceStringTurnFeatureOff_TabCardLabel() {
+        Tab tab = MockTab.createAndInitialize(1, mProfile);
+        MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
+        fetcher.setPriceStrings(EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
+        testPriceString(
+                tab, fetcher, View.VISIBLE, EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
+        mGridModel.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
+        TabCardLabelView tabCardLabelView = mTabGridView.findViewById(R.id.tab_card_label);
+        Assert.assertEquals(View.GONE, tabCardLabelView.getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testPriceStringTurnFeatureOff() {
         Tab tab = MockTab.createAndInitialize(1, mProfile);
         MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
@@ -829,15 +889,36 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
             String expectedPreviousPrice) {
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
         testGridSelected(mTabGridView, mGridModel);
-        PriceCardView priceCardView = mTabGridView.findViewById(R.id.price_info_box_outer);
-        TextView currentPrice = mTabGridView.findViewById(R.id.current_price);
-        TextView previousPrice = mTabGridView.findViewById(R.id.previous_price);
 
         mGridModel.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, fetcher);
-        Assert.assertEquals(expectedVisibility, priceCardView.getVisibility());
-        if (expectedVisibility == View.VISIBLE) {
-            Assert.assertEquals(expectedCurrentPrice, currentPrice.getText());
-            Assert.assertEquals(expectedPreviousPrice, previousPrice.getText());
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
+            TabCardLabelView tabCardLabelView = mTabGridView.findViewById(R.id.tab_card_label);
+
+            if (tabCardLabelView == null) {
+                ViewStub stub = mTabGridView.findViewById(R.id.tab_card_label_stub);
+                Assert.assertNotNull(stub);
+                Assert.assertEquals(View.GONE, expectedVisibility);
+                return;
+            }
+            Assert.assertEquals(expectedVisibility, tabCardLabelView.getVisibility());
+            if (expectedVisibility == View.VISIBLE) {
+                TextView labelText = tabCardLabelView.findViewById(R.id.tab_label_text);
+
+                String text = labelText.getText().toString();
+                Assert.assertTrue(text.contains(expectedCurrentPrice));
+                Assert.assertTrue(text.contains(expectedPreviousPrice));
+            }
+        } else {
+            PriceCardView priceCardView = mTabGridView.findViewById(R.id.price_info_box_outer);
+
+            Assert.assertEquals(expectedVisibility, priceCardView.getVisibility());
+            if (expectedVisibility == View.VISIBLE) {
+                TextView currentPrice = mTabGridView.findViewById(R.id.current_price);
+                TextView previousPrice = mTabGridView.findViewById(R.id.previous_price);
+
+                Assert.assertEquals(expectedCurrentPrice, currentPrice.getText());
+                Assert.assertEquals(expectedPreviousPrice, previousPrice.getText());
+            }
         }
     }
 

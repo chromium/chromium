@@ -2022,6 +2022,7 @@ class TabListMediator implements TabListNotificationHandler {
                 getTabActionButtonListener(tab, tabActionState));
         model.set(TabProperties.TAB_CLICK_LISTENER, getTabClickListener(tab, tabActionState));
         model.set(TabProperties.TAB_LONG_CLICK_LISTENER, getTabLongClickListener(tabActionState));
+        model.set(TabProperties.TAB_CARD_LABEL_DATA, model.get(TabProperties.TAB_CARD_LABEL_DATA));
 
         if (mTabActionState == TabActionState.SELECTABLE) {
             // Incognito in both light/dark theme is the same as non-incognito mode in dark theme.
@@ -2800,16 +2801,30 @@ class TabListMediator implements TabListNotificationHandler {
                     model.set(TabProperties.HAS_NOTIFICATION_BUBBLE, hasUpdate);
                 };
 
-        updateTabListItemsNotificationStatus(tabIdsToBeUpdated, updateTabStripItemCallback);
+        forAllTabListItems(tabIdsToBeUpdated, updateTabStripItemCallback);
     }
 
-    private void updateTabListItemsNotificationStatus(
+    @Override
+    public void updateTabCardLabels(Map<Integer, TabCardLabelData> labelData) {
+        assert mMode == TabListMode.GRID;
+
+        Callback<PropertyModel> updateTabCardLabel =
+                (model) -> {
+                    int tabId = model.get(TabProperties.TAB_ID);
+                    model.set(TabProperties.TAB_CARD_LABEL_DATA, labelData.get(tabId));
+                };
+        forAllTabListItems(labelData.keySet(), updateTabCardLabel);
+    }
+
+    private void forAllTabListItems(
             Set<Integer> tabIdsToBeUpdated, Callback<PropertyModel> updateCallback) {
         for (int i = 0; i < mModel.size(); i++) {
-            int tabId = mModel.get(i).model.get(TabProperties.TAB_ID);
+            PropertyModel model = mModel.get(i).model;
+            if (model.get(CARD_TYPE) != TAB) continue;
 
+            int tabId = model.get(TabProperties.TAB_ID);
             if (tabIdsToBeUpdated.contains(tabId)) {
-                updateCallback.onResult(mModel.get(i).model);
+                updateCallback.onResult(model);
             }
         }
     }

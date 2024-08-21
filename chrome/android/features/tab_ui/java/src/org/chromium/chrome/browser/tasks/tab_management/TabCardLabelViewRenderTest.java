@@ -190,7 +190,12 @@ public class TabCardLabelViewRenderTest {
             @TabCardLabelType int labelType,
             TextResolver textResolver,
             @Nullable AsyncImageView.Factory asyncImageFactory) {
-        TabCardLabelData data = new TabCardLabelData(labelType, textResolver, asyncImageFactory);
+        TabCardLabelData data =
+                new TabCardLabelData(
+                        labelType,
+                        textResolver,
+                        asyncImageFactory,
+                        /* contentDescriptionResolver= */ null);
         runOnUiThreadBlocking(
                 () -> {
                     mTabCardLabelView.setData(data);

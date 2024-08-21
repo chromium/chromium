@@ -4389,16 +4389,40 @@ public class TabListMediatorUnitTest {
 
         mMediator.resetWithListOfTabs(tabs, false);
 
-        assertEquals(mModel.get(POSITION1).model.get(TabProperties.HAS_NOTIFICATION_BUBBLE), false);
-        assertEquals(mModel.get(POSITION2).model.get(TabProperties.HAS_NOTIFICATION_BUBBLE), false);
+        assertFalse(mModel.get(POSITION1).model.get(TabProperties.HAS_NOTIFICATION_BUBBLE));
+        assertFalse(mModel.get(POSITION2).model.get(TabProperties.HAS_NOTIFICATION_BUBBLE));
 
         // Only pass in updates for mTab1 and leaving mTab2 untouched.
         Set<Integer> tabIdsToBeUpdated = new HashSet<>();
         tabIdsToBeUpdated.add(mTab1.getId());
         mMediator.updateTabStripNotificationBubble(tabIdsToBeUpdated, true);
 
-        assertEquals(mModel.get(POSITION1).model.get(TabProperties.HAS_NOTIFICATION_BUBBLE), true);
-        assertEquals(mModel.get(POSITION2).model.get(TabProperties.HAS_NOTIFICATION_BUBBLE), false);
+        assertTrue(mModel.get(POSITION1).model.get(TabProperties.HAS_NOTIFICATION_BUBBLE));
+        assertFalse(mModel.get(POSITION2).model.get(TabProperties.HAS_NOTIFICATION_BUBBLE));
+    }
+
+    @Test
+    public void testUpdateTabCardLabels() {
+        TabCardLabelData tabCardLabelData = mock(TabCardLabelData.class);
+        Map<Integer, TabCardLabelData> dataMap = new HashMap<>();
+        dataMap.put(TAB1_ID, tabCardLabelData);
+
+        mMediator.updateTabCardLabels(dataMap);
+
+        assertEquals(
+                tabCardLabelData,
+                mModel.get(POSITION1).model.get(TabProperties.TAB_CARD_LABEL_DATA));
+        assertNull(mModel.get(POSITION2).model.get(TabProperties.TAB_CARD_LABEL_DATA));
+
+        dataMap.replace(TAB1_ID, null);
+        dataMap.put(TAB2_ID, tabCardLabelData);
+
+        mMediator.updateTabCardLabels(dataMap);
+
+        assertNull(mModel.get(POSITION1).model.get(TabProperties.TAB_CARD_LABEL_DATA));
+        assertEquals(
+                tabCardLabelData,
+                mModel.get(POSITION2).model.get(TabProperties.TAB_CARD_LABEL_DATA));
     }
 
     private void setUpCloseButtonDescriptionString(boolean isGroup) {
