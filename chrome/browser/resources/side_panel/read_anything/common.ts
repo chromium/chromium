@@ -31,10 +31,30 @@ export enum ToolbarEvent {
   PLAY_PREVIEW = 'preview-voice',
 }
 
+// The user settings stored in preferences and restored on re-opening Reading
+// mode. Used to set the initial values for the toolbar buttons and menus.
+export interface SettingsPrefs {
+  letterSpacing: number;
+  lineSpacing: number;
+  theme: number;
+  speechRate: number;
+  font: string;
+}
+
 const ACTIVE_CSS_CLASS = 'active';
 
 export function getCurrentSpeechRate(): number {
   return parseFloat(chrome.readingMode.speechRate.toFixed(1));
+}
+
+// Propagates a custom event with the given name and any details.
+export function emitEvent(
+    target: EventTarget, name: string, eventDetail?: any) {
+  target.dispatchEvent(new CustomEvent(name, {
+    bubbles: true,
+    composed: true,
+    detail: eventDetail,
+  }));
 }
 
 export function openMenu(

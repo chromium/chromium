@@ -21,6 +21,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './app.html.js';
 import {AppStyleUpdater} from './app_style_updater.js';
 import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeout, toastDurationMs} from './common.js';
+import type {SettingsPrefs} from './common.js';
 import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import type {VoicePackStatus} from './voice_language_util.js';
@@ -244,6 +245,7 @@ export class AppElement extends AppElementBase {
 
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
   private styleUpdater_: AppStyleUpdater;
+  private settingsPrefs_: SettingsPrefs;
 
   // State for speech synthesis paused/play state needs to be tracked explicitly
   // because there are bugs with window.speechSynthesis.paused and
@@ -333,6 +335,14 @@ export class AppElement extends AppElementBase {
         this.onVoicesChanged();
       };
     }
+
+    this.settingsPrefs_ = {
+      letterSpacing: chrome.readingMode.letterSpacing,
+      lineSpacing: chrome.readingMode.lineSpacing,
+      theme: chrome.readingMode.colorTheme,
+      speechRate: chrome.readingMode.speechRate,
+      font: chrome.readingMode.fontName,
+    };
 
     document.onselectionchange = () => {
       // When Read Aloud is playing, user-selection is disabled on the Read
@@ -2188,7 +2198,17 @@ export class AppElement extends AppElementBase {
       this.restoreEnabledLanguagesFromPref();
       this.selectPreferredVoice();
     }
+    this.settingsPrefs_ = {
+      ...this.settingsPrefs_,
+      letterSpacing: chrome.readingMode.letterSpacing,
+      lineSpacing: chrome.readingMode.lineSpacing,
+      theme: chrome.readingMode.colorTheme,
+      speechRate: chrome.readingMode.speechRate,
+      font: chrome.readingMode.fontName,
+    };
     this.styleUpdater_.setAllTextStyles();
+    // TODO(crbug.com/40927698): Remove this call. Using this.settingsPrefs_
+    // should replace this direct call to the toolbar.
     this.$.toolbar.restoreSettingsFromPrefs();
   }
 
