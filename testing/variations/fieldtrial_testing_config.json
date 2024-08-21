@@ -8884,6 +8884,28 @@
             ]
         }
     ],
+    "EnableDiscountOnShoppyPagesDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "discount-on-shoppy-page": "true"
+                    },
+                    "enable_features": [
+                        "EnableDiscountInfoApi"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableExtensibleEnterpriseSSO": [
         {
             "platforms": [
