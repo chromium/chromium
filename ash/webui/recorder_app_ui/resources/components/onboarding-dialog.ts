@@ -203,12 +203,10 @@ export class OnboardingDialog extends ReactiveLitElement {
             <cra-button
               .label=${i18n.onboardingDialogTranscriptionDeferButton}
               class="left"
-              button-style="secondary"
               @click=${this.close}
             ></cra-button>
             <cra-button
               .label=${i18n.onboardingDialogTranscriptionCancelButton}
-              button-style="secondary"
               @click=${disableTranscription}
             ></cra-button>
             <cra-button
@@ -242,12 +240,10 @@ export class OnboardingDialog extends ReactiveLitElement {
             <cra-button
               .label=${i18n.onboardingDialogSpeakerLabelDeferButton}
               class="left"
-              button-style="secondary"
               @click=${this.close}
             ></cra-button>
             <cra-button
               .label=${i18n.onboardingDialogSpeakerLabelDisallowButton}
-              button-style="secondary"
               @click=${disableSpeakerLabel}
             ></cra-button>
             <cra-button

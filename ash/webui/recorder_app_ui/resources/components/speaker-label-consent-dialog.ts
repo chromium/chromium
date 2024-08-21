@@ -80,12 +80,10 @@ export class SpeakerLabelConsentDialog extends ReactiveLitElement {
         <cra-button
           .label=${i18n.onboardingDialogSpeakerLabelDeferButton}
           class="left"
-          button-style="secondary"
           @click=${this.hide}
         ></cra-button>
         <cra-button
           .label=${i18n.onboardingDialogSpeakerLabelDisallowButton}
-          button-style="secondary"
           @click=${this.disableSpeakerLabel}
         ></cra-button>
         <cra-button
