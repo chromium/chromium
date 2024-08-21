@@ -4571,6 +4571,16 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.TabSwitcher.DragDropMultiSelect"
+    enum="IOSTabSwitcherDragDropTabs" expires_after="2025-07-09">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <summary>
+    Records multi-selection drag and drop interactions on the tab switcher. An
+    interaction is recorded twice (one drag and one drop).
+  </summary>
+</histogram>
+
 <histogram name="IOS.TabSwitcher.DragDropTabs"
     enum="IOSTabSwitcherDragDropTabs" expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>
