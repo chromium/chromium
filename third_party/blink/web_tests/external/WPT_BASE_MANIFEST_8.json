@@ -84162,6 +84162,58 @@
        {}
       ]
      ],
+     "background-image-004.html": [
+      "11e1d13ec4e08b390756d6c51edd8dbea9da0729",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "background-image-005.html": [
+      "82624e4a9743e6d69bae9fdf175fe06ea16fc8f7",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "background-image-006.html": [
+      "b7b5ca54643d53774782ea6860d18f662ab6c4fc",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "background-image-007.html": [
+      "0b7c2cd8cd773cc759f03283b7ba57eae968d826",
+      [
+       null,
+       [
+        [
+         "/css/css-break/background-image-007-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "become-unfragmented-001.html": [
       "df104fc494dfc3bd5070c04abf66becaea468a24",
       [
@@ -84533,6 +84585,19 @@
        [
         [
          "/css/css-break/borders-007-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "borders-008.html": [
+      "6f99764ebe0cee76a933c81d502b0651c4222d2b",
+      [
+       null,
+       [
+        [
+         "/css/css-break/borders-008-ref.html",
          "=="
         ]
        ],
@@ -298862,11 +298927,11 @@
       []
      ],
      "derived_bits_length.https.any-expected.txt": [
-      "a5b52665f6ebd6d18972957ca9e450576246b400",
+      "21228fb640dc74cf44a886ffb65e6e0d4126cf8e",
       []
      ],
      "derived_bits_length.https.any.worker-expected.txt": [
-      "a5b52665f6ebd6d18972957ca9e450576246b400",
+      "21228fb640dc74cf44a886ffb65e6e0d4126cf8e",
       []
      ],
      "derived_bits_length.js": [
@@ -299188,14 +299253,6 @@
     ],
     "getRandomValues.any.worker-expected.txt": [
      "1a0cb5189c323f7a02d86aee4079f52f1a1f8cba",
-     []
-    ],
-    "idlharness.https.any-expected.txt": [
-     "06afe5c5fea5043816ed318a0d3259475b74885a",
-     []
-    ],
-    "idlharness.https.any.worker-expected.txt": [
-     "06afe5c5fea5043816ed318a0d3259475b74885a",
      []
     ],
     "import_export": {
@@ -315053,6 +315110,10 @@
       "84853d4cf4fff381e0d864fdb4a785fa1e0ada5f",
       []
      ],
+     "background-image-007-ref.html": [
+      "155a5b92f3afd005debacdbe20c8ddad9ae1cf7e",
+      []
+     ],
      "block-001-wm-vlr-ref.html": [
       "b131b0e486084ed3a127ac07c23425f8e50be93a",
       []
@@ -315123,6 +315184,10 @@
      ],
      "borders-007-ref.html": [
       "3b9e23678d4eb08387423de7a0a0dfb5675445ef",
+      []
+     ],
+     "borders-008-ref.html": [
+      "57ea42641940a527f0b1ca0d363f1ab8206ee1c1",
       []
      ],
      "box-decoration-break-clone-009-ref.html": [
@@ -358255,7 +358320,7 @@
      ],
      "resources": {
       "abort-signal-any-tests.js": [
-       "66e4141eaccb08ee3efe3da8b6e83c82acdec942",
+       "929ee8a2e61ab44513e2b02d7d66c61cf1f98f24",
        []
       ]
      }
@@ -385896,6 +385961,10 @@
     ],
     "META.yml": [
      "212cae7fa52e95b820d11e7ca8e2eed7d36bf112",
+     []
+    ],
+    "dir-role.tentative-expected.txt": [
+     "e000bfdc7091aeb8705a5bd9b078bcfb266c84a7",
      []
     ],
     "roles-dynamic-switch.tentative.window-expected.txt": [
@@ -429245,7 +429314,7 @@
       ]
      ],
      "comp_label.html": [
-      "843a7aa65c97580bb6eb00f825a7061f3d898242",
+      "e24956bff9d11de02e58178719f47962bae3056e",
       [
        null,
        {
@@ -582902,7 +582971,7 @@
         ]
        ],
        "dir-slots-directionality.html": [
-        "7a16e38de125146643cc19b4ee105651758cc8ef",
+        "b7935cf1f3a062c63fadab1261d9a5fa63a31636",
         [
          null,
          {}
@@ -595780,7 +595849,7 @@
          ]
         ],
         "select-mouse-behavior.tentative.html": [
-         "b5d5c3fd1bb2c3fc381dea505ca01ca51b2bdaff",
+         "53c10ae2c4f29770b7456bda2d97b730769dd00d",
          [
           null,
           {
@@ -608106,6 +608175,15 @@
     }
    },
    "html-aam": {
+    "dir-role.tentative.html": [
+     "e5c374b90c2b86def16b1a29b4d4fd49fa6a0323",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "fragile": {
      "area-role.html": [
       "315d4a8e838f2d27508b53d7f6684119ebffd6bf",
@@ -608194,7 +608272,7 @@
      ]
     ],
     "roles.html": [
-     "22c3e7a215cd4a39a725cfc67dcf276eac1d271b",
+     "a50c767a86190891f03be5ec3a7205c6153b7ae5",
      [
       null,
       {
@@ -758818,7 +758896,7 @@
          ]
         ],
         "pointer_touch.py": [
-         "95aa62ceba9abb2054761007614f9353a4cc9b54",
+         "f036de7c744c1d5bb3376640bdffa9ef5ca79daa",
          [
           null,
           {}
