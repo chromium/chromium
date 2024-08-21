@@ -32,8 +32,6 @@ class OutputTapper {
   void Stop();
 
  private:
-  class UmaLogger;
-
   void StartListening();
 
   SEQUENCE_CHECKER(owning_sequence_);
@@ -42,7 +40,6 @@ class OutputTapper {
   raw_ptr<DeviceOutputListener> const device_output_listener_;
   raw_ptr<ReferenceOutput::Listener> const listener_;
   const LogCallback log_callback_;
-  std::unique_ptr<UmaLogger> uma_logger_;
 };
 
 }  // namespace audio

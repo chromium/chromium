@@ -893,55 +893,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.OutputDeviceListener.Duration{Device}" units="ms"
-    expires_after="2024-09-01">
-  <owner>olka@chromium.org</owner>
-  <owner>tguilbert@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Duration of the interval when a listener listens to a specific output
-    device. Recorded when a listener chooses to listen to another output device,
-    or stops listening altogether.
-  </summary>
-  <token key="Device">
-    <variant name=".Default" summary="Default device"/>
-    <variant name=".NonDefault" summary="Non-default device"/>
-  </token>
-</histogram>
-
-<histogram name="Media.Audio.OutputDeviceMixer.MaxListenerCount{Device}"
-    units="listeners" expires_after="2024-09-01">
-  <owner>olka@chromium.org</owner>
-  <owner>tguilbert@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Maximum number of listeners receiving the reference output signal during
-    mixed playback. Recoreded when mixing stops (i.e. when all reference signal
-    listeners are gone.)
-  </summary>
-  <token key="Device">
-    <variant name="" summary="All"/>
-    <variant name=".Default" summary="Default device mixer"/>
-    <variant name=".NonDefault" summary="Non-default device mixer"/>
-  </token>
-</histogram>
-
-<histogram name="Media.Audio.OutputDeviceMixer.MaxMixedStreamCount{Device}"
-    units="streams" expires_after="2025-01-05">
-  <owner>olka@chromium.org</owner>
-  <owner>tguilbert@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Maximum number of output streams mixed simlutaniously by OutputDeviceMixer.
-    Recoreded when mixing stops (when all reference signal listeners are gone).
-  </summary>
-  <token key="Device">
-    <variant name="" summary="All"/>
-    <variant name=".Default" summary="Default device mixer"/>
-    <variant name=".NonDefault" summary="Non-default device mixer"/>
-  </token>
-</histogram>
-
 <histogram name="Media.Audio.OutputDeviceMixer.MixedPlaybackStatus"
     enum="AudioOutputDeviceMixerMixedPlaybackStatus" expires_after="2025-01-05">
   <owner>olka@chromium.org</owner>
@@ -951,24 +902,6 @@ chromium-metrics-reviews@google.com.
     Health status of the mixed playback. Recorded when mixed playback stopped or
     failed to start.
   </summary>
-</histogram>
-
-<histogram name="Media.Audio.OutputDeviceMixer.MixingDuration{Device}"
-    units="ms" expires_after="2024-11-03">
-  <owner>olka@chromium.org</owner>
-  <owner>tguilbert@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Duration of the interval between the moment OutputDeviceMixer started mixed
-    playback (referece playback signal is requested by at least one listener and
-    there is at least one stream managed by the mixer playing) and the moment
-    OutputDeviceMixer stopped mixed playback (there are no more listeners).
-  </summary>
-  <token key="Device">
-    <variant name="" summary="All"/>
-    <variant name=".Default" summary="Default device mixer"/>
-    <variant name=".NonDefault" summary="Non-default device mixer"/>
-  </token>
 </histogram>
 
 <histogram name="Media.Audio.OutputDeviceMixer.OvertimeCount" units="count"
