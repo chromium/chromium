@@ -172,7 +172,7 @@ TEST_F(LoginAuthUserViewPixeltest, PinAndPassword) {
                  LoginAuthUserView::AUTH_PIN);
   views::test::RunScheduledLayout(container_);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PinAndPassword", /*revision_number=*/0, view_));
+      "PinAndPassword", /*revision_number=*/1, view_));
 }
 
 class LoginAuthUserViewPinOnlyPixeltest : public LoginAuthUserViewPixeltest {
@@ -199,7 +199,7 @@ TEST_F(LoginAuthUserViewPinOnlyPixeltest, PinOnlyModeWithAutosubmitEnabled) {
 
   views::test::RunScheduledLayout(container_);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PinOnlyEmpty", /*revision_number=*/0, view_));
+      "PinOnlyEmpty", /*revision_number=*/1, view_));
 
   const auto pin = std::string("123456");
 
@@ -210,7 +210,7 @@ TEST_F(LoginAuthUserViewPinOnlyPixeltest, PinOnlyModeWithAutosubmitEnabled) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PinOnlyFilled", /*revision_number=*/0, view_));
+      "PinOnlyFilled", /*revision_number=*/1, view_));
 }
 
 // Verifies the PIN only with auto submit off case. Take two pictures:
@@ -230,7 +230,7 @@ TEST_F(LoginAuthUserViewPinOnlyPixeltest, PinOnlyModeWithAutosubmitDisabled) {
 
   views::test::RunScheduledLayout(container_);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PinOnlyEmpty", /*revision_number=*/0, view_));
+      "PinOnlyEmpty", /*revision_number=*/1, view_));
 
   const auto pin = std::string("123456");
 
@@ -241,7 +241,7 @@ TEST_F(LoginAuthUserViewPinOnlyPixeltest, PinOnlyModeWithAutosubmitDisabled) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PinOnlyFilled", /*revision_number=*/0, view_));
+      "PinOnlyFilled", /*revision_number=*/1, view_));
 }
 
 }  // namespace ash
