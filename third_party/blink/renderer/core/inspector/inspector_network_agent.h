@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/network.h"
+#include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -73,7 +74,7 @@ struct ResourceLoaderOptions;
 class ResourceResponse;
 class XHRReplayData;
 class XMLHttpRequest;
-class WorkerGlobalScope;
+class WorkerOrWorkletGlobalScope;
 enum class ResourceRequestBlockedReason;
 enum class ResourceType : uint8_t;
 
@@ -83,7 +84,7 @@ class CORE_EXPORT InspectorNetworkAgent final
   // TODO(horo): Extract the logic for frames and for workers into different
   // classes.
   InspectorNetworkAgent(InspectedFrames*,
-                        WorkerGlobalScope*,
+                        WorkerOrWorkletGlobalScope*,
                         v8_inspector::V8InspectorSession*);
   ~InspectorNetworkAgent() override;
   void Trace(Visitor*) const override;
@@ -302,7 +303,7 @@ class CORE_EXPORT InspectorNetworkAgent final
   // This is null while inspecting workers.
   Member<InspectedFrames> inspected_frames_;
   // This is null while inspecting frames.
-  Member<WorkerGlobalScope> worker_global_scope_;
+  Member<WorkerOrWorkletGlobalScope> worker_or_worklet_global_scope_;
   v8_inspector::V8InspectorSession* v8_session_;
   Member<NetworkResourcesData> resources_data_;
   const base::UnguessableToken devtools_token_;
