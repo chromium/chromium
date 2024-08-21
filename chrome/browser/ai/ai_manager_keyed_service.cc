@@ -324,8 +324,7 @@ void AIManagerKeyedService::CreateTextSessionForCloning(
 
   blink::mojom::AITextSessionInfoPtr session_info =
       session->GetTextSessionInfo();
-  AIContextBoundObjectSet::GetFromContext(receivers_.current_context())
-      ->AddContextBoundObject(std::move(session));
+  context_bound_object_set->AddContextBoundObject(std::move(session));
   std::move(callback).Run(std::move(session_info));
 }
 
