@@ -51,6 +51,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -186,6 +187,10 @@ void MaybeRegisterChromeFeaturePromos(
   using user_education::FeaturePromoSpecification;
   using user_education::HelpBubbleArrow;
   using user_education::Metadata;
+  using AdditionalCondition = user_education::FeaturePromoSpecification::
+      AdditionalConditions::AdditionalCondition;
+  using AdditionalConditions =
+      user_education::FeaturePromoSpecification::AdditionalConditions;
 
   // This icon got updated, so select the 2023 Refresh version.
   // Note that the WebUI refresh state is not taken into account, so
@@ -345,6 +350,12 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleIcon(kLightbulbOutlineIcon)
           .SetCustomActionIsDefault(true)
           .SetCustomActionDismissText(IDS_PROMO_SNOOZE_BUTTON)
+          // This provides backwards-compatibility with legacy conditions used
+          // before feature auto-configuration was enabled.
+          .SetAdditionalConditions(std::move(
+              AdditionalConditions().AddAdditionalCondition(AdditionalCondition{
+                  feature_engagement::events::kCustomizeChromeOpened,
+                  AdditionalConditions::Constraint::kAtMost, 0})))
           // See: crbug.com/1494923
           .OverrideFocusOnShow(false)));
 
@@ -373,6 +384,12 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleArrow(HelpBubbleArrow::kNone)
           .SetCustomActionIsDefault(false)
           .SetCustomActionDismissText(IDS_PROMO_DISMISS_BUTTON)
+          // This provides backwards-compatibility with legacy conditions used
+          // before feature auto-configuration was enabled.
+          .SetAdditionalConditions(std::move(
+              AdditionalConditions().AddAdditionalCondition(AdditionalCondition{
+                  feature_engagement::events::kCustomizeChromeOpened,
+                  AdditionalConditions::Constraint::kAtMost, 0})))
           // See: crbug.com/1494923
           .OverrideFocusOnShow(false)
           .SetMetadata(119, "mickeyburks@chromium.org",
@@ -388,6 +405,12 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
           .SetBubbleIcon(kLightbulbOutlineIcon)
           .SetInAnyContext(true)
+          // This provides backwards-compatibility with legacy conditions used
+          // before feature auto-configuration was enabled.
+          .SetAdditionalConditions(std::move(
+              AdditionalConditions().AddAdditionalCondition(AdditionalCondition{
+                  feature_engagement::events::kDesktopNTPModuleUsed,
+                  AdditionalConditions::Constraint::kAtMost, 0})))
           // See: crbug.com/1494923
           .OverrideFocusOnShow(false)
           .SetMetadata(122, "romanarora@chromium.org",

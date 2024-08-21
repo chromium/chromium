@@ -462,54 +462,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHDesktopCustomizeChromeFeature.name == feature->name) {
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    // Used to increase the usage of Customize Chrome for users who have opened
-    // it 0 times in the last 360 days.
-    config->used =
-        EventConfig("customize_chrome_opened", Comparator(EQUAL, 0), 360, 360);
-    // Triggered when IPH hasn't been shown in the past day.
-    config->trigger = EventConfig("iph_customize_chrome_triggered",
-                                  Comparator(EQUAL, 0), 1, 360);
-    config->snooze_params.max_limit = 4;
-    return config;
-  }
-
-  if (kIPHDesktopCustomizeChromeRefreshFeature.name == feature->name) {
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
-    // Show IPH regardless of customize_chrome usage
-    config->used =
-        EventConfig("customize_chrome_opened", Comparator(ANY, 0), 360, 360);
-    // Triggered when IPH has been shown less than twice this year.
-    config->trigger = EventConfig("iph_customize_chrome_refresh_triggered",
-                                  Comparator(LESS_THAN, 2), 360, 360);
-    config->snooze_params.max_limit = 4;
-    return config;
-  }
-
-  if (kIPHDesktopNewTabPageModulesCustomizeFeature.name == feature->name) {
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
-    config->session_rate_impact.type = SessionRateImpact::Type::ALL;
-    // Show the promo max once every 10 years if the user hasn't interacted with
-    // the modules within the last year.
-    config->trigger = EventConfig("iph_desktop_new_tab_page_modules_triggered",
-                                  Comparator(EQUAL, 0), 3600, 3600);
-    config->used = EventConfig(events::kDesktopNTPModuleUsed,
-                               Comparator(EQUAL, 0), 360, 360);
-    config->snooze_params.max_limit = 5;
-    return config;
-  }
-
   if (kIPHPasswordsWebAppProfileSwitchFeature.name == feature->name) {
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
