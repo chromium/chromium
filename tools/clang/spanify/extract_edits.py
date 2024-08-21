@@ -51,6 +51,19 @@ import resource
 from os.path import expanduser
 
 
+# The connected components in the graph. This is useful to split the rewrite
+# into atomic changes.
+class Component:
+    all = set()
+
+    def __init__(self) -> None:
+        # Changes associated with the connected component.
+        self.changes = set()
+
+        # `Component.all` can be used to iterate over all components.
+        Component.all.add(self)
+
+
 class Node:
     # Mapping in between the replacement directive and the node.
     key_to_node = dict()
@@ -66,8 +79,10 @@ class Node:
         self.is_deref_node = is_deref_node
         self.is_data_change = is_data_change
 
-        # Neighbors of the node in the graph.
-        self.neighbors = set()
+        # Neighbors of the node in the graph. The graph is directed,
+        # flowing from lhs to rhs.
+        self.neighbors_directed = set()
+        self.neighbors_undirected = set()
 
         # Property to tracker whether the node is "connected" to a buffer node.
         # This is set from DFS(...)
@@ -77,9 +92,9 @@ class Node:
         self.size_info_available = size_info_available
         self.size_info_step = False
 
-        # Changes associated with the node. The whole connected component are
-        # sharing the same set. See DFS(...) for more details.
-        self.changes = None
+        # Identify the connected component this node belongs to. This is set in
+        # the main function.
+        self.component = None
 
     def __eq__(self, other):
         if isinstance(other, Node):
@@ -127,48 +142,46 @@ class Node:
             self.size_info_available)
         result += "is_deref_node:{},is_data_change:{},".format(
             self.is_deref_node, self.is_data_change)
-        # Recursively get neighbors.
+        # Recursively get neighbors_directed.
         result += "neighbors:"
-        neighbors = "{"
-        for node in self.neighbors:
-            if len(neighbors) > 1:
-                neighbors += ", "
-            neighbors += node.to_debug_string()
-        neighbors += "}"
-        return result + neighbors
+        neighbors_directed = "{"
+        for node in self.neighbors_directed:
+            if len(neighbors_directed) > 1:
+                neighbors_directed += ", "
+            neighbors_directed += node.to_debug_string()
+        neighbors_directed += "}"
+        return result + neighbors_directed
 
     # Static method to get all nodes.
     def all():
         return Node.key_to_node.values()
 
 
-def DFS(node: Node, changes: set):
+def DFS(node: Node):
     """
     Explore the graph in depth-first search from the given node. Identify edits
     to apply.
 
     Args:
         node: The current node being processed.
-        changes: A set to collect the identified changes.
     """
     # Only visit nodes once:
     if (node.visited):
         return
     node.visited = True
-    node.changes = changes
 
     if not node.replacement.endswith('<empty>'):
-        changes.add(node.replacement)
-        changes.add(node.include_directive)
+        node.component.changes.add(node.replacement)
+        node.component.changes.add(node.include_directive)
 
-    for neighbour in node.neighbors:
-        DFS(neighbour, changes)
+    for neighbour in node.neighbors_directed:
+        DFS(neighbour)
 
 
 def SizeInfoAvailable(node: Node):
     """
     Determines whether size information is available for a buffer node and its
-    neighbors. Updates the node's size_info_available attribute.
+    neighbors_directed. Updates the node's size_info_available attribute.
 
     Args:
         node: The current node's being processed.
@@ -197,7 +210,7 @@ def SizeInfoAvailable(node: Node):
     size_info_available = '0'
     # Check neighbors. If any neighbor doesn't have size info or there's a
     # cycle, the current node also doesn't.
-    for neighbour in node.neighbors:
+    for neighbour in node.neighbors_directed:
         # Break as soon as we encounter a neighbor for which size info is not
         # available.
         if SizeInfoAvailable(neighbour) == '0':
@@ -226,12 +239,33 @@ def main():
         lhs = Node.from_string(nodes[0])
         rhs = Node.from_string(nodes[1])
 
-        lhs.neighbors.add(rhs)
+        # Directed edge:
+        lhs.neighbors_directed.add(rhs)
+
+        # Undirected edge:
+        lhs.neighbors_undirected.add(rhs)
+        rhs.neighbors_undirected.add(lhs)
 
     # Determine whether size information is available for each buffer node:
     for node in Node.all():
         if node.is_buffer == '1':
             SizeInfoAvailable(node)
+
+    # Identify all the connected components in the undirected graph. This is
+    # exploring the graph in depth-first search and assigning the same component
+    # to each node in the connected component.
+    for node in Node.all():
+        if node.component is not None:
+            continue
+        new_component = Component()
+        stack = [node]
+        while stack:
+            current = stack.pop()
+            if current.component is not None:
+                continue
+            current.component = new_component
+            for neighbor in current.neighbors_undirected:
+                stack.append(neighbor)
 
     # Collect the changes to apply. Starting from buffers nodes whose size info
     # could be determined.
@@ -248,17 +282,16 @@ def main():
 
         # Collect the changes to apply. We start from buffer nodes whose size
         # info is available and explore the graph in depth-first search.
-        changes = set()
-        DFS(node, changes)
+        DFS(node)
 
     # Iterate over the deref_nodes and then check if their only neighbor was
     # visited. Visited nodes here are nodes who's type was rewritten to span.
     # In that case, the deref expression needs to be adapted(rewritten)
     for node in Node.all():
         if node.is_deref_node == '1':
-            neighbor = list(node.neighbors)[0]
+            neighbor = list(node.neighbors_directed)[0]
             if neighbor.visited:
-                neighbor.changes.add(node.replacement)
+                neighbor.component.changes.add(node.replacement)
 
     # At the edge in between rewritten and non-rewritten nodes, we need
     # to add a call to `.data()` to access the pointer from the span:
@@ -277,15 +310,15 @@ def main():
         # Expect a single neighbor.
         # TODO(357433195): In practice, this is not always the case. Investigate
         # why and add the assertion back:
-        # assert len(node.neighbors) == 1, "and node: " + node.to_debug_string()
+        # assert len(node.neighbors_directed) == 1, "and node: " + node.to_debug_string()
 
         # If the rhs node was visited (i.e rewritten), then we need to apply the
         # data change.
-        neighbor = list(node.neighbors)[0]
+        neighbor = list(node.neighbors_directed)[0]
         if neighbor.visited:
             # In this case, rhs was rewritten, and lhs was not, we need to add
             # the corresponding `.data()`
-            neighbor.changes.add(node.replacement)
+            neighbor.component.changes.add(node.replacement)
 
     # Emit the changes:
     # - ~/scratch/patches.txt: A summary of each atomic change.
@@ -296,21 +329,14 @@ def main():
     summary_filename = expanduser('~/scratch/patches.txt')
     summary_file = open(summary_filename, 'w')
 
-    change_index = 0
-    for node in Node.all():
-        if node.changes is None or len(node.changes) == 0:
-            continue
-
-        for text in node.changes:
+    for index, component in enumerate(list(Component.all)):
+        for text in component.changes:
             print(text)
 
-        summary_file.write(f'patch_{change_index}: {len(node.changes)}\n')
+        summary_file.write(f'patch_{index}: {len(component.changes)}\n')
 
-        with open(expanduser(f'~/scratch/patch_{change_index}.txt'), 'w') as f:
-            f.write('\n'.join(node.changes))
-        node.changes.clear()
-
-        change_index += 1
+        with open(expanduser(f'~/scratch/patch_{index}.txt'), 'w') as f:
+            f.write('\n'.join(component.changes))
 
     summary_file.close()
 
