@@ -99,9 +99,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
 
   // Returns true if the profile's source is
   // `AutofillProfile::Source::kAccount`.
-  bool IsProfileAnAccountProfile() const {
-    return profile_.source() == autofill::AutofillProfile::Source::kAccount;
-  }
+  bool IsProfileAnAccountProfile() const { return profile_.IsAccountProfile(); }
 
 #if defined(UNIT_TEST)
   // Getter for |user_decision_|. Used for the testing purposes.

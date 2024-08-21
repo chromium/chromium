@@ -164,8 +164,7 @@ std::u16string SaveUpdateAddressProfileMessageController::GetDescription() {
                                  /*include_address_and_contacts=*/true);
   }
 
-  if (is_migration_to_account_ ||
-      profile_->source() == AutofillProfile::Source::kAccount) {
+  if (is_migration_to_account_ || profile_->IsAccountProfile()) {
     return GetSourceNotice();
   }
 

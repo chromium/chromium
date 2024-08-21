@@ -78,12 +78,13 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   // Validity of the guid is guaranteed by the database layer.
   DCHECK(base::Uuid::ParseCaseInsensitive(entry.guid()).is_valid());
 
-  // Profiles fall into two categories, kLocalOrSyncable and kAccount.
-  // kLocalOrSyncable profiles are synced through the AutofillProfileSyncBridge,
-  // while kAccount profiles are synced through the ContactInfoSyncBridge. Make
-  // sure that syncing a profile through the wrong sync bridge fails early.
-  if (entry.source() != AutofillProfile::Source::kLocalOrSyncable)
+  // Profiles fall into two categories, local and account. local profiles are
+  // synced through the AutofillProfileSyncBridge, while account profiles are
+  // synced through the ContactInfoSyncBridge. Make sure that syncing a profile
+  // through the wrong sync bridge fails early.
+  if (entry.IsAccountProfile()) {
     return nullptr;
+  }
 
   auto entity_data = std::make_unique<EntityData>();
   entity_data->name = entry.guid();

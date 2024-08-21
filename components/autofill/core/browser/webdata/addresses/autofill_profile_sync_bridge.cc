@@ -208,8 +208,7 @@ AutofillProfileSyncBridge::GetAllDataForDebugging() {
 void AutofillProfileSyncBridge::ActOnLocalChange(
     const AutofillProfileChange& change) {
   if (!change_processor()->IsTrackingMetadata() ||
-      change.data_model().source() !=
-          AutofillProfile::Source::kLocalOrSyncable) {
+      change.data_model().IsAccountProfile()) {
     return;
   }
 

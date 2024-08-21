@@ -32,8 +32,7 @@ std::u16string UpdateAddressBubbleController::GetWindowTitle() const {
 }
 
 std::u16string UpdateAddressBubbleController::GetFooterMessage() const {
-  if (profile_to_save_.source() == AutofillProfile::Source::kAccount &&
-      web_contents()) {
+  if (profile_to_save_.IsAccountProfile() && web_contents()) {
     std::optional<AccountInfo> account =
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());

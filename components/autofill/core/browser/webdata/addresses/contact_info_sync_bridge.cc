@@ -178,7 +178,7 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
     const AutofillProfileChange& change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!change_processor()->IsTrackingMetadata() ||
-      change.data_model().source() != AutofillProfile::Source::kAccount) {
+      !change.data_model().IsAccountProfile()) {
     return;
   }
 

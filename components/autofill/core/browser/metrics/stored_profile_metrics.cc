@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 
+#include <functional>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -71,11 +73,10 @@ void LogStoredProfileMetrics(
 void LogLocalProfileSupersetMetrics(
     std::vector<const AutofillProfile*> profiles,
     std::string_view app_locale) {
-  // Place all `kLocalOrSyncable` profiles before all `kAccount` profiles.
+  // Place all local profiles before all account profiles.
   std::vector<const AutofillProfile*>::iterator begin_account_profiles =
-      base::ranges::partition(profiles, [](const AutofillProfile* profile) {
-        return profile->source() == AutofillProfile::Source::kLocalOrSyncable;
-      });
+      base::ranges::partition(profiles,
+                              std::not_fn(&AutofillProfile::IsAccountProfile));
   // Determines if a given `profile` is a strict superset of any account
   // profile.
   auto is_account_superset = [&, comparator =

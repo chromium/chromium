@@ -495,7 +495,7 @@ void ChromeAutofillClient::ShowEditAddressProfileDialog(
       web_contents()->GetBrowserContext());
   CHECK(account);
   std::u16string footer_message =
-      profile.source() == AutofillProfile::Source::kAccount
+      profile.IsAccountProfile()
           ? l10n_util::GetStringFUTF16(
                 IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE,
                 base::ASCIIToUTF16(account->email))

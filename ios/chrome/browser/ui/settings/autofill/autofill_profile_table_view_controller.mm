@@ -250,7 +250,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.GUID = guid;
   item.showMigrateToAccountButton = NO;
   item.localProfileIconShown = NO;
-  if (autofillProfile.source() == autofill::AutofillProfile::Source::kAccount) {
+  if (autofillProfile.IsAccountProfile()) {
     item.autofillProfileSource =
         AutofillAddressProfileSource::AutofillAccountProfile;
   } else if (self.syncEnabled) {

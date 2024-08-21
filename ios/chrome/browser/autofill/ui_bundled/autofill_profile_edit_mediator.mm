@@ -395,8 +395,7 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 
 // Returns YES if `autofillProfile` is an account profile.
 - (BOOL)isAccountProfile {
-  return _autofillProfile->source() ==
-         autofill::AutofillProfile::Source::kAccount;
+  return _autofillProfile->IsAccountProfile();
 }
 
 - (autofill::FieldType)typeNameToFieldType:(NSString*)autofillFieldType {

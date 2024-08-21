@@ -838,13 +838,13 @@ DeduplicatedProfilesForSuggestions(
         break;
       }
       // The profiles are identical and only one should be included.
-      // Prefer `kAccount` profiles over `kLocalOrSyncable` ones. In case the
-      // profiles have the same source, prefer the earlier one (since the
-      // profiles are pre-sorted by their relevance).
+      // Prefer account profiles over local ones. In case the profiles are of
+      // the same type, prefer the earlier one (since the profiles are
+      // pre-sorted by their relevance).
       const bool prefer_a_over_b =
-          profile_a->source() == profile_b->source()
+          profile_a->IsAccountProfile() == profile_b->IsAccountProfile()
               ? a < b
-              : profile_a->source() == AutofillProfile::Source::kAccount;
+              : profile_a->IsAccountProfile();
       if (!prefer_a_over_b) {
         include = false;
         break;
@@ -1186,7 +1186,7 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
         suggestions.back().icon = Suggestion::Icon::kAccount;
       }
     }
-    if (profile && profile->source() == AutofillProfile::Source::kAccount &&
+    if (profile && profile->IsAccountProfile() &&
         profile->initial_creator_id() !=
             AutofillProfile::kInitialCreatorOrModifierChrome) {
       suggestions.back().feature_for_iph =

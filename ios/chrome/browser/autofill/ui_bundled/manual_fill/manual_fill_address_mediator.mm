@@ -194,8 +194,7 @@ NSString* const ManageAddressAccessibilityIdentifier =
 - (BOOL)offerMigrateToAccountForAddress:(const AutofillProfile*)address {
   BOOL syncIsEnabled = _personalDataManager->address_data_manager()
                            .IsSyncFeatureEnabledForAutofill();
-  BOOL addressIsLocalOrSyncable =
-      address->source() == autofill::AutofillProfile::Source::kLocalOrSyncable;
+  BOOL addressIsLocalOrSyncable = !address->IsAccountProfile();
   BOOL addressIsEligibleForAccountMigration =
       addressIsLocalOrSyncable &&
       IsEligibleForMigrationToAccount(

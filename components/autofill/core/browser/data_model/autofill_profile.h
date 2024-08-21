@@ -286,6 +286,10 @@ class AutofillProfile : public AutofillDataModel {
 
   Source source() const { return source_; }
 
+  // Returns true if the profile is stored in the user's account. Non-account
+  // profiles are considered local profiles.
+  bool IsAccountProfile() const;
+
   int initial_creator_id() const { return initial_creator_id_; }
   void set_initial_creator_id(int creator_id) {
     initial_creator_id_ = creator_id;

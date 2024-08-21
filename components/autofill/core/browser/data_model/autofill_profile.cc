@@ -725,6 +725,16 @@ AddressCountryCode AutofillProfile::GetAddressCountryCode() const {
   return GetAddress().GetAddressCountryCode();
 }
 
+bool AutofillProfile::IsAccountProfile() const {
+  switch (source()) {
+    case Source::kLocalOrSyncable:
+      return false;
+    case Source::kAccount:
+      return true;
+  }
+  NOTREACHED();
+}
+
 void AutofillProfile::OverwriteDataFromForLegacySync(
     const AutofillProfile& profile) {
   DCHECK_EQ(guid(), profile.guid());

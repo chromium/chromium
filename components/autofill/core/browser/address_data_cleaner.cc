@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/address_data_cleaner.h"
 
+#include <functional>
+
 #include "base/containers/to_vector.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -87,10 +89,8 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
   // Partition the profiles into local and account profiles:
   // - Local: [profiles.begin(), bgn_account_profiles[
   // - Account: [bgn_account_profiles, profiles.end()[
-  auto bgn_account_profiles =
-      base::ranges::stable_partition(profiles, [](const AutofillProfile& p) {
-        return p.source() == AutofillProfile::Source::kLocalOrSyncable;
-      });
+  auto bgn_account_profiles = base::ranges::stable_partition(
+      profiles, std::not_fn(&AutofillProfile::IsAccountProfile));
 
   size_t num_profiles_deleted = 0, num_quasi_duplicates_deleted = 0;
   for (auto local_profile_it = profiles.begin();

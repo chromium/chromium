@@ -87,8 +87,7 @@ std::u16string SaveUpdateAddressProfilePromptController::GetTitle() {
 
 std::u16string SaveUpdateAddressProfilePromptController::GetSourceNotice(
     signin::IdentityManager* identity_manager) {
-  if (!is_migration_to_account_ &&
-      profile_.source() != AutofillProfile::Source::kAccount) {
+  if (!is_migration_to_account_ && !profile_.IsAccountProfile()) {
     return std::u16string();
   }
   std::optional<AccountInfo> account =

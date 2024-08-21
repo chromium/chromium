@@ -348,7 +348,7 @@ void ProfileImportProcess::MaybeSetMigrationCandidate(
   // (i.e. not only silent updates) and the `profile` is not stored in the
   // user's account already.
   if (migration_candidate || allow_only_silent_updates_ ||
-      profile.source() != AutofillProfile::Source::kLocalOrSyncable) {
+      profile.IsAccountProfile()) {
     return;
   }
   // Check the eligiblity of the user and profile.

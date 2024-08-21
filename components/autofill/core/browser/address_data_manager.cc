@@ -393,8 +393,7 @@ AddressCountryCode AddressDataManager::GetDefaultCountryCodeForNewAddress()
 bool AddressDataManager::IsProfileMigrationBlocked(
     const std::string& guid) const {
   const AutofillProfile* profile = GetProfileByGUID(guid);
-  DCHECK(profile == nullptr ||
-         profile->source() == AutofillProfile::Source::kLocalOrSyncable);
+  DCHECK(profile == nullptr || !profile->IsAccountProfile());
   if (!GetProfileMigrationStrikeDatabase()) {
     return false;
   }
