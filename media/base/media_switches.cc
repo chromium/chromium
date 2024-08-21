@@ -589,12 +589,6 @@ BASE_FEATURE(kMemoryPressureBasedSourceBufferGC,
              "MemoryPressureBasedSourceBufferGC",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables writing pixels together for all planes to a multi-planar shared
-// image.
-BASE_FEATURE(kUseWritePixelsYUV,
-             "UseWritePixelsYUV",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the Mirroring Service will fetch, analyze, and store
 // information on the quality of the session using RTCP logs.
 BASE_FEATURE(kEnableRtcpReporting,
@@ -1854,7 +1848,7 @@ bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
 }
 
 bool IsWritePixelsYUVEnabled() {
-  return base::FeatureList::IsEnabled(kUseWritePixelsYUV);
+  return true;
 }
 
 #if BUILDFLAG(IS_WIN)

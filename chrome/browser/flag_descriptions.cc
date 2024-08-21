@@ -4098,12 +4098,6 @@ const char kUsePassthroughCommandDecoderDescription[] =
     "Use chrome passthrough command decoder instead of validating command "
     "decoder.";
 
-const char kUseWritePixelsYUVName[] =
-    "Enable WritePixelsYUV for software pixel upload";
-const char kUseWritePixelsYUVDescription[] =
-    "Enable pixel upload for multiplanar shared images to software video "
-    "frames";
-
 const char kUseGpuSchedulerDfsName[] = "Use new gpu scheduler.";
 const char kUseGpuSchedulerDfsDescription[] =
     "Enables using the new gpu "

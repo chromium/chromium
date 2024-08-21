@@ -2388,9 +2388,6 @@ extern const char kSanitizerApiDescription[];
 extern const char kUsePassthroughCommandDecoderName[];
 extern const char kUsePassthroughCommandDecoderDescription[];
 
-extern const char kUseWritePixelsYUVName[];
-extern const char kUseWritePixelsYUVDescription[];
-
 extern const char kReduceAcceptLanguageName[];
 extern const char kReduceAcceptLanguageDescription[];
 
