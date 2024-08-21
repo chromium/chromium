@@ -2432,7 +2432,13 @@ TEST_F(DownloadProtectionServiceTest,
   EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
 }
 
-TEST_F(DownloadProtectionServiceTest, TestDownloadRequestTimeout) {
+// TODO(360416397): test is flaky on Win11.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TestDownloadRequestTimeout DISABLED_TestDownloadRequestTimeout
+#else
+#define MAYBE_TestDownloadRequestTimeout TestDownloadRequestTimeout
+#endif
+TEST_F(DownloadProtectionServiceTest, MAYBE_TestDownloadRequestTimeout) {
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item, {"http://www.evil.com/bla.exe"},  // url_chain
                            "http://www.google.com/",                // referrer
