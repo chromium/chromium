@@ -1989,12 +1989,6 @@ const char kGalleryAppLensName[] = "Gallery App Lens";
 const char kGalleryAppLensDescription[] =
     "Enable Gallery App lens integration.";
 
-const char kGalleryAppPdfEditNotificationName[] =
-    "Gallery App Pdf Edit Notification";
-const char kGalleryAppPdfEditNotificationDescription[] =
-    "Shows a notification to provide an option to open Gallery app for a "
-    "downloaded pdf file";
-
 const char kMediaRemotingWithoutFullscreenName[] =
     "Media Remoting without videos in fullscreen mode";
 const char kMediaRemotingWithoutFullscreenDescription[] =

@@ -424,10 +424,6 @@ BASE_DECLARE_FEATURE(kFullscreenAfterUnlockAllowed);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFullscreenAlertBubble);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFuseBoxDebug);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kGalleryAppPdfEditNotification);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FeatureParam<std::string> kGalleryAppPdfEditNotificationText;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGlanceablesTimeManagementClassroomStudentView);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGlanceablesTimeManagementTasksView);
@@ -1216,7 +1212,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAfterUnlockAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAlertBubbleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBlockFwupdClientEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaRecordAccountCreationEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGalleryAppPdfEditNotificationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGameDashboardEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGameDashboardGamePWAsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreGameDashboardUtilitiesEnabled();

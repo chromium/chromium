@@ -1123,9 +1123,6 @@ extern const char kForceUiDirectionDescription[];
 extern const char kGalleryAppLensName[];
 extern const char kGalleryAppLensDescription[];
 
-extern const char kGalleryAppPdfEditNotificationName[];
-extern const char kGalleryAppPdfEditNotificationDescription[];
-
 extern const char kMediaRemotingWithoutFullscreenName[];
 extern const char kMediaRemotingWithoutFullscreenDescription[];
 
