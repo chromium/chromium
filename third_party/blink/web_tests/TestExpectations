@@ -2620,6 +2620,7 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/streams/readable-streams/crashtests/from-cross-realm.https.html [ Timeout ]
 [ Mac14 ] external/wpt/webusb/usbDevice.https.any.worker.html [ Skip Timeout ]
 crbug.com/361146524 [ Mac15 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/wide--12px-auto--nonpercent-width-nonpercent-height.html [ Failure ]
 crbug.com/360956939 [ Mac11-arm64 ] external/wpt/digital-credentials/get-user-activation.https.html [ Failure Timeout ]
@@ -3241,6 +3242,7 @@ crbug.com/331556923 external/wpt/geolocation-API/enabled-by-permissions-policy.h
 crbug.com/331556923 external/wpt/geolocation-API/enabled-on-self-origin-by-permissions-policy.https.sub.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/webxr/ar-module/xrSession_interactionMode.https.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Timeout ]
+crbug.com/626703 [ Mac14 ] external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/webxr/render_state_update.https.html [ Timeout ]
 crbug.com/626703 [ Linux Release ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Timeout ]
 crbug.com/626703 external/wpt/screen-orientation/active-lock.html [ Timeout ]
