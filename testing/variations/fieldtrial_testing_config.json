@@ -1577,7 +1577,7 @@
             ]
         }
     ],
-    "AutofillContentEditableChangeEvents": [
+    "AutofillContentEditableChangeEventsIOS": [
         {
             "platforms": [
                 "ios"
