@@ -4159,11 +4159,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-variable-refresh-rate-always-on",
-    "owners": [ "aswolfers@chromium.org", "chromeos-gfx-compositor@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-vbr-encode-acceleration",
     "owners": [ "chromeos-gfx-video@google.com" ],
     "expiry_milestone": 120
