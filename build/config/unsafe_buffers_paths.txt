@@ -122,7 +122,8 @@
 -native_client/
 -net/third_party/
 -printing/
--remoting/
+-remoting/host/
+-remoting/client/input/
 -sandbox/linux/seccomp-bpf-helpers/
 -sandbox/win/fuzzer/
 -services/accessibility
