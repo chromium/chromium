@@ -20,7 +20,7 @@ namespace policy {
 using GenAIVcBackgroundPolicyTest = PolicyTest;
 
 IN_PROC_BROWSER_TEST_F(GenAIVcBackgroundPolicyTest,
-                       DisableFeatureIfGenAIVcBackgroundPolicyUnset) {
+                       EnableFeatureIfGenAIVcBackgroundPolicyUnset) {
   Profile* profile = browser()->profile();
 
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
@@ -28,10 +28,36 @@ IN_PROC_BROWSER_TEST_F(GenAIVcBackgroundPolicyTest,
 
   EXPECT_TRUE(
       ash::personalization_app::IsManagedSeaPenVcBackgroundEnabled(profile));
+  EXPECT_FALSE(
+      ash::personalization_app::IsManagedSeaPenVcBackgroundFeedbackEnabled(
+          profile));
 }
-
 IN_PROC_BROWSER_TEST_F(GenAIVcBackgroundPolicyTest,
                        EnableFeatureIfGenAIVcBackgroundPolicyEnabled) {
+  Profile* profile = browser()->profile();
+  PolicyMap policies;
+
+  profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+  policies.Set(key::kGenAIVcBackgroundSettings, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(0), nullptr);
+  UpdateProviderPolicy(policies);
+
+  EXPECT_TRUE(profile->GetPrefs()->IsManagedPreference(
+      ash::prefs::kGenAIVcBackgroundSettings));
+  EXPECT_EQ(
+      profile->GetPrefs()->GetInteger(ash::prefs::kGenAIVcBackgroundSettings),
+      static_cast<int>(
+          ash::personalization_app::ManagedSeaPenSettings::kAllowed));
+  EXPECT_TRUE(
+      ash::personalization_app::IsManagedSeaPenVcBackgroundEnabled(profile));
+  EXPECT_TRUE(
+      ash::personalization_app::IsManagedSeaPenVcBackgroundFeedbackEnabled(
+          profile));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GenAIVcBackgroundPolicyTest,
+    EnableFeatureIfGenAIVcBackgroundPolicyEnabledWithoutLogging) {
   Profile* profile = browser()->profile();
   PolicyMap policies;
 
@@ -44,9 +70,13 @@ IN_PROC_BROWSER_TEST_F(GenAIVcBackgroundPolicyTest,
       ash::prefs::kGenAIVcBackgroundSettings));
   EXPECT_EQ(
       profile->GetPrefs()->GetInteger(ash::prefs::kGenAIVcBackgroundSettings),
-      1);
+      static_cast<int>(ash::personalization_app::ManagedSeaPenSettings::
+                           kAllowedWithoutLogging));
   EXPECT_TRUE(
       ash::personalization_app::IsManagedSeaPenVcBackgroundEnabled(profile));
+  EXPECT_FALSE(
+      ash::personalization_app::IsManagedSeaPenVcBackgroundFeedbackEnabled(
+          profile));
 }
 
 IN_PROC_BROWSER_TEST_F(GenAIVcBackgroundPolicyTest,
@@ -63,9 +93,13 @@ IN_PROC_BROWSER_TEST_F(GenAIVcBackgroundPolicyTest,
       ash::prefs::kGenAIVcBackgroundSettings));
   EXPECT_EQ(
       profile->GetPrefs()->GetInteger(ash::prefs::kGenAIVcBackgroundSettings),
-      2);
+      static_cast<int>(
+          ash::personalization_app::ManagedSeaPenSettings::kDisabled));
   EXPECT_FALSE(
       ash::personalization_app::IsManagedSeaPenVcBackgroundEnabled(profile));
+  EXPECT_FALSE(
+      ash::personalization_app::IsManagedSeaPenVcBackgroundFeedbackEnabled(
+          profile));
 }
 
 }  // namespace policy

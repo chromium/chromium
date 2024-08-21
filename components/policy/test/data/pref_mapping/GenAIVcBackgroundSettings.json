@@ -9,7 +9,7 @@
         "policies": {},
         "prefs": {
           "ash.vc_background_ui.gen_ai_vc_background_enterprise_policy_settings": {
-            "default_value": 1,
+            "value": 1,
             "location": "user_profile"
           }
         }
@@ -32,6 +32,17 @@
         "prefs": {
           "ash.vc_background_ui.gen_ai_vc_background_enterprise_policy_settings": {
             "value": 1,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAIWallpaperSettings": 2
+        },
+        "prefs": {
+          "ash.personalization_app.gen_ai_wallpaper_enterprise_policy_settings": {
+            "value": 2,
             "location": "user_profile"
           }
         }
