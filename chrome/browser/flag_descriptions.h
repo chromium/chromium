@@ -4568,8 +4568,14 @@ extern const char kLauncherSystemInfoAnswerCardsDescription[];
 extern const char kMacAddressRandomizationName[];
 extern const char kMacAddressRandomizationDescription[];
 
-extern const char kSysUIShouldHoldbackForestName[];
-extern const char kSysUIShouldHoldbackForestDescription[];
+extern const char kSysUiShouldHoldbackDriveIntegrationName[];
+extern const char kSysUiShouldHoldbackDriveIntegrationDescription[];
+
+extern const char kSysUiShouldHoldbackFocusModeName[];
+extern const char kSysUiShouldHoldbackFocusModeDescription[];
+
+extern const char kSysUiShouldHoldbackForestName[];
+extern const char kSysUiShouldHoldbackForestDescription[];
 
 extern const char kSysUiShouldHoldbackGifRecordingName[];
 extern const char kSysUiShouldHoldbackGifRecordingDescription[];
