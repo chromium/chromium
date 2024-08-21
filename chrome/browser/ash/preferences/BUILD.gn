@@ -41,7 +41,7 @@ static_library("preferences") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
-    "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash/system",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chromeos/ash/components/dbus/pciguard",

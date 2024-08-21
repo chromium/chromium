@@ -23,7 +23,7 @@ include_rules = [
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/notifications",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/ash/system_tray_client_impl.h",
+  "+chrome/browser/ui/ash/system",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_finder.h",
   "+chrome/common",
