@@ -18,6 +18,7 @@
 #include "ash/picker/picker_insert_media_request.h"
 #include "ash/picker/views/picker_feature_tour.h"
 #include "ash/picker/views/picker_view_delegate.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/public/cpp/picker/picker_web_paste_target.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -41,7 +42,6 @@ class PickerEmojiSuggester;
 class PickerModel;
 class PickerPasteRequest;
 class PickerSearchController;
-class PickerSearchResult;
 class PickerSuggestionsController;
 
 // Controls a Picker widget.

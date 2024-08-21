@@ -22,6 +22,7 @@
 #include "ash/picker/views/picker_submenu_controller.h"
 #include "ash/picker/views/picker_zero_state_view_delegate.h"
 #include "ash/public/cpp/picker/picker_category.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -48,7 +49,6 @@ class PickerEmojiBarView;
 class PickerMainContainerView;
 class PickerSearchFieldView;
 class PickerPageView;
-class PickerSearchResult;
 class PickerSearchResultsSection;
 class PickerSearchResultsView;
 class PickerTraversableItemContainer;

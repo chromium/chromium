@@ -7,15 +7,12 @@
 
 #include <vector>
 
+#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 
 class Profile;
-
-namespace ash {
-class PickerSearchResult;
-}
 
 namespace favicon {
 class FaviconService;

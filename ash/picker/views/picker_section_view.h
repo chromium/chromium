@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -31,7 +32,6 @@ class PickerItemView;
 class PickerListItemContainerView;
 class PickerListItemView;
 class PickerPreviewBubbleController;
-class PickerSearchResult;
 class PickerSubmenuController;
 class PickerTraversableItemContainer;
 enum class PickerActionType;

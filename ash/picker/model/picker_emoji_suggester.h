@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 
 namespace ash {
 
 class PickerEmojiHistoryModel;
-class PickerSearchResult;
 
 class ASH_EXPORT PickerEmojiSuggester {
  public:
