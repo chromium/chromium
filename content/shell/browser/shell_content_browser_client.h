@@ -164,6 +164,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   void GetHyphenationDictionary(
       base::OnceCallback<void(const base::FilePath&)>) override;
   bool HasErrorPage(int http_status_code) override;
+  void OnWebContentsCreated(WebContents* web_contents) override;
 
   // Turns on features via permissions policy for Isolated App
   // Web Platform Tests.

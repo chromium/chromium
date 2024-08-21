@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -79,9 +80,8 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<PerformanceManagerTabHelper>(*web_contents) {
   // We have an early WebContents creation hook so should see it when there is
-  // only a single frame, and it is not yet created. We sanity check that here.
+  // only a single frame. We sanity check that here.
 #if DCHECK_IS_ON()
-  DCHECK(!web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
   size_t frame_count = 0;
   web_contents->ForEachRenderFrameHost(
       [&frame_count](content::RenderFrameHost* render_frame_host) {
@@ -110,8 +110,14 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
       web_contents->GetWeakPtr(), web_contents->GetBrowserContext()->UniqueId(),
       web_contents->GetVisibleURL(), initial_property_flags,
       web_contents->GetLastActiveTimeTicks());
+
+  // If the main frame was activated during WebContentsImpl::Init, we missed the
+  // RenderFrameCreated notification, so synthesize it now.
   content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
-  DCHECK(main_rfh);
+  CHECK(main_rfh);
+  if (main_rfh->IsRenderFrameLive()) {
+    RenderFrameCreated(main_rfh);
+  }
 
   ConnectWindowOpenRelationshipIfExists(this, web_contents);
 }

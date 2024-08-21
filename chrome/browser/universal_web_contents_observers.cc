@@ -5,7 +5,7 @@
 #include "chrome/browser/universal_web_contents_observers.h"
 
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
-
+#include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -32,4 +32,9 @@ void AttachUniversalWebContentsObservers(content::WebContents* web_contents) {
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
       web_contents);
 #endif
+
+  if (auto* pm_registry =
+          performance_manager::PerformanceManagerRegistry::GetInstance()) {
+    pm_registry->MaybeCreatePageNodeForWebContents(web_contents);
+  }
 }
