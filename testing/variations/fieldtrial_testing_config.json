@@ -14669,6 +14669,21 @@
             ]
         }
     ],
+    "OmniboxAblateVisibleNetworks": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxAblateVisibleNetworks"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxActionsInSuggestIOS": [
         {
             "platforms": [

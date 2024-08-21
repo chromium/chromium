@@ -565,6 +565,10 @@ BASE_FEATURE(kOmniboxElegantTextHeight,
              "OmniboxElegantTextHeight",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOmniboxAblateVisibleNetworks,
+             "OmniboxAblateVisibleNetworks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace android {
 static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
@@ -578,6 +582,7 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
           &kRichAutocompletion,
           &kUseFusedLocationProvider,
           &kOmniboxElegantTextHeight,
+          &kOmniboxAblateVisibleNetworks,
       }});
 
   return reinterpret_cast<jlong>(kFeatureMap.get());

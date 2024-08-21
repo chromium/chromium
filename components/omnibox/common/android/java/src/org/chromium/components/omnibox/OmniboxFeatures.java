@@ -51,6 +51,9 @@ public class OmniboxFeatures {
     public static final CachedFlag sRichInlineAutocomplete =
             newFlag(OmniboxFeatureList.RICH_AUTOCOMPLETION, false);
 
+    public static final CachedFlag sAblateVisibleNetworks =
+            newFlag(OmniboxFeatureList.OMNIBOX_ABLATE_VISIBLE_NETWORKS, false);
+
     /**
      * Whether GeolocationHeader should use {@link
      * com.google.android.gms.location.FusedLocationProviderClient} to determine the location sent
