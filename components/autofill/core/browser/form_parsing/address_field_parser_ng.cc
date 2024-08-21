@@ -383,9 +383,7 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
       base::FeatureList::IsEnabled(
           features::kAutofillEnableLabelPrecedenceForTurkishAddresses)) {
     prefer_label = true;
-  } else if (context_->client_country == GeoIpCountryCode("MX") &&
-             base::FeatureList::IsEnabled(
-                 features::kAutofillPreferLabelsInSomeCountries)) {
+  } else if (context_->client_country == GeoIpCountryCode("MX")) {
     prefer_label = true;
   }
 

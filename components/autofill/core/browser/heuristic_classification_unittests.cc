@@ -565,7 +565,6 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillEnableRationalizationEngineForMX,
       // Other improvements.
       features::kAutofillDefaultToCityAndNumber,
-      features::kAutofillPreferLabelsInSomeCountries,
       features::kAutofillEnableCacheForRegexMatching};
   std::vector<base::test::FeatureRef> disabled_features = {};
 

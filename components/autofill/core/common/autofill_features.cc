@@ -492,12 +492,6 @@ BASE_FEATURE(kAutofillModelPredictions,
 const base::FeatureParam<bool> kAutofillModelPredictionsAreActive{
     &kAutofillModelPredictions, "model_active", false};
 
-// If enabled, Autofill will first look at field labels and then at field
-// attributes when classifying address fields in Mexico.
-BASE_FEATURE(kAutofillPreferLabelsInSomeCountries,
-             "AutofillPreferLabelsInSomeCountries",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, a pre-filled field will only be overwritten if it's not
 // classified as meaningfully pre-filled based on server predictions. If also
 // flag `kAutofillSkipPreFilledFields` is enabled, a pre-filled field will only

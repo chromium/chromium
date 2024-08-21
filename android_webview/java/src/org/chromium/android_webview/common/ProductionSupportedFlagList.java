@@ -265,10 +265,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_PAGE_LANGUAGE_DETECTION,
                 "Enables Autofill to retrieve the page language for form parsing."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_PREFER_LABELS_IN_SOME_COUNTRIES,
-                "When enabled, Autofill will first look at field labels and then at field "
-                        + "attributes when classifying address fields in Mexico."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_PREFER_PARSED_PHONE_NUMBER,
                 "When enabled, Autofill will always prefer the phone number parsed using "
                         + "libphonenumber over the format provided by the field during imports."),

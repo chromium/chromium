@@ -758,9 +758,7 @@ bool AddressFieldParser::ParseAddressField(ParsingContext& context,
       base::FeatureList::IsEnabled(
           features::kAutofillEnableLabelPrecedenceForTurkishAddresses)) {
     std::swap(results_to_match[0], results_to_match[1]);
-  } else if (context.client_country == GeoIpCountryCode("MX") &&
-             base::FeatureList::IsEnabled(
-                 features::kAutofillPreferLabelsInSomeCountries)) {
+  } else if (context.client_country == GeoIpCountryCode("MX")) {
     // We may want to consider whether we unify this logic with the previous
     // block. Currently, we don't swap the language if page_language ==
     // LanguageCode("es") because Spanish is spoken in many countries and we
