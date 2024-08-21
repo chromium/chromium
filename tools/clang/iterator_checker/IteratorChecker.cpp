@@ -12,6 +12,7 @@
 #include "clang/Analysis/FlowSensitive/AdornedCFG.h"
 #include "clang/Analysis/FlowSensitive/DataflowAnalysis.h"
 #include "clang/Analysis/FlowSensitive/DataflowLattice.h"
+#include "clang/Analysis/FlowSensitive/Models/ChromiumCheckModel.h"
 #include "clang/Analysis/FlowSensitive/NoopLattice.h"
 #include "clang/Analysis/FlowSensitive/Value.h"
 #include "clang/Analysis/FlowSensitive/WatchedLiteralsSolver.h"
@@ -726,6 +727,8 @@ class InvalidIteratorAnalysis
   void transfer(const clang::CFGElement& elt,
                 clang::dataflow::NoopLattice& state,
                 clang::dataflow::Environment& env) {
+    check_model_.transfer(elt, env);
+
     if (auto cfg_stmt = elt.getAs<clang::CFGStmt>()) {
       Transfer(*cfg_stmt->getStmt(), env);
     }
@@ -1896,6 +1899,9 @@ class InvalidIteratorAnalysis
         location, diagnostic_.getCustomDiagID(
                       clang::DiagnosticsEngine::Level::Error, error_message));
   }
+
+  // The check model that will handle Chromium's `CHECK` macros.
+  clang::dataflow::ChromiumCheckModel check_model_;
 
   // The diagnostic engine that will issue potential errors.
   clang::DiagnosticsEngine& diagnostic_;

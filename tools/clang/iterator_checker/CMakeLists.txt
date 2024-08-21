@@ -16,6 +16,7 @@ cmake_minimum_required(VERSION 3.13)
 
 target_sources(clang PRIVATE IteratorChecker.cpp)
 target_link_libraries(clang PRIVATE clangAnalysisFlowSensitive)
+target_link_libraries(clang PRIVATE clangAnalysisFlowSensitiveModels)
 
 cr_add_test(iterator_checker_test
   python3 tests/test.py
