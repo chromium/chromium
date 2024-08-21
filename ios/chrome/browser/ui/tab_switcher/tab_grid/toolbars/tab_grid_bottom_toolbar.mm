@@ -49,6 +49,7 @@
   self = [super initWithFrame:frame];
   if (self) {
     [self setupViews];
+    [self updateLayout];
   }
   return self;
 }
