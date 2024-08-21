@@ -4,11 +4,18 @@
 
 package org.chromium.chrome.browser.access_loss;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.BUTTON_TITLE;
+import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TEXT;
+import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TITLE;
+
+import android.content.Context;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,6 +36,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link TouchToFillPasswordGenerationBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -39,6 +47,7 @@ public class PasswordAccessLossWarningBridgeTest {
     private PasswordAccessLossWarningBridge mBridge;
     private final ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor =
             ArgumentCaptor.forClass(BottomSheetObserver.class);
+    private Context mContext;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
     @Mock private BottomSheetController mBottomSheetController;
@@ -47,11 +56,9 @@ public class PasswordAccessLossWarningBridgeTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        setUpBottomSheetController();
+        mContext = ContextUtils.getApplicationContext();
 
-        mBridge =
-                new PasswordAccessLossWarningBridge(
-                        ContextUtils.getApplicationContext(), mBottomSheetController);
+        mBridge = new PasswordAccessLossWarningBridge(mContext, mBottomSheetController);
     }
 
     private void setUpBottomSheetController() {
@@ -61,8 +68,104 @@ public class PasswordAccessLossWarningBridgeTest {
 
     @Test
     public void showsSheet() {
+        setUpBottomSheetController();
         mBridge.show(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
         verify(mBottomSheetController).addObserver(any());
+    }
+
+    @Test
+    public void getsModelForNoGmsCore() {
+        PropertyModel model =
+                mBridge.getModelForWarningType(PasswordAccessLossWarningType.NO_GMS_CORE);
+        assertTrue(
+                model.get(SHEET_TITLE)
+                        .equals(
+                                mContext.getString(
+                                        R.string.pwd_access_loss_warning_no_gms_core_title)));
+        assertTrue(
+                model.get(SHEET_TEXT)
+                        .equals(
+                                mContext.getString(
+                                                R.string.pwd_access_loss_warning_no_gms_core_text)
+                                        .replace("<link>", "")
+                                        .replace("</link>", "")));
+        assertTrue(
+                model.get(BUTTON_TITLE)
+                        .equals(
+                                mContext.getString(
+                                        R.string.pwd_access_loss_warning_no_gms_core_button_text)));
+    }
+
+    @Test
+    public void getsModelForNoUpm() {
+        PropertyModel model = mBridge.getModelForWarningType(PasswordAccessLossWarningType.NO_UPM);
+        assertTrue(
+                model.get(SHEET_TITLE)
+                        .equals(
+                                mContext.getString(
+                                        R.string.pwd_access_loss_warning_update_gms_core_title)));
+        assertTrue(
+                model.get(SHEET_TEXT)
+                        .equals(
+                                mContext.getString(
+                                                R.string
+                                                        .pwd_access_loss_warning_update_gms_core_text)
+                                        .replace("<link>", "")
+                                        .replace("</link>", "")));
+        assertTrue(
+                model.get(BUTTON_TITLE)
+                        .equals(
+                                mContext.getString(
+                                        R.string
+                                                .pwd_access_loss_warning_update_gms_core_button_text)));
+    }
+
+    @Test
+    public void getsModelForOnlyAccountUpm() {
+        PropertyModel model =
+                mBridge.getModelForWarningType(PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM);
+        assertTrue(
+                model.get(SHEET_TITLE)
+                        .equals(
+                                mContext.getString(
+                                        R.string.pwd_access_loss_warning_update_gms_core_title)));
+        assertTrue(
+                model.get(SHEET_TEXT)
+                        .equals(
+                                mContext.getString(
+                                                R.string
+                                                        .pwd_access_loss_warning_update_gms_core_text)
+                                        .replace("<link>", "")
+                                        .replace("</link>", "")));
+        assertTrue(
+                model.get(BUTTON_TITLE)
+                        .equals(
+                                mContext.getString(
+                                        R.string
+                                                .pwd_access_loss_warning_update_gms_core_button_text)));
+    }
+
+    @Test
+    public void getsModelForFailedMigration() {
+        PropertyModel model =
+                mBridge.getModelForWarningType(
+                        PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
+        assertTrue(
+                model.get(SHEET_TITLE)
+                        .equals(
+                                mContext.getString(
+                                        R.string.pwd_access_loss_warning_manual_migration_title)));
+        assertTrue(
+                model.get(SHEET_TEXT)
+                        .equals(
+                                mContext.getString(
+                                        R.string.pwd_access_loss_warning_manual_migration_text)));
+        assertTrue(
+                model.get(BUTTON_TITLE)
+                        .equals(
+                                mContext.getString(
+                                        R.string
+                                                .pwd_access_loss_warning_manual_migration_button_text)));
     }
 }

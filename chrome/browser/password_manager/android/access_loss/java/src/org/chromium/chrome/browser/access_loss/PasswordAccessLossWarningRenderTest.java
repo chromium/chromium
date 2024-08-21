@@ -65,7 +65,7 @@ public class PasswordAccessLossWarningRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(0)
+                    .setRevision(1)
                     .setBugComponent(Component.UI_BROWSER_PASSWORDS)
                     .build();
 
@@ -119,6 +119,6 @@ public class PasswordAccessLossWarningRenderTest {
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
-        mRenderTestRule.render(bottomSheetView, "simple_notice_bottom_sheet");
+        mRenderTestRule.render(bottomSheetView, "access_loss_warning_sheet");
     }
 }
