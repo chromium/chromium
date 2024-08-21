@@ -344,10 +344,15 @@ _CONFIG = [
         ],
     },
     {
-        'paths': ['third_party/blink/common/interest_group/interest_group.cc'],
+        'paths': ['third_party/blink/common/interest_group/interest_group.cc',
+                  'third_party/blink/public/common/interest_group/interest_group.h'],
         'allowed': [
             # For hashing of k-anonymity keys
             'crypto::SHA256HashString',
+
+            # Types used to compute k-anonymity keys.
+            "url::Origin",
+            "GURL",
         ],
     },
     {

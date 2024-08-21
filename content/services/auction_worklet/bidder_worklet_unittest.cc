@@ -927,6 +927,21 @@ class BidderWorkletTest : public testing::Test {
     return disconnect_reason;
   }
 
+  void AuthorizeKAnonForReporting(
+      const GURL& ad_render_url,
+      std::optional<std::string> buyer_reporting_id,
+      std::optional<std::string> buyer_and_seller_reporting_id,
+      std::optional<std::string> selected_buyer_and_seller_reporting_id,
+      mojom::BidderWorkletNonSharedParamsPtr& params) {
+    params->kanon_keys.emplace_back(auction_worklet::mojom::KAnonKey::New(
+        blink::HashedKAnonKeyForAdNameReportingWithoutInterestGroup(
+            url::Origin::Create(interest_group_bidding_url_),
+            interest_group_name_, interest_group_bidding_url_,
+            ad_render_url.spec(), buyer_reporting_id,
+            buyer_and_seller_reporting_id,
+            selected_buyer_and_seller_reporting_id)));
+  }
+
  protected:
   void ClosePipeCallback(mojo::ReceiverId receiver_id,
                          const std::string& description) {
@@ -12233,37 +12248,130 @@ TEST_F(BidderWorkletTest, IsKAnonResult) {
   params->kanon_keys.emplace_back(auction_worklet::mojom::KAnonKey::New(
       blink::HashedKAnonKeyForAdComponentBid(kUrl2)));
 
-  mojom::BidderWorkletBidPtr bid = mojom::BidderWorkletBid::New();
+  SetBidBindings::BidAndWorkletOnlyMetadata bid_with_metadata;
+  bid_with_metadata.bid = mojom::BidderWorkletBid::New();
+  const mojom::BidderWorkletBidPtr& bid = bid_with_metadata.bid;
 
   // k-anon ad URL.
   bid->ad_descriptor.url = kUrl1;
-  EXPECT_TRUE(BidderWorklet::IsMainAdKAnon(params.get(),
-                                           interest_group_bidding_url_, bid));
+  EXPECT_TRUE(BidderWorklet::IsMainAdKAnon(
+      params.get(), interest_group_bidding_url_, bid_with_metadata));
 
   // k-anon ad URL and component.
   bid->ad_component_descriptors.emplace();
   bid->ad_component_descriptors->emplace_back(kUrl2);
-  EXPECT_TRUE(BidderWorklet::IsMainAdKAnon(params.get(),
-                                           interest_group_bidding_url_, bid));
+  EXPECT_TRUE(BidderWorklet::IsMainAdKAnon(
+      params.get(), interest_group_bidding_url_, bid_with_metadata));
   EXPECT_TRUE(BidderWorklet::IsComponentAdKAnon(
       params.get(), bid->ad_component_descriptors.value()[0]));
 
   // Non k-anon ad URL, k-anon component.
   bid->ad_descriptor.url = kUrl4;
-  EXPECT_FALSE(BidderWorklet::IsMainAdKAnon(params.get(),
-                                            interest_group_bidding_url_, bid));
+  EXPECT_FALSE(BidderWorklet::IsMainAdKAnon(
+      params.get(), interest_group_bidding_url_, bid_with_metadata));
   EXPECT_TRUE(BidderWorklet::IsComponentAdKAnon(
       params.get(), bid->ad_component_descriptors.value()[0]));
 
   // k-anon ad URL, one of the components non-k-anon.
   bid->ad_descriptor.url = kUrl1;
   bid->ad_component_descriptors->emplace_back(kUrl3);
-  EXPECT_TRUE(BidderWorklet::IsMainAdKAnon(params.get(),
-                                           interest_group_bidding_url_, bid));
+  EXPECT_TRUE(BidderWorklet::IsMainAdKAnon(
+      params.get(), interest_group_bidding_url_, bid_with_metadata));
   EXPECT_TRUE(BidderWorklet::IsComponentAdKAnon(
       params.get(), bid->ad_component_descriptors.value()[0]));
   EXPECT_FALSE(BidderWorklet::IsComponentAdKAnon(
       params.get(), bid->ad_component_descriptors.value()[1]));
+}
+
+TEST_F(BidderWorkletTest, IsMainAdKAnonResultWithSelectedReportingIdRequired) {
+  const GURL kUrl1("https://example.test/1");
+
+  // Every combination of these reporting IDs is k-anon.
+  constexpr char kBuyerReportingId1[] = "buyer1";
+  constexpr char kBuyerAndSellerReportingId1[] = "buyerAndSeller1";
+  constexpr char kSelectedBuyerAndSellerReportingId1[] = "selected1";
+
+  // Only "selected2" without any other reporting IDs is k-anon.
+  constexpr char kSelectedBuyerAndSellerReportingId2[] = "selected2";
+
+  // "selected3" is never k-anon.
+  constexpr char kSelectedBuyerAndSellerReportingId3[] = "selected3";
+
+  mojom::BidderWorkletNonSharedParamsPtr params =
+      mojom::BidderWorkletNonSharedParams::New();
+  url::Origin owner = url::Origin::Create(interest_group_bidding_url_);
+
+  params->kanon_keys.emplace_back(
+      auction_worklet::mojom::KAnonKey::New(blink::HashedKAnonKeyForAdBid(
+          owner, interest_group_bidding_url_, kUrl1.spec())));
+  AuthorizeKAnonForReporting(kUrl1, kBuyerReportingId1,
+                             kBuyerAndSellerReportingId1,
+                             kSelectedBuyerAndSellerReportingId1, params);
+  AuthorizeKAnonForReporting(kUrl1, std::nullopt, kBuyerAndSellerReportingId1,
+                             kSelectedBuyerAndSellerReportingId1, params);
+  AuthorizeKAnonForReporting(kUrl1, kBuyerReportingId1, std::nullopt,
+                             kSelectedBuyerAndSellerReportingId1, params);
+  AuthorizeKAnonForReporting(kUrl1, std::nullopt, std::nullopt,
+                             kSelectedBuyerAndSellerReportingId1, params);
+  AuthorizeKAnonForReporting(kUrl1, std::nullopt, std::nullopt,
+                             kSelectedBuyerAndSellerReportingId2, params);
+
+  SetBidBindings::BidAndWorkletOnlyMetadata bid_with_metadata;
+  bid_with_metadata.bid = mojom::BidderWorkletBid::New();
+  const mojom::BidderWorkletBidPtr& bid = bid_with_metadata.bid;
+  bid->selected_buyer_and_seller_reporting_id_required = true;
+  bid->ad_descriptor.url = kUrl1;
+
+  bid->selected_buyer_and_seller_reporting_id =
+      kSelectedBuyerAndSellerReportingId1;
+
+  bid_with_metadata.buyer_reporting_id = kBuyerReportingId1;
+  bid_with_metadata.buyer_and_seller_reporting_id = kBuyerAndSellerReportingId1;
+  EXPECT_TRUE(BidderWorklet::IsMainAdKAnon(
+      params.get(), interest_group_bidding_url_, bid_with_metadata));
+
+  bid_with_metadata.buyer_reporting_id = std::nullopt;
+  bid_with_metadata.buyer_and_seller_reporting_id = kBuyerAndSellerReportingId1;
+  EXPECT_TRUE(BidderWorklet::IsMainAdKAnon(
+      params.get(), interest_group_bidding_url_, bid_with_metadata));
+
+  bid_with_metadata.buyer_reporting_id = kBuyerReportingId1;
+  bid_with_metadata.buyer_and_seller_reporting_id = std::nullopt;
+  EXPECT_TRUE(BidderWorklet::IsMainAdKAnon(
+      params.get(), interest_group_bidding_url_, bid_with_metadata));
+
+  bid_with_metadata.buyer_reporting_id = std::nullopt;
+  bid_with_metadata.buyer_and_seller_reporting_id = std::nullopt;
+  EXPECT_TRUE(BidderWorklet::IsMainAdKAnon(
+      params.get(), interest_group_bidding_url_, bid_with_metadata));
+
+  bid->selected_buyer_and_seller_reporting_id =
+      kSelectedBuyerAndSellerReportingId2;
+
+  bid_with_metadata.buyer_reporting_id = kBuyerReportingId1;
+  bid_with_metadata.buyer_and_seller_reporting_id = kBuyerAndSellerReportingId1;
+  EXPECT_FALSE(BidderWorklet::IsMainAdKAnon(
+      params.get(), interest_group_bidding_url_, bid_with_metadata));
+
+  bid_with_metadata.buyer_reporting_id = std::nullopt;
+  bid_with_metadata.buyer_and_seller_reporting_id = kBuyerAndSellerReportingId1;
+  EXPECT_FALSE(BidderWorklet::IsMainAdKAnon(
+      params.get(), interest_group_bidding_url_, bid_with_metadata));
+
+  bid_with_metadata.buyer_reporting_id = kBuyerReportingId1;
+  bid_with_metadata.buyer_and_seller_reporting_id = std::nullopt;
+  EXPECT_FALSE(BidderWorklet::IsMainAdKAnon(
+      params.get(), interest_group_bidding_url_, bid_with_metadata));
+
+  bid_with_metadata.buyer_reporting_id = std::nullopt;
+  bid_with_metadata.buyer_and_seller_reporting_id = std::nullopt;
+  EXPECT_TRUE(BidderWorklet::IsMainAdKAnon(
+      params.get(), interest_group_bidding_url_, bid_with_metadata));
+
+  bid->selected_buyer_and_seller_reporting_id =
+      kSelectedBuyerAndSellerReportingId3;
+  EXPECT_FALSE(BidderWorklet::IsMainAdKAnon(
+      params.get(), interest_group_bidding_url_, bid_with_metadata));
 }
 
 // Test of handling of FinalizeGenerateBid that comes in after the trusted

@@ -574,6 +574,11 @@ SetBidBindings::SemanticCheckBid(
         {error_prefix, "Invalid selected buyer and seller reporting id"})));
   }
 
+  bid_and_worklet_only_metadata.buyer_reporting_id =
+      maybe_ad->buyer_reporting_id;
+  bid_and_worklet_only_metadata.buyer_and_seller_reporting_id =
+      maybe_ad->buyer_and_seller_reporting_id;
+
   std::optional<std::vector<blink::AdDescriptor>> ad_component_descriptors;
   const size_t kMaxAdAuctionAdComponents = blink::MaxAdAuctionAdComponents();
   if (idl.target_num_ad_components.has_value()) {

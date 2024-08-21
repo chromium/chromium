@@ -110,6 +110,52 @@ void AppendReportingIdForSelectedReportingKeyKAnonKey(
        base::as_string_view(base::as_chars(base::make_span(size_in_bytes))),
        *reporting_id});
 }
+
+std::string InternalPlainTextKAnonKeyForAdNameReporting(
+    const url::Origin& interest_group_owner,
+    const std::string& interest_group_name,
+    const GURL& interest_group_bidding_url,
+    const std::string& ad_render_url,
+    base::optional_ref<const std::string> buyer_reporting_id,
+    base::optional_ref<const std::string> buyer_and_seller_reporting_id,
+    base::optional_ref<const std::string>
+        selected_buyer_and_seller_reporting_id) {
+  std::string middle =
+      base::StrCat({interest_group_owner.GetURL().spec(), "\n",
+                    interest_group_bidding_url.spec(), "\n", ad_render_url});
+
+  if (selected_buyer_and_seller_reporting_id.has_value()) {
+    // In the case where the reporting functions get
+    // `selected_buyer_and_seller_reporting_id`, it's possible for more than one
+    // reporting id to be provided. As such, all of the reporting ids passed
+    // into the reporting functions will need to be in the k-anon key. To ensure
+    // that the k-anon key uniquely reflects the values of all provided
+    // reporting ids, we construct the k-anon key so that each reporting id is
+    // prefixed by a fixed number of bytes representing its presence and length.
+    std::string k_anon_key = base::StrCat(
+        {kKAnonKeyForAdNameReportingSelectedBuyerAndSellerIdPrefix, middle});
+    AppendReportingIdForSelectedReportingKeyKAnonKey(
+        selected_buyer_and_seller_reporting_id, k_anon_key);
+    AppendReportingIdForSelectedReportingKeyKAnonKey(
+        buyer_and_seller_reporting_id, k_anon_key);
+    AppendReportingIdForSelectedReportingKeyKAnonKey(buyer_reporting_id,
+                                                     k_anon_key);
+    return k_anon_key;
+  }
+
+  if (buyer_and_seller_reporting_id.has_value()) {
+    return base::StrCat({kKAnonKeyForAdNameReportingBuyerAndSellerIdPrefix,
+                         middle, "\n", *buyer_and_seller_reporting_id});
+  }
+
+  if (buyer_reporting_id.has_value()) {
+    return base::StrCat({kKAnonKeyForAdNameReportingBuyerReportIdPrefix, middle,
+                         "\n", *buyer_reporting_id});
+  }
+
+  return base::StrCat({kKAnonKeyForAdNameReportingNamePrefix, middle, "\n",
+                       interest_group_name});
+}
 }  // namespace
 
 InterestGroup::Ad::Ad() = default;
@@ -543,7 +589,6 @@ std::string HashedKAnonKeyForAdComponentBid(
   // TODO(crbug.com/40266862): Add size back to this check.
   return HashedKAnonKeyForAdComponentBid(ad_descriptor.url.spec());
 }
-
 std::string DEPRECATED_KAnonKeyForAdNameReporting(
     const blink::InterestGroup& group,
     const blink::InterestGroup::Ad& ad,
@@ -552,41 +597,10 @@ std::string DEPRECATED_KAnonKeyForAdNameReporting(
   DCHECK(group.ads);
   DCHECK(base::Contains(*group.ads, ad)) << "No such ad: " << ad.render_url();
   DCHECK(group.bidding_url);
-  std::string middle = base::StrCat({group.owner.GetURL().spec(), "\n",
-                                     group.bidding_url.value_or(GURL()).spec(),
-                                     "\n", ad.render_url()});
-
-  if (selected_buyer_and_seller_reporting_id.has_value()) {
-    // In the case where the reporting functions get
-    // `selected_buyer_and_seller_reporting_id`, it's possible for more than one
-    // reporting id to be provided. As such, all of the reporting ids passed
-    // into the reporting functions will need to be in the k-anon key. To ensure
-    // that the k-anon key uniquely reflects the values of all provided
-    // reporting ids, we construct the k-anon key so that each reporting id is
-    // prefixed by a fixed number of bytes representing its presence and length.
-    std::string k_anon_key = base::StrCat(
-        {kKAnonKeyForAdNameReportingSelectedBuyerAndSellerIdPrefix, middle});
-    AppendReportingIdForSelectedReportingKeyKAnonKey(
-        selected_buyer_and_seller_reporting_id, k_anon_key);
-    AppendReportingIdForSelectedReportingKeyKAnonKey(
-        ad.buyer_and_seller_reporting_id, k_anon_key);
-    AppendReportingIdForSelectedReportingKeyKAnonKey(ad.buyer_reporting_id,
-                                                     k_anon_key);
-    return k_anon_key;
-  }
-
-  if (ad.buyer_and_seller_reporting_id.has_value()) {
-    return base::StrCat({kKAnonKeyForAdNameReportingBuyerAndSellerIdPrefix,
-                         middle, "\n", *ad.buyer_and_seller_reporting_id});
-  }
-
-  if (ad.buyer_reporting_id.has_value()) {
-    return base::StrCat({kKAnonKeyForAdNameReportingBuyerReportIdPrefix, middle,
-                         "\n", *ad.buyer_reporting_id});
-  }
-
-  return base::StrCat(
-      {kKAnonKeyForAdNameReportingNamePrefix, middle, "\n", group.name});
+  return InternalPlainTextKAnonKeyForAdNameReporting(
+      group.owner, group.name, group.bidding_url.value_or(GURL()),
+      ad.render_url(), ad.buyer_reporting_id, ad.buyer_and_seller_reporting_id,
+      selected_buyer_and_seller_reporting_id);
 }
 
 std::string HashedKAnonKeyForAdNameReporting(
@@ -598,4 +612,18 @@ std::string HashedKAnonKeyForAdNameReporting(
       group, ad, selected_buyer_and_seller_reporting_id));
 }
 
+std::string HashedKAnonKeyForAdNameReportingWithoutInterestGroup(
+    const url::Origin& interest_group_owner,
+    const std::string& interest_group_name,
+    const GURL& interest_group_bidding_url,
+    const std::string& ad_render_url,
+    base::optional_ref<const std::string> buyer_reporting_id,
+    base::optional_ref<const std::string> buyer_and_seller_reporting_id,
+    base::optional_ref<const std::string>
+        selected_buyer_and_seller_reporting_id) {
+  return crypto::SHA256HashString(InternalPlainTextKAnonKeyForAdNameReporting(
+      interest_group_owner, interest_group_name, interest_group_bidding_url,
+      ad_render_url, buyer_reporting_id, buyer_and_seller_reporting_id,
+      selected_buyer_and_seller_reporting_id));
+}
 }  // namespace blink

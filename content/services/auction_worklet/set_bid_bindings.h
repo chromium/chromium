@@ -52,6 +52,12 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
     // This many ad components from the beginning of the array absolutely must
     // be there and k-anonymous. Only used if `target_num_ad_components` is set.
     size_t num_mandatory_ad_components = 0;
+
+    // The buyerReportingId from the InterestGroup.ad, if provided.
+    std::optional<std::string> buyer_reporting_id;
+
+    // The buyerAndSellerReportingId from the InterestGroup.ad, if provided.
+    std::optional<std::string> buyer_and_seller_reporting_id;
   };
 
   explicit SetBidBindings(AuctionV8Helper* v8_helper);

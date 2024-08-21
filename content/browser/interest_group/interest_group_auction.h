@@ -199,8 +199,8 @@ class CONTENT_EXPORT InterestGroupAuction
 
     const SingleStorageInterestGroup bidder;
 
-    // Set of render keys that are k-anonymous and correspond to ad or ad
-    // component render URLs for this interest group.
+    // Set of keys that are k-anonymous and correspond to ad and ad component
+    // render URLs, and to reporting ids, for this interest group.
     // (Not set if we are not configured to care).
     base::flat_set<std::string> kanon_keys;
 

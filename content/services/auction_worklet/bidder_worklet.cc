@@ -264,7 +264,7 @@ std::vector<mojom::BidderWorkletBidPtr> ClassifyBidsAndApplyComponentAdLimits(
   for (auto& candidate : bid_info) {
     if (kanon_mode == mojom::KAnonymityBidMode::kNone ||
         !BidderWorklet::IsMainAdKAnon(bidder_worklet_non_shared_params,
-                                      script_source_url, candidate.bid)) {
+                                      script_source_url, candidate)) {
       DCHECK_EQ(candidate.bid->bid_role, mojom::BidRole::kUnenforcedKAnon);
       TrimAndCollectBid(std::move(candidate.bid),
                         candidate.target_num_ad_components, bids);
@@ -446,16 +446,38 @@ bool BidderWorklet::IsKAnon(
 bool BidderWorklet::IsMainAdKAnon(
     const mojom::BidderWorkletNonSharedParams* bidder_worklet_non_shared_params,
     const GURL& script_source_url,
-    const mojom::BidderWorkletBidPtr& bid) {
+    const SetBidBindings::BidAndWorkletOnlyMetadata& bid_and_metadata) {
+  const mojom::BidderWorkletBidPtr& bid = bid_and_metadata.bid;
   if (!bid) {
     return true;
   }
+
+  url::Origin owner = url::Origin::Create(script_source_url);
   if (!BidderWorklet::IsKAnon(
           bidder_worklet_non_shared_params,
-          blink::HashedKAnonKeyForAdBid(url::Origin::Create(script_source_url),
-                                        script_source_url,
+          blink::HashedKAnonKeyForAdBid(owner, script_source_url,
                                         bid->ad_descriptor.url.spec()))) {
     return false;
+  }
+  if (bid->selected_buyer_and_seller_reporting_id_required) {
+    // At this point, we've already verified that all bids that returned a
+    // `selectedBuyerAndSellerReportingIdRequired` of true also returned
+    // a value of `selectedBuyerAndSellerReportingId`.
+    DCHECK(bid->selected_buyer_and_seller_reporting_id.has_value());
+
+    if (!BidderWorklet::IsKAnon(
+            bidder_worklet_non_shared_params,
+            blink::HashedKAnonKeyForAdNameReportingWithoutInterestGroup(
+                /*interest_group_owner=*/owner,
+                /*interest_group_name=*/bidder_worklet_non_shared_params->name,
+                /*interest_group_bidding_url=*/script_source_url,
+                /*ad_render_url=*/bid->ad_descriptor.url.spec(),
+                bid_and_metadata.buyer_reporting_id,
+                bid_and_metadata.buyer_and_seller_reporting_id,
+                bid_and_metadata.bid
+                    ->selected_buyer_and_seller_reporting_id))) {
+      return false;
+    }
   }
   return true;
 }
@@ -1184,6 +1206,21 @@ void BidderWorklet::V8State::GenerateBid(
 
     // If bids were returned, and none were k-anon, we re-run the script with
     // only k-anon ads available to it.
+    //
+    // At this point, we don't need to worry about the impact of k-anonymity
+    // for reporting on k-anon where a bid returns
+    // `selectedBuyerAndSellerReportingIdRequired` = true. Assuming we find some
+    // k-anon ads in the loop below that would encourage us to make the
+    // k-anon-restricted call to `generateBid()`, we're only going to pass
+    // `selectableBuyerAndSellerReportingIds` that would, in combination with
+    // the renderUrl and other reporting ids, cause that bid to be k-anonymous
+    // for reporting. If no `selectableBuyerAndSellerReportingIds` meet that
+    // criteria, that's still fine: The bid could be returned with no
+    // `selectedBuyerAndSellerReportingId`, in which case it must not return
+    // `selectedBuyerAndSellerReportingIdRequired` = true, since that would
+    // cause the bid to be invalid. Without
+    // `selectedBuyerAndSellerReportingIdRequired` = true, the k-anonymous bid
+    // would remain k-anonymous, even if it isn't k-anonymous for reporting.
     if (!bids.empty() && !found_kanon_bid) {
       bool has_kanon_ads = false;
       for (const auto& ad : *bidder_worklet_non_shared_params->ads) {

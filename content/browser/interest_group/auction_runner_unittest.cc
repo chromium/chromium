@@ -616,6 +616,11 @@ std::string MakeFilteringBidScript(int bid) {
         ];
       }
 
+      if (interestGroup.ads[0].selectableBuyerAndSellerReportingIds) {
+        result.selectedBuyerAndSellerReportingId =
+            interestGroup.ads[0].selectableBuyerAndSellerReportingIds[0];
+      }
+
       return result;
     })",
                             bid);
@@ -22955,14 +22960,12 @@ TEST_P(AuctionRunnerKAnonTest, ReportingId) {
 
   for (bool authorize_reporting_kanon : {false, true}) {
     SCOPED_TRACE(authorize_reporting_kanon);
-    // TODO(crbug.com/334053709): Add
-    // ReportingIdField::kSelectedBuyerAndSellerReportingId when generateBid
-    // can return the provided selectedBuyerAndSellerReportingId.
     for (auto field_to_test :
          {auction_worklet::mojom::ReportingIdField::kInterestGroupName,
           auction_worklet::mojom::ReportingIdField::kBuyerReportingId,
+          auction_worklet::mojom::ReportingIdField::kBuyerAndSellerReportingId,
           auction_worklet::mojom::ReportingIdField::
-              kBuyerAndSellerReportingId}) {
+              kSelectedBuyerAndSellerReportingId}) {
       SCOPED_TRACE(field_to_test);
       std::vector<StorageInterestGroup> bidders;
       bidders.emplace_back(MakeInterestGroup(
@@ -22983,11 +22986,14 @@ TEST_P(AuctionRunnerKAnonTest, ReportingId) {
       }
       if (field_to_test == auction_worklet::mojom::ReportingIdField::
                                kSelectedBuyerAndSellerReportingId) {
-        // buyer-only ID should be ignored.
         bidders[0].interest_group.ads.value()[0].buyer_reporting_id = "buyid1";
         bidders[0].interest_group.ads.value()[0].buyer_and_seller_reporting_id =
             "commonid1";
-        selected_buyer_and_seller_reporting_id = "selectableid1";
+        bidders[0]
+            .interest_group.ads.value()[0]
+            .selectable_buyer_and_seller_reporting_ids = {"selectedid1",
+                                                          "selectedid2"};
+        selected_buyer_and_seller_reporting_id = "selectedid1";
       }
 
       AuthorizeKAnonAd(bidders[0].interest_group.ads.value()[0],
@@ -23048,14 +23054,107 @@ TEST_P(AuctionRunnerKAnonTest, ReportingId) {
             // Selected ID and Shared ID in the seller.
             EXPECT_THAT(result_.report_urls,
                         testing::UnorderedElementsAre(
-                            "https://seller.example.org/?commonid1/true",
-                            "https://example.org/?undefined/false/buyid/true/"
+                            "https://seller.example.org/?commonid1/true/"
+                            "selectedid1/true",
+                            "https://example.org/?undefined/false/buyid1/true/"
                             "commonid1/true/selectedid1/true"));
             break;
           default:
             NOTREACHED_IN_MIGRATION();
         }
       }
+    }
+  }
+}
+
+// When `generateBid()` returns
+// `selectedBuyerAndSellerReportingIdRequired` = true as part of a bid, it
+// conveys to the auction that this bid should only be considered k-anonymous
+// if it's also k-anonymous for reporting, so that all reporting ids would be
+// available in the reporting functions. (This only applies to bids that also
+// include a valid `selectedBuyerAndSellerReportingId`.) This test checks to
+// verify that this behavior is correctly applied. We see this by observing
+// that, when k-anonymity is enforced, we see that the sole bid, compelled to be
+// non-k-anonymous because it's not k-anonymous for reporting, in fact does not
+// win the auction despite it satisfying all other conditions needed to do so.
+TEST_P(AuctionRunnerKAnonTest, SelectedReportingIdRequired) {
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      // bidding script tries to bid with ad that is not k-anonymous.
+      std::string(R"(
+        function generateBid(interestGroup, auctionSignals, perBuyerSignals,
+                         trustedBiddingSignals, browserSignals) {
+          // TODO(crbug.com/334053709): Remove this when the k-anon restricted
+          // call to generateBid() removes non-k-anon
+          // selectedBuyerAndSellerReportingIds from
+          // interestGroup.ads[0].renderURL.
+          if (globalThis.alreadyCalled !== undefined) {
+            return;
+          }
+          globalThis.alreadyCalled = true;
+
+          if (interestGroup.ads[0].selectableBuyerAndSellerReportingIds.length
+              === 0) {
+            return;
+          }
+          return {
+              ad: {},
+              bid: 1,
+              render: interestGroup.ads[0].renderURL,
+              selectedBuyerAndSellerReportingId:
+                  interestGroup.ads[0].selectableBuyerAndSellerReportingIds[0],
+              selectedBuyerAndSellerReportingIdRequired: true,
+          };
+        })") +
+          kReportWinNoUrl);
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      std::string(kMinimumDecisionScript) + kBasicReportResult);
+
+  for (bool authorize_reporting_kanon : {false, true}) {
+    SCOPED_TRACE(authorize_reporting_kanon);
+    std::vector<StorageInterestGroup> bidders;
+    bidders.emplace_back(MakeInterestGroup(
+        kBidder1, kBidder1Name, kBidder1Url,
+        /*trusted_bidding_signals_url=*/std::nullopt,
+        /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+    bidders[0].interest_group.ads.value()[0].buyer_reporting_id = "buyid1";
+    bidders[0].interest_group.ads.value()[0].buyer_and_seller_reporting_id =
+        "commonid1";
+    bidders[0]
+        .interest_group.ads.value()[0]
+        .selectable_buyer_and_seller_reporting_ids = {"selectedid1",
+                                                      "selectedid2"};
+
+    AuthorizeKAnonAd(bidders[0].interest_group.ads.value()[0],
+                     "https://ad1.com/", bidders[0]);
+    if (authorize_reporting_kanon) {
+      AuthorizeKAnonReporting(bidders[0].interest_group.ads.value()[0],
+                              "https://ad1.com/", bidders[0],
+                              std::string("selectedid1"));
+    }
+
+    StartAuction(kSellerUrl, bidders);
+    auction_run_loop_->Run();
+    // Have to spin all message loops to flush any k-anon set join events.
+    task_environment()->RunUntilIdle();
+    EXPECT_THAT(interest_group_manager_->TakeJoinedKAnonSets(),
+                testing::UnorderedElementsAre(
+                    blink::HashedKAnonKeyForAdBid(
+                        bidders[0].interest_group,
+                        bidders[0].interest_group.ads.value()[0].render_url()),
+                    blink::HashedKAnonKeyForAdNameReporting(
+                        bidders[0].interest_group,
+                        bidders[0].interest_group.ads.value()[0],
+                        std::string("selectedid1"))));
+
+    if (kanon_mode() == KAnonMode::kEnforce && !authorize_reporting_kanon) {
+      EXPECT_FALSE(result_.ad_descriptor.has_value());
+      EXPECT_THAT(result_.errors, testing::ElementsAre());
+    } else {
+      ASSERT_TRUE(result_.ad_descriptor.has_value());
+      EXPECT_EQ(GURL("https://ad1.com"), result_.ad_descriptor->url);
+      EXPECT_THAT(result_.errors, testing::ElementsAre());
     }
   }
 }

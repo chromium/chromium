@@ -145,10 +145,11 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
                       const std::string& key);
 
   // This doesn't look at the component ads.
-  static bool IsMainAdKAnon(const mojom::BidderWorkletNonSharedParams*
-                                bidder_worklet_non_shared_params,
-                            const GURL& script_source_url,
-                            const mojom::BidderWorkletBidPtr& bid);
+  static bool IsMainAdKAnon(
+      const mojom::BidderWorkletNonSharedParams*
+          bidder_worklet_non_shared_params,
+      const GURL& script_source_url,
+      const SetBidBindings::BidAndWorkletOnlyMetadata& bid_and_metadata);
 
   static bool IsComponentAdKAnon(
       const mojom::BidderWorkletNonSharedParams*
