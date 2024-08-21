@@ -140,7 +140,6 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   void SetSelectedWindowForFocus(aura::Window* window) override;
   void ClearFocusSelection() override;
   void Layout(PassKey) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
@@ -167,6 +166,9 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   void OnRoundedCornersSet();
 
   void InstallFocusRing(bool use_custom_predicate);
+
+  void UpdateAccessibleIgnoredState();
+  void UpdateAccessibleName();
 
   // Generates the focus ring path for `this`, which has four rounded corners by
   // default. If this is part of a snap group, the path should match the rounded

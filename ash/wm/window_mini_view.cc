@@ -25,6 +25,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -263,6 +264,9 @@ WindowMiniView::WindowMiniView(aura::Window* source_window,
   InstallFocusRing(use_custom_focus_predicate);
   window_observation_.Observe(source_window);
   header_view_ = AddChildView(std::make_unique<WindowMiniViewHeaderView>(this));
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kWindow);
+  UpdateAccessibleName();
 }
 
 gfx::Rect WindowMiniView::GetContentAreaBounds() const {
@@ -287,27 +291,6 @@ void WindowMiniView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 }
 
-void WindowMiniView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // This may be called after `OnWindowDestroying`. `this` should be destroyed
-  // shortly by the owner (OverviewItem/WindowCycleView) but there may be a
-  // small window where `source_window_` is null. Speculative fix for
-  // https://crbug.com/1274775.
-  if (!source_window_) {
-    return;
-  }
-
-  node_data->role = ax::mojom::Role::kWindow;
-  const std::u16string& accessible_name =
-      wm::GetTransientRoot(source_window_)->GetTitle();
-
-  if (accessible_name.empty()) {
-    node_data->SetName(
-        l10n_util::GetStringUTF8(IDS_WM_WINDOW_CYCLER_UNTITLED_WINDOW));
-  } else {
-    node_data->SetName(accessible_name);
-  }
-}
-
 void WindowMiniView::OnWindowPropertyChanged(aura::Window* window,
                                              const void* key,
                                              intptr_t old) {
@@ -328,10 +311,13 @@ void WindowMiniView::OnWindowDestroying(aura::Window* window) {
   window_observation_.Reset();
   source_window_ = nullptr;
   SetShowPreview(false);
+
+  UpdateAccessibleIgnoredState();
 }
 
 void WindowMiniView::OnWindowTitleChanged(aura::Window* window) {
   header_view_->UpdateTitleLabel(window);
+  UpdateAccessibleName();
 }
 
 void WindowMiniView::OnRoundedCornersSet() {
@@ -355,6 +341,26 @@ void WindowMiniView::InstallFocusRing(bool use_custom_predicate) {
           CHECK(v);
           return v->is_focused_;
         }));
+  }
+}
+
+void WindowMiniView::UpdateAccessibleIgnoredState() {
+  if (source_window_) {
+    GetViewAccessibility().SetIsIgnored(false);
+  } else {
+    // Don't expose to accessibility when `source_window_` is null.
+    GetViewAccessibility().SetIsIgnored(true);
+  }
+}
+
+void WindowMiniView::UpdateAccessibleName() {
+  const std::u16string& accessible_name =
+      wm::GetTransientRoot(source_window_)->GetTitle();
+  if (accessible_name.empty()) {
+    GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(IDS_WM_WINDOW_CYCLER_UNTITLED_WINDOW));
+  } else {
+    GetViewAccessibility().SetName(accessible_name);
   }
 }
 

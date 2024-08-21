@@ -237,6 +237,7 @@ GroupContainerCycleView::GroupContainerCycleView(SnapGroup* snap_group)
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
   GetViewAccessibility().SetDescription(
       l10n_util::GetStringUTF16(IDS_ASH_SNAP_GROUP_WINDOW_CYCLE_DESCRIPTION));
 }
@@ -304,12 +305,10 @@ int GroupContainerCycleView::TryRemovingChildItem(
 void GroupContainerCycleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   for (WindowCycleItemView* mini_view : mini_views_) {
     if (mini_view->is_mini_view_focused()) {
-      mini_view->GetAccessibleNodeData(node_data);
+      mini_view->GetViewAccessibility().GetAccessibleNodeData(node_data);
       break;
     }
   }
-
-  node_data->role = ax::mojom::Role::kGroup;
 }
 
 gfx::RoundedCornersF GroupContainerCycleView::GetRoundedCorners() const {

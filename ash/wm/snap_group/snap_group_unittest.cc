@@ -78,6 +78,7 @@
 #include "ash/wm/test/test_non_client_frame_view_ash.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "ash/wm/window_cycle/window_cycle_item_view.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_cycle/window_cycle_view.h"
 #include "ash/wm/window_mini_view.h"
@@ -126,6 +127,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/views_test_utils.h"
@@ -10827,6 +10829,23 @@ TEST_F(SnapGroupMetricsTest, DoubleTapDividerUserAction) {
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 "SnapGroups_DoubleTapWindowSwapSuccess"),
             2);
+}
+
+TEST_F(SnapGroupMetricsTest, GroupContainerCycleViewAccessibleProperties) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true,
+                     GetEventGenerator());
+  auto* snap_group_controller = SnapGroupController::Get();
+  auto* snap_group =
+      snap_group_controller->GetSnapGroupForGivenWindow(w1.get());
+  ASSERT_TRUE(snap_group);
+  std::unique_ptr<GroupContainerCycleView> cycle_view =
+      std::make_unique<GroupContainerCycleView>(snap_group);
+  ui::AXNodeData data;
+
+  cycle_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kGroup);
 }
 
 }  // namespace ash
