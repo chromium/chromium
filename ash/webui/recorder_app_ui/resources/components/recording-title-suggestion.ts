@@ -103,6 +103,12 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
       --background-color: var(--cros-sys-app_base_shaded);
 
       bottom: -8px;
+
+      /*
+       * TODO: b/361221415 - Remove the old properties when stable Chrome
+       * supports new one.
+       */
+      inset-area: top span-left;
       position: absolute;
       position-anchor: --footer;
       position-area: top span-left;
@@ -126,8 +132,9 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
   }
 
   nthSuggestedTitleForTest(index: number): Chip {
-    const allSuggestions =
-      assertExists(this.shadowRoot?.querySelectorAll('.suggestion'));
+    const allSuggestions = assertExists(
+      this.shadowRoot?.querySelectorAll('.suggestion'),
+    );
     return assertInstanceof(allSuggestions[index], Chip);
   }
 

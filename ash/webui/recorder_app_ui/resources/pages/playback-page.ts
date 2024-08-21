@@ -52,7 +52,11 @@ import {
 } from '../core/reactive/lit.js';
 import {computed, Dispose, effect, signal} from '../core/reactive/signal.js';
 import {navigateTo} from '../core/state/route.js';
-import {assert, assertExists, assertInstanceof} from '../core/utils/assert.js';
+import {
+  assert,
+  assertExists,
+  assertInstanceof,
+} from '../core/utils/assert.js';
 import {formatDuration} from '../core/utils/datetime.js';
 
 /**
@@ -179,6 +183,12 @@ export class PlaybackPage extends ReactiveLitElement {
       & > div {
         color: var(--cros-sys-on_surface_variant);
         font: 440 24px/32px var(--monospace-font-family);
+
+        /*
+         * TODO: b/361221415 - Remove the old properties when stable Chrome
+         * supports new one.
+         */
+        inset-area: top;
         letter-spacing: 0.03em;
         margin-bottom: 4px;
         position: absolute;
