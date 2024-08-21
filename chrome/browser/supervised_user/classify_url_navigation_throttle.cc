@@ -243,13 +243,7 @@ MaybeCreateClassifyUrlNavigationThrottleFor(
   Profile* profile = Profile::FromBrowserContext(
       navigation_handle->GetWebContents()->GetBrowserContext());
   CHECK(profile);
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (identity_manager == nullptr) {
-    return nullptr;
-  }
-  if (IsPrimaryAccountSubjectToParentalControls(identity_manager) !=
-      signin::Tribool::kTrue) {
+  if (!profile->IsChild()) {
     return nullptr;
   }
   return ClassifyUrlNavigationThrottle::MakeUnique(navigation_handle);
