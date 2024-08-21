@@ -1359,10 +1359,9 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
     if (crypto_) {
       sql::Statement select_smt, update_smt;
 
-      select_smt.Assign(
-          db()->GetCachedStatement(SQL_FROM_HERE,
-                                   "SELECT rowid, host_key, encrypted_value "
-                                   "FROM cookies WHERE encrypted_value != ''"));
+      select_smt.Assign(db()->GetCachedStatement(
+          SQL_FROM_HERE,
+          "SELECT rowid, host_key, encrypted_value FROM cookies"));
 
       update_smt.Assign(
           db()->GetCachedStatement(SQL_FROM_HERE,
@@ -1379,7 +1378,6 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
         int64_t rowid = select_smt.ColumnInt64(0);
         std::string domain = select_smt.ColumnString(1);
         std::string encrypted_value = select_smt.ColumnString(2);
-        DCHECK(!encrypted_value.empty());
         std::string decrypted_value;
         if (!crypto_->DecryptString(encrypted_value, &decrypted_value)) {
           RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_DECRYPT_FAILED);
