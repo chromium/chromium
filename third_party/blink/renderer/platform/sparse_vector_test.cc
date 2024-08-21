@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/paint/sparse_vector.h"
+#include "third_party/blink/renderer/platform/sparse_vector.h"
 
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
 namespace blink {
@@ -112,7 +111,6 @@ class SparseVectorTest : public testing::Test {
   auto& sparse_vector() { return test_->sparse_vector; }
 
  private:
-  test::TaskEnvironment task_environment_;
   typename TestType::Handle test_ = TestType::MakeTest();
 };
 
