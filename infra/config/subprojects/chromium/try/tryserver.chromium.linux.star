@@ -225,21 +225,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-lacros-fyi-rel",
-    mirrors = [
-        "ci/linux-lacros-builder-fyi-rel",
-        "ci/linux-lacros-tester-fyi-rel",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/linux-lacros-builder-fyi-rel",
-            "try_builder",
-            "no_symbols",
-        ],
-    ),
-)
-
-try_.builder(
     name = "linux-layout-tests-edit-ng",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),

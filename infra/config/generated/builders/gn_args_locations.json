@@ -329,10 +329,6 @@
     "linux-chromeos-dbg-oslogin": "ci/linux-chromeos-dbg-oslogin/gn-args.json",
     "linux-fieldtrial-rel": "ci/linux-fieldtrial-rel/gn-args.json",
     "linux-headless-shell-rel": "ci/linux-headless-shell-rel/gn-args.json",
-    "linux-lacros-builder-fyi-rel": "ci/linux-lacros-builder-fyi-rel/gn-args.json",
-    "linux-lacros-builder-rel (reclient)": "ci/linux-lacros-builder-rel (reclient)/gn-args.json",
-    "linux-lacros-dbg-fyi": "ci/linux-lacros-dbg-fyi/gn-args.json",
-    "linux-lacros-rel-dangling-ptr-fyi": "ci/linux-lacros-rel-dangling-ptr-fyi/gn-args.json",
     "linux-multiscreen-fyi-rel": "ci/linux-multiscreen-fyi-rel/gn-args.json",
     "linux-perfetto-rel": "ci/linux-perfetto-rel/gn-args.json",
     "linux-rel-no-external-ip": "ci/linux-rel-no-external-ip/gn-args.json",
@@ -689,8 +685,7 @@
     "linux-chromeos-dbg-oslogin": "try/linux-chromeos-dbg-oslogin/gn-args.json",
     "linux-chromeos-rel": "try/linux-chromeos-rel/gn-args.json",
     "linux-lacros-dbg": "try/linux-lacros-dbg/gn-args.json",
-    "linux-lacros-rel": "try/linux-lacros-rel/gn-args.json",
-    "linux-lacros-rel-dangling-ptr-fyi": "try/linux-lacros-rel-dangling-ptr-fyi/gn-args.json"
+    "linux-lacros-rel": "try/linux-lacros-rel/gn-args.json"
   },
   "tryserver.chromium.codesearch": {
     "gen-android-try": "codesearch/gen-android-try/gn-args.json",
@@ -813,7 +808,6 @@
     "linux-js-code-coverage": "try/linux-js-code-coverage/gn-args.json",
     "linux-js-coverage-rel": "try/linux-js-coverage-rel/gn-args.json",
     "linux-lacros-code-coverage": "try/linux-lacros-code-coverage/gn-args.json",
-    "linux-lacros-fyi-rel": "try/linux-lacros-fyi-rel/gn-args.json",
     "linux-layout-tests-edit-ng": "try/linux-layout-tests-edit-ng/gn-args.json",
     "linux-libfuzzer-asan-rel": "try/linux-libfuzzer-asan-rel/gn-args.json",
     "linux-multiscreen-fyi-rel": "try/linux-multiscreen-fyi-rel/gn-args.json",

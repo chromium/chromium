@@ -87,12 +87,7 @@ ci/linux-fuzz-coverage
 ci/linux-headless-shell-rel
 ci/linux-js-code-coverage
 ci/linux-lacros-archive-rel
-ci/linux-lacros-builder-fyi-rel
-ci/linux-lacros-builder-rel (reclient)
 ci/linux-lacros-code-coverage
-ci/linux-lacros-dbg-fyi
-ci/linux-lacros-dbg-tests-fyi
-ci/linux-lacros-tester-fyi-rel
 ci/linux-official
 ci/linux-perfetto-rel
 ci/linux-rel-no-external-ip
@@ -324,7 +319,6 @@ try/linux-js-coverage-rel
 try/linux-lacros-clang-tidy-rel
 try/linux-lacros-code-coverage
 try/linux-lacros-dbg
-try/linux-lacros-fyi-rel
 try/linux-lacros-rel
 try/linux-lacros-rel-compilator
 try/linux-layout-tests-edit-ng

@@ -508,17 +508,3 @@ try_.builder(
         ],
     ),
 )
-
-try_.builder(
-    name = "linux-lacros-rel-dangling-ptr-fyi",
-    mirrors = [
-        "ci/linux-lacros-rel-dangling-ptr-fyi",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/linux-lacros-rel-dangling-ptr-fyi",
-        ],
-    ),
-    contact_team_email = "chrome-desktop-engprod@google.com",
-    execution_timeout = 8 * time.hour,
-)

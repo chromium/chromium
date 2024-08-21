@@ -204,10 +204,7 @@
       'android-asan',
       # Does not currently work on Lacros configurations.
       'linux-lacros-code-coverage',
-      'linux-lacros-rel-dangling-ptr-fyi',
       'linux-lacros-tester-rel',
-      'linux-lacros-tester-fyi-rel',
-      'linux-lacros-dbg-tests-fyi',
     ],
     'modifications': {
       'linux-chromeos-rel': {
@@ -1048,15 +1045,6 @@
         ],
         'swarming': {
           'shards': 50,
-        },
-      },
-      'linux-lacros-rel-dangling-ptr-fyi': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1473501
-        'retry_only_failed_tests': True,
-        'swarming': {
-          'shards': 20,
         },
       },
       'linux-lacros-tester-rel': {
@@ -1922,10 +1910,6 @@
           'shards': 12,
         },
       },
-      # https://crbug.com/1111979
-      'linux-lacros-tester-fyi-rel': {
-        'experiment_percentage': 100,
-      },
       'linux-lacros-tester-rel': {
         'ci_only': True,
       },
@@ -2579,16 +2563,6 @@
           '--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied',
         ],
       },
-      'linux-lacros-dbg-tests-fyi': {
-        'args': [
-          '--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied',
-        ],
-      },
-      'linux-lacros-rel-dangling-ptr-fyi': {
-        'args': [
-          '--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied',
-        ],
-      },
       'linux-lacros-tester-rel': {
         'args': [
           '--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied',
@@ -2614,18 +2588,6 @@
       },
       # https://crbug.com/1111979,
       'linux-lacros-code-coverage': {
-        'args': [
-          '--gtest_filter=-NativeExtensionBindingsSystemUnittest.AccessToAliasDoesntGiveAliasSourceAccess:'
-          'NativeExtensionBindingsSystemUnittest.AliasedAPIsAreDifferentObjects',
-        ],
-      },
-      'linux-lacros-dbg-tests-fyi': {
-        'args': [
-          '--gtest_filter=-NativeExtensionBindingsSystemUnittest.AccessToAliasDoesntGiveAliasSourceAccess:'
-          'NativeExtensionBindingsSystemUnittest.AliasedAPIsAreDifferentObjects',
-        ],
-      },
-      'linux-lacros-rel-dangling-ptr-fyi': {
         'args': [
           '--gtest_filter=-NativeExtensionBindingsSystemUnittest.AccessToAliasDoesntGiveAliasSourceAccess:'
           'NativeExtensionBindingsSystemUnittest.AliasedAPIsAreDifferentObjects',
@@ -3933,7 +3895,6 @@
       # pthreadpool is not built for ChromeOS currently.
       'linux-chromeos-dbg',
       'linux-chromeos-rel',
-      'linux-lacros-rel-dangling-ptr-fyi',
       'linux-lacros-tester-rel',
     ],
   },
@@ -4582,22 +4543,6 @@
     'modifications': {
       # https://crbug.com/1111979,
       'linux-lacros-code-coverage': {
-        'args': [
-          '--gtest_filter=-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura:'
-          'DesktopWidgetTest*:'
-          'DesktopWindowTreeHostPlatformTest*:'
-          'EditableComboboxTest*:'
-          'MenuRunnerTest*:'
-          'TextfieldTest*:'
-        ],
-      },
-      'linux-lacros-dbg-tests-fyi': {
-        'args': [
-          '--gtest_filter=-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura:'
-          'TextfieldTest*:'
-        ],
-      },
-      'linux-lacros-rel-dangling-ptr-fyi': {
         'args': [
           '--gtest_filter=-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura:'
           'DesktopWidgetTest*:'
