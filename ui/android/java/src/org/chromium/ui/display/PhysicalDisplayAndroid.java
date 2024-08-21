@@ -149,7 +149,7 @@ import java.util.function.Consumer;
     private final Display mDisplay;
     private Consumer<Display> mHdrSdrRatioCallback;
 
-    /* package */ PhysicalDisplayAndroid(Display display) {
+    /* package */ PhysicalDisplayAndroid(Display display, boolean disableHdrSdkRatioCallback) {
         super(display.getDisplayId());
         if (USE_CONFIGURATION) {
             Context appContext = ContextUtils.getApplicationContext();
@@ -180,7 +180,8 @@ import java.util.function.Consumer;
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-                && mDisplay.isHdrSdrRatioAvailable()) {
+                && mDisplay.isHdrSdrRatioAvailable()
+                && !disableHdrSdkRatioCallback) {
             mHdrSdrRatioCallback = this::hdrSdrRatioChanged;
             mDisplay.registerHdrSdrRatioChangedListener(
                     (Runnable runnable) -> {

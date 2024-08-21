@@ -78,6 +78,8 @@ public class DisplayAndroidManager {
     // virtual display ids at a much higher number, and increment them in the same way.
     private static final int VIRTUAL_DISPLAY_ID_BEGIN = Integer.MAX_VALUE / 2;
 
+    private static boolean sDisableHdrSdkRatioCallback;
+
     private long mNativePointer;
     private int mMainSdkDisplayId;
     private final SparseArray<DisplayAndroid> mIdMap = new SparseArray<>();
@@ -92,6 +94,11 @@ public class DisplayAndroidManager {
             sDisplayAndroidManager.initialize();
         }
         return sDisplayAndroidManager;
+    }
+
+    // Disable hdr/sdr ratio callback. Ratio will always be reported as 1.
+    public static void disableHdrSdrRatioCallback() {
+        sDisableHdrSdkRatioCallback = true;
     }
 
     public static Display getDefaultDisplayForContext(Context context) {
@@ -177,7 +184,8 @@ public class DisplayAndroidManager {
 
     private DisplayAndroid addDisplay(Display display) {
         int sdkDisplayId = display.getDisplayId();
-        PhysicalDisplayAndroid displayAndroid = new PhysicalDisplayAndroid(display);
+        PhysicalDisplayAndroid displayAndroid =
+                new PhysicalDisplayAndroid(display, sDisableHdrSdkRatioCallback);
         assert mIdMap.get(sdkDisplayId) == null;
         mIdMap.put(sdkDisplayId, displayAndroid);
         displayAndroid.updateFromDisplay(display);
