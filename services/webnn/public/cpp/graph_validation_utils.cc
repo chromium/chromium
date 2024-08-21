@@ -273,7 +273,7 @@ ValidateReduceAxesAndInferOutput(base::span<const uint32_t> input_dimensions,
                                  base::span<const uint32_t> axes,
                                  bool keep_dimensions,
                                  std::string_view label) {
-  auto input_rank = input_dimensions.size();
+  auto input_rank = static_cast<uint32_t>(input_dimensions.size());
   RETURN_IF_ERROR(ValidateAxes(axes, input_rank, label));
 
   std::vector<uint32_t> output_shape;
@@ -1225,10 +1225,8 @@ base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
                    context_properties.data_type_limits.gather_indices)));
   }
 
-  // TODO(crbug.com/325598628): Remove this checked math once input ranks are
-  // capped.
   auto checked_output_rank =
-      base::MakeCheckedNum<size_t>(input.Rank()) - 1 + indices.Rank();
+      base::MakeCheckedNum<uint32_t>(input.Rank()) - 1 + indices.Rank();
   if (!checked_output_rank.IsValid()) {
     return base::unexpected(
         ErrorWithLabel(label, "The output rank is too large."));
@@ -1236,7 +1234,7 @@ base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
 
   std::vector<uint32_t> output_shape;
   output_shape.reserve(checked_output_rank.ValueOrDie());
-  for (size_t i = 0; i < input.Rank(); ++i) {
+  for (uint32_t i = 0; i < input.Rank(); ++i) {
     if (i == axis) {
       base::ranges::copy(indices.shape(), std::back_inserter(output_shape));
     } else {
@@ -2031,7 +2029,7 @@ base::expected<OperandDescriptor, std::string> ValidateTransposeAndInferOutput(
                    context_properties.data_type_limits.transpose_input)));
   }
 
-  if (permutation.size() != input.Rank()) {
+  if (permutation.size() != static_cast<size_t>(input.Rank())) {
     return base::unexpected(ErrorWithLabel(
         label,
         "The number of values in permutation must be the same as the rank of "
@@ -2040,7 +2038,7 @@ base::expected<OperandDescriptor, std::string> ValidateTransposeAndInferOutput(
   RETURN_IF_ERROR(ValidateAxes(permutation, input.Rank(), label));
 
   std::vector<uint32_t> output_shape(input.Rank());
-  for (size_t i = 0; i < input.Rank(); ++i) {
+  for (uint32_t i = 0; i < input.Rank(); ++i) {
     output_shape[i] = input.shape()[permutation[i]];
   }
   return OperandDescriptor::Create(input.data_type(), std::move(output_shape));
@@ -2256,14 +2254,14 @@ base::expected<OperandDescriptor, std::string> ValidateWhereAndInferOutput(
 }
 
 base::expected<void, std::string> ValidateAxes(base::span<const uint32_t> axes,
-                                               const size_t rank,
+                                               uint32_t rank,
                                                std::string_view label) {
   if (base::ranges::any_of(axes, [rank](uint32_t axis) {
         return base::MakeStrictNum(axis) >= rank;
       })) {
     return base::unexpected(ErrorWithLabel(
         label, base::StringPrintf(
-                   "The values in axes must be in the range [0, %zu).", rank)));
+                   "The values in axes must be in the range [0, %u).", rank)));
   }
 
   if (axes.size() != std::set<uint32_t>(axes.begin(), axes.end()).size()) {

@@ -638,7 +638,7 @@ base::expected<void, std::string> COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
 // duplication.
 base::expected<void, std::string> COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     ValidateAxes(base::span<const uint32_t> axes,
-                 const size_t rank,
+                 uint32_t rank,
                  std::string_view label);
 
 // Broadcast the input shapes and return the output shape.

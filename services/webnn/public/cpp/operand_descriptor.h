@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) OperandDescriptor {
   OperandDataType data_type() const { return data_type_; }
   const std::vector<uint32_t>& shape() const { return shape_; }
 
-  size_t Rank() const { return shape_.size(); }
+  uint32_t Rank() const { return static_cast<uint32_t>(shape_.size()); }
   // Total byte length assuming perfect packing. Some tensors described by this
   // `OperandDescriptor` may be stored with more bytes.
   size_t PackedByteLength() const;
