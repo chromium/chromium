@@ -253,6 +253,10 @@
   }
   _infobarBadgesCurrentlyShown = infobarBadgesCurrentlyShown;
 
+  if (_infobarBadgesCurrentlyShown) {
+    [self dismissEntrypointIPHAnimated:YES];
+  }
+
   [self.consumer setInfobarBadgesCurrentlyShown:_infobarBadgesCurrentlyShown];
 }
 
