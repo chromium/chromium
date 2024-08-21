@@ -24,7 +24,6 @@ static_library("kcer") {
     "//chrome/browser/ash/kcer/nssdb_migration",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/profiles",
-    "//chrome/browser/chromeos/kcer",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
@@ -54,7 +53,10 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "kcer_factory_no_nss_ash_browsertest.cc" ]
+  sources = [
+    "kcer_factory_ash_no_nss_browsertest.cc",
+    "kcer_factory_ash_nss_browsertest.cc",
+  ]
 
   deps = [
     ":kcer",
@@ -66,13 +68,13 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/login/saml:test_support",
     "//chrome/browser/ash/login/users:test_support",
-    "//chrome/browser/chromeos/kcer",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/components/kcer",
     "//components/user_manager",
     "//content/test:test_support",
+    "//crypto:test_support",
     "//testing/gtest",
   ]
 }

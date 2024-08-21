@@ -54,7 +54,7 @@ std::unique_ptr<KeyedService> CreateKcer(
     content::BrowserContext* context) {
   auto kcer = std::make_unique<internal::KcerImpl>();
   kcer->Initialize(content::GetUIThreadTaskRunner(), user_token, nullptr);
-  return std::make_unique<KcerFactory::KcerService>(std::move(kcer));
+  return std::make_unique<KcerFactoryAsh::KcerService>(std::move(kcer));
 }
 
 class KcerPkcs12MigratorTest : public testing::Test {

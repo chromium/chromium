@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/ash/kcer",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/chromeos/kcer",
   "+chrome/browser/net",
   "+chrome/browser/profiles",
   "+chrome/common/pref_names.h",

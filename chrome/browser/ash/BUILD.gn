@@ -938,7 +938,6 @@ static_library("ash") {
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/chromeos/arc",
     "//chrome/browser/chromeos/drivefs",
-    "//chrome/browser/chromeos/kcer",
     "//chrome/browser/chromeos/mahi",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/chromeos/printing/print_preview",

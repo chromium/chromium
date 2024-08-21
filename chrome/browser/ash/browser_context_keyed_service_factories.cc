@@ -204,7 +204,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   guest_os::GuestOsSharePathFactory::GetInstance();
   help_app::HelpAppManagerFactory::GetInstance();
   HoldingSpaceKeyedServiceFactory::GetInstance();
-  kcer::KcerFactoryAsh::EnsureFactoryBuilt();
+  kcer::KcerFactoryAsh::GetInstance();
   kcer::Pkcs12MigratorFactory::GetInstance();
   KerberosCredentialsManagerFactory::GetInstance();
   KioskAppUpdateServiceFactory::GetInstance();

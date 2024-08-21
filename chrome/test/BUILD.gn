@@ -877,7 +877,6 @@ static_library("test_support") {
       "base/chromeos/crosier:proto",
       "//base/test:proto_test_support",
       "//chrome/browser/chromeos",
-      "//chrome/browser/chromeos/kcer",
       "//chrome/browser/ui/chromeos",
       "//chromeos/components/mgs",
       "//chromeos/dbus/constants",

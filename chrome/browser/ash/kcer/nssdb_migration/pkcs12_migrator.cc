@@ -191,7 +191,7 @@ void Pkcs12Migrator::MigrateCerts(bool success,
   }
 
   base::WeakPtr<Kcer> kcer =
-      KcerFactory::GetKcer(Profile::FromBrowserContext(context_));
+      KcerFactoryAsh::GetKcer(Profile::FromBrowserContext(context_));
   kcer->ListCerts(
       {Token::kUser},
       base::BindOnce(&Pkcs12Migrator::MigrateCertsWithKcerCerts,
@@ -265,13 +265,13 @@ void Pkcs12Migrator::ExportedOneCert(net::ScopedCERTCertificateList certs,
   }
 
   base::WeakPtr<Kcer> kcer =
-      KcerFactory::GetKcer(Profile::FromBrowserContext(context_));
+      KcerFactoryAsh::GetKcer(Profile::FromBrowserContext(context_));
 
   auto callback = base::BindOnce(&Pkcs12Migrator::ImportedOneCert,
                                  weak_factory_.GetWeakPtr(), std::move(certs));
   // Set the flag that some certs now exist in both NSS public slot and Chaps.
   // It might be needed for the rollback.
-  kcer::KcerFactory::RecordPkcs12CertDualWritten();
+  kcer::KcerFactoryAsh::RecordPkcs12CertDualWritten();
   kcer->ImportPkcs12Cert(Token::kUser, std::move(pkcs12),
                          /*password=*/std::string(),
                          /*hardware_backed=*/false, /*mark_as_migrated=*/true,
