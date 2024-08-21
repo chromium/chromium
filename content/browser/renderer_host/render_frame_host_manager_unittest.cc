@@ -264,8 +264,10 @@ void DidNavigateFrame(RenderFrameHostManager* rfh_manager,
   rfh_manager->DidNavigateFrame(rfh, true /* was_caused_by_user_gesture */,
                                 false /* is_same_document_navigation */,
                                 false /* clear_proxies_on_commit */,
-                                blink::FramePolicy(), false
-                                /* allow_subframe_paint_holding */);
+                                blink::FramePolicy(),
+                                false
+                                /* allow_subframe_paint_holding */,
+                                /*is_initiated_by_animated_transition=*/false);
 }
 
 class TestDevToolsClientHost : public DevToolsAgentHostClient {

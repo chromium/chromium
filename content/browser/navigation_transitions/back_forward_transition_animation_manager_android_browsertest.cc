@@ -32,6 +32,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
@@ -231,7 +232,12 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
   }
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
     if (did_finish_navigation_callback_) {
-      std::move(did_finish_navigation_callback_).Run();
+      auto* request = static_cast<NavigationRequest*>(navigation_handle);
+      std::move(did_finish_navigation_callback_)
+          .Run(request->GetRenderFrameHost()
+                   ->GetView()
+                   ->host()
+                   ->IsContentRenderingTimeoutRunning());
     }
     BackForwardTransitionAnimator::DidFinishNavigation(navigation_handle);
   }
@@ -287,7 +293,8 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
     CHECK(!post_ready_to_commit_callback_);
     post_ready_to_commit_callback_ = std::move(callback);
   }
-  void set_did_finish_navigation_callback(base::OnceClosure callback) {
+  void set_did_finish_navigation_callback(
+      base::OnceCallback<void(bool)> callback) {
     CHECK(!did_finish_navigation_callback_);
     did_finish_navigation_callback_ = std::move(callback);
   }
@@ -327,7 +334,7 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
   base::OnceClosure waited_for_renderer_new_frame_;
   base::OnceClosure next_on_animate_callback_;
   base::OnceClosure post_ready_to_commit_callback_;
-  base::OnceClosure did_finish_navigation_callback_;
+  base::OnceCallback<void(bool)> did_finish_navigation_callback_;
   base::OnceCallback<void(State)> on_impl_destroyed_;
 };
 
@@ -1966,7 +1973,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
     metadata.primary_main_frame_item_sequence_number =
         GetItemSequenceNumberForNavigation(back_to_red.GetNavigationHandle());
     GetAnimator()->set_did_finish_navigation_callback(
-        base::BindLambdaForTesting([&]() {
+        base::BindLambdaForTesting([&](bool) {
           new_widget_host->render_frame_metadata_provider()
               ->SetLastRenderFrameMetadataForTest(std::move(metadata));
           GetAnimator()->OnRenderFrameMetadataChangedAfterActivation(
@@ -1997,7 +2004,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
 
   TestFuture<AnimatorState> destroyed;
-  TestFuture<void> did_finish_navigation;
+  TestFuture<bool> did_finish_navigation;
   GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
   GetAnimator()->set_did_finish_navigation_callback(
       did_finish_navigation.GetCallback());
@@ -2042,7 +2049,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
 
   TestFuture<AnimatorState> destroyed;
-  TestFuture<void> did_finish_navigation;
+  TestFuture<bool> did_finish_navigation;
   TestFuture<void> did_cross_fade;
   TestFuture<void> did_invoke;
   GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
@@ -2412,7 +2419,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
 
   TestFuture<AnimatorState> destroyed;
-  TestFuture<void> did_finish_nav;
+  TestFuture<bool> did_finish_nav;
   TestFuture<void> did_cross_fade;
   TestFuture<void> did_cancel;
   TestFuture<void> did_invoke;
@@ -2454,7 +2461,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
 
   TestFuture<AnimatorState> destroyed;
-  TestFuture<void> did_finish_nav;
+  TestFuture<bool> did_finish_nav;
   TestFuture<void> did_cancel;
   TestFuture<void> did_invoke;
   GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
@@ -2757,7 +2764,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
         GetItemSequenceNumberForNavigation(
             back_nav_to_red.GetNavigationHandle());
     GetAnimator()->set_did_finish_navigation_callback(
-        base::BindLambdaForTesting([&]() {
+        base::BindLambdaForTesting([&](bool) {
           new_widget_host->render_frame_metadata_provider()
               ->SetLastRenderFrameMetadataForTest(std::move(metadata));
           GetAnimator()->OnRenderFrameMetadataChangedAfterActivation(
@@ -3942,6 +3949,59 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(destroyed.Wait());
   EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
   ASSERT_FALSE(iframe_back_to_red.was_committed());
+}
+
+namespace {
+class BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding
+    : public BackForwardTransitionAnimationManagerBrowserTest {
+ public:
+  BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding() {
+    scoped_feature_list_.Reset();
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {blink::features::kBackForwardTransitions, {}},
+        {blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
+         {}},
+        {features::kRenderDocument,
+         {{kRenderDocumentLevelParameterName,
+           GetRenderDocumentLevelName(RenderDocumentLevel::kAllFrames)}}}};
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        enabled_features,
+        /*disabled_features=*/{});
+  }
+  ~BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding() override =
+      default;
+};
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding,
+    PaintHoldingDisabledOnTransition) {
+  // Disable BFCache. Since RenderDocument is fully enabled (in the test
+  // harness), the cross-doc navigation will have paint holding enabled.
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+
+  TestFuture<bool> is_paint_holding_timer_running_when_nav_finishes;
+  TestFuture<void> invoke_played;
+  TestFuture<AnimatorState> destroyed;
+  GetAnimator()->set_did_finish_navigation_callback(
+      is_paint_holding_timer_running_when_nav_finishes.GetCallback());
+  GetAnimator()->set_on_invoke_animation_displayed(invoke_played.GetCallback());
+  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+
+  TestNavigationManager back_nav_to_red(web_contents(), RedURL());
+  GetAnimationManager()->OnGestureInvoked();
+  ASSERT_TRUE(back_nav_to_red.WaitForNavigationFinished());
+  ASSERT_TRUE(is_paint_holding_timer_running_when_nav_finishes.Wait());
+  EXPECT_FALSE(is_paint_holding_timer_running_when_nav_finishes.Get());
+  ASSERT_TRUE(invoke_played.Wait());
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
 }
 
 }  // namespace content
