@@ -479,12 +479,10 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
     LoadHTML(test_case.html);
     WebFormControlElement form_target =
         GetFormControlElementById(GetDocument(), "target");
-    if (test_case.expected_label.empty()) {
-      EXPECT_EQ(InferLabelForElementForTesting(form_target), std::nullopt);
-    } else {
-      EXPECT_THAT(InferLabelForElementForTesting(form_target),
-                  Optional(Pair(test_case.expected_label, _)));
-    }
+    std::vector<FormFieldData> fields(1);
+    InferLabelForElementsForTesting(
+        std::to_array<WebFormControlElement>({form_target}), fields);
+    EXPECT_EQ(fields.front().label(), test_case.expected_label);
   }
 }
 
@@ -493,7 +491,6 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
     const char* html;
     const FormFieldData::LabelSource label_source;
   };
-  const char16_t kLabelSourceExpectedLabel[] = u"label";
   static const AutofillFieldLabelSourceCase test_cases[] = {
       {"<div><div>label</div><div><input id='target'/></div></div>",
        FormFieldData::LabelSource::kDivTable},
@@ -527,9 +524,10 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
     LoadHTML(test_case.html);
     WebFormControlElement form_target =
         GetFormControlElementById(GetDocument(), "target");
-    EXPECT_THAT(
-        InferLabelForElementForTesting(form_target),
-        Optional(Pair(kLabelSourceExpectedLabel, test_case.label_source)));
+    std::vector<FormFieldData> fields(1);
+    InferLabelForElementsForTesting(
+        std::to_array<WebFormControlElement>({form_target}), fields);
+    EXPECT_EQ(fields.front().label_source(), test_case.label_source);
   }
 }
 

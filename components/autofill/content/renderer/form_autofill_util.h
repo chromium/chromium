@@ -286,8 +286,9 @@ std::u16string GetAriaLabelForTesting(const blink::WebDocument& document,
                                       const blink::WebElement& element);
 std::u16string GetAriaDescriptionForTesting(const blink::WebDocument& document,
                                             const blink::WebElement& element);
-std::optional<std::pair<std::u16string, FormFieldData::LabelSource>>
-InferLabelForElementForTesting(const blink::WebFormControlElement& element);
+void InferLabelForElementsForTesting(
+    base::span<const blink::WebFormControlElement> control_elements,
+    std::vector<FormFieldData>& fields);
 std::u16string FindChildTextWithIgnoreListForTesting(
     const blink::WebNode& node,
     const std::set<blink::WebNode>& divs_to_skip);

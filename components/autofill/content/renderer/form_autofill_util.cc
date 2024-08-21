@@ -20,6 +20,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
@@ -1071,6 +1072,24 @@ std::optional<InferredLabel> InferLabelForElement(
   return std::nullopt;
 }
 
+void InferLabelForElements(
+    base::span<const WebFormControlElement> control_elements,
+    std::vector<FormFieldData>& fields) {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Autofill.TimingPrecise.InferLabelForElement");
+  CHECK_EQ(control_elements.size(), fields.size());
+  for (size_t i = 0; i < control_elements.size(); ++i) {
+    if (fields[i].label().empty()) {
+      if (auto label = InferLabelForElement(control_elements[i])) {
+        fields[i].set_label(std::move(label->label));
+        fields[i].set_label_source(label->source);
+      }
+    }
+    fields[i].set_label(
+        std::move(fields[i].label()).substr(0, kMaxStringLength));
+  }
+}
+
 // Removes the duplicate titles and limits totals length. The order of the list
 // is preserved as first elements are more reliable features than following
 // ones.
@@ -1977,7 +1996,7 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   fields.reserve(control_elements.size());
   child_frames.resize(iframe_elements.size());
 
-  std::vector<bool> fields_extracted(control_elements.size(), false);
+  std::vector<WebFormControlElement> extracted_elements;
   std::vector<ShadowFieldData> shadow_fields;
   for (size_t i = 0, next_iframe = 0; i < control_elements.size(); ++i) {
     const WebFormControlElement& control_element = control_elements[i];
@@ -1990,7 +2009,7 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     WebFormControlElementToFormField(form_element, control_element,
                                      &field_data_manager, extract_options,
                                      &fields.back(), &shadow_fields.back());
-    fields_extracted[i] = true;
+    extracted_elements.push_back(control_element);
 
     // Finds the last frame that precedes |control_element|.
     while (next_iframe < iframe_elements.size() &&
@@ -2032,31 +2051,8 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   if (!control_elements.empty()) {
     MatchLabelsAndFields(control_elements[0].GetDocument(), field_set);
   }
-
   // Infers field labels from other tags or <labels> without for="...".
-  DCHECK_EQ(control_elements.size(), fields_extracted.size());
-  DCHECK_EQ(fields.size(),
-            base::as_unsigned(base::ranges::count(fields_extracted, true)));
-  {
-    SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-        "Autofill.TimingPrecise.InferLabelForElement");
-    for (size_t element_index = 0, field_index = 0;
-         element_index < control_elements.size(); ++element_index) {
-      if (!fields_extracted[element_index]) {
-        continue;
-      }
-      const WebFormControlElement& control_element =
-          control_elements[element_index];
-      FormFieldData& field = fields[field_index++];
-      if (field.label().empty()) {
-        if (auto label = InferLabelForElement(control_element)) {
-          field.set_label(std::move(label->label));
-          field.set_label_source(label->source);
-        }
-      }
-      field.set_label(std::move(field.label()).substr(0, kMaxStringLength));
-    }
-  }
+  InferLabelForElements(extracted_elements, fields);
 
   // Extracts the frame tokens of |iframe_elements|.
   DCHECK_EQ(child_frames.size(), iframe_elements.size());
@@ -2864,13 +2860,10 @@ std::u16string GetAriaDescriptionForTesting(  // IN-TEST
   return GetAriaDescription(document, element);
 }
 
-std::optional<std::pair<std::u16string, FormFieldData::LabelSource>>
-InferLabelForElementForTesting(  // IN-TEST
-    const WebFormControlElement& element) {
-  if (std::optional<InferredLabel> label = InferLabelForElement(element)) {
-    return {{label->label, label->source}};
-  }
-  return std::nullopt;
+void InferLabelForElementsForTesting(  // IN-TEST
+    base::span<const blink::WebFormControlElement> control_elements,
+    std::vector<FormFieldData>& fields) {
+  InferLabelForElements(control_elements, fields);
 }
 
 WebNode NextWebNodeForTesting(  // IN-TEST
