@@ -29,6 +29,35 @@ struct CheckFilePrefixes {
   std::vector<llvm::StringRef> opt_in;
 };
 
+// Sort the prefixes and remove duplicates.
+void NormalizePrefixList(std::vector<llvm::StringRef>& prefixes) {
+  // TODO(danakj): Use std::ranges::sort when Clang is build with C++20.
+  std::sort(prefixes.begin(), prefixes.end());
+
+  // Remove ~duplicate in a general sense, where a prefix is a prefix of another
+  // prefix. This is useful when two unrelated patches are merged/reverted
+  // around the same time and the prefixes overlap. This avoids one to hide the
+  // other when searching them via std::upper_bound.
+  //
+  // Note that we could use std::unique here, but its behavior is not
+  // guaranteed by the standard when the predicate is not an equivalence
+  // relation.
+  {
+    auto it = prefixes.begin();
+    for (auto next = std::next(it); next != prefixes.end(); ++next) {
+      if (next->starts_with(*it)) {
+        continue;  // Skip the prefix.
+      }
+      ++it;
+      // Fill in the gap in between the two iterators.
+      if (it != next) {
+        *it = std::move(*next);
+      }
+    }
+    prefixes.erase(std::next(it), prefixes.end());
+  }
+}
+
 class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
  public:
   UnsafeBuffersDiagnosticConsumer(clang::DiagnosticsEngine* engine,
@@ -421,11 +450,9 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
       }
     }
 
-    // TODO(danakj): Use std::ranges::sort when Clang is build with C++20.
-    std::sort(check_file_prefixes_.opt_in.begin(),
-              check_file_prefixes_.opt_in.end());
-    std::sort(check_file_prefixes_.opt_out.begin(),
-              check_file_prefixes_.opt_out.end());
+    NormalizePrefixList(check_file_prefixes_.opt_in);
+    NormalizePrefixList(check_file_prefixes_.opt_out);
+
     return true;
   }
 
