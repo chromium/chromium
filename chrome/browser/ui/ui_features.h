@@ -202,7 +202,7 @@ BASE_DECLARE_FEATURE(kTabOrganization);
 bool IsTabOrganization();
 
 BASE_DECLARE_FEATURE(kTabstripDeclutter);
-bool IsTabstripDeclutter();
+bool IsTabstripDeclutterEnabled();
 
 BASE_DECLARE_FEATURE(kMultiTabOrganization);
 

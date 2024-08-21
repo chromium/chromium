@@ -307,7 +307,7 @@ BASE_FEATURE(kTabstripDeclutter,
              "TabstripDeclutter",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsTabstripDeclutter() {
+bool IsTabstripDeclutterEnabled() {
   return base::FeatureList::IsEnabled(features::kTabstripDeclutter);
 }
 

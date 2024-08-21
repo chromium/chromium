@@ -18,6 +18,10 @@ namespace extensions {
 class Mv2DisabledDialogController;
 }  // namespace extensions
 
+namespace tabs {
+class TabDeclutterController;
+}  // namespace tabs
+
 namespace commerce {
 class ProductSpecificationsEntryPointController;
 }  // namespace commerce
@@ -97,6 +101,10 @@ class BrowserWindowFeatures {
     return read_anything_coordinator_.get();
   }
 
+  tabs::TabDeclutterController* tab_declutter_controller() {
+    return tab_declutter_controller_.get();
+  }
+
  protected:
   BrowserWindowFeatures();
 
@@ -118,6 +126,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<extensions::Mv2DisabledDialogController>
       mv2_disabled_dialog_controller_;
+
+  std::unique_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
 
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
 

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/browser_tab_group_sync_observer.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/lens/lens_features.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/saved_tab_groups/features.h"
 
 namespace {
@@ -81,6 +83,9 @@ void BrowserWindowFeatures::Init(Browser* browser) {
               browser->profile(), browser->tab_strip_model(),
               browser->session_id());
     }
+
+    tab_declutter_controller_ = std::make_unique<tabs::TabDeclutterController>(
+        browser->tab_strip_model(), browser->profile());
   }
 
   // The LensOverlayEntryPointController is constructed for all browser types
