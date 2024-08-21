@@ -287,6 +287,7 @@ static_library("common_lib") {
 
   if (enable_extensions_core) {
     public_deps += [
+      "//chrome/common/extensions",
       "//extensions/common",
       "//extensions/common:common_constants",
       "//extensions/common:core_api_provider",
@@ -308,7 +309,6 @@ static_library("common_lib") {
         "//components/app_constants",
       ]
       public_deps += [
-        "//chrome/common/extensions",
         "//chrome/common/extensions/api",
         "//chrome/common/extensions/api:extensions_features",
         "//extensions:extensions_resources",

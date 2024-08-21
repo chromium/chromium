@@ -6,19 +6,11 @@ import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//tools/json_schema_compiler/json_features.gni")
 
-assert(enable_extensions)
+assert(enable_extensions_core)
 
 source_set("extensions") {
   # The files that can be included from other modules.
   public = [
-    "api/file_browser_handlers/file_browser_handler.h",
-    "api/notifications/notification_style.h",
-    "api/omnibox/omnibox_handler.h",
-    "api/side_panel/side_panel_info.h",
-    "api/speech/tts_engine_manifest_handler.h",
-    "api/storage/storage_schema_manifest_handler.h",
-    "api/system_indicator/system_indicator_handler.h",
-    "api/url_handlers/url_handlers_parser.h",
     "chrome_extensions_client.h",
     "chrome_manifest_url_handlers.h",
     "extension_constants.h",
@@ -37,14 +29,6 @@ source_set("extensions") {
 
   # Files that can only be included from here.
   sources = [
-    "api/file_browser_handlers/file_browser_handler.cc",
-    "api/notifications/notification_style.cc",
-    "api/omnibox/omnibox_handler.cc",
-    "api/side_panel/side_panel_info.cc",
-    "api/speech/tts_engine_manifest_handler.cc",
-    "api/storage/storage_schema_manifest_handler.cc",
-    "api/system_indicator/system_indicator_handler.cc",
-    "api/url_handlers/url_handlers_parser.cc",
     "chrome_extensions_api_provider.cc",
     "chrome_extensions_api_provider.h",
     "chrome_extensions_client.cc",
@@ -105,6 +89,32 @@ source_set("extensions") {
     "//ui/message_center/public/cpp",
     "//url",
   ]
+
+  # TODO(https://crbug.com/356905053): These sources do not currently build
+  # cleanly on the experimental desktop-android configuration. Gradually include
+  # more of them, or omit them behind more targeted GN flags.
+  if (enable_extensions) {
+    public += [
+      "api/file_browser_handlers/file_browser_handler.h",
+      "api/notifications/notification_style.h",
+      "api/side_panel/side_panel_info.h",
+      "api/speech/tts_engine_manifest_handler.h",
+      "api/storage/storage_schema_manifest_handler.h",
+      "api/system_indicator/system_indicator_handler.h",
+      "api/url_handlers/url_handlers_parser.h",
+    ]
+
+    sources += [
+      "api/file_browser_handlers/file_browser_handler.cc",
+      "api/notifications/notification_style.cc",
+      "api/omnibox/omnibox_handler.cc",
+      "api/side_panel/side_panel_info.cc",
+      "api/speech/tts_engine_manifest_handler.cc",
+      "api/storage/storage_schema_manifest_handler.cc",
+      "api/system_indicator/system_indicator_handler.cc",
+      "api/url_handlers/url_handlers_parser.cc",
+    ]
+  }
 
   if (is_chromeos) {
     public += [ "api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h" ]
