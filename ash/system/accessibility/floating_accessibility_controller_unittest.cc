@@ -105,15 +105,14 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
   }
 
   ImeMenuTray* GetImeTray() {
-    ImeMenuTray* result =
-        menu_view() ? menu_view()->ime_button_.get() : nullptr;
+    ImeMenuTray* result = menu_view() ? menu_view()->ime_button() : nullptr;
     EXPECT_NE(result, nullptr) << "Ime tray is not currently visible";
     return result;
   }
 
   TrayBackgroundView* GetVirtualKeyboardTray() {
     TrayBackgroundView* result =
-        menu_view() ? menu_view()->virtual_keyboard_button_.get() : nullptr;
+        menu_view() ? menu_view()->virtual_keyboard_button() : nullptr;
     EXPECT_NE(result, nullptr)
         << "Virtual keyboard tray is not currently visible";
     return result;

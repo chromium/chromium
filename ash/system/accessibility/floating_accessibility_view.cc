@@ -141,17 +141,19 @@ FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
   Shelf* shelf = RootWindowController::ForTargetRootWindow()->shelf();
   std::unique_ptr<views::View> feature_buttons_container =
       CreateButtonRowContainer(kPanelPositionButtonPadding);
-  dictation_button_ = feature_buttons_container->AddChildView(
+  dictation_button_observation_.Observe(feature_buttons_container->AddChildView(
       std::make_unique<DictationButtonTray>(
-          shelf, TrayBackgroundViewCatalogName::kDictationAccesibilityWindow));
-  select_to_speak_button_ = feature_buttons_container->AddChildView(
-      std::make_unique<SelectToSpeakTray>(
+          shelf, TrayBackgroundViewCatalogName::kDictationAccesibilityWindow)));
+  select_to_speak_button_observation_.Observe(
+      feature_buttons_container->AddChildView(std::make_unique<
+                                              SelectToSpeakTray>(
           shelf,
-          TrayBackgroundViewCatalogName::kSelectToSpeakAccessibilityWindow));
-  virtual_keyboard_button_ = feature_buttons_container->AddChildView(
-      std::make_unique<VirtualKeyboardTray>(
+          TrayBackgroundViewCatalogName::kSelectToSpeakAccessibilityWindow)));
+  virtual_keyboard_button_observation_.Observe(
+      feature_buttons_container->AddChildView(std::make_unique<
+                                              VirtualKeyboardTray>(
           shelf,
-          TrayBackgroundViewCatalogName::kVirtualKeyboardAccessibilityWindow));
+          TrayBackgroundViewCatalogName::kVirtualKeyboardAccessibilityWindow)));
 
   // It will be visible again as soon as any of the children becomes visible.
   feature_buttons_container->SetVisible(false);
@@ -184,10 +186,10 @@ FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
         /*is_handwriting_enabled*/ false, /*is_voice_enabled*/ false);
     std::unique_ptr<views::View> ime_button_container =
         CreateButtonRowContainer(kPanelPositionButtonPadding);
-    ime_button_ = ime_button_container->AddChildView(
-        std::make_unique<ImeMenuTray>(shelf));
+    ime_button_observation_.Observe(ime_button_container->AddChildView(
+        std::make_unique<ImeMenuTray>(shelf)));
     ime_button_container->SetVisible(true);
-    ime_button_->SetVisiblePreferred(true);
+    ime_button()->SetVisiblePreferred(true);
 
     AddChildView(std::move(ime_button_container));
     AddChildView(CreateSeparator());
@@ -201,11 +203,12 @@ FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
   // Set view IDs for testing.
   position_button_->SetID(static_cast<int>(ButtonId::kPosition));
   a11y_tray_button_->SetID(static_cast<int>(ButtonId::kSettingsList));
-  dictation_button_->SetID(static_cast<int>(ButtonId::kDictation));
-  select_to_speak_button_->SetID(static_cast<int>(ButtonId::kSelectToSpeak));
-  virtual_keyboard_button_->SetID(static_cast<int>(ButtonId::kVirtualKeyboard));
+  dictation_button()->SetID(static_cast<int>(ButtonId::kDictation));
+  select_to_speak_button()->SetID(static_cast<int>(ButtonId::kSelectToSpeak));
+  virtual_keyboard_button()->SetID(
+      static_cast<int>(ButtonId::kVirtualKeyboard));
   if (IsKioskImeButtonEnabled()) {
-    ime_button_->SetID(static_cast<int>(ButtonId::kIme));
+    ime_button()->SetID(static_cast<int>(ButtonId::kIme));
   }
 }
 
@@ -218,21 +221,19 @@ void FloatingAccessibilityView::Initialize() {
   Shell::Get()->system_tray_notifier()->AddSystemTrayObserver(this);
   KeyboardController::Get()->AddObserver(this);
   for (TrayBackgroundView* feature_view : {
-           dictation_button_,
-           select_to_speak_button_,
-           virtual_keyboard_button_,
+           dictation_button(),
+           select_to_speak_button(),
+           virtual_keyboard_button(),
        }) {
     feature_view->Initialize();
     feature_view->CalculateTargetBounds();
     feature_view->UpdateLayout();
-    feature_view->AddObserver(this);
   }
   if (IsKioskImeButtonEnabled()) {
-    ime_button_->Initialize();
-    ime_button_->CalculateTargetBounds();
-    ime_button_->UpdateLayout();
-    ime_button_->AddObserver(this);
-    ime_button_->SetVisible(true);
+    ime_button()->Initialize();
+    ime_button()->CalculateTargetBounds();
+    ime_button()->UpdateLayout();
+    ime_button()->SetVisible(true);
   }
 }
 
