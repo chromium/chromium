@@ -47,12 +47,9 @@ FormHandlersJavaScriptFeature::~FormHandlersJavaScriptFeature() = default;
 
 void FormHandlersJavaScriptFeature::TrackFormMutations(
     web::WebFrame* frame,
-    int mutation_tracking_delay,
-    bool allowBatching) {
+    int mutation_tracking_delay) {
   CallJavaScriptFunction(frame, "formHandlers.trackFormMutations",
-                         base::Value::List()
-                             .Append(mutation_tracking_delay)
-                             .Append(allowBatching));
+                         base::Value::List().Append(mutation_tracking_delay));
 }
 
 void FormHandlersJavaScriptFeature::ToggleTrackingUserEditedFields(

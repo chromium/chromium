@@ -124,8 +124,8 @@ TEST_F(FormActivityTabHelperTest, TestObserverDocumentSubmitted) {
 
   EXPECT_FALSE(observer_->submit_document_info()->has_user_gesture);
 
-  // Verify that there isn't any form activity metric recorded, even if
-  // batching is allowed, as the form submit signals aren't covered.
+  // Verify that there isn't any form activity metric recorded as the form
+  // submit signals aren't covered.
   histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.DropCount", 0);
   histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.SendCount", 0);
   histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.SendRatio", 0);
@@ -159,8 +159,8 @@ TEST_F(FormActivityTabHelperTest, TestFormSubmittedHook) {
   EXPECT_EQ(kTestFormData, observer_->submit_document_info()->form_data);
   EXPECT_FALSE(observer_->submit_document_info()->has_user_gesture);
 
-  // Verify that there isn't any form activity metric recorded, even if
-  // batching is allowed, as the form submit signals aren't covered.
+  // Verify that there isn't any form activity metric recorded as the form
+  // submit signals aren't covered.
   histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.DropCount", 0);
   histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.SendCount", 0);
   histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.SendRatio", 0);
@@ -297,9 +297,8 @@ TEST_F(FormActivityTabHelperTest, AddCustomElement) {
 
 // Test fixture verifying the behavior of FormActivityTabHelper when handling
 // form mutation events.
-class FormMutationTest
-    : public FormActivityTabHelperTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+class FormMutationTest : public FormActivityTabHelperTest,
+                         public testing::WithParamInterface<bool> {
  public:
   void SetUp() override { FormActivityTabHelperTest::SetUp(); }
 
@@ -310,7 +309,7 @@ class FormMutationTest
     LoadHtml(html);
     web::WebFrame* main_frame = WaitForMainFrame();
     ASSERT_TRUE(main_frame);
-    TrackFormMutations(main_frame, IsBatchingAllowed());
+    TrackFormMutations(main_frame);
 
     autofill::FormUtilJavaScriptFeature::GetInstance()
         ->SetAutofillXHRSubmissionDetection(main_frame,
@@ -363,11 +362,7 @@ class FormMutationTest
   }
 
   // Helper functions to access parameters:
-  bool IsBatchingAllowed() const { return std::get<0>(GetParam()); }
-
-  bool IsXHRSubmissionDetectionEnabled() const {
-    return std::get<1>(GetParam());
-  }
+  bool IsXHRSubmissionDetectionEnabled() const { return GetParam(); }
 
   // Forces fetching forms in the main frame which sets renderer IDs in the
   // relevant forms and fields. IDs are set in the order the elements appear in
@@ -409,7 +404,6 @@ TEST_P(FormMutationTest, PasswordFormRemovalRegistered) {
               ElementsAre(FormRendererId(1)));
   EXPECT_THAT(form_removal_params.value().removed_unowned_fields, IsEmpty());
 
-  if (IsBatchingAllowed()) {
     histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.DropCount",
                                          /*sample=*/0,
                                          /*expected_bucket_count=*/1);
@@ -419,16 +413,6 @@ TEST_P(FormMutationTest, PasswordFormRemovalRegistered) {
     histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendRatio",
                                          /*sample=*/100,
                                          /*expected_bucket_count=*/1);
-  } else {
-    // Verify that there isn't any metric recorded as the batching feature is
-    // disabled.
-    histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.DropCount",
-                                       0);
-    histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.SendCount",
-                                       0);
-    histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.SendRatio",
-                                       0);
-  }
 
   // Validate that only one removal event is received.
   ASSERT_FALSE(WaitUntilConditionOrTimeout(
@@ -515,7 +499,6 @@ TEST_P(FormMutationTest, RemoveFormlessPasswordFields) {
               ElementsAre(FieldRendererId(1)));
   EXPECT_THAT(form_removal_params.value().frame_id, Not(IsEmpty()));
 
-  if (IsBatchingAllowed()) {
     histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.DropCount",
                                          /*sample=*/0,
                                          /*expected_bucket_count=*/1);
@@ -525,16 +508,6 @@ TEST_P(FormMutationTest, RemoveFormlessPasswordFields) {
     histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendRatio",
                                          /*sample=*/100,
                                          /*expected_bucket_count=*/1);
-  } else {
-    // Verify that there isn't any metric recorded as the batching feature is
-    // disabled.
-    histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.DropCount",
-                                       0);
-    histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.SendCount",
-                                       0);
-    histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.SendRatio",
-                                       0);
-  }
 
   // Validate that only one removal event is received.
   ASSERT_FALSE(WaitUntilConditionOrTimeout(
@@ -586,7 +559,7 @@ TEST_P(FormMutationTest, RemoveMultipleFormsAndFormlessFields) {
 }
 // Tests that removing a form control element and adding a new one in the same
 // mutations batch is notified with a message for each mutation, sent
-// back-to-back, when batching is enabled.
+// back-to-back.
 TEST_P(FormMutationTest, RemovedAndAddedFormsRegistered) {
   // Basic HTML page in which we add a HTML form.
   NSString* const html = @"<html><body><form id=\"form1\">"
@@ -615,30 +588,24 @@ TEST_P(FormMutationTest, RemovedAndAddedFormsRegistered) {
     return observer_->number_of_events_received() == 1;
   }));
 
-  if (IsBatchingAllowed()) {
-    // The removed form message is always the first posted. Skip this when
-    // messages batching isn't enabled because the added form comes first in
-    // that case.
-    ASSERT_TRUE(observer_->form_removal_info());
-    FormRemovalParams form_removal_params =
-        observer_->form_removal_info()->form_removal_params;
-    EXPECT_THAT(form_removal_params.frame_id, Not(IsEmpty()));
-    EXPECT_THAT(form_removal_params.removed_unowned_fields, IsEmpty());
-    EXPECT_THAT(form_removal_params.removed_forms,
-                ElementsAre(FormRendererId(1)));
+  // The removed form message is always the first posted.
+  ASSERT_TRUE(observer_->form_removal_info());
+  FormRemovalParams form_removal_params =
+      observer_->form_removal_info()->form_removal_params;
+  EXPECT_THAT(form_removal_params.frame_id, Not(IsEmpty()));
+  EXPECT_THAT(form_removal_params.removed_unowned_fields, IsEmpty());
+  EXPECT_THAT(form_removal_params.removed_forms,
+              ElementsAre(FormRendererId(1)));
 
-    // Wait until the next message is received.
-    EXPECT_TRUE(
-        WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
-          return observer_->number_of_events_received() == 2;
-        }));
-  }
+  // Wait until the next message is received.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
+    return observer_->number_of_events_received() == 2;
+  }));
 
   ASSERT_TRUE(observer_->form_activity_info());
   ValidateParamsAfterFormChangedEvent(
       observer_->form_activity_info()->form_activity);
 
-  if (IsBatchingAllowed()) {
     histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.DropCount",
                                          /*sample=*/0,
                                          /*expected_bucket_count=*/1);
@@ -648,14 +615,6 @@ TEST_P(FormMutationTest, RemovedAndAddedFormsRegistered) {
     histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendRatio",
                                          /*sample=*/100,
                                          /*expected_bucket_count=*/1);
-  } else {
-    histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.DropCount",
-                                       0);
-    histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.SendCount",
-                                       0);
-    histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.SendRatio",
-                                       0);
-  }
 }
 
 // Tests that messages that were batched and dropped are correctly recorded as
@@ -693,58 +652,29 @@ TEST_P(FormMutationTest, RemovedAndAddedFormsRegistered_WithDroppedMessages) {
 
   ExecuteJavaScript(add_and_remove_form_JS);
 
-  if (IsBatchingAllowed()) {
-    // Wait on all the messages in the batch.
-    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-      return observer_->form_removal_info() != nullptr &&
-             observer_->form_activity_info() != nullptr;
-    }));
+  // Wait on all the messages in the batch.
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return observer_->form_removal_info() != nullptr &&
+           observer_->form_activity_info() != nullptr;
+  }));
 
-    EXPECT_THAT(
-        observer_->form_removal_info()->form_removal_params.removed_forms,
-        ElementsAre(FormRendererId(1)));
-    EXPECT_THAT(observer_->form_removal_info()
-                    ->form_removal_params.removed_unowned_fields,
-                IsEmpty());
-    ValidateParamsAfterFormChangedEvent(
-        observer_->form_activity_info()->form_activity);
+  EXPECT_THAT(observer_->form_removal_info()->form_removal_params.removed_forms,
+              ElementsAre(FormRendererId(1)));
+  EXPECT_THAT(observer_->form_removal_info()
+                  ->form_removal_params.removed_unowned_fields,
+              IsEmpty());
+  ValidateParamsAfterFormChangedEvent(
+      observer_->form_activity_info()->form_activity);
 
-    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.DropCount",
-                                         /*sample=*/4,
-                                         /*expected_bucket_count=*/1);
-    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendCount",
-                                         /*sample=*/2,
-                                         /*expected_bucket_count=*/1);
-    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendRatio",
-                                         /*sample=*/33,
-                                         /*expected_bucket_count=*/1);
-  } else {
-    // Wait on all the messages in the batch.
-    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-      return observer_->form_activity_info() != nullptr;
-    }));
-
-    EXPECT_THAT(observer_->form_activity_info()->form_activity.frame_id,
-                Not(IsEmpty()));
-    EXPECT_THAT(observer_->form_activity_info()->form_activity.type,
-                StrEq("form_changed"));
-
-    // Verify that there isn't any metric recorded as the batch feature is
-    // disabled.
-    histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.DropCount",
-                                       0);
-    histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.SendCount",
-                                       0);
-    histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.SendRatio",
-                                       0);
-
-    // Validate only the form activity message is received when batching is not
-    // allowed.
-    ASSERT_FALSE(WaitUntilConditionOrTimeout(
-        base::Milliseconds(kTrackFormMutationsDelayInMs * 2), ^bool {
-          return observer_->number_of_events_received() > 1;
-        }));
-  }
+  histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.DropCount",
+                                       /*sample=*/4,
+                                       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendCount",
+                                       /*sample=*/2,
+                                       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendRatio",
+                                       /*sample=*/33,
+                                       /*expected_bucket_count=*/1);
 }
 
 // Tests that removing input fields triggers the right events.
@@ -819,15 +749,15 @@ TEST_P(FormMutationTest, AddForm) {
 INSTANTIATE_TEST_SUITE_P(
     /* No InstantiationName */,
     FormMutationTest,
-    ::testing::Combine(::testing::Bool(),  // Batching allowed
-                       ::testing::Bool()   // XHR submission detection enabled
-                       ));
+
+    ::testing::Bool()  // XHR submission detection enabled
+);
 
 // Test fixture verifying the behavior of FormActivityTabHelper when handling
 // mutations involving form control elements.
 class FormMutationFormControlElements
     : public FormActivityTabHelperTest,
-      public testing::WithParamInterface<std::tuple<std::string, bool>> {};
+      public testing::WithParamInterface<std::string> {};
 
 // Tests that adding a formless control element is notified as a form changed
 // mutation.
@@ -839,8 +769,8 @@ TEST_P(FormMutationFormControlElements, AddedFormlessControlElement) {
   web::WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
 
-  auto [element_tag, allow_batching] = GetParam();
-  TrackFormMutations(main_frame, allow_batching);
+  std::string element_tag = GetParam();
+  TrackFormMutations(main_frame);
 
   // Add the element to the page.
   NSString* const insert_element_JS = [NSString
@@ -868,8 +798,8 @@ TEST_P(FormMutationFormControlElements, AddedFormControlElement) {
   web::WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
 
-  auto [element_tag, allow_batching] = GetParam();
-  TrackFormMutations(main_frame, allow_batching);
+  std::string element_tag = GetParam();
+  TrackFormMutations(main_frame);
 
   // Add the element to the page.
   NSString* const insert_element_JS = [NSString
@@ -890,6 +820,4 @@ TEST_P(FormMutationFormControlElements, AddedFormControlElement) {
 INSTANTIATE_TEST_SUITE_P(
     /* No InstantiationName */,
     FormMutationFormControlElements,
-    ::testing::Combine(
-        ::testing::Values("form", "input", "select", "option", "textarea"),
-        ::testing::Bool()));
+    ::testing::Values("form", "input", "select", "option", "textarea"));

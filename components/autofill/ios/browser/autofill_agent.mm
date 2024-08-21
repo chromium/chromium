@@ -1336,10 +1336,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   // Use a delay of 200ms when tracking form mutations to reduce the
   // communication overhead (as mutations are likely to come in batch).
   constexpr int kMutationTrackingEnabledDelayInMs = 200;
-  const bool allowMsgBatching =
-      base::FeatureList::IsEnabled(kAutofillFormActivityMsgBatchingIos);
-  formHandlerFeature->TrackFormMutations(
-      frame, kMutationTrackingEnabledDelayInMs, allowMsgBatching);
+  formHandlerFeature->TrackFormMutations(frame,
+                                         kMutationTrackingEnabledDelayInMs);
 
   formHandlerFeature->ToggleTrackingUserEditedFields(
       frame,

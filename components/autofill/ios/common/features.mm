@@ -6,14 +6,6 @@
 
 // Features that are exlusive to iOS go here in alphabetical order.
 
-// Allows batching up to 2 form activities together when multiple form
-// activities are detected in the same bundle of HTML element mutations.
-// Used as a safety kill switch, hence enabled by default.
-// TODO(crbug.com/329741789): Remove after a few milestones.
-BASE_FEATURE(kAutofillFormActivityMsgBatchingIos,
-             "AutofillAllowFormActivityBatchingIos",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to dynamically load the address input fields in the save
 // flow and settings based on the country value.
 // TODO(crbug.com/40281788): Remove once launched.
