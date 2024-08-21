@@ -23,7 +23,7 @@ class AtRuleDescriptorParser {
  public:
   static bool ParseAtRule(StyleRule::RuleType,
                           AtRuleDescriptorID,
-                          const CSSTokenizedValue&,
+                          CSSParserTokenStream&,
                           const CSSParserContext&,
                           HeapVector<CSSPropertyValue, 64>&);
   static CSSValue* ParseFontFaceDescriptor(AtRuleDescriptorID,

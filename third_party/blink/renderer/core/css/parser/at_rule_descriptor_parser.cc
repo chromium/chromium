@@ -270,36 +270,21 @@ CSSValueList* ConsumeFontFaceSrc(CSSParserTokenStream& stream,
 
 CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
                             AtRuleDescriptorID id,
-                            const CSSTokenizedValue& tokenized_value,
+                            CSSParserTokenStream& stream,
                             const CSSParserContext& context) {
   using Parser = AtRuleDescriptorParser;
 
   switch (rule_type) {
-    case StyleRule::kFontFace: {
-      CSSTokenizer tokenizer(tokenized_value.text);
-      CSSParserTokenStream stream(tokenizer);
+    case StyleRule::kFontFace:
       return Parser::ParseFontFaceDescriptor(id, stream, context);
-    }
-    case StyleRule::kFontPaletteValues: {
-      CSSTokenizer tokenizer(tokenized_value.text);
-      CSSParserTokenStream stream(tokenizer);
+    case StyleRule::kFontPaletteValues:
       return Parser::ParseAtFontPaletteValuesDescriptor(id, stream, context);
-    }
-    case StyleRule::kProperty: {
-      CSSTokenizer tokenizer(tokenized_value.text);
-      CSSParserTokenStream stream(tokenizer);
+    case StyleRule::kProperty:
       return Parser::ParseAtPropertyDescriptor(id, stream, context);
-    }
-    case StyleRule::kCounterStyle: {
-      CSSTokenizer tokenizer(tokenized_value.text);
-      CSSParserTokenStream stream(tokenizer);
+    case StyleRule::kCounterStyle:
       return Parser::ParseAtCounterStyleDescriptor(id, stream, context);
-    }
-    case StyleRule::kViewTransition: {
-      CSSTokenizer tokenizer(tokenized_value.text);
-      CSSParserTokenStream stream(tokenizer);
+    case StyleRule::kViewTransition:
       return Parser::ParseAtViewTransitionDescriptor(id, stream, context);
-    }
     case StyleRule::kCharset:
     case StyleRule::kContainer:
     case StyleRule::kStyle:
@@ -474,6 +459,7 @@ CSSValue* AtRuleDescriptorParser::ParseAtPropertyDescriptor(
   }
 
   if (!parsed_value || !stream.AtEnd()) {
+    stream.SkipUntilPeekedTypeIs();  // For the inspector.
     return nullptr;
   }
 
@@ -523,10 +509,10 @@ CSSValue* AtRuleDescriptorParser::ParseAtViewTransitionDescriptor(
 bool AtRuleDescriptorParser::ParseAtRule(
     StyleRule::RuleType rule_type,
     AtRuleDescriptorID id,
-    const CSSTokenizedValue& tokenized_value,
+    CSSParserTokenStream& stream,
     const CSSParserContext& context,
     HeapVector<CSSPropertyValue, 64>& parsed_descriptors) {
-  CSSValue* result = ConsumeDescriptor(rule_type, id, tokenized_value, context);
+  CSSValue* result = ConsumeDescriptor(rule_type, id, stream, context);
 
   if (!result) {
     return false;

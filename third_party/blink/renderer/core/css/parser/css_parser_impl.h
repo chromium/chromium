@@ -165,11 +165,6 @@ class CORE_EXPORT CSSParserImpl {
       wtf_size_t offset,
       const CSSParserContext*);
 
-  // Legacy function, mostly used for parsing descriptors. Will parsed
-  // until AtEnd.
-  static CSSTokenizedValue ConsumeUnrestrictedPropertyValue(
-      CSSParserTokenStream&);
-
   static bool RemoveImportantAnnotationIfPresent(CSSTokenizedValue&);
 
   CSSParserMode GetMode() const;
@@ -294,11 +289,6 @@ class CORE_EXPORT CSSParserImpl {
                             const AtomicString& property_name,
                             bool allow_important_annotation,
                             bool is_animation_tainted);
-
-  // Consumes tokens from the stream using the provided function, and wraps
-  // the result in a CSSTokenizedValue.
-  template <typename ConsumeFunction>
-  static CSSTokenizedValue ConsumeValue(CSSParserTokenStream&, ConsumeFunction);
 
   static std::unique_ptr<Vector<KeyframeOffset>> ConsumeKeyframeKeyList(
       const CSSParserContext*,

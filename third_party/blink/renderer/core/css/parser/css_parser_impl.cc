@@ -2743,17 +2743,8 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
 
   if (id) {
     if (parsing_descriptor) {
-      // TODO(sesse): When we move descriptor parsing entirely
-      // to the streaming parser, remove this and the remnants
-      // of ConsumeUnrestrictedPropertyValue().
-      CSSTokenizedValue tokenized_value =
-          ConsumeUnrestrictedPropertyValue(stream);
-      important = RemoveImportantAnnotationIfPresent(tokenized_value);
-      if (important) {
-        return false;  // Invalid for descriptors.
-      }
       const AtRuleDescriptorID atrule_id = static_cast<AtRuleDescriptorID>(id);
-      AtRuleDescriptorParser::ParseAtRule(rule_type, atrule_id, tokenized_value,
+      AtRuleDescriptorParser::ParseAtRule(rule_type, atrule_id, stream,
                                           *context_, parsed_properties_);
     } else {
       const CSSPropertyID unresolved_property = static_cast<CSSPropertyID>(id);
@@ -2805,7 +2796,7 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
        rule_type == StyleRule::kPositionTry ||
        rule_type == StyleRule::kFontPaletteValues)) {
     if (!id) {
-      // If we skipped the main call to ConsumeValue due to an invalid
+      // If we skipped the relevant Consume*() calls above due to an invalid
       // property/descriptor, the inspector still needs to know the offset
       // where the would-be declaration ends.
       CSSVariableParser::ConsumeUnparsedDeclaration(
@@ -2869,29 +2860,6 @@ void CSSParserImpl::ConsumeDeclarationValue(CSSParserTokenStream& stream,
   CSSPropertyParser::ParseValue(unresolved_property, allow_important_annotation,
                                 stream, context_, parsed_properties_,
                                 rule_type);
-}
-
-template <typename ConsumeFunction>
-CSSTokenizedValue CSSParserImpl::ConsumeValue(
-    CSSParserTokenStream& stream,
-    ConsumeFunction consume_function) {
-  // Consume leading whitespace and comments. This is needed
-  // by ConsumeDeclarationValue() / CSSPropertyParser::ParseValue(),
-  // and also CSSVariableParser::ParseDeclarationIncludingCSSWide().
-  stream.ConsumeWhitespace();
-  wtf_size_t value_start_offset = stream.LookAheadOffset();
-  CSSParserTokenRange range = consume_function(stream);
-  wtf_size_t value_end_offset = stream.LookAheadOffset();
-
-  return {range, stream.StringRangeAt(value_start_offset,
-                                      value_end_offset - value_start_offset)};
-}
-
-CSSTokenizedValue CSSParserImpl::ConsumeUnrestrictedPropertyValue(
-    CSSParserTokenStream& stream) {
-  return ConsumeValue(stream, [](CSSParserTokenStream& stream) {
-    return stream.ConsumeUntilPeekedTypeIs<>();
-  });
 }
 
 bool CSSParserImpl::RemoveImportantAnnotationIfPresent(
