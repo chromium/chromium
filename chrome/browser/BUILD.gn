@@ -7659,7 +7659,17 @@ static_library("browser") {
   # TODO(https://crbug.com/356905053): Add more dependencies here and merge this
   # block with the `enable_extensions` block above.
   if (enable_desktop_android_extensions) {
+    sources += [
+      # TODO(https://crbug.com/356905053): These files are temporary workarounds
+      # allow for a lightweight extensions runtime in desktop-android builds.
+      # They should be removed.
+      "extensions/desktop_android/desktop_android_extension_system.cc",
+      "extensions/desktop_android/desktop_android_extension_system.h",
+      "extensions/desktop_android/desktop_android_extensions_browser_client.cc",
+      "extensions/desktop_android/desktop_android_extensions_browser_client.h",
+    ]
     public_deps += [ "//extensions/browser" ]
+    deps += [ "//extensions/browser/updater" ]
   }
 
   if (enable_library_cdms) {
