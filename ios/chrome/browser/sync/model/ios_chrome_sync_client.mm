@@ -33,7 +33,7 @@
 #import "components/saved_tab_groups/tab_group_sync_service.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/sharing_message/sharing_message_bridge.h"
-#import "components/sharing_message/sharing_message_model_type_controller.h"
+#import "components/sharing_message/sharing_message_data_type_controller.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/report_unrecoverable_error.h"
@@ -243,7 +243,7 @@ IOSChromeSyncClient::CreateDataTypeControllers(
         IOSSharingMessageBridgeFactory::GetForBrowserState(browser_state_)
             ->GetControllerDelegate()
             .get();
-    controllers.push_back(std::make_unique<SharingMessageModelTypeController>(
+    controllers.push_back(std::make_unique<SharingMessageDataTypeController>(
         /*delegate_for_full_sync_mode=*/
         std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
             sharing_message_delegate),

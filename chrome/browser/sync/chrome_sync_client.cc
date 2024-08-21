@@ -78,7 +78,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/sharing_message/sharing_message_bridge.h"
-#include "components/sharing_message/sharing_message_model_type_controller.h"
+#include "components/sharing_message/sharing_message_data_type_controller.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/sync/base/data_type.h"
@@ -468,7 +468,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
         SharingMessageBridgeFactory::GetForBrowserContext(profile_)
             ->GetControllerDelegate()
             .get();
-    controllers.push_back(std::make_unique<SharingMessageModelTypeController>(
+    controllers.push_back(std::make_unique<SharingMessageDataTypeController>(
         /*delegate_for_full_sync_mode=*/
         std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
             sharing_message_delegate),
