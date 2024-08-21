@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 37 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Test that embedded 0x0A is stripped
   assert_equals: expected "data:text/plain;charset=utf-8,first%20linesecond%20line" but got "data:text/plain;charset=utf-8,first%20line%0Asecond%20line"
 [FAIL] Parsing: <http://example.com/foo/%2e%2> against <about:blank>
@@ -62,6 +62,16 @@ Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: href expected "foo://host/dir/?%20!%22$%&'()*+,-./:;%3C=%3E?@[\\\\]^_`{|}~" but got "foo://host/dir/?%20!%22$%&%27()*+,-./:;%3C=%3E?@[\\\\]^_`{|}~"
 [FAIL] Parsing: <https://xn--/> against <about:blank>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
+[FAIL] Parsing: <android://x:0/a> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <drivefs://x:0/a> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <chromeos-steam://x:0/a> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <steam://x:0/a> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <materialized-view://x:0/a> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
 [FAIL] Parsing: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank>
   assert_equals: href expected "http://example.com/%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF?%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF" but got "http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ\\ufffe\\uffff?U+d800𐟾U+dfff﷐﷏﷯ﷰ\\ufffe\\uffff"
 Harness: the test ran to completion.

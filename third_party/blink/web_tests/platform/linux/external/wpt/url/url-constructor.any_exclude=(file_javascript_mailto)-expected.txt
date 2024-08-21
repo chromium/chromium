@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 156 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 169 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <non-special://test:@test/x> without base
   assert_equals: href expected "non-special://test@test/x" but got "non-special://test:@test/x"
 [FAIL] Parsing: <non-special://:@test/x> without base
@@ -311,6 +311,32 @@ Found 156 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <w://x:0> without base
   assert_equals: host expected "x:0" but got ""
 [FAIL] Parsing: <west://x:0> without base
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <android://x:0/a> without base
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <drivefs://x:0/a> without base
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <chromeos-steam://x:0/a> without base
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <steam://x:0/a> without base
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <materialized-view://x:0/a> without base
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <android-app://x:0> without base
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <chrome-distiller://x:0> without base
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <chrome-extension://x:0> without base
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <chrome-native://x:0> without base
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <chrome-resource://x:0> without base
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <chrome-search://x:0> without base
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <fuchsia-dir://x:0> without base
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <isolated-app://x:0> without base
   assert_equals: host expected "x:0" but got ""
 Harness: the test ran to completion.
 

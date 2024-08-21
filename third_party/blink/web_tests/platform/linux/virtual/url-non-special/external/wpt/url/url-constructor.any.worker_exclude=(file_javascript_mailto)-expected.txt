@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <http://example.com/foo/%2e%2> without base
   assert_equals: href expected "http://example.com/foo/%2e%2" but got "http://example.com/foo/.%2"
 [FAIL] Parsing: <http://example.com/foo/%2e./%2e%2e/.%2e/%2e.bar> without base
@@ -60,5 +60,15 @@ Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: href expected "foo://host/dir/?%20!%22$%&'()*+,-./:;%3C=%3E?@[\\\\]^_`{|}~" but got "foo://host/dir/?%20!%22$%&%27()*+,-./:;%3C=%3E?@[\\\\]^_`{|}~"
 [FAIL] Parsing: <https://xn--/> without base
   assert_throws_js: function "function() {\n          new URL(expected.input, base);\n        }" did not throw
+[FAIL] Parsing: <android://x:0/a> without base
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <drivefs://x:0/a> without base
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <chromeos-steam://x:0/a> without base
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <steam://x:0/a> without base
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <materialized-view://x:0/a> without base
+  assert_equals: host expected "x:0" but got ""
 Harness: the test ran to completion.
 

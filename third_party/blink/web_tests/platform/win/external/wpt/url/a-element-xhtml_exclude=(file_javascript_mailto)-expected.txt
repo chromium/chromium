@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 166 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <non-special://test:@test/x> against <about:blank>
   assert_equals: href expected "non-special://test@test/x" but got "non-special://test:@test/x"
 [FAIL] Parsing: <non-special://:@test/x> against <about:blank>
@@ -329,6 +329,32 @@ Found 166 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <w://x:0> against <about:blank>
   assert_equals: href expected "w://x:0" but got "file:///W://x:0"
 [FAIL] Parsing: <west://x:0> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <android://x:0/a> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <drivefs://x:0/a> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <chromeos-steam://x:0/a> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <steam://x:0/a> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <materialized-view://x:0/a> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <android-app://x:0> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <chrome-distiller://x:0> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <chrome-extension://x:0> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <chrome-native://x:0> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <chrome-resource://x:0> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <chrome-search://x:0> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <fuchsia-dir://x:0> against <about:blank>
+  assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <isolated-app://x:0> against <about:blank>
   assert_equals: host expected "x:0" but got ""
 [FAIL] Parsing: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank>
   assert_equals: href expected "http://example.com/%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF?%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF" but got "http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ\\ufffe\\uffff?U+d800𐟾U+dfff﷐﷏﷯ﷰ\\ufffe\\uffff"
