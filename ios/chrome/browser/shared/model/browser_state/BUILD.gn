@@ -85,7 +85,6 @@ source_set("test_support") {
     "test_chrome_browser_state.h",
     "test_chrome_browser_state.mm",
     "test_chrome_browser_state_manager.h",
-    "test_chrome_browser_state_manager.mm",
   ]
 
   public_deps = [

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,14 +13,14 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 
-TestChromeBrowserStateManager::TestChromeBrowserStateManager()
+TestProfileManagerIOS::TestProfileManagerIOS()
     : browser_state_info_cache_(GetApplicationContext()->GetLocalState()),
       data_dir_(base::CreateUniqueTempDirectoryScopedToTest()) {
   CHECK_EQ(GetApplicationContext()->GetChromeBrowserStateManager(), nullptr);
   TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(this);
 }
 
-TestChromeBrowserStateManager::~TestChromeBrowserStateManager() {
+TestProfileManagerIOS::~TestProfileManagerIOS() {
   CHECK_EQ(GetApplicationContext()->GetChromeBrowserStateManager(), this);
 
   // Notify observers before unregistering from ApplicationContext.
@@ -31,7 +31,7 @@ TestChromeBrowserStateManager::~TestChromeBrowserStateManager() {
   TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(nullptr);
 }
 
-void TestChromeBrowserStateManager::AddObserver(
+void TestProfileManagerIOS::AddObserver(
     ChromeBrowserStateManagerObserver* observer) {
   observers_.AddObserver(observer);
 
@@ -41,26 +41,26 @@ void TestChromeBrowserStateManager::AddObserver(
   }
 }
 
-void TestChromeBrowserStateManager::RemoveObserver(
+void TestProfileManagerIOS::RemoveObserver(
     ChromeBrowserStateManagerObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void TestChromeBrowserStateManager::LoadBrowserStates() {}
+void TestProfileManagerIOS::LoadBrowserStates() {}
 
 ChromeBrowserState*
-TestChromeBrowserStateManager::GetLastUsedBrowserStateDeprecatedDoNotUse() {
+TestProfileManagerIOS::GetLastUsedBrowserStateDeprecatedDoNotUse() {
   return GetBrowserStateByName(last_used_browser_state_name_);
 }
 
-ChromeBrowserState* TestChromeBrowserStateManager::GetBrowserStateByName(
+ChromeBrowserState* TestProfileManagerIOS::GetBrowserStateByName(
     std::string_view name) {
   auto iterator = browser_states_.find(name);
   return iterator != browser_states_.end() ? iterator->second.get() : nullptr;
 }
 
 std::vector<ChromeBrowserState*>
-TestChromeBrowserStateManager::GetLoadedBrowserStates() {
+TestProfileManagerIOS::GetLoadedBrowserStates() {
   std::vector<ChromeBrowserState*> result;
   for (auto& browser_state : browser_states_) {
     result.push_back(browser_states_[browser_state.first].get());
@@ -68,7 +68,7 @@ TestChromeBrowserStateManager::GetLoadedBrowserStates() {
   return result;
 }
 
-bool TestChromeBrowserStateManager::LoadBrowserStateAsync(
+bool TestProfileManagerIOS::LoadBrowserStateAsync(
     std::string_view name,
     ChromeBrowserStateLoadedCallback initialized_callback,
     ChromeBrowserStateLoadedCallback created_callback) {
@@ -76,13 +76,13 @@ bool TestChromeBrowserStateManager::LoadBrowserStateAsync(
                                  std::move(created_callback));
 }
 
-bool TestChromeBrowserStateManager::CreateBrowserStateAsync(
+bool TestProfileManagerIOS::CreateBrowserStateAsync(
     std::string_view name,
     ChromeBrowserStateLoadedCallback initialized_callback,
     ChromeBrowserStateLoadedCallback created_callback) {
   auto iterator = browser_states_.find(name);
   if (iterator == browser_states_.end()) {
-    // Creation is not supported by TestChromeBrowserStateManager.
+    // Creation is not supported by TestProfileManagerIOS.
     return false;
   }
 
@@ -98,14 +98,14 @@ bool TestChromeBrowserStateManager::CreateBrowserStateAsync(
   return true;
 }
 
-ChromeBrowserState* TestChromeBrowserStateManager::LoadBrowserState(
+ChromeBrowserState* TestProfileManagerIOS::LoadBrowserState(
     std::string_view name) {
   // TestChromeBrowserState cannot create nor load a ChromeBrowserState,
   // so the implementation is equivalent to GetBrowserStateByName(...).
   return GetBrowserStateByName(name);
 }
 
-ChromeBrowserState* TestChromeBrowserStateManager::CreateBrowserState(
+ChromeBrowserState* TestProfileManagerIOS::CreateBrowserState(
     std::string_view name) {
   // TestChromeBrowserState cannot create nor load a ChromeBrowserState,
   // so the implementation is equivalent to GetBrowserStateByName(...).
@@ -113,12 +113,12 @@ ChromeBrowserState* TestChromeBrowserStateManager::CreateBrowserState(
 }
 
 BrowserStateInfoCache*
-TestChromeBrowserStateManager::GetBrowserStateInfoCache() {
+TestProfileManagerIOS::GetBrowserStateInfoCache() {
   return &browser_state_info_cache_;
 }
 
 TestChromeBrowserState*
-TestChromeBrowserStateManager::AddBrowserStateWithBuilder(
+TestProfileManagerIOS::AddBrowserStateWithBuilder(
     TestChromeBrowserState::Builder builder) {
   // Ensure that the created BrowserState will store its data in sub-directory
   // of `data_dir_` (i.e. GetBrowserStatePath().DirName() will be `data_dir_`).

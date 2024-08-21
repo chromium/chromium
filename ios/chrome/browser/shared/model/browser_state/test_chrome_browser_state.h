@@ -31,7 +31,7 @@ class UserCloudPolicyManager;
 }
 
 class EnterprisePolicyTestHelper;
-class TestChromeBrowserStateManager;
+class TestProfileManagerIOS;
 
 // This class is the implementation of ChromeBrowserState used for testing.
 class TestChromeBrowserState final : public ChromeBrowserState {
@@ -201,7 +201,7 @@ class TestChromeBrowserState final : public ChromeBrowserState {
 
    private:
     friend class EnterprisePolicyTestHelper;
-    friend class TestChromeBrowserStateManager;
+    friend class TestProfileManagerIOS;
 
     // Creates the TestChromeBrowserState using `data_dir` as base directory
     // for the storage, and other previously-set settings.

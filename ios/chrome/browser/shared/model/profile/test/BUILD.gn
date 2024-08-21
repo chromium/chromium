@@ -7,5 +7,15 @@ source_set("test") {
   sources = [
     "test_profile_ios.h",
     "test_profile_manager_ios.h",
+    "test_profile_manager_ios.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/test:test_support",
   ]
 }
