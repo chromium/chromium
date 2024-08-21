@@ -4,19 +4,24 @@ updates:
     directory: /
     schedule:
       interval: daily
+      time: '05:00'
+      timezone: Europe/Berlin
     open-pull-requests-limit: 1
     labels:
       - 'dependencies'
       - 'submodules'
-      - 'update-expectations'
+
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
+      time: '05:00'
+      timezone: Europe/Berlin
     groups:
       all:
         patterns:
           - '*'
+
   - package-ecosystem: pip
     directory: examples/
     schedule:
@@ -25,18 +30,25 @@ updates:
       all:
         patterns:
           - '*'
+
   - package-ecosystem: pip
     directory: tests/
     schedule:
       interval: monthly
+      time: '05:00'
+      timezone: Europe/Berlin
     groups:
       all:
         patterns:
           - '*'
+
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: monthly
+      interval: weekly
+      day: 'sunday'
+      time: '05:00'
+      timezone: Europe/Berlin
     groups:
       all:
         patterns:
