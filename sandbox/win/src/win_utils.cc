@@ -178,37 +178,6 @@ void* GetProcessBaseAddress(HANDLE process) {
   return base_address;
 }
 
-std::optional<ProcessHandleMap> GetCurrentProcessHandles() {
-  DWORD handle_count;
-  if (!::GetProcessHandleCount(::GetCurrentProcess(), &handle_count))
-    return std::nullopt;
-
-  // The system call will return only handles up to the buffer size so add a
-  // margin of error of an additional 1000 handles.
-  std::vector<char> buffer((handle_count + 1000) * sizeof(uint32_t));
-  DWORD return_length;
-  NTSTATUS status = GetNtExports()->QueryInformationProcess(
-      ::GetCurrentProcess(), ProcessHandleTable, buffer.data(),
-      static_cast<ULONG>(buffer.size()), &return_length);
-
-  if (!NT_SUCCESS(status)) {
-    ::SetLastError(GetLastErrorFromNtStatus(status));
-    return std::nullopt;
-  }
-  DCHECK(buffer.size() >= return_length);
-  DCHECK((buffer.size() % sizeof(uint32_t)) == 0);
-  ProcessHandleMap handle_map;
-  const uint32_t* handle_values = reinterpret_cast<uint32_t*>(buffer.data());
-  size_t count = return_length / sizeof(uint32_t);
-  for (size_t index = 0; index < count; ++index) {
-    HANDLE handle = base::win::Uint32ToHandle(handle_values[index]);
-    auto type_name = GetTypeNameFromHandle(handle);
-    if (type_name)
-      handle_map[type_name.value()].push_back(handle);
-  }
-  return handle_map;
-}
-
 bool ContainsNulCharacter(std::wstring_view str) {
   wchar_t nul = '\0';
   return str.find_first_of(nul) != std::wstring::npos;

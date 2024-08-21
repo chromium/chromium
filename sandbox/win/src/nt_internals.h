@@ -156,12 +156,6 @@ typedef NTSTATUS(WINAPI* NtSetInformationThreadFunction)(
     IN PVOID ThreadInformation,
     IN ULONG ThreadInformationLength);
 
-// Partial definition only for values not in PROCESS_INFO_CLASS.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wenum-constexpr-conversion"
-constexpr auto ProcessHandleTable = static_cast<PROCESSINFOCLASS>(58);
-#pragma clang diagnostic pop
-
 // Partial definition only adding fields not in winternl.h, from
 // https://msdn.microsoft.com/en-us/library/windows/desktop/aa813706(v=vs.85).aspx
 typedef struct _NT_PEB {
