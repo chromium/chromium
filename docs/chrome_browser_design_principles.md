@@ -56,6 +56,11 @@ code. Some code is used on Android.
         * `chrome::FindBrowserWithTab` (and everything in browser_finder.h)
         * `GetBrowserViewForNativeWindow`  (via browser_view.h)
         * `FindBrowserWindowWithWebContents` (via browser_window.h)
+    * Corollary: Don't use `Browser*`. This is functionally a container of
+      hundreds of other pointers. It is impossible to specify dependencies,
+      since `Browser*` functionally depends on everything. Instead, pass in the
+      relevant pointers, e.g. `Profile*`, `FooFeatureController`, etc.
+        * Code that uses `Browser*` is also impossible to properly unit test.
     * Rationale: Modularity enforces the creation of API surfaces and explicit
       dependencies. This has several positive externalities:
         * Separation of interface from implementation prevents unnecessarly
