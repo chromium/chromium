@@ -15,6 +15,7 @@
 #include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
 #include "base/apple/osstatus_logging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -32,7 +33,6 @@
 #endif
 
 extern "C" {
-Boolean _CFURLIsFileURL(CFURLRef url);
 CFTypeID SecKeyGetTypeID();
 }  // extern "C"
 
@@ -57,6 +57,12 @@ bool UncachedAmIBundled() {
   // Yes, this is cheap.
   return [apple::OuterBundle().bundlePath hasSuffix:@".app"];
 #endif
+}
+
+bool CFURLIsFileURL(CFURLRef url) {
+  ScopedCFTypeRef<CFStringRef> scheme(CFURLCopyScheme(url));
+  return CFStringCompare(scheme.get(), CFSTR("file"),
+                         kCFCompareCaseInsensitive) == kCFCompareEqualTo;
 }
 
 }  // namespace
@@ -420,7 +426,7 @@ FilePath CFStringToFilePath(CFStringRef str) {
 }
 
 FilePath CFURLToFilePath(CFURLRef url) {
-  if (!url || !_CFURLIsFileURL(url)) {
+  if (!url || !CFURLIsFileURL(url)) {
     return FilePath();
   }
 
