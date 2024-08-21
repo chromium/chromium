@@ -534,7 +534,7 @@ void NavigationEntryImpl::SetAppTitle(const std::u16string& app_title) {
   app_title_ = app_title;
 }
 
-const std::u16string& NavigationEntryImpl::GetAppTitle() {
+const std::optional<std::u16string>& NavigationEntryImpl::GetAppTitle() {
   return app_title_;
 }
 

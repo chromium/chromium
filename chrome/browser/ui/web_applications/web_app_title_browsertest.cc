@@ -187,4 +187,50 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleNavigation) {
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histogram_tester.ExpectCounts({{blink::mojom::WebFeature::kWebAppTitle, 1}});
 }
+
+// Test app title with empty app title.
+IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleIsEmpty) {
+  const GURL app_url =
+      https_server()->GetURL("/web_apps/page_with_app_title.html");
+  const std::u16string app_title = u"A Web App";
+  WebFeatureHistogramTester histogram_tester;
+
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
+  web_app_info->scope = app_url.GetWithoutFilename();
+  web_app_info->title = app_title;
+  const webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
+
+  Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  content::WebContents* const web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+
+  // Validate app title has app title.
+  EXPECT_EQ(u"A Web App - AppTitle",
+            app_browser->GetWindowTitleForCurrentTab(false));
+  // Navigate away to flush use counters.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+  // Log histogram map.
+  histogram_tester.ExpectCounts({{blink::mojom::WebFeature::kWebAppTitle, 1}});
+
+  // Update app title to empty via script and validate title is updated.
+  {
+    std::string update_app_title =
+        "document.head.getElementsByTagName('meta')['app-title'].content = ''";
+    EXPECT_TRUE(content::ExecJs(web_contents, update_app_title));
+    EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+    EXPECT_EQ(u"A Web App", app_browser->GetWindowTitleForCurrentTab(false));
+  }
+
+  // Update app title to space via script and validate title is updated.
+  {
+    std::string update_app_title =
+        "document.head.getElementsByTagName('meta')['app-title'].content = ' '";
+    EXPECT_TRUE(content::ExecJs(web_contents, update_app_title));
+    EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+    EXPECT_EQ(u"A Web App", app_browser->GetWindowTitleForCurrentTab(false));
+  }
+}
+
 }  // namespace web_app

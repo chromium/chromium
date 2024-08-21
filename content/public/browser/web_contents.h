@@ -679,7 +679,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // an alternative title text that can be used by app windows.
   // See
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DocumentSubtitle/explainer.md
-  virtual const std::u16string& GetAppTitle() = 0;
+  virtual const std::optional<std::u16string>& GetAppTitle() = 0;
 
   // Returns the SiteInstance associated with the current page.
   virtual SiteInstance* GetSiteInstance() = 0;
