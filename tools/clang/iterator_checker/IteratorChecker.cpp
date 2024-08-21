@@ -1539,8 +1539,12 @@ class InvalidIteratorAnalysis
       // would be too high as for now.
       TransferExpressionAccessForCheck(expr.getArg(0), env);
 
-      // The result of this operation is another iterator.
+      // The result of this operation "resets" the current iterator state and
+      // returns another one.
       if (auto* iterator = UnwrapAsIterator(expr.getArg(0), env)) {
+        SetIsValid(env, *iterator, env.makeAtomicBoolValue());
+        SetIsEnd(env, *iterator, env.makeAtomicBoolValue());
+
         CloneIterator(&expr, *iterator, env);
       }
       return;
@@ -1639,8 +1643,12 @@ class InvalidIteratorAnalysis
       assert(expr.getNumArgs());
       TransferExpressionAccessForDeref(expr.getArg(0), env);
 
-      // The result of this operation is another iterator.
+      // The result of this operation "resets" the current iterator state and
+      // returns another one.
       if (auto* iterator = UnwrapAsIterator(expr.getArg(0), env)) {
+        SetIsValid(env, *iterator, env.makeAtomicBoolValue());
+        SetIsEnd(env, *iterator, env.makeAtomicBoolValue());
+
         CloneIterator(&expr, *iterator, env);
       }
 
