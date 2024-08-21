@@ -127,10 +127,6 @@ SyncInternalsMessageHandler::GetMessageHandlerMap() {
       {syncer::sync_ui_util::kRequestStart,
        base::BindRepeating(&SyncInternalsMessageHandler::HandleRequestStart,
                            base::Unretained(this))},
-      {syncer::sync_ui_util::kRequestStopClearData,
-       base::BindRepeating(
-           &SyncInternalsMessageHandler::HandleRequestStopClearData,
-           base::Unretained(this))},
       {syncer::sync_ui_util::kTriggerRefresh,
        base::BindRepeating(&SyncInternalsMessageHandler::HandleTriggerRefresh,
                            base::Unretained(this))},
@@ -251,17 +247,6 @@ void SyncInternalsMessageHandler::HandleRequestStart(
   sync_service_->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-void SyncInternalsMessageHandler::HandleRequestStopClearData(
-    const base::Value::List& args) {
-  CHECK_EQ(0U, args.size());
-
-  if (!sync_service_) {
-    return;
-  }
-
-  sync_service_->StopAndClear();
 }
 
 void SyncInternalsMessageHandler::HandleTriggerRefresh(

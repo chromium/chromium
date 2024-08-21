@@ -127,9 +127,6 @@ class SyncInternalsMessageHandler : public syncer::SyncServiceObserver,
   // Handler for requestStart message.
   void HandleRequestStart(const base::Value::List& args);
 
-  // Handler for requestStopClearData message.
-  void HandleRequestStopClearData(const base::Value::List& args);
-
   // Handler for triggerRefresh message.
   void HandleTriggerRefresh(const base::Value::List& args);
 
