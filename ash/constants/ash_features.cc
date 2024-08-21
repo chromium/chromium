@@ -2047,6 +2047,16 @@ BASE_FEATURE(kFeatureManagementShouldExcludeFromSysUiHoldback,
              "FeatureManagementShouldExcludeFromSysUiHoldback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables a holdback experiment for Drive integration.
+BASE_FEATURE(kSysUiShouldHoldbackDriveIntegration,
+             "SysUiShouldHoldbackDriveIntegration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables a holdback experiment for Forcus Mode.
+BASE_FEATURE(kSysUiShouldHoldbackFocusMode,
+             "SysUiShouldHoldbackFocusMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables a holdback experiment for Forest.
 BASE_FEATURE(kSysUiShouldHoldbackForest,
              "SysUiShouldHoldbackForest",
@@ -3854,6 +3864,17 @@ bool IsFloatingWorkspaceV2Enabled() {
 }
 
 bool IsFocusModeEnabled() {
+  // If the holdback feature flag is enabled, the feature should be disabled,
+  // but only if the device is eligible for the study. Exclusion happens
+  // via hardware overlay, so it needs to be checked separately from the finch
+  // controlled holdback feature flag.
+  const bool device_excluded_from_holdback_study = base::FeatureList::IsEnabled(
+      kFeatureManagementShouldExcludeFromSysUiHoldback);
+  if (base::FeatureList::IsEnabled(kSysUiShouldHoldbackFocusMode) &&
+      !device_excluded_from_holdback_study) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(kFocusMode);
 }
 
@@ -4018,6 +4039,17 @@ bool IsHideShelfControlsInTabletModeEnabled() {
 }
 
 bool IsHoldingSpaceSuggestionsEnabled() {
+  // If the holdback feature flag is enabled, the feature should be disabled,
+  // but only if the device is eligible for the study. Exclusion happens
+  // via hardware overlay, so it needs to be checked separately from the finch
+  // controlled holdback feature flag.
+  const bool device_excluded_from_holdback_study = base::FeatureList::IsEnabled(
+      kFeatureManagementShouldExcludeFromSysUiHoldback);
+  if (base::FeatureList::IsEnabled(kSysUiShouldHoldbackDriveIntegration) &&
+      !device_excluded_from_holdback_study) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(kHoldingSpaceSuggestions);
 }
 
@@ -4122,6 +4154,17 @@ bool IsLacrosExtensionPrintingEnabled() {
 }
 
 bool IsLauncherContinueSectionWithRecentsEnabled() {
+  // If the holdback feature flag is enabled, the feature should be disabled,
+  // but only if the device is eligible for the study. Exclusion happens
+  // via hardware overlay, so it needs to be checked separately from the finch
+  // controlled holdback feature flag.
+  const bool device_excluded_from_holdback_study = base::FeatureList::IsEnabled(
+      kFeatureManagementShouldExcludeFromSysUiHoldback);
+  if (base::FeatureList::IsEnabled(kSysUiShouldHoldbackDriveIntegration) &&
+      !device_excluded_from_holdback_study) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(kLauncherContinueSectionWithRecents) ||
          base::FeatureList::IsEnabled(
              kLauncherContinueSectionWithRecentsRollout);

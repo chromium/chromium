@@ -22474,12 +22474,16 @@
                 {
                     "name": "Default",
                     "disable_features": [
+                        "SysUiShouldHoldbackDriveIntegration",
+                        "SysUiShouldHoldbackFocusMode",
                         "SysUiShouldHoldbackForest"
                     ]
                 },
                 {
                     "name": "EnrolledInHoldback",
                     "enable_features": [
+                        "SysUiShouldHoldbackDriveIntegration",
+                        "SysUiShouldHoldbackFocusMode",
                         "SysUiShouldHoldbackForest"
                     ]
                 }
