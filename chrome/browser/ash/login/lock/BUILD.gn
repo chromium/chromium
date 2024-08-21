@@ -52,6 +52,7 @@ static_library("lock") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/session",
+    "//chrome/browser/ui/ash/wallpaper",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chromeos/ash/components/browser_context_helper",

@@ -76,8 +76,6 @@ static_library("ash") {
     "test_ime_controller.h",
     "vpn_list_forwarder.cc",
     "vpn_list_forwarder.h",
-    "wallpaper_controller_client_impl.cc",
-    "wallpaper_controller_client_impl.h",
     "window_pin_util_ash.cc",
     "window_properties.cc",
     "window_properties.h",
@@ -204,6 +202,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/shell_init",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/ash/user_education",
+    "//chrome/browser/ui/ash/wallpaper",
     "//chrome/browser/ui/chromeos",
     "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_manager",
     "//chrome/browser/ui/quick_answers",
@@ -325,8 +324,6 @@ static_library("test_support") {
     "test_login_screen.h",
     "test_login_screen_model.cc",
     "test_login_screen_model.h",
-    "test_wallpaper_controller.cc",
-    "test_wallpaper_controller.h",
   ]
 
   deps = [
@@ -353,7 +350,6 @@ source_set("unit_tests") {
     "in_session_auth_dialog_client_unittest.cc",
     "media_client_impl_unittest.cc",
     "system_tray_client_impl_unittest.cc",
-    "wallpaper_controller_client_impl_unittest.cc",
     "window_pin_util_ash_unittest.cc",
   ]
 
@@ -414,6 +410,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/sharesheet:unit_tests",
     "//chrome/browser/ui/ash/shelf:unit_tests",
     "//chrome/browser/ui/ash/user_education:unit_tests",
+    "//chrome/browser/ui/ash/wallpaper:unit_tests",
   ]
 }
 
