@@ -196,6 +196,24 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
       float bottom = FloatValueForLength(inset.Bottom(), box_height);
       gfx::RectF rect(left, top, std::max<float>(box_width - left - right, 0),
                       std::max<float>(box_height - top - bottom, 0));
+      if (RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()) {
+        gfx::SizeF box_size(box_width, box_height);
+        gfx::SizeF top_left_radius =
+            SizeForLengthSize(inset.TopLeftRadius(), box_size);
+        gfx::SizeF top_right_radius =
+            SizeForLengthSize(inset.TopRightRadius(), box_size);
+        gfx::SizeF bottom_left_radius =
+            SizeForLengthSize(inset.BottomLeftRadius(), box_size);
+        gfx::SizeF bottom_right_radius =
+            SizeForLengthSize(inset.BottomRightRadius(), box_size);
+
+        FloatRoundedRect physical_rect(rect, top_left_radius, top_right_radius,
+                                       bottom_left_radius, bottom_right_radius);
+        physical_rect.ConstrainRadii();
+
+        shape = CreateInsetShape(BoxShape::ToLogical(physical_rect, converter));
+        break;
+      }
       gfx::RectF logical_rect = converter.ToLogical(rect);
 
       gfx::SizeF box_size(box_width, box_height);
@@ -408,7 +426,13 @@ std::unique_ptr<Shape> Shape::CreateLayoutBoxShape(
     WritingMode writing_mode,
     float margin) {
   gfx::RectF rect(rounded_rect.Rect().size());
-  FloatRoundedRect bounds(rect, rounded_rect.GetRadii());
+  WritingModeConverter converter(
+      {writing_mode, TextDirection::kLtr},
+      PhysicalSize::FromSizeFFloor(rounded_rect.Rect().size()));
+  FloatRoundedRect bounds =
+      RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()
+          ? BoxShape::ToLogical(rounded_rect, converter)
+          : FloatRoundedRect(rect, rounded_rect.GetRadii());
   std::unique_ptr<Shape> shape = CreateInsetShape(bounds);
   shape->writing_mode_ = writing_mode;
   shape->margin_ = margin;

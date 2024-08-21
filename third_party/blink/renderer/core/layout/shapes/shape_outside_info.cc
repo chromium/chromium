@@ -299,8 +299,11 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
     case ShapeValue::kBox: {
       // TODO(layout-dev): It seems incorrect to pass logical size to
       // RoundedBorderGeometry().
-      PhysicalSize size(reference_box_logical_size_.inline_size,
-                        reference_box_logical_size_.block_size);
+      PhysicalSize size =
+          RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled()
+              ? ReferenceBoxPhysicalSize()
+              : PhysicalSize(reference_box_logical_size_.inline_size,
+                             reference_box_logical_size_.block_size);
       const FloatRoundedRect& shape_rect = RoundedBorderGeometry::RoundedBorder(
           style, PhysicalRect(PhysicalOffset(), size));
       shape_ = Shape::CreateLayoutBoxShape(shape_rect, writing_mode, margin);
