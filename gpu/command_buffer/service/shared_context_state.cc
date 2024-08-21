@@ -1058,9 +1058,13 @@ void SharedContextState::UpdateSkiaOwnedMemorySize() {
     gr_context_->getResourceCacheUsage(nullptr /* resourceCount */, &new_size);
   } else {
     // NOTE: If `graphite_context_` is non-null, the GPU main recorder is
-    // guaranteed to be non-null as well.
+    // guaranteed to be non-null as well. Add the image provider's size too
+    // since with Graphite that's owned by Chrome rather than Skia as in Ganesh.
+    const auto* image_provider = static_cast<const gpu::GraphiteImageProvider*>(
+        gpu_main_graphite_recorder_->clientImageProvider());
     new_size = graphite_context_->currentBudgetedBytes() +
-               gpu_main_graphite_recorder_->currentBudgetedBytes();
+               gpu_main_graphite_recorder_->currentBudgetedBytes() +
+               image_provider->CurrentSizeInBytes();
   }
   // Skia does not have a CommandBufferId. PeakMemoryMonitor currently does not
   // use CommandBufferId to identify source, so use zero here to separate
