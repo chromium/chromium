@@ -1048,6 +1048,64 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdf) {
   EXPECT_EQ(u"TabWithEmbeddedPdf", web_contents->GetTitle());
 }
 
+// Tests that PDF MIME type is not set for non-PDF `WebContents`.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, IsContentsMimeTypePdfNonPdf) {
+  // Navigate to a non-PDF page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  // Verify that MIME type associated with non-PDF `WebContents` is not
+  // `application/pdf`.
+  EXPECT_NE(pdf::kPDFMimeType, GetActiveWebContents()->GetContentsMimeType());
+}
+
+// Tests that PDF MIME type is not set for embedded PDF `WebContents`.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, IsContentsMimeTypePdfEmbedPdf) {
+  // Load page with embedded PDF and make sure it succeeds.
+  ASSERT_TRUE(LoadPdfInFirstChild(
+      embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
+
+  // Verify that MIME type associated with embedded PDF `WebContents` is not
+  // `application/pdf`.
+  EXPECT_NE(pdf::kPDFMimeType, GetEmbedderWebContents()->GetContentsMimeType());
+}
+
+// Tests that PDF MIME type is set for full-page PDF `WebContents`.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, IsContentsMimeTypePdfFullPagePdf) {
+  // Load a full-page PDF and make sure it succeeds.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
+
+  // Verify that MIME type associated with full-page PDF `WebContents` is
+  // `application/pdf`.
+  EXPECT_EQ(pdf::kPDFMimeType, GetEmbedderWebContents()->GetContentsMimeType());
+}
+
+// Tests that PDF MIME type is set for full-page PDF `WebContents` with MIME
+// type params.
+// NOTE: This test is not parameterized as PDF MIME type validation for OOPIF
+// variant is already being done in
+// PDFExtensionOopifTest.FindFullPagePdfExtensionHostFullPagePdfWithMimeTypeParam.
+IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutOopifOverride,
+                       IsContentsMimeTypePdfFullPagePdfWithMimeTypeParam) {
+  // Load a full-page PDF with MIME type param and make sure it succeeds.
+  const char kPdfFullPageWithMimeTypeParam[] =
+      "data:application/pdf;charset=iso-8859-5;base64,"
+      "JVBERi0xLjcKJaDypPQKMSAwIG9iaiA8PAogIC9UeXBlIC9DYXRhbG9nCiAgL1BhZ2VzIDIg"
+      "MCBSCj4+CmVuZG9iagoyIDAgb2JqIDw8CiAgL1R5cGUgL1BhZ2VzCiAgL0NvdW50IDEKICAv"
+      "S2lkcyBbMyAwIFJdCiAgL1Jlc291cmNlcyA8PCA+Pgo+PgplbmRvYmoKMyAwIG9iaiA8PAog"
+      "IC9UeXBlIC9QYWdlIAogIC9QYXJlbnQgMiAwIFIKICAvTWVkaWFCb3ggWzAgMCAxMDAgNTBd"
+      "Cj4+CmVuZG9iagp4cmVmCjAgNAowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMTUgMDAw"
+      "MDAgbiAKMDAwMDAwMDA2OCAwMDAwMCBuIAowMDAwMDAwMTUwIDAwMDAwIG4gCnRyYWlsZXIg"
+      "PDwKICAvUm9vdCAxIDAgUgogIC9TaXplIDQKPj4Kc3RhcnR4cmVmCjIyNwolJUVPRgo=";
+  EXPECT_TRUE(LoadPdf(GURL(kPdfFullPageWithMimeTypeParam)));
+
+  // Verify that MIME type associated with full-page PDF `WebContents` is
+  // `application/pdf`, irrespective of MIME type params (Ex: charset in this
+  // test).
+  EXPECT_EQ(pdf::kPDFMimeType, GetEmbedderWebContents()->GetContentsMimeType());
+}
+
 // Flaky, http://crbug.com/767427
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_PdfZoomWithoutBubble DISABLED_PdfZoomWithoutBubble

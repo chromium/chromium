@@ -262,6 +262,7 @@
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_extension_util.h"
 #include "components/pdf/browser/pdf_frame_util.h"
+#include "components/pdf/common/constants.h"
 #include "pdf/pdf_features.h"
 #endif
 
@@ -2202,28 +2203,16 @@ void RenderViewContextMenu::AppendMediaItems() {
 }
 
 void RenderViewContextMenu::AppendPluginItems() {
-  RenderFrameHost* render_frame_host = GetRenderFrameHost();
-
-  bool is_full_page_pdf_viewer = false;
+  bool is_full_page_oopif_pdf_viewer = false;
 #if BUILDFLAG(ENABLE_PDF)
-  // Always append page items for full page PDF Viewers.
-  if (chrome_pdf::features::IsOopifPdfEnabled() && render_frame_host) {
-    // If the plugin is the PDF viewer, then `render_frame_host` will either be
-    // the PDF extension host or the PDF content host.
-    RenderFrameHost* extension_host =
-        pdf_frame_util::FindFullPagePdfExtensionHost(embedder_web_contents_);
-    // Check if the context menu is for the PDF extension host.
-    is_full_page_pdf_viewer = render_frame_host == extension_host;
-    if (!is_full_page_pdf_viewer) {
-      // Check if the context menu is for the PDF content host.
-      RenderFrameHost* parent_host = render_frame_host->GetParent();
-      is_full_page_pdf_viewer = parent_host && (parent_host == extension_host);
-    }
-  }
+  is_full_page_oopif_pdf_viewer =
+      chrome_pdf::features::IsOopifPdfEnabled() && embedder_web_contents_ &&
+      embedder_web_contents_->GetContentsMimeType() == pdf::kPDFMimeType;
 #endif  // BUILDFLAG(ENABLE_PDF)
+
   if (params_.page_url == params_.src_url ||
-      ((is_full_page_pdf_viewer ||
-        guest_view::GuestViewBase::IsGuest(render_frame_host)) &&
+      ((is_full_page_oopif_pdf_viewer ||
+        guest_view::GuestViewBase::IsGuest(GetRenderFrameHost())) &&
        (!embedder_web_contents_ || !embedder_web_contents_->IsSavable()))) {
     // Both full page and embedded plugins are hosted as guest now,
     // the difference is a full page plugin is not considered as savable.
