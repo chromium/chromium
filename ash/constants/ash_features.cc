@@ -3068,6 +3068,13 @@ BASE_FEATURE(kAllowPasswordlessSetup,
              "AllowPasswordlessSetup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This features controls whether or not pin will be setup as timeout based
+// lockout or attempt based lockout.
+BASE_FEATURE(kAllowPinTimeoutSetup,
+             "AllowPinTimeoutSetup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+
 // Use the staging URL as part of the "Messages" feature under "Connected
 // Devices" settings.
 BASE_FEATURE(kUseMessagesStagingUrl,
@@ -4994,6 +5001,10 @@ bool IsUseAuthPanelInSessionEnabled() {
 
 bool IsAllowPasswordlessSetupEnabled() {
   return base::FeatureList::IsEnabled(kAllowPasswordlessSetup);
+}
+
+bool IsAllowPinTimeoutSetupEnabled() {
+  return base::FeatureList::IsEnabled(kAllowPinTimeoutSetup);
 }
 
 bool ShouldEnterOverviewFromWallpaper() {
