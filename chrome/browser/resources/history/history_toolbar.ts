@@ -4,6 +4,7 @@
 
 import './shared_style.css.js';
 import './strings.m.js';
+import 'chrome://resources/cr_components/history_embeddings/icons.html.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.js';
 
@@ -154,7 +155,7 @@ export class HistoryToolbarElement extends PolymerElement {
   private computeSearchIconOverride_(): string|undefined {
     if (loadTimeData.getBoolean('enableHistoryEmbeddings') &&
         TABBED_PAGES.includes(this.selectedPage)) {
-      return 'history:embeddings';
+      return 'history-embeddings:search';
     }
 
     return undefined;

@@ -118,10 +118,10 @@ suite('history-toolbar', function() {
     await flushTasks();
     toolbar.selectedPage = 'history';
     assertEquals(
-        'history:embeddings', toolbar.$.mainToolbar.searchIconOverride);
+        'history-embeddings:search', toolbar.$.mainToolbar.searchIconOverride);
     toolbar.selectedPage = 'grouped';
     assertEquals(
-        'history:embeddings', toolbar.$.mainToolbar.searchIconOverride);
+        'history-embeddings:search', toolbar.$.mainToolbar.searchIconOverride);
 
     // Synced tabs page should have the default icon.
     toolbar.selectedPage = 'syncedTabs';
