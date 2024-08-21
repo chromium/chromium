@@ -7,8 +7,9 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {CardInfo, SettingsSafetyHubPageElement} from 'chrome://settings/lazy_load.js';
-import {CardState, ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
-import {LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, PasswordManagerImpl, PasswordManagerPage, Router, routes, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
+import {CardState, ContentSettingsTypes, SafeBrowsingSetting, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
+import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, PasswordManagerImpl, PasswordManagerPage, Router, routes, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -29,6 +30,12 @@ suite('SafetyHubPage', function() {
   let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
   let passwordManagerProxy: TestPasswordManagerProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
 
   const notificationPermissionMockData = [{
     origin: 'www.example.com',
@@ -76,6 +83,7 @@ suite('SafetyHubPage', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-safety-hub-page');
+    testElement.prefs = settingsPrefs.prefs!;
     document.body.appendChild(testElement);
     return flushTasks();
   });
@@ -85,6 +93,29 @@ suite('SafetyHubPage', function() {
         shouldBeVisible, isChildVisible(testElement, '#emptyStateModule'));
     assertEquals(
         shouldBeVisible, isChildVisible(testElement, '#userEducationModule'));
+  }
+
+  async function changeSafeBrowsingGeneratedPref(setting: SafeBrowsingSetting) {
+    testElement.set('prefs.generated.safe_browsing', {
+      value: setting,
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+    });
+    assertEquals(setting, testElement.getPref('generated.safe_browsing').value);
+    await flushTasks();
+  }
+
+  function assertSafeBrowsingCard(newCardData: CardInfo) {
+    assertEquals(
+        1, safetyHubBrowserProxy.getCallCount('getSafeBrowsingCardData'));
+    assertTrue(isChildVisible(testElement, '#safeBrowsing'));
+    assertEquals(
+        testElement.$.safeBrowsing.shadowRoot!.querySelector('#header')!
+            .textContent!.trim(),
+        newCardData.header);
+    assertEquals(
+        testElement.$.safeBrowsing.shadowRoot!.querySelector('#subheader')!
+            .textContent!.trim(),
+        newCardData.subheader);
   }
 
   test(
@@ -416,6 +447,49 @@ suite('SafetyHubPage', function() {
     // Ensure the Security Settings page is shown.
     assertEquals(routes.SECURITY, Router.getInstance().getCurrentRoute());
   });
+
+  test(
+      `Safe Browsing Card updates upon Safe Browsing settings change`,
+      async function() {
+        const standardCardData: CardInfo = {
+          header: 'Safe Browsing is on',
+          subheader: 'You are getting a standard protection.',
+          state: CardState.SAFE,
+        };
+
+        const enhancedCardData: CardInfo = {
+          header: 'Enhanced Safe Browsing is on',
+          subheader: 'You are getting an enhanced protection.',
+          state: CardState.SAFE,
+        };
+
+        const disabledCardData: CardInfo = safeBrowsingCardMockData;
+
+        // Set the generated.safe_browsing pref to STANDARD.
+        safetyHubBrowserProxy.setSafeBrowsingCardData(standardCardData);
+        await changeSafeBrowsingGeneratedPref(SafeBrowsingSetting.STANDARD);
+
+        // Change the generated.safe_browsing pref to ENHANCED and check that it
+        // triggers getSafeBrowsingCardData call and UI change.
+        safetyHubBrowserProxy.resetResolver('getSafeBrowsingCardData');
+        safetyHubBrowserProxy.setSafeBrowsingCardData(enhancedCardData);
+        await changeSafeBrowsingGeneratedPref(SafeBrowsingSetting.ENHANCED);
+        assertSafeBrowsingCard(enhancedCardData);
+
+        // Change the generated.safe_browsing pref to DISABLED and check that it
+        // triggers getSafeBrowsingCardData call and UI change.
+        safetyHubBrowserProxy.resetResolver('getSafeBrowsingCardData');
+        safetyHubBrowserProxy.setSafeBrowsingCardData(disabledCardData);
+        await changeSafeBrowsingGeneratedPref(SafeBrowsingSetting.DISABLED);
+        assertSafeBrowsingCard(disabledCardData);
+
+        // Change the generated.safe_browsing pref to STANDARD and check that it
+        // triggers getSafeBrowsingCardData call and UI change.
+        safetyHubBrowserProxy.resetResolver('getSafeBrowsingCardData');
+        safetyHubBrowserProxy.setSafeBrowsingCardData(standardCardData);
+        await changeSafeBrowsingGeneratedPref(SafeBrowsingSetting.STANDARD);
+        assertSafeBrowsingCard(standardCardData);
+      });
 
   test('Dismiss all menu notifications on page load', async function() {
     Router.getInstance().navigateTo(routes.SAFETY_HUB);
