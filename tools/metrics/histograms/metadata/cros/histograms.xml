@@ -99,19 +99,27 @@ chromium-metrics-reviews@google.com.
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     The error returned by the mount() system call when the ChromeOS cros-disks
-    daemon tries to mount a file system.
+    daemon tries to mount a {FileSystem} filesystem.
   </summary>
   <token key="FileSystem">
+    <variant name="archive"/>
+    <variant name="drivefs"/>
     <variant name="exfat"/>
     <variant name="ext2"/>
     <variant name="ext3"/>
     <variant name="ext4"/>
-    <variant name="fuse"/>
+    <variant name="fuseblk.exfat"/>
+    <variant name="fuseblk.ntfs"/>
+    <variant name="fusebox"/>
     <variant name="hfsplus"/>
     <variant name="iso9660"/>
-    <variant name="ntfs"/>
+    <variant name="ntfs3"/>
+    <variant name="rar"/>
+    <variant name="smbfs"/>
+    <variant name="sshfs"/>
     <variant name="udf"/>
     <variant name="vfat"/>
+    <variant name="zip"/>
   </token>
 </histogram>
 
@@ -153,7 +161,7 @@ chromium-metrics-reviews@google.com.
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     The error returned by the umount() system call when the ChromeOS cros-disks
-    daemon tries to unmount a file system.
+    daemon tries to unmount a {FileSystem} filesystem.
   </summary>
   <token key="FileSystem">
     <variant name="archive"/>
@@ -162,10 +170,12 @@ chromium-metrics-reviews@google.com.
     <variant name="ext2"/>
     <variant name="ext3"/>
     <variant name="ext4"/>
+    <variant name="fuseblk.exfat"/>
+    <variant name="fuseblk.ntfs"/>
     <variant name="fusebox"/>
     <variant name="hfsplus"/>
     <variant name="iso9660"/>
-    <variant name="ntfs"/>
+    <variant name="ntfs3"/>
     <variant name="rar"/>
     <variant name="smbfs"/>
     <variant name="sshfs"/>
