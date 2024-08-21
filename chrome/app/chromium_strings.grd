@@ -1744,6 +1744,15 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_ENTERPRISE_OIDC_WELCOME_TIMEOUT_SUBTITLE" desc="Subtitle of a section telling the user that their work profile was created but is not fully ready yet.">
           While we're setting up account access, you can still use Chromium. You may not be able to access some resources until setup is complete.
         </message>
+
+        <!-- Supervised user profile signin IPH -->
+        <!-- TODO(b/351333491): Mark them translateable once the strings are approved. -->
+        <message name="IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TEXT"
+          desc="Informative text shown on the IPH bubble when a supervised user signs-in in a new profile or an existing local profile."
+          translateable="false">
+          The Chromium settings your parent chose in Family Link can help keep you safe online
+        </message>
+
         <!-- Profile Picker -->
         <if expr="chromeos_lacros">
           <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_LACROS" desc="Profile picker main view subtitle">

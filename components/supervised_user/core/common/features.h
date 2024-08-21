@@ -60,6 +60,10 @@ BASE_DECLARE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers);
 // kCustomWebSignInInterceptForSupervisedUsers is enabled.
 BASE_DECLARE_FEATURE(kCustomWebSignInInterceptForSupervisedUsersUi);
 
+// Displays the supervised user signin-in IPH when the child signs
+// in to a new or existing local profile.
+BASE_DECLARE_FEATURE(kSupervisedUserProfileSigninIPH);
+
 // Displays a Family Link kite badge on the supervised user avatar in various
 // surfaces.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

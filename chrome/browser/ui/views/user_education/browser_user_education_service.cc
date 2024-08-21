@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
+#include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -60,6 +61,7 @@
 #include "components/saved_tab_groups/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/user_education/common/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo_specification.h"
@@ -786,6 +788,39 @@ void MaybeRegisterChromeFeaturePromos(
                          "triggered on startup when the saved tab groups are "
                          "defaulted to saved for the first time.")));
   }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // kIPHSupervisedUserProfileSigninFeature
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHSupervisedUserProfileSigninFeature,
+          kToolbarAvatarButtonElementId,
+          IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TEXT, IDS_LEARN_MORE,
+          base::BindRepeating(
+              [](ui::ElementContext ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
+                if (!browser) {
+                  return;
+                }
+                // Open parental controls page.
+                ShowSingletonTab(
+                    browser,
+                    GURL(supervised_user::kManagedByParentUiMoreInfoUrl));
+                base::RecordAction(base::UserMetricsAction(
+                    "SupervisedUserProfileSignIn_IPHPromo_"
+                    "ParentalControlsPageOpened"));
+              }))
+          // TODO(b/351333491): Clarify if we need to mark and approve as a
+          // keyed promo, displaying the IPH once per key per device.
+          .SetBubbleIcon(&vector_icons::kFamilyLinkIcon)
+          .SetBubbleTitleText(IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TITLE)
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetCustomActionIsDefault(false)
+          .SetMetadata(128, "anthie@google.com",
+                       "Triggered on signin-in a supervised user to "
+                       "a new profile or an existing local profile")));
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
   // kIPHTabOrganizationSuccessFeature:
   registry.RegisterFeature(std::move(

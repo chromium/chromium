@@ -650,6 +650,14 @@
       You can try again or contact your administrator for help
     </message>
 
+    <!-- Supervised user profile signin IPH -->
+    <!-- TODO(b/351333491): Mark them translateable once the strings are approved. -->
+    <message name="IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TITLE"
+      desc="Title of the IPH bubble when a supervised user signs-in in a new or existing local profile."
+      translateable="false">
+      Welcome <ph name="CHILD_NAME">$1<ex>Charlie</ex></ph>
+    </message>
+
     <!-- Profile Picker -->
     <message name="IDS_PROFILE_PICKER_ADD_SPACE_BUTTON" desc="Text for the add space button on the profile picker main view">
       Add

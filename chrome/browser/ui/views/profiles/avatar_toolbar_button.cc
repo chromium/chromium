@@ -43,6 +43,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "content/public/common/url_utils.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -342,6 +343,23 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
     browser_->window()->MaybeShowStartupFeaturePromo(
         feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature);
   }
+}
+
+void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH(
+    const AccountInfo& account_info) {
+  // TODO(b/351333491): Likely to need a delaying mechanism similar to
+  // `MaybeShowProfileSwitchIPH`. To be decided when implementing the
+  // invocation.
+  if (account_info.capabilities.is_subject_to_parental_controls() !=
+      signin::Tribool::kTrue) {
+    return;
+  }
+  user_education::FeaturePromoParams params(
+      feature_engagement::kIPHSupervisedUserProfileSigninFeature,
+      account_info.gaia);
+  params.title_params = base::UTF8ToUTF16(account_info.given_name);
+
+  browser_->window()->MaybeShowFeaturePromo(std::move(params));
 }
 
 void AvatarToolbarButton::MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(

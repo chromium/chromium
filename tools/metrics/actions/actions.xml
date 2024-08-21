@@ -40040,6 +40040,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SupervisedUserProfileSignIn_IPHPromo_ParentalControlsPageOpened">
+  <owner>anthie@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <description>
+    The parental controls page is opened from the supervised user signing in to
+    a profile.
+  </description>
+</action>
+
 <action name="SupervisedUsers_Extensions_ApprovalGranted">
   <owner>tobyhuang@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
@@ -45020,6 +45029,8 @@ should be able to be added at any place in this file.
   <suffix name="SideSearchPageActionLabel"
       label="For side search feature page action label triggering."/>
   <suffix name="SignoutWebIntercept" label="For web signout IPH feature."/>
+  <suffix name="SupervisedUserProfileSignin"
+      label="For displaying the supervised user sign-in IPH."/>
   <suffix name="TabAudioMuting" label="For TabAudioMuting feature."/>
   <suffix name="TabGroupsDragAndDrop" label="For drop-to-merge in tab group."/>
   <suffix name="TabGroupsQuicklyComparePages"
