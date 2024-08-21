@@ -4356,7 +4356,7 @@ TEST_P(PartitionAllocTest, RefCountBasic) {
   // doesn't equal zero.
   uint64_t* ptr2 =
       static_cast<uint64_t*>(allocator.root()->Alloc(alloc_size, type_name));
-  EXPECT_NE(ptr1, ptr2);
+  PA_EXPECT_PTR_NE(ptr1, ptr2);
   allocator.root()->Free(ptr2);
 
   // When the last reference is released, the slot should become reusable.
@@ -4367,7 +4367,7 @@ TEST_P(PartitionAllocTest, RefCountBasic) {
   PartitionAllocFreeForRefCounting(allocator.root()->ObjectToSlotStart(ptr1));
   uint64_t* ptr3 =
       static_cast<uint64_t*>(allocator.root()->Alloc(alloc_size, type_name));
-  EXPECT_EQ(ptr1, ptr3);
+  PA_EXPECT_PTR_EQ(ptr1, ptr3);
   allocator.root()->Free(ptr3);
 }
 

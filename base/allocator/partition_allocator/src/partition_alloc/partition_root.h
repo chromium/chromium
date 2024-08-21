@@ -636,7 +636,17 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
       PA_LOCKS_EXCLUDED(internal::PartitionRootLock(this));
 
   PA_ALWAYS_INLINE void RawFreeWithThreadCache(uintptr_t slot_start,
+                                               void* object,
                                                SlotSpanMetadata* slot_span);
+
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+  // Sets a new MTE tag on the slot. This must not be called when an object
+  // enters BRP quarantine because it might cause a race with |raw_ptr|'s
+  // ref-count decrement. (crbug.com/357526108)
+  PA_ALWAYS_INLINE void RetagSlotIfNeeded(uintptr_t slot_start,
+                                          void* object,
+                                          size_t slot_size);
+#endif
 
   // This is safe to do because we are switching to a bucket distribution with
   // more buckets, meaning any allocations we have done before the switch are
@@ -1205,7 +1215,8 @@ PA_ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
   root->total_count_of_brp_quarantined_slots.fetch_sub(
       1, std::memory_order_relaxed);
 
-  root->RawFreeWithThreadCache(slot_start, slot_span);
+  root->RawFreeWithThreadCache(slot_start, root->SlotStartToObject(slot_start),
+                               slot_span);
 }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
@@ -1449,25 +1460,6 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
   PA_DCHECK(slot_span ==
             SlotSpanMetadata::FromSlotStart(slot_start.untagged_slot_start));
 
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-  if (IsMemoryTaggingEnabled()) [[likely]] {
-    const size_t slot_size = slot_span->bucket->slot_size;
-    if (slot_size <= internal::kMaxMemoryTaggingSize) [[likely]] {
-      // Retag the `object` to provide MTE UaF mitigation. Doing so
-      // invalidates the tag in the address of `object`, so it must
-      // be refreshed.
-      if (UseRandomMemoryTagging()) {
-        // Exclude the previous tag so that immediate use after free is detected
-        // 100% of the time.
-        uint8_t previous_tag = internal::ExtractTagFromPtr(object);
-        object = internal::TagMemoryRangeRandomly(object, slot_size,
-                                                  1 << previous_tag);
-      } else {
-        object = internal::TagMemoryRangeIncrement(object, slot_size);
-      }
-    }
-  }
-#else   // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   // We are going to read from |*slot_span| in all branches, but haven't done it
   // yet.
   //
@@ -1476,11 +1468,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
   // parts (i.e. bucket pointer) from the rest. Indeed, every thread cache miss
   // (or batch fill) will *write* to |slot_span->freelist_head|, leading to
   // cacheline ping-pong.
-  //
-  // Don't do it when memory tagging is enabled, as |*slot_span| has already
-  // been touched above.
   PA_PREFETCH(slot_span);
-#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
   if constexpr (ContainsFlags(flags, FreeFlags::kZap)) {
     if (settings.zapping_by_free_flags) {
@@ -1594,7 +1582,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
   }
 #endif  // PA_CONFIG(ZERO_RANDOMLY_ON_FREE)
 
-  RawFreeWithThreadCache(slot_start, slot_span);
+  RawFreeWithThreadCache(slot_start, object, slot_span);
 }
 
 PA_ALWAYS_INLINE void PartitionRoot::FreeInSlotSpan(
@@ -1694,9 +1682,39 @@ PA_ALWAYS_INLINE void PartitionRoot::RawFreeBatch(FreeListEntry* head,
                             this->get_freelist_dispatcher());
 }
 
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+PA_ALWAYS_INLINE void PartitionRoot::RetagSlotIfNeeded(uintptr_t slot_start,
+                                                       void* object,
+                                                       size_t slot_size) {
+  // This branch is |likely| because HAS_MEMORY_TAGGING build flag is true for
+  // arm64 Android devices and only a small portion of them will have memory
+  // tagging enabled.
+  if (!IsMemoryTaggingEnabled()) [[likely]] {
+    return;
+  }
+
+  if (slot_size <= internal::kMaxMemoryTaggingSize) [[likely]] {
+    if (UseRandomMemoryTagging()) {
+      // Exclude the previous tag so that immediate use after free is detected
+      // 100% of the time.
+      uint8_t previous_tag = internal::ExtractTagFromPtr(object);
+      internal::TagMemoryRangeRandomly(slot_start, slot_size,
+                                       1 << previous_tag);
+    } else {
+      internal::TagMemoryRangeIncrement(slot_start, slot_size);
+    }
+  }
+}
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+
 PA_ALWAYS_INLINE void PartitionRoot::RawFreeWithThreadCache(
     uintptr_t slot_start,
+    void* object,
     SlotSpanMetadata* slot_span) {
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+  RetagSlotIfNeeded(slot_start, object, slot_span->bucket->slot_size);
+#endif
+
   // `[[likely]]`: performance-sensitive partitions have a thread cache,
   // direct-mapped allocations are uncommon.
   ThreadCache* thread_cache = GetThreadCache();
