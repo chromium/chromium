@@ -28,11 +28,6 @@ let browserInspector = 'chrome://tracing';
 let browserInspectorTitle = 'trace';
 
 (function() {
-const chromeMatch = navigator.userAgent.match(/(?:^|\W)Chrome\/(\S+)/);
-if (chromeMatch && chromeMatch.length > 1) {
-  HOST_CHROME_VERSION = chromeMatch[1].split('.').map(s => Number(s) || 0);
-}
-
 const queryParams = window.location.search;
 if (!queryParams) {
   return;
@@ -160,6 +155,10 @@ function showNativeUILaunchButton(enabled) {
   $('launch-ui-devtools').disabled = !enabled;
   $('ui-devtools-disabled-text').hidden = enabled;
   $('ui-devtools-enabled-text').hidden = !enabled;
+}
+
+function setHostVersion(version) {
+  HOST_CHROME_VERSION = version;
 }
 
 function populateLocalTargets(data) {
@@ -1175,6 +1174,7 @@ Object.assign(window, {
   populatePortStatus,
   showIncognitoWarning,
   showNativeUILaunchButton,
+  setHostVersion,
 });
 
 document.addEventListener('DOMContentLoaded', onload);

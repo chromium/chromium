@@ -50,6 +50,7 @@ class InspectUI : public content::WebUIController,
 
   void PopulateNativeUITargets(const base::Value::List& targets);
   void ShowNativeUILaunchButton(bool enabled);
+  void SetHostVersion(const std::string& version);
 
   static void InspectDevices(Browser* browser);
 

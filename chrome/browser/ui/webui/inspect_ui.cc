@@ -12,6 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/values.h"
+#include "base/version.h"
+#include "base/version_info/version_info.h"
 #include "chrome/browser/devtools/devtools_targets_ui.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -520,6 +522,7 @@ InspectUI::~InspectUI() {
 }
 
 void InspectUI::InitUI() {
+  SetHostVersion(version_info::GetVersion().GetString());
   SetPortForwardingDefaults();
   StartListeningNotifications();
   UpdateDiscoverUsbDevicesEnabled();
@@ -818,4 +821,8 @@ void InspectUI::ShowIncognitoWarning() {
 void InspectUI::ShowNativeUILaunchButton(bool enabled) {
   web_ui()->CallJavascriptFunctionUnsafe("showNativeUILaunchButton",
                                          base::Value(enabled));
+}
+
+void InspectUI::SetHostVersion(const std::string& source) {
+  web_ui()->CallJavascriptFunctionUnsafe("setHostVersion", base::Value(source));
 }
