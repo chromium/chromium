@@ -40,7 +40,7 @@ class GpuArcVideoFramePool : public mojom::VideoFramePool,
  public:
   GpuArcVideoFramePool(
       mojo::PendingAssociatedReceiver<mojom::VideoFramePool> video_frame_pool,
-      base::RepeatingClosure request_frames_cb,
+      base::RepeatingClosure release_client_video_frames_cb,
       scoped_refptr<ProtectedBufferManager> protected_buffer_manager);
   ~GpuArcVideoFramePool() override;
 
@@ -54,6 +54,16 @@ class GpuArcVideoFramePool : public mojom::VideoFramePool,
                       client) override;
   void AddVideoFrame(mojom::VideoFramePtr video_frame,
                      AddVideoFrameCallback callback) override;
+
+  // The GpuArcVideoDecoder should call this method when it's about to call
+  // Reset() on the underlying VideoDecoder. This is useful to interrupt a
+  // request for frames if a reset request comes in the middle of it.
+  void WillResetDecoder();
+
+  // The GpuArcVideoDecoder should call this method when a VideoDecoder::Reset()
+  // request has been completed. This is needed to start handling requests for
+  // frames after a WillResetDecoder() call.
+  void OnDecoderResetDone();
 
   // Implementation of VdaVideoFramePool::VdaDelegate.
   // RequestFrames will be called upon initialization and resolution changes.
@@ -104,8 +114,10 @@ class GpuArcVideoFramePool : public mojom::VideoFramePool,
   NotifyLayoutChangedCb notify_layout_changed_cb_;
   // Callback used to insert new frames in the video frame pool.
   ImportFrameCb import_frame_cb_;
-  // Callback used to notify the video decoder when new frames are requested.
-  base::RepeatingClosure request_frames_cb_;
+  // Callback used to notify the video decoder that it should release its
+  // references to the client video frames as the pool will no longer track
+  // them.
+  base::RepeatingClosure release_client_video_frames_cb_;
 
   // The coded size currently used for video frames.
   gfx::Size coded_size_;
@@ -122,6 +134,10 @@ class GpuArcVideoFramePool : public mojom::VideoFramePool,
   // calling mojom::VideoFramePoolClient::RequestVideoFrames().
   bool awaiting_request_frames_ack_ = false;
   static constexpr uint32_t kMinVersionForRequestFramesAck = 1;
+
+  // When |decoder_is_resetting_| is true, the decoder is in the middle of a
+  // Reset() so we should reject requests for frames.
+  bool decoder_is_resetting_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   bool has_error_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 

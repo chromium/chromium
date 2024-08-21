@@ -63,8 +63,11 @@ class GpuArcVideoDecoder : public mojom::VideoDecoder {
   void OnFrameReady(scoped_refptr<media::VideoFrame> frame);
   // Called by the decoder when a reset has been completed.
   void OnResetDone();
-  // Called by the video frame pool when new frames have been requested.
-  void OnRequestVideoFrames();
+  // Called by the video frame pool to notify us that the pool won't be tracking
+  // the current set of the video frames so we should release references to
+  // them. This can indicate that new frames will be soon added to the pool
+  // using the same IDs.
+  void ReleaseClientVideoFrames();
   // Called when an error occurred.
   void OnError(media::DecoderStatus status);
 

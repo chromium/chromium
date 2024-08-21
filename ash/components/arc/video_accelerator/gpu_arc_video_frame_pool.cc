@@ -63,10 +63,11 @@ media::VideoPixelFormat GetPixelFormat(mojom::HalPixelFormat format) {
 
 GpuArcVideoFramePool::GpuArcVideoFramePool(
     mojo::PendingAssociatedReceiver<mojom::VideoFramePool> video_frame_pool,
-    base::RepeatingClosure request_frames_cb,
+    base::RepeatingClosure release_client_video_frames_cb,
     scoped_refptr<ProtectedBufferManager> protected_buffer_manager)
     : video_frame_pool_receiver_(this),
-      request_frames_cb_(std::move(request_frames_cb)),
+      release_client_video_frames_cb_(
+          std::move(release_client_video_frames_cb)),
       protected_buffer_manager_(std::move(protected_buffer_manager)) {
   VLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -136,9 +137,20 @@ void GpuArcVideoFramePool::AddVideoFrame(mojom::VideoFramePtr video_frame,
   }
 
   if (!import_frame_cb_) {
-    DVLOGF(3) << "AddVideoFrame() can't be called before calling "
-                 "RequestVideoFrames(). Discarding video frame.";
-    std::move(callback).Run(false);
+    // This can happen if the remote end calls AddVideoFrame() before we call
+    // RequestFrames() on it (a badly behaved remote end) or if due to
+    // unfortunate timing, AddVideoFrame() is received after having interrupted
+    // a request for frames because of a Reset(). In either case, we should
+    // ignore the frame.
+    //
+    // Note that we call |callback| with true. This is to prevent
+    // GpuVdContext::OnAddVideoFrameDone() on the libvda side from dispatching
+    // an error. This is consistent with how the legacy VDA stack handles the
+    // absence of an import callback: see
+    // VdVideoDecodeAccelerator::ImportBufferForPicture() which simply returns
+    // early without reporting an error to the client.
+    DVLOGF(3) << "Can't import the frame because there's no import callback";
+    std::move(callback).Run(true);
     return;
   }
 
@@ -244,6 +256,33 @@ void GpuArcVideoFramePool::AddVideoFrame(mojom::VideoFramePtr video_frame,
   std::move(callback).Run(true);
 }
 
+void GpuArcVideoFramePool::WillResetDecoder() {
+  DVLOGF(4);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // GpuArcVideoDecoder should ensure WillResetDecoder() is not called while a
+  // reset is in progress.
+  CHECK(!decoder_is_resetting_);
+  decoder_is_resetting_ = true;
+
+  if (notify_layout_changed_cb_) {
+    // If we're here, a Reset() has occurred in the the middle of a request for
+    // frames. That means that the VdaVideoFramePool is blocked waiting for a
+    // call to |notify_layout_changed_cb_|. Here, we unblock it by calling
+    // |notify_layout_changed_cb_| with kResetRequired thus aborting the request
+    // for frames.
+    std::move(notify_layout_changed_cb_)
+        .Run(media::CroStatus::Codes::kResetRequired);
+    import_frame_cb_.Reset();
+  }
+}
+
+void GpuArcVideoFramePool::OnDecoderResetDone() {
+  DVLOGF(4);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  decoder_is_resetting_ = false;
+}
+
 void GpuArcVideoFramePool::RequestFrames(
     const media::Fourcc& fourcc,
     const gfx::Size& coded_size,
@@ -254,6 +293,10 @@ void GpuArcVideoFramePool::RequestFrames(
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!notify_layout_changed_cb_);
+
+  // Notify the GpuArcVideoDecoder that we're no longer tracking frames
+  // previously added to the pool.
+  release_client_video_frames_cb_.Run();
 
   if (has_error_ || !pool_client_version_) {
     std::move(notify_layout_changed_cb)
@@ -266,6 +309,17 @@ void GpuArcVideoFramePool::RequestFrames(
   notify_layout_changed_cb_ = std::move(notify_layout_changed_cb);
   import_frame_cb_ = std::move(import_frame_cb);
 
+  if (decoder_is_resetting_) {
+    // If we're here, it means that due to unfortunate timing, a Reset() request
+    // was received before this RequestFrames(). The VdaVideoFramePool is
+    // blocked waiting on a call to |notify_layout_changed_cb_|. Therefore, we
+    // call it here with kResetRequired thus aborting the request for frames.
+    std::move(notify_layout_changed_cb_)
+        .Run(media::CroStatus::Codes::kResetRequired);
+    import_frame_cb_.Reset();
+    return;
+  }
+
   // Send a request for new video frames to our mojo client.
   media::VideoPixelFormat format = fourcc.ToVideoPixelFormat();
 
@@ -277,9 +331,6 @@ void GpuArcVideoFramePool::RequestFrames(
       format, coded_size, visible_rect, max_num_frames,
       base::BindOnce(&GpuArcVideoFramePool::OnRequestVideoFramesDone,
                      weak_this_));
-
-  // Let the owner of the video frame pool know new frames were requested.
-  request_frames_cb_.Run();
 }
 
 void GpuArcVideoFramePool::OnRequestVideoFramesDone() {
