@@ -133,13 +133,15 @@ Node::InsertionNotificationRequest PictureInPictureInterstitial::InsertedInto(
   return HTMLDivElement::InsertedInto(root);
 }
 
-void PictureInPictureInterstitial::RemovedFrom(ContainerNode&) {
+void PictureInPictureInterstitial::RemovedFrom(ContainerNode& insertion_point) {
   DCHECK(!GetVideoElement().isConnected());
 
   if (resize_observer_) {
     resize_observer_->disconnect();
     resize_observer_.Clear();
   }
+
+  HTMLDivElement::RemovedFrom(insertion_point);
 }
 
 void PictureInPictureInterstitial::NotifyElementSizeChanged(
