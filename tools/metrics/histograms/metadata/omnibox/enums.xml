@@ -155,6 +155,18 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Shortcut text prefix"/>
 </enum>
 
+<enum name="ReconciliationType">
+  <int value="0" label="No Reconciliation"/>
+  <int value="1" label="By prepopulate_id"/>
+  <int value="2" label="By keyword"/>
+  <int value="3" label="By domain based keyword"/>
+</enum>
+
+<enum name="RegulatoryExtensionVariant">
+  <int value="0" label="Default extension"/>
+  <int value="1" label="Android EEA"/>
+</enum>
+
 <enum name="SearchPrefetchEligibilityReason">
   <int value="0" label="Prefetch started"/>
   <int value="1" label="User disabled prefetch/preconnect"/>

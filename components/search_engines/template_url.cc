@@ -2043,6 +2043,17 @@ const TemplateURLData::RegulatoryExtension*
 TemplateURL::GetRegulatoryExtension() const {
   auto extension = data_.regulatory_extensions.end();
 
+  enum class ExtensionType {
+    kDefault = 0,
+    kAndroidEEA = 1,
+    kMaxValue = kAndroidEEA
+  };
+
+  base::UmaHistogramEnumeration(
+      "Omnibox.TemplateUrl.Reconciliation.RegulatoryExtensionVariant",
+      data_.created_from_play_api ? ExtensionType::kAndroidEEA
+                                  : ExtensionType::kDefault);
+
   if (data_.created_from_play_api) {
     extension = data_.regulatory_extensions.find("android_eea");
   } else {

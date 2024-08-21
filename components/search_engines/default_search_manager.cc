@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/case_conversion.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -293,6 +294,14 @@ void DefaultSearchManager::OnOverridesPrefChanged() {
 }
 
 void DefaultSearchManager::MergePrefsDataWithPrepopulated() {
+  enum class ReconciliationType {
+    kNone,
+    kByID,
+    kByKeyword,
+    kByDomainBasedKeyword,
+    kMaxValue = kByDomainBasedKeyword
+  };
+
   if (!prefs_default_search_) {
     return;
   }
@@ -309,6 +318,8 @@ void DefaultSearchManager::MergePrefsDataWithPrepopulated() {
 
   // Don't call GetPrepopulatedEngines() if we don't have anything to reconcile.
   if (!(reconcile_by_id || reconcile_by_keyword)) {
+    base::UmaHistogramEnumeration("Omnibox.TemplateUrl.Reconciliation.Type",
+                                  ReconciliationType::kNone);
     return;
   }
 
@@ -318,6 +329,8 @@ void DefaultSearchManager::MergePrefsDataWithPrepopulated() {
   auto matching_engine = prepopulated_urls.end();
 
   if (reconcile_by_keyword) {
+    bool is_by_domain_based_keyword = false;
+
     std::u16string keyword = prefs_default_search_->keyword();
 
     if (prefs_default_search_->keyword() == u"yahoo.com") {
@@ -332,16 +345,31 @@ void DefaultSearchManager::MergePrefsDataWithPrepopulated() {
       std::string_view country_code =
           yahoo_search_host.substr(0, yahoo_search_host.find('.'));
       keyword = base::UTF8ToUTF16(country_code) + u".yahoo.com";
+      is_by_domain_based_keyword = true;
     }
 
     // Match by keyword.
     matching_engine = base::ranges::find(prepopulated_urls, keyword,
                                          &TemplateURLData::keyword);
+
+    base::UmaHistogramBoolean(
+        is_by_domain_based_keyword
+            ? "Omnibox.TemplateUrl.Reconciliation.ByDomainBasedKeyword.Result"
+            : "Omnibox.TemplateUrl.Reconciliation.ByKeyword.Result",
+        matching_engine != prepopulated_urls.end());
+    base::UmaHistogramEnumeration(
+        "Omnibox.TemplateUrl.Reconciliation.Type",
+        is_by_domain_based_keyword ? ReconciliationType::kByDomainBasedKeyword
+                                   : ReconciliationType::kByKeyword);
   } else if (reconcile_by_id) {
     // Match by prepopulate_id.
     matching_engine = base::ranges::find(prepopulated_urls,
                                          prefs_default_search_->prepopulate_id,
                                          &TemplateURLData::prepopulate_id);
+    base::UmaHistogramBoolean("Omnibox.TemplateUrl.Reconciliation.ByID.Result",
+                              matching_engine != prepopulated_urls.end());
+    base::UmaHistogramEnumeration("Omnibox.TemplateUrl.Reconciliation.Type",
+                                  ReconciliationType::kByID);
   }
 
   if (matching_engine == prepopulated_urls.end()) {

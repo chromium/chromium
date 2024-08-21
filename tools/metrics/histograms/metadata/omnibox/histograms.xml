@@ -2174,6 +2174,49 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.TemplateUrl.Reconciliation.RegulatoryExtensionVariant"
+    enum="RegulatoryExtensionVariant" expires_after="2025-09-01">
+  <owner>ender@google.com</owner>
+  <owner>chrome-search@google.com</owner>
+  <summary>
+    Records the type of regulatory extension used to replace the {regSearchExt}
+    or {regSuggestExt} field while handling replacements for a TemplateUrl.
+
+    Recorded only for eligible TemplateURLs that feature extensions mentioned
+    above, once per a replacement, regardless of whether the extension was
+    present or its corresponding field populated.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.TemplateUrl.Reconciliation.Type"
+    enum="ReconciliationType" expires_after="2025-09-01">
+  <owner>ender@google.com</owner>
+  <owner>chrome-search@google.com</owner>
+  <summary>
+    Captures the type of performed reconciliation (if any).
+
+    Recorded once per Default Search Engine reconciliation event (on start + any
+    time the Default Search Engine is changed).
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.TemplateUrl.Reconciliation.{ByVariant}.Result"
+    enum="BooleanSuccess" expires_after="2025-09-01">
+  <owner>ender@google.com</owner>
+  <owner>chrome-search@google.com</owner>
+  <summary>
+    Captures the outcome of TemplateURL reconciliation whenever reconciliation
+    takes place.
+
+    This histogram captures outcome of reconciliation {ByVariant}.
+  </summary>
+  <token key="ByVariant">
+    <variant name="ByDomainBasedKeyword" summary="by Domain-based Keyword"/>
+    <variant name="ByID" summary="by ID"/>
+    <variant name="ByKeyword" summary="by Keyword"/>
+  </token>
+</histogram>
+
 <histogram name="Omnibox.TemplateUrl.RlzPresent" enum="Boolean"
     expires_after="2025-05-30">
   <owner>ender@google.com</owner>
