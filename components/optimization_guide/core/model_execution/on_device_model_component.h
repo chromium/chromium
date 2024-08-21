@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/sequence_checker.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -85,6 +86,10 @@ class OnDeviceModelComponentStateManager
       PrefService* local_state,
       std::unique_ptr<Delegate> delegate);
 
+  // Returns whether the component installation is valid.
+  static bool VerifyInstallation(const base::FilePath& install_dir,
+                                 const base::Value::Dict& manifest);
+
   // Called at startup. Triggers install or uninstall of the component if
   // necessary.
   void OnStartup();
@@ -106,10 +111,6 @@ class OnDeviceModelComponentStateManager
 
   // Called when the on-device component has been uninstalled.
   void UninstallComplete();
-
-  // Returns whether the component installation is valid.
-  bool VerifyInstallation(const base::FilePath& install_dir,
-                          const base::Value::Dict& manifest);
 
   // Creates the on-device component state, only called after VerifyInstallation
   // returns true.
@@ -157,15 +158,21 @@ class OnDeviceModelComponentStateManager
 
   void NotifyStateChanged();
 
-  raw_ptr<PrefService> local_state_;
-  std::unique_ptr<Delegate> delegate_;
-  base::ObserverList<Observer> observers_;
-  bool component_installer_registered_ = false;
+  raw_ptr<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::ObserverList<Observer> observers_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool component_installer_registered_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 
-  bool is_model_allowed_ = false;
-  std::unique_ptr<OnDeviceModelComponentState> state_;
+  bool is_model_allowed_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  std::unique_ptr<OnDeviceModelComponentState> state_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   // Null until first registration attempt.
-  std::unique_ptr<RegistrationCriteria> registration_criteria_;
+  std::unique_ptr<RegistrationCriteria> registration_criteria_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
   base::WeakPtrFactory<OnDeviceModelComponentStateManager> weak_ptr_factory_{
       this};
 };
