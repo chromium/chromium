@@ -810,11 +810,12 @@ class InvalidIteratorAnalysis
     const clang::CXXConstructorDecl* ctor = expr.getConstructor();
     assert(ctor != nullptr);
 
-    if (ctor->isCopyOrMoveConstructor()) {
+    if (ctor->isCopyOrMoveConstructor() ||
+        ctor->isConvertingConstructor(false)) {
       auto* it = UnwrapAsIterator(expr.getArg(0), env);
       assert(it);
 
-      // TODO(crbug.com/40272746): Add support for copy and move constructor
+      CloneIterator(&expr, *it, env);
     }
   }
 
@@ -1461,7 +1462,7 @@ class InvalidIteratorAnalysis
     return attrs;
   }
 
-  void TransferCallReturningIterator(const clang::CallExpr* expr,
+  void TransferCallReturningIterator(const clang::Expr* expr,
                                      clang::dataflow::Value& container,
                                      clang::dataflow::BoolValue& is_valid,
                                      clang::dataflow::BoolValue& is_end,
@@ -1477,6 +1478,24 @@ class InvalidIteratorAnalysis
         env.setStorageLocation(*expr, *loc);
       }
     }
+
+    // We need to traverse the AST backwards to catch if the returning iterator
+    // belongs to a `VarDecl`. It is necessary because, in case of implicit
+    // casts, we need to keep track of the declared target type.
+    const clang::VarDecl* var_decl = nullptr;
+    auto parents = getASTContext().getParents(*expr);
+    while (!parents.empty() && !var_decl) {
+      if (auto* decl = parents[0].get<clang::VarDecl>()) {
+        var_decl = decl;
+      }
+
+      parents = getASTContext().getParents(parents[0]);
+    }
+
+    if (var_decl) {
+      iterator_types_mapping_.insert(var_decl->getType().getCanonicalType());
+    }
+
     assert(loc);
     PopulateIteratorValue(loc, container, is_valid, is_end, env);
   }
@@ -1794,7 +1813,7 @@ class InvalidIteratorAnalysis
     SetIsEnd(env, *iterator, is_end);
   }
 
-  void CloneIterator(const clang::CallExpr* expr,
+  void CloneIterator(const clang::Expr* expr,
                      clang::dataflow::RecordStorageLocation& iterator,
                      clang::dataflow::Environment& env) {
     auto* container = GetContainerValue(env, iterator);

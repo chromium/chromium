@@ -1,0 +1,10 @@
+copy-constructor.cpp:12:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it;
+   ^
+copy-constructor.cpp:13:4: error: [iterator-checker] Potentially invalid iterator used.
+  *copy_it;
+   ^
+copy-constructor.cpp:23:4: error: [iterator-checker] Potentially invalid iterator used.
+  *copy_it;
+   ^
+3 errors generated.
