@@ -223,11 +223,17 @@ class ManagePasswordsUIController
   }
 #endif  // defined(UNIT_TEST)
 
+  // Hides the bubble if opened. Mocked in the tests.
+  virtual void HidePasswordBubble();
+
+  bool IsShowingBubble() const {
+    return bubble_status_ == BubbleStatus::SHOWN ||
+           bubble_status_ == BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
+  }
+
  protected:
   explicit ManagePasswordsUIController(content::WebContents* web_contents);
 
-  // Hides the bubble if opened. Mocked in the tests.
-  virtual void HidePasswordBubble();
 
   // Called when a PasswordForm is autofilled, when a new PasswordForm is
   // submitted, or when a navigation occurs to update the visibility of the
@@ -286,11 +292,6 @@ class ManagePasswordsUIController
     // UpdateBubbleAndIconVisibility() and will be focused automatically.
     SHOULD_POP_UP_WITH_FOCUS,
   };
-
-  bool IsShowingBubble() const {
-    return bubble_status_ == BubbleStatus::SHOWN ||
-           bubble_status_ == BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
-  }
 
   // Returns whether saving credentials prompts for the current form in
   // |passwords_data_| is blocked due to explicit action of the user asking to

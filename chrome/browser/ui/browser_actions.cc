@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
@@ -432,7 +433,16 @@ void BrowserActions::InitializeBrowserActions() {
                       password_manager::ui::INACTIVE_STATE) {
                     chrome::ShowPasswordManager(browser);
                   } else {
-                    chrome::ManagePasswordsForPage(browser);
+                    content::WebContents* web_contents =
+                        browser->tab_strip_model()->GetActiveWebContents();
+                    auto* controller =
+                        ManagePasswordsUIController::FromWebContents(
+                            web_contents);
+                    if (controller->IsShowingBubble()) {
+                      controller->HidePasswordBubble();
+                    } else {
+                      chrome::ManagePasswordsForPage(browser);
+                    }
                   }
                 },
                 base::Unretained(browser)),
