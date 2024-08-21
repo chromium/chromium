@@ -2542,6 +2542,13 @@
           # incompatibilities are resolved.
         },
       },
+      'Dawn Chromium Presubmit': {
+        'os_type': 'linux',
+        'mixins': [
+          'linux-jammy',
+        ],
+        'test_suites': {},
+      },
       'Dawn Linux TSAN Release': {
         # This bot doesn't run any Telemetry-based tests so doesn't
         # need the browser_config parameter.

@@ -25,6 +25,7 @@ ci/Dawn Android arm64 Experimental Release (Pixel 6)
 ci/Dawn Android arm64 Release (Pixel 6)
 ci/Dawn Android arm64 Release (Samsung S24)
 ci/Dawn ChromeOS Skylab Release (volteer)
+ci/Dawn Chromium Presubmit
 ci/Dawn Linux TSAN Release
 ci/Dawn Linux x64 Builder
 ci/Dawn Linux x64 DEPS Builder
@@ -156,6 +157,7 @@ try/android-dawn-arm64-rel
 try/android-dawn-arm64-s24-rel
 try/dawn-android-arm-deps-rel
 try/dawn-android-arm64-deps-rel
+try/dawn-chromium-presubmit
 try/dawn-linux-x64-deps-rel
 try/dawn-mac-arm64-deps-rel
 try/dawn-mac-x64-deps-rel

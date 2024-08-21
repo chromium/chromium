@@ -1691,6 +1691,7 @@
       }
     ]
   },
+  "Dawn Chromium Presubmit": {},
   "Dawn Linux TSAN Release": {
     "gtest_tests": [
       {
