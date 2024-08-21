@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/services/recording/gif_file_writer.h"
 
 #include <string_view>
@@ -28,17 +23,15 @@ GifFileWriter::GifFileWriter(
 GifFileWriter::~GifFileWriter() = default;
 
 void GifFileWriter::WriteByte(uint8_t byte) {
-  WriteBytesAndCheck(base::make_span(&byte, sizeof(byte)));
+  WriteBytesAndCheck(base::byte_span_from_ref(byte));
 }
 
-void GifFileWriter::WriteBuffer(const uint8_t* const buffer,
-                                size_t buffer_size) {
-  WriteBytesAndCheck(base::make_span(buffer, buffer_size));
+void GifFileWriter::WriteBuffer(base::span<const uint8_t> buffer) {
+  WriteBytesAndCheck(buffer);
 }
 
 void GifFileWriter::WriteString(std::string_view string) {
-  WriteBytesAndCheck(base::make_span(
-      reinterpret_cast<const uint8_t*>(string.data()), string.size()));
+  WriteBytesAndCheck(base::as_byte_span(string));
 }
 
 void GifFileWriter::WriteShort(uint16_t value) {
