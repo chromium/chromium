@@ -1483,13 +1483,16 @@ public class CompositorViewHolder extends FrameLayout
             // CompositorView always has index of 0.
             // TODO(crbug.com/40770763): Look into enforcing the z-order of the views.
             addView(mView, 1);
-            updateFocusability(false, /* blockDescendants= */ false);
+
+            setFocusable(false);
+            setFocusableInTouchMode(false);
 
             // Claim focus for the new view unless the user is currently using the URL bar.
             if (mUrlBar == null || !mUrlBar.hasFocus()) mView.requestFocus();
         } else {
             if (mView.getParent() == this) {
-                updateFocusability(mCanBeFocusable, /* blockDescendants= */ false);
+                setFocusable(mCanBeFocusable);
+                setFocusableInTouchMode(mCanBeFocusable);
 
                 if (webContents != null && !webContents.isDestroyed()) {
                     getContentView().setVisibility(View.INVISIBLE);
@@ -1686,30 +1689,21 @@ public class CompositorViewHolder extends FrameLayout
         }
     }
 
-    private void updateFocusability(boolean focusable, boolean blockDescendants) {
-        setFocusable(focusable);
-        setFocusableInTouchMode(focusable);
-
-        if (!focusable && blockDescendants) {
-            setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);
-        } else {
-            setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
-        }
-    }
-
     // TabObscuringHandler.Observer
 
     @Override
     public void updateObscured(boolean obscureTabContent, boolean obscureToolbar) {
-        updateFocusability(!obscureTabContent, /* blockDescendants= */ true);
+        setFocusable(!obscureTabContent);
     }
 
     /**
-     * Class used to provide a virtual view hierarchy to the Accessibility framework for this view
-     * and its contained items.
-     *
-     * <p><strong>NOTE:</strong> This class is fully backwards compatible for compilation, but will
-     * only provide touch exploration on devices running Ice Cream Sandwich and above.
+     * Class used to provide a virtual view hierarchy to the Accessibility
+     * framework for this view and its contained items.
+     * <p>
+     * <strong>NOTE:</strong> This class is fully backwards compatible for
+     * compilation, but will only provide touch exploration on devices running
+     * Ice Cream Sandwich and above.
+     * </p>
      */
     private class CompositorAccessibilityProvider extends ExploreByTouchHelper {
         private final float mDpToPx;

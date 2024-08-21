@@ -11,12 +11,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import android.app.Activity;
 import android.app.Instrumentation;
+import android.content.Context;
 import android.os.SystemClock;
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
@@ -46,7 +48,6 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.content_public.browser.test.util.KeyUtils;
-import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -186,10 +187,13 @@ public class OmniboxTestUtils {
                             "unexpected Omnibox focus state",
                             mUrlBar.hasFocus(),
                             Matchers.is(active));
-
+                    InputMethodManager imm =
+                            (InputMethodManager)
+                                    mUrlBar.getContext()
+                                            .getSystemService(Context.INPUT_METHOD_SERVICE);
                     Criteria.checkThat(
                             "Keyboard did not reach expected state",
-                            KeyboardUtils.isAndroidSoftKeyboardShowing(mUrlBar),
+                            imm.isActive(mUrlBar),
                             Matchers.is(active));
                 });
     }
