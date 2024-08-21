@@ -929,7 +929,6 @@ class AutofillProfileSyncUtilTest
          features::kAutofillUseMXAddressModel,
          features::kAutofillEnableSupportForAddressOverflow,
          features::kAutofillEnableSupportForBetweenStreets,
-         features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
          features::kAutofillEnableSupportForAdminLevel2,
          features::kAutofillEnableSupportForApartmentNumbers},
         {});

@@ -143,7 +143,6 @@ class ProfileMatchingTypesTest
          features::kAutofillEnableSupportForAdminLevel2,
          features::kAutofillEnableSupportForApartmentNumbers,
          features::kAutofillEnableSupportForAddressOverflow,
-         features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
          features::kAutofillUseI18nAddressModel,
          features::kAutofillUseBRAddressModel,
          features::kAutofillUseCAAddressModel,

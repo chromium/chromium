@@ -59,8 +59,7 @@ class AddressAutofillTableProfileTest
     features_.InitWithFeatures(
         {features::kAutofillEnableSupportForBetweenStreets,
          features::kAutofillEnableSupportForAdminLevel2,
-         features::kAutofillEnableSupportForAddressOverflow,
-         features::kAutofillEnableSupportForBetweenStreetsOrLandmark},
+         features::kAutofillEnableSupportForAddressOverflow},
         {});
   }
   AutofillProfile::Source profile_source() const { return GetParam(); }

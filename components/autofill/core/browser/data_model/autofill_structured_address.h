@@ -121,7 +121,7 @@ class AddressOverflowAndLandmarkNode : public AddressComponent {
   ~AddressOverflowAndLandmarkNode() override;
 };
 
-class BetweenStreetsOrLandmarkNode : public FeatureGuardedAddressComponent {
+class BetweenStreetsOrLandmarkNode : public AddressComponent {
  public:
   explicit BetweenStreetsOrLandmarkNode(SubcomponentsList children);
   ~BetweenStreetsOrLandmarkNode() override;

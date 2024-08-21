@@ -351,8 +351,6 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
     }
     if (!(between_streets_or_landmark_ || between_streets_ ||
           between_streets_line_1_ || between_streets_line_2_) &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForBetweenStreetsOrLandmark) &&
         i18n_model_definition::IsTypeEnabledForCountry(
             ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK, country_code) &&
         ParseField(context, scanner, between_streets_or_landmark_patterns,
@@ -920,8 +918,6 @@ AddressFieldParser::ParseNameAndLabelForBetweenStreetsOrLandmark(
   AddressCountryCode country_code(context.client_country.value());
   if (between_streets_or_landmark_ || landmark_ || between_streets_ ||
       between_streets_line_1_ || between_streets_line_2_ ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreetsOrLandmark) ||
       !i18n_model_definition::IsTypeEnabledForCountry(
           ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK, country_code)) {
     return RESULT_MATCH_NONE;

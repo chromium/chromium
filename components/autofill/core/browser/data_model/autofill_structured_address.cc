@@ -375,11 +375,9 @@ AddressOverflowAndLandmarkNode::~AddressOverflowAndLandmarkNode() = default;
 
 BetweenStreetsOrLandmarkNode::BetweenStreetsOrLandmarkNode(
     SubcomponentsList children)
-    : FeatureGuardedAddressComponent(
-          &features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
-          ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
-          std::move(children),
-          MergeMode::kReplaceEmpty | kReplaceSubset) {}
+    : AddressComponent(ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+                       std::move(children),
+                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
 
 BetweenStreetsOrLandmarkNode::~BetweenStreetsOrLandmarkNode() = default;
 

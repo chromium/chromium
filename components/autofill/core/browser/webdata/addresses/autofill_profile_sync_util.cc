@@ -166,21 +166,13 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
     specifics->set_address_home_overflow(data_util::TruncateUTF8(
         base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_OVERFLOW))));
   }
-
-    specifics->set_address_home_landmark(data_util::TruncateUTF8(
-        base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_LANDMARK))));
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreetsOrLandmark)) {
-    specifics->set_address_home_between_streets_or_landmark(
-        data_util::TruncateUTF8(base::UTF16ToUTF8(
-            entry.GetRawInfo(ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK))));
-  }
-
-    specifics->set_address_home_overflow_and_landmark(
-        data_util::TruncateUTF8(base::UTF16ToUTF8(
-            entry.GetRawInfo(ADDRESS_HOME_OVERFLOW_AND_LANDMARK))));
-
+  specifics->set_address_home_landmark(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_LANDMARK))));
+  specifics->set_address_home_between_streets_or_landmark(
+      data_util::TruncateUTF8(base::UTF16ToUTF8(
+          entry.GetRawInfo(ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK))));
+  specifics->set_address_home_overflow_and_landmark(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_OVERFLOW_AND_LANDMARK))));
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForBetweenStreets)) {
     specifics->set_address_home_between_streets(data_util::TruncateUTF8(
@@ -268,17 +260,12 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
         ConvertProfileToSpecificsVerificationStatus(
             entry.GetVerificationStatus(ADDRESS_HOME_BETWEEN_STREETS_2)));
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreetsOrLandmark)) {
-    specifics->set_address_home_between_streets_or_landmark_status(
-        ConvertProfileToSpecificsVerificationStatus(entry.GetVerificationStatus(
-            ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK)));
-  }
-
+  specifics->set_address_home_between_streets_or_landmark_status(
+      ConvertProfileToSpecificsVerificationStatus(entry.GetVerificationStatus(
+          ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK)));
   specifics->set_address_home_overflow_and_landmark_status(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_OVERFLOW_AND_LANDMARK)));
-
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAdminLevel2)) {
     specifics->set_address_home_admin_level_2_status(
@@ -484,14 +471,11 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
             specifics.address_home_overflow_status()));
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreetsOrLandmark)) {
-    profile->SetRawInfoWithVerificationStatus(
-        ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
-        base::UTF8ToUTF16(specifics.address_home_between_streets_or_landmark()),
-        ConvertSpecificsToProfileVerificationStatus(
-            specifics.address_home_between_streets_or_landmark_status()));
-  }
+  profile->SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+      base::UTF8ToUTF16(specifics.address_home_between_streets_or_landmark()),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.address_home_between_streets_or_landmark_status()));
 
   profile->SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
