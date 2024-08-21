@@ -726,6 +726,53 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.InterestGroup.AdProtoCompressionRatio" units="%"
+    expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the percentage ratio of compressed size divided by uncompressed size
+    of the AdsProto, times 100. Recorded each time the AdProto is compressed,
+    including both during interest group insertion, and database migration from
+    older uncompressed versions, unless uncompressed size is 0. Includes both
+    ads and ad components.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.AdProtoDecompressionOutcome"
+    enum="AdProtoDecompressionOutcome" expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the outcome of interest group AdProto decompression, recorded on
+    each decompression attempt. Includes both ads and ad components.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.AdProtoSizeCompressed" units="bytes"
+    expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the size of the compressed AdProto, recorded each time the AdProto
+    is compressed, including both during interest group insertion, and database
+    migration from older uncompressed versions, even if the uncompressed size is
+    0. Includes both ads and ad components.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.AdProtoSizeUncompressed" units="bytes"
+    expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the size of the uncompressed AdProto, recorded each time the AdProto
+    is compressed, including both during interest group insertion, and database
+    migration from older uncompressed versions, even if the uncompressed size is
+    0. Includes both ads and ad components.
+  </summary>
+</histogram>
+
 <histogram name="Storage.InterestGroup.AdRenderURLSize" units="bytes"
     expires_after="2025-01-05">
   <owner>caraitto@chromium.org</owner>

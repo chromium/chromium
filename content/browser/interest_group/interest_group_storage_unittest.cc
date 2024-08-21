@@ -162,6 +162,7 @@ class InterestGroupStorageTest : public testing::Test {
         case 25:
         case 26:
         case 27:
+        case 30:
           *version_changed_ig_fields = false;
           break;
         default:
@@ -194,6 +195,9 @@ class InterestGroupStorageTest : public testing::Test {
     // instance.
 
     switch (version_number) {
+      case 30:
+        // Compressed AdsProto, but introduced no new fields.
+        ABSL_FALLTHROUGH_INTENDED;
       case 29:
         result.ads.value()[0].selectable_buyer_and_seller_reporting_ids = {
             "selectable_id1", "selectable_id2"};

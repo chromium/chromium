@@ -6935,6 +6935,7 @@ data/interest_group/auction_only_new_name.wbn
 data/interest_group/auction_only_new_name.wbn.mock-http-headers
 data/interest_group/autogenSchemaV28.sql
 data/interest_group/autogenSchemaV29.sql
+data/interest_group/autogenSchemaV30.sql
 data/interest_group/bidding_argument_validator.js
 data/interest_group/bidding_argument_validator.js.mock-http-headers
 data/interest_group/bidding_logic.js
