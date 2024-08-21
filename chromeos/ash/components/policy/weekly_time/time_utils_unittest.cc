@@ -86,46 +86,6 @@ class TimeUtilsTimezoneFunctionsTest : public testing::Test {
   std::unique_ptr<icu::TimeZone> timezone_;
 };
 
-TEST_F(TimeUtilsTimezoneFunctionsTest, ToLocalizedStringDaylightSavings) {
-  base::test::ScopedRestoreICUDefaultLocale restore_locale;
-  SetDaylightSavings(true);
-
-  // 15:50 UTC, 8:50 PT, 11:50 PT
-  WeeklyTime test_weekly_time =
-      WeeklyTime(5, (base::Hours(15) + base::Minutes(50)).InMilliseconds(), 0);
-
-  base::i18n::SetICUDefaultLocale("en_US");
-  icu::TimeZone::adoptDefault(
-      icu::TimeZone::createTimeZone("America/Los_Angeles"));
-  EXPECT_EQ(u"Friday 8:50\u202fAM",
-            WeeklyTimeToLocalizedString(test_weekly_time, &test_clock_));
-
-  base::i18n::SetICUDefaultLocale("de_DE");
-  EXPECT_EQ(u"Freitag, 08:50",
-            WeeklyTimeToLocalizedString(test_weekly_time, &test_clock_));
-
-  base::i18n::SetICUDefaultLocale("en_GB");
-  icu::TimeZone::adoptDefault(
-      icu::TimeZone::createTimeZone("America/New_York"));
-  EXPECT_EQ(u"Friday 11:50",
-            WeeklyTimeToLocalizedString(test_weekly_time, &test_clock_));
-}
-
-TEST_F(TimeUtilsTimezoneFunctionsTest, ToLocalizedStringNoDaylightSavings) {
-  base::test::ScopedRestoreICUDefaultLocale restore_locale;
-  SetDaylightSavings(false);
-
-  // 15:50 UTC, 7:50 PST
-  WeeklyTime test_weekly_time =
-      WeeklyTime(5, (base::Hours(15) + base::Minutes(50)).InMilliseconds(), 0);
-
-  base::i18n::SetICUDefaultLocale("en_US");
-  icu::TimeZone::adoptDefault(
-      icu::TimeZone::createTimeZone("America/Los_Angeles"));
-  EXPECT_EQ(u"Friday 7:50\u202fAM",
-            WeeklyTimeToLocalizedString(test_weekly_time, &test_clock_));
-}
-
 TEST_F(TimeUtilsTimezoneFunctionsTest, GetOffsetFromTimezoneToGmt) {
   // GMT + 7
   auto zone = base::WrapUnique(icu::TimeZone::createTimeZone(

@@ -91,11 +91,6 @@ WeeklyTime WeeklyTime::ConvertToTimezone(int timezone_offset) const {
       .AddMilliseconds(timezone_offset - timezone_offset_.value());
 }
 
-WeeklyTime WeeklyTime::ConvertToCustomTimezone(int timezone_offset) const {
-  DCHECK(!timezone_offset_);
-  return WeeklyTime(day_of_week_, milliseconds_, timezone_offset);
-}
-
 // static
 WeeklyTime WeeklyTime::GetGmtWeeklyTime(base::Time time) {
   base::Time::Exploded exploded;
