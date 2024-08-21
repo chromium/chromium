@@ -129,6 +129,10 @@ class SelfDestructingPermissionGrantObserver
     grant_->RemoveObserver(this);
   }
 
+  scoped_refptr<content::FileSystemAccessPermissionGrant>& grant() {
+    return grant_;
+  }
+
  private:
   explicit SelfDestructingPermissionGrantObserver(
       scoped_refptr<content::FileSystemAccessPermissionGrant> grant)
@@ -2902,6 +2906,92 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       kTestOrigin, new_path, HandleType::kFile, GrantType::kWrite));
 }
 
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ReadGrantDestroyedOnRevokeActiveGrants) {
+  auto grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
+
+  auto observer =
+      SelfDestructingPermissionGrantObserver::Create(std::move(grant));
+
+  // `observer` destroys itself when the permission gets revoked. `observer` is
+  // the only holder of `grant`, so `grant` is destroyed as well. This should
+  // work without crashing.
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin, kTestPath);
+  EXPECT_FALSE(observer);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       WriteGrantDestroyedOnRevokeActiveGrants) {
+  auto grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
+
+  auto observer =
+      SelfDestructingPermissionGrantObserver::Create(std::move(grant));
+
+  // `observer` destroys itself when the permission gets revoked. `observer` is
+  // the only holder of `grant`, so `grant` is destroyed as well. This should
+  // work without crashing.
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin, kTestPath);
+  EXPECT_FALSE(observer);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ReadGrantDestroyedOnRevokeAllActiveGrants) {
+  auto grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
+
+  auto observer =
+      SelfDestructingPermissionGrantObserver::Create(std::move(grant));
+
+  // `observer` destroys itself when the permission gets revoked. `observer` is
+  // the only holder of `grant`, so `grant` is destroyed as well. This should
+  // work without crashing.
+  permission_context()->RevokeAllActiveGrants();
+  EXPECT_FALSE(observer);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       WriteGrantDestroyedOnRevokeAllActiveGrants) {
+  auto grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
+
+  auto observer =
+      SelfDestructingPermissionGrantObserver::Create(std::move(grant));
+
+  // `observer` destroys itself when the permission gets revoked. `observer` is
+  // the only holder of `grant`, so `grant` is destroyed as well. This should
+  // work without crashing.
+  permission_context()->RevokeAllActiveGrants();
+  EXPECT_FALSE(observer);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       GrantDestroyedOnRequestingPermission) {
+  auto grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kNone);
+  EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
+
+  SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
+                                CONTENT_SETTING_BLOCK);
+
+  auto observer =
+      SelfDestructingPermissionGrantObserver::Create(std::move(grant));
+
+  // `observer` destroys itself when the permission gets revoked. `observer` is
+  // the only holder of `grant`, so `grant` is destroyed as well. This should
+  // work without crashing.
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  observer->grant()->RequestPermission(
+      frame_id(), UserActivationState::kNotRequired, future.GetCallback());
+  EXPECT_EQ(future.Get(), PermissionRequestOutcome::kBlockedByContentSetting);
+  EXPECT_FALSE(observer);
+}
+
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
@@ -3058,70 +3148,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                                                          future.GetCallback());
   EXPECT_THAT(future.Get<0>(), testing::SizeIs(1));
   EXPECT_EQ(future.Get<0>()[0].path, path_foo);
-}
-
-TEST_F(ChromeFileSystemAccessPermissionContextTest,
-       ReadGrantDestroyedOnRevokeActiveGrants) {
-  auto grant = permission_context()->GetReadPermissionGrant(
-      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
-  EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
-
-  auto observer =
-      SelfDestructingPermissionGrantObserver::Create(std::move(grant));
-
-  // `observer` destroys itself when the permission gets revoked. `observer` is
-  // the only holder of `grant`, so `grant` is destroyed as well. This should
-  // work without crashing.
-  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin, kTestPath);
-  EXPECT_FALSE(observer);
-}
-
-TEST_F(ChromeFileSystemAccessPermissionContextTest,
-       WriteGrantDestroyedOnRevokeActiveGrants) {
-  auto grant = permission_context()->GetWritePermissionGrant(
-      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
-  EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
-
-  auto observer =
-      SelfDestructingPermissionGrantObserver::Create(std::move(grant));
-
-  // `observer` destroys itself when the permission gets revoked. `observer` is
-  // the only holder of `grant`, so `grant` is destroyed as well. This should
-  // work without crashing.
-  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin, kTestPath);
-  EXPECT_FALSE(observer);
-}
-
-TEST_F(ChromeFileSystemAccessPermissionContextTest,
-       ReadGrantDestroyedOnRevokeAllActiveGrants) {
-  auto grant = permission_context()->GetWritePermissionGrant(
-      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
-  EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
-
-  auto observer =
-      SelfDestructingPermissionGrantObserver::Create(std::move(grant));
-
-  // `observer` destroys itself when the permission gets revoked. `observer` is
-  // the only holder of `grant`, so `grant` is destroyed as well. This should
-  // work without crashing.
-  permission_context()->RevokeAllActiveGrants();
-  EXPECT_FALSE(observer);
-}
-
-TEST_F(ChromeFileSystemAccessPermissionContextTest,
-       WriteGrantDestroyedOnRevokeAllActiveGrants) {
-  auto grant = permission_context()->GetWritePermissionGrant(
-      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
-  EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
-
-  auto observer =
-      SelfDestructingPermissionGrantObserver::Create(std::move(grant));
-
-  // `observer` destroys itself when the permission gets revoked. `observer` is
-  // the only holder of `grant`, so `grant` is destroyed as well. This should
-  // work without crashing.
-  permission_context()->RevokeAllActiveGrants();
-  EXPECT_FALSE(observer);
 }
 
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)

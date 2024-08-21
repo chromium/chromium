@@ -617,42 +617,50 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
 
       // Content setting grants write permission without asking.
       if (content_setting == CONTENT_SETTING_ALLOW) {
+        PermissionRequestOutcome outcome =
+            PermissionRequestOutcome::kGrantedByContentSetting;
+        RecordPermissionRequestOutcome(outcome);
+        // May destroy `this`.
         SetStatus(PermissionStatus::GRANTED,
                   PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
-        RunCallbackAndRecordPermissionRequestOutcome(
-            std::move(callback),
-            PermissionRequestOutcome::kGrantedByContentSetting);
+        std::move(callback).Run(outcome);
         return;
       }
 
       // Content setting blocks write permission.
       if (content_setting == CONTENT_SETTING_BLOCK) {
+        PermissionRequestOutcome outcome =
+            PermissionRequestOutcome::kBlockedByContentSetting;
+        RecordPermissionRequestOutcome(outcome);
+        // May destroy `this`.
         SetStatus(PermissionStatus::DENIED,
                   PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
-        RunCallbackAndRecordPermissionRequestOutcome(
-            std::move(callback),
-            PermissionRequestOutcome::kBlockedByContentSetting);
+        std::move(callback).Run(outcome);
         return;
       }
     }
 
     if (context_->CanAutoGrantViaPersistentPermission(origin_, path_,
                                                       handle_type_, type_)) {
+      PermissionRequestOutcome outcome =
+          PermissionRequestOutcome::kGrantedByPersistentPermission;
+      RecordPermissionRequestOutcome(outcome);
+      // May destroy `this`.
       SetStatus(PermissionStatus::GRANTED,
                 PersistedPermissionOptions::kUpdatePersistedPermission);
-      RunCallbackAndRecordPermissionRequestOutcome(
-          std::move(callback),
-          PermissionRequestOutcome::kGrantedByPersistentPermission);
+      std::move(callback).Run(outcome);
       return;
     }
 
     if (context_->CanAutoGrantViaAncestorPersistentPermission(origin_, path_,
                                                               type_)) {
+      PermissionRequestOutcome outcome =
+          PermissionRequestOutcome::kGrantedByAncestorPersistentPermission;
+      RecordPermissionRequestOutcome(outcome);
+      // May destroy `this`.
       SetStatus(PermissionStatus::GRANTED,
                 PersistedPermissionOptions::kUpdatePersistedPermission);
-      RunCallbackAndRecordPermissionRequestOutcome(
-          std::move(callback),
-          PermissionRequestOutcome::kGrantedByAncestorPersistentPermission);
+      std::move(callback).Run(outcome);
       return;
     }
 
@@ -774,6 +782,8 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     return type_;
   }
 
+  // `this` may be destroyed. A `FileSystemAccessPermissionGrant::Observer` may
+  // destroy `this` when notified of this the status change.
   void SetStatus(PermissionStatus new_status,
                  PersistedPermissionOptions update_options) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -835,6 +845,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     }
 
     if (permission_changed) {
+      // May destroy `this`.
       NotifyPermissionStatusChanged();
     }
   }
@@ -898,18 +909,26 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     }
 
     switch (result) {
-      case PermissionAction::GRANTED:
+      case PermissionAction::GRANTED: {
+        PermissionRequestOutcome outcome =
+            PermissionRequestOutcome::kUserGranted;
+        RecordPermissionRequestOutcome(outcome);
+        // May destroy `this`.
         SetStatus(PermissionStatus::GRANTED,
                   PersistedPermissionOptions::kUpdatePersistedPermission);
-        RunCallbackAndRecordPermissionRequestOutcome(
-            std::move(callback), PermissionRequestOutcome::kUserGranted);
+        std::move(callback).Run(outcome);
         break;
-      case PermissionAction::DENIED:
+      }
+      case PermissionAction::DENIED: {
+        PermissionRequestOutcome outcome =
+            PermissionRequestOutcome::kUserDenied;
+        RecordPermissionRequestOutcome(outcome);
+        // May destroy `this`.
         SetStatus(PermissionStatus::DENIED,
                   PersistedPermissionOptions::kUpdatePersistedPermission);
-        RunCallbackAndRecordPermissionRequestOutcome(
-            std::move(callback), PermissionRequestOutcome::kUserDenied);
+        std::move(callback).Run(outcome);
         break;
+      }
       case PermissionAction::DISMISSED:
       case PermissionAction::IGNORED:
         RunCallbackAndRecordPermissionRequestOutcome(
@@ -997,9 +1016,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     }
   }
 
-  void RunCallbackAndRecordPermissionRequestOutcome(
-      base::OnceCallback<void(PermissionRequestOutcome)> callback,
-      PermissionRequestOutcome outcome) {
+  void RecordPermissionRequestOutcome(PermissionRequestOutcome outcome) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (context_ &&
         (outcome ==
@@ -1033,6 +1050,12 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
             outcome);
       }
     }
+  }
+
+  void RunCallbackAndRecordPermissionRequestOutcome(
+      base::OnceCallback<void(PermissionRequestOutcome)> callback,
+      PermissionRequestOutcome outcome) {
+    RecordPermissionRequestOutcome(outcome);
 
     std::move(callback).Run(outcome);
   }
@@ -1063,6 +1086,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       }
     }
 
+    // May destroy `this`.
     NotifyPermissionStatusChanged();
   }
 
