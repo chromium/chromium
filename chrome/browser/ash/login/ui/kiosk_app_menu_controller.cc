@@ -4,16 +4,16 @@
 
 #include "chrome/browser/ash/login/ui/kiosk_app_menu_controller.h"
 
-#include <utility>
+#include <string>
 #include <vector>
 
 #include "ash/public/cpp/kiosk_app_menu.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/check.h"
-#include "base/notreached.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
@@ -36,6 +36,8 @@ KioskAppId ToKioskAppId(const KioskAppMenuEntry& menu_entry) {
       CHECK(menu_entry.chrome_app_id.has_value());
       return KioskAppId::ForChromeApp(menu_entry.chrome_app_id.value(),
                                       menu_entry.account_id);
+    case KioskAppMenuEntry::AppType::kIsolatedWebApp:
+      return KioskAppId::ForIsolatedWebApp(menu_entry.account_id);
   }
 }
 
@@ -45,6 +47,8 @@ KioskAppMenuEntry::AppType ToMenuEntryType(KioskAppType type) {
       return KioskAppMenuEntry::AppType::kWebApp;
     case KioskAppType::kChromeApp:
       return KioskAppMenuEntry::AppType::kChromeApp;
+    case KioskAppType::kIsolatedWebApp:
+      return KioskAppMenuEntry::AppType::kIsolatedWebApp;
   }
 }
 
@@ -64,6 +68,7 @@ std::string GetMenuItemName(const KioskApp& app) {
   // prevent a blank menu item.
   switch (app.id().type) {
     case KioskAppType::kChromeApp:
+    case KioskAppType::kIsolatedWebApp:
       return app.id().app_id.value();
     case KioskAppType::kWebApp:
       return app.url()->spec();

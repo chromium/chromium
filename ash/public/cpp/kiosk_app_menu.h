@@ -19,7 +19,7 @@ namespace ash {
 // Metadata used to populate the Kiosk apps menu in the login screen shelf.
 struct ASH_PUBLIC_EXPORT KioskAppMenuEntry {
   // Mirrors `KioskAppType`.
-  enum class AppType { kChromeApp, kWebApp };
+  enum class AppType { kChromeApp, kWebApp, kIsolatedWebApp };
 
   KioskAppMenuEntry(AppType type,
                     const AccountId& account_id,

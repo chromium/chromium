@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -88,8 +89,13 @@ class KioskControllerImpl : public KioskController,
   void DeleteLaunchControllerAsync();
   void DeleteLaunchController();
 
+  void AppendWebApps(std::vector<KioskApp>& apps) const;
+  void AppendChromeApps(std::vector<KioskApp>& apps) const;
+  void AppendIsolatedWebApps(std::vector<KioskApp>& apps) const;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
+  KioskIwaManager GUARDED_BY_CONTEXT(sequence_checker_) iwa_manager_;
   WebKioskAppManager GUARDED_BY_CONTEXT(sequence_checker_) web_app_manager_;
   KioskChromeAppManager GUARDED_BY_CONTEXT(sequence_checker_)
       chrome_app_manager_;

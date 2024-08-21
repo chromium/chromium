@@ -102,6 +102,7 @@ static_library("app_mode") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/app_mode/auto_sleep",
+    "//chrome/browser/ash/app_mode/isolated_web_app",
     "//chrome/browser/ash/app_mode/metrics",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/crosapi:browser_util",
@@ -143,6 +144,7 @@ static_library("app_mode") {
   ]
 
   allow_circular_includes_from = [
+    "//chrome/browser/ash/app_mode/isolated_web_app",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/app_mode",

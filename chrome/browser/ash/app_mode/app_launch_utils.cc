@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
@@ -163,6 +164,10 @@ void SetOneTimeAutoLaunchKioskAppId(PrefService& local_state,
       dict_update->Set(kOneTimeAutoLaunchWebKioskAccountId,
                        kiosk_app_id.account_id.Serialize());
       local_state.CommitPendingWrite();
+      return;
+    case KioskAppType::kIsolatedWebApp:
+      // TODO(crbug.com/361016399): implement Kiosk IWA autolaunch.
+      NOTIMPLEMENTED();
       return;
   }
   NOTREACHED();

@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_policy_handler.h"
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
@@ -41,6 +43,9 @@ KioskController::~KioskController() {
 void KioskController::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   KioskChromeAppManager::RegisterLocalStatePrefs(registry);
   WebKioskAppManager::RegisterPrefs(registry);
+  if (ash::features::IsIsolatedWebAppKioskEnabled()) {
+    KioskIwaManager::RegisterPrefs(registry);
+  }
   KioskCryptohomeRemover::RegisterPrefs(registry);
 
   kiosk_vision::RegisterLocalStatePrefs(registry);
