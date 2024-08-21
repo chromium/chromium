@@ -4763,13 +4763,13 @@
   },
   {
     "name": "file-system-provider-cloud-file-system",
-    "owners": [ "benreich@chromium.org", "cassycc@google.com", "simmonsjosh@google.com" ],
-    "expiry_milestone": 130
+    "owners": [ "benreich@google.com", "cassycc@google.com", "simmonsjosh@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "file-system-provider-content-cache",
-    "owners": [ "benreich@chromium.org", "cassycc@google.com", "simmonsjosh@google.com" ],
-    "expiry_milestone": 130
+    "owners": [ "benreich@google.com", "cassycc@google.com", "simmonsjosh@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "file-transfer-enterprise-connector",
