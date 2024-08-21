@@ -77,6 +77,24 @@
             }
           },
           {
+            "name": "getKeys",
+            "type": "function",
+            "description": "Gets all keys from storage.",
+            "parameters": [],
+            "returns_async": {
+              "name": "callback",
+              "description": "Callback with storage keys, or on failure (in which case $(ref:runtime.lastError) will be set).",
+              "parameters": [
+                {
+                  "name": "keys",
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "Array with keys read from storage."
+                }
+              ]
+            }
+          },
+          {
             "name": "getBytesInUse",
             "type": "function",
             "description": "Gets the amount of space (in bytes) being used by one or more items.",

@@ -1957,6 +1957,7 @@ enum HistogramValue {
   AUTOTESTPRIVATE_STARTOVERDRAWTRACKING = 1895,
   AUTOTESTPRIVATE_STOPOVERDRAWTRACKING = 1896,
   ACCESSIBILITY_PRIVATE_SCROLLATPOINT = 1897,
+  STORAGE_GETKEYS = 1898,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

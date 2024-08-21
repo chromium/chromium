@@ -71,6 +71,34 @@ chrome.test.runTests([
     test(stage0);
   },
 
+  function getKeysWhenEmpty() {
+    function stage0() {
+      this.getKeys(stage1.bind(this));
+    }
+    function stage1(settings) {
+      assertEq([], settings);
+      this.succeed();
+    }
+    test(stage0);
+  },
+
+  function getKeysWhenNonEmpty() {
+    function stage0() {
+      this.set({
+        'foo'  : 'bar',
+        'baz'  : 'qux'
+      }, stage1.bind(this));
+    }
+    function stage1() {
+      this.getKeys(stage2.bind(this));
+    }
+    function stage2(settings) {
+      assertEq(['baz', 'foo'], settings.sort());
+      this.succeed();
+    }
+    test(stage0);
+  },
+
   function removeWhenEmpty() {
     function stage0() {
       this.remove('foo', stage1.bind(this));

@@ -76,6 +76,12 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function getKeysFromContentScript() {
+    await testAccessibleStorageAreas('getKeys');
+    await testInaccessibleStorageAreas('getKeys');
+    chrome.test.succeed();
+  },
+
   async function getBytesInUseFromContentScript() {
     await testAccessibleStorageAreas('getBytesInUse', null);
     await testInaccessibleStorageAreas('getBytesInUse', null);
