@@ -222,6 +222,7 @@ source_set("unit_tests") {
     "//components/variations:test_support",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/profile/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

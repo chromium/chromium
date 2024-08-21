@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_state/model/chrome_browser_state_manager_impl.h"
+#import "ios/chrome/browser/profile/model/profile_manager_ios_impl.h"
 
 #import "base/containers/contains.h"
 #import "base/scoped_observation.h"
