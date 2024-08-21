@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 6
+// Next min version: 7
 
 module cros.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
 
+// [Deprecated in version 1]
+//
 // Set of effects that can be enabled.
 // Used by EffectsConfig to indicate which effect the g3 shared library
 // should be applying. Needs to be kept in sync with g3 version found in
@@ -102,4 +104,13 @@ struct EffectsConfig {
 
   // The inference backend to run portrait relighing model.
   [MinVersion=5] InferenceBackend relighting_inference_backend;
+
+  // Whether face retouch should be enabled.
+  [MinVersion=6] bool retouch_enabled;
+
+  // Whether Studio Look should be enabled. If the Studio Look feature is not
+  // available, set it to always true. Otherwise, it can be set to false by UI,
+  // which will override |retouch_enabled| and |relight_enabled| and disable
+  // both effects.
+  [MinVersion=6] bool studio_look_enabled = true;
 };

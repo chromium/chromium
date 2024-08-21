@@ -1119,7 +1119,7 @@ Style notes:
         Volume
       </message>
       <message name="IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibile text for the slider when it is focused and not muted.">
-      <ph name="VOLUME_LEVEL">$1<ex>55</ex></ph>, Hitting enter will mute audio. 
+      <ph name="VOLUME_LEVEL">$1<ex>55</ex></ph>, Hitting enter will mute audio.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_MUTED_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessible text for the slider when it is muted.">
       <ph name="VOLUME_LEVEL">$1<ex>55</ex></ph>, Muted </message>
@@ -1817,6 +1817,24 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_SIDETONE_TOGGLE_TOOLTIP" desc="Tooltip shown for a toggle to enable or disable sidetone.">
         Toggle sidetone
       </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SETTINGS_BUTTON_TOOLTIP" desc="Tooltip for the settings button in the VC bubble which opens a menu containing the VC settings.">
+        Settings
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SETTINGS_STUDIO_LOOK_PREFERENCE" desc="Text for the Studio Look preference title in the VC settings menu.">
+        Studio Look preference
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SETTINGS_MENU_AUDIO_SETTINGS" desc="Text for the audio settings item in the VC settings menu.">
+        Audio settings
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SETTINGS_MENU_FACE_RETOUCH" desc="Text for the face retouch preference in the VC settings menu.">
+        Face retouch
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SETTINGS_MENU_PORTRAIT_RELIGHTING" desc="Text for the portrait relighting preference in the VC settings menu.">
+        Improve lighting
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SETTINGS_MENU_PRIVACY_SETTINGS" desc="Text for the privacy settings item in the VC settings menu.">
+        Privacy settings
+      </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_TITLE" desc="The title of the bubble when sidetone is enabled.">
         Listen to your mic sound
       </message>
@@ -1835,7 +1853,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_DISMISS_BUTTON" desc="The dismiss button of the bubble when sidetone is enabled.">
         Dismiss
       </message>
-        <message name="IDS_ASH_VIDEO_CONFERENCE_CREAT_WITH_AI_NAME" desc="Text for name of the 'Create With AI' button in the VC bubble, which invokes the webui for the creation.">
+      <message name="IDS_ASH_VIDEO_CONFERENCE_CREAT_WITH_AI_NAME" desc="Text for name of the 'Create With AI' button in the VC bubble, which invokes the webui for the creation.">
         Create with AI
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_LINUX_APP_WARNING_TEXT" desc="Text for the warning label placed inside the VC bubble when there's any linux app running.">
@@ -4920,10 +4938,10 @@ No devices connected.
         Enter your PIN
       </message>
       <message name="IDS_ASH_IN_SESSION_AUTH_DIALOG_ACCESSIBLE_NAME" desc="The accessible name of the in session auth dialog">
-        Verify your identity 
+        Verify your identity
       </message>
       <message name="IDS_ASH_IN_SESSION_AUTH_DIALOG_ACCESSIBLE_DESCRIPTION" desc="The accessible name of the in session auth dialog">
-        Press escape to close 
+        Press escape to close
       </message>
       <message name="IDS_ASH_LOGIN_PIN_INPUT_DIGITS_REMAINING" desc="Screen reader message telling the user how many digits are remaining for the PIN input field. [ICU Syntax]">
         {NUM_DIGITS, plural,

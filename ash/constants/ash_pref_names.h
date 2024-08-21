@@ -1521,7 +1521,7 @@ inline constexpr char kDeviceGeolocationAllowed[] =
 inline constexpr char kUserPreviousGeolocationAccessLevel[] =
     "ash.user.previous_geolocation_access_level";
 
-// An boolean pref indicating whether a user has enabled the improve location
+// A boolean pref indicating whether a user has enabled the improve location
 // toggle.
 inline constexpr char kUserGeolocationAccuracyEnabled[] =
     "ash.user.geolocation_accuracy_enabled";
@@ -1952,7 +1952,7 @@ inline constexpr char kAutozoomNudges[] = "ash.camera.autozoom_nudges";
 inline constexpr char kCameraAppDevToolsOpen[] =
     "ash.camera.cca_dev_tools_open";
 
-// An boolean pref that specifies the recovery service activation for user.
+// A boolean pref that specifies the recovery service activation for user.
 // When the pref is set to `true`, the user data recovery is activated. When the
 // pref is set to `false`, the user data recovery is not activated. The default
 // value of the pref is `true`. Controlled by RecoveryFactorBehavior policy.
@@ -1967,15 +1967,21 @@ inline constexpr char kApnMigratedIccids[] = "ash.cellular.apn_migrated_iccids";
 // -1 means disabled.
 inline constexpr char kBackgroundBlur[] = "ash.camera.background_blur";
 
-// An boolean pref that indicates whether background replacement is applied.
+// A boolean pref that indicates whether background replacement is applied.
 inline constexpr char kBackgroundReplace[] = "ash.camera.background_replace";
 
 // An string pref that indicates the image path of the camera background.
 inline constexpr char kBackgroundImagePath[] =
     "ash.camera.background_image_path";
 
-// An boolean pref that indicates whether portrait relighting is applied.
+// A boolean pref that indicates whether portrait relighting is applied.
 inline constexpr char kPortraitRelighting[] = "ash.camera.portrait_relighting";
+
+// A boolean pref that indicates whether face retouch is applied.
+inline constexpr char kFaceRetouch[] = "ash.camera.face_retouch";
+
+// A boolean pref that indicates whether Studio Look is applied.
+inline constexpr char kStudioLook[] = "ash.camera.studio_look";
 
 // Specifies if ARC app sync metrics should be recorded, i.e. this is the
 // initial session after sync consent screen.

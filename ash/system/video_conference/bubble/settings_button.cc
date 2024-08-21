@@ -4,34 +4,205 @@
 
 #include "ash/system/video_conference/bubble/settings_button.h"
 
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/switch.h"
+#include "ash/system/camera/camera_effects_controller.h"
+#include "ash/system/model/system_tray_model.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/simple_menu_model.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/context_menu_controller.h"
+#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_model_adapter.h"
+#include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace ash::video_conference {
 
 namespace {
 
-constexpr gfx::Size kIconSize{20, 20};
+// Rounded corner constants.
+static constexpr int kRoundedCornerRadius = 16;
+static constexpr int kNonRoundedCornerRadius = 4;
+static constexpr int kIconSize = 20;
+
+enum CommandId {
+  kAudioSettings = 1,
+  kPrivacySettings = 2,
+  kPortraitRelighting = 3,
+  kFaceRetouch = 4,
+};
+
+constexpr gfx::Size kIconSizeGfx{kIconSize, kIconSize};
+
+constexpr gfx::RoundedCornersF kTopRightNonRoundedCorners(
+    kRoundedCornerRadius,
+    kNonRoundedCornerRadius,
+    kRoundedCornerRadius,
+    kRoundedCornerRadius);
 
 }  // namespace
 
-SettingsButton::SettingsButton() {
+class SettingsButton::MenuController : public ui::SimpleMenuModel::Delegate,
+                                       public views::ContextMenuController {
+ public:
+  MenuController() = default;
+  MenuController(const MenuController&) = delete;
+  MenuController& operator=(const MenuController&) = delete;
+  ~MenuController() override = default;
+
+  // ui::SimpleMenuModel::Delegate:
+  bool IsCommandIdChecked(int command_id) const override {
+    std::optional<int> state;
+    if (command_id == CommandId::kPortraitRelighting) {
+      state =
+          effects_controller_->GetEffectState(VcEffectId::kPortraitRelighting);
+    } else if (command_id == CommandId::kFaceRetouch) {
+      state = effects_controller_->GetEffectState(VcEffectId::kFaceRetouch);
+    } else {
+      return false;
+    }
+    return *state != 0;
+  }
+
+  // ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override {
+    auto* client = Shell::Get()->system_tray_model()->client();
+    switch (command_id) {
+      case CommandId::kAudioSettings:
+        client->ShowAudioSettings();
+        break;
+      case CommandId::kPrivacySettings:
+        client->ShowPrivacyAndSecuritySettings();
+        break;
+      case CommandId::kPortraitRelighting:
+        effects_controller_->OnEffectControlActivated(
+            VcEffectId::kPortraitRelighting, /*state=*/std::nullopt);
+        break;
+      case CommandId::kFaceRetouch:
+        effects_controller_->OnEffectControlActivated(VcEffectId::kFaceRetouch,
+                                                      /*state=*/std::nullopt);
+        break;
+    }
+  }
+
+  // views::ContextMenuController:
+  void ShowContextMenuForViewImpl(views::View* source,
+                                  const gfx::Point& point,
+                                  ui::MenuSourceType source_type) override {
+    BuildMenuModel();
+    menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(
+        menu_model_.get(), base::BindRepeating(&MenuController::OnMenuClosed,
+                                               base::Unretained(this)));
+    std::unique_ptr<views::MenuItemView> menu =
+        menu_model_adapter_->CreateMenu();
+    int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
+                    views::MenuRunner::CONTEXT_MENU |
+                    views::MenuRunner::FIXED_ANCHOR;
+    menu_runner_ =
+        std::make_unique<views::MenuRunner>(std::move(menu), run_types);
+
+    menu_runner_->RunMenuAt(source->GetWidget(), /*button_controller=*/nullptr,
+                            source->GetBoundsInScreen(),
+                            views::MenuAnchorPosition::kBubbleBottomLeft,
+                            source_type, /*native_view_for_gestures=*/nullptr,
+                            kTopRightNonRoundedCorners);
+  }
+
+ private:
+  // Builds and saves SimpleMenuModel to `context_menu_model_`.
+  void BuildMenuModel() {
+    menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+
+    // TODO(b/354069928): Add accessible names.
+    menu_model_->AddItemWithIcon(
+        CommandId::kAudioSettings,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_VIDEO_CONFERENCE_SETTINGS_MENU_AUDIO_SETTINGS),
+        ui::ImageModel::FromVectorIcon(kPrivacyIndicatorsMicrophoneIcon,
+                                       cros_tokens::kCrosSysOnSurface,
+                                       kIconSize));
+    menu_model_->AddItemWithIcon(
+        CommandId::kPrivacySettings,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_VIDEO_CONFERENCE_SETTINGS_MENU_PRIVACY_SETTINGS),
+        ui::ImageModel::FromVectorIcon(
+            kSecurityIcon, cros_tokens::kCrosSysOnSurface, kIconSize));
+    menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+    menu_model_->AddTitle(l10n_util::GetStringUTF16(
+        IDS_ASH_VIDEO_CONFERENCE_SETTINGS_STUDIO_LOOK_PREFERENCE));
+    menu_model_->AddCheckItem(
+        CommandId::kPortraitRelighting,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_VIDEO_CONFERENCE_SETTINGS_MENU_PORTRAIT_RELIGHTING));
+    menu_model_->AddCheckItem(
+        CommandId::kFaceRetouch,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_VIDEO_CONFERENCE_SETTINGS_MENU_FACE_RETOUCH));
+  }
+
+  void OnMenuClosed() {
+    menu_runner_.reset();
+    menu_model_.reset();
+    menu_model_adapter_.reset();
+  }
+
+  raw_ptr<CameraEffectsController> effects_controller_ =
+      Shell::Get()->camera_effects_controller();
+  std::unique_ptr<ui::SimpleMenuModel> menu_model_;
+  std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;
+  std::unique_ptr<views::MenuRunner> menu_runner_;
+};
+
+SettingsButton::SettingsButton()
+    : views::Button(base::BindRepeating(&SettingsButton::OnButtonActivated,
+                                        base::Unretained(this))),
+      context_menu_(std::make_unique<MenuController>()) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
 
   AddChildView(views::Builder<views::ImageView>()
                    .SetImage(ui::ImageModel::FromVectorIcon(
                        kSystemMenuSettingsIcon, cros_tokens::kCrosSysOnSurface))
-                   .SetImageSize(kIconSize)
+                   .SetImageSize(kIconSizeGfx)
                    .Build());
   AddChildView(views::Builder<views::ImageView>()
                    .SetImage(ui::ImageModel::FromVectorIcon(
                        kDropDownArrowIcon, cros_tokens::kCrosSysOnSurface))
-                   .SetImageSize(kIconSize)
+                   .SetImageSize(kIconSizeGfx)
                    .Build());
+  SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_ASH_VIDEO_CONFERENCE_SETTINGS_BUTTON_TOOLTIP));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_ASH_VIDEO_CONFERENCE_SETTINGS_BUTTON_TOOLTIP));
+}
+
+SettingsButton::~SettingsButton() = default;
+
+void SettingsButton::OnButtonActivated(const ui::Event& event) {
+  ui::MenuSourceType source_type;
+
+  if (event.IsMouseEvent()) {
+    source_type = ui::MENU_SOURCE_MOUSE;
+  } else if (event.IsTouchEvent()) {
+    source_type = ui::MENU_SOURCE_TOUCH;
+  } else if (event.IsKeyEvent()) {
+    source_type = ui::MENU_SOURCE_KEYBOARD;
+  } else {
+    source_type = ui::MENU_SOURCE_STYLUS;
+  }
+
+  context_menu_->ShowContextMenuForView(
+      /*source=*/this, GetBoundsInScreen().CenterPoint(), source_type);
 }
 
 BEGIN_METADATA(SettingsButton)

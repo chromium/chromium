@@ -191,6 +191,8 @@ VideoConferenceTrayEffectsManager::GetDlcIdsForEffectId(VcEffectId effect_id) {
     case VcEffectId::kNoiseCancellation:
     case VcEffectId::kStyleTransfer:
     case VcEffectId::kCameraFraming:
+    case VcEffectId::kFaceRetouch:
+    case VcEffectId::kStudioLook:
       return {};
   }
 }
