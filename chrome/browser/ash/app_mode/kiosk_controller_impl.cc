@@ -230,15 +230,15 @@ void KioskControllerImpl::OnUserLoggedIn(const user_manager::User& user) {
       !kiosk_app_id.empty()) {
     chrome_app_manager_.SetAppWasAutoLaunchedWithZeroDelay(kiosk_app_id);
   }
-
-  if (auto* input_controller =
-          ui::OzonePlatform::GetInstance()->GetInputController()) {
-    input_controller->DisableKeyboardImposterCheck();
-  }
 }
 
 void KioskControllerImpl::OnLaunchComplete(
     std::optional<KioskAppLaunchError::Error> error) {
+  if (auto* input_controller =
+          ui::OzonePlatform::GetInstance()->GetInputController()) {
+    input_controller->DisableKeyboardImposterCheck();
+  }
+
   // Delete the launcher so it doesn't end up with dangling references.
   DeleteLaunchControllerAsync();
 }
