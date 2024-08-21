@@ -28,18 +28,18 @@ TEST_F(PaintControllerUnderInvalidationTest, ChangeDrawing) {
   auto test = [&]() {
     FakeDisplayItemClient& first =
         *MakeGarbageCollected<FakeDisplayItemClient>("first");
-    GraphicsContext context(GetPaintController());
-
     {
-      CommitCycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
+      AutoCommitPaintController paint_controller(GetPersistentData());
+      GraphicsContext context(paint_controller);
+      InitRootChunk(paint_controller);
       DrawRect(context, first, kBackgroundType, gfx::Rect(1, 1, 1, 1));
       DrawRect(context, first, kForegroundType, gfx::Rect(1, 1, 3, 3));
     }
 
     {
-      CommitCycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
+      AutoCommitPaintController paint_controller(GetPersistentData());
+      GraphicsContext context(paint_controller);
+      InitRootChunk(paint_controller);
       DrawRect(context, first, kBackgroundType, gfx::Rect(2, 2, 3, 3));
       DrawRect(context, first, kForegroundType, gfx::Rect(1, 1, 3, 3));
     }
@@ -59,17 +59,18 @@ TEST_F(PaintControllerUnderInvalidationTest, MoreDrawing) {
   // also handle the case gracefully.
   FakeDisplayItemClient& first =
       *MakeGarbageCollected<FakeDisplayItemClient>("first");
-  GraphicsContext context(GetPaintController());
 
   {
-    CommitCycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
+    AutoCommitPaintController paint_controller(GetPersistentData());
+    GraphicsContext context(paint_controller);
+    InitRootChunk(paint_controller);
     DrawRect(context, first, kBackgroundType, gfx::Rect(1, 1, 1, 1));
   }
 
   {
-    CommitCycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
+    AutoCommitPaintController paint_controller(GetPersistentData());
+    GraphicsContext context(paint_controller);
+    InitRootChunk(paint_controller);
     DrawRect(context, first, kBackgroundType, gfx::Rect(1, 1, 1, 1));
     DrawRect(context, first, kForegroundType, gfx::Rect(1, 1, 3, 3));
   }
@@ -80,18 +81,18 @@ TEST_F(PaintControllerUnderInvalidationTest, LessDrawing) {
   // also handle the case gracefully.
   FakeDisplayItemClient& first =
       *MakeGarbageCollected<FakeDisplayItemClient>("first");
-  GraphicsContext context(GetPaintController());
-
   {
-    CommitCycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
+    AutoCommitPaintController paint_controller(GetPersistentData());
+    GraphicsContext context(paint_controller);
+    InitRootChunk(paint_controller);
     DrawRect(context, first, kBackgroundType, gfx::Rect(1, 1, 1, 1));
     DrawRect(context, first, kForegroundType, gfx::Rect(1, 1, 3, 3));
   }
 
   {
-    CommitCycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
+    AutoCommitPaintController paint_controller(GetPersistentData());
+    GraphicsContext context(paint_controller);
+    InitRootChunk(paint_controller);
     DrawRect(context, first, kBackgroundType, gfx::Rect(1, 1, 1, 1));
   }
 }
@@ -100,10 +101,10 @@ TEST_F(PaintControllerUnderInvalidationTest, ChangeDrawingInSubsequence) {
   auto test = [&]() {
     FakeDisplayItemClient& first =
         *MakeGarbageCollected<FakeDisplayItemClient>("first");
-    GraphicsContext context(GetPaintController());
     {
-      CommitCycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
+      AutoCommitPaintController paint_controller(GetPersistentData());
+      GraphicsContext context(paint_controller);
+      InitRootChunk(paint_controller);
       {
         SubsequenceRecorder r(context, first);
         DrawRect(context, first, kBackgroundType, gfx::Rect(1, 1, 1, 1));
@@ -112,8 +113,9 @@ TEST_F(PaintControllerUnderInvalidationTest, ChangeDrawingInSubsequence) {
     }
 
     {
-      CommitCycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
+      AutoCommitPaintController paint_controller(GetPersistentData());
+      GraphicsContext context(paint_controller);
+      InitRootChunk(paint_controller);
       {
         EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
             context, first));
@@ -138,11 +140,10 @@ TEST_F(PaintControllerUnderInvalidationTest, MoreDrawingInSubsequence) {
   auto test = [&]() {
     FakeDisplayItemClient& first =
         *MakeGarbageCollected<FakeDisplayItemClient>("first");
-    GraphicsContext context(GetPaintController());
-
     {
-      CommitCycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
+      AutoCommitPaintController paint_controller(GetPersistentData());
+      GraphicsContext context(paint_controller);
+      InitRootChunk(paint_controller);
       {
         SubsequenceRecorder r(context, first);
         DrawRect(context, first, kBackgroundType, gfx::Rect(1, 1, 1, 1));
@@ -150,8 +151,9 @@ TEST_F(PaintControllerUnderInvalidationTest, MoreDrawingInSubsequence) {
     }
 
     {
-      CommitCycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
+      AutoCommitPaintController paint_controller(GetPersistentData());
+      GraphicsContext context(paint_controller);
+      InitRootChunk(paint_controller);
       {
         EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
             context, first));
@@ -175,11 +177,10 @@ TEST_F(PaintControllerUnderInvalidationTest, LessDrawingInSubsequence) {
   auto test = [&]() {
     FakeDisplayItemClient& first =
         *MakeGarbageCollected<FakeDisplayItemClient>("first");
-    GraphicsContext context(GetPaintController());
-
     {
-      CommitCycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
+      AutoCommitPaintController paint_controller(GetPersistentData());
+      GraphicsContext context(paint_controller);
+      InitRootChunk(paint_controller);
       {
         SubsequenceRecorder r(context, first);
         DrawRect(context, first, kBackgroundType, gfx::Rect(1, 1, 3, 3));
@@ -188,8 +189,9 @@ TEST_F(PaintControllerUnderInvalidationTest, LessDrawingInSubsequence) {
     }
 
     {
-      CommitCycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
+      AutoCommitPaintController paint_controller(GetPersistentData());
+      GraphicsContext context(paint_controller);
+      InitRootChunk(paint_controller);
       {
         EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
             context, first));
@@ -212,11 +214,10 @@ TEST_F(PaintControllerUnderInvalidationTest, InvalidationInSubsequence) {
       *MakeGarbageCollected<FakeDisplayItemClient>("container");
   FakeDisplayItemClient& content =
       *MakeGarbageCollected<FakeDisplayItemClient>("content");
-  GraphicsContext context(GetPaintController());
-
   {
-    CommitCycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
+    AutoCommitPaintController paint_controller(GetPersistentData());
+    GraphicsContext context(paint_controller);
+    InitRootChunk(paint_controller);
     {
       SubsequenceRecorder r(context, container);
       DrawRect(context, content, kBackgroundType, gfx::Rect(1, 1, 3, 3));
@@ -225,8 +226,9 @@ TEST_F(PaintControllerUnderInvalidationTest, InvalidationInSubsequence) {
 
   content.Invalidate();
   {
-    CommitCycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
+    AutoCommitPaintController paint_controller(GetPersistentData());
+    GraphicsContext context(paint_controller);
+    InitRootChunk(paint_controller);
     // Leave container not invalidated.
     {
       EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
@@ -241,11 +243,10 @@ TEST_F(PaintControllerUnderInvalidationTest, SubsequenceBecomesEmpty) {
   auto test = [&]() {
     FakeDisplayItemClient& target =
         *MakeGarbageCollected<FakeDisplayItemClient>("target");
-    GraphicsContext context(GetPaintController());
-
     {
-      CommitCycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
+      AutoCommitPaintController paint_controller(GetPersistentData());
+      GraphicsContext context(paint_controller);
+      InitRootChunk(paint_controller);
       {
         SubsequenceRecorder r(context, target);
         DrawRect(context, target, kBackgroundType, gfx::Rect(1, 1, 3, 3));
@@ -253,8 +254,9 @@ TEST_F(PaintControllerUnderInvalidationTest, SubsequenceBecomesEmpty) {
     }
 
     {
-      CommitCycleScope cycle_scope(GetPaintController());
-      InitRootChunk();
+      AutoCommitPaintController paint_controller(GetPersistentData());
+      GraphicsContext context(paint_controller);
+      InitRootChunk(paint_controller);
       {
         EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
             context, target));
@@ -273,11 +275,10 @@ TEST_F(PaintControllerUnderInvalidationTest, SkipCacheInSubsequence) {
       *MakeGarbageCollected<FakeDisplayItemClient>("container");
   FakeDisplayItemClient& content =
       *MakeGarbageCollected<FakeDisplayItemClient>("content");
-  GraphicsContext context(GetPaintController());
-
   {
-    CommitCycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
+    AutoCommitPaintController paint_controller(GetPersistentData());
+    GraphicsContext context(paint_controller);
+    InitRootChunk(paint_controller);
     {
       SubsequenceRecorder r(context, container);
       {
@@ -289,8 +290,9 @@ TEST_F(PaintControllerUnderInvalidationTest, SkipCacheInSubsequence) {
   }
 
   {
-    CommitCycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
+    AutoCommitPaintController paint_controller(GetPersistentData());
+    GraphicsContext context(paint_controller);
+    InitRootChunk(paint_controller);
     {
       EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
           context, container));
@@ -310,11 +312,10 @@ TEST_F(PaintControllerUnderInvalidationTest,
       *MakeGarbageCollected<FakeDisplayItemClient>("container");
   FakeDisplayItemClient& content =
       *MakeGarbageCollected<FakeDisplayItemClient>("content");
-  GraphicsContext context(GetPaintController());
-
   {
-    CommitCycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
+    AutoCommitPaintController paint_controller(GetPersistentData());
+    GraphicsContext context(paint_controller);
+    InitRootChunk(paint_controller);
     {
       SubsequenceRecorder r(context, container);
       DrawRect(context, container, kBackgroundType, gfx::Rect(1, 1, 3, 3));
@@ -324,8 +325,9 @@ TEST_F(PaintControllerUnderInvalidationTest,
   }
 
   {
-    CommitCycleScope cycle_scope(GetPaintController());
-    InitRootChunk();
+    AutoCommitPaintController paint_controller(GetPersistentData());
+    GraphicsContext context(paint_controller);
+    InitRootChunk(paint_controller);
     {
       EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
           context, container));

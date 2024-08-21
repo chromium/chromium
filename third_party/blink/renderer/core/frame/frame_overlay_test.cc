@@ -134,27 +134,20 @@ TEST_P(FrameOverlayTest, DeviceEmulationScale) {
   EXPECT_EQ(&ClipPaintPropertyNode::Root(), &state.Clip());
   EXPECT_EQ(&EffectPaintPropertyNode::Root(), &state.Effect());
 
-  auto check_paint_results = [&frame_overlay,
-                              &state](PaintController& paint_controller) {
-    EXPECT_THAT(
-        paint_controller.GetDisplayItemList(),
-        ElementsAre(IsSameId(frame_overlay->Id(), DisplayItem::kFrameOverlay)));
-    EXPECT_EQ(gfx::Rect(0, 0, 800, 600),
-              paint_controller.GetDisplayItemList()[0].VisualRect());
-    EXPECT_THAT(
-        paint_controller.GetPaintChunks(),
-        ElementsAre(IsPaintChunk(
-            0, 1,
-            PaintChunk::Id(frame_overlay->Id(), DisplayItem::kFrameOverlay),
-            state, nullptr, gfx::Rect(0, 0, 800, 600))));
-  };
-
-  PaintController* paint_controller =
-      MakeGarbageCollected<PaintController>(PaintController::kTransient);
-  GraphicsContext context(*paint_controller);
+  PaintController paint_controller;
+  GraphicsContext context(paint_controller);
   frame_overlay->Paint(context);
-  paint_controller->CommitNewDisplayItems();
-  check_paint_results(*paint_controller);
+  auto& paint_artifact = paint_controller.CommitNewDisplayItems();
+  EXPECT_THAT(
+      paint_artifact.GetDisplayItemList(),
+      ElementsAre(IsSameId(frame_overlay->Id(), DisplayItem::kFrameOverlay)));
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 600),
+            paint_artifact.GetDisplayItemList()[0].VisualRect());
+  EXPECT_THAT(
+      paint_artifact.GetPaintChunks(),
+      ElementsAre(IsPaintChunk(
+          0, 1, PaintChunk::Id(frame_overlay->Id(), DisplayItem::kFrameOverlay),
+          state, nullptr, gfx::Rect(0, 0, 800, 600))));
   frame_overlay->Destroy();
 }
 

@@ -261,42 +261,6 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
                                           PropertyTreeManager&,
                                           cc::LayerTreeHost*);
 
-  // Collects the PaintChunks into groups which will end up in the same
-  // cc layer. This is the entry point of the layerization algorithm.
-  void CollectPendingLayers(const PaintArtifact&);
-
-  // This is the internal recursion of CollectPendingLayers. This function
-  // loops over the list of paint chunks, scoped by an isolated group
-  // (i.e. effect node). Inside of the loop, chunks are tested for overlap
-  // and merge compatibility. Subgroups are handled by recursion, and will
-  // be tested for "decompositing" upon return.
-  // Merge compatibility means consecutive chunks may be layerized into the
-  // same backing (i.e. merged) if their property states don't cross
-  // direct-compositing boundary.
-  // Non-consecutive chunks that are nevertheless compatible may still be
-  // merged, if reordering of the chunks won't affect the ultimate result.
-  // This is determined by overlap testing such that chunks can be safely
-  // reordered if their effective bounds in screen space can't overlap.
-  // The recursion only tests merge & overlap for chunks scoped by the same
-  // group. This is where "decompositing" came in. Upon returning from a
-  // recursion, the layerization of the subgroup may be tested for merge &
-  // overlap with other chunks in the parent group, if grouping requirement
-  // can be satisfied (and the effect node has no direct reason).
-  // |directly_composited_transforms| is used internally to optimize the first
-  // time a paint property tree node is encountered that has direct compositing
-  // reasons. This case will always start a new layer and can skip merge tests.
-  // New values are added when transform nodes are first encountered.
-  void LayerizeGroup(const PaintArtifact&,
-                     const EffectPaintPropertyNode&,
-                     PaintChunks::const_iterator& chunk_cursor,
-                     HeapHashSet<Member<const TransformPaintPropertyNode>>&
-                         directly_composited_transforms,
-                     bool force_draws_content);
-  bool DecompositeEffect(const EffectPaintPropertyNode& parent_effect,
-                         wtf_size_t first_layer_in_parent_group_index,
-                         const EffectPaintPropertyNode& effect,
-                         wtf_size_t layer_index);
-
   const TransformPaintPropertyNode& ScrollTranslationStateForLayer(
       const PendingLayer&);
 
@@ -355,6 +319,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   class OldPendingLayerMatcher;
   PendingLayers pending_layers_;
 
+  class Layerizer;
+
   struct ScrollTranslationInfo {
     gfx::Rect scrolling_contents_cull_rect;
     bool is_composited = false;
@@ -367,7 +333,6 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   HeapHashMap<Member<const TransformPaintPropertyNode>, ScrollTranslationInfo>
       painted_scroll_translations_;
 
-  friend class StubChromeClientForCAP;
   friend class PaintArtifactCompositorTest;
 };
 

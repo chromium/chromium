@@ -98,9 +98,9 @@ String PaintController::DebugDataAsString(
     DisplayItemList::JsonOption option) const {
   StringBuilder sb;
   sb.Append("current paint artifact: ");
-  if (current_paint_artifact_) {
-    sb.Append(PaintArtifactAsJSON(*current_paint_artifact_,
-                                  current_subsequences_.tree, option)
+  if (persistent_data_) {
+    sb.Append(PaintArtifactAsJSON(CurrentPaintArtifact(),
+                                  CurrentSubsequences().tree, option)
                   .ToString());
   } else {
     sb.Append("null");

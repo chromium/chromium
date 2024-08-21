@@ -1579,17 +1579,14 @@ TEST_F(WebPluginContainerTest, CompositedPlugin) {
   const auto* plugin =
       static_cast<const CompositedPlugin*>(container->Plugin());
 
-  auto* paint_controller =
-      MakeGarbageCollected<PaintController>(PaintController::kTransient);
-  paint_controller->UpdateCurrentPaintChunkProperties(
-      PropertyTreeState::Root());
-  GraphicsContext graphics_context(*paint_controller);
+  PaintController paint_controller;
+  paint_controller.UpdateCurrentPaintChunkProperties(PropertyTreeState::Root());
+  GraphicsContext graphics_context(paint_controller);
   container->Paint(graphics_context, PaintFlag::kNoFlag,
                    CullRect(gfx::Rect(10, 10, 400, 300)), gfx::Vector2d());
-  paint_controller->CommitNewDisplayItems();
+  auto& paint_artifact = paint_controller.CommitNewDisplayItems();
 
-  const auto& display_items =
-      paint_controller->GetPaintArtifact().GetDisplayItemList();
+  const auto& display_items = paint_artifact.GetDisplayItemList();
   ASSERT_EQ(1u, display_items.size());
   ASSERT_EQ(DisplayItem::kForeignLayerPlugin, display_items[0].GetType());
   const auto& foreign_layer_display_item =

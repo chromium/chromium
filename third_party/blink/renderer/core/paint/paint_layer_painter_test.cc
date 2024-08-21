@@ -852,9 +852,8 @@ TEST_P(PaintLayerPainterTest, PaintWithOverriddenCullRect) {
                                   /*disable_expansion*/ false);
     EXPECT_EQ(gfx::Rect(0, 0, 100, 100), GetCullRect(stacking).Rect());
     EXPECT_EQ(gfx::Rect(0, 0, 100, 100), GetCullRect(absolute).Rect());
-    PaintController* controller =
-        MakeGarbageCollected<PaintController>(PaintController::kTransient);
-    GraphicsContext context(*controller);
+    PaintController controller;
+    GraphicsContext context(controller);
     PaintLayerPainter(stacking).Paint(context);
   }
   // Should restore the original status after OverridingCullRectScope.

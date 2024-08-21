@@ -5,10 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_UNDER_INVALIDATION_CHECKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_UNDER_INVALIDATION_CHECKER_H_
 
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -20,13 +19,12 @@ class PaintController;
 // when PaintController can use a cached display item or a cached subsequence,
 // it lets the client paint instead of using the cache, and this class checks
 // whether the painting is the same as the cache.
-class PaintUnderInvalidationChecker
-    : public GarbageCollected<PaintUnderInvalidationChecker> {
+class PaintUnderInvalidationChecker {
+  STACK_ALLOCATED();
+
  public:
   explicit PaintUnderInvalidationChecker(PaintController& paint_controller);
   ~PaintUnderInvalidationChecker();
-
-  void Trace(Visitor*) const;
 
   bool IsChecking() const;
 
@@ -61,7 +59,7 @@ class PaintUnderInvalidationChecker
   DisplayItemList& OldDisplayItemList();
   DisplayItemList& NewDisplayItemList();
 
-  Member<PaintController> paint_controller_;
+  PaintController& paint_controller_;
 
   // Points to the cached display item which is expected to match the next new
   // display item.

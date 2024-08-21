@@ -133,7 +133,7 @@ TEST_P(PaintControllerPaintTest, FrameScrollingContents) {
   view_scroll_hit_test->scrolling_contents_cull_rect =
       gfx::Rect(0, 0, 800, 4600);
   EXPECT_THAT(
-      RootPaintController().GetPaintChunks()[0],
+      GetPersistentData().GetPaintChunks()[0],
       IsPaintChunk(
           0, 0,
           PaintChunk::Id(GetLayoutView().Id(), DisplayItem::kScrollHitTest),
@@ -164,7 +164,7 @@ TEST_P(PaintControllerPaintTest, FrameScrollingContents) {
   view_scroll_hit_test->scrolling_contents_cull_rect =
       gfx::Rect(0, 1000, 800, 8100);
   EXPECT_THAT(
-      RootPaintController().GetPaintChunks()[0],
+      GetPersistentData().GetPaintChunks()[0],
       IsPaintChunk(
           0, 0,
           PaintChunk::Id(GetLayoutView().Id(), DisplayItem::kScrollHitTest),

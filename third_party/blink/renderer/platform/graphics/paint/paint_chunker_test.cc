@@ -83,32 +83,35 @@ class TestDisplayItemRequiringSeparateChunk : public ForeignLayerDisplayItem {
 
 TEST_F(PaintChunkerTest, Empty) {
   PaintChunks chunks;
-  PaintChunker chunker(chunks);
-  EXPECT_TRUE(chunks.empty());
-
-  chunker.ResetChunks(&chunks);
+  {
+    PaintChunker chunker(chunks);
+    EXPECT_TRUE(chunks.empty());
+    chunker.Finish();
+    EXPECT_TRUE(chunks.empty());
+  }
   EXPECT_TRUE(chunks.empty());
 }
 
 TEST_F(PaintChunkerTest, SingleNonEmptyRange) {
   PaintChunks chunks;
-  PaintChunker chunker(chunks);
   PaintChunk::Id id(client_->Id(), DisplayItemType(1));
-  chunker.UpdateCurrentPaintChunkProperties(id, *client_,
-                                            DefaultPaintChunkProperties());
-  chunker.IncrementDisplayItemIndex(*client_,
-                                    TestChunkerDisplayItem(client_->Id()));
-  chunker.IncrementDisplayItemIndex(*client_,
-                                    TestChunkerDisplayItem(client_->Id()));
+  {
+    PaintChunker chunker(chunks);
+    chunker.UpdateCurrentPaintChunkProperties(id, *client_,
+                                              DefaultPaintChunkProperties());
+    chunker.IncrementDisplayItemIndex(*client_,
+                                      TestChunkerDisplayItem(client_->Id()));
+    chunker.IncrementDisplayItemIndex(*client_,
+                                      TestChunkerDisplayItem(client_->Id()));
 
+    EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(
+                            0, 2, id, DefaultPaintChunkProperties())));
+    chunker.Finish();
+    EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(
+                            0, 2, id, DefaultPaintChunkProperties())));
+  }
   EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(0, 2, id,
                                                DefaultPaintChunkProperties())));
-
-  PaintChunks chunks1;
-  chunker.ResetChunks(&chunks1);
-  EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(0, 2, id,
-                                               DefaultPaintChunkProperties())));
-  EXPECT_TRUE(chunks1.empty());
 }
 
 TEST_F(PaintChunkerTest, SamePropertiesTwiceCombineIntoOneChunk) {
@@ -129,11 +132,9 @@ TEST_F(PaintChunkerTest, SamePropertiesTwiceCombineIntoOneChunk) {
   EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(0, 3, id,
                                                DefaultPaintChunkProperties())));
 
-  PaintChunks chunks1;
-  chunker.ResetChunks(&chunks1);
+  chunker.Finish();
   EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(0, 3, id,
                                                DefaultPaintChunkProperties())));
-  EXPECT_TRUE(chunks1.empty());
 }
 
 TEST_F(PaintChunkerTest, BuildMultipleChunksWithSinglePropertyChanging) {
@@ -166,7 +167,7 @@ TEST_F(PaintChunkerTest, BuildMultipleChunksWithSinglePropertyChanging) {
   chunker.IncrementDisplayItemIndex(*client_,
                                     TestChunkerDisplayItem(client_->Id()));
 
-  chunker.ResetChunks(nullptr);
+  chunker.Finish();
   EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(0, 2, id1,
                                                DefaultPaintChunkProperties()),
                                   IsPaintChunk(2, 3, id2, simple_transform),
@@ -230,7 +231,7 @@ TEST_F(PaintChunkerTest, BuildMultipleChunksWithDifferentPropertyChanges) {
   chunker.IncrementDisplayItemIndex(*client_,
                                     TestChunkerDisplayItem(client_->Id()));
 
-  chunker.ResetChunks(nullptr);
+  chunker.Finish();
   EXPECT_THAT(
       chunks,
       ElementsAre(
@@ -276,7 +277,7 @@ TEST_F(PaintChunkerTest, BuildChunksFromNestedTransforms) {
   TestChunkerDisplayItem item_after_restore(client_->Id(), DisplayItemType(10));
   chunker.IncrementDisplayItemIndex(*client_, item_after_restore);
 
-  chunker.ResetChunks(nullptr);
+  chunker.Finish();
   EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(0, 1, id1,
                                                DefaultPaintChunkProperties()),
                                   IsPaintChunk(1, 3, id2, simple_transform),
@@ -311,7 +312,7 @@ TEST_F(PaintChunkerTest, ChangingPropertiesWithoutItems) {
   chunker.IncrementDisplayItemIndex(*client_,
                                     TestChunkerDisplayItem(client_->Id()));
 
-  chunker.ResetChunks(nullptr);
+  chunker.Finish();
   EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(0, 1, id1,
                                                DefaultPaintChunkProperties()),
                                   IsPaintChunk(1, 2, id3, second_transform)));
@@ -347,7 +348,7 @@ TEST_F(PaintChunkerTest, CreatesSeparateChunksWhenRequested) {
                                             DefaultPaintChunkProperties());
   chunker.IncrementDisplayItemIndex(*client_, i3);
 
-  chunker.ResetChunks(nullptr);
+  chunker.Finish();
   EXPECT_THAT(
       chunks,
       ElementsAre(
@@ -400,7 +401,7 @@ TEST_F(PaintChunkerTest, ForceNewChunkWithNewId) {
   chunker.IncrementDisplayItemIndex(*client_,
                                     TestChunkerDisplayItem(client_->Id()));
 
-  chunker.ResetChunks(nullptr);
+  chunker.Finish();
   EXPECT_THAT(
       chunks,
       ElementsAre(IsPaintChunk(0, 2, id0, DefaultPaintChunkProperties()),
@@ -444,7 +445,7 @@ TEST_F(PaintChunkerTest, ForceNewChunkWithoutNewId) {
   chunker.IncrementDisplayItemIndex(
       *client_, TestChunkerDisplayItem(client_->Id(), DisplayItemType(4)));
 
-  chunker.ResetChunks(nullptr);
+  chunker.Finish();
   EXPECT_THAT(
       chunks,
       ElementsAre(IsPaintChunk(0, 2, id0, DefaultPaintChunkProperties()),
@@ -477,7 +478,7 @@ TEST_F(PaintChunkerTest, NoNewChunkForSamePropertyDifferentIds) {
   chunker.IncrementDisplayItemIndex(*client_,
                                     TestChunkerDisplayItem(client_->Id()));
 
-  chunker.ResetChunks(nullptr);
+  chunker.Finish();
   EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(0, 6, id0,
                                                DefaultPaintChunkProperties())));
 }
@@ -507,7 +508,7 @@ TEST_F(PaintChunkerTest, ChunksFollowingForcedChunk) {
   chunker.IncrementDisplayItemIndex(*client_, after_forced1);
   chunker.IncrementDisplayItemIndex(*client_, after_forced2);
 
-  chunker.ResetChunks(nullptr);
+  chunker.Finish();
   EXPECT_THAT(
       chunks,
       ElementsAre(
@@ -559,7 +560,7 @@ TEST_F(PaintChunkerTest, ChunkIdsSkippingCache) {
   TestChunkerDisplayItem after_restore(client_->Id(), DisplayItemType(4));
   chunker.IncrementDisplayItemIndex(*client_, after_restore);
 
-  chunker.ResetChunks(nullptr);
+  chunker.Finish();
   EXPECT_THAT(
       chunks,
       ElementsAre(
@@ -611,7 +612,7 @@ TEST_F(PaintChunkerTest, AddHitTestDataToCurrentChunk) {
       *client_, TestChunkerDisplayItem(client_->Id(), DisplayItemType(5),
                                        gfx::Rect(0, 0, 10, 10)));
 
-  chunker.ResetChunks(nullptr);
+  chunker.Finish();
   auto* hit_test_data = MakeGarbageCollected<HitTestData>();
   hit_test_data->touch_action_rects = {
       {gfx::Rect(20, 30, 40, 50), TouchAction::kPan}};
@@ -661,7 +662,7 @@ TEST_F(PaintChunkerTest, AddHitTestDataToCurrentChunkWheelRegionsEnabled) {
       *client_, TestChunkerDisplayItem(client_->Id(), DisplayItemType(5),
                                        gfx::Rect(0, 0, 10, 10)));
 
-  chunker.ResetChunks(nullptr);
+  chunker.Finish();
   auto* hit_test_data = MakeGarbageCollected<HitTestData>();
   hit_test_data->touch_action_rects = {
       {gfx::Rect(20, 30, 40, 50), TouchAction::kPan}};
@@ -708,7 +709,7 @@ TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueAllOpaqueItems) {
       client3, TestChunkerOpaqueDisplayItem(client3.Id(), DisplayItemType(4),
                                             gfx::Rect(50, 50, 100, 100)));
 
-  chunker.ResetChunks(nullptr);
+  chunker.Finish();
   EXPECT_THAT(
       chunks,
       ElementsAre(
@@ -766,7 +767,7 @@ TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueWithHitTest) {
       gfx::Rect(0, 100, 200, 100), TouchAction::kAuto, false,
       cc::HitTestOpaqueness::kMixed);
 
-  chunker.ResetChunks(nullptr);
+  chunker.Finish();
 
   EXPECT_THAT(
       chunks,
@@ -829,7 +830,7 @@ TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueMixedOpaquenessItems) {
       *client_,
       TestChunkerDisplayItem(client2.Id(), DisplayItemType(7), visual_rect2));
 
-  chunker.ResetChunks(nullptr);
+  chunker.Finish();
   EXPECT_THAT(
       chunks,
       ElementsAre(

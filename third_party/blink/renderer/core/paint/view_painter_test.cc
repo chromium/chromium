@@ -52,7 +52,7 @@ void ViewPainterFixedBackgroundTest::RunFixedBackgroundTest(
                                    mojom::blink::ScrollType::kUser);
   frame_view->UpdateAllLifecyclePhasesForTest();
 
-  const auto& display_items = RootPaintController().GetDisplayItemList();
+  const auto& display_items = GetPersistentData().GetDisplayItemList();
   const auto& background_client = prefer_compositing_to_lcd_text
                                       ? GetLayoutView()
                                       : ViewScrollingBackgroundClient();
@@ -109,7 +109,7 @@ TEST_P(ViewPainterTest, DocumentBackgroundWithScroll) {
   // hit test does not prevent the background squashing with the scrolling
   // contents.
   EXPECT_THAT(
-      RootPaintController().GetPaintChunks()[0],
+      GetPersistentData().GetPaintChunks()[0],
       IsPaintChunk(
           0, 0,
           PaintChunk::Id(GetLayoutView().Id(), DisplayItem::kScrollHitTest),
@@ -137,7 +137,7 @@ TEST_P(ViewPainterTest, FrameScrollHitTestProperties) {
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(child.Id(), kBackgroundType)));
 
-  const auto& paint_chunks = RootPaintController().GetPaintChunks();
+  const auto& paint_chunks = GetPersistentData().GetPaintChunks();
   auto* scroll_hit_test_data = MakeGarbageCollected<HitTestData>();
   scroll_hit_test_data->scroll_translation =
       GetLayoutView().FirstFragment().PaintProperties()->ScrollTranslation();
@@ -220,12 +220,12 @@ TEST_P(ViewPainterTest, TouchActionRect) {
       GetLayoutView().FirstFragment().PaintProperties()->ScrollTranslation();
   scroll_hit_test_data->scroll_hit_test_rect = gfx::Rect(0, 0, 800, 600);
   EXPECT_THAT(
-      RootPaintController().GetPaintChunks()[0],
+      GetPersistentData().GetPaintChunks()[0],
       IsPaintChunk(
           0, 1, PaintChunk::Id(view->Layer()->Id(), DisplayItem::kLayerChunk),
           non_scrolling_properties, view_hit_test_data,
           gfx::Rect(0, 0, 800, 600)));
-  EXPECT_THAT(RootPaintController().GetPaintChunks()[1],
+  EXPECT_THAT(GetPersistentData().GetPaintChunks()[1],
               IsPaintChunk(
                   1, 1, PaintChunk::Id(view->Id(), DisplayItem::kScrollHitTest),
                   non_scrolling_properties, scroll_hit_test_data,

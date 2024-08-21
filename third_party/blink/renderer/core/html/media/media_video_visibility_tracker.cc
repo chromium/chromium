@@ -475,9 +475,9 @@ MediaVideoVisibilityTracker::GetClientIdsSet(
   LocalFrameView::InvalidationDisallowedScope invalidation_disallowed(
       *document_view);
 
-  const auto* paint_artifact = document_view->GetPaintArtifact();
+  const auto& paint_artifact = document_view->GetPaintArtifact();
   const DisplayItemList& display_item_list =
-      paint_artifact->GetDisplayItemList();
+      paint_artifact.GetDisplayItemList();
   if (display_item_list.IsEmpty()) {
     return {};
   }

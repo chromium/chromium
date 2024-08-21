@@ -54,8 +54,8 @@ TEST_F(HighlightOverlayTest, ComputeLayers) {
   auto* none = MakeGarbageCollected<DocumentMarkerVector>();
   const ComputedStyle& style = text->GetLayoutObject()->StyleRef();
   TextPaintStyle text_style;
-  PaintController* controller = MakeGarbageCollected<PaintController>();
-  GraphicsContext context(*controller);
+  PaintController controller;
+  GraphicsContext context(controller);
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
                        /*descendant_painting_blocked=*/false);
 
@@ -139,8 +139,8 @@ TEST_F(HighlightOverlayTest, ComputeEdges) {
   Node* br = GetDocument().body()->firstChild();
   Node* text = br->nextSibling();
   UpdateAllLifecyclePhasesForTest();
-  PaintController* controller = MakeGarbageCollected<PaintController>();
-  GraphicsContext context(*controller);
+  PaintController controller;
+  GraphicsContext context(controller);
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
                        /*descendant_painting_blocked=*/false);
 
@@ -308,7 +308,8 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   auto* text = DynamicTo<Text>(GetDocument().body()->firstChild());
   UpdateAllLifecyclePhasesForTest();
 
-  GraphicsContext context(*MakeGarbageCollected<PaintController>());
+  PaintController controller;
+  GraphicsContext context(controller);
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
                        /*descendant_painting_blocked=*/false);
 

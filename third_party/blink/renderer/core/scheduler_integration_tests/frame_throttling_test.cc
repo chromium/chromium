@@ -1958,8 +1958,9 @@ TEST_P(FrameThrottlingTest, ClearPaintArtifactOnThrottlingLocalRoot) {
   LocalFrameView* view = LocalFrameRoot().GetFrame()->View();
   Element* div =
       view->GetFrame().GetDocument()->QuerySelector(AtomicString("div"));
-  EXPECT_FALSE(
-      view->GetPaintControllerForTesting().GetPaintArtifact().IsEmpty());
+  EXPECT_FALSE(view->GetPaintControllerPersistentDataForTesting()
+                   .GetPaintArtifact()
+                   .IsEmpty());
 
   // This emulates javascript.
   div->setAttribute(html_names::kStyleAttr, g_empty_atom);
@@ -1968,8 +1969,9 @@ TEST_P(FrameThrottlingTest, ClearPaintArtifactOnThrottlingLocalRoot) {
   view->UpdateRenderThrottlingStatus(true, false, false, true);
   // UpdateRenderThrottlingStatus should have cleared out previous paint
   // results.
-  EXPECT_TRUE(
-      view->GetPaintControllerForTesting().GetPaintArtifact().IsEmpty());
+  EXPECT_TRUE(view->GetPaintControllerPersistentDataForTesting()
+                  .GetPaintArtifact()
+                  .IsEmpty());
 }
 
 TEST_P(FrameThrottlingTest, PrintThrottledFrame) {
