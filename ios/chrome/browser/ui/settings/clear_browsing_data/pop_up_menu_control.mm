@@ -48,7 +48,7 @@ constexpr CGFloat kChevronLeadingOffset = 5;
     _subtitleLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _subtitleLabel.adjustsFontForContentSizeCategory = YES;
-    _subtitleLabel.textColor = [UIColor colorNamed:kTextTertiaryColor];
+    _subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _subtitleLabel.numberOfLines = 1;
     _subtitleLabel.accessibilityIdentifier = kQuickDeletePopUpButtonIdentifier;
     [self addSubview:_subtitleLabel];
