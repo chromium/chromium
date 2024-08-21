@@ -2304,7 +2304,7 @@
   {
     "name": "drop-input-events-before-first-paint",
     "owners": [ "mustaq@chromium.org", "blink-interactions-team@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "dynamic-color-gamut",
@@ -4115,7 +4115,7 @@
   {
     "name": "enable-touch-drag-drop",
     "owners": [ "mustaq@chromium.org", "input-dev@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 142
   },
   {
     "name": "enable-touchpads-in-diagnostics-app",
