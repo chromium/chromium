@@ -51,6 +51,7 @@ suite('ProductSpecificationsTableTest', () => {
     // Assert.
     const columns = tableElement.shadowRoot!.querySelectorAll('.col');
     assertEquals(2, columns.length);
+    assertEquals('2', tableElement.style.getPropertyValue('--num-columns'));
 
     const detailContainers =
         tableElement.shadowRoot!.querySelectorAll('.detail-container');

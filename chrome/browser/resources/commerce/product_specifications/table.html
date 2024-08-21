@@ -7,11 +7,12 @@
   }
 
   #table {
+    container-type: inline-size;
     display: grid;
     font-size: var(--table-font-size);
     gap: var(--table-gap);
     grid-auto-flow: column;
-    grid-template-columns: auto;
+    grid-template-columns: repeat(var(--num-columns), var(--column-width));
     grid-template-rows: auto;
     line-height: 16px;
     width: fit-content;
@@ -86,6 +87,22 @@
     padding-bottom: 4px;
     padding-inline-end: 50px;
     width: var(--column-width);
+  }
+
+  /*
+   * Ensure the 'detail-title' element within the first column
+   * spans the full container width, allowing its nested sticky span
+   * to remain positioned correctly even when the column is scrolled
+   * away from.
+   */
+  .col[is-first-column] .detail-title {
+    padding-inline-end: 0;
+    width: 100cqw;
+  }
+
+  .col[is-first-column] .detail-title span {
+    left: 0;
+    position: sticky;
   }
 
   .col:not([is-first-column]) .detail-title span {

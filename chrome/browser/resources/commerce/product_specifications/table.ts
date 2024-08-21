@@ -43,7 +43,10 @@ export class TableElement extends PolymerElement {
 
   static get properties() {
     return {
-      columns: Array,
+      columns: {
+        type: Array,
+        observer: 'onColumnsChanged_',
+      },
       draggingColumn: HTMLElement,
       hoveredColumnIndex_: Number,
     };
@@ -90,6 +93,10 @@ export class TableElement extends PolymerElement {
     ]);
 
     this.dispatchEvent(new Event('url-order-update'));
+  }
+
+  private onColumnsChanged_() {
+    this.style.setProperty('--num-columns', String(this.columns.length));
   }
 
   // |this.draggingColumn| is set by |dragAndDropManager|.
