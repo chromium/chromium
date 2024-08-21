@@ -76,8 +76,6 @@ void SyncEngineFactoryImpl::CleanupOnDisableSync() {
         base::BindOnce(&syncer::DeleteLegacyDirectoryFilesAndNigoriStorage,
                        sync_data_folder_));
   }
-
-  syncer::SyncTransportDataPrefs::ClearAllLegacy(pref_service);
 }
 
 void SyncEngineFactoryImpl::ClearTransportDataForAccount(

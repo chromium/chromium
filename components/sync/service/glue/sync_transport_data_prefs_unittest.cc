@@ -55,25 +55,11 @@ TEST_F(SyncTransportDataPrefsTest, LastSyncTime) {
   EXPECT_EQ(now, sync_prefs_->GetLastSyncedTime());
 }
 
-TEST_F(SyncTransportDataPrefsTest, ClearAll) {
-  sync_prefs_->SetLastSyncedTime(base::Time::Now());
-  ASSERT_NE(base::Time(), sync_prefs_->GetLastSyncedTime());
-
-  sync_prefs_->ClearAllLegacy();
-
-  // ClearAllLegacy() should not have had any effect on the visible value.
-  EXPECT_NE(base::Time(), sync_prefs_->GetLastSyncedTime());
-}
-
 TEST_F(SyncTransportDataPrefsTest, Clear) {
   sync_prefs_->SetLastSyncedTime(base::Time::Now());
   ASSERT_NE(base::Time(), sync_prefs_->GetLastSyncedTime());
 
-  // ClearAllLegacy() should *not* affect the persisted value.
-  sync_prefs_->ClearAllLegacy();
-  EXPECT_NE(base::Time(), sync_prefs_->GetLastSyncedTime());
-
-  // ClearForCurrentAccount() should affect it though.
+  // ClearForCurrentAccount() should clear the persisted value.
   sync_prefs_->ClearForCurrentAccount();
   EXPECT_EQ(base::Time(), sync_prefs_->GetLastSyncedTime());
 }

@@ -71,8 +71,13 @@ SyncTransportDataPrefs::SyncTransportDataPrefs(
     account_values->Set(kSyncPollInterval,
                         pref_service_->GetValue(kSyncPollInterval).Clone());
   }
-  // TODO(crbug.com/337034860): Also clear the legacy prefs here, and stop
-  // populating them below.
+  // Whether values were migrated or not, clean up the legacy prefs now.
+  pref_service_->ClearPref(kSyncCacheGuid);
+  pref_service_->ClearPref(kSyncBirthday);
+  pref_service_->ClearPref(kSyncBagOfChips);
+  pref_service_->ClearPref(kSyncLastSyncedTime);
+  pref_service_->ClearPref(kSyncLastPollTime);
+  pref_service_->ClearPref(kSyncPollInterval);
 }
 
 SyncTransportDataPrefs::~SyncTransportDataPrefs() = default;
@@ -92,21 +97,6 @@ void SyncTransportDataPrefs::RegisterProfilePrefs(
   registry->RegisterTimePref(kSyncLastSyncedTime, base::Time());
   registry->RegisterTimePref(kSyncLastPollTime, base::Time());
   registry->RegisterTimeDeltaPref(kSyncPollInterval, base::TimeDelta());
-}
-
-void SyncTransportDataPrefs::ClearAllLegacy() {
-  ClearAllLegacy(pref_service_);
-}
-
-// static
-void SyncTransportDataPrefs::ClearAllLegacy(PrefService* pref_service) {
-  pref_service->ClearPref(kSyncLastSyncedTime);
-  pref_service->ClearPref(kSyncLastPollTime);
-  pref_service->ClearPref(kSyncPollInterval);
-  pref_service->ClearPref(kSyncGaiaId);
-  pref_service->ClearPref(kSyncCacheGuid);
-  pref_service->ClearPref(kSyncBirthday);
-  pref_service->ClearPref(kSyncBagOfChips);
 }
 
 void SyncTransportDataPrefs::ClearForCurrentAccount() {
@@ -132,8 +122,6 @@ base::Time SyncTransportDataPrefs::GetLastSyncedTime() const {
 
 void SyncTransportDataPrefs::SetLastSyncedTime(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetTime(kSyncLastSyncedTime, time);
-
   SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
                                gaia_id_hash_, kSyncLastSyncedTime,
                                base::TimeToValue(time));
@@ -149,8 +137,6 @@ base::Time SyncTransportDataPrefs::GetLastPollTime() const {
 
 void SyncTransportDataPrefs::SetLastPollTime(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetTime(kSyncLastPollTime, time);
-
   SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
                                gaia_id_hash_, kSyncLastPollTime,
                                base::TimeToValue(time));
@@ -178,8 +164,6 @@ base::TimeDelta SyncTransportDataPrefs::GetPollInterval() const {
 
 void SyncTransportDataPrefs::SetPollInterval(base::TimeDelta interval) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetTimeDelta(kSyncPollInterval, interval);
-
   SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
                                gaia_id_hash_, kSyncPollInterval,
                                base::TimeDeltaToValue(interval));
@@ -215,8 +199,6 @@ void SyncTransportDataPrefs::ClearCurrentSyncingGaiaId(
 
 void SyncTransportDataPrefs::SetCacheGuid(const std::string& cache_guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetString(kSyncCacheGuid, cache_guid);
-
   SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
                                gaia_id_hash_, kSyncCacheGuid,
                                base::Value(cache_guid));
@@ -232,8 +214,6 @@ std::string SyncTransportDataPrefs::GetCacheGuid() const {
 
 void SyncTransportDataPrefs::SetBirthday(const std::string& birthday) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetString(kSyncBirthday, birthday);
-
   SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
                                gaia_id_hash_, kSyncBirthday,
                                base::Value(birthday));
@@ -252,8 +232,6 @@ void SyncTransportDataPrefs::SetBagOfChips(const std::string& bag_of_chips) {
   // |bag_of_chips| contains a serialized proto which is not utf-8, hence
   // we use base64 encoding in prefs.
   std::string encoded = base::Base64Encode(bag_of_chips);
-  pref_service_->SetString(kSyncBagOfChips, encoded);
-
   SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
                                gaia_id_hash_, kSyncBagOfChips,
                                base::Value(encoded));

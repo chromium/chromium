@@ -137,7 +137,6 @@ void SyncEngineImpl::Initialize(InitParams params) {
     // everything away and start from scratch with a new cache GUID, which also
     // cascades into datatypes throwing away their dangling sync metadata due to
     // cache GUID mismatches.
-    prefs_->ClearAllLegacy();
     prefs_->ClearForCurrentAccount();
 
     prefs_->SetCacheGuid(GenerateCacheGUID());
@@ -307,7 +306,6 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
   sync_task_runner_->ReleaseSoon(FROM_HERE, std::move(backend_));
 
   if (reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
-    prefs_->ClearAllLegacy();
     prefs_->ClearCurrentSyncingGaiaId();
   }
 }
