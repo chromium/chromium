@@ -34,6 +34,8 @@
 namespace ash {
 namespace {
 
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
+
 class EsimInteractiveUiTest : public EsimInteractiveUiTestBase {
  protected:
   // InteractiveAshTest:
@@ -52,7 +54,6 @@ class EsimInteractiveUiTest : public EsimInteractiveUiTestBase {
 
 IN_PROC_BROWSER_TEST_F(EsimInteractiveUiTest,
                        OpenAddEsimDialogFromQuickSettings) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ShillDevicePowerStateObserver,
                                       kMobileDataPoweredState);
 
@@ -143,7 +144,6 @@ IN_PROC_BROWSER_TEST_F(EsimInteractiveUiTest,
 
 // TODO(crbug.com/358606262): Re-enable this test
 IN_PROC_BROWSER_TEST_F(EsimInteractiveUiTest, DISABLED_AutoconnectBehavior) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ShillDevicePowerStateObserver,
                                       kMobileDataPoweredState);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(WaitForServiceConnectedObserver,
@@ -233,6 +233,47 @@ IN_PROC_BROWSER_TEST_F(EsimInteractiveUiTest, DISABLED_AutoconnectBehavior) {
       Log("Closing the Settings app"),
 
       Do([&]() { CloseSystemWebApp(SystemWebAppType::SETTINGS); }),
+
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(EsimInteractiveUiTest, ConnectDisconnect) {
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(WaitForServiceConnectedObserver,
+                                      kCellularServiceConnected);
+
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequenceInContext(
+      context,
+
+      ObserveState(kCellularServiceConnected,
+                   std::make_unique<WaitForServiceConnectedObserver>(
+                       esim_info().iccid())),
+      WaitForState(kCellularServiceConnected, true),
+
+      Log("Navigating to the details page for the eSIM network"),
+
+      NavigateToInternetDetailsPage(kOSSettingsId,
+                                    NetworkTypePattern::Cellular(),
+                                    esim_info().nickname()),
+
+      Log("Disconnect eSIM network"),
+
+      WaitForElementExists(kOSSettingsId,
+                           settings::SettingsSubpageConnectDisconnectButton()),
+      ClickElement(kOSSettingsId,
+                   settings::SettingsSubpageConnectDisconnectButton()),
+      WaitForState(kCellularServiceConnected, false),
+
+      Log("Connect to eSIM network"),
+
+      WaitForElementExists(kOSSettingsId,
+                           settings::SettingsSubpageConnectDisconnectButton()),
+      ClickElement(kOSSettingsId,
+                   settings::SettingsSubpageConnectDisconnectButton()),
+      WaitForState(kCellularServiceConnected, true),
 
       Log("Test complete"));
 }
