@@ -356,7 +356,7 @@ void SidePanelCoordinator::RemoveSidePanelViewStateObserver(
 }
 
 void SidePanelCoordinator::Close() {
-  Close(/*supress_animations=*/false);
+  Close(/*suppress_animations=*/false);
 }
 
 void SidePanelCoordinator::Toggle(
@@ -509,7 +509,7 @@ bool SidePanelCoordinator::IsSidePanelEntryShowing(
 void SidePanelCoordinator::Show(
     SidePanelEntry* entry,
     std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
-    bool supress_animations) {
+    bool suppress_animations) {
   // Side panel is not supported for non-normal browsers.
   if (!browser_view_->browser()->is_type_normal()) {
     return;
@@ -592,10 +592,10 @@ void SidePanelCoordinator::Show(
 
   content_wrapper->RequestEntry(
       entry, base::BindOnce(&SidePanelCoordinator::PopulateSidePanel,
-                            base::Unretained(this), supress_animations));
+                            base::Unretained(this), suppress_animations));
 }
 
-void SidePanelCoordinator::Close(bool supress_animations) {
+void SidePanelCoordinator::Close(bool suppress_animations) {
   if (!IsSidePanelShowing() ||
       browser_view_->unified_side_panel()->IsClosing()) {
     return;
@@ -613,8 +613,8 @@ void SidePanelCoordinator::Close(bool supress_animations) {
     content_wrapper->SetProperty(
         kSidePanelContentStateKey,
         static_cast<std::underlying_type_t<SidePanelContentState>>(
-            supress_animations ? SidePanelContentState::kHideImmediately
-                               : SidePanelContentState::kReadyToHide));
+            suppress_animations ? SidePanelContentState::kHideImmediately
+                                : SidePanelContentState::kReadyToHide));
   }
 
   MaybeEndPinPromo(/*pinned=*/false);
@@ -665,7 +665,7 @@ void SidePanelCoordinator::InitializeSidePanel() {
 }
 
 void SidePanelCoordinator::PopulateSidePanel(
-    bool supress_animations,
+    bool suppress_animations,
     SidePanelEntry* entry,
     std::optional<std::unique_ptr<views::View>> content_view) {
   actions::ActionItem* const action_item = GetActionItem(entry->key());
@@ -687,8 +687,8 @@ void SidePanelCoordinator::PopulateSidePanel(
   content_wrapper->SetProperty(
       kSidePanelContentStateKey,
       static_cast<std::underlying_type_t<SidePanelContentState>>(
-          supress_animations ? SidePanelContentState::kShowImmediately
-                             : SidePanelContentState::kReadyToShow));
+          suppress_animations ? SidePanelContentState::kShowImmediately
+                              : SidePanelContentState::kReadyToShow));
 
   if (current_entry_ && content_wrapper->children().size()) {
     current_entry_->OnEntryWillHide(SidePanelEntryHideReason::kReplaced);
@@ -1100,7 +1100,7 @@ void SidePanelCoordinator::OnTabStripModelChanged(
     // one is found, show it.
     if (auto* new_active_entry = GetNewActiveEntryOnTabChanged()) {
       Show(new_active_entry, SidePanelUtil::SidePanelOpenTrigger::kTabChanged,
-           /*supress_animations=*/true);
+           /*suppress_animations=*/true);
     } else {
       // If there is no suitable entry to be shown after the tab switch, cache
       // the view of the old contextual registry (if it was active), and close
@@ -1117,13 +1117,13 @@ void SidePanelCoordinator::OnTabStripModelChanged(
         auto* active_entry = old_contextual_registry->active_entry().value();
         active_entry->CacheView(std::move(current_entry_view));
       }
-      Close(/*supress_animations=*/true);
+      Close(/*suppress_animations=*/true);
     }
   } else if (new_contextual_registry &&
              new_contextual_registry->active_entry().has_value()) {
     Show(new_contextual_registry->active_entry().value(),
          SidePanelUtil::SidePanelOpenTrigger::kTabChanged,
-         /*supress_animations=*/true);
+         /*suppress_animations=*/true);
   }
 }
 

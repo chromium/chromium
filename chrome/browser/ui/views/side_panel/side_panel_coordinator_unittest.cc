@@ -329,6 +329,8 @@ class MockSidePanelViewStateObserver : public SidePanelViewStateObserver {
 };
 
 TEST_F(SidePanelCoordinatorTest, ToggleSidePanel) {
+  coordinator_->DisableAnimationsForTesting();
+
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
                        SidePanelOpenTrigger::kPinnedEntryToolbarButton);
   EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
@@ -369,6 +371,8 @@ TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidth) {
 }
 
 TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
+  coordinator_->DisableAnimationsForTesting();
+
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
                        SidePanelOpenTrigger::kPinnedEntryToolbarButton);
   const int starting_width = 500;
@@ -426,6 +430,8 @@ TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthRTL) {
 }
 
 TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthWindowResize) {
+  coordinator_->DisableAnimationsForTesting();
+
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
                        SidePanelOpenTrigger::kPinnedEntryToolbarButton);
   const int starting_width = 500;
@@ -510,6 +516,8 @@ TEST_F(SidePanelCoordinatorTest, DontNotifySidePanelObserverOfChangingContent) {
 }
 
 TEST_F(SidePanelCoordinatorTest, NotifyingSidePanelObservers) {
+  coordinator_->DisableAnimationsForTesting();
+
   MockSidePanelViewStateObserver view_state_observer;
   EXPECT_CALL(view_state_observer, OnSidePanelDidOpen()).Times(3);
   EXPECT_CALL(view_state_observer, OnSidePanelDidClose()).Times(2);
@@ -533,6 +541,8 @@ TEST_F(SidePanelCoordinatorTest, NotifyingSidePanelObservers) {
 }
 
 TEST_F(SidePanelCoordinatorTest, RemovingObserverDoesNotIncrementCount) {
+  coordinator_->DisableAnimationsForTesting();
+
   MockSidePanelViewStateObserver view_state_observer;
   EXPECT_CALL(view_state_observer, OnSidePanelDidClose()).Times(1);
   coordinator_->AddSidePanelViewStateObserver(&view_state_observer);
@@ -552,6 +562,8 @@ TEST_F(SidePanelCoordinatorTest, RemovingObserverDoesNotIncrementCount) {
 }
 
 TEST_F(SidePanelCoordinatorTest, SidePanelToggleWithEntriesTest) {
+  coordinator_->DisableAnimationsForTesting();
+
   // Show reading list sidepanel.
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kReadingList),
                        SidePanelOpenTrigger::kPinnedEntryToolbarButton);
@@ -670,6 +682,8 @@ TEST_F(SidePanelCoordinatorTest, ContextualEntryDeregisteredWhileVisible) {
 TEST_F(
     SidePanelCoordinatorTest,
     ContextualEntryDeregisteredWhileVisibleClosesPanelIfNoLastSeenGlobalEntryExists) {
+  coordinator_->DisableAnimationsForTesting();
+
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator_->Show(SidePanelEntry::Id::kCustomizeChrome);
   EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
@@ -774,6 +788,8 @@ TEST_F(SidePanelCoordinatorTest,
 }
 
 TEST_F(SidePanelCoordinatorTest, TogglePanelWithContextualEntryShowing) {
+  coordinator_->DisableAnimationsForTesting();
+
   // Open side panel and verify it opens to kBookmarks by default.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
@@ -818,6 +834,8 @@ TEST_F(SidePanelCoordinatorTest, TogglePanelWithContextualEntryShowing) {
 
 TEST_F(SidePanelCoordinatorTest,
        TogglePanelWithGlobalEntryShowingWithTabSwitch) {
+  coordinator_->DisableAnimationsForTesting();
+
   // Open side panel and verify it opens to kBookmarks by default.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
@@ -873,6 +891,8 @@ TEST_F(SidePanelCoordinatorTest,
 
 TEST_F(SidePanelCoordinatorTest,
        TogglePanelWithContextualEntryShowingWithTabSwitch) {
+  coordinator_->DisableAnimationsForTesting();
+
   // Open side panel and verify it opens to kBookmarks by default.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
@@ -931,6 +951,8 @@ TEST_F(SidePanelCoordinatorTest,
 
 TEST_F(SidePanelCoordinatorTest,
        SwitchBetweenTabWithGlobalEntryAndTabWithLastActiveContextualEntry) {
+  coordinator_->DisableAnimationsForTesting();
+
   // Open side panel to kBookmarks.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
@@ -1033,6 +1055,8 @@ TEST_F(SidePanelCoordinatorTest,
 TEST_F(
     SidePanelCoordinatorTest,
     SwitchBetweenTabWithContextualEntryAndTabWithNoEntryWhenThereIsALastActiveGlobalEntry) {
+  coordinator_->DisableAnimationsForTesting();
+
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
                        SidePanelOpenTrigger::kPinnedEntryToolbarButton);
   EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
@@ -1114,6 +1138,8 @@ TEST_F(SidePanelCoordinatorTest,
 
 TEST_F(SidePanelCoordinatorTest,
        SwitchBackToTabWithContextualEntryAfterClosingGlobal) {
+  coordinator_->DisableAnimationsForTesting();
+
   // Open side panel to contextual entry and verify.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator_->Show(SidePanelEntry::Id::kCustomizeChrome);
@@ -1274,6 +1300,8 @@ TEST_F(SidePanelCoordinatorTest,
 
 TEST_F(SidePanelCoordinatorTest,
        EntryDeregistersOnBeingHiddenFromSidePanelClose) {
+  coordinator_->DisableAnimationsForTesting();
+
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
 
   // Create an observer that deregisters the entry once it is hidden.
@@ -1319,6 +1347,8 @@ TEST_F(SidePanelCoordinatorTest, ShouldNotRecreateTheSameEntry) {
 
 // Side panel closes if the active entry is de-registered when open.
 TEST_F(SidePanelCoordinatorTest, GlobalEntryDeregisteredWhenVisible) {
+  coordinator_->DisableAnimationsForTesting();
+
   coordinator_->Show(SidePanelEntry::Id::kBookmarks);
   EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
 
@@ -1418,6 +1448,8 @@ TEST_F(SidePanelCoordinatorTest, RegisterExtensionEntries) {
 // the global extension entry is shown if the active tab's extension entry is
 // deregistered.
 TEST_F(SidePanelCoordinatorTest, DeregisterExtensionEntries) {
+  coordinator_->DisableAnimationsForTesting();
+
   // Make sure the second tab is active.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
 
@@ -1655,6 +1687,7 @@ TEST_F(SidePanelCoordinatorTest, SidePanelTitleUpdates) {
 }
 
 TEST_F(SidePanelCoordinatorTest, SidePanelPinButtonsHideInGuestMode) {
+  coordinator_->DisableAnimationsForTesting();
   SetUpPinningTest();
   coordinator_->Show(SidePanelEntry::Id::kBookmarks);
   EXPECT_TRUE(coordinator_->GetHeaderPinButtonForTesting()->GetVisible());
