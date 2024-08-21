@@ -272,12 +272,6 @@ BASE_FEATURE(kAutofillEnableSupportForApartmentNumbers,
              "AutofillEnableSupportForApartmentNumbers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls if Autofill parses ADDRESS_HOME_DEPENDENT_LOCALITY.
-// TODO(crbug.com/40160818): Remove once launched.
-BASE_FEATURE(kAutofillEnableDependentLocalityParsing,
-             "AutofillEnableDependentLocalityParsing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables a couple of improvements to credit card expiration date handling:
 // - The autocomplete attribute values are rationalized with format strings
 //   like MM/YY from placeholders and labels in mind.

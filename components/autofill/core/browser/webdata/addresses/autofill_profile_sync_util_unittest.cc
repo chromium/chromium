@@ -933,8 +933,7 @@ class AutofillProfileSyncUtilTest
          features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
          features::kAutofillEnableSupportForAddressOverflowAndLandmark,
          features::kAutofillEnableSupportForAdminLevel2,
-         features::kAutofillEnableSupportForApartmentNumbers,
-         features::kAutofillEnableDependentLocalityParsing},
+         features::kAutofillEnableSupportForApartmentNumbers},
         {});
   }
 

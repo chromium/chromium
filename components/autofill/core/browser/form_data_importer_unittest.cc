@@ -531,7 +531,6 @@ class FormDataImporterTest : public testing::Test {
          features::kAutofillUseINAddressModel,
          features::kAutofillUseITAddressModel,
          features::kAutofillUseMXAddressModel,
-         features::kAutofillEnableDependentLocalityParsing,
          features::kAutofillEnableSupportForApartmentNumbers,
          features::kAutofillEnableSupportForLandmark,
          features::kAutofillEnableSupportForBetweenStreets,
@@ -1710,11 +1709,8 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_InsufficientAddress) {
 // Tests that an address can be imported from an Indian address form without
 // synthesized field types.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_NoSynthesizedTypes) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAutofillUseINAddressModel,
-       features::kAutofillEnableDependentLocalityParsing},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillUseINAddressModel};
   // The address does not contain synthesized types.
   TypeValuePairs type_value_pairs = {
       {NAME_FULL, "INFirst INSecond"},
@@ -1763,10 +1759,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_NoSynthesizedTypes) {
 // likely look incomplete when shown to the user.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_ContainsSynthesizedTypes) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAutofillUseINAddressModel,
-       features::kAutofillEnableDependentLocalityParsing},
-      {});
+  feature_list.InitWithFeatures({features::kAutofillUseINAddressModel}, {});
   // The address contains synthesized types which are not supported during
   // form import.
   ASSERT_TRUE(i18n_model_definition::IsSynthesizedType(

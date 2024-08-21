@@ -239,9 +239,6 @@ public final class ProductionSupportedFlagList {
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUEST_FOR_CHANGE_PASSWORD_NAME,
                 "Enables sending prefill requests for Change Password forms."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_ENABLE_DEPENDENT_LOCALITY_PARSING,
-                "Enables parsing dependent locality fields (e.g. Bairros in Brazil)."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_EXPIRATION_DATE_IMPROVEMENTS,
                 "Enables various improvements to handling expiration dates."),
         Flag.baseFeature(

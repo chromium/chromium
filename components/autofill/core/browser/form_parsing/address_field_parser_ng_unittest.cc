@@ -19,7 +19,6 @@ namespace {
 void InitFeaturesForIN(base::test::ScopedFeatureList& features) {
   features.InitWithFeatures(
       {
-          features::kAutofillEnableDependentLocalityParsing,
           features::kAutofillEnableSupportForLandmark,
           features::kAutofillEnableSupportForAdminLevel2,
           features::kAutofillUseINAddressModel,
@@ -154,11 +153,6 @@ TEST_P(AddressFieldParserTestNG, NotParseHouseNumberWithoutStreetName) {
 // Tests that the dependent locality is correctly classified with
 // an unambiguous field name and label.
 TEST_P(AddressFieldParserTestNG, ParseDependentLocality) {
-  // TODO(crbug.com/40160818): Remove once launched.
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableDependentLocalityParsing);
-
   AddTextFormFieldData("neighborhood", "Neighborhood",
                        ADDRESS_HOME_DEPENDENT_LOCALITY);
   ClassifyAndVerify();
@@ -310,7 +304,6 @@ TEST_P(AddressFieldParserTestNG,
   enabled.InitWithFeatures(
       {
           features::kAutofillUseMXAddressModel,
-          features::kAutofillEnableDependentLocalityParsing,
           features::kAutofillEnableSupportForLandmark,
           features::kAutofillEnableSupportForBetweenStreets,
           features::kAutofillEnableSupportForAdminLevel2,

@@ -59,12 +59,7 @@ bool FieldIsUsedInAddress(autofill::FieldType autofillType,
       @"PH", @"PK", @"TH", @"ZA"
     ];
 
-    const bool is_enabled_dependent_locality_parsing =
-        base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableDependentLocalityParsing);
-
-    return is_enabled_dependent_locality_parsing &&
-           ([countryCodes indexOfObject:countryCode] != NSNotFound);
+    return ([countryCodes indexOfObject:countryCode] != NSNotFound);
   }
 
   if (autofillType == autofill::ADDRESS_HOME_ADMIN_LEVEL2) {

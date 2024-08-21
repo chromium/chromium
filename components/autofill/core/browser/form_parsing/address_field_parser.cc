@@ -856,12 +856,9 @@ AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForDependentLocality(
     ParsingContext& context,
     AutofillScanner* scanner) {
-  const bool is_enabled_dependent_locality_parsing =
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableDependentLocalityParsing);
-  // TODO(crbug.com/40160818) Remove feature check when launched.
-  if (dependent_locality_ || !is_enabled_dependent_locality_parsing)
+  if (dependent_locality_) {
     return RESULT_MATCH_NONE;
+  }
 
   base::span<const MatchPatternRef> dependent_locality_patterns =
       GetMatchPatterns(ADDRESS_HOME_DEPENDENT_LOCALITY, context.page_language,

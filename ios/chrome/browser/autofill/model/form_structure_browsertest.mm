@@ -202,8 +202,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
   feature_list_.InitWithFeatures(
       // Enabled
       {
-          // TODO(crbug.com/40160818) Remove once launched.
-          features::kAutofillEnableDependentLocalityParsing,
           // TODO(crbug.com/40741721): Remove once shared labels are launched.
           features::kAutofillEnableSupportForParsingWithSharedLabels,
           features::kAutofillPageLanguageDetection,

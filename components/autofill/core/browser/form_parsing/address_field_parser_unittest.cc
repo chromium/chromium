@@ -200,11 +200,6 @@ TEST_P(AddressFieldParserTest, NotParseHouseNumberWithoutStreetName) {
 // Tests that the dependent locality is correctly classified with
 // an unambiguous field name and label.
 TEST_P(AddressFieldParserTest, ParseDependentLocality) {
-  // TODO(crbug.com/40160818): Remove once launched.
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableDependentLocalityParsing);
-
   AddTextFormFieldData("neighborhood", "Neighborhood",
                        ADDRESS_HOME_DEPENDENT_LOCALITY);
   ClassifyAndVerify();
@@ -375,7 +370,6 @@ TEST_P(AddressFieldParserTest,
   enabled.InitWithFeatures(
       {
           features::kAutofillEnableSupportForAddressOverflow,
-          features::kAutofillEnableDependentLocalityParsing,
           features::kAutofillEnableSupportForLandmark,
           features::kAutofillEnableSupportForBetweenStreets,
           features::kAutofillEnableSupportForAdminLevel2,
