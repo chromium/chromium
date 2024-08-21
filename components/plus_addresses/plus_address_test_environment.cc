@@ -4,9 +4,13 @@
 
 #include "components/plus_addresses/plus_address_test_environment.h"
 
+#include "components/plus_addresses/plus_address_prefs.h"
+
 namespace plus_addresses::test {
 
-PlusAddressTestEnvironment::PlusAddressTestEnvironment() = default;
+PlusAddressTestEnvironment::PlusAddressTestEnvironment() {
+  prefs::RegisterProfilePrefs(pref_service_.registry());
+}
 
 PlusAddressTestEnvironment::~PlusAddressTestEnvironment() = default;
 

@@ -176,6 +176,7 @@ static_library("test_support") {
     "plus_address_test_utils.h",
   ]
   deps = [
+    ":prefs",
     "//base",
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",

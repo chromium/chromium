@@ -4,10 +4,14 @@
 
 #include "components/plus_addresses/plus_address_test_utils.h"
 
+#include <string>
+
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/json/values_util.h"
 #include "base/strings/string_util.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/plus_addresses/plus_address_preallocator.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -145,6 +149,15 @@ HandleRequestToPlusAddressWithSuccess(
       /*use_full_domain=*/true);
   http_response->set_content(MakeCreationResponse(profile));
   return http_response;
+}
+
+base::Value CreatePreallocatedPlusAddress(base::Time end_of_life,
+                                          std::string address) {
+  return base::Value(
+      base::Value::Dict()
+          .Set(PlusAddressPreallocator::kEndOfLifeKey,
+               base::TimeToValue(end_of_life))
+          .Set(PlusAddressPreallocator::kPlusAddressKey, std::move(address)));
 }
 
 }  // namespace plus_addresses::test

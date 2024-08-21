@@ -140,12 +140,12 @@ bool PlusAddressPreallocator::IsRefreshingSupported(
 }
 
 void PlusAddressPreallocator::RemoveAllocatedPlusAddress(
-    std::string_view plus_address) {
+    const PlusAddress& plus_address) {
   {
     ScopedListPrefUpdate update(&pref_service_.get(),
                                 prefs::kPreallocatedAddresses);
     update->EraseIf([&](const base::Value& value) {
-      return *value.GetDict().FindString(kPlusAddressKey) == plus_address;
+      return *value.GetDict().FindString(kPlusAddressKey) == *plus_address;
     });
   }
   FixIndexOfNextPreallocatedAddress();

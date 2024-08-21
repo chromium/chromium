@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_TEST_UTILS_H_
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_TEST_UTILS_H_
 
+#include <string>
+
+#include "base/time/time.h"
+#include "base/values.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -59,6 +63,12 @@ std::string MakePlusProfile(const PlusProfile& profile);
 std::unique_ptr<net::test_server::HttpResponse>
 HandleRequestToPlusAddressWithSuccess(
     const net::test_server::HttpRequest& request);
+
+// Creates a pre-allocated plus address in the same form in which it is
+// serialized to prefs.
+base::Value CreatePreallocatedPlusAddress(
+    base::Time end_of_life,
+    std::string address = "some@plus.com");
 
 }  // namespace plus_addresses::test
 

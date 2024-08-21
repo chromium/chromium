@@ -75,7 +75,7 @@ bool PlusAddressJitAllocator::IsRefreshingSupported(
 }
 
 void PlusAddressJitAllocator::RemoveAllocatedPlusAddress(
-    std::string_view plus_address) {
+    const PlusAddress& plus_address) {
   // This is a no-op for the JIT allocator - if the plus address was created,
   // the backend will ensure that it does not show up again.
 }

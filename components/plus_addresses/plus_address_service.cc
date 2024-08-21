@@ -482,6 +482,11 @@ void PlusAddressService::ConfirmPlusAddress(
     std::move(on_completed).Run(stored_plus_profile.value());
     return;
   }
+
+  // We remove the allocated plus address here even though the creation call
+  // may not go through. UI code may offer the user to re-attempt to confirm
+  // a plus address, e.g. in the case of time out.
+  plus_address_allocator_->RemoveAllocatedPlusAddress(plus_address);
   plus_address_http_client_->ConfirmPlusAddress(
       origin, plus_address,
       base::BindOnce(&PlusAddressService::HandleCreateOrConfirmResponse,
@@ -506,6 +511,7 @@ void PlusAddressService::HandleCreateOrConfirmResponse(
   } else {
     HandlePlusAddressRequestError(maybe_profile.error());
   }
+
   // Run callback last in case it's dependent on above changes.
   std::move(callback).Run(maybe_profile);
 }

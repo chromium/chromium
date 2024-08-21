@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_ALLOCATOR_H_
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_ALLOCATOR_H_
 
-#include <string_view>
-
 #include "components/plus_addresses/plus_address_types.h"
 
 namespace url {
@@ -46,7 +44,7 @@ class PlusAddressAllocator {
 
   // Removes `plus_address` from the allocation pool. Depending on the
   // implementation, this may be a no-op.
-  virtual void RemoveAllocatedPlusAddress(std::string_view plus_address) = 0;
+  virtual void RemoveAllocatedPlusAddress(const PlusAddress& plus_address) = 0;
 };
 
 }  // namespace plus_addresses

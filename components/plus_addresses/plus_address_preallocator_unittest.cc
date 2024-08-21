@@ -22,6 +22,7 @@
 #include "components/plus_addresses/plus_address_allocator.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_prefs.h"
+#include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -34,6 +35,7 @@ namespace plus_addresses {
 namespace {
 
 using base::test::RunOnceCallback;
+using test::CreatePreallocatedPlusAddress;
 using ::testing::_;
 using ::testing::InSequence;
 using ::testing::IsEmpty;
@@ -41,16 +43,6 @@ using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
-
-base::Value CreatePreallocatedPlusAddress(
-    base::Time end_of_life,
-    std::string address = "some@plus.com") {
-  return base::Value(
-      base::Value::Dict()
-          .Set(PlusAddressPreallocator::kEndOfLifeKey,
-               base::TimeToValue(end_of_life))
-          .Set(PlusAddressPreallocator::kPlusAddressKey, std::move(address)));
-}
 
 PlusProfileOrError PlusProfileFromPreallocatedAddress(
     const url::Origin& origin,
@@ -682,14 +674,14 @@ TEST_F(PlusAddressPreallocatorTest,
 
 // Tests that removing plus addresses works correctly.
 TEST_F(PlusAddressPreallocatorTest, RemoveAllocatedPlusAddress) {
-  const std::string kPlusAddress1 = "plus1@plusfoo.com";
-  const std::string kPlusAddress2 = "plus2@plusbar.com";
+  const auto kPlusAddress1 = PlusAddress("plus1@plusfoo.com");
+  const auto kPlusAddress2 = PlusAddress("plus2@plusbar.com");
   SetPreallocatedAddresses(
       base::Value::List()
           .Append(CreatePreallocatedPlusAddress(
-              base::Time::Now() + base::Days(1), kPlusAddress1))
+              base::Time::Now() + base::Days(1), *kPlusAddress1))
           .Append(CreatePreallocatedPlusAddress(
-              base::Time::Now() + base::Days(2), kPlusAddress2)));
+              base::Time::Now() + base::Days(2), *kPlusAddress2)));
   SetPreallocatedAddressesNext(1);
 
   PlusAddressPreallocator allocator(&pref_service(), &setting_service(),

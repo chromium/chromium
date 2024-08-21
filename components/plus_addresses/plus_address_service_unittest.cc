@@ -33,6 +33,8 @@
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_blocklist_data.h"
 #include "components/plus_addresses/plus_address_http_client_impl.h"
+#include "components/plus_addresses/plus_address_preallocator.h"
+#include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_test_environment.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -40,6 +42,7 @@
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_table.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -58,6 +61,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+#include "url/origin.h"
+
+namespace plus_addresses {
 
 namespace {
 
@@ -71,6 +77,7 @@ using autofill::FormFieldData;
 using autofill::Suggestion;
 using autofill::SuggestionType;
 using ::base::test::RunOnceCallback;
+using test::CreatePreallocatedPlusAddress;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
@@ -117,13 +124,21 @@ auto IsSingleFillPlusAddressSuggestion(std::string_view address) {
   return ElementsAre(EqualsFillPlusAddressSuggestion(address));
 }
 
+MATCHER_P(IsPreallocatedPlusAddress, address, "") {
+  if (!arg.is_dict()) {
+    return false;
+  }
+  const base::Value::Dict& d = arg.GetDict();
+  const std::string* plus_address =
+      d.FindString(PlusAddressPreallocator::kPlusAddressKey);
+  return plus_address && *plus_address == address;
+}
+
 url::Origin OriginFromFacet(const plus_addresses::PlusProfile::facet_t& facet) {
   return url::Origin::Create(GURL("https://" + absl::get<std::string>(facet)));
 }
 
 }  // namespace
-
-namespace plus_addresses {
 
 class MockPlusAddressServiceObserver : public PlusAddressService::Observer {
  public:
@@ -182,6 +197,7 @@ class PlusAddressServiceTest : public ::testing::Test {
   signin::IdentityManager* identity_manager() {
     return identity_env().identity_manager();
   }
+  PrefService& pref_service() { return plus_environment_.pref_service(); }
   PlusAddressService& service() { return *service_; }
   FakePlusAddressSettingService& setting_service() {
     return plus_environment_.setting_service();
@@ -569,6 +585,60 @@ TEST_F(PlusAddressServiceRequestsTest, OngoingRequestsCancelledOnSignout) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+class PlusAddressServicePreAllocationTest
+    : public PlusAddressServiceRequestsTest {
+ public:
+  PlusAddressServicePreAllocationTest() {
+    preallocation_feature_.InitAndEnableFeatureWithParameters(
+        features::kPlusAddressPreallocation,
+        {{features::kPlusAddressPreallocationMinimumSize.name, "1"}});
+    InitService();
+  }
+
+  const base::Value::List& GetPreallocatedAddresses() {
+    return pref_service().GetList(prefs::kPreallocatedAddresses);
+  }
+  void SetPreallocatedAddresses(base::Value::List addresses) {
+    pref_service().SetList(prefs::kPreallocatedAddresses, std::move(addresses));
+  }
+
+ private:
+  base::test::ScopedFeatureList preallocation_feature_;
+};
+
+// Tests that a successful plus address confirmation removes the pre-allocated
+// email from the pre-allocated pool of addresses.
+TEST_F(PlusAddressServicePreAllocationTest,
+       ConfirmationRemovesAllocatedPlusAddress) {
+  const base::Time kFuture = base::Time::Now() + base::Days(1);
+  const std::string kPlusAddress1 = "plus1@plus.com";
+  const std::string kPlusAddress2 = "plus2@plus.com";
+  const auto kOrigin = url::Origin::Create(GURL("https://foo.com"));
+  SetPreallocatedAddresses(
+      base::Value::List()
+          .Append(CreatePreallocatedPlusAddress(kFuture, kPlusAddress1))
+          .Append(CreatePreallocatedPlusAddress(kFuture, kPlusAddress2)));
+
+  base::test::TestFuture<const PlusProfileOrError&> reserve;
+  service().ReservePlusAddress(kOrigin, reserve.GetCallback());
+  ASSERT_TRUE(reserve.Get().has_value());
+  PlusProfile profile = *reserve.Get();
+  EXPECT_EQ(profile.plus_address.value(), kPlusAddress1);
+
+  // Simulate a response.
+  profile.is_confirmed = true;
+  profile.profile_id = "123";
+  base::test::TestFuture<const PlusProfileOrError&> confirm;
+  service().ConfirmPlusAddress(kOrigin, profile.plus_address,
+                               confirm.GetCallback());
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kCreatePlusAddressEndpoint, test::MakeCreationResponse(profile)));
+  EXPECT_TRUE(confirm.Get().has_value());
+
+  EXPECT_THAT(GetPreallocatedAddresses(),
+              ElementsAre(IsPreallocatedPlusAddress(kPlusAddress2)));
+}
+
 class PlusAddressHttpForbiddenResponseTest
     : public PlusAddressServiceRequestsTest {
  public:
@@ -587,7 +657,6 @@ class PlusAddressHttpForbiddenResponseTest
 // Tests that two `HTTP_FORBIDDEN` responses and no successful network request
 // lead to a disabled service.
 TEST_F(PlusAddressHttpForbiddenResponseTest, RepeatedHttpForbiddenFromConfirm) {
-  const std::string kPlusAddress = "plus+remote@plus.plus";
   ASSERT_FALSE(service().IsPlusAddress(kPlusAddress));
 
   // The service remains enabled after a single `HTTP_FORBIDDEN` response.
@@ -614,7 +683,6 @@ TEST_F(PlusAddressHttpForbiddenResponseTest,
       features::kPlusAddressesEnabled,
       PlusAddressServiceRequestsTest::GetFieldTrialParams());
 
-  const std::string kPlusAddress = "plus+remote@plus.plus";
   ASSERT_FALSE(service().IsPlusAddress(kPlusAddress));
 
   // The service remains enabled after a single `HTTP_FORBIDDEN` response.
@@ -636,7 +704,6 @@ TEST_F(PlusAddressHttpForbiddenResponseTest,
 // lead to a disabled service and that other network errors do not have an
 // impact.
 TEST_F(PlusAddressHttpForbiddenResponseTest, OtherErrorsHaveNoEffect) {
-  const std::string kPlusAddress = "plus+remote@plus.plus";
   ASSERT_FALSE(service().IsPlusAddress(kPlusAddress));
 
   // The service remains enabled after a single `HTTP_FORBIDDEN` response.
