@@ -77,10 +77,8 @@ class TouchToFillPaymentMethodProperties {
                 new PropertyModel.ReadableObjectPropertyKey<>("main_text");
         static final PropertyModel.ReadableObjectPropertyKey<String> MINOR_TEXT =
                 new PropertyModel.ReadableObjectPropertyKey<>("minor_text");
-        static final PropertyModel.ReadableObjectPropertyKey<String> CARD_EXPIRATION =
-                new PropertyModel.ReadableObjectPropertyKey<>("card_expiration");
-        static final PropertyModel.ReadableObjectPropertyKey<String> VIRTUAL_CARD_LABEL =
-                new PropertyModel.ReadableObjectPropertyKey<>("virtual_card_label");
+        static final PropertyModel.ReadableObjectPropertyKey<String> FIRST_LINE_LABEL =
+                new PropertyModel.ReadableObjectPropertyKey<>("first_line_label");
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CREDIT_CARD_CLICK_ACTION =
                 new PropertyModel.ReadableObjectPropertyKey<>("on_credit_card_click_action");
         static final PropertyModel.ReadableBooleanPropertyKey APPLY_DEACTIVATED_STYLE =
@@ -93,8 +91,7 @@ class TouchToFillPaymentMethodProperties {
             NETWORK_NAME,
             MAIN_TEXT,
             MINOR_TEXT,
-            CARD_EXPIRATION,
-            VIRTUAL_CARD_LABEL,
+            FIRST_LINE_LABEL,
             ON_CREDIT_CARD_CLICK_ACTION,
             APPLY_DEACTIVATED_STYLE,
             ITEM_COLLECTION_INFO

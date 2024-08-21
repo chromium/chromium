@@ -5,14 +5,13 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.APPLY_DEACTIVATED_STYLE;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.CARD_EXPIRATION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.CARD_IMAGE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.FIRST_LINE_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ITEM_COLLECTION_INFO;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MAIN_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MINOR_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NETWORK_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ON_CREDIT_CARD_CLICK_ACTION;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.VIRTUAL_CARD_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
@@ -148,10 +147,8 @@ class TouchToFillPaymentMethodViewBinder {
             mainText.setText(model.get(MAIN_TEXT));
         } else if (propertyKey == MINOR_TEXT) {
             minorText.setText(model.get(MINOR_TEXT));
-        } else if (propertyKey == CARD_EXPIRATION) {
-            descriptionLabel.setText(model.get(CARD_EXPIRATION));
-        } else if (propertyKey == VIRTUAL_CARD_LABEL) {
-            descriptionLabel.setText(model.get(VIRTUAL_CARD_LABEL));
+        } else if (propertyKey == FIRST_LINE_LABEL) {
+            descriptionLabel.setText(model.get(FIRST_LINE_LABEL));
         } else if (propertyKey == ON_CREDIT_CARD_CLICK_ACTION) {
             view.setOnClickListener(unusedView -> model.get(ON_CREDIT_CARD_CLICK_ACTION).run());
         } else if (propertyKey == ITEM_COLLECTION_INFO) {
@@ -248,8 +245,7 @@ class TouchToFillPaymentMethodViewBinder {
                 || propertyKey == NETWORK_NAME
                 || propertyKey == MAIN_TEXT
                 || propertyKey == MINOR_TEXT
-                || propertyKey == CARD_EXPIRATION
-                || propertyKey == VIRTUAL_CARD_LABEL
+                || propertyKey == FIRST_LINE_LABEL
                 || propertyKey == IBAN_VALUE
                 || propertyKey == IBAN_NICKNAME
                 || propertyKey == ITEM_COLLECTION_INFO

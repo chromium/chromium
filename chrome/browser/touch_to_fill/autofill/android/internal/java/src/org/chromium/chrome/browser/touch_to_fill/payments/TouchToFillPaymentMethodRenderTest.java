@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -165,36 +166,45 @@ public class TouchToFillPaymentMethodRenderTest {
             createCreditCardSuggestion(
                     VISA.getCardNameForAutofillDisplay(),
                     VISA.getObfuscatedLastFourDigits(),
+                    VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion MASTERCARD_SUGGESTION =
             createCreditCardSuggestion(
                     MASTERCARD.getCardNameForAutofillDisplay(),
                     MASTERCARD.getObfuscatedLastFourDigits(),
+                    MASTERCARD.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion SERVER_MASTERCARD_SUGGESTION =
             createCreditCardSuggestion(
                     SERVER_MASTERCARD.getCardNameForAutofillDisplay(),
                     SERVER_MASTERCARD.getObfuscatedLastFourDigits(),
+                    SERVER_MASTERCARD.getFormattedExpirationDate(
+                            ContextUtils.getApplicationContext()),
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion DISCOVER_SUGGESTION =
             createCreditCardSuggestion(
                     DISCOVER.getCardNameForAutofillDisplay(),
                     DISCOVER.getObfuscatedLastFourDigits(),
+                    DISCOVER.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion AMERICAN_EXPRESS_SUGGESTION =
             createCreditCardSuggestion(
                     AMERICAN_EXPRESS.getCardNameForAutofillDisplay(),
                     AMERICAN_EXPRESS.getObfuscatedLastFourDigits(),
+                    AMERICAN_EXPRESS.getFormattedExpirationDate(
+                            ContextUtils.getApplicationContext()),
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion ACCEPTABLE_MASTERCARD_VIRTUAL_CARD_SUGGESTION =
             createCreditCardSuggestion(
                     MASTERCARD_VIRTUAL_CARD.getCardNameForAutofillDisplay(),
                     MASTERCARD_VIRTUAL_CARD.getObfuscatedLastFourDigits(),
+                    /* subLabel= */ "Virtual card",
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion NON_ACCEPTABLE_MASTERCARD_VIRTUAL_CARD_SUGGESTION =
             createCreditCardSuggestion(
                     MASTERCARD_VIRTUAL_CARD.getCardNameForAutofillDisplay(),
                     MASTERCARD_VIRTUAL_CARD.getObfuscatedLastFourDigits(),
+                    /* subLabel= */ "Merchant doesn't accept this virtual card",
                     /* applyDeactivatedStyle= */ true);
 
     private BottomSheetController mBottomSheetController;

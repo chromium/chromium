@@ -889,7 +889,7 @@
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CVC_LABEL_IOS" desc="Text shown above the virtual CVC field in the manual fallback bubble on IOS. The bubble below shows the CVC for the card available to fill the form. Clicking the bubble will populate the field with the CVC.">
       CVC:
   </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE" desc="Text to be displayed for a virtual card option in the credit card suggestion list when the virtual card is disabled(opted-out) by the merchant. This suggestion will be grayed-out and the user will not be able to preview or select this option." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE" desc="Text to be displayed for a virtual card option in the credit card suggestion list when the virtual card is disabled(opted-out) by the merchant. This suggestion will be grayed-out and the user will not be able to preview or select this option.">
       Merchant doesn't accept this virtual card
   </message>
   <message name="IDS_AUTOFILL_DISABLED_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP" desc="Text shown in the `In-Product Help(IPH)` bubble for disabled and grayed out virtual card suggestions on Chrome Desktop.">

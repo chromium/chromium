@@ -129,31 +129,38 @@ public class TouchToFillPaymentMethodViewTest {
             createCreditCardSuggestion(
                     VISA.getCardNameForAutofillDisplay(),
                     VISA.getObfuscatedLastFourDigits(),
+                    VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion NICKNAMED_VISA_SUGGESTION =
             createCreditCardSuggestion(
                     NICKNAMED_VISA.getCardNameForAutofillDisplay(),
                     NICKNAMED_VISA.getObfuscatedLastFourDigits(),
+                    NICKNAMED_VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion MASTERCARD_SUGGESTION =
             createCreditCardSuggestion(
                     MASTERCARD.getName(),
                     MASTERCARD.getNumber(),
+                    MASTERCARD.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion VIRTUAL_CARD_SUGGESTION =
             createCreditCardSuggestion(
                     VIRTUAL_CARD.getCardNameForAutofillDisplay(),
                     VIRTUAL_CARD.getObfuscatedLastFourDigits(),
+                    /* subLabel= */ "Virtual card",
                     /* applyDeactivatedStyle= */ false);
     private static final AutofillSuggestion NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION =
             createCreditCardSuggestion(
                     VIRTUAL_CARD.getCardNameForAutofillDisplay(),
                     VIRTUAL_CARD.getObfuscatedLastFourDigits(),
+                    /* subLabel= */ "Merchant doesn't accept this virtual card",
                     /* applyDeactivatedStyle= */ true);
     private static final AutofillSuggestion LONG_CARD_NAME_CARD_SUGGESTION =
             createCreditCardSuggestion(
                     LONG_CARD_NAME_CARD.getCardNameForAutofillDisplay(),
                     LONG_CARD_NAME_CARD.getObfuscatedLastFourDigits(),
+                    LONG_CARD_NAME_CARD.getFormattedExpirationDate(
+                            ContextUtils.getApplicationContext()),
                     /* applyDeactivatedStyle= */ false);
     private static final Iban LOCAL_IBAN =
             Iban.createLocal(
@@ -266,21 +273,24 @@ public class TouchToFillPaymentMethodViewTest {
         assertThat(getCreditCardSuggestions().getChildCount(), is(3));
 
         assertThat(getSuggestionMainTextAt(0).getText(), is(VISA_SUGGESTION.getLabel()));
-        assertThat(getSuggestionMinorTextAt(0).getText(), is(VISA_SUGGESTION.getSublabel()));
+        assertThat(getSuggestionMinorTextAt(0).getText(), is(VISA_SUGGESTION.getSecondaryLabel()));
         assertThat(
-                getCreditCardExpirationAt(0).getText(),
+                getSuggestionLabelAt(0).getText(),
                 is(VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext())));
 
         assertThat(getSuggestionMainTextAt(1).getText(), is(MASTERCARD_SUGGESTION.getLabel()));
-        assertThat(getSuggestionMinorTextAt(1).getText(), is(MASTERCARD_SUGGESTION.getSublabel()));
         assertThat(
-                getCreditCardExpirationAt(1).getText(),
+                getSuggestionMinorTextAt(1).getText(),
+                is(MASTERCARD_SUGGESTION.getSecondaryLabel()));
+        assertThat(
+                getSuggestionLabelAt(1).getText(),
                 is(MASTERCARD.getFormattedExpirationDate(ContextUtils.getApplicationContext())));
 
         assertThat(getSuggestionMainTextAt(2).getText(), is(VIRTUAL_CARD_SUGGESTION.getLabel()));
         assertThat(
-                getSuggestionMinorTextAt(2).getText(), is(VIRTUAL_CARD_SUGGESTION.getSublabel()));
-        assertThat(getCreditCardExpirationAt(2).getText(), is(getVirtualCardLabel()));
+                getSuggestionMinorTextAt(2).getText(),
+                is(VIRTUAL_CARD_SUGGESTION.getSecondaryLabel()));
+        assertThat(getSuggestionLabelAt(2).getText(), is(VIRTUAL_CARD_SUGGESTION.getSublabel()));
     }
 
     @Test
@@ -589,6 +599,39 @@ public class TouchToFillPaymentMethodViewTest {
 
     @Test
     @MediumTest
+    public void testNonAcceptableVirtualCardSuggestion() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            CREDIT_CARD,
+                                            createCardSuggestionModel(
+                                                    VIRTUAL_CARD,
+                                                    NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION,
+                                                    new FillableItemCollectionInfo(1, 1),
+                                                    () -> {})));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        ImageView icon = mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.favicon);
+        assertThat(icon.getAlpha(), is(0.38f));
+        assertThat(getCreditCardSuggestions().getChildAt(0).isEnabled(), is(false));
+        assertThat(
+                getSuggestionMainTextAt(0).getText(),
+                is(NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION.getLabel()));
+        assertThat(
+                getSuggestionMinorTextAt(0).getText(),
+                is(NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION.getSecondaryLabel()));
+        assertThat(
+                getSuggestionLabelAt(0).getText(),
+                is(NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION.getSublabel()));
+    }
+
+    @Test
+    @MediumTest
     @DisabledTest(message = "crbug.com/333128685")
     public void testMainTextTruncatesLongCardNameWithLastFourDigitsAlwaysShown() {
         runOnUiThreadBlocking(
@@ -614,7 +657,7 @@ public class TouchToFillPaymentMethodViewTest {
                 mainText.getLayout().getEllipsisCount(mainText.getLayout().getLineCount() - 1) > 0);
         assertThat(
                 minorText.getLayout().getText().toString(),
-                is(LONG_CARD_NAME_CARD_SUGGESTION.getSublabel()));
+                is(LONG_CARD_NAME_CARD_SUGGESTION.getSecondaryLabel()));
     }
 
     @Test
@@ -724,30 +767,6 @@ public class TouchToFillPaymentMethodViewTest {
         assertThat(ibanNickname.getLayout().getText().toString(), is(LOCAL_IBAN.getNickname()));
     }
 
-    @Test
-    @MediumTest
-    public void testNonAcceptableVirtualCardSuggestion() {
-        runOnUiThreadBlocking(
-                () -> {
-                    mTouchToFillPaymentMethodModel
-                            .get(SHEET_ITEMS)
-                            .add(
-                                    new ListItem(
-                                            CREDIT_CARD,
-                                            createCardSuggestionModel(
-                                                    VIRTUAL_CARD,
-                                                    NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION,
-                                                    new FillableItemCollectionInfo(1, 1),
-                                                    () -> {})));
-                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
-                });
-        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-
-        ImageView icon = mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.favicon);
-        assertThat(icon.getAlpha(), is(0.38f));
-        assertThat(getCreditCardSuggestions().getChildAt(0).isEnabled(), is(false));
-    }
-
     private RecyclerView getCreditCardSuggestions() {
         return mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.sheet_item_list);
     }
@@ -760,7 +779,7 @@ public class TouchToFillPaymentMethodViewTest {
         return getCreditCardSuggestions().getChildAt(index).findViewById(R.id.minor_text);
     }
 
-    private TextView getCreditCardExpirationAt(int index) {
+    private TextView getSuggestionLabelAt(int index) {
         return getCreditCardSuggestions().getChildAt(index).findViewById(R.id.description_line_2);
     }
 
@@ -780,7 +799,7 @@ public class TouchToFillPaymentMethodViewTest {
             AutofillSuggestion suggestion,
             FillableItemCollectionInfo collectionInfo,
             Runnable actionCallback) {
-        PropertyModel.Builder creditCardModelBuilder =
+        PropertyModel.Builder creditCardSuggestionModelBuilder =
                 new PropertyModel.Builder(
                                 TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
                                         .NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS)
@@ -791,6 +810,10 @@ public class TouchToFillPaymentMethodViewTest {
                         .with(
                                 TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
                                         .MINOR_TEXT,
+                                suggestion.getSecondaryLabel())
+                        .with(
+                                TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
+                                        .FIRST_LINE_LABEL,
                                 suggestion.getSublabel())
                         .with(
                                 TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
@@ -806,22 +829,11 @@ public class TouchToFillPaymentMethodViewTest {
                                 suggestion.applyDeactivatedStyle());
         if (!card.getBasicCardIssuerNetwork()
                 .equals(card.getCardNameForAutofillDisplay().toLowerCase())) {
-            creditCardModelBuilder.with(
+            creditCardSuggestionModelBuilder.with(
                     TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NETWORK_NAME,
                     card.getBasicCardIssuerNetwork());
         }
-        if (card.getIsVirtual()) {
-            creditCardModelBuilder.with(
-                    TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
-                            .VIRTUAL_CARD_LABEL,
-                    getVirtualCardLabel());
-        } else {
-            creditCardModelBuilder.with(
-                    TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
-                            .CARD_EXPIRATION,
-                    card.getFormattedExpirationDate(ContextUtils.getApplicationContext()));
-        }
-        return creditCardModelBuilder.build();
+        return creditCardSuggestionModelBuilder.build();
     }
 
     private static PropertyModel createIbanModel(Iban iban) {
@@ -843,11 +855,6 @@ public class TouchToFillPaymentMethodViewTest {
                                 TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION,
                                 actionCallback);
         return ibanModelBuilder.build();
-    }
-
-    private static String getVirtualCardLabel() {
-        return ContextUtils.getApplicationContext()
-                .getString(R.string.autofill_virtual_card_number_switch_label);
     }
 
     private static <T> T waitForEvent(T mock) {

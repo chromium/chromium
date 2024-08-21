@@ -1153,6 +1153,18 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
     if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
       suggestion.apply_deactivated_style = !IsCardSuggestionAcceptable(
           credit_card, client, /*is_manual_fallback= */ false);
+      suggestion.labels.push_back(std::vector<Suggestion::Text>{
+          Suggestion::Text(l10n_util::GetStringUTF16(
+              suggestion.apply_deactivated_style
+                  ? IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE
+                  : IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE))});
+    } else {
+      suggestion.labels.push_back(
+          std::vector<Suggestion::Text>{Suggestion::Text(
+              credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+                                  client.GetPersonalDataManager()
+                                      ->payments_data_manager()
+                                      .app_locale()))});
     }
     suggestions.push_back(suggestion);
   }

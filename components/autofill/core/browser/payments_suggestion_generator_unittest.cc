@@ -2773,4 +2773,34 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   EXPECT_EQ(suggestions[1].apply_deactivated_style, false);
 }
 
+TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
+       GetCreditCardSuggestionsForTouchToFill_Labels) {
+  CreditCard virtual_card = test::GetVirtualCard();
+  CreditCard server_card = CreateServerCard();
+  std::vector<CreditCard> cards = {virtual_card, server_card};
+  base::span<const CreditCard> credit_cards_span(cards);
+
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      credit_cards_span, *autofill_client());
+
+  ASSERT_EQ(suggestions.size(), 2U);
+  // Virtual card displays `Virtual card` label. If the merchant has opted out
+  // of accepting virtual cards, it displays `Merchant doesn't accept this
+  // virtual card` label.
+  if (is_merchant_opted_out()) {
+    EXPECT_THAT(
+        suggestions[0],
+        EqualLabels({{l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE)}}));
+  } else {
+    EXPECT_THAT(suggestions[0],
+                EqualLabels({{l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE)}}));
+  }
+  // Server card displays the expiration date in MM/YY format.
+  EXPECT_THAT(suggestions[1],
+              EqualLabels({{server_card.GetInfo(
+                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale())}}));
+}
+
 }  // namespace autofill

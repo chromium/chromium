@@ -21,7 +21,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -296,7 +295,7 @@ class TouchToFillPaymentMethodMediator {
                         : new GURL("");
         TouchToFillPaymentMethodProperties.CardImageMetaData cardImageMetaData =
                 new TouchToFillPaymentMethodProperties.CardImageMetaData(drawableId, artUrl);
-        PropertyModel.Builder creditCardModelBuilder =
+        PropertyModel.Builder creditCardSuggestionModelBuilder =
                 new PropertyModel.Builder(
                                 TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
                                         .NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS)
@@ -316,6 +315,14 @@ class TouchToFillPaymentMethodMediator {
                         .with(
                                 TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
                                         .MINOR_TEXT,
+                                suggestion.getSecondaryLabel())
+                        .with(
+                                // For virtual cards, show the "Virtual card" label on the second
+                                // line, and for non-virtual cards, show the expiration date.
+                                // If the merchant has opted-out for the virtual card, on the second
+                                // line we convey that merchant does not accept this virtual card.
+                                TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
+                                        .FIRST_LINE_LABEL,
                                 suggestion.getSublabel())
                         .with(ON_CREDIT_CARD_CLICK_ACTION, () -> this.onSelectedCreditCard(card))
                         .with(ITEM_COLLECTION_INFO, itemCollectionInfo)
@@ -328,32 +335,12 @@ class TouchToFillPaymentMethodMediator {
         // of the card will be the network name and it will be announced.
         if (!card.getBasicCardIssuerNetwork()
                 .equals(card.getCardNameForAutofillDisplay().toLowerCase(Locale.getDefault()))) {
-            creditCardModelBuilder.with(
+            creditCardSuggestionModelBuilder.with(
                     TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NETWORK_NAME,
                     card.getBasicCardIssuerNetwork());
         }
 
-        // For virtual cards, show the "Virtual card" label on the second line, and for non-virtual
-        // cards, show the expiration date.
-        if (card.getIsVirtual()) {
-            // If the merchant has opted-out for the virtual card, on the second line we convey
-            // that merchant does not accept this virtual card.
-            @StringRes
-            int virtualCardLabel =
-                    suggestion.applyDeactivatedStyle()
-                            ? R.string.autofill_virtual_card_disabled_suggestion_option_value
-                            : R.string.autofill_virtual_card_number_switch_label;
-            creditCardModelBuilder.with(
-                    TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
-                            .VIRTUAL_CARD_LABEL,
-                    mContext.getString(virtualCardLabel));
-        } else {
-            creditCardModelBuilder.with(
-                    TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
-                            .CARD_EXPIRATION,
-                    card.getFormattedExpirationDate(mContext));
-        }
-        return creditCardModelBuilder.build();
+        return creditCardSuggestionModelBuilder.build();
     }
 
     private PropertyModel createIbanModel(Iban iban) {
