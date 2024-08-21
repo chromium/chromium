@@ -12,18 +12,6 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
-static_library("url_constants") {
-  sources = [ "url_constants.h" ]
-
-  if (is_chrome_branded && is_official_build) {
-    sources += [ "internal/url_constants.cc" ]
-  } else {
-    sources += [ "url_constants.cc" ]
-  }
-
-  deps = [ "//build:branding_buildflags" ]
-}
-
 source_set("lib") {
   visibility = [ ":*" ]
 
@@ -33,8 +21,8 @@ source_set("lib") {
   ]
 
   deps = [
-    ":url_constants",
     "//base",
+    "//build:branding_buildflags",
   ]
 }
 
