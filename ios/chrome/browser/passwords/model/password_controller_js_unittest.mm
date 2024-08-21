@@ -855,8 +855,8 @@ TEST_F(PasswordControllerJsTest,
   ASSERT_TRUE(SetUpUniqueIDs());
 
   uint32_t formIdentifier = 1;
-  uint32_t const newPasswordIdentifier = 3;
-  uint32_t const confirmPasswordIdentifier = 4;
+  uint32_t const newPasswordIdentifier = 4;
+  uint32_t const confirmPasswordIdentifier = 5;
   EXPECT_NSEQ(
       @NO, ExecuteJavaScript([NSString
                stringWithFormat:

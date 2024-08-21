@@ -210,6 +210,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:util",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test:javascript_test",

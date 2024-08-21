@@ -149,9 +149,7 @@ function formActivity(evt: Event): void {
       target.tagName === 'FORM' ? target : (target as HTMLFormElement)['form'];
   const field = target.tagName === 'FORM' ? null : target;
 
-  gCrWeb.fill.setUniqueIDIfNeeded(form);
   const formRendererID = gCrWeb.fill.getUniqueID(form);
-  gCrWeb.fill.setUniqueIDIfNeeded(field);
   const fieldRendererID = gCrWeb.fill.getUniqueID(field);
 
   const fieldType = 'type' in target ? target.type : '';

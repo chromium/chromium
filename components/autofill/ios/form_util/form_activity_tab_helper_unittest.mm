@@ -7,9 +7,11 @@
 #import <optional>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/form_activity_observer.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
@@ -45,7 +47,8 @@ class FormActivityTabHelperTest : public AutofillTestWithWebState {
         static_cast<web::FakeWebClient*>(GetWebClient());
     web_client->SetJavaScriptFeatures(
         {autofill::FormUtilJavaScriptFeature::GetInstance(),
-         autofill::FormHandlersJavaScriptFeature::GetInstance()});
+         autofill::FormHandlersJavaScriptFeature::GetInstance(),
+         autofill::AutofillJavaScriptFeature::GetInstance()});
   }
 
   void SetUp() override {
@@ -312,6 +315,12 @@ class FormMutationTest
     autofill::FormUtilJavaScriptFeature::GetInstance()
         ->SetAutofillXHRSubmissionDetection(main_frame,
                                             IsXHRSubmissionDetectionEnabled());
+    // Force fetching forms to set the elements renderer IDs.
+    // Element IDs are set on demand, the first time they are queried for an
+    // element. Setting them here make the tests easier to maintain because the
+    // elements in a DOM will get the ID assigned in the order they appear in
+    // the document.
+    ASSERT_TRUE(SetUpUniqueIDs());
   }
 
   /**
@@ -353,20 +362,31 @@ class FormMutationTest
     return info->form_removal_params;
   }
 
-  // Sets a unique ID for the specified web element if it doesn't already have
-  // one.
-  void SetElementUniqueID(NSString* element_id) {
-    ExecuteJavaScript([NSString
-        stringWithFormat:@"var element = document.getElementById('%@');"
-                         @"__gCrWeb.fill.setUniqueIDIfNeeded(element);",
-                         element_id]);
-  }
-
   // Helper functions to access parameters:
   bool IsBatchingAllowed() const { return std::get<0>(GetParam()); }
 
   bool IsXHRSubmissionDetectionEnabled() const {
     return std::get<1>(GetParam());
+  }
+
+  // Forces fetching forms in the main frame which sets renderer IDs in the
+  // relevant forms and fields. IDs are set in the order the elements appear in
+  // the DOM tree.
+  bool SetUpUniqueIDs() {
+    WebFrame* main_frame = WaitForMainFrame();
+    if (!main_frame) {
+      return false;
+    }
+
+    __block bool finished = false;
+    autofill::AutofillJavaScriptFeature::GetInstance()->FetchForms(
+        main_frame, base::BindOnce(^(NSString* result) {
+          finished = true;
+        }));
+
+    return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+      return finished;
+    });
   }
 };
 
@@ -381,7 +401,6 @@ TEST_P(FormMutationTest, PasswordFormRemovalRegistered) {
 
   ASSERT_FALSE(observer_->form_removal_info());
 
-  SetElementUniqueID(@"form1");
   std::optional<autofill::FormRemovalParams> form_removal_params =
       RemoveElement(/*element_id=*/@"form1");
   ASSERT_TRUE(form_removal_params);
@@ -426,10 +445,6 @@ TEST_P(FormMutationTest, RemoveNonPasswordForm) {
                            "<input type='text'>"
                            "</form>");
 
-  // Set form unique ID before removal so the ID is reported in the form removal
-  // message sent to the browser.
-  SetElementUniqueID(/*element_id=*/@"form1");
-
   std::optional<autofill::FormRemovalParams> form_removal_params =
       RemoveElement(/*element_id=*/@"form1");
 
@@ -459,18 +474,14 @@ TEST_P(FormMutationTest, RemoveMultipleForms) {
                            "</form>"
                            "</div>");
 
-  SetElementUniqueID(/*element_id=*/@"form1");
-  SetElementUniqueID(/*element_id=*/@"form2");
-  SetElementUniqueID(/*element_id=*/@"form3");
-
   std::optional<autofill::FormRemovalParams> form_removal_params =
       RemoveElement(/*element_id=*/@"div");
 
   ASSERT_TRUE(form_removal_params);
 
   const FormRendererId form1_id = FormRendererId(1);
-  const FormRendererId form2_id = FormRendererId(2);
-  const FormRendererId form3_id = FormRendererId(3);
+  const FormRendererId form2_id = FormRendererId(3);
+  const FormRendererId form3_id = FormRendererId(5);
 
   if (IsXHRSubmissionDetectionEnabled()) {
     EXPECT_THAT(form_removal_params.value().removed_forms,
@@ -495,7 +506,6 @@ TEST_P(FormMutationTest, RemoveFormlessPasswordFields) {
   web::WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
 
-  SetElementUniqueID(@"pw");
   std::optional<autofill::FormRemovalParams> form_removal_params =
       RemoveElement(/*element_id=*/@"pw");
 
@@ -551,22 +561,16 @@ TEST_P(FormMutationTest, RemoveMultipleFormsAndFormlessFields) {
                            "<input id='text' type='text'/>"
                            "</div>");
 
-  SetElementUniqueID(/*element_id=*/@"form1");
-  SetElementUniqueID(/*element_id=*/@"form2");
-  SetElementUniqueID(/*element_id=*/@"form3");
-  SetElementUniqueID(/*element_id=*/@"password");
-  SetElementUniqueID(/*element_id=*/@"text");
-
   std::optional<autofill::FormRemovalParams> form_removal_params =
       RemoveElement(/*element_id=*/@"div");
 
   ASSERT_TRUE(form_removal_params);
 
   const FormRendererId form1_id = FormRendererId(1);
-  const FormRendererId form2_id = FormRendererId(2);
-  const FormRendererId form3_id = FormRendererId(3);
-  const FieldRendererId password_id = FieldRendererId(4);
-  const FieldRendererId text_id = FieldRendererId(5);
+  const FormRendererId form2_id = FormRendererId(3);
+  const FormRendererId form3_id = FormRendererId(5);
+  const FieldRendererId password_id = FieldRendererId(7);
+  const FieldRendererId text_id = FieldRendererId(8);
 
   if (IsXHRSubmissionDetectionEnabled()) {
     EXPECT_THAT(form_removal_params.value().removed_forms,
@@ -600,7 +604,6 @@ TEST_P(FormMutationTest, RemovedAndAddedFormsRegistered) {
       @"const newForm = document.createElement('form'); "
        "newForm.id = 'form2'; "
        "const oldForm = document.forms[0]; "
-       "__gCrWeb.fill.setUniqueIDIfNeeded(oldForm);"
        "oldForm.parentNode.replaceChild(newForm, oldForm);";
 
   // Replace the form to trigger an added and a removed form mutation event
@@ -679,7 +682,6 @@ TEST_P(FormMutationTest, RemovedAndAddedFormsRegistered_WithDroppedMessages) {
        // notified in the same batch.
        "parentNode.appendChild(document.createElement('form')); "
        "const form1 = document.getElementById('form1'); "
-       "__gCrWeb.fill.setUniqueIDIfNeeded(form1); "
        "form1.remove(); "
        // Form transformations from here should be ignored.
        // Add non-password form and remove it, 2 notifications dropped.
@@ -763,17 +765,6 @@ TEST_P(FormMutationTest, RemoveFormlessFields) {
                            "</select>"
                            "<textarea id='textarea'/>"
                            "</div></body>");
-
-  SetElementUniqueID(/*element_id=*/@"password");
-  SetElementUniqueID(/*element_id=*/@"text");
-  SetElementUniqueID(/*element_id=*/@"email");
-  SetElementUniqueID(/*element_id=*/@"phone");
-  SetElementUniqueID(/*element_id=*/@"url");
-  SetElementUniqueID(/*element_id=*/@"number");
-  SetElementUniqueID(/*element_id=*/@"checkbox");
-  SetElementUniqueID(/*element_id=*/@"radio");
-  SetElementUniqueID(/*element_id=*/@"select");
-  SetElementUniqueID(/*element_id=*/@"textarea");
 
   std::optional<autofill::FormRemovalParams> form_removal_params =
       RemoveElement(/*element_id=*/@"div");
