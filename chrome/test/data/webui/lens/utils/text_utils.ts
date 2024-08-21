@@ -8,13 +8,24 @@ import type {Line, Paragraph, Text, Word} from 'chrome-untrusted://lens/text.moj
 import {WritingDirection} from 'chrome-untrusted://lens/text.mojom-webui.js';
 
 export function createText(paragraphs: Paragraph[]): Text {
-  return {textLayout: {paragraphs: paragraphs}, contentLanguage: null};
+  return {
+    textLayout: {
+      paragraphs: paragraphs,
+    },
+    contentLanguage: null,
+  };
 }
 
 export function createParagraph(
     lines: Line[],
     writingDirection = WritingDirection.kLeftToRight): Paragraph {
-  return {lines, writingDirection, geometry: null, contentLanguage: null};
+  return {
+    lines,
+    translation: null,
+    writingDirection,
+    geometry: null,
+    contentLanguage: null,
+  };
 }
 
 export function createLine(words: Word[]): Line {

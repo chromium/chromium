@@ -408,6 +408,11 @@ class LensOverlayController : public LensSearchboxClient,
       int selection_start_index,
       int selection_end_index);
 
+  // Testing function to issue a full page translate request.
+  void IssueTranslateFullPageRequestForTesting(
+      const std::string& source_language,
+      const std::string& target_language);
+
   // Testing function to issue a searchbox request.
   void IssueSearchBoxRequestForTesting(
       const std::string& search_box_text,

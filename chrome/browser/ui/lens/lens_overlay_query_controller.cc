@@ -261,6 +261,9 @@ void LensOverlayQueryController::OnImageDataReady(
     ref_counted_logs->client_logs().set_paella_id(gen204_id_);
   }
 
+  resized_bitmap_size_ = gfx::Size(image_data.image_metadata().width(),
+                                   image_data.image_metadata().height());
+
   AddSignificantRegions(image_data, std::move(significant_region_boxes_));
   FetchFullImageRequest(request_id_generator_->GetNextRequestId(), image_data,
                         ref_counted_logs->client_logs());
@@ -414,12 +417,12 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          full_image_callback_,
-          lens::CreateObjectsMojomArrayFromServerResponse(server_response),
-          lens::CreateTextMojomFromServerResponse(server_response),
-          /*is_error=*/false));
+      FROM_HERE, base::BindOnce(full_image_callback_,
+                                lens::CreateObjectsMojomArrayFromServerResponse(
+                                    server_response),
+                                lens::CreateTextMojomFromServerResponse(
+                                    server_response, resized_bitmap_size_),
+                                /*is_error=*/false));
 }
 
 void LensOverlayQueryController::SendLatencyGen204IfEnabled(
