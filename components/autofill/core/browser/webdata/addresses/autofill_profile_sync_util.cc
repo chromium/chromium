@@ -166,11 +166,10 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
     specifics->set_address_home_overflow(data_util::TruncateUTF8(
         base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_OVERFLOW))));
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForLandmark)) {
+
     specifics->set_address_home_landmark(data_util::TruncateUTF8(
         base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_LANDMARK))));
-  }
+
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForBetweenStreetsOrLandmark)) {
     specifics->set_address_home_between_streets_or_landmark(
@@ -254,12 +253,10 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
         ConvertProfileToSpecificsVerificationStatus(
             entry.GetVerificationStatus(ADDRESS_HOME_OVERFLOW)));
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForLandmark)) {
     specifics->set_address_home_landmark_status(
         ConvertProfileToSpecificsVerificationStatus(
             entry.GetVerificationStatus(ADDRESS_HOME_LANDMARK)));
-  }
+
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForBetweenStreets)) {
     specifics->set_address_home_between_streets_status(
@@ -507,14 +504,11 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
             specifics.address_home_overflow_and_landmark_status()));
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForLandmark)) {
-    profile->SetRawInfoWithVerificationStatus(
-        ADDRESS_HOME_LANDMARK,
-        base::UTF8ToUTF16(specifics.address_home_landmark()),
-        ConvertSpecificsToProfileVerificationStatus(
-            specifics.address_home_landmark_status()));
-  }
+  profile->SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_LANDMARK,
+      base::UTF8ToUTF16(specifics.address_home_landmark()),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.address_home_landmark_status()));
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForBetweenStreets)) {

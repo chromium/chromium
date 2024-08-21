@@ -927,7 +927,6 @@ class AutofillProfileSyncUtilTest
          features::kAutofillUseINAddressModel,
          features::kAutofillUseITAddressModel,
          features::kAutofillUseMXAddressModel,
-         features::kAutofillEnableSupportForLandmark,
          features::kAutofillEnableSupportForAddressOverflow,
          features::kAutofillEnableSupportForBetweenStreets,
          features::kAutofillEnableSupportForBetweenStreetsOrLandmark,

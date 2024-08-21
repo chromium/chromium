@@ -296,9 +296,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_BETWEEN_STREETS_OR_LANDMARK,
                 "When enabled, Autofill supports between streets or landmark fields."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_LANDMARK,
-                "When enabled, Autofill supports landmark fields."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_PARSING_OF_STREET_LOCATION,
                 "When enabled, Autofill supports parsing fields as street locations."),
         Flag.baseFeature(

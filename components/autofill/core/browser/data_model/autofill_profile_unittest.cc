@@ -1371,7 +1371,6 @@ TEST_F(AutofillProfileTest, Compare_StructuredTypes) {
        features::kAutofillUseINAddressModel,
        features::kAutofillUseITAddressModel,
        features::kAutofillUseMXAddressModel,
-       features::kAutofillEnableSupportForLandmark,
        features::kAutofillEnableSupportForBetweenStreets,
        features::kAutofillEnableSupportForAdminLevel2,
        features::kAutofillEnableSupportForApartmentNumbers,
@@ -1533,8 +1532,7 @@ TEST_F(AutofillProfileTest, SetRawInfoDoesntTrimWhitespace) {
 
 TEST_F(AutofillProfileTest, SetRawInfoWorksForLandmark) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kAutofillEnableSupportForLandmark,
-                                 features::kAutofillUseI18nAddressModel,
+  feature_list.InitWithFeatures({features::kAutofillUseI18nAddressModel,
                                  features::kAutofillUseMXAddressModel},
                                 {});
 

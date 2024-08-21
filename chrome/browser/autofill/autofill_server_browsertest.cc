@@ -120,7 +120,6 @@ class AutofillServerTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         // Enabled.
         {features::test::kAutofillServerCommunication,
-         features::kAutofillEnableSupportForLandmark,
          features::kAutofillEnableSupportForBetweenStreets,
          features::kAutofillEnableSupportForAdminLevel2,
          features::kAutofillEnableSupportForApartmentNumbers,

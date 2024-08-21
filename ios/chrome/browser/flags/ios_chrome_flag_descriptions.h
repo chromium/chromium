@@ -101,11 +101,6 @@ extern const char kAutofillEnableSupportForAdminLevel2Description[];
 extern const char kAutofillEnableSupportForBetweenStreetsName[];
 extern const char kAutofillEnableSupportForBetweenStreetsDescription[];
 
-// Title and description for the flag that controls whether Autofill handles
-// landmark fields.
-extern const char kAutofillEnableSupportForLandmarkName[];
-extern const char kAutofillEnableSupportForLandmarkDescription[];
-
 // Title and description for flag to enable showing card product name (instead
 // of issuer network) in Payments UI.
 extern const char kAutofillEnableCardProductNameName[];

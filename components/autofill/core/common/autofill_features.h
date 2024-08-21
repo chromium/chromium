@@ -61,8 +61,6 @@ BASE_DECLARE_FEATURE(kAutofillEnableSupportForAddressOverflowAndLandmark);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSupportForBetweenStreetsOrLandmark);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableSupportForLandmark);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableParsingOfStreetLocation);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableRationalizationEngineForMX);

@@ -395,11 +395,6 @@ bool AddProfileTypeTokensToTable(sql::Database* db,
       continue;
     }
     if (!base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForLandmark) &&
-        type == ADDRESS_HOME_LANDMARK) {
-      continue;
-    }
-    if (!base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForBetweenStreets) &&
         (type == ADDRESS_HOME_BETWEEN_STREETS ||
          type == ADDRESS_HOME_BETWEEN_STREETS_1 ||

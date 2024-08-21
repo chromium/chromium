@@ -207,10 +207,6 @@ TEST_P(AddressFieldParserTest, ParseDependentLocality) {
 
 // Tests that the landmark is correctly classified.
 TEST_P(AddressFieldParserTest, ParseLandmark) {
-  // TODO(crbug.com/40266693): Remove once launched.
-  base::test::ScopedFeatureList enabled{
-      features::kAutofillEnableSupportForLandmark};
-
   AddTextFormFieldData("landmark", "Landmark", ADDRESS_HOME_LANDMARK);
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("BR"),
                     LanguageCode("pt"));
@@ -370,7 +366,6 @@ TEST_P(AddressFieldParserTest,
   enabled.InitWithFeatures(
       {
           features::kAutofillEnableSupportForAddressOverflow,
-          features::kAutofillEnableSupportForLandmark,
           features::kAutofillEnableSupportForBetweenStreets,
           features::kAutofillEnableSupportForAdminLevel2,
           features::kAutofillUseMXAddressModel,

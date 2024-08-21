@@ -74,7 +74,7 @@ class SubPremiseNode : public AddressComponent {
 };
 
 // Stores the landmark of an address profile.
-class LandmarkNode : public FeatureGuardedAddressComponent {
+class LandmarkNode : public AddressComponent {
  public:
   explicit LandmarkNode(SubcomponentsList children);
   ~LandmarkNode() override;

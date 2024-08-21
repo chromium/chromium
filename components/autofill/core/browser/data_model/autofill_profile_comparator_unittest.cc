@@ -56,8 +56,7 @@ class AutofillProfileComparatorTest : public testing::Test {
 
   AutofillProfileComparatorTest() {
     features_.InitWithFeatures(
-        {features::kAutofillEnableSupportForLandmark,
-         features::kAutofillEnableSupportForBetweenStreets,
+        {features::kAutofillEnableSupportForBetweenStreets,
          features::kAutofillEnableSupportForAdminLevel2},
         {});
   }

@@ -984,11 +984,8 @@ AddressFieldParser::ParseNameAndLabelForLandmark(ParsingContext& context,
                                                  AutofillScanner* scanner) {
   AddressCountryCode country_code(context.client_country.value());
   // TODO(crbug.com/40266693) Remove feature check when launched.
-  if (landmark_ ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForLandmark) ||
-      !i18n_model_definition::IsTypeEnabledForCountry(ADDRESS_HOME_LANDMARK,
-                                                      country_code)) {
+  if (landmark_ || !i18n_model_definition::IsTypeEnabledForCountry(
+                       ADDRESS_HOME_LANDMARK, country_code)) {
     return RESULT_MATCH_NONE;
   }
 

@@ -19,7 +19,6 @@ namespace {
 void InitFeaturesForIN(base::test::ScopedFeatureList& features) {
   features.InitWithFeatures(
       {
-          features::kAutofillEnableSupportForLandmark,
           features::kAutofillEnableSupportForAdminLevel2,
           features::kAutofillUseINAddressModel,
           features::kAutofillStructuredFieldsDisableAddressLines,
@@ -161,11 +160,7 @@ TEST_P(AddressFieldParserTestNG, ParseDependentLocality) {
 // Tests that the landmark is correctly classified.
 TEST_P(AddressFieldParserTestNG, ParseLandmark) {
   // TODO(crbug.com/40266693): Remove once launched.
-  base::test::ScopedFeatureList enabled;
-  enabled.InitWithFeatures({features::kAutofillUseBRAddressModel,
-                            features::kAutofillEnableSupportForLandmark},
-                           {});
-
+  base::test::ScopedFeatureList enabled{features::kAutofillUseBRAddressModel};
   AddTextFormFieldData("landmark", "Landmark", ADDRESS_HOME_LANDMARK);
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("BR"),
                     LanguageCode("pt"));
@@ -304,7 +299,6 @@ TEST_P(AddressFieldParserTestNG,
   enabled.InitWithFeatures(
       {
           features::kAutofillUseMXAddressModel,
-          features::kAutofillEnableSupportForLandmark,
           features::kAutofillEnableSupportForBetweenStreets,
           features::kAutofillEnableSupportForAdminLevel2,
       },

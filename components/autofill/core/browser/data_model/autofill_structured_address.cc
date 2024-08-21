@@ -314,11 +314,9 @@ SortingCodeNode::SortingCodeNode(SubcomponentsList children)
 SortingCodeNode::~SortingCodeNode() = default;
 
 LandmarkNode::LandmarkNode(SubcomponentsList children)
-    : FeatureGuardedAddressComponent(
-          &features::kAutofillEnableSupportForLandmark,
-          ADDRESS_HOME_LANDMARK,
-          std::move(children),
-          MergeMode::kReplaceEmpty | kReplaceSubset) {}
+    : AddressComponent(ADDRESS_HOME_LANDMARK,
+                       std::move(children),
+                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
 
 LandmarkNode::~LandmarkNode() = default;
 

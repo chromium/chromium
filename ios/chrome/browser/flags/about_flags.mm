@@ -1501,11 +1501,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableSupportForBetweenStreets)},
-    {"autofill-enable-landmark",
-     flag_descriptions::kAutofillEnableSupportForLandmarkName,
-     flag_descriptions::kAutofillEnableSupportForLandmarkDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableSupportForLandmark)},
     {"spotlight-never-retain-index",
      flag_descriptions::kSpotlightNeverRetainIndexName,
      flag_descriptions::kSpotlightNeverRetainIndexDescription, flags_ui::kOsIos,

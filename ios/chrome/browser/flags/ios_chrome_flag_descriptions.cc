@@ -123,13 +123,6 @@ const char kAutofillEnableSupportForBetweenStreetsName[] =
 const char kAutofillEnableSupportForBetweenStreetsDescription[] =
     "When enabled, Autofill will parse, save and fill between street "
     "fields in forms.";
-
-const char kAutofillEnableSupportForLandmarkName[] =
-    "Enables parsing and filling of Landmark fields";
-const char kAutofillEnableSupportForLandmarkDescription[] =
-    "When enabled, Autofill will parse, save and fill landmark fields in "
-    "forms.";
-
 const char kAutofillEnableCardProductNameName[] =
     "Enable showing card product name";
 const char kAutofillEnableCardProductNameDescription[] =

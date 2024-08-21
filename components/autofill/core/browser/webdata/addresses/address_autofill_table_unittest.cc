@@ -57,8 +57,7 @@ class AddressAutofillTableProfileTest
   void SetUp() override {
     AddressAutofillTableTest::SetUp();
     features_.InitWithFeatures(
-        {features::kAutofillEnableSupportForLandmark,
-         features::kAutofillEnableSupportForBetweenStreets,
+        {features::kAutofillEnableSupportForBetweenStreets,
          features::kAutofillEnableSupportForAdminLevel2,
          features::kAutofillEnableSupportForAddressOverflow,
          features::kAutofillEnableSupportForAddressOverflowAndLandmark,

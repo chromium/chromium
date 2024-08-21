@@ -231,7 +231,6 @@ class AutofillStructuredAddressAddressComponent : public testing::Test {
          features::kAutofillUseBRAddressModel,
          features::kAutofillUseINAddressModel,
          features::kAutofillUseMXAddressModel,
-         features::kAutofillEnableSupportForLandmark,
          features::kAutofillEnableSupportForBetweenStreets,
          features::kAutofillEnableSupportForAddressOverflow,
          features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
