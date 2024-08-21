@@ -347,7 +347,12 @@ bool IsReadAnythingReadAloudEnabled() {
 
 BASE_FEATURE(kReadAloudAutoVoiceSwitching,
              "ReadAloudAutoVoiceSwitching",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+);
 bool IsReadAloudAutoVoiceSwitchingEnabled() {
   return IsReadAnythingReadAloudEnabled() &&
          base::FeatureList::IsEnabled(::features::kReadAloudAutoVoiceSwitching);
@@ -355,7 +360,12 @@ bool IsReadAloudAutoVoiceSwitchingEnabled() {
 
 BASE_FEATURE(kReadAloudLanguagePackDownloading,
              "ReadAloudLanguagePackDownloading",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+);
 bool IsReadAloudLanguagePackDownloadingEnabled() {
   return IsReadAnythingReadAloudEnabled() &&
          base::FeatureList::IsEnabled(
