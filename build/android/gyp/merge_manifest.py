@@ -39,7 +39,7 @@ def _ProcessMainManifest(manifest_path, min_sdk_version, target_sdk_version,
 
 
 @contextlib.contextmanager
-def _ProcessOtherManifest(manifest_path, target_sdk_version,
+def _ProcessOtherManifest(manifest_path, min_sdk_version, target_sdk_version,
                           seen_package_names):
   """Patches non-main AndroidManifest.xml if necessary."""
   # 1. Ensure targetSdkVersion is set to the expected value to avoid
@@ -51,6 +51,11 @@ def _ProcessOtherManifest(manifest_path, target_sdk_version,
   changed_api = manifest_utils.SetTargetApiIfUnset(manifest, target_sdk_version)
 
   package_name = manifest_utils.GetPackage(manifest)
+  # Ignore minSdkVersion from androidx.pdf library. The client code will ensure
+  # not to call into the library API on older Android versions.
+  if package_name in ('androidx.pdf', 'androidx.pdf.viewer.fragment'):
+    manifest_utils.OverrideMinSdkVersionIfPresent(manifest, min_sdk_version)
+    changed_api = True
   package_count = seen_package_names[package_name]
   seen_package_names[package_name] += 1
   if package_count > 0:
@@ -126,7 +131,8 @@ def main(argv):
         seen_package_names = collections.Counter()
         extras_processed = [
             stack.enter_context(
-                _ProcessOtherManifest(e, args.target_sdk_version,
+                _ProcessOtherManifest(e, args.min_sdk_version,
+                                      args.target_sdk_version,
                                       seen_package_names)) for e in extras
         ]
         cmd += ['--libs', ':'.join(extras_processed)]

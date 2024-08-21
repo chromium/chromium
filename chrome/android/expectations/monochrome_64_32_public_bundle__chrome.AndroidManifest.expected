@@ -11,6 +11,13 @@
   <dist:module dist:onDemand="false">  # DIFF-ANCHOR: 2805007f
     <dist:fusing dist:include="true"/>
   </dist:module>  # DIFF-ANCHOR: 2805007f
+  <queries>  # DIFF-ANCHOR: ac70d2a8
+    <intent>  # DIFF-ANCHOR: dd112d1c
+      <action android:name="android.intent.action.VIEW"/>
+      <category android:name="android.intent.category.BROWSABLE"/>
+      <data android:scheme="https"/>
+    </intent>  # DIFF-ANCHOR: dd112d1c
+  </queries>  # DIFF-ANCHOR: ac70d2a8
   <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
   <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
   <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="35"/>
@@ -846,6 +853,7 @@
         android:exported="false">
     </receiver>  # DIFF-ANCHOR: 2553238b
     <service android:name="androidx.browser.customtabs.PostMessageService"/>
+    <service android:name="androidx.pdf.service.PdfDocumentService" android:isolatedProcess="true"/>
     <service  # DIFF-ANCHOR: 4c2196d9
         android:name="com.google.ipc.invalidation.ticl.android2.channel.GcmRegistrationTaskService"
         android:exported="true"
