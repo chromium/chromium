@@ -245,9 +245,8 @@ class V4Database {
   // Log the difference in time between database updates in a UMA histogram.
   void RecordDatabaseUpdateLatency();
 
-  // Used to verify that certain methods are called on the client-designated SB
-  // sequence (see InitializeOnUIThread()).
-  SEQUENCE_CHECKER(sb_sequence_checker_);
+  // Used to verify that certain methods are called on the UI thread.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   const scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
 
