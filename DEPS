@@ -1067,7 +1067,7 @@ deps = {
     'packages': [
         {
             'package': 'infra/3pp/tools/httpd-php/windows-arm64',
-            'version': 'version:2@httpd2.4.55-php8.2.5.chromium.6.chromium.5',
+            'version': 'version:3@httpd2.4.55-php8.2.5.chromium.6',
         }
     ],
     'dep_type': 'cipd',
