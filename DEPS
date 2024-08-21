@@ -1470,7 +1470,7 @@ deps = {
               'version': 'cfGQ9GV4juNnGZIPzTmaL3ehiZM1hs6UsB5HUA8fT6oC',
           },
       ],
-      'condition': 'checkout_android',
+      'condition': 'checkout_android and non_git_source',
       'dep_type': 'cipd',
   },
 
@@ -1481,7 +1481,7 @@ deps = {
               'version': 'O8Lyta0y6jpvFD1rbPp7trvcM2rdny3ngyhyeYAWXK4C',
           },
       ],
-      'condition': 'checkout_android',
+      'condition': 'checkout_android and non_git_source',
       'dep_type': 'cipd',
   },
 
@@ -1492,7 +1492,7 @@ deps = {
                'version': 'sZ24OFOduSafn8fvR3ajsGS6KP_oS_Tq0Cw3SA8XiD0C',
           },
       ],
-      'condition': 'checkout_android',
+      'condition': 'checkout_android and non_git_source',
       'dep_type': 'cipd',
   },
 
@@ -1503,7 +1503,7 @@ deps = {
                'version': 'YqeN_FF5AQD-nio02hA2KgnBCJfq7qvNBckmETpkmVUC',
           },
       ],
-      'condition': 'checkout_android',
+      'condition': 'checkout_android and non_git_source',
       'dep_type': 'cipd',
   },
 
@@ -1514,7 +1514,7 @@ deps = {
                'version': '7EcHxlEXEaLRWEyHIAxf0ouPjkmN1Od6jkutuo0sfBIC',
           },
       ],
-      'condition': 'checkout_android',
+      'condition': 'checkout_android and non_git_source',
       'dep_type': 'cipd',
   },
 
@@ -1525,7 +1525,7 @@ deps = {
                'version': 'MykJKlnPCySreZNaZ8U98JUYYanLiIOaBxpSNKqQodkC',
           },
       ],
-      'condition': 'checkout_android',
+      'condition': 'checkout_android and non_git_source',
       'dep_type': 'cipd',
   },
 
@@ -1536,7 +1536,7 @@ deps = {
                'version': '70I-qA6r12xulCU-J0jGGcYtD9ywe1G8qPVH6o4MSBQC',
           },
       ],
-      'condition': 'checkout_android',
+      'condition': 'checkout_android and non_git_source',
       'dep_type': 'cipd',
   },
 
