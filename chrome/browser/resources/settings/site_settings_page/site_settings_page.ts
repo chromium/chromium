@@ -60,15 +60,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
           loadTimeData.getBoolean('enableSafeBrowsingSubresourceFilter'),
     },
     {
-      route: routes.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE,
-      id: Id.AUTO_PICTURE_IN_PICTURE,
-      label: 'siteSettingsAutoPictureInPicture',
-      icon: 'settings:picture-in-picture',
-      enabledLabel: 'siteSettingsAutoPictureInPictureAllowed',
-      disabledLabel: 'siteSettingsAutoPictureInPictureBlocked',
-      shouldShow: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),
-    },
-    {
       route: routes.SITE_SETTINGS_AUTO_VERIFY,
       id: Id.ANTI_ABUSE,
       label: 'siteSettingsAntiAbuse',
@@ -93,6 +84,23 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'cr:file-download',
       enabledLabel: 'siteSettingsAutomaticDownloadsAllowed',
       disabledLabel: 'siteSettingsAutomaticDownloadsBlocked',
+    },
+    {
+      route: routes.SITE_SETTINGS_AUTOMATIC_FULLSCREEN,
+      id: Id.AUTOMATIC_FULLSCREEN,
+      label: 'siteSettingsAutomaticFullscreen',
+      icon: 'cr:fullscreen',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting'),
+    },
+    {
+      route: routes.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE,
+      id: Id.AUTO_PICTURE_IN_PICTURE,
+      label: 'siteSettingsAutoPictureInPicture',
+      icon: 'settings:picture-in-picture',
+      enabledLabel: 'siteSettingsAutoPictureInPictureAllowed',
+      disabledLabel: 'siteSettingsAutoPictureInPictureBlocked',
+      shouldShow: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),
     },
     {
       route: routes.SITE_SETTINGS_BACKGROUND_SYNC,
@@ -149,22 +157,30 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsClipboardBlocked',
     },
     {
+      route: routes.SITE_SETTINGS_FEDERATED_IDENTITY_API,
+      id: Id.FEDERATED_IDENTITY_API,
+      label: 'siteSettingsFederatedIdentityApi',
+      icon: 'privacy:account-circle',
+      enabledLabel: 'siteSettingsFederatedIdentityApiAllowed',
+      disabledLabel: 'siteSettingsFederatedIdentityApiBlocked',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableFederatedIdentityApiContentSetting'),
+    },
+    {
+      route: routes.SITE_SETTINGS_FILE_SYSTEM_WRITE,
+      id: Id.FILE_SYSTEM_WRITE,
+      label: 'siteSettingsFileSystemWrite',
+      icon: 'privacy:file-save',
+      enabledLabel: 'siteSettingsFileSystemWriteAllowed',
+      disabledLabel: 'siteSettingsFileSystemWriteBlocked',
+    },
+    {
       route: routes.SITE_SETTINGS_LOCATION,
       id: Id.GEOLOCATION,
       label: 'siteSettingsLocation',
       icon: 'settings:location-on',
       enabledLabel: 'siteSettingsLocationAllowed',
       disabledLabel: 'siteSettingsLocationBlocked',
-    },
-    {
-      route: routes.SITE_SETTINGS_WEB_PRINTING,
-      id: Id.WEB_PRINTING,
-      label: 'siteSettingsWebPrinting',
-      icon: 'settings:printer',
-      enabledLabel: 'siteSettingsWebPrintingAsk',
-      disabledLabel: 'siteSettingsWebPrintingBlock',
-      shouldShow: () =>
-          loadTimeData.getBoolean('enableWebPrintingContentSetting'),
     },
     {
       route: routes.SITE_SETTINGS_HID_DEVICES,
@@ -207,11 +223,22 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsJavascriptJitBlocked',
     },
     {
-      route: routes.SITE_SETTINGS_OFFER_WRITING_HELP,
-      id: Id.OFFER_WRITING_HELP,
-      label: 'siteSettingsOfferWritingHelp',
-      icon: 'settings:compose',
-      shouldShow: () => loadTimeData.getBoolean('enableComposeProactiveNudge'),
+      route: routes.SITE_SETTINGS_KEYBOARD_LOCK,
+      id: Id.KEYBOARD_LOCK,
+      label: 'siteSettingsKeyboardLock',
+      icon: 'settings20:keyboard-lock',
+      enabledLabel: 'siteSettingsKeyboardLockAllowed',
+      disabledLabel: 'siteSettingsKeyboardLockBlocked',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
+    },
+    {
+      route: routes.SITE_SETTINGS_LOCAL_FONTS,
+      id: Id.LOCAL_FONTS,
+      label: 'fonts',
+      icon: 'privacy:font-download',
+      enabledLabel: 'siteSettingsFontsAllowed',
+      disabledLabel: 'siteSettingsFontsBlocked',
     },
     {
       route: routes.SITE_SETTINGS_MICROPHONE,
@@ -237,54 +264,17 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsInsecureContentBlock',
     },
     {
-      route: routes.SITE_SETTINGS_FEDERATED_IDENTITY_API,
-      id: Id.FEDERATED_IDENTITY_API,
-      label: 'siteSettingsFederatedIdentityApi',
-      icon: 'privacy:account-circle',
-      enabledLabel: 'siteSettingsFederatedIdentityApiAllowed',
-      disabledLabel: 'siteSettingsFederatedIdentityApiBlocked',
-      shouldShow: () =>
-          loadTimeData.getBoolean('enableFederatedIdentityApiContentSetting'),
-    },
-    {
-      route: routes.SITE_SETTINGS_FILE_SYSTEM_WRITE,
-      id: Id.FILE_SYSTEM_WRITE,
-      label: 'siteSettingsFileSystemWrite',
-      icon: 'privacy:file-save',
-      enabledLabel: 'siteSettingsFileSystemWriteAllowed',
-      disabledLabel: 'siteSettingsFileSystemWriteBlocked',
-    },
-    {
-      route: routes.SITE_SETTINGS_AUTOMATIC_FULLSCREEN,
-      id: Id.AUTOMATIC_FULLSCREEN,
-      label: 'siteSettingsAutomaticFullscreen',
-      icon: 'cr:fullscreen',
-      shouldShow: () =>
-          loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting'),
-    },
-    {
-      route: routes.SITE_SETTINGS_KEYBOARD_LOCK,
-      id: Id.KEYBOARD_LOCK,
-      label: 'siteSettingsKeyboardLock',
-      icon: 'settings20:keyboard-lock',
-      enabledLabel: 'siteSettingsKeyboardLockAllowed',
-      disabledLabel: 'siteSettingsKeyboardLockBlocked',
-      shouldShow: () =>
-          loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
-    },
-    {
-      route: routes.SITE_SETTINGS_LOCAL_FONTS,
-      id: Id.LOCAL_FONTS,
-      label: 'fonts',
-      icon: 'privacy:font-download',
-      enabledLabel: 'siteSettingsFontsAllowed',
-      disabledLabel: 'siteSettingsFontsBlocked',
-    },
-    {
       route: routes.SITE_SETTINGS_NOTIFICATIONS,
       id: Id.NOTIFICATIONS,
       label: 'siteSettingsNotifications',
       icon: 'privacy:notifications',
+    },
+    {
+      route: routes.SITE_SETTINGS_OFFER_WRITING_HELP,
+      id: Id.OFFER_WRITING_HELP,
+      label: 'siteSettingsOfferWritingHelp',
+      icon: 'settings:compose',
+      shouldShow: () => loadTimeData.getBoolean('enableComposeProactiveNudge'),
     },
     {
       route: routes.SITE_SETTINGS_PAYMENT_HANDLER,
@@ -303,6 +293,14 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'privacy:drive-pdf',
       enabledLabel: 'siteSettingsPdfsAllowed',
       disabledLabel: 'siteSettingsPdfsBlocked',
+    },
+    {
+      route: routes.PERFORMANCE,
+      id: Id.PERFORMANCE,
+      label: 'siteSettingsPerformance',
+      icon: 'settings:performance',
+      enabledLabel: 'siteSettingsPerformanceSublabel',
+      disabledLabel: 'siteSettingsPerformanceSublabel',
     },
     {
       route: routes.SITE_SETTINGS_POINTER_LOCK,
@@ -394,6 +392,16 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsVrBlocked',
     },
     {
+      route: routes.SITE_SETTINGS_WEB_PRINTING,
+      id: Id.WEB_PRINTING,
+      label: 'siteSettingsWebPrinting',
+      icon: 'settings:printer',
+      enabledLabel: 'siteSettingsWebPrintingAsk',
+      disabledLabel: 'siteSettingsWebPrintingBlock',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableWebPrintingContentSetting'),
+    },
+    {
       route: routes.SITE_SETTINGS_WINDOW_MANAGEMENT,
       id: Id.WINDOW_MANAGEMENT,
       label: 'siteSettingsWindowManagement',
@@ -406,14 +414,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.ZOOM_LEVELS,
       label: 'siteSettingsZoomLevels',
       icon: 'privacy:zoom-in',
-    },
-    {
-      route: routes.PERFORMANCE,
-      id: Id.PERFORMANCE,
-      label: 'siteSettingsPerformance',
-      icon: 'settings:performance',
-      enabledLabel: 'siteSettingsPerformanceSublabel',
-      disabledLabel: 'siteSettingsPerformanceSublabel',
     },
   ];
   if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
