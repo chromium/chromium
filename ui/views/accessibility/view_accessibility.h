@@ -240,6 +240,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // will work.
   void SetName(View& naming_view);
 
+  // Removes kName and KNameFrom attributes from accessibility cache.
+  void RemoveName();
+
   void SetIsEditable(bool editable);
 
   void SetBounds(const gfx::RectF& bounds);

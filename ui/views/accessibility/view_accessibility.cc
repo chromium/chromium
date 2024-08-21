@@ -504,6 +504,11 @@ void ViewAccessibility::SetName(View& naming_view) {
                             {naming_view.GetViewAccessibility().GetUniqueId()});
 }
 
+void ViewAccessibility::RemoveName() {
+  data_.RemoveStringAttribute(ax::mojom::StringAttribute::kName);
+  data_.RemoveIntAttribute(ax::mojom::IntAttribute::kNameFrom);
+}
+
 std::u16string ViewAccessibility::GetCachedName() const {
   return data_.GetString16Attribute(ax::mojom::StringAttribute::kName);
 }
