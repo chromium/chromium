@@ -1575,17 +1575,10 @@ void BrowserAutofillManager::
         *this, form.global_id(), field.global_id(), suggestions_context,
         password_form_type, suggestions[0].type);
 
-    const bool has_sfff_suggestions =
-        base::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
-          return IsSingleFieldFormFillerFillingProduct(
-              GetFillingProductFromSuggestionType(suggestion.type));
-        });
-
-    if (!has_sfff_suggestions) {
-      suggestions.emplace_back(SuggestionType::kSeparator);
-      suggestions.push_back(
-          client().GetPlusAddressDelegate()->GetManagePlusAddressSuggestion());
-    }
+    // Include ManagePlusAddressSuggestion item.
+    suggestions.emplace_back(SuggestionType::kSeparator);
+    suggestions.push_back(
+        client().GetPlusAddressDelegate()->GetManagePlusAddressSuggestion());
   }
 
   // Show the list of `suggestions`. These may include single field form field

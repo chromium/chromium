@@ -8285,7 +8285,9 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
       external_delegate()->suggestions(),
       ElementsAre(EqualsSuggestion(SuggestionType::kFillExistingPlusAddress),
                   EqualsSuggestion(SuggestionType::kAutocompleteEntry),
-                  EqualsSuggestion(SuggestionType::kAutocompleteEntry)));
+                  EqualsSuggestion(SuggestionType::kAutocompleteEntry),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManagePlusAddress)));
 }
 
 // Tests that a manage plus address suggestion is not added if there are no plus
