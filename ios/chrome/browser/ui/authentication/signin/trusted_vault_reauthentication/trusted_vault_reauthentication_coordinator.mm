@@ -135,6 +135,9 @@ using l10n_util::GetNSStringF;
         [weakSelf trustedVaultDialogDoneWithSuccess:success error:error];
       };
   std::string securityDomainPath = GetSecurityDomainPath(_securityDomainID);
+  if (!base::FeatureList::IsEnabled(kTrustedVaultSecurityDomainKillSwitch)) {
+    securityDomainPath = trusted_vault::kSyncSecurityDomainName;
+  }
   switch (self.intent) {
     case SigninTrustedVaultDialogIntentFetchKeys:
       _dialogCancelCallback =
