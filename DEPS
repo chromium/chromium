@@ -1939,7 +1939,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/icu4j',
-              'version': 'e87e5bed2b4935913ee26a3ebd0b723ee2344354',
+              'version': '8dV7WRVX0tTaNNqkLEnCA_dMofr2MJXFK400E7gOFygC',
           },
       ],
       'condition': 'checkout_android',
