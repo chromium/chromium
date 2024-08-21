@@ -100,14 +100,25 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   //
   // LINT.IfChange(WaitingForHeadersFinishedReason)
   enum class WaitingForHeadersFinishedReason {
-    kNoVarySearchHeaderReceived = 0,
+    // This is split into kNoVarySearchHeaderReceivedAndMatched,
+    // kNoVarySearchHeaderReceivedButNotMatched, and
+    // kNoVarySearchHeaderReceivedButDefaultValue.
+    // kNoVarySearchHeaderReceived = 0,
+
     kNoVarySearchHeaderNotReceived = 1,
     kNoVarySearchHeaderParseFailed = 2,
     kHostDestroyed = 3,
     kTimeoutElapsed = 4,
     kMaybeNavigationCancelled = 5,
 
-    kMaxValue = kMaybeNavigationCancelled,
+    // Success case. The No-Vary-Search header is received and matches
+    // navigation.
+    kNoVarySearchHeaderReceivedAndMatched = 6,
+
+    kNoVarySearchHeaderReceivedButNotMatched = 7,
+    kNoVarySearchHeaderReceivedButDefaultValue = 8,
+
+    kMaxValue = kNoVarySearchHeaderReceivedButDefaultValue,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:PrerenderWaitingForHeadersFinishedReason)
 

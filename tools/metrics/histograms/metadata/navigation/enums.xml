@@ -1748,12 +1748,15 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(PrerenderWaitingForHeadersFinishedReason) -->
 
 <enum name="PrerenderWaitingForHeadersFinishedReason">
-  <int value="0" label="NoVarySearchHeaderReceived"/>
+  <int value="0" label="NoVarySearchHeaderReceived (deprecated)"/>
   <int value="1" label="NoVarySearchHeaderNotReceived"/>
   <int value="2" label="NoVarySearchHeaderParseFailed"/>
   <int value="3" label="HostDestroyed"/>
   <int value="4" label="TimeoutElapsed"/>
   <int value="5" label="MaybeNavigationCancelled"/>
+  <int value="6" label="NoVarySearchHeaderReceivedAndMatched"/>
+  <int value="7" label="NoVarySearchHeaderReceivedButNotMatched"/>
+  <int value="8" label="NoVarySearchHeaderReceivedButDefaultValue"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/preloading/prerender/prerender_host.h:WaitingForHeadersFinishedReason) -->

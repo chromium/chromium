@@ -1042,11 +1042,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(observer.wait_for_headers_start_reason().value(),
             StartedReason::kWithTimeout);
   EXPECT_EQ(observer.wait_for_headers_finish_reason().value(),
-            FinishedReason::kNoVarySearchHeaderReceived);
+            FinishedReason::kNoVarySearchHeaderReceivedAndMatched);
 
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.WaitingForHeadersFinishedReason.SpeculationRule",
-      FinishedReason::kNoVarySearchHeaderReceived, 1);
+      FinishedReason::kNoVarySearchHeaderReceivedAndMatched, 1);
 }
 
 // Test that the timer is enabled and cleared appropriately when navigating to
@@ -1260,14 +1260,23 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
 // Test that a No-Vary-Search header is default value.
 IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
                        NoVarySearchHeaderWithDefaultValue) {
-  TestNoVarySearchHeaderFailure("No-Vary-Search: params=()",
-                                FinishedReason::kNoVarySearchHeaderReceived);
+  TestNoVarySearchHeaderFailure(
+      "No-Vary-Search: params=()",
+      FinishedReason::kNoVarySearchHeaderReceivedButDefaultValue);
 }
 
 // Test that a No-Vary-Search header is not served.
 IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest, NoNoVarySearchHeader) {
   TestNoVarySearchHeaderFailure("",
                                 FinishedReason::kNoVarySearchHeaderNotReceived);
+}
+
+// Test that a No-Vary-Search header is received but does not match.
+IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest,
+                       UnmatchedNoVarySearchHeader) {
+  TestNoVarySearchHeaderFailure(
+      "No-Vary-Search: params=(\"different\")",
+      FinishedReason::kNoVarySearchHeaderReceivedButNotMatched);
 }
 
 // Test that activation is successful when navigating to an inexact URL

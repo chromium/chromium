@@ -194,8 +194,10 @@ void PrerenderNoVarySearchHintCommitDeferringCondition::OnHeadersReceived() {
   // associated prerender's headers.
   if (waiting_on_headers_) {
     waiting_on_headers_ = false;
+
+    // Determine the finished reason.
     using FinishedReason = PrerenderHost::WaitingForHeadersFinishedReason;
-    auto reason = FinishedReason::kNoVarySearchHeaderNotReceived;
+    std::optional<FinishedReason> reason;
     if (prerender_host.no_vary_search_parse_error().has_value()) {
       using ParseError = network::mojom::NoVarySearchParseError;
       switch (prerender_host.no_vary_search_parse_error().value()) {
@@ -205,8 +207,8 @@ void PrerenderNoVarySearchHintCommitDeferringCondition::OnHeadersReceived() {
           break;
         case ParseError::kDefaultValue:
           // kDefaultValue indicates parsing is correct but led to default
-          // value. Treat this case as header received.
-          reason = FinishedReason::kNoVarySearchHeaderReceived;
+          // value.
+          reason = FinishedReason::kNoVarySearchHeaderReceivedButDefaultValue;
           break;
         case ParseError::kNotDictionary:
         case ParseError::kUnknownDictionaryKey:
@@ -218,9 +220,16 @@ void PrerenderNoVarySearchHintCommitDeferringCondition::OnHeadersReceived() {
           break;
       }
     } else if (prerender_host.no_vary_search().has_value()) {
-      reason = FinishedReason::kNoVarySearchHeaderReceived;
+      std::optional<UrlMatchType> match_type =
+          prerender_host.IsUrlMatch(GetNavigationHandle().GetURL());
+      if (match_type.has_value()) {
+        reason = FinishedReason::kNoVarySearchHeaderReceivedAndMatched;
+      } else {
+        reason = FinishedReason::kNoVarySearchHeaderReceivedButNotMatched;
+      }
     }
-    prerender_host.OnWaitingForHeadersFinished(GetNavigationHandle(), reason);
+    CHECK(reason.has_value());
+    prerender_host.OnWaitingForHeadersFinished(GetNavigationHandle(), *reason);
   }
 
   // We don't need the timer anymore.
