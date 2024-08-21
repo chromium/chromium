@@ -2634,9 +2634,6 @@ extern const char kEnableAndroidGamepadVibrationDescription[];
 extern const char kEnableCommandLineOnNonRootedName[];
 extern const char kEnableCommandLineOnNoRootedDescription[];
 
-extern const char kEnableEncryptedAV1Name[];
-extern const char kEnableEncryptedAV1Description[];
-
 extern const char kEnablePixDetectionName[];
 extern const char kEnablePixDetectionDescription[];
 

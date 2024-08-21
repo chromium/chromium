@@ -3044,11 +3044,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-encrypted-AV1",
-    "owners": [ "jrummell@chromium.org", "media-dev@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-enterprise-profile-badging",
     "owners": [ "ydago@chromium.org", "cbe-magic@google.com" ],
     "expiry_milestone": 125

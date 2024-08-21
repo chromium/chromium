@@ -1134,11 +1134,6 @@ BASE_FEATURE(kAllowNonSecureOverlays,
              "AllowNonSecureOverlays",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables support for playback of encrypted AV1 content.
-BASE_FEATURE(kEnableEncryptedAV1,
-             "EnableEncryptedAV1",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Allow FrameInfoHelper to guess coded size information for MediaCodec frames.
 BASE_FEATURE(kMediaCodecCodedSizeGuessing,
              "MediaCodecCodedSizeGuessing",

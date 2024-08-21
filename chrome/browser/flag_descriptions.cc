@@ -4501,10 +4501,6 @@ const char kEnableCommandLineOnNonRootedName[] =
 const char kEnableCommandLineOnNoRootedDescription[] =
     "Enable reading command line file on non-rooted devices (DANGEROUS).";
 
-const char kEnableEncryptedAV1Name[] = "Enable encrypted AV1 playback";
-const char kEnableEncryptedAV1Description[] =
-    "Enable support to playback encrypted AV1 content.";
-
 const char kEnablePixDetectionName[] = "Enable PIX detection";
 const char kEnablePixDetectionDescription[] =
     "Enables PIX code detection on allow-listed merchant websites.";
