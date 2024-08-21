@@ -73,6 +73,7 @@
 #import "ios/chrome/app/variations_app_state_agent.h"
 #import "ios/chrome/browser/accessibility/model/window_accessibility_change_notifier_app_agent.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
+#import "ios/chrome/browser/browser_state_metrics/model/browser_state_activity_app_agent.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/browsing_data/model/sessions_storage_util.h"
@@ -893,6 +894,8 @@ SEQUENCE_CHECKER(_sequenceChecker);
   if (base::ios::IsMultipleScenesSupported()) {
     [appState addAgent:[[WindowAccessibilityChangeNotifierAppAgent alloc] init]];
   }
+
+  [appState addAgent:[[BrowserStateActivityAppAgent alloc] init]];
 }
 
 // TODO(crbug.com/325614311): Get rid of this method/property completely.
