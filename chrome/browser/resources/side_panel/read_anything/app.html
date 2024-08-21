@@ -113,7 +113,7 @@
   }
 
   /* Not using :host because AppElement does not use ShadowDOM. */
-  read-anything-app:not([images-enabled]) figure {
+  :host(:not([images-enabled])) figure {
     display: none;
   }
 </style>

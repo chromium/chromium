@@ -96,35 +96,31 @@ suite('ReadAloud_UpdateContentSelection', () => {
     chrome.readingMode.setContentForTesting(axTree, []);
   });
 
-  suite('Before speech started', () => {
-    test('inner html of container matches expected html', () => {
-      assertFalse(app.speechPlayingState.isSpeechActive);
-      assertFalse(app.speechPlayingState.hasSpeechBeenTriggered);
-      // isSpeechTreeInitialized is set in updateContent
-      assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
-      // The expected HTML before any highlights are added.
-      const expected = '<div><p>World</p><p>Friend!</p></div>';
-      const innerHTML = app.$.container.innerHTML;
-      assertEquals(expected, innerHTML);
-    });
+  test('inner html of container matches expected html', () => {
+    assertFalse(app.speechPlayingState.isSpeechActive);
+    assertFalse(app.speechPlayingState.hasSpeechBeenTriggered);
+    // isSpeechTreeInitialized is set in updateContent
+    assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
+    // The expected HTML before any highlights are added.
+    const expected = '<div><p>World</p><p>Friend!</p></div>';
+    const innerHTML = app.$.container.innerHTML;
+    assertEquals(expected, innerHTML);
+  });
 
-    test('selection in reading mode panel correct', () => {
-      // Calling shadowRoot.getSelection directly is not supported in TS tests,
-      // so use a helper to get the selection from the app instead.
-      const selection = document.getSelection()!;
-      assertTrue(selection != null);
-      assertEquals('World', selection.anchorNode!.textContent);
-      assertEquals('Friend', selection.focusNode!.textContent);
-      assertEquals(1, selection.anchorOffset);
-      assertEquals(2, selection.focusOffset);
-    });
+  test('selection in reading mode panel correct', () => {
+    const selection = app.getSelection();
+    assertTrue(!!selection);
+    assertEquals('World', selection.anchorNode!.textContent);
+    assertEquals('Friend', selection.focusNode!.textContent);
+    assertEquals(1, selection.anchorOffset);
+    assertEquals(2, selection.focusOffset);
+  });
 
-    test('conbtainer class correct', () => {
-      assertEquals(
-          app.$.container.className,
-          'user-select-disabled-when-speech-active-false');
-      assertEquals('auto', window.getComputedStyle(app.$.container).userSelect);
-    });
+  test('container class correct', () => {
+    assertEquals(
+        app.$.container.className,
+        'user-select-disabled-when-speech-active-false');
+    assertEquals('auto', window.getComputedStyle(app.$.container).userSelect);
   });
 
   suite('While Read Aloud playing', () => {
@@ -149,7 +145,8 @@ suite('ReadAloud_UpdateContentSelection', () => {
     });
 
     test('selection in reading mode panel cleared', () => {
-      const selection = document.getSelection()!;
+      const selection = app.getSelection();
+      assertTrue(!!selection);
       assertEquals('', selection.toString());
     });
 
@@ -183,7 +180,8 @@ suite('ReadAloud_UpdateContentSelection', () => {
     });
 
     test('selection in reading mode panel cleared', () => {
-      const selection = document.getSelection()!;
+      const selection = app.getSelection();
+      assertTrue(!!selection);
       assertEquals('', selection.toString());
     });
 

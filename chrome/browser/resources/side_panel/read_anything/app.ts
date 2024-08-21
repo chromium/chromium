@@ -165,14 +165,6 @@ export class AppElement extends AppElementBase {
   private startTime = Date.now();
   private constructorTime: number;
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  override _attachDom(dom: Node|null): ShadowRoot|null {
-    if (dom) {
-      this.appendChild(dom);
-    }
-    return null;
-  }
-
   // Maps a DOM node to the AXNodeID that was used to create it. DOM nodes and
   // AXNodeIDs are unique, so this is a two way map where either DOM node or
   // AXNodeID can be used to access the other.
@@ -368,8 +360,8 @@ export class AppElement extends AppElementBase {
       // If there's been a selection, clear the current
       // Read Aloud highlight.
       const elements =
-          document.querySelectorAll('.' + currentReadHighlightClass);
-      if (elements.length > 0 && anchorNodeId && focusNodeId) {
+          this.shadowRoot?.querySelectorAll('.' + currentReadHighlightClass);
+      if (elements && anchorNodeId && focusNodeId) {
         elements.forEach(el => el.classList.remove(currentReadHighlightClass));
       }
 
@@ -813,12 +805,17 @@ export class AppElement extends AppElementBase {
   }
 
   updateLinks(shouldRehighlightCurrentNodes: boolean = true) {
+    if (!this.shadowRoot) {
+      return;
+    }
+
     const originallyHadHighlights =
-        document.querySelectorAll<HTMLElement>('.' + currentReadHighlightClass)
+        this.shadowRoot
+            .querySelectorAll<HTMLElement>('.' + currentReadHighlightClass)
             .length > 0;
 
     const selector = this.shouldShowLinks() ? 'span[data-link]' : 'a';
-    const elements = this.querySelectorAll(selector);
+    const elements = this.shadowRoot.querySelectorAll(selector);
 
     for (const elem of elements) {
       assert(elem instanceof HTMLElement, 'link is not an HTMLElement');
@@ -1015,25 +1012,19 @@ export class AppElement extends AppElementBase {
 
   // TODO(b/325962407): replace toast with system notification
   private showToast_(): void {
-    let toast: CrToastElement;
+    assert(this.shadowRoot);
     // Tests don't have menus and dialogs set up, no need to check
-    if (this.$.toolbar.shadowRoot!.querySelector('voice-selection-menu')) {
-      const isLanguageMenuOpen =
-          this.$.toolbar.shadowRoot!.querySelector('voice-selection-menu')!
-              .shadowRoot!.querySelector('language-menu') ?
-          this.$.toolbar.shadowRoot!.querySelector('voice-selection-menu')!
-              .shadowRoot!.querySelector('language-menu')!.shadowRoot!
-              .querySelector('cr-dialog')!.open :
-          false;
-      toast = isLanguageMenuOpen ?
-          this.$.toolbar.shadowRoot!.querySelector('voice-selection-menu')!
-              .shadowRoot!.querySelector('language-menu')!.shadowRoot!
-              .querySelector('cr-dialog')!.querySelector<CrToastElement>(
-                  '#toast-in-dialog')! :
-          document.querySelector<CrToastElement>('#toast')!;
-    } else {
-      toast = document.querySelector<CrToastElement>('#toast')!;
-    }
+    const voiceSelectionMenu =
+        this.$.toolbar.shadowRoot?.querySelector('voice-selection-menu');
+    const languageMenu =
+        voiceSelectionMenu?.shadowRoot?.querySelector('language-menu');
+    const languageMenuToast =
+        languageMenu?.shadowRoot?.querySelector('cr-dialog')
+            ?.querySelector<CrToastElement>('#toast-in-dialog');
+
+    const toast = languageMenuToast ||
+        this.shadowRoot!.querySelector<CrToastElement>('#toast')!;
+    assert(toast);
 
     if (toast.open) {
       toast.hide();
@@ -1969,9 +1960,10 @@ export class AppElement extends AppElementBase {
     // of the window (e.g. when font size is very large). Possibly using word
     // boundaries to know when we've reached the bottom of the window and need
     // to scroll so the rest of the current highlight is showing.
-    const currentHighlights =
-        document.querySelectorAll<HTMLElement>('.' + currentReadHighlightClass);
-    if (!currentHighlights.length) {
+    assert(this.shadowRoot);
+    const currentHighlights = this.shadowRoot!.querySelectorAll<HTMLElement>(
+        '.' + currentReadHighlightClass);
+    if (!currentHighlights) {
       return;
     }
     const firstHighlight = currentHighlights.item(0);

@@ -72,7 +72,7 @@ suite('UpdateVoicePack', () => {
     let toast: CrToastElement;
 
     setup(() => {
-      toast = document.querySelector<CrToastElement>('#toast')!;
+      toast = app.shadowRoot!.querySelector<CrToastElement>('#toast')!;
       app.getSpeechSynthesisVoice();
     });
 

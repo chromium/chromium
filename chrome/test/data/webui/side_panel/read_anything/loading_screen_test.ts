@@ -25,7 +25,8 @@ suite('LoadingScreen', () => {
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
     app.showLoading();
-    emptyState = document.querySelector<SpEmptyStateElement>('sp-empty-state')!;
+    emptyState =
+        app.shadowRoot!.querySelector<SpEmptyStateElement>('sp-empty-state')!;
   });
 
   test('shows spinner', () => {

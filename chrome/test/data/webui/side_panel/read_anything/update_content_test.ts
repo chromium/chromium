@@ -69,7 +69,9 @@ suite('UpdateContent', () => {
   test('hides loading page', () => {
     app.updateContent();
 
-    const emptyState = app.querySelector<HTMLElement>('#empty-state-container');
+    assertTrue(!!app.shadowRoot);
+    const emptyState =
+        app.shadowRoot.querySelector<HTMLElement>('#empty-state-container');
     assertTrue(!!emptyState);
     assertTrue(emptyState.hidden);
   });
