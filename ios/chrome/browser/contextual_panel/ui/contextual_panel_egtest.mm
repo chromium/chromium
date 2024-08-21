@@ -69,7 +69,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
       {kContextualPanelForceShowEntrypoint, {}});
 
   if ([self isRunningTest:@selector(testOpenContextualPanelFromNormalIPH)] ||
-      [self isRunningTest:@selector(testOpenContextualPanelFromRichIPH)]) {
+      [self isRunningTest:@selector(testOpenContextualPanelFromRichIPH)] ||
+      [self isRunningTest:@selector(testOrientationChangeDismissesIPH)]) {
     config.iph_feature_enabled =
         feature_engagement::kIPHiOSContextualPanelSampleModelFeature.name;
   }
@@ -297,6 +298,28 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
       selectElementWithMatcher:grey_accessibilityID(
                                    @"ContextualPanelEntrypointLabelAXID")]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Test that the Contextual Panel entrypoint IPH is dismissed when the device
+// orientation changes.
+- (void)testOrientationChangeDismissesIPH {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
+
+  // Check that the IPH has appeared.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                              @"BubbleViewLabelIdentifier")];
+
+  // Switch to landscape.
+  GREYAssert(
+      [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
+                                    error:nil],
+      @"Could not rotate device to Landscape Left");
+
+  // Check that the IPH has disappeared.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 @"BubbleViewLabelIdentifier")];
 }
 
 @end

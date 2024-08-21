@@ -142,6 +142,14 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
     [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.self ]
                        withAction:@selector(updateLabelFont)];
   }
+
+  // TODO(crbug.com/361110974): Have bubbles gracefully handle orientation
+  // changes without needing to dismiss here.
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self
+             selector:@selector(dismissIPHWithoutAnimation)
+                 name:UIDeviceOrientationDidChangeNotification
+               object:nil];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -158,7 +166,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
 - (void)displayEntrypointView:(BOOL)display {
   if (!display) {
-    [self.mutator dismissIPHAnimated:NO];
+    [self dismissIPHWithoutAnimation];
   }
   self.view.hidden = !display || !_entrypointDisplayed;
   _entrypointContainer.isAccessibilityElement = !self.view.hidden;
@@ -362,6 +370,10 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
 - (void)updateLabelFont {
   _label.font = [self entrypointLabelFont];
+}
+
+- (void)dismissIPHWithoutAnimation {
+  [self.mutator dismissIPHAnimated:NO];
 }
 
 // Returns the preferred font and size given the current ContentSizeCategory.
