@@ -1691,6 +1691,9 @@ void AXObject::SerializeLangAttribute(ui::AXNodeData* node_data) const {
 }
 
 void AXObject::SerializeLineAttributes(ui::AXNodeData* node_data) const {
+  // TODO(accessibility):Skip the search for objects not in an inline
+  // formatting context.
+  // See LayoutObject::IsInLayoutNGInlineFormattingContext.
   if (AXObject* next_on_line = NextOnLine()) {
     CHECK(!next_on_line->IsDetached());
     node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kNextOnLineId,

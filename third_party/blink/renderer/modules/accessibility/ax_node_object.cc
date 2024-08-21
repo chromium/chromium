@@ -7735,6 +7735,59 @@ AXObject* AXNodeObject::GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
                : result->DeepestLastChildIncludingIgnored();
 }
 
+void AXNodeObject::MaybeResetCache() const {
+  uint64_t generation = AXObjectCache().GenerationalCacheId();
+  if (!generational_cache_) {
+    generational_cache_ = MakeGarbageCollected<GenerationalCache>();
+  }
+  // In order to use the cached values, the tree must be frozen with the same
+  // generation ID. As the tree is frozen during tree update or snapshot
+  // serialization, we can limit how frequently we recompute cached values.
+  // The tree is not frozen when serialization is triggered via
+  // ui::AXNodeData WebAXObjectProxy::GetAXNodeData.
+  if (generation != generational_cache_->generation ||
+      !AXObjectCache().IsFrozen()) {
+    generational_cache_->generation = generation;
+    generational_cache_->next_on_line = std::nullopt;
+    generational_cache_->previous_on_line = std::nullopt;
+  } else {
+#if DCHECK_IS_ON()
+    // AXObjects cannot be detached while the tree is frozen.
+    // These are sanity checks. Limited to DCHECK enabled builds due to
+    // potential performance impact with to the sheer volume of calls.
+    if (generational_cache_->next_on_line) {
+      AXObject* next = generational_cache_->next_on_line.value();
+      CHECK(!next || !next->IsDetached());
+    }
+    if (generational_cache_->previous_on_line) {
+      AXObject* previous = generational_cache_->previous_on_line.value();
+      CHECK(!previous || !previous->IsDetached());
+    }
+#endif
+  }
+}
+
+void AXNodeObject::GenerationalCache::Trace(Visitor* visitor) const {
+  if (next_on_line) {
+    visitor->Trace(next_on_line.value());
+  }
+  if (previous_on_line) {
+    visitor->Trace(previous_on_line.value());
+  }
+}
+
+AXObject* AXNodeObject::SetNextOnLine(AXObject* next_on_line) const {
+  CHECK(generational_cache_) << "Must call MaybeResetCache ahead of this call";
+  generational_cache_->next_on_line = next_on_line;
+  return next_on_line;
+}
+
+AXObject* AXNodeObject::SetPreviousOnLine(AXObject* previous_on_line) const {
+  CHECK(generational_cache_) << "Must call MaybeResetCache ahead of this call";
+  generational_cache_->previous_on_line = previous_on_line;
+  return previous_on_line;
+}
+
 AXObject* AXNodeObject::NextOnLine() const {
   // If this is the last object on the line, nullptr is returned. Otherwise, all
   // AXNodeObjects, regardless of role and tree depth, are connected to the
@@ -7742,13 +7795,18 @@ AXObject* AXNodeObject::NextOnLine() const {
   // are connected to the next leaf AXObject.
   DCHECK(!IsDetached());
 
+  MaybeResetCache();
+  if (generational_cache_->next_on_line) {
+    return generational_cache_->next_on_line.value();
+  }
+
   const LayoutObject* layout_object = GetLayoutObject();
   if (!layout_object) {
-    return nullptr;
+    return SetNextOnLine(nullptr);
   }
 
   if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object)) {
-    return nullptr;
+    return SetNextOnLine(nullptr);
   }
 
   if (layout_object->IsLayoutOutsideListMarker()) {
@@ -7759,15 +7817,15 @@ AXObject* AXNodeObject::NextOnLine() const {
       return GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
           NextSiblingIncludingIgnored(), true);
     }
-    return nullptr;
+    return SetNextOnLine(nullptr);
   }
 
   if (!ShouldUseLayoutNG(*layout_object)) {
-    return nullptr;
+    return SetNextOnLine(nullptr);
   }
 
   if (!layout_object->IsInLayoutNGInlineFormattingContext()) {
-    return nullptr;
+    return SetNextOnLine(nullptr);
   }
 
   InlineCursor cursor;
@@ -7808,7 +7866,7 @@ AXObject* AXNodeObject::NextOnLine() const {
       result =
           GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(result, true);
       if (result && !should_keep_looking) {
-        return result;
+        return SetNextOnLine(result);
       }
 
       if (!should_keep_looking) {
@@ -7822,14 +7880,14 @@ AXObject* AXNodeObject::NextOnLine() const {
   // before attempting to connect to the next AXObject that is on the same
   // line as its first line.
   if (layout_object->NextSibling()) {
-    return nullptr;  // Not at end of parent layout object.
+    return SetNextOnLine(nullptr);  // Not at end of parent layout object.
   }
   // Fallback: Use AX parent's next on line.
   AXObject* ax_parent = ParentObject();
   DCHECK(ax_parent);
   AXObject* ax_result = ax_parent->NextOnLine();
   if (!ax_result) {
-    return nullptr;
+    return SetNextOnLine(nullptr);
   }
 
   if (!AXObjectCache().IsAriaOwned(this) && ax_result->ParentObject() == this) {
@@ -7838,10 +7896,10 @@ AXObject* AXNodeObject::NextOnLine() const {
     // parents, using a descendant can cause a previous position to be
     // reused, which appears as a loop in the nextOnLine data, and
     // can cause an infinite loop in consumers of the nextOnLine data.
-    return nullptr;
+    return SetNextOnLine(nullptr);
   }
 
-  return ax_result;
+  return SetNextOnLine(ax_result);
 }
 
 AXObject* AXNodeObject::PreviousOnLine() const {
@@ -7851,17 +7909,22 @@ AXObject* AXNodeObject::PreviousOnLine() const {
   // box, they are connected to the previous leaf AXObject.
   DCHECK(!IsDetached());
 
+  MaybeResetCache();
+  if (generational_cache_->previous_on_line) {
+    return generational_cache_->previous_on_line.value();
+  }
+
   const LayoutObject* layout_object = GetLayoutObject();
   if (!layout_object) {
-    return nullptr;
+    return SetPreviousOnLine(nullptr);
   }
 
   if (!ShouldUseLayoutNG(*layout_object)) {
-    return nullptr;
+    return SetPreviousOnLine(nullptr);
   }
 
   if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object)) {
-    return nullptr;
+    return SetPreviousOnLine(nullptr);
   }
 
   AXObject* previous_sibling = IsIncludedInTree()
@@ -7876,7 +7939,7 @@ AXObject* AXNodeObject::PreviousOnLine() const {
 
   if (layout_object->IsLayoutOutsideListMarker() ||
       !layout_object->IsInLayoutNGInlineFormattingContext()) {
-    return nullptr;
+    return SetPreviousOnLine(nullptr);
   }
 
   InlineCursor cursor;
@@ -7917,7 +7980,7 @@ AXObject* AXNodeObject::PreviousOnLine() const {
       result =
           GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(result, false);
       if (result && !should_keep_looking) {
-        return result;
+        return SetPreviousOnLine(result);
       }
 
       // We want to continue searching for the previous inline leaf if the
@@ -7933,7 +7996,7 @@ AXObject* AXNodeObject::PreviousOnLine() const {
   // before attempting to connect to the previous AXObject that is on the same
   // line as its first line.
   if (layout_object->PreviousSibling()) {
-    return nullptr;  // Not at start of parent layout object.
+    return SetPreviousOnLine(nullptr);  // Not at start of parent layout object.
   }
 
   // Fallback: Use AX parent's previous on line.
@@ -7941,7 +8004,7 @@ AXObject* AXNodeObject::PreviousOnLine() const {
   DCHECK(ax_parent);
   AXObject* ax_result = ax_parent->PreviousOnLine();
   if (!ax_result) {
-    return nullptr;
+    return SetPreviousOnLine(nullptr);
   }
 
   if (!AXObjectCache().IsAriaOwned(this) && ax_result->ParentObject() == this) {
@@ -7950,10 +8013,10 @@ AXObject* AXNodeObject::PreviousOnLine() const {
     // parents, using a descendant can cause a previous position to be
     // reused, which appears as a loop in the previousOnLine data, and
     // can cause an infinite loop in consumers of the previousOnLine data.
-    return nullptr;
+    return SetPreviousOnLine(nullptr);
   }
 
-  return ax_result;
+  return SetPreviousOnLine(ax_result);
 }
 
 void AXNodeObject::HandleAutofillSuggestionAvailabilityChanged(
@@ -7992,6 +8055,7 @@ void AXNodeObject::GetWordBoundaries(Vector<int>& word_starts,
 void AXNodeObject::Trace(Visitor* visitor) const {
   visitor->Trace(node_);
   visitor->Trace(layout_object_);
+  visitor->Trace(generational_cache_);
   AXObject::Trace(visitor);
 }
 
