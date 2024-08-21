@@ -2134,10 +2134,8 @@ TEST_F(PickerViewTest, DownArrowKeyNavigatesSearchResults) {
 TEST_F(PickerViewTest, RightArrowKeyShowsSubmenu) {
   FakePickerViewDelegate delegate({
       .zero_state_suggested_results =
-          {PickerSearchResult::NewWindow(
-               PickerSearchResult::NewWindowData::Type::kDoc),
-           PickerSearchResult::NewWindow(
-               PickerSearchResult::NewWindowData::Type::kSheet)},
+          {PickerSearchResult::NewWindow(PickerNewWindowResult::Type::kDoc),
+           PickerSearchResult::NewWindow(PickerNewWindowResult::Type::kSheet)},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -2153,10 +2151,8 @@ TEST_F(PickerViewTest, RightArrowKeyShowsSubmenu) {
 TEST_F(PickerViewTest, EnterKeyShowsSubmenu) {
   FakePickerViewDelegate delegate({
       .zero_state_suggested_results =
-          {PickerSearchResult::NewWindow(
-               PickerSearchResult::NewWindowData::Type::kDoc),
-           PickerSearchResult::NewWindow(
-               PickerSearchResult::NewWindowData::Type::kSheet)},
+          {PickerSearchResult::NewWindow(PickerNewWindowResult::Type::kDoc),
+           PickerSearchResult::NewWindow(PickerNewWindowResult::Type::kSheet)},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -2172,10 +2168,8 @@ TEST_F(PickerViewTest, EnterKeyShowsSubmenu) {
 TEST_F(PickerViewTest, LeftArrowKeyClosesSubmenu) {
   FakePickerViewDelegate delegate({
       .zero_state_suggested_results =
-          {PickerSearchResult::NewWindow(
-               PickerSearchResult::NewWindowData::Type::kDoc),
-           PickerSearchResult::NewWindow(
-               PickerSearchResult::NewWindowData::Type::kSheet)},
+          {PickerSearchResult::NewWindow(PickerNewWindowResult::Type::kDoc),
+           PickerSearchResult::NewWindow(PickerNewWindowResult::Type::kSheet)},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -2193,7 +2187,7 @@ TEST_F(PickerViewTest, LeftArrowKeyClosesSubmenu) {
 TEST_F(PickerViewTest, PressingEscClosesSubmenuThenWidget) {
   FakePickerViewDelegate delegate({
       .zero_state_suggested_results = {PickerSearchResult::NewWindow(
-          PickerSearchResult::NewWindowData::Type::kDoc)},
+          PickerNewWindowResult::Type::kDoc)},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -2276,10 +2270,8 @@ TEST_F(PickerViewTest, TabKeyNavigatesItemWithPreview) {
 TEST_F(PickerViewTest, KeyEventsNavigateWithinSubmenu) {
   FakePickerViewDelegate delegate({
       .zero_state_suggested_results =
-          {PickerSearchResult::NewWindow(
-               PickerSearchResult::NewWindowData::Type::kDoc),
-           PickerSearchResult::NewWindow(
-               PickerSearchResult::NewWindowData::Type::kSheet)},
+          {PickerSearchResult::NewWindow(PickerNewWindowResult::Type::kDoc),
+           PickerSearchResult::NewWindow(PickerNewWindowResult::Type::kSheet)},
       .action_type = PickerActionType::kOpen,
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
@@ -2295,7 +2287,7 @@ TEST_F(PickerViewTest, KeyEventsNavigateWithinSubmenu) {
 
   EXPECT_THAT(delegate.last_opened_result(),
               Optional(PickerSearchResult::NewWindow(
-                  PickerSearchResult::NewWindowData::Type::kSheet)));
+                  PickerNewWindowResult::Type::kSheet)));
 }
 
 TEST_F(PickerViewTest, LeftArrowKeyNavigatesToBackButton) {
@@ -2520,10 +2512,8 @@ TEST_F(PickerViewTest, DownArrowKeyNavigatesFromClearButtonToSearchResults) {
 TEST_F(PickerViewTest, ShowsSubmenuOnMouseHover) {
   FakePickerViewDelegate delegate({
       .zero_state_suggested_results =
-          {PickerSearchResult::NewWindow(
-               PickerSearchResult::NewWindowData::Type::kDoc),
-           PickerSearchResult::NewWindow(
-               PickerSearchResult::NewWindowData::Type::kSheet)},
+          {PickerSearchResult::NewWindow(PickerNewWindowResult::Type::kDoc),
+           PickerSearchResult::NewWindow(PickerNewWindowResult::Type::kSheet)},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -2550,10 +2540,8 @@ TEST_F(PickerViewTest, ClosesSubmenuWhenResumingKeyboardNavigationInMainView) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kEmojisGifs},
       .zero_state_suggested_results =
-          {PickerSearchResult::NewWindow(
-               PickerSearchResult::NewWindowData::Type::kDoc),
-           PickerSearchResult::NewWindow(
-               PickerSearchResult::NewWindowData::Type::kSheet)},
+          {PickerSearchResult::NewWindow(PickerNewWindowResult::Type::kDoc),
+           PickerSearchResult::NewWindow(PickerNewWindowResult::Type::kSheet)},
       .emoji_results = {PickerSearchResult::Emoji(u"😊"),
                         PickerSearchResult::Symbol(u"♬")},
   });
@@ -2885,12 +2873,12 @@ TEST_F(PickerViewTest, EnterOnZeroState) {
                     Property("is visible", &views::View::GetVisible, true))))));
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
 
-  EXPECT_THAT(delegate.last_inserted_result(),
-              Optional(Property("data", &PickerSearchResult::data,
-                                VariantWith<PickerSearchResult::TextData>(Field(
-                                    "primary text",
-                                    &PickerSearchResult::TextData::primary_text,
-                                    u"zero state")))));
+  EXPECT_THAT(
+      delegate.last_inserted_result(),
+      Optional(Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerTextResult>(Field(
+                            "primary text", &PickerTextResult::primary_text,
+                            u"zero state")))));
 }
 
 // TODO: b/351920494 - Insert the first new result instead of doing nothing.
@@ -2974,12 +2962,12 @@ TEST_F(PickerViewTest, EnterOnSearchResults) {
                                  true)))))))));
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
 
-  EXPECT_THAT(delegate.last_inserted_result(),
-              Optional(Property("data", &PickerSearchResult::data,
-                                VariantWith<PickerSearchResult::TextData>(Field(
-                                    "primary text",
-                                    &PickerSearchResult::TextData::primary_text,
-                                    u"first search")))));
+  EXPECT_THAT(
+      delegate.last_inserted_result(),
+      Optional(Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerTextResult>(Field(
+                            "primary text", &PickerTextResult::primary_text,
+                            u"first search")))));
 }
 
 // TODO: b/351920494 - Insert the first new result instead of doing nothing.

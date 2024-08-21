@@ -38,16 +38,16 @@ MATCHER(ResultMatchesDate, "") {
   const auto& [actual_result, expected_result] = arg;
   return ExplainMatchResult(
       AllOf(Property("data", &PickerSearchResult::data,
-                     VariantWith<PickerSearchResult::TextData>(Field(
-                         "text", &PickerSearchResult::TextData::primary_text,
-                         expected_result.primary_text))),
+                     VariantWith<PickerTextResult>(
+                         Field("text", &PickerTextResult::primary_text,
+                               expected_result.primary_text))),
             Property("data", &PickerSearchResult::data,
-                     VariantWith<PickerSearchResult::TextData>(Field(
-                         "text", &PickerSearchResult::TextData::secondary_text,
-                         expected_result.secondary_text))),
+                     VariantWith<PickerTextResult>(
+                         Field("text", &PickerTextResult::secondary_text,
+                               expected_result.secondary_text))),
             Property("data", &PickerSearchResult::data,
-                     VariantWith<PickerSearchResult::TextData>(
-                         Field("source", &PickerSearchResult::TextData::source,
+                     VariantWith<PickerTextResult>(
+                         Field("source", &PickerTextResult::source,
                                expected_result.source)))),
       actual_result, result_listener);
 }
@@ -55,14 +55,13 @@ MATCHER(ResultMatchesDate, "") {
 struct TestCase {
   std::string_view date;
   std::u16string_view query;
-  std::vector<PickerSearchResult::TextData> expected_results;
+  std::vector<PickerTextResult> expected_results;
 };
 
-PickerSearchResult::TextData MakeResult(std::u16string primary_text,
-                                        std::u16string secondary_text = u"") {
-  return PickerSearchResult::TextData(
-      primary_text, secondary_text, ui::ImageModel(),
-      PickerSearchResult::TextData::Source::kDate);
+PickerTextResult MakeResult(std::u16string primary_text,
+                            std::u16string secondary_text = u"") {
+  return PickerTextResult(primary_text, secondary_text, ui::ImageModel(),
+                          PickerTextResult::Source::kDate);
 }
 
 class PickerDateSearchTest
@@ -218,12 +217,11 @@ TEST(PickerSuggestedDateResults, ReturnsSuggestedResults) {
       results,
       Each(Property(
           "data", &PickerSearchResult::data,
-          VariantWith<PickerSearchResult::SearchRequestData>(AllOf(
-              Field("primary_text",
-                    &PickerSearchResult::SearchRequestData::primary_text,
+          VariantWith<PickerSearchRequestResult>(AllOf(
+              Field("primary_text", &PickerSearchRequestResult::primary_text,
                     Not(IsEmpty())),
               Field("secondary_text",
-                    &PickerSearchResult::SearchRequestData::secondary_text,
+                    &PickerSearchRequestResult::secondary_text,
                     Not(IsEmpty())))))));
 }
 }  // namespace

@@ -204,13 +204,12 @@ TEST_F(PickerSectionViewTest,
                                  &submenu_controller);
 
   section_view.AddResult(
-      PickerSearchResult::Clipboard(
-          base::UnguessableToken(),
-          PickerSearchResult::ClipboardData::DisplayFormat::kFile,
-          /*file_count=*/1,
-          /*display_text=*/u"image.png",
-          /*display_image=*/{},
-          /*is_recent=*/false),
+      PickerSearchResult::Clipboard(base::UnguessableToken(),
+                                    PickerClipboardResult::DisplayFormat::kFile,
+                                    /*file_count=*/1,
+                                    /*display_text=*/u"image.png",
+                                    /*display_image=*/{},
+                                    /*is_recent=*/false),
       &preview_controller, base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
@@ -236,13 +235,12 @@ TEST_F(PickerSectionViewTest,
                                  &submenu_controller);
 
   section_view.AddResult(
-      PickerSearchResult::Clipboard(
-          base::UnguessableToken(),
-          PickerSearchResult::ClipboardData::DisplayFormat::kFile,
-          /*file_count=*/2,
-          /*display_text=*/u"2 files",
-          /*display_image=*/{},
-          /*is_recent=*/false),
+      PickerSearchResult::Clipboard(base::UnguessableToken(),
+                                    PickerClipboardResult::DisplayFormat::kFile,
+                                    /*file_count=*/2,
+                                    /*display_text=*/u"2 files",
+                                    /*display_image=*/{},
+                                    /*is_recent=*/false),
       &preview_controller, base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
@@ -268,8 +266,7 @@ TEST_F(PickerSectionViewTest, CapsLockResultShowsShortcutHint) {
 
   section_view.AddResult(
       PickerSearchResult::CapsLock(
-          /*enabled=*/true,
-          PickerSearchResult::CapsLockData::Shortcut::kAltSearch),
+          /*enabled=*/true, PickerCapsLockResult::Shortcut::kAltSearch),
       &preview_controller, base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =

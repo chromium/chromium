@@ -133,16 +133,15 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromOmniboxSearch) {
   // https://google.github.io/googletest/gmock_cook_book.html#uninteresting-vs-unexpected
   // for more details.
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(PickerSearchSource::kOmnibox,
-           ElementsAre(Property(
-               "data", &PickerSearchResult::data,
-               VariantWith<PickerSearchResult::BrowsingHistoryData>(
-                   Field("url", &PickerSearchResult::BrowsingHistoryData::url,
-                         Property("spec", &GURL::spec,
-                                  "https://www.google.com/search?q=cat"))))),
-           /*has_more_results=*/false))
+  EXPECT_CALL(search_results_callback,
+              Call(PickerSearchSource::kOmnibox,
+                   ElementsAre(Property(
+                       "data", &PickerSearchResult::data,
+                       VariantWith<PickerBrowsingHistoryResult>(Field(
+                           "url", &PickerBrowsingHistoryResult::url,
+                           Property("spec", &GURL::spec,
+                                    "https://www.google.com/search?q=cat"))))),
+                   /*has_more_results=*/false))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -166,17 +165,14 @@ TEST_F(PickerSearchRequestTest, TruncatesOmniboxResults) {
       Call(PickerSearchSource::kOmnibox,
            ElementsAre(
                Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"1"))),
+                        VariantWith<PickerTextResult>(Field(
+                            "text", &PickerTextResult::primary_text, u"1"))),
                Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"2"))),
+                        VariantWith<PickerTextResult>(Field(
+                            "text", &PickerTextResult::primary_text, u"2"))),
                Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"3")))),
+                        VariantWith<PickerTextResult>(Field(
+                            "text", &PickerTextResult::primary_text, u"3")))),
            /*has_more_results=*/true))
       .Times(AtLeast(1));
 
@@ -201,21 +197,17 @@ TEST_F(PickerSearchRequestTest, DoesNotTruncateOmniboxOnlyResults) {
       Call(PickerSearchSource::kOmnibox,
            ElementsAre(
                Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"1"))),
+                        VariantWith<PickerTextResult>(Field(
+                            "text", &PickerTextResult::primary_text, u"1"))),
                Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"2"))),
+                        VariantWith<PickerTextResult>(Field(
+                            "text", &PickerTextResult::primary_text, u"2"))),
                Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"3"))),
+                        VariantWith<PickerTextResult>(Field(
+                            "text", &PickerTextResult::primary_text, u"3"))),
                Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"4")))),
+                        VariantWith<PickerTextResult>(Field(
+                            "text", &PickerTextResult::primary_text, u"4")))),
            /*has_more_results=*/false))
       .Times(AtLeast(1));
 
@@ -241,31 +233,26 @@ TEST_F(PickerSearchRequestTest, DeduplicatesGoogleCorpGoLinks) {
       search_results_callback,
       Call(PickerSearchSource::kOmnibox,
            ElementsAre(
-               Property(
-                   "data", &PickerSearchResult::data,
-                   VariantWith<PickerSearchResult::BrowsingHistoryData>(Field(
-                       "url", &PickerSearchResult::BrowsingHistoryData::url,
-                       GURL("https://example.com")))),
-               Property(
-                   "data", &PickerSearchResult::data,
-                   VariantWith<PickerSearchResult::BrowsingHistoryData>(Field(
-                       "url", &PickerSearchResult::BrowsingHistoryData::url,
-                       GURL("http://go/link")))),
-               Property(
-                   "data", &PickerSearchResult::data,
-                   VariantWith<PickerSearchResult::BrowsingHistoryData>(Field(
-                       "url", &PickerSearchResult::BrowsingHistoryData::url,
-                       GURL("https://example.com/2")))),
-               Property(
-                   "data", &PickerSearchResult::data,
-                   VariantWith<PickerSearchResult::BrowsingHistoryData>(Field(
-                       "url", &PickerSearchResult::BrowsingHistoryData::url,
-                       GURL("https://goto2.corp.google.com/link2")))),
-               Property(
-                   "data", &PickerSearchResult::data,
-                   VariantWith<PickerSearchResult::BrowsingHistoryData>(Field(
-                       "url", &PickerSearchResult::BrowsingHistoryData::url,
-                       GURL("https://example.com/3"))))),
+               Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerBrowsingHistoryResult>(
+                            Field("url", &PickerBrowsingHistoryResult::url,
+                                  GURL("https://example.com")))),
+               Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerBrowsingHistoryResult>(
+                            Field("url", &PickerBrowsingHistoryResult::url,
+                                  GURL("http://go/link")))),
+               Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerBrowsingHistoryResult>(
+                            Field("url", &PickerBrowsingHistoryResult::url,
+                                  GURL("https://example.com/2")))),
+               Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerBrowsingHistoryResult>(Field(
+                            "url", &PickerBrowsingHistoryResult::url,
+                            GURL("https://goto2.corp.google.com/link2")))),
+               Property("data", &PickerSearchResult::data,
+                        VariantWith<PickerBrowsingHistoryResult>(
+                            Field("url", &PickerBrowsingHistoryResult::url,
+                                  GURL("https://example.com/3"))))),
            /*has_more_results=*/false))
       .Times(AtLeast(1));
 
@@ -489,14 +476,14 @@ TEST_F(
 TEST_F(PickerSearchRequestTest, ShowsResultsFromFileSearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(search_results_callback,
-              Call(PickerSearchSource::kLocalFile,
-                   ElementsAre(Property(
-                       "data", &PickerSearchResult::data,
-                       VariantWith<PickerSearchResult::TextData>(Field(
-                           "text", &PickerSearchResult::TextData::primary_text,
-                           u"monorail_cat.jpg")))),
-                   /*has_more_results=*/false))
+  EXPECT_CALL(
+      search_results_callback,
+      Call(PickerSearchSource::kLocalFile,
+           ElementsAre(Property("data", &PickerSearchResult::data,
+                                VariantWith<PickerTextResult>(Field(
+                                    "text", &PickerTextResult::primary_text,
+                                    u"monorail_cat.jpg")))),
+           /*has_more_results=*/false))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -514,21 +501,20 @@ TEST_F(PickerSearchRequestTest, TruncatesResultsFromFileSearch) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(PickerSearchSource::kLocalFile,
-           ElementsAre(
-               Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"1.jpg"))),
-               Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"2.jpg"))),
-               Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"3.jpg")))),
-           /*has_more_results=*/true))
+      Call(
+          PickerSearchSource::kLocalFile,
+          ElementsAre(
+              Property("data", &PickerSearchResult::data,
+                       VariantWith<PickerTextResult>(Field(
+                           "text", &PickerTextResult::primary_text, u"1.jpg"))),
+              Property("data", &PickerSearchResult::data,
+                       VariantWith<PickerTextResult>(Field(
+                           "text", &PickerTextResult::primary_text, u"2.jpg"))),
+              Property(
+                  "data", &PickerSearchResult::data,
+                  VariantWith<PickerTextResult>(Field(
+                      "text", &PickerTextResult::primary_text, u"3.jpg")))),
+          /*has_more_results=*/true))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -549,25 +535,23 @@ TEST_F(PickerSearchRequestTest, DoesNotTruncateResultsFromFileOnlySearch) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(PickerSearchSource::kLocalFile,
-           ElementsAre(
-               Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"1.jpg"))),
-               Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"2.jpg"))),
-               Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"3.jpg"))),
-               Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"4.jpg")))),
-           /*has_more_results=*/false))
+      Call(
+          PickerSearchSource::kLocalFile,
+          ElementsAre(
+              Property("data", &PickerSearchResult::data,
+                       VariantWith<PickerTextResult>(Field(
+                           "text", &PickerTextResult::primary_text, u"1.jpg"))),
+              Property("data", &PickerSearchResult::data,
+                       VariantWith<PickerTextResult>(Field(
+                           "text", &PickerTextResult::primary_text, u"2.jpg"))),
+              Property("data", &PickerSearchResult::data,
+                       VariantWith<PickerTextResult>(Field(
+                           "text", &PickerTextResult::primary_text, u"3.jpg"))),
+              Property(
+                  "data", &PickerSearchResult::data,
+                  VariantWith<PickerTextResult>(Field(
+                      "text", &PickerTextResult::primary_text, u"4.jpg")))),
+          /*has_more_results=*/false))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -680,14 +664,14 @@ TEST_F(PickerSearchRequestTest,
 TEST_F(PickerSearchRequestTest, ShowsResultsFromDriveSearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(search_results_callback,
-              Call(PickerSearchSource::kDrive,
-                   ElementsAre(Property(
-                       "data", &PickerSearchResult::data,
-                       VariantWith<PickerSearchResult::TextData>(Field(
-                           "text", &PickerSearchResult::TextData::primary_text,
-                           u"catrbug_135117.jpg")))),
-                   /*has_more_results=*/false))
+  EXPECT_CALL(
+      search_results_callback,
+      Call(PickerSearchSource::kDrive,
+           ElementsAre(Property("data", &PickerSearchResult::data,
+                                VariantWith<PickerTextResult>(Field(
+                                    "text", &PickerTextResult::primary_text,
+                                    u"catrbug_135117.jpg")))),
+           /*has_more_results=*/false))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -705,21 +689,20 @@ TEST_F(PickerSearchRequestTest, TruncatesResultsFromDriveSearch) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(PickerSearchSource::kDrive,
-           ElementsAre(
-               Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"1.jpg"))),
-               Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"2.jpg"))),
-               Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"3.jpg")))),
-           /*has_more_results=*/true))
+      Call(
+          PickerSearchSource::kDrive,
+          ElementsAre(
+              Property("data", &PickerSearchResult::data,
+                       VariantWith<PickerTextResult>(Field(
+                           "text", &PickerTextResult::primary_text, u"1.jpg"))),
+              Property("data", &PickerSearchResult::data,
+                       VariantWith<PickerTextResult>(Field(
+                           "text", &PickerTextResult::primary_text, u"2.jpg"))),
+              Property(
+                  "data", &PickerSearchResult::data,
+                  VariantWith<PickerTextResult>(Field(
+                      "text", &PickerTextResult::primary_text, u"3.jpg")))),
+          /*has_more_results=*/true))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -740,25 +723,23 @@ TEST_F(PickerSearchRequestTest, DoesNotTruncateResultsFromDriveOnlySearch) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(PickerSearchSource::kDrive,
-           ElementsAre(
-               Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"1.jpg"))),
-               Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"2.jpg"))),
-               Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"3.jpg"))),
-               Property("data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::TextData>(Field(
-                            "text", &PickerSearchResult::TextData::primary_text,
-                            u"4.jpg")))),
-           /*has_more_results=*/false))
+      Call(
+          PickerSearchSource::kDrive,
+          ElementsAre(
+              Property("data", &PickerSearchResult::data,
+                       VariantWith<PickerTextResult>(Field(
+                           "text", &PickerTextResult::primary_text, u"1.jpg"))),
+              Property("data", &PickerSearchResult::data,
+                       VariantWith<PickerTextResult>(Field(
+                           "text", &PickerTextResult::primary_text, u"2.jpg"))),
+              Property("data", &PickerSearchResult::data,
+                       VariantWith<PickerTextResult>(Field(
+                           "text", &PickerTextResult::primary_text, u"3.jpg"))),
+              Property(
+                  "data", &PickerSearchResult::data,
+                  VariantWith<PickerTextResult>(Field(
+                      "text", &PickerTextResult::primary_text, u"4.jpg")))),
+          /*has_more_results=*/false))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -1018,15 +999,14 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromClipboardSearch) {
 
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(PickerSearchSource::kClipboard,
-           ElementsAre(Property(
-               "data", &PickerSearchResult::data,
-               VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
-                   _, PickerSearchResult::ClipboardData::DisplayFormat::kText,
-                   /*file_count=*/0, u"cat", std::nullopt, true)))),
-           /*has_more_results=*/false))
+  EXPECT_CALL(search_results_callback,
+              Call(PickerSearchSource::kClipboard,
+                   ElementsAre(Property(
+                       "data", &PickerSearchResult::data,
+                       VariantWith<PickerClipboardResult>(FieldsAre(
+                           _, PickerClipboardResult::DisplayFormat::kText,
+                           /*file_count=*/0, u"cat", std::nullopt, true)))),
+                   /*has_more_results=*/false))
       .Times(1);
 
   PickerSearchRequest request(
@@ -1069,9 +1049,8 @@ TEST_P(PickerSearchRequestEditorTest, ShowsResultsFromEditorSearch) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback,
               Call(source,
-                   ElementsAre(Property(
-                       "data", &PickerSearchResult::data,
-                       VariantWith<PickerSearchResult::EditorData>(_))),
+                   ElementsAre(Property("data", &PickerSearchResult::data,
+                                        VariantWith<PickerEditorResult>(_))),
                    /*has_more_results=*/false))
       .Times(1);
 

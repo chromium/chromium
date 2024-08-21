@@ -181,11 +181,11 @@ TEST_F(PickerZeroStateViewTest, ShowsSuggestedResults) {
   widget->Show();
 
   EXPECT_CALL(mock_delegate,
-              SelectZeroStateResult(Property(
-                  "data", &ash::PickerSearchResult::data,
-                  VariantWith<ash::PickerSearchResult::DriveFileData>(Field(
-                      "title", &ash::PickerSearchResult::DriveFileData::title,
-                      u"test drive file")))))
+              SelectZeroStateResult(
+                  Property("data", &ash::PickerSearchResult::data,
+                           VariantWith<ash::PickerDriveFileResult>(Field(
+                               "title", &ash::PickerDriveFileResult::title,
+                               u"test drive file")))))
       .Times(1);
 
   ASSERT_THAT(
@@ -209,7 +209,7 @@ TEST_F(PickerZeroStateViewTest, DisplayingCapsLockResultSetsCapsLockDisplayed) {
                      /*url=*/GURL(), base::FilePath()),
                  PickerSearchResult::CapsLock(
                      /*enabled=*/true,
-                     PickerSearchResult::CapsLockData::Shortcut::kAltSearch)});
+                     PickerCapsLockResult::Shortcut::kAltSearch)});
           });
   EXPECT_CALL(mock_delegate, SetCapsLockDisplayed(true)).Times(1);
 
@@ -233,7 +233,7 @@ TEST_F(PickerZeroStateViewTest,
             std::move(callback).Run(
                 {PickerSearchResult::CapsLock(
                      /*enabled=*/true,
-                     PickerSearchResult::CapsLockData::Shortcut::kAltSearch),
+                     PickerCapsLockResult::Shortcut::kAltSearch),
                  PickerSearchResult::DriveFile(
                      /*id=*/std::nullopt,
                      /*title=*/u"test drive file",
@@ -256,9 +256,8 @@ TEST_F(PickerZeroStateViewTest,
   EXPECT_CALL(mock_delegate,
               SelectZeroStateResult(Property(
                   "data", &ash::PickerSearchResult::data,
-                  VariantWith<ash::PickerSearchResult::CapsLockData>(Field(
-                      "enabled",
-                      &ash::PickerSearchResult::CapsLockData::enabled, true)))))
+                  VariantWith<ash::PickerCapsLockResult>(Field(
+                      "enabled", &ash::PickerCapsLockResult::enabled, true)))))
       .Times(1);
 
   PickerItemView* item_view =
@@ -277,7 +276,7 @@ TEST_F(PickerZeroStateViewTest, PutsCapsLockInMoreCategoryForBottomCase) {
             std::move(callback).Run(
                 {PickerSearchResult::CapsLock(
                      /*enabled=*/true,
-                     PickerSearchResult::CapsLockData::Shortcut::kAltSearch),
+                     PickerCapsLockResult::Shortcut::kAltSearch),
                  PickerSearchResult::DriveFile(
                      /*id=*/std::nullopt,
                      /*title=*/u"test drive file",
@@ -298,9 +297,8 @@ TEST_F(PickerZeroStateViewTest, PutsCapsLockInMoreCategoryForBottomCase) {
   EXPECT_CALL(mock_delegate,
               SelectZeroStateResult(Property(
                   "data", &ash::PickerSearchResult::data,
-                  VariantWith<ash::PickerSearchResult::CapsLockData>(Field(
-                      "enabled",
-                      &ash::PickerSearchResult::CapsLockData::enabled, true)))))
+                  VariantWith<ash::PickerCapsLockResult>(Field(
+                      "enabled", &ash::PickerCapsLockResult::enabled, true)))))
       .Times(1);
 
   PickerItemView* item_view = view->category_section_views_for_testing()
@@ -332,13 +330,13 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItemsWithoutSubmenu) {
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run({
                 PickerSearchResult::Editor(
-                    PickerSearchResult::EditorData::Mode::kRewrite,
+                    PickerEditorResult::Mode::kRewrite,
                     /*display_name=*/u"a",
                     /*category=*/
                     chromeos::editor_menu::PresetQueryCategory::kUnknown,
                     "query_a"),
                 PickerSearchResult::Editor(
-                    PickerSearchResult::EditorData::Mode::kRewrite,
+                    PickerEditorResult::Mode::kRewrite,
                     /*display_name=*/u"b",
                     /*category=*/
                     chromeos::editor_menu::PresetQueryCategory::kUnknown,
@@ -371,13 +369,13 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run({
                 PickerSearchResult::Editor(
-                    PickerSearchResult::EditorData::Mode::kRewrite,
+                    PickerEditorResult::Mode::kRewrite,
                     /*display_name=*/u"a",
                     /*category=*/
                     chromeos::editor_menu::PresetQueryCategory::kShorten,
                     "shorten"),
                 PickerSearchResult::Editor(
-                    PickerSearchResult::EditorData::Mode::kRewrite,
+                    PickerEditorResult::Mode::kRewrite,
                     /*display_name=*/u"b",
                     /*category=*/
                     chromeos::editor_menu::PresetQueryCategory::kEmojify,
@@ -412,11 +410,11 @@ TEST_F(PickerZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run({
                 PickerSearchResult::CaseTransform(
-                    PickerSearchResult::CaseTransformData::kUpperCase),
+                    PickerCaseTransformResult::kUpperCase),
                 PickerSearchResult::CaseTransform(
-                    PickerSearchResult::CaseTransformData::kLowerCase),
+                    PickerCaseTransformResult::kLowerCase),
                 PickerSearchResult::CaseTransform(
-                    PickerSearchResult::CaseTransformData::kTitleCase),
+                    PickerCaseTransformResult::kTitleCase),
             });
           });
   PickerZeroStateView view(&mock_delegate, {}, kPickerWidth, &asset_fetcher_,

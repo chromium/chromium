@@ -406,15 +406,14 @@ void PickerView::SetCapsLockDisplayed(bool displayed) {
 }
 
 void PickerView::SelectSearchResult(const PickerSearchResult& result) {
-  if (const PickerSearchResult::CategoryData* category_data =
-          std::get_if<PickerSearchResult::CategoryData>(&result.data())) {
+  if (const PickerCategoryResult* category_data =
+          std::get_if<PickerCategoryResult>(&result.data())) {
     SelectCategory(category_data->category);
-  } else if (const PickerSearchResult::SearchRequestData* search_request_data =
-                 std::get_if<PickerSearchResult::SearchRequestData>(
-                     &result.data())) {
+  } else if (const PickerSearchRequestResult* search_request_data =
+                 std::get_if<PickerSearchRequestResult>(&result.data())) {
     UpdateSearchQueryAndActivePage(search_request_data->primary_text);
-  } else if (const PickerSearchResult::EditorData* editor_data =
-                 std::get_if<PickerSearchResult::EditorData>(&result.data())) {
+  } else if (const PickerEditorResult* editor_data =
+                 std::get_if<PickerEditorResult>(&result.data())) {
     delegate_->ShowEditor(
         editor_data->preset_query_id,
         base::UTF16ToUTF8(search_field_view_->GetQueryText()));

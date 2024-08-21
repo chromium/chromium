@@ -30,7 +30,7 @@ std::optional<PickerSearchResult> PickerMathSearch(std::u16string_view query) {
         base::UTF8ToUTF16(*result), u"",
         ui::ImageModel::FromVectorIcon(
             kPickerUnitsMathsIcon, cros_tokens::kCrosSysOnSurface, kIconSize),
-        PickerSearchResult::TextData::Source::kMath);
+        PickerTextResult::Source::kMath);
   }
   return std::nullopt;
 }

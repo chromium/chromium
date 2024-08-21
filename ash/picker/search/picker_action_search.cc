@@ -23,7 +23,7 @@
 namespace ash {
 namespace {
 
-using CaseTransformType = PickerSearchResult::CaseTransformData::Type;
+using CaseTransformType = PickerCaseTransformResult::Type;
 
 constexpr auto kTransformMessageIds =
     std::to_array<std::pair<int, CaseTransformType>>({

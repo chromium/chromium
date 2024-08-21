@@ -90,7 +90,7 @@ PickerSearchResult MakeResult(const ResolvedDate& date) {
       date.disambiguation_text.value_or(u""),
       ui::ImageModel::FromVectorIcon(kPickerCalendarIcon,
                                      cros_tokens::kCrosSysOnSurface),
-      PickerSearchResult::TextData::Source::kDate);
+      PickerTextResult::Source::kDate);
 }
 
 PickerSearchResult MakeSuggestedResult(std::u16string_view query_text,

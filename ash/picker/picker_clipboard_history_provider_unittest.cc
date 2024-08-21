@@ -60,13 +60,13 @@ TEST_F(PickerClipboardHistoryProviderTest, FetchesTextResult) {
   base::test::TestFuture<std::vector<PickerSearchResult>> future;
   provider.FetchResults(future.GetCallback());
 
-  EXPECT_THAT(future.Get(),
-              ElementsAre(Property(
-                  "data", &PickerSearchResult::data,
-                  VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
-                      expected_item_id,
-                      PickerSearchResult::ClipboardData::DisplayFormat::kText,
-                      0, u"xyz", std::nullopt, true)))));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(Property(
+          "data", &PickerSearchResult::data,
+          VariantWith<PickerClipboardResult>(FieldsAre(
+              expected_item_id, PickerClipboardResult::DisplayFormat::kText, 0,
+              u"xyz", std::nullopt, true)))));
 }
 
 TEST_F(PickerClipboardHistoryProviderTest, FetchesUrlResult) {
@@ -91,13 +91,13 @@ TEST_F(PickerClipboardHistoryProviderTest, FetchesUrlResult) {
   base::test::TestFuture<std::vector<PickerSearchResult>> future;
   provider.FetchResults(future.GetCallback());
 
-  EXPECT_THAT(future.Get(),
-              ElementsAre(Property(
-                  "data", &PickerSearchResult::data,
-                  VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
-                      expected_item_id,
-                      PickerSearchResult::ClipboardData::DisplayFormat::kUrl, 0,
-                      u"https://www.google.com/", std::nullopt, true)))));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(Property(
+          "data", &PickerSearchResult::data,
+          VariantWith<PickerClipboardResult>(FieldsAre(
+              expected_item_id, PickerClipboardResult::DisplayFormat::kUrl, 0,
+              u"https://www.google.com/", std::nullopt, true)))));
 }
 
 TEST_F(PickerClipboardHistoryProviderTest, FetchesImageResult) {
@@ -125,13 +125,13 @@ TEST_F(PickerClipboardHistoryProviderTest, FetchesImageResult) {
   base::test::TestFuture<std::vector<PickerSearchResult>> future;
   provider.FetchResults(future.GetCallback());
 
-  EXPECT_THAT(future.Get(),
-              ElementsAre(Property(
-                  "data", &PickerSearchResult::data,
-                  VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
-                      expected_item_id,
-                      PickerSearchResult::ClipboardData::DisplayFormat::kImage,
-                      0, _, expected_display_image, true)))));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(Property(
+          "data", &PickerSearchResult::data,
+          VariantWith<PickerClipboardResult>(FieldsAre(
+              expected_item_id, PickerClipboardResult::DisplayFormat::kImage, 0,
+              _, expected_display_image, true)))));
 }
 
 TEST_F(PickerClipboardHistoryProviderTest, FetchesSingleFileResult) {
@@ -157,13 +157,13 @@ TEST_F(PickerClipboardHistoryProviderTest, FetchesSingleFileResult) {
   base::test::TestFuture<std::vector<PickerSearchResult>> future;
   provider.FetchResults(future.GetCallback());
 
-  EXPECT_THAT(future.Get(),
-              ElementsAre(Property(
-                  "data", &PickerSearchResult::data,
-                  VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
-                      expected_item_id,
-                      PickerSearchResult::ClipboardData::DisplayFormat::kFile,
-                      1, u"filename", std::nullopt, true)))));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(Property(
+          "data", &PickerSearchResult::data,
+          VariantWith<PickerClipboardResult>(FieldsAre(
+              expected_item_id, PickerClipboardResult::DisplayFormat::kFile, 1,
+              u"filename", std::nullopt, true)))));
 }
 
 TEST_F(PickerClipboardHistoryProviderTest, FetchesMultipleFileResults) {
@@ -192,13 +192,13 @@ TEST_F(PickerClipboardHistoryProviderTest, FetchesMultipleFileResults) {
   base::test::TestFuture<std::vector<PickerSearchResult>> future;
   provider.FetchResults(future.GetCallback());
 
-  EXPECT_THAT(future.Get(),
-              ElementsAre(Property(
-                  "data", &PickerSearchResult::data,
-                  VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
-                      expected_item_id,
-                      PickerSearchResult::ClipboardData::DisplayFormat::kFile,
-                      2, u"2 files", std::nullopt, true)))));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(Property(
+          "data", &PickerSearchResult::data,
+          VariantWith<PickerClipboardResult>(FieldsAre(
+              expected_item_id, PickerClipboardResult::DisplayFormat::kFile, 2,
+              u"2 files", std::nullopt, true)))));
 }
 
 TEST_F(PickerClipboardHistoryProviderTest, SetsIsRecentFieldFalse) {
@@ -224,13 +224,13 @@ TEST_F(PickerClipboardHistoryProviderTest, SetsIsRecentFieldFalse) {
   base::test::TestFuture<std::vector<PickerSearchResult>> future;
   provider.FetchResults(future.GetCallback(), /*query=*/u"");
 
-  EXPECT_THAT(future.Get(),
-              ElementsAre(Property(
-                  "data", &PickerSearchResult::data,
-                  VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
-                      expected_item_id,
-                      PickerSearchResult::ClipboardData::DisplayFormat::kText,
-                      0, u"xyz", std::nullopt, false)))));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(Property(
+          "data", &PickerSearchResult::data,
+          VariantWith<PickerClipboardResult>(FieldsAre(
+              expected_item_id, PickerClipboardResult::DisplayFormat::kText, 0,
+              u"xyz", std::nullopt, false)))));
 }
 
 TEST_F(PickerClipboardHistoryProviderTest, FiletersResultByQuery) {
@@ -257,11 +257,10 @@ TEST_F(PickerClipboardHistoryProviderTest, FiletersResultByQuery) {
 
   EXPECT_THAT(
       future.Get(),
-      ElementsAre(Property(
-          "data", &PickerSearchResult::data,
-          VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
-              _, PickerSearchResult::ClipboardData::DisplayFormat::kText, 0,
-              u"12345", std::nullopt, true)))));
+      ElementsAre(Property("data", &PickerSearchResult::data,
+                           VariantWith<PickerClipboardResult>(FieldsAre(
+                               _, PickerClipboardResult::DisplayFormat::kText,
+                               0, u"12345", std::nullopt, true)))));
 }
 
 TEST_F(PickerClipboardHistoryProviderTest, FiltersOutHtmlResults) {

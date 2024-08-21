@@ -170,49 +170,46 @@ input_method::ImeKeyboard& GetImeKeyboard() {
 }
 
 // The user can ask to insert rich media, a clipboard item, or insert nothing.
-using InsertionContent = std::
-    variant<PickerRichMedia, PickerSearchResult::ClipboardData, std::monostate>;
+using InsertionContent =
+    std::variant<PickerRichMedia, PickerClipboardResult, std::monostate>;
 
 InsertionContent GetInsertionContentForResult(
     const PickerSearchResult& result) {
   using ReturnType = InsertionContent;
   return std::visit(
       base::Overloaded{
-          [](const PickerSearchResult::TextData& data) -> ReturnType {
+          [](const PickerTextResult& data) -> ReturnType {
             return PickerTextMedia(data.primary_text);
           },
-          [](const PickerSearchResult::EmojiData& data) -> ReturnType {
+          [](const PickerEmojiResult& data) -> ReturnType {
             return PickerTextMedia(data.text);
           },
-          [](const PickerSearchResult::ClipboardData& data) -> ReturnType {
-            return data;
-          },
-          [](const PickerSearchResult::BrowsingHistoryData& data)
-              -> ReturnType {
+          [](const PickerClipboardResult& data) -> ReturnType { return data; },
+          [](const PickerBrowsingHistoryResult& data) -> ReturnType {
             return PickerLinkMedia(data.url, base::UTF16ToUTF8(data.title));
           },
-          [](const PickerSearchResult::LocalFileData& data) -> ReturnType {
+          [](const PickerLocalFileResult& data) -> ReturnType {
             return PickerLocalFileMedia(data.file_path);
           },
-          [](const PickerSearchResult::DriveFileData& data) -> ReturnType {
+          [](const PickerDriveFileResult& data) -> ReturnType {
             return PickerLinkMedia(data.url, base::UTF16ToUTF8(data.title));
           },
-          [](const PickerSearchResult::CategoryData& data) -> ReturnType {
+          [](const PickerCategoryResult& data) -> ReturnType {
             return std::monostate();
           },
-          [](const PickerSearchResult::SearchRequestData& data) -> ReturnType {
+          [](const PickerSearchRequestResult& data) -> ReturnType {
             return std::monostate();
           },
-          [](const PickerSearchResult::EditorData& data) -> ReturnType {
+          [](const PickerEditorResult& data) -> ReturnType {
             return std::monostate();
           },
-          [](const PickerSearchResult::NewWindowData& data) -> ReturnType {
+          [](const PickerNewWindowResult& data) -> ReturnType {
             return std::monostate();
           },
-          [](const PickerSearchResult::CapsLockData& data) -> ReturnType {
+          [](const PickerCapsLockResult& data) -> ReturnType {
             return std::monostate();
           },
-          [](const PickerSearchResult::CaseTransformData& data) -> ReturnType {
+          [](const PickerCaseTransformResult& data) -> ReturnType {
             return std::monostate();
           },
       },
@@ -230,13 +227,13 @@ std::vector<PickerSearchResultsSection> CreateSingleSectionForCategoryResults(
 }
 
 std::u16string TransformText(std::u16string_view text,
-                             PickerSearchResult::CaseTransformData::Type type) {
+                             PickerCaseTransformResult::Type type) {
   switch (type) {
-    case PickerSearchResult::CaseTransformData::Type::kUpperCase:
+    case PickerCaseTransformResult::Type::kUpperCase:
       return PickerTransformToUpperCase(text);
-    case PickerSearchResult::CaseTransformData::Type::kLowerCase:
+    case PickerCaseTransformResult::Type::kLowerCase:
       return PickerTransformToLowerCase(text);
-    case PickerSearchResult::CaseTransformData::Type::kTitleCase:
+    case PickerCaseTransformResult::Type::kTitleCase:
       return PickerTransformToTitleCase(text);
   }
   NOTREACHED();
@@ -252,15 +249,15 @@ void OpenFile(const base::FilePath& path) {
   ash::NewWindowDelegate::GetPrimary()->OpenFile(path);
 }
 
-GURL GetUrlForNewWindow(PickerSearchResult::NewWindowData::Type type) {
+GURL GetUrlForNewWindow(PickerNewWindowResult::Type type) {
   switch (type) {
-    case PickerSearchResult::NewWindowData::Type::kDoc:
+    case PickerNewWindowResult::Type::kDoc:
       return GURL("https://docs.new");
-    case PickerSearchResult::NewWindowData::Type::kSheet:
+    case PickerNewWindowResult::Type::kSheet:
       return GURL("https://sheets.new");
-    case PickerSearchResult::NewWindowData::Type::kSlide:
+    case PickerNewWindowResult::Type::kSlide:
       return GURL("https://slides.new");
-    case PickerSearchResult::NewWindowData::Type::kChrome:
+    case PickerNewWindowResult::Type::kChrome:
       return GURL("chrome://newtab");
   }
 }
@@ -275,13 +272,13 @@ gfx::NativeView GetParentView() {
 }
 
 ui::EmojiPickerCategory EmojiResultTypeToCategory(
-    PickerSearchResult::EmojiData::Type type) {
+    PickerEmojiResult::Type type) {
   switch (type) {
-    case PickerSearchResult::EmojiData::Type::kEmoji:
+    case PickerEmojiResult::Type::kEmoji:
       return ui::EmojiPickerCategory::kEmojis;
-    case PickerSearchResult::EmojiData::Type::kSymbol:
+    case PickerEmojiResult::Type::kSymbol:
       return ui::EmojiPickerCategory::kSymbols;
-    case PickerSearchResult::EmojiData::Type::kEmoticon:
+    case PickerEmojiResult::Type::kEmoticon:
       return ui::EmojiPickerCategory::kEmoticons;
   }
 }
@@ -455,40 +452,38 @@ void PickerController::CloseWidgetThenInsertResultOnNextFocus(
 void PickerController::OpenResult(const PickerSearchResult& result) {
   return std::visit(
       base::Overloaded{
-          [](const PickerSearchResult::TextData& data) { NOTREACHED(); },
-          [](const PickerSearchResult::EmojiData& data) { NOTREACHED(); },
-          [](const PickerSearchResult::ClipboardData& data) { NOTREACHED(); },
-          [&](const PickerSearchResult::BrowsingHistoryData& data) {
+          [](const PickerTextResult& data) { NOTREACHED(); },
+          [](const PickerEmojiResult& data) { NOTREACHED(); },
+          [](const PickerClipboardResult& data) { NOTREACHED(); },
+          [&](const PickerBrowsingHistoryResult& data) {
             session_metrics_->SetOutcome(
                 PickerSessionMetrics::SessionOutcome::kOpenLink);
             OpenLink(data.url);
           },
-          [&](const PickerSearchResult::LocalFileData& data) {
+          [&](const PickerLocalFileResult& data) {
             session_metrics_->SetOutcome(
                 PickerSessionMetrics::SessionOutcome::kOpenFile);
             OpenFile(data.file_path);
           },
-          [&](const PickerSearchResult::DriveFileData& data) {
+          [&](const PickerDriveFileResult& data) {
             session_metrics_->SetOutcome(
                 PickerSessionMetrics::SessionOutcome::kOpenLink);
             OpenLink(data.url);
           },
-          [](const PickerSearchResult::CategoryData& data) { NOTREACHED(); },
-          [](const PickerSearchResult::SearchRequestData& data) {
-            NOTREACHED();
-          },
-          [](const PickerSearchResult::EditorData& data) { NOTREACHED(); },
-          [&](const PickerSearchResult::NewWindowData& data) {
+          [](const PickerCategoryResult& data) { NOTREACHED(); },
+          [](const PickerSearchRequestResult& data) { NOTREACHED(); },
+          [](const PickerEditorResult& data) { NOTREACHED(); },
+          [&](const PickerNewWindowResult& data) {
             session_metrics_->SetOutcome(
                 PickerSessionMetrics::SessionOutcome::kCreate);
             OpenLink(GetUrlForNewWindow(data.type));
           },
-          [&](const PickerSearchResult::CapsLockData& data) {
+          [&](const PickerCapsLockResult& data) {
             session_metrics_->SetOutcome(
                 PickerSessionMetrics::SessionOutcome::kFormat);
             GetImeKeyboard().SetCapsLockEnabled(data.enabled);
           },
-          [&](const PickerSearchResult::CaseTransformData& data) {
+          [&](const PickerCaseTransformResult& data) {
             if (!model_) {
               return;
             }
@@ -497,7 +492,7 @@ void PickerController::OpenResult(const PickerSearchResult& result) {
             std::u16string_view selected_text = model_->selected_text();
             InsertResultOnNextFocus(PickerSearchResult::Text(
                 TransformText(selected_text, data.type),
-                PickerSearchResult::TextData::Source::kCaseTransform));
+                PickerTextResult::Source::kCaseTransform));
           },
       },
       result.data());
@@ -532,52 +527,52 @@ PickerActionType PickerController::GetActionForResult(
   const PickerModeType mode = model_->GetMode();
   return std::visit(
       base::Overloaded{
-          [mode](const PickerSearchResult::TextData& data) {
+          [mode](const PickerTextResult& data) {
             CHECK(mode == PickerModeType::kNoSelection ||
                   mode == PickerModeType::kHasSelection);
             return PickerActionType::kInsert;
           },
-          [mode](const PickerSearchResult::EmojiData& data) {
+          [mode](const PickerEmojiResult& data) {
             CHECK(mode == PickerModeType::kNoSelection ||
                   mode == PickerModeType::kHasSelection);
             return PickerActionType::kInsert;
           },
-          [mode](const PickerSearchResult::ClipboardData& data) {
+          [mode](const PickerClipboardResult& data) {
             CHECK(mode == PickerModeType::kNoSelection ||
                   mode == PickerModeType::kHasSelection);
             return PickerActionType::kInsert;
           },
-          [mode](const PickerSearchResult::BrowsingHistoryData& data) {
+          [mode](const PickerBrowsingHistoryResult& data) {
             return mode == PickerModeType::kUnfocused
                        ? PickerActionType::kOpen
                        : PickerActionType::kInsert;
           },
-          [mode](const PickerSearchResult::LocalFileData& data) {
+          [mode](const PickerLocalFileResult& data) {
             return mode == PickerModeType::kUnfocused
                        ? PickerActionType::kOpen
                        : PickerActionType::kInsert;
           },
-          [mode](const PickerSearchResult::DriveFileData& data) {
+          [mode](const PickerDriveFileResult& data) {
             return mode == PickerModeType::kUnfocused
                        ? PickerActionType::kOpen
                        : PickerActionType::kInsert;
           },
-          [](const PickerSearchResult::CategoryData& data) {
+          [](const PickerCategoryResult& data) {
             return PickerActionType::kDo;
           },
-          [](const PickerSearchResult::SearchRequestData& data) {
+          [](const PickerSearchRequestResult& data) {
             return PickerActionType::kDo;
           },
-          [](const PickerSearchResult::EditorData& data) {
+          [](const PickerEditorResult& data) {
             return PickerActionType::kCreate;
           },
-          [](const PickerSearchResult::NewWindowData& data) {
+          [](const PickerNewWindowResult& data) {
             return PickerActionType::kDo;
           },
-          [](const PickerSearchResult::CapsLockData& data) {
+          [](const PickerCapsLockResult& data) {
             return PickerActionType::kDo;
           },
-          [&](const PickerSearchResult::CaseTransformData& data) {
+          [&](const PickerCaseTransformResult& data) {
             return PickerActionType::kDo;
           }},
       result.data());
@@ -704,7 +699,7 @@ void PickerController::InsertResultOnNextFocus(
 
   // Update emoji history in prefs the result is an emoji/symbol/emoticon.
   CHECK(model_);
-  if (auto* data = std::get_if<PickerSearchResult::EmojiData>(&result.data());
+  if (auto* data = std::get_if<PickerEmojiResult>(&result.data());
       data != nullptr && model_->should_do_learning()) {
     emoji_history_model_->UpdateRecentEmoji(
         EmojiResultTypeToCategory(data->type), base::UTF16ToUTF8(data->text));
@@ -731,7 +726,7 @@ void PickerController::InsertResultOnNextFocus(
                 base::BindOnce(&PickerController::OnInsertCompleted,
                                weak_ptr_factory_.GetWeakPtr(), media));
           },
-          [&](PickerSearchResult::ClipboardData data) {
+          [&](PickerClipboardResult data) {
             // This cancels the previous request if there was one.
             paste_request_ = std::make_unique<PickerPasteRequest>(
                 ClipboardHistoryController::Get(),

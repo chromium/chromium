@@ -64,41 +64,39 @@ constexpr auto kSectionTitleMargins = gfx::Insets::VH(8, 16);
 constexpr auto kSectionTitleTrailingLinkMargins =
     gfx::Insets::TLBR(4, 8, 4, 16);
 
-PickerCategory GetCategoryForEditorData(
-    const PickerSearchResult::EditorData& data) {
+PickerCategory GetCategoryForEditorData(const PickerEditorResult& data) {
   switch (data.mode) {
-    case PickerSearchResult::EditorData::Mode::kWrite:
+    case PickerEditorResult::Mode::kWrite:
       return PickerCategory::kEditorWrite;
-    case PickerSearchResult::EditorData::Mode::kRewrite:
+    case PickerEditorResult::Mode::kRewrite:
       return PickerCategory::kEditorRewrite;
   }
 }
 
-std::u16string GetLabelForNewWindowType(
-    PickerSearchResult::NewWindowData::Type type) {
+std::u16string GetLabelForNewWindowType(PickerNewWindowResult::Type type) {
   switch (type) {
-    case PickerSearchResult::NewWindowData::Type::kDoc:
+    case PickerNewWindowResult::Type::kDoc:
       return l10n_util::GetStringUTF16(IDS_PICKER_NEW_GOOGLE_DOC_MENU_LABEL);
-    case PickerSearchResult::NewWindowData::Type::kSheet:
+    case PickerNewWindowResult::Type::kSheet:
       return l10n_util::GetStringUTF16(IDS_PICKER_NEW_GOOGLE_SHEET_MENU_LABEL);
-    case PickerSearchResult::NewWindowData::Type::kSlide:
+    case PickerNewWindowResult::Type::kSlide:
       return l10n_util::GetStringUTF16(IDS_PICKER_NEW_GOOGLE_SLIDE_MENU_LABEL);
-    case PickerSearchResult::NewWindowData::Type::kChrome:
+    case PickerNewWindowResult::Type::kChrome:
       return l10n_util::GetStringUTF16(IDS_PICKER_NEW_GOOGLE_CHROME_MENU_LABEL);
   }
 }
 
 const gfx::VectorIcon& GetIconForNewWindowType(
-    PickerSearchResult::NewWindowData::Type type) {
+    PickerNewWindowResult::Type type) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   switch (type) {
-    case PickerSearchResult::NewWindowData::Type::kDoc:
+    case PickerNewWindowResult::Type::kDoc:
       return vector_icons::kGoogleDocsIcon;
-    case PickerSearchResult::NewWindowData::Type::kSheet:
+    case PickerNewWindowResult::Type::kSheet:
       return vector_icons::kGoogleSheetsIcon;
-    case PickerSearchResult::NewWindowData::Type::kSlide:
+    case PickerNewWindowResult::Type::kSlide:
       return vector_icons::kGoogleSlidesIcon;
-    case PickerSearchResult::NewWindowData::Type::kChrome:
+    case PickerNewWindowResult::Type::kChrome:
       return vector_icons::kProductRefreshIcon;
   }
 #else
@@ -107,25 +105,25 @@ const gfx::VectorIcon& GetIconForNewWindowType(
 }
 
 std::u16string GetLabelForCaseTransformType(
-    PickerSearchResult::CaseTransformData::Type type) {
+    PickerCaseTransformResult::Type type) {
   switch (type) {
-    case PickerSearchResult::CaseTransformData::Type::kUpperCase:
+    case PickerCaseTransformResult::Type::kUpperCase:
       return l10n_util::GetStringUTF16(IDS_PICKER_UPPER_CASE_MENU_LABEL);
-    case PickerSearchResult::CaseTransformData::Type::kLowerCase:
+    case PickerCaseTransformResult::Type::kLowerCase:
       return l10n_util::GetStringUTF16(IDS_PICKER_LOWER_CASE_MENU_LABEL);
-    case PickerSearchResult::CaseTransformData::Type::kTitleCase:
+    case PickerCaseTransformResult::Type::kTitleCase:
       return l10n_util::GetStringUTF16(IDS_PICKER_TITLE_CASE_MENU_LABEL);
   }
 }
 
 const gfx::VectorIcon& GetIconForCaseTransformType(
-    PickerSearchResult::CaseTransformData::Type type) {
+    PickerCaseTransformResult::Type type) {
   switch (type) {
-    case PickerSearchResult::CaseTransformData::Type::kUpperCase:
+    case PickerCaseTransformResult::Type::kUpperCase:
       return kPickerUpperCaseIcon;
-    case PickerSearchResult::CaseTransformData::Type::kLowerCase:
+    case PickerCaseTransformResult::Type::kLowerCase:
       return kPickerLowerCaseIcon;
-    case PickerSearchResult::CaseTransformData::Type::kTitleCase:
+    case PickerCaseTransformResult::Type::kTitleCase:
       return kPickerTitleCaseIcon;
   }
 }
@@ -149,19 +147,19 @@ std::optional<base::File::Info> ResolveFileInfo(const base::FilePath& path) {
 
 // This should align with `chromeos::clipboard_history::GetIconForDescriptor`.
 const gfx::VectorIcon& GetIconForClipboardData(
-    const PickerSearchResult::ClipboardData& data) {
+    const PickerClipboardResult& data) {
   switch (data.display_format) {
-    case PickerSearchResult::ClipboardData::DisplayFormat::kText:
+    case PickerClipboardResult::DisplayFormat::kText:
       return chromeos::kTextIcon;
-    case PickerSearchResult::ClipboardData::DisplayFormat::kUrl:
+    case PickerClipboardResult::DisplayFormat::kUrl:
       return vector_icons::kLinkIcon;
-    case PickerSearchResult::ClipboardData::DisplayFormat::kImage:
+    case PickerClipboardResult::DisplayFormat::kImage:
       return chromeos::kFiletypeImageIcon;
-    case PickerSearchResult::ClipboardData::DisplayFormat::kFile:
+    case PickerClipboardResult::DisplayFormat::kFile:
       return data.file_count == 1 ? chromeos::GetIconForPath(base::FilePath(
                                         base::UTF16ToUTF8(data.display_text)))
                                   : vector_icons::kContentCopyIcon;
-    case PickerSearchResult::ClipboardData::DisplayFormat::kHtml:
+    case PickerClipboardResult::DisplayFormat::kHtml:
       NOTREACHED();
   }
   NOTREACHED();
@@ -197,7 +195,7 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
   using ReturnType = std::unique_ptr<PickerItemView>;
   return std::visit(
       base::Overloaded{
-          [&](const PickerSearchResult::TextData& data) -> ReturnType {
+          [&](const PickerTextResult& data) -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(data.primary_text);
@@ -205,7 +203,7 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
             item_view->SetLeadingIcon(data.icon);
             return item_view;
           },
-          [&](const PickerSearchResult::SearchRequestData& data) -> ReturnType {
+          [&](const PickerSearchRequestResult& data) -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(data.primary_text);
@@ -213,26 +211,24 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
             item_view->SetLeadingIcon(data.icon);
             return item_view;
           },
-          [&](const PickerSearchResult::EmojiData& data) -> ReturnType {
-            NOTREACHED();
-          },
-          [&](const PickerSearchResult::ClipboardData& data) -> ReturnType {
+          [&](const PickerEmojiResult& data) -> ReturnType { NOTREACHED(); },
+          [&](const PickerClipboardResult& data) -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
             switch (data.display_format) {
-              case PickerSearchResult::ClipboardData::DisplayFormat::kFile:
-              case PickerSearchResult::ClipboardData::DisplayFormat::kText:
-              case PickerSearchResult::ClipboardData::DisplayFormat::kUrl:
+              case PickerClipboardResult::DisplayFormat::kFile:
+              case PickerClipboardResult::DisplayFormat::kText:
+              case PickerClipboardResult::DisplayFormat::kUrl:
                 item_view->SetPrimaryText(data.display_text);
                 break;
-              case PickerSearchResult::ClipboardData::DisplayFormat::kImage:
+              case PickerClipboardResult::DisplayFormat::kImage:
                 if (!data.display_image.has_value()) {
                   return nullptr;
                 }
                 item_view->SetPrimaryImage(*data.display_image,
                                            available_width);
                 break;
-              case PickerSearchResult::ClipboardData::DisplayFormat::kHtml:
+              case PickerClipboardResult::DisplayFormat::kHtml:
                 NOTREACHED();
             }
             item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
@@ -240,8 +236,7 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
                 kIconSize));
             return item_view;
           },
-          [&](const PickerSearchResult::BrowsingHistoryData& data)
-              -> ReturnType {
+          [&](const PickerBrowsingHistoryResult& data) -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
             std::u16string formatted_url = FormatBrowsingHistoryUrl(data.url);
@@ -251,7 +246,7 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
             item_view->SetLeadingIcon(data.icon, kBrowsingHistoryIconSize);
             return item_view;
           },
-          [&](const PickerSearchResult::LocalFileData& data) -> ReturnType {
+          [&](const PickerLocalFileResult& data) -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(data.title);
@@ -265,7 +260,7 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
                 /*update_icon=*/true);
             return item_view;
           },
-          [&](const PickerSearchResult::DriveFileData& data) -> ReturnType {
+          [&](const PickerDriveFileResult& data) -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(data.title);
@@ -283,14 +278,14 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
                 /*update_icon=*/false);
             return item_view;
           },
-          [&](const PickerSearchResult::CategoryData& data) -> ReturnType {
+          [&](const PickerCategoryResult& data) -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(GetLabelForPickerCategory(data.category));
             item_view->SetLeadingIcon(GetIconForPickerCategory(data.category));
             return item_view;
           },
-          [&](const PickerSearchResult::EditorData& data) -> ReturnType {
+          [&](const PickerEditorResult& data) -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
             if (data.category.has_value()) {
@@ -308,7 +303,7 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
             }
             return item_view;
           },
-          [&](const PickerSearchResult::NewWindowData& data) -> ReturnType {
+          [&](const PickerNewWindowResult& data) -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(GetLabelForNewWindowType(data.type));
@@ -317,7 +312,7 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
                 cros_tokens::kCrosSysOnSurface));
             return item_view;
           },
-          [&](const PickerSearchResult::CapsLockData& data) -> ReturnType {
+          [&](const PickerCapsLockResult& data) -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(l10n_util::GetStringUTF16(
@@ -330,7 +325,7 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
                 std::make_unique<PickerShortcutHintView>(data.shortcut));
             return item_view;
           },
-          [&](const PickerSearchResult::CaseTransformData& data) -> ReturnType {
+          [&](const PickerCaseTransformResult& data) -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(GetLabelForCaseTransformType(data.type));

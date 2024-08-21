@@ -153,8 +153,7 @@ std::vector<ash::PickerSearchResult> ConvertSearchResults(
               result->best_match()));
         } else {
           picker_results.push_back(ash::PickerSearchResult::Text(
-              result->title(),
-              ash::PickerSearchResult::TextData::Source::kOmnibox));
+              result->title(), ash::PickerTextResult::Source::kOmnibox));
         }
         break;
       }
@@ -221,8 +220,7 @@ std::vector<ash::PickerSearchResult> GetEditorResultsFromPanelContext(
   for (const crosapi::mojom::EditorPanelPresetTextQueryPtr& query :
        panel_context->preset_text_queries) {
     results.push_back(ash::PickerSearchResult::Editor(
-        ash::PickerSearchResult::EditorData::Mode::kRewrite,
-        base::UTF8ToUTF16(query->name),
+        ash::PickerEditorResult::Mode::kRewrite, base::UTF8ToUTF16(query->name),
         FromMojoPresetQueryCategory(query->category), query->text_query_id));
   }
   return results;

@@ -22,7 +22,7 @@ using ::testing::IsEmpty;
 using ::testing::Property;
 using ::testing::VariantWith;
 
-using CaseTransformType = PickerSearchResult::CaseTransformData::Type;
+using CaseTransformType = PickerCaseTransformResult::Type;
 
 struct TestCase {
   PickerActionSearchOptions options;
@@ -117,7 +117,7 @@ INSTANTIATE_TEST_SUITE_P(
             .query = u"caps",
             .expected_results = {PickerSearchResult::CapsLock(
                 /*enabled=*/false,
-                PickerSearchResult::CapsLockData::Shortcut::kAltSearch)},
+                PickerCapsLockResult::Shortcut::kAltSearch)},
         },
         // Caps Lock On
         TestCase{
@@ -128,7 +128,7 @@ INSTANTIATE_TEST_SUITE_P(
             .query = u"caps",
             .expected_results = {PickerSearchResult::CapsLock(
                 /*enabled=*/true,
-                PickerSearchResult::CapsLockData::Shortcut::kAltSearch)},
+                PickerCapsLockResult::Shortcut::kAltSearch)},
         },
         // Uppercase
         TestCase{

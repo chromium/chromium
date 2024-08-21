@@ -189,8 +189,8 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromOmniboxSearch) {
               "results", &PickerSearchResultsSection::results,
               ElementsAre(Property(
                   "data", &PickerSearchResult::data,
-                  VariantWith<PickerSearchResult::BrowsingHistoryData>(Field(
-                      "url", &PickerSearchResult::BrowsingHistoryData::url,
+                  VariantWith<PickerBrowsingHistoryResult>(Field(
+                      "url", &PickerBrowsingHistoryResult::url,
                       Property("spec", &GURL::spec,
                                "https://www.google.com/search?q=cat"))))))))))
       .Times(AtLeast(1));
@@ -443,17 +443,16 @@ TEST_F(
 TEST_F(PickerSearchControllerTest, ShowsResultsFromFileSearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(Contains(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
-                   PickerSectionType::kLocalFiles),
-          Property("results", &PickerSearchResultsSection::results,
-                   ElementsAre(Property(
-                       "data", &PickerSearchResult::data,
-                       VariantWith<PickerSearchResult::TextData>(Field(
-                           "text", &PickerSearchResult::TextData::primary_text,
-                           u"monorail_cat.jpg")))))))))
+  EXPECT_CALL(search_results_callback,
+              Call(Contains(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kLocalFiles),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(Property(
+                               "data", &PickerSearchResult::data,
+                               VariantWith<PickerTextResult>(Field(
+                                   "text", &PickerTextResult::primary_text,
+                                   u"monorail_cat.jpg")))))))))
       .Times(AtLeast(1));
   PickerSearchController controller(&client(), kBurnInPeriod);
 
@@ -582,17 +581,16 @@ TEST_F(PickerSearchControllerTest,
 TEST_F(PickerSearchControllerTest, ShowsResultsFromDriveSearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(Contains(AllOf(
-          Property("type", &PickerSearchResultsSection::type,
-                   PickerSectionType::kDriveFiles),
-          Property("results", &PickerSearchResultsSection::results,
-                   ElementsAre(Property(
-                       "data", &PickerSearchResult::data,
-                       VariantWith<PickerSearchResult::TextData>(Field(
-                           "text", &PickerSearchResult::TextData::primary_text,
-                           u"catrbug_135117.jpg")))))))))
+  EXPECT_CALL(search_results_callback,
+              Call(Contains(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kDriveFiles),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(Property(
+                               "data", &PickerSearchResult::data,
+                               VariantWith<PickerTextResult>(Field(
+                                   "text", &PickerTextResult::primary_text,
+                                   u"catrbug_135117.jpg")))))))))
       .Times(AtLeast(1));
   PickerSearchController controller(&client(), kBurnInPeriod);
 
@@ -727,30 +725,27 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kLinks),
                 Property("results", &PickerSearchResultsSection::results,
-                         Contains(Property(
-                             "data", &PickerSearchResult::data,
-                             VariantWith<PickerSearchResult::TextData>(Field(
-                                 "primary_text",
-                                 &PickerSearchResult::TextData::primary_text,
-                                 u"omnibox")))))),
+                         Contains(Property("data", &PickerSearchResult::data,
+                                           VariantWith<PickerTextResult>(Field(
+                                               "primary_text",
+                                               &PickerTextResult::primary_text,
+                                               u"omnibox")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kLocalFiles),
                 Property("results", &PickerSearchResultsSection::results,
                          Contains(Property(
                              "data", &PickerSearchResult::data,
-                             VariantWith<PickerSearchResult::TextData>(Field(
+                             VariantWith<PickerTextResult>(Field(
                                  "primary_text",
-                                 &PickerSearchResult::TextData::primary_text,
-                                 u"file")))))),
+                                 &PickerTextResult::primary_text, u"file")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kDriveFiles),
                 Property("results", &PickerSearchResultsSection::results,
-                         Contains(Property(
-                             "data", &PickerSearchResult::data,
-                             VariantWith<PickerSearchResult::TextData>(Field(
-                                 "primary_text",
-                                 &PickerSearchResult::TextData::primary_text,
-                                 u"drive")))))),
+                         Contains(Property("data", &PickerSearchResult::data,
+                                           VariantWith<PickerTextResult>(Field(
+                                               "primary_text",
+                                               &PickerTextResult::primary_text,
+                                               u"drive")))))),
       })))
       .Times(AtLeast(1));
   PickerSearchController controller(&client(), kBurnInPeriod);
@@ -814,10 +809,9 @@ TEST_F(PickerSearchControllerTest, ShowResultsEvenAfterBurnIn) {
           Property("results", &PickerSearchResultsSection::results,
                    Contains(Property(
                        "data", &PickerSearchResult::data,
-                       VariantWith<PickerSearchResult::TextData>(AllOf(
-                           Field("primary_text",
-                                 &PickerSearchResult::TextData::primary_text,
-                                 u"test"))))))))))
+                       VariantWith<PickerTextResult>(AllOf(Field(
+                           "primary_text", &PickerTextResult::primary_text,
+                           u"test"))))))))))
       .Times(AtLeast(1));
   PickerSearchController controller(&client(), kBurnInPeriod);
 
@@ -1020,19 +1014,16 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataInAllLanguages) {
       results_callback,
       Call(ElementsAre(
           // JP is first because the current input method is a JP input method
-          Property(
-              "data", &PickerSearchResult::data,
-              VariantWith<PickerSearchResult::EmojiData>(Field(
-                  "text", &PickerSearchResult::EmojiData::text, Eq(u"😀jp")))),
+          Property("data", &PickerSearchResult::data,
+                   VariantWith<PickerEmojiResult>(
+                       Field("text", &PickerEmojiResult::text, Eq(u"😀jp")))),
           // The rest is from English
-          Property(
-              "data", &PickerSearchResult::data,
-              VariantWith<PickerSearchResult::EmojiData>(Field(
-                  "text", &PickerSearchResult::EmojiData::text, Eq(u"😀en")))),
-          Property(
-              "data", &PickerSearchResult::data,
-              VariantWith<PickerSearchResult::EmojiData>(Field(
-                  "text", &PickerSearchResult::EmojiData::text, Eq(u":-)")))))))
+          Property("data", &PickerSearchResult::data,
+                   VariantWith<PickerEmojiResult>(
+                       Field("text", &PickerEmojiResult::text, Eq(u"😀en")))),
+          Property("data", &PickerSearchResult::data,
+                   VariantWith<PickerEmojiResult>(
+                       Field("text", &PickerEmojiResult::text, Eq(u":-)")))))))
       .Times(1);
 
   PickerSearchController controller(&client(),
@@ -1076,14 +1067,12 @@ TEST_F(PickerSearchControllerTest,
   EXPECT_CALL(
       results_callback,
       Call(ElementsAre(
-          Property(
-              "data", &PickerSearchResult::data,
-              VariantWith<PickerSearchResult::EmojiData>(Field(
-                  "text", &PickerSearchResult::EmojiData::text, Eq(u"😀en")))),
-          Property(
-              "data", &PickerSearchResult::data,
-              VariantWith<PickerSearchResult::EmojiData>(Field(
-                  "text", &PickerSearchResult::EmojiData::text, Eq(u":-)")))))))
+          Property("data", &PickerSearchResult::data,
+                   VariantWith<PickerEmojiResult>(
+                       Field("text", &PickerEmojiResult::text, Eq(u"😀en")))),
+          Property("data", &PickerSearchResult::data,
+                   VariantWith<PickerEmojiResult>(
+                       Field("text", &PickerEmojiResult::text, Eq(u":-)")))))))
       .Times(1);
 
   PickerSearchController controller(&client(),
@@ -1140,14 +1129,12 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
       results_callback,
       Call(ElementsAre(
           // Only English Results
-          Property(
-              "data", &PickerSearchResult::data,
-              VariantWith<PickerSearchResult::EmojiData>(Field(
-                  "text", &PickerSearchResult::EmojiData::text, Eq(u"😀en")))),
-          Property(
-              "data", &PickerSearchResult::data,
-              VariantWith<PickerSearchResult::EmojiData>(Field(
-                  "text", &PickerSearchResult::EmojiData::text, Eq(u":-)")))))))
+          Property("data", &PickerSearchResult::data,
+                   VariantWith<PickerEmojiResult>(
+                       Field("text", &PickerEmojiResult::text, Eq(u"😀en")))),
+          Property("data", &PickerSearchResult::data,
+                   VariantWith<PickerEmojiResult>(
+                       Field("text", &PickerEmojiResult::text, Eq(u":-)")))))))
       .Times(1);
   controller.StartEmojiSearch(
       u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
@@ -1162,18 +1149,15 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
   EXPECT_CALL(
       results_callback_jp,
       Call(ElementsAre(
-          Property(
-              "data", &PickerSearchResult::data,
-              VariantWith<PickerSearchResult::EmojiData>(Field(
-                  "text", &PickerSearchResult::EmojiData::text, Eq(u"😀en")))),
-          Property(
-              "data", &PickerSearchResult::data,
-              VariantWith<PickerSearchResult::EmojiData>(Field(
-                  "text", &PickerSearchResult::EmojiData::text, Eq(u"😀jp")))),
-          Property(
-              "data", &PickerSearchResult::data,
-              VariantWith<PickerSearchResult::EmojiData>(Field(
-                  "text", &PickerSearchResult::EmojiData::text, Eq(u":-)")))))))
+          Property("data", &PickerSearchResult::data,
+                   VariantWith<PickerEmojiResult>(
+                       Field("text", &PickerEmojiResult::text, Eq(u"😀en")))),
+          Property("data", &PickerSearchResult::data,
+                   VariantWith<PickerEmojiResult>(
+                       Field("text", &PickerEmojiResult::text, Eq(u"😀jp")))),
+          Property("data", &PickerSearchResult::data,
+                   VariantWith<PickerEmojiResult>(
+                       Field("text", &PickerEmojiResult::text, Eq(u":-)")))))))
       .Times(1);
   controller.StartEmojiSearch(
       u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
@@ -1224,18 +1208,15 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataForJapaneseUiLocale) {
   EXPECT_CALL(
       results_callback_jp,
       Call(ElementsAre(
-          Property(
-              "data", &PickerSearchResult::data,
-              VariantWith<PickerSearchResult::EmojiData>(Field(
-                  "text", &PickerSearchResult::EmojiData::text, Eq(u"😀en")))),
-          Property(
-              "data", &PickerSearchResult::data,
-              VariantWith<PickerSearchResult::EmojiData>(Field(
-                  "text", &PickerSearchResult::EmojiData::text, Eq(u"😀jp")))),
-          Property(
-              "data", &PickerSearchResult::data,
-              VariantWith<PickerSearchResult::EmojiData>(Field(
-                  "text", &PickerSearchResult::EmojiData::text, Eq(u":-)")))))))
+          Property("data", &PickerSearchResult::data,
+                   VariantWith<PickerEmojiResult>(
+                       Field("text", &PickerEmojiResult::text, Eq(u"😀en")))),
+          Property("data", &PickerSearchResult::data,
+                   VariantWith<PickerEmojiResult>(
+                       Field("text", &PickerEmojiResult::text, Eq(u"😀jp")))),
+          Property("data", &PickerSearchResult::data,
+                   VariantWith<PickerEmojiResult>(
+                       Field("text", &PickerEmojiResult::text, Eq(u":-)")))))))
       .Times(1);
   controller.StartEmojiSearch(
       u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,

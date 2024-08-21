@@ -211,31 +211,18 @@ struct ASH_PUBLIC_EXPORT PickerCaseTransformResult {
 // Represents a search result, which might be text or other types of media.
 class ASH_PUBLIC_EXPORT PickerSearchResult {
  public:
-  using TextData = PickerTextResult;
-  using SearchRequestData = PickerSearchRequestResult;
-  using EmojiData = PickerEmojiResult;
-  using ClipboardData = PickerClipboardResult;
-  using BrowsingHistoryData = PickerBrowsingHistoryResult;
-  using LocalFileData = PickerLocalFileResult;
-  using DriveFileData = PickerDriveFileResult;
-  using CategoryData = PickerCategoryResult;
-  using EditorData = PickerEditorResult;
-  using NewWindowData = PickerNewWindowResult;
-  using CapsLockData = PickerCapsLockResult;
-  using CaseTransformData = PickerCaseTransformResult;
-
-  using Data = std::variant<TextData,
-                            SearchRequestData,
-                            EmojiData,
-                            ClipboardData,
-                            BrowsingHistoryData,
-                            LocalFileData,
-                            DriveFileData,
-                            CategoryData,
-                            EditorData,
-                            NewWindowData,
-                            CapsLockData,
-                            CaseTransformData>;
+  using Data = std::variant<PickerTextResult,
+                            PickerSearchRequestResult,
+                            PickerEmojiResult,
+                            PickerClipboardResult,
+                            PickerBrowsingHistoryResult,
+                            PickerLocalFileResult,
+                            PickerDriveFileResult,
+                            PickerCategoryResult,
+                            PickerEditorResult,
+                            PickerNewWindowResult,
+                            PickerCapsLockResult,
+                            PickerCaseTransformResult>;
 
   PickerSearchResult(const PickerSearchResult&);
   PickerSearchResult& operator=(const PickerSearchResult&);
@@ -249,12 +236,12 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                                             bool best_match = false);
   static PickerSearchResult Text(
       std::u16string_view text,
-      TextData::Source source = TextData::Source::kUnknown);
+      PickerTextResult::Source source = PickerTextResult::Source::kUnknown);
   static PickerSearchResult Text(
       std::u16string_view primary_text,
       std::u16string_view secondary_text,
       ui::ImageModel icon,
-      TextData::Source source = TextData::Source::kUnknown);
+      PickerTextResult::Source source = PickerTextResult::Source::kUnknown);
   static PickerSearchResult SearchRequest(std::u16string_view primary_text,
                                           std::u16string_view secondary_text,
                                           ui::ImageModel icon);
@@ -266,7 +253,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                                      std::u16string name = u"");
   static PickerSearchResult Clipboard(
       base::UnguessableToken item_id,
-      ClipboardData::DisplayFormat display_format,
+      PickerClipboardResult::DisplayFormat display_format,
       size_t file_count,
       std::u16string display_text,
       std::optional<ui::ImageModel> display_image,
@@ -281,14 +268,14 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                                       bool best_match = false);
   static PickerSearchResult Category(PickerCategory category);
   static PickerSearchResult Editor(
-      EditorData::Mode mode,
+      PickerEditorResult::Mode mode,
       std::u16string display_name,
       std::optional<chromeos::editor_menu::PresetQueryCategory> category,
       std::optional<std::string> preset_query_id);
-  static PickerSearchResult NewWindow(NewWindowData::Type type);
+  static PickerSearchResult NewWindow(PickerNewWindowResult::Type type);
   static PickerSearchResult CapsLock(bool enabled,
-                                     CapsLockData::Shortcut shortcut);
-  static PickerSearchResult CaseTransform(CaseTransformData::Type type);
+                                     PickerCapsLockResult::Shortcut shortcut);
+  static PickerSearchResult CaseTransform(PickerCaseTransformResult::Type type);
 
   const Data& data() const;
 

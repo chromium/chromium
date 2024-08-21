@@ -108,7 +108,7 @@ TEST_F(PickerListItemViewTest, SetsShortcutHintView) {
   PickerListItemView item_view(base::DoNothing());
 
   item_view.SetShortcutHintView(std::make_unique<PickerShortcutHintView>(
-      PickerSearchResult::CapsLockData::Shortcut::kAltSearch));
+      PickerCapsLockResult::Shortcut::kAltSearch));
 
   EXPECT_NE(item_view.shortcut_hint_view_for_testing(), nullptr);
 }

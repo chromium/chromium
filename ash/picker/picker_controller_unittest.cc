@@ -591,8 +591,7 @@ TEST_F(PickerControllerTest,
 
   controller().CloseWidgetThenInsertResultOnNextFocus(
       PickerSearchResult::Clipboard(
-          *clipboard_item_id,
-          PickerSearchResult::ClipboardData::DisplayFormat::kText,
+          *clipboard_item_id, PickerClipboardResult::DisplayFormat::kText,
           /*file_count=*/0,
           /*display_text=*/u"", /*display_image=*/{}, /*is_recent=*/false));
   views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
@@ -681,16 +680,15 @@ TEST_F(PickerControllerTest, OpenNewGoogleDocOpensGoogleDocs) {
               OpenUrl(GURL("https://docs.new"), _, _))
       .Times(1);
 
-  controller().OpenResult(PickerSearchResult::NewWindow(
-      PickerSearchResult::NewWindowData::Type::kDoc));
+  controller().OpenResult(
+      PickerSearchResult::NewWindow(PickerNewWindowResult::Type::kDoc));
 }
 
 TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOnCapsLock) {
   controller().ToggleWidget();
 
   controller().OpenResult(PickerSearchResult::CapsLock(
-      /*enabled=*/true,
-      PickerSearchResult::CapsLockData::Shortcut::kAltSearch));
+      /*enabled=*/true, PickerCapsLockResult::Shortcut::kAltSearch));
 
   input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
   ASSERT_TRUE(ime_keyboard);
@@ -701,8 +699,7 @@ TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOffCapsLock) {
   controller().ToggleWidget();
 
   controller().OpenResult(PickerSearchResult::CapsLock(
-      /*enabled=*/false,
-      PickerSearchResult::CapsLockData::Shortcut::kAltSearch));
+      /*enabled=*/false, PickerCapsLockResult::Shortcut::kAltSearch));
 
   input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
   ASSERT_TRUE(ime_keyboard);
@@ -719,7 +716,7 @@ TEST_F(PickerControllerTest, OpenUpperCaseResultCommitsUpperCase) {
 
   controller().ToggleWidget();
   controller().OpenResult(PickerSearchResult::CaseTransform(
-      PickerSearchResult::CaseTransformData::Type::kUpperCase));
+      PickerCaseTransformResult::Type::kUpperCase));
   input_method->SetFocusedTextInputClient(&input_field);
 
   EXPECT_EQ(input_field.text(), u"ABC DEF");
@@ -735,7 +732,7 @@ TEST_F(PickerControllerTest, OpenLowerCaseResultCommitsLowerCase) {
 
   controller().ToggleWidget();
   controller().OpenResult(PickerSearchResult::CaseTransform(
-      PickerSearchResult::CaseTransformData::Type::kLowerCase));
+      PickerCaseTransformResult::Type::kLowerCase));
   input_method->SetFocusedTextInputClient(&input_field);
 
   EXPECT_EQ(input_field.text(), u"abc def");
@@ -751,7 +748,7 @@ TEST_F(PickerControllerTest, OpenTitleCaseResultCommitsTitleCase) {
 
   controller().ToggleWidget();
   controller().OpenResult(PickerSearchResult::CaseTransform(
-      PickerSearchResult::CaseTransformData::Type::kTitleCase));
+      PickerCaseTransformResult::Type::kTitleCase));
   input_method->SetFocusedTextInputClient(&input_field);
 
   EXPECT_EQ(input_field.text(), u"Abc Def");
@@ -1036,11 +1033,10 @@ TEST_F(PickerControllerTest, SearchesCapsLockOnWhenCapsLockIsOff) {
 
   EXPECT_THAT(
       search_future.Take(),
-      Contains(Property(
-          &PickerSearchResultsSection::results,
-          Contains(PickerSearchResult::CapsLock(
-              /*enabled=*/true,
-              PickerSearchResult::CapsLockData::Shortcut::kAltLauncher)))));
+      Contains(Property(&PickerSearchResultsSection::results,
+                        Contains(PickerSearchResult::CapsLock(
+                            /*enabled=*/true,
+                            PickerCapsLockResult::Shortcut::kAltLauncher)))));
 }
 
 TEST_F(PickerControllerTest, SearchesCapsLockOffWhenCapsLockIsOn) {
@@ -1053,11 +1049,10 @@ TEST_F(PickerControllerTest, SearchesCapsLockOffWhenCapsLockIsOn) {
 
   EXPECT_THAT(
       search_future.Take(),
-      Contains(Property(
-          &PickerSearchResultsSection::results,
-          Contains(PickerSearchResult::CapsLock(
-              /*enabled=*/false,
-              PickerSearchResult::CapsLockData::Shortcut::kAltLauncher)))));
+      Contains(Property(&PickerSearchResultsSection::results,
+                        Contains(PickerSearchResult::CapsLock(
+                            /*enabled=*/false,
+                            PickerCapsLockResult::Shortcut::kAltLauncher)))));
 }
 
 TEST_F(PickerControllerTest, DoesNotSearchCaseTransformWhenNoSelectedText) {
@@ -1073,9 +1068,8 @@ TEST_F(PickerControllerTest, DoesNotSearchCaseTransformWhenNoSelectedText) {
       callback,
       Run(Contains(Property(
           &PickerSearchResultsSection::results,
-          Contains(Property(
-              &PickerSearchResult::data,
-              VariantWith<PickerSearchResult::CaseTransformData>(_)))))))
+          Contains(Property(&PickerSearchResult::data,
+                            VariantWith<PickerCaseTransformResult>(_)))))))
       .Times(0);
 
   controller().ToggleWidget();
@@ -1096,11 +1090,10 @@ TEST_F(PickerControllerTest, SearchesCaseTransformWhenSelectedText) {
       callback,
       Run(Contains(Property(
           &PickerSearchResultsSection::results,
-          Contains(Property(
-              &PickerSearchResult::data,
-              VariantWith<PickerSearchResult::CaseTransformData>(Field(
-                  &PickerSearchResult::CaseTransformData::type,
-                  PickerSearchResult::CaseTransformData::kUpperCase))))))))
+          Contains(Property(&PickerSearchResult::data,
+                            VariantWith<PickerCaseTransformResult>(Field(
+                                &PickerCaseTransformResult::type,
+                                PickerCaseTransformResult::kUpperCase))))))))
       .Times(1);
 
   controller().ToggleWidget();
@@ -1252,7 +1245,7 @@ INSTANTIATE_TEST_SUITE_P(
         {
             .result = PickerSearchResult::Clipboard(
                 base::UnguessableToken::Create(),
-                PickerSearchResult::ClipboardData::DisplayFormat::kFile,
+                PickerClipboardResult::DisplayFormat::kFile,
                 0,
                 u"",
                 {},
@@ -1297,18 +1290,18 @@ INSTANTIATE_TEST_SUITE_P(
             .has_selection_action = PickerActionType::kDo,
         },
         {
-            .result = PickerSearchResult::Editor(
-                PickerSearchResult::EditorData::Mode::kWrite,
-                u"",
-                {},
-                {}),
+            .result =
+                PickerSearchResult::Editor(PickerEditorResult::Mode::kWrite,
+                                           u"",
+                                           {},
+                                           {}),
             .unfocused_action = PickerActionType::kCreate,
             .no_selection_action = PickerActionType::kCreate,
             .has_selection_action = PickerActionType::kCreate,
         },
         {
             .result = PickerSearchResult::NewWindow(
-                PickerSearchResult::NewWindowData::Type::kDoc),
+                PickerNewWindowResult::Type::kDoc),
             .unfocused_action = PickerActionType::kDo,
         },
     }));

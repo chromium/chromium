@@ -78,15 +78,14 @@ std::unique_ptr<views::View> CreateEmptyCell() {
   return cell_view;
 }
 
-std::u16string GetTooltipForEmojiResult(
-    const PickerSearchResult::EmojiData& data) {
+std::u16string GetTooltipForEmojiResult(const PickerEmojiResult& data) {
   switch (data.type) {
-    case PickerSearchResult::EmojiData::Type::kEmoji:
+    case PickerEmojiResult::Type::kEmoji:
       return l10n_util::GetStringFUTF16(IDS_PICKER_EMOJI_ITEM_ACCESSIBLE_NAME,
                                         data.name);
-    case PickerSearchResult::EmojiData::Type::kSymbol:
+    case PickerEmojiResult::Type::kSymbol:
       return data.name;
-    case PickerSearchResult::EmojiData::Type::kEmoticon:
+    case PickerEmojiResult::Type::kEmoticon:
       return l10n_util::GetStringFUTF16(
           IDS_PICKER_EMOTICON_ITEM_ACCESSIBLE_NAME, data.name);
   }
@@ -98,22 +97,22 @@ std::u16string GetTooltipForEmojiResult(
 std::unique_ptr<PickerItemView> CreateItemView(
     const PickerSearchResult& result,
     base::RepeatingClosure select_result_callback) {
-  const auto* data = std::get_if<PickerSearchResult::EmojiData>(&result.data());
+  const auto* data = std::get_if<PickerEmojiResult>(&result.data());
   CHECK(data);
 
   std::unique_ptr<PickerItemView> item_view;
   switch (data->type) {
-    case PickerSearchResult::EmojiData::Type::kEmoji:
+    case PickerEmojiResult::Type::kEmoji:
       item_view = std::make_unique<PickerEmojiItemView>(
           std::move(select_result_callback), data->text);
       item_view->SetPreferredSize(kEmojiBarItemPreferredSize);
       break;
-    case PickerSearchResult::EmojiData::Type::kSymbol:
+    case PickerEmojiResult::Type::kSymbol:
       item_view = std::make_unique<PickerSymbolItemView>(
           std::move(select_result_callback), data->text);
       item_view->SetPreferredSize(kEmojiBarItemPreferredSize);
       break;
-    case PickerSearchResult::EmojiData::Type::kEmoticon:
+    case PickerEmojiResult::Type::kEmoticon:
       item_view = std::make_unique<PickerEmoticonItemView>(
           std::move(select_result_callback), data->text);
       item_view->SetPreferredSize(

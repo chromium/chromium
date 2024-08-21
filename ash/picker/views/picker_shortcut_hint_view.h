@@ -18,7 +18,7 @@ class ASH_EXPORT PickerShortcutHintView : public views::View {
   METADATA_HEADER(PickerShortcutHintView, views::View)
 
  public:
-  explicit PickerShortcutHintView(PickerSearchResult::CapsLockData::Shortcut);
+  explicit PickerShortcutHintView(PickerCapsLockResult::Shortcut);
   PickerShortcutHintView(const PickerShortcutHintView&) = delete;
   PickerShortcutHintView& operator=(const PickerShortcutHintView&) = delete;
   ~PickerShortcutHintView() override;

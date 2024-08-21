@@ -45,11 +45,11 @@ std::unique_ptr<views::Label> CreateShortcutTextLabel(
 }  // namespace
 
 PickerShortcutHintView::PickerShortcutHintView(
-    PickerSearchResult::CapsLockData::Shortcut shortcut) {
+    PickerCapsLockResult::Shortcut shortcut) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
   switch (shortcut) {
-    case PickerSearchResult::CapsLockData::Shortcut::kAltLauncher: {
+    case PickerCapsLockResult::Shortcut::kAltLauncher: {
       auto* alt_label = AddChildView(
           CreateShortcutTextLabel(l10n_util::GetStringUTF16(IDS_ASH_ALT_KEY)));
       auto* plus_label = AddChildView(CreateShortcutTextLabel(u" + "));
@@ -62,7 +62,7 @@ PickerShortcutHintView::PickerShortcutHintView(
            l10n_util::GetStringUTF16(IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER)});
       break;
     }
-    case PickerSearchResult::CapsLockData::Shortcut::kAltSearch: {
+    case PickerCapsLockResult::Shortcut::kAltSearch: {
       auto* alt_label = AddChildView(
           CreateShortcutTextLabel(l10n_util::GetStringUTF16(IDS_ASH_ALT_KEY)));
       auto* plus_label = AddChildView(CreateShortcutTextLabel(u" + "));
@@ -75,7 +75,7 @@ PickerShortcutHintView::PickerShortcutHintView(
            l10n_util::GetStringUTF16(IDS_ASH_SHORTCUT_MODIFIER_SEARCH)});
       break;
     }
-    case PickerSearchResult::CapsLockData::Shortcut::kFnRightAlt: {
+    case PickerCapsLockResult::Shortcut::kFnRightAlt: {
       // TODO: b/331285414 - Shortcut hint strings and icon should be moved into
       // open source.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

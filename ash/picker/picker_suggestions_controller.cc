@@ -38,11 +38,11 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
                                                  SuggestionsCallback callback) {
   if (model.GetMode() == PickerModeType::kUnfocused) {
     std::vector<PickerSearchResult> new_window_results;
-    for (PickerSearchResult::NewWindowData::Type type : {
-             PickerSearchResult::NewWindowData::Type::kDoc,
-             PickerSearchResult::NewWindowData::Type::kSheet,
-             PickerSearchResult::NewWindowData::Type::kSlide,
-             PickerSearchResult::NewWindowData::Type::kChrome,
+    for (PickerNewWindowResult::Type type : {
+             PickerNewWindowResult::Type::kDoc,
+             PickerNewWindowResult::Type::kSheet,
+             PickerNewWindowResult::Type::kSlide,
+             PickerNewWindowResult::Type::kChrome,
          }) {
       new_window_results.push_back(PickerSearchResult::NewWindow(type));
     }
@@ -62,10 +62,10 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
 
   if (model.GetMode() == PickerModeType::kHasSelection) {
     std::vector<PickerSearchResult> case_transform_results;
-    for (PickerSearchResult::CaseTransformData::Type type : {
-             PickerSearchResult::CaseTransformData::Type::kUpperCase,
-             PickerSearchResult::CaseTransformData::Type::kLowerCase,
-             PickerSearchResult::CaseTransformData::Type::kTitleCase,
+    for (PickerCaseTransformResult::Type type : {
+             PickerCaseTransformResult::Type::kUpperCase,
+             PickerCaseTransformResult::Type::kLowerCase,
+             PickerCaseTransformResult::Type::kTitleCase,
          }) {
       case_transform_results.push_back(PickerSearchResult::CaseTransform(type));
     }

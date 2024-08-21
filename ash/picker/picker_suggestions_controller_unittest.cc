@@ -51,9 +51,8 @@ TEST_F(PickerSuggestionsControllerTest,
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(callback,
-              Run(Contains(
-                  Property(&PickerSearchResult::data,
-                           VariantWith<PickerSearchResult::NewWindowData>(_)))))
+              Run(Contains(Property(&PickerSearchResult::data,
+                                    VariantWith<PickerNewWindowResult>(_)))))
       .Times(1);
 
   controller.GetSuggestions(model, callback.Get());
@@ -64,8 +63,8 @@ TEST_F(PickerSuggestionsControllerTest,
   NiceMock<MockPickerClient> client;
   EXPECT_CALL(client, GetSuggestedEditorResults)
       .WillRepeatedly(RunCallbackArgWith(std::vector<PickerSearchResult>{
-          PickerSearchResult::Editor(
-              PickerSearchResult::EditorData::Mode::kRewrite, u"", {}, {}),
+          PickerSearchResult::Editor(PickerEditorResult::Mode::kRewrite, u"",
+                                     {}, {}),
       }));
   PickerSuggestionsController controller(&client);
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
@@ -79,11 +78,10 @@ TEST_F(PickerSuggestionsControllerTest,
   EXPECT_CALL(
       callback,
       Run(AllOf(Not(IsEmpty()),
-                Each(Property(
-                    "data", &PickerSearchResult::data,
-                    VariantWith<PickerSearchResult::EditorData>(Field(
-                        &PickerSearchResult::EditorData::mode,
-                        PickerSearchResult::EditorData::Mode::kRewrite)))))))
+                Each(Property("data", &PickerSearchResult::data,
+                              VariantWith<PickerEditorResult>(Field(
+                                  &PickerEditorResult::mode,
+                                  PickerEditorResult::Mode::kRewrite)))))))
       .Times(1);
 
   controller.GetSuggestions(model, callback.Get());
@@ -100,9 +98,8 @@ TEST_F(PickerSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback,
-              Run(Contains(
-                  Property(&PickerSearchResult::data,
-                           VariantWith<PickerSearchResult::NewWindowData>(_)))))
+              Run(Contains(Property(&PickerSearchResult::data,
+                                    VariantWith<PickerNewWindowResult>(_)))))
       .Times(0);
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
 
@@ -120,10 +117,10 @@ TEST_F(PickerSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
-  EXPECT_CALL(callback,
-              Run(Contains(PickerSearchResult::CapsLock(
-                  /*enabled=*/true,
-                  PickerSearchResult::CapsLockData::Shortcut::kAltSearch))))
+  EXPECT_CALL(
+      callback,
+      Run(Contains(PickerSearchResult::CapsLock(
+          /*enabled=*/true, PickerCapsLockResult::Shortcut::kAltSearch))))
       .Times(1);
 
   controller.GetSuggestions(model, callback.Get());
@@ -140,10 +137,10 @@ TEST_F(PickerSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
-  EXPECT_CALL(callback,
-              Run(Contains(PickerSearchResult::CapsLock(
-                  /*enabled=*/false,
-                  PickerSearchResult::CapsLockData::Shortcut::kAltSearch))))
+  EXPECT_CALL(
+      callback,
+      Run(Contains(PickerSearchResult::CapsLock(
+          /*enabled=*/false, PickerCapsLockResult::Shortcut::kAltSearch))))
       .Times(1);
 
   controller.GetSuggestions(model, callback.Get());
@@ -161,16 +158,14 @@ TEST_F(PickerSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
-  EXPECT_CALL(
-      callback,
-      Run(IsSupersetOf({
-          PickerSearchResult::CaseTransform(
-              PickerSearchResult::CaseTransformData::Type::kUpperCase),
-          PickerSearchResult::CaseTransform(
-              PickerSearchResult::CaseTransformData::Type::kLowerCase),
-          PickerSearchResult::CaseTransform(
-              PickerSearchResult::CaseTransformData::Type::kTitleCase),
-      })))
+  EXPECT_CALL(callback, Run(IsSupersetOf({
+                            PickerSearchResult::CaseTransform(
+                                PickerCaseTransformResult::Type::kUpperCase),
+                            PickerSearchResult::CaseTransform(
+                                PickerCaseTransformResult::Type::kLowerCase),
+                            PickerSearchResult::CaseTransform(
+                                PickerCaseTransformResult::Type::kTitleCase),
+                        })))
       .Times(1);
 
   controller.GetSuggestions(model, callback.Get());
@@ -187,17 +182,14 @@ TEST_F(PickerSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
-  EXPECT_CALL(callback,
-              Run(Contains(PickerSearchResult::CaseTransform(
-                  PickerSearchResult::CaseTransformData::Type::kUpperCase))))
+  EXPECT_CALL(callback, Run(Contains(PickerSearchResult::CaseTransform(
+                            PickerCaseTransformResult::Type::kUpperCase))))
       .Times(0);
-  EXPECT_CALL(callback,
-              Run(Contains(PickerSearchResult::CaseTransform(
-                  PickerSearchResult::CaseTransformData::Type::kLowerCase))))
+  EXPECT_CALL(callback, Run(Contains(PickerSearchResult::CaseTransform(
+                            PickerCaseTransformResult::Type::kLowerCase))))
       .Times(0);
-  EXPECT_CALL(callback,
-              Run(Contains(PickerSearchResult::CaseTransform(
-                  PickerSearchResult::CaseTransformData::Type::kTitleCase))))
+  EXPECT_CALL(callback, Run(Contains(PickerSearchResult::CaseTransform(
+                            PickerCaseTransformResult::Type::kTitleCase))))
       .Times(0);
 
   controller.GetSuggestions(model, callback.Get());
@@ -235,20 +227,18 @@ TEST_F(PickerSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run).Times(AnyNumber());
-  EXPECT_CALL(callback,
-              Run(ElementsAre(Property(
-                  &PickerSearchResult::data,
-                  VariantWith<PickerSearchResult::BrowsingHistoryData>(_)))))
+  EXPECT_CALL(
+      callback,
+      Run(ElementsAre(Property(&PickerSearchResult::data,
+                               VariantWith<PickerBrowsingHistoryResult>(_)))))
       .Times(1);
   EXPECT_CALL(callback,
-              Run(ElementsAre(
-                  Property(&PickerSearchResult::data,
-                           VariantWith<PickerSearchResult::DriveFileData>(_)))))
+              Run(ElementsAre(Property(&PickerSearchResult::data,
+                                       VariantWith<PickerDriveFileResult>(_)))))
       .Times(1);
   EXPECT_CALL(callback,
-              Run(ElementsAre(
-                  Property(&PickerSearchResult::data,
-                           VariantWith<PickerSearchResult::LocalFileData>(_)))))
+              Run(ElementsAre(Property(&PickerSearchResult::data,
+                                       VariantWith<PickerLocalFileResult>(_)))))
       .Times(1);
 
   controller.GetSuggestions(model, callback.Get());
@@ -350,11 +340,10 @@ TEST_F(PickerSuggestionsControllerTest, GetSuggestionsForClipboardCategory) {
 
   EXPECT_THAT(
       future.Take(),
-      ElementsAre(Property(
-          "data", &PickerSearchResult::data,
-          VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
-              _, PickerSearchResult::ClipboardData::DisplayFormat::kText, _,
-              u"abc", _, _)))));
+      ElementsAre(Property("data", &PickerSearchResult::data,
+                           VariantWith<PickerClipboardResult>(FieldsAre(
+                               _, PickerClipboardResult::DisplayFormat::kText,
+                               _, u"abc", _, _)))));
 }
 
 }  // namespace
