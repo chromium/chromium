@@ -293,7 +293,7 @@ std::vector<manta::AppsData> SparkyDelegateImpl::GetAppsList() {
           return;
         }
 
-        manta::AppsData& app = apps.emplace_back(update.AppId(), update.Name());
+        manta::AppsData& app = apps.emplace_back(update.Name(), update.AppId());
 
         for (const std::string& term : update.AdditionalSearchTerms()) {
           app.AddSearchableText(term);
