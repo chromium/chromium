@@ -548,6 +548,12 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
           ancestor_render_frame_host->GetCookieSettingOverrides(),
           "DedicatedWorkerHost::CreateNetworkFactoryForSubresources");
 
+  RenderFrameHost* frame = nullptr;
+  if (base::FeatureList::IsEnabled(
+          blink::features::kUseAncestorRenderFrameForWorker)) {
+    frame = ancestor_render_frame_host;
+  }
+
   return url_loader_factory::CreatePendingRemote(
       ContentBrowserClient::URLLoaderFactoryType::kWorkerSubResource,
       url_loader_factory::TerminalParams::ForNetworkContext(
@@ -556,9 +562,9 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
           url_loader_factory::HeaderClientOption::kAllow,
           url_loader_factory::FactoryOverrideOption::kAllow),
       url_loader_factory::ContentClientParams(
-          worker_process_host_->GetBrowserContext(),
-          /*frame=*/nullptr, worker_process_host_->GetID(),
-          GetStorageKey().origin(), isolation_info_,
+          worker_process_host_->GetBrowserContext(), frame,
+          worker_process_host_->GetID(), GetStorageKey().origin(),
+          isolation_info_,
           ukm::SourceIdObj::FromInt64(
               ancestor_render_frame_host->GetPageUkmSourceId()),
           bypass_redirect_checks),

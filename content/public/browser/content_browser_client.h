@@ -1901,9 +1901,20 @@ class CONTENT_EXPORT ContentBrowserClient {
   //
   // |type| indicates the type of requests the factory will be used for.
   //
-  // |frame| is nullptr for type kWorkerSubResource, kServiceWorkerSubResource
-  // and kServiceWorkerScript. For kNavigation type, it's the RenderFrameHost
-  // the navigation might commit in. Else it's the initiating frame.
+  // |frame| is set upon |type|:
+  // - For kServiceWorkerSubResource type and kServiceWorkerScript type,
+  //   nullptr is set.
+  // - For kWorkerSubResource type used for SharedWorker, nullptr is set.
+  // - For kWorkerSubResource type used for DedicatedWorker
+  //   (Note: used only in PlzDedicatedWorker cases),
+  //   the worker's ancestor RenderFrameHost, which is always non-null, is set
+  //   for preserving non-PlzDedicatedWorker behavior for WebViewClient.
+  //   See: crbug.com/356827071.
+  //   However, if the feature flag kUseAncestorRenderFrameForWorker is
+  //   disabled, nullptr is set instead.
+  // - For kNavigation type, it's the RenderFrameHost the navigation might
+  //   commit in.
+  // - Else, it's the initiating frame.
   //
   // |render_process_id| is the id of a render process host in which the
   // URLLoaderFactory will be used.

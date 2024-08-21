@@ -1858,6 +1858,10 @@ BASE_FEATURE(kDedicatedWorkerAblationStudyEnabled,
 const base::FeatureParam<int> kDedicatedWorkerStartDelayInMs = {
     &kDedicatedWorkerAblationStudyEnabled, "DedicatedWorkerStartDelayInMs", 0};
 
+BASE_FEATURE(kUseAncestorRenderFrameForWorker,
+             "UseAncestorRenderFrameForWorker",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPreInitializePageAndFrameForSVGImage,
              "PreInitializePageAndFrameForSVGImage",
              base::FEATURE_DISABLED_BY_DEFAULT);
