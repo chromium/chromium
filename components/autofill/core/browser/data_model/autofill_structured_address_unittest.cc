@@ -84,7 +84,6 @@ class AutofillStructuredAddress : public testing::Test {
          features::kAutofillEnableSupportForApartmentNumbers,
          features::kAutofillEnableSupportForAddressOverflow,
          features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
-         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
          features::kAutofillUseI18nAddressModel,
          features::kAutofillUseAUAddressModel,
          features::kAutofillUseBRAddressModel,

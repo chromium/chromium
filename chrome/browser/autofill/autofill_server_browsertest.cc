@@ -125,7 +125,6 @@ class AutofillServerTest : public InProcessBrowserTest {
          features::kAutofillEnableSupportForApartmentNumbers,
          features::kAutofillEnableSupportForAddressOverflow,
          features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
-         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
          features::kAutofillUseI18nAddressModel,
          features::kAutofillUseBRAddressModel,
          features::kAutofillUseCAAddressModel,

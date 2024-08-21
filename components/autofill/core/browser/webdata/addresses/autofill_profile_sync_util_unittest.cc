@@ -930,7 +930,6 @@ class AutofillProfileSyncUtilTest
          features::kAutofillEnableSupportForAddressOverflow,
          features::kAutofillEnableSupportForBetweenStreets,
          features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
-         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
          features::kAutofillEnableSupportForAdminLevel2,
          features::kAutofillEnableSupportForApartmentNumbers},
         {});

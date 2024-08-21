@@ -241,8 +241,7 @@ TEST_P(AddressFieldParserTestNG, ParseOverflowAndLandmark) {
   features.InitWithFeatures(
       /*enabled_features=*/
       {features::kAutofillUseBRAddressModel,
-       features::kAutofillEnableSupportForAddressOverflow,
-       features::kAutofillEnableSupportForAddressOverflowAndLandmark},
+       features::kAutofillEnableSupportForAddressOverflow},
       /*disabled_features=*/{});
 
   AddTextFormFieldData("additional_info", "Complemento e ponto de referência",

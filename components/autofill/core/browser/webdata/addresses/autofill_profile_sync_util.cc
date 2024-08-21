@@ -176,12 +176,11 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
         data_util::TruncateUTF8(base::UTF16ToUTF8(
             entry.GetRawInfo(ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK))));
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAddressOverflowAndLandmark)) {
+
     specifics->set_address_home_overflow_and_landmark(
         data_util::TruncateUTF8(base::UTF16ToUTF8(
             entry.GetRawInfo(ADDRESS_HOME_OVERFLOW_AND_LANDMARK))));
-  }
+
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForBetweenStreets)) {
     specifics->set_address_home_between_streets(data_util::TruncateUTF8(
@@ -275,12 +274,11 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
         ConvertProfileToSpecificsVerificationStatus(entry.GetVerificationStatus(
             ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK)));
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAddressOverflowAndLandmark)) {
-    specifics->set_address_home_overflow_and_landmark_status(
-        ConvertProfileToSpecificsVerificationStatus(
-            entry.GetVerificationStatus(ADDRESS_HOME_OVERFLOW_AND_LANDMARK)));
-  }
+
+  specifics->set_address_home_overflow_and_landmark_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_OVERFLOW_AND_LANDMARK)));
+
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAdminLevel2)) {
     specifics->set_address_home_admin_level_2_status(
@@ -495,14 +493,11 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
             specifics.address_home_between_streets_or_landmark_status()));
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAddressOverflowAndLandmark)) {
-    profile->SetRawInfoWithVerificationStatus(
-        ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
-        base::UTF8ToUTF16(specifics.address_home_overflow_and_landmark()),
-        ConvertSpecificsToProfileVerificationStatus(
-            specifics.address_home_overflow_and_landmark_status()));
-  }
+  profile->SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+      base::UTF8ToUTF16(specifics.address_home_overflow_and_landmark()),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.address_home_overflow_and_landmark_status()));
 
   profile->SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_LANDMARK,

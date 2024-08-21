@@ -115,7 +115,7 @@ class AddressOverflowNode : public FeatureGuardedAddressComponent {
   ~AddressOverflowNode() override;
 };
 
-class AddressOverflowAndLandmarkNode : public FeatureGuardedAddressComponent {
+class AddressOverflowAndLandmarkNode : public AddressComponent {
  public:
   explicit AddressOverflowAndLandmarkNode(SubcomponentsList children);
   ~AddressOverflowAndLandmarkNode() override;

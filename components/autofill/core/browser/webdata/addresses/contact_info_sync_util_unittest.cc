@@ -692,7 +692,6 @@ class ContactInfoSyncUtilTest
          features::kAutofillEnableSupportForBetweenStreets,
          features::kAutofillEnableSupportForAddressOverflow,
          features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
-         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
          features::kAutofillEnableSupportForAdminLevel2,
          features::kAutofillEnableSupportForApartmentNumbers,
          features::kAutofillTrackMultipleUseDates},

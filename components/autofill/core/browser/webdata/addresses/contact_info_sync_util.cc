@@ -258,11 +258,9 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
           ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAddressOverflowAndLandmark)) {
-    s.Set(specifics.mutable_address_overflow_and_landmark(),
-          ADDRESS_HOME_OVERFLOW_AND_LANDMARK);
-  }
+  s.Set(specifics.mutable_address_overflow_and_landmark(),
+        ADDRESS_HOME_OVERFLOW_AND_LANDMARK);
+
   if (base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
     s.Set(specifics.mutable_address_street_location_and_locality(),
           ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY);
@@ -405,11 +403,10 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
     s.Set(specifics.address_between_streets_or_landmark(),
           ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK);
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAddressOverflowAndLandmark)) {
-    s.Set(specifics.address_overflow_and_landmark(),
-          ADDRESS_HOME_OVERFLOW_AND_LANDMARK);
-  }
+
+  s.Set(specifics.address_overflow_and_landmark(),
+        ADDRESS_HOME_OVERFLOW_AND_LANDMARK);
+
   if (base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
     s.Set(specifics.address_street_location_and_locality(),
           ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY);

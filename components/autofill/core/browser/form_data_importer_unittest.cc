@@ -536,7 +536,6 @@ class FormDataImporterTest : public testing::Test {
          features::kAutofillEnableSupportForAdminLevel2,
          features::kAutofillEnableSupportForAddressOverflow,
          features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
-         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
          features::kAutofillEnableParsingOfStreetLocation},
         {});
   }

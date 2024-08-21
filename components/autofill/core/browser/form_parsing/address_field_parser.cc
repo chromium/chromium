@@ -362,8 +362,6 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
     }
 
     if (!(overflow_and_landmark_ || overflow_) &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForAddressOverflowAndLandmark) &&
         i18n_model_definition::IsTypeEnabledForCountry(
             ADDRESS_HOME_OVERFLOW_AND_LANDMARK, country_code) &&
         ParseField(context, scanner, overflow_and_landmark_patterns,
@@ -945,8 +943,6 @@ AddressFieldParser::ParseNameAndLabelForOverflowAndLandmark(
   AddressCountryCode country_code(context.client_country.value());
   //  TODO(crbug.com/40266693) Remove feature check when launched.
   if (overflow_and_landmark_ || overflow_ ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAddressOverflowAndLandmark) ||
       !i18n_model_definition::IsTypeEnabledForCountry(
           ADDRESS_HOME_OVERFLOW_AND_LANDMARK, country_code)) {
     return RESULT_MATCH_NONE;

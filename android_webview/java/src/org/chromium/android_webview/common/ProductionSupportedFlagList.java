@@ -290,9 +290,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_ADDRESS_OVERFLOW,
                 "When enabled, Autofill supports overflow fields."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_ADDRESS_OVERFLOW_AND_LANDMARK,
-                "When enabled, Autofill supports overflow and landmark fields."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_BETWEEN_STREETS_OR_LANDMARK,
                 "When enabled, Autofill supports between streets or landmark fields."),
         Flag.baseFeature(

@@ -308,7 +308,6 @@ TEST_P(AddressFieldParserTest, ParseOverflowAndLandmark) {
   features.InitWithFeatures(
       /*enabled_features=*/
       {features::kAutofillEnableSupportForAddressOverflow,
-       features::kAutofillEnableSupportForAddressOverflowAndLandmark,
        features::kAutofillUseBRAddressModel},
       /*disabled_features=*/{});
 

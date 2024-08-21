@@ -60,7 +60,6 @@ class AddressAutofillTableProfileTest
         {features::kAutofillEnableSupportForBetweenStreets,
          features::kAutofillEnableSupportForAdminLevel2,
          features::kAutofillEnableSupportForAddressOverflow,
-         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
          features::kAutofillEnableSupportForBetweenStreetsOrLandmark},
         {});
   }

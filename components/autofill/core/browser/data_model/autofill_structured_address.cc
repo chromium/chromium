@@ -367,11 +367,9 @@ AddressOverflowNode::~AddressOverflowNode() = default;
 
 AddressOverflowAndLandmarkNode::AddressOverflowAndLandmarkNode(
     SubcomponentsList children)
-    : FeatureGuardedAddressComponent(
-          &features::kAutofillEnableSupportForAddressOverflowAndLandmark,
-          ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
-          std::move(children),
-          MergeMode::kReplaceEmpty | kReplaceSubset) {}
+    : AddressComponent(ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+                       std::move(children),
+                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
 
 AddressOverflowAndLandmarkNode::~AddressOverflowAndLandmarkNode() = default;
 

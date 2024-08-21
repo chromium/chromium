@@ -1375,8 +1375,7 @@ TEST_F(AutofillProfileTest, Compare_StructuredTypes) {
        features::kAutofillEnableSupportForAdminLevel2,
        features::kAutofillEnableSupportForApartmentNumbers,
        features::kAutofillEnableSupportForAddressOverflow,
-       features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
-       features::kAutofillEnableSupportForAddressOverflowAndLandmark},
+       features::kAutofillEnableSupportForBetweenStreetsOrLandmark},
       {});
   // Those types do store a verification status.
   FieldTypeSet structured_types{
