@@ -649,9 +649,11 @@ bool SecurityOrigin::IsSameSiteWith(const SecurityOrigin* other) const {
   // https://html.spec.whatwg.org/#schemelessly-same-site
   if (IsOpaque())
     return IsSameOriginWith(other);
-  if (RegistrableDomain().IsNull())
+  String registrable_domain = RegistrableDomain();
+  if (registrable_domain.IsNull()) {
     return Host() == other->Host();
-  return RegistrableDomain() == other->RegistrableDomain();
+  }
+  return registrable_domain == other->RegistrableDomain();
 }
 
 const KURL& SecurityOrigin::UrlWithUniqueOpaqueOrigin() {
