@@ -8,18 +8,52 @@ import("//build/config/features.gni")
 if (use_blink) {
   source_set("renderer") {
     sources = [
+      "renderer_agent.cc",
+      "renderer_agent.h",
+      "renderer_url_loader_throttle.cc",
+      "renderer_url_loader_throttle.h",
       "unverified_ruleset_dealer.cc",
       "unverified_ruleset_dealer.h",
     ]
     public_deps = [
+      "//base",
       "//components/fingerprinting_protection_filter/mojom",
+      "//components/subresource_filter/content/shared/renderer",
       "//components/subresource_filter/core/common",
+      "//components/subresource_filter/core/mojom",
       "//content/public/renderer",
       "//mojo/public/cpp/bindings",
+      "//services/network/public/mojom",
+      "//third_party/blink/public:blink",
+      "//url",
     ]
     deps = [
+      "//components/fingerprinting_protection_filter/browser",
+      "//content/public/common",
+      "//net",
+      "//services/network/public/cpp",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "renderer_agent_unittest.cc",
+      "renderer_url_loader_throttle_unittest.cc",
+    ]
+    deps = [
+      ":renderer",
       "//base",
+      "//base/test:test_support",
+      "//components/subresource_filter/core/common",
+      "//components/subresource_filter/core/common:test_support",
+      "//components/subresource_filter/core/mojom",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
+      "//testing/gmock",
+      "//testing/gtest",
       "//third_party/blink/public:blink",
+      "//url",
     ]
   }
 }

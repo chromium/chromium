@@ -9,6 +9,9 @@ import("//mojo/public/tools/bindings/mojom.gni")
 if (use_blink) {
   mojom("mojom") {
     sources = [ "fingerprinting_protection_filter.mojom" ]
-    deps = [ "//mojo/public/mojom/base" ]
+    deps = [
+      "//components/subresource_filter/core/mojom",
+      "//mojo/public/mojom/base",
+    ]
   }
 }
