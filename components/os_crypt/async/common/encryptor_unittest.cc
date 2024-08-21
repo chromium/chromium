@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -17,6 +18,10 @@
 #include "crypto/random.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "components/os_crypt/sync/key_storage_linux.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -125,6 +130,28 @@ class EncryptorTestBase : public ::testing::Test {
                        mojom::Algorithm::kAES256GCM);
     key.is_os_crypt_sync_compatible_ = is_os_crypt_sync_compatible;
     return key;
+  }
+
+  // Simulate a 'locked' OSCrypt keychain on platforms that need it, which makes
+  // OSCrypt::IsEncryptionAvailable return false, without hitting a CHECK on
+  // Linux. Note this is different from using the full OSCryptMocker, because in
+  // this state, no key is available for encryption. Returns a
+  // ScopedClosureRunner that will reset the behavior back to default when it
+  // goes out of scope.
+  [[nodiscard]] static std::optional<base::ScopedClosureRunner>
+  MaybeSimulateLockedKeyChain() {
+#if BUILDFLAG(IS_LINUX)
+    OSCrypt::UseMockKeyStorageForTesting(base::BindOnce(
+        []() -> std::unique_ptr<KeyStorageLinux> { return nullptr; }));
+    return std::nullopt;
+#elif BUILDFLAG(IS_APPLE)
+    OSCrypt::UseLockedMockKeychainForTesting(/*use_locked=*/true);
+    return base::ScopedClosureRunner(base::BindOnce([]() {
+      OSCrypt::UseLockedMockKeychainForTesting(/*use_locked=*/false);
+    }));
+#else
+    return std::nullopt;
+#endif
   }
 };
 
@@ -456,6 +483,52 @@ TEST_F(EncryptorTestWithOSCrypt, ShortCiphertext) {
         encryptor.DecryptData(base::as_bytes(base::make_span(bad_data)));
     EXPECT_TRUE(MaybeVerifyFailedDecryptOperation(
         decrypted, base::as_bytes(base::make_span(bad_data))));
+  }
+}
+
+// These two tests verify the fallback to OSCrypt::IsEncryptionAvailable
+// functions correctly. When there is no OSCrypt mocker in place, encryption is
+// not available if the keyring is empty.
+TEST_F(EncryptorTestBase, IsEncryptionAvailableFallback) {
+  auto cleanup = MaybeSimulateLockedKeyChain();
+  Encryptor encryptor = GetEncryptor();
+  EXPECT_FALSE(encryptor.IsDecryptionAvailable());
+  EXPECT_FALSE(encryptor.IsEncryptionAvailable());
+}
+
+TEST_F(EncryptorTestWithOSCrypt, IsEncryptionAvailableFallback) {
+  Encryptor encryptor = GetEncryptor();
+  // os_crypt_posix.cc always has encryption disabled. This preprocessor
+  // directive is a copy of the gn expression around that file in the build file
+  // for the os_crypt component.
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) &&         \
+        !(BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
+    BUILDFLAG(IS_FUCHSIA)
+  EXPECT_FALSE(encryptor.IsDecryptionAvailable());
+  EXPECT_FALSE(encryptor.IsEncryptionAvailable());
+#else
+  EXPECT_TRUE(encryptor.IsDecryptionAvailable());
+  EXPECT_TRUE(encryptor.IsEncryptionAvailable());
+#endif
+}
+
+TEST_F(EncryptorTestBase, IsEncryptionAvailable) {
+  auto cleanup = MaybeSimulateLockedKeyChain();
+  {
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("TEST", GenerateRandomAES256TestKey());
+    const Encryptor encryptor = GetEncryptor(std::move(key_ring), "TEST");
+    EXPECT_TRUE(encryptor.IsEncryptionAvailable());
+    EXPECT_TRUE(encryptor.IsDecryptionAvailable());
+  }
+  {
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("TEST", GenerateRandomAES256TestKey());
+    const Encryptor encryptor = GetEncryptor(std::move(key_ring), "BLAH");
+    EXPECT_FALSE(encryptor.IsEncryptionAvailable());
+    // Decryption for data encrypted with TEST key is available, but encryption
+    // is not available as there is no key BLAH.
+    EXPECT_TRUE(encryptor.IsDecryptionAvailable());
   }
 }
 

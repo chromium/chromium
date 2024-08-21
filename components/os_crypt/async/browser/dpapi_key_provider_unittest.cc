@@ -26,20 +26,13 @@ namespace os_crypt_async {
 
 // This class tests that DPAPIKeyProvider is forwards and backwards
 // compatible with OSCrypt.
-class DPAPIKeyProviderTest : public ::testing::Test {
- public:
-  void SetUp() override {
-    OSCrypt::RegisterLocalPrefs(prefs_.registry());
-    OSCrypt::Init(&prefs_);
-  }
-
+class DPAPIKeyProviderTestBase : public ::testing::Test {
+ protected:
   void TearDown() override {
-    OSCrypt::ResetStateForTesting();
     histograms_.ExpectBucketCount("OSCrypt.DPAPIProvider.Status",
                                   expected_histogram_, 1);
   }
 
- protected:
   Encryptor GetInstanceSync(
       OSCryptAsync& factory,
       Encryptor::Option option = Encryptor::Option::kNone) {
@@ -65,17 +58,33 @@ class DPAPIKeyProviderTest : public ::testing::Test {
     return GetInstanceSync(factory);
   }
 
+  TestingPrefServiceSimple prefs_;
   DPAPIKeyProvider::KeyStatus expected_histogram_ =
       DPAPIKeyProvider::KeyStatus::kSuccess;
-  TestingPrefServiceSimple prefs_;
 
  private:
-  base::test::TaskEnvironment task_environment_;
   base::HistogramTester histograms_;
+  base::test::TaskEnvironment task_environment_;
+};
+
+class DPAPIKeyProviderTest : public DPAPIKeyProviderTestBase {
+ protected:
+  void SetUp() override {
+    OSCrypt::RegisterLocalPrefs(prefs_.registry());
+    OSCrypt::Init(&prefs_);
+  }
+
+  void TearDown() override {
+    OSCrypt::ResetStateForTesting();
+    DPAPIKeyProviderTestBase::TearDown();
+  }
 };
 
 TEST_F(DPAPIKeyProviderTest, Basic) {
   Encryptor encryptor = GetInstanceWithDPAPI();
+
+  ASSERT_TRUE(encryptor.IsEncryptionAvailable());
+  ASSERT_TRUE(encryptor.IsDecryptionAvailable());
 
   std::string plaintext = "secrets";
   std::string ciphertext;
@@ -201,6 +210,11 @@ TEST_F(DPAPIKeyProviderTest, EncryptWithOptions) {
 TEST_F(DPAPIKeyProviderTest, OSCryptNotInit) {
   prefs_.ClearPref("os_crypt.encrypted_key");
   Encryptor encryptor = GetInstanceWithDPAPI();
+  // Encryption is available because OSCrypt sync already initialized before the
+  // test fixture invalidated the key for the DPAPI Key Provider, and so while
+  // the encryptor has no keyring, it delegates successfully to OSCrypt sync.
+  EXPECT_TRUE(encryptor.IsEncryptionAvailable());
+  EXPECT_TRUE(encryptor.IsDecryptionAvailable());
   expected_histogram_ = DPAPIKeyProvider::KeyStatus::kKeyNotFound;
 }
 
@@ -208,6 +222,17 @@ TEST_F(DPAPIKeyProviderTest, OSCryptBadKeyHeader) {
   prefs_.SetString("os_crypt.encrypted_key", "badkeybadkey");
   Encryptor encryptor = GetInstanceWithDPAPI();
   expected_histogram_ = DPAPIKeyProvider::KeyStatus::kInvalidKeyHeader;
+}
+
+TEST_F(DPAPIKeyProviderTestBase, NoOSCrypt) {
+  Encryptor encryptor = GetInstanceWithDPAPI();
+  // Compare with DPAPIKeyProviderTest.OSCryptNotInit above: Encryption is not
+  // available for this test because OSCrypt was never initialized and so the
+  // encryptor has no key, and OSCrypt::IsEncryptionAvailable is also returning
+  // false.
+  EXPECT_FALSE(encryptor.IsEncryptionAvailable());
+  EXPECT_FALSE(encryptor.IsDecryptionAvailable());
+  expected_histogram_ = DPAPIKeyProvider::KeyStatus::kKeyNotFound;
 }
 
 }  // namespace os_crypt_async
