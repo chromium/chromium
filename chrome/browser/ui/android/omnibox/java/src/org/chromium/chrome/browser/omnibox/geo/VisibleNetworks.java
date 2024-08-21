@@ -8,6 +8,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.core.util.ObjectsCompat;
 
+import org.chromium.components.omnibox.OmniboxFeatures;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
@@ -190,6 +192,10 @@ class VisibleNetworks {
          * proto.
          */
         PartnerLocationDescriptor.VisibleNetwork toProto(boolean connected) {
+            if (OmniboxFeatures.sAblateVisibleNetworks.isEnabled()) {
+                return PartnerLocationDescriptor.VisibleNetwork.getDefaultInstance();
+            }
+
             PartnerLocationDescriptor.VisibleNetwork.Builder visibleNetworkBuilder =
                     PartnerLocationDescriptor.VisibleNetwork.newBuilder();
 
@@ -357,6 +363,10 @@ class VisibleNetworks {
          * proto.
          */
         PartnerLocationDescriptor.VisibleNetwork toProto(boolean connected) {
+            if (OmniboxFeatures.sAblateVisibleNetworks.isEnabled()) {
+                return PartnerLocationDescriptor.VisibleNetwork.getDefaultInstance();
+            }
+
             PartnerLocationDescriptor.VisibleNetwork.Builder visibleNetworkBuilder =
                     PartnerLocationDescriptor.VisibleNetwork.newBuilder();
 
