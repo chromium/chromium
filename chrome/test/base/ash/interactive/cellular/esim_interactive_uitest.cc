@@ -141,7 +141,8 @@ IN_PROC_BROWSER_TEST_F(EsimInteractiveUiTest,
       Log("Test complete"));
 }
 
-IN_PROC_BROWSER_TEST_F(EsimInteractiveUiTest, AutoconnectBehavior) {
+// TODO(crbug.com/358606262): Re-enable this test
+IN_PROC_BROWSER_TEST_F(EsimInteractiveUiTest, DISABLED_AutoconnectBehavior) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ShillDevicePowerStateObserver,
                                       kMobileDataPoweredState);
