@@ -4,6 +4,7 @@
 
 #include "ash/system/focus_mode/focus_mode_tasks_provider.h"
 
+#include <algorithm>
 #include <optional>
 #include <vector>
 
@@ -435,8 +436,6 @@ void FocusModeTasksProvider::OnTasksFetchedForTask(
     bool success,
     std::optional<google_apis::ApiErrorCode> http_error,
     const ui::ListModel<api::Task>* api_tasks) {
-  FocusModeTask task;
-
   // Handle HTTP errors and apply retires.
   if (http_error.has_value() &&
       http_error.value() != google_apis::HTTP_SUCCESS) {
@@ -454,7 +453,7 @@ void FocusModeTasksProvider::OnTasksFetchedForTask(
       }
 
       // Max number of retries reached. Bail gracefully.
-      std::move(callback).Run(task);
+      std::move(callback).Run(FocusModeTask{});
       get_task_retry_state_.Reset();
       return;
     }
@@ -475,34 +474,53 @@ void FocusModeTasksProvider::OnTasksFetchedForTask(
       }
 
       // Max number of retries reached. Bail gracefully.
-      std::move(callback).Run(task);
+      std::move(callback).Run(FocusModeTask{});
       get_task_retry_state_.Reset();
       return;
     }
 
     // Other unhandled HTTP errors. Bail gracefully.
-    std::move(callback).Run(task);
+    std::move(callback).Run(FocusModeTask{});
     get_task_retry_state_.Reset();
     return;
   }
 
-    // NOTE: Completed tasks will not show up in `api_tasks`, so we first assume
-    // it's completed and update the state if the task is found in `api_tasks`.
-    // TODO: Can we actually verify that the task is complete instead of making
-    // this assumption?
-    task.task_id = {.list_id = task_list_id, .id = task_id};
-    task.completed = true;
+  if (!success) {
+    std::move(callback).Run(FocusModeTask{});
+    get_task_retry_state_.Reset();
+    return;
+  }
 
-    if (success && api_tasks) {
-      for (const auto& api_task : *api_tasks) {
-        if (api_task->id == task_id) {
-          task.title = api_task->title;
-          task.updated = api_task->updated;
-          task.completed = api_task->completed;
-          break;
-        }
-      }
+  TaskId fetched_task_id = {.list_id = task_list_id, .id = task_id};
+  auto iter =
+      base::ranges::find(tasks_, fetched_task_id, &FocusModeTask::task_id);
+  bool task_exists = iter != tasks_.end();
+
+  FocusModeTask temp_local_task;
+  if (!task_exists) {
+    temp_local_task.task_id = fetched_task_id;
+  }
+  FocusModeTask& task = task_exists ? *iter : temp_local_task;
+
+  // Make sure that the fetched task is updated in the cache if it exists.
+  // NOTE: Completed tasks will not show up in `api_tasks`, so we first assume
+  // it's completed and update the state if the task is found in `api_tasks`.
+  // TODO: Can we actually verify that the task is complete instead of making
+  // this assumption?
+  task.completed = true;
+
+  for (const auto& api_task : *api_tasks) {
+    if (api_task->id == task_id) {
+      task.title = api_task->title;
+      task.updated = api_task->updated;
+      task.completed = api_task->completed;
+      break;
     }
+  }
+  if (task.completed && task_exists) {
+    // Only mark the task as deleted if it already exists in `tasks_`.
+    deleted_task_ids_.insert(fetched_task_id);
+  }
 
   std::move(callback).Run(task);
   get_task_retry_state_.Reset();

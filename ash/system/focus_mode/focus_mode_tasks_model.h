@@ -121,6 +121,8 @@ class ASH_EXPORT FocusModeTasksModel final {
 
   void OnPrefTaskFetched(const std::optional<FocusModeTask>& fetched_task);
 
+  void OnSelectedTaskFetched(const std::optional<FocusModeTask>& fetched_task);
+
   // Inserts `task` at the front of `tasks_` then resets `selected_task_` and
   // `pending_task_` pointers to the matching tasks in `tasks_`.
   FocusModeTask* InsertTaskIntoTaskList(FocusModeTask&& task);
