@@ -19624,6 +19624,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ManualFallback_CreditCard_OverflowMenu_Edit">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user tapped on the &quot;Edit&quot; action of the overflow menu button
+    shown in the Credit Card Manual Fallback view. iOS only.
+  </description>
+</action>
+
+<action name="ManualFallback_CreditCard_OverflowMenu_ShowDetails">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user tapped on the &quot;Show Details&quot; action of the overflow menu
+    button shown in the Credit Card Manual Fallback view. iOS only.
+  </description>
+</action>
+
 <action name="ManualFallback_CreditCard_SelectCardholderName">
   <owner>djean@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -19701,6 +19719,17 @@ should be able to be added at any place in this file.
   <description>The user opened the Profile Manual Fallback view.</description>
 </action>
 
+<action name="ManualFallback_OtherPasswords_OverflowMenu_Edit">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user tapped on the &quot;Edit&quot; action of the overflow menu button
+    shown in the Other Passwords Manual Fallback view, which is opened by
+    tapping the &quot;Select Password...&quot; button in the Password Manual
+    Fallback view. iOS only.
+  </description>
+</action>
+
 <action name="ManualFallback_Password_OpenManagePassword">
   <owner>djean@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -19724,6 +19753,15 @@ should be able to be added at any place in this file.
   <description>
     The user tapped on &quot;Use other password&quot; on the Password Manual
     Fallback view.
+  </description>
+</action>
+
+<action name="ManualFallback_Password_OverflowMenu_Edit">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user tapped on the &quot;Edit&quot; action of the overflow menu button
+    shown in the Password Manual Fallback view. iOS only.
   </description>
 </action>
 
@@ -19797,6 +19835,15 @@ should be able to be added at any place in this file.
   <description>
     The user tapped on &quot;Manage addresses&quot; on the Password Manual
     Fallback view.
+  </description>
+</action>
+
+<action name="ManualFallback_Profiles_OverflowMenu_Edit">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user tapped on the &quot;Edit&quot; action of the overflow menu button
+    shown in the Address Manual Fallback view. iOS only.
   </description>
 </action>
 

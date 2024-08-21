@@ -474,10 +474,15 @@ BOOL AreCredentialsAtIndicesConnected(
 // Requests the appropriate delegate to open the details of the given credential
 // in edit mode.
 - (void)openPasswordDetailsInEditMode:(CredentialUIEntry)credential {
-  if ([self isFromAllPasswordsContext]) {
+  BOOL fromAllPasswordContext = [self isFromAllPasswordsContext];
+  if (fromAllPasswordContext) {
+    base::RecordAction(base::UserMetricsAction(
+        "ManualFallback_OtherPasswords_OverflowMenu_Edit"));
     [self.delegate manualFillPasswordMediator:self
         didTriggerOpenPasswordDetailsInEditMode:credential];
   } else {
+    base::RecordAction(
+        base::UserMetricsAction("ManualFallback_Password_OverflowMenu_Edit"));
     [self.navigator openPasswordDetailsInEditModeForCredential:credential];
   }
 }

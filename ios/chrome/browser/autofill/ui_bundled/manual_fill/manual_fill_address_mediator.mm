@@ -173,14 +173,20 @@ NSString* const ManageAddressAccessibilityIdentifier =
 
   __weak __typeof(self) weakSelf = self;
   UIAction* editAction = [actionFactory actionToEditWithBlock:^{
-    BOOL offerMigrateToAccount =
-        [weakSelf offerMigrateToAccountForAddress:address];
-    [weakSelf.navigationDelegate
-        openAddressDetailsInEditMode:address
-               offerMigrateToAccount:offerMigrateToAccount];
+    [weakSelf openAddressDetailsInEditMode:address];
   }];
 
   return editAction;
+}
+
+// Requests the `navigationDelegate` to open the details of the given `address`
+// in edit mode.
+- (void)openAddressDetailsInEditMode:(const AutofillProfile*)address {
+  base::RecordAction(
+      base::UserMetricsAction("ManualFallback_Profiles_OverflowMenu_Edit"));
+  BOOL offerMigrateToAccount = [self offerMigrateToAccountForAddress:address];
+  [self.navigationDelegate openAddressDetailsInEditMode:address
+                                  offerMigrateToAccount:offerMigrateToAccount];
 }
 
 // Evaluates whether or not the option to move the address to the account should
