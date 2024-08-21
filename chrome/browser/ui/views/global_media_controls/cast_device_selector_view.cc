@@ -5,11 +5,14 @@
 #include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 #include "components/media_router/browser/media_router_metrics.h"
+#include "components/media_router/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -219,9 +222,9 @@ void CastDeviceSelectorView::OnDevicesUpdated(
 }
 
 void CastDeviceSelectorView::OnPermissionRejected() {
-  // TODO(crbug.com/358821864): Do not show the permission error if users have
-  // dismissed it.
-  if (has_permission_rejected_issue_) {
+  if (has_permission_rejected_issue_ ||
+      g_browser_process->local_state()->GetBoolean(
+          media_router::prefs::kSuppressLocalDiscoveryPermissionError)) {
     return;
   }
   has_permission_rejected_issue_ = true;
@@ -355,7 +358,11 @@ void CastDeviceSelectorView::CloseButtonPressed() {
         RecordMediaRouterUiPermissionRejectedViewEvents(
             media_router::MediaRouterUiPermissionRejectedViewEvents::
                 kGmcDialogErrorDismissed);
+    g_browser_process->local_state()->SetBoolean(
+        media_router::prefs::kSuppressLocalDiscoveryPermissionError, true);
+    has_permission_rejected_issue_ = false;
   }
+
   HideDevices();
 }
 

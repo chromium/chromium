@@ -155,6 +155,8 @@ bool MediaRouterEnabled(content::BrowserContext* context) {
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kMediaRouterCastAllowAllIPs, false,
                                 PrefRegistry::PUBLIC);
+  registry->RegisterBooleanPref(prefs::kSuppressLocalDiscoveryPermissionError,
+                                false);
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
