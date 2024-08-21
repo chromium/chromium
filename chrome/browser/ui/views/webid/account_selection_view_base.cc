@@ -584,6 +584,7 @@ void AccountSelectionViewBase::ConfigureBrandImageView(
     return;
   }
 
+  image_view->SetVisible(true);
   auto it = brand_icon_images_.find(brand_icon_url);
   if (it != brand_icon_images_.end()) {
     image_view->CropAndSetImage(it->second);
