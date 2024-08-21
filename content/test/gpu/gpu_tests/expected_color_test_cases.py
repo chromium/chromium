@@ -195,6 +195,8 @@ def MapsTestCases() -> List[ExpectedColorTestCase]:
               'SM-A235M': 1.1025,
               # Samsung S23.
               'SM-S911U1': 1.1,
+              # Motorola Moto G Power 5G.
+              'moto g power 5G - 2023': 1.1,
           }),
   ]
 

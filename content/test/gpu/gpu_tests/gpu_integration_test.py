@@ -1067,6 +1067,8 @@ class GpuIntegrationTest(
         # device name is clearer.
         'arm-mali-g52',  # android-sm-a135m
         'arm-mali-t860',  # chromeos-board-kevin
+        # android-moto-g-power-5g---2023
+        'imagination-powervr-b-series-bxm-8-256',
         'qualcomm-adreno-(tm)-418',  # android-nexus-5x
         'qualcomm-adreno-(tm)-540',  # android-pixel-2
         'qualcomm-adreno-(tm)-610',  # android-sm-a235m
@@ -1082,7 +1084,7 @@ class GpuIntegrationTest(
         'chromium-os',  # ChromeOS
         'cros-chrome',  # ChromeOS
         'web-engine-shell',  # Fuchsia
-        'cast-streaming-shell',  # Syonymous with cast_streaming suite
+        'cast-streaming-shell',  # Synonymous with cast_streaming suite
         # GPU tests are always run in remote mode on the bots, and it shouldn't
         # make a difference to these tests anyways.
         'chromeos-local',
