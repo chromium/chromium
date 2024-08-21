@@ -2501,11 +2501,6 @@
     "expiry_milestone": 142
   },
   {
-    "name": "enable-accessibility-select-to-speak-hover-text-improvements",
-    "owners": [ "josiahk@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-accessibility-select-to-speak-shortcut",
     "owners": [ "akihiroota@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 132
