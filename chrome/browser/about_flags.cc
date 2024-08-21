@@ -3766,11 +3766,26 @@ const char kReplaceSyncPromosWithSignInPromosFeatures[] =
     "FeedBottomSyncStringRemoval,"
     "EnableBatchUploadFromSettings";
 
+// The ones above + UnoPhase2FollowUp.
+const char kFastFollowFeatures[] =
+    "ReplaceSyncPromosWithSignInPromos,"
+    "ReadingListEnableSyncTransportModeUponSignIn,"
+    "SyncEnableContactInfoDataTypeInTransportMode,"
+    "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
+    "SyncEnableWalletMetadataInTransportMode,"
+    "SyncEnableWalletOfferInTransportMode,"
+    "EnablePasswordsAccountStorageForNonSyncingUsers,"
+    "HideSettingsSignInPromo,"
+    "FeedBottomSyncStringRemoval,"
+    "EnableBatchUploadFromSettings,"
+    "UnoPhase2FollowUp";
+
 const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
     {"Default", "", ""},
     {"Disabled", "disable-features",
      kReplaceSyncPromosWithSignInPromosFeatures},
     {"Enabled", "enable-features", kReplaceSyncPromosWithSignInPromosFeatures},
+    {"Enabled with follow-ups", "enable-features", kFastFollowFeatures},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
