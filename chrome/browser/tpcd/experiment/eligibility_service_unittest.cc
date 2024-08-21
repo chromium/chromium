@@ -44,8 +44,6 @@ namespace {
 using ::testing::_;
 using ::testing::Return;
 using TpcdExperimentEligibility = privacy_sandbox::TpcdExperimentEligibility;
-using NoticeType = privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
-using SurfaceType = privacy_sandbox::TrackingProtectionOnboarding::SurfaceType;
 
 constexpr char kReasonForEligibilityStoredInPrefsHistogram[] =
     "PrivacySandbox.CookieDeprecationFacilitatedTesting."
@@ -98,11 +96,6 @@ class EligibilityServiceTest : public EligibilityServiceTestBase {
   EligibilityServiceTest() {
     feature_list_.InitAndEnableFeature(
         features::kCookieDeprecationFacilitatedTesting);
-  }
-
- protected:
-  void SetChannelVersion(version_info::Channel channel) {
-    onboarding_service_->channel_ = channel;
   }
 
  private:

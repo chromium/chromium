@@ -8,13 +8,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/version_info/channel.h"
 
 class PrefService;
-
-namespace tpcd::experiment {
-class EligibilityServiceTest;
-}  // namespace tpcd::experiment
 
 namespace privacy_sandbox {
 
@@ -111,16 +106,11 @@ class TrackingProtectionOnboarding : public KeyedService {
   };
 
   TrackingProtectionOnboarding(PrefService* pref_service,
-                               version_info::Channel channel,
                                bool is_silent_onboarding_enabled = false);
   ~TrackingProtectionOnboarding() override;
 
   // KeyedService:
   void Shutdown() override;
-
-  // To be called by the Mode B experiment service in BETA, DEV and CANARY only
-  // to reset the user's prefs for testing.
-  void MaybeResetModeBOnboardingPrefs();
 
   // Indicates the onboarding status for the user. Return value is the enum
   // defined above.
@@ -131,10 +121,7 @@ class TrackingProtectionOnboarding : public KeyedService {
   SilentOnboardingStatus GetSilentOnboardingStatus() const;
 
  private:
-  friend class tpcd::experiment::EligibilityServiceTest;
-
   raw_ptr<PrefService> pref_service_;
-  version_info::Channel channel_;
   bool is_silent_onboarding_enabled_;
 };
 

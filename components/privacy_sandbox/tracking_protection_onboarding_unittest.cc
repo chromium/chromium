@@ -15,7 +15,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
-#include "components/version_info/channel.h"
 #include "privacy_sandbox_notice_constants.h"
 #include "privacy_sandbox_notice_storage.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,10 +46,9 @@ class TrackingProtectionOnboardingTest : public testing::Test {
     tracking_protection::RegisterProfilePrefs(prefs()->registry());
   }
 
-  void RecreateOnboardingService(
-      version_info::Channel channel = version_info::Channel::UNKNOWN) {
+  void RecreateOnboardingService() {
     tracking_protection_onboarding_service_ =
-        std::make_unique<TrackingProtectionOnboarding>(prefs(), channel);
+        std::make_unique<TrackingProtectionOnboarding>(prefs());
   }
 
   void SetUp() override { RecreateOnboardingService(); }
@@ -69,42 +67,6 @@ class TrackingProtectionOnboardingTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
 };
-
-TEST_F(TrackingProtectionOnboardingTest, MaybeResetOnboardingPrefsInStable) {
-  // Setup
-  tracking_protection_onboarding_service_ =
-      std::make_unique<TrackingProtectionOnboarding>(
-          prefs(), version_info::Channel::STABLE);
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
-
-  // Action
-  tracking_protection_onboarding()->MaybeResetModeBOnboardingPrefs();
-
-  // Verification
-  EXPECT_EQ(static_cast<TrackingProtectionOnboardingStatus>(prefs()->GetInteger(
-                prefs::kTrackingProtectionOnboardingStatus)),
-            TrackingProtectionOnboardingStatus::kOnboarded);
-}
-
-TEST_F(TrackingProtectionOnboardingTest, MaybeResetOnboardingPrefsInCanary) {
-  // Setup
-  tracking_protection_onboarding_service_ =
-      std::make_unique<TrackingProtectionOnboarding>(
-          prefs(), version_info::Channel::CANARY);
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
-
-  // Action
-  tracking_protection_onboarding()->MaybeResetModeBOnboardingPrefs();
-
-  // Verification
-  EXPECT_FALSE(prefs()
-                   ->FindPreference(prefs::kTrackingProtectionOnboardingStatus)
-                   ->HasUserSetting());
-}
 
 class TrackingProtectionOnboardingAccessorTest
     : public TrackingProtectionOnboardingTest,
@@ -148,47 +110,8 @@ TEST_F(TrackingProtectionOnboardingStartupStateTest,
 class TrackingProtectionSilentOnboardingTest
     : public TrackingProtectionOnboardingTest {};
 
-TEST_F(TrackingProtectionSilentOnboardingTest,
-       MaybeResetOnboardingPrefsInStable) {
-  // Setup
-  tracking_protection_onboarding_service_ =
-      std::make_unique<TrackingProtectionOnboarding>(
-          prefs(), version_info::Channel::STABLE);
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionSilentOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
-
-  // Action
-  tracking_protection_onboarding()->MaybeResetModeBOnboardingPrefs();
-
-  // Verification
-  EXPECT_EQ(static_cast<TrackingProtectionOnboardingStatus>(prefs()->GetInteger(
-                prefs::kTrackingProtectionSilentOnboardingStatus)),
-            TrackingProtectionOnboardingStatus::kOnboarded);
-}
-
-TEST_F(TrackingProtectionSilentOnboardingTest,
-       MaybeResetOnboardingPrefsInCanary) {
-  // Setup
-  tracking_protection_onboarding_service_ =
-      std::make_unique<TrackingProtectionOnboarding>(
-          prefs(), version_info::Channel::CANARY);
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionSilentOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
-
-  // Action
-  tracking_protection_onboarding()->MaybeResetModeBOnboardingPrefs();
-
-  // Verification
-  EXPECT_FALSE(
-      prefs()
-          ->FindPreference(prefs::kTrackingProtectionSilentOnboardingStatus)
-          ->HasUserSetting());
-}
-
 class TrackingProtectionSilentOnboardingAccessorTest
-    : public TrackingProtectionSilentOnboardingTest,
+    : public TrackingProtectionOnboardingTest,
       public testing::WithParamInterface<
           std::pair<TrackingProtectionOnboardingStatus,
                     TrackingProtectionOnboarding::SilentOnboardingStatus>> {};
@@ -216,7 +139,7 @@ INSTANTIATE_TEST_SUITE_P(
             TrackingProtectionOnboarding::SilentOnboardingStatus::kOnboarded)));
 
 class TrackingProtectionSilentOnboardingStartupStateTest
-    : public TrackingProtectionSilentOnboardingTest {
+    : public TrackingProtectionOnboardingTest {
  protected:
   base::HistogramTester histogram_tester_;
 };
