@@ -167,10 +167,6 @@ std::string FormatSampleForDiagnosticOutput(const std::vector<Frame>& sample);
 void ExpectStackContains(const std::vector<Frame>& stack,
                          const std::vector<FunctionAddressRange>& functions);
 
-// Expects that the stack contains the function names in the specified order.
-void ExpectStackContainsNames(const std::vector<Frame>& stack,
-                              const std::vector<std::string>& function_names);
-
 // Expects that the stack does not contain the functions with the specified
 // address ranges.
 void ExpectStackDoesNotContain(

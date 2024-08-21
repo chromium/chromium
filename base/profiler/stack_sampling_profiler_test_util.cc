@@ -384,24 +384,6 @@ void ExpectStackContains(const std::vector<Frame>& stack,
       << FormatSampleForDiagnosticOutput(stack);
 }
 
-void ExpectStackContainsNames(const std::vector<Frame>& stack,
-                              const std::vector<std::string>& function_names) {
-  auto frame_it = stack.begin();
-  auto names_it = function_names.begin();
-  for (; frame_it != stack.end() && names_it != function_names.end();
-       ++frame_it) {
-    if (frame_it->function_name == *names_it) {
-      ++names_it;
-    }
-  }
-
-  EXPECT_EQ(names_it, function_names.end())
-      << "Function name in position " << names_it - function_names.begin()
-      << " - {" << *names_it << "} was not found in stack "
-      << "(or did not appear in the expected order):\n"
-      << FormatSampleForDiagnosticOutput(stack);
-}
-
 void ExpectStackDoesNotContain(
     const std::vector<Frame>& stack,
     const std::vector<FunctionAddressRange>& functions) {
