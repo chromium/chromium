@@ -11,4 +11,11 @@ source_set("model") {
     "profile_ios_io_data.h",
     "profile_manager_ios_impl.h",
   ]
+
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/net/model:net_types",
+    "//ios/chrome/browser/shared/model/profile",
+  ]
 }
