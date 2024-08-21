@@ -348,6 +348,8 @@ source_set("web_applications") {
     "web_contents/web_app_icon_downloader.h",
     "web_contents/web_contents_manager.cc",
     "web_contents/web_contents_manager.h",
+    "web_install_service_impl.cc",
+    "web_install_service_impl.h",
   ]
 
   if (is_chromeos) {

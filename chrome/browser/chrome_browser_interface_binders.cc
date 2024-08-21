@@ -201,6 +201,7 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/browser/ui/webui/webui_gallery/webui_gallery_ui.h"
+#include "chrome/browser/web_applications/web_install_service_impl.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
@@ -1004,6 +1005,11 @@ void PopulateChromeFrameBinders(
   if (base::FeatureList::IsEnabled(features::kWebPayments)) {
     map->Add<payments::mojom::PaymentRequest>(
         base::BindRepeating(&payments::CreatePaymentRequest));
+  }
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppInstallation) &&
+      !render_frame_host->GetParentOrOuterDocument()) {
+    map->Add<blink::mojom::WebInstallService>(
+        base::BindRepeating(&web_app::WebInstallServiceImpl::CreateIfAllowed));
   }
 #endif
 

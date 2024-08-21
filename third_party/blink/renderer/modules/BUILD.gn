@@ -156,6 +156,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/video_rvfc",
     "//third_party/blink/renderer/modules/virtualkeyboard",
     "//third_party/blink/renderer/modules/wake_lock",
+    "//third_party/blink/renderer/modules/web_install",
     "//third_party/blink/renderer/modules/webaudio",
     "//third_party/blink/renderer/modules/webcodecs",
     "//third_party/blink/renderer/modules/webdatabase",

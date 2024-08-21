@@ -1250,6 +1250,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_watch_advertisements_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_wave_shaper_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_wave_shaper_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_install_result.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_install_result.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_close_info.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_close_info.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_connection_stats.cc",

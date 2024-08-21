@@ -6803,6 +6803,7 @@ interface Navigator
     method getGamepads
     method getInstalledRelatedApps
     method getUserMedia
+    method install
     method javaEnabled
     method joinAdInterestGroup
     method leaveAdInterestGroup
