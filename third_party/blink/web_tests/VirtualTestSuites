@@ -990,7 +990,8 @@
               "external/wpt/signed-exchange"],
     "exclusive_tests": ["external/wpt/fetch/http-cache"],
     "args": ["--enable-features=SplitCacheByNetworkIsolationKey"],
-    "expires": "never"
+    "expires": "never",
+    "owners": ["awillia@chromium.org", "shivanisha@chromium.org", "jkarlin@chromium.org"]
   },
   {
     "prefix": "not-split-http-cache",
