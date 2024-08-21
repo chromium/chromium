@@ -3115,7 +3115,7 @@
     "owners": [ "fgm@chromium.org", "thibaudm@chromium.org", "wasm-team@google.com" ],
     // This flag is used by developers and partners to test
     // stack switching features in WebAssembly.
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-expkit-text-classifier",
