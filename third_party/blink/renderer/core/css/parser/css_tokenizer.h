@@ -62,14 +62,6 @@ class CORE_EXPORT CSSTokenizer {
   CSSParserToken TokenizeSingle();
   CSSParserToken TokenizeSingleWithComments();
 
-  // If you want the returned CSSParserTokens' Value() to be valid beyond
-  // the destruction of CSSTokenizer, you'll need to call PersistString()
-  // to some longer-lived tokenizer (escaped string tokens may have
-  // StringViews that refer to the string pool). The tokenizer
-  // (*this, not the destination) is in an undefined state after this;
-  // all you can do is destroy it.
-  void PersistStrings(CSSTokenizer& destination);
-
   // Skips to the given offset, which _must_ be exactly the end of
   // the current block. Does _not_ return a new token for lookahead
   // (because the only caller in question does not want that).

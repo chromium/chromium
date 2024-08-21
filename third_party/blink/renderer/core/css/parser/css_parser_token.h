@@ -179,6 +179,13 @@ class CORE_EXPORT CSSParserToken {
   void Serialize(StringBuilder&) const;
 
   CSSParserToken CopyWithUpdatedString(const StringView&) const;
+  CSSParserToken CopyWithoutValue() const {
+    CSSParserToken token = *this;
+    token.value_is_inline_ = false;
+    token.value_length_ = 0;
+    token.value_data_char_raw_ = nullptr;
+    return token;
+  }
 
   static CSSParserTokenType ClosingTokenType(CSSParserTokenType opening_type) {
     switch (opening_type) {
