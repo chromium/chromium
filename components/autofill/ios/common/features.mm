@@ -38,4 +38,4 @@ BASE_FEATURE(kAutofillIsolatedWorldForJavascriptIos,
 // timeout but will be dismissed once navigating from an explicit user gesture.
 BASE_FEATURE(kAutofillStickyInfobarIos,
              "AutofillStickyInfobarIos",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
