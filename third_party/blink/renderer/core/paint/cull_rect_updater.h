@@ -83,7 +83,7 @@ class CORE_EXPORT CullRectUpdater {
   bool ShouldProactivelyUpdate(const Context&, const PaintLayer&) const;
 
   PaintLayer& starting_layer_;
-  PropertyTreeState root_state_ = PropertyTreeState::Uninitialized();
+  PropertyTreeState root_state_{PropertyTreeState::kUninitialized};
   ViewTransitionSupplement* view_transition_supplement_;
   float expansion_ratio_;
 };

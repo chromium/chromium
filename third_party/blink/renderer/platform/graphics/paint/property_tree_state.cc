@@ -65,14 +65,6 @@ bool ClipChainInTransformCompositingBoundary(
 
 }  // namespace
 
-bool PropertyTreeStateOrAlias::Changed(
-    PaintPropertyChangeType change,
-    const PropertyTreeState& relative_to) const {
-  return Transform().Changed(change, relative_to.Transform()) ||
-         Clip().Changed(change, relative_to, &Transform()) ||
-         Effect().Changed(change, relative_to, &Transform());
-}
-
 std::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
     const PropertyTreeState& guest,
     IsCompositedScrollFunction is_composited_scroll) const {
@@ -123,8 +115,7 @@ std::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
 }
 
 String PropertyTreeStateOrAlias::ToString() const {
-  return String::Format("t:%p c:%p e:%p", transform_.Get(), clip_.Get(),
-                        effect_.Get());
+  return String::Format("t:%p c:%p e:%p", transform_, clip_, effect_);
 }
 
 #if DCHECK_IS_ON()
@@ -142,11 +133,6 @@ std::unique_ptr<JSONObject> PropertyTreeStateOrAlias::ToJSON() const {
   result->SetObject("clip", clip_->ToJSON());
   result->SetObject("effect", effect_->ToJSON());
   return result;
-}
-
-std::ostream& operator<<(std::ostream& os,
-                         const PropertyTreeStateOrAlias& state) {
-  return os << state.ToString().Utf8();
 }
 
 }  // namespace blink

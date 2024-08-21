@@ -2286,7 +2286,7 @@ bool LayoutObject::MapToVisualRectInAncestorSpaceInternalFastPath(
     return true;
 
   AncestorSkipInfo skip_info(ancestor);
-  PropertyTreeState container_properties = PropertyTreeState::Uninitialized();
+  PropertyTreeState container_properties(PropertyTreeState::kUninitialized);
   const LayoutObject* property_container = GetPropertyContainer(
       &skip_info, &container_properties, visual_rect_flags);
   if (!property_container)

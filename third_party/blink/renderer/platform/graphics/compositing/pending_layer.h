@@ -56,8 +56,8 @@ class PLATFORM_EXPORT PendingLayer {
     return text_known_to_be_on_opaque_background_;
   }
   const PaintChunkSubset& Chunks() const { return chunks_; }
-  const PropertyTreeState& GetPropertyTreeState() const {
-    return property_tree_state_;
+  PropertyTreeState GetPropertyTreeState() const {
+    return PropertyTreeState(property_tree_state_);
   }
   const gfx::Vector2dF& OffsetOfDecompositedTransforms() const {
     return offset_of_decomposited_transforms_;
@@ -118,8 +118,12 @@ class PLATFORM_EXPORT PendingLayer {
   void ForceDrawsContent() { draws_content_ = true; }
   bool DrawsContent() const { return draws_content_; }
 
+  static bool RequiresOwnLayer(CompositingType type) {
+    return type != kOverlap && type != kOther;
+  }
+
   bool ChunkRequiresOwnLayer() const {
-    bool result = compositing_type_ != kOverlap && compositing_type_ != kOther;
+    bool result = RequiresOwnLayer(compositing_type_);
 #if DCHECK_IS_ON()
     if (result) {
       DCHECK(!content_layer_client_);
@@ -220,7 +224,7 @@ class PLATFORM_EXPORT PendingLayer {
   // must draw a solid color that fully covers this pending layer.
   wtf_size_t solid_color_chunk_index_ = kNotFound;
   PaintChunkSubset chunks_;
-  PropertyTreeState property_tree_state_;
+  TraceablePropertyTreeState property_tree_state_;
   gfx::Vector2dF offset_of_decomposited_transforms_;
   PaintPropertyChangeType change_of_decomposited_transforms_ =
       PaintPropertyChangeType::kUnchanged;

@@ -362,7 +362,8 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   scoped_refptr<cc::SolidColorScrollbarLayer> scrollbar_layer_horizontal_;
   scoped_refptr<cc::SolidColorScrollbarLayer> scrollbar_layer_vertical_;
 
-  PropertyTreeStateOrAlias parent_property_tree_state_;
+  TraceablePropertyTreeStateOrAlias parent_property_tree_state_{
+      TraceablePropertyTreeStateOrAlias::kUninitialized};
   Member<TransformPaintPropertyNode> device_emulation_transform_node_;
   Member<TransformPaintPropertyNode> overscroll_elasticity_transform_node_;
   Member<TransformPaintPropertyNode> page_scale_node_;

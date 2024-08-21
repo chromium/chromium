@@ -97,8 +97,8 @@ class FindPropertiesNeedingUpdateScope {
   const FragmentData& fragment_data_;
   bool needed_paint_property_update_ = false;
   bool needed_forced_subtree_update_ = false;
-  PropertyTreeStateOrAlias original_local_border_box_properties_ =
-      PropertyTreeState::Uninitialized();
+  PropertyTreeStateOrAlias original_local_border_box_properties_{
+      PropertyTreeState::kUninitialized};
   bool had_original_properties_ = false;
 };
 

@@ -142,8 +142,8 @@ class PLATFORM_EXPORT PaintChunker final {
   using NextChunkId = std::pair<PaintChunk::Id, const DisplayItemClient&>;
   std::optional<NextChunkId> next_chunk_id_;
 
-  PropertyTreeStateOrAlias current_properties_ =
-      PropertyTreeState::Uninitialized();
+  PropertyTreeStateOrAlias current_properties_{
+      PropertyTreeStateOrAlias::kUninitialized};
 
   // True when an item forces a new chunk (e.g., foreign display items), and for
   // the item following a forced chunk. PaintController also forces new chunks
