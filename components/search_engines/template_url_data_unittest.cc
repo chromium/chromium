@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/search_engines/prepopulated_engines.h"
+#include "components/search_engines/regulatory_extension_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -46,44 +47,36 @@ TEST(TemplateURLDataTest, Trim) {
   EXPECT_EQ(u"otherkeyword", data.keyword());
 }
 
-#if DCHECK_IS_ON()
-TEST(TemplateURLDataTest, RejectUnknownRegulatoryKeywords) {
-  std::array<TemplateURLData::RegulatoryExtension, 2> unknown_keywords = {{
-      {"default", "good data"},
-      {"unknown", "bad data"},
-  }};
-
-  EXPECT_DEATH_IF_SUPPORTED(BuildDataForRegulatoryExtensions(unknown_keywords),
-                            "");
-}
-#endif
-
 TEST(TemplateURLDataTest, AcceptKnownRegulatoryKeywords) {
   std::array<TemplateURLData::RegulatoryExtension, 2> extensions = {{
-      {.variant = "default",
+      {.variant = RegulatoryExtensionType::kDefault,
        .search_params = "default_search",
        .suggest_params = "default_suggest"},
-      {.variant = "android_eea",
+      {.variant = RegulatoryExtensionType::kAndroidEEA,
        .search_params = "android_eea_search",
        .suggest_params = "android_eea_suggest"},
   }};
 
   auto data = BuildDataForRegulatoryExtensions(extensions);
   EXPECT_EQ("default_search",
-            data.regulatory_extensions.at("default")->search_params);
+            data.regulatory_extensions.at(RegulatoryExtensionType::kDefault)
+                ->search_params);
   EXPECT_EQ("default_suggest",
-            data.regulatory_extensions.at("default")->suggest_params);
+            data.regulatory_extensions.at(RegulatoryExtensionType::kDefault)
+                ->suggest_params);
   EXPECT_EQ("android_eea_search",
-            data.regulatory_extensions.at("android_eea")->search_params);
+            data.regulatory_extensions.at(RegulatoryExtensionType::kAndroidEEA)
+                ->search_params);
   EXPECT_EQ("android_eea_suggest",
-            data.regulatory_extensions.at("android_eea")->suggest_params);
+            data.regulatory_extensions.at(RegulatoryExtensionType::kAndroidEEA)
+                ->suggest_params);
 }
 
 #if DCHECK_IS_ON()
 TEST(TemplateURLDataTest, DuplicateRegulatoryKeywords) {
   std::array<TemplateURLData::RegulatoryExtension, 2> duplicate_data = {{
-      {"default", "default_data"},
-      {"default", "android_eea_data"},
+      {RegulatoryExtensionType::kDefault, "default_data"},
+      {RegulatoryExtensionType::kDefault, "android_eea_data"},
   }};
 
   EXPECT_DEATH_IF_SUPPORTED(BuildDataForRegulatoryExtensions(duplicate_data),

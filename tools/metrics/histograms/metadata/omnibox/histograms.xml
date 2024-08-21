@@ -2183,8 +2183,8 @@ chromium-metrics-reviews@google.com.
     or {regSuggestExt} field while handling replacements for a TemplateUrl.
 
     Recorded only for eligible TemplateURLs that feature extensions mentioned
-    above, once per a replacement, regardless of whether the extension was
-    present or its corresponding field populated.
+    above, once per a replacement, regardless of whether the relevant extension
+    field was populated.
   </summary>
 </histogram>
 

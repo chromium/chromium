@@ -210,7 +210,7 @@ struct TemplateURLData {
   std::vector<std::string> alternate_urls;
 
   // A list of regulatory extensions, keyed by extension variant.
-  base::flat_map<std::string_view, const RegulatoryExtension*>
+  base::flat_map<RegulatoryExtensionType, const RegulatoryExtension*>
       regulatory_extensions;
 
   // Whether a connection to |url_| should regularly be established when this is

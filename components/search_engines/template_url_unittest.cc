@@ -27,6 +27,7 @@
 #include "base/test/with_feature_override.h"
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/regulatory_extension_type.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_data.h"
@@ -1019,13 +1020,14 @@ TEST_F(TemplateURLTest, GetRegulatoryExtension_NoExtension) {
 
 TEST_F(TemplateURLTest, GetRegulatoryExtension_OnlyDefaultExtension) {
   constexpr auto default_ext = TemplateURLData::RegulatoryExtension{
-      .variant = "default",
+      .variant = RegulatoryExtensionType::kDefault,
       .search_params = "search=params1",
       .suggest_params = "suggest=params2",
   };
 
   TemplateURLData data;
-  data.regulatory_extensions.insert_or_assign("default", &default_ext);
+  data.regulatory_extensions.insert_or_assign(default_ext.variant,
+                                              &default_ext);
 
   {
     // Default extension should give us params mentioned above.
@@ -1046,18 +1048,20 @@ TEST_F(TemplateURLTest, GetRegulatoryExtension_OnlyDefaultExtension) {
 
 TEST_F(TemplateURLTest, GetRegulatoryExtension_WithDefaultAndEEAExtensions) {
   constexpr auto default_ext = TemplateURLData::RegulatoryExtension{
-      .variant = "default",
+      .variant = RegulatoryExtensionType::kDefault,
       .search_params = "search=params1",
       .suggest_params = "suggest=params2",
   };
   constexpr auto android_eea_ext = TemplateURLData::RegulatoryExtension{
-      .variant = "android_eea",
+      .variant = RegulatoryExtensionType::kAndroidEEA,
       .search_params = "eea_search=params3",
       .suggest_params = "eea_suggest=params4",
   };
   TemplateURLData data;
-  data.regulatory_extensions.insert_or_assign("default", &default_ext);
-  data.regulatory_extensions.insert_or_assign("android_eea", &android_eea_ext);
+  data.regulatory_extensions.insert_or_assign(default_ext.variant,
+                                              &default_ext);
+  data.regulatory_extensions.insert_or_assign(android_eea_ext.variant,
+                                              &android_eea_ext);
 
   {
     // Default extension should give us default params.
@@ -1077,7 +1081,7 @@ TEST_F(TemplateURLTest, GetRegulatoryExtension_WithDefaultAndEEAExtensions) {
 
 TEST_F(TemplateURLTest, RegulatoryExtensionsReplacement_withNoValues) {
   constexpr auto default_ext = TemplateURLData::RegulatoryExtension{
-      .variant = "default",
+      .variant = RegulatoryExtensionType::kDefault,
       .search_params = "",
       .suggest_params = "",
   };
@@ -1086,7 +1090,8 @@ TEST_F(TemplateURLTest, RegulatoryExtensionsReplacement_withNoValues) {
   TemplateURLData data;
   data.SetURL(
       "http://engine.com/?q={searchTerms}{regSearchExt}{regSuggestExt}");
-  data.regulatory_extensions.insert_or_assign("default", &default_ext);
+  data.regulatory_extensions.insert_or_assign(default_ext.variant,
+                                              &default_ext);
 
   {
     TemplateURL url(data);
@@ -1099,12 +1104,12 @@ TEST_F(TemplateURLTest, RegulatoryExtensionsReplacement_withNoValues) {
 
 TEST_F(TemplateURLTest, RegulatoryExtensionsReplacement_withPartialValues) {
   constexpr auto default_ext = TemplateURLData::RegulatoryExtension{
-      .variant = "default",
+      .variant = RegulatoryExtensionType::kDefault,
       .search_params = "",
       .suggest_params = "suggest=value",
   };
   constexpr auto android_eea_ext = TemplateURLData::RegulatoryExtension{
-      .variant = "android_eea",
+      .variant = RegulatoryExtensionType::kAndroidEEA,
       .search_params = "search=value",
       .suggest_params = "",
   };
@@ -1113,8 +1118,10 @@ TEST_F(TemplateURLTest, RegulatoryExtensionsReplacement_withPartialValues) {
   TemplateURLData data;
   data.SetURL(
       "http://engine.com/?q={searchTerms}{regSearchExt}{regSuggestExt}");
-  data.regulatory_extensions.insert_or_assign("default", &default_ext);
-  data.regulatory_extensions.insert_or_assign("android_eea", &android_eea_ext);
+  data.regulatory_extensions.insert_or_assign(default_ext.variant,
+                                              &default_ext);
+  data.regulatory_extensions.insert_or_assign(android_eea_ext.variant,
+                                              &android_eea_ext);
 
   {
     TemplateURL url(data);
@@ -1141,12 +1148,12 @@ TEST_F(TemplateURLTest, RegulatoryExtensionsReplacement_withPartialValues) {
 }
 TEST_F(TemplateURLTest, RegulatoryExtensionsReplacement_withValues) {
   constexpr auto default_ext = TemplateURLData::RegulatoryExtension{
-      .variant = "default",
+      .variant = RegulatoryExtensionType::kDefault,
       .search_params = "search=params1",
       .suggest_params = "suggest=params2",
   };
   constexpr auto android_eea_ext = TemplateURLData::RegulatoryExtension{
-      .variant = "android_eea",
+      .variant = RegulatoryExtensionType::kAndroidEEA,
       .search_params = "eea_search=params3",
       .suggest_params = "eea_suggest=params4",
   };
@@ -1155,8 +1162,10 @@ TEST_F(TemplateURLTest, RegulatoryExtensionsReplacement_withValues) {
   TemplateURLData data;
   data.SetURL(
       "http://engine.com/?q={searchTerms}{regSearchExt}{regSuggestExt}");
-  data.regulatory_extensions.insert_or_assign("default", &default_ext);
-  data.regulatory_extensions.insert_or_assign("android_eea", &android_eea_ext);
+  data.regulatory_extensions.insert_or_assign(default_ext.variant,
+                                              &default_ext);
+  data.regulatory_extensions.insert_or_assign(android_eea_ext.variant,
+                                              &android_eea_ext);
 
   {
     // Default variant should expand "default" params.

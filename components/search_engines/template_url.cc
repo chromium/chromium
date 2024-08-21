@@ -37,6 +37,7 @@
 #include "build/build_config.h"
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/regulatory_extension_type.h"
 #include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
@@ -1591,6 +1592,13 @@ std::string TemplateURLRef::HandleReplacements(
         // decision whether a parameter delimiter is important in a given
         // context and to add one if so.
         auto* extension = owner_->GetRegulatoryExtension();
+
+        if (extension != nullptr) {
+          base::UmaHistogramEnumeration(
+              "Omnibox.TemplateUrl.Reconciliation.RegulatoryExtensionVariant",
+              extension->variant);
+        }
+
         if (extension != nullptr && extension->search_params != nullptr) {
           std::string search_extension(extension->search_params);
 
@@ -1608,6 +1616,13 @@ std::string TemplateURLRef::HandleReplacements(
         // decision whether a parameter delimiter is important in a given
         // context and to add one if so.
         auto* extension = owner_->GetRegulatoryExtension();
+
+        if (extension != nullptr) {
+          base::UmaHistogramEnumeration(
+              "Omnibox.TemplateUrl.Reconciliation.RegulatoryExtensionVariant",
+              extension->variant);
+        }
+
         if (extension != nullptr && extension->suggest_params != nullptr) {
           std::string suggest_extension(extension->suggest_params);
           if (!suggest_extension.empty()) {
@@ -2043,21 +2058,12 @@ const TemplateURLData::RegulatoryExtension*
 TemplateURL::GetRegulatoryExtension() const {
   auto extension = data_.regulatory_extensions.end();
 
-  enum class ExtensionType {
-    kDefault = 0,
-    kAndroidEEA = 1,
-    kMaxValue = kAndroidEEA
-  };
-
-  base::UmaHistogramEnumeration(
-      "Omnibox.TemplateUrl.Reconciliation.RegulatoryExtensionVariant",
-      data_.created_from_play_api ? ExtensionType::kAndroidEEA
-                                  : ExtensionType::kDefault);
-
   if (data_.created_from_play_api) {
-    extension = data_.regulatory_extensions.find("android_eea");
+    extension =
+        data_.regulatory_extensions.find(RegulatoryExtensionType::kAndroidEEA);
   } else {
-    extension = data_.regulatory_extensions.find("default");
+    extension =
+        data_.regulatory_extensions.find(RegulatoryExtensionType::kDefault);
   }
 
   return extension == data_.regulatory_extensions.end() ? nullptr
