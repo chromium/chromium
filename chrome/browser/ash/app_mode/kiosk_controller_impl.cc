@@ -303,11 +303,6 @@ void KioskControllerImpl::OnUserLoggedIn(const user_manager::User& user) {
       !kiosk_app_id.empty()) {
     chrome_app_manager_.SetAppWasAutoLaunchedWithZeroDelay(kiosk_app_id);
   }
-
-  if (auto* input_controller =
-          ui::OzonePlatform::GetInstance()->GetInputController()) {
-    input_controller->DisableKeyboardImposterCheck();
-  }
 }
 
 void KioskControllerImpl::OnAppLaunched(
@@ -318,6 +313,10 @@ void KioskControllerImpl::OnAppLaunched(
 }
 
 void KioskControllerImpl::OnLaunchComplete(KioskAppLaunchError::Error error) {
+  if (auto* input_controller =
+          ui::OzonePlatform::GetInstance()->GetInputController()) {
+    input_controller->DisableKeyboardImposterCheck();
+  }
   // Delete the launcher so it doesn't end up with dangling references.
   DeleteLaunchControllerAsync();
 }
@@ -346,6 +345,10 @@ void KioskControllerImpl::OnLaunchCompleteAfterCrash(
     const std::optional<std::string>& app_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (success) {
+    if (auto* input_controller =
+            ui::OzonePlatform::GetInstance()->GetInputController()) {
+      input_controller->DisableKeyboardImposterCheck();
+    }
     InitializeKioskSystemSession(app, profile, app_name);
   } else {
     chrome::AttemptUserExit();
