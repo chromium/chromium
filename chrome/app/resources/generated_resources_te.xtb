@@ -391,7 +391,7 @@
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />సపోర్ట్ చేయబడిన లింక్‌ల<ph name="END_LINK" />ను తెరుస్తోంది</translation>
 <translation id="1272978324304772054">ఈ వినియోగదారు ఖాతా, పరికరం నమోదు చేయబడిన డొమైన్‌కు చెందినది కాదు. మీరు వేరొక డొమైన్‌కు నమోదు చేయాలనుకుంటే మీరు ముందుగా పరికరాన్ని పునరుద్ధరించాలి.</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" />‌ను బ్లాక్ చేయండి</translation>
-<translation id="1274997165432133392">కుక్కీలు మరియు ఇతర సైట్ డేటా</translation>
+<translation id="1274997165432133392">కుక్కీలు, ఇతర సైట్ డేటా</translation>
 <translation id="1275718070701477396">ఎంచుకోబడింది</translation>
 <translation id="1275936815032730048">లాంచర్ + కుడి వైపు బాణం</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" />ను అన్ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు.</translation>
@@ -8926,7 +8926,7 @@
 <translation id="7509539379068593709">యాప్‌ను అన్‌ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="7509653797310675541">Lacros</translation>
 <translation id="7514239104543605883">మీ పరికరానికి కాపీ చేయండి</translation>
-<translation id="7514365320538308">డౌన్‌లోడ్ చేయి</translation>
+<translation id="7514365320538308">డౌన్‌లోడ్ చేయండి</translation>
 <translation id="7514417110442087199">కేటాయింపును జోడించండి</translation>
 <translation id="7515191208480168435">సులభంగా యాక్సెస్ చేయడం కోసం మీరు Google Lensను పిన్ చేయవచ్చు</translation>
 <translation id="751523031290522286">అడ్మిన్ <ph name="APP_NAME" />ను బ్లాక్ చేశారు. ఈ యాప్‌ను ఉపయోగించడానికి అడ్మిన్‌ను అనుమతి అడగండి.</translation>
@@ -9185,7 +9185,7 @@
 <translation id="7701040980221191251">ఏదీ లేదు</translation>
 <translation id="7701869757853594372">వినియోగదారు నిర్వహించేవి</translation>
 <translation id="7702463352133825032"><ph name="DEVICE_NAME" />లో ప్రసారం చేయడాన్ని ఆపివేయండి</translation>
-<translation id="7704305437604973648">విధి</translation>
+<translation id="7704305437604973648">టాస్క్</translation>
 <translation id="7704521324619958564">Play Storeను తెరువు</translation>
 <translation id="7705276765467986571">బుక్‌మార్క్ నమూనాను లోడ్ చేయడం సాధ్యం కాలేదు.</translation>
 <translation id="7705334495398865155">ఇతరులు ఈ పరికరాన్ని ట్రాక్ చేయకుండా నిరోధించడానికి మీ హార్డ్‌వేర్ ID (BSSID)ని ర్యాండమైజ్ చేయండి.</translation>
@@ -9554,7 +9554,7 @@
 <translation id="7958828865373988933">మీరు USB సెక్యూరిటీ కీలో <ph name="APP_NAME" /> కోసం పాస్-కీని క్రియేట్ చేయాలనుకుంటే, ఇప్పుడే ఇన్‌సర్ట్ చేసి, తాకండి</translation>
 <translation id="7959074893852789871">ఫైల్ దిగుమతి చెయ్యని కొన్ని బహుళ ప్రమాణపత్రాలను కలిగి ఉంది:</translation>
 <translation id="7959665254555683862">కొత్త అజ్ఞాత ట్యాబ్</translation>
-<translation id="7961015016161918242">ఎప్పుడూ లేదు</translation>
+<translation id="7961015016161918242">ఎప్పుడూ వద్దు</translation>
 <translation id="7963001036288347286">టచ్‌ప్యాడ్ యాక్సిలరేషన్</translation>
 <translation id="7963513503134856713">విండో కుడి వైపునకు తరలించబడింది</translation>
 <translation id="7963608432878156675">ఇతర పరికరాల బ్లూటూత్, నెట్‌వర్క్ కనెక్షన్‌లలో ఈ పేరు కనిపిస్తుంది</translation>
@@ -10310,7 +10310,7 @@
 <translation id="8500044868721690197">మీ MIDI పరికరాలను కంట్రోల్ చేసి, తిరిగి ప్రోగ్రామ్ చేయకుండా ఈ సైట్ బ్లాక్ చేయబడింది</translation>
 <translation id="8500123638242682652">విండో పైకి తరలించబడింది</translation>
 <translation id="8502536196501630039">Google Play నుండి యాప్‌లను ఉపయోగించడానికి, మీరు మొదట మీ యాప్‌లను పునరుద్ధరించాలి. ఆ యాప్‌లు కొంత డేటాను కోల్పోయి ఉండవచ్చు.</translation>
-<translation id="8503813439785031346">యూజర్‌పేరు</translation>
+<translation id="8503813439785031346">యూజర్‌నేమ్</translation>
 <translation id="850382998924680137">నేడు చూశారు</translation>
 <translation id="8505669004895429027">తక్కువ మెమరీ సేవింగ్స్</translation>
 <translation id="8507227974644337342">స్క్రీన్ రిజల్యూషన్</translation>
