@@ -387,6 +387,8 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
       static_cast<std::optional<uint16_t>>(modeling_signals),
       /*bid_duration=*/base::TimeDelta(),
       /*bidding_signals_data_version=*/std::nullopt, bid_ad,
+      /*selected_buyer_and_seller_reporting_id_required=*/false,
+      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
       result.bid_state.get(), auction);
 
   // TODO(http://crbug.com/1464874): Do we need to fill in any k-anon info?
