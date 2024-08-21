@@ -973,6 +973,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/global_media_controls",
     "//chrome/browser/ui/ash/holding_space",
     "//chrome/browser/ui/ash/keyboard",
+    "//chrome/browser/ui/ash/session",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui/ash",

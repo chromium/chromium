@@ -16,7 +16,7 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/session_util.h"
+#include "chrome/browser/ui/ash/session/session_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "ui/gfx/vector_icon_types.h"
 

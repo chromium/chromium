@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_SESSION_UTIL_H_
-#define CHROME_BROWSER_UI_ASH_SESSION_UTIL_H_
+#ifndef CHROME_BROWSER_UI_ASH_SESSION_SESSION_UTIL_H_
+#define CHROME_BROWSER_UI_ASH_SESSION_SESSION_UTIL_H_
 
 #include "base/functional/callback.h"
 #include "ui/gfx/image/image_skia.h"
@@ -36,4 +36,4 @@ bool CanShowWindowForUser(
 gfx::ImageSkia GetAvatarImageForContext(content::BrowserContext* context);
 gfx::ImageSkia GetAvatarImageForUser(const user_manager::User* user);
 
-#endif  // CHROME_BROWSER_UI_ASH_SESSION_UTIL_H_
+#endif  // CHROME_BROWSER_UI_ASH_SESSION_SESSION_UTIL_H_

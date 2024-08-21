@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_SESSION_CONTROLLER_CLIENT_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_SESSION_CONTROLLER_CLIENT_IMPL_H_
+#ifndef CHROME_BROWSER_UI_ASH_SESSION_SESSION_CONTROLLER_CLIENT_IMPL_H_
+#define CHROME_BROWSER_UI_ASH_SESSION_SESSION_CONTROLLER_CLIENT_IMPL_H_
 
 #include <memory>
 #include <set>
@@ -192,4 +192,4 @@ class SessionControllerClientImpl
   base::WeakPtrFactory<SessionControllerClientImpl> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_SESSION_CONTROLLER_CLIENT_IMPL_H_
+#endif  // CHROME_BROWSER_UI_ASH_SESSION_SESSION_CONTROLLER_CLIENT_IMPL_H_

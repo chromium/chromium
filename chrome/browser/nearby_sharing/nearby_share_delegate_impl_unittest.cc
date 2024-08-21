@@ -17,7 +17,7 @@
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/mock_nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
-#include "chrome/browser/ui/ash/test_session_controller.h"
+#include "chrome/browser/ui/ash/session/test_session_controller.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

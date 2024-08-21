@@ -118,7 +118,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_profile_support.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
-#include "chrome/browser/ui/ash/session_controller_client_impl.h"
+#include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"

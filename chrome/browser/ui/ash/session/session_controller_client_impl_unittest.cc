@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/session_controller_client_impl.h"
+#include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 
 #include <memory>
 #include <string>
@@ -26,7 +26,7 @@
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
-#include "chrome/browser/ui/ash/test_session_controller.h"
+#include "chrome/browser/ui/ash/session/test_session_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"

@@ -51,6 +51,7 @@ static_library("lock") {
     "//chrome/browser/ash/system",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/session",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chromeos/ash/components/browser_context_helper",
@@ -77,6 +78,7 @@ static_library("lock") {
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/session",
+    "//chrome/browser/ui/ash/session",
     "//chrome/browser/extensions",
   ]
 }
@@ -182,9 +184,10 @@ source_set("unit_tests") {
     "//chrome/browser/ash/lock_screen_apps",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/settings:test_support",
-    "//chrome/browser/ui/ash",
     "//chrome/browser/ui/ash:test_support",
     "//chrome/browser/ui/ash/assistant",
+    "//chrome/browser/ui/ash/session",
+    "//chrome/browser/ui/ash/session:test_support",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
     "//chromeos/ash/components/cryptohome",

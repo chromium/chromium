@@ -13,7 +13,7 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager_ash.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/errors.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api_lock_handler.h"
-#include "chrome/browser/ui/ash/session_controller_client_impl.h"
+#include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"

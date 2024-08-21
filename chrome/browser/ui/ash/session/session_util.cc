@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/session_util.h"
+#include "chrome/browser/ui/ash/session/session_util.h"
 
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "build/build_config.h"

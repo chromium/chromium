@@ -78,7 +78,7 @@
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_client_impl.h"
 #include "chrome/browser/ui/ash/screen_orientation_delegate_chromeos.h"
-#include "chrome/browser/ui/ash/session_controller_client_impl.h"
+#include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/shelf/app_service/exo_app_type_resolver.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"

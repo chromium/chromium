@@ -47,7 +47,7 @@
 #include "chrome/browser/nearby_sharing/wifi_network_configuration/fake_wifi_network_configuration_handler.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/ui/ash/test_session_controller.h"
+#include "chrome/browser/ui/ash/session/test_session_controller.h"
 #include "chrome/services/sharing/nearby/decoder/advertisement_decoder.h"
 #include "chrome/services/sharing/public/cpp/advertisement.h"
 #include "chrome/test/base/testing_browser_process.h"
