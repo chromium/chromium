@@ -130,6 +130,8 @@ class WaylandInputController : public InputController {
   }
   bool AreAnyKeysPressed() override { return false; }
 
+  void DisableKeyboardImposterCheck() override {}
+
  private:
   const raw_ptr<WaylandConnection> connection_;
 };

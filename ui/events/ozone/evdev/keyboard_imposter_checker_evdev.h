@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
+#include "ui/events/ozone/evdev/imposter_checker_evdev_state.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/events/ozone/evdev/fake_keyboard_heuristic_metrics.h"
@@ -38,6 +39,7 @@ class COMPONENT_EXPORT(EVDEV) KeyboardImposterCheckerEvdev {
 
   // Number of devices per phys path.
   std::multimap<std::string, int> devices_on_phys_path_;
+  std::unique_ptr<ImposterCheckerEvdevState> imposter_checker_evdev_state_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   FakeKeyboardHeuristicMetrics fake_keyboard_heuristic_metrics_;

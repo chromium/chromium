@@ -93,6 +93,10 @@ void InputControllerEvdev::SetInputDevicesEnabled(bool enabled) {
   ScheduleUpdateDeviceSettings();
 }
 
+void InputControllerEvdev::DisableKeyboardImposterCheck() {
+  input_device_factory_->DisableKeyboardImposterCheck();
+}
+
 bool InputControllerEvdev::HasMouse() {
   return has_mouse_;
 }

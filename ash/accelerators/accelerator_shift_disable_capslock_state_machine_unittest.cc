@@ -118,6 +118,7 @@ class MockInputController : public ui::InputController {
                              bool right) override {}
   void SetPointingStickPrimaryButtonRight(absl::optional<int> device_id,
                                           bool right) override {}
+  void DisableKeyboardImposterCheck() override {}
 };
 
 const bool kKeysPressed = true;

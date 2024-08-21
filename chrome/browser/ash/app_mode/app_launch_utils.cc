@@ -27,6 +27,8 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
+#include "ui/ozone/public/input_controller.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace ash {
 
@@ -102,7 +104,12 @@ class AppLaunchManager : public KioskAppLauncher::NetworkDelegate,
   // KioskAppLauncher::Observer:
   void OnAppInstalling() override {}
   void OnAppPrepared() override { app_launcher_->LaunchApp(); }
-  void OnAppLaunched() override {}
+  void OnAppLaunched() override {
+    if (auto* input_controller =
+            ui::OzonePlatform::GetInstance()->GetInputController()) {
+      input_controller->DisableKeyboardImposterCheck();
+    }
+  }
   void OnAppWindowCreated(
       const absl::optional<std::string>& app_name) override {
     if (should_start_kiosk_system_session_) {

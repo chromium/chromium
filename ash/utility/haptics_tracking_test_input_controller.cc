@@ -223,6 +223,8 @@ bool HapticsTrackingTestInputController::AreAnyKeysPressed() {
   return false;
 }
 
+void HapticsTrackingTestInputController::DisableKeyboardImposterCheck() {}
+
 int HapticsTrackingTestInputController::GetSentHapticCount(
     ui::HapticTouchpadEffect effect,
     ui::HapticTouchpadEffectStrength strength) const {

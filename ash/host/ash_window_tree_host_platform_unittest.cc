@@ -130,6 +130,7 @@ class TestInputController : public ui::InputController {
   bool AreAnyKeysPressed() override { return false; }
 
   bool GetAccelerationSuspended() { return acceleration_suspended_; }
+  void DisableKeyboardImposterCheck() override {}
 
  private:
   // member variable used to keep track of mouse acceleration suspension

@@ -58,6 +58,7 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdevProxy {
   void SetHapticTouchpadEffectForNextButtonRelease(
       HapticTouchpadEffect effect,
       HapticTouchpadEffectStrength strength);
+  void DisableKeyboardImposterCheck();
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

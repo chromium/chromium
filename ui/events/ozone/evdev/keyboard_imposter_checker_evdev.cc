@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/events/ozone/evdev/imposter_checker_evdev_state.h"
 #include "ui/events/ozone/features.h"
 
 namespace ui {
@@ -46,8 +47,9 @@ std::vector<int> KeyboardImposterCheckerEvdev::OnDeviceAdded(
 
 bool KeyboardImposterCheckerEvdev::FlagIfImposter(
     EventConverterEvdev* converter) {
-  if (!base::FeatureList::IsEnabled(kEnableFakeKeyboardHeuristic))
+  if (!imposter_checker_evdev_state_->IsKeyboardCheckEnabled()) {
     return false;
+  }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (converter->GetKeyboardType() == KeyboardType::IN_BLOCKLIST) {
     fake_keyboard_heuristic_metrics_.RecordUsage(false);
@@ -88,7 +90,9 @@ std::vector<int> KeyboardImposterCheckerEvdev::OnDeviceRemoved(
   return GetIdsOnSamePhys(StandardizedPhys(converter->input_device().phys));
 }
 
-KeyboardImposterCheckerEvdev::KeyboardImposterCheckerEvdev() = default;
+KeyboardImposterCheckerEvdev::KeyboardImposterCheckerEvdev()
+    : imposter_checker_evdev_state_(
+          std::make_unique<ImposterCheckerEvdevState>()) {}
 
 KeyboardImposterCheckerEvdev::~KeyboardImposterCheckerEvdev() = default;
 

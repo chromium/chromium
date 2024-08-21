@@ -108,6 +108,7 @@ class HapticsTrackingTestInputController : public ui::InputController {
       mojo::PendingReceiver<ui::ozone::mojom::GesturePropertiesService>
           receiver) override;
   bool AreAnyKeysPressed() override;
+  void DisableKeyboardImposterCheck() override;
 
   // Returns haptic count for effect/strength combination for testing.
   int GetSentHapticCount(ui::HapticTouchpadEffect effect,

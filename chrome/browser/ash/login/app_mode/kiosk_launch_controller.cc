@@ -57,6 +57,8 @@
 #include "chrome/common/chrome_features.h"
 #include "components/crash/core/common/crash_key.h"
 #include "content/public/browser/network_service_instance.h"
+#include "ui/ozone/public/input_controller.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace ash {
 namespace {
@@ -729,6 +731,10 @@ void KioskLaunchController::OnAppLaunched() {
     splash_screen_view_->UpdateAppLaunchState(
         AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
     splash_screen_view_->Show(GetAppData());
+  }
+  if (auto* input_controller =
+          ui::OzonePlatform::GetInstance()->GetInputController()) {
+    input_controller->DisableKeyboardImposterCheck();
   }
   session_manager::SessionManager::Get()->SessionStarted();
 }

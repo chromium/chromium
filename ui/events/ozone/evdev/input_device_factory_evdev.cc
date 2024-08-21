@@ -29,6 +29,7 @@
 #include "ui/events/ozone/evdev/event_converter_evdev_impl.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/gamepad_event_converter_evdev.h"
+#include "ui/events/ozone/evdev/imposter_checker_evdev_state.h"
 #include "ui/events/ozone/evdev/input_controller_evdev.h"
 #include "ui/events/ozone/evdev/input_device_settings_evdev.h"
 #include "ui/events/ozone/evdev/keyboard_imposter_checker_evdev.h"
@@ -791,6 +792,22 @@ void InputDeviceFactoryEvdev::EnableDevices() {
   // ApplyInputDeviceSettings() instead of this function.
   for (const auto& it : converters_)
     it.second->SetEnabled(IsDeviceEnabled(it.second.get()));
+}
+
+void InputDeviceFactoryEvdev::DisableKeyboardImposterCheck() {
+  ImposterCheckerEvdevState::Get().SetKeyboardCheckEnabled(/*enabled=*/false);
+  ForceReloadKeyboards();
+}
+
+void InputDeviceFactoryEvdev::ForceReloadKeyboards() {
+  for (const auto& it : converters_) {
+    if (it.second->HasKeyboard() &&
+        !keyboard_imposter_checker_->FlagIfImposter(it.second.get())) {
+      it.second.get()->SetSuspectedImposter(false);
+      UpdateDirtyFlags(it.second.get());
+    }
+  }
+  NotifyDevicesUpdated();
 }
 
 void InputDeviceFactoryEvdev::SetLatestStylusState(

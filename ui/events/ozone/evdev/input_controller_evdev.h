@@ -130,6 +130,9 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
       HapticTouchpadEffect effect,
       HapticTouchpadEffectStrength strength) override;
   bool AreAnyKeysPressed() override;
+
+  void DisableKeyboardImposterCheck() override;
+
   // Notifies the controller to delete any data for the given `device_id`.
   void OnInputDeviceRemoved(int device_id);
 
