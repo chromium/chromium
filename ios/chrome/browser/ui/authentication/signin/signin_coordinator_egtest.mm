@@ -125,6 +125,19 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 @implementation SigninCoordinatorTestCase
 
+// TODO(crbug.com/361252328): Tests are flaky on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSignInDisconnectFromChromeManaged_ClearDataFeatureDisabled \
+  testSignInDisconnectFromChromeManaged_ClearDataFeatureDisabled
+#define MAYBE_testSignInDisconnectFromChromeManaged_ClearDataFeatureEnabled \
+  testSignInDisconnectFromChromeManaged_ClearDataFeatureEnabled
+#else
+#define MAYBE_testSignInDisconnectFromChromeManaged_ClearDataFeatureDisabled \
+  DISABLED_testSignInDisconnectFromChromeManaged_ClearDataFeatureDisabled
+#define MAYBE_testSignInDisconnectFromChromeManaged_ClearDataFeatureEnabled \
+  testSignInDisconnectFromChromeManaged_ClearDataFeatureEnabled
+#endif
+
 - (void)setUp {
   [super setUp];
   // Remove closed tab history to make sure the sign-in promo is always visible
@@ -146,8 +159,10 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  if ([self isRunningTest:@selector
-            (testSignInDisconnectFromChromeManaged_ClearDataFeatureDisabled)]) {
+  if ([self
+          isRunningTest:@selector
+          (MAYBE_testSignInDisconnectFromChromeManaged_ClearDataFeatureDisabled
+              )]) {
     config.features_disabled.push_back(
         kClearDeviceDataOnSignOutForManagedUsers);
   } else {
@@ -282,7 +297,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that signing out of a managed account from the Settings works
 // correctly.
-- (void)testSignInDisconnectFromChromeManaged_ClearDataFeatureDisabled {
+- (void)MAYBE_testSignInDisconnectFromChromeManaged_ClearDataFeatureDisabled {
   // Sign-in with a managed account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
@@ -291,7 +306,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGreyUI signOut];
 }
 
-- (void)testSignInDisconnectFromChromeManaged_ClearDataFeatureEnabled {
+- (void)MAYBE_testSignInDisconnectFromChromeManaged_ClearDataFeatureEnabled {
   // Sign-in with a managed account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
