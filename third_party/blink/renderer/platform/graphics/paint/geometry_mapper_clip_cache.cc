@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
+#include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 
 namespace blink {
 
@@ -13,6 +14,16 @@ namespace blink {
 // and invalidating their cache if their cache generation disagrees with
 // s_global_generation_.
 unsigned GeometryMapperClipCache::s_global_generation_ = 1;
+
+void GeometryMapperClipCache::ClipAndTransform::Trace(Visitor* visitor) const {
+  visitor->Trace(ancestor_clip);
+  visitor->Trace(ancestor_transform);
+}
+
+void GeometryMapperClipCache::Trace(Visitor* visitor) const {
+  visitor->Trace(clip_cache_);
+  visitor->Trace(nearest_pixel_moving_filter_clip_);
+}
 
 void GeometryMapperClipCache::ClearCache() {
   s_global_generation_++;

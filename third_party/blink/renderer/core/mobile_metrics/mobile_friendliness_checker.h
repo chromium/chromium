@@ -96,8 +96,8 @@ class CORE_EXPORT MobileFriendlinessChecker
 
  private:
   Member<LocalFrameView> frame_view_;
-  const TransformPaintPropertyNodeOrAlias* viewport_transform_ = nullptr;
-  const TransformPaintPropertyNodeOrAlias* previous_transform_ = nullptr;
+  Member<const TransformPaintPropertyNodeOrAlias> viewport_transform_;
+  Member<const TransformPaintPropertyNodeOrAlias> previous_transform_;
   float current_x_offset_ = 0.0;
   float viewport_width_;
   double viewport_scalar_ = 1.0;

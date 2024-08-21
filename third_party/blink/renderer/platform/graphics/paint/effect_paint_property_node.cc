@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
 
@@ -98,11 +99,19 @@ bool EffectPaintPropertyNode::State::IsOpacityChangeSimple(
                                CompositingReason::kActiveOpacityAnimation)));
 }
 
+void EffectPaintPropertyNode::State::Trace(Visitor* visitor) const {
+  visitor->Trace(local_transform_space);
+  visitor->Trace(output_clip);
+}
+
+EffectPaintPropertyNode::EffectPaintPropertyNode(RootTag)
+    : EffectPaintPropertyNodeOrAlias(kRoot),
+      state_{TransformPaintPropertyNode::Root(),
+             &ClipPaintPropertyNode::Root()} {}
+
 const EffectPaintPropertyNode& EffectPaintPropertyNode::Root() {
-  DEFINE_STATIC_REF(EffectPaintPropertyNode, root,
-                    base::AdoptRef(new EffectPaintPropertyNode(
-                        nullptr, State{&TransformPaintPropertyNode::Root(),
-                                       &ClipPaintPropertyNode::Root()})));
+  DEFINE_STATIC_LOCAL(Persistent<EffectPaintPropertyNode>, root,
+                      (MakeGarbageCollected<EffectPaintPropertyNode>(kRoot)));
   return *root;
 }
 
@@ -196,8 +205,8 @@ gfx::RectF EffectPaintPropertyNode::MapRect(const gfx::RectF& rect) const {
 std::unique_ptr<JSONObject> EffectPaintPropertyNode::ToJSON() const {
   auto json = EffectPaintPropertyNodeOrAlias::ToJSON();
   json->SetString("localTransformSpace",
-                  String::Format("%p", state_.local_transform_space.get()));
-  json->SetString("outputClip", String::Format("%p", state_.output_clip.get()));
+                  String::Format("%p", state_.local_transform_space.Get()));
+  json->SetString("outputClip", String::Format("%p", state_.output_clip.Get()));
   if (!state_.filter.IsEmpty())
     json->SetString("filter", state_.filter.ToString());
   if (auto* backdrop_filter = BackdropFilter())

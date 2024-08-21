@@ -9,9 +9,9 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -22,13 +22,21 @@ class TransformPaintPropertyNode;
 // A GeometryMapperTransformCache hangs off a TransformPaintPropertyNode.
 // It stores useful intermediate results such as screen matrix for geometry
 // queries.
-class PLATFORM_EXPORT GeometryMapperTransformCache {
-  USING_FAST_MALLOC(GeometryMapperTransformCache);
+class PLATFORM_EXPORT GeometryMapperTransformCache
+    : public GarbageCollected<GeometryMapperTransformCache> {
  public:
   GeometryMapperTransformCache() = default;
   GeometryMapperTransformCache(const GeometryMapperTransformCache&) = delete;
   GeometryMapperTransformCache& operator=(const GeometryMapperTransformCache&) =
       delete;
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(root_of_2d_translation_);
+    visitor->Trace(plane_root_transform_);
+    visitor->Trace(nearest_scroll_translation_);
+    visitor->Trace(scroll_translation_state_);
+    visitor->Trace(nearest_directly_composited_ancestor_);
+  }
 
   static void ClearCache();
   bool IsValid() const;
@@ -116,7 +124,7 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   }
   const TransformPaintPropertyNode* plane_root() const {
     if (plane_root_transform_) [[unlikely]] {
-      return plane_root_transform_->plane_root;
+      return plane_root_transform_->plane_root.Get();
     }
     return root_of_2d_translation();
   }
@@ -160,10 +168,7 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   // The parent of the root of consecutive identity or 2d translations from the
   // transform node, or the root of the tree if the whole path from the
   // transform node to the root contains identity or 2d translations only.
-  //
-  // Excluded from being a `raw_ptr` for visible regression in
-  // MotionMark (crbug.com/1495275#c116).
-  RAW_PTR_EXCLUSION const TransformPaintPropertyNode* root_of_2d_translation_;
+  Member<const TransformPaintPropertyNode> root_of_2d_translation_;
 
   // The cached values here can be categorized in two logical groups:
   //
@@ -221,28 +226,28 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   //     = flatten(parent.to_screen) * local
   //     = flatten(parent.plane_root.to_screen) * parent.to_plane_root * local
   //     = flatten(plane_root.to_screen) * to_plane_root
-  struct PlaneRootTransform {
+  struct PlaneRootTransform : public GarbageCollected<PlaneRootTransform> {
     gfx::Transform to_plane_root;
     gfx::Transform from_plane_root;
-    const TransformPaintPropertyNode* plane_root = nullptr;
+    Member<const TransformPaintPropertyNode> plane_root;
     bool has_animation = false;
-    USING_FAST_MALLOC(PlaneRootTransform);
+
+    void Trace(Visitor* visitor) const { visitor->Trace(plane_root); }
   };
-  std::optional<PlaneRootTransform> plane_root_transform_;
+  Member<PlaneRootTransform> plane_root_transform_;
 
   struct ScreenTransform {
     gfx::Transform to_screen;
     gfx::Transform projection_from_screen;
     bool projection_from_screen_is_valid = false;
     bool has_animation = false;
-    USING_FAST_MALLOC(ScreenTransform);
   };
   std::optional<ScreenTransform> screen_transform_;
 
-  const TransformPaintPropertyNode* nearest_scroll_translation_ = nullptr;
-  const TransformPaintPropertyNode* scroll_translation_state_ = nullptr;
-  const TransformPaintPropertyNode* nearest_directly_composited_ancestor_ =
-      nullptr;
+  Member<const TransformPaintPropertyNode> nearest_scroll_translation_;
+  Member<const TransformPaintPropertyNode> scroll_translation_state_;
+  Member<const TransformPaintPropertyNode>
+      nearest_directly_composited_ancestor_;
 
   // Whether or not there is a sticky or anchor position scroll translation to
   // the root.

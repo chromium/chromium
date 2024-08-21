@@ -23,6 +23,9 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -35,7 +38,6 @@ namespace blink {
 
 class ContentLayerClientImpl;
 class JSONObject;
-class SynthesizedClip;
 
 using CompositorScrollCallbacks = cc::ScrollCallbacks;
 
@@ -112,7 +114,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   PaintArtifactCompositor& operator=(const PaintArtifactCompositor&) = delete;
   ~PaintArtifactCompositor() override;
 
-  void Trace(Visitor* visitor) const { visitor->Trace(pending_layers_); }
+  void Trace(Visitor*) const;
 
   struct ViewportProperties {
     STACK_ALLOCATED();
@@ -132,11 +134,12 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // noncomposited nodes, and is used for Scroll Unification to generate scroll
   // nodes for noncomposited scrollers to complete the compositor's scroll
   // property tree.
-  void Update(
-      const PaintArtifact& artifact,
-      const ViewportProperties& viewport_properties,
-      const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
-      Vector<std::unique_ptr<cc::ViewTransitionRequest>> requests);
+  using StackScrollTranslationVector =
+      HeapVector<Member<const TransformPaintPropertyNode>, 32>;
+  void Update(const PaintArtifact& artifact,
+              const ViewportProperties& viewport_properties,
+              const StackScrollTranslationVector& scroll_translation_nodes,
+              Vector<std::unique_ptr<cc::ViewTransitionRequest>> requests);
 
   // Fast-path update where the painting of existing composited layers changed,
   // but property trees and compositing decisions remain the same. See:
@@ -242,6 +245,17 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
     return should_always_update_on_scroll_;
   }
 
+  // This is public for WTF_ALLOW_INIT_WITH_MEM_FUNCTIONS.
+  struct SynthesizedClipEntry {
+    DISALLOW_NEW();
+
+    Member<const ClipPaintPropertyNode> key;
+    std::unique_ptr<SynthesizedClip> synthesized_clip;
+    bool in_use;
+
+    void Trace(Visitor* visitor) const { visitor->Trace(key); }
+  };
+
  private:
   void UpdateCompositorViewportProperties(const ViewportProperties&,
                                           PropertyTreeManager&,
@@ -275,7 +289,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   void LayerizeGroup(const PaintArtifact&,
                      const EffectPaintPropertyNode&,
                      PaintChunks::const_iterator& chunk_cursor,
-                     HashSet<const TransformPaintPropertyNode*>&
+                     HeapHashSet<Member<const TransformPaintPropertyNode>>&
                          directly_composited_transforms,
                      bool force_draws_content);
   bool DecompositeEffect(const EffectPaintPropertyNode& parent_effect,
@@ -335,12 +349,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   LCDTextPreference lcd_text_preference_ = LCDTextPreference::kIgnored;
 
   scoped_refptr<cc::Layer> root_layer_;
-  struct SynthesizedClipEntry {
-    const ClipPaintPropertyNode* key = nullptr;
-    std::unique_ptr<SynthesizedClip> synthesized_clip;
-    bool in_use;
-  };
-  Vector<SynthesizedClipEntry> synthesized_clip_cache_;
+
+  HeapVector<SynthesizedClipEntry> synthesized_clip_cache_;
 
   class OldPendingLayerMatcher;
   PendingLayers pending_layers_;
@@ -354,7 +364,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // been encountered during layerization. This includes every kind of scroll
   // translation, include those for composited scrolling and non-composited
   // scrolling (including raster-inducing and main-thread repainted).
-  HashMap<const TransformPaintPropertyNode*, ScrollTranslationInfo>
+  HeapHashMap<Member<const TransformPaintPropertyNode>, ScrollTranslationInfo>
       painted_scroll_translations_;
 
   friend class StubChromeClientForCAP;
@@ -362,5 +372,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 };
 
 }  // namespace blink
+
+WTF_ALLOW_INIT_WITH_MEM_FUNCTIONS(
+    blink::PaintArtifactCompositor::SynthesizedClipEntry)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PAINT_ARTIFACT_COMPOSITOR_H_

@@ -110,25 +110,25 @@ VisualViewport::VisualViewport(Page& owner)
 
 const TransformPaintPropertyNode*
 VisualViewport::GetDeviceEmulationTransformNode() const {
-  return device_emulation_transform_node_.get();
+  return device_emulation_transform_node_.Get();
 }
 
 const TransformPaintPropertyNode*
 VisualViewport::GetOverscrollElasticityTransformNode() const {
-  return overscroll_elasticity_transform_node_.get();
+  return overscroll_elasticity_transform_node_.Get();
 }
 
 const TransformPaintPropertyNode* VisualViewport::GetPageScaleNode() const {
-  return page_scale_node_.get();
+  return page_scale_node_.Get();
 }
 
 const TransformPaintPropertyNode* VisualViewport::GetScrollTranslationNode()
     const {
-  return scroll_translation_node_.get();
+  return scroll_translation_node_.Get();
 }
 
 const ScrollPaintPropertyNode* VisualViewport::GetScrollNode() const {
-  return scroll_node_.get();
+  return scroll_node_.Get();
 }
 
 const TransformPaintPropertyNode*
@@ -179,7 +179,7 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
         change = std::max(change, device_emulation_transform_node_->Update(
                                       *transform_parent, std::move(state)));
       }
-      transform_parent = device_emulation_transform_node_.get();
+      transform_parent = device_emulation_transform_node_.Get();
     } else if (device_emulation_transform_node_) {
       device_emulation_transform_node_ = nullptr;
       change = PaintPropertyChangeType::kNodeAddedOrRemoved;
@@ -208,7 +208,7 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
 
   {
     auto* parent = overscroll_elasticity_transform_node_
-                       ? overscroll_elasticity_transform_node_.get()
+                       ? overscroll_elasticity_transform_node_.Get()
                        : transform_parent;
     DCHECK(!parent->Unalias().IsInSubtreeOfPageScale());
 
@@ -370,6 +370,14 @@ VisualViewport::~VisualViewport() = default;
 
 void VisualViewport::Trace(Visitor* visitor) const {
   visitor->Trace(page_);
+  visitor->Trace(parent_property_tree_state_);
+  visitor->Trace(device_emulation_transform_node_);
+  visitor->Trace(overscroll_elasticity_transform_node_);
+  visitor->Trace(page_scale_node_);
+  visitor->Trace(scroll_translation_node_);
+  visitor->Trace(scroll_node_);
+  visitor->Trace(horizontal_scrollbar_effect_node_);
+  visitor->Trace(vertical_scrollbar_effect_node_);
   ScrollableArea::Trace(visitor);
 }
 
@@ -1161,13 +1169,13 @@ void VisualViewport::DisposeImpl() {
   scroll_layer_.reset();
   scrollbar_layer_horizontal_.reset();
   scrollbar_layer_vertical_.reset();
-  device_emulation_transform_node_.reset();
-  overscroll_elasticity_transform_node_.reset();
-  page_scale_node_.reset();
-  scroll_translation_node_.reset();
-  scroll_node_.reset();
-  horizontal_scrollbar_effect_node_.reset();
-  vertical_scrollbar_effect_node_.reset();
+  device_emulation_transform_node_ = nullptr;
+  overscroll_elasticity_transform_node_ = nullptr;
+  page_scale_node_ = nullptr;
+  scroll_translation_node_ = nullptr;
+  scroll_node_ = nullptr;
+  horizontal_scrollbar_effect_node_ = nullptr;
+  vertical_scrollbar_effect_node_ = nullptr;
 }
 
 void VisualViewport::Paint(GraphicsContext& context) const {

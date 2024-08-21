@@ -25,6 +25,27 @@
 
 namespace blink {
 
+PropertyTreeManager::EffectState::EffectState(const CurrentEffectState& other)
+    : effect_id(other.effect_id),
+      effect(other.effect),
+      clip(other.clip),
+      transform(other.transform),
+      may_be_2d_axis_misaligned_to_render_surface(
+          other.may_be_2d_axis_misaligned_to_render_surface),
+      contained_by_non_render_surface_synthetic_rounded_clip(
+          other.contained_by_non_render_surface_synthetic_rounded_clip) {}
+
+PropertyTreeManager::CurrentEffectState::CurrentEffectState(
+    const EffectState& other)
+    : effect_id(other.effect_id),
+      effect(other.effect),
+      clip(other.clip),
+      transform(other.transform),
+      may_be_2d_axis_misaligned_to_render_surface(
+          other.may_be_2d_axis_misaligned_to_render_surface),
+      contained_by_non_render_surface_synthetic_rounded_clip(
+          other.contained_by_non_render_surface_synthetic_rounded_clip) {}
+
 PropertyTreeManager::PropertyTreeManager(PropertyTreeManagerClient& client,
                                          cc::PropertyTrees& property_trees,
                                          cc::Layer& root_layer,
@@ -392,7 +413,7 @@ void PropertyTreeManager::SetCurrentEffectState(
     const ClipPaintPropertyNode& clip,
     const TransformPaintPropertyNode& transform) {
   const auto* previous_transform =
-      effect.IsRoot() ? nullptr : current_.transform;
+      effect.IsRoot() ? nullptr : current_.transform.Get();
   current_.effect_id = cc_effect_node.id;
   current_.effect_type = effect_type;
   current_.effect = &effect;
@@ -893,6 +914,16 @@ void PropertyTreeManager::ForceRenderSurfaceIfSyntheticRoundedCornerClip(
   }
 }
 
+struct PendingClip {
+  DISALLOW_NEW();
+
+ public:
+  Member<const ClipPaintPropertyNode> clip;
+  PropertyTreeManager::CcEffectType type;
+
+  void Trace(Visitor* visitor) const { visitor->Trace(clip); }
+};
+
 std::optional<gfx::RRectF> PropertyTreeManager::ShaderBasedRRect(
     const ClipPaintPropertyNode& clip,
     PropertyTreeManager::CcEffectType type,
@@ -978,7 +1009,7 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
         // fully launched.
         return cc::kInvalidPropertyNodeId;
       }
-      const auto* pre_exit_clip = current_.clip;
+      const auto* pre_exit_clip = current_.clip.Get();
       CloseCcEffect();
       // We may run past the lowest common ancestor because it may not have
       // been synthesized.
@@ -987,11 +1018,7 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
     }
   }
 
-  struct PendingClip {
-    const ClipPaintPropertyNode* clip;
-    CcEffectType type;
-  };
-  Vector<PendingClip> pending_clips;
+  HeapVector<PendingClip, 8> pending_clips;
   const ClipPaintPropertyNode* clip_node = &target_clip;
   for (; clip_node && clip_node != current_.clip;
        clip_node = clip_node->UnaliasedParent()) {
@@ -1048,7 +1075,7 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
 
     if (pending_clip.type & CcEffectType::kSyntheticForNonTrivialClip) {
       if (clip_id == cc::kInvalidPropertyNodeId) {
-        const auto* clip = pending_clip.clip;
+        const auto* clip = pending_clip.clip.Get();
         // Some virtual/threaded/external/wpt/css/css-view-transitions/*
         // tests will fail without the following condition.
         // TODO(crbug.com/1345805): Investigate the reason and remove the
@@ -1353,7 +1380,7 @@ void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
 // This is called after all property nodes have been converted and we know
 // pixel_moving_filter_id for the pixel-moving clip expanders.
 void PropertyTreeManager::UpdatePixelMovingFilterClipExpanders() {
-  for (auto* clip : pixel_moving_filter_clip_expanders_) {
+  for (const auto& clip : pixel_moving_filter_clip_expanders_) {
     DCHECK(clip->PixelMovingFilter());
     cc::ClipNode* cc_clip =
         clip_tree_.Node(clip->CcNodeId(new_sequence_number_));
@@ -1367,3 +1394,5 @@ void PropertyTreeManager::UpdatePixelMovingFilterClipExpanders() {
 }
 
 }  // namespace blink
+
+WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::PendingClip)

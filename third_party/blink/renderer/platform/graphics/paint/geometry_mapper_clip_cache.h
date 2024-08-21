@@ -5,9 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_GEOMETRY_MAPPER_CLIP_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_GEOMETRY_MAPPER_CLIP_CACHE_H_
 
-#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -20,9 +22,8 @@ class TransformPaintPropertyNode;
 // A GeometryMapperClipCache hangs off a ClipPaintPropertyNode. It stores
 // cached "clip visual rects" (See GeometryMapper.h) from that node in
 // ancestor spaces.
-class PLATFORM_EXPORT GeometryMapperClipCache {
-  USING_FAST_MALLOC(GeometryMapperClipCache);
-
+class PLATFORM_EXPORT GeometryMapperClipCache
+    : public GarbageCollected<GeometryMapperClipCache> {
  public:
   GeometryMapperClipCache() = default;
   GeometryMapperClipCache(const GeometryMapperClipCache&) = delete;
@@ -32,18 +33,10 @@ class PLATFORM_EXPORT GeometryMapperClipCache {
     DISALLOW_NEW();
 
    public:
-    // RAW_PTR_EXCLUSION: Performance reasons: based on this sampling profiler
-    // result on Windows Dev.
-    // TODO(crbug.com/1489080): `ancestor_clip` was marked
-    // `DanglingUntriaged` before being unrewritten.
-    RAW_PTR_EXCLUSION const ClipPaintPropertyNode* ancestor_clip;
-    RAW_PTR_EXCLUSION const TransformPaintPropertyNode* ancestor_transform;
+    Member<const ClipPaintPropertyNode> ancestor_clip;
+    Member<const TransformPaintPropertyNode> ancestor_transform;
     OverlayScrollbarClipBehavior clip_behavior;
-    bool operator==(const ClipAndTransform& other) const {
-      return ancestor_clip == other.ancestor_clip &&
-             ancestor_transform == other.ancestor_transform &&
-             clip_behavior == other.clip_behavior;
-    }
+    bool operator==(const ClipAndTransform& other) const = default;
     ClipAndTransform(const ClipPaintPropertyNode* ancestor_clip_arg,
                      const TransformPaintPropertyNode* ancestor_transform_arg,
                      OverlayScrollbarClipBehavior clip_behavior_arg)
@@ -53,6 +46,8 @@ class PLATFORM_EXPORT GeometryMapperClipCache {
       DCHECK(ancestor_clip);
       DCHECK(ancestor_transform);
     }
+
+    void Trace(Visitor*) const;
   };
 
   void UpdateIfNeeded(const ClipPaintPropertyNode& node) {
@@ -76,7 +71,11 @@ class PLATFORM_EXPORT GeometryMapperClipCache {
     const bool has_transform_animation = false;
     // Similarly, for sticky transform.
     const bool has_sticky_transform = false;
+
+    void Trace(Visitor* visitor) const { visitor->Trace(clip_and_transform); }
   };
+
+  void Trace(Visitor*) const;
 
   // Returns the clip visual rect  of the owning clip of |this| in the space of
   // |ancestors|, if there is one cached. Otherwise returns null.
@@ -96,14 +95,17 @@ class PLATFORM_EXPORT GeometryMapperClipCache {
  private:
   void Update(const ClipPaintPropertyNode&);
 
-  Vector<ClipCacheEntry> clip_cache_;
+  HeapVector<ClipCacheEntry> clip_cache_;
   // The nearest ancestor that has non-null PixelMovingFilter().
-  const ClipPaintPropertyNode* nearest_pixel_moving_filter_clip_ = nullptr;
+  Member<const ClipPaintPropertyNode> nearest_pixel_moving_filter_clip_;
 
   unsigned cache_generation_ = s_global_generation_ - 1;
   static unsigned s_global_generation_;
 };
 
 }  // namespace blink
+
+WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(
+    blink::GeometryMapperClipCache::ClipCacheEntry)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_GEOMETRY_MAPPER_CLIP_CACHE_H_

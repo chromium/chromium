@@ -2980,10 +2980,20 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
     }
   }
 
-  Vector<const TransformPaintPropertyNode*> scroll_translation_nodes;
+  PaintArtifactCompositor::StackScrollTranslationVector
+      scroll_translation_nodes;
   ForAllNonThrottledLocalFrameViews(
       [&scroll_translation_nodes](LocalFrameView& frame_view) {
-        frame_view.GetUserScrollTranslationNodes(scroll_translation_nodes);
+        if (const auto* scrollable_areas = frame_view.UserScrollableAreas()) {
+          for (const auto& area : *scrollable_areas) {
+            const auto* paint_properties =
+                area->GetLayoutBox()->FirstFragment().PaintProperties();
+            if (paint_properties && paint_properties->Scroll()) {
+              scroll_translation_nodes.push_back(
+                  paint_properties->ScrollTranslation());
+            }
+          }
+        }
       });
 
   WTF::Vector<std::unique_ptr<ViewTransitionRequest>> view_transition_requests;
@@ -4745,21 +4755,6 @@ LocalFrameView::EnsureOverlayInterstitialAdDetector() {
         std::make_unique<OverlayInterstitialAdDetector>();
   }
   return *overlay_interstitial_ad_detector_.get();
-}
-
-void LocalFrameView::GetUserScrollTranslationNodes(
-    Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes) {
-  const auto* scrollable_areas = UserScrollableAreas();
-  if (!scrollable_areas)
-    return;
-
-  for (const auto& area : *scrollable_areas) {
-    const auto* paint_properties =
-        area->GetLayoutBox()->FirstFragment().PaintProperties();
-    if (paint_properties && paint_properties->Scroll()) {
-      scroll_translation_nodes.push_back(paint_properties->ScrollTranslation());
-    }
-  }
 }
 
 StickyAdDetector& LocalFrameView::EnsureStickyAdDetector() {

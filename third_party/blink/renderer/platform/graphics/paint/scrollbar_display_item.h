@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace cc {
@@ -30,21 +31,20 @@ class TransformPaintPropertyNode;
 // scrollbar layer.
 class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
  public:
-  ScrollbarDisplayItem(
-      DisplayItemClientId,
-      Type,
-      scoped_refptr<cc::Scrollbar>,
-      const gfx::Rect& visual_rect,
-      scoped_refptr<const TransformPaintPropertyNode> scroll_translation,
-      CompositorElementId element_id,
-      cc::HitTestOpaqueness,
-      RasterEffectOutset outset,
-      PaintInvalidationReason paint_invalidation_reason =
-          PaintInvalidationReason::kJustCreated);
+  ScrollbarDisplayItem(DisplayItemClientId,
+                       Type,
+                       scoped_refptr<cc::Scrollbar>,
+                       const gfx::Rect& visual_rect,
+                       const TransformPaintPropertyNode* scroll_translation,
+                       CompositorElementId element_id,
+                       cc::HitTestOpaqueness,
+                       RasterEffectOutset outset,
+                       PaintInvalidationReason paint_invalidation_reason =
+                           PaintInvalidationReason::kJustCreated);
 
   const TransformPaintPropertyNode* ScrollTranslation() const {
     DCHECK(!IsTombstone());
-    return data_->scroll_translation_.get();
+    return data_->scroll_translation_.Get();
   }
   CompositorElementId ElementId() const {
     DCHECK(!IsTombstone());
@@ -65,15 +65,14 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
   // Records a scrollbar into a GraphicsContext. Must check
   // PaintController::UseCachedItem() before calling this function.
   // |rect| is the bounding box of the scrollbar in the current transform space.
-  static void Record(
-      GraphicsContext&,
-      const DisplayItemClient&,
-      DisplayItem::Type,
-      scoped_refptr<cc::Scrollbar>,
-      const gfx::Rect& visual_rect,
-      scoped_refptr<const TransformPaintPropertyNode> scroll_translation,
-      CompositorElementId element_id,
-      cc::HitTestOpaqueness);
+  static void Record(GraphicsContext&,
+                     const DisplayItemClient&,
+                     DisplayItem::Type,
+                     scoped_refptr<cc::Scrollbar>,
+                     const gfx::Rect& visual_rect,
+                     const TransformPaintPropertyNode* scroll_translation,
+                     CompositorElementId element_id,
+                     cc::HitTestOpaqueness);
 
   bool IsOpaque() const;
 
@@ -93,13 +92,11 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
 
   struct Data {
     scoped_refptr<cc::Scrollbar> scrollbar_;
-    scoped_refptr<const TransformPaintPropertyNode> scroll_translation_;
+    Persistent<const TransformPaintPropertyNode> scroll_translation_;
     CompositorElementId element_id_;
     cc::HitTestOpaqueness hit_test_opaqueness_;
     // This is lazily created for non-composited scrollbar.
     mutable PaintRecord record_;
-
-    USING_FAST_MALLOC(Data);
   };
   // This is to make ScrollbarDisplayItem not bigger than other DisplayItems,
   // so that we can store different types of DisplayItems in DisplayItemList

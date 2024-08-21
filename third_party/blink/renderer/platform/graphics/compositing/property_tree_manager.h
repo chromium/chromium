@@ -7,12 +7,11 @@
 
 #include <optional>
 
-#include "base/memory/raw_ptr_exclusion.h"
 #include "cc/layers/layer_collections.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace cc {
 class ClipTree;
@@ -196,14 +195,6 @@ class PropertyTreeManager {
   // here once the work is ready.
   void UpdateConditionalRenderSurfaceReasons(const cc::LayerList& layers);
 
- private:
-  void SetupRootTransformNode();
-  void SetupRootClipNode();
-  void SetupRootEffectNode();
-  void SetupRootScrollNode();
-
-  int EnsureCompositorScrollNodeInternal(const ScrollPaintPropertyNode&);
-
   // The type of operation the current cc effect node applies.
   enum CcEffectType {
     // The cc effect corresponds to a Blink effect node.
@@ -220,12 +211,9 @@ class PropertyTreeManager {
     kSyntheticFor2dAxisAlignment = 1 << 1
   };
 
-  static std::optional<gfx::RRectF> ShaderBasedRRect(
-      const ClipPaintPropertyNode&,
-      CcEffectType type,
-      const TransformPaintPropertyNode& transform,
-      const EffectPaintPropertyNode* next_effect);
+  struct CurrentEffectState;
 
+  // This is public for WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS.
   // Note: EffectState holds direct references to property nodes. Ordinarily it
   // would be verboten to keep references to data controlled by PropertyTrees,
   // because it evades ProtectedSequenceSynchronizer protections. We allow it in
@@ -233,6 +221,12 @@ class PropertyTreeManager {
   // STACK_ALLOCATED(), and we know that it will not initiate a protected
   // sequence (i.e., call into LayerTreeHost::WillCommit).
   struct EffectState {
+    DISALLOW_NEW();
+
+   public:
+    EffectState() = default;
+    explicit EffectState(const CurrentEffectState&);
+
     // The cc effect node that has the corresponding drawing state to the
     // effect and clip state from the last
     // SwitchToEffectNodeWithSynthesizedClip.
@@ -241,23 +235,20 @@ class PropertyTreeManager {
     CcEffectType effect_type;
 
     // The effect state of the cc effect node. It's never nullptr.
-    // RAW_PTR_EXCLUSION: The struct is performance critical and stack scoped.
-    RAW_PTR_EXCLUSION const EffectPaintPropertyNode* effect;
+    Member<const EffectPaintPropertyNode> effect;
 
     // The clip state of the cc effect node. This value may be shallower than
     // the one passed into SwitchToEffectNodeWithSynthesizedClip because not
     // every clip needs to be synthesized as cc effect. Is set to output clip of
     // the effect if the type is kEffect, or set to the synthesized clip node.
     // It's never nullptr.
-    // RAW_PTR_EXCLUSION: The struct is performance critical and stack scoped.
-    RAW_PTR_EXCLUSION const ClipPaintPropertyNode* clip;
+    Member<const ClipPaintPropertyNode> clip;
 
-    // The transform space of this state. It's |&effect->LocalTransformSpace()|
+    // The transform space of this state. It's |&effect->LocalTransformSpace()|z
     // if this state is of kEffect type or synthetic with backdrop filters
     // moved up from the original effect.
     // Otherwise it's |&clip->LocalTransformSpace()|.
-    // RAW_PTR_EXCLUSION: The struct is performance critical and stack scoped.
-    RAW_PTR_EXCLUSION const TransformPaintPropertyNode* transform;
+    Member<const TransformPaintPropertyNode> transform;
 
     // Whether the transform space of this state may be 2d axis misaligned to
     // the containing render surface. As there may be new render surfaces
@@ -273,17 +264,58 @@ class PropertyTreeManager {
     //
     // It's lazily computed if it can't be trivially known when we create this
     // EffectState.
-    enum {
+    enum Alignment {
       kAligned,
       kMisaligned,
       kUnknown,
-    } may_be_2d_axis_misaligned_to_render_surface;
+    };
+    Alignment may_be_2d_axis_misaligned_to_render_surface;
 
     // Whether this effect or an ancestor has a synthetic rounded clip between
     // self and the next render surface. This is used to force a render surface
     // for all ancestor synthetic rounded clips if a descendant is found.
     bool contained_by_non_render_surface_synthetic_rounded_clip;
+
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(effect);
+      visitor->Trace(clip);
+      visitor->Trace(transform);
+    }
   };
+
+  // For performance, the top of effect_stack_ is separated into current_
+  // which is stack allocated and allow raw pointers to avoid the overhead of
+  // Member<>.
+  struct CurrentEffectState {
+    STACK_ALLOCATED();
+
+   public:
+    CurrentEffectState() = default;
+    explicit CurrentEffectState(const EffectState&);
+
+    int effect_id = 0;
+    CcEffectType effect_type = kEffect;
+    const EffectPaintPropertyNode* effect = nullptr;
+    const ClipPaintPropertyNode* clip = nullptr;
+    const TransformPaintPropertyNode* transform = nullptr;
+    EffectState::Alignment may_be_2d_axis_misaligned_to_render_surface =
+        EffectState::kAligned;
+    bool contained_by_non_render_surface_synthetic_rounded_clip = false;
+  };
+
+ private:
+  void SetupRootTransformNode();
+  void SetupRootClipNode();
+  void SetupRootEffectNode();
+  void SetupRootScrollNode();
+
+  int EnsureCompositorScrollNodeInternal(const ScrollPaintPropertyNode&);
+
+  static std::optional<gfx::RRectF> ShaderBasedRRect(
+      const ClipPaintPropertyNode&,
+      CcEffectType type,
+      const TransformPaintPropertyNode& transform,
+      const EffectPaintPropertyNode* next_effect);
 
   void CollectAnimationElementId(CompositorElementId);
   void BuildEffectNodesRecursively(const EffectPaintPropertyNode& next_effect);
@@ -357,7 +389,7 @@ class PropertyTreeManager {
   // Note: This is a "restore stack", i.e. the top element does not represent
   // the current state (which is in current_), but the state prior to most
   // recent push.
-  Vector<EffectState> effect_stack_;
+  HeapVector<EffectState> effect_stack_;
 
   // A set of synthetic clips masks which will be applied if a layer under them
   // is encountered which draws content (and thus necessitates the mask).
@@ -365,9 +397,13 @@ class PropertyTreeManager {
 
   // EnsureCompositorClipNode() collects pixel moving filter clips. We'll set
   // clip_expander of their cc nodes after all effect nodes have been converted.
-  Vector<const ClipPaintPropertyNode*> pixel_moving_filter_clip_expanders_;
+  HeapVector<Member<const ClipPaintPropertyNode>, 16>
+      pixel_moving_filter_clip_expanders_;
 };
 
 }  // namespace blink
+
+WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(
+    blink::PropertyTreeManager::EffectState)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PROPERTY_TREE_MANAGER_H_

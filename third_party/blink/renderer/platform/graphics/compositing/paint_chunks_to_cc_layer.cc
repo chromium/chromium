@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
 
+#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidation_tracking.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -64,10 +66,80 @@ struct ScrollTranslationAction {
   explicit operator bool() const { return type != kNone; }
 };
 
+// State stack of ConversionContext.
+// The size of the stack is the number of nested paired items that are
+// currently nested. Note that this is a "restore stack", i.e. the top element
+// does not represent the current state, but the state prior to applying the
+// last paired begin.
+struct StateEntry {
+  DISALLOW_NEW();
+
+ public:
+  // Remembers the type of paired begin that caused a state to be saved.
+  // This is for checking integrity of the algorithm.
+  enum PairedType { kClip, kClipOmitted, kEffect };
+  explicit StateEntry(PairedType type,
+                      const TransformPaintPropertyNode* transform,
+                      const ClipPaintPropertyNode* clip,
+                      const EffectPaintPropertyNode* effect,
+                      const TransformPaintPropertyNode* previous_transform)
+      : transform(transform),
+        clip(clip),
+        effect(effect),
+        previous_transform(previous_transform),
+        type_(type) {}
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(transform);
+    visitor->Trace(clip);
+    visitor->Trace(effect);
+    visitor->Trace(previous_transform);
+  }
+
+  bool IsClip() const { return type_ != kEffect; }
+  bool IsEffect() const { return type_ == kEffect; }
+  bool NeedsRestore() const { return type_ != kClipOmitted; }
+
+  // These fields are never nullptr. They save ConversionContext::
+  // current_transform_, current_clip_ and current_effect_, respectively.
+  Member<const TransformPaintPropertyNode> transform;
+  Member<const ClipPaintPropertyNode> clip;
+  Member<const EffectPaintPropertyNode> effect;
+  // This saves ConversionContext::previous_transform_.
+  Member<const TransformPaintPropertyNode> previous_transform;
+#if DCHECK_IS_ON()
+  bool has_effect_hierarchy_issue = false;
+#endif
+
+ private:
+  PairedType type_;
+};
+
+// This structure accumulates bounds of all chunks under an effect. When an
+// effect starts, we emit a SaveLayer[Alpha]Op with null bounds, and push a
+// new |EffectBoundsInfo| onto |effect_bounds_stack_|. When the effect ends,
+// we update the bounds of the op.
+struct EffectBoundsInfo {
+  DISALLOW_NEW();
+
+ public:
+  void Trace(Visitor* visitor) const { visitor->Trace(transform); }
+
+  // The id of the SaveLayer[Alpha]Op for this effect. It's recorded when we
+  // push the op for this effect, and used when this effect ends in
+  // UpdateSaveLayerBounds().
+  size_t save_layer_id;
+  // The transform space when the SaveLayer[Alpha]Op was emitted.
+  Member<const TransformPaintPropertyNode> transform;
+  // Records the bounds of the effect which initiated the entry. Note that
+  // the effect is not |effect| (which is the previous effect), but the
+  // |current_effect_| when this entry is the top of the stack.
+  gfx::RectF bounds;
+};
+
 template <typename Result>
 class ConversionContext {
   STACK_ALLOCATED();
-  struct StateEntry;
 
  public:
   ConversionContext(const PropertyTreeState& layer_state,
@@ -253,58 +325,12 @@ class ConversionContext {
     return result_.template push<T>(std::forward<Args>(args)...);
   }
 
-  // State stack.
-  // The size of the stack is the number of nested paired items that are
-  // currently nested. Note that this is a "restore stack", i.e. the top
-  // element does not represent the current state, but the state prior to
-  // applying the last paired begin.
-  struct StateEntry {
-    // Remembers the type of paired begin that caused a state to be saved.
-    // This is for checking integrity of the algorithm.
-    enum PairedType { kClip, kClipOmitted, kEffect };
-    explicit StateEntry(PairedType type,
-                        const TransformPaintPropertyNode* transform,
-                        const ClipPaintPropertyNode* clip,
-                        const EffectPaintPropertyNode* effect,
-                        const TransformPaintPropertyNode* previous_transform)
-        : transform(transform),
-          clip(clip),
-          effect(effect),
-          previous_transform(previous_transform),
-          type_(type) {}
-
-    bool IsClip() const { return type_ != kEffect; }
-    bool IsEffect() const { return type_ == kEffect; }
-    bool NeedsRestore() const { return type_ != kClipOmitted; }
-
-    // These fields are never nullptr.
-    //
-    // RAW_PTR_EXCLUSION: Performance reasons: regressions in MotionMark
-    // (crbug.com/1495275#c116). The struct is performance critical and stack
-    // scoped.
-    // These fields are never nullptr. They save ConversionContext::
-    // current_transform_, current_clip_ and current_effect_, respectively.
-    RAW_PTR_EXCLUSION const TransformPaintPropertyNode* transform;
-    // RAW_PTR_EXCLUSION: The struct is performance critical and stack scoped.
-    RAW_PTR_EXCLUSION const ClipPaintPropertyNode* clip;
-    // RAW_PTR_EXCLUSION: The struct is performance critical and stack scoped.
-    RAW_PTR_EXCLUSION const EffectPaintPropertyNode* effect;
-    // This saves ConversionContext::previous_transform_.
-    // RAW_PTR_EXCLUSION: The struct is performance critical and stack scoped.
-    RAW_PTR_EXCLUSION const TransformPaintPropertyNode* previous_transform;
-#if DCHECK_IS_ON()
-    bool has_effect_hierarchy_issue = false;
-#endif
-
-   private:
-    PairedType type_;
-  };
   void PushState(typename StateEntry::PairedType);
   void PopState();
-  Vector<StateEntry> state_stack_;
 
+  HeapVector<StateEntry> state_stack_;
+  HeapVector<EffectBoundsInfo> effect_bounds_stack_;
   ChunkToLayerMapper chunk_to_layer_mapper_;
-
   bool translated_for_layer_offset_ = false;
 
   // These fields are never nullptr.
@@ -321,25 +347,6 @@ class ConversionContext {
   // nullptr. When the clip/effect state ends, this field will be restored to
   // the saved value.
   const TransformPaintPropertyNode* previous_transform_ = nullptr;
-
-  // This structure accumulates bounds of all chunks under an effect. When an
-  // effect starts, we emit a SaveLayer[Alpha]Op with null bounds, and push a
-  // new |EffectBoundsInfo| onto |effect_bounds_stack_|. When the effect ends,
-  // we update the bounds of the op.
-  struct EffectBoundsInfo {
-    // The id of the SaveLayer[Alpha]Op for this effect. It's recorded when we
-    // push the op for this effect, and used when this effect ends in
-    // UpdateSaveLayerBounds().
-    size_t save_layer_id;
-    // The transform space when the SaveLayer[Alpha]Op was emitted.
-    // RAW_PTR_EXCLUSION: The struct is performance critical and stack scoped.
-    RAW_PTR_EXCLUSION const TransformPaintPropertyNode* transform;
-    // Records the bounds of the effect which initiated the entry. Note that
-    // the effect is not |effect| (which is the previous effect), but the
-    // |current_effect_| when this entry is the top of the stack.
-    gfx::RectF bounds;
-  };
-  Vector<EffectBoundsInfo> effect_bounds_stack_;
 
   Result& result_;
 
@@ -485,7 +492,7 @@ ScrollTranslationAction ConversionContext<Result>::SwitchToClip(
 
   // Step 2: Collect all clips between the target clip and the current clip.
   // At this point the current clip must be an ancestor of the target.
-  Vector<const ClipPaintPropertyNode*, 1u> pending_clips;
+  HeapVector<Member<const ClipPaintPropertyNode>, 8> pending_clips;
   for (const auto* clip = &target_clip; clip != current_clip_;
        clip = clip->UnaliasedParent()) {
     // This should never happen unless the DCHECK in step 1 failed.
@@ -497,9 +504,9 @@ ScrollTranslationAction ConversionContext<Result>::SwitchToClip(
   // Step 3: Now apply the list of clips in top-down order.
   DCHECK(pending_clips.size());
   auto pending_combined_clip_rect = pending_clips.back()->PaintClipRect();
-  const auto* lowest_combined_clip_node = pending_clips.back();
+  const auto* lowest_combined_clip_node = pending_clips.back().Get();
   for (auto i = pending_clips.size() - 1; i--;) {
-    const auto* sub_clip = pending_clips[i];
+    const auto* sub_clip = pending_clips[i].Get();
     if (CombineClip(*sub_clip, pending_combined_clip_rect)) {
       // Continue to combine.
       lowest_combined_clip_node = sub_clip;
@@ -614,7 +621,7 @@ ScrollTranslationAction ConversionContext<Result>::SwitchToEffect(
 
   // Step 2: Collect all effects between the target effect and the current
   // effect. At this point the current effect must be an ancestor of the target.
-  Vector<const EffectPaintPropertyNode*, 1u> pending_effects;
+  HeapVector<Member<const EffectPaintPropertyNode>, 8> pending_effects;
   for (const auto* effect = &target_effect; effect != &lca_effect;
        effect = effect->UnaliasedParent()) {
     // This should never happen unless the DCHECK in step 1 failed.
@@ -624,8 +631,7 @@ ScrollTranslationAction ConversionContext<Result>::SwitchToEffect(
   }
 
   // Step 3: Now apply the list of effects in top-down order.
-  for (auto i = pending_effects.size(); i--;) {
-    const EffectPaintPropertyNode* sub_effect = pending_effects[i];
+  for (const auto& sub_effect : base::Reversed(pending_effects)) {
 #if DCHECK_IS_ON()
     if (!has_effect_hierarchy_issue)
       DCHECK_EQ(current_effect_, sub_effect->UnaliasedParent());
@@ -987,8 +993,7 @@ void ConversionContext<Result>::Convert(PaintChunkIterator& chunk_it,
       continue;
     }
 
-    PropertyTreeState chunk_state =
-        chunk.properties.GetPropertyTreeState().Unalias();
+    PropertyTreeState chunk_state = chunk.properties.Unalias();
     if (!HasDrawing(chunk_it, chunk_state)) {
       continue;
     }
@@ -1118,7 +1123,10 @@ PaintRecord PaintChunksToCcLayer::Convert(const PaintChunkSubset& chunks,
 namespace {
 
 struct NonCompositedScroll {
-  const TransformPaintPropertyNode* scroll_translation;
+  DISALLOW_NEW();
+
+ public:
+  Member<const TransformPaintPropertyNode> scroll_translation;
   // The hit-testable rect of the scroller in the layer space.
   gfx::Rect layer_hit_test_rect;
   // Accumulated hit test opaqueness of a) the scroller itself and b)
@@ -1126,6 +1134,8 @@ struct NonCompositedScroll {
   // If it's kMixed, scroll in some areas in the layer can't reliably scroll
   // `scroll_translation`.
   cc::HitTestOpaqueness hit_test_opaqueness;
+
+  void Trace(Visitor* visitor) const { visitor->Trace(scroll_translation); }
 };
 
 class LayerPropertiesUpdater {
@@ -1462,7 +1472,7 @@ void LayerPropertiesUpdater::UpdateForNonCompositedScrollbar(
 void LayerPropertiesUpdater::UpdateRegionCaptureData(
     const RegionCaptureData& region_capture_data) {
   for (const std::pair<RegionCaptureCropId, gfx::Rect>& pair :
-       region_capture_data) {
+       region_capture_data.map) {
     capture_bounds_.Set(pair.first.value(),
                         chunk_to_layer_mapper_.MapVisualRect(pair.second));
   }
@@ -1584,3 +1594,7 @@ void PaintChunksToCcLayer::UpdateLayerProperties(
 }
 
 }  // namespace blink
+
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::StateEntry)
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::EffectBoundsInfo)
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::NonCompositedScroll)

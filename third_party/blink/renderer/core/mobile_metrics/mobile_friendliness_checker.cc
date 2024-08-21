@@ -296,6 +296,8 @@ void MobileFriendlinessChecker::NotifyPaintReplaced(
 
 void MobileFriendlinessChecker::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
+  visitor->Trace(viewport_transform_);
+  visitor->Trace(previous_transform_);
 }
 
 }  // namespace blink
