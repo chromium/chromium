@@ -268,31 +268,6 @@
       'service_account': 'chrome-tester@chops-service-accounts.iam.gserviceaccount.com',
     },
   },
-  'chromeos-betty': {
-    'args': [
-      '--magic-vm-cache=magic_cros_vm_cache',
-    ],
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'kvm': '1',
-        'gce': '1',
-        'os': 'Ubuntu-22.04',
-        'pool': 'chrome.tests',
-      },
-      'optional_dimensions': {
-        '60': {
-          'caches': 'cros_vm',
-        },
-      },
-      'named_caches': [
-        {
-          'name': 'cros_vm',
-          'path': 'magic_cros_vm_cache',
-        },
-      ],
-    },
-  },
   'chromeos-betty-finch': {
     'args': [
       '--board=betty',

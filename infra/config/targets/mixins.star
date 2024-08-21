@@ -397,35 +397,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "chromeos-betty",
-    args = [
-        "--magic-vm-cache=magic_cros_vm_cache",
-    ],
-    swarming = targets.swarming(
-        dimensions = {
-            "cpu": "x86-64",
-            "kvm": "1",
-            "gce": "1",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests",
-        },
-        optional_dimensions = {
-            60: {
-                "caches": "cros_vm",
-            },
-        },
-        # See the 'chromeos-generic-vm' mixin above for the purpose of this
-        # cache.
-        named_caches = [
-            swarming.cache(
-                name = "cros_vm",
-                path = "magic_cros_vm_cache",
-            ),
-        ],
-    ),
-)
-
-targets.mixin(
     name = "chromeos-betty-finch",
     args = [
         "--board=betty",

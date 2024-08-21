@@ -1261,30 +1261,6 @@
           '--tast-shard-method=hash',
         ],
       },
-      'chromeos-betty-pi-arc-cfi-thin-lto-chrome': {
-        'args': [
-          # This bot sets symbol_level=2, which doesn't fit inside a normal VM.
-          '--strip-chrome',
-          '--tast-shard-method=hash',
-        ],
-      },
-      'chromeos-betty-pi-arc-chrome': {
-        'swarming': {
-          'shards': 15,
-        },
-        'args': [
-          '--tast-shard-method=hash',
-        ],
-      },
-      'chromeos-betty-pi-arc-chrome-dchecks': {
-        'swarming': {
-          # DCHECK builder is slower than non-DCHECK one.
-          'shards': 20,
-        },
-        'args': [
-          '--tast-shard-method=hash',
-        ],
-      },
       'chromeos-eve-chrome': {
         'swarming': {
           # Increased timeout to 4 hours due to shard timeout.
@@ -3663,16 +3639,6 @@
   },
   'ozone_unittests': {
     'modifications': {
-      'chromeos-betty-pi-arc-chrome': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',
-        ],
-      },
-      'chromeos-betty-pi-arc-chrome-dchecks': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',
-        ],
-      },
       'linux-chromeos-chrome': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',

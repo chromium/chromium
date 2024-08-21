@@ -134,43 +134,11 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "chromeos_device_no_gtests",
-    basic_suites = [
-        "chromeos_browser_all_tast_tests",
-        "chromeos_browser_criticalstaging_tast_tests",
-        "chromeos_browser_disabled_tast_tests",
-        "chromeos_browser_integration_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "chromeos_vm_gtests",
     basic_suites = [
         "chromeos_system_friendly_gtests",
         "chromeos_vaapi_fakelib_gtests",
         "chromeos_integration_tests_suite",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "chromeos_vm_gtests_and_tast",
-    basic_suites = [
-        "chromeos_browser_all_tast_tests",
-        "chromeos_browser_criticalstaging_tast_tests",
-        "chromeos_browser_disabled_tast_tests",
-        "chromeos_browser_integration_tests",
-        "chromeos_system_friendly_gtests",
-        "chromeos_vaapi_fakelib_gtests",
-        "chromeos_integration_tests_suite",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "chromeos_vm_preuprev_tast",
-    basic_suites = [
-        "chromeos_browser_cq_medium_tast_tests",
-        "chromeos_integration_tests_suite",
-        "chromeos_device_only_gtests",
     ],
 )
 
