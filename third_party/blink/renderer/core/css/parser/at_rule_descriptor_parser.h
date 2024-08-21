@@ -13,7 +13,6 @@
 namespace blink {
 
 class CSSParserContext;
-class CSSParserTokenRange;
 class CSSParserTokenStream;
 class CSSValue;
 struct CSSTokenizedValue;
@@ -28,15 +27,12 @@ class AtRuleDescriptorParser {
                           const CSSParserContext&,
                           HeapVector<CSSPropertyValue, 64>&);
   static CSSValue* ParseFontFaceDescriptor(AtRuleDescriptorID,
-                                           CSSParserTokenRange&,
+                                           CSSParserTokenStream&,
                                            const CSSParserContext&);
   static CSSValue* ParseFontFaceDescriptor(AtRuleDescriptorID,
-                                           const String& value,
+                                           StringView,
                                            const CSSParserContext&);
-  static CSSValue* ParseFontFaceDescriptor(AtRuleDescriptorID,
-                                           const CSSTokenizedValue&,
-                                           const CSSParserContext&);
-  static CSSValue* ParseFontFaceDeclaration(CSSParserTokenRange&,
+  static CSSValue* ParseFontFaceDeclaration(CSSParserTokenStream&,
                                             const CSSParserContext&);
   static CSSValue* ParseAtPropertyDescriptor(AtRuleDescriptorID,
                                              CSSParserTokenStream&,

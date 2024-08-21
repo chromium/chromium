@@ -468,22 +468,8 @@ bool CSSPropertyParser::ParseFontFaceDescriptor(
     return false;
   }
 
-  // ParseFontFaceDescriptor() could want the original text,
-  // for re-tokenization for the specific case of the “unicode-range”
-  // property (which is the only property where UnicodeRange productions
-  // are allowed). Thus, we need to keep track of exactly what
-  // we tokenized, so that we can also send in the original text.
-  //
-  // This should obviously go away when everything uses
-  // the streaming parser.
-  wtf_size_t start_offset = stream_.LookAheadOffset();
-  CSSParserTokenRange range = stream_.ConsumeUntilPeekedTypeIs();
-  wtf_size_t end_offset = stream_.Offset();
-  StringView original_text =
-      stream_.StringRangeAt(start_offset, end_offset - start_offset);
-
-  CSSValue* parsed_value = AtRuleDescriptorParser::ParseFontFaceDescriptor(
-      id, {range, original_text}, *context_);
+  CSSValue* parsed_value =
+      AtRuleDescriptorParser::ParseFontFaceDescriptor(id, stream_, *context_);
   if (!parsed_value) {
     return false;
   }

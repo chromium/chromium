@@ -221,8 +221,6 @@ CSSCustomIdentValue* ConsumeDashedIdent(T&, const CSSParserContext&);
 CSSStringValue* ConsumeString(CSSParserTokenRange&);
 CSSStringValue* ConsumeString(CSSParserTokenStream&);
 StringView ConsumeStringAsStringView(CSSParserTokenRange&);
-cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenRange&,
-                                  const CSSParserContext&);
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenStream&,
                                   const CSSParserContext&);
 

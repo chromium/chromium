@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
 namespace blink {
@@ -73,13 +74,10 @@ void TestTokens(const String& string,
   CSSParserTokenRange expected(expected_tokens);
 
   CSSTokenizer tokenizer(string);
-  Vector<CSSParserToken, 32> tokens;
-  if (unicode_ranges_allowed) {
-    tokens = tokenizer.TokenizeToEOFWithUnicodeRanges();
-  } else {
-    tokens = tokenizer.TokenizeToEOF();
-  }
-  CSSParserTokenRange actual(tokens);
+  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream::EnableUnicodeRanges enable(stream,
+                                                   unicode_ranges_allowed);
+  CSSParserTokenRange actual = stream.ConsumeUntilPeekedTypeIs();
 
   // Just check that serialization doesn't hit any asserts
   actual.Serialize();

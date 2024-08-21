@@ -99,6 +99,32 @@ class CORE_EXPORT CSSParserTokenStream {
     base::AutoReset<uint64_t> auto_reset_;
   };
 
+  // While EnableUnicodeRanges is true, we invoke a special tokenizer to solve
+  // a design mistake in CSS.
+  //
+  // https://drafts.csswg.org/css-syntax/#consume-unicode-range-value
+  class EnableUnicodeRanges {
+    STACK_ALLOCATED();
+
+   public:
+    explicit EnableUnicodeRanges(CSSParserTokenStream& stream,
+                                 bool unicode_ranges_allowed)
+        : stream_(stream),
+          old_unicode_ranges_allowed_(
+              stream.tokenizer_.unicode_ranges_allowed_) {
+      stream.tokenizer_.unicode_ranges_allowed_ = unicode_ranges_allowed;
+      stream.RetokenizeLookAhead();
+    }
+    ~EnableUnicodeRanges() {
+      stream_.tokenizer_.unicode_ranges_allowed_ = old_unicode_ranges_allowed_;
+      stream_.RetokenizeLookAhead();
+    }
+
+   private:
+    CSSParserTokenStream& stream_;
+    const bool old_unicode_ranges_allowed_;
+  };
+
   // We found that this value works well empirically by printing out the
   // maximum buffer size for a few top alexa websites. It should be slightly
   // above the expected number of tokens in the prelude of an at rule and
@@ -639,6 +665,15 @@ class CORE_EXPORT CSSParserTokenStream {
     has_look_ahead_ = false;
     offset_ = tokenizer_.Offset();
     return next_;
+  }
+
+  // Used after switching tokenizer_.unicode_ranges_allowed_, which may change
+  // interpretation of the tokens (and thus, what the lookahead token should
+  // be).
+  void RetokenizeLookAhead() {
+    if (has_look_ahead_) {
+      next_ = tokenizer_.Restore(next_, tokenizer_.PreviousOffset());
+    }
   }
 
   // Assuming the last token was a BlockStart token, ignores tokens

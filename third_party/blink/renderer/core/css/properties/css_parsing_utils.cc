@@ -1911,35 +1911,8 @@ CSSUrlData CollectUrlData(const StringView& url,
 // or the empty string if there are fetch restrictions,
 // or an EOF token if we failed to parse.
 //
-// NOTE: We are careful not to return a reference, since for
-// the streaming parser, the token will be overwritten on once we
-// move to the next one.
-//
-// NOTE: Keep in sync with the other ConsumeUrlAsToken.
-CSSParserToken ConsumeUrlAsToken(CSSParserTokenRange& range,
-                                 const CSSParserContext& context) {
-  const CSSParserToken* token = &range.Peek();
-  if (token->GetType() == kUrlToken) {
-    range.ConsumeIncludingWhitespace();
-  } else if (token->FunctionId() == CSSValueID::kUrl) {
-    CSSParserTokenRange url_range = range;
-    CSSParserTokenRange url_args = url_range.ConsumeBlock();
-    const CSSParserToken& next = url_args.ConsumeIncludingWhitespace();
-    if (next.GetType() == kBadStringToken || !url_args.AtEnd()) {
-      return CSSParserToken(kEOFToken);
-    }
-    DCHECK_EQ(next.GetType(), kStringToken);
-    range = url_range;
-    range.ConsumeWhitespace();
-    token = &next;
-  } else {
-    return CSSParserToken(kEOFToken);
-  }
-  return IsFetchRestricted(token->Value(), context)
-             ? CSSParserToken(kUrlToken, StringView(""))
-             : *token;
-}
-
+// NOTE: We are careful not to return a reference, since the token
+// will be overwritten once we move to the next one.
 CSSParserToken ConsumeUrlAsToken(CSSParserTokenStream& stream,
                                  const CSSParserContext& context) {
   CSSParserToken token = stream.Peek();
@@ -1967,27 +1940,14 @@ CSSParserToken ConsumeUrlAsToken(CSSParserTokenStream& stream,
              : token;
 }
 
-template <class T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-cssvalue::CSSURIValue* ConsumeUrlInternal(T& range,
-                                          const CSSParserContext& context) {
-  CSSParserToken url = ConsumeUrlAsToken(range, context);
+cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenStream& stream,
+                                  const CSSParserContext& context) {
+  CSSParserToken url = ConsumeUrlAsToken(stream, context);
   if (url.GetType() == kEOFToken) {
     return nullptr;
   }
   return MakeGarbageCollected<cssvalue::CSSURIValue>(
       CollectUrlData(url.Value(), context));
-}
-
-cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenRange& range,
-                                  const CSSParserContext& context) {
-  return ConsumeUrlInternal(range, context);
-}
-
-cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenStream& stream,
-                                  const CSSParserContext& context) {
-  return ConsumeUrlInternal(stream, context);
 }
 
 static bool ConsumeColorInterpolationSpace(
@@ -6197,6 +6157,7 @@ CSSIdentifierValue* ConsumeFontTechIdent(T& stream) {
 }
 
 template CSSIdentifierValue* ConsumeFontTechIdent(CSSParserTokenRange& stream);
+template CSSIdentifierValue* ConsumeFontTechIdent(CSSParserTokenStream& stream);
 
 template <typename T>
   requires std::is_same_v<T, CSSParserTokenStream> ||
@@ -6210,6 +6171,8 @@ CSSIdentifierValue* ConsumeFontFormatIdent(T& stream) {
 
 template CSSIdentifierValue* ConsumeFontFormatIdent(
     CSSParserTokenRange& stream);
+template CSSIdentifierValue* ConsumeFontFormatIdent(
+    CSSParserTokenStream& stream);
 
 CSSValueID FontFormatToId(String font_format) {
   CSSValueID converted_id = CssValueKeywordID(font_format);

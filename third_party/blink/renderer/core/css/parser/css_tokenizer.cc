@@ -83,13 +83,6 @@ CSSTokenizer::TokenizeToEOFWithOffsets() {
   }
 }
 
-Vector<CSSParserToken, 32> CSSTokenizer::TokenizeToEOFWithUnicodeRanges() {
-  unicode_ranges_allowed_ = true;
-  Vector<CSSParserToken, 32> tokens = TokenizeToEOF();
-  unicode_ranges_allowed_ = false;
-  return tokens;
-}
-
 StringView CSSTokenizer::StringRangeFrom(wtf_size_t start) const {
   return input_.RangeFrom(start);
 }
