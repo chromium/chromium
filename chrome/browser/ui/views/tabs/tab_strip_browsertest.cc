@@ -17,6 +17,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "url/gurl.h"
 
 namespace {
@@ -965,4 +966,40 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, TabGroupTabNavigationAccelerators) {
   // Navigate to the last tab using the select last accelerator.
   updater->ExecuteCommand(IDC_SELECT_LAST_TAB);
   ASSERT_EQ(3, tab_strip_model()->active_index());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
+                       TabHasCorrectAccessibleSelectedState) {
+  AppendTab();
+  AppendTab();
+
+  Tab* tab0 = tab_strip()->tab_at(0);
+  Tab* tab1 = tab_strip()->tab_at(1);
+  ui::AXNodeData ax_node_data_0;
+  ui::AXNodeData ax_node_data_1;
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+
+  tab_strip()->SelectTab(tab_strip()->tab_at(0), GetDummyEvent());
+  tab0->GetViewAccessibility().GetAccessibleNodeData(&ax_node_data_0);
+  tab1->GetViewAccessibility().GetAccessibleNodeData(&ax_node_data_1);
+  EXPECT_TRUE(tab0->IsSelected());
+  EXPECT_TRUE(
+      ax_node_data_0.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(tab1->IsSelected());
+  EXPECT_FALSE(
+      ax_node_data_1.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kSelection), 1);
+
+  tab_strip()->SelectTab(tab_strip()->tab_at(1), GetDummyEvent());
+  ax_node_data_0 = ui::AXNodeData();
+  ax_node_data_1 = ui::AXNodeData();
+  tab0->GetViewAccessibility().GetAccessibleNodeData(&ax_node_data_0);
+  tab1->GetViewAccessibility().GetAccessibleNodeData(&ax_node_data_1);
+  EXPECT_FALSE(tab0->IsSelected());
+  EXPECT_FALSE(
+      ax_node_data_0.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+  EXPECT_TRUE(tab1->IsSelected());
+  EXPECT_TRUE(
+      ax_node_data_1.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kSelection), 2);
 }
