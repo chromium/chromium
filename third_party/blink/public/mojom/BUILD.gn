@@ -1349,6 +1349,7 @@ mojom("mojom_core") {
     "page/prerender_page_param.mojom",
     "page/widget.mojom",
     "page_state/page_state.mojom",
+    "partitioned_popins/partitioned_popin_params.mojom",
 
     # transferable_message.mojom depends the other messaging/ mojom files here.
     "messaging/cloneable_message.mojom",

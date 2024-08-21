@@ -6518,6 +6518,13 @@ scoped_refptr<const SecurityOrigin> Document::TopFrameOrigin() const {
   if (!GetFrame())
     return scoped_refptr<const SecurityOrigin>();
 
+  // If this window was opened as a new partitioned popin we need to use the
+  // origin of the opener's top-frame as our top-frame.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  if (GetPage()->GetPartitionedPopinOpenerTopFrameOrigin()) {
+    return GetPage()->GetPartitionedPopinOpenerTopFrameOrigin();
+  }
+
   return GetFrame()->Tree().Top().GetSecurityContext()->GetSecurityOrigin();
 }
 
@@ -6525,8 +6532,7 @@ net::SiteForCookies Document::SiteForCookies() const {
   if (!GetFrame())
     return net::SiteForCookies();
 
-  Frame& top = GetFrame()->Tree().Top();
-  const SecurityOrigin* origin = top.GetSecurityContext()->GetSecurityOrigin();
+  scoped_refptr<const SecurityOrigin> origin = TopFrameOrigin();
   // TODO(yhirano): Ideally |origin| should not be null here.
   if (!origin)
     return net::SiteForCookies();
@@ -6544,6 +6550,13 @@ net::SiteForCookies Document::SiteForCookies() const {
   }
 
   net::SiteForCookies candidate = net::SiteForCookies::FromOrigin(url_origin);
+
+  // If this window was opened as a new partitioned popin we need to use the
+  // site for cookies of the opener as our initial candidate.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  if (GetPage()->GetPartitionedPopinOpenerSiteForCookies()) {
+    candidate = *GetPage()->GetPartitionedPopinOpenerSiteForCookies();
+  }
 
   if (SchemeRegistry::ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
           origin->Protocol())) {

@@ -9026,6 +9026,19 @@ void RenderFrameHostImpl::CreateNewWindow(
   bool wait_for_debugger =
       devtools_instrumentation::ShouldWaitForDebuggerInWindowOpen();
 
+  // We must send access information relative to the popin opener in order for
+  // the renderer to properly conduct checks.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params = nullptr;
+  RenderFrameHostImpl* partitioned_popin_opener =
+      new_main_rfh->delegate()->PartitionedPopinOpener();
+  if (partitioned_popin_opener && !IsNestedWithinFencedFrame()) {
+    partitioned_popin_params = blink::mojom::PartitionedPopinParams::New(
+        partitioned_popin_opener->ComputeTopFrameOrigin(
+            partitioned_popin_opener->GetLastCommittedOrigin()),
+        partitioned_popin_opener->ComputeSiteForCookies());
+  }
+
   mojom::CreateNewWindowReplyPtr reply = mojom::CreateNewWindowReply::New(
       new_main_rfh->GetFrameToken(), new_main_rfh->GetRoutingID(),
       std::move(pending_frame_receiver), std::move(widget_params),
@@ -9037,7 +9050,8 @@ void RenderFrameHostImpl::CreateNewWindow(
       blink::BrowsingContextGroupInfo(
           new_main_rfh->GetSiteInstance()->browsing_instance_token(),
           new_main_rfh->GetSiteInstance()->coop_related_group_token()),
-      delegate_->GetColorProviderColorMaps());
+      delegate_->GetColorProviderColorMaps(),
+      std::move(partitioned_popin_params));
 
   std::move(callback).Run(mojom::CreateNewWindowStatus::kSuccess,
                           std::move(reply));

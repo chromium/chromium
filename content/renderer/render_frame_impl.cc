@@ -6806,6 +6806,8 @@ WebView* RenderFrameImpl::CreateNewWindow(
       << "Session storage namespace must be populated.";
   view_params->hidden = is_background_tab;
   view_params->never_composited = never_composited;
+  view_params->partitioned_popin_params =
+      std::move(reply->partitioned_popin_params);
 
   WebView* web_view = agent_scheduling_group_->CreateWebView(
       std::move(view_params),

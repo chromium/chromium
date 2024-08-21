@@ -31,8 +31,8 @@ async_test(t => {
         break;
       case 'popin-read':
         // Step 8
-        // We want to see the same behavior a cross-site iframe would have, initially only SameSite=None, then first-party strict and lax come back for an inner fetch.
-        assert_equals(e.data.message, "ReadOnLoad:FirstPartyNone-ThirdPartyNone-,ReadOnFetch:FirstPartyStrict-FirstPartyLax-FirstPartyNone-ThirdPartyNone-");
+        // We want to see the same behavior a cross-site iframe would have, only SameSite=None available, with the ability to set additional cookies in the popin.
+        assert_equals(e.data.message, "ReadOnLoad:FirstPartyNone-ThirdPartyNone-,ReadOnFetch:FirstPartyNone-ThirdPartyNone-FirstPartyNonePopin-ThirdPartyNonePopin-,ReadOnDocument:FirstPartyNone-ThirdPartyNone-FirstPartyNonePopin-ThirdPartyNonePopin-");
         t.done();
         break;
     }

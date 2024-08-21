@@ -58,6 +58,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
+#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -507,7 +508,8 @@ WebView* WebView::Create(
     const SessionStorageNamespaceId& session_storage_namespace_id,
     std::optional<SkColor> page_base_background_color,
     const BrowsingContextGroupInfo& browsing_context_group_info,
-    const ColorProviderColorMaps* color_provider_colors) {
+    const ColorProviderColorMaps* color_provider_colors,
+    blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params) {
   return WebViewImpl::Create(
       client,
       is_hidden ? mojom::blink::PageVisibilityState::kHidden
@@ -516,7 +518,7 @@ WebView* WebView::Create(
       widgets_never_composited, To<WebViewImpl>(opener), std::move(page_handle),
       agent_group_scheduler, session_storage_namespace_id,
       std::move(page_base_background_color), browsing_context_group_info,
-      color_provider_colors);
+      color_provider_colors, std::move(partitioned_popin_params));
 }
 
 WebViewImpl* WebViewImpl::Create(
@@ -533,13 +535,15 @@ WebViewImpl* WebViewImpl::Create(
     const SessionStorageNamespaceId& session_storage_namespace_id,
     std::optional<SkColor> page_base_background_color,
     const BrowsingContextGroupInfo& browsing_context_group_info,
-    const ColorProviderColorMaps* color_provider_colors) {
+    const ColorProviderColorMaps* color_provider_colors,
+    blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params) {
   return new WebViewImpl(
       client, visibility, std::move(prerender_param), fenced_frame_mode,
       compositing_enabled, widgets_never_composited, opener,
       std::move(page_handle), agent_group_scheduler,
       session_storage_namespace_id, std::move(page_base_background_color),
-      browsing_context_group_info, color_provider_colors);
+      browsing_context_group_info, color_provider_colors,
+      std::move(partitioned_popin_params));
 }
 
 size_t WebView::GetWebViewCount() {
@@ -603,7 +607,8 @@ WebViewImpl::WebViewImpl(
     const SessionStorageNamespaceId& session_storage_namespace_id,
     std::optional<SkColor> page_base_background_color,
     const BrowsingContextGroupInfo& browsing_context_group_info,
-    const ColorProviderColorMaps* color_provider_colors)
+    const ColorProviderColorMaps* color_provider_colors,
+    blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params)
     : widgets_never_composited_(widgets_never_composited),
       web_view_client_(client),
       chrome_client_(MakeGarbageCollected<ChromeClientImpl>(this)),
@@ -634,7 +639,8 @@ WebViewImpl::WebViewImpl(
   page_ = Page::CreateOrdinary(
       *chrome_client_, opener ? opener->GetPage() : nullptr,
       agent_group_scheduler.GetAgentGroupScheduler(),
-      browsing_context_group_info, color_provider_colors);
+      browsing_context_group_info, color_provider_colors,
+      std::move(partitioned_popin_params));
   CoreInitializer::GetInstance().ProvideModulesToPage(
       *page_, session_storage_namespace_id_);
 

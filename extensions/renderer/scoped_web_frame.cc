@@ -9,6 +9,7 @@
 #include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
+#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/web/web_heap.h"
@@ -34,7 +35,8 @@ ScopedWebFrame::ScopedWebFrame()
           /*session_storage_namespace_id=*/std::string(),
           /*page_base_background_color=*/std::nullopt,
           blink::BrowsingContextGroupInfo::CreateUnique(),
-          /*color_provider_colors=*/nullptr)),
+          /*color_provider_colors=*/nullptr,
+          /*partitioned_popin_params=*/nullptr)),
       frame_(blink::WebLocalFrame::CreateMainFrame(view_,
                                                    &frame_client_,
                                                    nullptr,
