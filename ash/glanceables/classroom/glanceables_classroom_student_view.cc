@@ -399,6 +399,9 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
     }
   }
 
+  // Reset the position of the scroll view after the new data is fetched.
+  content_scroll_view()->ScrollToOffset(gfx::PointF(0, 0));
+
   auto* controller = Shell::Get()->glanceables_controller();
 
   if (initial_update) {

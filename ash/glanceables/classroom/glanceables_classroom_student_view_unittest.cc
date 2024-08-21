@@ -34,6 +34,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -129,6 +130,11 @@ class GlanceablesClassroomStudentViewTest : public AshTestBase {
   Combobox* GetComboBoxView() {
     return views::AsViewClass<Combobox>(view_->GetViewByID(
         base::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox)));
+  }
+
+  views::ScrollView* GetScrollView() const {
+    return views::AsViewClass<views::ScrollView>(view_->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kContentsScrollView)));
   }
 
   const CounterExpandButton* GetCounterExpandButton() const {
@@ -255,6 +261,30 @@ TEST_F(GlanceablesClassroomStudentViewTest, RendersComboBoxView) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
   ASSERT_TRUE(combobox_view->GetSelectedIndex());
   EXPECT_EQ(3u, *combobox_view->GetSelectedIndex());
+}
+
+TEST_F(GlanceablesClassroomStudentViewTest,
+       ScrollViewResetPositionAfterSwitchingLists) {
+  auto* scroll_bar = GetScrollView()->vertical_scroll_bar();
+
+  EXPECT_CALL(classroom_client_, GetStudentAssignmentsWithoutDueDate(_))
+      .WillOnce([](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
+        std::move(cb).Run(/*success=*/true, CreateAssignments(101));
+      });
+  EXPECT_CALL(classroom_client_, GetStudentAssignmentsWithMissedDueDate(_))
+      .WillOnce([](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
+        std::move(cb).Run(/*success=*/true, {CreateAssignments(101)});
+      });
+
+  GetComboBoxView()->SelectMenuItemForTest(1);
+
+  EXPECT_EQ(scroll_bar->GetPosition(), scroll_bar->GetMinPosition());
+  ASSERT_TRUE(scroll_bar->GetVisible());
+  scroll_bar->ScrollByAmount(views::ScrollBar::ScrollAmount::kEnd);
+  EXPECT_GT(scroll_bar->GetPosition(), scroll_bar->GetMinPosition());
+
+  GetComboBoxView()->SelectMenuItemForTest(2);
+  EXPECT_EQ(scroll_bar->GetPosition(), scroll_bar->GetMinPosition());
 }
 
 TEST_F(GlanceablesClassroomStudentViewTest, RecordShowTimeHistogramOnClose) {

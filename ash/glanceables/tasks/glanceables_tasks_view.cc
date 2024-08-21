@@ -561,6 +561,9 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
     }
   }
 
+  // Scroll the scroll view back to the top after the selected list is changed.
+  content_scroll_view()->ScrollToOffset(gfx::PointF(0, 0));
+
   switch (context) {
     case ListShownContext::kCachedList:
       break;

@@ -37,6 +37,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/mouse_constants.h"
 #include "ui/views/view.h"
@@ -86,11 +87,11 @@ class GlanceablesTasksViewTest : public AshTestBase {
   }
 
   // Populates `num` of tasks to the default task list.
-  void PopulateTasks(size_t num) {
+  void PopulateTasks(size_t num, std::string task_list_id = "TaskListID1") {
     for (size_t i = 0; i < num; ++i) {
       auto num_string = base::NumberToString(i);
       fake_glanceables_tasks_client_->AddTask(
-          "TaskListID1", base::StrCat({"title_", num_string}),
+          task_list_id, base::StrCat({"title_", num_string}),
           base::DoNothing());
     }
 
@@ -123,6 +124,11 @@ class GlanceablesTasksViewTest : public AshTestBase {
     return views::AsViewClass<CounterExpandButton>(
         view_->GetViewByID(base::to_underlying(
             GlanceablesViewId::kTimeManagementBubbleExpandButton)));
+  }
+
+  views::ScrollView* GetScrollView() const {
+    return views::AsViewClass<views::ScrollView>(view_->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kContentsScrollView)));
   }
 
   const views::View* GetTaskItemsContainerView() const {
@@ -273,6 +279,20 @@ TEST_F(GlanceablesTasksViewTest, ShowsProgressBarWhileEditingTask) {
 
   histogram_tester.ExpectUniqueSample(
       "Ash.Glanceables.TimeManagement.Tasks.UserAction", 4, 1);
+}
+
+TEST_F(GlanceablesTasksViewTest, ScrollViewResetPositionAfterSwitchingLists) {
+  PopulateTasks(20, "TaskListID1");
+  PopulateTasks(20, "TaskListID2");
+
+  auto* scroll_bar = GetScrollView()->vertical_scroll_bar();
+  EXPECT_EQ(scroll_bar->GetPosition(), scroll_bar->GetMinPosition());
+  ASSERT_TRUE(scroll_bar->GetVisible());
+  scroll_bar->ScrollByAmount(views::ScrollBar::ScrollAmount::kEnd);
+  EXPECT_GT(scroll_bar->GetPosition(), scroll_bar->GetMinPosition());
+
+  GetComboBoxView()->SelectMenuItemForTest(1);
+  EXPECT_EQ(scroll_bar->GetPosition(), scroll_bar->GetMinPosition());
 }
 
 TEST_F(GlanceablesTasksViewTest, OnlyShowsFooterIfAtLeast100Tasks) {
