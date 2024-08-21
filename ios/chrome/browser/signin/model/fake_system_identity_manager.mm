@@ -311,7 +311,11 @@ void FakeSystemIdentityManager::FetchAvatarForIdentity(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Fetching the avatar is an asynchronous operation (as it requires some
   // network calls).
-  DCHECK([storage_ containsIdentityWithGaiaID:identity.gaiaID]);
+  if (![storage_ containsIdentityWithGaiaID:identity.gaiaID]) {
+    // The identity was removed before async method was called. There is
+    // nothing to do.
+    return;
+  }
   PostClosure(
       FROM_HERE,
       base::BindOnce(&FakeSystemIdentityManager::FetchAvatarForIdentityAsync,
@@ -321,7 +325,11 @@ void FakeSystemIdentityManager::FetchAvatarForIdentity(
 UIImage* FakeSystemIdentityManager::GetCachedAvatarForIdentity(
     id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK([storage_ containsIdentityWithGaiaID:identity.gaiaID]);
+  if (![storage_ containsIdentityWithGaiaID:identity.gaiaID]) {
+    // The identity was removed before async method was called. There is
+    // nothing to do.
+    return nil;
+  }
   FakeSystemIdentityDetails* details =
       [storage_ detailsForGaiaID:identity.gaiaID];
   return details.cachedAvatar;

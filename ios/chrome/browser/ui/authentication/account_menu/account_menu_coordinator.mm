@@ -139,7 +139,9 @@
     std::move(_accountDetailsControllerDismissCallback).Run(/*animated=*/false);
   }
   [self stopAccountsCoordinator];
-  [_navigationController dismissViewControllerAnimated:YES completion:nil];
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
   _authenticationService = nil;
   _navigationController.delegate = nil;
   _navigationController = nil;
