@@ -11,6 +11,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -38,6 +39,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
     private final ModuleDelegate mModuleDelegate;
     private final PrefChangeRegistrar mPrefChangeRegistrar;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Callback<String> mShowSurveyCallback;
 
     private boolean mHasBeenDismissed;
 
@@ -50,7 +52,8 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
             @NonNull TabModelSelector tabModelSelector,
             @NonNull ModuleDelegate moduleDelegate,
             @NonNull PrefChangeRegistrar prefChangeRegistrar,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            @NonNull Callback<String> showSurveyCallback) {
         mContext = context;
         mProfile = profile;
         mPrefService = prefService;
@@ -60,6 +63,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModuleDelegate = moduleDelegate;
         mPrefChangeRegistrar = prefChangeRegistrar;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mShowSurveyCallback = showSurveyCallback;
     }
 
     void showModule() {
@@ -84,7 +88,10 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 bindNotificationReviewView(magicStackEntry.getDescription());
                 break;
             case MagicStackEntry.ModuleType.REVOKED_PERMISSIONS:
-                bindSafeStateView(magicStackEntry.getDescription(), null);
+                bindSafeStateView(
+                        magicStackEntry.getDescription(),
+                        /* summary= */ null,
+                        MagicStackEntry.ModuleType.REVOKED_PERMISSIONS);
                 break;
             case MagicStackEntry.ModuleType.SAFE_BROWSING:
                 bindSafeBrowsingView(magicStackEntry.getDescription());
@@ -112,6 +119,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mMagicStackBridge.removeObserver(this);
 
         mPrefChangeRegistrar.removeObserver(Pref.SAFE_BROWSING_ENABLED);
+        mPrefChangeRegistrar.removeObserver(Pref.BREACHED_CREDENTIALS_COUNT);
         mPrefChangeRegistrar.destroy();
     }
 
@@ -154,7 +162,8 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModuleDelegate.removeModule(ModuleType.SAFETY_HUB);
     }
 
-    private void bindSafeStateView(@NonNull String title, @Nullable String summary) {
+    private void bindSafeStateView(
+            @NonNull String title, @Nullable String summary, String moduleType) {
         mModel.set(
                 SafetyHubMagicStackViewProperties.HEADER,
                 mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
@@ -175,6 +184,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
+                    mShowSurveyCallback.onResult(moduleType);
                     SettingsLauncherFactory.createSettingsLauncher()
                             .launchSettingsActivity(mContext, SafetyHubFragment.class);
                     recordExternalInteractions(ExternalInteractions.OPEN_FROM_MAGIC_STACK);
@@ -203,6 +213,8 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
+                    mShowSurveyCallback.onResult(
+                            MagicStackEntry.ModuleType.NOTIFICATION_PERMISSIONS);
                     SettingsLauncherFactory.createSettingsLauncher()
                             .launchSettingsActivity(mContext, SafetyHubFragment.class);
                     recordExternalInteractions(ExternalInteractions.OPEN_FROM_MAGIC_STACK);
@@ -231,6 +243,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
+                    mShowSurveyCallback.onResult(MagicStackEntry.ModuleType.SAFE_BROWSING);
                     SettingsLauncherFactory.createSettingsLauncher()
                             .launchSettingsActivity(mContext, SafeBrowsingSettingsFragment.class);
                     recordExternalInteractions(
@@ -262,6 +275,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
+                    mShowSurveyCallback.onResult(MagicStackEntry.ModuleType.PASSWORDS);
                     SafetyHubUtils.showPasswordCheckUI(
                             mContext, mProfile, mModalDialogManagerSupplier);
                     recordExternalInteractions(ExternalInteractions.OPEN_GPM_FROM_MAGIC_STACK);

@@ -23561,6 +23561,7 @@ from previous Chrome versions.
   <int value="1295669314" label="OmniboxOnClobberFocusTypeOnContent:enabled"/>
   <int value="1295688198" label="ClipboardHistoryRefresh:enabled"/>
   <int value="1295887301" label="ShowNtpAtStartupAndroid:disabled"/>
+  <int value="1296474231" label="SafetyHubAndroidSurvey:disabled"/>
   <int value="1296661698" label="CrOSLateBootMediaDynamicCgroup:disabled"/>
   <int value="1296878388" label="PermissionPredictions:disabled"/>
   <int value="1296958520" label="hide-active-apps-from-shelf"/>
@@ -25252,6 +25253,7 @@ from previous Chrome versions.
   <int value="1985952454"
       label="GetDisplayMediaSetAutoSelectAllScreens:enabled"/>
   <int value="1986031201" label="SwipingFromLeftEdgeToGoBack:disabled"/>
+  <int value="1987354002" label="SafetyHubAndroidSurvey:enabled"/>
   <int value="1987896454" label="EducationalTipModule:enabled"/>
   <int value="1988099368" label="DropInputEventsBeforeFirstPaint:disabled"/>
   <int value="1988389259" label="MediaFoundationClearRendering:disabled"/>

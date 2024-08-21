@@ -3353,6 +3353,11 @@ const char kSafetyHubFollowupDescription[] =
     "Enables some follow up work for Safety Check v2 if, this includes some "
     "enhancements to the passwords module on the Safety Check page and "
     "enabling the password card on magic stack.";
+
+const char kSafetyHubAndroidSurveyName[] =
+    "HaTS for Safety Check v2 on Android";
+const char kSafetyHubAndroidSurveyDescription[] =
+    "Enables control & proactive HaTS surveys for Safety Check v2 on Android.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const char kSafetyHubAbusiveNotificationRevocationName[] =

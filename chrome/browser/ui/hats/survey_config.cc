@@ -8,13 +8,13 @@
 
 #include "base/feature_list.h"
 #include "base/features.h"
+#include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_hats_trigger_helper.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_warning_desktop_hats_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "components/password_manager/core/browser/features/password_features.h"  // nogncheck
 #include "components/performance_manager/public/features.h"         // nogncheck
 #include "components/permissions/constants.h"                       // nogncheck
@@ -124,6 +124,8 @@ constexpr char kHatsSurveyTriggerWallpaperSearch[] = "wallpaper-search";
 #else   // BUILDFLAG(IS_ANDROID)
 constexpr char kHatsSurveyTriggerAndroidStartupSurvey[] = "startup_survey";
 constexpr char kHatsSurveyTriggerQuickDelete[] = "quick_delete_survey";
+constexpr char kHatsSurveyTriggerSafetyHubAndroid[] =
+    "safety_hub_android_survey";
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
 constexpr char kHatsSurveyTriggerTesting[] = "testing";
@@ -550,6 +552,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerQuickDelete,
       chrome::android::kQuickDeleteAndroidSurveyTriggerId.Get());
 
+  survey_configs.emplace_back(
+      &features::kSafetyHubAndroidSurvey, kHatsSurveyTriggerSafetyHubAndroid,
+      features::kSafetyHubAndroidTriggerId.Get(),
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      std::vector<std::string>{"Notification module type"});
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
   return survey_configs;

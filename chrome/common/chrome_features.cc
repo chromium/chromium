@@ -1135,6 +1135,16 @@ BASE_FEATURE(kSafetyHubMagicStack,
 BASE_FEATURE(kSafetyHubFollowup,
              "SafetyHubFollowup",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Safety Hub HaTS survey on Android.
+BASE_FEATURE(kSafetyHubAndroidSurvey,
+             "SafetyHubAndroidSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<std::string> kSafetyHubAndroidTriggerId(
+    &kSafetyHubAndroidSurvey,
+    "trigger_id",
+    /*default_value=*/"");
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Enables or disables the Trust Safety Sentiment Survey for Safety Hub.
