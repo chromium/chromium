@@ -1251,11 +1251,12 @@ bool ValidateLeakyRelu(const ContextProperties& context_properties,
   return true;
 }
 
-bool ValidateLinear(const IdToOperandMap& id_to_operand_map,
+bool ValidateLinear(const ContextProperties& context_properties,
+                    const IdToOperandMap& id_to_operand_map,
                     const mojom::Linear& linear,
                     base::flat_set<uint64_t>& processed_operands) {
   if (!ValidateUnaryOperation(id_to_operand_map, linear,
-                              DataTypeConstraint::kFloat16To32,
+                              context_properties.data_type_limits.linear_input,
                               processed_operands)) {
     return false;
   }
@@ -1610,7 +1611,8 @@ bool ValidatePrelu(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateResample2d(const IdToOperandMap& id_to_operand_map,
+bool ValidateResample2d(const ContextProperties& context_properties,
+                        const IdToOperandMap& id_to_operand_map,
                         const mojom::Resample2d& resample2d,
                         base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(resample2d.input_operand_id)) {
@@ -1644,8 +1646,9 @@ bool ValidateResample2d(const IdToOperandMap& id_to_operand_map,
     scales_or_sizes = sizes;
   }
 
-  auto validated_output = ValidateResample2dAndInferOutput(
-      input->descriptor, scales_or_sizes, axes, resample2d.label);
+  auto validated_output =
+      ValidateResample2dAndInferOutput(context_properties, input->descriptor,
+                                       scales_or_sizes, axes, resample2d.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1656,7 +1659,8 @@ bool ValidateResample2d(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateReshape(const IdToOperandMap& id_to_operand_map,
+bool ValidateReshape(const ContextProperties& context_properties,
+                     const IdToOperandMap& id_to_operand_map,
                      const mojom::Reshape& reshape,
                      base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(reshape.input_operand_id)) {
@@ -1668,6 +1672,10 @@ bool ValidateReshape(const IdToOperandMap& id_to_operand_map,
   auto* output = GetMojoOperand(id_to_operand_map, reshape.output_operand_id);
   if (!input || !output || output == input) {
     // The reshape operator is invalid.
+    return false;
+  }
+  if (!context_properties.data_type_limits.reshape_input.Has(
+          input->descriptor.data_type())) {
     return false;
   }
   if (output->descriptor.data_type() != input->descriptor.data_type()) {
@@ -1790,7 +1798,8 @@ bool ValidateSplit(const ContextProperties& context_properties,
   return true;
 }
 
-bool ValidateTranspose(const IdToOperandMap& id_to_operand_map,
+bool ValidateTranspose(const ContextProperties& context_properties,
+                       const IdToOperandMap& id_to_operand_map,
                        const mojom::Transpose& transpose,
                        base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(transpose.input_operand_id)) {
@@ -1805,8 +1814,9 @@ bool ValidateTranspose(const IdToOperandMap& id_to_operand_map,
     return false;
   }
 
-  auto validated_output = ValidateTransposeAndInferOutput(
-      input->descriptor, transpose.permutation, transpose.label);
+  auto validated_output =
+      ValidateTransposeAndInferOutput(context_properties, input->descriptor,
+                                      transpose.permutation, transpose.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1817,7 +1827,8 @@ bool ValidateTranspose(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateTriangular(const IdToOperandMap& id_to_operand_map,
+bool ValidateTriangular(const ContextProperties& context_properties,
+                        const IdToOperandMap& id_to_operand_map,
                         const mojom::Triangular& triangular,
                         base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(triangular.input_operand_id)) {
@@ -1834,7 +1845,8 @@ bool ValidateTriangular(const IdToOperandMap& id_to_operand_map,
   }
 
   base::expected<OperandDescriptor, std::string> validated_output =
-      ValidateTriangularAndInferOutput(input->descriptor, triangular.label);
+      ValidateTriangularAndInferOutput(context_properties, input->descriptor,
+                                       triangular.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1882,7 +1894,8 @@ bool ValidateWhere(const ContextProperties& context_properties,
   return true;
 }
 
-bool ValidateReduce(const IdToOperandMap& id_to_operand_map,
+bool ValidateReduce(const ContextProperties& context_properties,
+                    const IdToOperandMap& id_to_operand_map,
                     const mojom::Reduce& reduce,
                     base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(reduce.input_operand_id)) {
@@ -1898,8 +1911,8 @@ bool ValidateReduce(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output = ValidateReduceAndInferOutput(
-      MojoReduceTypeToComponent(reduce.kind), input->descriptor, reduce.label,
-      reduce.axes, reduce.keep_dimensions);
+      context_properties, MojoReduceTypeToComponent(reduce.kind),
+      input->descriptor, reduce.label, reduce.axes, reduce.keep_dimensions);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1981,8 +1994,8 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidateLeakyRelu(context_properties, id_to_operand_map,
                                *operation.get_leaky_relu(), processed_operands);
     case mojom::Operation::Tag::kLinear:
-      return ValidateLinear(id_to_operand_map, *operation.get_linear(),
-                            processed_operands);
+      return ValidateLinear(context_properties, id_to_operand_map,
+                            *operation.get_linear(), processed_operands);
     case mojom::Operation::Tag::kLstm:
       return ValidateLstm(id_to_operand_map, *operation.get_lstm(),
                           processed_operands);
@@ -2002,14 +2015,15 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidatePrelu(id_to_operand_map, *operation.get_prelu(),
                            processed_operands);
     case mojom::Operation::Tag::kReduce:
-      return ValidateReduce(id_to_operand_map, *operation.get_reduce(),
-                            processed_operands);
+      return ValidateReduce(context_properties, id_to_operand_map,
+                            *operation.get_reduce(), processed_operands);
     case mojom::Operation::Tag::kResample2d:
-      return ValidateResample2d(id_to_operand_map, *operation.get_resample2d(),
+      return ValidateResample2d(context_properties, id_to_operand_map,
+                                *operation.get_resample2d(),
                                 processed_operands);
     case mojom::Operation::Tag::kReshape:
-      return ValidateReshape(id_to_operand_map, *operation.get_reshape(),
-                             processed_operands);
+      return ValidateReshape(context_properties, id_to_operand_map,
+                             *operation.get_reshape(), processed_operands);
     case mojom::Operation::Tag::kRelu:
       return ValidateUnaryOperation(
           id_to_operand_map, *operation.get_relu(),
@@ -2039,14 +2053,15 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidateSplit(context_properties, id_to_operand_map,
                            *operation.get_split(), processed_operands);
     case mojom::Operation::Tag::kTanh:
-      return ValidateUnaryOperation(id_to_operand_map, *operation.get_tanh(),
-                                    DataTypeConstraint::kFloat16To32,
-                                    processed_operands);
+      return ValidateUnaryOperation(
+          id_to_operand_map, *operation.get_tanh(),
+          context_properties.data_type_limits.tanh_input, processed_operands);
     case mojom::Operation::Tag::kTranspose:
-      return ValidateTranspose(id_to_operand_map, *operation.get_transpose(),
-                               processed_operands);
+      return ValidateTranspose(context_properties, id_to_operand_map,
+                               *operation.get_transpose(), processed_operands);
     case mojom::Operation::Tag::kTriangular:
-      return ValidateTriangular(id_to_operand_map, *operation.get_triangular(),
+      return ValidateTriangular(context_properties, id_to_operand_map,
+                                *operation.get_triangular(),
                                 processed_operands);
     case mojom::Operation::Tag::kWhere:
       return ValidateWhere(context_properties, id_to_operand_map,

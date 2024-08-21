@@ -293,9 +293,8 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForSoftmax(
       const mojom::Softmax& operation,
       CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForTranspose(
-      const mojom::Transpose& operation,
-      CoreML::Specification::MILSpec::Block& block);
+  void AddOperationForTranspose(const mojom::Transpose& operation,
+                                CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForWhere(
       const mojom::Where& operation,
       CoreML::Specification::MILSpec::Block& block);

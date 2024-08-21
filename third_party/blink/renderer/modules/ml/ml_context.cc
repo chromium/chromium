@@ -416,12 +416,100 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       SupportedDataTypesToSupportLimits(data_type_limits.leaky_relu_input));
   op_support_limits->setLeakyRelu(leaky_relu);
 
+  MLSingleInputSupportLimits* linear = MLSingleInputSupportLimits::Create();
+  linear->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.linear_input));
+  linear->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.linear_input));
+  op_support_limits->setLinear(linear);
+
+  // Reduction ops.
+  MLSingleInputSupportLimits* reduce_l1 = MLSingleInputSupportLimits::Create();
+  reduce_l1->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_l1_input));
+  reduce_l1->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_l1_input));
+  op_support_limits->setReduceL1(reduce_l1);
+  MLSingleInputSupportLimits* reduce_l2 = MLSingleInputSupportLimits::Create();
+  reduce_l2->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_l2_input));
+  reduce_l2->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_l2_input));
+  op_support_limits->setReduceL2(reduce_l2);
+  MLSingleInputSupportLimits* reduce_log_sum =
+      MLSingleInputSupportLimits::Create();
+  reduce_log_sum->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_log_sum_input));
+  reduce_log_sum->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_log_sum_input));
+  op_support_limits->setReduceLogSum(reduce_log_sum);
+  MLSingleInputSupportLimits* reduce_log_sum_exp =
+      MLSingleInputSupportLimits::Create();
+  reduce_log_sum_exp->setInput(SupportedDataTypesToSupportLimits(
+      data_type_limits.reduce_log_sum_exp_input));
+  reduce_log_sum_exp->setOutput(SupportedDataTypesToSupportLimits(
+      data_type_limits.reduce_log_sum_exp_input));
+  op_support_limits->setReduceLogSumExp(reduce_log_sum_exp);
+  MLSingleInputSupportLimits* reduce_max = MLSingleInputSupportLimits::Create();
+  reduce_max->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_max_input));
+  reduce_max->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_max_input));
+  op_support_limits->setReduceMax(reduce_max);
+  MLSingleInputSupportLimits* reduce_mean =
+      MLSingleInputSupportLimits::Create();
+  reduce_mean->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_mean_input));
+  reduce_mean->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_mean_input));
+  op_support_limits->setReduceMean(reduce_mean);
+  MLSingleInputSupportLimits* reduce_min = MLSingleInputSupportLimits::Create();
+  reduce_min->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_min_input));
+  reduce_min->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_min_input));
+  op_support_limits->setReduceMin(reduce_min);
+  MLSingleInputSupportLimits* reduce_product =
+      MLSingleInputSupportLimits::Create();
+  reduce_product->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_product_input));
+  reduce_product->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_product_input));
+  op_support_limits->setReduceProduct(reduce_product);
+  MLSingleInputSupportLimits* reduce_sum = MLSingleInputSupportLimits::Create();
+  reduce_sum->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_sum_input));
+  reduce_sum->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reduce_sum_input));
+  op_support_limits->setReduceSum(reduce_sum);
+  MLSingleInputSupportLimits* reduce_sum_square =
+      MLSingleInputSupportLimits::Create();
+  reduce_sum_square->setInput(SupportedDataTypesToSupportLimits(
+      data_type_limits.reduce_sum_square_input));
+  reduce_sum_square->setOutput(SupportedDataTypesToSupportLimits(
+      data_type_limits.reduce_sum_square_input));
+  op_support_limits->setReduceSumSquare(reduce_sum_square);
+
   MLSingleInputSupportLimits* relu = MLSingleInputSupportLimits::Create();
   relu->setInput(
       SupportedDataTypesToSupportLimits(data_type_limits.relu_input));
   relu->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.relu_input));
   op_support_limits->setRelu(relu);
+
+  MLSingleInputSupportLimits* resample2d = MLSingleInputSupportLimits::Create();
+  resample2d->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.resample2d_input));
+  resample2d->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.resample2d_input));
+  op_support_limits->setResample2d(resample2d);
+
+  MLSingleInputSupportLimits* reshape = MLSingleInputSupportLimits::Create();
+  reshape->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reshape_input));
+  reshape->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reshape_input));
+  op_support_limits->setReshape(reshape);
 
   MLSingleInputSupportLimits* sigmoid = MLSingleInputSupportLimits::Create();
   sigmoid->setInput(
@@ -464,6 +552,27 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   split->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.split_input));
   op_support_limits->setSplit(split);
+
+  MLSingleInputSupportLimits* tanh = MLSingleInputSupportLimits::Create();
+  tanh->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.tanh_input));
+  tanh->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.tanh_input));
+  op_support_limits->setTanh(tanh);
+
+  MLSingleInputSupportLimits* transpose = MLSingleInputSupportLimits::Create();
+  transpose->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.transpose_input));
+  transpose->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.transpose_input));
+  op_support_limits->setTranspose(transpose);
+
+  MLSingleInputSupportLimits* triangular = MLSingleInputSupportLimits::Create();
+  triangular->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.triangular_input));
+  triangular->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.triangular_input));
+  op_support_limits->setTriangular(triangular);
 
   MLWhereSupportLimits* where = MLWhereSupportLimits::Create();
   where->setCondition(

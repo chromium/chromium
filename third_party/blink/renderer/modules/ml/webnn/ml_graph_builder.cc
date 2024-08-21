@@ -670,6 +670,7 @@ MLOperand* BuildElementWiseUnaryOperator(
 
 MLOperand* BuildReduce(MLGraphBuilder* builder,
                        webnn::mojom::blink::Reduce::Kind kind,
+                       const webnn::ContextProperties& context_properties,
                        const MLOperand* input,
                        const MLReduceOptions* options,
                        ExceptionState& exception_state) {
@@ -677,8 +678,9 @@ MLOperand* BuildReduce(MLGraphBuilder* builder,
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
       webnn::ValidateReduceAndInferOutput(
-          MojoReduceKindToComponent(kind), input->Descriptor(),
-          options->label().Utf8(), axes, options->keepDimensions()));
+          context_properties, MojoReduceKindToComponent(kind),
+          input->Descriptor(), options->label().Utf8(), axes,
+          options->keepDimensions()));
 
   auto* reduce = MakeGarbageCollected<MLOperator>(
       builder, /*kind=*/webnn::mojom::blink::Operation::Tag::kReduce, options,
@@ -1294,7 +1296,8 @@ MLOperand* MLGraphBuilder::cast(const MLOperand* input,
     THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);     \
     THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);       \
     return BuildReduce(this, webnn::mojom::blink::Reduce::Kind::op_kind, \
-                       input, options, exception_state);                 \
+                       ml_context_->GetProperties(), input, options,     \
+                       exception_state);                                 \
   }
 
 BUILD_REDUCE_OP(reduceL1, kL1)
@@ -1648,7 +1651,8 @@ MLOperand* MLGraphBuilder::linear(const MLOperand* input,
   // of linear has the same type and dimensions as its input.
   return BuildUnaryOperator(
       this, exception_state, webnn::mojom::blink::Operation::Tag::kLinear,
-      webnn::DataTypeConstraint::kFloat16To32, input, options);
+      ml_context_->GetProperties().data_type_limits.linear_input, input,
+      options);
 }
 
 HeapVector<Member<const MLOperand>> MLGraphBuilder::lstm(
@@ -1928,11 +1932,22 @@ MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
+  const std::string label = options->label().Utf8();
+
+  if (!ml_context_->GetProperties().data_type_limits.reshape_input.Has(
+          input->DataType())) {
+    exception_state.ThrowTypeError(
+        String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
+        String(NotSupportedInputArgumentTypeError(
+            input->DataType(),
+            ml_context_->GetProperties().data_type_limits.reshape_input)));
+    return nullptr;
+  }
+
   // Setting the initial number of elements to 1 would cover the 0-D scalar with
   // empty dimensions.
   base::CheckedNumeric<size_t> checked_newshape_number_of_elements = 1;
   Vector<uint32_t> output_shape(new_shape.size());
-  const std::string label = options->label().Utf8();
   for (wtf_size_t i = 0; i < new_shape.size(); ++i) {
     auto dim = new_shape[i];
     if (dim == 0) {
@@ -2005,8 +2020,8 @@ MLOperand* MLGraphBuilder::resample2d(ScriptState* script_state,
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
       webnn::ValidateResample2dAndInferOutput(
-          input->Descriptor(), scales_or_sizes, options->getAxesOr({2, 3}),
-          label));
+          ml_context_->GetProperties(), input->Descriptor(), scales_or_sizes,
+          options->getAxesOr({2, 3}), label));
 
   // Create resample2d operator and its output operand. Connect the resample2d
   // operator to its input and output operands.
@@ -2201,7 +2216,7 @@ MLOperand* MLGraphBuilder::tanh(const MLOperand* input,
   // tanh has the same data type and dimensions as its input.
   return BuildUnaryOperator(
       this, exception_state, webnn::mojom::blink::Operation::Tag::kTanh,
-      webnn::DataTypeConstraint::kFloat16To32, input, options);
+      ml_context_->GetProperties().data_type_limits.tanh_input, input, options);
 }
 
 MLOperand* MLGraphBuilder::transpose(const MLOperand* input,
@@ -2218,7 +2233,8 @@ MLOperand* MLGraphBuilder::transpose(const MLOperand* input,
       options->getPermutationOr(CreateDefaultPermutation(input->Rank()));
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::ValidateTransposeAndInferOutput(input->Descriptor(), permutation,
+      webnn::ValidateTransposeAndInferOutput(ml_context_->GetProperties(),
+                                             input->Descriptor(), permutation,
                                              options->label().Utf8()));
 
   auto* transpose = MakeGarbageCollected<MLOperator>(
@@ -2241,7 +2257,8 @@ MLOperand* MLGraphBuilder::triangular(const MLOperand* input,
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::ValidateTriangularAndInferOutput(input->Descriptor(),
+      webnn::ValidateTriangularAndInferOutput(ml_context_->GetProperties(),
+                                              input->Descriptor(),
                                               options->label().Utf8()));
 
   auto* triangular = MakeGarbageCollected<MLOperator>(

@@ -65,14 +65,6 @@ struct TensorTypeMap<int64_t> {
 static constexpr auto kFloatDataTypes = base::MakeFixedFlatSet<OperandDataType>(
     {OperandDataType::kFloat16, OperandDataType::kFloat32});
 
-static constexpr auto k32BitIntegerDataTypes =
-    base::MakeFixedFlatSet<OperandDataType>(
-        {OperandDataType::kInt32, OperandDataType::kUint32});
-
-static constexpr auto k64BitIntegerDataTypes =
-    base::MakeFixedFlatSet<OperandDataType>(
-        {OperandDataType::kInt64, OperandDataType::kUint64});
-
 // Useful for converting dimension arrays coming from mojo as uint32 to the
 // int32 vectors used by TFLite.
 base::expected<std::vector<int32_t>, std::string> ToSignedDimensions(
@@ -314,7 +306,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
   static constexpr SupportedDataTypes kFloat32AndInt32To64{
       OperandDataType::kFloat32, OperandDataType::kInt32,
       OperandDataType::kInt64};
-  static constexpr SupportedDataTypes kFloat32AndInts32AndInt64{
+  static constexpr SupportedDataTypes kFloat32AndInt32To64AndUint32{
       OperandDataType::kFloat32, OperandDataType::kInt32,
       OperandDataType::kUint32, OperandDataType::kInt64};
   static constexpr SupportedDataTypes kFloat32AndInt32{
@@ -338,6 +330,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
       OperandDataType::kFloat32, OperandDataType::kInt64,
       OperandDataType::kInt32,   OperandDataType::kUint32,
       OperandDataType::kInt8,    OperandDataType::kUint8};
+
   return ContextProperties(
       InputOperandLayout::kNhwc,
       {/*input=*/SupportedDataTypes::All(),
@@ -347,7 +340,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*concat_inputs=*/SupportedDataTypes::All(),
        /*add_input=*/kFloat32AndInt32To64,
        /*sub_input=*/kFloat32AndInt32To64,
-       /*mul_input=*/kFloat32AndInts32AndInt64,
+       /*mul_input=*/kFloat32AndInt32To64AndUint32,
        /*div_input=*/kFloat32AndInt32,
        /*max_input=*/kFloat32AndInt32To64,
        /*min_input=*/kFloat32AndInt32To64,
@@ -378,13 +371,35 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*gather_indices=*/DataTypeConstraint::kGatherIndicesSupportedDataTypes,
        /*gelu_input=*/kFloat32,
        /*leaky_relu_input=*/kFloat32,
+       // Linear is emulated by mul and add.
+       /*linear_input=*/kFloat32AndInt32To64,
+       // ReduceL1 is emulated by abs and reduceSum.
+       /*reduce_l1_input=*/kFloat32AndInt32,
+       // ReduceL2 is emulated by pow and reduceSumSquare.
+       /*reduce_l2_input=*/kFloat32,
+       // ReduceLogSum is emulated by reduceSum and log.
+       /*reduce_log_sum_input=*/kFloat32,
+       // ReduceLogSumExp is emulated by reduceSum and exp.
+       /*reduce_log_sum_exp_input=*/kFloat32,
+       /*reduce_max_input=*/kFloat32AndInt32To64,
+       /*reduce_mean_input=*/kFloat32AndInt32To64AndUint8,
+       /*reduce_min_input=*/kFloat32AndInt32To64,
+       /*reduce_product_input=*/kFloat32AndInt32To64,
+       /*reduce_sum_input=*/kFloat32AndInt32To64,
+       // ReduceLogSum is emulated by reduceSum and pow.
+       /*reduce_sum_square_input=*/kFloat32,
        /*relu_input=*/kFloat32,
+       /*resample2d_input=*/kFloat32,
+       /*reshape_input=*/SupportedDataTypes::All(),
        /*sigmoid_input=*/kFloat32,
        /*slice_input=*/kSliceSupportedDataTypes,
        /*softmax_input=*/kFloat32,
        /*softplus_input=*/kFloat32,
        /*softsign_input=*/kFloat32,
        /*split_input=*/kFloat32AndInt8To64AndUint8,
+       /*tanh_input=*/kFloat32,
+       /*transpose_input=*/kFloat32AndInt8To64AndUint8,
+       /*triangular_input=*/kFloat32AndInt32To64AndUint32,
        /*where_condition=*/DataTypeConstraint::kUint8,
        /*where_value=*/kFloat32AndInt8To64AndUint32});
 }
@@ -3068,6 +3083,9 @@ auto GraphBuilderTflite::SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu)
 auto GraphBuilderTflite::SerializeLinear(const mojom::Linear& linear)
     -> OperatorOffset {
   const auto& input_operand = GetOperand(linear.input_operand_id);
+  CHECK(context_properties_.data_type_limits.linear_input.Has(
+      input_operand.descriptor.data_type()));
+
   // The input shape has been validated to not overflow before creating tensor.
   const auto signed_input_dimensions =
       ToSignedDimensions(input_operand.descriptor.shape());
@@ -3441,9 +3459,6 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
   // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
   // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
   const mojom::Operand& input_operand = GetOperand(reduce.input_operand_id);
-  if (input_operand.descriptor.data_type() == OperandDataType::kFloat16) {
-    return base::unexpected("The 16-bit float data type isn't supported.");
-  }
 
   // Serialize the axes tensor to reduce input tensor.
   ASSIGN_OR_RETURN(const std::vector<int32_t> signed_axes,
@@ -3458,35 +3473,33 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
       OperandDataTypeToTFLite(input_operand.descriptor.data_type());
   int32_t input_tensor_index =
       operand_to_index_map_.at(reduce.input_operand_id);
+
+  const DataTypeLimits& data_type_limits = context_properties_.data_type_limits;
+  const OperandDataType input_data_type = input_operand.descriptor.data_type();
+
   switch (reduce.kind) {
     case mojom::Reduce::Kind::kMax:
+      CHECK(data_type_limits.reduce_max_input.Has(input_data_type));
       operator_code = ::tflite::BuiltinOperator_REDUCE_MAX;
       break;
     case mojom::Reduce::Kind::kMean:
-      CHECK(kFloatDataTypes.contains(input_operand.descriptor.data_type()));
+      CHECK(data_type_limits.reduce_mean_input.Has(input_data_type));
       operator_code = ::tflite::BuiltinOperator_MEAN;
       break;
     case mojom::Reduce::Kind::kMin:
+      CHECK(data_type_limits.reduce_min_input.Has(input_data_type));
       operator_code = ::tflite::BuiltinOperator_REDUCE_MIN;
       break;
     case mojom::Reduce::Kind::kProduct:
-      CHECK(kFloatDataTypes.contains(input_operand.descriptor.data_type()) ||
-            k32BitIntegerDataTypes.contains(
-                input_operand.descriptor.data_type()) ||
-            k64BitIntegerDataTypes.contains(
-                input_operand.descriptor.data_type()));
+      CHECK(data_type_limits.reduce_product_input.Has(input_data_type));
       operator_code = ::tflite::BuiltinOperator_REDUCE_PROD;
       break;
     case mojom::Reduce::Kind::kSum:
-      CHECK(kFloatDataTypes.contains(input_operand.descriptor.data_type()) ||
-            k32BitIntegerDataTypes.contains(
-                input_operand.descriptor.data_type()) ||
-            k64BitIntegerDataTypes.contains(
-                input_operand.descriptor.data_type()));
+      CHECK(data_type_limits.reduce_sum_input.Has(input_data_type));
       operator_code = ::tflite::BuiltinOperator_SUM;
       break;
     case mojom::Reduce::Kind::kLogSum:
-      CHECK(kFloatDataTypes.contains(input_operand.descriptor.data_type()));
+      CHECK(data_type_limits.reduce_log_sum_input.Has(input_data_type));
       // The reduceLogSum can be emulated with appending log operation after
       // reduceSum.
       operator_code = ::tflite::BuiltinOperator_SUM;
@@ -3494,7 +3507,7 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
     case mojom::Reduce::Kind::kLogSumExp: {
       // The reduceLogSumExp can be emulated with adding exp operation before
       // reduceSum and appending log operation after the reduceSum.
-      CHECK(kFloatDataTypes.contains(input_operand.descriptor.data_type()));
+      CHECK(data_type_limits.reduce_log_sum_exp_input.Has(input_data_type));
       const int32_t output_tensor_index_of_exp =
           SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
       operators_.emplace_back(SerializeUnaryOperation(
@@ -3506,7 +3519,7 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
       break;
     }
     case mojom::Reduce::Kind::kL2: {
-      CHECK(kFloatDataTypes.contains(input_operand.descriptor.data_type()));
+      CHECK(data_type_limits.reduce_l2_input.Has(input_data_type));
       // The reduceL2 can be emulated with appending pow(x, 0.5) operation after
       // reduceSumSquare.
       const int32_t output_tensor_index_of_sum =
@@ -3515,7 +3528,6 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
           OperatorOffset operator_offset,
           SerializeReduceSumSquare(reduce, output_tensor_index_of_sum));
       operators_.emplace_back(operator_offset);
-      CHECK_EQ(input_operand.descriptor.data_type(), OperandDataType::kFloat32);
       const int32_t pow_constant_tensor_index =
           SerializeTensorWithBuffer<float>(
               /*buffer=*/std::array<float, 1>{0.5},
@@ -3528,26 +3540,12 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
     case mojom::Reduce::Kind::kSumSquare: {
       // The reduceSumSquare can be emulated with adding pow operation before
       // reduceSum.
-      CHECK(kFloatDataTypes.contains(input_operand.descriptor.data_type()) ||
-            k32BitIntegerDataTypes.contains(
-                input_operand.descriptor.data_type()) ||
-            k64BitIntegerDataTypes.contains(
-                input_operand.descriptor.data_type()));
+      CHECK(data_type_limits.reduce_sum_square_input.Has(input_data_type));
       return SerializeReduceSumSquare(
           reduce, operand_to_index_map_.at(reduce.output_operand_id));
     }
     case mojom::Reduce::Kind::kL1: {
-      CHECK(kFloatDataTypes.contains(input_operand.descriptor.data_type()) ||
-            k32BitIntegerDataTypes.contains(
-                input_operand.descriptor.data_type()) ||
-            k64BitIntegerDataTypes.contains(
-                input_operand.descriptor.data_type()));
-      if (input_operand.descriptor.data_type() == OperandDataType::kUint32 ||
-          input_operand.descriptor.data_type() == OperandDataType::kUint64) {
-        return base::unexpected(base::StrCat(
-            {DataTypeToString(input_operand.descriptor.data_type()),
-             " is not supported."}));
-      }
+      CHECK(data_type_limits.reduce_l1_input.Has(input_data_type));
       // The reduceL1 can be emulated with adding abs operation before
       // reduceSum.
       const int32_t output_tensor_index_of_abs =
@@ -3641,7 +3639,9 @@ auto GraphBuilderTflite::SerializeResample2d(
   // TODO: crbug.com/329543543 - `resample2d.scales` is dropped on the floor.
 
   const mojom::Operand& input_operand = GetOperand(resample2d.input_operand_id);
-  CHECK(kFloatDataTypes.contains(input_operand.descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.resample2d_input.Has(
+      input_operand.descriptor.data_type()));
+
   const std::array<uint32_t, 2> supported_axes = {1, 2};
   if (!base::ranges::equal(resample2d.axes, supported_axes)) {
     // TODO: crbug.com/329658123: Support axes of {0, 1} and {2, 3}.
@@ -3972,6 +3972,9 @@ auto GraphBuilderTflite::SerializeTan(const mojom::ElementWiseUnary& tan)
 
 auto GraphBuilderTflite::SerializeTanh(const mojom::Tanh& tanh)
     -> OperatorOffset {
+  CHECK(context_properties_.data_type_limits.tanh_input.Has(
+      GetOperand(tanh.input_operand_id).descriptor.data_type()));
+
   return SerializeUnaryOperation(
       ::tflite::BuiltinOperator_TANH,
       operand_to_index_map_.at(tanh.input_operand_id),
@@ -3982,6 +3985,9 @@ auto GraphBuilderTflite::SerializeTriangular(
     const mojom::Triangular& triangular)
     -> base::expected<OperatorOffset, std::string> {
   const mojom::Operand& input_operand = GetOperand(triangular.input_operand_id);
+  OperandDataType data_type = input_operand.descriptor.data_type();
+  CHECK(context_properties_.data_type_limits.triangular_input.Has(data_type));
+
   // The input shape has been validated to not overflow before creating tensor.
   const auto signed_input_dimensions =
       ToSignedDimensions(input_operand.descriptor.shape());
@@ -4004,7 +4010,6 @@ auto GraphBuilderTflite::SerializeTriangular(
   //
   // TODO(crbug.com/359729258): Save GPU memory consumption.
   int32_t mask_tensor_index;
-  OperandDataType data_type = input_operand.descriptor.data_type();
   switch (data_type) {
     case OperandDataType::kFloat32:
       mask_tensor_index = SerializeTensorWithBuffer<float>(
@@ -4034,10 +4039,7 @@ auto GraphBuilderTflite::SerializeTriangular(
     case OperandDataType::kUint8:
     case OperandDataType::kFloat16:
     case OperandDataType::kUint64:
-      // TODO(crbug.com/359758892): Add the unsupported data types in
-      // opSupportLimits.
-      return base::unexpected(base::StrCat(
-          {DataTypeToString(data_type), " is not supported for triangular."}));
+      NOTREACHED() << "This data type is not supported by triangular.";
   }
 
   return SerializeBinaryOperation(
@@ -4048,6 +4050,9 @@ auto GraphBuilderTflite::SerializeTriangular(
 
 auto GraphBuilderTflite::SerializeTranspose(const mojom::Transpose& transpose)
     -> OperatorOffset {
+  CHECK(context_properties_.data_type_limits.transpose_input.Has(
+      GetOperand(transpose.input_operand_id).descriptor.data_type()));
+
   return SerializeTransposeOperation(
       operand_to_index_map_.at(transpose.input_operand_id),
       operand_to_index_map_.at(transpose.output_operand_id),

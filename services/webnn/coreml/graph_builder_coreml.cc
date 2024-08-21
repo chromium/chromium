@@ -213,16 +213,6 @@ static constexpr auto kFloatsAndInt32DataTypes =
          CoreML::Specification::MILSpec::DataType::FLOAT32,
          CoreML::Specification::MILSpec::DataType::INT32});
 
-static constexpr auto k32BitIntegerDataTypes =
-    base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
-        {CoreML::Specification::MILSpec::DataType::INT32,
-         CoreML::Specification::MILSpec::DataType::UINT32});
-
-static constexpr auto k64BitIntegerDataTypes =
-    base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
-        {CoreML::Specification::MILSpec::DataType::INT64,
-         CoreML::Specification::MILSpec::DataType::UINT64});
-
 // Maps to types defined in
 // https://github.com/apple/coremltools/blob/b416f36054af9ca9d10b2d74ba215d0454677ca0/mlmodel/src/MILBlob/Blob/BlobDataType.hpp#L14
 enum class BlobDataType : uint32_t {
@@ -681,7 +671,25 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        kGatherIndicesSupportedDataTypes,
        /*gelu_input=*/DataTypeConstraint::kFloat16To32,
        /*leaky_relu_input=*/DataTypeConstraint::kFloat16To32,
+       // TODO: crbug.com/338667172 - Consider enhancing the data type support
+       // to include int32.
+       /*linear_input=*/DataTypeConstraint::kFloat16To32,
+       /*reduce_l1_input=*/kFloatsAndInt32,
+       /*reduce_l2_input=*/kFloatsAndInt32,
+       /*reduce_log_sum_input=*/kFloatsAndInt32,
+       /*reduce_log_sum_exp_input=*/kFloatsAndInt32,
+       /*reduce_max_input=*/kFloatsAndInt32,
+       /*reduce_mean_input=*/kFloatsAndInt32,
+       /*reduce_min_input=*/kFloatsAndInt32,
+       /*reduce_product_input=*/kFloatsAndInt32,
+       /*reduce_sum_input=*/kFloatsAndInt32,
+       /*reduce_sum_square_input=*/kFloatsAndInt32,
        /*relu_input=*/DataTypeConstraint::kFloat16To32,
+       /*resample2d_input=*/DataTypeConstraint::kFloat16To32,
+       // Note that BOOL is also supported by CoreML, but WebNN does not have a
+       // corresponding BOOL type. See docs here:
+       // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_transformation.reshape
+       /*reshape_input=*/kFloatsAndInt32,
        /*sigmoid_input=*/DataTypeConstraint::kFloat16To32,
        // Note that BOOL, INT16, and UINT16 is also supported by CoreML, but
        // WebNN does not have corresponding types. See docs here:
@@ -694,6 +702,13 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // corresponding BOOL type. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.split
        /*split_input=*/kFloatsAndInt32,
+       /*tanh_input=*/DataTypeConstraint::kFloat16To32,
+       // Note that BOOL is also supported by CoreML, but WebNN does not have a
+       // corresponding BOOL type. See docs here:
+       // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.transpose
+       /*transpose_input=*/kFloatsAndInt32,
+       // Triangular is not implemented.
+       /*triangular_input=*/{},
        /*where_condition=*/DataTypeConstraint::kUint8,
        // Note that BOOL is also supported by CoreML, but WebNN does not have a
        // corresponding BOOL type. See docs here:
@@ -920,14 +935,15 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         break;
       }
       case mojom::Operation::Tag::kTanh: {
-        RETURN_IF_ERROR(
-            AddUnaryOperation(SupportedDataType::kFloats, kOpTanhTypeName,
-                              *operation->get_tanh(), block, operand_op_name));
+        CHECK(context_properties_.data_type_limits.tanh_input.Has(
+            MILDataTypeToOperandType(
+                GetOperandInfo(operation->get_tanh()->input_operand_id)
+                    .mil_data_type)));
+        AddUnaryOperation(kOpTanhTypeName, *operation->get_tanh(), block);
         break;
       }
       case mojom::Operation::Tag::kTranspose: {
-        RETURN_IF_ERROR(
-            AddOperationForTranspose(*operation->get_transpose(), block));
+        AddOperationForTranspose(*operation->get_transpose(), block);
         break;
       }
       case mojom::Operation::Tag::kWhere: {
@@ -2166,9 +2182,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForLinear(
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
-  // TODO: crbug.com/338667172 - Consider enhancing the data type support to
-  // include int32.
-  CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
+  CHECK(context_properties_.data_type_limits.linear_input.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
   // WebNN's linear operator (alpha * a + beta) is far simpler than CoreML's
   // "linear" operator (a fully connected layer), so just implement it as
@@ -2430,59 +2445,51 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForReduce(
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    input_operand_info.coreml_name);
 
+  const DataTypeLimits& data_type_limits = context_properties_.data_type_limits;
+  const OperandDataType input_data_type =
+      MILDataTypeToOperandType(input_operand_info.mil_data_type);
+
   switch (operation.kind) {
     case mojom::Reduce::Kind::kL1:
-      CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type) ||
-            k32BitIntegerDataTypes.contains(input_operand_info.mil_data_type) ||
-            k64BitIntegerDataTypes.contains(input_operand_info.mil_data_type));
+      CHECK(data_type_limits.reduce_l1_input.Has(input_data_type));
       op->set_type(kOpReduceL1);
       break;
     case mojom::Reduce::Kind::kL2:
-      CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
+      CHECK(data_type_limits.reduce_l2_input.Has(input_data_type));
       op->set_type(kOpReduceL2);
       break;
     case mojom::Reduce::Kind::kLogSum:
-      CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
+      CHECK(data_type_limits.reduce_log_sum_input.Has(input_data_type));
       op->set_type(kOpReduceLogSum);
       break;
     case mojom::Reduce::Kind::kLogSumExp:
-      CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
+      CHECK(data_type_limits.reduce_log_sum_exp_input.Has(input_data_type));
       op->set_type(kOpReduceLogSumExp);
       break;
     case mojom::Reduce::Kind::kMax:
+      CHECK(data_type_limits.reduce_max_input.Has(input_data_type));
       op->set_type(kOpReduceMax);
       break;
     case mojom::Reduce::Kind::kMean:
-      CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
+      CHECK(data_type_limits.reduce_mean_input.Has(input_data_type));
       op->set_type(kOpReduceMean);
       break;
     case mojom::Reduce::Kind::kMin:
+      CHECK(data_type_limits.reduce_min_input.Has(input_data_type));
       op->set_type(kOpReduceMin);
       break;
     case mojom::Reduce::Kind::kProduct:
-      CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type) ||
-            k32BitIntegerDataTypes.contains(input_operand_info.mil_data_type) ||
-            k64BitIntegerDataTypes.contains(input_operand_info.mil_data_type));
+      CHECK(data_type_limits.reduce_product_input.Has(input_data_type));
       op->set_type(kOpReduceProduct);
       break;
     case mojom::Reduce::Kind::kSum:
-      CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type) ||
-            k32BitIntegerDataTypes.contains(input_operand_info.mil_data_type) ||
-            k64BitIntegerDataTypes.contains(input_operand_info.mil_data_type));
+      CHECK(data_type_limits.reduce_sum_input.Has(input_data_type));
       op->set_type(kOpReduceSum);
       break;
     case mojom::Reduce::Kind::kSumSquare:
-      CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type) ||
-            k32BitIntegerDataTypes.contains(input_operand_info.mil_data_type) ||
-            k64BitIntegerDataTypes.contains(input_operand_info.mil_data_type));
+      CHECK(data_type_limits.reduce_sum_square_input.Has(input_data_type));
       op->set_type(kOpReduceSumSquare);
       break;
-  }
-
-  if (!kFloatsAndInt32DataTypes.contains(input_operand_info.mil_data_type)) {
-    return NewNotSupportedError(NotSupportedInputArgumentTypeError(
-        OpKindToString(operation.kind),
-        MILDataTypeToOperandType(input_operand_info.mil_data_type)));
   }
 
   std::vector<int32_t> axes;
@@ -2510,7 +2517,8 @@ GraphBuilderCoreml::AddOperationForResample2d(
   // WebNN's "resample2d" maps to variants of the "upsample" operator in CoreML:
   // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.image_resizing.upsample_bilinear
   // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.image_resizing.upsample_nearest_neighbor
-  CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
+  CHECK(context_properties_.data_type_limits.resample2d_input.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
   const std::array<size_t, 2> supported_axes = {2, 3};
   if (!base::ranges::equal(operation.axes, supported_axes)) {
@@ -2576,14 +2584,9 @@ GraphBuilderCoreml::AddOperationForReshape(
     uint64_t output_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
-  // Note that BOOL is also supported by CoreML, but WebNN does not have a
-  // corresponding BOOL type. See docs here:
-  // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_transformation.reshape
-  if (!kFloatsAndInt32DataTypes.contains(input_operand_info.mil_data_type)) {
-    return NewNotSupportedError(NotSupportedInputArgumentTypeError(
-        ops::kReshape,
-        MILDataTypeToOperandType(input_operand_info.mil_data_type)));
-  }
+
+  CHECK(context_properties_.data_type_limits.reshape_input.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
   const OperandInfo& output_operand_info = GetOperandInfo(output_operand_id);
   if (output_operand_info.dimensions.size() > 5) {
@@ -2674,20 +2677,14 @@ GraphBuilderCoreml::AddOperationForSoftmax(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr>
-GraphBuilderCoreml::AddOperationForTranspose(
+void GraphBuilderCoreml::AddOperationForTranspose(
     const mojom::Transpose& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
-  // Note that BOOL is also supported by CoreML, but WebNN does not have a
-  // corresponding BOOL type. See docs here:
-  // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.transpose
-  if (!kFloatsAndInt32DataTypes.contains(input_operand_info.mil_data_type)) {
-    return NewNotSupportedError(NotSupportedInputArgumentTypeError(
-        ops::kTranspose,
-        MILDataTypeToOperandType(input_operand_info.mil_data_type)));
-  }
+
+  CHECK(context_properties_.data_type_limits.transpose_input.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpTransposeTypeName);
@@ -2705,7 +2702,6 @@ GraphBuilderCoreml::AddOperationForTranspose(
 
   CoreML::Specification::MILSpec::NamedValueType& output = *op->add_outputs();
   PopulateNamedValueType(operation.output_operand_id, output);
-  return base::ok();
 }
 
 base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForWhere(

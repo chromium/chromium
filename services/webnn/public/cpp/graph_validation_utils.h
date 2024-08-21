@@ -477,6 +477,7 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
     ValidateResample2dAndInferOutput(
+        const ContextProperties& context_properties,
         const OperandDescriptor& input,
         const absl::variant<base::span<const float>,
                             base::span<const uint32_t>>& scales_or_sizes,
@@ -585,7 +586,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateTransposeAndInferOutput(const OperandDescriptor& input,
+    ValidateTransposeAndInferOutput(const ContextProperties& context_properties,
+                                    const OperandDescriptor& input,
                                     base::span<const uint32_t> permutation,
                                     std::string_view label);
 
@@ -601,7 +603,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-reduce
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateReduceAndInferOutput(ReduceKind kind,
+    ValidateReduceAndInferOutput(const ContextProperties& context_properties,
+                                 ReduceKind kind,
                                  const OperandDescriptor& input,
                                  std::string_view label,
                                  base::span<const uint32_t> axes,
@@ -611,8 +614,10 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-triangular.
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateTriangularAndInferOutput(const OperandDescriptor& input,
-                                     std::string_view label);
+    ValidateTriangularAndInferOutput(
+        const ContextProperties& context_properties,
+        const OperandDescriptor& input,
+        std::string_view label);
 
 // Validate where operator defined in WebIDL here:
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-where.

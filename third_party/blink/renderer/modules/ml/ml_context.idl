@@ -109,13 +109,32 @@ dictionary MLOpSupportLimits {
   MLGatherSupportLimits gather;
   MLSingleInputSupportLimits gelu;
   MLSingleInputSupportLimits leakyRelu;
+  MLSingleInputSupportLimits linear;
+
+  // Reduction ops.
+  MLSingleInputSupportLimits reduceL1;
+  MLSingleInputSupportLimits reduceL2;
+  MLSingleInputSupportLimits reduceLogSum;
+  MLSingleInputSupportLimits reduceLogSumExp;
+  MLSingleInputSupportLimits reduceMax;
+  MLSingleInputSupportLimits reduceMean;
+  MLSingleInputSupportLimits reduceMin;
+  MLSingleInputSupportLimits reduceProduct;
+  MLSingleInputSupportLimits reduceSum;
+  MLSingleInputSupportLimits reduceSumSquare;
+
   MLSingleInputSupportLimits relu;
+  MLSingleInputSupportLimits resample2d;
+  MLSingleInputSupportLimits reshape;
   MLSingleInputSupportLimits sigmoid;
   MLSingleInputSupportLimits slice;
   MLSingleInputSupportLimits softmax;
   MLSingleInputSupportLimits softplus;
   MLSingleInputSupportLimits softsign;
   MLSingleInputSupportLimits split;
+  MLSingleInputSupportLimits tanh;
+  MLSingleInputSupportLimits transpose;
+  MLSingleInputSupportLimits triangular;
   MLWhereSupportLimits where;
 };
 

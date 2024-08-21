@@ -50,13 +50,29 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes gather_indices,
                  SupportedDataTypes gelu_input,
                  SupportedDataTypes leaky_relu_input,
+                 SupportedDataTypes linear_input,
+                 SupportedDataTypes reduce_l1_input,
+                 SupportedDataTypes reduce_l2_input,
+                 SupportedDataTypes reduce_log_sum_input,
+                 SupportedDataTypes reduce_log_sum_exp_input,
+                 SupportedDataTypes reduce_max_input,
+                 SupportedDataTypes reduce_mean_input,
+                 SupportedDataTypes reduce_min_input,
+                 SupportedDataTypes reduce_product_input,
+                 SupportedDataTypes reduce_sum_input,
+                 SupportedDataTypes reduce_sum_square_input,
                  SupportedDataTypes relu_input,
+                 SupportedDataTypes resample2d_input,
+                 SupportedDataTypes reshape_input,
                  SupportedDataTypes sigmoid_input,
                  SupportedDataTypes slice_input,
                  SupportedDataTypes softmax_input,
                  SupportedDataTypes softplus_input,
                  SupportedDataTypes softsign_input,
                  SupportedDataTypes split_input,
+                 SupportedDataTypes tanh_input,
+                 SupportedDataTypes transpose_input,
+                 SupportedDataTypes triangular_input,
                  SupportedDataTypes where_condition,
                  SupportedDataTypes where_value);
 
@@ -107,13 +123,29 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes gather_indices;
   SupportedDataTypes gelu_input;
   SupportedDataTypes leaky_relu_input;
+  SupportedDataTypes linear_input;
+  SupportedDataTypes reduce_l1_input;
+  SupportedDataTypes reduce_l2_input;
+  SupportedDataTypes reduce_log_sum_input;
+  SupportedDataTypes reduce_log_sum_exp_input;
+  SupportedDataTypes reduce_max_input;
+  SupportedDataTypes reduce_mean_input;
+  SupportedDataTypes reduce_min_input;
+  SupportedDataTypes reduce_product_input;
+  SupportedDataTypes reduce_sum_input;
+  SupportedDataTypes reduce_sum_square_input;
   SupportedDataTypes relu_input;
+  SupportedDataTypes resample2d_input;
+  SupportedDataTypes reshape_input;
   SupportedDataTypes sigmoid_input;
   SupportedDataTypes slice_input;
   SupportedDataTypes softmax_input;
   SupportedDataTypes softplus_input;
   SupportedDataTypes softsign_input;
   SupportedDataTypes split_input;
+  SupportedDataTypes tanh_input;
+  SupportedDataTypes transpose_input;
+  SupportedDataTypes triangular_input;
   SupportedDataTypes where_condition;
   SupportedDataTypes where_value;
 };
@@ -155,13 +187,29 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.elu_input == rhs.elu_input &&
          lhs.gelu_input == rhs.gelu_input &&
          lhs.leaky_relu_input == rhs.leaky_relu_input &&
+         lhs.linear_input == rhs.linear_input &&
+         lhs.reduce_l1_input == rhs.reduce_l1_input &&
+         lhs.reduce_l2_input == rhs.reduce_l2_input &&
+         lhs.reduce_log_sum_input == rhs.reduce_log_sum_input &&
+         lhs.reduce_log_sum_exp_input == rhs.reduce_log_sum_exp_input &&
+         lhs.reduce_max_input == rhs.reduce_max_input &&
+         lhs.reduce_mean_input == rhs.reduce_mean_input &&
+         lhs.reduce_min_input == rhs.reduce_min_input &&
+         lhs.reduce_product_input == rhs.reduce_product_input &&
+         lhs.reduce_sum_input == rhs.reduce_sum_input &&
+         lhs.reduce_sum_square_input == rhs.reduce_sum_square_input &&
          lhs.relu_input == rhs.relu_input &&
+         lhs.resample2d_input == rhs.resample2d_input &&
+         lhs.reshape_input == rhs.reshape_input &&
          lhs.sigmoid_input == rhs.sigmoid_input &&
          lhs.slice_input == rhs.slice_input &&
          lhs.softmax_input == rhs.softmax_input &&
          lhs.softplus_input == rhs.softplus_input &&
          lhs.softsign_input == rhs.softsign_input &&
          lhs.split_input == rhs.split_input &&
+         lhs.tanh_input == rhs.tanh_input &&
+         lhs.transpose_input == rhs.transpose_input &&
+         lhs.triangular_input == rhs.triangular_input &&
          lhs.where_condition == rhs.where_condition &&
          lhs.where_value == rhs.where_value;
 }

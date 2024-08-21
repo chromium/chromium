@@ -183,8 +183,28 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.leaky_relu_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.linear_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.reduce_l1_input.RetainAll(
+      DataTypeConstraint::kFloat16To32Ints32To64);
+  backend_context_properties.data_type_limits.reduce_l2_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.reduce_log_sum_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.reduce_log_sum_exp_input
+      .RetainAll(DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.reduce_mean_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.reduce_product_input.RetainAll(
+      DataTypeConstraint::kFloat16To32Ints32To64);
+  backend_context_properties.data_type_limits.reduce_sum_input.RetainAll(
+      DataTypeConstraint::kFloat16To32Ints32To64);
+  backend_context_properties.data_type_limits.reduce_sum_square_input.RetainAll(
+      DataTypeConstraint::kFloat16To32Ints32To64);
   backend_context_properties.data_type_limits.relu_input.RetainAll(
       DataTypeConstraint::kFloat16To32Int8To32);
+  backend_context_properties.data_type_limits.resample2d_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.sigmoid_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.softmax_input.RetainAll(
@@ -192,6 +212,8 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
   backend_context_properties.data_type_limits.softplus_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.softsign_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.tanh_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.where_condition.RetainAll(
       DataTypeConstraint::kUint8);

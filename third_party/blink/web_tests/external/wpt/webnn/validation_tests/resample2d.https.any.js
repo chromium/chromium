@@ -29,13 +29,6 @@ const tests = [
   },
   {
     name:
-        '[resample2d] Test building resample2d with input\'s dataType = float16',
-    input: {dataType: 'float16', dimensions: [1, 1, 5, 5]},
-    options: {scales: [0.5, 0.5]},
-    output: {dataType: 'float16', dimensions: [1, 1, 2, 2]},
-  },
-  {
-    name:
         '[resample2d] Test building resample2d with scales=[0.5, 0.5] and explicit axes=[2, 3]',
     input: {dataType: 'float32', dimensions: [1, 1, 5, 5]},
     options: {scales: [0.5, 0.5], axes: [2, 3]},
@@ -118,14 +111,6 @@ const tests = [
     input: {dataType: 'float32', dimensions: [1, 1, 2, 4]},
     options: {
       sizes: [1, 0],
-      label: label,
-    },
-  },
-  {
-    name: '[resample2d] Throw if input data type is not floating type',
-    input: {dataType: 'int32', dimensions: [1, 1, 2, 4]},
-    options: {
-      sizes: [1, 1, 4, 6],
       label: label,
     },
   },
@@ -236,3 +221,22 @@ tests.forEach(
 
 validateInputFromAnotherBuilder(
     'resample2d', {dataType: 'float32', dimensions: [2, 2, 2, 2]});
+
+promise_test(async t => {
+  for (let dataType of allWebNNOperandDataTypes) {
+    if (!context.opSupportLimits().input.dataTypes.includes(dataType)) {
+      continue;
+    }
+    const builder = new MLGraphBuilder(context);
+    const dimensions = [1, 1, 2, 4];
+    const input = builder.input(`input`, {dataType, dimensions});
+    if (context.opSupportLimits().resample2d.input.dataTypes.includes(
+            dataType)) {
+      const output = builder.resample2d(input);
+      assert_equals(output.dataType(), dataType);
+      assert_array_equals(output.shape(), dimensions);
+    } else {
+      assert_throws_js(TypeError, () => builder.resample2d(input));
+    }
+  }
+}, `[resample2d] Test resample2d with all of the data types.`);

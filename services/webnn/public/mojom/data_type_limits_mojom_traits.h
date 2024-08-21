@@ -162,9 +162,61 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.leaky_relu_input;
   }
+  static webnn::SupportedDataTypes linear_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.linear_input;
+  }
+  static webnn::SupportedDataTypes reduce_l1_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.reduce_l1_input;
+  }
+  static webnn::SupportedDataTypes reduce_l2_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.reduce_l2_input;
+  }
+  static webnn::SupportedDataTypes reduce_log_sum_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.reduce_log_sum_input;
+  }
+  static webnn::SupportedDataTypes reduce_log_sum_exp_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.reduce_log_sum_exp_input;
+  }
+  static webnn::SupportedDataTypes reduce_max_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.reduce_max_input;
+  }
+  static webnn::SupportedDataTypes reduce_mean_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.reduce_mean_input;
+  }
+  static webnn::SupportedDataTypes reduce_min_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.reduce_min_input;
+  }
+  static webnn::SupportedDataTypes reduce_product_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.reduce_product_input;
+  }
+  static webnn::SupportedDataTypes reduce_sum_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.reduce_sum_input;
+  }
+  static webnn::SupportedDataTypes reduce_sum_square_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.reduce_sum_square_input;
+  }
   static webnn::SupportedDataTypes relu_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.relu_input;
+  }
+  static webnn::SupportedDataTypes resample2d_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.resample2d_input;
+  }
+  static webnn::SupportedDataTypes reshape_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.reshape_input;
   }
   static webnn::SupportedDataTypes sigmoid_input(
       const webnn::DataTypeLimits& data_type_limits) {
@@ -189,6 +241,18 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
   static webnn::SupportedDataTypes split_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.split_input;
+  }
+  static webnn::SupportedDataTypes tanh_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.tanh_input;
+  }
+  static webnn::SupportedDataTypes transpose_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.transpose_input;
+  }
+  static webnn::SupportedDataTypes triangular_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.triangular_input;
   }
   static webnn::SupportedDataTypes where_condition(
       const webnn::DataTypeLimits& data_type_limits) {
@@ -237,13 +301,29 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadGatherIndices(&out->gather_indices) &&
            data.ReadGeluInput(&out->gelu_input) &&
            data.ReadLeakyReluInput(&out->leaky_relu_input) &&
+           data.ReadLinearInput(&out->linear_input) &&
+           data.ReadReduceL1Input(&out->reduce_l1_input) &&
+           data.ReadReduceL2Input(&out->reduce_l2_input) &&
+           data.ReadReduceLogSumInput(&out->reduce_log_sum_input) &&
+           data.ReadReduceLogSumExpInput(&out->reduce_log_sum_exp_input) &&
+           data.ReadReduceMaxInput(&out->reduce_max_input) &&
+           data.ReadReduceMeanInput(&out->reduce_mean_input) &&
+           data.ReadReduceMinInput(&out->reduce_min_input) &&
+           data.ReadReduceProductInput(&out->reduce_product_input) &&
+           data.ReadReduceSumInput(&out->reduce_sum_input) &&
+           data.ReadReduceSumSquareInput(&out->reduce_sum_square_input) &&
            data.ReadReluInput(&out->relu_input) &&
+           data.ReadResample2dInput(&out->resample2d_input) &&
+           data.ReadReshapeInput(&out->reshape_input) &&
            data.ReadSigmoidInput(&out->sigmoid_input) &&
            data.ReadSliceInput(&out->slice_input) &&
            data.ReadSoftmaxInput(&out->softmax_input) &&
            data.ReadSoftplusInput(&out->softplus_input) &&
            data.ReadSoftsignInput(&out->softsign_input) &&
            data.ReadSplitInput(&out->split_input) &&
+           data.ReadTanhInput(&out->tanh_input) &&
+           data.ReadTransposeInput(&out->transpose_input) &&
+           data.ReadTriangularInput(&out->triangular_input) &&
            data.ReadWhereCondition(&out->where_condition) &&
            data.ReadWhereValue(&out->where_value);
   }

@@ -77,14 +77,6 @@ static constexpr auto kDmlFloatDataTypes =
     base::MakeFixedFlatSet<DML_TENSOR_DATA_TYPE>(
         {DML_TENSOR_DATA_TYPE_FLOAT32, DML_TENSOR_DATA_TYPE_FLOAT16});
 
-static constexpr auto kDml32BitIntegerDataTypes =
-    base::MakeFixedFlatSet<DML_TENSOR_DATA_TYPE>(
-        {DML_TENSOR_DATA_TYPE_INT32, DML_TENSOR_DATA_TYPE_UINT32});
-
-static constexpr auto kDml64BitIntegerDataTypes =
-    base::MakeFixedFlatSet<DML_TENSOR_DATA_TYPE>(
-        {DML_TENSOR_DATA_TYPE_INT64, DML_TENSOR_DATA_TYPE_UINT64});
-
 DML_TENSOR_DATA_TYPE GetTensorDataType(OperandDataType type) {
   switch (type) {
     case OperandDataType::kFloat32:
@@ -152,30 +144,41 @@ DML_REDUCE_FUNCTION MapReduceKindToReduceFuntion(mojom::Reduce::Kind kind) {
     case mojom::Reduce::Kind::kSumSquare:
       return DML_REDUCE_FUNCTION_SUM_SQUARE;
   }
-  NOTREACHED();
 }
 
-void CheckInputDataTypeForReduce(mojom::Reduce::Kind kind,
-                                 DML_TENSOR_DATA_TYPE data_type) {
+void CheckInputDataTypeForReduce(const DataTypeLimits& data_type_limits,
+                                 mojom::Reduce::Kind kind,
+                                 OperandDataType data_type) {
   switch (kind) {
     case mojom::Reduce::Kind::kL1:
-    case mojom::Reduce::Kind::kProduct:
-    case mojom::Reduce::Kind::kSum:
-    case mojom::Reduce::Kind::kSumSquare: {
-      CHECK(kDmlFloatDataTypes.contains(data_type) ||
-            kDml32BitIntegerDataTypes.contains(data_type) ||
-            kDml64BitIntegerDataTypes.contains(data_type));
+      CHECK(data_type_limits.reduce_l1_input.Has(data_type));
       break;
-    }
     case mojom::Reduce::Kind::kL2:
-    case mojom::Reduce::Kind::kLogSum:
-    case mojom::Reduce::Kind::kLogSumExp:
-    case mojom::Reduce::Kind::kMean: {
-      CHECK(kDmlFloatDataTypes.contains(data_type));
+      CHECK(data_type_limits.reduce_l2_input.Has(data_type));
       break;
-    }
+    case mojom::Reduce::Kind::kLogSum:
+      CHECK(data_type_limits.reduce_log_sum_input.Has(data_type));
+      break;
+    case mojom::Reduce::Kind::kLogSumExp:
+      CHECK(data_type_limits.reduce_log_sum_exp_input.Has(data_type));
+      break;
     case mojom::Reduce::Kind::kMax:
+      CHECK(data_type_limits.reduce_max_input.Has(data_type));
+      break;
+    case mojom::Reduce::Kind::kMean:
+      CHECK(data_type_limits.reduce_mean_input.Has(data_type));
+      break;
     case mojom::Reduce::Kind::kMin:
+      CHECK(data_type_limits.reduce_min_input.Has(data_type));
+      break;
+    case mojom::Reduce::Kind::kProduct:
+      CHECK(data_type_limits.reduce_product_input.Has(data_type));
+      break;
+    case mojom::Reduce::Kind::kSum:
+      CHECK(data_type_limits.reduce_sum_input.Has(data_type));
+      break;
+    case mojom::Reduce::Kind::kSumSquare:
+      CHECK(data_type_limits.reduce_sum_square_input.Has(data_type));
       break;
   }
 }
@@ -2359,14 +2362,17 @@ void CreateOperatorNodeForElementWiseUnary(
   }
 }
 
-void CreateOperatorNodeForResample2d(const IdToOperandMap& id_to_operand_map,
-                                     const mojom::Resample2dPtr& resample2d,
-                                     GraphBuilderDml& graph_builder,
-                                     IdToNodeOutputMap& id_to_node_output_map) {
+void CreateOperatorNodeForResample2d(
+    const ContextProperties& context_properties,
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::Resample2dPtr& resample2d,
+    GraphBuilderDml& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, resample2d->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
-  CHECK(kDmlFloatDataTypes.contains(input_tensor_desc.GetDataType()));
+  CHECK(context_properties.data_type_limits.resample2d_input.Has(
+      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   uint64_t output_id = resample2d->output_operand_id;
   const auto& output_tensor_desc =
@@ -2424,14 +2430,18 @@ void CreateOperatorNodeForResample2d(const IdToOperandMap& id_to_operand_map,
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 }
 
-void CreateOperatorNodeForReduce(const IdToOperandMap& id_to_operand_map,
+void CreateOperatorNodeForReduce(const ContextProperties& context_properties,
+                                 const IdToOperandMap& id_to_operand_map,
                                  const mojom::ReducePtr& reduce,
                                  GraphBuilderDml& graph_builder,
                                  IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, reduce->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
-  CheckInputDataTypeForReduce(reduce->kind, input_tensor_desc.GetDataType());
+  CheckInputDataTypeForReduce(
+      context_properties.data_type_limits, reduce->kind,
+      DmlDataTypeToOperand(input_tensor_desc.GetDataType()));
+
   uint64_t output_id = reduce->output_operand_id;
   const auto& output_tensor_desc =
       CreateOutputTensorDesc(id_to_operand_map, output_id);
@@ -2505,12 +2515,16 @@ const NodeOutput* CreateReshapeNode(GraphBuilderDml& graph_builder,
 // DirectML API does not have a real Reshape operator. The WebNN Reshape is
 // implemented by a DirectML Identity operator. DirectML runtime is able to
 // optimize the unnecessary IDENTITY operators when compiling the graph.
-void CreateOperatorNodeForReshape(const IdToOperandMap& id_to_operand_map,
+void CreateOperatorNodeForReshape(const ContextProperties& context_properties,
+                                  const IdToOperandMap& id_to_operand_map,
                                   const mojom::ReshapePtr& reshape,
                                   GraphBuilderDml& graph_builder,
                                   IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, reshape->input_operand_id);
+  CHECK(context_properties.data_type_limits.reshape_input.Has(
+      DmlDataTypeToOperand(input->GetTensorDesc().GetDataType())));
+
   uint64_t output_id = reshape->output_operand_id;
   const OperandPtr& output_operand = id_to_operand_map.at(output_id);
   base::span<const uint32_t> new_shape = output_operand->descriptor.shape();
@@ -3510,13 +3524,17 @@ void CreateOperatorNodeForLeakyRelu(const IdToOperandMap& id_to_operand_map,
   CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
 }
 
-void CreateOperatorNodeForLinear(const IdToOperandMap& id_to_operand_map,
+void CreateOperatorNodeForLinear(const ContextProperties& context_properties,
+                                 const IdToOperandMap& id_to_operand_map,
                                  const mojom::LinearPtr& linear,
                                  GraphBuilderDml& graph_builder,
                                  IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, linear->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
+
+  CHECK(context_properties.data_type_limits.linear_input.Has(
+      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   uint64_t output_id = linear->output_operand_id;
   auto output_tensor_desc =
@@ -4190,12 +4208,16 @@ void CreateOperatorNodeForSoftplus(const IdToOperandMap& id_to_operand_map,
 // tensor is remapped for reading elements following the strides after the
 // permutation, and an identity operator is appended to consume the remapped
 // strides.
-void CreateOperatorNodeForTranspose(const IdToOperandMap& id_to_operand_map,
+void CreateOperatorNodeForTranspose(const ContextProperties& context_properties,
+                                    const IdToOperandMap& id_to_operand_map,
                                     const mojom::TransposePtr& transpose,
                                     GraphBuilderDml& graph_builder,
                                     IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, transpose->input_operand_id);
+  CHECK(context_properties.data_type_limits.transpose_input.Has(
+      DmlDataTypeToOperand(input->GetTensorDesc().GetDataType())));
+
   uint64_t output_id = transpose->output_operand_id;
 
   const NodeOutput* output =
@@ -4236,6 +4258,7 @@ void CreateOperatorNodeForTranspose(const IdToOperandMap& id_to_operand_map,
 //   4, 5,   bit_and   [0xFFFF, 0,]      =>    4, 0,
 //   6, 7]             [0xFFFF, 0xFFFF]        6, 7]
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
+    const ContextProperties& context_properties,
     Adapter* adapter,
     const mojom::TriangularPtr& triangular,
     mojom::GraphInfoPtr& graph_info,
@@ -4246,6 +4269,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
   const NodeOutput* input = GetNodeOutputForOperand(
       id_to_node_output_map, triangular->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
+  CHECK(context_properties.data_type_limits.triangular_input.Has(
+      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   auto& id_to_operand_map = graph_info->id_to_operand_map;
   uint64_t output_id = triangular->output_operand_id;
@@ -4412,21 +4437,14 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
       buffer = mojo_base::BigBuffer(base::as_bytes(base::make_span(values)));
       break;
     }
-    // The current spec doesn't restrict the input data type of triangular. An
-    // issue has been filed to track it:
-    // https://github.com/webmachinelearning/webnn/issues/654.
-    // TODO(crbug.com/336841827): Delete the cases of uint64 and int64 after
-    // the spec drops the support of int64 and uint64 for triangular.
     case OperandDataType::kInt64:
     case OperandDataType::kUint64: {
-      // DML_ELEMENT_WISE_BIT_AND_OPERATOR_DESC can't support uint64 when
-      // DML_FEATURE_LEVEL is less than DML_FEATURE_LEVEL_4_1:
-      // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_bit_and_operator_desc#dml_feature_level_4_1-and-above
-      return base::unexpected(
-          CreateError(mojom::Error::Code::kNotSupportedError,
-                      "Triangular can't support int64 and uint64 "
-                      "for input data type.",
-                      label));
+      webnn_mask_data_type = OperandDataType::kUint64;
+      dml_mask_data_type = DML_TENSOR_DATA_TYPE_UINT64;
+      std::array<uint64_t, 2> values = {static_cast<uint64_t>(lower_mask),
+                                        static_cast<uint64_t>(upper_mask)};
+      buffer = mojo_base::BigBuffer(base::as_bytes(base::make_span(values)));
+      break;
     }
   }
 
@@ -5620,8 +5638,9 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case Operation::Tag::kLinear: {
-        CreateOperatorNodeForLinear(id_to_operand_map, operation->get_linear(),
-                                    graph_builder, id_to_node_output_map);
+        CreateOperatorNodeForLinear(context_properties, id_to_operand_map,
+                                    operation->get_linear(), graph_builder,
+                                    id_to_node_output_map);
         break;
       }
       case Operation::Tag::kLstm: {
@@ -5663,8 +5682,9 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case Operation::Tag::kReduce: {
-        CreateOperatorNodeForReduce(id_to_operand_map, operation->get_reduce(),
-                                    graph_builder, id_to_node_output_map);
+        CreateOperatorNodeForReduce(context_properties, id_to_operand_map,
+                                    operation->get_reduce(), graph_builder,
+                                    id_to_node_output_map);
         break;
       }
       case Operation::Tag::kRelu: {
@@ -5675,13 +5695,13 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case Operation::Tag::kResample2d: {
-        CreateOperatorNodeForResample2d(id_to_operand_map,
+        CreateOperatorNodeForResample2d(context_properties, id_to_operand_map,
                                         operation->get_resample2d(),
                                         graph_builder, id_to_node_output_map);
         break;
       }
       case Operation::Tag::kReshape: {
-        CreateOperatorNodeForReshape(id_to_operand_map,
+        CreateOperatorNodeForReshape(context_properties, id_to_operand_map,
                                      operation->get_reshape(), graph_builder,
                                      id_to_node_output_map);
         break;
@@ -5732,15 +5752,15 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case Operation::Tag::kTranspose: {
-        CreateOperatorNodeForTranspose(id_to_operand_map,
+        CreateOperatorNodeForTranspose(context_properties, id_to_operand_map,
                                        operation->get_transpose(),
                                        graph_builder, id_to_node_output_map);
         break;
       }
       case mojom::Operation::Tag::kTriangular: {
         create_operator_result = CreateOperatorNodeForTriangular(
-            adapter.get(), operation->get_triangular(), graph_info,
-            graph_builder, id_to_node_output_map,
+            context_properties, adapter.get(), operation->get_triangular(),
+            graph_info, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id);
         break;
       }

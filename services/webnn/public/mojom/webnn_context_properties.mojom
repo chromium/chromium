@@ -80,13 +80,32 @@ struct DataTypeLimits {
 
   SupportedDataTypes gelu_input;
   SupportedDataTypes leaky_relu_input;
+  SupportedDataTypes linear_input;
+
+  // Reduction ops.
+  SupportedDataTypes reduce_l1_input;
+  SupportedDataTypes reduce_l2_input;
+  SupportedDataTypes reduce_log_sum_input;
+  SupportedDataTypes reduce_log_sum_exp_input;
+  SupportedDataTypes reduce_max_input;
+  SupportedDataTypes reduce_mean_input;
+  SupportedDataTypes reduce_min_input;
+  SupportedDataTypes reduce_product_input;
+  SupportedDataTypes reduce_sum_input;
+  SupportedDataTypes reduce_sum_square_input;
+
   SupportedDataTypes relu_input;
+  SupportedDataTypes resample2d_input;
+  SupportedDataTypes reshape_input;
   SupportedDataTypes sigmoid_input;
   SupportedDataTypes slice_input;
   SupportedDataTypes softmax_input;
   SupportedDataTypes softplus_input;
   SupportedDataTypes softsign_input;
   SupportedDataTypes split_input;
+  SupportedDataTypes tanh_input;
+  SupportedDataTypes transpose_input;
+  SupportedDataTypes triangular_input;
 
   // Where.
   SupportedDataTypes where_condition;

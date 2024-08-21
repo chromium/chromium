@@ -28,6 +28,11 @@ static constexpr SupportedDataTypes kFloat16To32Int8To32 = {
     OperandDataType::kFloat16, OperandDataType::kFloat32,
     OperandDataType::kInt8, OperandDataType::kInt32};
 
+static constexpr SupportedDataTypes kFloat16To32Ints32To64 = {
+    OperandDataType::kFloat16, OperandDataType::kFloat32,
+    OperandDataType::kInt32,   OperandDataType::kUint32,
+    OperandDataType::kInt64,   OperandDataType::kUint64};
+
 static constexpr SupportedDataTypes kGatherIndicesSupportedDataTypes = {
     OperandDataType::kInt32, OperandDataType::kUint32, OperandDataType::kInt64};
 
