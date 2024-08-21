@@ -67,6 +67,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/share/ChromeShareExtras.java",
       "android/java/src/org/chromium/chrome/browser/share/ShareDelegate.java",
+      "android/java/src/org/chromium/chrome/browser/share/ShareDelegateSupplier.java",
       "android/java/src/org/chromium/chrome/browser/share/ShareHistoryBridge.java",
       "android/java/src/org/chromium/chrome/browser/share/ShareRankingBridge.java",
       "android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoSharingBridge.java",
@@ -84,6 +85,7 @@ if (is_android) {
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_java",
       "//url:gurl_java",
     ]
   }

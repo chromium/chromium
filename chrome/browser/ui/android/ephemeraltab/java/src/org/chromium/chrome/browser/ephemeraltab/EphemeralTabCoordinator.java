@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.compositor.bottombar.ephemeraltab;
+package org.chromium.chrome.browser.ephemeraltab;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -12,7 +12,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.version_info.VersionInfo;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -42,7 +41,7 @@ import org.chromium.url.GURL;
 
 /**
  * Central class for ephemeral tab, responsible for spinning off other classes necessary to display
- * the preview tab UI.
+ * short-lived WebContents on bottom sheet UI.
  */
 public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     private final Context mContext;
@@ -341,8 +340,8 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             mContext = context;
             mFaviconHelper = new FaviconHelper();
             mIconGenerator = FaviconUtils.createCircularIconGenerator(mContext);
-            mFaviconSize =
-                    mContext.getResources().getDimensionPixelSize(R.dimen.preview_tab_favicon_size);
+            int sizeResId = R.dimen.ephemeral_tab_favicon_size;
+            mFaviconSize = mContext.getResources().getDimensionPixelSize(sizeResId);
         }
 
         /**

@@ -1,0 +1,7 @@
+monorail: {
+  component: "UI>Browser>Mobile>PreviewTab"
+}
+team_email: "chrome-android-app@chromium.org"
+buganizer_public: {
+  component_id: 1457302
+}

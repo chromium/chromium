@@ -1,0 +1,56 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ephemeraltab/EphemeralTabCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ephemeraltab/EphemeralTabMediator.java",
+    "java/src/org/chromium/chrome/browser/ephemeraltab/EphemeralTabObserver.java",
+    "java/src/org/chromium/chrome/browser/ephemeraltab/EphemeralTabSheetContent.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//base/version_info/android:version_constants_java",
+    "//chrome/browser/android/content:java",
+    "//chrome/browser/feature_engagement:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/share:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/favicon:java",
+    "//chrome/browser/ui/android/omnibox:java_resources",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/android/toolbar:java_resources",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java",
+    "//components/browser_ui/widget/android:java_resources",
+    "//components/embedder_support/android:content_view_java",
+    "//components/embedder_support/android:util_java",
+    "//components/embedder_support/android:web_contents_delegate_java",
+    "//components/feature_engagement/public:public_java",
+    "//components/omnibox/browser:java_resources",
+    "//components/security_state/content/android:java",
+    "//components/security_state/core:security_state_enums_java",
+    "//components/thin_webview:factory_java",
+    "//components/thin_webview:java",
+    "//components/url_formatter/android:url_formatter_java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_utils_java",
+    "//url:gurl_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.ephemeraltab"
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/values/dimens.xml" ]
+}

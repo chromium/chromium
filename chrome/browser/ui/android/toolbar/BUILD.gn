@@ -273,6 +273,7 @@ android_resources("java_resources") {
     "java/res/layout/navigation_popup_item.xml",
     "java/res/layout/optional_button_layout.xml",
     "java/res/layout/radio_button_group_adaptive_toolbar_preference.xml",
+    "java/res/layout/sheet_tab_toolbar.xml",
     "java/res/layout/toolbar_phone.xml",
     "java/res/layout/toolbar_tablet.xml",
     "java/res/values-night/drawables.xml",

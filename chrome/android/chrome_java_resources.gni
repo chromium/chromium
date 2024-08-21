@@ -566,7 +566,6 @@ chrome_java_resources = [
   "java/res/layout/settings_activity.xml",
   "java/res/layout/share_sheet_content.xml",
   "java/res/layout/share_sheet_item.xml",
-  "java/res/layout/sheet_tab_toolbar.xml",
   "java/res/layout/shopping_accessory_view_layout.xml",
   "java/res/layout/signin_activity.xml",
   "java/res/layout/signin_settings_card_view.xml",
