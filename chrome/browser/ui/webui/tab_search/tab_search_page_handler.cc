@@ -256,6 +256,14 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
   // Do not add code past this point.
 }
 
+void TabSearchPageHandler::DeclutterTabs(const std::vector<int32_t>& tab_ids) {
+  // TODO(crbug.com/358382903): Route this through TabDeclutterService and add
+  // metrics logging. Potentially also invoke IPH pending UX.
+  for (auto id : tab_ids) {
+    CloseTab(id);
+  }
+}
+
 void TabSearchPageHandler::AcceptTabOrganization(
     int32_t session_id,
     int32_t organization_id,

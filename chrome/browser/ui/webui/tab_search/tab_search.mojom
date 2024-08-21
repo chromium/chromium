@@ -211,6 +211,9 @@ interface PageHandler {
   // Close a specific tab.
   CloseTab(int32 tab_id);
 
+  // Bulk close multiple tabs as part of the declutter workflow.
+  DeclutterTabs(array<int32> tab_ids);
+
   // Accept the tab organization, updated with the specified name and tab list.
   AcceptTabOrganization(int32 session_id,
                         int32 organization_id,

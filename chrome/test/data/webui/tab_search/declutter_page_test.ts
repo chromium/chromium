@@ -4,7 +4,7 @@
 
 import type {DeclutterPageElement, Tab} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createTab} from './tab_search_test_data.js';
@@ -41,5 +41,19 @@ suite('DeclutterPageTest', () => {
     const staleTabElements =
         declutterPage.shadowRoot!.querySelectorAll('tab-search-item');
     assertEquals(3, staleTabElements.length);
+  });
+
+  test('Closes tabs', async () => {
+    await declutterPageSetup();
+    assertEquals(0, testApiProxy.getCallCount('declutterTabs'));
+
+    const staleTabElements =
+        declutterPage.shadowRoot!.querySelectorAll('tab-search-item');
+    const closeButton = declutterPage.shadowRoot!.querySelector('cr-button');
+    assertTrue(!!closeButton);
+    closeButton.click();
+
+    const [tabIds] = await testApiProxy.whenCalled('declutterTabs');
+    assertEquals(staleTabElements.length, tabIds.length);
   });
 });

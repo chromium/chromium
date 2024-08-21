@@ -15,5 +15,8 @@ export function getHtml(this: DeclutterPageElement) {
             data-index="${index}">
         </tab-search-item>
     `)}
-  </div><!--_html_template_end_-->`;
+  </div>
+  <cr-button class="action-button" @click="${this.onCloseTabsClick_}">
+    Close tabs
+  </cr-button><!--_html_template_end_-->`;
 }

@@ -17,6 +17,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'closeTab',
+      'declutterTabs',
       'acceptTabOrganization',
       'rejectTabOrganization',
       'getProfileData',
@@ -49,6 +50,10 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
 
   closeTab(tabId: number) {
     this.methodCalled('closeTab', [tabId]);
+  }
+
+  declutterTabs(tabIds: number[]) {
+    this.methodCalled('declutterTabs', [tabIds]);
   }
 
   acceptTabOrganization(

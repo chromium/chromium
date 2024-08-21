@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import '../tab_search_item.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -49,6 +50,11 @@ export class DeclutterPageElement extends CrLitElement {
     super.disconnectedCallback();
     this.listenerIds_.forEach(
         id => this.apiProxy_.getCallbackRouter().removeListener(id));
+  }
+
+  protected onCloseTabsClick_() {
+    const tabIds = this.staleTabDatas_.map((tabData) => tabData.tab.tabId);
+    this.apiProxy_.declutterTabs(tabIds);
   }
 
   private setStaleTabs_(tabs: Tab[]): void {
