@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_SECURITY_TOKEN_SESSION_RESTRICTION_VIEW_H_
-#define CHROME_BROWSER_UI_ASH_SECURITY_TOKEN_SESSION_RESTRICTION_VIEW_H_
+#ifndef CHROME_BROWSER_UI_ASH_SECURITY_TOKEN_RESTRICTION_SECURITY_TOKEN_SESSION_RESTRICTION_VIEW_H_
+#define CHROME_BROWSER_UI_ASH_SECURITY_TOKEN_RESTRICTION_SECURITY_TOKEN_SESSION_RESTRICTION_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
@@ -48,4 +48,4 @@ class SecurityTokenSessionRestrictionView : public AppDialogView {
   base::RepeatingTimer update_timer_;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_SECURITY_TOKEN_SESSION_RESTRICTION_VIEW_H_
+#endif  // CHROME_BROWSER_UI_ASH_SECURITY_TOKEN_RESTRICTION_SECURITY_TOKEN_SESSION_RESTRICTION_VIEW_H_
