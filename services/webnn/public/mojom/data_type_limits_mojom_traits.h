@@ -158,6 +158,14 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.gelu_input;
   }
+  static webnn::SupportedDataTypes hard_sigmoid_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.hard_sigmoid_input;
+  }
+  static webnn::SupportedDataTypes hard_swish_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.hard_swish_input;
+  }
   static webnn::SupportedDataTypes leaky_relu_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.leaky_relu_input;
@@ -300,6 +308,8 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadGatherInput(&out->gather_input) &&
            data.ReadGatherIndices(&out->gather_indices) &&
            data.ReadGeluInput(&out->gelu_input) &&
+           data.ReadHardSigmoidInput(&out->hard_sigmoid_input) &&
+           data.ReadHardSwishInput(&out->hard_swish_input) &&
            data.ReadLeakyReluInput(&out->leaky_relu_input) &&
            data.ReadLinearInput(&out->linear_input) &&
            data.ReadReduceL1Input(&out->reduce_l1_input) &&

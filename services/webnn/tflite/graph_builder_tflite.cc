@@ -370,6 +370,8 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*gather_input=*/kFloat32AndInt8To64AndUint8,
        /*gather_indices=*/DataTypeConstraint::kGatherIndicesSupportedDataTypes,
        /*gelu_input=*/kFloat32,
+       /*hard_sigmoid_input=*/kFloat32,
+       /*hard_swish_input=*/kFloat32,
        /*leaky_relu_input=*/kFloat32,
        // Linear is emulated by mul and add.
        /*linear_input=*/kFloat32AndInt32To64,
@@ -2827,8 +2829,8 @@ auto GraphBuilderTflite::SerializeHardSigmoid(
   // The subexpression `alpha * x + beta` is considered a linear operation.
   const mojom::Operand& input_operand =
       GetOperand(hard_sigmoid.input_operand_id);
-  CHECK(input_operand.descriptor.data_type() == OperandDataType::kFloat16 ||
-        input_operand.descriptor.data_type() == OperandDataType::kFloat32);
+  CHECK_EQ(GetOperand(hard_sigmoid.input_operand_id).descriptor.data_type(),
+           OperandDataType::kFloat32);
   // The input shape has been validated to not overflow before creating tensor.
   const auto signed_input_dimensions =
       ToSignedDimensions(input_operand.descriptor.shape());
@@ -2851,6 +2853,9 @@ auto GraphBuilderTflite::SerializeHardSigmoid(
 
 auto GraphBuilderTflite::SerializeHardSwish(const mojom::HardSwish& hard_swish)
     -> OperatorOffset {
+  CHECK_EQ(GetOperand(hard_swish.input_operand_id).descriptor.data_type(),
+           OperandDataType::kFloat32);
+
   return SerializeUnaryOperation(
       ::tflite::BuiltinOperator_HARD_SWISH,
       operand_to_index_map_.at(hard_swish.input_operand_id),

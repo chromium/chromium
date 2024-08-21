@@ -181,6 +181,10 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kGatherIndicesSupportedDataTypes);
   backend_context_properties.data_type_limits.gelu_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.hard_sigmoid_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.hard_swish_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.leaky_relu_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.linear_input.RetainAll(
