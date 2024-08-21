@@ -1728,6 +1728,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDnsOverHttpsIncludedDomains,
     ash::prefs::kDnsOverHttpsIncludedDomains,
     base::Value::Type::LIST },
+  { key::kHelpMeReadSettings,
+    ash::prefs::kHmrManagedSettings,
+    base::Value::Type::INTEGER},
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)
