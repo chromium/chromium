@@ -2488,7 +2488,8 @@ std::optional<FormData> FindFormForContentEditable(
   if (content_editable.DynamicTo<WebFormElement>() ||
       content_editable.DynamicTo<WebFormControlElement>() ||
       !content_editable.IsContentEditable() ||
-      content_editable != content_editable.RootEditableElement()) {
+      content_editable != content_editable.RootEditableElement() ||
+      !content_editable.IsConnected()) {
     return std::nullopt;
   }
 
