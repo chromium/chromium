@@ -437,22 +437,19 @@ const TestCardFillData kElvisCardFillData("Elvis Presley",
                                           /*use_month_type*/ false);
 
 TestAddressFillData GetElvisAddressFillData() {
-  return {
-      "Elvis",
-      "Aaron",
-      "Presley",
-      "3734 Elvis Presley Blvd.",
-      "Apt. 10",
-      "Memphis",
-      "Tennessee",
-      "38116",
-      "United States",
-      "US",
-      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
-          ? "2345678901"
-          : "12345678901",
-      "theking@gmail.com",
-      "RCA"};
+  return {"Elvis",
+          "Aaron",
+          "Presley",
+          "3734 Elvis Presley Blvd.",
+          "Apt. 10",
+          "Memphis",
+          "Tennessee",
+          "38116",
+          "United States",
+          "US",
+          "2345678901",
+          "theking@gmail.com",
+          "RCA"};
 }
 
 // Matches a FillFieldLogEvent by equality of fields. Use FillEventId(-1) if
@@ -4183,11 +4180,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
   response_data = FillAutofillFormDataAndGetResults(
       response_data, *response_data.fields().begin(), MakeGuid(1));
 
-  bool default_to_city_and_number =
-      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber);
   expected_address_fill_data.first = "Elvis";
-  expected_address_fill_data.phone =
-      default_to_city_and_number ? "2345678901" : "12345678901";
+  expected_address_fill_data.phone = "2345678901";
   expected_address_fill_data.email = "theking@gmail.com";
   ExpectFilledForm(response_data, expected_address_fill_data,
                    /*card_fill_data=*/std::nullopt);

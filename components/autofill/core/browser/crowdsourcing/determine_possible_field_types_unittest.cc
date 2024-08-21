@@ -95,22 +95,10 @@ struct TestAddressFillData {
 };
 
 TestAddressFillData GetElvisAddressFillData() {
-  return {
-      "Elvis",
-      "Aaron",
-      "Presley",
-      "3734 Elvis Presley Blvd.",
-      "Apt. 10",
-      "Memphis",
-      "Tennessee",
-      "38116",
-      "South Africa",
-      "ZA",
-      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
-          ? "2345678901"
-          : "12345678901",
-      "theking@gmail.com",
-      "RCA"};
+  return {"Elvis",        "Aaron",   "Presley",    "3734 Elvis Presley Blvd.",
+          "Apt. 10",      "Memphis", "Tennessee",  "38116",
+          "South Africa", "ZA",      "2345678901", "theking@gmail.com",
+          "RCA"};
 }
 
 AutofillProfile FillDataToAutofillProfile(const TestAddressFillData& data) {

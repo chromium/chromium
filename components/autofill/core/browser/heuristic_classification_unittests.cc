@@ -564,7 +564,6 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillEnableParsingOfStreetLocation,
       features::kAutofillEnableRationalizationEngineForMX,
       // Other improvements.
-      features::kAutofillDefaultToCityAndNumber,
       features::kAutofillEnableCacheForRegexMatching};
   std::vector<base::test::FeatureRef> disabled_features = {};
 

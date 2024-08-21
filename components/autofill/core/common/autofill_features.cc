@@ -90,13 +90,6 @@ BASE_FEATURE(kAutofillConsiderPhoneNumberSeparatorsValidLabels,
              "AutofillConsiderPhoneNumberSeparatorsValidLabels",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Crowdsourcing already prefers PHONE_HOME_CITY_AND_NUMBER over
-// PHONE_HOME_WHOLE_NUMBER. With this feature, local heuristics do the same.
-// TODO(crbug.com/40279279): Clean up after June 1, 2024.
-BASE_FEATURE(kAutofillDefaultToCityAndNumber,
-             "AutofillDefaultToCityAndNumber",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, no prefix matching is applied to filter credit card number
 // suggestions.
 // TODO(crbug.com/338932642): Clean up if launched.

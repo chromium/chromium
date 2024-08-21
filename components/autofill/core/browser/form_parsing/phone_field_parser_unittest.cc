@@ -176,18 +176,7 @@ TEST_P(PhoneFieldParserTest, NonParse) {
   RunParsingTest({}, /*expect_success=*/false);
 }
 
-TEST_P(PhoneFieldParserTest, ParseOneLinePhoneWithoutDefaultToCityAndNumber) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillDefaultToCityAndNumber);
-  for (FormControlType field_type : kFieldTypes) {
-    RunParsingTest({{field_type, u"Phone", u"phone", PHONE_HOME_WHOLE_NUMBER}});
-  }
-}
-
 TEST_P(PhoneFieldParserTest, ParseOneLinePhoneWithDefaultToCityAndNumber) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillDefaultToCityAndNumber};
   for (FormControlType field_type : kFieldTypes) {
     RunParsingTest(
         {{field_type, u"Phone", u"phone", PHONE_HOME_CITY_AND_NUMBER}});
@@ -253,11 +242,8 @@ TEST_P(PhoneFieldParserTest, GrammarMetrics) {
   // 14 of the grammars array in PhoneFieldParser::GetPhoneGrammars. We thus
   // expect that 14 is logged.
   base::HistogramTester histogram_tester;
-  bool default_to_city_and_number =
-      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber);
   RunParsingTest({{FormControlType::kInputText, u"Phone", u"phone",
-                   default_to_city_and_number ? PHONE_HOME_CITY_AND_NUMBER
-                                              : PHONE_HOME_WHOLE_NUMBER}});
+                   PHONE_HOME_CITY_AND_NUMBER}});
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.FieldPrediction.PhoneNumberGrammarUsage2"),
               BucketsAre(base::Bucket(14, 1)));
