@@ -188,8 +188,7 @@ URLPattern::URLPattern(const URLPattern& other) = default;
 
 URLPattern::URLPattern(URLPattern&& other) = default;
 
-URLPattern::~URLPattern() {
-}
+URLPattern::~URLPattern() = default;
 
 URLPattern& URLPattern::operator=(const URLPattern& other) = default;
 
