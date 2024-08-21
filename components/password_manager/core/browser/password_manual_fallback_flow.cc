@@ -229,41 +229,33 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
                                             field_id_));
 
   switch (suggestion.type) {
-    case autofill::SuggestionType::kPasswordEntry:
-      MaybeAuthenticateBeforeFilling(base::BindOnce(
-          &PasswordManagerDriver::FillSuggestion,
-          base::Unretained(password_manager_driver_),
-          GetUsernameFromLabel(suggestion.labels[0][0].value),
-          suggestion.GetPayload<Suggestion::PasswordSuggestionDetails>()
-              .password));
+    case autofill::SuggestionType::kPasswordEntry: {
+      Suggestion::PasswordSuggestionDetails payload =
+          suggestion.GetPayload<Suggestion::PasswordSuggestionDetails>();
+      EnsureCrossDomainPasswordUsageGetsConsent(
+          payload, /*on_allowed=*/base::BindOnce(
+              &PasswordManualFallbackFlow::MaybeAuthenticateBeforeFilling,
+              weak_ptr_factory_.GetWeakPtr(),
+              base::BindOnce(
+                  &PasswordManagerDriver::FillSuggestion,
+                  base::Unretained(password_manager_driver_),
+                  GetUsernameFromLabel(suggestion.labels[0][0].value),
+                  payload.password)));
       break;
+    }
     case autofill::SuggestionType::kPasswordFieldByFieldFilling:
       password_manager_driver_->FillField(suggestion.main_text.value);
       break;
     case autofill::SuggestionType::kFillPassword: {
       Suggestion::PasswordSuggestionDetails payload =
           suggestion.GetPayload<Suggestion::PasswordSuggestionDetails>();
-      auto filling_callback = base::BindOnce(
-          &PasswordManualFallbackFlow::MaybeAuthenticateBeforeFilling,
-          weak_ptr_factory_.GetWeakPtr(),
-          base::BindOnce(&PasswordManagerDriver::FillField,
-                         base::Unretained(password_manager_driver_),
-                         payload.password));
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_CHROMEOS)
-      if (payload.is_cross_domain) {
-        cross_domain_confirmation_popup_controller_ =
-            password_client_->ShowCrossDomainConfirmationPopup(
-                bounds_, text_direction_,
-                password_manager_driver_->GetLastCommittedURL(),
-                payload.display_signon_realm, std::move(filling_callback));
-        break;
-      }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_CHROMEOS)
-
-      std::move(filling_callback).Run();
+      EnsureCrossDomainPasswordUsageGetsConsent(
+          payload, /*on_allowed=*/base::BindOnce(
+              &PasswordManualFallbackFlow::MaybeAuthenticateBeforeFilling,
+              weak_ptr_factory_.GetWeakPtr(),
+              base::BindOnce(&PasswordManagerDriver::FillField,
+                             base::Unretained(password_manager_driver_),
+                             payload.password)));
       break;
     }
     case autofill::SuggestionType::kViewPasswordDetails: {
@@ -389,6 +381,25 @@ void PasswordManualFallbackFlow::CancelBiometricReauthIfOngoing() {
   }
   authenticator_->Cancel();
   authenticator_.reset();
+}
+
+void PasswordManualFallbackFlow::EnsureCrossDomainPasswordUsageGetsConsent(
+    const Suggestion::PasswordSuggestionDetails& payload,
+    base::OnceClosure on_allowed) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS)
+  if (payload.is_cross_domain) {
+    cross_domain_confirmation_popup_controller_ =
+        password_client_->ShowCrossDomainConfirmationPopup(
+            bounds_, text_direction_,
+            password_manager_driver_->GetLastCommittedURL(),
+            payload.display_signon_realm, std::move(on_allowed));
+    return;
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
+  std::move(on_allowed).Run();
 }
 
 }  // namespace password_manager

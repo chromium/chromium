@@ -55,6 +55,7 @@ using testing::NiceMock;
 using testing::Return;
 using testing::ReturnRef;
 using testing::Test;
+using testing::Values;
 
 constexpr const char kUrl[] = "https://example.com/";
 constexpr const char kPSLExtension[] = "https://psl.example.com/";
@@ -895,8 +896,13 @@ TEST_F(PasswordManualFallbackFlowTest, NoFillingIfAuthFails) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
+class PasswordManualFallbackFlowCrossDomainConfirmationTest
+    : public PasswordManualFallbackFlowTest,
+      public testing::WithParamInterface<SuggestionType> {};
+
 // Tests that the confirmation popup is shown for cross domain filling.
-TEST_F(PasswordManualFallbackFlowTest, CrossDomainConfirmation) {
+TEST_P(PasswordManualFallbackFlowCrossDomainConfirmationTest,
+       CrossDomainConfirmationBlocksFilling) {
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
@@ -913,14 +919,23 @@ TEST_F(PasswordManualFallbackFlowTest, CrossDomainConfirmation) {
                                        base::UTF8ToUTF16(password_origin), _));
   EXPECT_CALL(driver(), FillField).Times(0);
 
-  ShowAndAcceptSuggestion(autofill::test::CreateAutofillSuggestion(
-                              SuggestionType::kFillPassword, u"Fill password",
-                              Suggestion::PasswordSuggestionDetails(
-                                  u"username", u"password", password_origin,
-                                  base::UTF8ToUTF16(password_origin),
-                                  /*is_cross_domain=*/true)),
+  Suggestion suggestion =
+      Suggestion(/*main_text=*/"Password", "label", Suggestion::Icon::kKey,
+                 /*type=*/GetParam());
+  suggestion.payload = Suggestion::PasswordSuggestionDetails(
+      u"username", u"password", password_origin,
+      base::UTF8ToUTF16(password_origin),
+      /*is_cross_domain=*/true);
+
+  ShowAndAcceptSuggestion(std::move(suggestion),
                           AutofillSuggestionDelegate::SuggestionPosition{});
 }
+
+INSTANTIATE_TEST_SUITE_P(PasswordManualFallbackFlowTest,
+                         PasswordManualFallbackFlowCrossDomainConfirmationTest,
+                         Values(SuggestionType::kPasswordEntry,
+                                SuggestionType::kFillPassword));
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
 

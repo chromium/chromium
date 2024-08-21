@@ -120,6 +120,15 @@ class PasswordManualFallbackFlow : public autofill::AutofillSuggestionDelegate,
   // Cancels an ongoing biometric re-authentication.
   void CancelBiometricReauthIfOngoing();
 
+  // For credentials not originated from the current domain (defined by
+  // `payload.is_cross_domain`), this method makes sure that the `on_allowed`
+  // callback is called only after receiving user's explicit consent (through
+  // a bubble dialog).
+  // For non cross domain usages the `on_allowed` is called immediately.
+  void EnsureCrossDomainPasswordUsageGetsConsent(
+      const autofill::Suggestion::PasswordSuggestionDetails& payload,
+      base::OnceClosure on_allowed);
+
   const PasswordSuggestionGenerator suggestion_generator_;
   const raw_ptr<PasswordManagerDriver> password_manager_driver_;
   const raw_ptr<autofill::AutofillClient> autofill_client_;
