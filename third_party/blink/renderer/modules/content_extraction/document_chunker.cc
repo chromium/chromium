@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -19,13 +21,16 @@ namespace {
 
 // Checks for excluded tags. Text within these will be excluded from passages.
 bool IsExcludedElement(const Node& node) {
-  const HTMLElement* html_element = DynamicTo<HTMLElement>(node);
-  if (!html_element) {
+  const Element* element = DynamicTo<Element>(node);
+  if (!element) {
     return false;
   }
-  return html_element->HasTagName(html_names::kNoscriptTag) ||
-         html_element->HasTagName(html_names::kScriptTag) ||
-         html_element->HasTagName(html_names::kStyleTag);
+  return element->HasTagName(html_names::kNoscriptTag) ||
+         element->HasTagName(html_names::kScriptTag) ||
+         element->HasTagName(html_names::kStyleTag) ||
+         element->HasTagName(svg_names::kDefsTag) ||
+         element->HasTagName(svg_names::kStyleTag) ||
+         element->HasTagName(svg_names::kScriptTag);
 }
 
 // Checks for tags that indicate a section break. Sibling nodes will not be
