@@ -111,6 +111,12 @@ PATH_CONTEXT = {
             'archive_name': None,
             'archive_extract_dir': 'android-arm64'
         },
+        'android-arm64-high': {
+            'binary_name': None,
+            'listing_platform_dir': 'high-arm_64/',
+            'archive_name': None,
+            'archive_extract_dir': 'android-arm64'
+        },
         'android-x86': {
             'binary_name': None,
             'listing_platform_dir': 'x86/',
@@ -169,8 +175,13 @@ PATH_CONTEXT = {
         },
         'android-arm64': {
             'binary_name': None,
-            # See for why not high_end: https://crbug.com/350944660#comment7
             'listing_platform_dir': 'android_arm64-builder-perf/',
+            'archive_name': 'full-build-linux.zip',
+            'archive_extract_dir': 'full-build-linux'
+        },
+        'android-arm64-high': {
+            'binary_name': None,
+            'listing_platform_dir': 'android_arm64_high_end-builder-perf/',
             'archive_name': 'full-build-linux.zip',
             'archive_extract_dir': 'full-build-linux'
         },
@@ -295,6 +306,38 @@ MONOCHROME_APK_FILENAMES = {
     'chrome_dev': 'MonochromeDev.apk',
     'chrome_stable': 'MonochromeStable.apk',
     'chromium': 'ChromePublic.apk',
+}
+
+TRICHROME_APK_FILENAMES = {
+    'chrome': 'TrichromeChromeGoogle.apks',
+    'chrome_beta': 'TrichromeChromeGoogleBeta.apks',
+    'chrome_canary': 'TrichromeChromeGoogleCanary.apks',
+    'chrome_dev': 'TrichromeChromeGoogleDev.apks',
+    'chrome_stable': 'TrichromeChromeGoogleStable.apks',
+}
+
+TRICHROME64_APK_FILENAMES = {
+    'chrome': 'TrichromeChromeGoogle6432.apks',
+    'chrome_beta': 'TrichromeChromeGoogle6432Beta.apks',
+    'chrome_canary': 'TrichromeChromeGoogle6432Canary.apks',
+    'chrome_dev': 'TrichromeChromeGoogle6432Dev.apks',
+    'chrome_stable': 'TrichromeChromeGoogle6432Stable.apks',
+}
+
+TRICHROME_LIBRARY_FILENAMES = {
+    'chrome': 'TrichromeLibraryGoogle.apk',
+    'chrome_beta': 'TrichromeLibraryGoogleBeta.apk',
+    'chrome_canary': 'TrichromeLibraryGoogleCanary.apk',
+    'chrome_dev': 'TrichromeLibraryGoogleDev.apk',
+    'chrome_stable': 'TrichromeLibraryGoogleStable.apk',
+}
+
+TRICHROME64_LIBRARY_FILENAMES = {
+    'chrome': 'TrichromeLibraryGoogle6432.apk',
+    'chrome_beta': 'TrichromeLibraryGoogle6432Beta.apk',
+    'chrome_canary': 'TrichromeLibraryGoogle6432Canary.apk',
+    'chrome_dev': 'TrichromeLibraryGoogle6432Dev.apk',
+    'chrome_stable': 'TrichromeLibraryGoogle6432Stable.apk',
 }
 
 WEBVIEW_APK_FILENAMES = {
@@ -491,6 +534,8 @@ class ArchiveBuild(abc.ABC):
 
   def _save_rev_list_cache(self, revisions):
     if not self.use_local_cache:
+      return
+    if not revisions:
       return
     cache = {}
     cache_filename = self._rev_list_cache_filename
@@ -711,9 +756,11 @@ class ReleaseBuild(ArchiveBuild):
   def _get_listing_url(self):
     return self._get_release_bucket()
 
-  def _get_archive_path(self, build_number):
+  def _get_archive_path(self, build_number, archive_name=None):
+    if archive_name is None:
+      archive_name = self.archive_name
     return '/'.join((self._get_release_bucket(), str(build_number),
-                     self.listing_platform_dir.rstrip('/'), self.archive_name))
+                     self.listing_platform_dir.rstrip('/'), archive_name))
 
   @property
   def _rev_list_cache_key(self):
@@ -729,8 +776,7 @@ class ReleaseBuild(ArchiveBuild):
     return [LooseVersion(x) for x in revisions]
 
   def get_download_url(self, revision):
-    return '%s/%s/%s%s' % (self._get_release_bucket(), revision,
-                           self.listing_platform_dir, self.archive_name)
+    return self._get_archive_path(revision)
 
 
 class ArchiveBuildWithCommitPosition(ArchiveBuild):
@@ -965,7 +1011,27 @@ class AndroidBuildMixin:
     # The args could be set via self.run_revision
     self.flags = flag_changer.FlagChanger(
         self.device, chrome.PACKAGE_INFO[self.apk].cmdline_file)
-    self.binary_name = GetAndroidApkFilename(self.device, self.apk)
+    self.binary_name = self._get_apk_filename()
+
+  def _get_apk_filename(self, prefer_64bit=True):
+    sdk = self.device.build_version_sdk
+    apk_mapping = None
+    if 'webview' in self.apk.lower():
+      apk_mapping = WEBVIEW_APK_FILENAMES
+    # Need these logic to bisect very old build. Release binaries are stored
+    # forever and occasionally there are requests to bisect issues introduced
+    # in very old versions.
+    elif sdk < version_codes.LOLLIPOP:
+      apk_mapping = CHROME_APK_FILENAMES
+    elif sdk < version_codes.NOUGAT:
+      apk_mapping = CHROME_MODERN_APK_FILENAMES
+    else:
+      apk_mapping = MONOCHROME_APK_FILENAMES
+    if self.apk not in apk_mapping:
+      raise BisectException(
+          'Bisecting on Android only supported for these apks: [%s].' %
+          '|'.join(apk_mapping))
+    return apk_mapping[self.apk]
 
   def _install_revision(self, download, tempdir):
     apk_path = super()._install_revision(download, tempdir)
@@ -980,13 +1046,47 @@ class AndroidBuildMixin:
     return '%s/*/apks/%s' % (tempdir, self.binary_name)
 
 
+class AndroidTrichromeMixin(AndroidBuildMixin):
+
+  def __init__(self, options):
+    self._64bit_platforms = ('android-arm64', 'android-x64',
+                             'android-arm64-high')
+    super().__init__(options)
+    if self.device.build_version_sdk < version_codes.Q:
+      raise BisectException("Trichrome is only supported after Android Q.")
+    self.library_binary_name = self._get_library_filename()
+
+  def _get_apk_filename(self, prefer_64bit=True):
+    if self.platform in self._64bit_platforms and prefer_64bit:
+      apk_mapping = TRICHROME64_APK_FILENAMES
+    else:
+      apk_mapping = TRICHROME_APK_FILENAMES
+    if self.apk not in apk_mapping:
+      raise BisectException(
+          'Bisecting on Android only supported for these apks: [%s].' %
+          '|'.join(apk_mapping))
+    return apk_mapping[self.apk]
+
+  def _get_library_filename(self, prefer_64bit=True):
+    apk_mapping = None
+    if self.platform in self._64bit_platforms and prefer_64bit:
+      apk_mapping = TRICHROME64_LIBRARY_FILENAMES
+    else:
+      apk_mapping = TRICHROME_LIBRARY_FILENAMES
+    if self.apk not in apk_mapping:
+      raise BisectException(
+          'Bisecting for Android Trichrome only supported for these apks: [%s].'
+          % '|'.join(apk_mapping))
+    return apk_mapping[self.apk]
+
+
 class AndroidReleaseBuild(AndroidBuildMixin, ReleaseBuild):
 
   def __init__(self, options):
     super().__init__(options)
     self.signed = options.signed
     # We could download the apk directly from build bucket
-    self.archive_name = GetAndroidApkFilename(self.device, self.apk)
+    self.archive_name = self.binary_name
 
   def _get_release_bucket(self):
     if self.signed:
@@ -1009,6 +1109,64 @@ class AndroidReleaseBuild(AndroidBuildMixin, ReleaseBuild):
     InstallOnAndroid(self.device, download)
 
 
+class AndroidTrichromeReleaseBuild(AndroidTrichromeMixin, AndroidReleaseBuild):
+
+  def __init__(self, options):
+    super().__init__(options)
+    # Release build will download the binary directly from GCS bucket.
+    self.archive_name = self.binary_name
+    self.library_archive_name = self.library_binary_name
+
+  def _get_library_filename(self, prefer_64bit=True):
+    if self.apk == 'chrome' and self.platform == 'android-arm64-high':
+      raise BisectException('chrome debug build is not supported for %s' %
+                            self.platform)
+    return super()._get_library_filename(prefer_64bit)
+
+  def get_download_url(self, revision):
+    # M112 is when we started serving 6432 to 4GB+ devices. Before this it was
+    # only to 6GB+ devices.
+    if revision >= LooseVersion('112'):
+      trichrome = self.binary_name
+      trichrome_library = self.library_binary_name
+    else:
+      trichrome = self._get_apk_filename(prefer_64bit=False)
+      trichrome_library = self._get_library_filename(prefer_64bit=False)
+    return {
+        'trichrome': self._get_archive_path(revision, trichrome),
+        'trichrome_library': self._get_archive_path(revision,
+                                                    trichrome_library),
+    }
+
+  def _install_revision(self, download, tempdir):
+    if not isinstance(download, dict):
+      raise Exception("Trichrome should download multiple files from GCS.")
+    # AndroidRelease build downloads the apks directly from GCS bucket.
+    # Trichrome need to install the trichrome_library first.
+    InstallOnAndroid(self.device, download['trichrome_library'])
+    InstallOnAndroid(self.device, download['trichrome'])
+
+
+class AndroidTrichromeOfficialBuild(AndroidTrichromeMixin, OfficialBuild):
+
+  def _get_apk_filename(self, prefer_64bit=True):
+    filename = super()._get_apk_filename(prefer_64bit)
+    return filename.replace(".apks", ".minimal.apks")
+
+  def _install_revision(self, download, tempdir):
+    UnzipFilenameToDir(download, tempdir)
+    trichrome_library_filename = self._get_library_filename()
+    trichrome_library_path = glob.glob(f'{tempdir}/*/apks/{trichrome_library_filename}')
+    if len(trichrome_library_path) == 0:
+      raise Exception(f'Can not find {trichrome_library_filename} from {tempdir}')
+    trichrome_filename = self._get_apk_filename()
+    trichrome_path = glob.glob(f'{tempdir}/*/apks/{trichrome_filename}')
+    if len(trichrome_path) == 0:
+      raise Exception(f'Can not find {trichrome_filename} from {tempdir}')
+    InstallOnAndroid(self.device, trichrome_library_path[0])
+    InstallOnAndroid(self.device, trichrome_path[0])
+
+
 class LinuxReleaseBuild(ReleaseBuild):
 
   def _get_extra_args(self):
@@ -1029,13 +1187,17 @@ class AndroidSnapshotBuild(AndroidBuildMixin, SnapshotBuild):
 
 def create_archive_build(options):
   if options.release_builds:
-    if options.archive.startswith('android'):
+    if options.archive == 'android-arm64-high':
+      return AndroidTrichromeReleaseBuild(options)
+    elif options.archive.startswith('android'):
       return AndroidReleaseBuild(options)
     elif options.archive.startswith('linux'):
       return LinuxReleaseBuild(options)
     return ReleaseBuild(options)
   elif options.official_builds:
-    if options.archive.startswith('android'):
+    if options.archive == 'android-arm64-high':
+      return AndroidTrichromeOfficialBuild(options)
+    elif options.archive.startswith('android'):
       return AndroidOfficialBuild(options)
     return OfficialBuild(options)
   elif options.asan:
@@ -1095,24 +1257,6 @@ def gsutil_download(download_url, filename):
   RunGsutilCommand(command)
 
 
-def _GetMappingFromAndroidApk(device, apk):
-  sdk = device.build_version_sdk
-  if 'webview' in apk.lower():
-    return WEBVIEW_APK_FILENAMES
-  # Need these logic to bisect very old build. Release binaries are stored
-  # forever and occasionally there are requests to bisect issues introduced
-  # in very old versions.
-  elif sdk < version_codes.LOLLIPOP:
-    return CHROME_APK_FILENAMES
-  elif sdk < version_codes.NOUGAT:
-    return CHROME_MODERN_APK_FILENAMES
-  return MONOCHROME_APK_FILENAMES
-
-
-def GetAndroidApkFilename(device, apk):
-  return _GetMappingFromAndroidApk(device, apk)[apk]
-
-
 def RunRevision(archive_build, revision, zip_file, args):
   """Given a zipped revision, unzip it and run the test."""
   print('Trying revision %s...' % str(revision))
@@ -1166,28 +1310,42 @@ def DidCommandSucceed(rev, exit_status, stdout, stderr):
 
 
 class DownloadJob:
-  """DownloadJob represents a task to download a given url."""
+  """
+  DownloadJob represents a task to download a given url.
+  """
 
   def __init__(self, url, rev, name=None):
-    self.url = url
+    """
+    Args:
+      url: The url to download or a dict of {key: url} to download multiple
+        targets.
+      rev: The revision of the target.
+      name: The name of the thread.
+    """
+    if isinstance(url, dict):
+      self.is_multiple = True
+      self.urls = url
+    else:
+      self.is_multiple = False
+      self.urls = {None: url}
     self.rev = rev
     self.name = name
 
-    _, ext = os.path.splitext(urllib.parse.urlparse(self.url).path)
-    fd, self.tmp_file = tempfile.mkstemp(suffix=ext)
-    os.close(fd)
+    self.results = {}
     self.quit_event = threading.Event()
     self.progress_event = threading.Event()
     self.thread = None
 
   def _clear_up_tmp_files(self):
-    if self.tmp_file:
+    if not self.results:
+      return
+    for tmp_file in self.results.values():
       try:
-        os.unlink(self.tmp_file)
-        self.tmp_file = None
+        os.unlink(tmp_file)
       except FileNotFoundError:
         # Handle missing archives.
         pass
+    self.results = None
 
   def __del__(self):
     self._clear_up_tmp_files()
@@ -1207,14 +1365,22 @@ class DownloadJob:
     # Send a \r to let all progress messages use just one line of output.
     print(progress, end='\r', flush=True)
 
+  def _fetch(self, url, tmp_file):
+    if url.startswith('gs'):
+      gsutil_download(url, tmp_file)
+    else:
+      urllib.request.urlretrieve(url, tmp_file, self._report_hook)
+      if self.progress_event and self.progress_event.is_set():
+        print()
+
   def fetch(self):
     try:
-      if self.url.startswith('gs'):
-        gsutil_download(self.url, self.tmp_file)
-      else:
-        urllib.request.urlretrieve(self.url, self.tmp_file, self._report_hook)
-        if self.progress_event and self.progress_event.is_set():
-          print()
+      for key, url in self.urls.items():
+        _, ext = os.path.splitext(urllib.parse.urlparse(url).path)
+        fd, tmp_file = tempfile.mkstemp(suffix=ext)
+        self.results[key] = tmp_file
+        os.close(fd)
+        self._fetch(url, tmp_file)
     except RuntimeError:
       pass
 
@@ -1245,7 +1411,12 @@ class DownloadJob:
         # The parameter to join is needed to keep the main thread responsive to
         # signals. Without it, the program will not respond to interruptions.
         self.thread.join(1)
-      return self.tmp_file
+      if self.quit_event.is_set():
+        raise Exception('The DownloadJob was stopped.')
+      if self.is_multiple:
+        return self.results
+      else:
+        return self.results[None]
     except (KeyboardInterrupt, SystemExit):
       self.stop()
       raise
