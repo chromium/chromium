@@ -139,7 +139,10 @@ static_library("chrome_test_launcher") {
 # require many files from it. This makes linking more efficient.
 static_library("test_support") {
   defines = []
-  deps = [ "//chrome/browser/ui:ui_features" ]
+  deps = [
+    "//chrome/browser:global_features",
+    "//chrome/browser/ui:ui_features",
+  ]
   public_deps = []
   testonly = true
 
@@ -1761,6 +1764,7 @@ if (!is_android) {
       "//chrome/app/vector_icons",
       "//chrome/browser",
       "//chrome/browser:buildflags",
+      "//chrome/browser:global_features",
       "//chrome/browser:main_extra_parts",
       "//chrome/browser:primitives",
       "//chrome/browser/accessibility:test_support",

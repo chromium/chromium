@@ -134,6 +134,11 @@ source_set("main_extra_parts") {
   sources = [ "chrome_browser_main_extra_parts.h" ]
 }
 
+source_set("global_features") {
+  sources = [ "global_features.h" ]
+  public_deps = [ "//base" ]
+}
+
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 static_library("browser") {
@@ -579,7 +584,6 @@ static_library("browser") {
     "geolocation/geolocation_permission_context_extensions.cc",
     "geolocation/geolocation_permission_context_extensions.h",
     "global_features.cc",
-    "global_features.h",
     "gpu/chrome_browser_main_extra_parts_gpu.cc",
     "gpu/chrome_browser_main_extra_parts_gpu.h",
     "gpu/gpu_mode_manager.cc",
@@ -1890,6 +1894,7 @@ static_library("browser") {
     ":dev_ui_browser_resources_grit",
     ":expired_flags_list",
     ":font_pref",
+    ":global_features",
     ":k_anonymity_storage_proto",
     ":lcp_critical_path_predictor_proto",
     ":main_extra_parts",
@@ -8934,6 +8939,7 @@ static_library("test_support") {
   ]
   deps = [
     ":browser_process",
+    ":global_features",
     ":lcp_critical_path_predictor_proto",
     "//build:chromeos_buildflags",
     "//chrome/app/theme:theme_resources",

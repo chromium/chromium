@@ -446,6 +446,7 @@ static_library("ui") {
     "//chrome/browser:buildflags",
     "//chrome/browser:dev_ui_browser_resources",
     "//chrome/browser:font_pref",
+    "//chrome/browser:global_features",
     "//chrome/browser/autofill",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",
