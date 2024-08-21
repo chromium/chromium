@@ -130,7 +130,6 @@ constexpr std::string_view kMaskedIbansTable = "masked_ibans";
 // kInstrumentId = "instrument_id"
 constexpr std::string_view kPrefix = "prefix";
 // kSuffix = "suffix";
-constexpr std::string_view kLength = "length";
 // kNickname = "nickname"
 
 constexpr std::string_view kMaskedIbansMetadataTable = "masked_ibans_metadata";
@@ -578,6 +577,9 @@ bool PaymentsAutofillTable::MigrateToVersion(int version,
     case 131:
       *update_compatible_version = true;
       return MigrateToVersion131RemoveGenericPaymentInstrumentTypeColumn();
+    case 133:
+      *update_compatible_version = true;
+      return MigrateToVersion133RemoveLengthColumnFromMaskedIbansTable();
   }
   return true;
 }
@@ -1267,10 +1269,10 @@ bool PaymentsAutofillTable::GetCreditCardCloudTokenData(
 
 bool PaymentsAutofillTable::GetServerIbans(std::vector<std::unique_ptr<Iban>>& ibans) {
   sql::Statement s;
-  SelectBuilder(db_, s, kMaskedIbansTable,
-                {kInstrumentId, kUseCount, kUseDate, kNickname, kPrefix,
-                 kSuffix, kLength},
-                "LEFT OUTER JOIN masked_ibans_metadata USING (instrument_id)");
+  SelectBuilder(
+      db_, s, kMaskedIbansTable,
+      {kInstrumentId, kUseCount, kUseDate, kNickname, kPrefix, kSuffix},
+      "LEFT OUTER JOIN masked_ibans_metadata USING (instrument_id)");
 
   ibans.clear();
   while (s.Step()) {
@@ -1287,7 +1289,6 @@ bool PaymentsAutofillTable::GetServerIbans(std::vector<std::unique_ptr<Iban>>& i
     iban->set_nickname(s.ColumnString16(index++));
     iban->set_prefix(s.ColumnString16(index++));
     iban->set_suffix(s.ColumnString16(index++));
-    index++;  // Skip unused `length` field.
     ibans.push_back(std::move(iban));
   }
 
@@ -1305,7 +1306,7 @@ bool PaymentsAutofillTable::SetServerIbansData(const std::vector<Iban>& ibans) {
 
   sql::Statement s;
   InsertBuilder(db_, s, kMaskedIbansTable,
-                {kInstrumentId, kNickname, kPrefix, kSuffix, kLength});
+                {kInstrumentId, kNickname, kPrefix, kSuffix});
   for (const Iban& iban : ibans) {
     CHECK_EQ(Iban::RecordType::kServerIban, iban.record_type());
     int index = 0;
@@ -1313,8 +1314,6 @@ bool PaymentsAutofillTable::SetServerIbansData(const std::vector<Iban>& ibans) {
     s.BindString16(index++, iban.nickname());
     s.BindString16(index++, iban.prefix());
     s.BindString16(index++, iban.suffix());
-    // TODO(b/355074921): Clean up length field from kMaskedIbansTable table.
-    s.BindInt64(index++, 0);
     if (!s.Run()) {
       return false;
     }
@@ -2083,7 +2082,7 @@ bool PaymentsAutofillTable::
                      {{kInstrumentId, "VARCHAR PRIMARY KEY NOT NULL"},
                       {kPrefix, "VARCHAR NOT NULL"},
                       {kSuffix, "VARCHAR NOT NULL"},
-                      {kLength, "INTEGER NOT NULL DEFAULT 0"},
+                      {"length", "INTEGER NOT NULL DEFAULT 0"},
                       {kNickname, "VARCHAR"}}) &&
          CreateTable(db_, kMaskedIbansMetadataTable,
                      {{kInstrumentId, "VARCHAR PRIMARY KEY NOT NULL"},
@@ -2134,6 +2133,11 @@ bool PaymentsAutofillTable::
     MigrateToVersion131RemoveGenericPaymentInstrumentTypeColumn() {
   return DropColumnIfExists(db_, kGenericPaymentInstrumentsTable,
                             "payment_instrument_type");
+}
+
+bool PaymentsAutofillTable::
+    MigrateToVersion133RemoveLengthColumnFromMaskedIbansTable() {
+  return DropColumnIfExists(db_, kMaskedIbansTable, "length");
 }
 
 void PaymentsAutofillTable::AddMaskedCreditCards(
@@ -2248,7 +2252,6 @@ bool PaymentsAutofillTable::InitMaskedIbansTable() {
       {{kInstrumentId, "VARCHAR PRIMARY KEY NOT NULL"},
        {kPrefix, "VARCHAR NOT NULL"},
        {kSuffix, "VARCHAR NOT NULL"},
-       {kLength, "INTEGER NOT NULL DEFAULT 0"},
        {kNickname, "VARCHAR"}});
 }
 

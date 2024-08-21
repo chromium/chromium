@@ -1533,3 +1533,21 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion131ToCurrent) {
     EXPECT_TRUE(connection.DoesColumnExist("local_addresses", "use_date3"));
   }
 }
+
+TEST_F(WebDatabaseMigrationTest, MigrateVersion132ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_132.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(132, VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesColumnExist("masked_ibans", "length"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesColumnExist("masked_ibans", "length"));
+  }
+}

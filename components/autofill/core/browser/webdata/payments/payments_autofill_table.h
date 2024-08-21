@@ -181,7 +181,6 @@ struct ServerCvc {
 //                      shown when in a masked format.
 //   suffix             Contains the suffix of the full IBAN value that is
 //                      shown when in a masked format.
-//   length             Length of the full IBAN value.
 //   nickname           A nickname for the IBAN, entered by the user.
 // -----------------------------------------------------------------------------
 // masked_ibans_metadata
@@ -588,6 +587,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion125DeleteFullServerCardsTable();
   bool MigrateToVersion129AddGenericPaymentInstrumentsTable();
   bool MigrateToVersion131RemoveGenericPaymentInstrumentTypeColumn();
+  bool MigrateToVersion133RemoveLengthColumnFromMaskedIbansTable();
 
  private:
   // Adds to |masked_credit_cards| and updates |server_card_metadata|.
