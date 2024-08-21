@@ -3881,11 +3881,11 @@ const char kVcWebApiName[] = "VC web API";
 const char kVcWebApiDescription[] =
     "Allows web API support for video conferencing on chromebooks.";
 
-const char kVideoPictureInPictureMinimizeButtonName[] =
-    "Video picture-in-picture minimize button";
-const char kVideoPictureInPictureMinimizeButtonDescription[] =
-    "Displays a minimize button in the video picture-in-picture window that"
-    "closes the window without pausing the video.";
+const char kVideoPictureInPictureControlsUpdate2024Name[] =
+    "Video picture-in-picture controls update 2024";
+const char kVideoPictureInPictureControlsUpdate2024Description[] =
+    "Displays an updated UI for video picture-in-picture controls from its 2024"
+    "UI update";
 
 const char kV8VmFutureName[] = "Future V8 VM features";
 const char kV8VmFutureDescription[] =

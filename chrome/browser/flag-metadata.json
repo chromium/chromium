@@ -9256,9 +9256,9 @@
     "expiry_milestone": 129
   },
   {
-    "name": "video-picture-in-picture-minimize-button",
+    "name": "video-picture-in-picture-controls-update-2024",
     "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
     "name": "view-transition-on-navigation",

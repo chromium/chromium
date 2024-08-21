@@ -20647,6 +20647,8 @@ from previous Chrome versions.
   <int value="61205887" label="enable-text-input-focus-manager"/>
   <int value="61466986" label="AsyncDns:disabled"/>
   <int value="61770125" label="LinkPreview:enabled"/>
+  <int value="62547894"
+      label="VideoPictureInPictureControlsUpdate2024:enabled"/>
   <int value="62808713" label="TemplateUrlReconciliation:disabled"/>
   <int value="63187126" label="DownloadsAutoResumptionNative:enabled"/>
   <int value="63693157" label="cast-streaming-force-disable-hardware-h264"/>
@@ -24922,6 +24924,8 @@ from previous Chrome versions.
   <int value="1834968807" label="OmniboxAutocompleteTitles:enabled"/>
   <int value="1835075399" label="PostQuantumCECPQ2:disabled"/>
   <int value="1835523483" label="OmniboxUIExperimentSwapTitleAndUrl:enabled"/>
+  <int value="1835930032"
+      label="VideoPictureInPictureControlsUpdate2024:disabled"/>
   <int value="1835931933" label="ShareUsageRankingFixedMore:enabled"/>
   <int value="1835970010" label="UrlScoringModel:enabled"/>
   <int value="1836557489" label="EnableDangerousDownloadDialog:disabled"/>

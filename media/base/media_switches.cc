@@ -866,9 +866,9 @@ BASE_FEATURE(kVideoFrameUseClientSITextureTarget,
              "VideoFrameUseClientSITextureTarget",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Displays a minimize button on video picture-in-picture windows.
-BASE_FEATURE(kVideoPictureInPictureMinimizeButton,
-             "VideoPictureInPictureMinimizeButton",
+// Displays new video picture-in-picture controls for the 2024 UI update.
+BASE_FEATURE(kVideoPictureInPictureControlsUpdate2024,
+             "VideoPictureInPictureControlsUpdate2024",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // A video encoder is allowed to drop a frame in cast mirroring.

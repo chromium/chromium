@@ -9820,11 +9820,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(media::kAutoPictureInPictureForVideoPlayback)},
 
-    {"video-picture-in-picture-minimize-button",
-     flag_descriptions::kVideoPictureInPictureMinimizeButtonName,
-     flag_descriptions::kVideoPictureInPictureMinimizeButtonDescription,
+    {"video-picture-in-picture-controls-update-2024",
+     flag_descriptions::kVideoPictureInPictureControlsUpdate2024Name,
+     flag_descriptions::kVideoPictureInPictureControlsUpdate2024Description,
      kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(media::kVideoPictureInPictureMinimizeButton)},
+     FEATURE_VALUE_TYPE(media::kVideoPictureInPictureControlsUpdate2024)},
 
     {"document-picture-in-picture-animate-resize",
      flag_descriptions::kDocumentPictureInPictureAnimateResizeName,

@@ -17,7 +17,7 @@
 namespace {
 
 constexpr int kMinimizeButtonVerticalMargin = 4;
-constexpr int kMinimizeButtonHorizontalMargin = 32;
+constexpr int kMinimizeButtonHorizontalMargin = 60;
 constexpr int kMinimizeButtonSize = 24;
 constexpr int kMinimizeButtonIconSize = 16;
 
