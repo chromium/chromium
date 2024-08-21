@@ -75,6 +75,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
@@ -660,6 +661,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   BackgroundSyncControllerFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   badging::BadgeManagerFactory::GetInstance();
+#endif
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  BatchUploadServiceFactory::GetInstance();
 #endif
   BitmapFetcherServiceFactory::GetInstance();
   BluetoothChooserContextFactory::GetInstance();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/profiles/batch_upload/batch_upload.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 
 #include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
@@ -71,25 +71,43 @@ GetBatchUploadDataProviderMap(Profile& profile) {
 
 }  // namespace
 
-bool OpenBatchUpload(Browser* browser) {
-  base::flat_map<BatchUploadDataType, std::unique_ptr<BatchUploadDataProvider>>
-      data_providers = GetBatchUploadDataProviderMap(*browser->profile());
-  // TODO(b/359146413): Tackle this task when implementing the main view.
-  // Currently this does nothing as there `BatchUploadController::ShowDialog()`
-  // only has a dummy implementation. `BatchUploadController` also needs to have
-  // a concrete owner while the dialog is shown -- there are multiple options
-  // for now:
-  // - As a BrowserUserData
-  // - As a keyed service
-  // - As part of the dialog that will be shown that is itself owned by the
-  // views framework
-  BatchUploadController controller(std::move(data_providers));
-  return controller.ShowDialog();
+BatchUploadService::BatchUploadService(Profile& profile) : profile_(profile) {}
+
+BatchUploadService::~BatchUploadService() = default;
+
+bool BatchUploadService::OpenBatchUpload(Browser* browser) {
+  // Do not allow to have more than one controller/dialog shown at a time.
+  if (controller_) {
+    return false;
+  }
+
+  // Create the controller with all the implementations of available local data
+  // providers.
+  controller_ = std::make_unique<BatchUploadController>(
+      GetBatchUploadDataProviderMap(profile_.get()));
+
+  // TODO(b/359146413): pass in a callback to know when the dialog is closed to
+  // reset the `controller_`, using `OnBatchUplaodDialogClosed()`.
+  return controller_->ShowDialog();
 }
 
-bool ShouldShowBatchUploadEntryPointForDataType(Profile& profile,
-                                                BatchUploadDataType type) {
+void BatchUploadService::OnBatchUplaodDialogClosed(bool upload_requested) {
+  CHECK(controller_);
+  // TODO(b/361034858): Use `upload_requested` to determine whether we show the
+  // expanded pill on the avatar button that displays "Saving to your account"
+  // or not.
+
+  // Reset the state of the service.
+  controller_.reset();
+}
+
+void BatchUploadService::CloseDialogForTesting() {
+  OnBatchUplaodDialogClosed(/*upload_requested=*/false);
+}
+
+bool BatchUploadService::ShouldShowBatchUploadEntryPointForDataType(
+    BatchUploadDataType type) {
   std::unique_ptr<BatchUploadDataProvider> local_data_provider =
-      GetBatchUploadDataProvider(profile, type);
+      GetBatchUploadDataProvider(profile_.get(), type);
   return local_data_provider->HasLocalData();
 }
