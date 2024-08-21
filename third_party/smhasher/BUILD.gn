@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# murmur2 is deprecated; use only for compatibility with legacy components
+# that cannot migrate to a more modern hash.
 static_library("murmurhash2") {
   sources = [
     "src/MurmurHash2.cpp",
@@ -9,8 +11,17 @@ static_library("murmurhash2") {
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
+  visibility = [
+    "//chrome/browser/android/webapk:webapk_sources",
+    "//chrome/browser/apps/app_service",
+    "//components/language_detection/core",
+    "//components/translate/core/language_detection",
+    "//components/webapps/browser",
+  ]
 }
 
+# murmur3 is deprecated; use only for compatibility with legacy components
+# that cannot migrate to a more modern hash.
 static_library("murmurhash3") {
   sources = [
     "src/MurmurHash3.cpp",
@@ -18,4 +29,10 @@ static_library("murmurhash3") {
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
+  visibility = [
+    "//components/optimization_guide/core:bloomfilter",
+    "//components/safe_browsing/content/renderer/phishing_classifier",
+    "//components/variations:unit_tests",
+    "//third_party/nearby:connections_implementation_mediums",
+  ]
 }

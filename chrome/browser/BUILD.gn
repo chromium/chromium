@@ -3428,7 +3428,6 @@ static_library("browser") {
       "//third_party/crashpad/crashpad/client",
       "//third_party/libaddressinput:util",
       "//third_party/libphonenumber",
-      "//third_party/smhasher:murmurhash2",
       "//ui/accessibility",
       "//url",
     ]
@@ -6093,7 +6092,6 @@ static_library("browser") {
       "//components/webauthn/core/browser:passkey_model",
       "//device/fido",
       "//services/device/public/cpp/geolocation",
-      "//third_party/smhasher:murmurhash2",
       "//ui/chromeos/styles:cros_tokens_color_mappings",
       "//ui/wm/public",
     ]
