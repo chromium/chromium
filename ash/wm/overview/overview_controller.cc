@@ -13,6 +13,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
@@ -59,24 +60,6 @@ constexpr base::TimeDelta kOcclusionPauseDurationForStart =
 // overview mode immediately, contents are ready.
 constexpr base::TimeDelta kOcclusionPauseDurationForEnd =
     base::Milliseconds(500);
-
-constexpr base::TimeDelta kEnterExitPresentationMaxLatency = base::Seconds(2);
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(DeskBarVisibility)
-enum class DeskBarVisibility {
-  // Desk bar is shown in the first overview frame.
-  kShownImmediately = 0,
-  // Desk bar is shown after the first overview frame (usually after the
-  // enter-overview animation is complete).
-  kShownAfterFirstFrame = 1,
-  // Desk bar was never shown during the overview session.
-  kNotShown = 2,
-  kMaxValue = kNotShown,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:DeskBarVisibility)
 
 // Returns the enter/exit type that should be used if `kNormal` enter/exit type
 // was originally requested. Used in two cases:
@@ -425,18 +408,26 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::ExitOverview",
                                       this);
 
-    auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
-        Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-        kExitOverviewPresentationHistogram, "",
-        kEnterExitPresentationMaxLatency, /*emit_trace_event=*/true);
-    presentation_time_recorder->RequestNext();
-
-    base::UmaHistogramEnumeration(
-        "Ash.Overview.DeskBarVisibility",
+    const DeskBarVisibility desk_bar_visibility =
         desk_bar_shown_immediately_
             ? DeskBarVisibility::kShownImmediately
             : (IsDeskBarOpen() ? DeskBarVisibility::kShownAfterFirstFrame
-                               : DeskBarVisibility::kNotShown));
+                               : DeskBarVisibility::kNotShown);
+    base::UmaHistogramEnumeration("Ash.Overview.DeskBarVisibility",
+                                  desk_bar_visibility);
+
+    auto exit_presentation_time_recorder =
+        CreatePresentationTimeHistogramRecorder(
+            Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
+            kExitOverviewPresentationHistogram, "",
+            kOverviewEnterExitPresentationMaxLatency,
+            /*emit_trace_event=*/true);
+    exit_presentation_time_recorder->RequestNext();
+    if (IsRenderingDeskBarWithMiniViews()) {
+      SchedulePresentationTimeMetricsWithDeskBar(
+          std::move(enter_presentation_time_recorder_),
+          std::move(exit_presentation_time_recorder), desk_bar_visibility);
+    }
 
     // Suspend occlusion tracker until the exit animation is complete.
     exit_pauser_ = PauseOcclusionTracker(occlusion_pause_duration_for_end_);
@@ -503,11 +494,11 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::EnterOverview",
                                       this);
 
-    auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
+    enter_presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
         Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
         kEnterOverviewPresentationHistogram, "",
-        kEnterExitPresentationMaxLatency, /*emit_trace_event=*/true);
-    presentation_time_recorder->RequestNext();
+        kOverviewEnterExitPresentationMaxLatency, /*emit_trace_event=*/true);
+    enter_presentation_time_recorder_->RequestNext();
 
     base::UmaHistogramCounts100("Ash.Overview.DeskCount",
                                 DesksController::Get()->desks().size());
@@ -721,6 +712,15 @@ bool OverviewController::IsDeskBarOpen() const {
   CHECK(overview_session_);
   return overview_session_->GetGridWithRootWindow(Shell::GetPrimaryRootWindow())
       ->desks_bar_view();
+}
+
+bool OverviewController::IsRenderingDeskBarWithMiniViews() const {
+  return IsDeskBarOpen() &&
+         !overview_session_
+              ->GetGridWithRootWindow(Shell::GetPrimaryRootWindow())
+              ->desks_bar_view()
+              ->mini_views()
+              .empty();
 }
 
 void OverviewController::UpdateRoundedCornersAndShadow() {

@@ -65,10 +65,12 @@ TEST_F(PresentationTimeRecorderTest, Histogram) {
   test_recorder->RequestNext();
   histogram_tester.ExpectTotalCount(kName, 0);
   histogram_tester.ExpectTotalCount(kMaxLatencyName, 0);
+  EXPECT_FALSE(test_recorder->GetAverageLatency());
 
   EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
   histogram_tester.ExpectTotalCount(kName, 1);
   histogram_tester.ExpectTotalCount(kMaxLatencyName, 0);
+  EXPECT_TRUE(test_recorder->GetAverageLatency());
 
   compositor->ScheduleFullRedraw();
   EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
