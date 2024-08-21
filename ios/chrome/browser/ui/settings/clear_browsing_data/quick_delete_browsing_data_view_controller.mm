@@ -341,6 +341,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   cell.accessoryType = selected ? UITableViewCellAccessoryCheckmark
                                 : UITableViewCellAccessoryNone;
   cell.accessibilityIdentifier = accessibilityIdentifier;
+  cell.accessibilityTraits |= UIAccessibilityTraitButton;
   return cell;
 }
 
