@@ -915,42 +915,6 @@ ci.builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
-ci.thin_tester(
-    name = "linux-lacros-tester-rel",
-    branch_selector = branches.selector.MAIN,
-    triggered_by = ["linux-lacros-builder-rel"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "use_clang_coverage",
-                "chromeos",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.INTEL,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-        ),
-        build_gs_bucket = "chromium-chromiumos-archive",
-    ),
-    gardener_rotations = args.ignore_default(None),
-    tree_closing = False,
-    console_view_entry = consoles.console_view_entry(
-        category = "default",
-        short_name = "lcr",
-    ),
-    main_console_view = "main",
-    cq_mirrors_console_view = "mirrors",
-    contact_team_email = "chrome-desktop-engprod@google.com",
-)
-
 ci.builder(
     name = "linux-lacros-dbg",
     branch_selector = branches.selector.CROS_BRANCHES,

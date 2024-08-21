@@ -185,25 +185,6 @@ polymorphic.launcher(
     ],
 )
 
-# A coordinator for lacros.
-polymorphic.launcher(
-    name = "lacros-coordinator",
-    # To avoid peak hours, we run it from 8PM TO 4AM PST. It is
-    # 3 AM to 11 AM UTC.
-    schedule = "0 3,5,7,9 * * *",
-    pool = ci.DEFAULT_POOL,
-    os = os.LINUX_DEFAULT,
-    runner = "reviver/runner",
-    target_builders = [
-        polymorphic.target_builder(
-            builder = "ci/linux-lacros-builder-rel",
-            testers = [
-                "ci/linux-lacros-tester-rel",
-            ],
-        ),
-    ],
-)
-
 builder(
     name = "runner",
     executable = "recipe:reviver/chromium/runner",

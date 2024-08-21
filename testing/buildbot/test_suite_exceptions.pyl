@@ -202,8 +202,6 @@
       'Android FYI Release (Nexus 5X)',
       # Times out listing tests crbug.com/1167314
       'android-asan',
-      # Does not currently work on Lacros configurations.
-      'linux-lacros-tester-rel',
     ],
     'modifications': {
       'linux-chromeos-rel': {
@@ -1046,15 +1044,6 @@
           'shards': 50,
         },
       },
-      'linux-lacros-tester-rel': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1473501
-        'retry_only_failed_tests': True,
-        'swarming': {
-          'shards': 20,
-        },
-      },
       'linux-rel-cft': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux.linux-rel-cft.browser_tests.filter',
@@ -1221,9 +1210,6 @@
         'swarming': {
           'shards': 4,
         },
-      },
-      'linux-lacros-tester-rel': {
-        'ci_only': True, # https://crbug.com/1509554
       },
     },
   },
@@ -1909,9 +1895,6 @@
           'shards': 12,
         },
       },
-      'linux-lacros-tester-rel': {
-        'ci_only': True,
-      },
       'linux-ubsan-fyi-rel': {
         'swarming': {
           'shards': 16,
@@ -2556,11 +2539,6 @@
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100, # https://crbug.com/876615
       },
-      'linux-lacros-tester-rel': {
-        'args': [
-          '--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied',
-        ],
-      },
       'win10-code-coverage': {
         'swarming': {
           'shards': 2,
@@ -2578,12 +2556,6 @@
         'swarming': {
           'shards': 2,
         },
-      },
-      'linux-lacros-tester-rel': {
-        'args': [
-          '--gtest_filter=-NativeExtensionBindingsSystemUnittest.AccessToAliasDoesntGiveAliasSourceAccess:'
-          'NativeExtensionBindingsSystemUnittest.AliasedAPIsAreDifferentObjects',
-        ],
       },
     },
   },
@@ -3130,11 +3102,6 @@
         'swarming': {
           'shards': 10,
         },
-      },
-      'linux-lacros-tester-rel': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        'retry_only_failed_tests': True,
       },
       'linux-rel-cft': {
         'args': [
@@ -3891,7 +3858,6 @@
       # pthreadpool is not built for ChromeOS currently.
       'linux-chromeos-dbg',
       'linux-chromeos-rel',
-      'linux-lacros-tester-rel',
     ],
   },
   'sandbox_linux_unittests': {
@@ -4476,11 +4442,6 @@
           'shards': 2,
         },
       },
-      'linux-lacros-tester-rel': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        'retry_only_failed_tests': True,
-      },
       'linux-ubsan-fyi-rel': {
         'swarming': {
           'shards': 2,
@@ -4535,20 +4496,6 @@
       'Win10 FYI x64 Experimental Release (Intel)',
     ],
   },
-  'views_unittests': {
-    'modifications': {
-      'linux-lacros-tester-rel': {
-        'args': [
-          '--gtest_filter=-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura:'
-          'DesktopWidgetTest*:'
-          'DesktopWindowTreeHostPlatformTest*:'
-          'EditableComboboxTest*:'
-          'MenuRunnerTest*:'
-          'TextfieldTest*:'
-        ],
-      },
-    },
-  },
   'viz_unittests': {
     'modifications': {
       'android-11-x86-rel': {
@@ -4562,9 +4509,6 @@
       },
       'android-pie-arm64-rel': {
         'ci_only': True,
-      },
-      'linux-lacros-tester-rel': {
-        'ci_only': True, # https://crbug.com/1509573
       },
     },
   },

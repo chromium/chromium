@@ -192,7 +192,6 @@ reviver/android-launcher
 reviver/android-x64-launcher
 reviver/coverage-runner
 reviver/fuchsia-coordinator
-reviver/lacros-coordinator
 reviver/linux-launcher
 reviver/mac-launcher
 reviver/runner

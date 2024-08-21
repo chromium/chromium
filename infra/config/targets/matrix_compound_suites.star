@@ -1363,44 +1363,6 @@ targets.legacy_matrix_compound_suite(
     },
 )
 
-# This is:
-#   linux_chromeos_gtests
-#   - linux_chromeos_specific_gtests
-#   + linux_chromeos_lacros_gtests
-#   + linux_lacros_chrome_browsertests_version_skew
-#   + linux_lacros_specific_gtests
-targets.legacy_matrix_compound_suite(
-    name = "linux_lacros_gtests",
-    basic_suites = {
-        "aura_gtests": None,
-        "chromium_gtests": None,
-        "chromium_gtests_for_devices_with_graphical_output": None,
-        "chromium_gtests_for_linux_and_chromeos_only": None,
-        "chromium_gtests_for_win_and_linux_only": None,
-        "linux_chromeos_lacros_gtests": None,
-        "linux_flavor_specific_chromium_gtests": None,
-        "linux_lacros_specific_gtests": None,
-        "non_android_chromium_gtests": None,
-        "linux_lacros_chrome_browsertests_non_version_skew": None,
-        "linux_lacros_chrome_browsertests_version_skew": targets.legacy_matrix_config(
-            variants = [
-                "LACROS_VERSION_SKEW_CANARY",
-                "LACROS_VERSION_SKEW_DEV",
-                "LACROS_VERSION_SKEW_BETA",
-                "LACROS_VERSION_SKEW_STABLE",
-            ],
-        ),
-        "linux_lacros_chrome_interactive_ui_tests_version_skew": targets.legacy_matrix_config(
-            variants = [
-                "LACROS_VERSION_SKEW_CANARY",
-                "LACROS_VERSION_SKEW_DEV",
-                "LACROS_VERSION_SKEW_BETA",
-                "LACROS_VERSION_SKEW_STABLE",
-            ],
-        ),
-    },
-)
-
 targets.legacy_matrix_compound_suite(
     name = "linux_optional_gpu_tests_rel_gpu_telemetry_tests",
     basic_suites = {

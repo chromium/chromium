@@ -1625,25 +1625,17 @@
           'scripts': 'chromeos_annotation_scripts',
         },
       },
-      'linux-lacros-dbg': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'linux-lacros-tester-rel': {
-        'mixins': [
-          'isolate_profile_data',
-          'linux-jammy',
-          'x86-64',
-        ],
+      'linux-lacros-builder-rel': {
         'additional_compile_targets': [
           'chrome',
           'chrome_sandbox',
           'symupload'
         ],
-        'test_suites': {
-          'gtest_tests': 'linux_lacros_gtests',
-        },
+      },
+      'linux-lacros-dbg': {
+        'additional_compile_targets': [
+          'all',
+        ],
       },
     },
   },

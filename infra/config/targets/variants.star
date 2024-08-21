@@ -97,23 +97,6 @@ targets.variant(
     ),
 )
 
-# This set of variants is encoded in a json file so that
-# chrome/official.infra/lacros-version-skew-roller can update the variant
-# definitions
-[targets.variant(
-    name = name,
-    identifier = v["identifier"],
-    description = v["description"],
-    args = v["args"],
-    swarming = targets.swarming(
-        cipd_packages = [targets.cipd_package(
-            package = p["cipd_package"],
-            location = p["location"],
-            revision = p["revision"],
-        ) for p in v["swarming"]["cipd_packages"]],
-    ),
-) for name, v in json.decode(io.read_file("./lacros-version-skew-variants.json")).items()]
-
 targets.variant(
     name = "LINUX_INTEL_UHD_630_STABLE",
     identifier = "UHD 630",

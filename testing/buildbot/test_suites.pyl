@@ -4229,28 +4229,6 @@
       'sandbox_linux_unittests': {},
     },
 
-    'linux_lacros_chrome_browsertests_non_version_skew': {
-      'lacros_chrome_browsertests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-
-    'linux_lacros_chrome_browsertests_version_skew': {
-      'lacros_chrome_browsertests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter;../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-
     'linux_lacros_chrome_gtests': {
       'browser_tests': {
         'swarming': {
@@ -4267,21 +4245,6 @@
           'shards': 6,
         },
       },
-    },
-
-    'linux_lacros_chrome_interactive_ui_tests_version_skew': {
-      'interactive_ui_tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter;../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter',
-        ],
-        'swarming': {
-          'shards': 3,
-        },
-      },
-    },
-
-    'linux_lacros_specific_gtests': {
-      'ozone_unittests': {},
     },
 
     'linux_specific_chromium_isolated_scripts': {
@@ -7649,35 +7612,6 @@
           'SIM_IPHONE_15_18_0',
         ],
       },
-    },
-
-    'linux_lacros_gtests': {
-      'aura_gtests': {},
-      'chromium_gtests': {},
-      'chromium_gtests_for_devices_with_graphical_output': {},
-      'chromium_gtests_for_linux_and_chromeos_only': {},
-      'chromium_gtests_for_win_and_linux_only': {},
-      'linux_chromeos_lacros_gtests': {},
-      'linux_flavor_specific_chromium_gtests': {},
-      'linux_lacros_chrome_browsertests_non_version_skew': {},
-      'linux_lacros_chrome_browsertests_version_skew': {
-        'variants': [
-          'LACROS_VERSION_SKEW_BETA',
-          'LACROS_VERSION_SKEW_CANARY',
-          'LACROS_VERSION_SKEW_DEV',
-          'LACROS_VERSION_SKEW_STABLE',
-        ],
-      },
-      'linux_lacros_chrome_interactive_ui_tests_version_skew': {
-        'variants': [
-          'LACROS_VERSION_SKEW_BETA',
-          'LACROS_VERSION_SKEW_CANARY',
-          'LACROS_VERSION_SKEW_DEV',
-          'LACROS_VERSION_SKEW_STABLE',
-        ],
-      },
-      'linux_lacros_specific_gtests': {},
-      'non_android_chromium_gtests': {},
     },
 
     'linux_optional_gpu_tests_rel_gpu_telemetry_tests': {
