@@ -4,6 +4,7 @@
 
 #include "services/on_device_model/ml/chrome_ml.h"
 
+#include <memory>
 #include <optional>
 #include <string_view>
 
@@ -13,6 +14,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/native_library.h"
@@ -22,6 +24,7 @@
 #include "build/build_config.h"
 #include "gpu/config/gpu_info_collector.h"
 #include "gpu/config/gpu_util.h"
+#include "services/on_device_model/ml/chrome_ml_api.h"
 #include "services/on_device_model/ml/gpu_blocklist.h"
 #include "third_party/dawn/include/dawn/dawn_proc.h"
 #include "third_party/dawn/include/dawn/native/DawnNative.h"
@@ -98,11 +101,11 @@ ChromeMLHolder::~ChromeMLHolder() = default;
 
 // static
 DISABLE_CFI_DLSYM
-std::optional<ChromeMLHolder> ChromeMLHolder::Create(
+std::unique_ptr<ChromeMLHolder> ChromeMLHolder::Create(
     const std::optional<std::string>& library_name) {
   base::NativeLibraryLoadError error;
   base::FilePath base_dir;
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 #if BUILDFLAG(IS_MAC)
   if (base::apple::AmIBundled()) {
     base_dir = base::apple::FrameworkBundlePath().Append("Libraries");
@@ -136,13 +139,11 @@ std::optional<ChromeMLHolder> ChromeMLHolder::Create(
     return {};
   }
 
-  return std::make_optional<ChromeMLHolder>(base::PassKey<ChromeMLHolder>(),
-                                            std::move(scoped_library), api);
+  return std::make_unique<ChromeMLHolder>(base::PassKey<ChromeMLHolder>(),
+                                          std::move(scoped_library), api);
 }
 
-ChromeML::ChromeML(base::PassKey<ChromeML>, ChromeMLHolder holder)
-    : holder_(std::move(holder)) {}
-
+ChromeML::ChromeML(const ChromeMLAPI* api) : api_(api) {}
 ChromeML::~ChromeML() = default;
 
 // static
@@ -161,12 +162,13 @@ std::unique_ptr<ChromeML> ChromeML::Create(
   gpu::CollectBasicGraphicsInfo(&gpu_info);
   gpu::SetKeysForCrashLogging(gpu_info);
 
-  std::optional<ChromeMLHolder> holder = ChromeMLHolder::Create(library_name);
-  if (!holder) {
+  static base::NoDestructor<std::unique_ptr<ChromeMLHolder>> holder{
+      ChromeMLHolder::Create(library_name)};
+  if (!holder.get()) {
     return {};
   }
 
-  auto& api = holder->api();
+  auto& api = (*holder)->api();
 
   dawnProcSetProcs(&dawn::native::GetProcs());
   api.InitDawnProcs(dawn::native::GetProcs());
@@ -183,8 +185,7 @@ std::unique_ptr<ChromeML> ChromeML::Create(
   if (api.SetFatalErrorNonGpuFn) {
     api.SetFatalErrorNonGpuFn(&FatalErrorFn);
   }
-  return std::make_unique<ChromeML>(base::PassKey<ChromeML>(),
-                                    std::move(*holder));
+  return base::WrapUnique(new ChromeML(&api));
 }
 
 }  // namespace ml

@@ -2,12 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//services/on_device_model/on_device_model.gni")
+
 source_set("api") {
   public = [ "chrome_ml_api.h" ]
   deps = [ "//third_party/dawn/src/dawn/native:headers" ]
 }
 
-component("ml") {
+component("ml_no_internal") {
   public = [
     "chrome_ml.h",
     "on_device_model_executor.h",
@@ -51,7 +53,13 @@ component("ml") {
   if (!is_ios) {
     deps += [ "//gpu/config:webgpu_blocklist_impl" ]
   }
+}
 
-  data_deps =
-      [ "//components/optimization_guide/internal:optimization_guide_internal" ]
+if (enable_ml_internal) {
+  source_set("ml") {
+    public_deps = [ ":ml_no_internal" ]
+    data_deps = [
+      "//components/optimization_guide/internal:optimization_guide_internal",
+    ]
+  }
 }
