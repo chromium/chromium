@@ -24,6 +24,8 @@ def main(request, response):
 <script src="/resources/testdriver-vendor.js"></script>
 <script>
 (async function() {
+  test_driver.set_test_context(window.opener);
+
   // Step 7 (partitioned-popins/partitioned-popins.cookies.tentative.sub.https.window.js)
   const id = (new URLSearchParams(window.location.search)).get("id");
   test_driver.set_test_context(window.top);
