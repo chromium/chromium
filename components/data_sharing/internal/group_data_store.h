@@ -44,10 +44,9 @@ class GroupDataStore {
                  DBLoadedCallback db_loaded_callback);
   ~GroupDataStore();
 
-  // TODO(crbug.com/301390275): replace mutation methods with plural versions.
   void StoreGroupData(const VersionToken& version_token,
                       const GroupData& group_data);
-  void DeleteGroupData(const GroupId& group_id);
+  void DeleteGroups(const std::vector<GroupId>& groups_ids);
 
   std::optional<VersionToken> GetGroupVersionToken(
       const GroupId& group_id) const;

@@ -120,9 +120,13 @@ void GroupDataStore::StoreGroupData(const VersionToken& version_token,
                                  entity);
 }
 
-void GroupDataStore::DeleteGroupData(const GroupId& group_id) {
+void GroupDataStore::DeleteGroups(const std::vector<GroupId>& groups_ids) {
   CHECK_EQ(db_init_status_, DBInitStatus::kSuccess);
-  group_entity_data_->DeleteData({group_id.value()});
+  std::vector<std::string> keys;
+  for (const auto& id : groups_ids) {
+    keys.push_back(id.value());
+  }
+  group_entity_data_->DeleteData(keys);
 }
 
 std::optional<VersionToken> GroupDataStore::GetGroupVersionToken(

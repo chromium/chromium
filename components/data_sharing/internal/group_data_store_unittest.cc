@@ -84,21 +84,57 @@ TEST_F(GroupDataStoreTest, ShouldStoreAndGetGroupData) {
   EXPECT_THAT(*stored_version_token, Eq(version_token));
 }
 
-TEST_F(GroupDataStoreTest, ShouldDeleteGroupData) {
-  const GroupId group_id("test_group_id");
-  GroupData group_data;
-  group_data.group_token.group_id = group_id;
+TEST_F(GroupDataStoreTest, ShouldDeleteSingleGroup) {
+  const GroupId group_id1("test_group_id1");
+  GroupData group_data1;
+  group_data1.group_token.group_id = group_id1;
+
+  const GroupId group_id2("test_group_id2");
+  GroupData group_data2;
+  group_data2.group_token.group_id = group_id2;
 
   const VersionToken version_token("test_version_token");
 
-  store().StoreGroupData(version_token, group_data);
-  ASSERT_TRUE(store().GetGroupData(group_id).has_value());
-  ASSERT_TRUE(store().GetGroupVersionToken(group_id).has_value());
+  store().StoreGroupData(version_token, group_data1);
+  store().StoreGroupData(version_token, group_data2);
+  ASSERT_TRUE(store().GetGroupData(group_id1).has_value());
+  ASSERT_TRUE(store().GetGroupVersionToken(group_id1).has_value());
+  ASSERT_TRUE(store().GetGroupData(group_id2).has_value());
+  ASSERT_TRUE(store().GetGroupVersionToken(group_id2).has_value());
 
-  store().DeleteGroupData(group_id);
+  store().DeleteGroups({group_id1});
 
-  EXPECT_FALSE(store().GetGroupData(group_id).has_value());
-  EXPECT_FALSE(store().GetGroupVersionToken(group_id).has_value());
+  EXPECT_FALSE(store().GetGroupData(group_id1).has_value());
+  EXPECT_FALSE(store().GetGroupVersionToken(group_id1).has_value());
+  // Second group should stay intact.
+  EXPECT_TRUE(store().GetGroupData(group_id2).has_value());
+  EXPECT_TRUE(store().GetGroupVersionToken(group_id2).has_value());
+}
+
+TEST_F(GroupDataStoreTest, ShouldDeleteMultipleGroups) {
+  const GroupId group_id1("test_group_id1");
+  GroupData group_data1;
+  group_data1.group_token.group_id = group_id1;
+
+  const GroupId group_id2("test_group_id2");
+  GroupData group_data2;
+  group_data2.group_token.group_id = group_id2;
+
+  const VersionToken version_token("test_version_token");
+
+  store().StoreGroupData(version_token, group_data1);
+  store().StoreGroupData(version_token, group_data2);
+  ASSERT_TRUE(store().GetGroupData(group_id1).has_value());
+  ASSERT_TRUE(store().GetGroupVersionToken(group_id1).has_value());
+  ASSERT_TRUE(store().GetGroupData(group_id2).has_value());
+  ASSERT_TRUE(store().GetGroupVersionToken(group_id2).has_value());
+
+  store().DeleteGroups({group_id1, group_id2});
+
+  EXPECT_FALSE(store().GetGroupData(group_id1).has_value());
+  EXPECT_FALSE(store().GetGroupVersionToken(group_id1).has_value());
+  EXPECT_FALSE(store().GetGroupData(group_id2).has_value());
+  EXPECT_FALSE(store().GetGroupVersionToken(group_id2).has_value());
 }
 
 TEST_F(GroupDataStoreTest, ShouldGetAllGroupIds) {
@@ -144,7 +180,7 @@ TEST_F(GroupDataStoreTest, ShouldPersistChanges) {
   EXPECT_THAT(*stored_version_token, Eq(version_token));
 
   // Now delete the group data.
-  store().DeleteGroupData(group_id);
+  store().DeleteGroups({group_id});
   ASSERT_FALSE(store().GetGroupData(group_id).has_value());
   ASSERT_FALSE(store().GetGroupVersionToken(group_id).has_value());
 
