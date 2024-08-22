@@ -37,17 +37,6 @@ extern const base::FeatureParam<std::string> kEnterprisePlusAddressOAuthScope;
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 extern const base::FeatureParam<std::string> kEnterprisePlusAddressServerUrl;
 
-// Used to control whether the PlusAddressService periodically retrieves all
-// plus addresses from an enterprise's remote server.
-COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
-extern const base::FeatureParam<bool> kSyncWithEnterprisePlusAddressServer;
-
-// Used to control the cadence at which the PlusAddressService retrieves all
-// plus addresses from an enterprise's remote server.
-COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
-extern const base::FeatureParam<base::TimeDelta>
-    kEnterprisePlusAddressTimerDelay;
-
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 extern const base::FeatureParam<std::string> kPlusAddressManagementUrl;
 

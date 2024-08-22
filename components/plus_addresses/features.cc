@@ -13,8 +13,6 @@ namespace {
 
 constexpr char kEnterprisePlusAddressOAuthScopeName[] = "oauth-scope";
 constexpr char kEnterprisePlusAddressServerUrlName[] = "server-url";
-constexpr char kSyncWithEnterprisePlusAddressServerName[] = "sync-with-server";
-constexpr char kEnterprisePlusAddressTimerDelayName[] = "timer-delay";
 constexpr char kPlusAddressManagementUrlName[] = "manage-url";
 constexpr char kPlusAddressLearnMoreUrlName[] = "learn-more";
 constexpr char kPlusAddressExcludedSitesName[] = "excluded-sites";
@@ -61,12 +59,6 @@ const base::FeatureParam<std::string> kEnterprisePlusAddressOAuthScope{
     &kPlusAddressesEnabled, kEnterprisePlusAddressOAuthScopeName, ""};
 const base::FeatureParam<std::string> kEnterprisePlusAddressServerUrl{
     &kPlusAddressesEnabled, kEnterprisePlusAddressServerUrlName, ""};
-const base::FeatureParam<bool> kSyncWithEnterprisePlusAddressServer{
-    &kPlusAddressesEnabled, kSyncWithEnterprisePlusAddressServerName, false};
-// TODO(crbug.com/322147254): Remove.
-const base::FeatureParam<base::TimeDelta> kEnterprisePlusAddressTimerDelay{
-    &kPlusAddressesEnabled, kEnterprisePlusAddressTimerDelayName,
-    base::Hours(24)};
 const base::FeatureParam<std::string> kPlusAddressManagementUrl{
     &kPlusAddressesEnabled, kPlusAddressManagementUrlName, ""};
 const base::FeatureParam<std::string> kPlusAddressLearnMoreUrl{
