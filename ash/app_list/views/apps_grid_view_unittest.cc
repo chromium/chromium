@@ -787,7 +787,7 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
   // True if we set the test on tablet mode.
   bool create_as_tablet_mode_ = false;
   // True to test with the drag and drop refactor feature enabled.
-  bool use_drag_drop_refactor_ = false;
+  bool use_drag_drop_refactor_ = true;
 
   std::unique_ptr<PageFlipWaiter> page_flip_waiter_;
 
@@ -881,7 +881,10 @@ INSTANTIATE_TEST_SUITE_P(Rtl,
 class AppsGridViewDragLegacyTest : public AppsGridViewDragTestBase,
                                    public testing::WithParamInterface<bool> {
  public:
-  AppsGridViewDragLegacyTest() { is_rtl_ = GetParam(); }
+  AppsGridViewDragLegacyTest() {
+    is_rtl_ = GetParam();
+    use_drag_drop_refactor_ = false;
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(All, AppsGridViewDragLegacyTest, testing::Bool());
@@ -1100,44 +1103,50 @@ TEST_P(AppsGridViewClamshellAndTabletTest, InFolderBetweenRowsAnimation) {
   AppListFolderItem* folder_item =
       GetTestModel()->CreateAndPopulateFolderWithApps(4);
 
-  // Record the bounds of the folder view with 4 items in it.
-  AppsGridView* items_grid_view = app_list_folder_view()->items_grid_view();
-
   // Open the folder
   test_api_->PressItemAt(0);
   EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
   EXPECT_EQ(4u, folder_item->ChildItemCount());
 
-  auto* dragged_item_view = items_grid_view->GetItemViewAt(0);
-  auto* generator = GetEventGenerator();
-
-  // Start dragging the item at slot 0.
-  generator->MoveMouseTo(
-      dragged_item_view->GetIconBoundsInScreen().CenterPoint());
-  generator->PressLeftButton();
-  dragged_item_view->FireMouseDragTimerForTest();
-
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  AppListItemView* const dragged_item_view =
+      GetItemViewInCurrentPageAt(0, 0, folder_apps_grid_view());
+  StartDragForViewAndFireTimer(AppsGridView::MOUSE, dragged_item_view);
 
-  // Drag the item over slot 1.
-  generator->MoveMouseTo(
-      items_grid_view->GetItemViewAt(1)->GetBoundsInScreen().CenterPoint());
-  ASSERT_TRUE(items_grid_view->reorder_timer_for_test()->IsRunning());
-  items_grid_view->reorder_timer_for_test()->FireNow();
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Drag the item over slot 1.
+    UpdateDrag(AppsGridView::MOUSE,
+               folder_apps_grid_view()
+                   ->GetItemViewAt(1)
+                   ->GetBoundsInScreen()
+                   .CenterPoint(),
+               folder_apps_grid_view(), 5 /*steps*/);
 
-  // Check that there is no row change animation for a drag from slot 0 to
-  // slot 1.
-  EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest(items_grid_view));
-  // Drag the item over slot 2.
-  generator->MoveMouseTo(
-      items_grid_view->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
-  ASSERT_TRUE(items_grid_view->reorder_timer_for_test()->IsRunning());
-  items_grid_view->reorder_timer_for_test()->FireNow();
+    ASSERT_TRUE(folder_apps_grid_view()->reorder_timer_for_test()->IsRunning());
+    folder_apps_grid_view()->reorder_timer_for_test()->FireNow();
+    // Check that there is no row change animation for a drag from slot 0 to
+    // slot 1.
+    EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest(folder_apps_grid_view()));
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Drag the item over slot 2.
+    UpdateDrag(AppsGridView::MOUSE,
+               folder_apps_grid_view()
+                   ->GetItemViewAt(2)
+                   ->GetBoundsInScreen()
+                   .CenterPoint(),
+               folder_apps_grid_view(), 5 /*steps*/);
 
-  // Check that there is a row change animation for a drag from slot 1 to
-  // slot 2.
-  EXPECT_EQ(1, GetNumberOfRowChangeLayersForTest(items_grid_view));
+    ASSERT_TRUE(folder_apps_grid_view()->reorder_timer_for_test()->IsRunning());
+    folder_apps_grid_view()->reorder_timer_for_test()->FireNow();
+
+    // Check that there is a row change animation for a drag from slot 1 to
+    // slot 2.
+    EXPECT_EQ(1, GetNumberOfRowChangeLayersForTest(folder_apps_grid_view()));
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
 }
 
 // Test dragging an app item from the first row to second row, and then back to
@@ -3265,36 +3274,46 @@ TEST_P(AppsGridViewClamshellAndTabletTest, ControlArrowIsNoOpDuringDrag) {
   GetTestModel()->PopulateApps(20);
   apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
 
-  AppListItemView* item_view = InitiateDragForItemAtCurrentPageAt(
-      AppsGridView::TOUCH, 0, 0, apps_grid_view_);
+  AppListItemView* item_view =
+      GetItemViewInCurrentPageAt(0, 0, apps_grid_view_);
 
+  StartDragForViewAndFireTimer(AppsGridView::TOUCH, item_view);
   AppListItemView* moving_item = GetItemViewInTopLevelGrid(1);
-  apps_grid_view_->GetFocusManager()->SetFocusedView(moving_item);
 
-  SimulateKeyPress(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN);
-  SimulateKeyReleased(ui::VKEY_RIGHT, ui::EF_NONE);
-  EXPECT_EQ(item_view, test_api_->GetViewAtIndex(GridIndex(0, 0)));
-  EXPECT_EQ(moving_item, test_api_->GetViewAtIndex(GridIndex(0, 1)));
-
-  SimulateKeyPress(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN);
-  SimulateKeyReleased(ui::VKEY_LEFT, ui::EF_NONE);
-  EXPECT_EQ(item_view, test_api_->GetViewAtIndex(GridIndex(0, 0)));
-  EXPECT_EQ(moving_item, test_api_->GetViewAtIndex(GridIndex(0, 1)));
-
-  SimulateKeyPress(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN);
-  SimulateKeyReleased(ui::VKEY_DOWN, ui::EF_NONE);
-  EXPECT_EQ(item_view, test_api_->GetViewAtIndex(GridIndex(0, 0)));
-  EXPECT_EQ(moving_item, test_api_->GetViewAtIndex(GridIndex(0, 1)));
-
-  SimulateKeyPress(ui::VKEY_UP, ui::EF_CONTROL_DOWN);
-  SimulateKeyReleased(ui::VKEY_UP, ui::EF_NONE);
-  EXPECT_EQ(item_view, test_api_->GetViewAtIndex(GridIndex(0, 0)));
-  EXPECT_EQ(moving_item, test_api_->GetViewAtIndex(GridIndex(0, 1)));
-
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    apps_grid_view_->GetFocusManager()->SetFocusedView(moving_item);
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    SimulateKeyPress(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN);
+    SimulateKeyReleased(ui::VKEY_RIGHT, ui::EF_NONE);
+    EXPECT_EQ(item_view, test_api_->GetViewAtIndex(GridIndex(0, 0)));
+    EXPECT_EQ(moving_item, test_api_->GetViewAtIndex(GridIndex(0, 1)));
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    SimulateKeyPress(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN);
+    SimulateKeyReleased(ui::VKEY_LEFT, ui::EF_NONE);
+    EXPECT_EQ(item_view, test_api_->GetViewAtIndex(GridIndex(0, 0)));
+    EXPECT_EQ(moving_item, test_api_->GetViewAtIndex(GridIndex(0, 1)));
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    SimulateKeyPress(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN);
+    SimulateKeyReleased(ui::VKEY_DOWN, ui::EF_NONE);
+    EXPECT_EQ(item_view, test_api_->GetViewAtIndex(GridIndex(0, 0)));
+    EXPECT_EQ(moving_item, test_api_->GetViewAtIndex(GridIndex(0, 1)));
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    SimulateKeyPress(ui::VKEY_UP, ui::EF_CONTROL_DOWN);
+    SimulateKeyReleased(ui::VKEY_UP, ui::EF_NONE);
+    EXPECT_EQ(item_view, test_api_->GetViewAtIndex(GridIndex(0, 0)));
+    EXPECT_EQ(moving_item, test_api_->GetViewAtIndex(GridIndex(0, 1)));
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // End the drag to satisfy checks in AppsGridView destructor.
+    EndDrag(AppsGridView::TOUCH);
+  }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
   histogram_tester.ExpectBucketCount(GetItemMoveTypeHistogramName(), 6, 0);
-
-  // End the drag to satisfy checks in AppsGridView destructor.
-  EndDrag(AppsGridView::TOUCH);
 }
 
 // Tests that an item is scrolled to visible position if moved to initially
@@ -4032,7 +4051,8 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToNextPage) {
               CalculateManhattanDistance(apps_grid_bottom_center - icon_offset,
                                          GetDragIconCenter()));
   }));
-  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
+  tasks.push_back(
+      base::BindLambdaForTesting([&]() { EndDrag(AppsGridView::TOUCH); }));
   MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
   MaybeCheckHaptickEventsCount(0);
 }
@@ -4220,73 +4240,74 @@ TEST_P(AppsGridViewTabletTest, DragAcrossPagesToTheLastSlot) {
   AppListItemView* original_first_item_on_second_page =
       view_model->view_at(GetTilesPerPageInPagedGrid(0));
 
-  auto* generator = GetEventGenerator();
+  StartDragForViewAndFireTimer(AppsGridView::MOUSE, dragged_view);
 
-  // Initiate drag.
-  generator->MoveMouseTo(dragged_view->GetBoundsInScreen().CenterPoint());
-  generator->PressLeftButton();
-  dragged_view->FireMouseDragTimerForTest();
-  generator->MoveMouseBy(10, 10);
   MaybeCheckHaptickEventsCount(1);
-
-  // Drag the item to launcher page flip zone, and flip the launcher to the
-  // second page.
-  generator->MoveMouseTo(
-      paged_apps_grid_view_->GetBoundsInScreen().bottom_center() +
-      gfx::Vector2d(0, -1));
-  ASSERT_TRUE(HasPendingPageFlip(paged_apps_grid_view_));
 
   // Task to move mouse from the page flip area after the page gets flipped, to
   // prevent subseuquent page flips.
   PostPageFlipTask task(GetPaginationModel(), base::BindLambdaForTesting([&]() {
-                          generator->MoveMouseBy(0, -50);
-                          generator->MoveMouseBy(0, -50);
+                          GetEventGenerator()->MoveMouseBy(0, -50);
+                          GetEventGenerator()->MoveMouseBy(0, -50);
                         }));
-
-  page_flip_waiter_->Wait();
-
-  // Ensure that the reoreder timer ran, and that any views on the second page
-  // that should have been moved to the first page have done so.
-  ASSERT_TRUE(paged_apps_grid_view_->reorder_timer_for_test()->IsRunning());
-  paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
-  test_api_->WaitForItemMoveAnimationDone();
-
-  // Move the item to the first empty slot on the second page.
-  gfx::Point empty_slot =
-      test_api_->GetItemTileRectAtVisualIndex(1, 3).CenterPoint();
-  views::View::ConvertPointToScreen(paged_apps_grid_view_, &empty_slot);
-  generator->MoveMouseTo(empty_slot);
-  test_api_->WaitForItemMoveAnimationDone();
-
-  if (paged_apps_grid_view_->reorder_timer_for_test()->IsRunning())
-    paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
-  test_api_->WaitForItemMoveAnimationDone();
-
   const int expected_final_slot = 2;
-  EXPECT_EQ(GridIndex(1, expected_final_slot),
-            paged_apps_grid_view_->reorder_placeholder());
 
-  // Verify that the last item in the grid is left of the expected placeholder
-  // location.
-  const gfx::Rect last_slot_rect =
-      GetItemRectOnCurrentPageAt(1, expected_final_slot);
-  const views::View* last_view =
-      view_model->view_at(view_model->view_size() - 1);
-  if (is_rtl_) {
-    gfx::Point last_view_left_center_in_grid =
-        last_view->GetLocalBounds().left_center();
-    views::View::ConvertPointToTarget(last_view, paged_apps_grid_view_,
-                                      &last_view_left_center_in_grid);
-    EXPECT_GE(last_view_left_center_in_grid.x(), last_slot_rect.right());
-  } else {
-    gfx::Point last_view_right_center_in_grid =
-        last_view->GetLocalBounds().right_center();
-    views::View::ConvertPointToTarget(last_view, paged_apps_grid_view_,
-                                      &last_view_right_center_in_grid);
-    EXPECT_LE(last_view_right_center_in_grid.x(), last_slot_rect.x());
-  }
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    gfx::Point to = paged_apps_grid_view_->GetBoundsInScreen().bottom_center() +
+                    gfx::Vector2d(0, -1);
+    UpdateDragInScreen(AppsGridView::MOUSE, to,
+                       /*steps=*/10);
+    ASSERT_TRUE(HasPendingPageFlip(paged_apps_grid_view_));
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    page_flip_waiter_->Wait();
 
-  EndDrag();
+    // Ensure that the reorder timer ran, and that any views on the second page
+    // that should have been moved to the first page have done so.
+    ASSERT_TRUE(paged_apps_grid_view_->reorder_timer_for_test()->IsRunning());
+    paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
+    test_api_->WaitForItemMoveAnimationDone();
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Move the item to the first empty slot on the second page.
+    gfx::Point empty_slot =
+        test_api_->GetItemTileRectAtVisualIndex(1, 3).CenterPoint();
+    views::View::ConvertPointToScreen(paged_apps_grid_view_, &empty_slot);
+    UpdateDrag(AppsGridView::MOUSE, empty_slot, paged_apps_grid_view_,
+               /*steps=*/10);
+
+    if (paged_apps_grid_view_->reorder_timer_for_test()->IsRunning()) {
+      paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
+    }
+    test_api_->WaitForItemMoveAnimationDone();
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    EXPECT_EQ(GridIndex(1, expected_final_slot),
+              paged_apps_grid_view_->reorder_placeholder());
+
+    // Verify that the last item in the grid is left of the expected placeholder
+    // location.
+    const gfx::Rect last_slot_rect =
+        GetItemRectOnCurrentPageAt(1, expected_final_slot);
+    const views::View* last_view =
+        view_model->view_at(view_model->view_size() - 1);
+    if (is_rtl_) {
+      gfx::Point last_view_left_center_in_grid =
+          last_view->GetLocalBounds().left_center();
+      views::View::ConvertPointToTarget(last_view, paged_apps_grid_view_,
+                                        &last_view_left_center_in_grid);
+      EXPECT_GE(last_view_left_center_in_grid.x(), last_slot_rect.right());
+    } else {
+      gfx::Point last_view_right_center_in_grid =
+          last_view->GetLocalBounds().right_center();
+      views::View::ConvertPointToTarget(last_view, paged_apps_grid_view_,
+                                        &last_view_right_center_in_grid);
+      EXPECT_LE(last_view_right_center_in_grid.x(), last_slot_rect.x());
+    }
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
   MaybeCheckHaptickEventsCount(1);
 
   EXPECT_EQ(1, GetPaginationModel()->selected_page());
@@ -4321,96 +4342,98 @@ TEST_P(AppsGridViewTabletTest, DragAcrossPagesToSecondToLastSlot) {
   AppListItemView* original_first_item_on_second_page =
       view_model->view_at(GetTilesPerPageInPagedGrid(0));
 
-  auto* generator = GetEventGenerator();
+  StartDragForViewAndFireTimer(AppsGridView::MOUSE, dragged_view);
 
-  // Initiate drag.
-  generator->MoveMouseTo(dragged_view->GetBoundsInScreen().CenterPoint());
-  generator->PressLeftButton();
-  dragged_view->FireMouseDragTimerForTest();
-  generator->MoveMouseBy(10, 10);
   MaybeCheckHaptickEventsCount(1);
-
-  // Drag the item to launcher page flip zone, and flip the launcher to the
-  // second page.
-  generator->MoveMouseTo(
-      paged_apps_grid_view_->GetBoundsInScreen().bottom_center() +
-      gfx::Vector2d(0, -1));
-  ASSERT_TRUE(HasPendingPageFlip(paged_apps_grid_view_));
 
   // Task to move mouse from the page flip area after the page gets flipped, to
   // prevent subseuquent page flips.
   PostPageFlipTask task(GetPaginationModel(), base::BindLambdaForTesting([&]() {
-                          generator->MoveMouseBy(0, -50);
-                          generator->MoveMouseBy(0, -50);
+                          GetEventGenerator()->MoveMouseBy(0, -50);
+                          GetEventGenerator()->MoveMouseBy(0, -50);
                         }));
-
-  page_flip_waiter_->Wait();
-
-  // Ensure that the reoreder timer ran, and that any views on the second page
-  // that should have been moved to the first page have done so.
-  ASSERT_TRUE(paged_apps_grid_view_->reorder_timer_for_test()->IsRunning());
-  paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
-  test_api_->WaitForItemMoveAnimationDone();
-
-  // Move the item between two last slots on the page.
-  views::View* last_view = view_model->view_at(view_model->view_size() - 1);
-  const gfx::Point last_slot = last_view->GetBoundsInScreen().CenterPoint();
-  views::View* second_to_last_view =
-      view_model->view_at(view_model->view_size() - 2);
-  const gfx::Point second_to_last_slot =
-      second_to_last_view->GetBoundsInScreen().CenterPoint();
-  const gfx::Point drop_point((last_slot.x() + second_to_last_slot.x()) / 2,
-                              last_slot.y());
-
-  generator->MoveMouseTo(drop_point);
-
-  if (paged_apps_grid_view_->reorder_timer_for_test()->IsRunning())
-    paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
-  test_api_->WaitForItemMoveAnimationDone();
-
   const int expected_final_slot = 1;
-  EXPECT_EQ(GridIndex(1, expected_final_slot),
-            paged_apps_grid_view_->reorder_placeholder());
 
-  // Verify that the last item in the grid is right of the expected placeholder
-  // location.
-  const gfx::Rect target_slot_rect =
-      GetItemRectOnCurrentPageAt(1, expected_final_slot);
-  if (is_rtl_) {
-    gfx::Point last_view_right_center_in_grid =
-        last_view->GetLocalBounds().right_center();
-    views::View::ConvertPointToTarget(last_view, paged_apps_grid_view_,
-                                      &last_view_right_center_in_grid);
-    EXPECT_LE(last_view_right_center_in_grid.x(), target_slot_rect.x());
-  } else {
-    gfx::Point last_view_left_center_in_grid =
-        last_view->GetLocalBounds().left_center();
-    views::View::ConvertPointToTarget(last_view, paged_apps_grid_view_,
-                                      &last_view_left_center_in_grid);
-    EXPECT_GE(last_view_left_center_in_grid.x(), target_slot_rect.right());
-  }
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Drag the item to launcher page flip zone, and flip the launcher to the
+    // second page.
+    gfx::Point to = paged_apps_grid_view_->GetBoundsInScreen().bottom_center() +
+                    gfx::Vector2d(0, -1);
+    UpdateDragInScreen(AppsGridView::MOUSE, to,
+                       /*steps=*/10);
+    ASSERT_TRUE(HasPendingPageFlip(paged_apps_grid_view_));
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    page_flip_waiter_->Wait();
 
-  // Verify that second to last item in the grid is left of the expected
-  // placeholder location.
-  if (is_rtl_) {
-    gfx::Point second_to_last_view_left_center_in_grid =
-        second_to_last_view->GetLocalBounds().left_center();
-    views::View::ConvertPointToTarget(second_to_last_view,
-                                      paged_apps_grid_view_,
-                                      &second_to_last_view_left_center_in_grid);
-    EXPECT_GE(second_to_last_view_left_center_in_grid.x(),
-              target_slot_rect.right());
-  } else {
-    gfx::Point second_to_last_view_right_center_in_grid =
-        second_to_last_view->GetLocalBounds().right_center();
-    views::View::ConvertPointToTarget(
-        second_to_last_view, paged_apps_grid_view_,
-        &second_to_last_view_right_center_in_grid);
-    EXPECT_LE(second_to_last_view_right_center_in_grid.x(),
-              target_slot_rect.x());
-  }
+    // Ensure that the reorder timer ran, and that any views on the second page
+    // that should have been moved to the first page have done so.
+    ASSERT_TRUE(paged_apps_grid_view_->reorder_timer_for_test()->IsRunning());
+    paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
+    test_api_->WaitForItemMoveAnimationDone();
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Move the item between two last slots on the page.
+    views::View* last_view = view_model->view_at(view_model->view_size() - 1);
+    const gfx::Point last_slot = last_view->GetBoundsInScreen().CenterPoint();
+    views::View* second_to_last_view =
+        view_model->view_at(view_model->view_size() - 2);
+    const gfx::Point second_to_last_slot =
+        second_to_last_view->GetBoundsInScreen().CenterPoint();
+    const gfx::Point drop_point((last_slot.x() + second_to_last_slot.x()) / 2,
+                                last_slot.y());
+    UpdateDragInScreen(AppsGridView::MOUSE, drop_point,
+                       /*steps=*/10);
 
-  generator->ReleaseLeftButton();
+    if (paged_apps_grid_view_->reorder_timer_for_test()->IsRunning()) {
+      paged_apps_grid_view_->reorder_timer_for_test()->FireNow();
+    }
+    test_api_->WaitForItemMoveAnimationDone();
+    EXPECT_EQ(GridIndex(1, expected_final_slot),
+              paged_apps_grid_view_->reorder_placeholder());
+
+    // Verify that the last item in the grid is right of the expected
+    // placeholder location.
+    const gfx::Rect target_slot_rect =
+        GetItemRectOnCurrentPageAt(1, expected_final_slot);
+    if (is_rtl_) {
+      gfx::Point last_view_right_center_in_grid =
+          last_view->GetLocalBounds().right_center();
+      views::View::ConvertPointToTarget(last_view, paged_apps_grid_view_,
+                                        &last_view_right_center_in_grid);
+      EXPECT_LE(last_view_right_center_in_grid.x(), target_slot_rect.x());
+    } else {
+      gfx::Point last_view_left_center_in_grid =
+          last_view->GetLocalBounds().left_center();
+      views::View::ConvertPointToTarget(last_view, paged_apps_grid_view_,
+                                        &last_view_left_center_in_grid);
+      EXPECT_GE(last_view_left_center_in_grid.x(), target_slot_rect.right());
+    }
+
+    // Verify that second to last item in the grid is left of the expected
+    // placeholder location.
+    if (is_rtl_) {
+      gfx::Point second_to_last_view_left_center_in_grid =
+          second_to_last_view->GetLocalBounds().left_center();
+      views::View::ConvertPointToTarget(
+          second_to_last_view, paged_apps_grid_view_,
+          &second_to_last_view_left_center_in_grid);
+      EXPECT_GE(second_to_last_view_left_center_in_grid.x(),
+                target_slot_rect.right());
+    } else {
+      gfx::Point second_to_last_view_right_center_in_grid =
+          second_to_last_view->GetLocalBounds().right_center();
+      views::View::ConvertPointToTarget(
+          second_to_last_view, paged_apps_grid_view_,
+          &second_to_last_view_right_center_in_grid);
+      EXPECT_LE(second_to_last_view_right_center_in_grid.x(),
+                target_slot_rect.x());
+    }
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
+
   MaybeCheckHaptickEventsCount(1);
 
   EXPECT_EQ(1, GetPaginationModel()->selected_page());
@@ -4541,10 +4564,12 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToPreviousPage) {
   std::list<base::OnceClosure> tasks;
   tasks.push_back(base::BindLambdaForTesting([&]() {
     MaybeCheckHaptickEventsCount(0);
-    gfx::Point apps_grid_top_center(
-        paged_apps_grid_view_->GetLocalBounds().width() / 2, 0);
-    UpdateDrag(AppsGridView::TOUCH, apps_grid_top_center, paged_apps_grid_view_,
-               5 /*steps*/);
+    const gfx::Rect apps_grid_bounds = paged_apps_grid_view_->GetLocalBounds();
+    gfx::Point point_in_page_flip_buffer =
+        gfx::Point(apps_grid_bounds.width() / 2, 10);
+    UpdateDrag(AppsGridView::TOUCH, point_in_page_flip_buffer,
+               paged_apps_grid_view_,
+               /*steps=*/10);
     while (HasPendingPageFlip(paged_apps_grid_view_)) {
       page_flip_waiter_->Wait();
     }
@@ -4559,15 +4584,15 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToPreviousPage) {
         0, std::round(GetAppListConfig()->grid_icon_bottom_padding() *
                       kDragDropAppIconScale) /
                2);
-    EXPECT_LE(2, CalculateManhattanDistance(apps_grid_top_center - icon_offset,
-                                            GetDragIconCenter()));
+    EXPECT_LE(
+        2, CalculateManhattanDistance(point_in_page_flip_buffer - icon_offset,
+                                      GetDragIconCenter()));
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {
     // End the drag to satisfy checks in AppsGridView destructor.
-    EndDrag();
+    EndDrag(AppsGridView::TOUCH);
   }));
   MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
-
   MaybeCheckHaptickEventsCount(0);
 }
 
@@ -5828,6 +5853,12 @@ TEST_P(AppsGridViewTabletTest, PeekingCardOnLastPage) {
 }
 
 TEST_P(AppsGridViewTabletTest, BackgroundCardBounds) {
+  if (use_drag_drop_refactor()) {
+    // Screen Rotation interrupts drag with the drag and drop refactor enabled.
+    // TODO(b/361444279): Revise drag and drop behaviour when it is interrupted
+    // because of a screen rotation.
+    return;
+  }
   ASSERT_TRUE(paged_apps_grid_view_);
   GetTestModel()->PopulateApps(30);
   UpdateLayout();
@@ -5871,35 +5902,42 @@ TEST_P(AppsGridViewTabletTest, BackgroundCardBounds) {
     UpdateDisplay("1024x768/r");
     app_list_view_->OnParentWindowBoundsChanged();
   }));
-  tasks.push_back(base::BindLambdaForTesting([&]() {
-    ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
-    ASSERT_EQ(2, paged_apps_grid_view_->BackgroundCardCountForTesting());
 
-    // Verify that all items in the current page fit within the background card.
-    const gfx::Rect background_card_bounds =
-        paged_apps_grid_view_->GetBackgroundCardBoundsForTesting(0);
-    const gfx::Rect clip_rect = paged_apps_grid_view_->GetMirroredRect(
-        paged_apps_grid_view_->layer()->clip_rect());
-    const gfx::Rect first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
+  if (!use_drag_drop_refactor()) {
+    // Screen Rotation interrupts drag with the drag and drop refactor enabled.
+    // TODO(b/361444279): Revise drag and drop behaviour when it is interrupted
+    // because of a screen rotation.
+    tasks.push_back(base::BindLambdaForTesting([&]() {
+      ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
+      ASSERT_EQ(2, paged_apps_grid_view_->BackgroundCardCountForTesting());
 
-    EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
-        << " background card bounds " << background_card_bounds.ToString()
-        << " item bounds " << first_item_bounds.ToString();
-    EXPECT_TRUE(clip_rect.Contains(first_item_bounds))
-        << " clip rect " << clip_rect.ToString() << " item bounds "
-        << first_item_bounds.ToString();
+      // Verify that all items in the current page fit within the background
+      // card.
+      const gfx::Rect background_card_bounds =
+          paged_apps_grid_view_->GetBackgroundCardBoundsForTesting(0);
+      const gfx::Rect clip_rect = paged_apps_grid_view_->GetMirroredRect(
+          paged_apps_grid_view_->layer()->clip_rect());
+      const gfx::Rect first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
 
-    const gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(
-        GetTilesPerPageInPagedGrid(0) / apps_grid_view_->cols() - 1,
-        apps_grid_view_->cols() - 1);
+      EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
+          << " background card bounds " << background_card_bounds.ToString()
+          << " item bounds " << first_item_bounds.ToString();
+      EXPECT_TRUE(clip_rect.Contains(first_item_bounds))
+          << " clip rect " << clip_rect.ToString() << " item bounds "
+          << first_item_bounds.ToString();
 
-    EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
-        << " background card bounds " << background_card_bounds.ToString()
-        << " item bounds " << last_item_bounds.ToString();
-    EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
-        << " clip rect " << clip_rect.ToString() << " item bounds "
-        << last_item_bounds.ToString();
-  }));
+      const gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(
+          GetTilesPerPageInPagedGrid(0) / apps_grid_view_->cols() - 1,
+          apps_grid_view_->cols() - 1);
+
+      EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
+          << " background card bounds " << background_card_bounds.ToString()
+          << " item bounds " << last_item_bounds.ToString();
+      EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
+          << " clip rect " << clip_rect.ToString() << " item bounds "
+          << last_item_bounds.ToString();
+    }));
+  }
   tasks.push_back(
       base::BindLambdaForTesting([&]() { EndDrag(AppsGridView::TOUCH); }));
   MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
@@ -5968,38 +6006,45 @@ TEST_P(AppsGridViewTabletTest, BackgroundCardBoundsOnSecondPage) {
         << " clip rect " << clip_rect.ToString() << " item bounds "
         << last_item_bounds.ToString();
   }));
-  tasks.push_back(base::BindLambdaForTesting([&]() {
-    // Simulate screen rotation (r = 90 degrees clockwise).
-    UpdateDisplay("1024x768/r");
 
-    ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
-    ASSERT_EQ(2, paged_apps_grid_view_->BackgroundCardCountForTesting());
+  if (!use_drag_drop_refactor()) {
+    // Screen Rotation interrupts drag with the drag and drop refactor enabled.
+    // TODO(b/361444279): Revise drag and drop behaviour when it is interrupted
+    // because of a screen rotation.
+    tasks.push_back(base::BindLambdaForTesting([&]() {
+      // Simulate screen rotation (r = 90 degrees clockwise).
+      UpdateDisplay("1024x768/r");
 
-    // Verify that all items in the current page fit within the background card.
-    const gfx::Rect background_card_bounds =
-        paged_apps_grid_view_->GetBackgroundCardBoundsForTesting(1);
-    const gfx::Rect clip_rect = paged_apps_grid_view_->GetMirroredRect(
-        paged_apps_grid_view_->layer()->clip_rect());
-    const gfx::Rect first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
+      ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
+      ASSERT_EQ(2, paged_apps_grid_view_->BackgroundCardCountForTesting());
 
-    EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
-        << " background card bounds " << background_card_bounds.ToString()
-        << " item bounds " << first_item_bounds.ToString();
-    EXPECT_TRUE(clip_rect.Contains(first_item_bounds))
-        << " clip rect " << clip_rect.ToString() << " item bounds "
-        << first_item_bounds.ToString();
+      // Verify that all items in the current page fit within the background
+      // card.
+      const gfx::Rect background_card_bounds =
+          paged_apps_grid_view_->GetBackgroundCardBoundsForTesting(1);
+      const gfx::Rect clip_rect = paged_apps_grid_view_->GetMirroredRect(
+          paged_apps_grid_view_->layer()->clip_rect());
+      const gfx::Rect first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
 
-    const gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(
-        GetTilesPerPageInPagedGrid(1) / apps_grid_view_->cols() - 1,
-        apps_grid_view_->cols() - 1);
+      EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
+          << " background card bounds " << background_card_bounds.ToString()
+          << " item bounds " << first_item_bounds.ToString();
+      EXPECT_TRUE(clip_rect.Contains(first_item_bounds))
+          << " clip rect " << clip_rect.ToString() << " item bounds "
+          << first_item_bounds.ToString();
 
-    EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
-        << " background card bounds " << background_card_bounds.ToString()
-        << " item bounds " << last_item_bounds.ToString();
-    EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
-        << " clip rect " << clip_rect.ToString() << " item bounds "
-        << last_item_bounds.ToString();
-  }));
+      const gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(
+          GetTilesPerPageInPagedGrid(1) / apps_grid_view_->cols() - 1,
+          apps_grid_view_->cols() - 1);
+
+      EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
+          << " background card bounds " << background_card_bounds.ToString()
+          << " item bounds " << last_item_bounds.ToString();
+      EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
+          << " clip rect " << clip_rect.ToString() << " item bounds "
+          << last_item_bounds.ToString();
+    }));
+  }
   tasks.push_back(
       base::BindLambdaForTesting([&]() { EndDrag(AppsGridView::TOUCH); }));
   MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
@@ -6155,7 +6200,10 @@ TEST_P(AppsGridViewTabletTest, DragWithinFolderDoesNotEnterCardifiedState) {
         folder_grid_test_api.GetItemTileRectOnCurrentPageAt(0, 1).CenterPoint();
     UpdateDrag(AppsGridView::TOUCH, to, folder_apps_grid_view(), 10 /*steps*/);
     // The folder item reparent timer should not be triggered.
-    ASSERT_FALSE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+    // With the drag and drop refactor, folder is closed immediately OnDragExit
+    // without timer.
+    ASSERT_EQ(use_drag_drop_refactor(),
+              folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
 
     EXPECT_FALSE(paged_apps_grid_view_->cardified_state_for_testing());
   }));
@@ -6739,34 +6787,36 @@ TEST_P(AppsGridViewClamshellAndTabletTest, QuickDragToRemoveItemFromFolder) {
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
-  // Begin dragging the first item in the folder.
-  GetEventGenerator()->MoveMouseTo(
-      item_in_folder->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->PressLeftButton();
-  item_in_folder->FireMouseDragTimerForTest();
+  StartDragForViewAndFireTimer(AppsGridView::MOUSE, item_in_folder);
 
-  // Drag item outside of the folder, to slot 0.
-  const gfx::Point to =
-      apps_grid_view_->GetItemViewAt(0)->GetIconBoundsInScreen().left_center();
-  GetEventGenerator()->MoveMouseTo(to);
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Drag item outside of the folder, to slot 0.
+    const gfx::Point to = apps_grid_view_->GetItemViewAt(0)
+                              ->GetIconBoundsInScreen()
+                              .left_center();
+    UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
 
-  ASSERT_TRUE(folder_apps_grid_view()->has_dragged_item());
-  ASSERT_TRUE(folder_apps_grid_view()->IsDragging());
+    ASSERT_TRUE(folder_apps_grid_view()->has_dragged_item());
+    ASSERT_TRUE(folder_apps_grid_view()->IsDragging());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Release drag.
+    ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+    EndDrag(AppsGridView::MOUSE);
+    ASSERT_FALSE(GetAppListTestHelper()->IsInFolderView());
+    EXPECT_EQ(folder_item_view->item()->ChildItemCount(), 1u);
 
-  // Release drag.
-  ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
-  GetEventGenerator()->ReleaseLeftButton();
-  ASSERT_FALSE(GetAppListTestHelper()->IsInFolderView());
-  EXPECT_EQ(folder_item_view->item()->ChildItemCount(), 1u);
+    apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
 
-  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
-
-  // After releasing drag, check that the root item views are still animating.
-  for (size_t i = 1; i < apps_grid_view_->view_model()->view_size(); i++) {
-    auto* item_view = apps_grid_view_->view_model()->view_at(i);
-    EXPECT_TRUE(item_view->layer()->GetAnimator()->is_animating() ||
-                apps_grid_view_->IsAnimatingView(item_view));
-  }
+    // After releasing drag, check that the root item views are still animating.
+    for (size_t i = 1; i < apps_grid_view_->view_model()->view_size(); i++) {
+      auto* item_view = apps_grid_view_->view_model()->view_at(i);
+      EXPECT_TRUE((item_view->layer()->GetAnimator()->is_animating() ||
+                   apps_grid_view_->IsAnimatingView(item_view)));
+    }
+  }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
 }
 
 // TODO(crbug.com/1371184): Fix flaky test.
