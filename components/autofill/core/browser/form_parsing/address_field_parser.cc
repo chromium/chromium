@@ -1031,11 +1031,8 @@ AddressFieldParser::ParseNameAndLabelForAdminLevel2(ParsingContext& context,
                                                     AutofillScanner* scanner) {
   AddressCountryCode country_code(context.client_country.value());
   // TODO(crbug.com/40266693) Remove feature check when launched.
-  if (admin_level2_ ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAdminLevel2) ||
-      !i18n_model_definition::IsTypeEnabledForCountry(ADDRESS_HOME_ADMIN_LEVEL2,
-                                                      country_code)) {
+  if (admin_level2_ || !i18n_model_definition::IsTypeEnabledForCountry(
+                           ADDRESS_HOME_ADMIN_LEVEL2, country_code)) {
     return RESULT_MATCH_NONE;
   }
 

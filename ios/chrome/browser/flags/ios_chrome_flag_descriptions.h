@@ -91,11 +91,6 @@ extern const char kAutofillEnableSaveCardLoadingAndConfirmationDescription[];
 extern const char kAutofillEnableSaveCardLocalSaveFallbackName[];
 extern const char kAutofillEnableSaveCardLocalSaveFallbackDescription[];
 
-// Title and description for the flag that controls whether Autofill handles
-// administrative area level 2 fields.
-extern const char kAutofillEnableSupportForAdminLevel2Name[];
-extern const char kAutofillEnableSupportForAdminLevel2Description[];
-
 // Title and description for flag to enable showing card product name (instead
 // of issuer network) in Payments UI.
 extern const char kAutofillEnableCardProductNameName[];

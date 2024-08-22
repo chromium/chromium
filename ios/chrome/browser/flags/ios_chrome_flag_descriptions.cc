@@ -112,12 +112,6 @@ const char kAutofillEnableSaveCardLocalSaveFallbackDescription[] =
     "will be a no-op and the existing card will not be updated with any card "
     "details from the form.";
 
-const char kAutofillEnableSupportForAdminLevel2Name[] =
-    "Enables parsing and filling of administrative area level 2 fields";
-const char kAutofillEnableSupportForAdminLevel2Description[] =
-    "When enabled, Autofill will parse, save and fill administrative area "
-    "level 2 fields in forms.";
-
 const char kAutofillEnableCardProductNameName[] =
     "Enable showing card product name";
 const char kAutofillEnableCardProductNameDescription[] =

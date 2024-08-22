@@ -251,11 +251,7 @@ TEST_P(AddressFieldParserTest, ParseBetweenStreetsLines) {
 // Tests that address level 2 field is correctly classified.
 TEST_P(AddressFieldParserTest, ParseAdminLevel2) {
   // TODO(crbug.com/40266693): Remove once launched.
-  base::test::ScopedFeatureList enabled;
-  enabled.InitWithFeatures({features::kAutofillEnableSupportForAdminLevel2,
-                            features::kAutofillUseMXAddressModel},
-                           {});
-
+  base::test::ScopedFeatureList enabled{features::kAutofillUseMXAddressModel};
   AddTextFormFieldData("municipio", "Municipio", ADDRESS_HOME_ADMIN_LEVEL2);
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("MX"),
                     LanguageCode("es"));
@@ -346,14 +342,7 @@ TEST_P(AddressFieldParserTest, ParseCompany) {
 TEST_P(AddressFieldParserTest,
        ParseDependentLocalityCityStateCountryZipcodeTogether) {
   // TODO(crbug.com/40160818): Remove once launched.
-  base::test::ScopedFeatureList enabled;
-  enabled.InitWithFeatures(
-      {
-          features::kAutofillEnableSupportForAdminLevel2,
-          features::kAutofillUseMXAddressModel,
-      },
-      {});
-
+  base::test::ScopedFeatureList enabled{features::kAutofillUseMXAddressModel};
   AddTextFormFieldData("neighborhood", "Neighborhood",
                        ADDRESS_HOME_DEPENDENT_LOCALITY);
   AddTextFormFieldData("city", "City", ADDRESS_HOME_CITY);

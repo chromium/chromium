@@ -1489,12 +1489,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::test::kAutofillDisableSilentProfileUpdates)},
-    {"autofill-enable-admin-level-2",
-     flag_descriptions::kAutofillEnableSupportForAdminLevel2Name,
-     flag_descriptions::kAutofillEnableSupportForAdminLevel2Description,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableSupportForAdminLevel2)},
     {"spotlight-never-retain-index",
      flag_descriptions::kSpotlightNeverRetainIndexName,
      flag_descriptions::kSpotlightNeverRetainIndexDescription, flags_ui::kOsIos,

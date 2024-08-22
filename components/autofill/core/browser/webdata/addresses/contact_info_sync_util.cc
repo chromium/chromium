@@ -252,11 +252,7 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
     s.Set(specifics.mutable_address_street_location_and_locality(),
           ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY);
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAdminLevel2)) {
-    s.Set(specifics.mutable_address_admin_level_2(), ADDRESS_HOME_ADMIN_LEVEL2);
-  }
-
+  s.Set(specifics.mutable_address_admin_level_2(), ADDRESS_HOME_ADMIN_LEVEL2);
   // Set email, phone and company values and statuses.
   s.Set(specifics.mutable_email_address(), EMAIL_ADDRESS);
   s.Set(specifics.mutable_company_name(), COMPANY_NAME);
@@ -383,11 +379,8 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
     s.Set(specifics.address_street_location_and_locality(),
           ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY);
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAdminLevel2)) {
-    s.Set(specifics.address_admin_level_2(), ADDRESS_HOME_ADMIN_LEVEL2);
-  }
 
+  s.Set(specifics.address_admin_level_2(), ADDRESS_HOME_ADMIN_LEVEL2);
   // Set email, phone and company values and statuses.
   s.Set(specifics.email_address(), EMAIL_ADDRESS);
   s.Set(specifics.company_name(), COMPANY_NAME);

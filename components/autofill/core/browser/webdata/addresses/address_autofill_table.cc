@@ -378,11 +378,6 @@ bool AddProfileMetadataToTable(sql::Database* db,
 bool AddProfileTypeTokensToTable(sql::Database* db,
                                  const AutofillProfile& profile) {
   for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForAdminLevel2) &&
-        type == ADDRESS_HOME_ADMIN_LEVEL2) {
-      continue;
-    }
     if (!base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel) &&
         type == ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY) {
       continue;

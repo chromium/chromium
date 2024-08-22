@@ -342,11 +342,9 @@ BetweenStreets2Node::BetweenStreets2Node(SubcomponentsList children)
 BetweenStreets2Node::~BetweenStreets2Node() = default;
 
 AdminLevel2Node::AdminLevel2Node(SubcomponentsList children)
-    : FeatureGuardedAddressComponent(
-          &features::kAutofillEnableSupportForAdminLevel2,
-          ADDRESS_HOME_ADMIN_LEVEL2,
-          std::move(children),
-          MergeMode::kReplaceEmpty | kReplaceSubset) {}
+    : AddressComponent(ADDRESS_HOME_ADMIN_LEVEL2,
+                       std::move(children),
+                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
 
 AdminLevel2Node::~AdminLevel2Node() = default;
 

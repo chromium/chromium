@@ -19,7 +19,6 @@ namespace {
 void InitFeaturesForIN(base::test::ScopedFeatureList& features) {
   features.InitWithFeatures(
       {
-          features::kAutofillEnableSupportForAdminLevel2,
           features::kAutofillUseINAddressModel,
           features::kAutofillStructuredFieldsDisableAddressLines,
       },
@@ -204,10 +203,6 @@ TEST_P(AddressFieldParserTestNG, ParseBetweenStreetsLines) {
 
 // Tests that address level 2 field is correctly classified.
 TEST_P(AddressFieldParserTestNG, ParseAdminLevel2) {
-  // TODO(crbug.com/40266693): Remove once launched.
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(features::kAutofillEnableSupportForAdminLevel2);
-
   AddTextFormFieldData("municipio", "Municipio", ADDRESS_HOME_ADMIN_LEVEL2);
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("MX"),
                     LanguageCode("es"));
@@ -276,14 +271,7 @@ TEST_P(AddressFieldParserTestNG, ParseCompany) {
 TEST_P(AddressFieldParserTestNG,
        ParseDependentLocalityCityStateCountryZipcodeTogether) {
   // TODO(crbug.com/40160818): Remove once launched.
-  base::test::ScopedFeatureList enabled;
-  enabled.InitWithFeatures(
-      {
-          features::kAutofillUseMXAddressModel,
-          features::kAutofillEnableSupportForAdminLevel2,
-      },
-      {});
-
+  base::test::ScopedFeatureList enabled{features::kAutofillUseMXAddressModel};
   AddTextFormFieldData("neighborhood", "Neighborhood",
                        ADDRESS_HOME_DEPENDENT_LOCALITY);
   AddTextFormFieldData("city", "City", ADDRESS_HOME_CITY);

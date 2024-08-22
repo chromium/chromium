@@ -99,7 +99,7 @@ class BetweenStreets2Node : public AddressComponent {
 
 // Stores administrative area level 2. A sub-division of a state, e.g. a
 // Municipio in Brazil or Mexico.
-class AdminLevel2Node : public FeatureGuardedAddressComponent {
+class AdminLevel2Node : public AddressComponent {
  public:
   explicit AdminLevel2Node(SubcomponentsList children);
   ~AdminLevel2Node() override;

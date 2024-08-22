@@ -1371,7 +1371,6 @@ TEST_F(AutofillProfileTest, Compare_StructuredTypes) {
        features::kAutofillUseINAddressModel,
        features::kAutofillUseITAddressModel,
        features::kAutofillUseMXAddressModel,
-       features::kAutofillEnableSupportForAdminLevel2,
        features::kAutofillEnableSupportForApartmentNumbers},
       {});
   // Those types do store a verification status.

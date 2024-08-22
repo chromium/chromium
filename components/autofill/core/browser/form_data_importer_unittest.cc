@@ -532,8 +532,7 @@ class FormDataImporterTest : public testing::Test {
          features::kAutofillUseINAddressModel,
          features::kAutofillUseITAddressModel,
          features::kAutofillUseMXAddressModel,
-         features::kAutofillEnableSupportForApartmentNumbers,
-         features::kAutofillEnableSupportForAdminLevel2},
+         features::kAutofillEnableSupportForApartmentNumbers},
         {});
   }
 

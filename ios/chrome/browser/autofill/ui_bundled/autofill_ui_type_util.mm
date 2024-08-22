@@ -63,13 +63,8 @@ bool FieldIsUsedInAddress(autofill::FieldType autofillType,
   }
 
   if (autofillType == autofill::ADDRESS_HOME_ADMIN_LEVEL2) {
-    const bool is_enabled_support_for_admin_level_2 =
-        base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableSupportForAdminLevel2);
-
     // Admin Level 2 is only available in Mexico.
-    return is_enabled_support_for_admin_level_2 &&
-           [countryCode isEqualToString:@"MX"];
+    return [countryCode isEqualToString:@"MX"];
   }
 
   return true;

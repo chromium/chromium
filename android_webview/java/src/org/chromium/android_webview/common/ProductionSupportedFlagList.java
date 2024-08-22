@@ -277,9 +277,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, Autofill local heuristics consider the placeholder attribute "
                         + "for determining field types."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_ADMIN_LEVEL2,
-                "When enabled, Autofill supports admin-level2 fields."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_RATIONALIZATION_ENGINE_FOR_MX,
                 "When enabled, Autofill performs Mexico specific rationalization."),
         Flag.baseFeature(

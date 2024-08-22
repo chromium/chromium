@@ -68,10 +68,6 @@ class AddressAutofillTableProfileTest
                ? "local_addresses"
                : "contact_info";
   }
-
- private:
-  base::test::ScopedFeatureList features_{
-      features::kAutofillEnableSupportForAdminLevel2};
 };
 
 INSTANTIATE_TEST_SUITE_P(
