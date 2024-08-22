@@ -83,6 +83,7 @@ config("dependants_extra_warnings") {
       "-Wduplicate-enum",
       "-Wextra-semi",
       "-Wextra-semi-stmt",
+      "-Widiomatic-parentheses",
       "-Wimplicit-fallthrough",
       "-Winconsistent-missing-destructor-override",
       "-Winvalid-offsetof",
