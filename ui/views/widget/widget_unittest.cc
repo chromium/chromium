@@ -5666,6 +5666,37 @@ TEST_F(WidgetTest, RootViewAccessibilityCacheInitialized) {
   EXPECT_TRUE(widget->GetRootView()->GetViewAccessibility().is_initialized());
 }
 
+TEST_F(WidgetTest, ClientViewAccessibilityProperties) {
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       Widget::InitParams::TYPE_WINDOW);
+  widget->Show();
+
+  ui::AXNodeData node_data;
+  widget->client_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kClient);
+}
+
+TEST_F(WidgetTest, NonClientViewAccessibilityProperties) {
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       Widget::InitParams::TYPE_WINDOW);
+  NonClientView* non_client_view = widget->non_client_view();
+  non_client_view->SetFrameView(
+      std::make_unique<MinimumSizeFrameView>(widget.get()));
+  widget->Show();
+
+  ui::AXNodeData node_data;
+  non_client_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kClient);
+
+  node_data = ui::AXNodeData();
+  non_client_view->frame_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kClient);
+}
+
 // Parameterized test that verifies the behavior of SetAspectRatio with respect
 // to the excluded margin.
 class WidgetSetAspectRatioTest

@@ -116,10 +116,6 @@ int NonClientFrameView::NonClientHitTest(const gfx::Point& point) {
   return HTNOWHERE;
 }
 
-void NonClientFrameView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kClient;
-}
-
 void NonClientFrameView::OnThemeChanged() {
   View::OnThemeChanged();
   SchedulePaint();
@@ -155,6 +151,7 @@ void NonClientFrameView::InsertClientView(ClientView* client_view) {
 }
 
 NonClientFrameView::NonClientFrameView() {
+  GetViewAccessibility().SetRole(ax::mojom::Role::kClient);
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 }
 
@@ -170,6 +167,10 @@ END_METADATA
 NonClientView::NonClientView(views::ClientView* client_view)
     : client_view_(client_view) {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+
+  // TODO(crbug.com/40866857): Should this be pruned from the accessibility
+  // tree?
+  GetViewAccessibility().SetRole(ax::mojom::Role::kClient);
 }
 
 NonClientView::~NonClientView() {
@@ -291,12 +292,6 @@ void NonClientView::Layout(PassKey) {
 
   if (overlay_view_)
     overlay_view_->SetBoundsRect(GetLocalBounds());
-}
-
-void NonClientView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // TODO(crbug.com/40866857): Should this be pruned from the accessibility
-  // tree?
-  node_data->role = ax::mojom::Role::kClient;
 }
 
 View* NonClientView::GetTooltipHandlerForPoint(const gfx::Point& point) {
