@@ -32,6 +32,7 @@ class IOSSharingServiceFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
+  bool ServiceIsCreatedWithBrowserState() const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARING_MESSAGE_MODEL_IOS_SHARING_SERVICE_FACTORY_H_

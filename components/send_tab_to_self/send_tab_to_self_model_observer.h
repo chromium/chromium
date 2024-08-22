@@ -38,9 +38,11 @@ class SendTabToSelfModelObserver {
   // clarify ownership.
   virtual void EntriesAddedRemotely(
       const std::vector<const SendTabToSelfEntry*>& new_entries) = 0;
+  // Invoked when a new entry is added on the local device.
+  virtual void EntryAddedLocally(const SendTabToSelfEntry* entry) {}
   virtual void EntriesRemovedRemotely(
       const std::vector<std::string>& guids) = 0;
-  // This observer will>>>>>>>> notify listeners of new and existing entries
+  // This observer will notify listeners of new and existing entries
   // that have been marked as opened.
   virtual void EntriesOpenedRemotely(
       const std::vector<const SendTabToSelfEntry*>& opened_entries) {}

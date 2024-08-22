@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -18,12 +19,16 @@
 #include "chrome/browser/sharing/sharing_handler_registry_impl.h"
 #include "chrome/browser/sharing/sharing_message_bridge_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/gcm_driver/crypto/gcm_encryption_provider.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/send_tab_to_self/features.h"
+#include "components/send_tab_to_self/send_tab_to_self_model.h"
+#include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/sharing_message/buildflags.h"
 #include "components/sharing_message/ios_push/sharing_ios_push_sender.h"
 #include "components/sharing_message/sharing_constants.h"
@@ -95,6 +100,8 @@ SharingServiceFactory::SharingServiceFactory()
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SharingMessageBridgeFactory::GetInstance());
+  DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
+  DependsOn(FaviconServiceFactory::GetInstance());
 }
 
 SharingServiceFactory::~SharingServiceFactory() = default;
@@ -171,11 +178,20 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
   auto fcm_handler = std::make_unique<SharingFCMHandler>(
       gcm_driver, device_info_tracker, fcm_sender_ptr, handler_registry.get());
 
+  favicon::FaviconService* favicon_service =
+      FaviconServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::IMPLICIT_ACCESS);
+
+  send_tab_to_self::SendTabToSelfModel* send_tab_model =
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile)
+          ->GetSendTabToSelfModel();
+
   return std::make_unique<SharingService>(
       std::move(sync_prefs), std::move(vapid_key_manager),
       std::move(sharing_device_registration), std::move(sharing_message_sender),
       std::move(device_source), std::move(handler_registry),
-      std::move(fcm_handler), sync_service, task_runner);
+      std::move(fcm_handler), sync_service, favicon_service, send_tab_model,
+      task_runner);
 }
 
 bool SharingServiceFactory::ServiceIsNULLWhileTesting() const {
