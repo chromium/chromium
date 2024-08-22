@@ -37,7 +37,7 @@ class LevelDBScopeTest : public LevelDBScopesTestBase {
     base::RunLoop loop;
     PartitionedLockHolder locks_receiver;
     lock_manager->AcquireLocks(
-        lock_requests, locks_receiver.AsWeakPtr(),
+        lock_requests, locks_receiver,
         base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
     loop.Run();
     return std::move(locks_receiver.locks);

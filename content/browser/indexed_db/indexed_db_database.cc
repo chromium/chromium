@@ -48,7 +48,6 @@
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "ipc/ipc_channel.h"
 #include "storage/browser/blob/blob_data_handle.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
@@ -214,8 +213,7 @@ void IndexedDBDatabase::RegisterAndScheduleTransaction(
   RequireBlockingTransactionClientsToBeActive(transaction, lock_requests);
 
   lock_manager().AcquireLocks(
-      std::move(lock_requests),
-      transaction->mutable_locks_receiver()->AsWeakPtr(),
+      std::move(lock_requests), *transaction->mutable_locks_receiver(),
       base::BindOnce(&IndexedDBTransaction::Start, transaction->AsWeakPtr()));
 }
 

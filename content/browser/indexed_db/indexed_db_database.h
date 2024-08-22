@@ -90,9 +90,6 @@ class CONTENT_EXPORT IndexedDBDatabase {
     return connections_;
   }
 
-  // TODO(dmurph): Remove this method and have transactions be directly
-  // scheduled using the lock manager.
-
   enum class RunTasksResult { kDone, kError, kCanBeDestroyed };
   std::tuple<RunTasksResult, leveldb::Status> RunTasks();
   void RegisterAndScheduleTransaction(IndexedDBTransaction* transaction);

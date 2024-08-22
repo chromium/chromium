@@ -138,8 +138,7 @@ class IndexedDBConnectionCoordinator::ConnectionRequest {
         {{GetDatabaseLockId(db_->metadata().name),
           PartitionedLockManager::LockType::kExclusive}};
     state_ = RequestState::kPendingLocks;
-    db_->lock_manager().AcquireLocks(std::move(lock_requests),
-                                     lock_receiver_.weak_factory.GetWeakPtr(),
+    db_->lock_manager().AcquireLocks(std::move(lock_requests), lock_receiver_,
                                      std::move(next_step));
   }
 

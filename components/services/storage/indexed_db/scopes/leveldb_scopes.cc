@@ -161,8 +161,7 @@ leveldb::Status LevelDBScopes::Initialize() {
       }
     }
     PartitionedLockHolder receiver;
-    lock_manager_->AcquireLocks(std::move(lock_requests),
-                                receiver.weak_factory.GetWeakPtr(),
+    lock_manager_->AcquireLocks(std::move(lock_requests), receiver,
                                 base::DoNothing());
 
     // AcquireLocks should grant the locks synchronously because

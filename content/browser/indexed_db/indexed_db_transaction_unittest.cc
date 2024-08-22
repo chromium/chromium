@@ -537,8 +537,7 @@ TEST_F(IndexedDBTransactionTest, AbortCancelsLockRequest) {
                              PartitionedLockManager::LockType::kExclusive);
   bool locks_received = false;
   PartitionedLockHolder temp_lock_receiver;
-  lock_manager().AcquireLocks(lock_requests,
-                              temp_lock_receiver.weak_factory.GetWeakPtr(),
+  lock_manager().AcquireLocks(lock_requests, temp_lock_receiver,
                               base::BindOnce(SetToTrue, &locks_received));
   EXPECT_TRUE(locks_received);
 
@@ -563,8 +562,7 @@ TEST_F(IndexedDBTransactionTest, AbortCancelsLockRequest) {
   // Verify that the locks are available for acquisition again, as the
   // transaction should have cancelled its lock request.
   locks_received = false;
-  lock_manager().AcquireLocks(lock_requests,
-                              temp_lock_receiver.weak_factory.GetWeakPtr(),
+  lock_manager().AcquireLocks(lock_requests, temp_lock_receiver,
                               base::BindOnce(SetToTrue, &locks_received));
   EXPECT_TRUE(locks_received);
 }

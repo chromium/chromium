@@ -269,8 +269,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
     PartitionedLockHolder locks_receiver;
     bucket_context_->lock_manager().AcquireLocks(
         {{{0, "01"}, PartitionedLockManager::LockType::kShared}},
-        locks_receiver.AsWeakPtr(),
-        base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
+        locks_receiver, base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
     loop.Run();
     return std::move(locks_receiver.locks);
   }

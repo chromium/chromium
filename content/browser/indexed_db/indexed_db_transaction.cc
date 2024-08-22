@@ -255,7 +255,7 @@ leveldb::Status IndexedDBTransaction::Abort(
   // front-end is notified, as the transaction completion unblocks
   // operations like closing connections.
   locks_receiver_.locks.clear();
-  locks_receiver_.AbortLockRequest();
+  locks_receiver_.CancelLockRequest();
 
   callbacks()->OnAbort(*this, error);
 
@@ -295,26 +295,18 @@ void IndexedDBTransaction::DontAllowInactiveClientToBlockOthers(
 
 bool IndexedDBTransaction::IsTransactionBlockingOtherClients() const {
   CHECK_EQ(state_, STARTED);
-  for (const PartitionedLockId& lock_id : lock_ids_) {
-    std::set<PartitionedLockHolder*> blocked_requests =
-        bucket_context_->lock_manager().GetQueuedRequests(lock_id);
-    if (std::any_of(blocked_requests.begin(), blocked_requests.end(),
-                    [&](PartitionedLockHolder* blocked_lock_holder) {
-                      auto* lock_request_data =
-                          static_cast<IndexedDBLockRequestData*>(
-                              blocked_lock_holder->GetUserData(
-                                  IndexedDBLockRequestData::kKey));
-                      if (!lock_request_data) {
-                        return true;
-                      }
-                      return lock_request_data->client_token !=
-                             connection_->client_token();
-                    })) {
-      return true;
-    }
-  }
-
-  return false;
+  std::set<PartitionedLockHolder*> blocked_requests =
+      bucket_context_->lock_manager().GetBlockedRequests(lock_ids());
+  return std::any_of(
+      blocked_requests.begin(), blocked_requests.end(),
+      [&](PartitionedLockHolder* blocked_lock_holder) {
+        auto* lock_request_data = static_cast<IndexedDBLockRequestData*>(
+            blocked_lock_holder->GetUserData(IndexedDBLockRequestData::kKey));
+        if (!lock_request_data) {
+          return true;
+        }
+        return lock_request_data->client_token != connection_->client_token();
+      });
 }
 
 void IndexedDBTransaction::Start() {
