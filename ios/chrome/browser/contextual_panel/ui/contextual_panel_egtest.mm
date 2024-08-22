@@ -6,6 +6,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -329,6 +330,36 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
                                                  @"BubbleViewLabelIdentifier")];
+}
+
+// Tests that opening the keyboard on iPhone closes the panel. On iPad, the
+// panel is presented modally, so the panel wouldn't close.
+- (void)testKeyboardOpenClosesPanelOniPhone {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test conditions don't happen on iPad.");
+  }
+
+  // Open a page wth a text field.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_login_form.html")];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   @"ContextualPanelEntrypointImageViewAXID")]
+      performAction:grey_tap()];
+
+  // Check that the contextual panel opened up.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(@"PanelContentViewAXID")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Open the keyboard by tapping a text field.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("un")];
+
+  // Check that the contextual panel is closed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(@"PanelContentViewAXID")]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

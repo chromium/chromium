@@ -66,6 +66,16 @@ const CGFloat kTopCornerRadius = 10;
   self.view.clipsToBounds = YES;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(handleKeyboardWillShow:)
+             name:UIKeyboardWillShowNotification
+           object:nil];
+}
+
 - (void)didMoveToParentViewController:(UIViewController*)parent {
   if (!parent) {
     _heightConstraint = nil;
@@ -235,6 +245,14 @@ const CGFloat kTopCornerRadius = 10;
   if (newHeight > 0) {
     _heightConstraint.constant = newHeight;
   }
+}
+
+#pragma mark - Keyboard notifications
+
+- (void)handleKeyboardWillShow:(NSNotification*)notification {
+  base::UmaHistogramEnumeration("IOS.ContextualPanel.DismissedReason",
+                                ContextualPanelDismissedReason::KeyboardOpened);
+  [self.contextualSheetHandler closeContextualSheet];
 }
 
 @end
