@@ -3,6 +3,7 @@
     "android_static_analysis": "off",
     "dcheck_always_on": false,
     "debuggable_apks": false,
+    "enable_chrome_android_internal": false,
     "ffmpeg_branding": "Chrome",
     "is_component_build": false,
     "is_debug": false,
