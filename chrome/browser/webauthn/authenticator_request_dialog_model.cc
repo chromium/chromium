@@ -566,15 +566,75 @@ AUTHENTICATOR_EVENTS
 
 std::ostream& operator<<(std::ostream& os,
                          const AuthenticatorRequestDialogModel::Step& step) {
-  switch (step) {
-#define F(x)                                     \
-  case AuthenticatorRequestDialogModel::Step::x: \
-    os << #x;                                    \
-    break;
-    STEPS
-#undef F
-  }
-  return os;
+  using Step = AuthenticatorRequestDialogModel::Step;
+  constexpr auto kStepNames = base::MakeFixedFlatMap<Step, std::string_view>({
+      {Step::kNotStarted, "kNotStarted"},
+      {Step::kConditionalMediation, "kConditionalMediation"},
+      {Step::kMechanismSelection, "kMechanismSelection"},
+      {Step::kErrorNoAvailableTransports, "kErrorNoAvailableTransports"},
+      {Step::kErrorNoPasskeys, "kErrorNoPasskeys"},
+      {Step::kErrorInternalUnrecognized, "kErrorInternalUnrecognized"},
+      {Step::kErrorWindowsHelloNotEnabled, "kErrorWindowsHelloNotEnabled"},
+      {Step::kTimedOut, "kTimedOut"},
+      {Step::kKeyNotRegistered, "kKeyNotRegistered"},
+      {Step::kKeyAlreadyRegistered, "kKeyAlreadyRegistered"},
+      {Step::kMissingCapability, "kMissingCapability"},
+      {Step::kStorageFull, "kStorageFull"},
+      {Step::kClosed, "kClosed"},
+      {Step::kUsbInsertAndActivate, "kUsbInsertAndActivate"},
+      {Step::kBlePowerOnAutomatic, "kBlePowerOnAutomatic"},
+      {Step::kBlePowerOnManual, "kBlePowerOnManual"},
+      {Step::kBlePermissionMac, "kBlePermissionMac"},
+      {Step::kOffTheRecordInterstitial, "kOffTheRecordInterstitial"},
+      {Step::kPhoneConfirmationSheet, "kPhoneConfirmationSheet"},
+      {Step::kCableActivate, "kCableActivate"},
+      {Step::kAndroidAccessory, "kAndroidAccessory"},
+      {Step::kCableV2QRCode, "kCableV2QRCode"},
+      {Step::kCableV2Connecting, "kCableV2Connecting"},
+      {Step::kCableV2Connected, "kCableV2Connected"},
+      {Step::kCableV2Error, "kCableV2Error"},
+      {Step::kClientPinChange, "kClientPinChange"},
+      {Step::kClientPinEntry, "kClientPinEntry"},
+      {Step::kClientPinSetup, "kClientPinSetup"},
+      {Step::kClientPinTapAgain, "kClientPinTapAgain"},
+      {Step::kClientPinErrorSoftBlock, "kClientPinErrorSoftBlock"},
+      {Step::kClientPinErrorHardBlock, "kClientPinErrorHardBlock"},
+      {Step::kClientPinErrorAuthenticatorRemoved,
+       "kClientPinErrorAuthenticatorRemoved"},
+      {Step::kInlineBioEnrollment, "kInlineBioEnrollment"},
+      {Step::kRetryInternalUserVerification, "kRetryInternalUserVerification"},
+      {Step::kResidentCredentialConfirmation,
+       "kResidentCredentialConfirmation"},
+      {Step::kSelectAccount, "kSelectAccount"},
+      {Step::kSelectSingleAccount, "kSelectSingleAccount"},
+      {Step::kPreSelectAccount, "kPreSelectAccount"},
+      {Step::kPreSelectSingleAccount, "kPreSelectSingleAccount"},
+      {Step::kSelectPriorityMechanism, "kSelectPriorityMechanism"},
+      {Step::kAttestationPermissionRequest, "kAttestationPermissionRequest"},
+      {Step::kEnterpriseAttestationPermissionRequest,
+       "kEnterpriseAttestationPermissionRequest"},
+      {Step::kGPMChangePin, "kGPMChangePin"},
+      {Step::kGPMCreatePin, "kGPMCreatePin"},
+      {Step::kGPMEnterPin, "kGPMEnterPin"},
+      {Step::kGPMChangeArbitraryPin, "kGPMChangeArbitraryPin"},
+      {Step::kGPMCreateArbitraryPin, "kGPMCreateArbitraryPin"},
+      {Step::kGPMEnterArbitraryPin, "kGPMEnterArbitraryPin"},
+      {Step::kGPMTouchID, "kGPMTouchID"},
+      {Step::kGPMCreatePasskey, "kGPMCreatePasskey"},
+      {Step::kGPMConfirmOffTheRecordCreate, "kGPMConfirmOffTheRecordCreate"},
+      {Step::kCreatePasskey, "kCreatePasskey"},
+      {Step::kGPMError, "kGPMError"},
+      {Step::kGPMConnecting, "kGPMConnecting"},
+      {Step::kRecoverSecurityDomain, "kRecoverSecurityDomain"},
+      {Step::kTrustThisComputerAssertion, "kTrustThisComputerAssertion"},
+      {Step::kTrustThisComputerCreation, "kTrustThisComputerCreation"},
+      {Step::kGPMReauthForPinReset, "kGPMReauthForPinReset"},
+      {Step::kGPMLockedPin, "kGPMLockedPin"},
+  });
+  static_assert(Step::kMaxValue == Step::kGPMLockedPin &&
+                    kStepNames.size() - 1 == static_cast<int>(Step::kMaxValue),
+                "implement operator<< overload when adding new Step values");
+  return os << kStepNames.at(step);
 }
 
 AuthenticatorRequestDialogController::EphemeralState::EphemeralState() =

@@ -204,137 +204,112 @@ class ProfileAttributesEntry;
   /* Called when the GPM passkeys are reset successfully or not. */           \
   AUTHENTICATOR_REQUEST_EVENT_1(OnGpmPasskeysReset, bool)
 
-// Each Step defines a unique UI state. Setting a Step causes the matching
-// dialog or window to appear.
-#define STEPS                                                                  \
-  /* The UX flow has not started yet, the dialog should still be hidden. */    \
-  F(kNotStarted)                                                               \
-                                                                               \
-  /* Conditionally mediated UI. No dialog is shown, instead credentials are */ \
-  /* offered to the user on the password autofill prompt. */                   \
-  F(kConditionalMediation)                                                     \
-                                                                               \
-  F(kMechanismSelection)                                                       \
-                                                                               \
-  /* The request errored out before completing. Error will only be sent */     \
-  /* after user interaction. */                                                \
-  F(kErrorNoAvailableTransports)                                               \
-  F(kErrorNoPasskeys)                                                          \
-  F(kErrorInternalUnrecognized)                                                \
-  F(kErrorWindowsHelloNotEnabled)                                              \
-                                                                               \
-  /* The request is already complete, but the error dialog should wait */      \
-  /* until user acknowledgement. */                                            \
-  F(kTimedOut)                                                                 \
-  F(kKeyNotRegistered)                                                         \
-  F(kKeyAlreadyRegistered)                                                     \
-  F(kMissingCapability)                                                        \
-  F(kStorageFull)                                                              \
-                                                                               \
-  /* The request is completed, and the dialog should be closed. */             \
-  F(kClosed)                                                                   \
-                                                                               \
-  /* Universal Serial Bus (USB). */                                            \
-  F(kUsbInsertAndActivate)                                                     \
-                                                                               \
-  /* Bluetooth Low Energy (BLE). */                                            \
-  F(kBlePowerOnAutomatic)                                                      \
-  F(kBlePowerOnManual)                                                         \
-  F(kBlePermissionMac)                                                         \
-                                                                               \
-  /* Let the user confirm that they want to create a credential in an */       \
-  /* off-the-record browsing context. Used for platform and caBLE */           \
-  /* credential, where we feel that it's perhaps not obvious that something */ \
-  /* will be recorded. */                                                      \
-  F(kOffTheRecordInterstitial)                                                 \
-                                                                               \
-  /* Phone as a security key. */                                               \
-  F(kPhoneConfirmationSheet)                                                   \
-  F(kCableActivate)                                                            \
-  F(kAndroidAccessory)                                                         \
-  F(kCableV2QRCode)                                                            \
-  F(kCableV2Connecting)                                                        \
-  F(kCableV2Connected)                                                         \
-  F(kCableV2Error)                                                             \
-                                                                               \
-  /* Authenticator Client PIN. */                                              \
-  F(kClientPinChange)                                                          \
-  F(kClientPinEntry)                                                           \
-  F(kClientPinSetup)                                                           \
-  F(kClientPinTapAgain)                                                        \
-  F(kClientPinErrorSoftBlock)                                                  \
-  F(kClientPinErrorHardBlock)                                                  \
-  F(kClientPinErrorAuthenticatorRemoved)                                       \
-                                                                               \
-  /* Authenticator Internal User Verification */                               \
-  F(kInlineBioEnrollment)                                                      \
-  F(kRetryInternalUserVerification)                                            \
-                                                                               \
-  /* Confirm user consent to create a resident credential. Used prior to */    \
-  /* triggering Windows-native APIs when Windows itself won't show any */      \
-  /* notice about resident credentials. */                                     \
-  F(kResidentCredentialConfirmation)                                           \
-                                                                               \
-  /* Account selection. This occurs prior to performing user verification */   \
-  /* for platform authenticators ("pre-select"), or afterwards for USB  */     \
-  /* security keys. In each mode, there are different sheets for confirming */ \
-  /* a single available credential and choosing one from a list of multiple */ \
-  /* options. */                                                               \
-  F(kSelectAccount)                                                            \
-  F(kSelectSingleAccount)                                                      \
-                                                                               \
-  F(kPreSelectAccount)                                                         \
-                                                                               \
-  /* TODO(crbug.com/40284700): Merge with kSelectPriorityMechanism. */         \
-  F(kPreSelectSingleAccount)                                                   \
-                                                                               \
-  /* kSelectPriorityMechanism lets the user confirm a single "priority" */     \
-  /* mechanism. */                                                             \
-  F(kSelectPriorityMechanism)                                                  \
-                                                                               \
-  /* Attestation permission requests. */                                       \
-  F(kAttestationPermissionRequest)                                             \
-  F(kEnterpriseAttestationPermissionRequest)                                   \
-                                                                               \
-  /* GPM Pin (6-digit). */                                                     \
-  F(kGPMChangePin)                                                             \
-  F(kGPMCreatePin)                                                             \
-  F(kGPMEnterPin)                                                              \
-                                                                               \
-  /* GPM Pin (alphanumeric). */                                                \
-  F(kGPMChangeArbitraryPin)                                                    \
-  F(kGPMCreateArbitraryPin)                                                    \
-  F(kGPMEnterArbitraryPin)                                                     \
-                                                                               \
-  /* User verification prompt for GPM. Only valid on macOS 12+. */             \
-  F(kGPMTouchID)                                                               \
-                                                                               \
-  /* GPM passkey creation. */                                                  \
-  F(kGPMCreatePasskey)                                                         \
-  F(kGPMConfirmOffTheRecordCreate)                                             \
-  F(kCreatePasskey)                                                            \
-  F(kGPMError)                                                                 \
-  F(kGPMConnecting)                                                            \
-                                                                               \
-  /* Device bootstrap to use GPM passkeys. */                                  \
-  F(kRecoverSecurityDomain)                                                    \
-  F(kTrustThisComputerAssertion)                                               \
-  F(kTrustThisComputerCreation)                                                \
-                                                                               \
-  /* Changing GPM PIN. */                                                      \
-  F(kGPMReauthForPinReset)                                                     \
-  F(kGPMLockedPin)
-
 // AuthenticatorRequestDialogModel holds the UI state for a WebAuthn request.
 // This class is refcounted so that its ownership can be shared between the
 // dialog view and the request delegate, which both depend on its state, and
 // don't have coupled lifetimes.
 struct AuthenticatorRequestDialogModel
     : public base::RefCounted<AuthenticatorRequestDialogModel> {
+  // Each Step defines a unique UI state. Setting a Step causes the matching
+  // dialog or window to appear.
+  //
+  // Append new values to the end at update kMaxValue.
   enum class Step {
-#define F(x) x,
-    STEPS
-#undef F
+    // The UX flow has not started yet, the dialog should still be hidden.
+    kNotStarted,
+    // Conditionally mediated UI. No dialog is shown, instead credentials are
+    // offered to the user on the password autofill prompt.
+    kConditionalMediation,
+    kMechanismSelection,
+    // The request errored out before completing. Error will only be sent
+    // after user interaction.
+    kErrorNoAvailableTransports,
+    kErrorNoPasskeys,
+    kErrorInternalUnrecognized,
+    kErrorWindowsHelloNotEnabled,
+    // The request is already complete, but the error dialog should wait
+    // until user acknowledgement.
+    kTimedOut,
+    kKeyNotRegistered,
+    kKeyAlreadyRegistered,
+    kMissingCapability,
+    kStorageFull,
+    // The request is completed, and the dialog should be closed.
+    kClosed,
+    // Universal Serial Bus (USB).
+    kUsbInsertAndActivate,
+    // Bluetooth Low Energy (BLE).
+    kBlePowerOnAutomatic,
+    kBlePowerOnManual,
+    kBlePermissionMac,
+    // Let the user confirm that they want to create a credential in an
+    // off-the-record browsing context. Used for platform and caBLE
+    // credential, where we feel that it's perhaps not obvious that something
+    // will be recorded.
+    kOffTheRecordInterstitial,
+    // Phone as a security key.
+    kPhoneConfirmationSheet,
+    kCableActivate,
+    kAndroidAccessory,
+    kCableV2QRCode,
+    kCableV2Connecting,
+    kCableV2Connected,
+    kCableV2Error,
+    // Authenticator Client PIN.
+    kClientPinChange,
+    kClientPinEntry,
+    kClientPinSetup,
+    kClientPinTapAgain,
+    kClientPinErrorSoftBlock,
+    kClientPinErrorHardBlock,
+    kClientPinErrorAuthenticatorRemoved,
+    // Authenticator Internal User Verification
+    kInlineBioEnrollment,
+    kRetryInternalUserVerification,
+    // Confirm user consent to create a resident credential. Used prior to
+    // triggering Windows-native APIs when Windows itself won't show any
+    // notice about resident credentials.
+    kResidentCredentialConfirmation,
+    // Account selection. This occurs prior to performing user verification
+    // for platform authenticators ("pre-select"), or afterwards for USB
+    // security keys. In each mode, there are different sheets for confirming
+    // a single available credential and choosing one from a list of multiple
+    // options.
+    kSelectAccount,
+    kSelectSingleAccount,
+    kPreSelectAccount,
+    // TODO(crbug.com/40284700): Merge with kSelectPriorityMechanism.
+    kPreSelectSingleAccount,
+    // kSelectPriorityMechanism lets the user confirm a single "priority"
+    // mechanism.
+    kSelectPriorityMechanism,
+    // Attestation permission requests.
+    kAttestationPermissionRequest,
+    kEnterpriseAttestationPermissionRequest,
+    // GPM Pin (6-digit).
+    kGPMChangePin,
+    kGPMCreatePin,
+    kGPMEnterPin,
+    // GPM Pin (alphanumeric).
+    kGPMChangeArbitraryPin,
+    kGPMCreateArbitraryPin,
+    kGPMEnterArbitraryPin,
+    // User verification prompt for GPM. Only valid on macOS 12+.
+    kGPMTouchID,
+    // GPM passkey creation.
+    kGPMCreatePasskey,
+    kGPMConfirmOffTheRecordCreate,
+    kCreatePasskey,
+    kGPMError,
+    kGPMConnecting,
+    // Device bootstrap to use GPM passkeys.
+    kRecoverSecurityDomain,
+    kTrustThisComputerAssertion,
+    kTrustThisComputerCreation,
+    // Changing GPM PIN.
+    kGPMReauthForPinReset,
+    kGPMLockedPin,
+    kMaxValue = kGPMLockedPin,
   };
 
   // Views and controllers implement this interface to receive events, which
@@ -1158,7 +1133,5 @@ class AuthenticatorRequestDialogController
   base::WeakPtrFactory<AuthenticatorRequestDialogController> weak_factory_{
       this};
 };
-
-#undef STEP
 
 #endif  // CHROME_BROWSER_WEBAUTHN_AUTHENTICATOR_REQUEST_DIALOG_MODEL_H_
