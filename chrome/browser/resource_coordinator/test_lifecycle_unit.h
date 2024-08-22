@@ -30,8 +30,8 @@ class TestLifecycleUnit : public LifecycleUnitBase {
 
   ~TestLifecycleUnit() override;
 
-  void SetLastFocusedTime(base::TimeTicks last_focused_time) {
-    last_focused_time_ = last_focused_time;
+  void SetLastFocusedTimeTicks(base::TimeTicks last_focused_time) {
+    last_focused_time_ticks_ = last_focused_time;
   }
 
   void SetSortKey(LifecycleUnit::SortKey sort_key) { sort_key_ = sort_key; }
@@ -51,7 +51,8 @@ class TestLifecycleUnit : public LifecycleUnitBase {
   // LifecycleUnit:
   TabLifecycleUnitExternal* AsTabLifecycleUnitExternal() override;
   std::u16string GetTitle() const override;
-  base::TimeTicks GetLastFocusedTime() const override;
+  base::TimeTicks GetLastFocusedTimeTicks() const override;
+  base::Time GetLastFocusedTime() const override;
   base::ProcessHandle GetProcessHandle() const override;
   SortKey GetSortKey() const override;
   content::Visibility GetVisibility() const override;
@@ -66,7 +67,8 @@ class TestLifecycleUnit : public LifecycleUnitBase {
 
  private:
   std::u16string title_;
-  base::TimeTicks last_focused_time_;
+  base::TimeTicks last_focused_time_ticks_;
+  base::Time last_focused_time_;
   base::ProcessHandle process_handle_;
   LifecycleUnit::SortKey sort_key_;
   bool can_discard_ = true;

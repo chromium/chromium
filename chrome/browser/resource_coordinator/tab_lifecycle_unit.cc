@@ -157,6 +157,10 @@ class TabLifecycleUnitExternalImpl : public TabLifecycleUnitExternal {
     return tab_lifecycle_unit_->GetDiscardCount();
   }
 
+  base::Time GetLastFocusedTime() const override {
+    return tab_lifecycle_unit_->GetLastFocusedTime();
+  }
+
  private:
   raw_ptr<TabLifecycleUnitSource::TabLifecycleUnit> tab_lifecycle_unit_ =
       nullptr;
@@ -186,10 +190,13 @@ TabLifecycleUnitSource::TabLifecycleUnit::TabLifecycleUnit(
   // Visible tabs are treated as having been immediately focused, while
   // non-visible tabs have their focus set to the last active time (the time at
   // which they stopped being the active tab in a tabstrip).
-  if (GetVisibility() == content::Visibility::VISIBLE)
-    last_focused_time_ = NowTicks();
-  else
-    last_focused_time_ = web_contents->GetLastActiveTimeTicks();
+  if (GetVisibility() == content::Visibility::VISIBLE) {
+    last_focused_time_ticks_ = NowTicks();
+    last_focused_time_ = Now();
+  } else {
+    last_focused_time_ticks_ = web_contents->GetLastActiveTimeTicks();
+    last_focused_time_ = web_contents->GetLastActiveTime();
+  }
 }
 
 TabLifecycleUnitSource::TabLifecycleUnit::~TabLifecycleUnit() {
@@ -208,13 +215,18 @@ void TabLifecycleUnitSource::TabLifecycleUnit::SetWebContents(
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::SetFocused(bool focused) {
-  const bool was_focused = last_focused_time_ == base::TimeTicks::Max();
-  if (focused == was_focused)
-    return;
-  last_focused_time_ = focused ? base::TimeTicks::Max() : NowTicks();
+  const bool was_focused = last_focused_time_ticks_ == base::TimeTicks::Max();
 
-  if (!focused)
+  if (focused == was_focused) {
     return;
+  }
+
+  last_focused_time_ticks_ = focused ? base::TimeTicks::Max() : NowTicks();
+  last_focused_time_ = focused ? base::Time::Max() : Now();
+
+  if (!focused) {
+    return;
+  }
 
   switch (GetState()) {
     case LifecycleUnitState::DISCARDED: {
@@ -279,7 +291,12 @@ std::u16string TabLifecycleUnitSource::TabLifecycleUnit::GetTitle() const {
   return web_contents()->GetTitle();
 }
 
-base::TimeTicks TabLifecycleUnitSource::TabLifecycleUnit::GetLastFocusedTime()
+base::TimeTicks
+TabLifecycleUnitSource::TabLifecycleUnit::GetLastFocusedTimeTicks() const {
+  return last_focused_time_ticks_;
+}
+
+base::Time TabLifecycleUnitSource::TabLifecycleUnit::GetLastFocusedTime()
     const {
   return last_focused_time_;
 }
@@ -297,7 +314,7 @@ base::ProcessHandle TabLifecycleUnitSource::TabLifecycleUnit::GetProcessHandle()
 
 LifecycleUnit::SortKey TabLifecycleUnitSource::TabLifecycleUnit::GetSortKey()
     const {
-  return SortKey(last_focused_time_);
+  return SortKey(last_focused_time_ticks_);
 }
 
 content::Visibility TabLifecycleUnitSource::TabLifecycleUnit::GetVisibility()
