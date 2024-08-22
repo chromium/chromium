@@ -2299,7 +2299,6 @@ if (!is_android) {
         "//chrome/browser/ash/file_suggest:test_support",
         "//chrome/browser/ash/input_method",
         "//chrome/browser/ash/input_method:test_support",
-        "//chrome/browser/ash/input_method/ui",
         "//chrome/browser/ash/plugin_vm",
         "//chrome/browser/ash/plugin_vm:test_support",
         "//chrome/browser/ash/policy/affiliation:test_support",

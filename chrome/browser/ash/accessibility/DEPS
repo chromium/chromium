@@ -20,7 +20,6 @@ include_rules = [
   "+chrome/browser/ash/app_list",
   "+chrome/browser/ash/base",
   "+chrome/browser/ash/crosapi",
-  "+chrome/browser/ash/input_method/ui",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/policy/enrollment",
   "+chrome/browser/ash/preferences/preferences.h",

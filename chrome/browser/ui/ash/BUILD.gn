@@ -105,7 +105,6 @@ static_library("ash") {
     "//chrome/browser/ash/growth",
     "//chrome/browser/ash/input_device_settings",
     "//chrome/browser/ash/input_method",
-    "//chrome/browser/ash/input_method/ui",
     "//chrome/browser/ash/lock_screen_apps",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/demo_mode",

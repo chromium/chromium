@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/input_method/suggester.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
-#include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
+#include "chrome/browser/ui/ash/input_method/assistive_delegate.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 
 class Profile;

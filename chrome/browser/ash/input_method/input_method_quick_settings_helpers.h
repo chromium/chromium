@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHOD_QUICK_SETTINGS_HELPERS_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHOD_QUICK_SETTINGS_HELPERS_H_
 
-#include "chrome/browser/ash/input_method/ui/input_method_menu_item.h"
+#include "chrome/browser/ui/ash/input_method/input_method_menu_item.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
 
 namespace ash {

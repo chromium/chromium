@@ -9,7 +9,7 @@
 #include "ash/public/cpp/ime_info.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/input_method/ui/input_method_menu_manager.h"
+#include "chrome/browser/ui/ash/input_method/input_method_menu_manager.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
