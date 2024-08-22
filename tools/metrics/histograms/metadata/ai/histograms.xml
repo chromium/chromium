@@ -22,11 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!-- LINT.IfChange(SessionType) -->
+
 <variants name="SessionType">
+  <variant name="Assistant" summary="AI assistant session"/>
   <variant name="Rewriter" summary="AI rewriter session"/>
-  <variant name="Text" summary="AI text session"/>
+  <variant name="Summarizer" summary="AI summarizer session"/>
   <variant name="Writer" summary="AI writer session"/>
 </variants>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:AISessionType) -->
 
 <histogram name="AI.Session.{SessionType}.PromptRequestSize" units="bytes"
     expires_after="2025-02-10">

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/ai/ai_summarizer_factory.h"
 
 #include "third_party/blink/public/web/web_console_message.h"
+#include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_summarizer.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 
@@ -37,14 +38,17 @@ ScriptPromise<AISummarizerCapabilities> AISummarizerFactory::capabilities(
           script_state);
   auto promise = resolver->Promise();
 
-  text_session_factory_->CanCreateTextSession(WTF::BindOnce(
-      [](ScriptPromiseResolver<AISummarizerCapabilities>* resolver,
-         AISummarizerFactory* factory, AICapabilityAvailability availability,
-         mojom::blink::ModelAvailabilityCheckResult check_result) {
-        resolver->Resolve(MakeGarbageCollected<AISummarizerCapabilities>(
-            AICapabilityAvailabilityToV8(availability)));
-      },
-      WrapPersistent(resolver), WrapWeakPersistent(this)));
+  text_session_factory_->CanCreateTextSession(
+      AIMetrics::AISessionType::kSummarizer,
+      WTF::BindOnce(
+          [](ScriptPromiseResolver<AISummarizerCapabilities>* resolver,
+             AISummarizerFactory* factory,
+             AICapabilityAvailability availability,
+             mojom::blink::ModelAvailabilityCheckResult check_result) {
+            resolver->Resolve(MakeGarbageCollected<AISummarizerCapabilities>(
+                AICapabilityAvailabilityToV8(availability)));
+          },
+          WrapPersistent(resolver), WrapWeakPersistent(this)));
   return promise;
 }
 
@@ -60,6 +64,7 @@ ScriptPromise<AISummarizer> AISummarizerFactory::create(
   auto promise = resolver->Promise();
 
   text_session_factory_->CreateTextSession(
+      AIMetrics::AISessionType::kSummarizer,
       /*sampling_params=*/nullptr, /*system_prompt=*/WTF::String(),
       WTF::BindOnce(
           [](ScriptPromiseResolver<AISummarizer>* resolver,

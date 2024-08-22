@@ -33,7 +33,7 @@ interface AIAssistantFactory {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AITextSession> create(
+  Promise<AIAssistant> create(
     optional AITextSessionOptions options = {}
   );
 };

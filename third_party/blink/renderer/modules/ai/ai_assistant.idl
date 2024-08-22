@@ -1,0 +1,46 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/explainers-by-googlers/prompt-api
+
+[
+  Exposed=(Window,Worker),
+  RuntimeEnabled=AIPromptAPI
+]
+interface AIAssistant {
+  [
+    // TODO: add Measure,
+    CallWith=ScriptState,
+    RaisesException,
+    RuntimeEnabled=AIPromptAPI
+  ]
+  Promise<DOMString> prompt(DOMString input);
+  [
+    // TODO: add Measure,
+    CallWith=ScriptState,
+    RaisesException,
+    RuntimeEnabled=AIPromptAPI
+  ]
+  ReadableStream promptStreaming(DOMString input);
+
+  readonly attribute unsigned long long maxTokens;
+  readonly attribute unsigned long long tokensSoFar;
+  readonly attribute unsigned long long tokensLeft;
+
+  readonly attribute unsigned long topK;
+  readonly attribute float temperature;
+
+  [
+    // TODO: add Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AIAssistant> clone();
+  [
+    // TODO: add Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  void destroy();
+};

@@ -8,6 +8,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_session_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -18,7 +19,7 @@
 namespace blink {
 
 class AI;
-class AITextSession;
+class AIAssistant;
 
 // This class is responsible for creating AIAssistant instances.
 class AIAssistantFactory final : public ScriptWrappable,
@@ -32,9 +33,9 @@ class AIAssistantFactory final : public ScriptWrappable,
   void Trace(Visitor* visitor) const override;
 
   // ai_assistant_factory.idl implementation.
-  ScriptPromise<AITextSession> create(ScriptState* script_state,
-                                      const AITextSessionOptions* options,
-                                      ExceptionState& exception_state);
+  ScriptPromise<AIAssistant> create(ScriptState* script_state,
+                                    const AITextSessionOptions* options,
+                                    ExceptionState& exception_state);
   ScriptPromise<AIAssistantCapabilities> capabilities(
       ScriptState* script_state,
       ExceptionState& exception_state);

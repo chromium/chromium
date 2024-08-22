@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/modules/ai/ai_assistant_factory.h"
 
 #include "third_party/blink/renderer/modules/ai/ai.h"
+#include "third_party/blink/renderer/modules/ai/ai_assistant.h"
 #include "third_party/blink/renderer/modules/ai/ai_assistant_capabilities.h"
 #include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
+#include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -68,23 +70,24 @@ ScriptPromise<AIAssistantCapabilities> AIAssistantFactory::capabilities(
           script_state);
   auto promise = resolver->Promise();
   text_session_factory_->CanCreateTextSession(
+      AIMetrics::AISessionType::kAssistant,
       WTF::BindOnce(&AIAssistantFactory::OnCanCreateSessionComplete,
                     WrapPersistent(this), WrapPersistent(resolver)));
 
   return promise;
 }
 
-ScriptPromise<AITextSession> AIAssistantFactory::create(
+ScriptPromise<AIAssistant> AIAssistantFactory::create(
     ScriptState* script_state,
     const AITextSessionOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<AITextSession>();
+    return ScriptPromise<AIAssistant>();
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<AITextSession>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<AIAssistant>>(script_state);
   auto promise = resolver->Promise();
   mojom::blink::AITextSessionSamplingParamsPtr sampling_params;
   WTF::String system_prompt;
@@ -106,17 +109,21 @@ ScriptPromise<AITextSession> AIAssistantFactory::create(
   }
 
   text_session_factory_->CreateTextSession(
-      std::move(sampling_params), system_prompt,
+      AIMetrics::AISessionType::kAssistant, std::move(sampling_params),
+      system_prompt,
       WTF::BindOnce(
-          [](ScriptPromiseResolver<AITextSession>* resolver,
+          [](ScriptPromiseResolver<AIAssistant>* resolver,
+             AIAssistantFactory* factory,
              base::expected<AITextSession*, DOMException*> result) {
             if (result.has_value()) {
-              resolver->Resolve(result.value());
+              resolver->Resolve(MakeGarbageCollected<AIAssistant>(
+                  factory->GetExecutionContext(), result.value(),
+                  factory->task_runner_));
             } else {
               resolver->Reject(result.error());
             }
           },
-          WrapPersistent(resolver)));
+          WrapPersistent(resolver), WrapWeakPersistent(this)));
 
   return promise;
 }

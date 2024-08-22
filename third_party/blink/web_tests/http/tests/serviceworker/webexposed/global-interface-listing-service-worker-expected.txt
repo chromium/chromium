@@ -6,6 +6,18 @@ interface AI
     getter summarizer
     getter writer
     method constructor
+interface AIAssistant
+    attribute @@toStringTag
+    getter maxTokens
+    getter temperature
+    getter tokensLeft
+    getter tokensSoFar
+    getter topK
+    method clone
+    method constructor
+    method destroy
+    method prompt
+    method promptStreaming
 interface AIAssistantCapabilities
     attribute @@toStringTag
     getter available
@@ -46,18 +58,6 @@ interface AISummarizerFactory
     method capabilities
     method constructor
     method create
-interface AITextSession
-    attribute @@toStringTag
-    getter maxTokens
-    getter temperature
-    getter tokensLeft
-    getter tokensSoFar
-    getter topK
-    method clone
-    method constructor
-    method destroy
-    method prompt
-    method promptStreaming
 interface AIWriter
     attribute @@toStringTag
     getter sharedContext

@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
+#include "third_party/blink/renderer/modules/ai/ai_text_session.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -51,13 +52,13 @@ ScriptPromise<IDLString> AISummarizer::summarize(
   }
 
   base::UmaHistogramEnumeration(
-      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kText),
+      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kSummarizer),
       AIMetrics::AIAPI::kSessionSummarize);
 
   // TODO(crbug.com/356058216): Shall we add separate text size UMAs for
   // summarization
   base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
-                                 AIMetrics::AISessionType::kText),
+                                 AIMetrics::AISessionType::kSummarizer),
                              int(input.CharactersSizeInBytes()));
 
   if (!text_session_) {
@@ -67,7 +68,8 @@ ScriptPromise<IDLString> AISummarizer::summarize(
 
   auto [promise, pending_remote] = CreateModelExecutionResponder(
       script_state, /*signal=*/nullptr, task_runner_,
-      AIMetrics::AISessionType::kText, /*complete_callback=*/base::DoNothing());
+      AIMetrics::AISessionType::kSummarizer,
+      /*complete_callback=*/base::DoNothing());
   text_session_->GetRemoteTextSession()->Prompt(BuildPromptInput(input),
                                                 std::move(pending_remote));
   return promise;
@@ -83,13 +85,13 @@ ReadableStream* AISummarizer::summarizeStreaming(
   }
 
   base::UmaHistogramEnumeration(
-      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kText),
+      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kSummarizer),
       AIMetrics::AIAPI::kSessionSummarizeStreaming);
 
   // TODO(crbug.com/356058216): Shall we add separate text size UMAs for
   // summarization
   base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
-                                 AIMetrics::AISessionType::kText),
+                                 AIMetrics::AISessionType::kSummarizer),
                              int(input.CharactersSizeInBytes()));
 
   if (!text_session_) {
@@ -100,17 +102,29 @@ ReadableStream* AISummarizer::summarizeStreaming(
   auto [readable_stream, pending_remote] =
       CreateModelExecutionStreamingResponder(
           script_state, /*signal=*/nullptr, task_runner_,
-          AIMetrics::AISessionType::kText,
+          AIMetrics::AISessionType::kSummarizer,
           /*complete_callback=*/base::DoNothing());
   text_session_->GetRemoteTextSession()->Prompt(BuildPromptInput(input),
                                                 std::move(pending_remote));
   return readable_stream;
 }
 
+// TODO(crbug.com/355967885): reset the remote to destroy the session.
 void AISummarizer::destroy(ScriptState* script_state,
                            ExceptionState& exception_state) {
-  text_session_->destroy(script_state, exception_state);
-  text_session_ = nullptr;
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kSummarizer),
+      AIMetrics::AIAPI::kSessionDestroy);
+
+  if (text_session_) {
+    text_session_->GetRemoteTextSession()->Destroy();
+    text_session_ = nullptr;
+  }
 }
 
 }  // namespace blink
