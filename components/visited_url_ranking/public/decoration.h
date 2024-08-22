@@ -11,9 +11,10 @@ namespace visited_url_ranking {
 // Aggregate
 enum class DecorationType {
   kUnknown = 0,
-  kMostRecent = 1,
-  kFrequentlyVisitedAtTime = 2,
+  kVisitedXAgo = 1,
+  kMostRecent = 2,
   kFrequentlyVisited = 3,
+  kFrequentlyVisitedAtTime = 4,
 };
 
 // Holds the data for one of the decorations for a URL Visit Aggregate.

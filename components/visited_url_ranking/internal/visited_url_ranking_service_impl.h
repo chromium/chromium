@@ -83,6 +83,10 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
   void RankURLVisitAggregates(const Config& config,
                               std::vector<URLVisitAggregate> visits,
                               RankURLVisitAggregatesCallback callback) override;
+  void DecorateURLVisitAggregates(
+      const Config& config,
+      std::vector<URLVisitAggregate> visit_aggregates,
+      DecorateURLVisitAggregatesCallback callback) override;
   void RecordAction(
       ScoredURLUserAction action,
       const std::string& visit_id,

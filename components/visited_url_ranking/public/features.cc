@@ -73,4 +73,18 @@ constexpr base::FeatureParam<std::string>
         /*name=*/"url_deduplication_excluded_prefixes",
         /*default_value=*/"www."};
 
+BASE_FEATURE(kVisitedURLRankingDecorations,
+             "VisitedURLRankingDecorations",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int> kVisitedURLRankingDecorationTimeOfDay{
+    &kVisitedURLRankingDecorations,
+    /*name=*/"decorations_time_of_day_threshold",
+    /*default_value=*/5};
+
+constexpr base::FeatureParam<int> kVisitedURLRankingFrequentlyVisitedThreshold{
+    &kVisitedURLRankingDecorations,
+    /*name=*/"decorations_frequently_visited_threshold",
+    /*default_value=*/5};
+
 }  // namespace visited_url_ranking::features

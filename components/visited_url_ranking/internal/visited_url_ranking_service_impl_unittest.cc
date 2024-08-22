@@ -27,6 +27,7 @@
 #include "components/visited_url_ranking/public/test_support.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
+#include "components/visited_url_ranking/public/url_visit_util.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -166,6 +167,25 @@ class VisitedURLRankingServiceImplTest : public testing::Test {
     Result result;
     base::RunLoop wait_loop;
     service_impl_->RankURLVisitAggregates(
+        config, std::move(visit_aggregates),
+        base::BindOnce(
+            [](base::OnceClosure stop_waiting, Result* result,
+               ResultStatus status, std::vector<URLVisitAggregate> aggregates) {
+              result->first = status;
+              result->second = std::move(aggregates);
+              std::move(stop_waiting).Run();
+            },
+            wait_loop.QuitClosure(), &result));
+    wait_loop.Run();
+    return result;
+  }
+
+  Result RunDecorateURLVisitAggregates(
+      const Config& config,
+      std::vector<URLVisitAggregate> visit_aggregates) {
+    Result result;
+    base::RunLoop wait_loop;
+    service_impl_->DecorateURLVisitAggregates(
         config, std::move(visit_aggregates),
         base::BindOnce(
             [](base::OnceClosure stop_waiting, Result* result,
@@ -499,6 +519,30 @@ TEST_F(VisitedURLRankingServiceImplTest, RecordActionTimeout) {
   histogram_tester.ExpectUniqueSample(
       "VisitedURLRanking.ScoredURLAction",
       static_cast<int>(ScoredURLUserAction::kSeen), 1);
+}
+
+TEST_F(VisitedURLRankingServiceImplTest, DecorateURLVisitAggregates) {
+  InitService(/*data_fetchers=*/{}, /*transformers=*/{});
+
+  base::Time now = base::Time::Now();
+  std::vector<URLVisitAggregate> url_visit_aggregates = {};
+  const GURL kSampleUrl = GURL(kSampleSearchUrl);
+  auto url_visit_aggregate =
+      CreateSampleURLVisitAggregate(kSampleUrl, 1.0f, now, {Fetcher::kHistory});
+  auto* history_data = std::get_if<URLVisitAggregate::HistoryData>(
+      &url_visit_aggregate.fetcher_data_map.at(Fetcher::kHistory));
+  history_data->same_time_group_visit_count = 6;
+  history_data->visit_count = 6;
+  url_visit_aggregates.push_back(std::move(url_visit_aggregate));
+
+  VisitedURLRankingServiceImplTest::Result result =
+      RunDecorateURLVisitAggregates({}, std::move(url_visit_aggregates));
+  EXPECT_EQ(result.first, ResultStatus::kSuccess);
+  EXPECT_EQ(result.second.size(), 1u);
+  EXPECT_EQ(**result.second[0].GetAssociatedURLs().begin(), kSampleUrl);
+  EXPECT_EQ(result.second[0].decorations.size(), 4u);
+  EXPECT_EQ(GetMostRelevantDecoration(result.second[0]).type,
+            DecorationType::kMostRecent);
 }
 
 }  // namespace visited_url_ranking

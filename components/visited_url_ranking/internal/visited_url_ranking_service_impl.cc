@@ -37,6 +37,7 @@
 #include "components/url_deduplication/url_deduplication_helper.h"
 #include "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/internal/session_url_visit_data_fetcher.h"
+#include "components/visited_url_ranking/public/decoration.h"
 #include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
@@ -191,6 +192,64 @@ void SortScoredAggregatesAndCallback(
   std::move(callback).Run(ResultStatus::kSuccess, std::move(scored_visits));
 }
 
+void AddMostRecentDecoration(URLVisitAggregate& url_visit_aggregate,
+                             URLVisitAggregate* curr_most_recent_aggregate,
+                             bool last_visit) {
+  if (url_visit_aggregate.GetLastVisitTime() >
+      curr_most_recent_aggregate->GetLastVisitTime()) {
+    curr_most_recent_aggregate = &url_visit_aggregate;
+  }
+  if (last_visit) {
+    curr_most_recent_aggregate->decorations.emplace_back(
+        DecorationType::kMostRecent);
+  }
+}
+
+void AddFrequentlyVisitedDecoration(URLVisitAggregate& url_visit_aggregate) {
+  int total_visits = 0;
+  for (const auto& fetcher_entry : url_visit_aggregate.fetcher_data_map) {
+    switch (fetcher_entry.first) {
+      case Fetcher::kTabModel:
+        total_visits += static_cast<int>(
+            std::get<URLVisitAggregate::TabData>(fetcher_entry.second)
+                .tab_count);
+        break;
+      case Fetcher::kSession:
+        total_visits += static_cast<int>(
+            std::get<URLVisitAggregate::TabData>(fetcher_entry.second)
+                .tab_count);
+        break;
+      case Fetcher::kHistory:
+        total_visits += static_cast<int>(
+            std::get<URLVisitAggregate::HistoryData>(fetcher_entry.second)
+                .visit_count);
+        break;
+    }
+  }
+  if (total_visits >
+      features::kVisitedURLRankingFrequentlyVisitedThreshold.Get()) {
+    url_visit_aggregate.decorations.emplace_back(
+        DecorationType::kFrequentlyVisited);
+  }
+}
+
+void AddFrequentlyVisitedAtTimeDecoration(
+    URLVisitAggregate& url_visit_aggregate) {
+  const auto& fetcher_data_map = url_visit_aggregate.fetcher_data_map;
+  if (fetcher_data_map.find(Fetcher::kHistory) != fetcher_data_map.end()) {
+    const URLVisitAggregate::HistoryData* history_data =
+        std::get_if<URLVisitAggregate::HistoryData>(
+            &fetcher_data_map.at(Fetcher::kHistory));
+    if (history_data) {
+      if (static_cast<int>(history_data->same_time_group_visit_count) >
+          features::kVisitedURLRankingDecorationTimeOfDay.Get()) {
+        url_visit_aggregate.decorations.emplace_back(
+            DecorationType::kFrequentlyVisitedAtTime);
+      }
+    }
+  }
+}
+
 }  // namespace
 
 VisitedURLRankingServiceImpl::VisitedURLRankingServiceImpl(
@@ -282,6 +341,33 @@ void VisitedURLRankingServiceImpl::RankURLVisitAggregates(
   GetNextResult(config.key, std::move(visits_queue), {}, std::move(callback));
 }
 
+void VisitedURLRankingServiceImpl::DecorateURLVisitAggregates(
+    const Config& config,
+    std::vector<URLVisitAggregate> visit_aggregates,
+    DecorateURLVisitAggregatesCallback callback) {
+  if (visit_aggregates.empty()) {
+    std::move(callback).Run(ResultStatus::kSuccess, {});
+    return;
+  }
+
+  auto& most_recent_aggregate = visit_aggregates[0];
+  for (size_t i = 0; i < visit_aggregates.size(); i++) {
+    auto& url_visit_aggregate = visit_aggregates[i];
+
+    AddMostRecentDecoration(url_visit_aggregate, &most_recent_aggregate,
+                            i == visit_aggregates.size() - 1);
+
+    AddFrequentlyVisitedDecoration(url_visit_aggregate);
+
+    AddFrequentlyVisitedAtTimeDecoration(url_visit_aggregate);
+
+    // Default decoration.
+    url_visit_aggregate.decorations.emplace_back(DecorationType::kVisitedXAgo);
+  }
+
+  std::move(callback).Run(ResultStatus::kSuccess, std::move(visit_aggregates));
+}
+
 void VisitedURLRankingServiceImpl::RecordAction(
     ScoredURLUserAction action,
     const std::string& visit_id,
@@ -302,9 +388,9 @@ void VisitedURLRankingServiceImpl::RecordAction(
 
   base::TimeDelta wait_for_activation = base::TimeDelta();
   // If the action is kSeen, then wait for some time before recording this as
-  // result, in case the user clicks on the suggestion. Effectively, this would
-  // assume if the user clicks on first 5 mins, then it's a success, otherwise
-  // failure.
+  // result, in case the user clicks on the suggestion. Effectively, this
+  // would assume if the user clicks on first 5 mins, then it's a success,
+  // otherwise failure.
   if (action == ScoredURLUserAction::kSeen) {
     if (base::RandInt(1, seen_records_sampling_rate_) > 1) {
       return;
