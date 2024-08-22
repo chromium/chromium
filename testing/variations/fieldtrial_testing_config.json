@@ -19861,6 +19861,28 @@
             ]
         }
     ],
+    "SafeBrowsingDailyPhishingReportsLimit": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "kMaxReportsPerIntervalESB": "10"
+                    },
+                    "enable_features": [
+                        "SafeBrowsingDailyPhishingReportsLimit"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingDeepScanningPromptRemoval": [
         {
             "platforms": [
