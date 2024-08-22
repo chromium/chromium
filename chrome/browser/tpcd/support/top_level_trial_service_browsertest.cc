@@ -13,6 +13,7 @@
 #include "chrome/browser/tpcd/support/trial_test_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -46,7 +47,7 @@ using content::WebContents;
 
 namespace tpcd::trial {
 
-class TopLevelTpcdTrialBrowserTest : public PlatformBrowserTest {
+class TopLevelTpcdTrialBrowserTest : public InProcessBrowserTest {
  public:
   const std::string kUkmEventName =
       "ThirdPartyCookies.TopLevelDeprecationTrial";
@@ -64,7 +65,7 @@ class TopLevelTpcdTrialBrowserTest : public PlatformBrowserTest {
          {content_settings::features::kTrackingProtection3pcd, {}}},
         {});
 
-    PlatformBrowserTest::SetUp();
+    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -94,7 +95,7 @@ class TopLevelTpcdTrialBrowserTest : public PlatformBrowserTest {
   void TearDownOnMainThread() override {
     https_server_.reset();
     url_loader_interceptor_.reset();
-    PlatformBrowserTest::TearDownOnMainThread();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
  protected:
