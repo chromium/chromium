@@ -1070,9 +1070,7 @@ public class TabGridDialogMediator
 
         List<Tab> tabs = getRelatedTabs(currentTabId);
         // Setup dialog selection editor.
-        mTabListEditorControllerSupplier
-                .get()
-                .show(tabs, /* preSelectedTabCount= */ 0, mRecyclerViewPositionSupplier.get());
+        mTabListEditorControllerSupplier.get().show(tabs, mRecyclerViewPositionSupplier.get());
         configureTabListEditorMenu();
         return true;
     }

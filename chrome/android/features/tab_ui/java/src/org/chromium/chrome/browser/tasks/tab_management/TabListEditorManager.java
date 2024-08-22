@@ -185,7 +185,6 @@ public class TabListEditorManager {
         var controller = mControllerSupplier.get();
         controller.show(
                 TabModelUtils.convertTabListToListOfTabs(mCurrentTabModelFilterSupplier.get()),
-                /* preSelectedTabCount= */ 0,
                 mTabListCoordinator.getRecyclerViewPosition());
         controller.configureToolbarWithMenuItems(mTabListEditorActions);
 

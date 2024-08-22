@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.OTHERS;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +37,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -63,13 +59,11 @@ class TabListEditorCoordinator {
          * Handles the reset event.
          *
          * @param tabs List of {@link Tab}s to reset.
-         * @param preSelectedCount First {@code preSelectedCount} {@code tabs} are pre-selected.
          * @param recyclerViewPosition The state to preserve scroll position of the recycler view.
          * @param quickMode whether to use quick mode.
          */
         void resetWithListOfTabs(
                 @Nullable List<Tab> tabs,
-                int preSelectedCount,
                 @Nullable RecyclerViewPosition recyclerViewPosition,
                 boolean quickMode);
 
@@ -83,16 +77,12 @@ class TabListEditorCoordinator {
     /** An interface to control the TabListEditor. */
     interface TabListEditorController extends BackPressHandler {
         /**
-         * Shows the TabListEditor with the given {@Link Tab}s, and the first
-         * {@code preSelectedTabCount} tabs being selected.
+         * Shows the TabListEditor with the given {@Link Tab}s.
+         *
          * @param tabs List of {@link Tab}s to show.
-         * @param preSelectedTabCount Number of selected {@link Tab}s.
          * @param recyclerViewPosition The state to preserve scroll position of the recycler view.
          */
-        void show(
-                List<Tab> tabs,
-                int preSelectedTabCount,
-                @Nullable RecyclerViewPosition recyclerViewPosition);
+        void show(List<Tab> tabs, @Nullable RecyclerViewPosition recyclerViewPosition);
 
         /** Hides the TabListEditor. */
         void hide();
@@ -166,13 +156,11 @@ class TabListEditorCoordinator {
             new TabListEditorController() {
                 @Override
                 public void show(
-                        List<Tab> tabs,
-                        int preSelectedTabCount,
-                        @Nullable RecyclerViewPosition recyclerViewPosition) {
+                        List<Tab> tabs, @Nullable RecyclerViewPosition recyclerViewPosition) {
                     if (mTabListCoordinator == null) {
                         createTabListCoordinator();
                     }
-                    mTabListEditorMediator.show(tabs, preSelectedTabCount, recyclerViewPosition);
+                    mTabListEditorMediator.show(tabs, recyclerViewPosition);
                 }
 
                 @Override
@@ -337,18 +325,10 @@ class TabListEditorCoordinator {
      * Resets {@link TabListCoordinator} with the provided list.
      *
      * @param tabs List of {@link Tab}s to reset.
-     * @param preSelectedCount First {@code preSelectedCount} {@code tabs} are pre-selected.
      * @param quickMode whether to use quick mode.
      */
-    void resetWithListOfTabs(@Nullable List<Tab> tabs, int preSelectedCount, boolean quickMode) {
+    void resetWithListOfTabs(@Nullable List<Tab> tabs, boolean quickMode) {
         mTabListCoordinator.resetWithListOfTabs(tabs, quickMode);
-
-        if (tabs != null && preSelectedCount > 0 && preSelectedCount < tabs.size()) {
-            mTabListCoordinator.addSpecialListItem(
-                    preSelectedCount,
-                    TabProperties.UiType.DIVIDER,
-                    new PropertyModel.Builder(CARD_TYPE).with(CARD_TYPE, OTHERS).build());
-        }
     }
 
     /**
@@ -439,11 +419,9 @@ class TabListEditorCoordinator {
                     @Override
                     public void resetWithListOfTabs(
                             @Nullable List<Tab> tabs,
-                            int preSelectedCount,
                             @Nullable RecyclerViewPosition recyclerViewPosition,
                             boolean quickMode) {
-                        TabListEditorCoordinator.this.resetWithListOfTabs(
-                                tabs, preSelectedCount, quickMode);
+                        TabListEditorCoordinator.this.resetWithListOfTabs(tabs, quickMode);
                         if (recyclerViewPosition == null) {
                             return;
                         }
@@ -497,10 +475,6 @@ class TabListEditorCoordinator {
         // Note: The TabListEditorCoordinator is always created after native is initialized.
         mTabListCoordinator.initWithNative(regularProfile);
 
-        mTabListCoordinator.registerItemType(
-                TabProperties.UiType.DIVIDER,
-                new LayoutViewBuilder(R.layout.horizontal_divider),
-                (model, view, propertyKey) -> {});
         RecyclerView.LayoutManager layoutManager =
                 mTabListCoordinator.getContainerView().getLayoutManager();
         if (layoutManager instanceof GridLayoutManager) {
@@ -509,15 +483,6 @@ class TabListEditorCoordinator {
                             new GridLayoutManager.SpanSizeLookup() {
                                 @Override
                                 public int getSpanSize(int i) {
-                                    int itemType =
-                                            mTabListCoordinator
-                                                    .getContainerView()
-                                                    .getAdapter()
-                                                    .getItemViewType(i);
-
-                                    if (itemType == TabProperties.UiType.DIVIDER) {
-                                        return ((GridLayoutManager) layoutManager).getSpanCount();
-                                    }
                                     return 1;
                                 }
                             });

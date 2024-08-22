@@ -32,24 +32,14 @@ import java.lang.annotation.RetentionPolicy;
 /** List of properties to designate information about a single tab. */
 public class TabProperties {
     /** IDs for possible types of UI in the tab list. */
-    @IntDef({
-        UiType.TAB,
-        UiType.STRIP,
-        UiType.MESSAGE,
-        UiType.DIVIDER,
-        UiType.NEW_TAB_TILE_DEPRECATED,
-        UiType.LARGE_MESSAGE,
-        UiType.CUSTOM_MESSAGE
-    })
+    @IntDef({UiType.TAB, UiType.STRIP, UiType.MESSAGE, UiType.LARGE_MESSAGE, UiType.CUSTOM_MESSAGE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface UiType {
         int TAB = 0;
         int STRIP = 1;
         int MESSAGE = 2;
-        int DIVIDER = 3;
-        int NEW_TAB_TILE_DEPRECATED = 4;
-        int LARGE_MESSAGE = 5;
-        int CUSTOM_MESSAGE = 6;
+        int LARGE_MESSAGE = 3;
+        int CUSTOM_MESSAGE = 4;
     }
 
     /** IDs for possible tab action states. */
