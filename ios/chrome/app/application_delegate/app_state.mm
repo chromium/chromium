@@ -17,6 +17,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
+#import "base/types/cxx23_to_underlying.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_service.h"
@@ -528,7 +529,7 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   }
 }
 
-- (void)removeObserver:(id<SceneStateObserver>)observer {
+- (void)removeObserver:(id<AppStateObserver>)observer {
   [self.observers removeObserver:observer];
 }
 
@@ -648,7 +649,16 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
   // TODO(crbug.com/353683675) Improve this logic once ProfileInitStage and
   // (app) InitStage are fully decoupled.
   if (initStage >= InitStageBrowserObjectsForBackgroundHandlers) {
-    self.mainProfile.initStage = ProfileInitStageFromAppInitStage(initStage);
+    ProfileInitStage currStage = self.mainProfile.initStage;
+    ProfileInitStage nextStage = ProfileInitStageFromAppInitStage(initStage);
+    while (currStage != nextStage) {
+      // The ProfileInitStage enum has more values than InitStage, so move over
+      // all stage that have no representation in InitStage to avoid failing
+      // CHECK in -[ProfileState setInitStage:].
+      currStage =
+          static_cast<ProfileInitStage>(base::to_underlying(currStage) + 1);
+      self.mainProfile.initStage = currStage;
+    }
   }
   self.isIncrementingInitStage = NO;
 
