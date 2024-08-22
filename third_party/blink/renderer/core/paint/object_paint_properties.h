@@ -270,28 +270,28 @@ class CORE_EXPORT ObjectPaintProperties
   //   |   Provides the root stacking context for a local subframe with an
   //   |   active ViewTransition. This is used to implement the view transition
   //  /    layer stacking context:
-  // /     https://drafts.csswg.org/css-view-transitions-1/#view-transition-layer
+  // |     https://drafts.csswg.org/css-view-transitions-1/#view-transition-layer
   // +-[ ViewTransitionEffect ]
   //   |   Provides the stacking context to paint all content for a Document,
   //   |   including top layer elements, into an image used for ViewTransition.
   //  /    This implements the capturing the image for the document element at:
-  // /     https://drafts.csswg.org/css-view-transitions-1/#capture-the-image-algorithm
+  // |     https://drafts.csswg.org/css-view-transitions-1/#capture-the-image-algorithm
   // +-[ Effect ]
   //   |   Isolated group to apply various CSS effects, including opacity,
   //  /    mix-blend-mode, backdrop-filter, and for isolation if a mask needs
-  // /     to be applied or backdrop-dependent children are present.
+  // |     to be applied or backdrop-dependent children are present.
   // +-[ Mask ]
-  // | |   Isolated group for painting the CSS mask or the mask-based CSS
-  // | |   clip-path. This node will have SkBlendMode::kDstIn and shall paint
-  // | |   last, i.e. after masked contents.
-  // | +-[ ClipPathMask ]
-  // |     Isolated group for painting the mask-based CSS clip-path. This node
-  // |     will have SkBlendMode::kDstIn and shall paint last, i.e. after
-  // |     clipped contents. If there is no Mask node, then this node is a
+  //   |   Isolated group for painting the CSS mask or the mask-based CSS
+  //  /    clip-path. This node will have SkBlendMode::kDstIn and shall paint
+  // |     last, i.e. after masked contents.
+  // +-[ ClipPathMask ]
+  //   |   Isolated group for painting the mask-based CSS clip-path. This node
+  //   |   will have SkBlendMode::kDstIn and shall paint last, i.e. after
+  //  /    clipped contents. If there is no Mask node, then this node is a
   // |     direct child of the Effect node.
   // +-[ Filter ]
-  // |     Isolated group for CSS filter. This is separate from Effect in case
-  // |     there are masks which should be applied to the output of the filter
+  //   |   Isolated group for CSS filter. This is separate from Effect in case
+  //  /    there are masks which should be applied to the output of the filter
   // |     instead of the input.
   // +-[ VerticalScrollbarEffect / HorizontalScrollbarEffect / ScrollCorner ]
   // |     Overlay Scrollbars on Aura and Android need effect node for fade
@@ -330,7 +330,7 @@ class CORE_EXPORT ObjectPaintProperties
   // +-[ ClipPathClip ]
   //   |  Clip created by path-based CSS clip-path. Only exists if the
   //  /   clip-path is "simple" that can be applied geometrically. This and
-  // /    the ClipPathMask effect node are mutually exclusive.
+  // |    the ClipPathMask effect node are mutually exclusive.
   // +-[ MaskClip ]
   //   |   Clip created by CSS mask or mask-based CSS clip-path.
   //   |   It serves two purposes:
@@ -354,7 +354,7 @@ class CORE_EXPORT ObjectPaintProperties
   //       | Clip created by pixel-moving filter. Instead of intersecting with
   //       | the current clip, this clip expands the current clip to include all
   //      /  pixels in the filtered content that may affect the pixels in the
-  //     /   current clip.
+  //     |   current clip.
   //     +-[ InnerBorderRadiusClip ]
   //       |   Clip created by a rounded border with overflow clip. This clip is
   //       |   not inset by scrollbars.
