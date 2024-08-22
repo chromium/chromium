@@ -7901,12 +7901,6 @@ crbug.com/353790533 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context
 crbug.com/352093460 external/wpt/webtransport/stats.https.any.worker.html [ Failure Pass ]
 crbug.com/352093460 external/wpt/webtransport/stats.https.any.serviceworker.html [ Failure Pass ]
 
-# Temporary disable to land http://review.skia.org/891154
-crbug.com/359049360 css3/blending/background-blend-mode-multiple-background-layers.html [ Failure Pass ]
-crbug.com/359049360 [ Linux ] css3/blending/mix-blend-mode-isolated-group-3.html [ Failure Pass ]
-crbug.com/359049360 virtual/gpu/fast/canvas/canvas-composite-shadow-part3.html [ Failure Pass ]
-crbug.com/359049360 virtual/oopr-canvas2d/fast/canvas/canvas-composite-shadow-part3.html [ Failure Pass ]
-
 # Gardener 2024-07-19
 crbug.com/354060896 [ Release Win11-arm64 ] virtual/media-foundation-for-clear-dcomp/media/track/track-css-window-color.html [ Failure Pass Timeout ]
 crbug.com/354061998 [ Release Win11-arm64 ] http/tests/cookies/partitioned-cookies/ancestor-chain-same-site-subresource-to-cross-site.https.html [ Failure Pass Timeout ]
