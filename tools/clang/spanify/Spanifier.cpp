@@ -249,6 +249,54 @@ static clang::SourceRange getSourceRange(
   return clang::SourceRange(getExprRange(expr).getEnd());
 }
 
+static void maybeUpdateSourceRangeIfInMacro(
+    const clang::SourceManager& source_manager,
+    const MatchFinder::MatchResult& result,
+    clang::SourceRange& range) {
+  if (!range.isValid() || !range.getBegin().isMacroID()) {
+    return;
+  }
+  // We need to find the reference to the object that might be getting
+  // accessed and rewritten to find the location to rewrite. SpellingLocation
+  // returns a different position if the source was pointing into the macro
+  // definition. See clang::SourceManager for details but relevant section:
+  //
+  // "Spelling locations represent where the bytes corresponding to a token came
+  // from and expansion locations represent where the location is in the user's
+  // view. In the case of a macro expansion, for example, the spelling location
+  // indicates where the expanded token came from and the expansion location
+  // specifies where it was expanded."
+  auto* rhs_decl_ref =
+      result.Nodes.getNodeAs<clang::DeclRefExpr>("declRefExpr");
+  if (!rhs_decl_ref) {
+    return;
+  }
+  // We're extracting the spellingLocation's position and then we'll move the
+  // location forward by the length of the variable. This will allow us to
+  // insert .data() at the end of the decl_ref.
+  clang::SourceLocation correct_start =
+      source_manager.getSpellingLoc(rhs_decl_ref->getLocation());
+
+  bool invalid_line, invalid_col = false;
+  auto line =
+      source_manager.getSpellingLineNumber(correct_start, &invalid_line);
+  auto col =
+      source_manager.getSpellingColumnNumber(correct_start, &invalid_col);
+  assert(correct_start.isValid() && !invalid_line && !invalid_col &&
+         "Unable to get SpellingLocation info");
+  // Get the name and find the end of the decl_ref.
+  std::string name = rhs_decl_ref->getFoundDecl()->getNameAsString();
+  clang::SourceLocation correct_end = source_manager.translateLineCol(
+      source_manager.getFileID(correct_start), line, col + name.size());
+  assert(correct_end.isValid() &&
+         "Incorrectly got an End SourceLocation for macro");
+  // This returns at the end of the variable being referenced so we can
+  // insert .data(), if we wanted it wrapped in params (variable).data()
+  // we'd need {correct_start, correct_end} but this doesn't seem needed in
+  // macros tested on so far.
+  range = clang::SourceRange{correct_end};
+}
+
 static Node getNodeFromPointerTypeLoc(const clang::PointerTypeLoc* type_loc,
                                       const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
@@ -417,6 +465,13 @@ static Node getDataChangeNode(const std::string& lhs_replacement,
   const clang::ASTContext& ast_context = *result.Context;
   const auto& lang_opts = ast_context.getLangOpts();
   auto rep_range = getSourceRange(result);
+
+  // If we're inside a macro the rep_range computed above is going to be
+  // incorrect because it will point into the file where the macro is defined.
+  // We need to get the "SpellingLocation", and then we figure out the end of
+  // the parameter so we can insert .data() at the end if needed.
+  maybeUpdateSourceRangeIfInMacro(source_manager, result, rep_range);
+
   std::string initial_text =
       clang::Lexer::getSourceText(
           clang::CharSourceRange::getCharRange(rep_range), source_manager,

@@ -104,8 +104,11 @@ then
   # saved).
   if [ ! -d third_party/llvm-build-upstream/ ]
   then
-    echo *** Saving current build ***
+    echo "*** Saving current build ***"
+
     mv third_party/llvm-build third_party/llvm-build-upstream
+  else
+    echo "*** Build is already saved ***"
   fi
   if [ $INCREMENTAL_CLANG_BUILD = true ]
   then

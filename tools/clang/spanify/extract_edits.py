@@ -108,6 +108,26 @@ class Node:
     def from_key(replacement: str):
         return Node.key_to_node.get(replacement)
 
+    # This is not parsable by from_string but is for debugging.
+    def to_debug_string(self) -> str:
+        # include_directory already includes explanatory text.
+        result = "{"
+        result += ("is_buffer:{},replacement:{},{},size_info_available:{}"
+                   "is_deref_node:{},is_data_change:{},neighbors:").format(
+                       self.is_buffer, self.replacement,
+                       self.include_directive, self.size_info_available,
+                       self.is_deref_node, self.is_data_change)
+        neighbors = "{"
+        for node in self.neighbors:
+            if len(neighbors) > 1:
+                neighbors += ", "
+            neighbors += node.to_debug_string()
+        neighbors += "}"
+        # We started result with a '{' thus we end it to wrap everything up
+        # nicely.
+        return result + neighbors + "}"
+
+
     # Static method to create a node from its string representation. This
     # deduplicate nodes by storing them in a dictionary.
     def from_string(txt: str):
@@ -307,18 +327,44 @@ def main():
         if Node.from_key(node.include_directive).visited:
             continue
 
-        # Expect a single neighbor.
-        # TODO(357433195): In practice, this is not always the case. Investigate
-        # why and add the assertion back:
-        # assert len(node.neighbors_directed) == 1, "and node: " + node.to_debug_string()
+        # Expect at least single neighbor (usually just one).
+        #
+        # However when you have a MACRO that references a variable that isn't
+        # passed as an argument to that MACRO for example:
+        #
+        # #define MY_MACRO(name) CallFunc(entry, name)
+        #
+        # When this macro is used in different locations, each textual
+        # replacement causes a single rhs to be created pointing at the location
+        # inside the macro (I.E. the |entry| in MY_MACRO). This results in one
+        # lhs (the CallFunc's entry parameter) being referenced by two rhs (each
+        # macro usage). In that case ALL neighbors should have been visited or
+        # NONE should have. I.E. we rewrite all or none. Otherwise a compile
+        # error will naturally result.
+        num_nodes = len(node.neighbors_directed)
+        assert num_nodes >= 1, "and node: " + node.to_debug_string()
 
         # If the rhs node was visited (i.e rewritten), then we need to apply the
         # data change.
-        neighbor = list(node.neighbors_directed)[0]
-        if neighbor.visited:
-            # In this case, rhs was rewritten, and lhs was not, we need to add
-            # the corresponding `.data()`
-            neighbor.component.changes.add(node.replacement)
+        visited = 0
+        neighbors = list(node.neighbors_directed)
+        for neighbor in neighbors:
+            if neighbor.visited:
+                visited += 1
+                # In this case, rhs was rewritten, and lhs was not, we need to
+                # add the corresponding `.data()`
+                neighbor.component.changes.add(node.replacement)
+        # It is worth noting that while this is the correct assertion, and there
+        # are tests that cover this assertion, in the actual chromium code base
+        # we don't ever seem to run into such macros so it is usually num_nodes
+        # == 1 and when it isn't visited will be zero. However due to the tests
+        # we assert that either nothing gets rewritten or everything gets
+        # rewritten.
+        assert visited == 0 or visited == num_nodes, ("node: ",
+                                                      node.to_debug_string(),
+                                                      " num: ", str(num_nodes),
+                                                      " visited: ",
+                                                      str(visited))
 
     # Emit the changes:
     # - ~/scratch/patches.txt: A summary of each atomic change.
