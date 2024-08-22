@@ -214,10 +214,17 @@ struct HistoryGraph: View {
       /// Gesture for selecting date on the graph.
       GeometryReader { geometry in
         Rectangle().fill(.clear).contentShape(Rectangle())
+          .onAppear {
+            if selectedDate == nil {
+              selectedDate = sortedHistoryDates.last?.key
+              updateTooltipPosition(geometry: geometry, chart: proxy)
+            }
+          }
           .onContinuousHover(perform: { phase in
             switch phase {
             case .active(let location):
               updateSelectionData(location: location, geometry: geometry, chart: proxy)
+              updateTooltipPosition(geometry: geometry, chart: proxy)
             case .ended:
               break
             }
@@ -226,6 +233,7 @@ struct HistoryGraph: View {
             DragGesture()
               .onChanged { value in
                 updateSelectionData(location: value.location, geometry: geometry, chart: proxy)
+                updateTooltipPosition(geometry: geometry, chart: proxy)
               }
           )
       }
@@ -246,11 +254,6 @@ struct HistoryGraph: View {
       }
     )
     .edgesIgnoringSafeArea(.all)
-    .onAppear {
-      if selectedDate == nil {
-        selectedDate = sortedHistoryDates.last?.key
-      }
-    }
   }
 
   /// Updates the selected data when the given `location` is selected inside the given
@@ -261,8 +264,13 @@ struct HistoryGraph: View {
     if let index: Date = chart.value(atX: currentX) {
       selectedDate = closestDate(to: index, in: history)
     }
+  }
 
+  /// Calculates and updates the tooltip's position based on the selected date
+  /// and chart geometry.
+  private func updateTooltipPosition(geometry: GeometryProxy, chart: ChartProxy) {
     if let selectedDate = selectedDate {
+      let startX = geometry[chart.plotAreaFrame].origin.x
       if let xPosition = chart.position(forX: selectedDate) {
         selectedXPosition = xPosition + startX
       }
