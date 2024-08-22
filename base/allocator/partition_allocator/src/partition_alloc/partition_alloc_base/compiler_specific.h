@@ -149,23 +149,6 @@
 #define PA_MSAN_UNPOISON(p, size)
 #endif  // MEMORY_SANITIZER
 
-// Macro for hinting that an expression is likely to be false.
-#if !defined(PA_UNLIKELY)
-#if PA_BUILDFLAG(PA_COMPILER_GCC) || defined(__clang__)
-#define PA_UNLIKELY(x) __builtin_expect(!!(x), 0)
-#else
-#define PA_UNLIKELY(x) (x)
-#endif  // PA_BUILDFLAG(PA_COMPILER_GCC)
-#endif  // !defined(PA_UNLIKELY)
-
-#if !defined(PA_LIKELY)
-#if PA_BUILDFLAG(PA_COMPILER_GCC) || defined(__clang__)
-#define PA_LIKELY(x) __builtin_expect(!!(x), 1)
-#else
-#define PA_LIKELY(x) (x)
-#endif  // PA_BUILDFLAG(PA_COMPILER_GCC)
-#endif  // !defined(PA_LIKELY)
-
 // Compiler feature-detection.
 // clang.llvm.org/docs/LanguageExtensions.html#has-feature-and-has-extension
 #if defined(__has_feature)

@@ -228,23 +228,6 @@
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // !defined(CDECL)
 
-// Macro for hinting that an expression is likely to be false.
-#if !defined(UNLIKELY)
-#if defined(COMPILER_GCC) || defined(__clang__)
-#define UNLIKELY(x) __builtin_expect(!!(x), 0)
-#else
-#define UNLIKELY(x) (x)
-#endif  // defined(COMPILER_GCC)
-#endif  // !defined(UNLIKELY)
-
-#if !defined(LIKELY)
-#if defined(COMPILER_GCC) || defined(__clang__)
-#define LIKELY(x) __builtin_expect(!!(x), 1)
-#else
-#define LIKELY(x) (x)
-#endif  // defined(COMPILER_GCC)
-#endif  // !defined(LIKELY)
-
 // Compiler feature-detection.
 // clang.llvm.org/docs/LanguageExtensions.html#has-feature-and-has-extension
 #if defined(__has_feature)
