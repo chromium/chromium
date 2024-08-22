@@ -13,7 +13,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 suite('healthdInternalsTestSuite', function() {
   let healthdInternalsApp: HealthdInternalsAppElement;
   // The expected number of navigation items in the sidebar.
-  const navItemsNumber: number = 6;
+  const navItemsNumber: number = 7;
   // The expected number of card components in the telemetry page.
   const cardsNumberTelemetryPage: number = 5;
 

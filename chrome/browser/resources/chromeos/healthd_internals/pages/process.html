@@ -1,0 +1,84 @@
+<style include="healthd-internals-shared cr-shared-style">
+  #pageHeader {
+    height: 25px;
+  }
+
+  #tableContainer {
+    height: calc(100vh - 25px);
+    width: 100%;
+    overflow: auto;
+  }
+
+  table {
+    overflow: auto;
+    border-collapse: collapse;
+    margin: 0 auto;
+    border: 1px solid var(--cr-primary-text-color);
+    margin: 0px 16px;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: var(--cr-menu-background-color);
+  }
+
+  th, td {
+    color: var(--cr-primary-text-color);
+    border: 1px solid var(--cr-primary-text-color);
+    padding: 8px;
+    text-align: center;
+    max-width: 100px;
+    word-wrap: break-word;
+  }
+
+  .command-column {
+    text-align: left;
+    max-width: 600px;
+  }
+</style>
+
+
+<h1 id="pageHeader">Processes</h1>
+
+<div id="tableContainer"><table>
+  <thead>
+    <tr>
+      <th>Process ID</th>
+      <th>Name</th>
+      <th>Priority</th>
+      <th>Nice</th>
+      <th>Process State</th>
+      <th>Threads Number</th>
+      <th>User ID</th>
+      <th>Parent ID</th>
+      <th>Group ID</th>
+      <th>Resident Memory (KiB)</th>
+      <th>Uptime Ticks</th>
+      <th>Count of read syscall</th>
+      <th>Count of write syscall</th>
+      <th class="command-column">Command</th>
+    </tr>
+  </thead>
+  <tbody>
+    <template is="dom-repeat" items="[[displayedData]]">
+      <tr>
+        <td>[[item.processId]]</td>
+        <td>[[item.name]]</td>
+        <td>[[item.priority]]</td>
+        <td>[[item.nice]]</td>
+        <td>[[item.state]]</td>
+        <td>[[item.threadsNumber]]</td>
+        <td>[[item.userId]]</td>
+        <td>[[item.parentProcessId]]</td>
+        <td>[[item.processGroupId]]</td>
+        <td>[[item.residentMemoryKib]]</td>
+        <td>[[item.uptimeTicks]]</td>
+        <td>[[item.readSystemCallsCount]]</td>
+        <td>[[item.writeSystemCallsCount]]</td>
+        <td class="command-column">[[item.command]]</td>
+      </tr>
+    </template>
+  </tbody>
+</table></div>

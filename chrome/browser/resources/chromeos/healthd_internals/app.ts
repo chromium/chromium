@@ -11,6 +11,7 @@ import '//resources/polymer/v3_0/iron-location/iron-location.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './healthd_internals_shared.css.js';
 import './pages/generic_chart.js';
+import './pages/process.js';
 import './pages/telemetry.js';
 import './settings/settings_dialog.js';
 
@@ -22,6 +23,7 @@ import {PagePath} from './constants.js';
 import {DataManager} from './data_manager.js';
 import type {HealthdInternalsFeatureFlagResult} from './externs.js';
 import type {HealthdInternalsGenericChartElement} from './pages/generic_chart.js';
+import type {HealthdInternalsProcessElement} from './pages/process.js';
 import type {HealthdInternalsTelemetryElement} from './pages/telemetry.js';
 import {HealthdInternalsPage} from './pages/utils/page_interface.js';
 import type {HealthdInternalsSettingsDialogElement} from './settings/settings_dialog.js';
@@ -36,6 +38,7 @@ interface Page {
 export interface HealthdInternalsAppElement {
   $: {
     telemetryPage: HealthdInternalsTelemetryElement,
+    processPage: HealthdInternalsProcessElement,
     batteryChart: HealthdInternalsGenericChartElement,
     cpuFrequencyChart: HealthdInternalsGenericChartElement,
     cpuUsageChart: HealthdInternalsGenericChartElement,
@@ -109,6 +112,11 @@ export class HealthdInternalsAppElement extends PolymerElement {
               name: 'Telemetry',
               path: PagePath.TELEMETRY,
               obj: this.$.telemetryPage,
+            },
+            {
+              name: 'Process Viewer',
+              path: PagePath.PROCESS,
+              obj: this.$.processPage,
             },
             {
               name: 'Battery Chart',
