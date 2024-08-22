@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/browser/web_contents.h"
-#include "data_protection_navigation_controller.h"
 
 namespace {
 
@@ -41,8 +40,12 @@ namespace enterprise_data_protection {
 
 DataProtectionNavigationController::DataProtectionNavigationController(
     tabs::TabInterface* tab_interface)
-    : content::WebContentsObserver(tab_interface->GetContents()),
-      tab_interface_(tab_interface) {
+    : content::WebContentsObserver(nullptr), tab_interface_(tab_interface) {
+  if (!IsDataProtectionEnabled(
+          tab_interface->GetBrowserWindowInterface()->GetProfile())) {
+    return;
+  }
+  Observe(tab_interface->GetContents());
   tab_subscriptions_.push_back(tab_interface_->RegisterDidEnterForeground(
       base::BindRepeating(&DataProtectionNavigationController::TabForegrounded,
                           weak_ptr_factory_.GetWeakPtr())));

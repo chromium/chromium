@@ -161,10 +161,6 @@ bool IsScreenshotProtectionEnabled() {
       data_controls::kEnableScreenshotProtection);
 }
 
-bool IsDataProtectionEnabled(Profile* profile) {
-  return IsEnterpriseLookupEnabled(profile) || IsScreenshotProtectionEnabled();
-}
-
 std::string GetIdentifier(content::BrowserContext* browser_context) {
   return enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
              browser_context)
@@ -186,6 +182,10 @@ bool IsScreenshotAllowedByDataControls(content::BrowserContext* context,
 }
 
 }  // namespace
+
+bool IsDataProtectionEnabled(Profile* profile) {
+  return IsEnterpriseLookupEnabled(profile) || IsScreenshotProtectionEnabled();
+}
 
 // static
 void DataProtectionNavigationObserver::CreateForNavigationIfNeeded(

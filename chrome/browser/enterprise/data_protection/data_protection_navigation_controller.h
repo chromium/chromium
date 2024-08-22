@@ -19,6 +19,8 @@ struct UrlSettings;
 
 // Observes navigations in order to correctly set that tab's Data Protection
 // settings based on the SafeBrowsing verdict for said navigation.
+// This class is unconditionally created, but will do nothing if data protection
+// is disabled.
 class DataProtectionNavigationController : public content::WebContentsObserver {
  public:
   explicit DataProtectionNavigationController(

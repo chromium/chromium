@@ -31,6 +31,8 @@ class RealTimeUrlLookupServiceBase;
 
 namespace enterprise_data_protection {
 
+bool IsDataProtectionEnabled(Profile* profile);
+
 // Monitors a navigation in a WebContents to determine if data protection
 // settings should be enabled or not.
 class DataProtectionNavigationObserver
