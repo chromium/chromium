@@ -69,9 +69,17 @@ PrerenderNoVarySearchHintCommitDeferringCondition::MaybeCreate(
   if (prerender_host.were_headers_received()) {
     return nullptr;
   }
-  if (!prerender_host.no_vary_search_expected().has_value()) {
+
+  // Don't wait for the No-Vary-Search header if this navigation can match
+  // without the header
+  std::optional<UrlMatchType> match_type =
+      prerender_host.IsUrlMatch(navigation_request.GetURL());
+  if (match_type.has_value()) {
     return nullptr;
   }
+
+  // Reach here only when the No-Vary-Search hint is specified.
+  CHECK(prerender_host.no_vary_search_expected().has_value());
 
   return base::WrapUnique(new PrerenderNoVarySearchHintCommitDeferringCondition(
       navigation_request, candidate_prerender_frame_tree_node_id.value()));
@@ -223,6 +231,9 @@ void PrerenderNoVarySearchHintCommitDeferringCondition::OnHeadersReceived() {
       std::optional<UrlMatchType> match_type =
           prerender_host.IsUrlMatch(GetNavigationHandle().GetURL());
       if (match_type.has_value()) {
+        CHECK_EQ(match_type.value(), UrlMatchType::kNoVarySearch)
+            << "PrerenderNoVarySearchHintCommitDeferringCondition should be "
+            << "created only for UrlMatchType::kNoVarySearch.";
         reason = FinishedReason::kNoVarySearchHeaderReceivedAndMatched;
       } else {
         reason = FinishedReason::kNoVarySearchHeaderReceivedButNotMatched;
