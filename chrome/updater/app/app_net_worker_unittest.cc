@@ -86,8 +86,9 @@ class AppNetWorkerTest : public ::testing::Test {
 
 TEST_F(AppNetWorkerTest, PostRequest) {
   net::EmbeddedTestServer test_server;
-  test_server.RegisterRequestHandler(
-      base::BindRepeating([](const net::test_server::HttpRequest& request) {
+  test_server.RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
         auto http_response =
             std::make_unique<net::test_server::BasicHttpResponse>();
         http_response->set_code(net::HTTP_OK);
@@ -99,8 +100,7 @@ TEST_F(AppNetWorkerTest, PostRequest) {
             update_client::NetworkFetcher::kHeaderXCupServerProof,
             "cup-server-proof-xyz");
         http_response->AddCustomHeader("SomeOtherHeader", "foo-bar");
-        return static_cast<std::unique_ptr<net::test_server::HttpResponse>>(
-            std::move(http_response));
+        return http_response;
       }));
   ASSERT_TRUE(test_server.Start());
 
@@ -138,14 +138,14 @@ TEST_F(AppNetWorkerTest, DownloadFile) {
   ASSERT_TRUE(base::ReadFileToString(payload_path, &payload));
   net::EmbeddedTestServer test_server;
   test_server.RegisterRequestHandler(base::BindLambdaForTesting(
-      [&](const net::test_server::HttpRequest& request) {
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
         auto http_response =
             std::make_unique<net::test_server::BasicHttpResponse>();
         http_response->set_code(net::HTTP_OK);
         http_response->set_content(payload);
         http_response->set_content_type("application/octet-stream");
-        return static_cast<std::unique_ptr<net::test_server::HttpResponse>>(
-            std::move(http_response));
+        return http_response;
       }));
   ASSERT_TRUE(test_server.Start());
 

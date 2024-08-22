@@ -996,7 +996,7 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
             return std::make_unique<net::test_server::RawHttpResponse>(
                 "HTTP/1.1 200 OK", "Hello there!");
           }
-          return nullptr;
+          return {};
         }));
 
     embedded_test_server()->StartAcceptingConnections();
@@ -1547,16 +1547,14 @@ class HostedAppProcessModelFencedFrameTest : public HostedAppProcessModelTest {
     test_server().RegisterRequestHandler(base::BindRepeating(
         [](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
-          const char kFencedFramePage[] = "page.html";
-          if (request.GetURL().ExtractFileName() == kFencedFramePage) {
-            auto response =
-                std::make_unique<net::test_server::BasicHttpResponse>();
-            response->set_content_type("text/html");
-            response->AddCustomHeader("Supports-Loading-Mode", "fenced-frame");
-            return static_cast<std::unique_ptr<net::test_server::HttpResponse>>(
-                std::move(response));
+          if (request.GetURL().ExtractFileName() != "page.html") {
+            return {};
           }
-          return nullptr;
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_content_type("text/html");
+          response->AddCustomHeader("Supports-Loading-Mode", "fenced-frame");
+          return response;
         }));
     test_server().StartAcceptingConnections();
   }
