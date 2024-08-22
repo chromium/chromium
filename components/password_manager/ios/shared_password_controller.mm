@@ -625,15 +625,15 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     DCHECK(self.delegate.passwordManagerClient);
     NSString* value = [rawSuggestion.value
         stringByAppendingString:kPasswordFormSuggestionSuffix];
-    FormSuggestion* suggestion = [FormSuggestion
-               suggestionWithValue:value
-                displayDescription:rawSuggestion.displayDescription
-                              icon:nil
-                              type:autofill::SuggestionType::kAutocompleteEntry
-                 backendIdentifier:nil
-                    requiresReauth:YES
-        acceptanceA11yAnnouncement:nil
-                          metadata:rawSuggestion.metadata];
+    FormSuggestion* suggestion =
+        [FormSuggestion suggestionWithValue:value
+                         displayDescription:rawSuggestion.displayDescription
+                                       icon:nil
+                                       type:rawSuggestion.type
+                          backendIdentifier:nil
+                             requiresReauth:YES
+                 acceptanceA11yAnnouncement:nil
+                                   metadata:rawSuggestion.metadata];
     [suggestions addObject:suggestion];
   }
   std::optional<PasswordDropdownState> suggestionState;
