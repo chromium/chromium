@@ -2582,6 +2582,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/download_status",
       "//chrome/browser/ui/ash/game_dashboard",
       "//chrome/browser/ui/ash/global_media_controls",
+      "//chrome/browser/ui/ash/google_one",
       "//chrome/browser/ui/ash/holding_space",
       "//chrome/browser/ui/ash/keyboard",
       "//chrome/browser/ui/ash/login",

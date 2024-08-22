@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/google_one_offer_iph_tab_helper.h"
+#include "chrome/browser/ui/ash/google_one/google_one_offer_iph_tab_helper.h"
 
 #include <optional>
 #include <string>
@@ -22,7 +22,7 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/google_one_offer_iph_tab_helper_constants.h"
+#include "chrome/browser/ui/ash/google_one/google_one_offer_iph_tab_helper_constants.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"

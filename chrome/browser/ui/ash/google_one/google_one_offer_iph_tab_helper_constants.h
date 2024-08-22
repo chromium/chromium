@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_GOOGLE_ONE_OFFER_IPH_TAB_HELPER_CONSTANTS_H_
-#define CHROME_BROWSER_UI_ASH_GOOGLE_ONE_OFFER_IPH_TAB_HELPER_CONSTANTS_H_
+#ifndef CHROME_BROWSER_UI_ASH_GOOGLE_ONE_GOOGLE_ONE_OFFER_IPH_TAB_HELPER_CONSTANTS_H_
+#define CHROME_BROWSER_UI_ASH_GOOGLE_ONE_GOOGLE_ONE_OFFER_IPH_TAB_HELPER_CONSTANTS_H_
 
 // Fallback texts are used if params are not provided, e.g. IPH demo mode. We
 // won't expect that those fallback texts are used in prod.
@@ -40,4 +40,4 @@ constexpr char kNotificationMessageParamName[] =
 constexpr char kGetPerkButtonTitleParamName[] =
     "x_google-one-offer-get-perk-title";
 
-#endif  // CHROME_BROWSER_UI_ASH_GOOGLE_ONE_OFFER_IPH_TAB_HELPER_CONSTANTS_H_
+#endif  // CHROME_BROWSER_UI_ASH_GOOGLE_ONE_GOOGLE_ONE_OFFER_IPH_TAB_HELPER_CONSTANTS_H_

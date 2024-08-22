@@ -1,0 +1,65 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("google_one") {
+  sources = [
+    "google_one_offer_iph_tab_helper.cc",
+    "google_one_offer_iph_tab_helper.h",
+    "google_one_offer_iph_tab_helper_constants.h",
+  ]
+
+  public_deps = [ "//content/public/browser" ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ui/vector_icons",
+    "//components/feature_engagement/public",
+    "//ui/message_center/public/cpp",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "google_one_offer_iph_tab_helper_browsertest.cc" ]
+
+  deps = [
+    ":google_one",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/scalable_iph:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/settings",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/message_center/public/cpp",
+    "//url",
+  ]
+}

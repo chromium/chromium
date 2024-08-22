@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_GOOGLE_ONE_OFFER_IPH_TAB_HELPER_H_
-#define CHROME_BROWSER_UI_ASH_GOOGLE_ONE_OFFER_IPH_TAB_HELPER_H_
+#ifndef CHROME_BROWSER_UI_ASH_GOOGLE_ONE_GOOGLE_ONE_OFFER_IPH_TAB_HELPER_H_
+#define CHROME_BROWSER_UI_ASH_GOOGLE_ONE_GOOGLE_ONE_OFFER_IPH_TAB_HELPER_H_
 
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -36,4 +36,4 @@ class GoogleOneOfferIphTabHelper
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_GOOGLE_ONE_OFFER_IPH_TAB_HELPER_H_
+#endif  // CHROME_BROWSER_UI_ASH_GOOGLE_ONE_GOOGLE_ONE_OFFER_IPH_TAB_HELPER_H_
