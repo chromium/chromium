@@ -610,7 +610,7 @@ bool PaymentsAutofillTable::SetMaskedBankAccounts(
 }
 
 bool PaymentsAutofillTable::GetMaskedBankAccounts(
-    std::vector<std::unique_ptr<BankAccount>>& bank_accounts) {
+    std::vector<BankAccount>& bank_accounts) {
   sql::Statement s;
   bank_accounts.clear();
 
@@ -630,10 +630,10 @@ bool PaymentsAutofillTable::GetMaskedBankAccounts(
         account_type < static_cast<int>(BankAccount::AccountType::kUnknown)) {
       continue;
     }
-    bank_accounts.push_back(std::make_unique<BankAccount>(
-        instrument_id, nickname, GURL(display_icon_url), bank_name,
-        account_number_suffix,
-        static_cast<BankAccount::AccountType>(account_type)));
+    bank_accounts.push_back(
+        BankAccount(instrument_id, nickname, GURL(display_icon_url), bank_name,
+                    account_number_suffix,
+                    static_cast<BankAccount::AccountType>(account_type)));
   }
   return s.Succeeded();
 }

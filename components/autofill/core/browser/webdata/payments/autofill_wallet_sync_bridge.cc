@@ -289,7 +289,7 @@ std::unique_ptr<syncer::DataBatch> AutofillWalletSyncBridge::GetAllDataImpl(
   std::vector<std::unique_ptr<Iban>> ibans;
   std::vector<std::unique_ptr<CreditCardCloudTokenData>> cloud_token_data;
   std::unique_ptr<PaymentsCustomerData> customer_data;
-  std::vector<std::unique_ptr<BankAccount>> bank_accounts;
+  std::vector<BankAccount> bank_accounts;
   if (!GetAutofillTable()->GetServerCreditCards(cards) ||
       !GetAutofillTable()->GetServerIbans(ibans) ||
       !GetAutofillTable()->GetCreditCardCloudTokenData(cloud_token_data) ||
@@ -341,10 +341,10 @@ std::unique_ptr<syncer::DataBatch> AutofillWalletSyncBridge::GetAllDataImpl(
         CreateEntityDataFromIban(*entry, enforce_utf8));
   }
   if (AreMaskedBankAccountSupported()) {
-    for (const std::unique_ptr<BankAccount>& entry : bank_accounts) {
+    for (const BankAccount& entry : bank_accounts) {
       batch->Put(GetStorageKeyForWalletDataClientTag(
-                     GetClientTagFromBankAccount(*entry)),
-                 CreateEntityDataFromBankAccount(*entry));
+                     GetClientTagFromBankAccount(entry)),
+                 CreateEntityDataFromBankAccount(entry));
     }
   }
 
@@ -551,12 +551,11 @@ bool AutofillWalletSyncBridge::SetCreditCardCloudTokenData(
 bool AutofillWalletSyncBridge::SetBankAccountsData(
     const std::vector<BankAccount>& bank_accounts) {
   PaymentsAutofillTable* table = GetAutofillTable();
-  std::vector<std::unique_ptr<BankAccount>> existing_data;
+  std::vector<BankAccount> existing_data;
   table->GetMaskedBankAccounts(existing_data);
   if (AreAnyItemsDifferent(existing_data, bank_accounts)) {
     return table->SetMaskedBankAccounts(bank_accounts);
   }
-
   return false;
 }
 

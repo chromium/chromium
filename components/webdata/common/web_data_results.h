@@ -42,12 +42,11 @@ typedef enum {
                                  //     PaymentsCustomerData>>
   AUTOFILL_OFFER_DATA,           // WDResult<std::vector<std::unique_ptr<
                                  //     AutofillOfferData>>>
-  AUTOFILL_VIRTUAL_CARD_USAGE_DATA,  // WDResult<std::vector<std::unique_ptr<
-                                     //     VirtualCardUsageData>>>
+  AUTOFILL_VIRTUAL_CARD_USAGE_DATA,  // WDResult<std::vector<
+                                     //     VirtualCardUsageData>>
   CREDIT_CARD_BENEFIT_RESULT,        // WDResult<std::vector<std::unique_ptr<
                                      //     CreditCardBenefit>>>
-  MASKED_BANK_ACCOUNTS_RESULT,       // WDResult<std::vector<std::unique_ptr<
-                                     // BankAccount>>>
+  MASKED_BANK_ACCOUNTS_RESULT,       // WDResult<std::vector<BankAccount>>
 #if BUILDFLAG(USE_BLINK)         //
   PAYMENT_WEB_APP_MANIFEST,      // WDResult<std::vector<
                                  //     mojom::WebAppManifestSectionPtr>>

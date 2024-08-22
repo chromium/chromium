@@ -151,7 +151,7 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               (override));
   MOCK_METHOD(bool,
               ShowPixPaymentPrompt,
-              (base::span<autofill::BankAccount> pix_account_suggestions,
+              (base::span<const autofill::BankAccount> pix_account_suggestions,
                base::OnceCallback<void(bool, int64_t)>),
               (override));
   MOCK_METHOD(void, ShowProgressScreen, (), (override));

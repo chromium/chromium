@@ -1899,7 +1899,7 @@ TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_ExpOff) {
   BankAccount bank_account2 = test::CreatePixBankAccount(5678L);
   ASSERT_TRUE(GetServerDataTable()->SetMaskedBankAccounts(
       {bank_account1, bank_account2}));
-  std::vector<BankAccount> bank_accounts =
+  base::span<const BankAccount> bank_accounts =
       payments_data_manager().GetMaskedBankAccounts();
   // Since the PaymentsDataManager was initialized before adding the masked
   // bank accounts to the WebDatabase, we expect GetMaskedBankAccounts to return
@@ -1949,7 +1949,7 @@ TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_DatabaseUpdated) {
   // Since the PaymentsDataManager was initialized before adding the masked
   // bank accounts to the WebDatabase, we expect GetMaskedBankAccounts to return
   // an empty list.
-  std::vector<BankAccount> bank_accounts =
+  base::span<const BankAccount> bank_accounts =
       payments_data_manager().GetMaskedBankAccounts();
   EXPECT_EQ(0u, bank_accounts.size());
 

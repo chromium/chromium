@@ -365,8 +365,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // successfully added to the database.
   bool SetMaskedBankAccounts(const std::vector<BankAccount>& bank_accounts);
   // Retrieve all bank accounts from the database.
-  bool GetMaskedBankAccounts(
-      std::vector<std::unique_ptr<BankAccount>>& bank_accounts);
+  bool GetMaskedBankAccounts(std::vector<BankAccount>& bank_accounts);
 
   // Records a single IBAN in the local_ibans table.
   bool AddLocalIban(const Iban& iban);

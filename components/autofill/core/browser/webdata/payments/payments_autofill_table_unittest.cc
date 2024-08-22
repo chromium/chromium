@@ -1620,12 +1620,12 @@ TEST_F(PaymentsAutofillTableTest, GetMaskedBankAccounts) {
       "VALUES(200, 'bank_name_2', 'account_number_suffix_2', 3, 'nickname_2', "
       "'http://display-icon-url2.com');"));
 
-  std::vector<std::unique_ptr<BankAccount>> bank_accounts_from_db;
+  std::vector<BankAccount> bank_accounts_from_db;
   table_->GetMaskedBankAccounts(bank_accounts_from_db);
 
   EXPECT_EQ(2u, bank_accounts_from_db.size());
 
-  BankAccount bank_account_from_db_1 = *bank_accounts_from_db.at(0).get();
+  BankAccount bank_account_from_db_1 = bank_accounts_from_db.at(0);
   EXPECT_EQ(100, bank_account_from_db_1.payment_instrument().instrument_id());
   EXPECT_EQ(u"bank_name", bank_account_from_db_1.bank_name());
   EXPECT_EQ(u"account_number_suffix",
@@ -1637,7 +1637,7 @@ TEST_F(PaymentsAutofillTableTest, GetMaskedBankAccounts) {
   EXPECT_EQ(GURL("http://display-icon-url.com"),
             bank_account_from_db_1.payment_instrument().display_icon_url());
 
-  BankAccount bank_account_from_db_2 = *bank_accounts_from_db.at(1).get();
+  BankAccount bank_account_from_db_2 = bank_accounts_from_db.at(1);
   EXPECT_EQ(200, bank_account_from_db_2.payment_instrument().instrument_id());
   EXPECT_EQ(u"bank_name_2", bank_account_from_db_2.bank_name());
   EXPECT_EQ(u"account_number_suffix_2",
@@ -1664,14 +1664,14 @@ TEST_F(PaymentsAutofillTableTest,
       "VALUES(200, 'bank_name_2', 'account_number_suffix_2', 3, 'nickname_2', "
       "'http://display-icon-url2.com');"));
 
-  std::vector<std::unique_ptr<BankAccount>> bank_accounts_from_db;
+  std::vector<BankAccount> bank_accounts_from_db;
   table_->GetMaskedBankAccounts(bank_accounts_from_db);
 
   // Expect only one bank account since the other one has an invalid bank
   // account type.
   EXPECT_EQ(1u, bank_accounts_from_db.size());
   // Verify that the returned bank account maps to the second row in the table.
-  BankAccount bank_account_from_db = *bank_accounts_from_db.at(0).get();
+  BankAccount bank_account_from_db = bank_accounts_from_db.at(0);
   EXPECT_EQ(200, bank_account_from_db.payment_instrument().instrument_id());
 }
 
@@ -1687,7 +1687,7 @@ TEST_F(PaymentsAutofillTableTest, SetMaskedBankAccounts) {
       "'http://display-icon-url2.com');"));
 
   // Verify that GetMaskedBankAccounts returns 2 bank accounts.
-  std::vector<std::unique_ptr<BankAccount>> bank_accounts_from_db;
+  std::vector<BankAccount> bank_accounts_from_db;
   table_->GetMaskedBankAccounts(bank_accounts_from_db);
   EXPECT_EQ(2u, bank_accounts_from_db.size());
 
@@ -1703,7 +1703,7 @@ TEST_F(PaymentsAutofillTableTest, SetMaskedBankAccounts) {
 
   // Verify that the instrument id of the returned bank account matches the one
   // that was stored.
-  BankAccount bank_account_from_db = *bank_accounts_from_db.at(0).get();
+  BankAccount bank_account_from_db = bank_accounts_from_db.at(0);
   EXPECT_EQ(8000, bank_account_from_db.payment_instrument().instrument_id());
 }
 

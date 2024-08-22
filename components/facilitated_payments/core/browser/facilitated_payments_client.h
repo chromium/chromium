@@ -49,7 +49,7 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // shown to the user for payment. If the UI was not shown, then returns false
   // and does not invoke the callback.
   virtual bool ShowPixPaymentPrompt(
-      base::span<autofill::BankAccount> bank_account_suggestions,
+      base::span<const autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
 
   // Shows a progress bar while users wait for server response after selecting a

@@ -847,10 +847,10 @@ AutofillWebDataBackendImpl::GetCreditCardBenefits(WebDatabase* db) {
 std::unique_ptr<WDTypedResult>
 AutofillWebDataBackendImpl::GetMaskedBankAccounts(WebDatabase* db) {
   CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  std::vector<std::unique_ptr<BankAccount>> masked_bank_accounts;
+  std::vector<BankAccount> masked_bank_accounts;
   PaymentsAutofillTable::FromWebDatabase(db)->GetMaskedBankAccounts(
       masked_bank_accounts);
-  return std::make_unique<WDResult<std::vector<std::unique_ptr<BankAccount>>>>(
+  return std::make_unique<WDResult<std::vector<BankAccount>>>(
       MASKED_BANK_ACCOUNTS_RESULT, std::move(masked_bank_accounts));
 }
 

@@ -714,17 +714,12 @@ bool PaymentsDataManager::HasMaskedBankAccounts() const {
   return !masked_bank_accounts_.empty();
 }
 
-std::vector<BankAccount> PaymentsDataManager::GetMaskedBankAccounts() const {
+base::span<const BankAccount> PaymentsDataManager::GetMaskedBankAccounts()
+    const {
   if (!HasMaskedBankAccounts()) {
     return {};
   }
-  std::vector<BankAccount> bank_accounts;
-  bank_accounts.reserve(masked_bank_accounts_.size());
-  for (const std::unique_ptr<BankAccount>& bank_account :
-       masked_bank_accounts_) {
-    bank_accounts.push_back(*bank_account);
-  }
-  return bank_accounts;
+  return masked_bank_accounts_;
 }
 
 PaymentsCustomerData* PaymentsDataManager::GetPaymentsCustomerData() const {
@@ -1862,7 +1857,7 @@ void PaymentsDataManager::SetSyncServiceForTest(
 
 void PaymentsDataManager::AddMaskedBankAccountForTest(
     const BankAccount& bank_account) {
-  masked_bank_accounts_.push_back(std::make_unique<BankAccount>(bank_account));
+  masked_bank_accounts_.push_back(bank_account);
 }
 
 void PaymentsDataManager::AddServerCreditCardForTest(
@@ -1980,9 +1975,9 @@ std::string PaymentsDataManager::SaveImportedCreditCard(
 
 void PaymentsDataManager::OnMaskedBankAccountsRefreshed() {
   std::vector<GURL> updated_urls;
-  for (auto& bank_account : masked_bank_accounts_) {
+  for (const BankAccount& bank_account : masked_bank_accounts_) {
     const GURL& display_icon_url =
-        bank_account->payment_instrument().display_icon_url();
+        bank_account.payment_instrument().display_icon_url();
     if (!display_icon_url.is_valid()) {
       continue;
     }

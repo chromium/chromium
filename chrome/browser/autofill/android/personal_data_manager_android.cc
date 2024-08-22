@@ -829,13 +829,12 @@ jboolean PersonalDataManagerAndroid::IsValidIban(
 ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetMaskedBankAccounts(JNIEnv* env) {
   std::vector<base::android::ScopedJavaLocalRef<jobject>> j_bank_accounts_list;
-  std::vector<BankAccount> bank_accounts =
-      personal_data_manager_->payments_data_manager().GetMaskedBankAccounts();
-  std::transform(bank_accounts.begin(), bank_accounts.end(),
-                 std::back_inserter(j_bank_accounts_list),
-                 [env](const BankAccount& bank_account) {
-                   return CreateJavaBankAccountFromNative(env, bank_account);
-                 });
+  std::ranges::transform(
+      personal_data_manager_->payments_data_manager().GetMaskedBankAccounts(),
+      std::back_inserter(j_bank_accounts_list),
+      [env](const BankAccount& bank_account) {
+        return CreateJavaBankAccountFromNative(env, bank_account);
+      });
   ScopedJavaLocalRef<jclass> type = base::android::GetClass(
       env, "org/chromium/components/autofill/payments/BankAccount");
   return base::android::ToTypedJavaArrayOfObjects(env, j_bank_accounts_list,

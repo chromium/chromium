@@ -195,7 +195,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns true if the user has at least 1 masked bank account.
   bool HasMaskedBankAccounts() const;
   // Returns the masked bank accounts that can be suggested to the user.
-  std::vector<BankAccount> GetMaskedBankAccounts() const;
+  base::span<const BankAccount> GetMaskedBankAccounts() const;
 
   // Returns the Payments customer data. Returns nullptr if no data is present.
   virtual PaymentsCustomerData* GetPaymentsCustomerData() const;
@@ -535,7 +535,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   std::vector<std::unique_ptr<Iban>> server_ibans_;
 
   // Cached versions of the masked bank accounts.
-  std::vector<std::unique_ptr<BankAccount>> masked_bank_accounts_;
+  std::vector<BankAccount> masked_bank_accounts_;
 
   // Cached version of the CreditCardCloudTokenData obtained from the database.
   std::vector<std::unique_ptr<CreditCardCloudTokenData>>

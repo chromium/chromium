@@ -972,9 +972,8 @@ template bool AreAnyItemsDifferent<>(
     const std::vector<std::unique_ptr<CreditCardCloudTokenData>>&,
     const std::vector<CreditCardCloudTokenData>&);
 
-template bool AreAnyItemsDifferent<>(
-    const std::vector<std::unique_ptr<BankAccount>>&,
-    const std::vector<BankAccount>&);
+template bool AreAnyItemsDifferent<>(const std::vector<BankAccount>&,
+                                     const std::vector<BankAccount>&);
 
 template <class Item>
 bool AreAnyItemsDifferent(const std::vector<Item>& old_data,

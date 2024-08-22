@@ -1590,7 +1590,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_SameBankAccountData) {
   BankAccount existing_bank_account =
       test::CreatePixBankAccount(/*instrument_id=*/1234);
   EXPECT_TRUE(table()->SetMaskedBankAccounts({existing_bank_account}));
-  std::vector<std::unique_ptr<BankAccount>> bank_accounts;
+  std::vector<BankAccount> bank_accounts;
   table()->GetMaskedBankAccounts(bank_accounts);
   ASSERT_EQ(1U, bank_accounts.size());
 
@@ -1616,7 +1616,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NewBankAccount) {
   BankAccount existing_bank_account =
       test::CreatePixBankAccount(/*instrument_id=*/1234);
   EXPECT_TRUE(table()->SetMaskedBankAccounts({existing_bank_account}));
-  std::vector<std::unique_ptr<BankAccount>> bank_accounts;
+  std::vector<BankAccount> bank_accounts;
   table()->GetMaskedBankAccounts(bank_accounts);
   ASSERT_EQ(1U, bank_accounts.size());
   AutofillWalletSpecifics existing_bank_account_specifics;
@@ -1649,7 +1649,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_UpdatedBankAccount) {
   BankAccount existing_bank_account =
       test::CreatePixBankAccount(/*instrument_id=*/1234);
   EXPECT_TRUE(table()->SetMaskedBankAccounts({existing_bank_account}));
-  std::vector<std::unique_ptr<BankAccount>> bank_accounts;
+  std::vector<BankAccount> bank_accounts;
   table()->GetMaskedBankAccounts(bank_accounts);
   ASSERT_EQ(1U, bank_accounts.size());
 
@@ -1685,7 +1685,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_RemoveBankAccount) {
   BankAccount bank_account_2 =
       test::CreatePixBankAccount(/*instrument_id=*/9999);
   EXPECT_TRUE(table()->SetMaskedBankAccounts({bank_account_1, bank_account_2}));
-  std::vector<std::unique_ptr<BankAccount>> bank_accounts;
+  std::vector<BankAccount> bank_accounts;
   table()->GetMaskedBankAccounts(bank_accounts);
   ASSERT_EQ(2U, bank_accounts.size());
   AutofillWalletSpecifics bank_account_1_specifics;
@@ -1709,7 +1709,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NewBankAccount_ExpOff) {
       features::kAutofillEnableSyncingOfPixBankAccounts);
   // Create a bank account on the server.
   BankAccount bank_account = test::CreatePixBankAccount(/*instrument_id=*/1234);
-  std::vector<std::unique_ptr<BankAccount>> bank_accounts;
+  std::vector<BankAccount> bank_accounts;
   AutofillWalletSpecifics bank_account_specifics;
   SetAutofillWalletSpecificsFromBankAccount(bank_account,
                                             &bank_account_specifics);
