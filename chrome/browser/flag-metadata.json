@@ -8526,6 +8526,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "tab-group-indicator",
+    "owners": [ "ewannpv@chromium.org", "bling-flags@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "tab-group-pane-android",
     "owners": [ "skym@chromium.org", "clank-tab-dev@google.com" ],
     "expiry_milestone": 130

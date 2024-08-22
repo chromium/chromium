@@ -941,9 +941,14 @@ extern const char kSyncSessionOnVisibilityChangedDescription[];
 extern const char kSyncSegmentsDataName[];
 extern const char kSyncSegmentsDataDescription[];
 
+// Title and description for the flag to control if a tab group indicator is
+// displayed.
+extern const char kTabGroupIndicatorName[];
+extern const char kTabGroupIndicatorDescription[];
+
 // Title and description for the flag to control if tab groups are synced with
 // other syncing devices.
-extern const char kTabGroupSync[];
+extern const char kTabGroupSyncName[];
 extern const char kTabGroupSyncDescription[];
 
 // Title and description for the flag to enable TFLite for language detection.

@@ -1751,8 +1751,8 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxActionsInSuggestName,
      flag_descriptions::kOmniboxActionsInSuggestDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kOmniboxActionsInSuggest)},
-    {"tab-group-sync", flag_descriptions::kTabGroupSync,
-     flag_descriptions::kTabGroupSync, flags_ui::kOsIos,
+    {"tab-group-sync", flag_descriptions::kTabGroupSyncName,
+     flag_descriptions::kTabGroupSyncDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGroupSync)},
     {"autofill-enable-save-card-loading-and-confirmation",
      flag_descriptions::kAutofillEnableSaveCardLoadingAndConfirmationName,
@@ -1954,6 +1954,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"shared-tab-groups", flag_descriptions::kSharedTabGroupsName,
      flag_descriptions::kSharedTabGroupsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSharedTabGroups)},
+    {"tab-group-indicator", flag_descriptions::kTabGroupIndicatorName,
+     flag_descriptions::kTabGroupIndicatorDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabGroupIndicator)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

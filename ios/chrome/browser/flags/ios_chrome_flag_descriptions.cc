@@ -1045,7 +1045,11 @@ const char kSyncSegmentsDataDescription[] =
     "Enables history's segments to include foreign visits from syncing "
     "devices.";
 
-const char kTabGroupSync[] = "Enable Tab Group Sync";
+const char kTabGroupIndicatorName[] = "Tab Group Indicator";
+const char kTabGroupIndicatorDescription[] =
+    "When enabled, displays a tab group indicator next to the omnibox.";
+
+const char kTabGroupSyncName[] = "Enable Tab Group Sync";
 const char kTabGroupSyncDescription[] =
     "When enabled, if tab-groups-in-grid is enabled, tab groups are synced "
     "between syncing devices.";

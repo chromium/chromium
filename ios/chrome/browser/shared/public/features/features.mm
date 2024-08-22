@@ -433,6 +433,14 @@ bool IsSharedTabGroupsEnabled() {
          base::FeatureList::IsEnabled(kSharedTabGroups);
 }
 
+BASE_FEATURE(kTabGroupIndicator,
+             "TabGroupIndicator",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsTabGroupIndicatorEnabled() {
+  return base::FeatureList::IsEnabled(kTabGroupIndicator);
+}
+
 BASE_FEATURE(kDisableLensCamera,
              "DisableLensCamera",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -12107,6 +12107,21 @@
             ]
         }
     ],
+    "IOSTabGroupIndicator": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabGroupIndicator"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSTabGroupSynciPhone": [
         {
             "platforms": [
