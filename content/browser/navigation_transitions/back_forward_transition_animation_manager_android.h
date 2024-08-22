@@ -121,6 +121,11 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
 
   SkBitmap MaybeCopyContentAreaAsBitmapSync();
 
+  // Called from the animator when a stable screenshot is not dismissed. This
+  // can happen to a very busy renderer when it couldn't submit a new frame
+  // after the navigation.
+  void OnPostNavigationFirstFrameTimeout();
+
   WebContentsViewAndroid* web_contents_view_android() const {
     return web_contents_view_android_;
   }

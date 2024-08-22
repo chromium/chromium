@@ -191,6 +191,10 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   }
   ProgressBar* progress_bar_for_testing() const { return progress_bar_.get(); }
 
+  base::OneShotTimer* dismiss_screenshot_timer_for_testing() {
+    return &dismiss_screenshot_timer_;
+  }
+
  protected:
   BackForwardTransitionAnimator(
       WebContentsViewAndroid* web_contents_view_android,
@@ -322,6 +326,11 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   void InsertLayersInOrder();
 
+  // Dispatched when `dismiss_screenshot_timer_` fires, to remove the stale
+  // screenshot after the screenshot is fully centered because the new Document
+  // hasn't produced a frame yet.
+  void OnPostNavigationFirstFrameTimeout();
+
   const BackForwardTransitionAnimationManager::NavigationDirection
       nav_direction_;
 
@@ -437,6 +446,12 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // A transition suppresses sending input events to the renderer during the
   // animation.
   std::optional<WebContentsImpl::ScopedIgnoreInputEvents> ignore_input_scope_;
+
+  // A timer to dismiss the potentially stale screenshot, after screenshot is
+  // fully centered (at the end of the invoke animation).
+  base::OneShotTimer dismiss_screenshot_timer_;
+
+  base::WeakPtrFactory<BackForwardTransitionAnimator> weak_ptr_factory_{this};
 };
 
 }  // namespace content

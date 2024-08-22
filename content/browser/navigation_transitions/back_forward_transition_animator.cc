@@ -39,6 +39,8 @@ using AnimationStage = BackForwardTransitionAnimationManager::AnimationStage;
 using SwitchSpringReason = PhysicsModel::SwitchSpringReason;
 using SwipeEdge = ui::BackGestureEventSwipeEdge;
 
+static constexpr base::TimeDelta kDismissScreenshotAfter = base::Seconds(4);
+
 void ResetTransformForLayer(cc::slim::Layer* layer) {
   CHECK(layer);
   auto transform = layer->transform();
@@ -1053,13 +1055,20 @@ void BackForwardTransitionAnimator::ProcessState() {
       // navigation and animation or cancel everything.
       break;
     }
-    case State::kWaitingForNewRendererToDraw:
+    case State::kWaitingForNewRendererToDraw: {
+      dismiss_screenshot_timer_.Start(
+          FROM_HERE, kDismissScreenshotAfter,
+          base::BindOnce(
+              &BackForwardTransitionAnimator::OnPostNavigationFirstFrameTimeout,
+              weak_ptr_factory_.GetWeakPtr()));
       // No-op. Waiting for `OnRenderFrameMetadataChangedAfterActivation()`.
       break;
+    }
     case State::kWaitingForContentForNavigationEntryShown:
       // No-op.
       break;
     case State::kDisplayingCrossFadeAnimation: {
+      dismiss_screenshot_timer_.Stop();
       // Before we start displaying the crossfade animation,
       // `parent_for_web_page_widgets()` is completely out of the viewport. This
       // layer is reused for new content. For this reason, before we can start
@@ -1545,6 +1554,13 @@ void BackForwardTransitionAnimator::InsertLayersInOrder() {
     parent_layer->InsertChild(old_surface_clone_.get(),
                               web_page_widgets_index + 1);
   }
+}
+
+void BackForwardTransitionAnimator::OnPostNavigationFirstFrameTimeout() {
+  CHECK_EQ(state_, State::kWaitingForNewRendererToDraw);
+  CHECK_EQ(navigation_state_, NavigationState::kCommitted);
+  AbortAnimation();
+  animation_manager_->OnPostNavigationFirstFrameTimeout();
 }
 
 }  // namespace content

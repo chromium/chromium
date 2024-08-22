@@ -244,6 +244,13 @@ SkBitmap BackForwardTransitionAnimationManagerAndroid::
       ->MaybeCopyContentAreaAsBitmapSync();
 }
 
+void BackForwardTransitionAnimationManagerAndroid::
+    OnPostNavigationFirstFrameTimeout() {
+  CHECK(animator_);
+  CHECK(animator_->IsTerminalState());
+  DestroyAnimator();
+}
+
 void BackForwardTransitionAnimationManagerAndroid::MaybeDestroyAnimator() {
   CHECK(animator_);
   if (animator_->IsTerminalState()) {

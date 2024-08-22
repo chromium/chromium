@@ -334,6 +334,8 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
   base::OnceClosure waited_for_renderer_new_frame_;
   base::OnceClosure next_on_animate_callback_;
   base::OnceClosure post_ready_to_commit_callback_;
+  // The return value indicates if the paint-holding timer is running on the new
+  // RenderWidgetHost when the animated history navigation commits.
   base::OnceCallback<void(bool)> did_finish_navigation_callback_;
   base::OnceCallback<void(State)> on_impl_destroyed_;
 };
@@ -4000,6 +4002,94 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(is_paint_holding_timer_running_when_nav_finishes.Wait());
   EXPECT_FALSE(is_paint_holding_timer_running_when_nav_finishes.Get());
   ASSERT_TRUE(invoke_played.Wait());
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
+}
+
+// Test that the timer to dismiss the screenshot is properly started, if the
+// renderer never submits a new frame post-navigation.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding,
+    ScreenshotDismissalTimer) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+
+  TestFuture<void> invoke_played;
+  TestFuture<AnimatorState> destroyed;
+  GetAnimator()->set_on_invoke_animation_displayed(invoke_played.GetCallback());
+  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+  GetAnimator()->set_intercept_render_frame_metadata_changed(true);
+
+  TestFrameNavigationObserver back_nav_to_red(web_contents());
+  GetAnimationManager()->OnGestureInvoked();
+  back_nav_to_red.Wait();
+  ASSERT_EQ(back_nav_to_red.last_committed_url(), RedURL());
+  ASSERT_TRUE(back_nav_to_red.last_navigation_succeeded());
+  ASSERT_TRUE(invoke_played.Wait());
+
+  ASSERT_TRUE(
+      GetAnimator()->dismiss_screenshot_timer_for_testing()->IsRunning());
+  ASSERT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+  EXPECT_TRUE(base::IsApproximatelyEqual(
+      GetAnimator()->scrim_layer_for_testing()->background_color().fA, 0.f,
+      kFloatTolerance));
+  GetAnimator()->dismiss_screenshot_timer_for_testing()->FireNow();
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+}
+
+// Test that the timer to dismiss the screenshot is stopped once the renderer
+// submits a new frame.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestNoPaintHolding,
+    ScreenshotDismissalTimerStopped) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+
+  TestFuture<void> invoke_played;
+  TestFuture<AnimatorState> destroyed;
+  GetAnimator()->set_on_invoke_animation_displayed(invoke_played.GetCallback());
+  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+  GetAnimator()->set_intercept_render_frame_metadata_changed(true);
+
+  TestFrameNavigationObserver back_nav_to_red(web_contents());
+  GetAnimationManager()->OnGestureInvoked();
+  back_nav_to_red.Wait();
+  ASSERT_EQ(back_nav_to_red.last_committed_url(), RedURL());
+  ASSERT_TRUE(back_nav_to_red.last_navigation_succeeded());
+  ASSERT_TRUE(invoke_played.Wait());
+
+  ASSERT_TRUE(
+      GetAnimator()->dismiss_screenshot_timer_for_testing()->IsRunning());
+  ASSERT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+  EXPECT_TRUE(base::IsApproximatelyEqual(
+      GetAnimator()->scrim_layer_for_testing()->background_color().fA, 0.f,
+      kFloatTolerance));
+
+  cc::RenderFrameMetadata metadata;
+  metadata.primary_main_frame_item_sequence_number =
+      GetAnimator()->primary_main_frame_navigation_entry_item_sequence_number();
+  web_contents()
+      ->GetPrimaryMainFrame()
+      ->GetRenderWidgetHost()
+      ->render_frame_metadata_provider()
+      ->SetLastRenderFrameMetadataForTest(metadata);
+
+  GetAnimator()->set_intercept_render_frame_metadata_changed(false);
+  GetAnimator()->OnRenderFrameMetadataChangedAfterActivation(base::TimeTicks());
+
+  EXPECT_FALSE(
+      GetAnimator()->dismiss_screenshot_timer_for_testing()->IsRunning());
   ASSERT_TRUE(destroyed.Wait());
   EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
 }
