@@ -498,12 +498,23 @@ void Page::TakePropertiesForLocalMainFrameSwap(Page* old_page) {
 }
 
 const SecurityOrigin* Page::GetPartitionedPopinOpenerTopFrameOrigin() const {
+  // We should never be in a state where one of these was set and not the other.
+  DCHECK(!partitioned_popin_opener_top_frame_origin_ ==
+         !partitioned_popin_opener_site_for_cookies_);
   return partitioned_popin_opener_top_frame_origin_.get();
 }
 
 const std::optional<net::SiteForCookies>
 Page::GetPartitionedPopinOpenerSiteForCookies() const {
+  // We should never be in a state where one of these was set and not the other.
+  DCHECK(!partitioned_popin_opener_top_frame_origin_ ==
+         !partitioned_popin_opener_site_for_cookies_);
   return partitioned_popin_opener_site_for_cookies_;
+}
+
+bool Page::IsPartitionedPopin() const {
+  return GetPartitionedPopinOpenerTopFrameOrigin() &&
+         GetPartitionedPopinOpenerSiteForCookies();
 }
 
 LocalFrame* Page::DeprecatedLocalMainFrame() const {

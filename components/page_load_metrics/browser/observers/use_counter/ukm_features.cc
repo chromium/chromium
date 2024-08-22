@@ -408,6 +408,8 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kGamepadHapticActuatorType,
           WebFeature::kV8Navigator_JoinAdInterestGroup_Method,
           WebFeature::kFormValidationShowedMessage,
+          WebFeature::kPartitionedPopin_OpenAttempt,
+          WebFeature::kPartitionedPopin_Opened,
       }));
   return *opt_in_features;
 }

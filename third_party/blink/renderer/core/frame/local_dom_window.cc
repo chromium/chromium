@@ -2246,14 +2246,17 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   WebWindowFeatures window_features =
       GetWindowFeaturesFromString(features, entered_window);
 
-  if (window_features.is_partitioned_popin &&
-      !IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kPartitionedPopins,
-          ReportOptions::kReportOnFailure)) {
-    exception_state.ThrowSecurityError(
-        "Permissions-Policy: `popin` access denied.",
-        "Permissions-Policy: `popin` access denied.");
-    return nullptr;
+  if (window_features.is_partitioned_popin) {
+    UseCounter::Count(*entered_window,
+                      WebFeature::kPartitionedPopin_OpenAttempt);
+    if (!IsFeatureEnabled(
+            mojom::blink::PermissionsPolicyFeature::kPartitionedPopins,
+            ReportOptions::kReportOnFailure)) {
+      exception_state.ThrowSecurityError(
+          "Permissions-Policy: `popin` access denied.",
+          "Permissions-Policy: `popin` access denied.");
+      return nullptr;
+    }
   }
 
   // In fenced frames, we should always use `noopener`.

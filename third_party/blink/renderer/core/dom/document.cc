@@ -915,6 +915,9 @@ Document::Document(const DocumentInit& initializer,
     fetcher_ = FrameFetchContext::CreateFetcherForCommittedDocument(
         *GetFrame()->Loader().GetDocumentLoader(), *this);
     cookie_jar_ = MakeGarbageCollected<CookieJar>(this);
+    if (IsInMainFrame() && GetPage()->IsPartitionedPopin()) {
+      CountUse(WebFeature::kPartitionedPopin_Opened);
+    }
   } else {
     // We disable fetches for frame-less Documents.
     // See https://crbug.com/961614 for details.

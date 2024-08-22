@@ -10825,6 +10825,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5072" label="FencedFrameCanLoadOpaqueURL"/>
   <int value="5073"
       label="V8Performance_Memory_AttributeGetter_NotLockedToSite"/>
+  <int value="5074" label="PartitionedPopin_OpenAttempt"/>
+  <int value="5075" label="PartitionedPopin_Opened"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

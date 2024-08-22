@@ -546,6 +546,10 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   const std::optional<net::SiteForCookies>
   GetPartitionedPopinOpenerSiteForCookies() const;
 
+  // This is true if the popin opener access information is set.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  bool IsPartitionedPopin() const;
+
  private:
   friend class ScopedPagePauser;
   class CloseTaskHandler;

@@ -4443,6 +4443,8 @@ enum WebFeature {
   kV8AIRewriter_Destroy_Method = 5071,
   kFencedFrameCanLoadOpaqueURL = 5072,
   kV8Performance_Memory_AttributeGetter_NotLockedToSite = 5073,
+  kPartitionedPopin_OpenAttempt = 5074,
+  kPartitionedPopin_Opened = 5075,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
