@@ -135,7 +135,8 @@ static std::pair<std::string, std::string> GetReplacementAndIncludeDirectives(
     const clang::SourceRange replacement_range,
     std::string replacement_text,
     const clang::SourceManager& source_manager,
-    const char* include_path = nullptr) {
+    const char* include_path = nullptr,
+    bool is_system_include_path = false) {
   clang::tooling::Replacement replacement(
       source_manager, clang::CharSourceRange::getCharRange(replacement_range),
       replacement_text);
@@ -150,9 +151,16 @@ static std::pair<std::string, std::string> GetReplacementAndIncludeDirectives(
 
   if (!include_path) {
     include_path = kBaseSpanIncludePath;
+    is_system_include_path = false;
   }
-  std::string include_directive = llvm::formatv(
-      "include-user-header:::{0}:::-1:::-1:::{1}", file_path, include_path);
+  std::string include_directive;
+  if (is_system_include_path) {
+    include_directive = llvm::formatv(
+        "include-system-header:::{0}:::-1:::-1:::{1}", file_path, include_path);
+  } else {
+    include_directive = llvm::formatv(
+        "include-user-header:::{0}:::-1:::-1:::{1}", file_path, include_path);
+  }
 
   return {replacement_directive, include_directive};
 }
@@ -496,7 +504,8 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
       array_type_loc->getSourceRange().getEnd().getLocWithOffset(1)};
 
   auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
-      replacement_range, replacement_text, source_manager, "<array>");
+      replacement_range, replacement_text, source_manager, "array",
+      /* is_system_include_header =*/true);
   Node n;
   n.replacement = replacement_and_include_pair.first;
   n.include_directive = replacement_and_include_pair.second;
