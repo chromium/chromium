@@ -87,6 +87,11 @@ void VirtualCpuProbeManager::SetPressureState(
     mojom::PressureState desired_state) {
   double cpu_utilization =
       state_thresholds().at(static_cast<size_t>(desired_state));
+  // If the new `desired_state` is one state below the previously set
+  // `desired_state`, its setting will be under the effect of `threshold_delta`
+  // used to prevent state flip-flopping, therefore the hysteresis threshold
+  // delta needs to be applied to validate the state change.
+  cpu_utilization -= hysteresis_threshold_delta();
   static_cast<VirtualCpuProbe*>(cpu_probe())
       ->SetSample(system_cpu::CpuSample{cpu_utilization});
 }

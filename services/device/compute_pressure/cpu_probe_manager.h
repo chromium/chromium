@@ -83,6 +83,10 @@ class CpuProbeManager {
                    static_cast<size_t>(mojom::PressureState::kMaxValue) + 1>&
   state_thresholds() const;
 
+  // Returns the hysteresis threshold delta value used
+  // to prevent state flip-flopping.
+  double hysteresis_threshold_delta() const;
+
  private:
   friend class CpuProbeManagerTest;
   FRIEND_TEST_ALL_PREFIXES(CpuProbeManagerDeathTest,
