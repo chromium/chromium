@@ -4,6 +4,13 @@
 
 #include "components/data_sharing/internal/group_data_store.h"
 
+#include <memory>
+
+#include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,13 +22,46 @@ using testing::UnorderedElementsAre;
 
 class GroupDataStoreTest : public testing::Test {
  public:
-  GroupDataStoreTest() = default;
+  GroupDataStoreTest() {
+    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+    InitStoreAndWaitForDBLoading();
+  }
+
   ~GroupDataStoreTest() override = default;
 
-  GroupDataStore& store() { return store_; }
+  void MimicRestart() {
+    store_ = nullptr;
+    // Wait for shutdown tasks completion.
+    task_environment_.RunUntilIdle();
+
+    InitStoreAndWaitForDBLoading();
+  }
+
+  GroupDataStore& store() { return *store_; }
 
  private:
-  GroupDataStore store_;
+  void InitStoreAndWaitForDBLoading() {
+    base::RunLoop run_loop;
+    store_ = std::make_unique<GroupDataStore>(
+        GetDBPath(), base::BindLambdaForTesting(
+                         [&run_loop](GroupDataStore::DBInitStatus status) {
+                           EXPECT_EQ(status,
+                                     GroupDataStore::DBInitStatus::kSuccess);
+                           run_loop.Quit();
+                         }));
+    run_loop.Run();
+  }
+
+  base::FilePath GetDBPath() const {
+    return temp_dir_.GetPath().Append(
+        base::FilePath(FILE_PATH_LITERAL("db_file")));
+  }
+
+  base::test::TaskEnvironment task_environment_;
+
+  base::ScopedTempDir temp_dir_;
+  std::unique_ptr<GroupDataStore> store_;
 };
 
 TEST_F(GroupDataStoreTest, ShouldStoreAndGetGroupData) {
@@ -61,7 +101,7 @@ TEST_F(GroupDataStoreTest, ShouldDeleteGroupData) {
   EXPECT_FALSE(store().GetGroupVersionToken(group_id).has_value());
 }
 
-TEST_F(GroupDataStoreTest, ShouldGetAllGroupsIds) {
+TEST_F(GroupDataStoreTest, ShouldGetAllGroupIds) {
   const VersionToken version_token("test_version_token");
 
   const GroupId group_id1("test_group_id1");
@@ -75,8 +115,43 @@ TEST_F(GroupDataStoreTest, ShouldGetAllGroupsIds) {
   store().StoreGroupData(version_token, group_data1);
   store().StoreGroupData(version_token, group_data2);
 
-  std::vector<GroupId> stored_group_ids = store().GetAllGroupsIds();
+  std::vector<GroupId> stored_group_ids = store().GetAllGroupIds();
   EXPECT_THAT(stored_group_ids, UnorderedElementsAre(group_id1, group_id2));
+}
+
+TEST_F(GroupDataStoreTest, ShouldPersistChanges) {
+  const GroupId group_id("test_group_id");
+  GroupData group_data;
+  group_data.group_token.group_id = group_id;
+  group_data.display_name = "Test group";
+
+  const VersionToken version_token("test_version_token");
+
+  // Store some group data first.
+  store().StoreGroupData(version_token, group_data);
+  ASSERT_TRUE(store().GetGroupData(group_id).has_value());
+  ASSERT_TRUE(store().GetGroupVersionToken(group_id).has_value());
+
+  // Ensure that data is still around after restart.
+  MimicRestart();
+  auto stored_group_data = store().GetGroupData(group_id);
+  ASSERT_TRUE(stored_group_data.has_value());
+  EXPECT_THAT(stored_group_data->group_token.group_id, Eq(group_id));
+  EXPECT_THAT(stored_group_data->display_name, Eq(group_data.display_name));
+
+  auto stored_version_token = store().GetGroupVersionToken(group_id);
+  ASSERT_TRUE(stored_version_token.has_value());
+  EXPECT_THAT(*stored_version_token, Eq(version_token));
+
+  // Now delete the group data.
+  store().DeleteGroupData(group_id);
+  ASSERT_FALSE(store().GetGroupData(group_id).has_value());
+  ASSERT_FALSE(store().GetGroupVersionToken(group_id).has_value());
+
+  // Ensure that data was actually deleted from DB.
+  MimicRestart();
+  EXPECT_FALSE(store().GetGroupData(group_id).has_value());
+  EXPECT_FALSE(store().GetGroupVersionToken(group_id).has_value());
 }
 
 }  // namespace

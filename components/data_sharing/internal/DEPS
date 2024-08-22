@@ -1,6 +1,7 @@
 include_rules = [
   "+components/endpoint_fetcher",
   "+components/signin/public/identity_manager",
+  "+components/sqlite_proto",
   "+components/sync/base",
   "+components/sync/protocol",
   "+components/sync/test",
@@ -8,4 +9,5 @@ include_rules = [
   "+net/base",
   "+services/network/public/cpp",
   "+services/network/test",
+  "+sql",
 ]

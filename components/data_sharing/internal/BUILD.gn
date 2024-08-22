@@ -33,12 +33,15 @@ static_library("internal") {
   ]
 
   deps = [
+    "//components/data_sharing/internal/protocol",
     "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/signin/public/identity_manager",
+    "//components/sqlite_proto",
     "//components/sync/base:base",
     "//components/sync/model:model",
     "//components/sync/protocol:protocol",
     "//services/network/public/cpp",
+    "//sql",
   ]
 
   public_deps = [
