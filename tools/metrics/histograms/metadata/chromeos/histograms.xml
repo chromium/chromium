@@ -780,6 +780,16 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Camera.OpenDeviceError" enum="Boolean"
+    expires_after="2025-02-09">
+  <owner>wtlee@chromium.org</owner>
+  <owner>chromeos-camera-app-eng@google.com</owner>
+  <summary>
+    Records when a camera fails to open and the value indicates whether the
+    camera is currently occupied.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Camera.OpenDeviceLatency" units="microseconds"
     expires_after="2025-02-10">
   <owner>beckerh@chromium.org</owner>
