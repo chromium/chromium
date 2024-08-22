@@ -134,7 +134,7 @@ void MLContext::destroy(ScriptState* script_state,
     OnLost(0, "destroy() called on MLContext.");
 
     for (const auto& graph : graphs_) {
-      graph->OnConnectionError();
+      graph->destroy();
     }
 
     for (const auto& graph_builder : graph_builders_) {

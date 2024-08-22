@@ -181,6 +181,12 @@ void MLGraph::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
+void MLGraph::destroy() {
+  if (remote_graph_.is_bound()) {
+    OnConnectionError();
+  }
+}
+
 const MLGraph::NamedOperandDescriptors& MLGraph::GetInputConstraints() const {
   return input_constraints_;
 }
@@ -206,8 +212,9 @@ ScriptPromise<MLComputeResult> MLGraph::Compute(
   // Remote graph gets automatically unbound when the execution context
   // destructs.
   if (!remote_graph_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid graph state");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Graph has been destroyed or context is lost.");
     return EmptyPromise();
   }
 
@@ -260,8 +267,9 @@ void MLGraph::Dispatch(ScopedMLTrace scoped_trace,
   // Remote graph gets automatically unbound when the execution context
   // destructs.
   if (!remote_graph_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid graph state");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Graph has been destroyed or context is lost.");
     return;
   }
 
@@ -352,8 +360,9 @@ void MLGraph::OnConnectionError() {
   remote_graph_.reset();
 
   for (const auto& resolver : pending_resolvers_) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
-                                     "Context is lost.");
+    resolver->RejectWithDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Graph has been destroyed or context is lost.");
   }
   pending_resolvers_.clear();
 }
