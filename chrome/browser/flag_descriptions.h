@@ -3728,9 +3728,6 @@ extern const char kCrostiniQtImeSupportDescription[];
 extern const char kCrostiniVirtualKeyboardSupportName[];
 extern const char kCrostiniVirtualKeyboardSupportDescription[];
 
-extern const char kCameraAppCrosEventsName[];
-extern const char kCameraAppCrosEventsDescription[];
-
 extern const char kCameraAppDigitalZoomName[];
 extern const char kCameraAppDigitalZoomDescription[];
 
