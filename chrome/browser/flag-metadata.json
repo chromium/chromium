@@ -3684,11 +3684,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-per-desk-z-order",
-    "owners": [ "dandersson@chromium.org", "janetmac@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-perfetto-system-tracing",
     "owners": [ "woa-performance@google.com" ],
     // This flag is used for recording system traces on Chrome for Android.
