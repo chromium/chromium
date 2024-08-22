@@ -307,11 +307,21 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   // GetWidget()->Close() to close the UI when ready.
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
-  std::unique_ptr<views::View> primary_view =
+  // This view will act as the contents view for the bubble. It is used to be
+  // able to set empty margins on `this` and, instead, set them on
+  // `primary_view`. This allows adding an element at the top of the dialog that
+  // has no margins.
+  std::unique_ptr<views::View> wrapper_view =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .Build();
-  primary_view->SetProperty(views::kElementIdentifierKey, kTopViewId);
+  std::unique_ptr<views::View> primary_view =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetProperty(views::kElementIdentifierKey, kTopViewId)
+          .SetProperty(views::kMarginsKey, margins())
+          .Build();
+  set_margins(gfx::Insets());
 
   primary_view->AddChildView(CreateLogo());
   primary_view->AddChildView(CreateTitle(show_notice));
@@ -345,7 +355,8 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   }
   primary_view->AddChildView(CreateButtons());
 
-  SetContentsView(std::move(primary_view));
+  wrapper_view->AddChildView(std::move(primary_view));
+  SetContentsView(std::move(wrapper_view));
 }
 
 PlusAddressCreationDialogDelegate::~PlusAddressCreationDialogDelegate() {
