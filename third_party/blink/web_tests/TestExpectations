@@ -2618,7 +2618,7 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac15 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/nested-exit.tentative.html?vtmode=crossdoc [ Failure ]
+crbug.com/361393554 [ Mac15 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/nested-exit.tentative.html?vtmode=crossdoc [ Failure ]
 crbug.com/361146527 external/wpt/streams/readable-streams/crashtests/from-cross-realm.https.html [ Timeout ]
 [ Mac14 ] external/wpt/webusb/usbDevice.https.any.worker.html [ Skip Timeout ]
 crbug.com/361146524 [ Mac15 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/wide--12px-auto--nonpercent-width-nonpercent-height.html [ Failure ]
