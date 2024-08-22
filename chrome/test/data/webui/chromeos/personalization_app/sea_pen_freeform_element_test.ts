@@ -94,6 +94,8 @@ suite('SeaPenFreeformElementTest', function() {
 
     const samplesElement =
         freeformElement.shadowRoot!.querySelector(SeaPenSamplesElement.is);
+    await waitAfterNextRender(samplesElement as HTMLElement);
+
     assertTrue(
         !!samplesElement, 'sample prompts element shown on freeform page');
     assertEquals(6, getSamples().length, 'there are 6 sample prompts');
