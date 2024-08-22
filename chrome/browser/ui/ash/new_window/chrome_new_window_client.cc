@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/chrome_new_window_client.h"
+#include "chrome/browser/ui/ash/new_window/chrome_new_window_client.h"
 #include "base/memory/raw_ptr.h"
 
 #include <string>

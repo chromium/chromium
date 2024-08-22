@@ -1,0 +1,2 @@
+# Must be updated when a new OS settings section is added.
+per-file chrome_new_window_client*=file://chrome/browser/resources/ash/settings/OWNERS
