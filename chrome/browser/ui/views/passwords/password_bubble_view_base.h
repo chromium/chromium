@@ -13,6 +13,7 @@ namespace content {
 class WebContents;
 }
 
+class Browser;
 class PasswordBubbleControllerBase;
 
 // Base class for all manage-passwords bubbles. Provides static methods for
@@ -77,6 +78,8 @@ class PasswordBubbleViewBase : public LocationBarBubbleDelegateView {
  private:
   // views::BubbleDialogDelegateView:
   void Init() override;
+
+  raw_ptr<Browser> browser_ = nullptr;
 
   // Singleton instance of the Password bubble.The instance is owned by the
   // Bubble and will be deleted when the bubble closes.
