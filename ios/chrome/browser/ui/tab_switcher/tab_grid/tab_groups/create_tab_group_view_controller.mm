@@ -663,7 +663,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
       [snapshotsContainerLayoutGuide.bottomAnchor
           constraintEqualToAnchor:_colorsScrollView.topAnchor
                          constant:-kSnapshotViewVerticalMargin];
-  snapshotLayoutGuideConstraint.priority = UILayoutPriorityDefaultLow;
+  snapshotLayoutGuideConstraint.priority = UILayoutPriorityDefaultHigh + 1;
 
   _regularConstraints = @[
     [dotAndFieldContainer.leadingAnchor
@@ -789,9 +789,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   NSLayoutConstraint* backgroundHeightConstraint =
       [snapshotsBackground.heightAnchor
           constraintEqualToConstant:kSnapshotViewMaxHeight];
-  // Lower the priority of the constraint so for smaller device, snapshot are
-  // reduced instead of other elements where the user can interact with.
-  backgroundHeightConstraint.priority = UILayoutPriorityDefaultLow;
+  backgroundHeightConstraint.priority = UILayoutPriorityDefaultHigh;
 
   _singleSnapshotConstraints = @[
     [_snapshotsView.widthAnchor
