@@ -36,6 +36,7 @@
 #include "chrome/browser/extensions/devtools_util.h"
 #include "chrome/browser/extensions/error_console/error_console_factory.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -175,6 +176,9 @@ const char kUserCancelledError[] = "User cancelled uninstall";
 const char kNoExtensionError[] = "Extension with ID '*' doesn't exist.";
 const char kExtensionNotAffectedByMV2Deprecation[] =
     "Extension with ID '*' is not affected by the MV2 deprecation.";
+const char kCannotRepairNonWebstoreExtension[] =
+    "Cannot repair an extension that is not installed from the Chrome Web "
+    "Store.";
 
 const char kUnpackedAppsFolder[] = "apps_target";
 const char kManifestFile[] = "manifest.json";
@@ -2172,6 +2176,12 @@ DeveloperPrivateRepairExtensionFunction::Run() {
   content::WebContents* web_contents = GetSenderWebContents();
   if (!web_contents)
     return RespondNow(Error(kCouldNotFindWebContentsError));
+
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(browser_context());
+  if (!extension_management->UpdatesFromWebstore(*extension)) {
+    return RespondNow(Error(kCannotRepairNonWebstoreExtension));
+  }
 
   auto reinstaller = base::MakeRefCounted<WebstoreReinstaller>(
       web_contents, params->extension_id,

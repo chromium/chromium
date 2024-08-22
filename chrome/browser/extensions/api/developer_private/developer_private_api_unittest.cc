@@ -1417,7 +1417,7 @@ TEST_F(DeveloperPrivateApiUnitTest, RepairPolicyExtension) {
   EXPECT_FALSE(RunFunction(function, args));
   EXPECT_EQ("Cannot repair a healthy extension.", function->GetError());
 
-  // Corrupt the extension , still expect repair failure because this is a
+  // Corrupt the extension, still expect repair failure because this is a
   // policy extension.
   service()->DisableExtension(extension_id, disable_reason::DISABLE_CORRUPTED);
   args = base::Value::List().Append(extension_id);
@@ -1426,6 +1426,31 @@ TEST_F(DeveloperPrivateApiUnitTest, RepairPolicyExtension) {
   EXPECT_FALSE(RunFunction(function, args));
   EXPECT_EQ("Cannot repair a policy-installed extension.",
             function->GetError());
+}
+
+// Tests that developerPrivate.repair does not succeed for an extension not from
+// the Chrome Web Store.
+TEST_F(DeveloperPrivateApiUnitTest, RepairNonCWSExtension) {
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+  base::FilePath extension_path = data_dir().AppendASCII("good.crx");
+  const Extension* extension = InstallCRX(extension_path, INSTALL_NEW);
+
+  // Corrupt the extension, still expect repair failure because `good.crx` does
+  // not update from the web store.
+  service()->DisableExtension(extension->id(),
+                              disable_reason::DISABLE_CORRUPTED);
+
+  base::Value::List args = base::Value::List().Append(extension->id());
+  auto function =
+      base::MakeRefCounted<api::DeveloperPrivateRepairExtensionFunction>();
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+  EXPECT_FALSE(RunFunction(function, args));
+  EXPECT_EQ(
+      "Cannot repair an extension that is not installed from the Chrome Web "
+      "Store.",
+      function->GetError());
 }
 
 // Test developerPrivate.updateProfileConfiguration: Try to turn on devMode
