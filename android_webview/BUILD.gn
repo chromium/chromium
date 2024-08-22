@@ -792,6 +792,7 @@ android_library("common_platform_services_java") {
     "java/src/org/chromium/android_webview/common/AwSupervisedUserUrlClassifierDelegate.java",
     "java/src/org/chromium/android_webview/common/MediaIntegrityApiStatus.java",
     "java/src/org/chromium/android_webview/common/MediaIntegrityErrorCode.java",
+    "java/src/org/chromium/android_webview/common/MediaIntegrityErrorWrapper.java",
     "java/src/org/chromium/android_webview/common/MediaIntegrityProvider.java",
     "java/src/org/chromium/android_webview/common/PlatformServiceBridge.java",
     "java/src/org/chromium/android_webview/common/PlatformServiceBridgeImpl.java",
