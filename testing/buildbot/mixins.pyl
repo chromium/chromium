@@ -357,6 +357,9 @@
   'ci_only': {
     'ci_only': True,
   },
+  'cros-cbx-dut': {
+    'cros_cbx': 'True',
+  },
   'crosier-no-arc': {
     'args': [
       '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.reven.chromeos_integration_tests.filter',
