@@ -43,7 +43,7 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
         test_chrome_browser_state->GetBrowserStateName();
     pref_service_ = test_chrome_browser_state->GetPrefs();
 
-    browser_state_info()->RemoveBrowserState(browser_state_name);
+    profile_attributes_storage()->RemoveBrowserState(browser_state_name);
     manager_ = [[PushNotificationAccountContextManager alloc]
         initWithChromeBrowserStateManager:&browser_state_manager_];
     fake_id_ = [FakeSystemIdentity fakeIdentity1];
@@ -52,14 +52,14 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
         {/*enabled=*/kContentNotificationExperiment, kIOSTipsNotifications,
          kSafetyCheckNotifications},
         {/*disabled=*/});
-    AddTestCasesToManager(manager_, browser_state_info(),
+    AddTestCasesToManager(manager_, profile_attributes_storage(),
                           base::SysNSStringToUTF8(fake_id_.gaiaID),
                           browser_state_name);
   }
-  BrowserStateInfoCache* browser_state_info() const {
+  ProfileAttributesStorageIOS* profile_attributes_storage() const {
     return GetApplicationContext()
-        ->GetChromeBrowserStateManager()
-        ->GetBrowserStateInfoCache();
+        ->GetProfileManager()
+        ->GetProfileAttributesStorage();
   }
   void TurnNotificationForKey(BOOL on,
                               const std::string key,
@@ -79,12 +79,12 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
     pref_service->SetBoolean(commerce::kPriceEmailNotificationsEnabled, on);
   }
   void AddTestCasesToManager(PushNotificationAccountContextManager* manager,
-                             BrowserStateInfoCache* info_cache,
+                             ProfileAttributesStorageIOS* storage,
                              const std::string& gaia_id,
                              const std::string browser_state_name) {
     // Construct the BrowserStates with the given gaia id and add the gaia id
     // into the AccountContextManager.
-    info_cache->AddBrowserState(browser_state_name, gaia_id, std::string());
+    storage->AddBrowserState(browser_state_name, gaia_id, std::string());
     [manager addAccount:gaia_id];
   }
 

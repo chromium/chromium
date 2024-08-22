@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 
+#import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -14,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -24,6 +26,22 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+
+namespace {
+
+// Returns the gaia id used for `browser_state`.
+NSString* GetGaiaIdForBrowserState(ChromeBrowserState* browser_state) {
+  const ProfileAttributesIOS attributes =
+      GetApplicationContext()
+          ->GetProfileManager()
+          ->GetProfileAttributesStorage()
+          ->GetAttributesForProfileWithName(
+              browser_state->GetBrowserStateName());
+
+  return base::SysUTF8ToNSString(attributes.GetGaiaId());
+}
+
+}  // namespace
 
 @implementation NotificationsOptInAlertCoordinator {
   SEQUENCE_CHECKER(sequence_checker_);
@@ -122,13 +140,7 @@
 
 // Enables notifications in prefs for the client with `clientID`.
 - (void)enableNotifications {
-  BrowserStateInfoCache* infoCache = GetApplicationContext()
-                                         ->GetChromeBrowserStateManager()
-                                         ->GetBrowserStateInfoCache();
-  const size_t browserStateIndex = infoCache->GetIndexOfBrowserStateWithName(
-      self.browser->GetBrowserState()->GetBrowserStateName());
-  NSString* gaiaID = base::SysUTF8ToNSString(
-      infoCache->GetGAIAIdOfBrowserStateAtIndex(browserStateIndex));
+  NSString* gaiaID = GetGaiaIdForBrowserState(self.browser->GetBrowserState());
   std::vector<PushNotificationClientId> clientIDs = self.clientIds.value();
   for (PushNotificationClientId clientID : clientIDs) {
     GetApplicationContext()->GetPushNotificationService()->SetPreference(

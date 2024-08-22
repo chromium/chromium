@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -72,23 +73,22 @@ enum class PushNotificationLifecycleEvent {
 // map of each user's preferences for each push notification enabled feature.
 GaiaIdToPushNotificationPreferenceMap*
 GaiaIdToPushNotificationPreferenceMapFromCache(
-    BrowserStateInfoCache* info_cache) {
-  size_t number_of_browser_states = info_cache->GetNumberOfProfiles();
+    ProfileAttributesStorageIOS* storage) {
+  const size_t number_of_profiles = storage->GetNumberOfProfiles();
   NSMutableDictionary* account_preference_map =
       [[NSMutableDictionary alloc] init];
 
-  for (size_t i = 0; i < number_of_browser_states; i++) {
-    NSString* gaia_id =
-        base::SysUTF8ToNSString(info_cache->GetGAIAIdOfBrowserStateAtIndex(i));
-    if (!gaia_id.length) {
+  for (size_t i = 0; i < number_of_profiles; i++) {
+    ProfileAttributesIOS attr = storage->GetAttributesForProfileAtIndex(i);
+    if (attr.GetGaiaId().empty()) {
       continue;
     }
 
-    const std::string& name = info_cache->GetNameOfBrowserStateAtIndex(i);
-    PrefService* pref_service = GetApplicationContext()
-                                    ->GetChromeBrowserStateManager()
-                                    ->GetBrowserStateByName(name)
-                                    ->GetPrefs();
+    PrefService* pref_service =
+        GetApplicationContext()
+            ->GetChromeBrowserStateManager()
+            ->GetBrowserStateByName(attr.GetProfileName())
+            ->GetPrefs();
 
     NSMutableDictionary<NSString*, NSNumber*>* preference_map =
         [[NSMutableDictionary alloc] init];
@@ -100,7 +100,8 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
           [NSNumber numberWithBool:pair.second.GetBool()];
     }
 
-    account_preference_map[gaia_id] = preference_map;
+    account_preference_map[base::SysUTF8ToNSString(attr.GetGaiaId())] =
+        preference_map;
   }
 
   return account_preference_map;
@@ -188,12 +189,12 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 
 - (void)applicationDidRegisterWithAPNS:(NSData*)deviceToken
                           browserState:(ChromeBrowserState*)browserState {
-  BrowserStateInfoCache* infoCache = GetApplicationContext()
-                                         ->GetChromeBrowserStateManager()
-                                         ->GetBrowserStateInfoCache();
+  ProfileAttributesStorageIOS* storage = GetApplicationContext()
+                                             ->GetProfileManager()
+                                             ->GetProfileAttributesStorage();
 
   GaiaIdToPushNotificationPreferenceMap* accountPreferenceMap =
-      GaiaIdToPushNotificationPreferenceMapFromCache(infoCache);
+      GaiaIdToPushNotificationPreferenceMapFromCache(storage);
 
   // Return early if no accounts are signed into Chrome.
   if (!accountPreferenceMap.count) {

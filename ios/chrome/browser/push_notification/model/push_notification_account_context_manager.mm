@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 
@@ -46,11 +47,12 @@ struct PermissionsPref {
 
   if (self) {
     _chromeBrowserStateManager = manager;
-    BrowserStateInfoCache* infoCache = manager->GetBrowserStateInfoCache();
-    const size_t numberOfBrowserStates = infoCache->GetNumberOfProfiles();
-    for (size_t i = 0; i < numberOfBrowserStates; i++) {
-      const std::string& gaiaID = infoCache->GetGAIAIdOfBrowserStateAtIndex(i);
-      [self addAccount:gaiaID];
+    ProfileAttributesStorageIOS* storage =
+        manager->GetProfileAttributesStorage();
+    const size_t numberOfProfiles = storage->GetNumberOfProfiles();
+    for (size_t i = 0; i < numberOfProfiles; i++) {
+      ProfileAttributesIOS attr = storage->GetAttributesForProfileAtIndex(i);
+      [self addAccount:attr.GetGaiaId()];
     }
   }
 
@@ -167,20 +169,19 @@ struct PermissionsPref {
 // the push notification enabled features' permissions may be incorrectly
 // applied.
 - (ChromeBrowserState*)chromeBrowserStateFrom:(const std::string&)gaiaID {
-  BrowserStateInfoCache* infoCache =
-      _chromeBrowserStateManager->GetBrowserStateInfoCache();
-  const size_t numberOfBrowserStates = infoCache->GetNumberOfProfiles();
+  ProfileAttributesStorageIOS* storage =
+      _chromeBrowserStateManager->GetProfileAttributesStorage();
 
-  for (size_t i = 0; i < numberOfBrowserStates; i++) {
-    const std::string& browserStateGaiaID =
-        infoCache->GetGAIAIdOfBrowserStateAtIndex(i);
-    if (gaiaID == browserStateGaiaID) {
-      const std::string& name = infoCache->GetNameOfBrowserStateAtIndex(i);
-      return _chromeBrowserStateManager->GetBrowserStateByName(name);
+  const size_t numberOfProfiles = storage->GetNumberOfProfiles();
+  for (size_t i = 0; i < numberOfProfiles; i++) {
+    ProfileAttributesIOS attr = storage->GetAttributesForProfileAtIndex(i);
+    if (gaiaID == attr.GetGaiaId()) {
+      return _chromeBrowserStateManager->GetBrowserStateByName(
+          attr.GetProfileName());
     }
   }
 
-  return nil;
+  return nullptr;
 }
 
 // Returns the appropriate `PermissionsPref` for the given `clientID` and

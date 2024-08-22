@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -36,6 +37,22 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+
+namespace {
+
+// Returns the gaia id used for `browser_state`.
+NSString* GetGaiaIdForBrowserState(ChromeBrowserState* browser_state) {
+  const ProfileAttributesIOS attributes =
+      GetApplicationContext()
+          ->GetProfileManager()
+          ->GetProfileAttributesStorage()
+          ->GetAttributesForProfileWithName(
+              browser_state->GetBrowserStateName());
+
+  return base::SysUTF8ToNSString(attributes.GetGaiaId());
+}
+
+}  // namespace
 
 @interface PriceNotificationsViewCoordinator ()
 
@@ -67,13 +84,7 @@
     prefService->SetBoolean(prefs::kPriceNotificationsHasBeenShown, true);
   }
 
-  BrowserStateInfoCache* infoCache = GetApplicationContext()
-                                         ->GetChromeBrowserStateManager()
-                                         ->GetBrowserStateInfoCache();
-  const size_t browserStateIndex = infoCache->GetIndexOfBrowserStateWithName(
-      self.browser->GetBrowserState()->GetBrowserStateName());
-  NSString* gaiaID = base::SysUTF8ToNSString(
-      infoCache->GetGAIAIdOfBrowserStateAtIndex(browserStateIndex));
+  NSString* gaiaID = GetGaiaIdForBrowserState(self.browser->GetBrowserState());
   PushNotificationService* pushNotificationService =
       GetApplicationContext()->GetPushNotificationService();
   commerce::ShoppingService* shoppingService =
