@@ -9563,6 +9563,17 @@
                     "enable_features": [
                         "ExtremeLightweightUAFDetector"
                     ]
+                },
+                {
+                    "name": "NonRendererProcesses",
+                    "params": {
+                        "quarantine_capacity_in_bytes": "1048576",
+                        "sampling_frequency": "100",
+                        "target_processes": "non_renderer"
+                    },
+                    "enable_features": [
+                        "ExtremeLightweightUAFDetector"
+                    ]
                 }
             ]
         }
