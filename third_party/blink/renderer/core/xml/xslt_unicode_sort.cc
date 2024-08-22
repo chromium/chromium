@@ -35,7 +35,10 @@
 
 #include <libxslt/templates.h>
 #include <libxslt/xsltutils.h>
+
+#include <array>
 #include <memory>
+
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/i18n/unicode/ucol.h"
@@ -78,7 +81,7 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
   xmlNodeSetPtr list = nullptr;
   int depth;
   xmlNodePtr node;
-  int tempstype[XSLT_MAX_SORT], temporder[XSLT_MAX_SORT];
+  std::array<int, XSLT_MAX_SORT> tempstype, temporder;
 
   if (!ctxt || !sorts || nbsorts <= 0 || nbsorts >= XSLT_MAX_SORT)
     return;
