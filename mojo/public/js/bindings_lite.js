@@ -1729,6 +1729,49 @@ mojo.internal.Struct = function(
 };
 
 /**
+ * Bridges typemapped types to mojo types. The adapter includes a function which
+ * will convert a mapped type to mojo type and vice versa.
+ */
+mojo.internal.TypemapAdapter = class {
+  constructor(toMojoTypeFn, toMappedTypeFn) {
+    this.toMojoTypeFn = toMojoTypeFn;
+    this.toMappedTypeFn = toMappedTypeFn;
+  }
+}
+
+/**
+ * @param {!Object} objectToBlessAsType
+ * @param {string} name
+ * @param {!mojo.internal.TypemapAdapter} typemapAdapter
+ * @param {!Array<!mojo.internal.StructFieldSpec>} fields
+ * @param {Array<!Array<number>>=} versionData
+ * @export
+ */
+mojo.internal.TypemappedStruct = function(
+    objectToBlessAsType, name, typemapAdapter, fields, versionData) {
+  const versions = versionData.map(v => ({version: v[0], packedSize: v[1]}));
+  const packedSize = versions[versions.length - 1].packedSize;
+  const structSpec = {name, packedSize, fields, versions};
+  objectToBlessAsType.$ = {
+    structSpec: structSpec,
+    encode: function(value, encoder, byteOffset, bitOffset, nullable) {
+      const mojoType = typemapAdapter.toMojoTypeFn(value);
+      encoder.encodeStruct(structSpec, byteOffset, mojoType);
+    },
+    encodeNull: function(encoder, byteOffset) {},
+    decode: function(decoder, byteOffset, bitOffset, nullable) {
+      const mojoType = decoder.decodeStruct(structSpec, byteOffset);
+      return typemapAdapter.toMappedTypeFn(mojoType);
+    },
+    computeDimensions: function(value, nullable) {
+      return mojo.internal.computeStructDimensions(structSpec, value);
+    },
+    arrayElementSize: nullable => 8,
+    isValidObjectKeyType: false,
+  };
+};
+
+/**
  * @param {!mojo.internal.MojomType} structMojomType
  * @return {!Function}
  * @export

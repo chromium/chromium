@@ -670,8 +670,8 @@ class Generator(generator.Generator):
     if len(self.typemap) == 0:
       return []
 
-    mapped_structs = []
+    mapped_structs = {}
     for struct in self.module.structs:
       if struct.qualified_name in self.typemap:
-        mapped_structs.append(struct)
+        mapped_structs[struct] = self.typemap[struct.qualified_name]
     return mapped_structs

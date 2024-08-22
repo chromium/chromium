@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 {%- for struct in typemapped_structs %}
 import type {
-  {{struct.name}}
+  {{struct.name}}MojoType
 {%-   if not loop.last -%},{% endif %}
 } from './{{module_filename}}';
 {%- endfor %}
@@ -11,9 +11,9 @@ import type {
 {%- for struct in typemapped_structs %}
 
 export class {{struct.name}}DataView {
-  private readonly mojoType: {{struct.name}};
+  private readonly mojoType: {{struct.name}}MojoType;
 
-  constructor(mojoType: {{struct.name}}) {
+  constructor(mojoType: {{struct.name}}MojoType) {
     this.mojoType = mojoType;
   }
 {%-    for packed_field in struct.packed.packed_fields %}
