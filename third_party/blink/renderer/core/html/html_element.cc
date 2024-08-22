@@ -2664,6 +2664,9 @@ HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(
 }
 
 bool HTMLElement::CalculateAndAdjustAutoDirectionality() {
+  // Note that HTMLSlotElement overrides this method in order to defer
+  // its work in some cases.
+
   TextDirection text_direction;
   std::optional<TextDirection> resolve_result = ResolveAutoDirectionality();
   if (resolve_result) {

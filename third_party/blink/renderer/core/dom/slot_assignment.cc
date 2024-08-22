@@ -339,6 +339,14 @@ void SlotAssignment::RecalcAssignment() {
     }
   }
 
+  // We need to update any slots with dir=auto for two reasons:
+  //  (1) because this call might have assigned them different assigned nodes
+  //      and changed the result of the dir=auto, or
+  //  (2) because an earlier call to the slot's
+  //      CalculateAndAdjustAutoDirectionality method was deferred because the
+  //      slot needed assignment recalc (which is necessary because some such
+  //      calls happen when it's not safe to recalc assignment).
+  //
   // This needs to happen outside of the scope above, when flat tree traversal
   // is allowed, because Element::UpdateDescendantHasDirAutoAttribute uses
   // FlatTreeTraversal.

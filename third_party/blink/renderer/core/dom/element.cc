@@ -4743,6 +4743,8 @@ std::optional<TextDirection> Element::ResolveAutoDirectionality() const {
     return std::nullopt;
   };
 
+  // Note that the one caller of this method is overridden by HTMLSlotElement
+  // in order to defer doing this until it is safe to do so.
   if (const HTMLSlotElement* slot_this =
           ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
     auto& assigned_nodes = slot_this->AssignedNodes();

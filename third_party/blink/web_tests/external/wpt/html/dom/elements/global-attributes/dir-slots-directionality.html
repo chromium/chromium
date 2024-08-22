@@ -273,4 +273,23 @@ test(() => {
   tree.remove();
 }, 'dir=auto slot is not affected by content inside inner slot (version 1)');
 
+// version 2 of the test is simpler, but initially exposed assertion failures
+// (maybe crashes?) in Chromium, so was added later.
+test(() => {
+  let [tree, shadow] = setup_tree(`
+    <div>
+      <div id=root><div slot="inner">اختبر</div></div>
+    </div>
+  `,`
+    <slot name="outer" dir=auto>
+      <slot name="inner"></slot>
+    </slot>
+  `);
+  let slot = shadow.querySelector("slot[name='outer']");
+  assert_equals(html_direction(slot), "ltr");
+  // do an extra intermediate removal to make sure it doesn't crash/assert:
+  tree.querySelector("div[slot='inner']").remove();
+  tree.remove();
+}, 'dir=auto slot is not affected by content inside inner slot (version 2)');
+
 </script>

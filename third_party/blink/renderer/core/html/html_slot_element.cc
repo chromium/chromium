@@ -754,6 +754,21 @@ void HTMLSlotElement::ChildrenChanged(const ChildrenChange& change) {
     SetShadowRootNeedsAssignmentRecalc();
 }
 
+bool HTMLSlotElement::CalculateAndAdjustAutoDirectionality() {
+  if (SupportsAssignment() &&
+      ContainingShadowRoot()->GetSlotAssignment().NeedsAssignmentRecalc()) {
+    // It might not be safe to do an auto directionality update right now
+    // since it might run RecalcAssignment at a bad time; we should wait until
+    // RecalcAssignment runs.  RecalcAssignment needs to update directionality
+    // anyway, so we don't need to invalidate anything.
+
+    // This dependency on NeedsAssignmentRecalc() is a little bit ugly, but it
+    // seems far less problematic than other solutions.
+    return false;
+  }
+  return HTMLElement::CalculateAndAdjustAutoDirectionality();
+}
+
 void HTMLSlotElement::Trace(Visitor* visitor) const {
   visitor->Trace(assigned_nodes_);
   visitor->Trace(flat_tree_children_);
