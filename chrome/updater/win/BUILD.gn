@@ -126,19 +126,19 @@ template("updater_process_version_rc_template") {
   # `process_version_rc_template` invokes `process_version` with the default
   # template rc file which is at //chrome/app/chrome_version.rc.version.
   process_version_rc_template(target_name) {
-    _product_fullname = "$updater_product_full_display_name"
+    _internal_name = "$updater_product_full_display_name"
     if (invoker.suffix != "") {
-      _product_fullname += invoker.suffix
+      _internal_name += invoker.suffix
     }
-    _product_fullname += " ($current_cpu)"
+    _internal_name += " ($current_cpu)"
     if (is_debug) {
-      _product_fullname += " (debug)"
+      _internal_name += " (debug)"
     }
     extra_args = [
       "-e",
-      "PRODUCT_FULLNAME=\"$_product_fullname\"",
+      "PRODUCT_FULLNAME=\"$updater_product_full_display_name\"",
       "-e",
-      "INTERNAL_NAME=\"$_product_fullname\"",
+      "INTERNAL_NAME=\"$_internal_name\"",
       "-e",
       "ORIGINAL_FILENAME=\"${invoker.original_filename}\"",
       "-e",
