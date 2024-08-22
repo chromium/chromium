@@ -2526,7 +2526,9 @@
         'mixins': [
           'linux-jammy',
         ],
-        'test_suites': {},
+        'test_suites': {
+          'isolated_scripts': 'gpu_dawn_common_isolated_scripts',
+        },
       },
       'Dawn Linux TSAN Release': {
         # This bot doesn't run any Telemetry-based tests so doesn't
