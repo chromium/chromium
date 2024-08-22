@@ -217,8 +217,8 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
 
   void OpenPipManually(content::WebContents* web_contents) {
     web_contents->GetPrimaryMainFrame()
-        ->ExecuteJavaScriptWithUserGestureForTests(
-            u"openPip({automatic: true})", base::NullCallback());
+        ->ExecuteJavaScriptWithUserGestureForTests(u"openPip()",
+                                                   base::NullCallback());
   }
 
   void RegisterForAutopip(content::WebContents* web_contents) {
