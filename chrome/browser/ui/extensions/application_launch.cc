@@ -497,7 +497,6 @@ WebContents* NavigateApplicationWindow(Browser* browser,
     extensions::TabHelper::FromWebContents(web_contents)
         ->SetExtensionApp(extension);
   }
-  web_app::SetAppPrefsForWebContents(web_contents);
 
   return web_contents;
 }

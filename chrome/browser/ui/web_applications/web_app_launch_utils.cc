@@ -478,20 +478,6 @@ void SetWebContentsIsPinnedHomeTab(content::WebContents* contents) {
   helper->set_is_pinned_home_tab(true);
 }
 
-void SetAppPrefsForWebContents(content::WebContents* web_contents) {
-  web_contents->GetMutableRendererPrefs()->can_accept_load_drops = false;
-  web_contents->SyncRendererPrefs();
-
-  web_contents->NotifyPreferencesChanged();
-}
-
-void ClearAppPrefsForWebContents(content::WebContents* web_contents) {
-  web_contents->GetMutableRendererPrefs()->can_accept_load_drops = true;
-  web_contents->SyncRendererPrefs();
-
-  web_contents->NotifyPreferencesChanged();
-}
-
 std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
     Browser* browser) {
   std::unique_ptr<AppBrowserController> controller;
@@ -685,7 +671,6 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
 
   if (web_contents) {
     SetWebContentsActingAsApp(web_contents, app_id);
-    SetAppPrefsForWebContents(web_contents);
   }
 
   return web_contents;

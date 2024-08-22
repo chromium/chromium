@@ -706,7 +706,6 @@ void WebAppBrowserController::SetManifestUpdateAppliedCallbackForTesting(
 
 void WebAppBrowserController::OnTabInserted(content::WebContents* contents) {
   AppBrowserController::OnTabInserted(contents);
-  SetAppPrefsForWebContents(contents);
 
   // If a `WebContents` is inserted into an app browser (e.g. after
   // installation), it is "appy". Note that if and when it's moved back into a
@@ -721,7 +720,6 @@ void WebAppBrowserController::OnTabInserted(content::WebContents* contents) {
 
 void WebAppBrowserController::OnTabRemoved(content::WebContents* contents) {
   AppBrowserController::OnTabRemoved(contents);
-  ClearAppPrefsForWebContents(contents);
 }
 
 const WebAppRegistrar& WebAppBrowserController::registrar() const {

@@ -75,12 +75,6 @@ void SetWebContentsActingAsApp(content::WebContents* contents,
 // Marks the web contents as being the pinned home tab of a tabbed web app.
 void SetWebContentsIsPinnedHomeTab(content::WebContents* contents);
 
-// Set preferences that are unique to app windows.
-void SetAppPrefsForWebContents(content::WebContents* web_contents);
-
-// Clear preferences that are unique to app windows.
-void ClearAppPrefsForWebContents(content::WebContents* web_contents);
-
 std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
     Browser* browser);
 
