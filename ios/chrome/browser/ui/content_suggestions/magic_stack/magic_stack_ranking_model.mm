@@ -27,6 +27,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_magic_stack_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
@@ -41,6 +43,7 @@
 
 @interface MagicStackRankingModel () <MostVisitedTilesMediatorDelegate,
                                       ParcelTrackingMediatorDelegate,
+                                      PriceTrackingPromoMediatorDelegate,
                                       SafetyCheckMagicStackMediatorDelegate,
                                       SetUpListMediatorAudience,
                                       ShortcutsMediatorDelegate,
@@ -66,6 +69,7 @@
   SetUpListMediator* _setUpListMediator;
   TabResumptionMediator* _tabResumptionMediator;
   ParcelTrackingMediator* _parcelTrackingMediator;
+  PriceTrackingPromoMediator* _priceTrackingPromoMediator;
   ShortcutsMediator* _shortcutsMediator;
   SafetyCheckMagicStackMediator* _safetyCheckMediator;
   base::TimeTicks ranking_fetch_start_time_;
@@ -101,6 +105,10 @@
         _parcelTrackingMediator =
             static_cast<ParcelTrackingMediator*>(mediator);
         _parcelTrackingMediator.delegate = self;
+      } else if ([mediator isKindOfClass:[PriceTrackingPromoMediator class]]) {
+        _priceTrackingPromoMediator =
+            static_cast<PriceTrackingPromoMediator*>(mediator);
+        _priceTrackingPromoMediator.delegate = self;
       } else if ([mediator
                      isKindOfClass:[SafetyCheckMagicStackMediator class]]) {
         _safetyCheckMediator =
@@ -120,6 +128,7 @@
   _setUpListMediator = nil;
   _tabResumptionMediator = nil;
   _parcelTrackingMediator = nil;
+  _priceTrackingPromoMediator = nil;
   _shortcutsMediator = nil;
   _safetyCheckMediator = nil;
 }
@@ -272,6 +281,11 @@
   [order addObject:@(int(ContentSuggestionsModuleType::kSafetyCheck))];
 }
 
+// New subscription observed for user (from another platform). This
+// has the potential to boost the ranking of the price trackiing promo.
+- (void)newSubscriptionAvailable {
+}
+
 // Starts a fetch of the Segmentation module ranking.
 - (void)fetchMagicStackModuleRankingFromSegmentationPlatform {
   if (!base::FeatureList::IsEnabled(segmentation_platform::features::
@@ -394,6 +408,9 @@
     } else if (label == segmentation_platform::kParcelTracking) {
       [magicStackOrder
           addObject:@(int(ContentSuggestionsModuleType::kParcelTracking))];
+    } else if (label == segmentation_platform::kPriceTrackingPromo) {
+      [magicStackOrder
+          addObject:@(int(ContentSuggestionsModuleType::kPriceTrackingPromo))];
     }
   }
   _magicStackOrderFromSegmentationReceived = YES;
@@ -484,6 +501,12 @@
             _parcelTrackingMediator.parcelTrackingItemToShow) {
           [magicStackOrder
               addObject:_parcelTrackingMediator.parcelTrackingItemToShow];
+        }
+        break;
+      case ContentSuggestionsModuleType::kPriceTrackingPromo:
+        if (_priceTrackingPromoMediator) {
+          [magicStackOrder addObject:_priceTrackingPromoMediator
+                                         .priceTrackingPromoItemToShow];
         }
         break;
       default:

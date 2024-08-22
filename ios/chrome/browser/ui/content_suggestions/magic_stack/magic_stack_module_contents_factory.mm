@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
@@ -65,6 +67,11 @@
           static_cast<SafetyCheckState*>(config);
       return [self safetyCheckViewForConfigState:safetyCheckConfig
                              contentViewDelegate:contentViewDelegate];
+    }
+    case ContentSuggestionsModuleType::kPriceTrackingPromo: {
+      PriceTrackingPromoItem* item =
+          static_cast<PriceTrackingPromoItem*>(config);
+      return [self priceTrackingPromoViewForConfig:item];
     }
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
@@ -127,6 +134,15 @@
   parcelTrackingModuleView.commandHandler = parcelTrackingItem.commandHandler;
   [parcelTrackingModuleView configureView:parcelTrackingItem];
   return parcelTrackingModuleView;
+}
+
+- (UIView*)priceTrackingPromoViewForConfig:
+    (PriceTrackingPromoItem*)priceTrackingPromoItem {
+  PriceTrackingPromoModuleView* view =
+      [[PriceTrackingPromoModuleView alloc] initWithFrame:CGRectZero];
+  view.commandHandler = priceTrackingPromoItem.commandHandler;
+  [view configureView:priceTrackingPromoItem];
+  return view;
 }
 
 - (UIView*)safetyCheckViewForConfigState:(SafetyCheckState*)state

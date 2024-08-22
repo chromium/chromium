@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/commerce/core/commerce_feature_list.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -24,6 +25,7 @@
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
@@ -98,6 +100,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/magic_stack_parcel_list_half_sheet_table_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_magic_stack_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/types.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
@@ -200,6 +203,7 @@
   SafetyCheckMagicStackMediator* _safetyCheckMediator;
   MostVisitedTilesMediator* _mostVisitedTilesMediator;
   TabResumptionMediator* _tabResumptionMediator;
+  PriceTrackingPromoMediator* _priceTrackingPromoMediator;
 
   MagicStackCollectionViewController* _magicStackCollectionView;
 
@@ -308,6 +312,16 @@
         self.contentSuggestionsMetricsRecorder;
     [moduleMediators addObject:_tabResumptionMediator];
   }
+  if (base::FeatureList::IsEnabled(commerce::kPriceTrackingPromo) &&
+      IsPriceNotificationsEnabled() &&
+      IsPriceTrackingEnabled(self.browser->GetBrowserState())) {
+    _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]
+        initWithShoppingService:commerce::ShoppingServiceFactory::
+                                    GetForBrowserState(
+                                        self.browser->GetBrowserState())];
+    [moduleMediators addObject:_priceTrackingPromoMediator];
+  }
+
   if (IsIOSParcelTrackingEnabled() &&
       !IsParcelTrackingDisabled(
           IsHomeCustomizationEnabled()
