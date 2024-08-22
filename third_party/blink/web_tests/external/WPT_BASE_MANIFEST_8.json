@@ -146783,7 +146783,7 @@
        ]
       ],
       "text-box-trim-height-002.html": [
-       "d646b9387f6cf7b94b3a0667714da800fb42850d",
+       "a3743e4bf9fac7b7938bb8dcb90795e93c9e941a",
        [
         null,
         [
@@ -313430,6 +313430,18 @@
        "6a2438077a7db085bf5e0a1450095e13aee45dee",
        []
       ],
+      "background-clip-computed-expected.txt": [
+       "bc346b2b9282a23b2d063d25e4ca983954bb5764",
+       []
+      ],
+      "background-clip-valid-expected.txt": [
+       "2c41035a64ff219ec3d11d01ebd92f817c89e4af",
+       []
+      ],
+      "background-computed-expected.txt": [
+       "02491ecd6aca5f41a2160d73a60cf236ebf56d43",
+       []
+      ],
       "background-image-computed.sub-expected.txt": [
        "a9699a9f14a036ba12024a5c1878f4ab53fb5a69",
        []
@@ -332569,7 +332581,7 @@
        []
       ],
       "text-box-trim-height-002-ref.html": [
-       "61378327c75323b74d5d6454ae14a2fbf2d8044f",
+       "ae6a271312f04f0cce103ea593a3396de5049626",
        []
       ],
       "text-box-trim-initial-letter-end-001-ref.html": [
@@ -345877,7 +345889,7 @@
      ],
      "animations": {
       "text-decoration-thickness-interpolation-expected.txt": [
-       "7cd6292525dbba768cf2edc5506b4dcb15823354",
+       "36d500e85bff872ee3ef7cefa5844a4b114f59fd",
        []
       ]
      },
@@ -392295,7 +392307,19 @@
    },
    "partitioned-popins": {
     "META.yml": [
-     "b9d43340c8af62e294a2ecd89ccaa870f51405d9",
+     "3329f00c069308e1729a707accf3b128b4244dea",
+     []
+    ],
+    "OWNERS": [
+     "538d4ae006c5e74bb29194eb2394da1019203075",
+     []
+    ],
+    "partitioned-popins.permission-all.tentative.sub.https.window.js.headers": [
+     "36ba34ecd5346257a406700a657bdd6397f893d1",
+     []
+    ],
+    "partitioned-popins.permission-self.tentative.sub.https.window.js.headers": [
+     "0d61ec4d3e4c527089c67da826bd512b62ab390c",
      []
     ],
     "resources": {
@@ -392304,27 +392328,35 @@
       []
      ],
      "partitioned-popins.cookies-iframe.html": [
-      "43ef731278e0ceb83a41615b9783d2112dbe3c48",
+      "04d95e6c6e92e37f60c7c7396501da133fd4f2a4",
       []
      ],
      "partitioned-popins.cookies-popin.py": [
-      "db48e781b9419bd73f602286d78d06a81895b4fa",
+      "f5d94c3c5f1bf4e43436b7ccd82bd2ccc2097001",
       []
      ],
      "partitioned-popins.cookies-window.html": [
-      "66880c3255d51299f64585f6cdd06f1a6128a246",
+      "908ad75622df47bc9270f1aa1c3f941f1879e073",
       []
      ],
      "partitioned-popins.localStorage-iframe.html": [
-      "d2833c71852c42ccbe65b7173661b7cf16b455ec",
+      "ae3e96150a375fd6c0eebac8bb2f9a9107c94a04",
       []
      ],
      "partitioned-popins.localStorage-popin.html": [
-      "87a6ab95fa26d92e870a8c886139850c7a2ae1af",
+      "4ab2d4a5ff22664e9c24bb094410eb92b9dc3684",
       []
      ],
      "partitioned-popins.localStorage-window.html": [
-      "1d5106e05092f6d7230430bb0f081b0e56af5a51",
+      "1e1f4ed2a6b288e490ea786d8abc40c7b7b684a8",
+      []
+     ],
+     "partitioned-popins.permissions-iframe.html": [
+      "fe41057b7bb16071e6c49429e2fba282e12f616f",
+      []
+     ],
+     "partitioned-popins.permissions-popin.html": [
+      "1009ee687a29a94a264aaf89c50fc64010d161a7",
       []
      ]
     }
@@ -414540,14 +414572,6 @@
     ],
     "response-json-expected.txt": [
      "1de54c3c1b017a41bf26470da043c52cb4268ad7",
-     []
-    ],
-    "responseType-document-in-worker-expected.txt": [
-     "6a8112b3beeea70511e855e69b468182a9c11028",
-     []
-    ],
-    "responsetype.any.worker-expected.txt": [
-     "0fa4abaaa51ac4d0ffd6774fb9ed86fe25963827",
      []
     ],
     "send-authentication-cors-setrequestheader-no-cred-expected.txt": [
@@ -455092,21 +455116,21 @@
        ]
       ],
       "background-clip-computed.html": [
-       "91ca19f5b26dc7248b8be7136c5cc90a96425e54",
+       "45dc75f7a4f9fb69a484144a0fe62dc1c09caf79",
        [
         null,
         {}
        ]
       ],
       "background-clip-invalid.html": [
-       "96831e06fc9cce1c9c45e4d44c83f04d2350d0ab",
+       "f86293635bbc5a5d0fb110fc271e42ba17d71d53",
        [
         null,
         {}
        ]
       ],
       "background-clip-valid.html": [
-       "e262a788bd0296deb0429fd4fc4257390776680a",
+       "6949b4e3d81713c6acc79c1471598bb86512927c",
        [
         null,
         {}
@@ -455134,7 +455158,7 @@
        ]
       ],
       "background-computed.html": [
-       "8a07df4903d6d3fa24cd675af284261798c549a1",
+       "9c45a8888abdb393f36689b5fb6a944f36ac7123",
        [
         null,
         {}
@@ -479891,7 +479915,7 @@
        ]
       ],
       "text-decoration-thickness-interpolation.html": [
-       "57a7eb09c690dfc89cfaed14510c530f0b6f8b30",
+       "a17efd9331dee4586c71fcd077f3680ca2b26099",
        [
         null,
         {}
@@ -497817,6 +497841,13 @@
            ]
           ]
          }
+        ]
+       ],
+       "modal-dialog.html": [
+        "fa9eeae85eb13daf948c20406b1b907575c1c1f6",
+        [
+         null,
+         {}
         ]
        ],
        "moveBefore-shadow-inside.html": [
@@ -624433,7 +624464,7 @@
    },
    "partitioned-popins": {
     "partitioned-popins.cookies.tentative.sub.https.window.js": [
-     "d98e08a73969610e9eb3fbd878b2624c42520593",
+     "952e78a6eb0d66fb5f88b8db20c3bfbfbe2b736d",
      [
       "partitioned-popins/partitioned-popins.cookies.tentative.sub.https.window.html",
       {
@@ -624451,9 +624482,63 @@
      ]
     ],
     "partitioned-popins.localStorage.tentative.sub.https.window.js": [
-     "d8444604c9eb1d52da7111a33c9b009641b3d534",
+     "06fe2239fd38a2c115dc75f27243e4b4b746b60b",
      [
       "partitioned-popins/partitioned-popins.localStorage.tentative.sub.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "partitioned-popins.permission-all.tentative.sub.https.window.js": [
+     "83eb092905c612630484d6d7af5537921d56d6ec",
+     [
+      "partitioned-popins/partitioned-popins.permission-all.tentative.sub.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "partitioned-popins.permission-default.tentative.sub.https.window.js": [
+     "613d8dbb5f2da23f8953cbfe0e6392dbe5a6cdb5",
+     [
+      "partitioned-popins/partitioned-popins.permission-default.tentative.sub.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "partitioned-popins.permission-self.tentative.sub.https.window.js": [
+     "5930442aa872d7b1c51fa8d19636348b7d658dc3",
+     [
+      "partitioned-popins/partitioned-popins.permission-self.tentative.sub.https.window.html",
       {
        "script_metadata": [
         [
@@ -692214,7 +692299,7 @@
       ]
      ],
      "buffer.https.any.js": [
-      "31a33d9e70654d9c9a10baf7326e2bc86f015982",
+      "6bd3993afcf63d1713f33410eafc6dcf8544018d",
       [
        "webnn/conformance_tests/buffer.https.any.html?cpu",
        {
@@ -692457,7 +692542,7 @@
       ]
      ],
      "byob_readbuffer.https.any.js": [
-      "3b9546c50f0c63da99f0ae4db328f120ad09a8bd",
+      "ccbd6d390fa3661f0c3d6568243d37146b48120a",
       [
        "webnn/conformance_tests/byob_readbuffer.https.any.html?cpu",
        {
@@ -701868,7 +701953,7 @@
       ]
      ],
      "parallel-dispatch.https.any.js": [
-      "2ba1f6cf442bd0f6a36b135df7f8ed865ec98efe",
+      "b3927765fb5ae16deef3bae366fa26c365688d69",
       [
        "webnn/conformance_tests/parallel-dispatch.https.any.html?cpu",
        {
@@ -711205,7 +711290,7 @@
       ]
      ],
      "destroyContext.https.any.js": [
-      "ba0661ae6f8e3da28d03ffbf1cdfdea97a7e2fd7",
+      "7d2411412b3d7cb4291ff70f1c05f81debf65840",
       [
        "webnn/validation_tests/destroyContext.https.any.html?cpu",
        {
@@ -713290,7 +713375,7 @@
       ]
      ],
      "hardSigmoid.https.any.js": [
-      "b0104dfc2c2729c62fd732972bb07ad0a1542533",
+      "c4ea4e1296ba6e6d0aec8abfa502f644ce1369c6",
       [
        "webnn/validation_tests/hardSigmoid.https.any.html?cpu",
        {
@@ -713479,7 +713564,7 @@
       ]
      ],
      "hardSwish.https.any.js": [
-      "53c78c8c81df2af2b2f2759f646626d2de2b3c93",
+      "4c76640b09351b73635dad9318ba4ebe3e7f05b0",
       [
        "webnn/validation_tests/hardSwish.https.any.html?cpu",
        {
@@ -714020,6 +714105,195 @@
          [
           "title",
           "validation tests for WebNN API instanceNormalization operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "invalid-rank.https.any.js": [
+      "59f5ac52337533916efcab14d9698f4d7c84b683",
+      [
+       "webnn/validation_tests/invalid-rank.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "ensure an MLOperand cannot be created with an invalid rank"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/invalid-rank.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "ensure an MLOperand cannot be created with an invalid rank"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/invalid-rank.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "ensure an MLOperand cannot be created with an invalid rank"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/invalid-rank.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "ensure an MLOperand cannot be created with an invalid rank"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/invalid-rank.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "ensure an MLOperand cannot be created with an invalid rank"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/invalid-rank.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "ensure an MLOperand cannot be created with an invalid rank"
          ],
          [
           "global",
