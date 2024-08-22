@@ -81,6 +81,14 @@ using PerformSigninCallback =
         AccountId account_id,
         PerformSigninResultCallback callback)>;
 
+// Convenience alias to declare callbacks to the signin `Profile`.
+using StartSessionResultCallback = base::OnceCallback<void(Profile& result)>;
+
+// Convenience alias to declare functions that start the session.
+using StartSessionCallback = base::OnceCallback<std::unique_ptr<CancellableJob>(
+    const UserContext& user_context,
+    StartSessionResultCallback on_done)>;
+
 // Same as `LoadProfile` above but allows callers to replace the sub-callbacks
 // it executes. Useful in tests.
 [[nodiscard]] std::unique_ptr<CancellableJob> LoadProfileWithCallbacks(
@@ -88,6 +96,7 @@ using PerformSigninCallback =
     KioskAppType app_type,
     CheckCryptohomeCallback check_cryptohome,
     PerformSigninCallback perform_signin,
+    StartSessionCallback start_session,
     LoadProfileResultCallback on_done);
 
 }  // namespace ash::kiosk
