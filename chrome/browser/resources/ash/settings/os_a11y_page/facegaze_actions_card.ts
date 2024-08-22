@@ -154,6 +154,10 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     return FaceGazeUtils.getMacroDisplayText(action);
   }
 
+  private getSubLabel_(action: MacroName): string|null {
+    return FaceGazeUtils.getMacroDisplaySubLabel(action);
+  }
+
   private getGestureDisplayText_(gesture: FacialGesture|null): string {
     return FaceGazeUtils.getGestureDisplayText(gesture);
   }
