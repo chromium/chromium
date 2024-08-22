@@ -5,12 +5,18 @@
 #import "ios/chrome/browser/tabs/model/ios_chrome_synced_tab_delegate.h"
 
 #import "base/check.h"
+#import "components/prefs/pref_service.h"
 #import "components/sessions/ios/ios_serialized_navigation_builder.h"
 #import "components/sync/base/features.h"
 #import "components/sync_sessions/sync_sessions_client.h"
 #import "components/sync_sessions/synced_window_delegates_getter.h"
 #import "ios/chrome/browser/complex_tasks/model/ios_task_tab_helper.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -26,6 +32,21 @@ web::NavigationItem* GetPossiblyPendingItemAtIndex(web::WebState* web_state,
   return (pending_index == index)
              ? web_state->GetNavigationManager()->GetPendingItem()
              : web_state->GetNavigationManager()->GetItemAtIndex(index);
+}
+
+// Returns the time of the most recent activity for `web_state`, which is the
+// maximum of the last navigation timestamp (if available) and the last active
+// time (i.e. the last time the tab was made visible).
+base::Time GetMostRecentActivityTime(const web::WebState* web_state) {
+  base::Time result = web_state->GetLastActiveTime();
+  if (web_state->IsRealized()) {
+    web::NavigationItem* last_committed_item =
+        web_state->GetNavigationManager()->GetLastCommittedItem();
+    if (last_committed_item) {
+      result = std::max(result, last_committed_item->GetTimestamp());
+    }
+  }
+  return result;
 }
 
 }  // namespace
@@ -140,6 +161,28 @@ bool IOSChromeSyncedTabDelegate::ShouldSync(
 
   if (IsInitialBlankNavigation()) {
     return false;  // This deliberately ignores a new pending entry.
+  }
+
+  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+    // If fast account switching via the account particle disk on the NTP is
+    // enabled, then for managed accounts, only sync tabs that have been updated
+    // after the signin.
+    ChromeBrowserState* browser_state =
+        ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+    AuthenticationService* auth_service =
+        AuthenticationServiceFactory::GetForBrowserState(browser_state);
+    if (auth_service && auth_service->HasPrimaryIdentityManaged(
+                            signin::ConsentLevel::kSignin)) {
+      base::Time signin_time =
+          browser_state->GetPrefs()->GetTime(prefs::kLastSigninTimestamp);
+      // Note: Don't use GetLastActiveTime() here: (a) it only tracks when the
+      // tab was last made visible (not when it was last used), and (b) it
+      // intentionally caches outdated values for a few minutes. Instead, query
+      // the most-recent activity time from the WebState directly.
+      if (GetMostRecentActivityTime(web_state_) < signin_time) {
+        return false;
+      }
+    }
   }
 
   int entry_count = GetEntryCount();

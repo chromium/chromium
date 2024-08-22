@@ -7,9 +7,11 @@ include_rules = [
   "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
   "+ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h",
   "+ios/chrome/browser/sessions/model",
+  "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/synced_sessions/model",
+  "+ios/chrome/browser/ui/ntp/new_tab_page_feature.h",
 ]
 
 specific_include_rules = {
