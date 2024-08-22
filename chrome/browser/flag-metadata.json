@@ -4701,7 +4701,7 @@
   {
     "name": "file-system-observer",
     "owners": [ "dslee@chromium.org", "chrome-owp-storage@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 134
   },
   {
     "name": "file-system-provider-cloud-file-system",
