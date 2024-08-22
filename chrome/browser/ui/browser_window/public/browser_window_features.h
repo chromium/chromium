@@ -13,6 +13,7 @@ class ChromeLabsCoordinator;
 class ReadAnythingCoordinator;
 class SidePanelCoordinator;
 class SidePanelUI;
+class ToastController;
 
 namespace extensions {
 class Mv2DisabledDialogController;
@@ -105,6 +106,8 @@ class BrowserWindowFeatures {
     return tab_declutter_controller_.get();
   }
 
+  ToastController* toast_controller() { return toast_controller_.get(); }
+
  protected:
   BrowserWindowFeatures();
 
@@ -135,6 +138,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<tab_groups::BrowserTabGroupSyncObserver>
       browser_tab_group_sync_observer;
+
+  std::unique_ptr<ToastController> toast_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

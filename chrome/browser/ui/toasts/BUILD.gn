@@ -8,6 +8,8 @@ import("//build/config/ui.gni")
 
 source_set("toasts") {
   sources = [
+    "toast_controller.cc",
+    "toast_controller.h",
     "toast_features.cc",
     "toast_features.h",
     "toast_id.h",
