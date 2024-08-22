@@ -101,6 +101,9 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
   // Describe internal state for system log.
   void DescribeForLog(InputController::DescribeForLogReply reply) const;
 
+  void DisableKeyboardImposterCheck();
+  void ForceReloadKeyboards();
+
   base::WeakPtr<InputDeviceFactoryEvdev> GetWeakPtr();
 
  private:

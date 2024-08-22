@@ -30,6 +30,7 @@
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/gamepad_event_converter_evdev.h"
 #include "ui/events/ozone/evdev/imposter_checker_evdev.h"
+#include "ui/events/ozone/evdev/imposter_checker_evdev_state.h"
 #include "ui/events/ozone/evdev/input_controller_evdev.h"
 #include "ui/events/ozone/evdev/input_device_settings_evdev.h"
 #include "ui/events/ozone/evdev/microphone_mute_switch_event_converter_evdev.h"
@@ -105,7 +106,7 @@ InputDeviceFactoryEvdev::InputDeviceFactoryEvdev(
       gesture_property_provider_(new GesturePropertyProvider),
 #endif
       dispatcher_(std::move(dispatcher)),
-      imposter_checker_(new ImposterCheckerEvdev),
+      imposter_checker_(new ImposterCheckerEvdev()),
       input_device_opener_(std::move(input_device_opener)),
       input_controller_(input_controller) {
 }
@@ -802,6 +803,21 @@ void InputDeviceFactoryEvdev::EnableDevices() {
   // ApplyInputDeviceSettings() instead of this function.
   for (const auto& it : converters_)
     it.second->SetEnabled(IsDeviceEnabled(it.second.get()));
+}
+
+void InputDeviceFactoryEvdev::DisableKeyboardImposterCheck() {
+  ImposterCheckerEvdevState::Get().SetKeyboardCheckEnabled(/*enabled=*/false);
+  ForceReloadKeyboards();
+}
+
+void InputDeviceFactoryEvdev::ForceReloadKeyboards() {
+  for (const auto& it : converters_) {
+    if (it.second->HasKeyboard()) {
+      imposter_checker_->FlagSuspectedImposter(it.second.get());
+      UpdateDirtyFlags(it.second.get());
+    }
+  }
+  NotifyDevicesUpdated();
 }
 
 void InputDeviceFactoryEvdev::SetLatestStylusState(

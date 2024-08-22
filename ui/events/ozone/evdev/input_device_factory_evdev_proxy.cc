@@ -183,4 +183,11 @@ void InputDeviceFactoryEvdevProxy::SetHapticTouchpadEffectForNextButtonRelease(
           input_device_factory_, effect, strength));
 }
 
+void InputDeviceFactoryEvdevProxy::DisableKeyboardImposterCheck() {
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&InputDeviceFactoryEvdev::DisableKeyboardImposterCheck,
+                     input_device_factory_));
+}
+
 }  // namespace ui

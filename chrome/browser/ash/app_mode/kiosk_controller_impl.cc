@@ -41,6 +41,8 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "ui/ozone/public/input_controller.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/wm/core/wm_core_switches.h"
 
 namespace ash {
@@ -234,6 +236,10 @@ void KioskControllerImpl::OnUserLoggedIn(const user_manager::User& user) {
 
 void KioskControllerImpl::OnLaunchComplete(
     std::optional<KioskAppLaunchError::Error> error) {
+  if (auto* input_controller =
+          ui::OzonePlatform::GetInstance()->GetInputController()) {
+    input_controller->DisableKeyboardImposterCheck();
+  }
   // Delete the launcher so it doesn't end up with dangling references.
   DeleteLaunchControllerAsync();
 }
