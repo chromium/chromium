@@ -26,6 +26,7 @@ SUPPORTED_DEBIAN_RELEASES = {
 }
 
 SUPPORTED_UBUNTU_RELEASES = {
+    "Ubuntu 18.04 (Bionic)": "bionic",
     "Ubuntu 20.04 (Focal)": "focal",
     "Ubuntu 22.04 (Jammy)": "jammy",
 }
@@ -42,7 +43,10 @@ PACKAGE_FILTER = {
     "libdrm2",
     "libexpat1",
     "libgbm1",
-    "libgcc-s1",
+    # See the comment in calculate_package_deps.py about libgcc_s.
+    # TODO(https://crbug.com/40549424): Add this once support for
+    # Ubuntu Bionic is dropped.
+    # "libgcc-s1",
     "libglib2.0-0",
     "libnspr4",
     "libnss3",
