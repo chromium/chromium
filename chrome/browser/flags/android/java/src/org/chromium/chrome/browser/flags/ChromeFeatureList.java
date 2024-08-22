@@ -440,8 +440,6 @@ public abstract class ChromeFeatureList {
     public static final String SAFETY_HUB_FOLLOWUP = "SafetyHubFollowup";
     public static final String SAFETY_HUB_MAGIC_STACK = "SafetyHubMagicStack";
     public static final String SAFE_BROWSING_DELAYED_WARNINGS = "SafeBrowsingDelayedWarnings";
-    public static final String SAFE_BROWSING_CALL_NEW_GMS_API_ON_STARTUP =
-            "SafeBrowsingCallNewGmsApiOnStartup";
     public static final String SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK =
             "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck";
     public static final String SEARCH_IN_CCT = "SearchInCCT";
@@ -653,8 +651,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sQueryTiles = newCachedFlag(QUERY_TILES, false);
     public static final CachedFlag sRedirectExplicitCTAIntentsToExistingActivity =
             newCachedFlag(REDIRECT_EXPLICIT_CTA_INTENTS_TO_EXISTING_ACTIVITY, true);
-    public static final CachedFlag sSafeBrowsingCallNewGmsApiOnStartup =
-            newCachedFlag(SAFE_BROWSING_CALL_NEW_GMS_API_ON_STARTUP, false);
     public static final CachedFlag sSafetyHubMagicStack =
             newCachedFlag(SAFETY_HUB_MAGIC_STACK, false);
     public static final CachedFlag sSearchEngineChoice = newCachedFlag(SEARCH_ENGINE_CHOICE, false);
@@ -772,7 +768,6 @@ public abstract class ChromeFeatureList {
                     sPrefetchBrowserInitiatedTriggers,
                     sQueryTiles,
                     sRedirectExplicitCTAIntentsToExistingActivity,
-                    sSafeBrowsingCallNewGmsApiOnStartup,
                     sSafetyHubMagicStack,
                     sSearchEngineChoice,
                     sSearchInCCT,

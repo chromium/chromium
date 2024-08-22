@@ -60,7 +60,6 @@ import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.OfflineContentAvailabilityStatusProvider;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.firstrun.TosDialogBehaviorSharedPrefInvalidator;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.HistoryDeletionBridge;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoTabLauncher;
@@ -249,9 +248,7 @@ public class ProcessInitializationHandler {
     @CallSuper
     protected void handlePreNativeLibraryLoadInitialization() {
         new Thread(SafeBrowsingApiBridge::ensureSafetyNetApiInitialized).start();
-        if (ChromeFeatureList.sSafeBrowsingCallNewGmsApiOnStartup.isEnabled()) {
-            new Thread(SafeBrowsingApiBridge::initSafeBrowsingApi).start();
-        }
+        new Thread(SafeBrowsingApiBridge::initSafeBrowsingApi).start();
 
         // Ensure critical files are available, so they aren't blocked on the file-system
         // behind long-running accesses in next phase.
