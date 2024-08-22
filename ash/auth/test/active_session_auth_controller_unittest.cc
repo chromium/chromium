@@ -148,8 +148,11 @@ class ActiveSessionAuthControllerTest : public NoSessionAshTestBase {
 // Tests that the StartAuthSession call to cryptohome includes the correct
 // account id.
 TEST_F(ActiveSessionAuthControllerTest,
-       StartAuthSessionCalledWithCorrectAccountId) {
+       StartAuthSessionCalledWithCorrectAccountIdAndReturnsPasswordFactor) {
   AddGaiaPassword(account_id_, kExpectedPassword);
+
+  auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(
+      Shell::Get()->active_session_auth_controller());
 
   OnAuthComplete future;
 
@@ -166,42 +169,16 @@ TEST_F(ActiveSessionAuthControllerTest,
           ->GetLastRequest<
               FakeUserDataAuthClient::Operation::kStartAuthSession>();
   EXPECT_EQ(start_auth_session_request.account_id().account_id(), kUserEmail);
-}
-
-// Tests that the ListAuthFactors call to cryptohome includes the correct
-// account id and returns the password factor.
-TEST_F(ActiveSessionAuthControllerTest, ListAuthFactorsReturnsPassword) {
-  AddGaiaPassword(account_id_, kExpectedPassword);
-
-  auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(
-      Shell::Get()->active_session_auth_controller());
-
-  OnAuthComplete future;
-
-  Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
-      ActiveSessionAuthController::Reason::kSettings, future.GetCallback());
-
-  base::RunLoop().RunUntilIdle();
-
   AuthFactorSet available_factors =
       ActiveSessionAuthControllerImpl::TestApi(controller)
           .GetAvailableFactors();
-
-  EXPECT_TRUE(
-      FakeUserDataAuthClient::Get()
-          ->WasCalled<FakeUserDataAuthClient::Operation::kListAuthFactors>());
-  auto list_auth_factors_request =
-      FakeUserDataAuthClient::Get()
-          ->GetLastRequest<
-              FakeUserDataAuthClient::Operation::kListAuthFactors>();
-  EXPECT_EQ(list_auth_factors_request.account_id().account_id(), kUserEmail);
   EXPECT_EQ(1u, available_factors.size());
   EXPECT_TRUE(available_factors.Has(AuthInputType::kPassword));
 }
 
 // Tests that the ListAuthFactors call to cryptohome includes the correct
 // account id and returns the password and pin factors.
-TEST_F(ActiveSessionAuthControllerTest, ListAuthFactorsReturnsPasswordAndPin) {
+TEST_F(ActiveSessionAuthControllerTest, StartAuthSessionReturnsPasswordAndPin) {
   AddGaiaPassword(account_id_, kExpectedPassword);
   AddCryptohomePin(account_id_, kExpectedPin);
 
@@ -220,14 +197,6 @@ TEST_F(ActiveSessionAuthControllerTest, ListAuthFactorsReturnsPasswordAndPin) {
       ActiveSessionAuthControllerImpl::TestApi(controller)
           .GetAvailableFactors();
 
-  EXPECT_TRUE(
-      FakeUserDataAuthClient::Get()
-          ->WasCalled<FakeUserDataAuthClient::Operation::kListAuthFactors>());
-  auto list_auth_factors_request =
-      FakeUserDataAuthClient::Get()
-          ->GetLastRequest<
-              FakeUserDataAuthClient::Operation::kListAuthFactors>();
-  EXPECT_EQ(list_auth_factors_request.account_id().account_id(), kUserEmail);
   EXPECT_EQ(2u, available_factors.size());
   EXPECT_TRUE(available_factors.Has(AuthInputType::kPassword));
   EXPECT_TRUE(available_factors.Has(AuthInputType::kPin));

@@ -23,6 +23,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/cryptohome/auth_factor_conversions.h"
 #include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
@@ -219,40 +220,21 @@ void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
   }
 
   uma_recorder_.RecordShow(reason_);
-
-  auth_factor_editor_->GetAuthFactorsConfiguration(
-      std::move(user_context),
-      base::BindOnce(&ActiveSessionAuthControllerImpl::OnAuthFactorsListed,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::BindOnce(&ActiveSessionAuthControllerImpl::InitUi,
-                                    weak_ptr_factory_.GetWeakPtr())));
-}
-
-void ActiveSessionAuthControllerImpl::OnAuthFactorsListed(
-    base::OnceClosure callback,
-    std::unique_ptr<UserContext> user_context,
-    std::optional<AuthenticationError> authentication_error) {
-  if (authentication_error.has_value()) {
-    LOG(ERROR) << "Failed to get auth factors configuration, code "
-               << authentication_error->get_cryptohome_code();
-    Close();
-    return;
-  }
+  UserDataAuthClient::Get()->AddAuthFactorStatusUpdateObserver(this);
 
   available_factors_.Clear();
-  const auto& config = user_context->GetAuthFactorsConfiguration();
   user_context_ = std::move(user_context);
+  const auto& auth_factors = user_context_->GetAuthFactorsData();
 
-  if (config.FindFactorByType(cryptohome::AuthFactorType::kPassword)) {
+  if (auth_factors.FindAnyPasswordFactor()) {
     available_factors_.Put(AuthInputType::kPassword);
   }
 
-  if (config.FindFactorByType(cryptohome::AuthFactorType::kPin) &&
-      !IsPinLocked()) {
+  if (auth_factors.FindPinFactor() && !IsPinLocked()) {
     available_factors_.Put(AuthInputType::kPin);
   }
 
-  std::move(callback).Run();
+  InitUi();
 }
 
 void ActiveSessionAuthControllerImpl::InitUi() {
@@ -282,6 +264,8 @@ void ActiveSessionAuthControllerImpl::Close() {
   contents_view_ = nullptr;
   SetState(ActiveSessionAuthState::kWaitForInit);
 
+  pending_pin_factor_status_update_.reset();
+  UserDataAuthClient::Get()->RemoveAuthFactorStatusUpdateObserver(this);
   if (auth_performer_) {
     auth_performer_->InvalidateCurrentAttempts();
     auth_performer_.reset();
@@ -344,11 +328,6 @@ void ActiveSessionAuthControllerImpl::OnPinSubmit(const std::u16string& pin) {
                      weak_ptr_factory_.GetWeakPtr(), AuthInputType::kPin));
 }
 
-void ActiveSessionAuthControllerImpl::OnFailedPinAttempt() {
-  contents_view_->SetHasPin(available_factors_.Has(AuthInputType::kPin));
-  SetState(ActiveSessionAuthState::kInitialized);
-}
-
 void ActiveSessionAuthControllerImpl::OnAuthComplete(
     AuthInputType input_type,
     std::unique_ptr<UserContext> user_context,
@@ -356,22 +335,15 @@ void ActiveSessionAuthControllerImpl::OnAuthComplete(
   if (authentication_error.has_value()) {
     uma_recorder_.RecordAuthFailed(input_type);
     user_context_ = std::move(user_context);
+    if (pending_pin_factor_status_update_.has_value()) {
+      ProcessAuthFactorStatusUpdate(pending_pin_factor_status_update_.value());
+      pending_pin_factor_status_update_.reset();
+    }
     contents_view_->SetErrorTitle(l10n_util::GetStringUTF16(
         input_type == AuthInputType::kPassword
             ? IDS_ASH_IN_SESSION_AUTH_PASSWORD_INCORRECT
             : IDS_ASH_IN_SESSION_AUTH_PIN_INCORRECT));
-    if (input_type == AuthInputType::kPassword) {
-      SetState(ActiveSessionAuthState::kInitialized);
-    } else {
-      auth_factor_editor_->GetAuthFactorsConfiguration(
-          std::move(user_context_),
-          base::BindOnce(
-              &ActiveSessionAuthControllerImpl::OnAuthFactorsListed,
-              weak_ptr_factory_.GetWeakPtr(),
-              base::BindOnce(
-                  &ActiveSessionAuthControllerImpl::OnFailedPinAttempt,
-                  weak_ptr_factory_.GetWeakPtr())));
-    }
+    SetState(ActiveSessionAuthState::kInitialized);
   } else {
     uma_recorder_.RecordAuthSucceeded(input_type);
     SetState(input_type == AuthInputType::kPassword
@@ -405,8 +377,8 @@ void ActiveSessionAuthControllerImpl::OnClose() {
 
 bool ActiveSessionAuthControllerImpl::IsPinLocked() const {
   CHECK(user_context_);
-  const auto& config = user_context_->GetAuthFactorsConfiguration();
-  auto* pin_factor = config.FindFactorByType(cryptohome::AuthFactorType::kPin);
+  const auto& auth_factors = user_context_->GetAuthFactorsData();
+  auto* pin_factor = auth_factors.FindPinFactor();
   CHECK(pin_factor);
   return pin_factor->GetPinStatus().IsLockedFactor();
 }
@@ -443,6 +415,42 @@ void ActiveSessionAuthControllerImpl::SetState(ActiveSessionAuthState state) {
       break;
   }
   state_ = state;
+}
+
+void ActiveSessionAuthControllerImpl::OnAuthFactorStatusUpdate(
+    const user_data_auth::AuthFactorStatusUpdate& update) {
+  if (update.auth_factor_with_status().auth_factor().type() ==
+      user_data_auth::AUTH_FACTOR_TYPE_PIN) {
+    if (user_context_) {
+      ProcessAuthFactorStatusUpdate(update);
+    } else {
+      if (pending_pin_factor_status_update_.has_value()) {
+        LOG(WARNING) << "Overwrite pending pin status update.";
+      }
+      pending_pin_factor_status_update_ = update;
+    }
+  }
+}
+
+void ActiveSessionAuthControllerImpl::ProcessAuthFactorStatusUpdate(
+    const user_data_auth::AuthFactorStatusUpdate& update) {
+  CHECK(user_context_);
+  // Broadcast id is a public id of an ongoing auth session.
+  // Generally it is unlikely to have two active auth session running
+  // in parallel, but we need to make sure we only react to signals
+  // mapped to this session.
+  if (user_context_->GetBroadcastId() == update.broadcast_id()) {
+    auto auth_factor = cryptohome::DeserializeAuthFactor(
+        update.auth_factor_with_status(),
+        /*fallback_type=*/cryptohome::AuthFactorType::kPassword);
+    if (auth_factor.ref().type() == cryptohome::AuthFactorType::kPin) {
+      CHECK(contents_view_);
+      bool pin_enabled = !auth_factor.GetPinStatus().IsLockedFactor();
+      // Only need to update the auth view because |available_factors_| is only
+      // used to initialize the view.
+      contents_view_->SetHasPin(pin_enabled);
+    }
+  }
 }
 
 }  // namespace ash

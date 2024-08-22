@@ -6,6 +6,7 @@
 #define ASH_AUTH_ACTIVE_SESSION_AUTH_CONTROLLER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -16,6 +17,7 @@
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
@@ -35,6 +37,7 @@ namespace ash {
 class ASH_EXPORT ActiveSessionAuthControllerImpl
     : public ActiveSessionAuthController,
       public ActiveSessionAuthView::Observer,
+      public UserDataAuthClient::AuthFactorStatusUpdateObserver,
       public views::ViewObserver,
       public InSessionAuthTokenProvider {
  public:
@@ -84,6 +87,10 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   void OnPinSubmit(const std::u16string& pin) override;
   void OnClose() override;
 
+  // UserDataAuthClient::AuthFactorStatusUpdateObserver:
+  void OnAuthFactorStatusUpdate(
+      const user_data_auth::AuthFactorStatusUpdate& update) override;
+
   // InSessionAuthTokenProvider:
   void ExchangeForToken(
       std::unique_ptr<UserContext> user_context,
@@ -114,22 +121,16 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
       bool user_exists,
       std::unique_ptr<UserContext> user_context,
       std::optional<AuthenticationError> authentication_error);
-  void OnAuthFactorsListed(
-      base::OnceClosure callback,
-      std::unique_ptr<UserContext> user_context,
-      std::optional<AuthenticationError> authentication_error);
   void OnAuthComplete(AuthInputType input_type,
                       std::unique_ptr<UserContext> user_context,
                       std::optional<AuthenticationError> authentication_error);
   void NotifySuccess(const AuthProofToken& token, base::TimeDelta timeout);
+  void ProcessAuthFactorStatusUpdate(
+      const user_data_auth::AuthFactorStatusUpdate& update);
 
   // Initialize the UI after we retrieve the available auth factors from
   // cryptohome.
   void InitUi();
-
-  // After a failed pin attempt we have to retrieve the updated auth factors
-  // configuration to can check the pin is still available or not.
-  void OnFailedPinAttempt();
 
   // Checks the pin factor is still available using user_context_. It shpuld be
   // called after auth factors configuration is updated.
@@ -157,6 +158,9 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   ActiveSessionAuthState state_ = ActiveSessionAuthState::kWaitForInit;
 
   Reason reason_;
+  std::optional<user_data_auth::AuthFactorStatusUpdate>
+      pending_pin_factor_status_update_ = std::nullopt;
+
   ActiveSessionAuthMetricsRecorder uma_recorder_;
 
   base::WeakPtrFactory<ActiveSessionAuthControllerImpl> weak_ptr_factory_{this};
