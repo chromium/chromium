@@ -4072,7 +4072,7 @@
   {
     "name": "enable-tls13-early-data",
     "owners": [ "davidben@chromium.org", "svaldez@chromium.org", "bashi@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 160
   },
   {
     "name": "enable-tls13-kyber",
