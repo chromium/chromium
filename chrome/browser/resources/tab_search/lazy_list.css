@@ -13,3 +13,10 @@
   overflow-y: auto;
   position: relative;
 }
+
+#container > ::slotted(*) {
+  box-sizing: border-box;
+  contain-intrinsic-size: var(--list-item-size, 100px) auto;
+  content-visibility: auto;
+  width: 100%;
+}

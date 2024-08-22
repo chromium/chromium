@@ -121,7 +121,7 @@ suite('TabSearchAppFocusTest', () => {
         tabIds: [(i + 1)],
         recentlyClosedTabs: [],
       });
-      await microtasksFinished();
+      await eventToPromise('focus-restored-for-test', tabSearchPage.$.tabsList);
       assertEquals(numTabItems - 1 - i, queryRows().length);
       assertEquals('tab-search-item', getDeepActiveElement()!.localName);
     }
@@ -207,13 +207,14 @@ suite('TabSearchAppFocusTest', () => {
     recentlyClosedTitleExpandButton.click();
 
     await microtasksFinished();
-    const tabsDiv = tabSearchPage.$.tabsList;
+    const tabsList = tabSearchPage.$.tabsList.querySelector('lazy-list');
+    assertTrue(!!tabsList);
     // Assert that the tabs are in a overflowing state.
-    assertGT(tabsDiv.scrollHeight, tabsDiv.clientHeight);
+    assertGT(tabsList.scrollHeight, tabsList.clientHeight);
 
     // Assert the first recently closed item is in view bounds.
     const tabItems =
         tabSearchPage.$.tabsList.querySelectorAll('tab-search-item');
-    assertTabItemInViewBounds(tabsDiv, tabItems[4]!);
+    assertTabItemInViewBounds(tabsList, tabItems[4]!);
   });
 });

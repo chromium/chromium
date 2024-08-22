@@ -5,7 +5,7 @@
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {SelectableLazyListElement, TabData, TabItemType, TabSearchItemElement, TitleItem} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {generateSampleTabsFromSiteNames, sampleSiteNames} from './tab_search_test_data.js';
 import {assertTabItemAndNeighborsInViewBounds, disableAnimationBehavior} from './tab_search_test_helper.js';
@@ -27,7 +27,7 @@ class TestApp extends CrLitElement {
 
   override render() {
     return html`
-    <selectable-lazy-list max-height="${this.maxHeight_}"
+    <selectable-lazy-list max-height="${this.maxHeight_}" item-size="48"
         .isSelectable=${(item: any) => item.constructor.name === 'TabData'}
         .template=${(item: any) => {
       switch (item.constructor.name) {
@@ -65,7 +65,7 @@ suite('SelectableLazyListTest', () => {
     selectableList =
         testApp.shadowRoot!.querySelector('selectable-lazy-list')!;
     selectableList.items = sampleData;
-    await microtasksFinished();
+    await eventToPromise('viewport-filled', selectableList);
   }
 
   function queryRows(): NodeListOf<HTMLElement> {
@@ -88,9 +88,11 @@ suite('SelectableLazyListTest', () => {
     await setupTest(tabItems);
 
     assertEquals(0, selectableList.scrollTop);
+    const lazyList = selectableList.querySelector('lazy-list');
+    assertTrue(!!lazyList);
 
     const paddingBottomStyle =
-        getComputedStyle(selectableList).getPropertyValue('padding-bottom');
+        getComputedStyle(lazyList).getPropertyValue('padding-bottom');
     assertTrue(paddingBottomStyle.endsWith('px'));
 
     const paddingBottom = Number.parseInt(
@@ -122,7 +124,7 @@ suite('SelectableLazyListTest', () => {
     const tabItems =
         sampleTabItems(sampleSiteNames(2 * SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT));
     selectableList.items = tabItems;
-    await microtasksFinished();
+    await eventToPromise('viewport-filled', selectableList);
     assertGT(tabItems.length, queryRows().length);
   });
 
@@ -261,10 +263,10 @@ suite('SelectableLazyListTest', () => {
     const initialRows = queryRows().length;
     assertGT(tabItems.length, initialRows);
 
-    // fillCurrentViewHeight() should only render enough items to fill the
+    // fillCurrentViewport() should only render enough items to fill the
     // view. Since the view height has not changed, no new items should
     // render.
-    await selectableList.fillCurrentViewHeight();
+    await selectableList.fillCurrentViewport();
     await microtasksFinished();
     assertEquals(initialRows, queryRows().length);
 
@@ -284,12 +286,11 @@ suite('SelectableLazyListTest', () => {
     selectableList.items = sampleTabItems(sampleSiteNames(10));
     await microtasksFinished();
 
-    // selectable-lazy-list will try to render one item, and then return early
-    // since the DOM item height cannot be estimated. List item and container
-    // are not visible.
+    // lazy-list will render 1 item then return since item height is not valid.
+    // List item and lazy-list are not visible.
     assertEquals(1, queryRows().length);
     let firstItem = queryRows()[0]!;
-    assertFalse(isVisible(selectableList.$.container));
+    assertFalse(isVisible(selectableList.querySelector('lazy-list')));
     assertFalse(isVisible(firstItem));
 
     testApp.style.display = '';
@@ -297,11 +298,11 @@ suite('SelectableLazyListTest', () => {
 
     // After the client is rendered and calls fillCurrentViewHeight(), the
     // container and item should be visible.
-    await selectableList.fillCurrentViewHeight();
+    await selectableList.fillCurrentViewport();
     await microtasksFinished();
     assertGT(queryRows().length, 1);
     firstItem = queryRows()[0]!;
     assertTrue(isVisible(firstItem));
-    assertTrue(isVisible(selectableList.$.container));
+    assertTrue(isVisible(selectableList.querySelector('lazy-list')));
   });
 });

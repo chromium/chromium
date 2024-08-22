@@ -32,6 +32,7 @@ export function getHtml(this: TabSearchPageElement) {
   <div ?hidden="${!this.filteredItems_.length}">
     <selectable-lazy-list id="tabsList"
         max-height="${this.listMaxHeight_}"
+        item-size="${this.listItemSize_}"
         .items="${this.filteredItems_}"
         @selected-change="${this.onSelectedChanged_}"
         role="listbox"

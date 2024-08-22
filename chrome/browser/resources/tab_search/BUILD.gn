@@ -26,6 +26,7 @@ build_webui("build") {
   non_web_component_files = [
     "app.html.ts",
     "app.ts",
+    "lazy_list.ts",
     "selectable_lazy_list.ts",
     "search.ts",
     "tab_data.ts",
@@ -65,6 +66,7 @@ build_webui("build") {
 
   css_files = [
     "app.css",
+    "lazy_list.css",
     "selectable_lazy_list.css",
     "tab_search_page.css",
     "tab_group_shared_vars.css",
@@ -97,7 +99,10 @@ build_webui("build") {
   html_to_wrapper_template = "detect"
 
   ts_composite = true
-  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+  ts_definitions = [
+    "//tools/typescript/definitions/pending.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+  ]
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
