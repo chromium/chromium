@@ -635,8 +635,7 @@ void FocusModeTasksProvider::AddTaskInternal(const std::string& title,
   api::TasksController::Get()->tasks_delegate()->AddTask(
       task_list_for_new_task_, title,
       base::BindOnce(&FocusModeTasksProvider::OnTaskAdded,
-                     weak_factory_.GetWeakPtr(), task_list_for_new_task_,
-                     std::move(callback)));
+                     weak_factory_.GetWeakPtr(), title, std::move(callback)));
 }
 
 void FocusModeTasksProvider::UpdateTaskInternal(const std::string& task_list_id,
