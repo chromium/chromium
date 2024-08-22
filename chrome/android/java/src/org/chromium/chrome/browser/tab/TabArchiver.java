@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -35,6 +36,12 @@ public class TabArchiver implements TabWindowManager.Observer {
         long currentTimeMillis();
     }
 
+    /** Provides an interface to observer the declutter process. */
+    public interface Observer {
+        void onDeclutterPassCompleted();
+    }
+
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final TabModel mArchivedTabModel;
     private final TabCreator mArchivedTabCreator;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
@@ -43,6 +50,7 @@ public class TabArchiver implements TabWindowManager.Observer {
     private final Clock mClock;
 
     private boolean mDeclutterInitCalled;
+    private int mSelectorsQueuedForDeclutter;
 
     /**
      * @param archivedTabModel The archived {@link TabModel}.
@@ -67,6 +75,14 @@ public class TabArchiver implements TabWindowManager.Observer {
         mClock = clock;
     }
 
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
+    }
+
     /** Initialize the archiving process by observing TabWindowManager for new TabModelSelectors. */
     public void initDeclutter() {
         ThreadUtils.assertOnUiThread();
@@ -89,6 +105,7 @@ public class TabArchiver implements TabWindowManager.Observer {
         for (int i = 0; i < mTabWindowManager.getMaxSimultaneousSelectors(); i++) {
             TabModelSelector selector = mTabWindowManager.getTabModelSelectorById(i);
             if (selector == null) continue;
+            mSelectorsQueuedForDeclutter++;
             onTabModelSelectorAdded(selector);
         }
 
@@ -190,16 +207,26 @@ public class TabArchiver implements TabWindowManager.Observer {
     // Private functions.
 
     private void archiveEligibleTabsFromTabModelSelector(TabModelSelector selector) {
-        TabModel model = selector.getModel(/* isIncognito= */ false);
-        int activeTabId = TabModelUtils.getCurrentTabId(model);
-        for (int i = 0; i < model.getCount(); ) {
-            Tab tab = model.getTabAt(i);
-            if (activeTabId != tab.getId() && isTabEligibleForArchive(tab)) {
-                archiveAndRemoveTab(model, tab);
-            } else {
-                i++;
-            }
-        }
+        ThreadUtils.postOnUiThread(
+                () -> {
+                    TabModel model = selector.getModel(/* isIncognito= */ false);
+                    int activeTabId = TabModelUtils.getCurrentTabId(model);
+                    for (int i = 0; i < model.getCount(); ) {
+                        Tab tab = model.getTabAt(i);
+                        if (activeTabId != tab.getId() && isTabEligibleForArchive(tab)) {
+                            archiveAndRemoveTab(model, tab);
+                        } else {
+                            i++;
+                        }
+                    }
+                    mSelectorsQueuedForDeclutter--;
+
+                    if (mSelectorsQueuedForDeclutter == 0) {
+                        for (Observer obs : mObservers) {
+                            obs.onDeclutterPassCompleted();
+                        }
+                    }
+                });
     }
 
     private boolean isTabEligibleForArchive(Tab tab) {
