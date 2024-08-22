@@ -89,6 +89,7 @@ class TabGroupSyncServiceTest : public testing::Test {
         group_1_(test::CreateTestSavedTabGroup()),
         group_2_(test::CreateTestSavedTabGroup()),
         group_3_(test::CreateTestSavedTabGroup()),
+        group_4_(test::CreateTestSavedTabGroup()),
         local_group_id_1_(test::GenerateRandomTabGroupID()),
         local_tab_id_1_(test::GenerateRandomTabID()) {}
 
@@ -219,6 +220,7 @@ class TabGroupSyncServiceTest : public testing::Test {
   SavedTabGroup group_1_;
   SavedTabGroup group_2_;
   SavedTabGroup group_3_;
+  SavedTabGroup group_4_;
   LocalTabGroupID local_group_id_1_;
   LocalTabID local_tab_id_1_;
 };
@@ -394,7 +396,32 @@ TEST_F(TabGroupSyncServiceTest, ConnectLocalTabGroup) {
                                                 local_id);
 }
 
-TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping) {
+TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping_BeforeInit) {
+  tab_group_sync_service_->SetIsInitializedForTesting(false);
+  LocalTabGroupID local_id_4 = test::GenerateRandomTabGroupID();
+  ASSERT_FALSE(group_4_.local_group_id().has_value());
+
+  tab_group_sync_service_->UpdateLocalTabGroupMapping(group_4_.saved_guid(),
+                                                      local_id_4);
+
+  auto retrieved_group =
+      tab_group_sync_service_->GetGroup(group_4_.saved_guid());
+  EXPECT_FALSE(retrieved_group.has_value());
+
+  // Initialize model and add group 4.
+  model_->LoadStoredEntries(/*groups=*/{group_4_}, /*tabs=*/{});
+  task_environment_.RunUntilIdle();
+
+  retrieved_group = tab_group_sync_service_->GetGroup(group_4_.saved_guid());
+  EXPECT_TRUE(retrieved_group.has_value());
+  EXPECT_EQ(retrieved_group->local_group_id().value(), local_id_4);
+  EXPECT_EQ(retrieved_group->saved_guid(), group_4_.saved_guid());
+
+  test::CompareSavedTabGroupTabs(retrieved_group->saved_tabs(),
+                                 group_4_.saved_tabs());
+}
+
+TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping_AfterInit) {
   LocalTabGroupID local_id_2 = test::GenerateRandomTabGroupID();
   tab_group_sync_service_->UpdateLocalTabGroupMapping(group_1_.saved_guid(),
                                                       local_id_2);

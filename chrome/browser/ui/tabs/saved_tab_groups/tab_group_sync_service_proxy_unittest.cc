@@ -118,6 +118,7 @@ class TabGroupSyncServiceProxyUnitTest
 
     service_ =
         tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_.get());
+    service_->SetIsInitializedForTesting(true);
   }
 
   void TearDown() override {

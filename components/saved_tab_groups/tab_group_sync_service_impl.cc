@@ -86,6 +86,10 @@ void TabGroupSyncServiceImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+void TabGroupSyncServiceImpl::SetIsInitializedForTesting(bool initialized) {
+  is_initialized_ = initialized;
+}
+
 void TabGroupSyncServiceImpl::Shutdown() {
   metrics_logger_.reset();
 }
@@ -333,6 +337,14 @@ void TabGroupSyncServiceImpl::OpenTabGroup(
 void TabGroupSyncServiceImpl::UpdateLocalTabGroupMapping(
     const base::Uuid& sync_id,
     const LocalTabGroupID& local_id) {
+  if (!is_initialized_) {
+    VLOG(2) << __func__ << " Invoked before init";
+    pending_actions_.emplace_back(
+        base::BindOnce(&TabGroupSyncServiceImpl::UpdateLocalTabGroupMapping,
+                       weak_ptr_factory_.GetWeakPtr(), sync_id, local_id));
+    return;
+  }
+
   VLOG(2) << __func__;
   model_->OnGroupOpenedInTabStrip(sync_id, local_id);
 }
@@ -598,6 +610,13 @@ void TabGroupSyncServiceImpl::NotifyServiceInitialized() {
   VLOG(2) << __func__;
 
   is_initialized_ = true;
+
+  while (!pending_actions_.empty()) {
+    auto callback = std::move(pending_actions_.front());
+    pending_actions_.pop_front();
+    std::move(callback).Run();
+  }
+
   for (auto& observer : observers_) {
     observer.OnInitialized();
   }

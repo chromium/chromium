@@ -180,6 +180,11 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // Add / remove observers.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  // For testing only. This is needed to test the API calls received before
+  // service init as we need to explicitly un-initialize the service for these
+  // scenarios.
+  virtual void SetIsInitializedForTesting(bool initialized) {}
 };
 
 }  // namespace tab_groups

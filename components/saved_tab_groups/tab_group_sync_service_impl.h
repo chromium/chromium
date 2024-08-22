@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
@@ -116,6 +117,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void AddObserver(TabGroupSyncService::Observer* observer) override;
   void RemoveObserver(TabGroupSyncService::Observer* observer) override;
 
+  // For testing only.
+  void SetIsInitializedForTesting(bool initialized) override;
+
  private:
   // KeyedService:
   void Shutdown() override;
@@ -196,17 +200,17 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // ID mappings have been loaded into memory.
   bool is_initialized_ = false;
 
-  // Keeps track of the ids of session restored tab groups that were once saved
-  // in order to link them together again once the SavedTabGroupModelLoaded is
-  // called. After the model is loaded, this variable is emptied to conserve
-  // memory.
-  std::vector<std::pair<base::Uuid, LocalTabGroupID>>
-      saved_guid_to_local_group_id_mapping_;
-
   // Groups with zero tabs are groups that still haven't received their tabs
   // from sync. UI can't handle these groups, hence the service needs to wait
   // before notifying the observers.
   std::set<base::Uuid> empty_groups_;
+
+  // Keeps track of API calls received before the service is initialized.
+  // Once the initialization is complete, these callbacks are run in the order
+  // they were received. External observers are notified of init completion only
+  // after this step. Currently used only for UpdateLocalTabGroupMapping()
+  // calls.
+  base::circular_deque<base::OnceClosure> pending_actions_;
 
   base::WeakPtrFactory<TabGroupSyncServiceImpl> weak_ptr_factory_{this};
 };
