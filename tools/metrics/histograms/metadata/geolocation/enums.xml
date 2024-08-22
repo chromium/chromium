@@ -96,6 +96,15 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kSimpleGeolocationProvider"/>
 </enum>
 
+<enum name="WindowsDevicesGeolocationPositionStatus">
+  <int value="0" label="PositionStatus_Ready"/>
+  <int value="1" label="PositionStatus_Initializing"/>
+  <int value="2" label="PositionStatus_NoData"/>
+  <int value="3" label="PositionStatus_Disabled"/>
+  <int value="4" label="PositionStatus_NotInitialized"/>
+  <int value="5" label="PositionStatus_NotAvailable"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>
