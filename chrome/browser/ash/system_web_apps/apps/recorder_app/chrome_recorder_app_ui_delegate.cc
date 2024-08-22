@@ -11,6 +11,7 @@
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/feedback/feedback_constants.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_util.h"
 #include "url/gurl.h"
@@ -38,13 +39,17 @@ void ChromeRecorderAppUIDelegate::InstallSoda(
 void ChromeRecorderAppUIDelegate::OpenAiFeedbackDialog(
     const std::string& description_template) {
   Profile* profile = Profile::FromWebUI(web_ui_);
+  base::Value::Dict ai_metadata;
+  ai_metadata.Set(feedback::kConchMetadataKey, "true");
   chrome::ShowFeedbackPage(/*page_url=*/GURL(ash::kChromeUIRecorderAppURL),
                            /*profile=*/profile,
                            /*source=*/feedback::kFeedbackSourceAI,
                            /*description_template=*/description_template,
                            /*description_placeholder_text=*/std::string(),
                            /*category_tag=*/"chromeos-recorder-app",
-                           /*extra_diagnostics=*/std::string());
+                           /*extra_diagnostics=*/std::string(),
+                           /*autofill_metadata=*/base::Value::Dict(),
+                           /*ai_metadata=*/std::move(ai_metadata));
 }
 
 media_device_salt::MediaDeviceSaltService*

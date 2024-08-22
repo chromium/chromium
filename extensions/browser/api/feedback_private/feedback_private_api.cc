@@ -70,8 +70,9 @@ constexpr int kChromeLabsAndKaleidoscopeProductId = 5192933;
 std::string StripFakepath(const std::string& path) {
   constexpr char kFakePathStr[] = "C:\\fakepath\\";
   if (base::StartsWith(path, kFakePathStr,
-                       base::CompareCase::INSENSITIVE_ASCII))
+                       base::CompareCase::INSENSITIVE_ASCII)) {
     return path.substr(std::size(kFakePathStr) - 1);
+  }
   return path;
 }
 
@@ -127,16 +128,21 @@ void SendFeedback(content::BrowserContext* browser_context,
   // Populate feedback data.
   feedback_data->set_description(feedback_info.description);
 
-  if (feedback_info.product_id)
+  if (feedback_info.product_id) {
     feedback_data->set_product_id(*feedback_info.product_id);
-  if (feedback_info.category_tag)
+  }
+  if (feedback_info.category_tag) {
     feedback_data->set_category_tag(*feedback_info.category_tag);
-  if (feedback_info.page_url)
+  }
+  if (feedback_info.page_url) {
     feedback_data->set_page_url(*feedback_info.page_url);
-  if (feedback_info.email)
+  }
+  if (feedback_info.email) {
     feedback_data->set_user_email(*feedback_info.email);
-  if (feedback_info.trace_id)
+  }
+  if (feedback_info.trace_id) {
     feedback_data->set_trace_id(*feedback_info.trace_id);
+  }
   if (feedback_params.send_autofill_metadata &&
       feedback_info.autofill_metadata) {
     feedback_data->set_autofill_metadata(*feedback_info.autofill_metadata);
@@ -284,8 +290,11 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
     // default.
     info->product_id = FeedbackCommon::GetChromeBrowserProductId();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Use ChromeOS product id for ChromeOS AI wallpaper and VC backgrounds.
     if (ai_metadata.contains(feedback::kSeaPenMetadataKey)) {
+      // Use ChromeOS product id for ChromeOS AI wallpaper and VC backgrounds.
+      info->product_id = FeedbackCommon::GetChromeOSProductId();
+    } else if (ai_metadata.contains(feedback::kConchMetadataKey)) {
+      // Use ChromeOS product id for ChromeOS Recorder App.
       info->product_id = FeedbackCommon::GetChromeOSProductId();
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

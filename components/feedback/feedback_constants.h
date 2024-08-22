@@ -11,6 +11,7 @@ namespace feedback {
 
 inline constexpr std::string_view kMahiMetadataKey = "from_mahi";
 inline constexpr std::string_view kSeaPenMetadataKey = "from_sea_pen";
+inline constexpr std::string_view kConchMetadataKey = "from_conch";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 inline constexpr int kChromeOSProductId = 208;
