@@ -51,6 +51,11 @@ _MAC_SI_FILE_ALLOWLIST = [
     '000100',  # Used to setup std::cin/cout/cerr
 ]
 
+# The minimum for Mac is:
+# _GLOBAL__I_000100
+# InitializeDefaultMallocZoneWithPartitionAlloc()
+FALLBACK_MIN_MAC_SI_COUNT = 2
+
 # Two static initializers are needed on Mac for libc++ to set up
 # std::cin/cout/cerr before main() runs. Only iostream.cpp needs to be counted
 # here. Plus, PartitionAlloc-Everywhere uses one static initializer
@@ -128,12 +133,14 @@ def main_mac(src_dir, hermetic_xcode_path, allow_coverage_initializer=False):
       stdout, si_count = get_mod_init_count(src_dir,
                                             chromium_framework_executable,
                                             hermetic_xcode_path)
-      min_si_count = allowed_si_count = FALLBACK_EXPECTED_MAC_SI_COUNT
+      min_si_count = FALLBACK_MIN_MAC_SI_COUNT
+      allowed_si_count = FALLBACK_EXPECTED_MAC_SI_COUNT
       if allow_coverage_initializer:
         allowed_si_count = COVERAGE_BUILD_FALLBACK_EXPECTED_MAC_SI_COUNT
       if si_count > allowed_si_count or si_count < min_si_count:
-        print('Expected %d static initializers in %s, but found %d' %
-              (allowed_si_count, chromium_framework_executable, si_count))
+        print('Expected [%d, %d] static initializers in %s, but found %d' %
+              (min_si_count, allowed_si_count, chromium_framework_executable,
+               si_count))
         print(stdout)
         ret = 1
   return ret
