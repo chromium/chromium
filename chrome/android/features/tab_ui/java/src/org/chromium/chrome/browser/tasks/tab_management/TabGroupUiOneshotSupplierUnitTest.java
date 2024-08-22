@@ -64,7 +64,6 @@ public class TabGroupUiOneshotSupplierUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private TabContentManager mTabContentManager;
-    @Mock private ViewGroup mRootView;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private ModalDialogManager mModalDialogManager;
@@ -103,14 +102,13 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mBottomSheetController,
                         mDataSharingTabManager,
                         mTabContentManager,
-                        mRootView,
                         mTabCreatorManager,
                         mLayoutStateProviderSupplier,
                         mSnackbarManager,
                         mModalDialogManager);
         when(mTabManagementDelegate.createTabGroupUi(
                         any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(),
-                        any(), any(), any(), any()))
+                        any(), any(), any()))
                 .thenReturn(mTabGroupUi);
         TabManagementDelegateProvider.setTabManagementDelegateForTesting(mTabManagementDelegate);
 
@@ -150,7 +148,6 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mDataSharingTabManager,
                         mTabModelSelector,
                         mTabContentManager,
-                        mRootView,
                         mTabCreatorManager,
                         mLayoutStateProviderSupplier,
                         mSnackbarManager,
@@ -181,7 +178,6 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mDataSharingTabManager,
                         mTabModelSelector,
                         mTabContentManager,
-                        mRootView,
                         mTabCreatorManager,
                         mLayoutStateProviderSupplier,
                         mSnackbarManager,

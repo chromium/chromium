@@ -131,7 +131,6 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
      * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
      *     UI and DataSharing services.
      * @param tabContentManager Gives access to the tab content.
-     * @param rootView The root view of the app.
      * @param tabCreatorManager Manages creation of tabs.
      * @param layoutStateProviderSupplier Supplies the {@link LayoutStateProvider}.
      * @param snackbarManager Manages the display of snackbars.
@@ -149,7 +148,6 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
             BottomSheetController bottomSheetController,
             DataSharingTabManager dataSharingTabManager,
             TabContentManager tabContentManager,
-            ViewGroup rootView,
             TabCreatorManager tabCreatorManager,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             SnackbarManager snackbarManager,
@@ -169,7 +167,6 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
                                             dataSharingTabManager,
                                             tabModelSelector,
                                             tabContentManager,
-                                            rootView,
                                             tabCreatorManager,
                                             layoutStateProviderSupplier,
                                             snackbarManager,

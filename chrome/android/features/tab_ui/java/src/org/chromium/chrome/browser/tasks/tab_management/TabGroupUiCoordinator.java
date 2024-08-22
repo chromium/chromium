@@ -67,7 +67,6 @@ public class TabGroupUiCoordinator
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final BottomSheetController mBottomSheetController;
     private final DataSharingTabManager mDataSharingTabManager;
-    private final ViewGroup mRootView;
     private final TabModelSelector mTabModelSelector;
     private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     private final SnackbarManager mSnackbarManager;
@@ -93,7 +92,6 @@ public class TabGroupUiCoordinator
             @NonNull DataSharingTabManager dataSharingTabManager,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull TabContentManager tabContentManager,
-            @NonNull ViewGroup rootView,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @NonNull SnackbarManager snackbarManager,
@@ -115,7 +113,6 @@ public class TabGroupUiCoordinator
             mDataSharingTabManager = dataSharingTabManager;
             mTabModelSelector = tabModelSelector;
             mLayoutStateProviderSupplier = layoutStateProviderSupplier;
-            mRootView = rootView;
             mSnackbarManager = snackbarManager;
             mTabCreatorManager = tabCreatorManager;
             mTabContentManager = tabContentManager;
@@ -150,7 +147,6 @@ public class TabGroupUiCoordinator
                         null,
                         mScrimCoordinator,
                         mTabStripCoordinator.getTabGroupTitleEditor(),
-                        mRootView,
                         actionConfirmationManager,
                         mModalDialogManager);
         mTabGridDialogControllerSupplier.set(mTabGridDialogCoordinator);

@@ -57,7 +57,6 @@ public interface TabManagementDelegate {
      *     UI and DataSharing services.
      * @param tabModelSelector Gives access to the current set of {@TabModel}.
      * @param tabContentManager Gives access to the tab content.
-     * @param rootView The root view of the app.
      * @param tabCreatorManager Manages creation of tabs.
      * @param layoutStateProviderSupplier Supplies the {@link LayoutStateProvider}.
      * @param snackbarManager Manages the display of snackbars.
@@ -75,7 +74,6 @@ public interface TabManagementDelegate {
             @NonNull DataSharingTabManager dataSharingTabManager,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull TabContentManager tabContentManager,
-            @NonNull ViewGroup rootView,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @NonNull SnackbarManager snackbarManager,

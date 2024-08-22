@@ -1557,7 +1557,6 @@ public class ToolbarManager
                         mBottomSheetController,
                         mDataSharingTabManager,
                         mTabContentManager,
-                        mCompositorViewHolder,
                         mTabCreatorManager,
                         mLayoutStateProviderSupplier,
                         mSnackbarManager,

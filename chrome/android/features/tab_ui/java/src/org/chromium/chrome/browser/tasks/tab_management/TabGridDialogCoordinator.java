@@ -68,7 +68,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private final TabGridDialogMediator mMediator;
     private final PropertyModel mModel;
     private final PropertyModelChangeProcessor mModelChangeProcessor;
-    private final ViewGroup mRootView;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
     private final Activity mActivity;
@@ -103,7 +102,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             @Nullable TabGridDialogMediator.AnimationSourceViewProvider animationSourceViewProvider,
             ScrimCoordinator scrimCoordinator,
             TabGroupTitleEditor tabGroupTitleEditor,
-            ViewGroup rootView,
             @Nullable ActionConfirmationManager actionConfirmationManager,
             @NonNull ModalDialogManager modalDialogManager) {
         try (TraceEvent e = TraceEvent.scoped("TabGridDialogCoordinator.constructor")) {
@@ -130,7 +128,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                                     TabGridDialogProperties.COLOR_ICON_CLICK_LISTENER,
                                     getColorIconClickListener())
                             .build();
-            mRootView = rootView;
 
             mDialogView = containerView.findViewById(R.id.dialog_parent_view);
             if (mDialogView == null) {
