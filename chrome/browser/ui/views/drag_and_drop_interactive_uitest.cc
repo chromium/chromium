@@ -1787,7 +1787,10 @@ void DragAndDropBrowserTest::DragImageFromDisappearingFrame_Step3(
 
 // There is no known way to execute test-controlled tasks during
 // a drag-and-drop loop run by Windows OS.
+// TODO(b:361552512): Flaky on Chrome OS
 #if BUILDFLAG(IS_WIN)
+#define MAYBE_CrossSiteDrag DISABLED_CrossSiteDrag
+#elif BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CrossSiteDrag DISABLED_CrossSiteDrag
 #else
 #define MAYBE_CrossSiteDrag CrossSiteDrag
