@@ -18,7 +18,6 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -159,11 +158,6 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
 
   histogram_tester.ExpectUniqueSample("ProfilePicker.FirstRun.ServiceCreated",
                                       true, 1);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  histogram_tester.ExpectUniqueSample(
-      "Profile.LacrosPrimaryProfileFirstRunEntryPoint",
-      FirstRunService::EntryPoint::kOther, 1);
-#endif
   histogram_tester.ExpectUniqueSample("ProfilePicker.FirstRun.EntryPoint",
                                       FirstRunService::EntryPoint::kOther, 1);
 
@@ -173,8 +167,6 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
   EXPECT_EQ(expected_fre_finished, GetFirstRunFinishedPrefValue());
   EXPECT_NE(expected_fre_finished, fre_service()->ShouldOpenFirstRun());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  histogram_tester.ExpectTotalCount(
-      "Profile.LacrosPrimaryProfileFirstRunOutcome", 0);
   histogram_tester.ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kQuitEarly, 1);
@@ -244,9 +236,6 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
   // The FRE should be finished silently during the creation of the service.
   EXPECT_TRUE(GetFirstRunFinishedPrefValue());
   EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
-  histogram_tester.ExpectUniqueSample(
-      "Profile.LacrosPrimaryProfileFirstRunOutcome",
-      ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedAlreadySyncing, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
@@ -270,9 +259,6 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  histogram_tester.ExpectUniqueSample(
-      "Profile.LacrosPrimaryProfileFirstRunOutcome",
-      ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
@@ -296,9 +282,6 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  histogram_tester.ExpectUniqueSample(
-      "Profile.LacrosPrimaryProfileFirstRunOutcome",
-      ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies, 1);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -448,17 +431,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunServicePolicyBrowserTest, OpenFirstRunIfNeeded) {
 #endif
 
   EXPECT_NE(GetParam().should_open_fre, GetFirstRunFinishedPrefValue());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (GetParam().should_open_fre) {
-    histogram_tester.ExpectTotalCount(
-        "Profile.LacrosPrimaryProfileFirstRunOutcome", 0);
-  } else {
-    histogram_tester.ExpectUniqueSample(
-        "Profile.LacrosPrimaryProfileFirstRunOutcome",
-        ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies, 1);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   ProfilePicker::Hide();
   run_loop.Run();
