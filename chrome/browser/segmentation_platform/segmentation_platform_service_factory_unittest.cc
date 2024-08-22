@@ -24,6 +24,7 @@
 #include "components/segmentation_platform/embedder/default_model/contextual_page_actions_model.h"
 #include "components/segmentation_platform/embedder/default_model/metrics_clustering.h"
 #include "components/segmentation_platform/embedder/default_model/most_visited_tiles_user.h"
+#include "components/segmentation_platform/embedder/home_modules/ephemeral_home_module_backend.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
@@ -119,6 +120,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
          {features::kSegmentationPlatformTabResumptionRanker, {}},
          {features::kSegmentationPlatformAndroidHomeModuleRanker, {}},
          {features::kSegmentationPlatformURLVisitResumptionRanker, {}},
+         {home_modules::kSegmentationPlatformEphemeralHomeModuleBackend, {}},
          {features::kSegmentationPlatformMetricsClustering, {}}},
         {});
 
@@ -151,7 +153,8 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
       PredictionStatus expected_status,
       std::optional<std::vector<std::string>> expected_labels,
       const ClassificationResult& actual_result) {
-    EXPECT_EQ(actual_result.status, expected_status);
+    EXPECT_EQ(static_cast<int>(actual_result.status),
+              static_cast<int>(expected_status));
     if (expected_labels.has_value()) {
       EXPECT_EQ(actual_result.ordered_labels, expected_labels.value());
     }
@@ -644,6 +647,32 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestAndroidHomeModuleRanker) {
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeMdouleBackend) {
+  InitService();
+
+  home_modules::HomeModulesCardRegistry* registry =
+      SegmentationPlatformServiceFactory::GetHomeModulesCardRegistry(
+          profile_->profile.get());
+  ASSERT_TRUE(registry);
+  // Update this test when adding new cards with inputs.
+  // Each card's feature flag should be enabled by test framework for this
+  // integration test.
+  EXPECT_TRUE(registry->get_all_cards_by_priority().empty());
+
+  PredictionOptions prediction_options;
+  prediction_options.on_demand_execution = true;
+
+  auto input_context = base::MakeRefCounted<InputContext>();
+
+  // No cards are added, the model fetches no results and fails.
+  std::vector<std::string> result = {};
+  ExpectGetClassificationResult(
+      home_modules::EphemeralHomeModuleBackend::kEphemeralHomeModuleBackendKey,
+      prediction_options, input_context,
+      /*expected_status=*/segmentation_platform::PredictionStatus::kFailed,
+      /*expected_labels=*/result);
+}
 
 }  // namespace
 }  // namespace segmentation_platform

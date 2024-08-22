@@ -40,13 +40,15 @@ void FillCustomInput(const MetadataWriter::CustomInput feature,
   }
 }
 
+template <typename StringVector>
 void PopulateMultiClassClassifier(
     proto::Predictor::MultiClassClassifier* multi_class_classifier,
-    base::span<const char* const> class_labels,
+    const StringVector& class_labels,
     int top_k_outputs) {
   multi_class_classifier->set_top_k_outputs(top_k_outputs);
-  for (auto* class_label : class_labels) {
-    multi_class_classifier->mutable_class_labels()->Add(class_label);
+  for (const auto& class_label : class_labels) {
+    multi_class_classifier->mutable_class_labels()->Add(
+        std::string(class_label));
   }
 }
 
@@ -210,6 +212,22 @@ void MetadataWriter::SetIgnorePreviousModelTTLInOutputConfig() {
 
 void MetadataWriter::AddOutputConfigForMultiClassClassifier(
     base::span<const char* const> class_labels,
+    int top_k_outputs,
+    std::optional<float> threshold) {
+  proto::Predictor::MultiClassClassifier* multi_class_classifier =
+      metadata_->mutable_output_config()
+          ->mutable_predictor()
+          ->mutable_multi_class_classifier();
+
+  PopulateMultiClassClassifier(multi_class_classifier, class_labels,
+                               top_k_outputs);
+  if (threshold.has_value()) {
+    multi_class_classifier->set_threshold(threshold.value());
+  }
+}
+
+void MetadataWriter::AddOutputConfigForMultiClassClassifier(
+    const std::vector<std::string>& class_labels,
     int top_k_outputs,
     std::optional<float> threshold) {
   proto::Predictor::MultiClassClassifier* multi_class_classifier =

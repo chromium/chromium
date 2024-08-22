@@ -27,8 +27,10 @@ void DefaultModelTestBase::TearDown() {
 void DefaultModelTestBase::ExpectInitAndFetchModel() {
   std::unique_ptr<DefaultModelProvider::ModelConfig> config =
       model_->GetModelConfig();
-  EXPECT_EQ(metadata_utils::ValidateMetadataAndFeatures(config->metadata),
-            metadata_utils::ValidationResult::kValidationSuccess);
+  EXPECT_EQ(
+      static_cast<int>(
+          metadata_utils::ValidateMetadataAndFeatures(config->metadata)),
+      static_cast<int>(metadata_utils::ValidationResult::kValidationSuccess));
   fetched_metadata_ = std::move(config->metadata);
 }
 

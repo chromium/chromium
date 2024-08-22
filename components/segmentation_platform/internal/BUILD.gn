@@ -113,6 +113,8 @@ static_library("internal") {
     "local_state_helper_impl.h",
     "logging.cc",
     "logging.h",
+    "metadata/feature_query.cc",
+    "metadata/feature_query.h",
     "metadata/metadata_utils.cc",
     "metadata/metadata_utils.h",
     "metadata/metadata_writer.cc",
