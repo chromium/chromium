@@ -799,19 +799,7 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
 
 std::vector<tab_search::mojom::TabPtr> TabSearchPageHandler::FindStaleTabs(
     int32_t excluded_id) {
-  // TODO(crbug.com/358381117): Replace with actual stale tab data as provided
-  // by TabDeclutterService. This is a placeholder for now, returning all tabs
-  // from the current window regardless of last active time.
-  Browser* browser = chrome::FindLastActive();
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
   std::vector<tab_search::mojom::TabPtr> tabs;
-  for (int i = 0; i < tab_strip_model->count(); ++i) {
-    auto* web_contents = tab_strip_model->GetWebContentsAt(i);
-    const auto tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-    if (tab_id != excluded_id) {
-      tabs.push_back(GetTab(tab_strip_model, web_contents, i));
-    }
-  }
   return tabs;
 }
 
