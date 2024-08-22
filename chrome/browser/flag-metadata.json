@@ -3409,7 +3409,7 @@
   {
     "name": "enable-immersive-fullscreen-toolbar",
     "owners": [ "bur@chromium.org", "chrome-mac-dev@google.com" ],
-    "expiry_milestone": 129
+    "expiry_milestone": 135
   },
   {
     "name": "enable-input-device-settings-split",
