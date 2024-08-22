@@ -185,6 +185,7 @@ export class HealthdInternalsProcessElement extends PolymerElement implements
         computed:
             'getDisplayedData(processData, filterQuery, sortColumn, sortOrder)',
       },
+      lastUpdateTime: {type: String},
     };
   }
 
@@ -197,6 +198,7 @@ export class HealthdInternalsProcessElement extends PolymerElement implements
       sendWithPromise('getHealthdProcessInfo')
           .then((data: HealthdApiProcessResult) => {
             this.processData = data.processes;
+            this.lastUpdateTime = new Date().toLocaleTimeString();
           });
     });
   }
@@ -242,6 +244,9 @@ export class HealthdInternalsProcessElement extends PolymerElement implements
 
   // Data displayed in the process table.
   private displayedData: DisplayedProcessInfo[] = [];
+
+  // The time that the process data is last updated.
+  private lastUpdateTime: string = '';
 
   // Helper for updating UI regularly. Init in `connectedCallback`.
   private updateHelper: UiUpdateHelper;
