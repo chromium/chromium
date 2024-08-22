@@ -66,14 +66,13 @@ interface SizeOption {
   size: number;
 }
 
-// TODO(crbug.com/341282609): Choose production size values. Add icons and
-// labels.
+// TODO(crbug.com/341282609): Choose production size values. Add labels.
 const ERASER_SIZES: SizeOption[] = [
-  {icon: 'pen-size-1', name: 'sizeExtraThin', size: 1},
-  {icon: 'pen-size-2', name: 'sizeThin', size: 2},
-  {icon: 'pen-size-3', name: 'sizeExtraMedium', size: 3},
-  {icon: 'pen-size-4', name: 'sizeThick', size: 6},
-  {icon: 'pen-size-5', name: 'sizeExtraThick', size: 8},
+  {icon: 'eraser-size-1', name: 'sizeExtraThin', size: 1},
+  {icon: 'eraser-size-2', name: 'sizeThin', size: 2},
+  {icon: 'eraser-size-3', name: 'sizeExtraMedium', size: 3},
+  {icon: 'eraser-size-4', name: 'sizeThick', size: 6},
+  {icon: 'eraser-size-5', name: 'sizeExtraThick', size: 8},
 ];
 
 const HIGHLIGHTER_SIZES: SizeOption[] = [
