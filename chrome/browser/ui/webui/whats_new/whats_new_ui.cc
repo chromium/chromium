@@ -29,6 +29,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -60,6 +61,15 @@ void CreateAndAddWhatsNewUIHtmlSource(Profile* profile, bool enable_staging) {
 }
 
 }  // namespace
+
+WhatsNewUIConfig::WhatsNewUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIWhatsNewHost) {}
+
+bool WhatsNewUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return whats_new::IsEnabled();
+}
 
 // static
 void WhatsNewUI::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
