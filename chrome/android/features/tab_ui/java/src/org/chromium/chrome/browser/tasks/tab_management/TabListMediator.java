@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.ACTION_BUTTON_DESCRIPTION_STRING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
+import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.THUMBNAIL_FETCHER;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -449,7 +450,8 @@ class TabListMediator implements TabListNotificationHandler {
 
                     int index = mModel.indexFromId(tabId);
                     if (index == TabModel.INVALID_TAB_INDEX) return;
-                    boolean selected = mModel.get(index).model.get(TabProperties.IS_SELECTED);
+                    PropertyModel model = mModel.get(index).model;
+                    boolean selected = model.get(TabProperties.IS_SELECTED);
                     if (selected) {
                         TabUiMetricsHelper.recordSelectionEditorActionMetrics(
                                 TabListEditorActionMetricGroups.UNSELECTED);
@@ -457,16 +459,12 @@ class TabListMediator implements TabListNotificationHandler {
                         TabUiMetricsHelper.recordSelectionEditorActionMetrics(
                                 TabListEditorActionMetricGroups.SELECTED);
                     }
-                    mModel.get(index).model.set(TabProperties.IS_SELECTED, !selected);
+                    model.set(TabProperties.IS_SELECTED, !selected);
                     // Reset thumbnail to ensure the color of the blank tab slots is correct.
                     TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
                     Tab tab = filter.getTabModel().getTabById(tabId);
                     if (tab != null && filter.isTabInTabGroup(tab)) {
-                        mModel.get(index)
-                                .model
-                                .set(
-                                        TabProperties.THUMBNAIL_FETCHER,
-                                        new ThumbnailFetcher(mThumbnailProvider, tabId));
+                        updateThumbnailFetcher(model, tabId);
                     }
                 }
             };
@@ -543,9 +541,7 @@ class TabListMediator implements TabListNotificationHandler {
 
                         if (mThumbnailProvider != null) {
                             PropertyModel model = mModel.get(indexAndTab.first).model;
-                            model.set(
-                                    TabProperties.THUMBNAIL_FETCHER,
-                                    new ThumbnailFetcher(mThumbnailProvider, tab.getId()));
+                            updateThumbnailFetcher(model, tab.getId());
                         }
                     } else {
                         tab = updatedTab;
@@ -653,12 +649,8 @@ class TabListMediator implements TabListNotificationHandler {
                         if (indexInModel == TabModel.INVALID_TAB_INDEX) return;
 
                         Tab lastShownTab = filter.getTabAt(filter.indexOf(movedTab));
-                        mModel.get(indexInModel)
-                                .model
-                                .set(
-                                        TabProperties.THUMBNAIL_FETCHER,
-                                        new ThumbnailFetcher(
-                                                mThumbnailProvider, lastShownTab.getId()));
+                        PropertyModel model = mModel.get(indexInModel).model;
+                        updateThumbnailFetcher(model, lastShownTab.getId());
                         return;
                     }
 
@@ -1284,26 +1276,20 @@ class TabListMediator implements TabListNotificationHandler {
     private void selectTab(int oldIndex, int newIndex) {
         // TODO(crbug.com/347886633): Change the bounds check to an assert.
         if (oldIndex != TabModel.INVALID_TAB_INDEX && oldIndex < mModel.size()) {
-            int lastId = mModel.get(oldIndex).model.get(TAB_ID);
-            mModel.get(oldIndex).model.set(TabProperties.IS_SELECTED, false);
+            PropertyModel oldModel = mModel.get(oldIndex).model;
+            int lastId = oldModel.get(TAB_ID);
+            oldModel.set(TabProperties.IS_SELECTED, false);
             if (mActionsOnAllRelatedTabs && mThumbnailProvider != null && mShowingTabs) {
-                mModel.get(oldIndex)
-                        .model
-                        .set(
-                                TabProperties.THUMBNAIL_FETCHER,
-                                new ThumbnailFetcher(mThumbnailProvider, lastId));
+                updateThumbnailFetcher(oldModel, lastId);
             }
         }
 
         if (newIndex != TabModel.INVALID_TAB_INDEX) {
-            int newId = mModel.get(newIndex).model.get(TAB_ID);
-            mModel.get(newIndex).model.set(TabProperties.IS_SELECTED, true);
+            PropertyModel newModel = mModel.get(newIndex).model;
+            int newId = newModel.get(TAB_ID);
+            newModel.set(TabProperties.IS_SELECTED, true);
             if (mThumbnailProvider != null && mShowingTabs) {
-                mModel.get(newIndex)
-                        .model
-                        .set(
-                                TabProperties.THUMBNAIL_FETCHER,
-                                new ThumbnailFetcher(mThumbnailProvider, newId));
+                updateThumbnailFetcher(newModel, newId);
             }
         }
     }
@@ -1328,9 +1314,11 @@ class TabListMediator implements TabListNotificationHandler {
                                         tab);
                         int index = mModel.indexFromId(currentGroupSelectedTab.getId());
                         if (index == TabModel.INVALID_TAB_INDEX) return;
-                        mModel.get(index).model.set(TabProperties.TITLE, title);
-                        updateDescriptionString(tab, mModel.get(index).model);
-                        updateActionButtonDescriptionString(tab, mModel.get(index).model);
+
+                        PropertyModel model = mModel.get(index).model;
+                        model.set(TabProperties.TITLE, title);
+                        updateDescriptionString(tab, model);
+                        updateActionButtonDescriptionString(tab, model);
                     }
 
                     @Override
@@ -1474,9 +1462,9 @@ class TabListMediator implements TabListNotificationHandler {
         if (tabs.size() != tabsCount) return false;
         int tabsIndex = 0;
         for (int i = 0; i < mModel.size(); i++) {
-            if (mModel.get(i).model.get(CARD_TYPE) == TAB
-                    && mModel.get(i).model.get(TabProperties.TAB_ID)
-                            != tabs.get(tabsIndex++).getId()) {
+            PropertyModel model = mModel.get(i).model;
+            if (model.get(CARD_TYPE) == TAB
+                    && model.get(TabProperties.TAB_ID) != tabs.get(tabsIndex++).getId()) {
                 return false;
             }
         }
@@ -1566,9 +1554,10 @@ class TabListMediator implements TabListNotificationHandler {
     void softCleanup() {
         assert !mShowingTabs;
         for (int i = 0; i < mModel.size(); i++) {
-            if (mModel.get(i).model.get(CARD_TYPE) == TAB) {
-                mModel.get(i).model.set(TabProperties.THUMBNAIL_FETCHER, null);
-                mModel.get(i).model.set(TabProperties.FAVICON_FETCHER, null);
+            PropertyModel model = mModel.get(i).model;
+            if (model.get(CARD_TYPE) == TAB) {
+                updateThumbnailFetcher(model, Tab.INVALID_TAB_ID);
+                model.set(TabProperties.FAVICON_FETCHER, null);
             }
         }
     }
@@ -1610,10 +1599,12 @@ class TabListMediator implements TabListNotificationHandler {
 
     private void updateTab(int index, Tab tab, boolean isUpdatingId, boolean quickMode) {
         if (index < 0 || index >= mModel.size()) return;
+
+        PropertyModel model = mModel.get(index).model;
         if (isUpdatingId) {
-            mModel.get(index).model.set(TabProperties.TAB_ID, tab.getId());
+            model.set(TabProperties.TAB_ID, tab.getId());
         } else {
-            assert mModel.get(index).model.get(TabProperties.TAB_ID) == tab.getId();
+            assert model.get(TabProperties.TAB_ID) == tab.getId();
         }
 
         boolean isTabSelected = isTabSelected(mTabActionState, tab);
@@ -1630,21 +1621,14 @@ class TabListMediator implements TabListNotificationHandler {
                     tabGroupColorId = filter.getTabGroupColorWithFallback(tab.getRootId());
                 }
 
-                PropertyModel model = getModelFromId(tab.getId());
-                if (model != null) {
-                    model.set(TabProperties.TAB_GROUP_COLOR_ID, tabGroupColorId);
-                }
+                model.set(TabProperties.TAB_GROUP_COLOR_ID, tabGroupColorId);
             }
         }
 
-        mModel.get(index)
-                .model
-                .set(TabProperties.TAB_CLICK_LISTENER, getTabActionListener(tab, isInTabGroup));
-        mModel.get(index).model.set(TabProperties.IS_SELECTED, isTabSelected);
-        mModel.get(index).model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
-        mModel.get(index)
-                .model
-                .set(TabProperties.TITLE, getLatestTitleForTab(tab, /* useDefault= */ true));
+        model.set(TabProperties.TAB_CLICK_LISTENER, getTabActionListener(tab, isInTabGroup));
+        model.set(TabProperties.IS_SELECTED, isTabSelected);
+        model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
+        model.set(TabProperties.TITLE, getLatestTitleForTab(tab, /* useDefault= */ true));
 
         // A tab is deemed a tab group card representation if it is part of a tab group and
         // based in the tab switcher.
@@ -1658,28 +1642,20 @@ class TabListMediator implements TabListNotificationHandler {
         // so ensure that the default behavior (close on click) is set first, and tab groups
         // under valid circumstances will override the listener with alternate behavior.
         if (!ChromeFeatureList.sTabGroupPaneAndroid.isEnabled() || !isTabGroup) {
-            mModel.get(index)
-                    .model
-                    .set(TabProperties.TAB_ACTION_BUTTON_LISTENER, mTabClosedListener);
+            model.set(TabProperties.TAB_ACTION_BUTTON_LISTENER, mTabClosedListener);
         }
         // Only set this for tab group representation cards. An onClickListener will be set in the
         // view as part of the accompanying logic.
         if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
-            mModel.get(index)
-                    .model
-                    .set(
-                            TabProperties.TAB_GROUP_INFO,
-                            new TabGroupInfo(
-                                    TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile),
-                                    isTabGroup));
+            model.set(
+                    TabProperties.TAB_GROUP_INFO,
+                    new TabGroupInfo(
+                            TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile), isTabGroup));
         }
 
-        bindTabActionStateProperties(
-                mModel.get(index).model.get(TabProperties.TAB_ACTION_STATE),
-                tab,
-                mModel.get(index).model);
+        bindTabActionStateProperties(model.get(TabProperties.TAB_ACTION_STATE), tab, model);
 
-        mModel.get(index).model.set(TabProperties.URL_DOMAIN, getDomainForTab(tab));
+        model.set(TabProperties.URL_DOMAIN, getDomainForTab(tab));
 
         setupPersistedTabDataFetcherForTab(tab, index);
 
@@ -1691,13 +1667,12 @@ class TabListMediator implements TabListNotificationHandler {
         // to improve it.
         if (mThumbnailProvider != null
                 && mShowingTabs
-                && (mModel.get(index).model.get(TabProperties.THUMBNAIL_FETCHER) == null
+                && (model.get(THUMBNAIL_FETCHER) == null
                         || forceUpdate
                         || isUpdatingId
                         || forceUpdateLastSelected
                         || isInTabGroup)) {
-            ThumbnailFetcher callback = new ThumbnailFetcher(mThumbnailProvider, tab.getId());
-            mModel.get(index).model.set(TabProperties.THUMBNAIL_FETCHER, callback);
+            updateThumbnailFetcher(model, tab.getId());
         }
     }
 
@@ -1900,10 +1875,11 @@ class TabListMediator implements TabListNotificationHandler {
             if (item.type != UiType.TAB) continue;
             Tab tab = getTabForIndex(i);
             // Unbind the current TabActionState properties.
-            unbindTabActionStateProperties(item.model);
+            PropertyModel model = item.model;
+            unbindTabActionStateProperties(model);
 
-            item.model.set(TabProperties.TAB_ACTION_STATE, mTabActionState);
-            bindTabActionStateProperties(tabActionState, tab, item.model);
+            model.set(TabProperties.TAB_ACTION_STATE, mTabActionState);
+            bindTabActionStateProperties(tabActionState, tab, model);
         }
     }
 
@@ -2216,8 +2192,7 @@ class TabListMediator implements TabListNotificationHandler {
             }
         }
         if (mThumbnailProvider != null && mShowingTabs) {
-            ThumbnailFetcher callback = new ThumbnailFetcher(mThumbnailProvider, tab.getId());
-            tabInfo.set(TabProperties.THUMBNAIL_FETCHER, callback);
+            updateThumbnailFetcher(tabInfo, tab.getId());
         }
     }
 
@@ -2360,23 +2335,20 @@ class TabListMediator implements TabListNotificationHandler {
     }
 
     private void setupPersistedTabDataFetcherForTab(Tab tab, int index) {
+        PropertyModel model = mModel.get(index).model;
         if (mMode == TabListMode.GRID && !tab.isIncognito()) {
             assert mProfile != null;
             if (PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfile)
                     && !isTabInTabGroup(tab)) {
-                mModel.get(index)
-                        .model
-                        .set(
-                                TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
-                                new ShoppingPersistedTabDataFetcher(
-                                        tab, mPriceWelcomeMessageControllerSupplier));
+                model.set(
+                        TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
+                        new ShoppingPersistedTabDataFetcher(
+                                tab, mPriceWelcomeMessageControllerSupplier));
             } else {
-                mModel.get(index)
-                        .model
-                        .set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
+                model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
             }
         } else {
-            mModel.get(index).model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
+            model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
         }
     }
 
@@ -2385,6 +2357,7 @@ class TabListMediator implements TabListNotificationHandler {
         int modelIndex = mModel.indexFromId(tab.getId());
         if (modelIndex == Tab.INVALID_TAB_ID) return;
 
+        PropertyModel model = mModel.get(modelIndex).model;
         if (mActionsOnAllRelatedTabs && isTabInTabGroup(tab)) {
             List<Tab> relatedTabList = getRelatedTabsForId(tab.getId());
             if (mMode != TabListMode.LIST) {
@@ -2401,7 +2374,7 @@ class TabListMediator implements TabListNotificationHandler {
                                     colorId, filter.getTabModel(), tab);
                 }
 
-                mModel.get(modelIndex).model.set(TabProperties.FAVICON_FETCHER, faviconFetcher);
+                model.set(TabProperties.FAVICON_FETCHER, faviconFetcher);
                 return;
             } else if (mMode == TabListMode.LIST && relatedTabList.size() > 1) {
                 // The order of the url list matches the multi-thumbnail.
@@ -2413,12 +2386,10 @@ class TabListMediator implements TabListNotificationHandler {
                 }
 
                 // For tab group card in list tab switcher, the favicon is the composed favicon.
-                mModel.get(modelIndex)
-                        .model
-                        .set(
-                                TabProperties.FAVICON_FETCHER,
-                                mTabListFaviconProvider.getComposedFaviconImageFetcher(
-                                        urls, tab.isIncognito()));
+                model.set(
+                        TabProperties.FAVICON_FETCHER,
+                        mTabListFaviconProvider.getComposedFaviconImageFetcher(
+                                urls, tab.isIncognito()));
                 return;
             }
         }
@@ -2428,17 +2399,15 @@ class TabListMediator implements TabListNotificationHandler {
 
         // If there is an available icon, we fetch favicon synchronously; otherwise asynchronously.
         if (icon != null && iconUrl != null) {
-            mModel.get(modelIndex)
-                    .model
-                    .set(
-                            TabProperties.FAVICON_FETCHER,
-                            mTabListFaviconProvider.getFaviconFromBitmapFetcher(icon, iconUrl));
+            model.set(
+                    TabProperties.FAVICON_FETCHER,
+                    mTabListFaviconProvider.getFaviconFromBitmapFetcher(icon, iconUrl));
             return;
         }
 
         TabFaviconFetcher fetcher =
                 mTabListFaviconProvider.getFaviconForUrlFetcher(tab.getUrl(), tab.isIncognito());
-        mModel.get(modelIndex).model.set(TabProperties.FAVICON_FETCHER, fetcher);
+        model.set(TabProperties.FAVICON_FETCHER, fetcher);
     }
 
     /**
@@ -2446,7 +2415,7 @@ class TabListMediator implements TabListNotificationHandler {
      * the current {@link TabListModel}.
      *
      * @param index The index of the {@link org.chromium.ui.modelutil.MVCListAdapter.ListItem} to be
-     *              inserted.
+     *     inserted.
      * @param uiType The view type the model will bind to.
      * @param model The model that will be bound to a view.
      */
@@ -3117,6 +3086,18 @@ class TabListMediator implements TabListNotificationHandler {
 
     private boolean isParentComponentTabSwitcher() {
         return TabSwitcherPaneCoordinator.COMPONENT_NAME.equals(mComponentName);
+    }
+
+    private void updateThumbnailFetcher(PropertyModel model, int tabId) {
+        @Nullable ThumbnailFetcher oldFetcher = model.get(THUMBNAIL_FETCHER);
+        if (oldFetcher != null) oldFetcher.cancel();
+
+        @Nullable
+        ThumbnailFetcher newFetcher =
+                tabId == Tab.INVALID_TAB_ID
+                        ? null
+                        : new ThumbnailFetcher(mThumbnailProvider, tabId);
+        model.set(THUMBNAIL_FETCHER, newFetcher);
     }
 
     @TabListMode

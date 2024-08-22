@@ -1438,18 +1438,28 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void tabSelection() {
-        ThumbnailFetcher tab1Fetcher = mModel.get(0).model.get(TabProperties.THUMBNAIL_FETCHER);
-        ThumbnailFetcher tab2Fetcher = mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER);
+        PropertyModel model0 = mModel.get(0).model;
+        PropertyModel model1 = mModel.get(1).model;
+        ThumbnailFetcher tab1Fetcher = model0.get(TabProperties.THUMBNAIL_FETCHER);
+        ThumbnailFetcher tab2Fetcher = model1.get(TabProperties.THUMBNAIL_FETCHER);
+        assertNotNull(tab1Fetcher);
+        assertNotNull(tab2Fetcher);
+        tab1Fetcher = mock(ThumbnailFetcher.class);
+        model0.set(TabProperties.THUMBNAIL_FETCHER, tab1Fetcher);
+        tab2Fetcher = mock(ThumbnailFetcher.class);
+        model1.set(TabProperties.THUMBNAIL_FETCHER, tab2Fetcher);
 
         mTabModelObserverCaptor
                 .getValue()
                 .didSelectTab(mTab2, TabLaunchType.FROM_CHROME_UI, TAB1_ID);
 
-        assertThat(mModel.size(), equalTo(2));
-        assertThat(mModel.get(0).model.get(TabProperties.IS_SELECTED), equalTo(false));
-        assertNotEquals(mModel.get(0).model.get(TabProperties.THUMBNAIL_FETCHER), tab1Fetcher);
-        assertThat(mModel.get(1).model.get(TabProperties.IS_SELECTED), equalTo(true));
-        assertNotEquals(mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER), tab2Fetcher);
+        assertEquals(2, mModel.size());
+        assertFalse(model0.get(TabProperties.IS_SELECTED));
+        assertNotEquals(model0.get(TabProperties.THUMBNAIL_FETCHER), tab1Fetcher);
+        verify(tab1Fetcher).cancel();
+        assertTrue(model1.get(TabProperties.IS_SELECTED));
+        assertNotEquals(model1.get(TabProperties.THUMBNAIL_FETCHER), tab2Fetcher);
+        verify(tab2Fetcher).cancel();
     }
 
     @Test
