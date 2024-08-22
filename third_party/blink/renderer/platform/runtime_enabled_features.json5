@@ -5002,12 +5002,6 @@
       name: "XMLParserMergeAdjacentCDataSections",
       status: "stable",
     },
-    // Flag to guard fix for https://crbug.com/331970402.  Should be removed
-    // after M125 is stable.
-    {
-      name: "XPathLangUseAsciiCase",
-      status: "stable",
-    },
     {
       // If enabled, the `getDisplayMedia()` family of APIs will ask for NV12
       // frames, which should trigger a zero-copy path in the tab capture code.
