@@ -8,6 +8,7 @@
 
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/profile_metrics/counts.h"
+#include "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #include "ios/web/public/browser_state.h"
@@ -16,40 +17,37 @@ namespace {
 
 constexpr base::TimeDelta kActivityThreshold = base::Days(28);
 
-bool BrowserStateIsActive(const BrowserStateInfoCache& info_cache, int index) {
-  return base::Time::Now() -
-             info_cache.GetLastActiveTimeOfBrowserStateAtIndex(index) <=
-         kActivityThreshold;
+bool ProfileIsActive(const ProfileAttributesIOS& attr) {
+  return base::Time::Now() - attr.GetLastActiveTime() <= kActivityThreshold;
 }
 
-}  // namespace
-
-bool CountBrowserStateInformation(ChromeBrowserStateManager* manager,
-                                  profile_metrics::Counts* counts) {
-  BrowserStateInfoCache* info_cache = manager->GetBrowserStateInfoCache();
-  size_t number_of_browser_states = info_cache->GetNumberOfProfiles();
-  counts->total = number_of_browser_states;
+void CountProfileInformation(const ProfileAttributesStorageIOS& storage,
+                             profile_metrics::Counts* counts) {
+  size_t profile_count = storage.GetNumberOfProfiles();
+  counts->total = profile_count;
 
   // Ignore other metrics if we have no browser states.
-  if (!number_of_browser_states) {
-    return false;
+  if (!profile_count) {
+    return;
   }
 
-  for (size_t i = 0; i < number_of_browser_states; ++i) {
-    if (!BrowserStateIsActive(*info_cache, i)) {
+  for (size_t i = 0; i < profile_count; ++i) {
+    ProfileAttributesIOS attr = storage.GetAttributesForProfileAtIndex(i);
+    if (!ProfileIsActive(attr)) {
       counts->unused++;
     } else {
       counts->active++;
-      if (info_cache->BrowserStateIsAuthenticatedAtIndex(i)) {
+      if (attr.IsAuthenticated()) {
         counts->signedin++;
       }
     }
   }
-  return true;
 }
 
-void LogNumberOfBrowserStates(ChromeBrowserStateManager* manager) {
+}  // namespace
+
+void LogNumberOfProfiles(ProfileManagerIOS* manager) {
   profile_metrics::Counts counts;
-  CountBrowserStateInformation(manager, &counts);
+  CountProfileInformation(*manager->GetProfileAttributesStorage(), &counts);
   profile_metrics::LogProfileMetricsCounts(counts);
 }

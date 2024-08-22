@@ -15,16 +15,12 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 @implementation BrowserStateActivityAppAgent
-
-- (instancetype)init {
-  self = [super init];
-  return self;
-}
 
 #pragma mark - Private methods
 
@@ -32,13 +28,16 @@
   ChromeBrowserState* browserState =
       sceneState.appState.mainProfile.browserState;
 
-  // Update the BrowserState's last-active time in the info cache.
-  BrowserStateInfoCache* infoCache = GetApplicationContext()
-                                         ->GetChromeBrowserStateManager()
-                                         ->GetBrowserStateInfoCache();
-  int index = infoCache->GetIndexOfBrowserStateWithName(
-      browserState->GetBrowserStateName());
-  infoCache->SetLastActiveTimeOfBrowserStateAtIndex(index, base::Time::Now());
+  // Update the ProfileIOS's last-active time stored in the preferences.
+  GetApplicationContext()
+      ->GetProfileManager()
+      ->GetProfileAttributesStorage()
+      ->UpdateAttributesForProfileWithName(
+          browserState->GetBrowserStateName(),
+          base::BindOnce([](ProfileAttributesIOS attr) {
+            attr.SetLastActiveTime(base::Time::Now());
+            return attr;
+          }));
 
   // Update the primary account's last-active time (if there is a primary
   // account).

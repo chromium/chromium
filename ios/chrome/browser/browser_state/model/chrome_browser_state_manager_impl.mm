@@ -514,7 +514,7 @@ void ChromeBrowserStateManagerImpl::DoFinalInit(
       base::BindOnce(&BrowserStateSizeTask, browser_state->GetStatePath()),
       base::Seconds(112));
 
-  LogNumberOfBrowserStates(this);
+  LogNumberOfProfiles(this);
 }
 
 void ChromeBrowserStateManagerImpl::DoFinalInitForServices(
