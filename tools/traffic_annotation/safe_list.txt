@@ -322,7 +322,6 @@ missing_new_fields,rlz/lib/financial_ping.cc
 missing_new_fields,services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.cc
 missing_new_fields,services/image_annotation/annotator.cc
 missing_new_fields,services/network/network_context.cc
-missing_new_fields,services/network/public/cpp/server/http_server.cc
 missing_new_fields,third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.cc
 missing_new_fields,third_party/blink/renderer/platform/loader/fetch/fetch_utils.cc
 missing_new_fields,third_party/libaddressinput/chromium/chrome_metadata_source.cc

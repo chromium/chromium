@@ -153,21 +153,6 @@ component("cpp") {
     "x_frame_options_parser.h",
   ]
 
-  if (enable_websockets) {
-    sources += [
-      "server/http_connection.cc",
-      "server/http_connection.h",
-      "server/http_server.cc",
-      "server/http_server.h",
-      "server/http_server_request_info.cc",
-      "server/http_server_request_info.h",
-      "server/http_server_response_info.cc",
-      "server/http_server_response_info.h",
-      "server/web_socket.cc",
-      "server/web_socket.h",
-    ]
-  }
-
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
@@ -605,10 +590,6 @@ source_set("tests") {
     "web_sandbox_flags_unittests.cc",
     "x_frame_options_parser_unittest.cc",
   ]
-
-  if (enable_websockets) {
-    sources += [ "server/http_server_unittest.cc" ]
-  }
 
   if (is_linux) {
     sources += [ "network_interface_change_listener_mojom_traits_unittest.cc" ]
