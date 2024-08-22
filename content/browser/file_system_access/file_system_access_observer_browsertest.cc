@@ -26,10 +26,11 @@ namespace content {
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA) && \
+    !BUILDFLAG(IS_MAC)
 constexpr int kBFCacheTestTimeoutMs = 3000;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
-        // !BUILDFLAG(IS_FUCHSIA)
+        // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_MAC)
 
 enum class TestFileSystemType {
   kBucket,
@@ -1209,6 +1210,10 @@ class FileSystemAccessObserverWithBFCacheBrowserTest
   base::test::ScopedFeatureList feature_list_for_back_forward_cache_;
 };
 
+// TODO(b/360153904): This test is flaky on Mac, likely as a result of FSEvents
+// reporting events later than expected, on occasion. Re-enable once flake is
+// resolved.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
                        ReceivesFileUpdatesAfterReturningFromBFCache) {
   base::FilePath file_path = CreateFileToBePicked();
@@ -1295,6 +1300,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
                 .ExtractInt(),
             1);
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
                        NotifyOnReturnFromBFCacheWhenFileUpdates) {
