@@ -204,7 +204,10 @@
               src="[[item.image]]"
               tabindex$="[[tabIndex]]">
           </wallpaper-grid-item>
-          <template is="dom-if" if="[[!thumbnailsLoading_]]" restamp>
+          <template
+              is="dom-if"
+              if="[[shouldShowThumbnailFeedback_(isManagedSeaPenFeedbackEnabled_, thumbnailsLoading_)]]"
+              restamp>
             <div class="feedback-icon-container">
               <sea-pen-feedback
                   inherit-tab-index="[[tabIndex]]"
@@ -259,15 +262,17 @@
                   src="[[item.image]]"
                   tabindex$="[[tabIndex]]">
               </wallpaper-grid-item>
-              <div class="feedback-icon-container">
-                <sea-pen-feedback
-                    inherit-tab-index="[[tabIndex]]"
-                    thumbnail="[[item]]"
-                    on-selected-feedback-changed="onSelectedFeedbackChanged_">
-                </sea-pen-feedback>
-                <div class="feedback-icon-container-shadow-left"></div>
-                <div class="feedback-icon-container-shadow-top"></div>
-              </div>
+              <template is="dom-if" if="[[isManagedSeaPenFeedbackEnabled_]]" restamp>
+                <div class="feedback-icon-container">
+                  <sea-pen-feedback
+                      inherit-tab-index="[[tabIndex]]"
+                      thumbnail="[[item]]"
+                      on-selected-feedback-changed="onSelectedFeedbackChanged_">
+                  </sea-pen-feedback>
+                  <div class="feedback-icon-container-shadow-left"></div>
+                  <div class="feedback-icon-container-shadow-top"></div>
+                </div>
+              </template>
             </div>
           </template>
         </iron-list>

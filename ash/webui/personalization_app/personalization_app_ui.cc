@@ -566,6 +566,8 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean("isSeaPenEnterpriseEnabled",
                      common_sea_pen_requirements &&
                          ::ash::features::IsSeaPenEnterpriseEnabled());
+  source->AddBoolean("isManagedSeaPenFeedbackEnabled",
+                     sea_pen_provider_->IsManagedSeaPenFeedbackEnabled());
   source->AddBoolean("isLacrosEnabled",
                      ::crosapi::lacros_startup_state::IsLacrosEnabled());
   source->AddBoolean("isVcResizeThumbnailEnabled", false);

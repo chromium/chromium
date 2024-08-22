@@ -33,3 +33,7 @@ export function isLacrosEnabled() {
 export function isVcResizeThumbnailEnabled() {
   return loadTimeData.getBoolean('isVcResizeThumbnailEnabled');
 }
+
+export function isManagedSeaPenFeedbackEnabled() {
+  return loadTimeData.getBoolean('isManagedSeaPenFeedbackEnabled');
+}
