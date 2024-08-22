@@ -21,7 +21,6 @@ class FilePath;
 }  // namespace base
 
 namespace component_updater {
-using Parser = tpcd::metadata::Parser;
 
 inline constexpr base::FilePath::CharType kTpcdMetadataComponentFileName[] =
     FILE_PATH_LITERAL("metadata.pb");
