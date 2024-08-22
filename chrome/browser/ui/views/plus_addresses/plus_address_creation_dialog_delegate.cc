@@ -51,6 +51,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/table_layout_view.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
@@ -109,6 +110,158 @@ void OpenLearnMoreLink(content::WebContents* web_contents) {
   OpenLink(web_contents, GURL(features::kPlusAddressLearnMoreUrl.Get()));
 }
 
+std::unique_ptr<views::View> CreateTitle(bool show_notice) {
+  return views::Builder<views::StyledLabel>()
+      .SetProperty(views::kElementIdentifierKey,
+                   PlusAddressCreationView::kPlusAddressTitleElementId)
+      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+      .SetTextContext(views::style::STYLE_PRIMARY)
+      .SetText(l10n_util::GetStringUTF16(
+          show_notice ? IDS_PLUS_ADDRESS_MODAL_TITLE_NOTICE
+                      : IDS_PLUS_ADDRESS_MODAL_TITLE))
+      .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
+      .SetDefaultTextStyle(views::style::STYLE_BODY_1_BOLD)
+      .Build();
+}
+
+std::unique_ptr<views::View> CreateDescription(
+    bool show_notice,
+    std::string_view primary_email_address) {
+  return views::Builder<views::StyledLabel>()
+      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+      .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+      .SetProperty(
+          views::kElementIdentifierKey,
+          PlusAddressCreationView::kPlusAddressDescriptionTextElementId)
+      .SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::TLBR(views::LayoutProvider::Get()->GetDistanceMetric(
+                                views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
+                            0, 0, 0))
+      .SetText(show_notice ? l10n_util::GetStringUTF16(
+                                 IDS_PLUS_ADDRESS_MODAL_DESCRIPTION_NOTICE)
+                           : l10n_util::GetStringFUTF16(
+                                 IDS_PLUS_ADDRESS_MODAL_DESCRIPTION,
+                                 {base::UTF8ToUTF16(primary_email_address)}))
+      .Build();
+}
+
+// Creates a view that contains the box with an icon, the proposed plus address,
+// and if `offer_refresh` is true, a refresh button.
+std::unique_ptr<views::TableLayoutView> CreatePlusAddressLabelContainer(
+    bool offer_refresh) {
+  // Create a bubble for the plus address to be displayed in.
+  std::unique_ptr<views::Background> background =
+      views::CreateThemedRoundedRectBackground(
+          // TODO(b/342330801): Figure out the correct color for the background
+          // and move the definition to the mixer.
+          ui::kColorSysHeaderContainer,
+          kProposedPlusAddressBackgroundCornerRadius);
+
+  using Alignment = views::LayoutAlignment;
+  using ColumnSize = views::TableLayout::ColumnSize;
+  auto container = views::Builder<views::TableLayoutView>()
+                       .SetBackground(std::move(background))
+                       .Build();
+  container->SetProperty(views::kMarginsKey,
+                         gfx::Insets::VH(kPlusAddressLabelVerticalMargin, 0));
+  container->AddColumn(Alignment::kCenter, Alignment::kCenter,
+                       views::TableLayout::kFixedSize, ColumnSize::kFixed,
+                       kPlusAddressIconColumnWidth, 0);
+  container->AddColumn(Alignment::kStart, Alignment::kCenter, 1.0f,
+                       ColumnSize::kUsePreferred, 0, 0);
+  if (offer_refresh) {
+    container->AddColumn(Alignment::kStart, Alignment::kStretch,
+                         views::TableLayout::kFixedSize, ColumnSize::kFixed,
+                         kPlusAddressRefreshColumnWidth, 0);
+  } else {
+    container->AddPaddingColumn(views::TableLayout::kFixedSize,
+                                kPlusAddressIconColumnWidth);
+  }
+  return container;
+}
+
+// Creates the label that holds the plus address or a progress message.
+std::unique_ptr<views::Label> CreatePlusAddressLabel() {
+  auto label =
+      views::Builder<views::Label>()
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER))
+          .SetTextContext(views::style::CONTEXT_LABEL)
+          .SetTextStyle(STYLE_SECONDARY_MONOSPACED)
+          .SetProperty(
+              views::kElementIdentifierKey,
+              PlusAddressCreationView::kPlusAddressSuggestedEmailElementId)
+          .SetSelectable(true)
+          .Build();
+  label->SetLineHeight(2 * label->GetLineHeight());
+  return label;
+}
+
+// Creates a (by-default invisible) label for reporting errors.
+std::unique_ptr<views::View> CreateErrorReportLabel(
+    content::WebContents* web_contents) {
+  std::vector<size_t> error_link_offsets;
+  std::u16string error_link_text =
+      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_ERROR_REPORT_LINK_TEXT);
+  auto label =
+      views::Builder<views::StyledLabel>()
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetText(l10n_util::GetStringFUTF16(
+              IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_DESKTOP,
+              {error_link_text}, &error_link_offsets))
+          .SetTextContext(views::style::CONTEXT_BUBBLE_FOOTER)
+          .SetDefaultTextStyle(views::style::STYLE_HINT)
+          .SetVisible(false)
+          .SetProperty(views::kMarginsKey,
+                       gfx::Insets::VH(kPlusAddressLabelVerticalMargin, 0))
+          .SetProperty(views::kElementIdentifierKey,
+                       PlusAddressCreationView::kPlusAddressErrorTextElementId)
+          .Build();
+  // Update the style for the error link.
+  gfx::Range error_link_range(error_link_offsets[0],
+                              error_link_offsets[0] + error_link_text.length());
+  const auto error_link_text_style =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          base::BindRepeating(&OpenErrorReportingLink, web_contents));
+  label->AddStyleRange(error_link_range, error_link_text_style);
+  return label;
+}
+
+// Creates the view containing the legal notice and a link to learn more.
+std::unique_ptr<views::View> CreateNotice(
+    content::WebContents* web_contents,
+    std::string_view primary_email_address) {
+  std::vector<size_t> replacement_offsets;
+  const std::u16string learn_more_link_text = l10n_util::GetStringUTF16(
+      IDS_PLUS_ADDRESS_MODAL_NOTICE_LEARN_MORE_LINK_TEXT);
+  auto notice =
+      views::Builder<views::StyledLabel>()
+          .SetProperty(views::kElementIdentifierKey,
+                       PlusAddressCreationView::kPlusAddressNoticeElementId)
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetDefaultTextStyle(views::style::TextStyle::STYLE_BODY_5)
+          .SetDefaultEnabledColorId(ui::kColorLabelForegroundSecondary)
+          .SetText(l10n_util::GetStringFUTF16(
+              IDS_PLUS_ADDRESS_MODAL_NOTICE,
+              /*replacements=*/
+              {base::UTF8ToUTF16(primary_email_address), learn_more_link_text},
+              &replacement_offsets))
+          .SetProperty(
+              views::kMarginsKey,
+              gfx::Insets::TLBR(0, 0, kPlusAddressLabelVerticalMargin, 0))
+          .Build();
+  auto learn_more_link_text_style =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          base::BindRepeating(&OpenLearnMoreLink, web_contents));
+  learn_more_link_text_style.text_style = views::style::TextStyle::STYLE_LINK_5;
+  notice->AddStyleRange(
+      gfx::Range(replacement_offsets[1],
+                 replacement_offsets[1] + learn_more_link_text.length()),
+      learn_more_link_text_style);
+  return notice;
+}
+
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView, kTopViewId);
@@ -150,230 +303,47 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
+  // Avoid using the builtin DialogDelegate buttons so that we can use
+  // GetWidget()->Close() to close the UI when ready.
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+
   std::unique_ptr<views::View> primary_view =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .Build();
   primary_view->SetProperty(views::kElementIdentifierKey, kTopViewId);
 
-  // Create hero image.
-  auto logo_image = std::make_unique<views::ThemeTrackingImageView>(
-      ui::ImageModel::FromVectorIcon(kGoogleGLogoIcon, gfx::kPlaceholderColor,
-                                     kGoogleGLogoWidth),
-      ui::ImageModel::FromVectorIcon(kDarkGoogleGLogoIcon, ui::kColorIcon,
-                                     kGoogleGLogoWidth),
-      base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
-                          base::Unretained(this)));
-  logo_image->SetProperty(views::kMarginsKey,
-                          gfx::Insets::VH(kPlusAddressLabelVerticalMargin, 0));
-  primary_view->AddChildView(std::move(logo_image));
-
-  // The title.
+  primary_view->AddChildView(CreateLogo());
+  primary_view->AddChildView(CreateTitle(show_notice));
   primary_view->AddChildView(
-      views::Builder<views::StyledLabel>()
-          .SetProperty(views::kElementIdentifierKey, kPlusAddressTitleElementId)
-          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-          .SetTextContext(views::style::STYLE_PRIMARY)
-          .SetText(l10n_util::GetStringUTF16(
-              show_notice ? IDS_PLUS_ADDRESS_MODAL_TITLE_NOTICE
-                          : IDS_PLUS_ADDRESS_MODAL_TITLE))
-          .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
-          .SetDefaultTextStyle(views::style::STYLE_BODY_1_BOLD)
-          .Build());
+      CreateDescription(show_notice, primary_email_address));
 
-  // The description.
-  primary_view->AddChildView(
-      views::Builder<views::StyledLabel>()
-          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-          .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
-          .SetProperty(views::kElementIdentifierKey,
-                       kPlusAddressDescriptionTextElementId)
-          .SetProperty(views::kMarginsKey,
-                       gfx::Insets::TLBR(
-                           views::LayoutProvider::Get()->GetDistanceMetric(
-                               views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
-                           0, 0, 0))
-          .SetText(show_notice
-                       ? l10n_util::GetStringUTF16(
-                             IDS_PLUS_ADDRESS_MODAL_DESCRIPTION_NOTICE)
-                       : l10n_util::GetStringFUTF16(
-                             IDS_PLUS_ADDRESS_MODAL_DESCRIPTION,
-                             {base::UTF8ToUTF16(primary_email_address)}))
-          .Build());
-
-  // Create a bubble for the plus address to be displayed in.
-  std::unique_ptr<views::Background> background =
-      views::CreateThemedRoundedRectBackground(
-          // TODO(b/342330801): Figure out the correct color for the background
-          // and move the definition to the mixer.
-          ui::kColorSysHeaderContainer,
-          kProposedPlusAddressBackgroundCornerRadius);
-
-  plus_address_label_container_ =
-      primary_view->AddChildView(views::Builder<views::TableLayoutView>()
-                                     .SetBackground(std::move(background))
-                                     .Build());
-
-  plus_address_label_container_->SetProperty(
-      views::kMarginsKey, gfx::Insets::VH(kPlusAddressLabelVerticalMargin, 0));
-  plus_address_label_container_->AddColumn(
-      views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter,
-      views::TableLayout::kFixedSize, views::TableLayout::ColumnSize::kFixed,
-      kPlusAddressIconColumnWidth, 0);
-  plus_address_label_container_->AddColumn(
-      views::LayoutAlignment::kStart, views::LayoutAlignment::kCenter, 1.0f,
-      views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
-  if (offer_refresh) {
-    plus_address_label_container_->AddColumn(
-        views::LayoutAlignment::kStart, views::LayoutAlignment::kStretch,
-        views::TableLayout::kFixedSize, views::TableLayout::ColumnSize::kFixed,
-        kPlusAddressRefreshColumnWidth, 0);
-  } else {
-    plus_address_label_container_->AddPaddingColumn(
-        views::TableLayout::kFixedSize, kPlusAddressIconColumnWidth);
-  }
+  // The container that contains the suggested plus address (or a loading
+  // message).
+  plus_address_label_container_ = primary_view->AddChildView(
+      CreatePlusAddressLabelContainer(offer_refresh));
   plus_address_label_container_->AddRows(1, views::TableLayout::kFixedSize);
-
   plus_address_label_container_->AddChildView(
       views::Builder<views::ImageView>()
           .SetImage(ui::ImageModel::FromVectorIcon(
               kLogoLargeIcon, ui::kColorIcon, kPlusAddressIconWidth))
           .Build());
-
-  plus_address_label_ = plus_address_label_container_->AddChildView(
-      views::Builder<views::Label>()
-          .SetText(l10n_util::GetStringUTF16(
-              IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER))
-          .SetTextContext(views::style::CONTEXT_LABEL)
-          .SetTextStyle(STYLE_SECONDARY_MONOSPACED)
-          .SetProperty(views::kElementIdentifierKey,
-                       kPlusAddressSuggestedEmailElementId)
-          .SetSelectable(true)
-          .Build());
-  plus_address_label_->SetLineHeight(2 * plus_address_label_->GetLineHeight());
-
-  // The refresh button.
+  plus_address_label_ =
+      plus_address_label_container_->AddChildView(CreatePlusAddressLabel());
   if (offer_refresh) {
-    refresh_button_ = plus_address_label_container_->AddChildView(
-        views::CreateVectorImageButtonWithNativeTheme(
-            base::BindRepeating(
-                &PlusAddressCreationDialogDelegate::OnRefreshClicked,
-                base::Unretained(this)),
-            vector_icons::kReloadIcon, kRefreshButtonIconWidth));
-    views::InstallCircleHighlightPathGenerator(refresh_button_.get());
-    refresh_button_->SetProperty(views::kElementIdentifierKey,
-                                 kPlusAddressRefreshButtonElementId);
-    refresh_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
-        IDS_PLUS_ADDRESS_MODAL_REFRESH_BUTTON_ACCESSIBLE_NAME));
-    refresh_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, 8)));
+    refresh_button_ =
+        plus_address_label_container_->AddChildView(CreateRefreshButton());
   }
 
-  // Create and hide label for bug report instruction.
-  std::vector<size_t> error_link_offsets;
-  std::u16string error_link_text =
-      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_ERROR_REPORT_LINK_TEXT);
-  error_report_label_ = primary_view->AddChildView(
-      views::Builder<views::StyledLabel>()
-          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-          .SetText(l10n_util::GetStringFUTF16(
-              IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_DESKTOP,
-              {error_link_text}, &error_link_offsets))
-          .SetTextContext(views::style::CONTEXT_BUBBLE_FOOTER)
-          .SetDefaultTextStyle(views::style::STYLE_HINT)
-          .SetVisible(false)
-          .SetProperty(views::kMarginsKey,
-                       gfx::Insets::VH(kPlusAddressLabelVerticalMargin, 0))
-          .SetProperty(views::kElementIdentifierKey,
-                       kPlusAddressErrorTextElementId)
-          .Build());
-  // Update style for error link.
-  gfx::Range error_link_range(error_link_offsets[0],
-                              error_link_offsets[0] + error_link_text.length());
-  const auto error_link_text_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink(
-          base::BindRepeating(&OpenErrorReportingLink, web_contents));
-  error_report_label_->AddStyleRange(error_link_range, error_link_text_style);
+  // The error report label is hidden by default.
+  error_report_label_ =
+      primary_view->AddChildView(CreateErrorReportLabel(web_contents));
 
   if (show_notice) {
-    std::vector<size_t> replacement_offsets;
-    const std::u16string learn_more_link_text = l10n_util::GetStringUTF16(
-        IDS_PLUS_ADDRESS_MODAL_NOTICE_LEARN_MORE_LINK_TEXT);
-    auto* notice_label = primary_view->AddChildView(
-        views::Builder<views::StyledLabel>()
-            .SetProperty(views::kElementIdentifierKey,
-                         kPlusAddressNoticeElementId)
-            .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-            .SetDefaultTextStyle(views::style::TextStyle::STYLE_BODY_5)
-            .SetDefaultEnabledColorId(ui::kColorLabelForegroundSecondary)
-            .SetText(l10n_util::GetStringFUTF16(
-                IDS_PLUS_ADDRESS_MODAL_NOTICE,
-                /*replacements=*/
-                {base::UTF8ToUTF16(primary_email_address),
-                 learn_more_link_text},
-                &replacement_offsets))
-            .SetProperty(
-                views::kMarginsKey,
-                gfx::Insets::TLBR(0, 0, kPlusAddressLabelVerticalMargin, 0))
-            .Build());
-    auto learn_more_link_text_style =
-        views::StyledLabel::RangeStyleInfo::CreateForLink(
-            base::BindRepeating(&OpenLearnMoreLink, web_contents));
-    learn_more_link_text_style.text_style =
-        views::style::TextStyle::STYLE_LINK_5;
-    notice_label->AddStyleRange(
-        gfx::Range(replacement_offsets[1],
-                   replacement_offsets[1] + learn_more_link_text.length()),
-        learn_more_link_text_style);
+    primary_view->AddChildView(
+        CreateNotice(web_contents, primary_email_address));
   }
-
-  // Avoid using the builtin DialogDelegate buttons so that we can use
-  // GetWidget()->Close() to close the UI when ready.
-  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-
-  // Initialize buttons.
-  primary_view->AddChildView(
-      views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd)
-          .SetBetweenChildSpacing(
-              ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL))
-          .AddChildren(
-              views::Builder<views::MdTextButton>()
-                  .SetCallback(base::BindRepeating(
-                      &PlusAddressCreationDialogDelegate::HandleButtonPress,
-                      // Safe because this delegate outlives the Widget (and
-                      // this view).
-                      base::Unretained(this),
-                      PlusAddressViewButtonType::kCancel))
-                  .SetText(l10n_util::GetStringUTF16(
-                      IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT))
-                  .SetTooltipText(l10n_util::GetStringUTF16(
-                      IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT))
-                  .SetProperty(views::kElementIdentifierKey,
-                               kPlusAddressCancelButtonElementId)
-                  .SetStyle(ui::ButtonStyle::kTonal)
-                  .SetAccessibleName(l10n_util::GetStringUTF16(
-                      IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT)),
-              views::Builder<views::MdTextButton>()
-                  .CopyAddressTo(&confirm_button_)
-                  .SetCallback(base::BindRepeating(
-                      &PlusAddressCreationDialogDelegate::HandleButtonPress,
-                      // Safe because this delegate outlives the Widget (and
-                      // this view).
-                      base::Unretained(this),
-                      PlusAddressViewButtonType::kConfirm))
-                  .SetText(
-                      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT))
-                  .SetTooltipText(
-                      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT))
-                  .SetStyle(ui::ButtonStyle::kProminent)
-                  .SetEnabled(false)
-                  .SetProperty(views::kElementIdentifierKey,
-                               kPlusAddressConfirmButtonElementId)
-                  .SetAccessibleName(l10n_util::GetStringUTF16(
-                      IDS_PLUS_ADDRESS_MODAL_OK_TEXT)))
-          .Build());
+  primary_view->AddChildView(CreateButtons());
 
   SetContentsView(std::move(primary_view));
 }
@@ -457,6 +427,77 @@ void PlusAddressCreationDialogDelegate::HandleButtonPress(
       return;
     }
   }
+}
+
+std::unique_ptr<views::View> PlusAddressCreationDialogDelegate::CreateLogo() {
+  auto logo = std::make_unique<views::ThemeTrackingImageView>(
+      ui::ImageModel::FromVectorIcon(kGoogleGLogoIcon, gfx::kPlaceholderColor,
+                                     kGoogleGLogoWidth),
+      ui::ImageModel::FromVectorIcon(kDarkGoogleGLogoIcon, ui::kColorIcon,
+                                     kGoogleGLogoWidth),
+      base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+                          base::Unretained(this)));
+  logo->SetProperty(views::kMarginsKey,
+                    gfx::Insets::VH(kPlusAddressLabelVerticalMargin, 0));
+  return logo;
+}
+
+std::unique_ptr<views::ImageButton>
+PlusAddressCreationDialogDelegate::CreateRefreshButton() {
+  auto button = views::CreateVectorImageButtonWithNativeTheme(
+      base::BindRepeating(&PlusAddressCreationDialogDelegate::OnRefreshClicked,
+                          base::Unretained(this)),
+      vector_icons::kReloadIcon, kRefreshButtonIconWidth);
+  views::InstallCircleHighlightPathGenerator(button.get());
+  button->SetProperty(views::kElementIdentifierKey,
+                      kPlusAddressRefreshButtonElementId);
+  button->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_PLUS_ADDRESS_MODAL_REFRESH_BUTTON_ACCESSIBLE_NAME));
+  button->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, 8)));
+  return button;
+}
+
+std::unique_ptr<views::View>
+PlusAddressCreationDialogDelegate::CreateButtons() {
+  return views::Builder<views::BoxLayoutView>()
+      .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+      .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd)
+      .SetBetweenChildSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL))
+      .AddChildren(
+          views::Builder<views::MdTextButton>()
+              .SetCallback(base::BindRepeating(
+                  &PlusAddressCreationDialogDelegate::HandleButtonPress,
+                  // Safe because this delegate outlives the Widget (and
+                  // this view).
+                  base::Unretained(this), PlusAddressViewButtonType::kCancel))
+              .SetText(
+                  l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT))
+              .SetTooltipText(
+                  l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT))
+              .SetProperty(views::kElementIdentifierKey,
+                           kPlusAddressCancelButtonElementId)
+              .SetStyle(ui::ButtonStyle::kTonal)
+              .SetAccessibleName(l10n_util::GetStringUTF16(
+                  IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT)),
+          views::Builder<views::MdTextButton>()
+              .CopyAddressTo(&confirm_button_)
+              .SetCallback(base::BindRepeating(
+                  &PlusAddressCreationDialogDelegate::HandleButtonPress,
+                  // Safe because this delegate outlives the Widget (and
+                  // this view).
+                  base::Unretained(this), PlusAddressViewButtonType::kConfirm))
+              .SetText(
+                  l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT))
+              .SetTooltipText(
+                  l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT))
+              .SetStyle(ui::ButtonStyle::kProminent)
+              .SetEnabled(false)
+              .SetProperty(views::kElementIdentifierKey,
+                           kPlusAddressConfirmButtonElementId)
+              .SetAccessibleName(
+                  l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT)))
+      .Build();
 }
 
 void PlusAddressCreationDialogDelegate::ShowErrorStateUI() {

@@ -20,8 +20,8 @@ namespace views {
 class ImageButton;
 class Label;
 class MdTextButton;
-class StyledLabel;
 class TableLayoutView;
+class View;
 }  // namespace views
 
 namespace plus_addresses {
@@ -56,6 +56,15 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
   void HandleButtonPress(PlusAddressViewButtonType type);
 
  private:
+  // Helper methods for view setup.
+
+  // Creates the logo displayed at the top of the dialog.
+  std::unique_ptr<views::View> CreateLogo();
+  std::unique_ptr<views::ImageButton> CreateRefreshButton();
+  // Creates a view containing the two buttons for the dialog and saves a
+  // pointer to the confirm button to `confirm_button_`.
+  std::unique_ptr<views::View> CreateButtons();
+
   // Updates the modal dialog to show error messages.
   void ShowErrorStateUI();
 
@@ -68,7 +77,7 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
   raw_ptr<views::TableLayoutView> plus_address_label_container_ = nullptr;
   raw_ptr<views::Label> plus_address_label_ = nullptr;
   raw_ptr<views::ImageButton> refresh_button_ = nullptr;
-  raw_ptr<views::StyledLabel> error_report_label_ = nullptr;
+  raw_ptr<views::View> error_report_label_ = nullptr;
   raw_ptr<views::MdTextButton> confirm_button_ = nullptr;
 };
 
