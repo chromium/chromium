@@ -605,17 +605,17 @@ _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
         'v8.browsing_mobile-future',
     ])
 _ANDROID_PIXEL6_BENCHMARK_CONFIGS = PerfSuite(
-    _OFFICIAL_EXCEPT_DISPLAY_LOCKING).Add([
-        _GetBenchmarkConfig('system_health.scroll_jank_mobile')
-    ]
-)
+    _OFFICIAL_EXCEPT_DISPLAY_LOCKING).Add(
+        [_GetBenchmarkConfig('system_health.scroll_jank_mobile')]).Repeat([
+            'speedometer3',
+        ], 4)
 _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.common_mobile'),
     _GetBenchmarkConfig('jetstream2'),
     _GetBenchmarkConfig('rendering.mobile'),
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('speedometer2-predictable'),
-    _GetBenchmarkConfig('speedometer3'),
+    _GetBenchmarkConfig('speedometer3', pageset_repeat=4),
     _GetBenchmarkConfig('speedometer3-predictable'),
 ])
 _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS = PerfSuite(
@@ -625,6 +625,9 @@ _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS = PerfSuite(
         _GetBenchmarkConfig('speedometer3-minorms'),
     ])
 _ANDROID_PIXEL6_EXECUTABLE_CONFIGS = frozenset([
+    _components_perftests(60),
+])
+_ANDROID_PIXEL6_PGO_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),
 ])
 _ANDROID_PIXEL6_PRO_EXECUTABLE_CONFIGS = frozenset([
@@ -858,15 +861,20 @@ ANDROID_PIXEL4_WEBVIEW = PerfPlatform(
 #                            28 once more devices are procured. Temporarily use
 #                            15 to avoid high contention in the pixel6 pool.
 ANDROID_PIXEL6 = PerfPlatform('android-pixel6-perf',
-                              'Android T',
+                              'Android U',
                               _ANDROID_PIXEL6_BENCHMARK_CONFIGS,
                               15,
                               'android',
                               executables=_ANDROID_PIXEL6_EXECUTABLE_CONFIGS,
                               crossbench=_CROSSBENCH_SPEEDOMETER)
-ANDROID_PIXEL6_PGO = PerfPlatform('android-pixel6-perf-pgo', 'Android T',
-                                  _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS, 15,
-                                  'android')
+ANDROID_PIXEL6_PGO = PerfPlatform(
+    'android-pixel6-perf-pgo',
+    'Android U',
+    _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS,
+    10,
+    'android',
+    executables=_ANDROID_PIXEL6_PGO_EXECUTABLE_CONFIGS,
+    crossbench=_CROSSBENCH_SPEEDOMETER)
 ANDROID_PIXEL6_PRO = PerfPlatform(
     'android-pixel6-pro-perf',
     'Android T',
