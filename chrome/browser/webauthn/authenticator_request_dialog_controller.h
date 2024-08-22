@@ -36,17 +36,12 @@ class AuthenticatorRequestDialogController
     : public AuthenticatorRequestDialogModel::Observer,
       public webauthn::PasskeyModel::Observer {
  public:
-  using Model = AuthenticatorRequestDialogModel;
-  using Step = AuthenticatorRequestDialogModel::Step;
-  using Mechanism = AuthenticatorRequestDialogModel::Mechanism;
   using RequestCallback = device::FidoRequestHandlerBase::RequestCallback;
-  using TransportAvailabilityInfo =
-      device::FidoRequestHandlerBase::TransportAvailabilityInfo;
   using BlePermissionCallback = base::RepeatingCallback<void(
       device::FidoRequestHandlerBase::BlePermissionCallback)>;
 
   AuthenticatorRequestDialogController(
-      Model* model,
+      AuthenticatorRequestDialogModel* model,
       content::RenderFrameHost* render_frame_host);
 
   AuthenticatorRequestDialogController(
@@ -56,7 +51,7 @@ class AuthenticatorRequestDialogController
 
   ~AuthenticatorRequestDialogController() override;
 
-  Model* model() const;
+  AuthenticatorRequestDialogModel* model() const;
 
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
 
@@ -66,18 +61,7 @@ class AuthenticatorRequestDialogController
   // Returns whether the UI is in a state at which the |request_| member of
   // AuthenticatorImpl has completed processing. Note that the request callback
   // is only resolved after the UI is dismissed.
-  bool is_request_complete() const {
-    return model_->step() == Step::kTimedOut ||
-           model_->step() == Step::kKeyNotRegistered ||
-           model_->step() == Step::kKeyAlreadyRegistered ||
-           model_->step() == Step::kMissingCapability ||
-           model_->step() == Step::kErrorWindowsHelloNotEnabled ||
-           model_->step() == Step::kClosed;
-  }
-
-  const TransportAvailabilityInfo* transport_availability() const {
-    return &transport_availability_;
-  }
+  bool is_request_complete() const;
 
   const std::optional<std::string>& selected_authenticator_id() const {
     return ephemeral_state_.selected_authenticator_id_;
@@ -90,7 +74,8 @@ class AuthenticatorRequestDialogController
   // password autofill instead of the full-blown page-modal UI.
   //
   // Valid action when at step: kNotStarted.
-  void StartFlow(TransportAvailabilityInfo trasport_availability,
+  void StartFlow(device::FidoRequestHandlerBase::TransportAvailabilityInfo
+                     transport_availability,
                  bool is_conditional_mediation);
 
   void StartOver() override;
@@ -125,7 +110,8 @@ class AuthenticatorRequestDialogController
 
   // Called when the transport availability info changes.
   void OnTransportAvailabilityChanged(
-      TransportAvailabilityInfo transport_availability);
+      device::FidoRequestHandlerBase::TransportAvailabilityInfo
+          transport_availability);
 
   // Called when an attempt to contact a phone failed.
   void OnPhoneContactFailed(const std::string& name);
@@ -317,9 +303,10 @@ class AuthenticatorRequestDialogController
   // performs the little extra processing that this Controller does before
   // setting the model's Step. In most cases tests can set the Step on the
   // model directly.
-  void SetCurrentStepForTesting(Step step);
+  void SetCurrentStepForTesting(AuthenticatorRequestDialogModel::Step step);
 
-  TransportAvailabilityInfo& transport_availability_for_testing() {
+  device::FidoRequestHandlerBase::TransportAvailabilityInfo&
+  transport_availability_for_testing() {
     return transport_availability_;
   }
 
@@ -419,7 +406,7 @@ class AuthenticatorRequestDialogController
 
   void ResetEphemeralState();
 
-  void SetCurrentStep(Step);
+  void SetCurrentStep(AuthenticatorRequestDialogModel::Step step);
 
   // Requests that the step-by-step wizard flow commence, guiding the user
   // through using the Secutity Key with the given |transport|.
@@ -499,7 +486,7 @@ class AuthenticatorRequestDialogController
   // frame host indirectly owns the controller, and so it should outlive it.
   content::RenderFrameHost* GetRenderFrameHost() const;
 
-  raw_ptr<Model> model_;
+  raw_ptr<AuthenticatorRequestDialogModel> model_;
 
   // Identifier for the RenderFrameHost of the frame that initiated the current
   // request.
@@ -515,7 +502,7 @@ class AuthenticatorRequestDialogController
   // pending_step_ holds requested steps until the UI is shown. The UI is only
   // shown once the TransportAvailabilityInfo is available, but authenticators
   // may request, e.g., PIN entry prior to that.
-  std::optional<Step> pending_step_;
+  std::optional<AuthenticatorRequestDialogModel::Step> pending_step_;
 
   // after_off_the_record_interstitial_ contains the closure to run if the user
   // accepts the interstitial that warns that platform/caBLE authenticators may
@@ -527,7 +514,8 @@ class AuthenticatorRequestDialogController
   base::OnceClosure after_ble_adapter_powered_;
 
   // This field is only filled out once the UX flow is started.
-  TransportAvailabilityInfo transport_availability_;
+  device::FidoRequestHandlerBase::TransportAvailabilityInfo
+      transport_availability_;
 
   content::AuthenticatorRequestClientDelegate::AccountPreselectedCallback
       account_preselected_callback_;

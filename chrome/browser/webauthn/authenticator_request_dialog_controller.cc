@@ -73,6 +73,8 @@ constexpr int kMaxPriorityGPMCredentialCreations = 2;
 
 using BleStatus = device::FidoRequestHandlerBase::BleStatus;
 using ChangePinEvent = ChangePinControllerImpl::ChangePinEvent;
+using Mechanism = AuthenticatorRequestDialogModel::Mechanism;
+using Step = AuthenticatorRequestDialogModel::Step;
 using TransportAvailabilityInfo =
     device::FidoRequestHandlerBase::TransportAvailabilityInfo;
 
@@ -449,6 +451,15 @@ void AuthenticatorRequestDialogController::OnModelDestroyed(
 
 void AuthenticatorRequestDialogController::HideDialog() {
   SetCurrentStep(Step::kNotStarted);
+}
+
+bool AuthenticatorRequestDialogController::is_request_complete() const {
+  return model_->step() == Step::kTimedOut ||
+         model_->step() == Step::kKeyNotRegistered ||
+         model_->step() == Step::kKeyAlreadyRegistered ||
+         model_->step() == Step::kMissingCapability ||
+         model_->step() == Step::kErrorWindowsHelloNotEnabled ||
+         model_->step() == Step::kClosed;
 }
 
 void AuthenticatorRequestDialogController::StartFlow(
@@ -836,7 +847,7 @@ void AuthenticatorRequestDialogController::OnBleStatusKnown(
       std::move(after_ble_adapter_powered_).Run();
       return;
     case BleStatus::kOff:
-      if (transport_availability()->can_power_on_ble_adapter) {
+      if (transport_availability_.can_power_on_ble_adapter) {
         SetCurrentStep(Step::kBlePowerOnAutomatic);
       } else {
         SetCurrentStep(Step::kBlePowerOnManual);
@@ -1733,7 +1744,7 @@ void AuthenticatorRequestDialogController::ReauthForSyncRestore() {
 
 void AuthenticatorRequestDialogController::ContactPhone(
     const std::string& name) {
-  if (transport_availability()->ble_status == BleStatus::kPermissionDenied) {
+  if (transport_availability_.ble_status == BleStatus::kPermissionDenied) {
     // |step| is not saved because macOS asks the user to restart Chrome
     // after permission has been granted. So the user will end up retrying
     // the whole WebAuthn request in the new process.

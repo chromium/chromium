@@ -1330,12 +1330,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
   dialog_model()->OnUserConfirmedPriorityMechanism();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMCreatePin);
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
       ->StoreKeys(kGaiaId,
                   {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
@@ -1444,7 +1444,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
   dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 
@@ -1499,12 +1499,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
   dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMCreatePin);
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
       ->StoreKeys(kGaiaId,
                   {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
@@ -1543,12 +1543,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
   dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMCreatePin);
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
       ->StoreKeys(kGaiaId,
                   {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
@@ -1574,7 +1574,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
             AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
 
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMEnterPin);
+      AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
   dialog_model()->OnGPMCreatePasskey();
   model_observer()->WaitForStep();
 
@@ -1622,12 +1622,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
   dialog_model()->OnUserConfirmedPriorityMechanism();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMCreatePin);
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
       ->StoreKeys(kGaiaId,
                   {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
@@ -1699,7 +1699,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMEnterPin);
+      AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
   dialog_model()->OnGPMCreatePasskey();
   model_observer()->WaitForStep();
 
@@ -1707,7 +1707,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                 webauthn::pref_names::kEnclaveFailedPINAttemptsCount),
             0);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMEnterPin);
+      AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
   dialog_model()->OnGPMPinEntered(u"111111");
   model_observer()->WaitForStep();
 
@@ -1726,7 +1726,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMEnterPin);
+      AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
   dialog_model()->OnUserConfirmedPriorityMechanism();
   model_observer()->WaitForStep();
 
@@ -1734,7 +1734,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                 webauthn::pref_names::kEnclaveFailedPINAttemptsCount),
             0);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMEnterPin);
+      AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
   dialog_model()->OnGPMPinEntered(u"111111");
   model_observer()->WaitForStep();
 
@@ -1868,7 +1868,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest, UserCancelsUV) {
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kClosed);
+      AuthenticatorRequestDialogModel::Step::kClosed);
   dialog_model()->OnUserConfirmedPriorityMechanism();
   model_observer()->WaitForStep();
 
@@ -1921,7 +1921,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
   // Resolve the connection and wait for the next step.
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
       registration_state_result;
   registration_state_result.state = trusted_vault::
@@ -1953,7 +1953,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
   // Tap the passkey and expect an error.
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMError);
+      AuthenticatorRequestDialogModel::Step::kGPMError);
   dialog_model()->OnAccountPreselectedIndex(0);
   model_observer()->WaitForStep();
 }
@@ -1982,7 +1982,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
   // Wait for the request to time out.
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMError);
+      AuthenticatorRequestDialogModel::Step::kGPMError);
   clock_.Advance(GPMEnclaveController::kDownloadAccountStateTimeout);
   model_observer()->WaitForStep();
 }
@@ -2339,7 +2339,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   EXPECT_TRUE(
       request_delegate()->enclave_controller_for_testing()->is_active());
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
   dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 
@@ -2378,7 +2378,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
   dialog_model()->OnUserConfirmedPriorityMechanism();
   model_observer()->WaitForStep();
 
@@ -2506,17 +2506,17 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kTrustThisComputerCreation);
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
   dialog_model()->OnGPMConfirmOffTheRecordCreate();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
   dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMCreatePin);
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
       ->StoreKeys(kGaiaId,
                   {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
@@ -2539,12 +2539,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
       dialog_model()->step(),
       AuthenticatorRequestDialogModel::Step::kGPMConfirmOffTheRecordCreate);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMCreatePasskey);
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
   dialog_model()->OnGPMConfirmOffTheRecordCreate();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMEnterPin);
+      AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
   dialog_model()->OnGPMCreatePasskey();
   model_observer()->WaitForStep();
 
@@ -2581,12 +2581,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
   dialog_model()->OnUserConfirmedPriorityMechanism();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMCreatePin);
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
       ->StoreKeys(kGaiaId,
                   {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
@@ -2895,7 +2895,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Recovery) {
                   ->account_state_for_testing(),
               GPMEnclaveController::AccountState::kRecoverable);
     model_observer()->SetStepToObserve(
-        AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+        AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
     dialog_model()->OnTrustThisComputer();
     model_observer()->WaitForStep();
 
@@ -3037,7 +3037,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kMechanismSelection);
+      AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   dialog_model()->StartOver();
   model_observer()->WaitForStep();
   dialog_model()->CancelAuthenticatorRequest();
@@ -3048,7 +3048,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kMechanismSelection);
+      AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   dialog_model()->StartOver();
   model_observer()->WaitForStep();
   dialog_model()->CancelAuthenticatorRequest();
@@ -3092,12 +3092,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kTrustThisComputerAssertion);
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
   dialog_model()->OnUserConfirmedPriorityMechanism();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kMechanismSelection);
+      AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   registration_state_result.state = trusted_vault::
       DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
   SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
@@ -3105,7 +3105,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kTrustThisComputerAssertion);
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
   EXPECT_TRUE(base::ranges::any_of(
       dialog_model()->mechanisms,
       [](const auto& m) { return IsMechanismEnclaveCredential(m); }));
@@ -3177,7 +3177,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMEnterPin);
+      AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
   dialog_model()->OnGPMCreatePasskey();
   model_observer()->WaitForStep();
   dialog_model()->OnGPMPinEntered(base::UTF8ToUTF16(pin));
@@ -3221,7 +3221,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMEnterPin);
+      AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
   dialog_model()->OnUserConfirmedPriorityMechanism();
   model_observer()->WaitForStep();
   dialog_model()->OnGPMPinEntered(base::UTF8ToUTF16(newpin));
@@ -3296,7 +3296,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
   dialog_model()->OnUserConfirmedPriorityMechanism();
   model_observer()->WaitForStep();
 
@@ -3372,12 +3372,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest, Bug_354083161) {
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
   dialog_model()->OnUserConfirmedPriorityMechanism();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMCreatePin);
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
       ->StoreKeys(kGaiaId,
                   {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
@@ -3434,12 +3434,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
   dialog_model()->OnUserConfirmedPriorityMechanism();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMCreatePin);
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
   EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
       ->StoreKeys(kGaiaId,
                   {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
