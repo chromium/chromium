@@ -132,11 +132,27 @@ void CookieCryptor::Init(base::OnceClosure callback) {
 
 bool CookieCryptor::EncryptString(const std::string& plaintext,
                                   std::string* ciphertext) {
+  // SQLite crypto uses OSCrypt Async Encryptor and the behavior for empty
+  // plaintext is to return empty ciphertext. See
+  // os_crypt_async::Encryptor::EncryptString. This matches this behavior,
+  // without adding a dependency from net into components.
+  if (plaintext.empty()) {
+    ciphertext->clear();
+    return true;
+  }
   return encryptor_.Encrypt(plaintext, ciphertext);
 }
 
 bool CookieCryptor::DecryptString(const std::string& ciphertext,
                                   std::string* plaintext) {
+  // SQLite crypto uses OSCrypt Async Encryptor and the behavior for empty
+  // ciphertext is to return empty plaintext. See
+  // os_crypt_async::Encryptor::DecryptString. This matches this behavior,
+  // without adding a dependency from net into components.
+  if (ciphertext.empty()) {
+    plaintext->clear();
+    return true;
+  }
   return encryptor_.Decrypt(ciphertext, plaintext);
 }
 
@@ -1759,6 +1775,11 @@ std::vector<CanonicalCookie> CookiesForMigrationTest() {
       /*last_update=*/now,
       /*secure=*/false, /*httponly=*/false, CookieSameSite::UNSPECIFIED,
       COOKIE_PRIORITY_DEFAULT));
+  cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
+      "D", "", "example.com", "/", /*creation=*/now, /*expiration=*/now,
+      /*last_access=*/now, /*last_update=*/now, /*secure=*/true,
+      /*httponly=*/false, CookieSameSite::UNSPECIFIED,
+      COOKIE_PRIORITY_DEFAULT));
   return cookies;
 }
 
@@ -2026,7 +2047,7 @@ bool AddV23EncryptedCookiesToDB(sql::Database* db,
 void ConfirmCookiesAfterMigrationTest(
     std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies,
     bool expect_last_update_date = false) {
-  ASSERT_EQ(read_in_cookies.size(), 6u);
+  ASSERT_EQ(read_in_cookies.size(), 7u);
 
   std::sort(read_in_cookies.begin(), read_in_cookies.end(), &CompareCookies);
   int i = 0;
@@ -2114,6 +2135,20 @@ void ConfirmCookiesAfterMigrationTest(
                                     : base::Time());
   EXPECT_EQ(read_in_cookies[i]->ExpiryDate(),
             read_in_cookies[i]->CreationDate() + base::Days(399));
+  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kUnknown);
+
+  i++;
+  EXPECT_EQ("D", read_in_cookies[i]->Name());
+  EXPECT_EQ("", read_in_cookies[i]->Value());
+  EXPECT_EQ("example.com", read_in_cookies[i]->Domain());
+  EXPECT_EQ("/", read_in_cookies[i]->Path());
+  EXPECT_TRUE(read_in_cookies[i]->SecureAttribute());
+  EXPECT_EQ(CookieSourceScheme::kSecure, read_in_cookies[i]->SourceScheme());
+  EXPECT_EQ(read_in_cookies[i]->LastUpdateDate(),
+            expect_last_update_date ? read_in_cookies[i]->CreationDate()
+                                    : base::Time());
+  EXPECT_EQ(read_in_cookies[i]->ExpiryDate(),
+            read_in_cookies[i]->CreationDate());
   EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kUnknown);
 }
 
