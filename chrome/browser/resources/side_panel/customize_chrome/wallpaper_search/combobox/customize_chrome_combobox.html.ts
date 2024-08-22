@@ -44,7 +44,7 @@ export function getHtml(this: CustomizeChromeComboboxElement) {
               <div class="item" role="option" .value="${subitem.key}"
                   aria-selected="${this.isItemSelected_(subitem)}">
                 <cr-icon icon="cr:check" aria-hidden="true"></cr-icon>
-                <span>${subitem.label}</span>
+                <span title=${subitem.label}>${subitem.label}</span>
               </div>
             `)}
           `: ''}
