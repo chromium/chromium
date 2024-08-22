@@ -6,10 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_WEB_GRAPHICS_CONTEXT_3D_VIDEO_FRAME_POOL_H_
 
 #include "base/atomic_sequence_num.h"
+#include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 
 namespace gfx {
@@ -86,6 +88,9 @@ class PLATFORM_EXPORT WebGraphicsContext3DVideoFramePool {
       weak_context_provider_;
   const std::unique_ptr<media::RenderableGpuMemoryBufferVideoFramePool> pool_;
   base::AtomicSequenceNumber trace_flow_seqno_;
+
+  WTF::Deque<std::unique_ptr<base::CancelableOnceClosure>>
+      pending_gpu_completion_callbacks_;
 };
 
 }  // namespace blink
