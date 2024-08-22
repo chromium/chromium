@@ -2895,6 +2895,12 @@ config("symbols") {
     configs += [ "//build/config:compress_debug_sections" ]
   }
 
+  if (is_clang && !is_nacl) {
+    # Remove unreferenced methods to reduce type info in symbols.
+    # See: https://github.com/llvm/llvm-project/pull/87018.
+    cflags += [ "-gomit-unreferenced-methods" ]
+  }
+
   if (is_clang && (!is_nacl || is_nacl_saigo)) {
     if (is_apple) {
       # TODO(crbug.com/40117949): Investigate missing debug info on mac.
