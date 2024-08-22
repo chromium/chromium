@@ -1736,6 +1736,8 @@ interface Document : Node
     getter onresume
     getter onscroll
     getter onscrollend
+    getter onscrollsnapchange
+    getter onscrollsnapchanging
     getter onsearch
     getter onsecuritypolicyviolation
     getter onseeked
@@ -1953,6 +1955,8 @@ interface Document : Node
     setter onresume
     setter onscroll
     setter onscrollend
+    setter onscrollsnapchange
+    setter onscrollsnapchanging
     setter onsearch
     setter onsecuritypolicyviolation
     setter onseeked
@@ -3428,6 +3432,8 @@ interface HTMLElement : Element
     getter onresize
     getter onscroll
     getter onscrollend
+    getter onscrollsnapchange
+    getter onscrollsnapchanging
     getter onsecuritypolicyviolation
     getter onseeked
     getter onseeking
@@ -3561,6 +3567,8 @@ interface HTMLElement : Element
     setter onresize
     setter onscroll
     setter onscrollend
+    setter onscrollsnapchange
+    setter onscrollsnapchanging
     setter onsecuritypolicyviolation
     setter onseeked
     setter onseeking
@@ -5340,6 +5348,8 @@ interface MathMLElement : Element
     getter onresize
     getter onscroll
     getter onscrollend
+    getter onscrollsnapchange
+    getter onscrollsnapchanging
     getter onsecuritypolicyviolation
     getter onseeked
     getter onseeking
@@ -5449,6 +5459,8 @@ interface MathMLElement : Element
     setter onresize
     setter onscroll
     setter onscrollend
+    setter onscrollsnapchange
+    setter onscrollsnapchanging
     setter onsecuritypolicyviolation
     setter onseeked
     setter onseeking
@@ -7532,6 +7544,8 @@ interface SVGElement : Element
     getter onresize
     getter onscroll
     getter onscrollend
+    getter onscrollsnapchange
+    getter onscrollsnapchanging
     getter onsecuritypolicyviolation
     getter onseeked
     getter onseeking
@@ -7643,6 +7657,8 @@ interface SVGElement : Element
     setter onresize
     setter onscroll
     setter onscrollend
+    setter onscrollsnapchange
+    setter onscrollsnapchanging
     setter onsecuritypolicyviolation
     setter onseeked
     setter onseeking
@@ -8700,6 +8716,11 @@ interface SharedWorker : EventTarget
     getter port
     method constructor
     setter onerror
+interface SnapEvent : Event
+    attribute @@toStringTag
+    getter snapTargetBlock
+    getter snapTargetInline
+    method constructor
 interface SourceBuffer : EventTarget
     attribute @@toStringTag
     getter appendWindowEnd
@@ -11808,6 +11829,8 @@ namespace console
     getter onresize
     getter onscroll
     getter onscrollend
+    getter onscrollsnapchange
+    getter onscrollsnapchanging
     getter onsearch
     getter onsecuritypolicyviolation
     getter onseeked
@@ -12026,6 +12049,8 @@ namespace console
     setter onresize
     setter onscroll
     setter onscrollend
+    setter onscrollsnapchange
+    setter onscrollsnapchanging
     setter onsearch
     setter onsecuritypolicyviolation
     setter onseeked

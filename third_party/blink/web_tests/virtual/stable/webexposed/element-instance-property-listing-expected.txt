@@ -245,6 +245,8 @@ namespace http://www.w3.org/1999/xhtml
     property onresize
     property onscroll
     property onscrollend
+    property onscrollsnapchange
+    property onscrollsnapchanging
     property onsearch
     property onsecuritypolicyviolation
     property onseeked
@@ -1448,6 +1450,8 @@ namespace http://www.w3.org/2000/svg
     property onresize
     property onscroll
     property onscrollend
+    property onscrollsnapchange
+    property onscrollsnapchanging
     property onsearch
     property onsecuritypolicyviolation
     property onseeked

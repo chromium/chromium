@@ -1152,17 +1152,17 @@
     {
       // https://drafts.csswg.org/css-scroll-snap-2/#scrollsnapchange
       name: "CSSScrollSnapChangeEvent",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://drafts.csswg.org/css-scroll-snap-2/#scrollsnapchanging
       name: "CSSScrollSnapChangingEvent",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://drafts.csswg.org/css-scroll-snap-2/#snap-events
       name: "CSSScrollSnapEvents",
-      status: "experimental",
+      status: "stable",
       implied_by: ["CSSScrollSnapChangeEvent", "CSSScrollSnapChangingEvent"],
     },
     {
