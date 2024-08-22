@@ -501,6 +501,8 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
 TEST_F(ContextualPanelEntrypointMediatorTest, TestWebStateListChanged) {
   [[mocked_entrypoint_help_handler_ expect]
       dismissContextualPanelEntrypointIPHAnimated:NO];
+  [[mocked_entrypoint_help_handler_ expect]
+      dismissContextualPanelEntrypointIPHAnimated:NO];
 
   auto web_state = std::make_unique<web::FakeWebState>();
   std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models;
