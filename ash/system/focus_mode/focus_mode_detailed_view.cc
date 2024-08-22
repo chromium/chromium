@@ -52,6 +52,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
@@ -62,6 +63,8 @@
 namespace ash {
 
 namespace {
+
+constexpr auto kViewportMargins = gfx::Insets::VH(8, 0);
 
 // Margins between containers in the detailed view if the container is connected
 // to the container above it.
@@ -317,6 +320,9 @@ FocusModeDetailedView::FocusModeDetailedView(DetailedViewDelegate* delegate)
     : TrayDetailedView(delegate) {
   CreateTitleRow(IDS_ASH_STATUS_TRAY_FOCUS_MODE);
   CreateScrollableList();
+  // Margins for the scroll viewport to make the focus ring not clipped. See
+  // b/360178403.
+  scroller()->SetPreferredViewportMargins(kViewportMargins);
 
   CreateToggleView();
 
