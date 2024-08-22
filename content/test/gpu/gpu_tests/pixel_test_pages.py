@@ -1524,47 +1524,42 @@ class PixelTestPages():
     match_algo = VERY_PERMISSIVE_SOBEL_ALGO
     # Use shorter timeout since the tests are not supposed to be long.
     timeout = 150
-    test_rect = [0, 0, 200, 200]
-    grace_period_end = date(2022, 10, 20)
+    standard_crop = ca.NonWhiteContentCropAction(
+        initial_crop=ca.FixedRectCropAction(0, 0, 250, 200))
 
     return [
         PixelTestPage('pixel_video_from_canvas_2d.html',
                       base_name + '_VideoStreamFrom2DCanvas',
-                      test_rect=test_rect,
+                      crop_action=standard_crop,
                       browser_args=[],
                       matching_algorithm=match_algo,
-                      grace_period_end=grace_period_end,
                       timeout=timeout),
         PixelTestPage('pixel_video_from_canvas_2d_alpha.html',
                       base_name + '_VideoStreamFrom2DAlphaCanvas',
-                      test_rect=test_rect,
+                      crop_action=standard_crop,
                       browser_args=[],
                       matching_algorithm=match_algo,
-                      grace_period_end=grace_period_end,
                       timeout=timeout),
         PixelTestPage('pixel_video_from_canvas_webgl2_alpha.html',
                       base_name + '_VideoStreamFromWebGLAlphaCanvas',
-                      test_rect=test_rect,
+                      crop_action=standard_crop,
                       browser_args=[],
                       matching_algorithm=match_algo,
-                      grace_period_end=grace_period_end,
                       timeout=timeout),
         PixelTestPage('pixel_video_from_canvas_webgl2.html',
                       base_name + '_VideoStreamFromWebGLCanvas',
-                      test_rect=test_rect,
+                      crop_action=standard_crop,
                       browser_args=[],
                       matching_algorithm=match_algo,
-                      grace_period_end=grace_period_end,
                       timeout=timeout),
 
         # Safeguard against repeating crbug.com/1337101
         PixelTestPage(
             'pixel_video_from_canvas_2d_alpha.html',
             base_name + '_VideoStreamFrom2DAlphaCanvas_DisableOOPRaster',
-            test_rect=test_rect,
+            crop_action=standard_crop,
             browser_args=['--disable-features=CanvasOopRasterization'],
             matching_algorithm=match_algo,
-            grace_period_end=grace_period_end,
             timeout=timeout),
 
         # Safeguard against repeating crbug.com/1371308
@@ -1572,51 +1567,49 @@ class PixelTestPages():
             'pixel_video_from_canvas_2d.html',
             base_name +
             '_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture',
-            test_rect=test_rect,
+            crop_action=standard_crop,
             browser_args=[
                 '--disable-features=GpuMemoryBufferReadbackFromTexture'
             ],
             matching_algorithm=match_algo,
-            grace_period_end=grace_period_end,
             timeout=timeout),
 
         # Test OneCopyCanvasCapture
         PixelTestPage('pixel_video_from_canvas_webgl2.html',
                       base_name + '_VideoStreamFromWebGLCanvas_OneCopy',
-                      test_rect=test_rect,
+                      crop_action=standard_crop,
                       browser_args=['--enable-features=OneCopyCanvasCapture'],
                       other_args={'one_copy': True},
                       matching_algorithm=match_algo,
-                      grace_period_end=grace_period_end,
                       timeout=timeout),
         # TwoCopyCanvasCapture
         PixelTestPage('pixel_video_from_canvas_webgl2.html',
                       base_name +
                       '_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated',
-                      test_rect=test_rect,
+                      crop_action=standard_crop,
                       browser_args=['--disable-features=OneCopyCanvasCapture'],
                       other_args={
                           'one_copy': False,
                           'accelerated_two_copy': True
                       },
                       matching_algorithm=match_algo,
-                      grace_period_end=grace_period_end,
                       timeout=timeout),
     ]
 
   @staticmethod
   def HdrTestPages(base_name: str) -> List[PixelTestPage]:
+    standard_crop = ca.NonWhiteContentCropAction(
+        ca.FixedRectCropAction(0, 0, 300, 300))
+
     return [
-        PixelTestPage(
-            'pixel_canvas2d.html',
-            base_name + '_Canvas2DRedBoxScrgbLinear',
-            test_rect=[0, 0, 300, 300],
-            browser_args=['--force-color-profile=scrgb-linear']),
-        PixelTestPage(
-            'pixel_canvas2d.html',
-            base_name + '_Canvas2DRedBoxHdr10',
-            test_rect=[0, 0, 300, 300],
-            browser_args=['--force-color-profile=hdr10']),
+        PixelTestPage('pixel_canvas2d.html',
+                      base_name + '_Canvas2DRedBoxScrgbLinear',
+                      crop_action=standard_crop,
+                      browser_args=['--force-color-profile=scrgb-linear']),
+        PixelTestPage('pixel_canvas2d.html',
+                      base_name + '_Canvas2DRedBoxHdr10',
+                      crop_action=standard_crop,
+                      browser_args=['--force-color-profile=hdr10']),
     ]
 
   # TODO(crbug.com/337737554): Move this to trace_test_pages.py
@@ -1628,7 +1621,6 @@ class PixelTestPages():
     return [
         PixelTestPage('wait_for_compositing.html',
                       base_name + '_IsOpaque',
-                      test_rect=[0, 0, 0, 0],
                       crop_action=ca.NoOpCropAction(),
                       other_args={
                           'has_alpha': False,
@@ -1642,11 +1634,11 @@ class PixelTestPages():
         PixelTestPage(
             'receiver.html',
             base_name + '_VP8_1Frame',
-            test_rect=[0, 0, 0, 0],
             crop_action=ca.NoOpCropAction(),
         ),
     ]
 
+  # TODO(crbug.com/337737554): Move this to trace_test_pages.py
   # Check what MediaFoundationD3D11VideoCapture works
   @staticmethod
   def MediaFoundationD3D11VideoCapturePages(
@@ -1654,7 +1646,7 @@ class PixelTestPages():
     return [
         PixelTestPage('media_foundation_d3d11_video_capture.html',
                       base_name + '_MediaFoundationD3D11VideoCapture',
-                      test_rect=[0, 0, 300, 300],
+                      crop_action=ca.NoOpCropAction(),
                       browser_args=[
                           '--use-fake-ui-for-media-stream',
                           '--enable-features=MediaFoundationD3D11VideoCapture'
