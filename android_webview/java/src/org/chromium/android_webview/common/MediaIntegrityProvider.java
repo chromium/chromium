@@ -9,30 +9,6 @@ import androidx.annotation.Nullable;
 
 /** Async handler for media integrity token requests. */
 public interface MediaIntegrityProvider {
-    /**
-     * Asynchronously request a token.
-     *
-     * @param contentBinding An optional content binding string.
-     * @param callback Callback to be called with the result of the request.
-     */
-    default void requestToken(
-            @Nullable String contentBinding,
-            @NonNull ValueOrErrorCallback<String, Integer> callback) {
-        // TODO(https://crbug.com/359452901): Temporary default implementation while migrating.
-        requestToken2(
-                contentBinding,
-                new ValueOrErrorCallback<>() {
-                    @Override
-                    public void onResult(String result) {
-                        callback.onResult(result);
-                    }
-
-                    @Override
-                    public void onError(MediaIntegrityErrorWrapper error) {
-                        callback.onError(error.value);
-                    }
-                });
-    }
 
     /**
      * Asynchronously request a token.

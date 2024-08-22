@@ -1040,13 +1040,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
         }
 
         @Override
-        public void requestToken(
-                @Nullable String contentBinding,
-                @NonNull ValueOrErrorCallback<String, Integer> callback) {
-            Assert.fail("This method should not be called");
-        }
-
-        @Override
         public void requestToken2(
                 @Nullable String contentBinding,
                 @NonNull ValueOrErrorCallback<String, MediaIntegrityErrorWrapper> callback) {
@@ -1126,14 +1119,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
         public int getTotalProviderCallCount() {
             return mProviderCallCount;
-        }
-
-        @Override
-        public void getMediaIntegrityProvider(
-                long cloudProjectNumber,
-                @MediaIntegrityApiStatus int apiStatus,
-                ValueOrErrorCallback<MediaIntegrityProvider, Integer> callback) {
-            Assert.fail("This method should not be called");
         }
 
         @Override
