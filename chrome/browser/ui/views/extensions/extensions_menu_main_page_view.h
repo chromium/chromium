@@ -107,9 +107,7 @@ class ExtensionsMenuMainPageView : public views::View {
 
   // Accessors used by tests:
   // Returns the currently-showing menu items.
-  // TODO(crbug.com/40879945): rename to GetSiteSettingLabelForTesting() after
-  // updating the label text as needed.
-  const std::u16string& GetSubheaderSubtitleTextForTesting() const;
+  const std::u16string& GetSiteSettingLabelForTesting() const;
   views::ToggleButton* GetSiteSettingsToggleForTesting() {
     return site_settings_toggle_;
   }

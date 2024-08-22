@@ -926,10 +926,11 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, NavigationWhenMainPageIsOpen) {
   views::View* requests_access_container =
       main_page()->GetRequestsAccessContainerForTesting();
 
-  // Verify subheader text has the current site, request access section shows
-  // extension A request and extension items have the site access text based on
-  // their access.
-  ASSERT_EQ(main_page()->GetSubheaderSubtitleTextForTesting(), u"site.com");
+  // Verify site settings label has the current site, request access section
+  // shows extension A request and extension items have the site access text
+  // based on their access.
+  ASSERT_EQ(main_page()->GetSiteSettingLabelForTesting(),
+            u"Allow extensions on site.com");
   EXPECT_TRUE(requests_access_container->GetVisible());
   EXPECT_THAT(GetExtensionsInRequestAccessSection(),
               testing::ElementsAre(extension_A->id()));
@@ -944,9 +945,11 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, NavigationWhenMainPageIsOpen) {
   web_contents_tester()->NavigateAndCommit(GURL(("http://www.site.com/path")));
   LayoutMenuIfNecessary();
 
-  // Verify subheader text has the new site, request access section still shows
-  // the extension A request and extension items have the same site access text.
-  ASSERT_EQ(main_page()->GetSubheaderSubtitleTextForTesting(), u"site.com");
+  // Verify site settings label has the new site, request access section still
+  // shows the extension A request and extension items have the same site access
+  // text.
+  ASSERT_EQ(main_page()->GetSiteSettingLabelForTesting(),
+            u"Allow extensions on site.com");
   EXPECT_TRUE(requests_access_container->GetVisible());
   EXPECT_THAT(GetExtensionsInRequestAccessSection(),
               testing::ElementsAre(extension_A->id()));
@@ -961,10 +964,11 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, NavigationWhenMainPageIsOpen) {
   web_contents_tester()->NavigateAndCommit(GURL(("http://www.other.com")));
   LayoutMenuIfNecessary();
 
-  // Verify subheader text has the new site, request access section is not
+  // Verify site settings label has the new site, request access section is not
   // visible (requests are reset on cross-origin navigations) and extension
   // items updated their site access text based on their access.
-  ASSERT_EQ(main_page()->GetSubheaderSubtitleTextForTesting(), u"other.com");
+  ASSERT_EQ(main_page()->GetSiteSettingLabelForTesting(),
+            u"Allow extensions on other.com");
   EXPECT_FALSE(requests_access_container->GetVisible());
   EXPECT_EQ(extension_A_item->site_permissions_button_for_testing()->GetText(),
             l10n_util::GetStringUTF16(

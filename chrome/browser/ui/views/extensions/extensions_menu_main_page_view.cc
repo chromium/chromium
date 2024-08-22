@@ -661,6 +661,16 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                   l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS))))
       .BuildChildren();
 
+  // By default, the button's accessible description is set to the button's
+  // tooltip text. This is the accepted workaround to ensure only accessible
+  // name is announced by a screenreader rather than tooltip text and
+  // accessible name.
+  site_settings_toggle_->GetViewAccessibility().SetDescription(
+      std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+  site_settings_toggle_->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ACCESSIBLE_NAME));
+
   // Align the site setting toggle vertically with the site settings label by
   // getting the label height after construction.
   site_settings_toggle_->SetPreferredSize(
@@ -701,13 +711,14 @@ void ExtensionsMenuMainPageView::UpdateSiteSettings(
     const std::u16string& current_site,
     bool is_site_settings_toggle_visible,
     bool is_site_settings_toggle_on) {
-  // TODO(crbug.com/40879945): Change text to "Allow extensions on
-  // <current_site>".
-  site_settings_label_->SetText(current_site);
+  // TODO(crbug.com/40879945): Text should be different when site is restricted,
+  // since site settings toggle cannot be selected. This means we no longer need
+  // MessageSectionState::kRestrictedAccess.
+  site_settings_label_->SetText(l10n_util::GetStringFUTF16(
+      IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL, current_site));
   site_settings_toggle_->SetVisible(is_site_settings_toggle_visible);
   site_settings_toggle_->SetIsOn(is_site_settings_toggle_on);
-  // TODO(crbug.com/40879945): Verify with UX what is the desired a11y text.
-  site_settings_toggle_->GetViewAccessibility().SetName(
+  site_settings_toggle_->SetTooltipText(
       GetSiteSettingToggleText(is_site_settings_toggle_on));
 }
 
@@ -751,7 +762,7 @@ std::vector<ExtensionMenuItemView*> ExtensionsMenuMainPageView::GetMenuItems()
 }
 
 const std::u16string&
-ExtensionsMenuMainPageView::GetSubheaderSubtitleTextForTesting() const {
+ExtensionsMenuMainPageView::GetSiteSettingLabelForTesting() const {
   return site_settings_label_->GetText();
 }
 
