@@ -22,11 +22,6 @@ class HttpTransactionFactory;
 class URLRequestJobFactory;
 }  // namespace net
 
-// TODO(crbug.com/361047031): Remove this forward declaration and typedef when
-// no usage of ChromeBrowserStateIOData remains.
-class ProfileIOSImplIOData;
-using ChromeBrowserStateImplIOData = ProfileIOSImplIOData;
-
 class ProfileIOSImplIOData : public ProfileIOSIOData {
  public:
   class Handle {
@@ -47,7 +42,7 @@ class ProfileIOSImplIOData : public ProfileIOSIOData {
 
     // These Create*ContextGetter() functions are only exposed because the
     // circular relationship between ChromeBrowserState,
-    // ChromeBrowserStateIOData::Handle, and the
+    // ProfileIOSIOData::Handle, and the
     // IOSChromeURLRequestContextGetter factories requires ChromeBrowserState be
     // able to call these functions.
     scoped_refptr<IOSChromeURLRequestContextGetter>
@@ -55,7 +50,7 @@ class ProfileIOSImplIOData : public ProfileIOSIOData {
                                    PrefService* local_state,
                                    IOSChromeIOThread* io_thread) const;
 
-    ChromeBrowserStateIOData* io_data() const;
+    ProfileIOSIOData* io_data() const;
 
     // Deletes all network related data since `time`. It deletes transport
     // security state since `time` and also deletes HttpServerProperties data.
@@ -83,7 +78,7 @@ class ProfileIOSImplIOData : public ProfileIOSIOData {
     GetAllContextGetters();
 
     // The getters will be invalidated on the IO thread before
-    // ChromeBrowserStateIOData instance is deleted.
+    // ProfileIOSIOData instance is deleted.
     mutable scoped_refptr<IOSChromeURLRequestContextGetter>
         main_request_context_getter_;
     mutable IOSChromeURLRequestContextGetterMap app_request_context_getter_map_;

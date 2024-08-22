@@ -38,7 +38,7 @@ namespace {
 // Factory that creates the main URLRequestContext.
 class FactoryForMain : public IOSChromeURLRequestContextFactory {
  public:
-  FactoryForMain(const ChromeBrowserStateIOData* io_data,
+  FactoryForMain(const ProfileIOSIOData* io_data,
                  ProtocolHandlerMap* protocol_handlers)
       : io_data_(io_data) {
     std::swap(protocol_handlers_, *protocol_handlers);
@@ -50,7 +50,7 @@ class FactoryForMain : public IOSChromeURLRequestContextFactory {
   }
 
  private:
-  const raw_ptr<const ChromeBrowserStateIOData> io_data_;
+  const raw_ptr<const ProfileIOSIOData> io_data_;
   ProtocolHandlerMap protocol_handlers_;
 };
 
@@ -101,7 +101,7 @@ IOSChromeURLRequestContextGetter::GetNetworkTaskRunner() const {
 
 // static
 IOSChromeURLRequestContextGetter* IOSChromeURLRequestContextGetter::Create(
-    const ChromeBrowserStateIOData* io_data,
+    const ProfileIOSIOData* io_data,
     ProtocolHandlerMap* protocol_handlers) {
   return new IOSChromeURLRequestContextGetter(
       std::make_unique<FactoryForMain>(io_data, protocol_handlers));

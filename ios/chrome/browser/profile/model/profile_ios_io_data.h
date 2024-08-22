@@ -44,11 +44,6 @@ class SystemCookieStore;
 class URLRequestContextBuilder;
 }  // namespace net
 
-// TODO(crbug.com/361047031): Remove this forward declaration and typedef when
-// no usage of ChromeBrowserStateIOData remains.
-class ProfileIOSIOData;
-using ChromeBrowserStateIOData = ProfileIOSIOData;
-
 // Conceptually speaking, the ProfileIOSIOData represents data that
 // lives on the IO thread that is owned by a ChromeBrowserState, such as, but
 // not limited to, network objects like CookieMonster, HttpTransactionFactory,

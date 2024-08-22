@@ -6,9 +6,8 @@
 #define IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_OFF_THE_RECORD_CHROME_BROWSER_STATE_IO_DATA_H_
 
 // This is a forwarding header to ease the name transition of ChromeBrowserState
-// and related classes to ProfileIOS. This header will become the header for
-// OffTheRecordProfileIOSIOData when OffTheRecordChromeBrowserStateIOData is
-// renamed. Until then it just forward-includes that class's header.
+// and related classes to ProfileIOS.
+// TODO(crbug.com/358267438): Remove this file.
 
 #include "ios/chrome/browser/profile/model/off_the_record_profile_ios_io_data.h"
 

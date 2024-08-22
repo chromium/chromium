@@ -13,10 +13,8 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 
-class ProfileIOSIOData;
-using ChromeBrowserStateIOData = ProfileIOSIOData;
-
 class IOSChromeURLRequestContextFactory;
+class ProfileIOSIOData;
 
 // A net::URLRequestContextGetter subclass used by the browser. This returns a
 // subclass of net::URLRequestContext which can be used to store extra
@@ -48,7 +46,7 @@ class IOSChromeURLRequestContextGetter : public net::URLRequestContextGetter {
   // Create an instance for use with an 'original' (non-OTR) profile. This is
   // expected to get called on the UI thread.
   static IOSChromeURLRequestContextGetter* Create(
-      const ChromeBrowserStateIOData* io_data,
+      const ProfileIOSIOData* io_data,
       ProtocolHandlerMap* protocol_handlers);
 
   // Discard reference to URLRequestContext and inform observers of shutdown.

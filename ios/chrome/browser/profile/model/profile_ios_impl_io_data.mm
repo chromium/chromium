@@ -88,8 +88,7 @@ ProfileIOSImplIOData::Handle::CreateMainRequestContextGetter(
   return main_request_context_getter_;
 }
 
-ChromeBrowserStateIOData* ProfileIOSImplIOData::Handle::io_data()
-    const {
+ProfileIOSIOData* ProfileIOSImplIOData::Handle::io_data() const {
   LazyInitialize();
   return io_data_;
 }
@@ -119,8 +118,7 @@ void ProfileIOSImplIOData::Handle::LazyInitialize() const {
   io_data_->InitializeOnUIThread(browser_state_);
 }
 
-std::unique_ptr<
-    ChromeBrowserStateIOData::IOSChromeURLRequestContextGetterVector>
+std::unique_ptr<ProfileIOSIOData::IOSChromeURLRequestContextGetterVector>
 ProfileIOSImplIOData::Handle::GetAllContextGetters() {
   IOSChromeURLRequestContextGetterMap::iterator iter;
   std::unique_ptr<IOSChromeURLRequestContextGetterVector> context_getters(
@@ -143,7 +141,7 @@ ProfileIOSImplIOData::LazyParams::LazyParams() : cache_max_size(0) {}
 ProfileIOSImplIOData::LazyParams::~LazyParams() {}
 
 ProfileIOSImplIOData::ProfileIOSImplIOData()
-    : ChromeBrowserStateIOData(ChromeBrowserStateType::REGULAR_BROWSER_STATE),
+    : ProfileIOSIOData(ChromeBrowserStateType::REGULAR_BROWSER_STATE),
       app_cache_max_size_(0) {}
 
 ProfileIOSImplIOData::~ProfileIOSImplIOData() {}

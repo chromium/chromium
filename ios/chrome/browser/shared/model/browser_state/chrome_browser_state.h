@@ -19,9 +19,7 @@
 class BrowserStatePolicyConnector;
 class PrefProxyConfigTracker;
 class PrefService;
-
 class ProfileIOSIOData;
-using ChromeBrowserStateIOData = ProfileIOSIOData;
 
 namespace base {
 class SequencedTaskRunner;
@@ -134,10 +132,10 @@ class ChromeBrowserState : public web::BrowserState {
   // a sync_preferences::PrefServiceSyncable.
   virtual sync_preferences::PrefServiceSyncable* GetSyncablePrefs() = 0;
 
-  // Allows access to ChromeBrowserStateIOData without going through
+  // Allows access to ProfileIOSIOData without going through
   // ResourceContext that is not compiled on iOS. This method must be called on
   // UI thread, but the returned object must only be accessed on the IO thread.
-  virtual ChromeBrowserStateIOData* GetIOData() = 0;
+  virtual ProfileIOSIOData* GetIOData() = 0;
 
   // Deletes all network related data since `time`. It deletes transport
   // security state since `time` and it also deletes HttpServerProperties data.

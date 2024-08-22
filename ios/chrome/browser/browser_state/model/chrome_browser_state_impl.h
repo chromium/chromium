@@ -45,7 +45,7 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   BrowserStatePolicyConnector* GetPolicyConnector() override;
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
   sync_preferences::PrefServiceSyncable* GetSyncablePrefs() override;
-  ChromeBrowserStateIOData* GetIOData() override;
+  ProfileIOSIOData* GetIOData() override;
   void ClearNetworkingHistorySince(base::Time time,
                                    base::OnceClosure completion) override;
   net::URLRequestContextGetter* CreateRequestContext(
@@ -103,7 +103,7 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   // others store pointers to `prefs_` and shall be destructed first.
   scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_;
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
-  std::unique_ptr<ChromeBrowserStateImplIOData::Handle> io_data_;
+  std::unique_ptr<ProfileIOSImplIOData::Handle> io_data_;
 
   std::unique_ptr<PrefProxyConfigTracker> pref_proxy_config_tracker_;
 

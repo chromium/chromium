@@ -263,7 +263,7 @@ TestChromeBrowserState::GetSyncablePrefs() {
   return prefs_.get();
 }
 
-ChromeBrowserStateIOData* TestChromeBrowserState::GetIOData() {
+ProfileIOSIOData* TestChromeBrowserState::GetIOData() {
   return nullptr;
 }
 

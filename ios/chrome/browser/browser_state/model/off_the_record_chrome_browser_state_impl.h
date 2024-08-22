@@ -40,7 +40,7 @@ class OffTheRecordChromeBrowserStateImpl final : public ChromeBrowserState {
   BrowserStatePolicyConnector* GetPolicyConnector() override;
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
   sync_preferences::PrefServiceSyncable* GetSyncablePrefs() override;
-  ChromeBrowserStateIOData* GetIOData() override;
+  ProfileIOSIOData* GetIOData() override;
   void ClearNetworkingHistorySince(base::Time time,
                                    base::OnceClosure completion) override;
   net::URLRequestContextGetter* CreateRequestContext(
@@ -67,7 +67,7 @@ class OffTheRecordChromeBrowserStateImpl final : public ChromeBrowserState {
 
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
 
-  std::unique_ptr<OffTheRecordChromeBrowserStateIOData::Handle> io_data_;
+  std::unique_ptr<OffTheRecordProfileIOSIOData::Handle> io_data_;
   std::unique_ptr<PrefProxyConfigTracker> pref_proxy_config_tracker_;
 
   base::WeakPtrFactory<OffTheRecordChromeBrowserStateImpl> weak_ptr_factory_{

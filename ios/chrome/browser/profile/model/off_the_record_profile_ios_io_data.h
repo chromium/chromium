@@ -17,11 +17,6 @@
 
 class IOSChromeURLRequestContextGetter;
 
-// TODO(crbug.com/361333866): Remove this forward declaration and typedef when
-// no usage of OffTheRecordChromeBrowserStateIOData remains.
-class OffTheRecordProfileIOSIOData;
-using OffTheRecordChromeBrowserStateIOData = OffTheRecordProfileIOSIOData;
-
 // OffTheRecordChromeBrowserState owns a
 // OffTheRecordProfileIOSIOData::Handle, which holds a reference to the
 // OffTheRecordProfileIOSIOData.

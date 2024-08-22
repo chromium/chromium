@@ -158,7 +158,7 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
                          std::move(io_task_runner)),
       delegate_(delegate),
       pref_registry_(new user_prefs::PrefRegistrySyncable),
-      io_data_(new ChromeBrowserStateImplIOData::Handle(this)) {
+      io_data_(new ProfileIOSImplIOData::Handle(this)) {
   DCHECK(!browser_state_name.empty());
   BrowserStateDependencyManager::GetInstance()->MarkBrowserStateLive(this);
 
@@ -374,7 +374,7 @@ void ChromeBrowserStateImpl::OnPrefsLoaded(CreationMode creation_mode,
   }
 }
 
-ChromeBrowserStateIOData* ChromeBrowserStateImpl::GetIOData() {
+ProfileIOSIOData* ChromeBrowserStateImpl::GetIOData() {
   return io_data_->io_data();
 }
 

@@ -32,7 +32,7 @@ OffTheRecordChromeBrowserStateImpl::OffTheRecordChromeBrowserStateImpl(
   BrowserStateDependencyManager::GetInstance()->MarkBrowserStateLive(this);
 
   user_prefs::UserPrefs::Set(this, GetPrefs());
-  io_data_.reset(new OffTheRecordChromeBrowserStateIOData::Handle(this));
+  io_data_.reset(new OffTheRecordProfileIOSIOData::Handle(this));
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kIncognito);
   base::RecordAction(base::UserMetricsAction("IncognitoMode_Started"));
@@ -113,7 +113,7 @@ OffTheRecordChromeBrowserStateImpl::GetProxyConfigTracker() {
   return pref_proxy_config_tracker_.get();
 }
 
-ChromeBrowserStateIOData* OffTheRecordChromeBrowserStateImpl::GetIOData() {
+ProfileIOSIOData* OffTheRecordChromeBrowserStateImpl::GetIOData() {
   return io_data_->io_data();
 }
 
