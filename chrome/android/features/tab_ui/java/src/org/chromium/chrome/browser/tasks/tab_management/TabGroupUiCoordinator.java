@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -69,7 +68,6 @@ public class TabGroupUiCoordinator
     private final DataSharingTabManager mDataSharingTabManager;
     private final TabModelSelector mTabModelSelector;
     private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
-    private final SnackbarManager mSnackbarManager;
     private final TabCreatorManager mTabCreatorManager;
     private final TabContentManager mTabContentManager;
     private final ModalDialogManager mModalDialogManager;
@@ -94,7 +92,6 @@ public class TabGroupUiCoordinator
             @NonNull TabContentManager tabContentManager,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager) {
         try (TraceEvent e = TraceEvent.scoped("TabGroupUiCoordinator.constructor")) {
             mActivity = activity;
@@ -113,7 +110,6 @@ public class TabGroupUiCoordinator
             mDataSharingTabManager = dataSharingTabManager;
             mTabModelSelector = tabModelSelector;
             mLayoutStateProviderSupplier = layoutStateProviderSupplier;
-            mSnackbarManager = snackbarManager;
             mTabCreatorManager = tabCreatorManager;
             mTabContentManager = tabContentManager;
             mModalDialogManager = modalDialogManager;

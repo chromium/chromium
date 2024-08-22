@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -133,7 +132,6 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
      * @param tabContentManager Gives access to the tab content.
      * @param tabCreatorManager Manages creation of tabs.
      * @param layoutStateProviderSupplier Supplies the {@link LayoutStateProvider}.
-     * @param snackbarManager Manages the display of snackbars.
      * @param modalDialogManager Used to show confirmation dialogs.
      */
     public TabGroupUiOneshotSupplier(
@@ -150,7 +148,6 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
             TabContentManager tabContentManager,
             TabCreatorManager tabCreatorManager,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            SnackbarManager snackbarManager,
             ModalDialogManager modalDialogManager) {
         Runnable setter =
                 () -> {
@@ -169,7 +166,6 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
                                             tabContentManager,
                                             tabCreatorManager,
                                             layoutStateProviderSupplier,
-                                            snackbarManager,
                                             modalDialogManager);
                     set(tabGroupUi);
                     maybeDestroyTabGroupUiCreationController();

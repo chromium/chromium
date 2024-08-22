@@ -59,7 +59,6 @@ public interface TabManagementDelegate {
      * @param tabContentManager Gives access to the tab content.
      * @param tabCreatorManager Manages creation of tabs.
      * @param layoutStateProviderSupplier Supplies the {@link LayoutStateProvider}.
-     * @param snackbarManager Manages the display of snackbars.
      * @param modalDialogManager Used to show confirmation dialogs.
      * @return The {@link TabGroupUi}.
      */
@@ -76,7 +75,6 @@ public interface TabManagementDelegate {
             @NonNull TabContentManager tabContentManager,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager);
 
     /**

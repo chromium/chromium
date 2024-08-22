@@ -154,7 +154,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.MenuButtonDelegate;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -274,7 +273,6 @@ public class ToolbarManager
     private final TabCreatorManager mTabCreatorManager;
     private final TabObscuringHandler mTabObscuringHandler;
     private ToolbarDragDropCoordinator mToolbarDragDropCoordinator;
-    private final SnackbarManager mSnackbarManager;
     private OnAttachStateChangeListener mAttachStateChangeListener;
     private final BackPressManager mBackPressManager;
     private final UserEducationHelper mUserEducationHelper;
@@ -533,7 +531,6 @@ public class ToolbarManager
      *     UI and DataSharing services.
      * @param tabContentManager Manages the content of tabs.
      * @param tabCreatorManager Manages the creation of tabs.
-     * @param snackbarManager Manages the display of snackbars.
      * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
      *     MerchantTrustSignalsCoordinator}.
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
@@ -581,7 +578,6 @@ public class ToolbarManager
             @NonNull DataSharingTabManager dataSharingTabManager,
             @NonNull TabContentManager tabContentManager,
             @NonNull TabCreatorManager tabCreatorManager,
-            @NonNull SnackbarManager snackbarManager,
             @NonNull
                     Supplier<MerchantTrustSignalsCoordinator>
                             merchantTrustSignalsCoordinatorSupplier,
@@ -621,7 +617,6 @@ public class ToolbarManager
         mTabContentManager = tabContentManager;
         mTabCreatorManager = tabCreatorManager;
         mTabObscuringHandler = tabObscuringHandler;
-        mSnackbarManager = snackbarManager;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mUserEducationHelper = new UserEducationHelper(mActivity, profileSupplier, mHandler);
         mDesktopWindowStateProvider = desktopWindowStateProvider;
@@ -1559,7 +1554,6 @@ public class ToolbarManager
                         mTabContentManager,
                         mTabCreatorManager,
                         mLayoutStateProviderSupplier,
-                        mSnackbarManager,
                         mModalDialogManagerSupplier.get());
         var bottomControlsContentDelegateSupplier =
                 (OneshotSupplier<BottomControlsContentDelegate>)

@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -65,7 +64,6 @@ public class TabGroupUiOneshotSupplierUnitTest {
     @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private TabContentManager mTabContentManager;
     @Mock private TabCreatorManager mTabCreatorManager;
-    @Mock private SnackbarManager mSnackbarManager;
     @Mock private ModalDialogManager mModalDialogManager;
 
     @Mock private Tab mTab;
@@ -104,11 +102,10 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mTabContentManager,
                         mTabCreatorManager,
                         mLayoutStateProviderSupplier,
-                        mSnackbarManager,
                         mModalDialogManager);
         when(mTabManagementDelegate.createTabGroupUi(
                         any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(),
-                        any(), any(), any()))
+                        any(), any()))
                 .thenReturn(mTabGroupUi);
         TabManagementDelegateProvider.setTabManagementDelegateForTesting(mTabManagementDelegate);
 
@@ -150,7 +147,6 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mTabContentManager,
                         mTabCreatorManager,
                         mLayoutStateProviderSupplier,
-                        mSnackbarManager,
                         mModalDialogManager);
         assertNotNull(mTabGroupUiOneshotSupplier.get());
     }
@@ -180,7 +176,6 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mTabContentManager,
                         mTabCreatorManager,
                         mLayoutStateProviderSupplier,
-                        mSnackbarManager,
                         mModalDialogManager);
         assertNotNull(mTabGroupUiOneshotSupplier.get());
     }

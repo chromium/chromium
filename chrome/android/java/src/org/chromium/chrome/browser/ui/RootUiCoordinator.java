@@ -1620,7 +1620,6 @@ public class RootUiCoordinator
                             mDataSharingTabManager,
                             mTabContentManagerSupplier.get(),
                             mTabCreatorManagerSupplier.get(),
-                            mSnackbarManagerSupplier.get(),
                             getMerchantTrustSignalsCoordinatorSupplier(),
                             omniboxActionDelegate,
                             mEphemeralTabCoordinatorSupplier,
