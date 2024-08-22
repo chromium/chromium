@@ -174,6 +174,11 @@ HostResolverManager::Job::Job(
   net_log_.BeginEvent(NetLogEventType::HOST_RESOLVER_MANAGER_JOB, [&] {
     return NetLogJobCreationParams(source_net_log.source());
   });
+
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    dns_task_results_manager_ = std::make_unique<DnsTaskResultsManager>(
+        this, key_.host, key_.query_types, net_log_);
+  }
 }
 
 HostResolverManager::Job::~Job() {
@@ -696,12 +701,6 @@ void HostResolverManager::Job::StartDnsTask(bool secure) {
   DCHECK_EQ(secure, !dispatched_);
   DCHECK_EQ(dispatched_ ? 1 : 0, num_occupied_job_slots_);
   DCHECK(!resolver_->ShouldForceSystemResolverDueToTestOverride());
-
-  CHECK(!dns_task_results_manager_);
-  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
-    dns_task_results_manager_ = std::make_unique<DnsTaskResultsManager>(
-        this, key_.host, key_.query_types, net_log_);
-  }
 
   // Need to create the task even if we're going to post a failure instead of
   // running it, as a "started" job needs a task to be properly cleaned up.

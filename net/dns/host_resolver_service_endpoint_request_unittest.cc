@@ -37,6 +37,7 @@
 
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Optional;
 using ::testing::UnorderedElementsAre;
 
 using net::test::IsError;
@@ -576,6 +577,24 @@ TEST_F(HostResolverServiceEndpointRequestTest, DestroyResolverWhileFinishing) {
 
   RunUntilIdle();
   EXPECT_THAT(*requester.finished_result(), IsOk());
+}
+
+TEST_F(HostResolverServiceEndpointRequestTest,
+       EndpointsCryptoReadySystemTaskOnly) {
+  proc_->AddRuleForAllFamilies("a.test", "192.0.2.1");
+  ResolveHostParameters parameters;
+  parameters.source = HostResolverSource::SYSTEM;
+  Requester requester =
+      CreateRequester("https://a.test", std::move(parameters));
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  // Should not crash when calling EndpointsCryptoReady().
+  ASSERT_FALSE(requester.request()->EndpointsCryptoReady());
+
+  proc_->SignalMultiple(1u);
+  requester.WaitForFinished();
+  EXPECT_THAT(requester.finished_result(), Optional(IsOk()));
+  ASSERT_TRUE(requester.request()->EndpointsCryptoReady());
 }
 
 TEST_F(HostResolverServiceEndpointRequestTest, MultipleRequestsOk) {
