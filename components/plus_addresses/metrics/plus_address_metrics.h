@@ -45,20 +45,16 @@ enum class PlusAddressModalCompletionStatus {
 
 // Logs plus address creation modal events triggered by user. `is_notice_screen`
 // indicates whether the modal included the legal notice.
-// TODO: crbug.com/359400425 - Remove the default value once all platforms
-// pass the parameter.
 void RecordModalEvent(PlusAddressModalEvent plus_address_modal_event,
-                      bool is_notice_screen = false);
+                      bool is_notice_screen);
 
 // Logs plus address creation modal/bottom sheet shown duration for each
 // closing `status`. `is_notice_screen` indicates whether the modal included the
 // legal notice.
-// TODO: crbug.com/359400425 - Remove the default value once all platforms
-// pass the parameter.
 void RecordModalShownOutcome(PlusAddressModalCompletionStatus status,
                              base::TimeDelta modal_shown_duration,
                              int refresh_count,
-                             bool is_notice_screen = false);
+                             bool is_notice_screen);
 
 // Logs plus address autofill suggestion events.
 void RecordAutofillSuggestionEvent(
