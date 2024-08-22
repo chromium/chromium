@@ -444,11 +444,13 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     ~ColorBuffer();
   };
 
-  using CopyFunctionRef = base::FunctionRef<bool(const gpu::MailboxHolder&,
-                                                 viz::SharedImageFormat,
-                                                 SkAlphaType alpha_type,
-                                                 const gfx::Size&,
-                                                 const gfx::ColorSpace&)>;
+  using CopyFunctionRef = base::FunctionRef<std::optional<gpu::SyncToken>(
+      scoped_refptr<gpu::ClientSharedImage>,
+      const gpu::SyncToken&,
+      viz::SharedImageFormat,
+      SkAlphaType alpha_type,
+      const gfx::Size&,
+      const gfx::ColorSpace&)>;
   bool CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
                               bool dst_is_unpremul_gl,
                               SourceDrawingBuffer src_buffer,

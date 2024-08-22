@@ -1093,26 +1093,21 @@ bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
     return false;
   }
 
-  dst_interface->WaitSyncTokenCHROMIUM(produce_sync_token.GetConstData());
-
-  // Use an empty sync token for `mailbox_holder` because we have already waited
-  // on the required sync tokens above.
-  gpu::MailboxHolder mailbox_holder(src_color_buffer->shared_image->mailbox(),
-                                    gpu::SyncToken(),
-                                    src_color_buffer->texture_target);
-  bool succeeded =
-      copy_function(mailbox_holder, src_color_buffer->format, src_alpha_type,
+  std::optional<gpu::SyncToken> sync_token =
+      copy_function(src_color_buffer->shared_image, produce_sync_token,
+                    src_color_buffer->format, src_alpha_type,
                     src_color_buffer->size, src_color_buffer->color_space);
 
-  gpu::SyncToken sync_token;
-  dst_interface->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-  src_gl->WaitSyncTokenCHROMIUM(sync_token.GetData());
+  if (sync_token.has_value()) {
+    src_gl->WaitSyncTokenCHROMIUM(sync_token.value().GetData());
+  }
+
   if (texture_id_to_restore_access) {
     src_gl->BeginSharedImageAccessDirectCHROMIUM(
         texture_id_to_restore_access,
         GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
   }
-  return succeeded;
+  return sync_token.has_value();
 }
 
 bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
@@ -1127,9 +1122,13 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
   if (!Extensions3DUtil::CanUseCopyTextureCHROMIUM(dst_texture_target))
     return false;
 
-  auto copy_function = [&](const gpu::MailboxHolder& src_mailbox,
-                           viz::SharedImageFormat, SkAlphaType src_alpha_type,
-                           const gfx::Size&, const gfx::ColorSpace&) -> bool {
+  auto copy_function =
+      [&](scoped_refptr<gpu::ClientSharedImage> src_shared_image,
+          const gpu::SyncToken& produce_sync_token, viz::SharedImageFormat,
+          SkAlphaType src_alpha_type, const gfx::Size&,
+          const gfx::ColorSpace&) -> std::optional<gpu::SyncToken> {
+    dst_gl->WaitSyncTokenCHROMIUM(produce_sync_token.GetConstData());
+
     GLboolean unpack_premultiply_alpha_needed = GL_FALSE;
     GLboolean unpack_unpremultiply_alpha_needed = GL_FALSE;
     if (src_alpha_type == kPremul_SkAlphaType && !premultiply_alpha) {
@@ -1139,7 +1138,7 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
     }
 
     GLuint src_texture = dst_gl->CreateAndTexStorage2DSharedImageCHROMIUM(
-        src_mailbox.mailbox.name);
+        src_shared_image->mailbox().name);
     dst_gl->BeginSharedImageAccessDirectCHROMIUM(
         src_texture, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
     dst_gl->CopySubTextureCHROMIUM(
@@ -1150,7 +1149,9 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
         unpack_unpremultiply_alpha_needed);
     dst_gl->EndSharedImageAccessDirectCHROMIUM(src_texture);
     dst_gl->DeleteTextures(1, &src_texture);
-    return true;
+    gpu::SyncToken sync_token;
+    dst_gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+    return sync_token;
   };
   return CopyToPlatformInternal(dst_gl, !premultiply_alpha, src_buffer,
                                 copy_function);
@@ -1164,20 +1165,28 @@ bool DrawingBuffer::CopyToPlatformMailbox(
     const gfx::Point& dst_texture_offset,
     const gfx::Rect& src_sub_rectangle,
     SourceDrawingBuffer src_buffer) {
-  auto copy_function = [&](const gpu::MailboxHolder& src_mailbox,
-                           viz::SharedImageFormat, SkAlphaType src_alpha_type,
-                           const gfx::Size&, const gfx::ColorSpace&) -> bool {
+  auto copy_function =
+      [&](scoped_refptr<gpu::ClientSharedImage> src_shared_image,
+          const gpu::SyncToken& produce_sync_token, viz::SharedImageFormat,
+          SkAlphaType src_alpha_type, const gfx::Size&,
+          const gfx::ColorSpace&) -> std::optional<gpu::SyncToken> {
+    dst_raster_interface->WaitSyncTokenCHROMIUM(
+        produce_sync_token.GetConstData());
+
     GLboolean unpack_premultiply_alpha_needed = GL_FALSE;
     if (src_alpha_type == kUnpremul_SkAlphaType) {
       unpack_premultiply_alpha_needed = GL_TRUE;
     }
 
     dst_raster_interface->CopySharedImage(
-        src_mailbox.mailbox, dst_mailbox, dst_texture_target,
+        src_shared_image->mailbox(), dst_mailbox, dst_texture_target,
         dst_texture_offset.x(), dst_texture_offset.y(), src_sub_rectangle.x(),
         src_sub_rectangle.y(), src_sub_rectangle.width(),
         src_sub_rectangle.height(), flip_y, unpack_premultiply_alpha_needed);
-    return true;
+
+    gpu::SyncToken sync_token;
+    dst_raster_interface->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+    return sync_token;
   };
 
   return CopyToPlatformInternal(dst_raster_interface,
@@ -1200,13 +1209,25 @@ bool DrawingBuffer::CopyToVideoFrame(
                                                  ? kTopLeft_GrSurfaceOrigin
                                                  : kBottomLeft_GrSurfaceOrigin;
   auto copy_function =
-      [&](const gpu::MailboxHolder& src_mailbox,
+      [&](scoped_refptr<gpu::ClientSharedImage> src_shared_image,
+          const gpu::SyncToken& produce_sync_token,
           viz::SharedImageFormat src_format, SkAlphaType src_alpha_type,
-          const gfx::Size& src_size, const gfx::ColorSpace& src_color_space) {
-        return frame_pool->CopyRGBATextureToVideoFrame(
-            src_format, src_size, src_color_space, src_surface_origin,
-            src_mailbox, dst_color_space, std::move(callback));
-      };
+          const gfx::Size& src_size, const gfx::ColorSpace& src_color_space)
+      -> std::optional<gpu::SyncToken> {
+    raster_interface->WaitSyncTokenCHROMIUM(produce_sync_token.GetConstData());
+    bool succeeded = frame_pool->CopyRGBATextureToVideoFrame(
+        src_format, src_size, src_color_space, src_surface_origin,
+        {src_shared_image->mailbox(), gpu::SyncToken(),
+         src_shared_image->GetTextureTarget()},
+        dst_color_space, std::move(callback));
+    if (!succeeded) {
+      return std::nullopt;
+    }
+
+    gpu::SyncToken sync_token;
+    raster_interface->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+    return sync_token;
+  };
   return CopyToPlatformInternal(raster_interface, /*dst_is_unpremul_gl=*/false,
                                 src_buffer, copy_function);
 }
