@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/in_session_auth_token_provider_impl.h"
+#include "chrome/browser/ui/ash/in_session_auth/in_session_auth_token_provider_impl.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/in_session_auth/in_session_auth_dialog_controller_impl.h"

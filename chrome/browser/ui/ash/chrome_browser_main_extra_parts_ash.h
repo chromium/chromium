@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/boca/boca_app_client_impl.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
-#include "chrome/browser/ui/ash/in_session_auth_token_provider_impl.h"
+#include "chrome/browser/ui/ash/in_session_auth/in_session_auth_token_provider_impl.h"
 #include "chrome/common/buildflags.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 

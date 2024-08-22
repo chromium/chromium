@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_IN_SESSION_AUTH_TOKEN_PROVIDER_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_IN_SESSION_AUTH_TOKEN_PROVIDER_IMPL_H_
+#ifndef CHROME_BROWSER_UI_ASH_IN_SESSION_AUTH_IN_SESSION_AUTH_TOKEN_PROVIDER_IMPL_H_
+#define CHROME_BROWSER_UI_ASH_IN_SESSION_AUTH_IN_SESSION_AUTH_TOKEN_PROVIDER_IMPL_H_
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
@@ -28,4 +28,4 @@ class ASH_PUBLIC_EXPORT InSessionAuthTokenProviderImpl
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_ASH_IN_SESSION_AUTH_TOKEN_PROVIDER_IMPL_H_
+#endif  // CHROME_BROWSER_UI_ASH_IN_SESSION_AUTH_IN_SESSION_AUTH_TOKEN_PROVIDER_IMPL_H_

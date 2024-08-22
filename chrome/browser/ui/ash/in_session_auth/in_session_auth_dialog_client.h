@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_IN_SESSION_AUTH_DIALOG_CLIENT_H_
-#define CHROME_BROWSER_UI_ASH_IN_SESSION_AUTH_DIALOG_CLIENT_H_
+#ifndef CHROME_BROWSER_UI_ASH_IN_SESSION_AUTH_IN_SESSION_AUTH_DIALOG_CLIENT_H_
+#define CHROME_BROWSER_UI_ASH_IN_SESSION_AUTH_IN_SESSION_AUTH_DIALOG_CLIENT_H_
 
 #include <memory>
 #include <optional>
@@ -160,4 +160,4 @@ class InSessionAuthDialogClient
   base::WeakPtrFactory<InSessionAuthDialogClient> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_IN_SESSION_AUTH_DIALOG_CLIENT_H_
+#endif  // CHROME_BROWSER_UI_ASH_IN_SESSION_AUTH_IN_SESSION_AUTH_DIALOG_CLIENT_H_
