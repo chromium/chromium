@@ -28,6 +28,7 @@ static_library("testapi") {
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ui/ash/login",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/strings",

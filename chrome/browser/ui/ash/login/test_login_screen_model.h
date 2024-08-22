@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_TEST_LOGIN_SCREEN_MODEL_H_
-#define CHROME_BROWSER_UI_ASH_TEST_LOGIN_SCREEN_MODEL_H_
+#ifndef CHROME_BROWSER_UI_ASH_LOGIN_TEST_LOGIN_SCREEN_MODEL_H_
+#define CHROME_BROWSER_UI_ASH_LOGIN_TEST_LOGIN_SCREEN_MODEL_H_
 
 #include "ash/public/cpp/login_screen_model.h"
 
@@ -74,4 +74,4 @@ class TestLoginScreenModel : public ash::LoginScreenModel {
   void NotifyFocusPod(const AccountId& account_id) override;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_TEST_LOGIN_SCREEN_MODEL_H_
+#endif  // CHROME_BROWSER_UI_ASH_LOGIN_TEST_LOGIN_SCREEN_MODEL_H_

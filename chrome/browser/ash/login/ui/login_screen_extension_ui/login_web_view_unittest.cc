@@ -9,7 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/create_options.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/dialog_delegate.h"
-#include "chrome/browser/ui/ash/test_login_screen.h"
+#include "chrome/browser/ui/ash/login/test_login_screen.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"

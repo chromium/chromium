@@ -55,8 +55,6 @@ static_library("ash") {
     "in_session_auth_dialog_client.h",
     "in_session_auth_token_provider_impl.cc",
     "in_session_auth_token_provider_impl.h",
-    "login_screen_client_impl.cc",
-    "login_screen_client_impl.h",
     "login_screen_shown_observer.h",
     "media_client_impl.cc",
     "media_client_impl.h",
@@ -187,6 +185,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/global_media_controls",
     "//chrome/browser/ui/ash/holding_space",
     "//chrome/browser/ui/ash/keyboard",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/network",
     "//chrome/browser/ui/ash/picker",
@@ -265,6 +264,7 @@ static_library("ash") {
 
   allow_circular_includes_from = [
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ash",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/app_list",
@@ -315,13 +315,6 @@ static_library("ash") {
 
 static_library("test_support") {
   testonly = true
-
-  sources = [
-    "test_login_screen.cc",
-    "test_login_screen.h",
-    "test_login_screen_model.cc",
-    "test_login_screen_model.h",
-  ]
 
   deps = [
     ":ash",

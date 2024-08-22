@@ -68,7 +68,7 @@
 #include "chrome/browser/ui/ash/ime_controller_client_impl.h"
 #include "chrome/browser/ui/ash/in_session_auth_dialog_client.h"
 #include "chrome/browser/ui/ash/in_session_auth_token_provider_impl.h"
-#include "chrome/browser/ui/ash/login_screen_client_impl.h"
+#include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
 #include "chrome/browser/ui/ash/network/network_connect_delegate.h"

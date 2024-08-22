@@ -41,7 +41,7 @@
 #include "chrome/browser/certificate_provider/pin_dialog_manager.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/login_screen_client_impl.h"
+#include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/browser_resources.h"

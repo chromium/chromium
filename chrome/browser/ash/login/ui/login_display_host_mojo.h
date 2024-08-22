@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/login/security_token_pin_dialog_host_login_impl.h"
 #include "chrome/browser/ash/login/ui/login_display_host_common.h"
 #include "chrome/browser/ash/login/ui/oobe_ui_dialog_delegate.h"
-#include "chrome/browser/ui/ash/login_screen_client_impl.h"
+#include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"

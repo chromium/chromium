@@ -43,6 +43,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ui/ash",
     "//chrome/browser/ui/ash:test_support",
+    "//chrome/browser/ui/ash/login:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/install_attributes:test_support",

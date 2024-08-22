@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_TEST_LOGIN_SCREEN_H_
-#define CHROME_BROWSER_UI_ASH_TEST_LOGIN_SCREEN_H_
+#ifndef CHROME_BROWSER_UI_ASH_LOGIN_TEST_LOGIN_SCREEN_H_
+#define CHROME_BROWSER_UI_ASH_LOGIN_TEST_LOGIN_SCREEN_H_
 
 #include <string>
 #include <vector>
 
 #include "ash/public/cpp/login_screen.h"
-#include "chrome/browser/ui/ash/test_login_screen_model.h"
+#include "chrome/browser/ui/ash/login/test_login_screen_model.h"
 
 namespace ash {
 class ScopedGuestButtonBlocker;
@@ -50,4 +50,4 @@ class TestLoginScreen : public ash::LoginScreen {
   TestLoginScreenModel test_screen_model_;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_TEST_LOGIN_SCREEN_H_
+#endif  // CHROME_BROWSER_UI_ASH_LOGIN_TEST_LOGIN_SCREEN_H_

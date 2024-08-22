@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LOGIN_SCREEN_CLIENT_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_LOGIN_SCREEN_CLIENT_IMPL_H_
+#ifndef CHROME_BROWSER_UI_ASH_LOGIN_LOGIN_SCREEN_CLIENT_IMPL_H_
+#define CHROME_BROWSER_UI_ASH_LOGIN_LOGIN_SCREEN_CLIENT_IMPL_H_
 
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen_client.h"
@@ -16,7 +16,6 @@
 #include "base/values.h"
 #include "chrome/browser/ui/ash/login_screen_shown_observer.h"
 #include "components/user_manager/user_manager.h"
-#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace ash {
 enum class ParentCodeValidationResult;
@@ -174,4 +173,4 @@ struct ScopedObservationTraits<LoginScreenClientImpl, ash::SystemTrayObserver> {
 
 }  // namespace base
 
-#endif  // CHROME_BROWSER_UI_ASH_LOGIN_SCREEN_CLIENT_IMPL_H_
+#endif  // CHROME_BROWSER_UI_ASH_LOGIN_LOGIN_SCREEN_CLIENT_IMPL_H_

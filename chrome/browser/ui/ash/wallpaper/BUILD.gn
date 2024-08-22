@@ -36,6 +36,7 @@ static_library("wallpaper") {
     "//chrome/browser/ash/wallpaper_handlers",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/webui/ash/settings",
     "//chrome/common",
@@ -59,6 +60,7 @@ static_library("wallpaper") {
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/policy/external_data/handlers",
     "//chrome/browser/ash/system_web_apps/apps/personalization_app",
+    "//chrome/browser/ui/ash/login",
   ]
 }
 

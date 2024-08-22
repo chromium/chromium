@@ -6,7 +6,7 @@
 
 #include "ash/public/cpp/login_screen.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/dialog_delegate.h"
-#include "chrome/browser/ui/ash/login_screen_client_impl.h"
+#include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
