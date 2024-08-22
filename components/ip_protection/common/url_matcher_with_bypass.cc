@@ -174,7 +174,6 @@ UrlMatcherWithBypassResult UrlMatcherWithBypass::Matches(
     return UrlMatcherWithBypassResult::kNoMatch;
   }
 
-  net::SchemefulSite request_site(request_url);
   std::string resource_host_suffix = PartitionMapKey(request_url.host());
 
   if (!match_list_with_bypass_map_.contains(resource_host_suffix)) {
