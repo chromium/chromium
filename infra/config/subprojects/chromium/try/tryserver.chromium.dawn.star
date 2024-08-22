@@ -41,6 +41,7 @@ try_.builder(
     ],
     builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
+        retry_without_patch = False,
     ),
     gn_args = "ci/Dawn Chromium Presubmit",
     execution_timeout = 30 * time.minute,

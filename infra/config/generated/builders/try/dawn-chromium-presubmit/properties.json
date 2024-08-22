@@ -41,7 +41,8 @@
           "project": "chromium"
         }
       ],
-      "retry_failed_shards": false
+      "retry_failed_shards": false,
+      "retry_without_patch": false
     }
   },
   "$build/reclient": {
