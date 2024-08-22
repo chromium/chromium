@@ -4,6 +4,7 @@
 
 import json
 import textwrap
+import unittest
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.log_testing import LoggingTestCase
@@ -560,6 +561,7 @@ class TestExporterTest(LoggingTestCase):
             self.host.filesystem.read_text_file('/tmp/summary.md'),
             'No pull requests modified.\n')
 
+    @unittest.skip('Unskip after crbug.com/346392205 is fixed')
     def test_run_returns_false_on_gerrit_search_error(self):
         def raise_gerrit_error():
             raise GerritError('Gerrit API fails.')

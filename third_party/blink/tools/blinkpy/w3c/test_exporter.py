@@ -200,7 +200,11 @@ class TestExporter:
             _log.info(
                 'In-flight CLs cannot be exported due to the following error:')
             _log.error(str(e))
-            return True
+            # TODO(crbug.com/346392205) change this back to True once the bug is fixed
+            # We do not need to mark the exporter run as failed due to this. Instead
+            # in flight changes can be exported in the next exporter run, or exported
+            # after the change has been submitted.
+            return False
         else:
             self.process_gerrit_cls(open_gerrit_cls, pr_events)
             return False
