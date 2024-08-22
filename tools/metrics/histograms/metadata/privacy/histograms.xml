@@ -1218,15 +1218,6 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="PrivacySandbox.M1AdMeasurementSetReason"
-    enum="M1AdMeasurementSetReason" expires_after="2024-09-30">
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the reason that the Privacy Sandbox Ads Measurement API is modified.
-  </summary>
-</histogram>
-
 <histogram
     name="PrivacySandbox.Notice.FirstShownToInteractedDuration.{PSNotice}_{PSNoticeAction}"
     units="ms" expires_after="2025-06-11">

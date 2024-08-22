@@ -25848,16 +25848,6 @@ from previous Chrome versions.
   </int>
 </enum>
 
-<!-- LINT.IfChange(M1AdMeasurementSetReason) -->
-
-<enum name="M1AdMeasurementSetReason">
-  <int value="0" label="Disabled_RestrictedNoNotice"/>
-  <int value="1" label="Disabled_PolicySettings"/>
-  <int value="2" label="Enabled"/>
-</enum>
-
-<!-- LINT.ThenChange(/chrome/browser/privacy_sandbox/privacy_sandbox_service.h:M1AdMeasurementSetReason) -->
-
 <enum name="MacLaunchApplicationResult">
   <int value="0" label="Success"/>
   <int value="1" label="Success despite error">

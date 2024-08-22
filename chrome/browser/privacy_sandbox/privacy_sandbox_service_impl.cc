@@ -233,12 +233,6 @@ void RecordProtectedAudienceJoiningTopFrameDisplayedHistogram(bool value) {
       "PrivacySandbox.ProtectedAudience.JoiningTopFrameDisplayed", value);
 }
 
-void RecordM1AdMeasurementSetReasonHistogram(
-    PrivacySandboxService::M1AdMeasurementSetReason reason) {
-  base::UmaHistogramEnumeration("PrivacySandbox.M1AdMeasurementSetReason",
-                                reason);
-}
-
 }  // namespace
 
 // static
@@ -336,9 +330,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, false);
     if (!privacy_sandbox::IsRestrictedNoticeRequired()) {
-      RecordM1AdMeasurementSetReasonHistogram(
-          PrivacySandboxService::M1AdMeasurementSetReason::
-              kDisabled_RestrictedNoNotice);
       pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
                                 false);
     }
@@ -439,8 +430,6 @@ void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action,
         pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
         pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
                                   true);
-        RecordM1AdMeasurementSetReasonHistogram(
-            PrivacySandboxService::M1AdMeasurementSetReason::kEnabled);
       }
     } else {
       DCHECK(privacy_sandbox::IsNoticeRequired());
@@ -450,8 +439,6 @@ void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action,
       pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
       pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
                                 true);
-      RecordM1AdMeasurementSetReasonHistogram(
-          PrivacySandboxService::M1AdMeasurementSetReason::kEnabled);
     }
 #if !BUILDFLAG(IS_ANDROID)
     MaybeCloseOpenPrompts();
@@ -478,8 +465,6 @@ void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action,
         prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged, true);
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
                               true);
-    RecordM1AdMeasurementSetReasonHistogram(
-        PrivacySandboxService::M1AdMeasurementSetReason::kEnabled);
 #if !BUILDFLAG(IS_ANDROID)
     MaybeCloseOpenPrompts();
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1188,8 +1173,6 @@ PrivacySandboxServiceImpl::GetRequiredPromptTypeInternal(
             static_cast<int>(PromptSuppressedReason::kNoticeShownToGuardian));
         pref_service->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
                                  true);
-        RecordM1AdMeasurementSetReasonHistogram(
-            PrivacySandboxService::M1AdMeasurementSetReason::kEnabled);
         return PromptType::kNone;
       }
     }

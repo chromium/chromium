@@ -36,16 +36,6 @@ class Widget;
 // Sandbox APIs.
 class PrivacySandboxService : public KeyedService {
  public:
-  // Possible areas where the pref kPrivacySandboxM1AdMeasurement would be set.
-  // LINT.IfChange(M1AdMeasurementSetReason)
-  enum class M1AdMeasurementSetReason {
-    kDisabled_RestrictedNoNotice = 0,
-    kDisabled_PolicySettings = 1,
-    kEnabled = 2,
-    kMaxValue = kEnabled,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:M1AdMeasurementSetReason)
-
   // Possible types of Privacy Sandbox prompts that may be shown to the user.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
   enum class PromptType {

@@ -126,8 +126,6 @@ const base::Version kFirstPartySetsVersion("1.2.3");
 
 constexpr int kTestTaxonomyVersion = 1;
 
-// TODO(b/342221188): Add histogram tests for
-// 'PrivacySandbox.M1AdMeasurementSetReason'
 class TestPrivacySandboxService
     : public privacy_sandbox_test_util::PrivacySandboxServiceTestInterface {
  public:
