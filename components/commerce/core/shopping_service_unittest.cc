@@ -91,7 +91,6 @@ const char kDiscountValueText[] = "10% off";
 const double kDiscountExpiryTime = 1000000;
 const char kDiscountCode[] = "discount code";
 const uint64_t kDiscountId1 = 111;
-const uint64_t kDiscountId2 = 222;
 const uint64_t kDiscountOfferId = 123456;
 
 const std::vector<std::vector<std::string>> kProductCategories = {
@@ -1882,35 +1881,27 @@ TEST_P(ShoppingServiceTest, TestDiscountInfoResponse) {
   valid_info.expiry_time_sec = kDiscountExpiryTime;
   valid_info.offer_id = kDiscountOfferId;
   infos.push_back(valid_info);
-  // Another valid info with different cluster type.
-  DiscountInfo valid_info_2 = valid_info;
-  valid_info_2.id = kDiscountId2;
-  valid_info_2.cluster_type = DiscountClusterType::kUnspecified;
-  infos.push_back(valid_info_2);
 
-  opt_guide_->SetResponse(GURL(kDiscountsUrl2),
+  opt_guide_->SetResponse(GURL(kDiscountsUrl1),
                           OptimizationType::SHOPPING_DISCOUNTS,
                           OptimizationGuideDecision::kTrue,
                           opt_guide_->BuildDiscountsResponse(infos));
 
   std::unique_ptr<MockDiscountsStorage> storage =
       std::make_unique<MockDiscountsStorage>();
-  EXPECT_CALL(*storage, HandleServerDiscounts(
-                            std::vector<std::string>{kDiscountsUrl1}, _, _));
+  EXPECT_CALL(*storage, HandleServerDiscounts(GURL(kDiscountsUrl1), _, _));
   SetDiscountsStorageForTesting(std::move(storage));
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kDiscountsFetchResultHistogramName, 0);
 
   base::RunLoop run_loop;
-  shopping_service_->GetDiscountInfoForUrls(
-      std::vector<GURL>{GURL(kDiscountsUrl1), GURL(kDiscountsUrl2)},
+  shopping_service_->GetDiscountInfoForUrl(
+      GURL(kDiscountsUrl1),
       base::BindOnce(
-          [](base::RunLoop* run_loop, const DiscountsMap& map) {
-            ASSERT_EQ(1, (int)map.size());
-
-            auto discounts = map.find(GURL(kDiscountsUrl2))->second;
-            ASSERT_EQ(2, (int)discounts.size());
+          [](base::RunLoop* run_loop, const GURL& url,
+             const std::vector<DiscountInfo> discounts) {
+            ASSERT_EQ(1, (int)discounts.size());
 
             ASSERT_EQ(DiscountClusterType::kOfferLevel,
                       discounts[0].cluster_type);
@@ -1924,10 +1915,6 @@ TEST_P(ShoppingServiceTest, TestDiscountInfoResponse) {
             ASSERT_EQ(true, discounts[0].is_merchant_wide);
             ASSERT_EQ(kDiscountExpiryTime, discounts[0].expiry_time_sec);
             ASSERT_EQ(kDiscountOfferId, discounts[0].offer_id);
-
-            ASSERT_EQ(kDiscountId2, discounts[1].id);
-            ASSERT_EQ(DiscountClusterType::kUnspecified,
-                      discounts[1].cluster_type);
 
             run_loop->Quit();
           },
@@ -1962,24 +1949,21 @@ TEST_P(ShoppingServiceTest, TestDiscountInfoResponse_InfoWithoutId) {
   invalid_info.id = kInvalidDiscountId;
   infos.push_back(invalid_info);
 
-  opt_guide_->SetResponse(GURL(kDiscountsUrl2),
+  opt_guide_->SetResponse(GURL(kDiscountsUrl1),
                           OptimizationType::SHOPPING_DISCOUNTS,
                           OptimizationGuideDecision::kTrue,
                           opt_guide_->BuildDiscountsResponse(infos));
 
   base::RunLoop run_loop;
-  shopping_service_->GetDiscountInfoForUrls(
-      std::vector<GURL>{GURL(kDiscountsUrl1), GURL(kDiscountsUrl2)},
-      base::BindOnce(
-          [](base::RunLoop* run_loop, const DiscountsMap& map) {
-            ASSERT_EQ(1, (int)map.size());
-
-            auto discounts = map.find(GURL(kDiscountsUrl2))->second;
-            ASSERT_EQ(1, (int)discounts.size());
-            ASSERT_EQ(kDiscountId1, discounts[0].id);
-            run_loop->Quit();
-          },
-          &run_loop));
+  shopping_service_->GetDiscountInfoForUrl(
+      GURL(kDiscountsUrl1), base::BindOnce(
+                                [](base::RunLoop* run_loop, const GURL& url,
+                                   const std::vector<DiscountInfo> discounts) {
+                                  ASSERT_EQ(1, (int)discounts.size());
+                                  ASSERT_EQ(kDiscountId1, discounts[0].id);
+                                  run_loop->Quit();
+                                },
+                                &run_loop));
   run_loop.Run();
 }
 
@@ -2003,19 +1987,17 @@ TEST_P(ShoppingServiceTest, TestDiscountInfoResponse_InfoWithoutTerms) {
   valid_info.offer_id = kDiscountOfferId;
   infos.push_back(valid_info);
 
-  opt_guide_->SetResponse(GURL(kDiscountsUrl2),
+  opt_guide_->SetResponse(GURL(kDiscountsUrl1),
                           OptimizationType::SHOPPING_DISCOUNTS,
                           OptimizationGuideDecision::kTrue,
                           opt_guide_->BuildDiscountsResponse(infos));
 
   base::RunLoop run_loop;
-  shopping_service_->GetDiscountInfoForUrls(
-      std::vector<GURL>{GURL(kDiscountsUrl1), GURL(kDiscountsUrl2)},
+  shopping_service_->GetDiscountInfoForUrl(
+      GURL(kDiscountsUrl1),
       base::BindOnce(
-          [](base::RunLoop* run_loop, const DiscountsMap& map) {
-            ASSERT_EQ(1, (int)map.size());
-
-            auto discounts = map.find(GURL(kDiscountsUrl2))->second;
+          [](base::RunLoop* run_loop, const GURL& key,
+             const std::vector<DiscountInfo> discounts) {
             ASSERT_EQ(1, (int)discounts.size());
             ASSERT_EQ(kDiscountId1, discounts[0].id);
             ASSERT_FALSE(discounts[0].terms_and_conditions.has_value());
@@ -2051,14 +2033,14 @@ TEST_P(ShoppingServiceTest, TestDiscountInfoResponse_InfoWithoutDiscountCode) {
                           opt_guide_->BuildDiscountsResponse(infos));
 
   base::RunLoop run_loop;
-  shopping_service_->GetDiscountInfoForUrls(
-      std::vector<GURL>{GURL(kDiscountsUrl1), GURL(kDiscountsUrl2)},
-      base::BindOnce(
-          [](base::RunLoop* run_loop, const DiscountsMap& map) {
-            ASSERT_EQ(0, (int)map.size());
-            run_loop->Quit();
-          },
-          &run_loop));
+  shopping_service_->GetDiscountInfoForUrl(
+      GURL(kDiscountsUrl1), base::BindOnce(
+                                [](base::RunLoop* run_loop, const GURL& key,
+                                   const std::vector<DiscountInfo> discounts) {
+                                  ASSERT_EQ(0, (int)discounts.size());
+                                  run_loop->Quit();
+                                },
+                                &run_loop));
   run_loop.Run();
 }
 

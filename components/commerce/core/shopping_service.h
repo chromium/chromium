@@ -266,11 +266,11 @@ class ShoppingService : public KeyedService,
   virtual void GetPriceInsightsInfoForUrl(const GURL& url,
                                           PriceInsightsInfoCallback callback);
 
-  // This API fetches valid discounts information on the provided |urls| and
+  // This API fetches valid discounts information on the provided |url| and
   // passes the payload back to the caller via |callback|. Call will run after
   // the fetch is completed.
-  virtual void GetDiscountInfoForUrls(const std::vector<GURL>& urls,
-                                      DiscountInfoCallback callback);
+  virtual void GetDiscountInfoForUrl(const GURL& url,
+                                     DiscountInfoCallback callback);
 
   virtual void GetProductSpecificationsForUrls(
       const std::vector<GURL>& urls,
@@ -603,11 +603,11 @@ class ShoppingService : public KeyedService,
   bool IsDiscountInfoApiEnabled();
 
   void GetDiscountInfoFromOptGuide(const GURL& url,
-                                   DiscountsOptGuideCallback callback);
+                                   DiscountInfoCallback callback);
 
   void HandleOptGuideDiscountInfoResponse(
       const GURL& url,
-      DiscountsOptGuideCallback callback,
+      DiscountInfoCallback callback,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 

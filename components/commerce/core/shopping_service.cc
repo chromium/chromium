@@ -731,16 +731,9 @@ void ShoppingService::GetPriceInsightsInfoForUrl(
                      weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
 }
 
-void ShoppingService::GetDiscountInfoForUrls(const std::vector<GURL>& urls,
-                                             DiscountInfoCallback callback) {
-  const auto barrier_callback = base::BarrierCallback<DiscountsPair>(
-      urls.size(),
-      base::BindOnce(&ShoppingService::OnGetAllDiscountsFromOptGuide,
-                     weak_ptr_factory_.GetWeakPtr(), urls,
-                     std::move(callback)));
-  for (const GURL& url : urls) {
-    GetDiscountInfoFromOptGuide(url, barrier_callback);
-  }
+void ShoppingService::GetDiscountInfoForUrl(const GURL& url,
+                                            DiscountInfoCallback callback) {
+  GetDiscountInfoFromOptGuide(url, std::move(callback));
 }
 
 void ShoppingService::GetProductSpecificationsForUrls(
@@ -1451,12 +1444,11 @@ void ShoppingService::HandleOptGuideShoppingPageTypesResponse(
 
 void ShoppingService::GetDiscountInfoFromOptGuide(
     const GURL& url,
-    DiscountsOptGuideCallback callback) {
+    DiscountInfoCallback callback) {
   if (!opt_guide_ || !IsDiscountInfoApiEnabled()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       DiscountsPair(url, std::vector<DiscountInfo>())));
+        base::BindOnce(std::move(callback), url, std::vector<DiscountInfo>()));
     return;
   }
 
@@ -1468,16 +1460,28 @@ void ShoppingService::GetDiscountInfoFromOptGuide(
 
 void ShoppingService::HandleOptGuideDiscountInfoResponse(
     const GURL& url,
-    DiscountsOptGuideCallback callback,
+    DiscountInfoCallback callback,
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
-    std::move(callback).Run(DiscountsPair(url, std::vector<DiscountInfo>()));
+    std::move(callback).Run(url, std::vector<DiscountInfo>());
     return;
   }
 
-  std::move(callback).Run(
-      DiscountsPair(url, OptGuideResultToDiscountInfos(metadata)));
+  std::vector<DiscountInfo> discount_infos =
+      OptGuideResultToDiscountInfos(metadata);
+
+  if (discount_infos.size() != 0) {
+    base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
+                                  DiscountsFetchResult::kInfoFromOptGuide);
+  }
+
+  if (discounts_storage_) {
+    discounts_storage_->HandleServerDiscounts(url, std::move(discount_infos),
+                                              std::move(callback));
+  } else {
+    std::move(callback).Run(url, std::move(discount_infos));
+  }
 }
 
 std::vector<DiscountInfo> ShoppingService::OptGuideResultToDiscountInfos(
@@ -1576,34 +1580,6 @@ std::vector<DiscountInfo> ShoppingService::OptGuideResultToDiscountInfos(
   }
 
   return discount_infos;
-}
-
-void ShoppingService::OnGetAllDiscountsFromOptGuide(
-    const std::vector<GURL>& urls,
-    DiscountInfoCallback callback,
-    const std::vector<DiscountsPair>& results) {
-  DiscountsMap map;
-  std::vector<std::string> urls_to_check_in_db;
-
-  for (const auto& discount_pair : results) {
-    const GURL& url = discount_pair.first;
-    const std::vector<DiscountInfo>& discount_infos = discount_pair.second;
-
-    if (discount_infos.empty()) {
-      urls_to_check_in_db.push_back(url.spec());
-    } else {
-      map.insert(discount_pair);
-      base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
-                                    DiscountsFetchResult::kInfoFromOptGuide);
-    }
-  }
-
-  if (discounts_storage_) {
-    discounts_storage_->HandleServerDiscounts(
-        urls_to_check_in_db, std::move(map), std::move(callback));
-  } else {
-    std::move(callback).Run(std::move(map));
-  }
 }
 
 void ShoppingService::SetDiscountsStorageForTesting(

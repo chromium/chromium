@@ -101,25 +101,22 @@ void DiscountsPageActionController::ResetForNewNavigation(const GURL& url) {
   last_committed_url_ = url;
   NotifyHost();
 
-  shopping_service_->GetDiscountInfoForUrls(
-      {url},
+  shopping_service_->GetDiscountInfoForUrl(
+      url,
       base::BindOnce(&DiscountsPageActionController::HandleDiscountInfoResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DiscountsPageActionController::HandleDiscountInfoResponse(
-    const DiscountsMap& discounts_map) {
-  CHECK(discounts_map.empty() ||
-        (discounts_map.size() == 1 &&
-         discounts_map.begin()->first == last_committed_url_));
-
-  if (discounts_map.empty() || discounts_map.begin()->second.empty()) {
+    const GURL& url,
+    const std::vector<DiscountInfo> discounts) {
+  if (url != last_committed_url_ || discounts.empty()) {
     got_discounts_response_for_page_ = true;
     NotifyHost();
     return;
   }
 
-  discounts_ = discounts_map.begin()->second;
+  discounts_ = std::move(discounts);
   got_discounts_response_for_page_ = true;
   NotifyHost();
 }

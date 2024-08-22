@@ -106,18 +106,16 @@ class DiscountsInteractiveTest : public InteractiveBrowserTest {
     double expiry_time_sec =
         (base::DefaultClock::GetInstance()->Now() + base::Days(2))
             .InSecondsFSinceUnixEpoch();
-    commerce::DiscountInfo discount_info = commerce::CreateValidDiscountInfo(
+    discount_info_ = commerce::CreateValidDiscountInfo(
         detail, terms_and_conditions, value_in_text, discount_code, /*id=*/1,
         /*is_merchant_wide=*/true, expiry_time_sec);
-    discount_info_map_ = {
-        {embedded_test_server()->GetURL(kShoppingURL), {discount_info}}};
 
-    ShoppingService()->SetResponseForGetDiscountInfoForUrls(discount_info_map_);
+    ShoppingService()->SetResponseForGetDiscountInfoForUrl({discount_info_});
   }
 
   base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription create_services_subscription_;
-  std::map<GURL, std::vector<commerce::DiscountInfo>> discount_info_map_;
+  commerce::DiscountInfo discount_info_;
   base::WeakPtrFactory<DiscountsInteractiveTest> weak_ptr_factory_{this};
 };
 

@@ -262,8 +262,8 @@ struct EntryPointInfo {
 };
 
 // Callbacks and typedefs for various accessors in the shopping service.
-using DiscountsMap = std::map<GURL, std::vector<DiscountInfo>>;
-using DiscountInfoCallback = base::OnceCallback<void(const DiscountsMap&)>;
+using DiscountInfoCallback =
+    base::OnceCallback<void(const GURL&, const std::vector<DiscountInfo>)>;
 using MerchantInfoCallback =
     base::OnceCallback<void(const GURL&, std::optional<MerchantInfo>)>;
 using PriceInsightsInfoCallback =

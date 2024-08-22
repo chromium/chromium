@@ -54,7 +54,7 @@ void MockShoppingService::SetupPermissiveMock() {
       .WillByDefault(testing::Return(30));
   SetResponseForGetMerchantInfoForUrl(std::nullopt);
   SetResponseForIsShoppingPage(std::nullopt);
-  SetResponseForGetDiscountInfoForUrls(default_discounts_map_);
+  SetResponseForGetDiscountInfoForUrl(std::vector<DiscountInfo>());
   SetSubscribeCallbackValue(true);
   SetUnsubscribeCallbackValue(true);
   SetIsSubscribedCallbackValue(true);
@@ -247,13 +247,12 @@ void MockShoppingService::SetIsDiscountEligibleToShowOnNavigation(
       .WillByDefault(testing::Return(is_eligible));
 }
 
-void MockShoppingService::SetResponseForGetDiscountInfoForUrls(
-    const DiscountsMap& discounts_map) {
-  ON_CALL(*this, GetDiscountInfoForUrls)
-      .WillByDefault([discounts_map](const std::vector<GURL>& urls,
-                                     DiscountInfoCallback callback) {
+void MockShoppingService::SetResponseForGetDiscountInfoForUrl(
+    const std::vector<DiscountInfo>& infos) {
+  ON_CALL(*this, GetDiscountInfoForUrl)
+      .WillByDefault([infos](const GURL& url, DiscountInfoCallback callback) {
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), discounts_map));
+            FROM_HERE, base::BindOnce(std::move(callback), url, infos));
       });
 }
 
