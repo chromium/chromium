@@ -525,6 +525,7 @@ chromium-metrics-reviews@google.com.
   <int value="13"
       label="Denied due to an abort by browser (e.g. RenderFrameHost was
              deleted)"/>
+  <int value="14" label="Allowed by FedCM connection"/>
 </enum>
 
 <enum name="StorageAccessResult">
