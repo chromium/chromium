@@ -11663,21 +11663,6 @@
             ]
         }
     ],
-    "IOSEnableColorLensAndVoiceIconsInHomeScreenWidget": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "kEnableColorLensAndVoiceIconsInHomeScreenWidget"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSFastApplicationWillTerminate": [
         {
             "platforms": [
@@ -13038,22 +13023,6 @@
                     "name": "Enabled_Dogfood",
                     "enable_features": [
                         "LacrosGooglePolicyRollout"
-                    ]
-                }
-            ]
-        }
-    ],
-    "LargeFakeboxWithColorIconsIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "LargeFakeboxWithColorIcons",
-                    "enable_features": [
-                        "IOSLargeFakebox",
-                        "OmniboxColorIcons"
                     ]
                 }
             ]
