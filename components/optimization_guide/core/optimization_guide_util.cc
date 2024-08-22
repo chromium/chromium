@@ -82,6 +82,9 @@ std::string_view GetStringNameForModelExecutionFeature(
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_FORMS_PREDICTIONS:
       return "FormsPredictions";
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_FORMS_ANNOTATIONS:
+      return "FormsAnnotations";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in

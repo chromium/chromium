@@ -30,6 +30,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="ModelExecutionFeature">
   <variant name="Compose" summary="Compose"/>
+  <variant name="FormsAnnotations" summary="Forms Annotations"/>
   <variant name="FormsPredictions" summary="Forms Predictions"/>
   <variant name="HistorySearch" summary="History Search"/>
   <variant name="PromptApi" summary="Prompt API"/>

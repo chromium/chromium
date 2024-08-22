@@ -112,6 +112,7 @@ const char* GetOnDeviceFeatureRecentlyUsedPref(
       return prefs::localstate::kLastTimeTestFeatureWasUsed;
     case ModelBasedCapabilityKey::kHistorySearch:
       return prefs::localstate::kLastTimeHistorySearchWasUsed;
+    case ModelBasedCapabilityKey::kFormsAnnotations:
     case ModelBasedCapabilityKey::kFormsPredictions:
     case ModelBasedCapabilityKey::kWallpaperSearch:
     case ModelBasedCapabilityKey::kTabOrganization:
