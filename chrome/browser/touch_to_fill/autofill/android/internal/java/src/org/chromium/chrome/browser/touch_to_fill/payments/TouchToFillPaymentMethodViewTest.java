@@ -24,7 +24,19 @@ import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCred
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCardSuggestion;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createLocalCreditCard;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createVirtualCreditCard;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.APPLY_DEACTIVATED_STYLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.FIRST_LINE_LABEL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ITEM_COLLECTION_INFO;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MAIN_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MINOR_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NETWORK_NAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ON_CREDIT_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.NON_TRANSFORMING_IBAN_KEYS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
@@ -800,38 +812,16 @@ public class TouchToFillPaymentMethodViewTest {
             FillableItemCollectionInfo collectionInfo,
             Runnable actionCallback) {
         PropertyModel.Builder creditCardSuggestionModelBuilder =
-                new PropertyModel.Builder(
-                                TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
-                                        .NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS)
-                        .with(
-                                TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
-                                        .MAIN_TEXT,
-                                suggestion.getLabel())
-                        .with(
-                                TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
-                                        .MINOR_TEXT,
-                                suggestion.getSecondaryLabel())
-                        .with(
-                                TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
-                                        .FIRST_LINE_LABEL,
-                                suggestion.getSublabel())
-                        .with(
-                                TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
-                                        .ITEM_COLLECTION_INFO,
-                                collectionInfo)
-                        .with(
-                                TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
-                                        .ON_CREDIT_CARD_CLICK_ACTION,
-                                actionCallback)
-                        .with(
-                                TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
-                                        .APPLY_DEACTIVATED_STYLE,
-                                suggestion.applyDeactivatedStyle());
+                new PropertyModel.Builder(NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS)
+                        .with(MAIN_TEXT, suggestion.getLabel())
+                        .with(MINOR_TEXT, suggestion.getSecondaryLabel())
+                        .with(FIRST_LINE_LABEL, suggestion.getSublabel())
+                        .with(ITEM_COLLECTION_INFO, collectionInfo)
+                        .with(ON_CREDIT_CARD_CLICK_ACTION, actionCallback)
+                        .with(APPLY_DEACTIVATED_STYLE, suggestion.applyDeactivatedStyle());
         if (!card.getBasicCardIssuerNetwork()
                 .equals(card.getCardNameForAutofillDisplay().toLowerCase())) {
-            creditCardSuggestionModelBuilder.with(
-                    TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NETWORK_NAME,
-                    card.getBasicCardIssuerNetwork());
+            creditCardSuggestionModelBuilder.with(NETWORK_NAME, card.getBasicCardIssuerNetwork());
         }
         return creditCardSuggestionModelBuilder.build();
     }
@@ -842,18 +832,10 @@ public class TouchToFillPaymentMethodViewTest {
 
     private static PropertyModel createIbanModel(Iban iban, Runnable actionCallback) {
         PropertyModel.Builder ibanModelBuilder =
-                new PropertyModel.Builder(
-                                TouchToFillPaymentMethodProperties.IbanProperties
-                                        .NON_TRANSFORMING_IBAN_KEYS)
-                        .with(
-                                TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE,
-                                iban.getLabel())
-                        .with(
-                                TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME,
-                                iban.getNickname())
-                        .with(
-                                TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION,
-                                actionCallback);
+                new PropertyModel.Builder(NON_TRANSFORMING_IBAN_KEYS)
+                        .with(IBAN_VALUE, iban.getLabel())
+                        .with(IBAN_NICKNAME, iban.getNickname())
+                        .with(ON_IBAN_CLICK_ACTION, actionCallback);
         return ibanModelBuilder.build();
     }
 
