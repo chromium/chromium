@@ -135,7 +135,8 @@ const char kUKMFieldTrialSuffix[] = "UKM";
 IOSChromeMetricsServiceClient::IOSChromeMetricsServiceClient(
     metrics::MetricsStateManager* state_manager,
     variations::SyntheticTrialRegistry* synthetic_trial_registry)
-    : metrics_state_manager_(state_manager),
+    : UkmConsentStateObserver(ukm::NoInitialUkmConsentState),
+      metrics_state_manager_(state_manager),
       synthetic_trial_registry_(synthetic_trial_registry),
       stability_metrics_provider_(nullptr) {
   RegisterForNotifications();
@@ -281,9 +282,7 @@ void IOSChromeMetricsServiceClient::Initialize() {
         std::make_unique<metrics::DemographicMetricsProvider>(
             std::make_unique<metrics::DemographicsClient>(),
             metrics::MetricsLogUploader::MetricServiceType::UKM));
-    // As this is startup, there the UKM previous state is the same as the
-    // present state.
-    OnUkmAllowedStateChanged(/* must_purge */ false, GetUkmConsentState());
+
     RegisterUKMProviders();
   }
 }
@@ -471,7 +470,7 @@ void IOSChromeMetricsServiceClient::RegisterForNotifications() {
               base::Unretained(this)));
 
   // ChromeBrowserStateManager invoke OnChromeBrowserStateLoaded(...) for
-  // all ChromeBrowserState already loaded, so there is no need to maually
+  // all ChromeBrowserState already loaded, so there is no need to manually
   // iterate over them.
   browser_state_manager_observation_.Observe(
       GetApplicationContext()->GetChromeBrowserStateManager());
