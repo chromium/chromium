@@ -25,14 +25,16 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "base/test/gmock_callback_support.h"
-#else
-#include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/autofill/core/browser/payments/test_internal_authenticator.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
-#endif
+#endif  // !BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#include "components/autofill/core/browser/payments/local_card_migration_manager.h"
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 namespace autofill::payments {
 
