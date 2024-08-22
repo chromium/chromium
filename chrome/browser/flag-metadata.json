@@ -7753,7 +7753,7 @@
   {
     "name": "render-document",
     "owners": [ "rakina@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
       "name": "replace-sync-promos-with-sign-in-promos",
