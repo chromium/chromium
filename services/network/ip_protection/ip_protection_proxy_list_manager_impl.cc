@@ -154,12 +154,12 @@ void IpProtectionProxyListManagerImpl::OnGotProxyList(
       current_geo_id_ = network::GetGeoIdFromGeoHint(std::move(geo_hint));
       ip_protection_config_cache_->GeoObserved(current_geo_id_);
     }
+  }
 
-    ScheduleRefreshProxyList(proxy_list_refresh_interval_);
+  ScheduleRefreshProxyList(proxy_list_refresh_interval_);
 
-    if (on_proxy_list_refreshed_for_testing_) {
-      std::move(on_proxy_list_refreshed_for_testing_).Run();
-    }
+  if (on_proxy_list_refreshed_for_testing_) {
+    std::move(on_proxy_list_refreshed_for_testing_).Run();
   }
 }
 
