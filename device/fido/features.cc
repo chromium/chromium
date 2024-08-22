@@ -49,11 +49,6 @@ BASE_FEATURE(kWebAuthnAndroidCredMan,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Added in M115. Remove in or after M118
-BASE_FEATURE(kWebAuthnHybridLinkWithoutNotifications,
-             "WebAuthenticationHybridLinkWithoutNotifications",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enabled in M118. Remove in or after M121.
 BASE_FEATURE(kWebAuthnICloudKeychainForGoogle,
              "WebAuthenticationICloudKeychainForGoogle",

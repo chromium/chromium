@@ -41,8 +41,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.webauthn.FidoIntentSender;
-import org.chromium.device.DeviceFeatureList;
-import org.chromium.device.DeviceFeatureMap;
 import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.widget.Toast;
@@ -263,15 +261,10 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener, F
                 case QR_CONFIRM:
                     if (event == Event.QR_ALLOW_BUTTON_CLICKED) {
                         ViewGroup top = (ViewGroup) getView();
-                        boolean link = ((CheckBox) top.findViewById(R.id.qr_link)).isChecked();
-                        if (link
-                                && !DeviceFeatureMap.isEnabled(
-                                        DeviceFeatureList
-                                                .WEBAUTHN_HYBRID_LINK_WITHOUT_NOTIFICATIONS)) {
-                            link =
-                                    NotificationManagerCompat.from(getContext())
-                                            .areNotificationsEnabled();
-                        }
+                        boolean link =
+                                ((CheckBox) top.findViewById(R.id.qr_link)).isChecked()
+                                        && NotificationManagerCompat.from(getContext())
+                                                .areNotificationsEnabled();
                         mAuthenticator.setQRLinking(link);
                         mState = State.CHECK_SCREENLOCK;
                         break;

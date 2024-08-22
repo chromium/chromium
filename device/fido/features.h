@@ -39,11 +39,6 @@ inline constexpr base::FeatureParam<bool> kWebAuthnAndroidGpmInCredMan{
     &kWebAuthnAndroidCredMan, "gpm_in_cred_man", false};
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Advertise hybrid prelinking on Android even if the app doesn't have
-// notifications permission.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnHybridLinkWithoutNotifications);
-
 // These five feature flags control whether iCloud Keychain is the default
 // mechanism for platform credential creation in different situations.
 // "Active" means that the user is an active user of the profile authenticator,
