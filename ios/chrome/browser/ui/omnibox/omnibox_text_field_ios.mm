@@ -494,6 +494,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 - (void)handleTap:(UITapGestureRecognizer*)sender {
   if (self.isPreEditing) {
     [self exitPreEditState];
+    [super selectAll:self];
   }
   if (self.hasAutocompleteText) {
     [self acceptAutocompleteText];
