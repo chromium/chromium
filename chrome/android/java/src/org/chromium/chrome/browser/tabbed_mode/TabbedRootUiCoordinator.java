@@ -111,7 +111,6 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
@@ -668,23 +667,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             getToolbarManager().enableBottomControls();
         }
 
-        if (EphemeralTabCoordinator.isSupported()) {
-            Supplier<TabCreator> tabCreator =
-                    () ->
-                            mTabCreatorManagerSupplier
-                                    .get()
-                                    .getTabCreator(
-                                            mTabModelSelectorSupplier.get().isIncognitoSelected());
-            mEphemeralTabCoordinatorSupplier.set(
-                    new EphemeralTabCoordinator(
-                            mActivity,
-                            mWindowAndroid,
-                            mActivity.getWindow().getDecorView(),
-                            mActivityTabProvider,
-                            tabCreator,
-                            getBottomSheetController(),
-                            true));
-        }
         SupplierUtils.waitForAll(
                 mCallbackController.makeCancelable(
                         () -> {

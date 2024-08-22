@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIPHController;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -74,7 +73,6 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
@@ -316,32 +314,17 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
+    protected boolean canPreviewPromoteToTab() {
+        return mActivityType == ActivityType.CUSTOM_TAB;
+    }
+
+    @Override
     public void onFinishNativeInitialization() {
         super.onFinishNativeInitialization();
 
         mGoogleBottomBarCoordinator = getGoogleBottomBarCoordinator();
         if (mGoogleBottomBarCoordinator != null) {
             mGoogleBottomBarCoordinator.onFinishNativeInitialization();
-        }
-        if (EphemeralTabCoordinator.isSupported()) {
-            Supplier<TabCreator> tabCreator =
-                    () ->
-                            mTabCreatorManagerSupplier
-                                    .get()
-                                    .getTabCreator(
-                                            mTabModelSelectorSupplier.get().isIncognitoSelected());
-            boolean canPromoteToTab =
-                    mActivityType == ActivityType.CUSTOM_TAB
-                            || mActivityType == ActivityType.TRUSTED_WEB_ACTIVITY;
-            mEphemeralTabCoordinatorSupplier.set(
-                    new EphemeralTabCoordinator(
-                            mActivity,
-                            mWindowAndroid,
-                            mActivity.getWindow().getDecorView(),
-                            mActivityTabProvider,
-                            tabCreator,
-                            getBottomSheetController(),
-                            canPromoteToTab));
         }
         new OneShotCallback<>(
                 mProfileSupplier,

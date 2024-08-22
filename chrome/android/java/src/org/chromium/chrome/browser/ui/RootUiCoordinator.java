@@ -933,6 +933,23 @@ public class RootUiCoordinator
                 mLayoutManager);
         initBoardingPassDetector();
 
+        if (EphemeralTabCoordinator.isSupported()) {
+            Supplier<TabCreator> tabCreator =
+                    () ->
+                            mTabCreatorManagerSupplier
+                                    .get()
+                                    .getTabCreator(
+                                            mTabModelSelectorSupplier.get().isIncognitoSelected());
+            mEphemeralTabCoordinatorSupplier.set(
+                    new EphemeralTabCoordinator(
+                            mActivity,
+                            mWindowAndroid,
+                            mActivity.getWindow().getDecorView(),
+                            mActivityTabProvider,
+                            tabCreator,
+                            getBottomSheetController(),
+                            canPreviewPromoteToTab()));
+        }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)) {
             TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
             ReadAloudController controller =
@@ -965,6 +982,11 @@ public class RootUiCoordinator
                 contextualSearchManager.addObserver(mReadAloudContextualSearchObserver);
             }
         }
+    }
+
+    /** Preview Tab can be promoted to a normal tab by default. */
+    protected boolean canPreviewPromoteToTab() {
+        return true;
     }
 
     protected boolean isContextualSearchEnabled() {
