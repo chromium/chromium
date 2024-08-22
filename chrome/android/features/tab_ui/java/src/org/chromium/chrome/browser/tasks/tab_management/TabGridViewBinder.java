@@ -131,9 +131,10 @@ class TabGridViewBinder {
             final Size cardSize = model.get(TabProperties.GRID_CARD_SIZE);
             view.setMinimumHeight(cardSize.getHeight());
             view.setMinimumWidth(cardSize.getWidth());
-            view.getLayoutParams().height = cardSize.getHeight();
-            view.getLayoutParams().width = cardSize.getWidth();
-            view.setLayoutParams(view.getLayoutParams());
+            var layoutParams = view.getLayoutParams();
+            layoutParams.height = cardSize.getHeight();
+            layoutParams.width = cardSize.getWidth();
+            view.setLayoutParams(layoutParams);
             updateThumbnail(view, model);
         } else if (TabProperties.THUMBNAIL_FETCHER == propertyKey) {
             updateThumbnail(view, model);
@@ -230,14 +231,10 @@ class TabGridViewBinder {
             updateColor(view, isIncognito, isSelected);
             updateColorForSelectionToggleButton(view, isIncognito, isSelected);
         } else if (TabProperties.TAB_ACTION_STATE == propertyKey) {
-            updateColor(
-                    view,
-                    model.get(TabProperties.IS_INCOGNITO),
-                    model.get(TabProperties.IS_SELECTED));
-            updateColorForSelectionToggleButton(
-                    view,
-                    model.get(TabProperties.IS_INCOGNITO),
-                    model.get(TabProperties.IS_SELECTED));
+            boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
+            boolean isSelected = model.get(TabProperties.IS_SELECTED);
+            updateColor(view, isIncognito, isSelected);
+            updateColorForSelectionToggleButton(view, isIncognito, isSelected);
         } else if (TabProperties.TAB_CARD_LABEL_DATA == propertyKey) {
             // Ignore this data for tab card labels in selectable mode.
             updateTabCardLabel(view, /* tabCardLabelData= */ null);
@@ -362,15 +359,12 @@ class TabGridViewBinder {
         // TODO(crbug.com/40882123): Consider unsetting the bitmap early to allow memory reuse if
         // needed.
         final Size thumbnailSize = TabUtils.deriveThumbnailSize(cardSize, view.getContext());
+        // This callback will be made cancelable inside ThumbnailFetcher so only the latest fetch
+        // request will return. When the fetcher is replaced any outbound requests are first
+        // canceled inside TabListMediator so it is not necessary to do any sort of validation that
+        // the callback matches the current thumbnail fetcher and grid card size.
         Callback<Drawable> callback =
                 result -> {
-                    // TODO(crbug.com/342450242): Remove this boolean once cancel is correctly
-                    // called on the old value when setting a new THUMBNAIL_FETCHER.
-                    final boolean isMostRecentRequest =
-                            fetcher == model.get(TabProperties.THUMBNAIL_FETCHER)
-                                    && cardSize.equals(model.get(TabProperties.GRID_CARD_SIZE));
-                    if (!isMostRecentRequest) return;
-
                     if (result != null) {
                         TabUtils.setDrawableAndUpdateImageMatrix(thumbnail, result, thumbnailSize);
                     } else {
