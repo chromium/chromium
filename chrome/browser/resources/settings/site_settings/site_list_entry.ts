@@ -239,8 +239,6 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
         description = loadTimeData.getStringF(
             'embeddedOnHost', this.sanitizePort(this.model.embeddingOrigin));
       }
-    } else if (this.model.category === ContentSettingsTypes.GEOLOCATION) {
-      description = loadTimeData.getString('embeddedOnAnyHost');
     }
 
     try {
