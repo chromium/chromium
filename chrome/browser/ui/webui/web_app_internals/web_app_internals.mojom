@@ -8,9 +8,11 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-struct InstallIsolatedWebAppResult {
-  bool success;  // true if app was installed successfully.
-  string error;  // should only be set if the app failed to install.
+struct InstallIsolatedWebAppSuccess {};
+
+union InstallIsolatedWebAppResult {
+  InstallIsolatedWebAppSuccess success;
+  string error;
 };
 
 // Dev mode IWAs are either installed from a proxy origin, or from a Web Bundle

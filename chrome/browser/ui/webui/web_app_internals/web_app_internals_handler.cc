@@ -416,10 +416,8 @@ class ObliterateStoragePartitionHelper
 void SendError(
     base::OnceCallback<void(mojom::InstallIsolatedWebAppResultPtr)> callback,
     const std::string& error_message) {
-  auto result = mojom::InstallIsolatedWebAppResult::New();
-  result->success = false;
-  result->error = error_message;
-  std::move(callback).Run(std::move(result));
+  std::move(callback).Run(
+      mojom::InstallIsolatedWebAppResult::NewError(error_message));
 }
 
 }  // namespace
@@ -627,14 +625,13 @@ void WebAppInternalsHandler::OnInstallIsolatedWebAppInDevMode(
     base::OnceCallback<void(mojom::InstallIsolatedWebAppResultPtr)> callback,
     web_app::IsolatedWebAppInstallationManager::
         MaybeInstallIsolatedWebAppCommandSuccess result) {
-  auto mojo_result = mojom::InstallIsolatedWebAppResult::New();
-  if (result.has_value()) {
-    mojo_result->success = true;
-  } else {
-    mojo_result->success = false;
-    mojo_result->error = result.error();
-  }
-  std::move(callback).Run(std::move(mojo_result));
+  std::move(callback).Run([&] {
+    if (result.has_value()) {
+      auto success = mojom::InstallIsolatedWebAppSuccess::New();
+      return mojom::InstallIsolatedWebAppResult::NewSuccess(std::move(success));
+    }
+    return mojom::InstallIsolatedWebAppResult::NewError(result.error());
+  }());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
