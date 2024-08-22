@@ -15,17 +15,18 @@
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_list_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_card_cell+Testing.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credit_card.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_labeled_chip.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/text_view_util.h"
@@ -52,18 +53,18 @@ using base::SysNSStringToUTF8;
 // The UIActions that should be available from the cell's overflow menu button.
 @property(nonatomic, strong) NSArray<UIAction*>* menuActions;
 
-// The part of the cell's accessibility label that is used to indicate the index
-// at which the payment method represented by this item is positioned in the
-// list of payment methods to show.
+// The 0-based index at which the payment method is in the list of payment
+// methods to show.
+@property(nonatomic, assign) NSInteger cellIndex;
+
+// The part of the cell's accessibility label that is used to indicate the
+// 1-based index at which the payment method represented by this item is
+// positioned in the list of payment methods to show.
 @property(nonatomic, strong) NSString* cellIndexAccessibilityLabel;
 
 @end
 
 @implementation ManualFillCardItem {
-  // The 0-based index at which the payment method is in the list of payment
-  // methods to show.
-  NSInteger _cellIndex;
-
   // If `YES`, autofill button is shown for the item.
   BOOL _showAutofillFormButton;
 }

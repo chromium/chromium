@@ -64,6 +64,7 @@ bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {
 @interface ManualFillCardMediator () <PersonalDataManagerObserver>
 
 // All available credit cards.
+// TODO(crbug.com/361606673): Store cards by value.
 @property(nonatomic, assign) std::vector<CreditCard*> cards;
 
 @end
@@ -94,7 +95,8 @@ bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {
     _personalDataManagerObserver.reset(
         new autofill::PersonalDataManagerObserverBridge(self));
     _personalDataManager->AddObserver(_personalDataManagerObserver.get());
-    _cards = _personalDataManager->payments_data_manager().GetCreditCards();
+    _cards =
+        _personalDataManager->payments_data_manager().GetCreditCardsToSuggest();
     _reauthenticationModule = reauthenticationModule;
     _showAutofillFormButton = showAutofillFormButton;
   }
@@ -146,29 +148,42 @@ bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {
     return;
   }
 
-  int cardCount = self.cards.size();
-  NSMutableArray* cardItems =
-      [[NSMutableArray alloc] initWithCapacity:cardCount];
-  for (int i = 0; i < cardCount; i++) {
-    CreditCard* card = self.cards[i];
-    NSString* cellIndexAccessibilityLabel = base::SysUTF16ToNSString(
-        base::i18n::MessageFormatter::FormatWithNamedArgs(
-            l10n_util::GetStringUTF16(
-                IDS_IOS_MANUAL_FALLBACK_PAYMENT_CELL_INDEX),
-            "count", cardCount, "position", i + 1));
+  // Holds the cards that will be presented in the UI. Can differ from
+  // `self.cards` as a virtual card will be created for the cards that are
+  // enrolled to have one (if any).
+  std::vector<CreditCard*> cardsToPresent = {};
 
-    // If this card is enrolled to have a virtual card, create the virtual card
-    // and order it directly before the original card.
+  // Holds the created virtual cards. Needed so that the created virtual cards
+  // won't go out of scope before the end of the method.
+  std::vector<std::unique_ptr<CreditCard>> virtualCards;
+
+  // Go through `self.cards` and create a virtual card for every card that is
+  // enrolled to have one.
+  for (CreditCard* card : self.cards) {
+    // Virtual cards are ordered directly before their original card.
     if (base::FeatureList::IsEnabled(
             autofill::features::kAutofillEnableVirtualCards) &&
         card->virtual_card_enrollment_state() ==
             CreditCard::VirtualCardEnrollmentState::kEnrolled) {
-      CreditCard virtualCard = CreditCard::CreateVirtualCard(*card);
-      [cardItems addObject:[self createManualFillCardItemForCard:&virtualCard
-                                                       cellIndex:i
-                                     cellIndexAccessibilityLabel:
-                                         cellIndexAccessibilityLabel]];
+      std::unique_ptr<CreditCard> virtualCard =
+          std::make_unique<CreditCard>(CreditCard::CreateVirtualCard(*card));
+      cardsToPresent.push_back(virtualCard.get());
+      virtualCards.push_back(std::move(virtualCard));
     }
+    cardsToPresent.push_back(card);
+  }
+
+  int cardsToPresentCount = cardsToPresent.size();
+  NSMutableArray* cardItems =
+      [[NSMutableArray alloc] initWithCapacity:cardsToPresentCount];
+  for (int i = 0; i < cardsToPresentCount; i++) {
+    CreditCard* card = cardsToPresent[i];
+    NSString* cellIndexAccessibilityLabel = base::SysUTF16ToNSString(
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_IOS_MANUAL_FALLBACK_PAYMENT_CELL_INDEX),
+            "count", cardsToPresentCount, "position", i + 1));
+
     [cardItems addObject:[self createManualFillCardItemForCard:card
                                                      cellIndex:i
                                    cellIndexAccessibilityLabel:
@@ -178,7 +193,13 @@ bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {
   [self.consumer presentCards:cardItems];
 }
 
-// Creates a ManualFillCardItem for the given `card`.
+// Creates a ManualFillCardItem for the given `card`. When `card` is of a type
+// other than "virtual", it must be retained indefinetely as it will be passed
+// to PrceduralBlocks upon the creation of menu actions (see
+// `-createMenuActionsForCard`). When `card` is virtual, it is sufficient to
+// retain it for the duration of the this method as no menu actions will be
+// created for this type of card.
+// TODO(crbug.com/361606673): Pass `card` by value instead.
 - (ManualFillCardItem*)createManualFillCardItemForCard:(CreditCard*)card
                                              cellIndex:(NSInteger)cellIndex
                            cellIndexAccessibilityLabel:
