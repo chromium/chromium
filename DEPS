@@ -1933,7 +1933,7 @@ deps = {
   'src/third_party/icu':
     Var('chromium_git') + '/chromium/deps/icu.git' + '@' + '9408c6fd4a39e6fef0e1c4077602e1c83b15f3fb',
 
-  'src/third_party/icu4j': {
+  'src/third_party/icu4j/cipd': {
       'packages': [
           {
               'package': 'chromium/third_party/icu4j',
