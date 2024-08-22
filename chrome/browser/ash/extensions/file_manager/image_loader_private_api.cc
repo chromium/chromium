@@ -147,8 +147,7 @@ ImageLoaderPrivateGetDriveThumbnailFunction::Run() {
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   scoped_refptr<storage::FileSystemContext> file_system_context =
-      file_manager::util::GetFileSystemContextForRenderFrameHost(
-          profile, render_frame_host());
+      file_manager::util::GetFileManagerFileSystemContext(profile);
   const GURL url = GURL(params->url);
   const storage::FileSystemURL file_system_url =
       file_system_context->CrackURLInFirstPartyContext(url);
@@ -210,10 +209,9 @@ ImageLoaderPrivateGetPdfThumbnailFunction::Run() {
   const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  Profile* const profile = Profile::FromBrowserContext(browser_context());
   scoped_refptr<storage::FileSystemContext> file_system_context =
-      file_manager::util::GetFileSystemContextForRenderFrameHost(
-          profile, render_frame_host());
+      file_manager::util::GetFileManagerFileSystemContext(
+          Profile::FromBrowserContext(browser_context()));
   const GURL url = GURL(params->url);
   const storage::FileSystemURL file_system_url =
       file_system_context->CrackURLInFirstPartyContext(url);
@@ -222,8 +220,8 @@ ImageLoaderPrivateGetPdfThumbnailFunction::Run() {
     return RespondNow(Error("Expected a native local URL"));
   }
 
-  base::FilePath path = file_manager::util::GetLocalPathFromURL(
-      render_frame_host(), profile, url);
+  base::FilePath path =
+      file_manager::util::GetLocalPathFromURL(file_system_context, url);
   if (path.empty() ||
       base::FilePath::CompareIgnoreCase(path.Extension(), ".pdf") != 0) {
     return RespondNow(Error("Can only handle PDF files"));
@@ -302,8 +300,8 @@ ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   scoped_refptr<storage::FileSystemContext> file_system_context =
-      file_manager::util::GetFileSystemContextForRenderFrameHost(
-          Profile::FromBrowserContext(browser_context()), render_frame_host());
+      file_manager::util::GetFileManagerFileSystemContext(
+          Profile::FromBrowserContext(browser_context()));
   const GURL url = GURL(params->url);
   const storage::FileSystemURL file_system_url =
       file_system_context->CrackURLInFirstPartyContext(url);

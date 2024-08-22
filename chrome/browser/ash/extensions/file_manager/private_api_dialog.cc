@@ -61,7 +61,9 @@ ExtensionFunction::ResponseAction FileManagerPrivateSelectFileFunction::Run() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
   base::FilePath local_path = file_manager::util::GetLocalPathFromURL(
-      render_frame_host(), profile, GURL(params->selected_path));
+      file_manager::util::GetFileSystemContextForRenderFrameHost(
+          profile, render_frame_host()),
+      GURL(params->selected_path));
   if (local_path.empty()) {
     return RespondNow(Error("Path not supported"));
   }
@@ -140,7 +142,9 @@ ExtensionFunction::ResponseAction FileManagerPrivateSelectFilesFunction::Run() {
   auto* drive_service = drive::util::GetIntegrationServiceByProfile(profile);
   for (const auto& selected_path : params->selected_paths) {
     base::FilePath local_path = file_manager::util::GetLocalPathFromURL(
-        render_frame_host(), profile, GURL(selected_path));
+        file_manager::util::GetFileSystemContextForRenderFrameHost(
+            profile, render_frame_host()),
+        GURL(selected_path));
     if (local_path.empty()) {
       continue;
     }
