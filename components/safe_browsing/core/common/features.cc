@@ -201,6 +201,13 @@ BASE_FEATURE(kDownloadsPageReferrerUrl,
              "DownloadsPageReferrerUrl",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHashDatabaseOffsetMap,
+             "SafeBrowsingHashDatabaseOffsetMap",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<int> kHashDatabaseOffsetMapBytesPerOffset{
+    &kHashDatabaseOffsetMap, "HashDatabaseOffsetMapBytesPerOffset",
+    /*default_value=*/0};
+
 BASE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings,
              "TailoredSecurityLogAccountEnhancedProtectionStateInProtegoPings",
              base::FEATURE_DISABLED_BY_DEFAULT);

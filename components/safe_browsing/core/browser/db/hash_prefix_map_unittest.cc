@@ -246,8 +246,8 @@ TEST_F(HashPrefixMapTest, ReadsAndWritesFileOffsets) {
   const size_t kBytesPerOffset = 1024;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      kMmapSafeBrowsingDatabase,
-      {{"store-bytes-per-offset", base::NumberToString(kBytesPerOffset)}});
+      kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset",
+                                base::NumberToString(kBytesPerOffset)}});
   MmapHashPrefixMap map(GetBasePath());
   const int kNum = 8;
   map.Reserve(4, kNum * kBytesPerOffset);
@@ -287,8 +287,8 @@ TEST_F(HashPrefixMapTest, FillsMissingOffsets) {
   const size_t kBytesPerOffset = 1024;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      kMmapSafeBrowsingDatabase,
-      {{"store-bytes-per-offset", base::NumberToString(kBytesPerOffset)}});
+      kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset",
+                                base::NumberToString(kBytesPerOffset)}});
   MmapHashPrefixMap map(GetBasePath());
   map.Reserve(4, 8 * kBytesPerOffset);
 
@@ -315,8 +315,8 @@ TEST_F(HashPrefixMapTest, UsesFileOffsets) {
   const size_t kBytesPerOffset = 1024;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      kMmapSafeBrowsingDatabase,
-      {{"store-bytes-per-offset", base::NumberToString(kBytesPerOffset)}});
+      kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset",
+                                base::NumberToString(kBytesPerOffset)}});
   MmapHashPrefixMap map(GetBasePath());
 
   // Write kNum * 2 hashes to the file.
@@ -368,7 +368,7 @@ TEST_F(HashPrefixMapTest, UsesFileOffsets) {
 TEST_F(HashPrefixMapTest, MigratesFileOffsets) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      kMmapSafeBrowsingDatabase, {{"store-bytes-per-offset", "8"}});
+      kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset", "8"}});
   MmapHashPrefixMap map(GetBasePath());
 
   // Write kNum * 2 hashes to the file.
@@ -395,7 +395,7 @@ TEST_F(HashPrefixMapTest, MigratesFileOffsets) {
 
   feature_list.Reset();
   feature_list.InitAndEnableFeatureWithParameters(
-      kMmapSafeBrowsingDatabase, {{"store-bytes-per-offset", "16"}});
+      kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset", "16"}});
   EXPECT_EQ(map.MigrateFileFormat(GetBasePath(), &file_format),
             HashPrefixMap::MigrateResult::kSuccess);
 
@@ -407,7 +407,7 @@ TEST_F(HashPrefixMapTest, MigratesFileOffsets) {
 TEST_F(HashPrefixMapTest, NoOffsetMap) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      kMmapSafeBrowsingDatabase, {{"store-bytes-per-offset", "0"}});
+      kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset", "0"}});
   MmapHashPrefixMap map(GetBasePath());
   map.Reserve(4, 8);
 

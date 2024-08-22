@@ -1074,7 +1074,7 @@ TEST_F(V4StoreTest, MigrateFileOffsets) {
   const std::string kHash2 = "zzzz";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      kMmapSafeBrowsingDatabase, {{"store-bytes-per-offset", "8"}});
+      kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset", "8"}});
   V4Store write_store(task_runner_, store_path_,
                       std::make_unique<MmapHashPrefixMap>(store_path_));
   write_store.state_ = "test_client_state";
@@ -1085,7 +1085,7 @@ TEST_F(V4StoreTest, MigrateFileOffsets) {
 
   feature_list.Reset();
   feature_list.InitAndEnableFeatureWithParameters(
-      kMmapSafeBrowsingDatabase, {{"store-bytes-per-offset", "4"}});
+      kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset", "4"}});
 
   V4Store mmap_store(task_runner_, store_path_,
                      std::make_unique<MmapHashPrefixMap>(store_path_));
@@ -1186,7 +1186,7 @@ TEST_F(V4StoreTest, ReserveSpaceInPrefixMap) {
 TEST_F(V4StoreTest, MergeUpdatesWithMmapHashPrefixMap) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      kMmapSafeBrowsingDatabase, {{"store-bytes-per-offset", "2"}});
+      kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset", "2"}});
 
   InMemoryHashPrefixMap prefix_map_old;
   prefix_map_old.Append(4, "abcdefgh");

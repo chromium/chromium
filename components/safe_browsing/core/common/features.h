@@ -189,6 +189,12 @@ extern const base::FeatureParam<int> kHashPrefixRealTimeLookupsSampleRate;
 // replace the downloads url.
 BASE_DECLARE_FEATURE(kDownloadsPageReferrerUrl);
 
+// If enabled, hash databases will compute an "offset map" that allows
+// prefix lookups to quickly narrow the search to a subrange of the
+// database. This will tradeoff memory for lookup time.
+BASE_DECLARE_FEATURE(kHashDatabaseOffsetMap);
+extern const base::FeatureParam<int> kHashDatabaseOffsetMapBytesPerOffset;
+
 // Enable logging of the account enhanced protection setting in Protego pings.
 BASE_DECLARE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings);
 

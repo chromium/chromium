@@ -56,9 +56,7 @@ size_t GetOffsetIndex(HashPrefixesView prefix, size_t size) {
 
 // Gets the size of the offset map based on the experiment configuration.
 size_t GetOffsetMapSize(size_t file_size) {
-  static const base::FeatureParam<int> kBytesPerOffsetParam{
-      &kMmapSafeBrowsingDatabase, "store-bytes-per-offset", 0};
-  size_t bytes_per_offset = kBytesPerOffsetParam.Get();
+  size_t bytes_per_offset = kHashDatabaseOffsetMapBytesPerOffset.Get();
   if (!bytes_per_offset)
     return 0;
   return std::min(kMaxOffsetMapSize, file_size / bytes_per_offset);
