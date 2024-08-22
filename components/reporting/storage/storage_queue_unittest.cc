@@ -666,7 +666,7 @@ class StorageQueueTest
     CreateTestEncryptionModuleOrDie();
     test::TestEvent<Status> initialized_event;
     const auto storage_queue = StorageQueue::Create(
-        "GENERATION_GUID", options,
+        options,
         base::BindRepeating(&StorageQueueTest::AsyncStartMockUploader,
                             base::Unretained(this)),
         base::BindRepeating(
@@ -675,12 +675,6 @@ class StorageQueueTest
                    result_cb) {
               // Returns empty candidates queue - no degradation allowed.
               std::move(result_cb).Run({});
-            }),
-        base::DoNothing(),
-        base::BindRepeating(
-            [](GenerationGuid generation_guid, base::OnceClosure done_cb) {
-              // Finished disconnect.
-              std::move(done_cb).Run();
             }),
         test_encryption_module_,
         CompressionModule::Create(kCompressionThreshold, kCompressionType));
@@ -2219,7 +2213,6 @@ TEST_P(StorageQueueTest, CreateStorageQueueMultipleTimesRace) {
   // initialization.
   std::array<scoped_refptr<StorageQueue>, kThreads> queues;
   CreateTestEncryptionModuleOrDie();
-  const GenerationGuid generation_guid = "GENERATION_GUID";
   const auto options = BuildStorageQueueOptionsOnlyManual();
   const auto async_start_upload_cb = base::BindRepeating(
       &StorageQueueTest_CreateStorageQueueMultipleTimesRace_Test::
@@ -2232,20 +2225,13 @@ TEST_P(StorageQueueTest, CreateStorageQueueMultipleTimesRace) {
         // Returns empty candidates queue - no degradation allowed.
         std::move(result_cb).Run({});
       });
-  const StorageQueue::DisableQueueCb disable_queue_cb = base::DoNothing();
-  const auto disconnect_queue_cb = base::BindRepeating(
-      [](GenerationGuid generation_guid, base::OnceClosure done_cb) {
-        // Finished disconnect.
-        std::move(done_cb).Run();
-      });
   const auto encryption_module = test_encryption_module_;
   const auto compression_module =
       CompressionModule::Create(kCompressionThreshold, kCompressionType);
   for (size_t i = 0; i < kThreads; ++i) {
-    queues[i] = StorageQueue::Create(
-        generation_guid, options, async_start_upload_cb,
-        degradation_candidates_cb, disable_queue_cb, disconnect_queue_cb,
-        encryption_module, compression_module);
+    queues[i] = StorageQueue::Create(options, async_start_upload_cb,
+                                     degradation_candidates_cb,
+                                     encryption_module, compression_module);
   }
   // Initialize all instances in parallel with the same settings (options).
   std::array<test::TestEvent<Status>, kThreads> init_events;

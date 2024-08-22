@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,7 +83,7 @@ using ::testing::StrEq;
 using ::testing::WithArg;
 using ::testing::WithoutArgs;
 
-// TODO(b/278734198): Combine common test logic with legacy_storage_test.cc
+// TODO(b/278734198): Combine common test logic with storage_test.cc
 namespace reporting {
 
 namespace {
@@ -154,11 +154,7 @@ class TestStorageOptions : public StorageOptions {
   TestStorageOptions()
       : StorageOptions(
             base::BindRepeating(&TestStorageOptions::ModifyQueueOptions,
-                                base::Unretained(this))) {
-    for (const Priority& priority : GetPrioritiesOrder()) {
-      set_multi_generational(priority, /*state=*/true);
-    }
-  }
+                                base::Unretained(this))) {}
 
   // Prepare options adjustment.
   // Must be called before the options are used by Storage::Create().
@@ -326,8 +322,8 @@ class StorageTest : public ::testing::TestWithParam<
                                    Hash>;
   };
 
-  using LastUploadedGenerationIdMap =
-      std::unordered_map<Priority, std::tuple<int64_t, GenerationGuid>>;
+  // Track the last uploaded generation id based on priority
+  using LastUploadedGenerationIdMap = std::unordered_map<Priority, int64_t>;
 
  protected:
   void SetUp() override {
@@ -413,8 +409,8 @@ class StorageTest : public ::testing::TestWithParam<
         LastRecordDigest::Map* const last_record_digest_map,
         ExpectRecordGroupCallback callback)
         : mock_upload_(std::move(mock_upload)),
-          last_upload_generation_id_(last_upload_generation_id),
           last_record_digest_map_(last_record_digest_map),
+          last_upload_generation_id_(last_upload_generation_id),
           expect_record_group_callback_(std::move(callback)) {
       DETACH_FROM_SEQUENCE(scoped_checker_);
       upload_progress_.assign("\nStart\n");
@@ -435,7 +431,6 @@ class StorageTest : public ::testing::TestWithParam<
             uploader_id_, sequence_information.priority(),
             sequence_information.sequencing_id(),
             sequence_information.generation_id(),
-            sequence_information.generation_guid(),
             Status(error::DATA_LOSS,
                    base::StrCat({"Generation id mismatch, expected=",
                                  base::NumberToString(generation_id_.value()),
@@ -449,8 +444,7 @@ class StorageTest : public ::testing::TestWithParam<
         generation_id_ = sequence_information.generation_id();
         last_upload_generation_id_->emplace(
             sequence_information.priority(),
-            std::make_tuple(sequence_information.generation_id(),
-                            sequence_information.generation_guid()));
+            sequence_information.generation_id());
       }
 
       last_record_digest_map_->emplace(
@@ -461,8 +455,7 @@ class StorageTest : public ::testing::TestWithParam<
 
       DoUploadGap(uploader_id_, sequence_information.priority(),
                   sequence_information.sequencing_id(),
-                  sequence_information.generation_id(),
-                  sequence_information.generation_guid(), count,
+                  sequence_information.generation_id(), count,
                   std::move(processed_cb));
     }
 
@@ -477,7 +470,6 @@ class StorageTest : public ::testing::TestWithParam<
             uploader_id_, sequence_information.priority(),
             sequence_information.sequencing_id(),
             sequence_information.generation_id(),
-            sequence_information.generation_guid(),
             Status(error::DATA_LOSS,
                    base::StrCat({"Generation id mismatch, expected=",
                                  base::NumberToString(generation_id_.value()),
@@ -491,8 +483,7 @@ class StorageTest : public ::testing::TestWithParam<
         generation_id_ = sequence_information.generation_id();
         last_upload_generation_id_->emplace(
             sequence_information.priority(),
-            std::make_tuple(sequence_information.generation_id(),
-                            sequence_information.generation_guid()));
+            sequence_information.generation_id());
       }
 
       // Verify digest and its match.
@@ -506,7 +497,6 @@ class StorageTest : public ::testing::TestWithParam<
               uploader_id_, sequence_information.priority(),
               sequence_information.sequencing_id(),
               sequence_information.generation_id(),
-              sequence_information.generation_guid(),
               Status(error::DATA_LOSS, "Record digest mismatch"),
               std::move(processed_cb));
           return;
@@ -523,7 +513,6 @@ class StorageTest : public ::testing::TestWithParam<
                 uploader_id_, sequence_information.priority(),
                 sequence_information.sequencing_id(),
                 sequence_information.generation_id(),
-                sequence_information.generation_guid(),
                 Status(error::DATA_LOSS, "Last record digest mismatch"),
                 std::move(processed_cb));
             return;
@@ -539,22 +528,18 @@ class StorageTest : public ::testing::TestWithParam<
       DoUploadRecord(uploader_id_, sequence_information.priority(),
                      sequence_information.sequencing_id(),
                      sequence_information.generation_id(),
-                     sequence_information.generation_guid(),
                      wrapped_record.record().data(), std::move(processed_cb));
     }
 
     void DoEncounterSeqId(int64_t uploader_id,
                           Priority priority,
                           int64_t sequencing_id,
-                          int64_t generation_id,
-                          GenerationGuid generation_guid) {
+                          int64_t generation_id) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(scoped_checker_);
       upload_progress_.append("SeqId: ")
           .append(base::NumberToString(sequencing_id))
           .append("/")
           .append(base::NumberToString(generation_id))
-          .append("/")
-          .append(generation_guid)
           .append("\n");
       mock_upload_->EncounterSeqId(uploader_id, priority, sequencing_id);
     }
@@ -563,18 +548,14 @@ class StorageTest : public ::testing::TestWithParam<
                         Priority priority,
                         int64_t sequencing_id,
                         int64_t generation_id,
-                        GenerationGuid generation_guid,
                         std::string_view data,
                         base::OnceCallback<void(bool)> processed_cb) {
-      DoEncounterSeqId(uploader_id, priority, sequencing_id, generation_id,
-                       generation_guid);
+      DoEncounterSeqId(uploader_id, priority, sequencing_id, generation_id);
       DCHECK_CALLED_ON_VALID_SEQUENCE(scoped_checker_);
       upload_progress_.append("Record: ")
           .append(base::NumberToString(sequencing_id))
           .append("/")
           .append(base::NumberToString(generation_id))
-          .append("/")
-          .append(generation_guid)
           .append(" '")
           .append(data.data(), 0, std::min(data.size(), kDebugDataPrintSize))
           .append("'\n");
@@ -588,7 +569,6 @@ class StorageTest : public ::testing::TestWithParam<
                                Priority priority,
                                int64_t sequencing_id,
                                int64_t generation_id,
-                               GenerationGuid generation_guid,
                                Status status,
                                base::OnceCallback<void(bool)> processed_cb) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(scoped_checker_);
@@ -596,8 +576,6 @@ class StorageTest : public ::testing::TestWithParam<
           .append(base::NumberToString(sequencing_id))
           .append("/")
           .append(base::NumberToString(generation_id))
-          .append("/")
-          .append(generation_guid)
           .append(" '")
           .append(status.ToString())
           .append("'\n");
@@ -610,21 +588,18 @@ class StorageTest : public ::testing::TestWithParam<
                      Priority priority,
                      int64_t sequencing_id,
                      int64_t generation_id,
-                     GenerationGuid generation_guid,
                      uint64_t count,
                      base::OnceCallback<void(bool)> processed_cb) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(scoped_checker_);
       for (uint64_t c = 0; c < count; ++c) {
         DoEncounterSeqId(uploader_id, priority,
-                         sequencing_id + static_cast<int64_t>(c), generation_id,
-                         generation_guid);
+                         sequencing_id + static_cast<int64_t>(c),
+                         generation_id);
       }
       upload_progress_.append("Gap: ")
           .append(base::NumberToString(sequencing_id))
           .append("/")
           .append(base::NumberToString(generation_id))
-          .append("/")
-          .append(generation_guid)
           .append(" (")
           .append(base::NumberToString(count))
           .append(")\n");
@@ -646,8 +621,8 @@ class StorageTest : public ::testing::TestWithParam<
    private:
     const std::unique_ptr<const MockUpload> mock_upload_;
     std::optional<int64_t> generation_id_;
-    const raw_ptr<LastUploadedGenerationIdMap> last_upload_generation_id_;
     const raw_ptr<LastRecordDigest::Map> last_record_digest_map_;
+    const raw_ptr<LastUploadedGenerationIdMap> last_upload_generation_id_;
     ExpectRecordGroupCallback expect_record_group_callback_;
     std::vector<TestRecord> records_;
     SEQUENCE_CHECKER(scoped_checker_);
@@ -1067,14 +1042,11 @@ class StorageTest : public ::testing::TestWithParam<
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     auto generation_it = last_upload_generation_id_.find(priority);
     ASSERT_NE(generation_it, last_upload_generation_id_.end()) << priority;
-    auto [generation_id, generation_guid] = generation_it->second;
     LOG(ERROR) << "Confirm priority=" << priority << " force=" << force
-               << " seq=" << sequencing_id << " gen_id=" << generation_id
-               << "gen_guid=" << generation_guid;
+               << " seq=" << sequencing_id << " gen=" << generation_it->second;
     SequenceInformation seq_info;
     seq_info.set_sequencing_id(sequencing_id);
-    seq_info.set_generation_id(generation_id);
-    seq_info.set_generation_guid(generation_guid);
+    seq_info.set_generation_id(generation_it->second);
     seq_info.set_priority(priority);
     test::TestEvent<Status> c;
     storage_->Confirm(std::move(seq_info), force, c.cb());
@@ -1102,7 +1074,7 @@ class StorageTest : public ::testing::TestWithParam<
         std::string(reinterpret_cast<const char*>(public_value), kKeySize),
         prepare_key_pair.cb());
     auto prepare_key_result = prepare_key_pair.result();
-    CHECK(prepare_key_result.has_value());
+    CHECK_OK(prepare_key_result);
     public_key_id = prepare_key_result.value();
     // Prepare signed encryption key to be delivered to Storage.
     SignedEncryptionInfo signed_encryption_key;
@@ -1376,43 +1348,34 @@ TEST_P(StorageTest, WriteIntoStorageReopenWriteMoreAndUpload) {
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
               Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
-      .WillRepeatedly(
-          Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
-            return TestUploader::SetUp(FAST_BATCH, &waiter, this)
-                .RequireEither(0, kData[0], 0, kMoreData[0])
-                .RequireEither(1, kData[1], 1, kMoreData[1])
-                .RequireEither(2, kData[2], 2, kMoreData[2])
-                .Complete();
-          }))
+      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+        return TestUploader::SetUp(FAST_BATCH, &waiter, this)
+            .RequireEither(0, kData[0], 3, kMoreData[0])
+            .RequireEither(1, kData[1], 4, kMoreData[1])
+            .RequireEither(2, kData[2], 5, kMoreData[2])
+            .RequireEither(0, kData[0], 3, kMoreData[0])
+            .RequireEither(1, kData[1], 4, kMoreData[1])
+            .RequireEither(2, kData[2], 5, kMoreData[2])
+            .Complete();
+      }))
       .RetiresOnSaturation();
-
-  // Delete any received records uploaded at this point
-  upload_store_.Reset();
-
-  // Expect two uploads. Two queues exists and both will upload once: one queue
-  // uploads data enqueued before the storage reset and one queue uploads data
-  // enqueued after storage reset. This is technically testing implementation
-  // details and should be addressed at some point, but for now there's nothing
-  // number of uploads or else the tests will not pass.
 
   // Trigger upload.
   task_environment_.FastForwardBy(base::Seconds(1));
-
-  // Wait for the TestUploader to finish because it runs on Storage's
-  // sequenced task runner, not the main test thread.
   task_environment_.RunUntilIdle();
 
-  const std::vector<TestRecord> allKData = {{FAST_BATCH, 0, kData[0]},
-                                            {FAST_BATCH, 1, kData[1]},
-                                            {FAST_BATCH, 2, kData[2]}};
+  const std::vector<TestRecord> all_uploaded_records = {
+      {FAST_BATCH, 0, kData[0]},     {FAST_BATCH, 1, kData[1]},
+      {FAST_BATCH, 2, kData[2]},     {FAST_BATCH, 3, kMoreData[0]},
+      {FAST_BATCH, 4, kMoreData[1]}, {FAST_BATCH, 5, kMoreData[2]}};
 
-  const std::vector<TestRecord> allKMoreData = {{FAST_BATCH, 0, kMoreData[0]},
-                                                {FAST_BATCH, 1, kMoreData[1]},
-                                                {FAST_BATCH, 2, kMoreData[2]}};
+  // Expect records to be contained in the same upload
+  EXPECT_THAT(upload_store_.Uploads(), testing::Contains(all_uploaded_records));
 
-  EXPECT_TRUE(RecordsArrivedInExpectedOrder(upload_store_.Records(), allKData));
-  EXPECT_TRUE(
-      RecordsArrivedInExpectedOrder(upload_store_.Records(), allKMoreData));
+  // Expect records are uploaded in the correct order relative to each other
+  // regardless of which upload they arrive in.
+  EXPECT_TRUE(RecordsArrivedInExpectedOrder(upload_store_.Records(),
+                                            all_uploaded_records));
 }
 
 TEST_P(StorageTest, WriteIntoStorageAndFlush) {
@@ -1469,90 +1432,24 @@ TEST_P(StorageTest, WriteIntoStorageReopenWriteMoreAndFlush) {
   WriteStringOrDie(MANUAL_BATCH, kMoreData[1]);
   WriteStringOrDie(MANUAL_BATCH, kMoreData[2]);
 
-  // Delete any received records uploaded at this point
-  upload_store_.Reset();
-
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
               Call(Eq(UploaderInterface::UploadReason::MANUAL)))
-      .WillRepeatedly(
-          Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
-            return TestUploader::SetUp(MANUAL_BATCH, &waiter, this)
-                // This setup verifies that data is received in the correct
-                // order -- kData[0] arrives before kData[1]. It does NOT verify
-                // that data is received in a specific upload (i.e. does not
-                // care if kData[0] arrives in the first or second upload)
-                .RequireEither(0, kData[0], 0, kMoreData[0])
-                .RequireEither(1, kData[1], 1, kMoreData[1])
-                .RequireEither(2, kData[2], 2, kMoreData[2])
-                .Complete();
-          }))
+      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+        return TestUploader::SetUp(MANUAL_BATCH, &waiter, this)
+            .Required(0, kData[0])
+            .Required(1, kData[1])
+            .Required(2, kData[2])
+            .Required(3, kMoreData[0])
+            .Required(4, kMoreData[1])
+            .Required(5, kMoreData[2])
+            .Complete();
+      }))
       .RetiresOnSaturation();
 
-  // Expect two uploads. Two queues exists and both will upload once: one queue
-  // uploads data enqueued before the storage reset and one queue uploads data
-  // enqueued after storage reset. This is technically testing implementation
-  // details and should be addressed at some point, but for now there's nothing
-  // number of uploads or else the tests will not pass.
+  // Trigger upload.
   FlushOrDie(MANUAL_BATCH);
-
-  // Wait for the TestUploader to finish because it runs on Storage's
-  // sequenced task runner, not the main test thread.
-  task_environment_.RunUntilIdle();
-
-  const std::vector<TestRecord> allKData = {{MANUAL_BATCH, 0, kData[0]},
-                                            {MANUAL_BATCH, 1, kData[1]},
-                                            {MANUAL_BATCH, 2, kData[2]}};
-
-  const std::vector<TestRecord> allKMoreData = {
-      {MANUAL_BATCH, 0, kMoreData[0]},
-      {MANUAL_BATCH, 1, kMoreData[1]},
-      {MANUAL_BATCH, 2, kMoreData[2]}};
-
-  EXPECT_TRUE(RecordsArrivedInExpectedOrder(upload_store_.Records(), allKData));
-  EXPECT_TRUE(
-      RecordsArrivedInExpectedOrder(upload_store_.Records(), allKMoreData));
-}
-
-// This test verifies that "empty" multigeneration queue directories are deleted
-// when storage is created. "Empty" means that there are no unconfirmed records
-// in the directory - it may still contain META files or empty record files with
-// size 0, and these are fine to delete.
-TEST_P(StorageTest, EmptyMultigenerationalQueuesAreDeletedOnStartup) {
-  CreateTestStorageOrDie(BuildTestStorageOptions());
-  WriteStringOrDie(FAST_BATCH, kData[0]);
-
-  {
-    // Set uploader expectations.
-    test::TestCallbackAutoWaiter waiter;
-    EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
-        .WillOnce(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
-              return TestUploader::SetUp(FAST_BATCH, &waiter, this)
-                  .Required(0, kData[0])
-                  .Complete();
-            }))
-        .RetiresOnSaturation();
-
-    // Forward time to trigger upload
-    task_environment_.FastForwardBy(base::Seconds(1));
-  }
-
-  // Confirm #0 and forward time again, removing data #0
-  ConfirmOrDie(FAST_BATCH, /*sequencing_id=*/0);
-
-  // Shutdown storage
-  ResetTestStorage();
-
-  // Startup storage. It should delete the FAST_BATCH queue directory since all
-  // records have been confirmed and theoretically deleted from the directory.
-  CreateTestStorageOrDie(BuildTestStorageOptions());
-
-  EXPECT_THAT(StorageDirectory::FindQueueDirectories(
-                  options_.directory(), options_.ProduceQueuesOptionsList()),
-              IsEmpty());
 }
 
 TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
@@ -2172,7 +2069,7 @@ TEST_P(StorageTest, KeyIsRequestedWhenEncryptionRenewalPeriodExpires) {
   }
 
   // Initialize Storage with failure to deliver key.
-  ASSERT_FALSE(storage_) << "StorageTest already assigned";
+  ASSERT_FALSE(storage_) << "Storage already assigned";
   options_.set_key_check_period(base::Seconds(4));
   StatusOr<scoped_refptr<Storage>> storage_result = CreateTestStorage(
       BuildTestStorageOptions(),
@@ -2183,7 +2080,7 @@ TEST_P(StorageTest, KeyIsRequestedWhenEncryptionRenewalPeriodExpires) {
       EncryptionModule::Create(
           base::Seconds(options_.key_check_period().InSeconds() - 1)));
   ASSERT_OK(storage_result)
-      << "Failed to create StorageTest, error=" << storage_result.error();
+      << "Failed to create legacy storage, error=" << storage_result.error();
   storage_ = std::move(storage_result.value());
 
   {
@@ -2214,182 +2111,19 @@ TEST_P(StorageTest, KeyIsRequestedWhenEncryptionRenewalPeriodExpires) {
           return result;
         }))
         .RetiresOnSaturation();
+    // Key update, request should succeed, and thus we expect UMA to log
+    // success for key delivery.
     task_environment_.FastForwardBy(options_.key_check_period());
   }
-}
-
-TEST_P(StorageTest, MultipleUsersWriteSamePriorityAndUpload) {
-  CreateTestStorageOrDie(BuildTestStorageOptions());
-
-  std::vector<DMtoken> dm_tokens = {kDeviceDMToken};
-  static constexpr size_t kNumDMTokens = 12;
-  for (size_t i = 0; i < kNumDMTokens; i++) {
-    // Value of dm token doesn't matter so just use `i`
-    dm_tokens.emplace_back(base::NumberToString(i));
-  }
-
-  for (const auto& dm_token : dm_tokens) {
-    // TODO(b/278735510): vary data
-    WriteStringOrDie(FAST_BATCH, kData[0], dm_token);
-    WriteStringOrDie(FAST_BATCH, kData[1], dm_token);
-    WriteStringOrDie(FAST_BATCH, kData[2], dm_token);
-  }
-
-  // Set uploader expectations.
-  test::TestCallbackAutoWaiter waiter;
-  EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
-      .WillRepeatedly(
-          Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
-            return TestUploader::SetUp(FAST_BATCH, &waiter, this)
-                .Required(0, kData[0])
-                .Required(1, kData[1])
-                .Required(2, kData[2])
-                .Complete();
-          }))
-      .RetiresOnSaturation();
-
-  // One queue for each distinct DM token will write data.
-
-  // Trigger upload.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  task_environment_.RunUntilIdle();
-}
-
-TEST_P(StorageTest, GarbageCollectEmptyMultigenerationQueueWithDefaultPeriod) {
-  StorageOptions options(BuildTestStorageOptions());
-  // Extend key update period to avoid extraneous key delivery.
-  options.set_key_check_period(base::Days(30));
-  // Only multigeneration queues are garbage collected.
-  options.set_multi_generational(MANUAL_BATCH, true);
-
-  CreateTestStorageOrDie(options);
-
-  WriteStringOrDie(MANUAL_BATCH, kData[0]);
-
-  // Record current queue settings for the later check.
-  const auto directories = StorageDirectory::FindQueueDirectories(
-      options_.directory(), options_.ProduceQueuesOptionsList());
-  ASSERT_THAT(directories, SizeIs(1u));
-  const auto [priority, generation_guid] = *directories.begin();
-  EXPECT_THAT(priority, Eq(MANUAL_BATCH));
-
-  {
-    // Set uploader expectations.
-    test::TestCallbackAutoWaiter waiter;
-    EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::UploadReason::MANUAL)))
-        .WillRepeatedly(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
-              return TestUploader::SetUp(MANUAL_BATCH, &waiter, this)
-                  .Required(0, kData[0])
-                  .Complete();
-            }))
-        .RetiresOnSaturation();
-
-    // Forward time to trigger upload
-    FlushOrDie(MANUAL_BATCH);
-  }
-
-  // Confirm #0 and forward time again, removing data #0
-  ConfirmOrDie(MANUAL_BATCH, /*sequencing_id=*/0);
-
-  // Trigger garbage collection.
-  task_environment_.FastForwardBy(
-      StorageOptions::kDefaultQueueGarbageCollectionPeriod);
-
-  // Empty multigeneration queue should have been garbage collected.
-  EXPECT_THAT(StorageDirectory::FindQueueDirectories(
-                  options_.directory(), options_.ProduceQueuesOptionsList()),
-              IsEmpty());
-
-  // Attempt to write into the same priority with the same DM token;
-  // make sure we end up in a different directory.
-  WriteStringOrDie(MANUAL_BATCH, kData[1]);
-
-  // Make sure new queue settings have been assigned.
-  const auto new_directories = StorageDirectory::FindQueueDirectories(
-      options_.directory(), options_.ProduceQueuesOptionsList());
-  ASSERT_THAT(new_directories, SizeIs(1u));
-  const auto [new_priority, new_generation_guid] = *new_directories.begin();
-  // Expected the same priority but different generation guid.
-  EXPECT_THAT(new_priority, Eq(MANUAL_BATCH));
-  EXPECT_THAT(new_generation_guid, Ne(generation_guid));
-}
-
-TEST_P(StorageTest, DoNotGarbageCollectQueuesWithUnconfirmedRecords) {
-  StorageOptions options(BuildTestStorageOptions());
-  // Extend key update period to avoid extraneous key delivery.
-  options.set_key_check_period(base::Days(30));
-  // Use a shorter collection period to keep test fast.
-  options.set_inactive_queue_self_destruct_delay(base::Hours(1));
-  options.set_multi_generational(MANUAL_BATCH, true);
-
-  CreateTestStorageOrDie(options);
-
-  WriteStringOrDie(MANUAL_BATCH, kData[0]);
-
-  // Trigger garbage collection.
-  task_environment_.FastForwardBy(
-      StorageOptions::kDefaultQueueGarbageCollectionPeriod);
-
-  // We didn't confirm the record, so the queue still has data, and we expect it
-  // to not be garbage collected.
-  EXPECT_THAT(StorageDirectory::FindQueueDirectories(
-                  options_.directory(), options_.ProduceQueuesOptionsList()),
-              SizeIs(1));
-}
-
-TEST_P(StorageTest, LegacyQueuesAreNeverGarbageCollected) {
-  StorageOptions options(BuildTestStorageOptions());
-  // Extend key update period to avoid extraneous key delivery.
-  options.set_key_check_period(base::Days(30));
-  // Set queue to legacy mode.
-  options.set_multi_generational(MANUAL_BATCH, false);
-  ASSERT_THAT(options.inactive_queue_self_destruct_delay(),
-              Eq(StorageOptions::kDefaultQueueGarbageCollectionPeriod));
-
-  CreateTestStorageOrDie(options);
-
-  WriteStringOrDie(MANUAL_BATCH, kData[0]);
-
-  {
-    // Set uploader expectations.
-    test::TestCallbackAutoWaiter waiter;
-    EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::UploadReason::MANUAL)))
-        .WillRepeatedly(
-            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
-              return TestUploader::SetUp(MANUAL_BATCH, &waiter, this)
-                  .Required(0, kData[0])
-                  .Complete();
-            }))
-        .RetiresOnSaturation();
-
-    // Trigger upload
-    FlushOrDie(MANUAL_BATCH);
-  }
-
-  // Confirm #0 and forward time again, removing data #0
-  ConfirmOrDie(MANUAL_BATCH, /*sequencing_id=*/0);
-
-  // Trigger garbage collection.
-  task_environment_.FastForwardBy(
-      StorageOptions::kDefaultQueueGarbageCollectionPeriod);
-
-  // Legacy queue should still exist and not be garbage collected.
-  EXPECT_THAT(StorageDirectory::FindQueueDirectories(
-                  options_.directory(), options_.ProduceQueuesOptionsList()),
-              SizeIs(1));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     VaryingFileSize,
     StorageTest,
     ::testing::Combine(::testing::Bool() /* true - encryption enabled */,
-                       ::testing::Values(128u * 1024uLL * 1024uLL,
-                                         256u /* two records in file */,
-                                         1u /* single record in file */)));
+                       ::testing::Values(128 * 1024LL * 1024LL,
+                                         256 /* two records in file */,
+                                         1 /* single record in file */)));
 
 }  // namespace
 }  // namespace reporting
