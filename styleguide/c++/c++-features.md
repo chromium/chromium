@@ -1753,7 +1753,8 @@ Banned since workaround for lack of RTTI
 absl::bind_front
 ```
 
-**Description:** Binds the first N arguments of an invocable object and stores them by value.
+**Description:** Binds the first N arguments of an invocable object and stores
+them by value.
 
 **Documentation:**
 *   [bind_front.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/functional/bind_front.h)
@@ -1857,6 +1858,23 @@ invocable type.
   to result in lifetime bugs.
 
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/JVN4E4IIYA0)
+***
+
+### Optional <sup>[banned]</sup>
+
+```c++
+absl::optional<int> Func(bool b) {
+  return b ? absl::make_optional(1) : abl::nullopt;
+}
+```
+
+**Description:** Early adaptation of C++17 `std::optional`.
+
+**Documentation:** [std::optional](https://en.cppreference.com/w/cpp/utility/optional)
+
+**Notes:**
+*** promo
+Superseded by `std::optional`. Use `std::optional` instead.
 ***
 
 ### Random <sup>[banned]</sup>

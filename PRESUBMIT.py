@@ -1011,6 +1011,14 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     BanRule(
+        pattern=
+        r'/\babsl::(optional|nullopt|make_optional)\b',
+        explanation=('absl::optional is banned. Use std::optional instead.', ),
+        treat_as_error=True,
+        excluded_paths=[
+            _THIRD_PARTY_EXCEPT_BLINK,
+        ]),
+    BanRule(
         r'/(\babsl::Span\b|#include <span>|\bstd::span\b)',
         (
             'absl::Span and std::span are not allowed ',
@@ -1981,27 +1989,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             '^chrome/browser/about_flags.cc',
             '^chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.cc',
         )),
-    BanRule(
-        pattern=
-        r'/\babsl::(optional|nullopt|make_optional|in_place|in_place_t)\b',
-        explanation=('Don\'t use `absl::optional`. Use `std::optional`.', ),
-        # TODO(b/40288126): Enforce after completing the rewrite.
-        treat_as_error=False,
-        excluded_paths=[
-            _THIRD_PARTY_EXCEPT_BLINK,
-        ]),
-    BanRule(
-        pattern=r'(base::)?\bStringPiece\b',
-        explanation=(
-            'Don\'t use `base::StringPiece`. Use `std::string_view`.', ),
-        treat_as_error=False,
-    ),
-    BanRule(
-        pattern=r'(base::)?\bStringPiece16\b',
-        explanation=(
-            'Don\'t use `base::StringPiece16`. Use `std::u16string_view`.', ),
-        treat_as_error=False,
-    ),
     BanRule(
         pattern='/(CUIAutomation|AccessibleObjectFromWindow)',
         explanation=
