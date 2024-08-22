@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/external_protocol_dialog.h"
+#include <string>
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
 #include "chrome/browser/ash/guest_os/guest_os_external_protocol_handler.h"
 #include "chrome/browser/chromeos/arc/arc_external_protocol_dialog.h"
@@ -26,6 +28,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
 using content::WebContents;
@@ -34,22 +37,74 @@ namespace {
 
 const int kMessageWidth = 400;
 
+// The external protocol dialog for Chrome OS shown when we have a URL with a
+// Tel scheme but there are no handlers.
+class ExternalProtocolNoHandlersTelSchemeDialog : public views::DialogDelegate {
+ public:
+  explicit ExternalProtocolNoHandlersTelSchemeDialog(
+      aura::Window* parent_window)
+      : creation_time_(base::TimeTicks::Now()) {
+    DCHECK(parent_window);
+    SetOwnedByWidget(true);
+    views::DialogDelegate::SetButtons(
+        static_cast<int>(ui::mojom::DialogButton::kOk));
+    views::DialogDelegate::SetButtonLabel(
+        ui::mojom::DialogButton::kOk,
+        l10n_util::GetStringUTF16(IDS_EXTERNAL_PROTOCOL_CLOSE_BUTTON_TEXT));
+
+    message_box_view_ = new views::MessageBoxView();
+    message_box_view_->SetMessageWidth(kMessageWidth);
+
+    views::DialogDelegate::CreateDialogWidget(this, nullptr, parent_window)
+        ->Show();
+  }
+
+  ExternalProtocolNoHandlersTelSchemeDialog(
+      const ExternalProtocolNoHandlersTelSchemeDialog&) = delete;
+  ExternalProtocolNoHandlersTelSchemeDialog& operator=(
+      const ExternalProtocolNoHandlersTelSchemeDialog&) = delete;
+
+  ~ExternalProtocolNoHandlersTelSchemeDialog() override = default;
+
+  // views::DialogDelegate:
+  std::u16string GetWindowTitle() const override {
+    // We display a message to the user on how to use the Click to Call feature.
+    return l10n_util::GetStringUTF16(
+        IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES);
+  }
+  views::View* GetContentsView() override { return message_box_view_; }
+  const views::Widget* GetWidget() const override {
+    return message_box_view_->GetWidget();
+  }
+  views::Widget* GetWidget() override { return message_box_view_->GetWidget(); }
+
+ private:
+  // The message box view whose commands we handle.
+  raw_ptr<views::MessageBoxView> message_box_view_;
+
+  // The time at which this dialog was created.
+  base::TimeTicks creation_time_;
+};
+
 void OnArcHandled(const GURL& url,
                   const std::optional<url::Origin>& initiating_origin,
                   content::WeakDocumentPtr initiator_document,
                   base::WeakPtr<WebContents> web_contents,
                   bool handled) {
-  if (handled)
+  if (handled) {
     return;
+  }
 
   // If WebContents have been destroyed, do not show any dialog.
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   aura::Window* parent_window = web_contents->GetTopLevelNativeWindow();
   // If WebContents has been detached from window tree, do not show any dialog.
-  if (!parent_window || !parent_window->GetRootWindow())
+  if (!parent_window || !parent_window->GetRootWindow()) {
     return;
+  }
 
   // Display the standard ExternalProtocolDialog if Guest OS has a handler.
   // Otherwise, if there is no handler and the URL is a Tel-link, show the No
@@ -62,7 +117,7 @@ void OnArcHandled(const GURL& url,
                                base::UTF8ToUTF16(registration->name()),
                                initiating_origin, initiator_document);
   } else if (url.scheme() == url::kTelScheme) {
-    new ash::ExternalProtocolNoHandlersTelSchemeDialog(parent_window);
+    new ExternalProtocolNoHandlersTelSchemeDialog(parent_window);
   }
 }
 
@@ -97,51 +152,3 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
                      std::move(initiator_document),
                      web_contents->GetWeakPtr()));
 }
-
-namespace ash {
-
-///////////////////////////////////////////////////////////////////////////////
-// ExternalProtocolNoHandlersTelSchemeDialog
-
-ExternalProtocolNoHandlersTelSchemeDialog::
-    ExternalProtocolNoHandlersTelSchemeDialog(aura::Window* parent_window)
-    : creation_time_(base::TimeTicks::Now()) {
-  DCHECK(parent_window);
-  SetOwnedByWidget(true);
-  views::DialogDelegate::SetButtons(
-      static_cast<int>(ui::mojom::DialogButton::kOk));
-  views::DialogDelegate::SetButtonLabel(
-      ui::mojom::DialogButton::kOk,
-      l10n_util::GetStringUTF16(IDS_EXTERNAL_PROTOCOL_CLOSE_BUTTON_TEXT));
-
-  message_box_view_ = new views::MessageBoxView();
-  message_box_view_->SetMessageWidth(kMessageWidth);
-
-  views::DialogDelegate::CreateDialogWidget(this, nullptr, parent_window)
-      ->Show();
-}
-
-ExternalProtocolNoHandlersTelSchemeDialog::
-    ~ExternalProtocolNoHandlersTelSchemeDialog() = default;
-
-std::u16string ExternalProtocolNoHandlersTelSchemeDialog::GetWindowTitle()
-    const {
-  // We display a message to the user on how to use the Click to Call feature.
-  return l10n_util::GetStringUTF16(
-      IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES);
-}
-
-views::View* ExternalProtocolNoHandlersTelSchemeDialog::GetContentsView() {
-  return message_box_view_;
-}
-
-const views::Widget* ExternalProtocolNoHandlersTelSchemeDialog::GetWidget()
-    const {
-  return message_box_view_->GetWidget();
-}
-
-views::Widget* ExternalProtocolNoHandlersTelSchemeDialog::GetWidget() {
-  return message_box_view_->GetWidget();
-}
-
-}  // namespace ash

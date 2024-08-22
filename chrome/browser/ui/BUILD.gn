@@ -3960,6 +3960,10 @@ static_library("ui") {
     }
   }
 
+  if (is_chromeos_ash) {
+    sources += [ "views/external_protocol_handler_ash.cc" ]
+  }
+
   # Device signals sharing currently only supports win, mac, linux and
   # ash-chromeos, so the corresponding consent functionality are
   # limited to the same set of platforms.
