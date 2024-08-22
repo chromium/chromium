@@ -16,7 +16,18 @@ import {
 {%- if not loop.last -%},{% endif -%}
 {%- endfor %}
 } from '{{path}}';
+{% endfor -%}
 
+{%- if typemapped_structs|length > 0 %}
+{%-  for struct in typemapped_structs.keys() %}
+import {
+  {{struct.name}}DataView,
+} from './{{converters_filename}}';
+{%-  endfor %}
+{%- endif %}
+
+{% for typemap in typemapped_structs.values() -%}
+import { {{typemap.converter}} } from './{{typemap.converter_import}}';
 {% endfor -%}
 
 {#--- Constants #}

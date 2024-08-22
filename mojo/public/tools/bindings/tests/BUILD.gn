@@ -12,8 +12,8 @@ mojom("test_mojom") {
         {
           mojom = "bindings.tests.mojom.SimpleStruct"
           ts = "string"
-          converter = "NotFilledYet"
-          import = "//NotFilledYet"
+          converter = "SimpleStructConverter"
+          import = "test_converter.js"
         },
       ]
     },
