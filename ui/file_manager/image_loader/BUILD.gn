@@ -31,18 +31,7 @@ copy("from_files_app") {
 }
 
 copy("copy_src") {
-  sources = [
-    "background.ts",
-    "cache.ts",
-    "image_loader.ts",
-    "image_loader_client.ts",
-    "image_loader_util.ts",
-    "image_orientation.ts",
-    "image_request_task.ts",
-    "load_image_request.ts",
-    "piex_loader.ts",
-    "scheduler.ts",
-  ]
+  sources = rebase_path(image_loader_ts, ".", "..")
   outputs = [ "$preprocess_folder/image_loader/{{source_file_part}}" ]
 }
 

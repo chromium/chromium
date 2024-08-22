@@ -184,9 +184,8 @@ webui_ts_library("build_ts") {
     "//ui/webui/resources/js:build_ts",
   ]
 
-  in_files =
-      generated_js_files + ts_files + ts_polymer + ts_generated_templates +
-      filter_exclude(image_loader_ts, [ "image_loader/background.ts" ])
+  in_files = generated_js_files + ts_files + ts_polymer +
+             ts_generated_templates + shared_image_loader_ts
 
   definitions = other_dts_files
   foreach(_file, generate_definitions_js_files) {
@@ -337,15 +336,9 @@ copy("for_image_loader") {
   }
 }
 
-shared_image_loader_files = [
-  "image_loader/image_loader_client.js",
-  "image_loader/image_orientation.js",
-  "image_loader/load_image_request.js",
-]
-
 copy("for_image_loader_unittests") {
   sources = []
-  foreach(f, shared_image_loader_files) {
+  foreach(f, image_loader_js) {
     sources += [ "$target_gen_dir/image_loader/tsc/$f" ]
   }
 
@@ -386,7 +379,7 @@ generate_grd("build_grd") {
           "file_manager/common/js/file_types_base.js",
           "file_manager/common/js/file_types_data.js",
           "file_manager/common/js/lru_cache.js",
-        ] + shared_image_loader_files
+        ] + shared_image_loader_js
 
     resource_path_rewrites += [
       "file_manager/background/js/runtime_loaded_test_util.rollup.js|file_manager/background/js/runtime_loaded_test_util.js",
@@ -455,10 +448,19 @@ generate_grd("build_tests_gen_grdp") {
   grd_prefix = "file_manager_test"
   out_grd = "$target_gen_dir/tests_gen_resources.grdp"
 
-  deps = [ ":test_build_ts" ]
+  deps = [
+    ":for_image_loader_unittests",
+    ":test_build_ts",
+  ]
 
   manifest_files = filter_include(get_target_outputs(":test_build_ts"),
                                   [ "*_manifest.json" ])
+
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+
+  # Removed `shared_image_loader_js` because it's already included via the
+  # `:build_ts` below.
+  input_files = image_loader_js - shared_image_loader_js
 
   if (enable_webui_inline_sourcemaps) {
     deps += [ ":merge_source_maps" ]

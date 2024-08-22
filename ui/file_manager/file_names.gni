@@ -1,17 +1,31 @@
-# Static files are used as-is from the repository.
-
-image_loader_ts = [
-  "image_loader/background.ts",
-  "image_loader/cache.ts",
-  "image_loader/image_loader.ts",
+# image_loader/ files that are also used outside of the generated
+# image_loader/background.rollup.js file (either in tests or in prod code).
+shared_image_loader_ts = [
   "image_loader/image_loader_client.ts",
-  "image_loader/image_loader_util.ts",
   "image_loader/image_orientation.ts",
-  "image_loader/image_request_task.ts",
   "image_loader/load_image_request.ts",
-  "image_loader/piex_loader.ts",
-  "image_loader/scheduler.ts",
 ]
+
+shared_image_loader_js = []
+foreach(_f, shared_image_loader_ts) {
+  shared_image_loader_js += [ string_replace(_f, ".ts", ".js") ]
+}
+
+# All image loader files, used for unit test and production.
+image_loader_ts = [
+                    "image_loader/background.ts",
+                    "image_loader/cache.ts",
+                    "image_loader/image_loader.ts",
+                    "image_loader/image_loader_util.ts",
+                    "image_loader/image_request_task.ts",
+                    "image_loader/piex_loader.ts",
+                    "image_loader/scheduler.ts",
+                  ] + shared_image_loader_ts
+
+image_loader_js = []
+foreach(_f, image_loader_ts) {
+  image_loader_js += [ string_replace(_f, ".ts", ".js") ]
+}
 
 ts_files = [
   # Common:
