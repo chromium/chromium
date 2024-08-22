@@ -3376,7 +3376,7 @@
   {
     "name": "enable-ipad-feed-ghost-cards",
     "owners": [ "adamta@google.com", "chrome-feed-fundamentals@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-isolated-sandboxed-iframes",
@@ -4624,14 +4624,9 @@
     "expiry_milestone": 105
   },
   {
-    "name": "feed-back-to-top",
-    "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "feed-background-refresh-ios",
     "owners": ["//ios/chrome/browser/discover_feed/model/OWNERS", "adamta@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "feed-close-refresh",
@@ -4646,22 +4641,22 @@
   {
     "name": "feed-discofeed-endpoint",
     "owners": [ "//chrome/android/feed/OWNERS", "freedjm@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "feed-dynamic-colors",
     "owners": ["//chrome/android/feed/OWNERS", "chili@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "feed-follow-ui-update",
     "owners": ["//chrome/android/feed/OWNERS", "jianli@chromium.org"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "feed-header-settings",
     "owners": ["//ios/chrome/browser/discover_feed/model/OWNERS", "adamta@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "feed-header-stick-to-top",
@@ -4671,17 +4666,12 @@
   {
     "name": "feed-loading-placeholder",
     "owners": [ "//chrome/android/feed/OWNERS", "dewittj@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "feed-signed-out-view-demotion",
     "owners": ["//components/feed/OWNERS", "harringtond@chromium.org"],
     "expiry_milestone": 135
-  },
-  {
-    "name": "feed-sports-card",
-    "owners": ["//components/feed/OWNERS", "jianli@chromium.org"],
-    "expiry_milestone": 130
   },
   {
     "name": "feed-v2-hearts",
@@ -9349,12 +9339,12 @@
   {
     "name": "web-feed",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "web-feed-awareness",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "web-feed-feedback-reroute",
@@ -9369,12 +9359,12 @@
   {
     "name": "web-feed-onboarding",
     "owners": ["//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "web-feed-sort",
     "owners": ["//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "web-hid-in-web-view",
