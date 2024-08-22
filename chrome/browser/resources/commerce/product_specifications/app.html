@@ -126,7 +126,10 @@
 </div>
 <div id="footer" hidden$="[[showEmptyState_]]">
   <div id="disclaimer">$i18n{experimentalFeatureDisclaimer}
-    <a href="#" aria-label="$i18n{learnMoreA11yLabel}">$i18n{learnMore}</a>
+    <a id="learnMoreLink" href="$i18n{compareLearnMoreUrl}"
+        target="_blank" aria-label="$i18n{learnMoreA11yLabel}">
+      $i18n{learnMore}
+    </a>
   </div>
   <div id="feedbackLoading" hidden$="[[!loadingState_.loading]]">
     <cr-loading-gradient>

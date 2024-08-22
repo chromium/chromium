@@ -1155,6 +1155,21 @@ suite('AppTest', () => {
     assertTrue(isVisible(feedbackButtons));
   });
 
+  test('shows learn more link', async () => {
+    const promiseValues = createAppPromiseValues({
+      urlsParam: ['https://example.com/'],
+    });
+    createAppElementWithPromiseValues(promiseValues);
+    const learnMoreLink =
+        appElement.shadowRoot!.querySelector('#learnMoreLink');
+
+    assertTrue(!!learnMoreLink);
+    assertTrue(isVisible(learnMoreLink));
+    assertEquals(
+        loadTimeData.getString('compareLearnMoreUrl'),
+        learnMoreLink!.getAttribute('href'));
+  });
+
   test('updates on selection change', async () => {
     const urlsParam = ['https://example.com/', 'https://example2.com/'];
     const specsSetUrls =
