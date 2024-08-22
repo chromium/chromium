@@ -291,7 +291,7 @@
   {
     "name": "arc-enable-virtio-blk-for-data",
     "owners": [ "niwa@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "arc-extend-input-anr-timeout",
@@ -316,7 +316,7 @@
   {
     "name": "arc-file-picker-experiment",
     "owners": [ "youkichihosoi@chromium.org", "niwa@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "arc-friendlier-error-dialog",
