@@ -14,8 +14,6 @@ source_set("model") {
     "http_server_properties_factory.h",
     "ios_chrome_http_user_agent_settings.h",
     "ios_chrome_http_user_agent_settings.mm",
-    "ios_chrome_network_delegate.cc",
-    "ios_chrome_network_delegate.h",
     "ios_chrome_url_request_context_getter.cc",
     "ios_chrome_url_request_context_getter.h",
     "retryable_url_fetcher.h",
@@ -42,6 +40,26 @@ source_set("model") {
   public_deps = [
     ":crurl",
     ":net_types",
+    ":network_delegate",
+  ]
+
+  # TODO(crbug.com/358267438): Remove once forwarding headers are removed.
+  allow_circular_includes_from = [ "//ios/chrome/browser/profile/model" ]
+}
+
+source_set("network_delegate") {
+  sources = [
+    "ios_chrome_network_delegate.cc",
+    "ios_chrome_network_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/common",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/web/public/thread",
+    "//net",
   ]
 }
 

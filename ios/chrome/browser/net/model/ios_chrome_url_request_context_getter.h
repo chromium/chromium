@@ -13,7 +13,9 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 
-class ChromeBrowserStateIOData;
+class ProfileIOSIOData;
+using ChromeBrowserStateIOData = ProfileIOSIOData;
+
 class IOSChromeURLRequestContextFactory;
 
 // A net::URLRequestContextGetter subclass used by the browser. This returns a

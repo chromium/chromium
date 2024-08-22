@@ -12,7 +12,7 @@ source_set("ios_thread") {
 
   deps = [
     "//components/variations/net",
-    "//ios/chrome/browser/net/model",
+    "//ios/chrome/browser/net/model:network_delegate",
     "//ios/chrome/common",
     "//ios/components/io_thread",
     "//ios/web/public/init",
@@ -31,7 +31,6 @@ source_set("model") {
     "chrome_browser_state_impl.mm",
     "chrome_browser_state_impl_io_data.mm",
     "chrome_browser_state_io_data.h",
-    "chrome_browser_state_io_data.mm",
     "chrome_browser_state_manager_impl.mm",
     "off_the_record_chrome_browser_state_impl.h",
     "off_the_record_chrome_browser_state_impl.mm",

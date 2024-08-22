@@ -17,9 +17,11 @@
 #include "net/url_request/url_request_job_factory.h"
 
 class BrowserStatePolicyConnector;
-class ChromeBrowserStateIOData;
 class PrefProxyConfigTracker;
 class PrefService;
+
+class ProfileIOSIOData;
+using ChromeBrowserStateIOData = ProfileIOSIOData;
 
 namespace base {
 class SequencedTaskRunner;

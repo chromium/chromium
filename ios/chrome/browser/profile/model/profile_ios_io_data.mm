@@ -63,11 +63,11 @@
 
 namespace {
 
-// For safe shutdown, must be called before the ChromeBrowserStateIOData is
+// For safe shutdown, must be called before the ProfileIOSIOData is
 // destroyed.
 void NotifyContextGettersOfShutdownOnIO(
     std::unique_ptr<
-        ChromeBrowserStateIOData::IOSChromeURLRequestContextGetterVector>
+        ProfileIOSIOData::IOSChromeURLRequestContextGetterVector>
         getters) {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
   for (auto& chrome_context_getter : *getters) {
@@ -77,7 +77,7 @@ void NotifyContextGettersOfShutdownOnIO(
 
 }  // namespace
 
-void ChromeBrowserStateIOData::InitializeOnUIThread(
+void ProfileIOSIOData::InitializeOnUIThread(
     ChromeBrowserState* browser_state) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   PrefService* pref_service = browser_state->GetPrefs();
@@ -107,47 +107,47 @@ void ChromeBrowserStateIOData::InitializeOnUIThread(
           accept_language_pref_watcher_->GetHandle());
 }
 
-ChromeBrowserStateIOData::ProfileParams::ProfileParams()
+ProfileIOSIOData::ProfileParams::ProfileParams()
     : io_thread(nullptr), browser_state(nullptr) {}
 
-ChromeBrowserStateIOData::ProfileParams::~ProfileParams() {}
+ProfileIOSIOData::ProfileParams::~ProfileParams() {}
 
-ChromeBrowserStateIOData::ChromeBrowserStateIOData(
+ProfileIOSIOData::ProfileIOSIOData(
     ChromeBrowserStateType browser_state_type)
     : initialized_(false), browser_state_type_(browser_state_type) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 }
 
-ChromeBrowserStateIOData::~ChromeBrowserStateIOData() {
+ProfileIOSIOData::~ProfileIOSIOData() {
   if (web::WebThread::IsThreadInitialized(web::WebThread::IO)) {
     DCHECK_CURRENTLY_ON(web::WebThread::IO);
   }
 }
 
-net::URLRequestContext* ChromeBrowserStateIOData::GetMainRequestContext()
+net::URLRequestContext* ProfileIOSIOData::GetMainRequestContext()
     const {
   DCHECK(initialized_);
   return main_request_context_.get();
 }
 
-content_settings::CookieSettings* ChromeBrowserStateIOData::GetCookieSettings()
+content_settings::CookieSettings* ProfileIOSIOData::GetCookieSettings()
     const {
   DCHECK(initialized_);
   return cookie_settings_.get();
 }
 
-HostContentSettingsMap* ChromeBrowserStateIOData::GetHostContentSettingsMap()
+HostContentSettingsMap* ProfileIOSIOData::GetHostContentSettingsMap()
     const {
   DCHECK(initialized_);
   return host_content_settings_map_.get();
 }
 
-bool ChromeBrowserStateIOData::IsOffTheRecord() const {
+bool ProfileIOSIOData::IsOffTheRecord() const {
   return browser_state_type() ==
          ChromeBrowserStateType::INCOGNITO_BROWSER_STATE;
 }
 
-void ChromeBrowserStateIOData::InitializeMetricsEnabledStateOnUIThread() {
+void ProfileIOSIOData::InitializeMetricsEnabledStateOnUIThread() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   // Prep the PrefMember and send it to the IO thread, since this value will be
   // read from there.
@@ -156,12 +156,12 @@ void ChromeBrowserStateIOData::InitializeMetricsEnabledStateOnUIThread() {
   enable_metrics_.MoveToSequence(web::GetIOThreadTaskRunner({}));
 }
 
-bool ChromeBrowserStateIOData::GetMetricsEnabledStateOnIOThread() const {
+bool ProfileIOSIOData::GetMetricsEnabledStateOnIOThread() const {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
   return enable_metrics_.GetValue();
 }
 
-void ChromeBrowserStateIOData::Init(
+void ProfileIOSIOData::Init(
     ProtocolHandlerMap* protocol_handlers) const {
   // The basic logic is implemented here. The specific initialization
   // is done in InitializeInternal(), implemented by subtypes. Static helper
@@ -223,7 +223,7 @@ void ChromeBrowserStateIOData::Init(
   initialized_ = true;
 }
 
-void ChromeBrowserStateIOData::ShutdownOnUIThread(
+void ProfileIOSIOData::ShutdownOnUIThread(
     std::unique_ptr<IOSChromeURLRequestContextGetterVector> context_getters) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
