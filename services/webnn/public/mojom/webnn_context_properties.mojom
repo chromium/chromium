@@ -84,6 +84,11 @@ struct DataTypeLimits {
   SupportedDataTypes leaky_relu_input;
   SupportedDataTypes linear_input;
 
+  // Pool2d.
+   SupportedDataTypes average_pool2d_input;
+   SupportedDataTypes l2_pool2d_input;
+   SupportedDataTypes max_pool2d_input;
+
   // Reduction ops.
   SupportedDataTypes reduce_l1_input;
   SupportedDataTypes reduce_l2_input;

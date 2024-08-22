@@ -35,6 +35,17 @@ webnn::InputOperandLayout MojoInputOperandLayoutToComponent(
   }
 }
 
+webnn::Pool2dKind FromMojoPool2dType(mojom::Pool2d::Kind kind) {
+  switch (kind) {
+    case mojom::Pool2d::Kind::kAveragePool2d:
+      return webnn::Pool2dKind::kAverage;
+    case mojom::Pool2d::Kind::kL2Pool2d:
+      return webnn::Pool2dKind::kL2;
+    case mojom::Pool2d::Kind::kMaxPool2d:
+      return webnn::Pool2dKind::kMax;
+  }
+}
+
 webnn::ReduceKind MojoReduceTypeToComponent(mojom::Reduce::Kind kind) {
   switch (kind) {
     case mojom::Reduce::Kind::kL1:
@@ -1558,20 +1569,13 @@ bool ValidatePool2d(const ContextProperties& context_properties,
     return false;
   }
 
-  if (pool2d.kind == mojom::Pool2d::Kind::kAveragePool2d ||
-      pool2d.kind == mojom::Pool2d::Kind::kL2Pool2d) {
-    if (!(DataTypeConstraint::kFloat16To32.Has(
-            input->descriptor.data_type()))) {
-      return false;
-    }
-  }
-
   if (output->descriptor.Rank() != 4) {
     return false;
   }
   auto validated_output = ValidatePool2dAndInferOutput(
-      input->descriptor,
-      ConvertToPool2dAttributes(context_properties, pool2d, output));
+      context_properties, input->descriptor,
+      ConvertToPool2dAttributes(context_properties, pool2d, output),
+      FromMojoPool2dType(pool2d.kind));
   if (!validated_output.has_value()) {
     return false;
   }

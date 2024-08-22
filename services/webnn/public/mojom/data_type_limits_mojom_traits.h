@@ -174,6 +174,18 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.linear_input;
   }
+  static webnn::SupportedDataTypes average_pool2d_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.average_pool2d_input;
+  }
+  static webnn::SupportedDataTypes l2_pool2d_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.l2_pool2d_input;
+  }
+  static webnn::SupportedDataTypes max_pool2d_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.max_pool2d_input;
+  }
   static webnn::SupportedDataTypes reduce_l1_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.reduce_l1_input;
@@ -312,6 +324,9 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadHardSwishInput(&out->hard_swish_input) &&
            data.ReadLeakyReluInput(&out->leaky_relu_input) &&
            data.ReadLinearInput(&out->linear_input) &&
+           data.ReadAveragePool2dInput(&out->average_pool2d_input) &&
+           data.ReadL2Pool2dInput(&out->l2_pool2d_input) &&
+           data.ReadMaxPool2dInput(&out->max_pool2d_input) &&
            data.ReadReduceL1Input(&out->reduce_l1_input) &&
            data.ReadReduceL2Input(&out->reduce_l2_input) &&
            data.ReadReduceLogSumInput(&out->reduce_log_sum_input) &&

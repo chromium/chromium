@@ -959,13 +959,32 @@ Pool2dAttributes& Pool2dAttributes::operator=(Pool2dAttributes&& other) =
     default;
 
 base::expected<OperandDescriptor, std::string> ValidatePool2dAndInferOutput(
+    const ContextProperties& context_properties,
     const OperandDescriptor& input,
-    const Pool2dAttributes& attributes) {
+    const Pool2dAttributes& attributes,
+    Pool2dKind kind) {
   const std::string& label = attributes.label;
   // Validate input operand and set its sizes.
   if (input.Rank() != 4) {
     return base::unexpected(
         ErrorWithLabel(label, "The input should be a 4-D tensor."));
+  }
+
+  const SupportedDataTypes& data_type_constraint = [&](Pool2dKind kind) {
+    switch (kind) {
+      case Pool2dKind::kAverage:
+        return context_properties.data_type_limits.average_pool2d_input;
+      case Pool2dKind::kL2:
+        return context_properties.data_type_limits.l2_pool2d_input;
+      case Pool2dKind::kMax:
+        return context_properties.data_type_limits.max_pool2d_input;
+    }
+  }(kind);
+
+  if (!data_type_constraint.Has(input.data_type())) {
+    return base::unexpected(
+        ErrorWithLabel(label, NotSupportedInputArgumentTypeError(
+                                  input.data_type(), data_type_constraint)));
   }
 
   const std::vector<uint32_t>& input_shape = input.shape();

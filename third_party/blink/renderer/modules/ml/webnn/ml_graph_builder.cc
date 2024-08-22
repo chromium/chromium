@@ -149,6 +149,17 @@ webnn::RoundingType BlinkRoundingTypeToComponent(
   }
 }
 
+webnn::Pool2dKind FromMojoPool2dKind(webnn::mojom::blink::Pool2d::Kind kind) {
+  switch (kind) {
+    case webnn::mojom::blink::Pool2d::Kind::kAveragePool2d:
+      return webnn::Pool2dKind::kAverage;
+    case webnn::mojom::blink::Pool2d::Kind::kL2Pool2d:
+      return webnn::Pool2dKind::kL2;
+    case webnn::mojom::blink::Pool2d::Kind::kMaxPool2d:
+      return webnn::Pool2dKind::kMax;
+  }
+}
+
 webnn::ReduceKind MojoReduceKindToComponent(
     webnn::mojom::blink::Reduce::Kind kind) {
   switch (kind) {
@@ -696,6 +707,7 @@ MLOperand* BuildReduce(MLGraphBuilder* builder,
 
 MLOperand* BuildPool2d(MLGraphBuilder* builder,
                        webnn::mojom::blink::Pool2d::Kind kind,
+                       const webnn::ContextProperties& context_properties,
                        const MLOperand* input,
                        const MLPool2dOptions* options,
                        ExceptionState& exception_state) {
@@ -708,7 +720,8 @@ MLOperand* BuildPool2d(MLGraphBuilder* builder,
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
       webnn::ValidatePool2dAndInferOutput(
-          input->Descriptor(), std::move(pool2d_attributes.value())));
+          context_properties, input->Descriptor(),
+          std::move(pool2d_attributes.value()), FromMojoPool2dKind(kind)));
 
   // Create pool2d operator and its output operand. Connect the pool2d operator
   // to its input and output operands.
@@ -1850,7 +1863,8 @@ MLOperand* MLGraphBuilder::averagePool2d(const MLOperand* input,
   }
 
   return BuildPool2d(this, webnn::mojom::blink::Pool2d::Kind::kAveragePool2d,
-                     input, options, exception_state);
+                     ml_context_->GetProperties(), input, options,
+                     exception_state);
 }
 
 MLOperand* MLGraphBuilder::l2Pool2d(const MLOperand* input,
@@ -1868,8 +1882,9 @@ MLOperand* MLGraphBuilder::l2Pool2d(const MLOperand* input,
     return nullptr;
   }
 
-  return BuildPool2d(this, webnn::mojom::blink::Pool2d::Kind::kL2Pool2d, input,
-                     options, exception_state);
+  return BuildPool2d(this, webnn::mojom::blink::Pool2d::Kind::kL2Pool2d,
+                     ml_context_->GetProperties(), input, options,
+                     exception_state);
 }
 
 MLOperand* MLGraphBuilder::maxPool2d(const MLOperand* input,
@@ -1878,8 +1893,9 @@ MLOperand* MLGraphBuilder::maxPool2d(const MLOperand* input,
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
-  return BuildPool2d(this, webnn::mojom::blink::Pool2d::Kind::kMaxPool2d, input,
-                     options, exception_state);
+  return BuildPool2d(this, webnn::mojom::blink::Pool2d::Kind::kMaxPool2d,
+                     ml_context_->GetProperties(), input, options,
+                     exception_state);
 }
 
 MLOperand* MLGraphBuilder::prelu(const MLOperand* input,

@@ -676,6 +676,9 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // TODO: crbug.com/338667172 - Consider enhancing the data type support
        // to include int32.
        /*linear_input=*/DataTypeConstraint::kFloat16To32,
+       /*average_pool2d_input=*/DataTypeConstraint::kFloat16To32,
+       /*l2_pool2d_input=*/DataTypeConstraint::kFloat16To32,
+       /*max_pool2d_input=*/DataTypeConstraint::kFloat16To32,
        /*reduce_l1_input=*/kFloatsAndInt32,
        /*reduce_l2_input=*/kFloatsAndInt32,
        /*reduce_log_sum_input=*/kFloatsAndInt32,
@@ -2331,16 +2334,19 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPool2d(
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
 
-  if (!kFloatDataTypes.contains(input_operand_info.mil_data_type)) {
-    switch (operation.kind) {
-      case mojom::Pool2d::Kind::kAveragePool2d:
-      case mojom::Pool2d::Kind::kL2Pool2d:
-        NOTREACHED() << "Invalid input datatype.";
-      case mojom::Pool2d::Kind::kMaxPool2d:
-        return NewNotSupportedError(NotSupportedInputArgumentTypeError(
-            ops::kMaxPool2d,
-            MILDataTypeToOperandType(input_operand_info.mil_data_type)));
-    }
+  switch (operation.kind) {
+    case mojom::Pool2d::Kind::kAveragePool2d:
+      CHECK(context_properties_.data_type_limits.average_pool2d_input.Has(
+          MILDataTypeToOperandType(input_operand_info.mil_data_type)));
+      break;
+    case mojom::Pool2d::Kind::kL2Pool2d:
+      CHECK(context_properties_.data_type_limits.l2_pool2d_input.Has(
+          MILDataTypeToOperandType(input_operand_info.mil_data_type)));
+      break;
+    case mojom::Pool2d::Kind::kMaxPool2d:
+      CHECK(context_properties_.data_type_limits.max_pool2d_input.Has(
+          MILDataTypeToOperandType(input_operand_info.mil_data_type)));
+      break;
   }
 
   if (operation.dilations->height != 1 || operation.dilations->width != 1) {

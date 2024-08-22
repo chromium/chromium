@@ -438,6 +438,29 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       SupportedDataTypesToSupportLimits(data_type_limits.linear_input));
   op_support_limits->setLinear(linear);
 
+  // Pool2d.
+  MLSingleInputSupportLimits* average_pool2d =
+      MLSingleInputSupportLimits::Create();
+  average_pool2d->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.average_pool2d_input));
+  average_pool2d->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.average_pool2d_input));
+  op_support_limits->setAveragePool2d(average_pool2d);
+
+  MLSingleInputSupportLimits* l2_pool2d = MLSingleInputSupportLimits::Create();
+  l2_pool2d->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.l2_pool2d_input));
+  l2_pool2d->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.l2_pool2d_input));
+  op_support_limits->setL2Pool2d(l2_pool2d);
+
+  MLSingleInputSupportLimits* max_pool2d = MLSingleInputSupportLimits::Create();
+  max_pool2d->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.max_pool2d_input));
+  max_pool2d->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.max_pool2d_input));
+  op_support_limits->setMaxPool2d(max_pool2d);
+
   // Reduction ops.
   MLSingleInputSupportLimits* reduce_l1 = MLSingleInputSupportLimits::Create();
   reduce_l1->setInput(

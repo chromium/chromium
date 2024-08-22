@@ -189,6 +189,10 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.linear_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.average_pool2d_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.l2_pool2d_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.reduce_l1_input.RetainAll(
       DataTypeConstraint::kFloat16To32Ints32To64);
   backend_context_properties.data_type_limits.reduce_l2_input.RetainAll(

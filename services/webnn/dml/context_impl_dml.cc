@@ -54,13 +54,13 @@ ContextProperties ContextImplDml::GetProperties(
     DML_FEATURE_LEVEL feature_level) {
   CHECK_GE(feature_level, DML_FEATURE_LEVEL_4_0);
 
-  static constexpr SupportedDataTypes kFloat16To32Ints32{
-      OperandDataType::kFloat16, OperandDataType::kFloat32,
-      OperandDataType::kInt32, OperandDataType::kUint32};
-
   static constexpr SupportedDataTypes kFloat16To32Ints8{
       OperandDataType::kFloat16, OperandDataType::kFloat32,
       OperandDataType::kInt8, OperandDataType::kUint8};
+
+  static constexpr SupportedDataTypes kFloat16To32Ints32{
+      OperandDataType::kFloat16, OperandDataType::kFloat32,
+      OperandDataType::kInt32, OperandDataType::kUint32};
 
   static constexpr SupportedDataTypes kFloat16To32Ints8To32{
       OperandDataType::kFloat16, OperandDataType::kFloat32,
@@ -198,6 +198,15 @@ ContextProperties ContextImplDml::GetProperties(
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_linear_operator_desc#tensor-support
        /*linear_input=*/DataTypeConstraint::kFloat16To32,
 
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_average_pooling_operator_desc
+       /*average_pool2d_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_lp_pooling_operator_desc
+       /*l2_pool2d_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_max_pooling_operator_desc
+       /*max_pool2d_input=*/kFloat16To32Ints8,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_reduce_operator_desc#tensor-support-according-to-function
        /*reduce_l1_input=*/DataTypeConstraint::kFloat16To32,
        /*reduce_l2_input=*/DataTypeConstraint::kFloat16To32,
@@ -295,6 +304,7 @@ ContextProperties ContextImplDml::GetProperties(
     properties.data_type_limits.reduce_sum_square_input =
         DataTypeConstraint::kFloat16To32Ints32To64;
     properties.data_type_limits.where_value = SupportedDataTypes::All();
+    properties.data_type_limits.max_pool2d_input = SupportedDataTypes::All();
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_5_1) {

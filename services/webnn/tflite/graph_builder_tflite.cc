@@ -375,6 +375,9 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*leaky_relu_input=*/kFloat32,
        // Linear is emulated by mul and add.
        /*linear_input=*/kFloat32AndInt32To64,
+       /*average_pool2d_input=*/kFloat32,
+       /*l2_pool2d_input=*/{},
+       /*max_pool2d_input=*/kFloat32,
        // ReduceL1 is emulated by abs and reduceSum.
        /*reduce_l1_input=*/kFloat32AndInt32,
        // ReduceL2 is emulated by pow and reduceSumSquare.
@@ -3376,14 +3379,16 @@ auto GraphBuilderTflite::SerializePool2d(const mojom::Pool2d& pool2d)
   ::tflite::BuiltinOperator operator_code;
   switch (pool2d.kind) {
     case mojom::Pool2d::Kind::kAveragePool2d:
-      CHECK(kFloatDataTypes.contains(input_operand.descriptor.data_type()));
+      CHECK(context_properties_.data_type_limits.average_pool2d_input.Has(
+          input_operand.descriptor.data_type()));
       operator_code = ::tflite::BuiltinOperator_AVERAGE_POOL_2D;
       break;
     case mojom::Pool2d::Kind::kMaxPool2d:
+      CHECK(context_properties_.data_type_limits.max_pool2d_input.Has(
+          input_operand.descriptor.data_type()));
       operator_code = ::tflite::BuiltinOperator_MAX_POOL_2D;
       break;
     case mojom::Pool2d::Kind::kL2Pool2d:
-      CHECK(kFloatDataTypes.contains(input_operand.descriptor.data_type()));
       return base::unexpected("L2Pool2d is not supported in tflite.");
   }
 

@@ -53,6 +53,9 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes hard_swish_input,
                  SupportedDataTypes leaky_relu_input,
                  SupportedDataTypes linear_input,
+                 SupportedDataTypes average_pool2d_input,
+                 SupportedDataTypes l2_pool2d_input,
+                 SupportedDataTypes max_pool2d_input,
                  SupportedDataTypes reduce_l1_input,
                  SupportedDataTypes reduce_l2_input,
                  SupportedDataTypes reduce_log_sum_input,
@@ -128,6 +131,9 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes hard_swish_input;
   SupportedDataTypes leaky_relu_input;
   SupportedDataTypes linear_input;
+  SupportedDataTypes average_pool2d_input;
+  SupportedDataTypes l2_pool2d_input;
+  SupportedDataTypes max_pool2d_input;
   SupportedDataTypes reduce_l1_input;
   SupportedDataTypes reduce_l2_input;
   SupportedDataTypes reduce_log_sum_input;
@@ -194,6 +200,9 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.hard_swish_input == rhs.hard_swish_input &&
          lhs.leaky_relu_input == rhs.leaky_relu_input &&
          lhs.linear_input == rhs.linear_input &&
+         lhs.average_pool2d_input == rhs.average_pool2d_input &&
+         lhs.l2_pool2d_input == rhs.l2_pool2d_input &&
+         lhs.max_pool2d_input == rhs.max_pool2d_input &&
          lhs.reduce_l1_input == rhs.reduce_l1_input &&
          lhs.reduce_l2_input == rhs.reduce_l2_input &&
          lhs.reduce_log_sum_input == rhs.reduce_log_sum_input &&

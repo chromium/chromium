@@ -31,6 +31,8 @@ enum class Conv2dFilterOperandLayout { kOihw, kHwio, kOhwi, kIhwo };
 // / groups, H is height and W is the width of filter.
 enum class ConvTranspose2dFilterOperandLayout { kIohw, kHwoi, kOhwi };
 
+enum class Pool2dKind { kAverage, kL2, kMax };
+
 // Represents the `MLRoundingType` that is used to compute the output shape.
 enum class RoundingType { kFloor, kCeil };
 
@@ -38,7 +40,7 @@ enum class RoundingType { kFloor, kCeil };
 // direction of the input sequence.
 enum class RecurrentNetworkDirection { kForward, kBackward, kBoth };
 
-enum ReduceKind {
+enum class ReduceKind {
   kL1,
   kL2,
   kLogSum,
@@ -469,8 +471,10 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pool2d
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidatePool2dAndInferOutput(const OperandDescriptor& input,
-                                 const Pool2dAttributes& attributes);
+    ValidatePool2dAndInferOutput(const ContextProperties& context_properties,
+                                 const OperandDescriptor& input,
+                                 const Pool2dAttributes& attributes,
+                                 Pool2dKind kind);
 
 // Validate and infer output information of 2-D resample operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-resample2d

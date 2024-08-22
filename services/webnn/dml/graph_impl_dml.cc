@@ -1920,6 +1920,7 @@ void CreateOperatorNodeForPad(const IdToOperandMap& id_to_operand_map,
 }
 
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
+    const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const mojom::Pool2dPtr& pool2d,
     GraphBuilderDml& graph_builder,
@@ -1949,7 +1950,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
   const std::string& label = pool2d->label;
   switch (pool2d->kind) {
     case mojom::Pool2d::Kind::kAveragePool2d: {
-      CHECK(kDmlFloatDataTypes.contains(input_tensor_desc.GetDataType()));
+      CHECK(context_properties.data_type_limits.average_pool2d_input.Has(
+          DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
       // TODO(crbug.com/40206287): Work around dilation support for L2 and
       // average pooling. According to WebNN spec:
@@ -1981,7 +1983,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
       break;
     }
     case mojom::Pool2d::Kind::kL2Pool2d: {
-      CHECK(kDmlFloatDataTypes.contains(input_tensor_desc.GetDataType()));
+      CHECK(context_properties.data_type_limits.l2_pool2d_input.Has(
+          DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
       DML_LP_POOLING_OPERATOR_DESC l2_pooling_desc = {
           .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
@@ -1998,6 +2001,9 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
       break;
     }
     case mojom::Pool2d::Kind::kMaxPool2d: {
+      CHECK(context_properties.data_type_limits.max_pool2d_input.Has(
+          DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
+
       // If the dilations are { 1, 1 } by default, prefer using
       // `DML_MAX_POOLING_OPERATOR_DESC` without dilations supported for best
       // compatibility.
@@ -5672,8 +5678,8 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
       }
       case Operation::Tag::kPool2d: {
         create_operator_result = CreateOperatorNodeForPool2d(
-            id_to_operand_map, operation->get_pool2d(), graph_builder,
-            id_to_node_output_map);
+            context_properties, id_to_operand_map, operation->get_pool2d(),
+            graph_builder, id_to_node_output_map);
         break;
       }
       case Operation::Tag::kPrelu: {

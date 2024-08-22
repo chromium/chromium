@@ -113,6 +113,11 @@ dictionary MLOpSupportLimits {
   MLSingleInputSupportLimits leakyRelu;
   MLSingleInputSupportLimits linear;
 
+  // Pool2d.
+  MLSingleInputSupportLimits averagePool2d;
+  MLSingleInputSupportLimits l2Pool2d;
+  MLSingleInputSupportLimits maxPool2d;
+
   // Reduction ops.
   MLSingleInputSupportLimits reduceL1;
   MLSingleInputSupportLimits reduceL2;
