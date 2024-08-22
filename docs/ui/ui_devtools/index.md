@@ -91,13 +91,6 @@ is read in from local files.
 
 ![sources panel]
 
-### View Bounds Highlighting
-
-Red border rectangles around each View element can be drawn using the command Ctrl+R (Meta+R for mac).
-The rectangles can be toggled off and on using the same command.
-
-![debug bounds rectangles]
-
 ### Bubble Locking
 
 In order to inspect a bubble, the command Ctrl+Shift+R (Meta+Shift+R for mac) locks bubbles to prevent
