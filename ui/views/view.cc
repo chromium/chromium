@@ -2625,9 +2625,6 @@ void View::OnBlur() {}
 void View::Focus() {
   OnFocus();
 
-  // TODO(crbug.com/40285437) - Get this working on Lacros as well.
-  UpdateTooltipForFocus();
-
   // TODO(pbos): Investigate if parts of this can run unconditionally.
   if (!suppress_default_focus_handling_) {
     // Clear the native focus. This ensures that no visible native view has the
@@ -2656,6 +2653,11 @@ void View::Focus() {
   } else {
     ScrollViewToVisible();
   }
+
+  // Update tooltip after scrolling view to place tooltip according to the new
+  // position.
+  // TODO(crbug.com/40285437) - Get this working on Lacros as well.
+  UpdateTooltipForFocus();
 
   for (ViewObserver& observer : observers_) {
     observer.OnViewFocused(this);
