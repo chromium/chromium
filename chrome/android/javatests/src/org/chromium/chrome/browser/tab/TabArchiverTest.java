@@ -242,8 +242,10 @@ public class TabArchiverTest {
         assertEquals(0, mArchivedTabModel.getCount());
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecords("Tabs.TabEligibleForArchive.AfterNDays", 0, 0)
+                        .expectIntRecords("Tabs.TabArchiveEligibilityCheck.AfterNDays", 0, 0)
+                        .expectIntRecords("Tabs.TabArchived.AfterNDays", 0, 0)
                         .build();
+
         // Send an event, similar to how TabWindowManager would.
         runOnUiThreadBlocking(
                 () ->
@@ -291,8 +293,10 @@ public class TabArchiverTest {
 
         Tab archivedTab = mArchivedTabModel.getTabAt(0);
         HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Tabs.TabEligibleForAutoDeletion.AfterNDays", 0);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Tabs.TabAutoDeleteEligibilityCheck.AfterNDays", 0)
+                        .expectIntRecords("Tabs.TabAutoDeleted.AfterNDays", 0)
+                        .build();
         runOnUiThreadBlocking(
                 () -> {
                     mTabArchiveSettings.setAutoDeleteEnabled(true);
@@ -300,10 +304,9 @@ public class TabArchiverTest {
                     mTabArchiver.deleteEligibleArchivedTabs();
                 });
 
-        assertEquals(1, mRegularTabModel.getCount());
         CriteriaHelper.pollInstrumentationThread(() -> mArchivedTabModel.getCount() == 0);
         CriteriaHelper.pollInstrumentationThread(() -> archivedTab.isDestroyed());
-        watcher.assertExpected();
+        assertEquals(1, mRegularTabModel.getCount());
 
         runOnUiThreadBlocking(
                 () -> {
@@ -315,6 +318,7 @@ public class TabArchiverTest {
                             });
                 });
         callbackHelper.waitForNext();
+        watcher.assertExpected();
     }
 
     @Test

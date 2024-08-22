@@ -129,8 +129,13 @@ public class TabArchiver implements TabWindowManager.Observer {
                     tab,
                     (archivePersistedTabData) -> {
                         if (isArchivedTabEligibleForDeletion(archivePersistedTabData)) {
+                            int tabAgeDays =
+                                    timestampMillisToDays(
+                                            archivePersistedTabData.getArchivedTimeMs());
                             mArchivedTabModel.closeTabs(
                                     TabClosureParams.closeTab(tab).allowUndo(false).build());
+                            RecordHistogram.recordCount1000Histogram(
+                                    "Tabs.TabAutoDeleted.AfterNDays", tabAgeDays);
                             RecordUserAction.record("Tabs.ArchivedTabAutoDeleted");
                         }
                     });
@@ -160,6 +165,7 @@ public class TabArchiver implements TabWindowManager.Observer {
      */
     public Tab archiveAndRemoveTab(TabModel tabModel, Tab tab) {
         ThreadUtils.assertOnUiThread();
+        int tabAgeDays = timestampMillisToDays(tab.getTimestampMillis());
         TabState tabState = prepareTabState(tab);
         Tab newTab = mArchivedTabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
         tabModel.closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
@@ -173,6 +179,7 @@ public class TabArchiver implements TabWindowManager.Observer {
                     archivePersistedTabData.setArchivedTimeMs(mClock.currentTimeMillis());
                 });
 
+        RecordHistogram.recordCount1000Histogram("Tabs.TabArchived.AfterNDays", tabAgeDays);
         RecordUserAction.record("Tabs.TabArchived");
         return newTab;
     }
@@ -241,7 +248,7 @@ public class TabArchiver implements TabWindowManager.Observer {
                 isTimestampWithinTargetHours(
                         timestampMillis, mTabArchiveSettings.getArchiveTimeDeltaHours());
         RecordHistogram.recordCount1000Histogram(
-                "Tabs.TabEligibleForArchive.AfterNDays", tabAgeDays);
+                "Tabs.TabArchiveEligibilityCheck.AfterNDays", tabAgeDays);
         return result;
     }
 
@@ -255,7 +262,7 @@ public class TabArchiver implements TabWindowManager.Observer {
                 isTimestampWithinTargetHours(
                         archivedTimeMillis, mTabArchiveSettings.getAutoDeleteTimeDeltaHours());
         RecordHistogram.recordCount1000Histogram(
-                "Tabs.TabEligibleForAutoDeletion.AfterNDays", tabAgeDays);
+                "Tabs.TabAutoDeleteEligibilityCheck.AfterNDays", tabAgeDays);
         return result;
     }
 

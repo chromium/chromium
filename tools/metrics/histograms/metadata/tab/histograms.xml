@@ -2241,6 +2241,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabArchived.AfterNDays" units="days"
+    expires_after="2024-10-30">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records how old, in days, a tab is when it's archived. Age is
+    calculated based on the last used time.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabArchiveEligibilityCheck.AfterNDays" units="days"
+    expires_after="2024-10-30">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records how old, in days, a tab is when it's checked for
+    archive eligibility. Recorded at startup when the archived tab model is
+    loaded and at regular intervals after that (default interval is 7d, but is
+    configurable via finch.). Only recorded if tab declutter is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabAutoDeleted.AfterNDays" units="days"
+    expires_after="2024-10-30">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records how old, in days, a tab is when it's autodeleted. Age
+    is calculated based on when a tab was archived.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabAutoDeleteEligibilityCheck.AfterNDays" units="days"
+    expires_after="2024-10-30">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records how old, in days, a tab is when it's checked for
+    auto-deletion eligibility. Recorded at startup when the archived tab model
+    is loaded and at regular intervals after that (default interval is 7d, but
+    is configurable via finch.). Only recorded if tab declutter is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabCountActiveWindow" units="tabs" expires_after="never">
 <!-- expires-never: usage drives tab optimization and analysis. -->
 
@@ -2317,28 +2361,6 @@ chromium-metrics-reviews@google.com.
     Desktop only.
   </summary>
   <token key="BatteryState" variants="BatteryState"/>
-</histogram>
-
-<histogram name="Tabs.TabEligibleForArchive.AfterNDays" units="days"
-    expires_after="2024-10-30">
-  <owner>wylieb@chromium.org</owner>
-  <owner>clank-tab-dev@google.com</owner>
-  <summary>
-    (Android only) Records how old, in days, a tab is when it's determined
-    eligible for archive. Recorded at startup when the archived tab model is
-    loaded.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.TabEligibleForDeletion.AfterNDays" units="days"
-    expires_after="2024-10-30">
-  <owner>wylieb@chromium.org</owner>
-  <owner>clank-tab-dev@google.com</owner>
-  <summary>
-    (Android only) Records how old, in days, a tab is when it's determisned
-    eligible for auto deletion. Recorded at startup when the archived tab model
-    is loaded.
-  </summary>
 </histogram>
 
 <histogram name="Tabs.TabOffsetOfSwitch{TabOffsetOfSwitchComponentList}"
