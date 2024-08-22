@@ -36,8 +36,10 @@ AudioTrackMojoEncoder::AudioTrackMojoEncoder(
     scoped_refptr<base::SequencedTaskRunner> encoder_task_runner,
     AudioTrackRecorder::CodecId codec,
     OnEncodedAudioCB on_encoded_audio_cb,
+    OnEncodedAudioErrorCB on_encoded_audio_error_cb,
     uint32_t bits_per_second)
-    : AudioTrackEncoder(std::move(on_encoded_audio_cb)),
+    : AudioTrackEncoder(std::move(on_encoded_audio_cb),
+                        std::move(on_encoded_audio_error_cb)),
       encoder_task_runner_(std::move(encoder_task_runner)),
       bits_per_second_(bits_per_second),
       current_status_(
@@ -58,6 +60,7 @@ void AudioTrackMojoEncoder::OnSetFormat(
 
   if (!input_params.IsValid()) {
     DVLOG(1) << "Invalid params: " << input_params.AsHumanReadableString();
+    NotifyError(current_status_);
     return;
   }
   input_params_ = input_params;
@@ -76,6 +79,7 @@ void AudioTrackMojoEncoder::OnSetFormat(
       std::make_unique<media::MojoAudioEncoder>(std::move(encoder_remote));
   if (!mojo_encoder_) {
     DVLOG(1) << "Couldn't create Mojo encoder.";
+    NotifyError(media::EncoderStatus::Codes::kEncoderMojoConnectionError);
     return;
   }
 
@@ -84,6 +88,7 @@ void AudioTrackMojoEncoder::OnSetFormat(
     options.codec = media::AudioCodec::kAAC;
   } else {
     DVLOG(1) << "Unsupported codec: " << static_cast<int>(codec_);
+    NotifyError(media::EncoderStatus::Codes::kEncoderUnsupportedCodec);
     return;
   }
 
@@ -121,6 +126,7 @@ void AudioTrackMojoEncoder::EncodeAudio(
 
   if (!current_status_.is_ok()) {
     LogError("EncodeAudio refused: ", current_status_);
+    NotifyError(current_status_);
     return;
   }
 
@@ -147,6 +153,7 @@ void AudioTrackMojoEncoder::OnInitializeDone(media::EncoderStatus status) {
   current_status_ = status;
   if (!current_status_.is_ok()) {
     LogError("Audio encoder initialization failed: ", current_status_);
+    NotifyError(current_status_);
     return;
   }
 
@@ -163,8 +170,10 @@ void AudioTrackMojoEncoder::OnEncodeDone(media::EncoderStatus status) {
     return;
 
   current_status_ = status;
-  if (!current_status_.is_ok())
+  if (!current_status_.is_ok()) {
     LogError("Audio encode failed: ", current_status_);
+    NotifyError(current_status_);
+  }
 }
 
 void AudioTrackMojoEncoder::OnEncodeOutput(
@@ -172,6 +181,7 @@ void AudioTrackMojoEncoder::OnEncodeOutput(
     std::optional<media::AudioEncoder::CodecDescription> codec_desc) {
   if (!current_status_.is_ok()) {
     LogError("Refusing to output when in error state: ", current_status_);
+    NotifyError(current_status_);
     return;
   }
 
@@ -179,6 +189,14 @@ void AudioTrackMojoEncoder::OnEncodeOutput(
                            encoded_buffer.encoded_data.end());
   on_encoded_audio_cb_.Run(encoded_buffer.params, encoded_data,
                            std::move(codec_desc), encoded_buffer.timestamp);
+}
+
+void AudioTrackMojoEncoder::NotifyError(const media::EncoderStatus& error) {
+  if (on_encoded_audio_error_cb_.is_null()) {
+    return;
+  }
+
+  std::move(on_encoded_audio_error_cb_).Run(error);
 }
 
 }  // namespace blink

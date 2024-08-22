@@ -45,6 +45,7 @@ class MODULES_EXPORT AudioTrackMojoEncoder : public AudioTrackEncoder {
       scoped_refptr<base::SequencedTaskRunner> encoder_task_runner,
       AudioTrackRecorder::CodecId codec,
       OnEncodedAudioCB on_encoded_audio_cb,
+      OnEncodedAudioErrorCB on_encoded_audio_error_cb,
       uint32_t bits_per_second = 0);
 
   AudioTrackMojoEncoder(const AudioTrackMojoEncoder&) = delete;
@@ -75,6 +76,7 @@ class MODULES_EXPORT AudioTrackMojoEncoder : public AudioTrackEncoder {
   void OnEncodeOutput(
       media::EncodedAudioBuffer encoded_buffer,
       std::optional<media::AudioEncoder::CodecDescription> codec_desc);
+  void NotifyError(const media::EncoderStatus& error);
 
   // The `media::AudioEncoder` interface requires the callback provided to
   // `Initialize` to be run before any further calls are made. So, we store any
