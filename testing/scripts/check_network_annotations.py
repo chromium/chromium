@@ -33,7 +33,8 @@ def main_run(args):
       os.path.join(common.SRC_DIR, 'tools', 'traffic_annotation', 'scripts',
                    'check_annotations.py'),
       '--build-path',
-      os.path.join(args.paths['checkout'], 'out', args.build_config_fs),
+      args.build_dir
+      or os.path.join(args.paths['checkout'], 'out', args.build_config_fs),
       '--errors-file',
       errors_filename,
   ]

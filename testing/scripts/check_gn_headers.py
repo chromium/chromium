@@ -19,7 +19,8 @@ def main_run(args):
         sys.executable,
         os.path.join(common.SRC_DIR, 'build', 'check_gn_headers.py'),
         '--out-dir',
-        os.path.join(args.paths['checkout'], 'out', args.build_config_fs),
+        args.build_dir
+        or os.path.join(args.paths['checkout'], 'out', args.build_config_fs),
         '--whitelist',
         os.path.join(common.SRC_DIR, 'build', 'check_gn_headers_whitelist.txt'),
         '--json',
