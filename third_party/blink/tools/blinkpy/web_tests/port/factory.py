@@ -231,7 +231,7 @@ def add_configuration_options_group(parser: argparse.ArgumentParser,
         group.add_argument(
             '-p',
             '--product',
-            default='chrome',
+            default='headless_shell',
             choices=(product_choices or []),
             metavar='PRODUCT',
             help='Product (browser or browser component) to test.')
