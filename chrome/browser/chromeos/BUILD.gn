@@ -388,21 +388,6 @@ source_set("chromeos") {
     ]
     allow_circular_includes_from += [ "//chrome/browser/chromeos/tablet_mode" ]
   }
-
-  if (use_cups) {
-    sources += [
-      "printing/cups_wrapper.cc",
-      "printing/cups_wrapper.h",
-      "printing/cups_wrapper_impl.cc",
-      "printing/printer_error_codes.cc",
-      "printing/printer_error_codes.h",
-    ]
-    public_deps += [ "//printing/backend" ]
-    deps += [
-      "//chromeos/components/print_management/mojom",
-      "//printing:printing_base",
-    ]
-  }
 }
 
 static_library("test_support") {

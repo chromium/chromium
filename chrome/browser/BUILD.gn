@@ -6116,6 +6116,10 @@ static_library("browser") {
       "//ui/wm/public",
     ]
 
+    if (use_cups) {
+      deps += [ "//chrome/browser/chromeos/printing" ]
+    }
+
     # Any circular includes must depend on the target
     # "browser_public_dependencies".
     allow_circular_includes_from += [

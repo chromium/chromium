@@ -2245,6 +2245,10 @@ if (!is_android) {
         "//components/onc",
         "//ui/chromeos",
       ]
+
+      if (use_cups) {
+        deps += [ "//chrome/browser/chromeos/printing" ]
+      }
     }
 
     if (is_chromeos_ash) {
@@ -5557,6 +5561,7 @@ if (is_chromeos_lacros) {
       ]
       deps += [
         "//chrome/browser/chromeos/extensions/printing_metrics",
+        "//chrome/browser/chromeos/printing",
         "//chromeos/printing",
       ]
     }
@@ -8342,13 +8347,6 @@ test("unit_tests") {
       # Unit tests from subdirectories.
       "//chrome/browser/chromeos:unit_tests",
     ]
-
-    if (use_cups) {
-      sources += [
-        "../browser/chromeos/printing/test_cups_wrapper.cc",
-        "../browser/chromeos/printing/test_cups_wrapper.h",
-      ]
-    }
   }
 
   if (is_chromeos_ash) {
@@ -9835,6 +9833,10 @@ test("unit_tests") {
     if (is_chromeos) {
       deps += [ "//chromeos/components/kiosk:test_support" ]
     }
+  }
+
+  if (is_chromeos && use_cups) {
+    deps += [ "//chrome/browser/chromeos/printing:test_support" ]
   }
 
   if ((is_linux || is_chromeos) && use_aura) {

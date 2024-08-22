@@ -144,7 +144,10 @@ static_library("printing") {
   ]
 
   if (use_cups) {
-    deps += [ "//chrome/services/cups_proxy" ]
+    deps += [
+      "//chrome/browser/chromeos/printing",
+      "//chrome/services/cups_proxy",
+    ]
   }
 
   public_deps = [
