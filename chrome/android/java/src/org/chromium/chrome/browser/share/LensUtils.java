@@ -170,7 +170,7 @@ public class LensUtils {
      *
      * @return The version name of the Agsa package or null if it can't be found.
      */
-    private static @Nullable String getAgsaVersionName() {
+    public static @Nullable String getAgsaVersionName() {
         PackageInfo packageInfo = PackageUtils.getPackageInfo(AGSA_PACKAGE_NAME, 0);
         return packageInfo == null ? null : packageInfo.versionName;
     }
