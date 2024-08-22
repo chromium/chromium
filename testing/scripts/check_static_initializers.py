@@ -17,6 +17,14 @@ sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 from scripts import common
 
+CHROMIUM_ROOT = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
+BUILD_DIR = os.path.join(CHROMIUM_ROOT, 'build')
+
+if BUILD_DIR not in sys.path:
+  sys.path.insert(0, BUILD_DIR)
+import gn_helpers
+
+
 # A list of filename regexes that are allowed to have static initializers.
 # If something adds a static initializer, revert it. We don't accept regressions
 # in static initializers.
@@ -170,11 +178,17 @@ def main_linux(src_dir):
 
 
 def main_run(args):
-  if args.build_config_fs != 'Release':
+  if args.build_dir:
+    with open(os.path.join(args.build_dir, 'args.gn')) as f:
+      gn_args = gn_helpers.FromGNArgs(f.read())
+    if gn_args.get('is_debug') or gn_args.get('is_official_build'):
+      raise Exception('Only release builds are supported')
+  elif args.build_config_fs != 'Release':
     raise Exception('Only release builds are supported')
 
   src_dir = args.paths['checkout']
-  build_dir = os.path.join(src_dir, 'out', args.build_config_fs)
+  build_dir = args.build_dir or os.path.join(src_dir, 'out',
+                                             args.build_config_fs)
   os.chdir(build_dir)
 
   if sys.platform.startswith('darwin'):

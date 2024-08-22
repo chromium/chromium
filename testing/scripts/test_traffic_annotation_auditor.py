@@ -77,7 +77,8 @@ def main_run(args):
   annotations_filename = annotations_file.name
   annotations_file.close()
 
-  build_path = os.path.join(args.paths['checkout'], 'out', args.build_config_fs)
+  build_path = args.build_dir or os.path.join(args.paths['checkout'], 'out',
+                                              args.build_config_fs)
   command_line = [
       sys.executable,
       os.path.join(common.SRC_DIR, 'tools', 'traffic_annotation', 'scripts',
