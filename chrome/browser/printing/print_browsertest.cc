@@ -550,6 +550,13 @@ void PrintBrowserTest::SetPrinterLanguageTypeForSubsequentContexts(
 }
 #endif
 
+void PrintBrowserTest::SetUserSettingsPageRangesForSubsequentContext(
+    const PageRanges& page_ranges) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  test_printing_context_factory_.SetUserSettingsPageRangesForSubsequentContext(
+      page_ranges);
+}
+
 void PrintBrowserTest::SetNewDocumentJobId(int job_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   test_printing_context_factory_.SetJobIdOnNewDocument(job_id);

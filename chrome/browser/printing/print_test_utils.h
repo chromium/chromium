@@ -49,7 +49,8 @@ std::unique_ptr<PrintSettings> MakeDefaultPrintSettings(
 // `MakeDefaultPrintSettings()`, to be used if test calls
 // `PrintingContext::AskUserForSettings()`.
 std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
-    const std::string& printer_name);
+    const std::string& printer_name,
+    const PageRanges* page_ranges);
 
 // Simpler version of StartPrint() provided for convenience with the common
 // defaults:
