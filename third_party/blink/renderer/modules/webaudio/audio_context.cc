@@ -1132,13 +1132,13 @@ void AudioContext::DevicesEnumerated(
         audio_input_capabilities) {
   Vector<WebMediaDeviceInfo> output_devices =
       enumeration[static_cast<wtf_size_t>(
-          mojom::blink::MediaDeviceType::kMediaAudioOuput)];
+          mojom::blink::MediaDeviceType::kMediaAudioOutput)];
 
   TRACE_EVENT1(
       "webaudio", "AudioContext::DevicesEnumerated", "DeviceEnumeration",
       audio_utilities::GetDeviceEnumerationForTracing(output_devices));
 
-  OnDevicesChanged(mojom::blink::MediaDeviceType::kMediaAudioOuput,
+  OnDevicesChanged(mojom::blink::MediaDeviceType::kMediaAudioOutput,
                    output_devices);
 
   // Start the first resolver in the queue once `output_device_ids_` is
@@ -1152,7 +1152,7 @@ void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
                                     const Vector<WebMediaDeviceInfo>& devices) {
   DCHECK(IsMainThread());
 
-  if (device_type == mojom::blink::MediaDeviceType::kMediaAudioOuput) {
+  if (device_type == mojom::blink::MediaDeviceType::kMediaAudioOutput) {
     output_device_ids_.clear();
     for (auto device : devices) {
       if (device.device_id == "default") {

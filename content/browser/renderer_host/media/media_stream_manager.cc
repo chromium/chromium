@@ -198,7 +198,7 @@ const char* DeviceTypeToString(MediaDeviceType type) {
   switch (type) {
     case MediaDeviceType::kMediaAudioInput:
       return "DEVICE_AUDIO_INPUT";
-    case MediaDeviceType::kMediaAudioOuput:
+    case MediaDeviceType::kMediaAudioOutput:
       return "DEVICE_AUDIO_OUTPUT";
     case MediaDeviceType::kMediaVideoInput:
       return "DEVICE_VIDEO_INPUT";

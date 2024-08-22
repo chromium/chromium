@@ -541,7 +541,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateNoCacheAudioOutput) {
       .Times(kNumCalls);
   EXPECT_CALL(*this, MockCallback(_)).Times(kNumCalls);
   MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
-  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] =
+  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] =
       true;
   for (int i = 0; i < kNumCalls; i++) {
     base::RunLoop run_loop;
@@ -563,7 +563,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateNoCacheAudio) {
   MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
   devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioInput)] =
       true;
-  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] =
+  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] =
       true;
   for (int i = 0; i < kNumCalls; i++) {
     base::RunLoop run_loop;
@@ -665,11 +665,11 @@ TEST_F(MediaDevicesManagerTest, EnumerateCacheAudio) {
   EXPECT_CALL(*this, MockCallback(_)).Times(kNumCalls);
   EXPECT_CALL(media_devices_manager_client_, InputDevicesChangedUI(_, _));
   EnableCache(MediaDeviceType::kMediaAudioInput);
-  EnableCache(MediaDeviceType::kMediaAudioOuput);
+  EnableCache(MediaDeviceType::kMediaAudioOutput);
   MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
   devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioInput)] =
       true;
-  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] =
+  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] =
       true;
   for (int i = 0; i < kNumCalls; i++) {
     base::RunLoop run_loop;
@@ -716,11 +716,11 @@ TEST_F(MediaDevicesManagerTest, EnumerateCacheAudioWithDeviceChanges) {
   audio_manager_->SetNumAudioInputDevices(num_audio_input_devices);
   audio_manager_->SetNumAudioOutputDevices(num_audio_output_devices);
   EnableCache(MediaDeviceType::kMediaAudioInput);
-  EnableCache(MediaDeviceType::kMediaAudioOuput);
+  EnableCache(MediaDeviceType::kMediaAudioOutput);
   MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
   devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioInput)] =
       true;
-  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] =
+  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] =
       true;
   for (int i = 0; i < kNumCalls; i++) {
     base::RunLoop run_loop;
@@ -735,7 +735,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateCacheAudioWithDeviceChanges) {
             .size());
     EXPECT_EQ(
         num_audio_output_devices,
-        enumeration[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)]
+        enumeration[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]
             .size());
   }
 
@@ -766,7 +766,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateCacheAudioWithDeviceChanges) {
             .size());
     EXPECT_EQ(
         num_audio_output_devices,
-        enumeration[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)]
+        enumeration[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]
             .size());
   }
 
@@ -793,7 +793,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateCacheAudioWithDeviceChanges) {
             .size());
     EXPECT_EQ(
         num_audio_output_devices,
-        enumeration[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)]
+        enumeration[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]
             .size());
   }
 }
@@ -897,7 +897,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateCacheAllWithDeviceChanges) {
       num_video_input_devices);
   audio_manager_->SetNumAudioOutputDevices(num_audio_output_devices);
   EnableCache(MediaDeviceType::kMediaAudioInput);
-  EnableCache(MediaDeviceType::kMediaAudioOuput);
+  EnableCache(MediaDeviceType::kMediaAudioOutput);
   EnableCache(MediaDeviceType::kMediaVideoInput);
   task_environment_.RunUntilIdle();
 
@@ -906,7 +906,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateCacheAllWithDeviceChanges) {
       true;
   devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] =
       true;
-  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] =
+  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] =
       true;
   for (int i = 0; i < kNumCalls; i++) {
     base::RunLoop run_loop;
@@ -925,7 +925,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateCacheAllWithDeviceChanges) {
             .size());
     EXPECT_EQ(
         num_audio_output_devices,
-        enumeration[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)]
+        enumeration[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]
             .size());
   }
 
@@ -968,7 +968,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateCacheAllWithDeviceChanges) {
             .size());
     EXPECT_EQ(
         num_audio_output_devices,
-        enumeration[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)]
+        enumeration[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]
             .size());
   }
 }
@@ -996,7 +996,7 @@ TEST_F(MediaDevicesManagerTest, SubscribeDeviceChanges) {
       true;
   devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] =
       true;
-  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] =
+  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] =
       true;
   base::RunLoop run_loop;
   media_devices_manager_->EnumerateDevices(
@@ -1029,7 +1029,7 @@ TEST_F(MediaDevicesManagerTest, SubscribeDeviceChanges) {
   MockMediaDevicesListener listener_audio_output;
   MediaDevicesManager::BoolDeviceTypes audio_output_devices_to_subscribe;
   audio_output_devices_to_subscribe[static_cast<size_t>(
-      MediaDeviceType::kMediaAudioOuput)] = true;
+      MediaDeviceType::kMediaAudioOutput)] = true;
   uint32_t audio_output_subscription_id =
       media_devices_manager_->SubscribeDeviceChangeNotifications(
           kRenderFrameHostId, audio_output_devices_to_subscribe,
@@ -1042,7 +1042,7 @@ TEST_F(MediaDevicesManagerTest, SubscribeDeviceChanges) {
   all_devices_to_subscribe[static_cast<size_t>(
       MediaDeviceType::kMediaVideoInput)] = true;
   all_devices_to_subscribe[static_cast<size_t>(
-      MediaDeviceType::kMediaAudioOuput)] = true;
+      MediaDeviceType::kMediaAudioOutput)] = true;
   media_devices_manager_->SubscribeDeviceChangeNotifications(
       kRenderFrameHostId, all_devices_to_subscribe,
       listener_all.CreateInterfacePtrAndBind());
@@ -1062,7 +1062,7 @@ TEST_F(MediaDevicesManagerTest, SubscribeDeviceChanges) {
       .Times(1)
       .WillOnce(SaveArg<1>(&notification_video_input));
   EXPECT_CALL(listener_audio_output,
-              OnDevicesChanged(MediaDeviceType::kMediaAudioOuput, _))
+              OnDevicesChanged(MediaDeviceType::kMediaAudioOutput, _))
       .Times(1)
       .WillOnce(SaveArg<1>(&notification_audio_output));
   EXPECT_CALL(listener_all,
@@ -1074,7 +1074,7 @@ TEST_F(MediaDevicesManagerTest, SubscribeDeviceChanges) {
       .Times(2)
       .WillRepeatedly(SaveArg<1>(&notification_all_video_input));
   EXPECT_CALL(listener_all,
-              OnDevicesChanged(MediaDeviceType::kMediaAudioOuput, _))
+              OnDevicesChanged(MediaDeviceType::kMediaAudioOutput, _))
       .Times(2)
       .WillRepeatedly(SaveArg<1>(&notification_all_audio_output));
 

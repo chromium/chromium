@@ -130,7 +130,7 @@ void MediaDevicesDispatcherHost::EnumerateDevices(
       request_audio_input;
   devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] =
       request_video_input;
-  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] =
+  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] =
       request_audio_output;
 
   media_stream_manager_->media_devices_manager()->EnumerateAndRankDevices(
@@ -223,7 +223,7 @@ void MediaDevicesDispatcherHost::AddMediaDevicesListener(
       subscribe_audio_input;
   devices_to_subscribe[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] =
       subscribe_video_input;
-  devices_to_subscribe[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] =
+  devices_to_subscribe[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] =
       subscribe_audio_output;
 
   uint32_t subscription_id =

@@ -229,7 +229,7 @@ class MediaDevicesDispatcherHostTest
     devices_to_enumerate[static_cast<size_t>(
         MediaDeviceType::kMediaVideoInput)] = true;
     devices_to_enumerate[static_cast<size_t>(
-        MediaDeviceType::kMediaAudioOuput)] = true;
+        MediaDeviceType::kMediaAudioOutput)] = true;
     media_stream_manager_->media_devices_manager()->EnumerateDevices(
         devices_to_enumerate,
         base::BindOnce(&PhysicalDevicesEnumerated, run_loop.QuitClosure(),
@@ -245,7 +245,7 @@ class MediaDevicesDispatcherHostTest
                   .size(),
               0u);
     ASSERT_GT(physical_devices_[static_cast<size_t>(
-                                    MediaDeviceType::kMediaAudioOuput)]
+                                    MediaDeviceType::kMediaAudioOutput)]
                   .size(),
               0u);
   }
@@ -392,7 +392,7 @@ class MediaDevicesDispatcherHostTest
                        .empty());
     if (enumerate_audio_output)
       EXPECT_FALSE(enumerated_devices_[static_cast<size_t>(
-                                           MediaDeviceType::kMediaAudioOuput)]
+                                           MediaDeviceType::kMediaAudioOutput)]
                        .empty());
 
     EXPECT_FALSE(DoesContainRawIds(enumerated_devices_));
@@ -496,7 +496,7 @@ class MediaDevicesDispatcherHostTest
       host_->AddMediaDevicesListener(
           type == MediaDeviceType::kMediaAudioInput,
           type == MediaDeviceType::kMediaVideoInput,
-          type == MediaDeviceType::kMediaAudioOuput,
+          type == MediaDeviceType::kMediaAudioOutput,
           device_change_listener.CreatePendingRemoteAndBind());
       blink::WebMediaDeviceInfoArray changed_devices;
       EXPECT_CALL(device_change_listener, OnDevicesChanged(type, _))

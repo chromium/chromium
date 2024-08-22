@@ -99,7 +99,7 @@ class MockMediaDevicesDispatcherHost final
         audio_input_capabilities;
     if (request_audio_output) {
       wtf_size_t index = static_cast<wtf_size_t>(
-          blink::mojom::blink::MediaDeviceType::kMediaAudioOuput);
+          blink::mojom::blink::MediaDeviceType::kMediaAudioOutput);
       enumeration[index] = enumeration_[index];
     }
     std::move(callback).Run(std::move(enumeration),

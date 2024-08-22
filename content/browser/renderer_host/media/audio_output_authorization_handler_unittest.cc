@@ -159,7 +159,7 @@ class AudioOutputAuthorizationHandlerTest : public RenderViewHostTestHarness {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
     devices_to_enumerate[static_cast<size_t>(
-        MediaDeviceType::kMediaAudioOuput)] = true;
+        MediaDeviceType::kMediaAudioOutput)] = true;
 
     media_stream_manager_->media_devices_manager()->EnumerateDevices(
         devices_to_enumerate,
@@ -167,11 +167,11 @@ class AudioOutputAuthorizationHandlerTest : public RenderViewHostTestHarness {
             [](std::string* out, const MediaDeviceEnumeration& result) {
               // Index 0 is default, so use 1.
               CHECK(
-                  result[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)]
+                  result[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]
                       .size() > 1)
                   << "Expected to have a nondefault device.";
               *out =
-                  result[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)]
+                  result[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]
                         [1]
                             .device_id;
             },

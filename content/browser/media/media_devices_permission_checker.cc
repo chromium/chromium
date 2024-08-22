@@ -64,9 +64,9 @@ MediaDevicesManager::BoolDeviceTypes DoCheckPermissionsOnUIThread(
 
   // Speakers. Also allow speakers if the microphone permission is given, even
   // if speaker permission is not explicitly given.
-  result[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] =
+  result[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] =
       requested_device_types[static_cast<size_t>(
-          MediaDeviceType::kMediaAudioOuput)] &&
+          MediaDeviceType::kMediaAudioOutput)] &&
       ((microphone_permission && mic_permissions_policy) ||
        (speaker_selection_permission && speaker_selection_permissions_policy));
 
