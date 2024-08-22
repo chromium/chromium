@@ -12,6 +12,7 @@
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
+#include "net/http/alternative_service.h"
 #include "net/http/http_response_info.h"
 #include "net/http/http_stream_key.h"
 #include "net/log/net_log_source.h"
@@ -119,6 +120,7 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
     // HttpStreamFactory::JobController resolves proxies.
     virtual void OnSwitchesToHttpStreamPool(
         HttpStreamKey stream_key,
+        const AlternativeServiceInfo& alternative_service_info,
         quic::ParsedQuicVersion quic_version) = 0;
   };
 

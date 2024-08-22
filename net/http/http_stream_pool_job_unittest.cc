@@ -29,6 +29,7 @@
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/http/alternative_service.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_server_properties.h"
@@ -162,7 +163,7 @@ class Preconnector {
 
   int Preconnect(HttpStreamPool& pool) {
     return pool.Preconnect(
-        GetStreamKey(), num_streams_, quic_version_,
+        GetStreamKey(), num_streams_, alternative_service_info_, quic_version_,
         base::BindOnce(&Preconnector::OnComplete, base::Unretained(this)));
   }
 
@@ -174,6 +175,8 @@ class Preconnector {
   StreamKeyBuilder key_builder_;
 
   size_t num_streams_ = 1;
+
+  AlternativeServiceInfo alternative_service_info_;
 
   quic::ParsedQuicVersion quic_version_ =
       quic::ParsedQuicVersion::Unsupported();
@@ -236,10 +239,10 @@ class StreamRequester : public HttpStreamRequest::Delegate {
 
   HttpStreamRequest* RequestStream(HttpStreamPool& pool) {
     HttpStreamKey stream_key = GetStreamKey();
-    request_ = pool.RequestStream(this, stream_key, priority_,
-                                  allowed_bad_certs_, enable_ip_based_pooling_,
-                                  enable_alternative_services_, quic_version_,
-                                  NetLogWithSource());
+    request_ = pool.RequestStream(
+        this, stream_key, priority_, allowed_bad_certs_,
+        enable_ip_based_pooling_, enable_alternative_services_,
+        alternative_service_info_, quic_version_, NetLogWithSource());
     return request_.get();
   }
 
@@ -294,6 +297,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
 
   void OnSwitchesToHttpStreamPool(
       HttpStreamKey stream_key,
+      const AlternativeServiceInfo& alternative_service_info,
       quic::ParsedQuicVersion quic_version) override {}
 
   std::unique_ptr<HttpStream> ReleaseStream() { return std::move(stream_); }
@@ -330,6 +334,8 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   bool enable_ip_based_pooling_ = true;
 
   bool enable_alternative_services_ = true;
+
+  AlternativeServiceInfo alternative_service_info_;
 
   quic::ParsedQuicVersion quic_version_ =
       quic::ParsedQuicVersion::Unsupported();

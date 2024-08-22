@@ -17,6 +17,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/request_priority.h"
+#include "net/http/alternative_service.h"
 #include "net/http/http_stream_request.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
@@ -88,6 +89,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       bool enable_ip_based_pooling,
       bool enable_alternative_services,
+      AlternativeServiceInfo alternative_service_info,
       quic::ParsedQuicVersion quic_version,
       const NetLogWithSource& net_log);
 
@@ -95,6 +97,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // `callback` is only invoked when the return value is `ERR_IO_PENDING`.
   int Preconnect(const HttpStreamKey& stream_key,
                  size_t num_streams,
+                 AlternativeServiceInfo alternative_service_info,
                  quic::ParsedQuicVersion quic_version,
                  CompletionOnceCallback callback);
 

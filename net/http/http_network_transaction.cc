@@ -776,6 +776,7 @@ void HttpNetworkTransaction::OnQuicBroken() {
 
 void HttpNetworkTransaction::OnSwitchesToHttpStreamPool(
     HttpStreamKey stream_key,
+    const AlternativeServiceInfo& alternative_service_info,
     quic::ParsedQuicVersion quic_version) {
   CHECK_EQ(STATE_CREATE_STREAM_COMPLETE, next_state_);
   CHECK(stream_request_);
@@ -784,7 +785,8 @@ void HttpNetworkTransaction::OnSwitchesToHttpStreamPool(
   stream_request_ = session_->http_stream_pool()->RequestStream(
       this, stream_key, priority_,
       /*allowed_bad_certs=*/observed_bad_certs_, enable_ip_based_pooling_,
-      enable_alternative_services_, quic_version, net_log_);
+      enable_alternative_services_, alternative_service_info, quic_version,
+      net_log_);
   CHECK(!stream_request_->completed());
   // No IO completion yet.
 }

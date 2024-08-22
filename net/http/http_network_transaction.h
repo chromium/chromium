@@ -128,6 +128,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   void OnSwitchesToHttpStreamPool(
       HttpStreamKey stream_key,
+      const AlternativeServiceInfo& alternative_service_info,
       quic::ParsedQuicVersion quic_version) override;
 
   ConnectionAttempts GetConnectionAttempts() const override;

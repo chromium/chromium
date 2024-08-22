@@ -215,6 +215,7 @@ class NET_EXPORT BidirectionalStream : public BidirectionalStreamImpl::Delegate,
   void OnQuicBroken() override;
   void OnSwitchesToHttpStreamPool(
       HttpStreamKey stream_key,
+      const AlternativeServiceInfo& alternative_service_info,
       quic::ParsedQuicVersion quic_version) override;
 
   // Helper method to notify delegate if there is an error.

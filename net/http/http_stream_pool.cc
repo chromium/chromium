@@ -144,6 +144,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
     bool enable_alternative_services,
+    AlternativeServiceInfo alternative_service_info,
     quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
   QuicSessionKey quic_session_key = stream_key.ToQuicSessionKey();
@@ -180,6 +181,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
 
 int HttpStreamPool::Preconnect(const HttpStreamKey& stream_key,
                                size_t num_streams,
+                               AlternativeServiceInfo alternative_service_info,
                                quic::ParsedQuicVersion quic_version,
                                CompletionOnceCallback callback) {
   CHECK_GE(kMaxStreamSocketsPerGroup, num_streams);
