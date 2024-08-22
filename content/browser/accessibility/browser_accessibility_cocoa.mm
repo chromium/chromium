@@ -2574,8 +2574,19 @@ bool content::IsNSRange(id value) {
     return NSZeroRect;
 
   BrowserAccessibilityManager* manager = _owner->manager();
+
+  // Clipping a table's cells results in cells with zero height or width. This
+  // causes VoiceOver to treat these cells as if they don't exist at all,
+  // making it impossible for the user to use VO to navigate to them. Instead,
+  // make sure all rows and cells have an extent, even if not visible.
+  ax::mojom::Role role = _owner->GetRole();
+  bool isTableComponent = ui::IsTableColumn(role) || ui::IsTableRow(role) ||
+                          ui::IsCellOrTableHeader(role);
+  ui::AXClippingBehavior clipping_behavior =
+      isTableComponent ? ui::AXClippingBehavior::kUnclipped
+                       : ui::AXClippingBehavior::kClipped;
   auto rect = _owner->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
-                                    ui::AXClippingBehavior::kClipped);
+                                    clipping_behavior);
 
   // TODO(vmpstr): GetBoundsRect() call above should account for this instead.
   auto result_rect =
