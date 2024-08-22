@@ -201,23 +201,14 @@ public class TabProperties {
                 HAS_NOTIFICATION_BUBBLE
             };
 
-    public static final PropertyKey[] TAB_GRID_SELECTABLE_KEYS =
-            new PropertyKey[] {
+    public static final WritableObjectPropertyKey[] TAB_ACTION_STATE_OBJECT_KEYS =
+            new WritableObjectPropertyKey[] {
                 TAB_ACTION_BUTTON_LISTENER,
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
                 CHECKED_DRAWABLE_STATE_LIST,
                 SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
-                IS_SELECTED,
-            };
-
-    public static final PropertyKey[] TAB_GRID_CLOSABLE_KEYS =
-            new PropertyKey[] {
-                TAB_ACTION_BUTTON_LISTENER,
-                TAB_CLICK_LISTENER,
-                TAB_LONG_CLICK_LISTENER,
-                CONTENT_DESCRIPTION_STRING,
                 ACTION_BUTTON_DESCRIPTION_STRING,
-                IS_SELECTED,
+                CONTENT_DESCRIPTION_STRING,
             };
 }

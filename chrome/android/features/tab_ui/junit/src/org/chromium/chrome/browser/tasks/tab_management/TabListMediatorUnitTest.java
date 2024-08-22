@@ -229,6 +229,26 @@ public class TabListMediatorUnitTest {
     private static final int POSITION2 = 1;
     private static final Token TAB_GROUP_ID = new Token(829L, 283L);
 
+    public static final PropertyKey[] TAB_GRID_SELECTABLE_KEYS =
+            new PropertyKey[] {
+                TabProperties.TAB_ACTION_BUTTON_LISTENER,
+                TabProperties.TAB_CLICK_LISTENER,
+                TabProperties.TAB_LONG_CLICK_LISTENER,
+                TabProperties.CHECKED_DRAWABLE_STATE_LIST,
+                TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
+                TabProperties.IS_SELECTED,
+            };
+
+    public static final PropertyKey[] TAB_GRID_CLOSABLE_KEYS =
+            new PropertyKey[] {
+                TabProperties.TAB_ACTION_BUTTON_LISTENER,
+                TabProperties.TAB_CLICK_LISTENER,
+                TabProperties.TAB_LONG_CLICK_LISTENER,
+                TabProperties.CONTENT_DESCRIPTION_STRING,
+                TabProperties.ACTION_BUTTON_DESCRIPTION_STRING,
+                TabProperties.IS_SELECTED,
+            };
+
     private static final BuyableProduct BUYABLE_PRODUCT_PROTO_INITIAL =
             BuyableProduct.newBuilder()
                     .setCurrentPrice(createProductPrice(123456789012345L, "USD"))
@@ -4264,11 +4284,11 @@ public class TabListMediatorUnitTest {
 
         // Unique sets of keys for each of SELECTABLE/CLOSABLE.
         ArrayList<PropertyKey> uniqueSelectableKeys =
-                new ArrayList<>(Arrays.asList(TabProperties.TAB_GRID_SELECTABLE_KEYS));
-        uniqueSelectableKeys.removeAll(Arrays.asList(TabProperties.TAB_GRID_CLOSABLE_KEYS));
+                new ArrayList<>(Arrays.asList(TAB_GRID_SELECTABLE_KEYS));
+        uniqueSelectableKeys.removeAll(Arrays.asList(TAB_GRID_CLOSABLE_KEYS));
         ArrayList<PropertyKey> uniqueClosableKeys =
-                new ArrayList<>(Arrays.asList(TabProperties.TAB_GRID_CLOSABLE_KEYS));
-        uniqueClosableKeys.removeAll(Arrays.asList(TabProperties.TAB_GRID_SELECTABLE_KEYS));
+                new ArrayList<>(Arrays.asList(TAB_GRID_CLOSABLE_KEYS));
+        uniqueClosableKeys.removeAll(Arrays.asList(TAB_GRID_SELECTABLE_KEYS));
 
         // The test starts in the CLOSABLE state.
         PropertyModel model = mModel.get(0).model;
@@ -4276,16 +4296,16 @@ public class TabListMediatorUnitTest {
         // be unset.
         Collection<PropertyKey> setProps = model.getAllSetProperties();
         assertEquals(TabActionState.CLOSABLE, model.get(TabProperties.TAB_ACTION_STATE));
-        assertThat(setProps, hasItems(TabProperties.TAB_GRID_CLOSABLE_KEYS));
-        assertThat(setProps, not(hasItems(TabProperties.TAB_GRID_SELECTABLE_KEYS)));
+        assertThat(setProps, hasItems(TAB_GRID_CLOSABLE_KEYS));
+        assertThat(setProps, not(hasItems(TAB_GRID_SELECTABLE_KEYS)));
 
         // After the TabActionState is changed to SELECTABLE, the CLOSABLE state properties should
         // still be present but unbound.
         mMediator.setTabActionState(TabActionState.SELECTABLE);
         setProps = model.getAllSetProperties();
         assertEquals(TabActionState.SELECTABLE, model.get(TabProperties.TAB_ACTION_STATE));
-        assertThat(setProps, hasItems(TabProperties.TAB_GRID_CLOSABLE_KEYS));
-        assertThat(setProps, hasItems(TabProperties.TAB_GRID_SELECTABLE_KEYS));
+        assertThat(setProps, hasItems(TAB_GRID_CLOSABLE_KEYS));
+        assertThat(setProps, hasItems(TAB_GRID_SELECTABLE_KEYS));
         assertAllUnset(model, uniqueClosableKeys);
 
         // Switching back to CLOSABLE will unbind the SELECTABLE properties, but they will still be
@@ -4293,8 +4313,8 @@ public class TabListMediatorUnitTest {
         mMediator.setTabActionState(TabActionState.CLOSABLE);
         setProps = model.getAllSetProperties();
         assertEquals(TabActionState.CLOSABLE, model.get(TabProperties.TAB_ACTION_STATE));
-        assertThat(setProps, hasItems(TabProperties.TAB_GRID_CLOSABLE_KEYS));
-        assertThat(setProps, hasItems(TabProperties.TAB_GRID_SELECTABLE_KEYS));
+        assertThat(setProps, hasItems(TAB_GRID_CLOSABLE_KEYS));
+        assertThat(setProps, hasItems(TAB_GRID_SELECTABLE_KEYS));
         assertAllUnset(model, uniqueSelectableKeys);
     }
 

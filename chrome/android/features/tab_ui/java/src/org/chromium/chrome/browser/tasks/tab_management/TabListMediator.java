@@ -111,8 +111,8 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.url.GURL;
 
@@ -1884,46 +1884,9 @@ class TabListMediator implements TabListNotificationHandler {
     }
 
     private void unbindTabActionStateProperties(PropertyModel model) {
-        for (PropertyKey propertyKey : TabProperties.TAB_GRID_SELECTABLE_KEYS) {
-            unbindSelectableProperty(model, propertyKey);
-        }
-
-        for (PropertyKey propertyKey : TabProperties.TAB_GRID_CLOSABLE_KEYS) {
-            unbindClosableProperty(model, propertyKey);
-        }
-    }
-
-    private void unbindSelectableProperty(
-            @NonNull PropertyModel model, @NonNull PropertyKey propertyKey) {
-        if (TabProperties.TAB_ACTION_BUTTON_LISTENER == propertyKey) {
-            model.set(TabProperties.TAB_ACTION_BUTTON_LISTENER, null);
-        } else if (TabProperties.TAB_CLICK_LISTENER == propertyKey) {
-            model.set(TabProperties.TAB_CLICK_LISTENER, null);
-        } else if (TabProperties.TAB_LONG_CLICK_LISTENER == propertyKey) {
-            model.set(TabProperties.TAB_LONG_CLICK_LISTENER, null);
-        } else if (TabProperties.CHECKED_DRAWABLE_STATE_LIST == propertyKey) {
-            model.set(TabProperties.CHECKED_DRAWABLE_STATE_LIST, null);
-        } else if (TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND == propertyKey) {
-            model.set(TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND, null);
-        } else if (TabProperties.IS_SELECTED == propertyKey) {
-            model.set(TabProperties.IS_SELECTED, false);
-        }
-    }
-
-    private void unbindClosableProperty(
-            @NonNull PropertyModel model, @NonNull PropertyKey propertyKey) {
-        if (TabProperties.TAB_ACTION_BUTTON_LISTENER == propertyKey) {
-            model.set(TabProperties.TAB_ACTION_BUTTON_LISTENER, null);
-        } else if (TabProperties.TAB_CLICK_LISTENER == propertyKey) {
-            model.set(TabProperties.TAB_CLICK_LISTENER, null);
-        } else if (TabProperties.TAB_LONG_CLICK_LISTENER == propertyKey) {
-            model.set(TabProperties.TAB_LONG_CLICK_LISTENER, null);
-        } else if (TabProperties.CONTENT_DESCRIPTION_STRING == propertyKey) {
-            model.set(TabProperties.CONTENT_DESCRIPTION_STRING, null);
-        } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_STRING == propertyKey) {
-            model.set(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING, null);
-        } else if (TabProperties.IS_SELECTED == propertyKey) {
-            model.set(TabProperties.IS_SELECTED, false);
+        model.set(TabProperties.IS_SELECTED, false);
+        for (WritableObjectPropertyKey propertyKey : TabProperties.TAB_ACTION_STATE_OBJECT_KEYS) {
+            model.set(propertyKey, null);
         }
     }
 
