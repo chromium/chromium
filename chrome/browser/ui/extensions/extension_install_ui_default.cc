@@ -107,22 +107,6 @@ void ShowInstalledNotification(
 }
 #endif
 
-void OpenAppInstalledUIImpl(const std::string& app_id, Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // chrome://apps/ is not available on ChromeOS.
-  // Toast is shown for Ash and Lacros.
-  NOTREACHED_IN_MIGRATION();
-#else
-  Profile* current_profile = profile->GetOriginalProfile();
-  Browser* browser = FindOrCreateVisibleBrowser(current_profile);
-  if (browser) {
-    NavigateParams params(
-        GetSingletonTabNavigateParams(browser, GURL(chrome::kChromeUIAppsURL)));
-    Navigate(&params);
-  }
-#endif
-}
-
 void ShowAppInstalledNotification(
     scoped_refptr<const extensions::Extension> extension,
     Profile* profile) {
@@ -133,9 +117,18 @@ void ShowAppInstalledNotification(
                                        base::UTF8ToUTF16(extension->name())));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   ShowInstalledNotification(extension, profile);
-#else   // !BUILDFLAG(IS_CHROMEOS)
-  OpenAppInstalledUIImpl(extension->id(), profile);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS)
+  // chrome://apps/ is not available on ChromeOS.
+  NOTREACHED_IN_MIGRATION();
+#else
+  Profile* current_profile = profile->GetOriginalProfile();
+  Browser* browser = FindOrCreateVisibleBrowser(current_profile);
+  if (browser) {
+    NavigateParams params(
+        GetSingletonTabNavigateParams(browser, GURL(chrome::kChromeUIAppsURL)));
+    Navigate(&params);
+  }
+#endif
 }
 
 }  // namespace
@@ -165,18 +158,20 @@ void ExtensionInstallUIDefault::OnInstallSuccess(
   // the install in a normal window.
   Profile* current_profile = profile_->GetOriginalProfile();
   Browser* browser = FindOrCreateVisibleBrowser(current_profile);
-  if (extension->is_app()) {
-    if (use_app_installed_bubble_) {
-      if (browser)
-        ShowPlatformBubble(extension, browser, *icon);
-      return;
-    }
 
+  if (!extension->is_app()) {
+    ShowPlatformBubble(extension, browser, *icon);
+    return;
+  }
+
+  if (!use_app_installed_bubble_) {
     ShowAppInstalledNotification(extension, profile_);
     return;
   }
 
-  ShowPlatformBubble(extension, browser, *icon);
+  if (browser) {
+    ShowPlatformBubble(extension, browser, *icon);
+  }
 }
 
 void ExtensionInstallUIDefault::OnInstallFailure(
@@ -196,24 +191,10 @@ void ExtensionInstallUIDefault::OnInstallFailure(
       infobars::ContentInfoBarManager::FromWebContents(web_contents), error);
 }
 
-void ExtensionInstallUIDefault::OpenAppInstalledUI(const std::string& app_id) {
-  OpenAppInstalledUIImpl(app_id, profile_);
-}
-
 void ExtensionInstallUIDefault::SetUseAppInstalledBubble(bool use_bubble) {
   use_app_installed_bubble_ = use_bubble;
 }
 
 void ExtensionInstallUIDefault::SetSkipPostInstallUI(bool skip_ui) {
   skip_post_install_ui_ = skip_ui;
-}
-
-gfx::NativeWindow ExtensionInstallUIDefault::GetDefaultInstallDialogParent() {
-  Browser* browser = chrome::FindLastActiveWithProfile(profile_);
-  if (browser) {
-    content::WebContents* contents =
-        browser->tab_strip_model()->GetActiveWebContents();
-    return contents->GetTopLevelNativeWindow();
-  }
-  return nullptr;
 }

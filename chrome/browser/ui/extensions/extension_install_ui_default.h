@@ -30,9 +30,7 @@ class ExtensionInstallUIDefault : public extensions::ExtensionInstallUI {
                         const SkBitmap* icon) override;
   void OnInstallFailure(const extensions::CrxInstallError& error) override;
   void SetUseAppInstalledBubble(bool use_bubble) override;
-  void OpenAppInstalledUI(const std::string& app_id) override;
   void SetSkipPostInstallUI(bool skip_ui) override;
-  gfx::NativeWindow GetDefaultInstallDialogParent() override;
 
   // Show the platform-specific bubble UI. This method has different
   // implementations on different platforms, controlled by build flags.

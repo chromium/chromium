@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_INSTALL_EXTENSION_INSTALL_UI_H_
 #define EXTENSIONS_BROWSER_INSTALL_EXTENSION_INSTALL_UI_H_
 
-#include <string>
-
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -41,17 +39,8 @@ class ExtensionInstallUI {
   // the default behavior in the future.
   virtual void SetUseAppInstalledBubble(bool use_bubble) = 0;
 
-  // Opens apps UI and animates the app icon for the app with id |app_id|.
-  virtual void OpenAppInstalledUI(const std::string& app_id) = 0;
-
   // Sets whether to show the default UI after completing the installation.
   virtual void SetSkipPostInstallUI(bool skip_ui) = 0;
-
-  // Returns the gfx::NativeWindow to use as the parent for install dialogs.
-  // Returns NULL if the install dialog should be a top level window. This
-  // method is deprecated - do not add new callers.
-  // TODO(pkotwicz): Remove this method. crbug.com/422474
-  virtual gfx::NativeWindow GetDefaultInstallDialogParent() = 0;
 
 #if defined(UNIT_TEST)
   static void set_disable_ui_for_tests() { disable_ui_for_tests_ = true; }
