@@ -8012,3 +8012,12 @@ crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/construct
 crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Pass ]
 crbug.com/361102827 [ Linux ] external/wpt/secure-payment-confirmation/enrollment.https.html [ Failure Pass ]
 crbug.com/361277938 http/tests/devtools/elements/styles-2/pseudo-elements.js [ Failure Pass ]
+
+#Gardener 2024-08-22
+crbug.com/361491550 [ Win11 ] external/wpt/css/css-backgrounds/parsing/background-clip-computed.html [ Failure ]
+crbug.com/361491550 [ Win11 ] external/wpt/css/css-backgrounds/parsing/background-clip-valid.html [ Failure ]
+crbug.com/361491550 [ Win11 ] external/wpt/css/css-backgrounds/parsing/background-computed.html [ Failure ]
+crbug.com/361491550 [ Win11 ] external/wpt/css/css-text-decor/animations/text-decoration-thickness-interpolation.html [ Failure Pass ]
+crbug.com/361491550 [ Win11 ] virtual/threaded/external/wpt/css/css-backgrounds/parsing/background-clip-computed.html [ Failure ]
+crbug.com/361491550 [ Win11 ] virtual/threaded/external/wpt/css/css-backgrounds/parsing/background-clip-valid.html [ Failure ]
+crbug.com/361491550 [ Win11 ] virtual/threaded/external/wpt/css/css-backgrounds/parsing/background-computed.html [ Failure Pass ]
