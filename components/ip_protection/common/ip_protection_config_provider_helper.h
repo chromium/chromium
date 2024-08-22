@@ -57,9 +57,7 @@ class IpProtectionConfigProviderHelper {
 
   // Service types used for GetProxyConfigRequest.
   static constexpr char kChromeIpBlinding[] = "chromeipblinding";
-  // Currently WebView uses the same service type as Chrome.
-  // TODO(b:280621504): Change this once we have a more specific service type.
-  static constexpr char kWebViewIpBlinding[] = "chromeipblinding";
+  static constexpr char kWebViewIpBlinding[] = "webviewipblinding";
 
   // Base time deltas for calculating `try_again_after`.
   static constexpr base::TimeDelta kNotEligibleBackoff = base::Days(1);
