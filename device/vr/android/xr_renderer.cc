@@ -4,6 +4,7 @@
 
 #include "device/vr/android/xr_renderer.h"
 
+#include "base/check_op.h"
 #include "device/vr/vr_gl_util.h"
 
 namespace device {
@@ -73,7 +74,9 @@ XrRenderer::XrRenderer() {
   uv_transform_ = glGetUniformLocation(program_handle_, "u_UvTransform");
 }
 
-void XrRenderer::Draw(int texture_handle, const float (&uv_transform)[16]) {
+void XrRenderer::Draw(const LocalTexture& texture,
+                      const float (&uv_transform)[16]) {
+  CHECK_EQ(texture.target, static_cast<uint32_t>(GL_TEXTURE_EXTERNAL_OES));
   if (!vertex_buffer_ || !index_buffer_) {
     GLuint buffers[2];
     glGenBuffersARB(2, buffers);
@@ -103,7 +106,7 @@ void XrRenderer::Draw(int texture_handle, const float (&uv_transform)[16]) {
   // size is modified by framebufferScaleFactor and requestViewportScale,
   // so use GL_LINEAR.
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_EXTERNAL_OES, texture_handle);
+  glBindTexture(GL_TEXTURE_EXTERNAL_OES, texture.id);
   glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

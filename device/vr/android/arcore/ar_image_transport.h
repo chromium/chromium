@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
+#include "device/vr/android/local_texture.h"
 #include "device/vr/android/xr_image_transport_base.h"
 #include "device/vr/android/xr_renderer.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -57,18 +58,18 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport
                                    const gfx::Transform& uv_transform);
 
  private:
-  void DoRuntimeInitialization() override;
+  void DoRuntimeInitialization(int texture_taget) override;
 
   // Makes all the relevant GL calls to actually draw the texture for the
   // runtime, will operate on the supplied framebuffer.
-  void CopyTextureToFramebuffer(GLuint texture,
+  void CopyTextureToFramebuffer(const LocalTexture& texture,
                                 GLuint framebuffer,
                                 const gfx::Size& frame_size,
                                 const gfx::Transform& uv_transform);
 
   std::unique_ptr<XrRenderer> renderer_;
   // samplerExternalOES texture for the camera image.
-  GLuint camera_texture_id_arcore_ = 0;
+  LocalTexture camera_texture_arcore_;
   GLuint camera_fbo_ = 0;
   GLuint camera_image_fbo_ = 0;
 

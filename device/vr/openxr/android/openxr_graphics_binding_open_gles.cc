@@ -48,8 +48,8 @@ OpenXrGraphicsBindingOpenGLES::~OpenXrGraphicsBindingOpenGLES() {
     glDeleteFramebuffersEXT(1, &back_buffer_fbo_);
   }
 
-  if (overlay_texture_) {
-    glDeleteTextures(1, &overlay_texture_);
+  if (overlay_texture_.id) {
+    glDeleteTextures(1, &overlay_texture_.id);
   }
 }
 
@@ -240,8 +240,6 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
       gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
 
-  glGenTextures(1, &swap_chain_info.shared_buffer_texture);
-
   swap_chain_info.scoped_ahb_handle =
       gpu::CreateScopedHardwareBufferHandle(transfer_size, format, usage);
   swap_chain_info.shared_buffer_size = transfer_size;
@@ -281,8 +279,12 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
     return;
   }
 
-  glBindTexture(GL_TEXTURE_EXTERNAL_OES, swap_chain_info.shared_buffer_texture);
-  glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, egl_image.get());
+  swap_chain_info.shared_buffer_texture.target = GL_TEXTURE_EXTERNAL_OES;
+  glGenTextures(1, &swap_chain_info.shared_buffer_texture.id);
+  glBindTexture(swap_chain_info.shared_buffer_texture.target,
+                swap_chain_info.shared_buffer_texture.id);
+  glEGLImageTargetTexture2DOES(swap_chain_info.shared_buffer_texture.target,
+                               egl_image.get());
   swap_chain_info.local_eglimage = std::move(egl_image);
 }
 
@@ -359,12 +361,13 @@ bool OpenXrGraphicsBindingOpenGLES::Render(
       return false;
     }
 
-    if (!overlay_texture_) {
-      glGenTextures(1, &overlay_texture_);
+    if (!overlay_texture_.id) {
+      overlay_texture_.target = GL_TEXTURE_EXTERNAL_OES;
+      glGenTextures(1, &overlay_texture_.id);
     }
 
-    glBindTexture(GL_TEXTURE_EXTERNAL_OES, overlay_texture_);
-    glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, egl_image.get());
+    glBindTexture(overlay_texture_.target, overlay_texture_.id);
+    glEGLImageTargetTexture2DOES(overlay_texture_.target, egl_image.get());
     renderer_->Draw(overlay_texture_, transform_floats);
   }
 

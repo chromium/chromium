@@ -6,6 +6,7 @@
 #define DEVICE_VR_ANDROID_XR_RENDERER_H_
 
 #include "base/component_export.h"
+#include "device/vr/android/local_texture.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace device {
@@ -22,7 +23,7 @@ class XrRenderer {
 
   // Blits the provided texture handle onto the currently bound framebuffer,
   // applying the provided uv_transform.
-  void Draw(int texture_handle, const float (&uv_transform)[16]);
+  void Draw(const LocalTexture& texture, const float (&uv_transform)[16]);
 
  private:
   GLuint program_handle_ = 0;

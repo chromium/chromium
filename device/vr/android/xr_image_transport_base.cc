@@ -76,15 +76,18 @@ void XrImageTransportBase::Initialize(WebXrPresentationState* webxr,
   CHECK(IsOnGlThread());
   DVLOG(2) << __func__;
 
-  DoRuntimeInitialization();
+  DoRuntimeInitialization(GL_TEXTURE_EXTERNAL_OES);
 
   if (UseSharedBuffer()) {
     DVLOG(2) << __func__ << ": UseSharedBuffer()=true";
   } else {
     DVLOG(2) << __func__ << ": UseSharedBuffer()=false, setting up surface";
-    glGenTextures(1, &transport_texture_id_);
+    glGenTextures(1, &transport_texture_.id);
+
+    // Transport Texture is bound to SurfaceTexture and must be TEXTURE_EXTERNAL
+    transport_texture_.target = GL_TEXTURE_EXTERNAL_OES;
     transport_surface_texture_ =
-        gl::SurfaceTexture::Create(transport_texture_id_);
+        gl::SurfaceTexture::Create(transport_texture_.id);
     surface_size_ = {0, 0};
     mailbox_bridge_->CreateSurface(transport_surface_texture_.get());
     transport_surface_texture_->SetFrameAvailableCallback(
@@ -233,14 +236,16 @@ bool XrImageTransportBase::ResizeSharedBuffer(WebXrPresentationState* webxr,
     return false;
   }
 
-  glBindTexture(GL_TEXTURE_EXTERNAL_OES, buffer->local_texture);
-
-  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-  glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, egl_image.get());
+  glBindTexture(buffer->local_texture.target, buffer->local_texture.id);
+  glTexParameteri(buffer->local_texture.target, GL_TEXTURE_WRAP_S,
+                  GL_CLAMP_TO_EDGE);
+  glTexParameteri(buffer->local_texture.target, GL_TEXTURE_WRAP_T,
+                  GL_CLAMP_TO_EDGE);
+  glTexParameteri(buffer->local_texture.target, GL_TEXTURE_MIN_FILTER,
+                  GL_LINEAR);
+  glTexParameteri(buffer->local_texture.target, GL_TEXTURE_MAG_FILTER,
+                  GL_LINEAR);
+  glEGLImageTargetTexture2DOES(buffer->local_texture.target, egl_image.get());
   buffer->local_eglimage = std::move(egl_image);
 
   // Save size to avoid resize next time.
@@ -255,7 +260,8 @@ std::unique_ptr<WebXrSharedBuffer> XrImageTransportBase::CreateBuffer() {
   std::unique_ptr<WebXrSharedBuffer> buffer =
       std::make_unique<WebXrSharedBuffer>();
   // Local resources
-  glGenTextures(1, &buffer->local_texture);
+  glGenTextures(1, &buffer->local_texture.id);
+  buffer->local_texture.target = GL_TEXTURE_EXTERNAL_OES;
   return buffer;
 }
 
@@ -313,12 +319,14 @@ void XrImageTransportBase::ServerWaitForGpuFence(
   local_fence->ServerWait();
 }
 
-GLuint XrImageTransportBase::GetRenderingTextureId(
+LocalTexture XrImageTransportBase::GetRenderingTexture(
     WebXrPresentationState* webxr) {
   CHECK(IsOnGlThread());
-  return UseSharedBuffer()
-             ? webxr->GetRenderingFrame()->shared_buffer->local_texture
-             : transport_texture_id_;
+  if (UseSharedBuffer()) {
+    return webxr->GetRenderingFrame()->shared_buffer->local_texture;
+  } else {
+    return transport_texture_;
+  }
 }
 
 void XrImageTransportBase::CopyMailboxToSurfaceAndSwap(
