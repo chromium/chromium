@@ -8305,6 +8305,13 @@ static_library("browser") {
   if (enable_reporting) {
     deps += [ "//components/tpcd/enterprise_reporting" ]
   }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [
+      "policy/gen_ai_default_settings_policy_handler.cc",
+      "policy/gen_ai_default_settings_policy_handler.h",
+    ]
+  }
 }
 
 # These are the dependencies for the "browser" target that are outside of

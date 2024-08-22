@@ -10281,6 +10281,12 @@ test("unit_tests") {
       "../browser/ui/startup/default_browser_prompt/default_browser_prompt_unittest.cc",
     ]
   }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [
+      "../browser/policy/gen_ai_default_settings_policy_handler_unittest.cc",
+    ]
+  }
 }
 
 static_library("test_support_unit") {

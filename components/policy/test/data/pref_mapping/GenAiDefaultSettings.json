@@ -1,0 +1,5 @@
+[
+  {
+    "reason_for_missing_test": "This policy has no pref as it is used to set the prefs of other policies. Tests will be added in the future once the handler has policies configured."
+  }
+]
