@@ -48,6 +48,39 @@ interface DisplayedProcessInfo {
   command: string;
 }
 
+function filterProcessData(data: HealthdApiProcessInfo[], filterQuery: string):
+    HealthdApiProcessInfo[] {
+  if (filterQuery === '') {
+    return data;
+  }
+
+  return data.filter((process: HealthdApiProcessInfo) => {
+    const displayedName: string =
+        (process.name === undefined) ? '<unknown>' : process.name;
+    if (displayedName.includes(filterQuery)) {
+      return true;
+    }
+
+    for (const stringField
+             of [process.processId, process.state, process.threadsNumber,
+                 process.parentProcessId, process.processGroupId,
+                 process.readSystemCallsCount, process.writeSystemCallsCount,
+                 process.command]) {
+      if (stringField.includes(filterQuery)) {
+        return true;
+      }
+    }
+
+    for (const numberField of [process.nice, process.priority]) {
+      if (numberField.toString().includes(filterQuery)) {
+        return true;
+      }
+    }
+
+    return false;
+  });
+}
+
 function convertProcessData(processes: HealthdApiProcessInfo[]):
     DisplayedProcessInfo[] {
   return processes.map(
@@ -82,9 +115,10 @@ export class HealthdInternalsProcessElement extends PolymerElement implements
   static get properties() {
     return {
       processData: {type: Array},
+      filterQuery: {type: String},
       displayedData: {
         type: Array,
-        computed: 'getDisplayedData(processData)',
+        computed: 'getDisplayedData(processData, filterQuery)',
       },
     };
   }
@@ -105,6 +139,9 @@ export class HealthdInternalsProcessElement extends PolymerElement implements
   // Latest process data from healthd.
   private processData: HealthdApiProcessInfo[] = [];
 
+  // The user entered filter query.
+  private filterQuery: string = '';
+
   // Data displayed in the process table.
   private displayedData: DisplayedProcessInfo[] = [];
 
@@ -119,9 +156,9 @@ export class HealthdInternalsProcessElement extends PolymerElement implements
     this.updateHelper.updateUiUpdateInterval(intervalSeconds);
   }
 
-  private getDisplayedData(data: HealthdApiProcessInfo[]):
+  private getDisplayedData(data: HealthdApiProcessInfo[], filterQuery: string):
       DisplayedProcessInfo[] {
-    return convertProcessData(data);
+    return convertProcessData(filterProcessData(data, filterQuery));
   }
 }
 

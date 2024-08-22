@@ -1,10 +1,35 @@
 <style include="healthd-internals-shared cr-shared-style">
   #pageHeader {
-    height: 25px;
+    height: 20px;
+  }
+
+  #settingsContainer {
+    display: flex;
+    height: 60px;
+    width: 100%;
+    overflow-x: auto;
+    gap: 32px;
+    margin: 0 32px;
+    align-items: center;
+  }
+
+  .setting-with-label-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  label {
+    color: var(--cr-primary-text-color);
+  }
+
+  cr-input {
+    width: 250px;
+    --cr-input-error-display: none;
   }
 
   #tableContainer {
-    height: calc(100vh - 25px);
+    height: calc(95vh - 80px);
     width: 100%;
     overflow: auto;
   }
@@ -14,7 +39,7 @@
     border-collapse: collapse;
     margin: 0 auto;
     border: 1px solid var(--cr-primary-text-color);
-    margin: 0px 16px;
+    margin: 0px 16px 16px 16px;
   }
 
   thead th {
@@ -41,6 +66,14 @@
 
 
 <h1 id="pageHeader">Processes</h1>
+
+<div id="settingsContainer">
+  <div class="setting-with-label-container">
+    <label>Filter</label>
+    <cr-input type="text" value="{{filterQuery}}" placeholder="Enter query...">
+    </cr-input>
+  </div>
+</div>
 
 <div id="tableContainer"><table>
   <thead>
