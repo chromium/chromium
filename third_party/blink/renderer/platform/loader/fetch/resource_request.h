@@ -673,12 +673,33 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool shared_storage_writable_opted_in_ : 1;
   bool shared_storage_writable_eligible_ : 1;
   bool allow_stale_response_ : 1;
-  mojom::blink::FetchCacheMode cache_mode_;
   bool skip_service_worker_ : 1;
   bool download_to_cache_only_ : 1;
   bool site_for_cookies_set_ : 1;
   bool is_form_submission_ : 1;
   bool priority_incremental_ : 1;
+  bool is_ad_resource_ : 1;
+  bool upgrade_if_insecure_ : 1;
+  bool is_revalidating_ : 1;
+  bool is_automatic_upgrade_ : 1;
+  bool is_from_origin_dirty_style_sheet_ : 1;
+  bool is_fetch_like_api_ : 1;
+  // Indicates that this ResourceRequest represents the requestObject for a
+  // JS fetchLater() call.
+  // https://whatpr.org/fetch/1647/094ea69...152d725.html#fetch-later-method
+  bool is_fetch_later_api_ : 1;
+  bool is_favicon_ : 1;
+  // Currently this is only used when a prefetch request has `as=document`
+  // specified. If true, and the request is cross-origin, the browser will cache
+  // the request under the cross-origin's partition. Furthermore, its reuse from
+  // the prefetch cache will be restricted to top-level-navigations.
+  bool prefetch_maybe_for_top_level_navigation_ : 1;
+  // Indicate the state of CompressionDictionaryTransport feature. When it is
+  // true, `use-as-dictionary` response HTTP header may be processed.
+  // TODO(crbug.com/1413922): Remove this flag when we launch
+  // CompressionDictionaryTransport feature.
+  bool shared_dictionary_writer_enabled_ : 1;
+  mojom::blink::FetchCacheMode cache_mode_;
   ResourceLoadPriority initial_priority_;
   ResourceLoadPriority priority_;
   int intra_priority_value_;
@@ -704,13 +725,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   static const base::TimeDelta default_timeout_interval_;
 
-  bool is_ad_resource_ = false;
-
-  bool upgrade_if_insecure_ = false;
-  bool is_revalidating_ = false;
-
-  bool is_automatic_upgrade_ = false;
-
   std::optional<base::UnguessableToken> devtools_token_;
   String devtools_id_;
   String requested_with_header_;
@@ -727,23 +741,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
       network::mojom::RequestDestination::kEmpty;
 
   uint64_t inspector_id_ = 0;
-
-  bool is_from_origin_dirty_style_sheet_ = false;
-
-  bool is_fetch_like_api_ = false;
-
-  // Indicates that this ResourceRequest represents the requestObject for a
-  // JS fetchLater() call.
-  // https://whatpr.org/fetch/1647/094ea69...152d725.html#fetch-later-method
-  bool is_fetch_later_api_ = false;
-
-  bool is_favicon_ = false;
-
-  // Currently this is only used when a prefetch request has `as=document`
-  // specified. If true, and the request is cross-origin, the browser will cache
-  // the request under the cross-origin's partition. Furthermore, its reuse from
-  // the prefetch cache will be restricted to top-level-navigations.
-  bool prefetch_maybe_for_top_level_navigation_ = false;
 
   // This is used when fetching preload header requests from cross-origin
   // prefetch responses. The browser process uses this token to ensure the
@@ -781,12 +778,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
           network::mojom::AttributionReportingEligibility::kUnset;
 
   std::optional<base::UnguessableToken> attribution_reporting_src_token_;
-
-  // Indicate the state of CompressionDictionaryTransport feature. When it is
-  // true, `use-as-dictionary` response HTTP header may be processed.
-  // TODO(crbug.com/1413922): Remove this flag when we launch
-  // CompressionDictionaryTransport feature.
-  bool shared_dictionary_writer_enabled_ = false;
 
   // The request is for a known transparent placeholder image, which enables us
   // to bypass as much processing as possible.
