@@ -228,6 +228,10 @@ void ProfilePickerTurnSyncOnDelegate::OnSyncConfirmationUIClosed(
       GetSyncOutcome(enterprise_account_, sync_disabled_, result);
   if (outcome) {
     LogOutcome(*outcome);
+  } else if (IsLacrosPrimaryProfileFirstRun(profile_) &&
+             result == LoginUIService::UI_CLOSED) {
+    ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(
+        ProfileMetrics::ProfileSignedInFlowOutcome::kAbortedAfterSignIn);
   }
 
   FinishSyncConfirmation(result);
@@ -333,7 +337,9 @@ void ProfilePickerTurnSyncOnDelegate::OnLacrosIntroClosed(
 
 void ProfilePickerTurnSyncOnDelegate::LogOutcome(
     ProfileMetrics::ProfileSignedInFlowOutcome outcome) {
-  if (!IsLacrosPrimaryProfileFirstRun(profile_)) {
+  if (IsLacrosPrimaryProfileFirstRun(profile_)) {
+    ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(outcome);
+  } else {
     ProfileMetrics::LogProfileAddSignInFlowOutcome(outcome);
   }
 }

@@ -161,6 +161,13 @@ void ProfileMetrics::LogProfileAddSignInFlowOutcome(
   base::UmaHistogramEnumeration("Profile.AddSignInFlowOutcome", outcome);
 }
 
+// static
+void ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(
+    ProfileSignedInFlowOutcome outcome) {
+  base::UmaHistogramEnumeration("Profile.LacrosPrimaryProfileFirstRunOutcome",
+                                outcome);
+}
+
 void ProfileMetrics::LogProfileAvatarSelection(size_t icon_index) {
   ProfileAvatar icon_name = AVATAR_UNKNOWN;
   switch (icon_index) {
