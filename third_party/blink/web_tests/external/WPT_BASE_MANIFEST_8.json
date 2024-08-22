@@ -163149,7 +163149,7 @@
       ]
      ],
      "supports-rule.html": [
-      "886eda432370f1262dd55280e9d941cc2667c5aa",
+      "653af0f831275aebc1d2b833629a0877736af8ca",
       [
        null,
        [
@@ -362280,6 +362280,10 @@
      "9850d21f3c6fa83cd87c23f6b0f4150b64011918",
      []
     ],
+    "fedcm-storage-access-api-autogrant.tentative.https.sub-expected.txt": [
+     "9634f09455f1826064fdc10b2cd2015545ca1245",
+     []
+    ],
     "support": {
      "README.md": [
       "28a6d3453bda1d74b2c0f81f0a9ab23e71545503",
@@ -367637,7 +367641,7 @@
      []
     ],
     "OWNERS": [
-     "5c49de21a3b53dfe928d30a36400469d8238bb1d",
+     "f856f7af1a8b1b5e72036eeece3252eb46f1b6ae",
      []
     ],
     "disabled-by-permissions-policy.https.sub.html.headers": [
@@ -391033,7 +391037,7 @@
      []
     ],
     "OWNERS": [
-     "5c49de21a3b53dfe928d30a36400469d8238bb1d",
+     "f856f7af1a8b1b5e72036eeece3252eb46f1b6ae",
      []
     ],
     "passthrough": {
@@ -401801,7 +401805,7 @@
      []
     ],
     "helpers.js": [
-     "7a476805135df44ff141d3f59ac9c59e2966b3e8",
+     "a1fd02ab5e60b86421d22e98953b748a2da69415",
      []
     ],
     "requestStorageAccess-cross-origin-iframe-navigation-relax.sub.https.window-expected.txt": [
@@ -401826,7 +401830,7 @@
       []
      ],
      "embedded_responder.js": [
-      "c222c4dac0562ef6fda4f5a9b0855c358229492a",
+      "fb3bef40b2d9245508ce99bad5f5990c5b9615ab",
       []
      ],
      "embedded_worker.py": [
@@ -495730,7 +495734,7 @@
      ]
     },
     "historical.html": [
-     "1bc209ec0e775026a2464a67ac708efddbdc97c4",
+     "390b40ed57a06060c94e93e540f4259fc8f4cdc7",
      [
       null,
       {}
@@ -518380,6 +518384,15 @@
     ],
     "fedcm-same-site-none.https.html": [
      "e4a9e3c41463411e158aa4eb0f92d958dcade4a2",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "fedcm-storage-access-api-autogrant.tentative.https.sub.html": [
+     "6cbd7851414f1a7fa5745b4cbc82b38a8926bd27",
      [
       null,
       {
@@ -648243,6 +648256,13 @@
         {}
        ]
       ],
+      "Selection-isCollapsed.html": [
+       "60384a20d3786b9ab9e0f2661276fc7e88f30dd7",
+       [
+        null,
+        {}
+       ]
+      ],
       "Selection-later-become-slotted-content.html": [
        "d44930479d4d7c1aee1de804c66865e9aefd8afe",
        [
@@ -683698,6 +683718,15 @@
       {
        "testdriver": true,
        "timeout": "long"
+      }
+     ]
+    ],
+    "createcredential-clientdata.https.html": [
+     "3759d5be9d3ec2058fd2d01bbf178895c7d46862",
+     [
+      null,
+      {
+       "testdriver": true
       }
      ]
     ],
