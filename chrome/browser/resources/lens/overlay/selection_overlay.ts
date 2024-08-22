@@ -657,9 +657,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     // Set our own canvas size while preserving the canvas aspect ratio.
     const screenshotHeight = this.$.backgroundImageCanvas.height;
     const screenshotWidth = this.$.backgroundImageCanvas.width;
-    const doesScreenshotFillContainer =
-        newRect.width === (screenshotWidth / window.devicePixelRatio) &&
-        newRect.height === (screenshotHeight / window.devicePixelRatio);
+    const doesScreenshotFillContainer = newRect.width ===
+            Math.round(screenshotWidth / window.devicePixelRatio) &&
+        newRect.height ===
+            Math.round(screenshotHeight / window.devicePixelRatio);
 
     // Apply margins if the page is resized and not closing.
     const margins = !doesScreenshotFillContainer && !this.isClosing ?

@@ -466,6 +466,20 @@ suite('SelectionOverlay', function() {
         selectionOverlayElement.$.backgroundImageCanvas.getBoundingClientRect();
     assertEquals(100, imageSize.width);
     assertEquals(100, imageSize.height);
+
+    // Increase the device pixel ratio and resize. Since 100 (screenshot size) /
+    // 1.5 is 66.666667, this will also test rounding errors in our
+    // calculations.
+    selectionOverlayElement.style.width = '67px';
+    selectionOverlayElement.style.height = '67px';
+    window.devicePixelRatio = 1.5;
+    await waitAfterNextRender(selectionOverlayElement);
+
+    // Size should now be back to fullscreen.
+    imageSize =
+        selectionOverlayElement.$.backgroundImageCanvas.getBoundingClientRect();
+    assertEquals(67, imageSize.width);
+    assertEquals(67, imageSize.height);
   });
 
   // <if expr="not is_linux">
