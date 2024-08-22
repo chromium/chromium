@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CPU_MIPS_WEBGL_IMAGE_CONVERSION_MSA_H_
 
 #include "base/compiler_specific.h"
+#include "build/build_config.h"
 
 #if defined(HAVE_MIPS_MSA_INTRINSICS)
 

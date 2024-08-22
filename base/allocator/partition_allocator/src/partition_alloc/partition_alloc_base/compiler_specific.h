@@ -157,24 +157,6 @@
 #define PA_HAS_FEATURE(FEATURE) 0
 #endif
 
-#if !defined(PA_CPU_ARM_NEON)
-#if defined(__arm__)
-#if !defined(__ARMEB__) && !defined(__ARM_EABI__) && !defined(__EABI__) && \
-    !defined(__VFP_FP__) && !defined(_WIN32_WCE) && !defined(ANDROID)
-#error Chromium does not support middle endian architecture
-#endif
-#if defined(__ARM_NEON__)
-#define PA_CPU_ARM_NEON 1
-#endif
-#endif  // defined(__arm__)
-#endif  // !defined(CPU_ARM_NEON)
-
-#if !defined(PA_HAVE_MIPS_MSA_INTRINSICS)
-#if defined(__mips_msa) && defined(__mips_isa_rev) && (__mips_isa_rev >= 5)
-#define PA_HAVE_MIPS_MSA_INTRINSICS 1
-#endif
-#endif
-
 // The ANALYZER_ASSUME_TRUE(bool arg) macro adds compiler-specific hints
 // to Clang which control what code paths are statically analyzed,
 // and is meant to be used in conjunction with assert & assert-like functions.

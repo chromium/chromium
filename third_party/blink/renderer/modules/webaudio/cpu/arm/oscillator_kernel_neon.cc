@@ -7,8 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "build/build_config.h"
 #include "third_party/blink/renderer/modules/webaudio/oscillator_handler.h"
-
 #include "third_party/blink/renderer/modules/webaudio/periodic_wave.h"
 
 #if defined(CPU_ARM_NEON)

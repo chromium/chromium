@@ -7,11 +7,12 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "third_party/blink/renderer/platform/audio/delay.h"
-
 #include <arm_neon.h>
 
 #include <algorithm>
+
+#include "build/build_config.h"
+#include "third_party/blink/renderer/platform/audio/delay.h"
 
 namespace blink {
 
