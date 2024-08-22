@@ -2949,6 +2949,18 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Unavailble without Network"/>
 </enum>
 
+<enum name="ComponentManagerError">
+  <int value="0" label="None - No error"/>
+  <int value="1" label="Component requested does not exist"/>
+  <int value="2" label="update_client fails to install component"/>
+  <int value="3" label="Component can not be mounted"/>
+  <int value="4" label="Compatibility check failed"/>
+  <int value="5"
+      label="A component installation was not found - reported for load
+             requests with kSkip update policy"/>
+  <int value="6" label="Component update in progress"/>
+</enum>
+
 <enum name="ComponentUpdaterCalls">
   <int value="0" label="Install"/>
   <int value="1" label="Update"/>

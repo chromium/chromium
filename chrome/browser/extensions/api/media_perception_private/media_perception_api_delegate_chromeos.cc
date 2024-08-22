@@ -43,7 +43,6 @@ api::media_perception_private::ComponentInstallationError
 GetComponentInstallationErrorForComponentManagerAshError(
     const component_updater::ComponentManagerAsh::Error error) {
   switch (error) {
-    case component_updater::ComponentManagerAsh::Error::ERROR_MAX:
     case component_updater::ComponentManagerAsh::Error::NONE:
       return api::media_perception_private::ComponentInstallationError::kNone;
     case component_updater::ComponentManagerAsh::Error::UNKNOWN_COMPONENT:

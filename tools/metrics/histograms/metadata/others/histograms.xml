@@ -2871,6 +2871,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ComponentUpdater.InstallResult" enum="ComponentManagerError"
+    expires_after="2025-08-14">
+  <owner>wanghaifan@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <owner>src/components/component_updater/OWNERS</owner>
+  <summary>
+    Chrome OS only. The installation result of the cros component manager.
+  </summary>
+</histogram>
+
 <histogram name="ComponentUpdater.UpdateCompleteError"
     enum="UpdateClientErrors" expires_after="2025-01-26">
   <owner>sorin@chromium.org</owner>
