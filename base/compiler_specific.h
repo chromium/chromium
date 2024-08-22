@@ -145,13 +145,6 @@
 #define PRINTF_FORMAT(format_param, dots_param)
 #endif
 
-// WPRINTF_FORMAT is the same, but for wide format strings.
-// This doesn't appear to yet be implemented in any compiler.
-// See http://gcc.gnu.org/bugzilla/show_bug.cgi?id=38308 .
-#define WPRINTF_FORMAT(format_param, dots_param)
-// If available, it would look like:
-//   __attribute__((format(wprintf, format_param, dots_param)))
-
 // Sanitizers annotations.
 #if HAS_ATTRIBUTE(no_sanitize)
 #define NO_SANITIZE(what) __attribute__((no_sanitize(what)))
