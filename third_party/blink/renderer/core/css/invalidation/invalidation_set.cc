@@ -337,9 +337,6 @@ void InvalidationSet::AddClass(const AtomicString& class_name) {
     return;
   }
   CHECK(!class_name.empty());
-  InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
-      this, InvalidationSetToSelectorMap::SelectorFeatureType::kClass,
-      class_name);
   classes_.Add(backing_flags_, class_name);
 }
 
@@ -348,8 +345,6 @@ void InvalidationSet::AddId(const AtomicString& id) {
     return;
   }
   CHECK(!id.empty());
-  InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
-      this, InvalidationSetToSelectorMap::SelectorFeatureType::kId, id);
   ids_.Add(backing_flags_, id);
 }
 
@@ -358,9 +353,6 @@ void InvalidationSet::AddTagName(const AtomicString& tag_name) {
     return;
   }
   CHECK(!tag_name.empty());
-  InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
-      this, InvalidationSetToSelectorMap::SelectorFeatureType::kTagName,
-      tag_name);
   tag_names_.Add(backing_flags_, tag_name);
 }
 
@@ -369,9 +361,6 @@ void InvalidationSet::AddAttribute(const AtomicString& attribute) {
     return;
   }
   CHECK(!attribute.empty());
-  InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
-      this, InvalidationSetToSelectorMap::SelectorFeatureType::kAttribute,
-      attribute);
   attributes_.Add(backing_flags_, attribute);
 }
 
@@ -380,9 +369,6 @@ void InvalidationSet::SetWholeSubtreeInvalid() {
     return;
   }
 
-  InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
-      this, InvalidationSetToSelectorMap::SelectorFeatureType::kWholeSubtree,
-      g_empty_atom);
   invalidation_flags_.SetWholeSubtreeInvalid(true);
   invalidation_flags_.SetInvalidateCustomPseudo(false);
   invalidation_flags_.SetTreeBoundaryCrossing(false);

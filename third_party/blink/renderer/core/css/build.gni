@@ -475,6 +475,8 @@ blink_core_sources_css = [
   "invalidation/rule_invalidation_data.h",
   "invalidation/rule_invalidation_data_builder.cc",
   "invalidation/rule_invalidation_data_builder.h",
+  "invalidation/rule_invalidation_data_tracer.cc",
+  "invalidation/rule_invalidation_data_tracer.h",
   "invalidation/rule_invalidation_data_visitor.cc",
   "invalidation/rule_invalidation_data_visitor.h",
   "invalidation/selector_pre_match.h",

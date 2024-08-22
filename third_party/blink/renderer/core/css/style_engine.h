@@ -741,6 +741,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // Returns true if marked dirty for layout
   bool UpdateLastSuccessfulPositionFallbacks();
 
+  void RevisitActiveStyleSheetsForInspector();
+
  private:
   void UpdateCounters(const Element& element,
                       CountersAttachmentContext& context);
@@ -770,6 +772,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void MarkUserStyleDirty();
 
   Document& GetDocument() const { return *document_; }
+
+  void RevisitStyleRulesForInspector(
+      const RuleFeatureSet& features,
+      const HeapVector<Member<StyleRuleBase>>& rules);
 
   typedef HeapHashSet<Member<TreeScope>> UnorderedTreeScopeSet;
 

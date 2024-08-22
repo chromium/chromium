@@ -16,6 +16,7 @@
 namespace blink {
 
 class InvalidationSet;
+class StyleEngine;
 class StyleRule;
 
 // Implements a back-mapping from InvalidationSet entries to the selectors that
@@ -55,7 +56,7 @@ class CORE_EXPORT InvalidationSetToSelectorMap final
   // Instantiates a new mapping if a diagnostic tracing session with the
   // appropriate configuration has started, or deletes an existing mapping if
   // tracing is no longer enabled.
-  static void StartOrStopTrackingIfNeeded();
+  static void StartOrStopTrackingIfNeeded(StyleEngine& style_engine);
 
   // Call at the start and end of indexing features for a given selector.
   static void BeginSelector(StyleRule* style_rule, unsigned selector_index);

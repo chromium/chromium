@@ -738,7 +738,7 @@ void StyleEngine::UpdateActiveStyle() {
   DCHECK(GetDocument().IsActive());
   DCHECK(IsMainThread());
   TRACE_EVENT0("blink", "Document::updateActiveStyle");
-  InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded();
+  InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(*this);
   UpdateViewport();
   UpdateActiveStyleSheets();
   UpdateGlobalRuleSet();
@@ -4502,6 +4502,46 @@ bool StyleEngine::UpdateLastSuccessfulPositionFallbacks() {
     last_successful_option_dirty_set_.clear();
   }
   return invalidated;
+}
+
+void StyleEngine::RevisitActiveStyleSheetsForInspector() {
+  // TODO(crbug.com/337076014): Also revisit other stylesheets such as those in
+  // shadow trees, user sheets, and UA sheets.
+  const RuleFeatureSet& global_features = GetRuleFeatureSet();
+  const ActiveStyleSheetVector& active_style_sheets =
+      GetDocumentStyleSheetCollection().ActiveStyleSheets();
+  for (const ActiveStyleSheet& sheet : active_style_sheets) {
+    // We need to revisit each sheet twice, once with the global rule set and
+    // once with the sheet's associated rule set.
+    // The global rule set contains the rule invalidation data we're currently
+    // using for style invalidations. However, if a stylesheet change occurs,
+    // we may throw out the global rule set data and rebuild it from the
+    // individual sheets' data, so the inspector needs to know about both.
+    StyleSheetContents* contents = sheet.first->Contents();
+    RevisitStyleRulesForInspector(global_features, contents->ChildRules());
+    if (contents->HasRuleSet()) {
+      RevisitStyleRulesForInspector(contents->GetRuleSet().Features(),
+                                    contents->ChildRules());
+    }
+  }
+}
+
+void StyleEngine::RevisitStyleRulesForInspector(
+    const RuleFeatureSet& features,
+    const HeapVector<Member<StyleRuleBase>>& rules) {
+  for (StyleRuleBase* rule : rules) {
+    if (StyleRule* style_rule = DynamicTo<StyleRule>(rule)) {
+      for (const CSSSelector* selector = style_rule->FirstSelector(); selector;
+           selector = CSSSelectorList::Next(*selector)) {
+        InvalidationSetToSelectorMap::SelectorScope selector_scope(
+            style_rule, style_rule->SelectorIndex(*selector));
+        features.RevisitSelectorForInspector(*selector);
+      }
+    } else if (StyleRuleGroup* style_rule_group =
+                   DynamicTo<StyleRuleGroup>(rule)) {
+      RevisitStyleRulesForInspector(features, style_rule_group->ChildRules());
+    }
+  }
 }
 
 }  // namespace blink
