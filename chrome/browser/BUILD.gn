@@ -750,8 +750,6 @@ static_library("browser") {
     "metrics/chrome_metrics_service_client.h",
     "metrics/chrome_metrics_services_manager_client.cc",
     "metrics/chrome_metrics_services_manager_client.h",
-    "metrics/family_link_user_metrics_provider.cc",
-    "metrics/family_link_user_metrics_provider.h",
     "metrics/https_engagement_metrics_provider.cc",
     "metrics/https_engagement_metrics_provider.h",
     "metrics/incognito_observer.cc",
@@ -8093,6 +8091,13 @@ static_library("browser") {
     if (!is_android) {
       deps += [ "//third_party/hunspell" ]
     }
+  }
+
+  if (!is_chromeos_ash) {
+    sources += [
+      "metrics/family_link_user_metrics_provider.cc",
+      "metrics/family_link_user_metrics_provider.h",
+    ]
   }
 
   if (enable_extensions) {

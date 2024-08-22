@@ -6069,7 +6069,6 @@ test("unit_tests") {
     "../browser/metrics/chrome_metrics_service_accessor_unittest.cc",
     "../browser/metrics/chrome_metrics_service_client_unittest.cc",
     "../browser/metrics/chrome_metrics_services_manager_client_unittest.cc",
-    "../browser/metrics/family_link_user_metrics_provider_unittest.cc",
     "../browser/metrics/process_memory_metrics_emitter_unittest.cc",
     "../browser/metrics/tab_footprint_aggregator_unittest.cc",
     "../browser/metrics/variations/chrome_variations_service_client_unittest.cc",
@@ -6321,6 +6320,7 @@ test("unit_tests") {
   }
   if (!is_chromeos_ash) {
     sources += [
+      "../browser/metrics/family_link_user_metrics_provider_unittest.cc",
       "../browser/signin/wait_for_network_callback_helper_chrome_unittest.cc",
     ]
   }

@@ -415,13 +415,11 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: used internally for filtering -->
 
   <owner>fernandex@chromium.org</owner>
-  <owner>courtneywong@chromium.org</owner>
-  <owner>agawronska@chromium.org</owner>
   <owner>chrome-kids-eng@google.com</owner>
-  <owner>cros-families-eng@google.com</owner>
   <summary>
     Categorizes the current user based on Family Link user type. Recorded for
-    all supervised platforms.
+    all supervised platforms except ChromeOS which uses
+    ChromeOS.FamilyLinkUser.LogSegment.
   </summary>
 </histogram>
 
