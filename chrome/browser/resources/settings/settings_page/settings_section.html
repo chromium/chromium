@@ -53,8 +53,8 @@
       <h2 id="title" class="title" tabindex="-1"
           aria-hidden$="[[getTitleHiddenStatus_(pageTitle)]]">[[pageTitle]]</h2>
       <template is="dom-if" if="[[showSendFeedbackButton]]">
-        <cr-icon-button id="feedback" iron-icon="settings:feedback" dir="ltr"
-            aria-labelledby="title"
+        <cr-icon-button id="feedback" iron-icon="settings:feedback"
+            aria-labelledby="title" suppress-rtl-flip
             aria-roledescription="$i18n{sendFeedbackButton}"
             on-click="onSendFeedbackClick_">
         </cr-icon-button>
