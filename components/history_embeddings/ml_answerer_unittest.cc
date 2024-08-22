@@ -224,7 +224,7 @@ TEST_F(MlAnswererTest, ComputeAnswerUnanswerable) {
 
   TestFuture<AnswererResult> future;
   ml_answerer_->ComputeAnswer("query", context, future.GetCallback());
-  const auto answer_result = future.Get();
+  const auto answer_result = future.Take();
   EXPECT_EQ(ComputeAnswerStatus::UNANSWERABLE, answer_result.status);
 }
 

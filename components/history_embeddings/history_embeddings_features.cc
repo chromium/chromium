@@ -98,6 +98,9 @@ const base::FeatureParam<int> kScheduledEmbeddingsMax(&kHistoryEmbeddings,
 const base::FeatureParam<bool> kSendQualityLog(&kHistoryEmbeddings,
                                                "SendQualityLog",
                                                false);
+const base::FeatureParam<bool> kSendQualityLogV2(&kHistoryEmbeddings,
+                                                 "SendQualityLogV2",
+                                                 false);
 
 const base::FeatureParam<int> kEmbedderNumThreads(&kHistoryEmbeddings,
                                                   "EmbeddingsNumThreads",

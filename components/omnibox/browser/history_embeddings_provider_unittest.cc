@@ -327,7 +327,8 @@ TEST_F(HistoryEmbeddingsProviderTest,
   };
   history_embeddings_provider_->done_ = false;
   history_embeddings_provider_->last_search_input_ = u"query";
-  history_embeddings_provider_->OnReceivedSearchResult(u"query", result);
+  history_embeddings_provider_->OnReceivedSearchResult(u"query",
+                                                       std::move(result));
 
   ASSERT_EQ(history_embeddings_provider_->matches_.size(), 1u);
   EXPECT_EQ(history_embeddings_provider_->matches_[0].provider.get(),
@@ -364,7 +365,8 @@ TEST_F(HistoryEmbeddingsProviderTest,
   };
   history_embeddings_provider_->done_ = false;
   history_embeddings_provider_->last_search_input_ = u"query";
-  history_embeddings_provider_->OnReceivedSearchResult(u"query", result);
+  history_embeddings_provider_->OnReceivedSearchResult(u"query",
+                                                       std::move(result));
 
   ASSERT_EQ(history_embeddings_provider_->matches_.size(), 1u);
   EXPECT_EQ(history_embeddings_provider_->matches_[0].provider.get(),

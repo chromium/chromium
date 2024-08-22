@@ -102,11 +102,14 @@ struct ScoredUrlRow {
 
 struct SearchResult {
   SearchResult();
-  SearchResult(const SearchResult&);
   SearchResult(SearchResult&&);
   ~SearchResult();
-  SearchResult& operator=(const SearchResult&);
   SearchResult& operator=(SearchResult&&);
+
+  // Explicit copy only, since the `answerer_result` contains a log entry.
+  // This should only be called if `answerer_result` is not populated with
+  // a log entry yet, for example after initial search and before answering.
+  SearchResult Clone();
 
   // Gets the answer text from within the `answerer_result`.
   const std::string& AnswerText() const;
@@ -186,7 +189,8 @@ class HistoryEmbeddingsService : public KeyedService,
   base::WeakPtr<HistoryEmbeddingsService> AsWeakPtr();
 
   // Submit quality logging data after user selects an item from search result.
-  void SendQualityLog(const SearchResult& result,
+  // Note, the `result` contains a log entry that will be consumed by this call.
+  void SendQualityLog(SearchResult& result,
                       optimization_guide::proto::UserFeedback user_feedback,
                       std::set<size_t> selections,
                       size_t num_entered_characters,
