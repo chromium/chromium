@@ -3636,6 +3636,8 @@ test("ash_unittests") {
     "accessibility/sticky_keys/sticky_keys_overlay_unittest.cc",
     "accessibility/sticky_keys/sticky_keys_unittest.cc",
     "accessibility/switch_access/point_scan_controller_unittest.cc",
+    "accessibility/test_event_recorder.cc",
+    "accessibility/test_event_recorder.h",
     "accessibility/ui/accessibility_focus_ring_controller_unittest.cc",
     "accessibility/ui/accessibility_focus_ring_group_unittest.cc",
     "accessibility/ui/accessibility_highlight_controller_unittest.cc",

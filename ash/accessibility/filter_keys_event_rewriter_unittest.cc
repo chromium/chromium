@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/accessibility/test_event_recorder.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -16,31 +17,6 @@
 #include "ui/events/event_rewriter.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
-
-namespace {
-
-class EventCapturer : public ui::EventRewriter {
- public:
-  EventCapturer() = default;
-  EventCapturer(const EventCapturer&) = delete;
-  EventCapturer& operator=(const EventCapturer&) = delete;
-  ~EventCapturer() override = default;
-
-  // ui::EventRewriter:
-  ui::EventDispatchDetails RewriteEvent(
-      const ui::Event& event,
-      const Continuation continuation) override {
-    events_.push_back(event.Clone());
-    return SendEvent(continuation, &event);
-  }
-
-  const std::vector<std::unique_ptr<ui::Event>>& events() { return events_; }
-
- private:
-  std::vector<std::unique_ptr<ui::Event>> events_;
-};
-
-}  // namespace
 
 namespace ash {
 
@@ -59,12 +35,12 @@ class FilterKeysEventRewriterTest : public AshTestBase {
     GetContext()->GetHost()->GetEventSource()->AddEventRewriter(
         event_rewriter());
     GetContext()->GetHost()->GetEventSource()->AddEventRewriter(
-        &event_capturer_);
+        &event_recorder_);
   }
 
   void TearDown() override {
     GetContext()->GetHost()->GetEventSource()->RemoveEventRewriter(
-        &event_capturer_);
+        &event_recorder_);
     GetContext()->GetHost()->GetEventSource()->RemoveEventRewriter(
         event_rewriter());
     event_rewriter_.reset();
@@ -73,7 +49,7 @@ class FilterKeysEventRewriterTest : public AshTestBase {
   }
 
   ui::test::EventGenerator* generator() { return generator_; }
-  EventCapturer* event_capturer() { return &event_capturer_; }
+  TestEventRecorder* event_recorder() { return &event_recorder_; }
   FilterKeysEventRewriter* event_rewriter() { return event_rewriter_.get(); }
 
  private:
@@ -81,7 +57,7 @@ class FilterKeysEventRewriterTest : public AshTestBase {
   raw_ptr<ui::test::EventGenerator> generator_ = nullptr;
   // Records events delivered to the next event rewriter after
   // FilterKeysEventRewriter.
-  EventCapturer event_capturer_;
+  TestEventRecorder event_recorder_;
   // The FilterKeysEventRewriter instance.
   std::unique_ptr<FilterKeysEventRewriter> event_rewriter_;
 };
@@ -89,49 +65,49 @@ class FilterKeysEventRewriterTest : public AshTestBase {
 TEST_F(FilterKeysEventRewriterTest, KeyboardEventsNotCanceledIfDisabled) {
   event_rewriter()->SetBounceKeysEnabled(false);
   generator()->PressKey(ui::VKEY_A, ui::EF_NONE);
-  ASSERT_EQ(1U, event_capturer()->events().size());
+  ASSERT_EQ(1U, event_recorder()->events().size());
   ASSERT_EQ(ui::EventType::kKeyPressed,
-            event_capturer()->events().back()->type());
+            event_recorder()->events().back()->type());
   generator()->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
-  ASSERT_EQ(2u, event_capturer()->events().size());
+  ASSERT_EQ(2u, event_recorder()->events().size());
   ASSERT_EQ(ui::EventType::kKeyReleased,
-            event_capturer()->events().back()->type());
+            event_recorder()->events().back()->type());
 }
 
 TEST_F(FilterKeysEventRewriterTest, MouseButtonsNotCanceledIfDisabled) {
   event_rewriter()->SetBounceKeysEnabled(false);
   generator()->PressLeftButton();
-  EXPECT_EQ(1U, event_capturer()->events().size());
+  EXPECT_EQ(1U, event_recorder()->events().size());
   EXPECT_EQ(ui::EventType::kMousePressed,
-            event_capturer()->events().back()->type());
+            event_recorder()->events().back()->type());
   generator()->ReleaseLeftButton();
-  EXPECT_EQ(2U, event_capturer()->events().size());
+  EXPECT_EQ(2U, event_recorder()->events().size());
   EXPECT_EQ(ui::EventType::kMouseReleased,
-            event_capturer()->events().back()->type());
+            event_recorder()->events().back()->type());
 }
 
 TEST_F(FilterKeysEventRewriterTest, KeyboardEventsNotCanceled) {
   event_rewriter()->SetBounceKeysEnabled(true);
   generator()->PressKey(ui::VKEY_A, ui::EF_NONE);
-  ASSERT_EQ(1U, event_capturer()->events().size());
+  ASSERT_EQ(1U, event_recorder()->events().size());
   ASSERT_EQ(ui::EventType::kKeyPressed,
-            event_capturer()->events().back()->type());
+            event_recorder()->events().back()->type());
   generator()->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
-  ASSERT_EQ(2u, event_capturer()->events().size());
+  ASSERT_EQ(2u, event_recorder()->events().size());
   ASSERT_EQ(ui::EventType::kKeyReleased,
-            event_capturer()->events().back()->type());
+            event_recorder()->events().back()->type());
 }
 
 TEST_F(FilterKeysEventRewriterTest, MouseButtonsNotCanceled) {
   event_rewriter()->SetBounceKeysEnabled(true);
   generator()->PressLeftButton();
-  EXPECT_EQ(1U, event_capturer()->events().size());
+  EXPECT_EQ(1U, event_recorder()->events().size());
   EXPECT_EQ(ui::EventType::kMousePressed,
-            event_capturer()->events().back()->type());
+            event_recorder()->events().back()->type());
   generator()->ReleaseLeftButton();
-  EXPECT_EQ(2U, event_capturer()->events().size());
+  EXPECT_EQ(2U, event_recorder()->events().size());
   EXPECT_EQ(ui::EventType::kMouseReleased,
-            event_capturer()->events().back()->type());
+            event_recorder()->events().back()->type());
 }
 
 }  // namespace ash
