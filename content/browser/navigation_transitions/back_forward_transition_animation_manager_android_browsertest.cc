@@ -2619,6 +2619,39 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntryIndex(), 2);
 }
 
+IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
+                       HasUaVisualTransitionSameDocument) {
+  GURL url1 = embedded_test_server()->GetURL(
+      "a.com", "/has-ua-visual-transition.html#frag1");
+  GURL url2 = embedded_test_server()->GetURL(
+      "a.com", "/has-ua-visual-transition.html#frag2");
+  NavigationHandleCommitObserver navigation_0(web_contents(), url1);
+  NavigationHandleCommitObserver navigation_1(web_contents(), url2);
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
+  NavigationEntry* entry =
+      web_contents()->GetController().GetLastCommittedEntry();
+  ASSERT_TRUE(NavigateToURL(web_contents(), url2));
+  // The NavigationEntry changes on a same-document navigation.
+  EXPECT_NE(web_contents()->GetController().GetLastCommittedEntry(), entry);
+  EXPECT_FALSE(
+      EvalJs(web_contents(), "hasUAVisualTransitionValue").ExtractBool());
+
+  EXPECT_TRUE(navigation_0.has_committed());
+  EXPECT_TRUE(navigation_1.has_committed());
+  EXPECT_FALSE(navigation_0.was_same_document());
+  EXPECT_TRUE(navigation_1.was_same_document());
+
+  TestNavigationManager manager(web_contents(), url1);
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  GetAnimationManager()->OnGestureInvoked();
+
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
+  ASSERT_TRUE(
+      EvalJs(web_contents(), "hasUAVisualTransitionValue").ExtractBool());
+}
+
 // Test the case where script commits a same-document navigation in beforeunload
 // while the cancel animation is playing.
 IN_PROC_BROWSER_TEST_F(

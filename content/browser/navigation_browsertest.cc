@@ -3406,51 +3406,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_FALSE(navigation_1.was_same_document());
 }
 
-namespace {
-class VisualTransitionAddingObserver : public WebContentsObserver {
- public:
-  VisualTransitionAddingObserver(WebContents* web_contents)
-      : WebContentsObserver(web_contents) {}
-  ~VisualTransitionAddingObserver() override = default;
-
-  void DidStartNavigation(NavigationHandle* handle) override {
-    NavigationRequest* navigation_request = NavigationRequest::From(handle);
-    navigation_request->set_was_initiated_by_animated_transition();
-  }
-};
-}  // namespace
-
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
-                       HasUaVisualTransitionValueForSameDocumentNavigation) {
-  WebContents* wc = shell()->web_contents();
-  GURL url1 = embedded_test_server()->GetURL(
-      "a.com", "/has-ua-visual-transition.html#frag1");
-  GURL url2 = embedded_test_server()->GetURL(
-      "a.com", "/has-ua-visual-transition.html#frag2");
-  NavigationHandleCommitObserver navigation_0(wc, url1);
-  NavigationHandleCommitObserver navigation_1(wc, url2);
-
-  ASSERT_TRUE(NavigateToURL(shell(), url1));
-  NavigationEntry* entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-  ASSERT_TRUE(NavigateToURL(shell(), url2));
-  // The NavigationEntry changes on a same-document navigation.
-  EXPECT_NE(web_contents()->GetController().GetLastCommittedEntry(), entry);
-  ASSERT_FALSE(EvalJs(wc, "hasUAVisualTransitionValue").ExtractBool());
-
-  EXPECT_TRUE(navigation_0.has_committed());
-  EXPECT_TRUE(navigation_1.has_committed());
-  EXPECT_FALSE(navigation_0.was_same_document());
-  EXPECT_TRUE(navigation_1.was_same_document());
-
-  VisualTransitionAddingObserver observer(web_contents());
-  TestNavigationManager manager(web_contents(), url1);
-  wc->GetController().GoBack();
-
-  ASSERT_TRUE(manager.WaitForNavigationFinished());
-  ASSERT_TRUE(EvalJs(wc, "hasUAVisualTransitionValue").ExtractBool());
-}
-
 // This navigation is allowed by the browser, but the network will not be able
 // to connect to the site, so the NavigationRequest fails on the browser side
 // and is redirected to an error page. Performing another navigation should

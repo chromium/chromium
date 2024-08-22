@@ -360,6 +360,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   };
   std::optional<TrackedRequest> tracked_request_;
 
+  // Set when a navigation is being started.
+  bool is_starting_navigation_ = false;
+
   // The unique id assigned to `screenshot_`.
   cc::UIResourceId ui_resource_id_ =
       cc::UIResourceClient::kUninitializedUIResourceId;

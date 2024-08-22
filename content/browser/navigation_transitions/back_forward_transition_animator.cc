@@ -485,6 +485,13 @@ void BackForwardTransitionAnimator::OnRenderFrameMetadataChangedAfterActivation(
 // the BeforeUnload message to proceed (begin) the navigation.
 void BackForwardTransitionAnimator::DidStartNavigation(
     NavigationHandle* navigation_handle) {
+  // We need to set this state here since for same-document navigations, the
+  // commit message is sent before the animator starts tracking the navigation.
+  if (is_starting_navigation_) {
+    NavigationRequest::From(navigation_handle)
+        ->set_was_initiated_by_animated_transition();
+  }
+
   if (!tracked_request_) {
     // We could reach here for an early-commit navigation:
     // - The animator only tracks the request's ID after `GoToIndex()` returns.
@@ -1191,14 +1198,19 @@ bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
     return false;
   }
 
-  std::vector<base::WeakPtr<NavigationRequest>> requests =
-      nav_controller->GoToIndexAndReturnAllRequests(index);
+  std::vector<base::WeakPtr<NavigationRequest>> requests;
+  {
+    CHECK(!is_starting_navigation_);
+    base::AutoReset reset(&is_starting_navigation_, true);
+    requests = nav_controller->GoToIndexAndReturnAllRequests(index);
+  }
   if (requests.empty()) {
     // The gesture did not create any navigation requests.
     return false;
   }
 
   for (const auto& request : requests) {
+    request->set_was_initiated_by_animated_transition();
     if (request->IsInPrimaryMainFrame()) {
       TrackRequest(std::move(request));
       return true;
@@ -1258,7 +1270,6 @@ void BackForwardTransitionAnimator::TrackRequest(
     CHECK(created_request->IsWaitingForBeforeUnload());
     navigation_state_ = NavigationState::kBeforeUnloadDispatched;
   }
-  created_request->set_was_initiated_by_animated_transition();
 }
 
 BackForwardTransitionAnimator::ComputedAnimationValues
