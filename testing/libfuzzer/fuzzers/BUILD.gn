@@ -33,14 +33,6 @@ fuzzer_test("string_compare_proto_fuzzer") {
   additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
 }
 
-fuzzer_test("courgette_fuzzer") {
-  sources = [ "courgette_fuzzer.cc" ]
-  deps = [
-    "//base",
-    "//courgette:courgette_lib",
-  ]
-}
-
 fuzzer_test("snappy_compress_fuzzer") {
   sources = [ "snappy_compress_fuzzer.cc" ]
   deps = [ "//third_party/snappy:snappy" ]

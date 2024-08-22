@@ -61,7 +61,6 @@ FUZZERS_WITH_CORPORA = [
     'content_security_policy_util_fuzzer',
     'content_sms_parser_fuzzer',
     'convert_woff2ttf_fuzzer',
-    'courgette_fuzzer',
     'create_trial_from_study_fuzzer',
     'create_trials_from_seed_fuzzer_v2',
     'css_parser_fast_paths_fuzzer',

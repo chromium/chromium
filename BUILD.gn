@@ -548,10 +548,6 @@ group("gn_all") {
 
       if (!is_android && !is_ios) {
         deps += [
-          "//courgette:courgette",
-          "//courgette:courgette_fuzz",
-          "//courgette:courgette_minimal_tool",
-          "//courgette:courgette_unittests",
           "//net:crash_cache",
           "//net:net_watcher",  # TODO(GYP): This should be conditional on
                                 # use_v8_in_net
@@ -964,17 +960,10 @@ if (is_win) {
       "//components/policy:pack_policy_templates",
       "//components/zucchini",
       "//components/zucchini:zucchini64",
-      "//courgette",
       "//third_party/hyphenation-patterns",
       "//tools/metrics:metrics_metadata",
     ]
 
-    if (target_cpu == "x86") {
-      deps += [
-        "//courgette:copy_courgette_binaries",
-        "//courgette(//build/toolchain/win:win_clang_x64)",
-      ]
-    }
     if (is_chrome_branded) {
       deps += [ "//remoting/host:remoting_host_installation" ]
     }
