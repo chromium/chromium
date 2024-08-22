@@ -30,6 +30,7 @@ source_set("unit_tests") {
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/input_method:test_support",
     "//chrome/browser/ui/ash",
     "//testing/gtest",
     "//ui/base:test_support",

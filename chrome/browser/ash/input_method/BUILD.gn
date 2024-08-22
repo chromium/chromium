@@ -269,6 +269,8 @@ static_library("test_support") {
     "mock_input_method_engine.cc",
     "mock_input_method_engine.h",
     "stub_input_method_engine_observer.h",
+    "test_ime_controller.cc",
+    "test_ime_controller.h",
     "textinput_test_helper.cc",
     "textinput_test_helper.h",
   ]

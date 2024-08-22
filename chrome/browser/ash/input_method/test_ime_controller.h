@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_TEST_IME_CONTROLLER_H_
-#define CHROME_BROWSER_UI_ASH_TEST_IME_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ASH_INPUT_METHOD_TEST_IME_CONTROLLER_H_
+#define CHROME_BROWSER_ASH_INPUT_METHOD_TEST_IME_CONTROLLER_H_
 
 #include <memory>
 #include <string>
@@ -69,4 +69,4 @@ class TestImeController : private ImeControllerResetterForTest,
   bool is_voice_enabled_ = false;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_TEST_IME_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ASH_INPUT_METHOD_TEST_IME_CONTROLLER_H_
