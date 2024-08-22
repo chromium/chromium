@@ -330,8 +330,6 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
         // support. This is easy to confuse with with an address line 1 field.
         // This is currently allowlisted for MX which prefers pairs of
         // street location and address overflow fields.
-        base::FeatureList::IsEnabled(
-            features::kAutofillEnableParsingOfStreetLocation) &&
         context.client_country == GeoIpCountryCode("MX") &&
         ParseField(context, scanner, street_location_patterns,
                    &street_location_, "ADDRESS_HOME_STREET_LOCATION")) {

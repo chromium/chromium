@@ -560,7 +560,6 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillEnableSupportForAdminLevel2,
       features::kAutofillEnableSupportForApartmentNumbers,
       features::kAutofillEnableExpirationDateImprovements,
-      features::kAutofillEnableParsingOfStreetLocation,
       features::kAutofillEnableRationalizationEngineForMX,
       // Other improvements.
       features::kAutofillEnableCacheForRegexMatching};
