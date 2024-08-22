@@ -441,7 +441,8 @@ class WebBundleURLLoaderFactory::BundleDataSource
     }
     uint64_t out_len = buffer_.GetAvailableLength(offset, length);
     std::vector<uint8_t> output(base::checked_cast<size_t>(out_len));
-    buffer_.ReadData(offset, out_len, output.data());
+    uint64_t read_len = buffer_.ReadData(offset, output);
+    output.resize(base::checked_cast<size_t>(read_len));
     std::move(callback).Run(std::move(output));
   }
 
@@ -468,7 +469,7 @@ class WebBundleURLLoaderFactory::BundleDataSource
       }
       return;
     }
-    buffer_.Append(data.data(), data.size());
+    buffer_.Append(data);
     ProcessPendingReads();
   }
 
