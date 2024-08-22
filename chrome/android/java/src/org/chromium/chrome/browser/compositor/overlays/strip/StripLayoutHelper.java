@@ -123,9 +123,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private static final int SPINNER_UPDATE_DELAY_MS = 66;
     // Degrees per millisecond.
     private static final float SPINNER_DPMS = 0.33f;
-    private static final int SCROLL_DURATION_MS = 250;
-    private static final int SCROLL_DURATION_MS_MEDIUM = 350;
-    private static final int SCROLL_DURATION_MS_LONG = 450;
     private static final int ANIM_FOLIO_DETACH_MS = 75;
     private static final int ANIM_TAB_CREATED_MS = 150;
     private static final int ANIM_TAB_CLOSED_MS = 150;
@@ -134,8 +131,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private static final int ANIM_TAB_MOVE_MS = 125;
     private static final int ANIM_TAB_SLIDE_OUT_MS = 250;
     private static final int ANIM_BUTTONS_FADE_MS = 150;
-    private static final int SCROLL_DISTANCE_SHORT = 960;
-    private static final int SCROLL_DISTANCE_MEDIUM = 1920;
     private static final long INVALID_TIME = 0L;
     private static final int ANIM_HOVERED_TAB_CONTAINER_FADE_MS = 200;
     static final long DROP_INTO_GROUP_MS = 300L;
@@ -373,7 +368,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private final float mGroupTitleOverlapWidth;
 
     // Strip State
-    private StackScroller mScroller;
     private ScrollDelegate mScrollDelegate = new ScrollDelegate();
     private float mCachedTabWidth;
 
@@ -909,8 +903,10 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
      * @param context The current Android {@link Context}.
      */
     public void onContextChanged(Context context) {
-        mScroller = new StackScroller(context);
+        // TODO(crbug.com/360206998): Clean up this method as the Context doesn't change.
         mContext = context;
+
+        mScrollDelegate.onContextChanged(context);
     }
 
     /**
@@ -1040,8 +1036,11 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     public boolean updateLayout(long time) {
         mLastUpdateTime = time;
 
-        // 1. Handle any Scroller movements (flings).
-        updateScrollOffset(time);
+        // 1.a. Handle any Scroller movements (flings).
+        if (mScrollDelegate.updateScrollInProgress(time)) {
+            // 1.b. Scroll still in progress, so request update.
+            mUpdateHost.requestUpdate();
+        }
 
         // 2. Handle reordering automatically scrolling the tab strip.
         handleReorderAutoScrolling(time);
@@ -1061,7 +1060,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         }
 
         // 4. Show iph text bubble for synced tab group if necessary.
-        if (doneAnimating && mScroller.isFinished()) {
+        if (doneAnimating && mScrollDelegate.isFinished()) {
             showTabGroupSyncIph();
         }
         return doneAnimating;
@@ -1771,11 +1770,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                     updateReorderPosition(accumulatedDeltaX);
                 }
             }
-        } else if (!mScroller.isFinished()) {
-            // 3.b. Still scrolling, update the scroll destination here.
-            mScroller.setFinalX((int) (mScroller.getFinalX() + deltaX));
         } else {
-            // 3.c. Not scrolling.
+            // 3.b. Handle scroll.
             if (!mIsStripScrollInProgress) {
                 mIsStripScrollInProgress = true;
                 RecordUserAction.record("MobileToolbarSlideTabs");
@@ -1823,36 +1819,14 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     public void fling(long time, float x, float y, float velocityX, float velocityY) {
         resetResizeTimeout(false);
 
-        velocityX = MathUtils.flipSignIf(velocityX, LocalizationUtils.isLayoutRtl());
-
-        // 1. If we're currently in reorder mode, don't allow the user to fling.
+        // 1. If we're currently in reorder mode, don't allow the user to fling. Else, ensure that
+        // the interacting tab is cleared.
         if (mInReorderMode) return;
+        mInteractingTab = null;
 
-        // 2. If we're fast scrolling, figure out the destination of the scroll so we can apply it
-        // to the end of this fling.
-        int scrollDeltaRemaining = 0;
-        if (!mScroller.isFinished()) {
-            scrollDeltaRemaining =
-                    mScroller.getFinalX() - Math.round(mScrollDelegate.getScrollOffset());
-
-            mInteractingTab = null;
-            mScroller.forceFinished(true);
-        }
-
-        // 3. Kick off the fling.
-        mScroller.fling(
-                Math.round(mScrollDelegate.getScrollOffset()),
-                0,
-                (int) velocityX,
-                0,
-                (int) mScrollDelegate.getMinScrollOffset(),
-                0,
-                0,
-                0,
-                0,
-                0,
-                time);
-        mScroller.setFinalX(mScroller.getFinalX() + scrollDeltaRemaining);
+        // 2. Begin scrolling.
+        mScrollDelegate.fling(
+                time, MathUtils.flipSignIf(velocityX, LocalizationUtils.isLayoutRtl()));
         mUpdateHost.requestUpdate();
     }
 
@@ -1896,8 +1870,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             mRenderHost.requestRender();
         }
 
-        if (!mScroller.isFinished()) {
-            mScroller.forceFinished(true);
+        if (!mScrollDelegate.isFinished()) {
+            mScrollDelegate.stopScroll();
             mInteractingTab = null;
         }
 
@@ -2379,7 +2353,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
      */
     public boolean isAnimatingForTesting() {
         return (mRunningAnimator != null && mRunningAnimator.isRunning())
-                || !mScroller.isFinished();
+                || !mScrollDelegate.isFinished();
     }
 
     private void finishAnimations() {
@@ -2474,19 +2448,12 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private void updateScrollOffsetPosition(float pos) {
         float delta = mScrollDelegate.setClampedScrollOffset(pos);
 
-        if (mInReorderMode && mScroller.isFinished()) {
+        if (mInReorderMode && mScrollDelegate.isFinished()) {
             if (mReorderingForTabDrop) {
                 updateReorderPositionForTabDrop(mLastReorderX);
             } else {
                 updateReorderPosition(delta);
             }
-        }
-    }
-
-    private void updateScrollOffset(long time) {
-        if (mScroller.computeScrollOffset(time)) {
-            updateScrollOffsetPosition(mScroller.getCurrX());
-            mUpdateHost.requestUpdate();
         }
     }
 
@@ -5196,33 +5163,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private void setScrollForScrollingTabStacker(float delta, boolean shouldAnimate, long time) {
         if (delta == 0.f) return;
 
-        if (shouldAnimate && !mAnimationsDisabledForTesting) {
-            mScroller.startScroll(
-                    Math.round(mScrollDelegate.getScrollOffset()),
-                    0,
-                    (int) delta,
-                    0,
-                    time,
-                    getScrollDuration());
-        } else {
-            mScrollDelegate.setClampedScrollOffset(mScrollDelegate.getScrollOffset() + delta);
-        }
-    }
-
-    /**
-     * Scales the scroll duration based on the scroll offset.
-     *
-     * @return the duration in ms.
-     */
-    private int getScrollDuration() {
-        float scrollDistance = Math.abs(mScrollDelegate.getScrollOffset());
-        if (scrollDistance <= SCROLL_DISTANCE_SHORT) {
-            return SCROLL_DURATION_MS;
-        } else if (scrollDistance <= SCROLL_DISTANCE_MEDIUM) {
-            return SCROLL_DURATION_MS_MEDIUM;
-        } else {
-            return SCROLL_DURATION_MS_LONG;
-        }
+        shouldAnimate = shouldAnimate && !mAnimationsDisabledForTesting;
+        mScrollDelegate.startScroll(time, delta, shouldAnimate);
     }
 
     /** Scrolls to the selected tab if it's not fully visible. */
@@ -5308,10 +5250,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         mTabMenu.performItemClick(menuItemId);
     }
 
-    int getScrollDurationForTesting() {
-        return getScrollDuration();
-    }
-
     /**
      * @return The width of the tab strip.
      */
@@ -5330,7 +5268,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
      * @return The strip's minimum scroll offset.
      */
     float getMinimumScrollOffsetForTesting() {
-        return mScrollDelegate.getMinScrollOffset();
+        return mScrollDelegate.getMinScrollOffsetForTesting(); // IN-TEST
     }
 
     /**
@@ -5344,7 +5282,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
      * @return The scroller.
      */
     StackScroller getScrollerForTesting() {
-        return mScroller;
+        return mScrollDelegate.getScrollerForTesting(); // IN-TEST
     }
 
     /**

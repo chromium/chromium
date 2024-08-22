@@ -1593,43 +1593,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testScrollDuration() {
-        initializeTest(false, true, 3);
-
-        // Act: Set scroll offset greater than -960.
-        mStripLayoutHelper.setScrollOffsetForTesting(-800);
-
-        // Assert: Scroll duration is 250.
-        assertEquals(mStripLayoutHelper.getScrollDurationForTesting(), 250);
-    }
-
-    @Test
-    public void testScrollDuration_Medium() {
-        initializeTest(false, true, false, 3, 22);
-        mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
-
-        // Act: Set scroll offset between -960 and -1920.
-        mStripLayoutHelper.setScrollOffsetForTesting(-1000);
-
-        // Assert: Scroll duration is 350.
-        assertEquals(mStripLayoutHelper.getScrollDurationForTesting(), 350);
-    }
-
-    @Test
-    public void testScrollDuration_Large() {
-        initializeTest(false, true, false, 3, 34);
-        mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
-
-        // Act: Set scroll offset less than -1920
-        mStripLayoutHelper.setScrollOffsetForTesting(-2000);
-
-        // Assert: Scroll duration is 450.
-        assertEquals(mStripLayoutHelper.getScrollDurationForTesting(), 450);
-    }
-
-    @Test
     public void testOnDown_OnNewTabButton() {
         // Initialize.
         initializeTest(false, false, true, 0, 5);
