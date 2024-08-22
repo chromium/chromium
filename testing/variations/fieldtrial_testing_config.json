@@ -11267,6 +11267,13 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "ContentVisibilityThreshold": "0.0",
+                        "FilterHashes": "3962775614,4220142007,430397466",
+                        "OmniboxScoped": "true",
+                        "SearchPassageMinimumWordCount": "5",
+                        "SearchQueryMinimumWordCount": "2"
+                    },
                     "enable_features": [
                         "HistoryEmbeddings"
                     ]
