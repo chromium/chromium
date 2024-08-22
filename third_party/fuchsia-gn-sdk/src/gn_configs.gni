@@ -6,6 +6,12 @@ declare_args() {
 
 import(gn_configs_path)
 
+# Allows gn_configs_path above to explicitly override the
+# fuchsia_target_api_level.
+if (!defined(fuchsia_target_api_level)) {
+  fuchsia_target_api_level = 22
+}
+
 if (!defined(fuchsia_arch_root)) {
   if (current_cpu != "") {
     # According to
