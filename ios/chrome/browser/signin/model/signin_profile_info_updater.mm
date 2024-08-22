@@ -19,10 +19,7 @@ SigninBrowserStateInfoUpdater::SigninBrowserStateInfoUpdater(
     : identity_manager_(identity_manager),
       signin_error_controller_(signin_error_controller),
       browser_state_name_(browser_state_name) {
-  // Some tests don't have a ChromeBrowserStateManager, disable this service.
-  if (!GetApplicationContext()->GetChromeBrowserStateManager())
-    return;
-
+  DCHECK(GetApplicationContext()->GetChromeBrowserStateManager());
   identity_manager_observation_.Observe(identity_manager_.get());
 
   signin_error_controller_observation_.Observe(signin_error_controller);

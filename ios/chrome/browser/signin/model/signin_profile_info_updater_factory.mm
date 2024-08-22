@@ -52,3 +52,7 @@ bool SigninBrowserStateInfoUpdaterFactory::ServiceIsCreatedWithBrowserState()
     const {
   return true;
 }
+
+bool SigninBrowserStateInfoUpdaterFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}

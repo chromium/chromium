@@ -39,6 +39,7 @@ class SigninBrowserStateInfoUpdaterFactory
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* state) const override;
   bool ServiceIsCreatedWithBrowserState() const override;
+  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_PROFILE_INFO_UPDATER_FACTORY_H_
