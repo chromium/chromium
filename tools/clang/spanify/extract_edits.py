@@ -329,7 +329,11 @@ def main():
     summary_filename = expanduser('~/scratch/patches.txt')
     summary_file = open(summary_filename, 'w')
 
-    for index, component in enumerate(list(Component.all)):
+    component_with_changes = [
+        component for component in Component.all if len(component.changes) > 0
+    ]
+
+    for index, component in enumerate(component_with_changes):
         for text in component.changes:
             print(text)
 
