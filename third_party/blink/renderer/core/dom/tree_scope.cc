@@ -37,6 +37,8 @@
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer_registry.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/tree_scope_adopter.h"
 #include "third_party/blink/renderer/core/editing/dom_selection.h"
@@ -562,6 +564,14 @@ Element* TreeScope::AdjustedFocusedElement() const {
         *document.GetFrame());
   if (!element)
     return nullptr;
+
+  // https://github.com/flackr/carousel/tree/main/scroll-marker#what-is-the-documentactiveelement-of-a-focused-pseudo-element
+  if (auto* scroll_marker = DynamicTo<ScrollMarkerPseudoElement>(element)) {
+    CHECK(scroll_marker->ScrollMarkerGroup());
+    element = scroll_marker->ScrollMarkerGroup()->OriginatingElement();
+  }
+
+  CHECK(!element->IsPseudoElement());
 
   if (RootNode().IsInShadowTree()) {
     if (Element* retargeted = AdjustedFocusedElementInternal(*element)) {
