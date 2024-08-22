@@ -136,7 +136,8 @@ AXNode* AXTreeManager::GetNodeFromTree(const AXTreeID& tree_id,
 void AXTreeManager::Initialize(const ui::AXTreeUpdate& initial_tree) {
   if (!ax_tree()->Unserialize(initial_tree)) {
     LOG(FATAL) << "No recovery is possible if the initial tree is broken: "
-               << ax_tree()->error();
+               << ax_tree()->error() << ", AXTreeUpdate info: "
+               << initial_tree.ToString().substr(0, 500);
   }
 }
 
