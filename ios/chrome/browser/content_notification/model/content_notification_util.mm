@@ -169,14 +169,18 @@ bool IsContentNotificationEnabled(ChromeBrowserState* browser_state) {
     return false;
   }
 
-  if (!IsContentNotificationExperimentEnabled()) {
-    return false;
-  }
-
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
   BOOL user_signed_in = auth_service && auth_service->HasPrimaryIdentity(
                                             signin::ConsentLevel::kSignin);
+
+  if (user_signed_in && IsContentNotificationProvisionalIgnoreConditions()) {
+    return true;
+  }
+
+  if (!IsContentNotificationExperimentEnabled()) {
+    return false;
+  }
 
   const TemplateURL* default_search_url_template =
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state)
