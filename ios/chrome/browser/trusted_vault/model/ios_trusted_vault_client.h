@@ -66,7 +66,7 @@ class IOSTrustedVaultClient : public trusted_vault::TrustedVaultClient {
   const raw_ptr<ChromeAccountManagerService> account_manager_service_;
   const raw_ptr<TrustedVaultClientBackend> backend_;
   // TODO(crbug.com/343007092): Need to set the right security domain path.
-  const trusted_vault::SecurityDomainId security_domain_path_;
+  const trusted_vault::SecurityDomainId security_domain_id_;
   base::WeakPtrFactory<IOSTrustedVaultClient> weak_ptr_factory_{this};
 };
 
