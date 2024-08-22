@@ -15,7 +15,7 @@ gn:
 sample command line:
   command = python3 ../../tools/protoc_wrapper/protoc_wrapper.py test.proto --protoc ./protoc --proto-in-dir ../../base/test --descriptor-set-out gen/base/test/test_proto.descriptor --descriptor-set-dependency-file gen/base/test/test_proto.descriptor.d
 
-  command = python3 ../../build/protoc_java.py --depfile gen/android_webview/proto/aw_variations_seed_proto_java__protoc_java.d --protoc ../../third_party/android_protoc/protoc --proto-path ../../android_webview/proto --srcjar gen/android_webview/proto/aw_variations_seed_proto_java__protoc_java.srcjar ../../android_webview/proto/aw_variations_seed.proto
+  command = python3 ../../build/protoc_java.py --depfile gen/android_webview/proto/aw_variations_seed_proto_java__protoc_java.d --protoc ../../third_party/android_protoc/cipd/protoc --proto-path ../../android_webview/proto --srcjar gen/android_webview/proto/aw_variations_seed_proto_java__protoc_java.srcjar ../../android_webview/proto/aw_variations_seed.proto
 """
 
 load("@builtin//struct.star", "module")

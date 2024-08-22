@@ -1412,14 +1412,14 @@ deps = {
       'url': Var('chromium_git') + '/external/github.com/google/Accessibility-Test-Framework-for-Android.git' + '@' + '4a764c690353ea136c82f1a696a70bf38d1ef5fe',
   },
 
-  'src/third_party/android_protoc': {
+  'src/third_party/android_protoc/cipd': {
       'packages': [
           {
               'package': 'chromium/third_party/android_protoc',
               'version': 'sLsJWojddBL2u8NYwNh6pJsqp_bL1ttmYIlBnhiIQ1QC',
           },
       ],
-      'condition': 'checkout_android',
+      'condition': 'checkout_android and non_git_source',
       'dep_type': 'cipd',
   },
 
