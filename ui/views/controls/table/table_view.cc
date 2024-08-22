@@ -190,6 +190,7 @@ TableView::TableView() : weak_factory_(this) {
         CHECK(v);
         return v->HasFocus() && !v->header_row_is_active_;
       }));
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListGrid);
 }
 
 TableView::TableView(ui::TableModel* model,
@@ -197,6 +198,7 @@ TableView::TableView(ui::TableModel* model,
                      TableType table_type,
                      bool single_selection)
     : TableView() {
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListGrid);
   Init(model, std::move(columns), table_type, single_selection);
 }
 
@@ -740,7 +742,6 @@ std::u16string TableView::GetTooltipText(const gfx::Point& p) const {
 void TableView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // ID, class name and relative bounds are added by ViewAccessibility for all
   // non-virtual views, so we don't need to add them here.
-  node_data->role = ax::mojom::Role::kListGrid;
   node_data->SetRestriction(ax::mojom::Restriction::kReadOnly);
   node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kActivate);
   // Subclasses should overwrite the name with the control's associated label.

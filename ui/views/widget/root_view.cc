@@ -106,6 +106,8 @@ class AnnounceTextView : public View {
   METADATA_HEADER(AnnounceTextView, View)
 
  public:
+  AnnounceTextView() { UpdateAccessibleRole(); }
+
   ~AnnounceTextView() override = default;
 
   void AnnounceTextAs(const std::u16string& text,
@@ -127,21 +129,27 @@ class AnnounceTextView : public View {
     } else {
       GetViewAccessibility().RemoveContainerLiveStatus();
     }
+
+    UpdateAccessibleRole();
+
     NotifyAccessibilityEvent(announce_event_type_, /*send_native_event=*/true);
+  }
+
+  void UpdateAccessibleRole() {
+#if BUILDFLAG(IS_CHROMEOS)
+    // On ChromeOS, kAlert role can invoke an unnecessary event on reparenting.
+    GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
+#elif BUILDFLAG(IS_LINUX)
+    // TODO(crbug.com/40658933): Use live regions (do not use alerts).
+    // May require setting kLiveStatus, kContainerLiveStatus to "polite".
+    GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
+#else
+    GetViewAccessibility().SetRole(announce_role_);
+#endif
   }
 
   // View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-#if BUILDFLAG(IS_CHROMEOS)
-    // On ChromeOS, kAlert role can invoke an unnecessary event on reparenting.
-    node_data->role = ax::mojom::Role::kStaticText;
-#elif BUILDFLAG(IS_LINUX)
-    // TODO(crbug.com/40658933): Use live regions (do not use alerts).
-    // May require setting kLiveStatus, kContainerLiveStatus to "polite".
-    node_data->role = ax::mojom::Role::kAlert;
-#else
-    node_data->role = announce_role_;
-#endif
     node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic, true);
     node_data->AddStringAttribute(ax::mojom::StringAttribute::kLiveStatus,
                                   "polite");
@@ -161,7 +169,9 @@ class AnnounceTextView : public View {
  private:
   std::u16string announce_text_;
   ax::mojom::Event announce_event_type_ = ax::mojom::Event::kNone;
-  ax::mojom::Role announce_role_ = ax::mojom::Role::kNone;
+  // View should have a initial accessible role, and it will later change
+  // depending on the announce_role_ accordingly.
+  ax::mojom::Role announce_role_ = ax::mojom::Role::kStatus;
 };
 
 BEGIN_METADATA(AnnounceTextView)
@@ -281,6 +291,14 @@ RootView::RootView(Widget* widget)
   AddPostTargetHandler(post_dispatch_handler_.get());
   SetEventTargeter(
       std::unique_ptr<ViewTargeter>(new RootViewTargeter(this, this)));
+
+  auto* widget_delegate = widget->widget_delegate();
+  if (widget_delegate) {
+    if (ax::mojom::Role::kUnknown == GetViewAccessibility().GetCachedRole()) {
+      GetViewAccessibility().SetRole(
+          widget_delegate->GetAccessibleWindowRole());
+    }
+  }
 }
 
 RootView::~RootView() {
@@ -675,12 +693,19 @@ void RootView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
   DCHECK(GetWidget());
   auto* widget_delegate = GetWidget()->widget_delegate();
-  if (!widget_delegate) {
+  // On linux, we could now get to a situation where when we are first
+  // constructing the RootView we try to call GetViewAccessibility.SetRole() and
+  // since the VirtualAccessibility object is not yet created, we will try to
+  // create one first. This can lead to a crash because on Linux we end up
+  // querying GetAccessibleNodeData on the view when we are creating the
+  // VirtualAccessibility object, and so we will end up here and if we don't
+  // exit early we will try to set the name on an object with no role (we are in
+  // the middle of setting it) and so it will crash. This check will prevent us
+  // from crashing in that scenario, and will have no other effects since at
+  // every other point in time we will have a valid role since its set on the
+  // constructor.
+  if (!widget_delegate || node_data->role == ax::mojom::Role::kUnknown) {
     return;
-  }
-
-  if (node_data->role == ax::mojom::Role::kUnknown) {
-    node_data->role = widget_delegate->GetAccessibleWindowRole();
   }
 
   if (node_data->GetStringAttribute(ax::mojom::StringAttribute::kName)

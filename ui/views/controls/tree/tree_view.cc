@@ -103,6 +103,7 @@ TreeView::TreeView()
   text_offset_ = folder_icon_.Size().width() + kImagePadding + kImagePadding +
                  kArrowRegionSize;
 
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTree);
   GetViewAccessibility().SetIsVertical(true);
 }
 
@@ -455,7 +456,6 @@ void TreeView::ShowContextMenu(const gfx::Point& p,
 void TreeView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // ID, class name and relative bounds are added by ViewAccessibility for all
   // non-virtual views, so we don't need to add them here.
-  node_data->role = ax::mojom::Role::kTree;
   node_data->SetRestriction(ax::mojom::Restriction::kReadOnly);
   node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kActivate);
   node_data->SetNameExplicitlyEmpty();

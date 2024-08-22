@@ -7,15 +7,18 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace views {
 namespace test {
 
-TestListGridView::TestListGridView() = default;
+TestListGridView::TestListGridView() {
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListGrid);
+}
+
 TestListGridView::~TestListGridView() = default;
 
 void TestListGridView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kListGrid;
   if (aria_row_count) {
     node_data->AddIntAttribute(ax::mojom::IntAttribute::kAriaRowCount,
                                *aria_row_count);

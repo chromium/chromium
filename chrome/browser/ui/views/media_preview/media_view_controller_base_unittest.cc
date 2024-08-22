@@ -51,7 +51,7 @@ std::optional<std::u16string> GetAnnouncementFromRootView(
   }
   ui::AXNodeData node_data;
   views::View* const hidden_polite_view = root_view->children()[1];
-  hidden_polite_view->GetAccessibleNodeData(&node_data);
+  hidden_polite_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   return node_data.GetString16Attribute(ax::mojom::StringAttribute::kName);
 }
 #endif
