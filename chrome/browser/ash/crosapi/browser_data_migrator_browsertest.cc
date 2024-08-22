@@ -139,8 +139,9 @@ class BrowserDataMigratorMoveMigrateOnSignInByPolicy
 };
 
 // Enabling LacrosOnly by policy should trigger move migration during signin.
+// Disabled since Lacros can no longer be enabled via policy.
 IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnSignInByPolicy,
-                       MigrateOnSignIn) {
+                       DISABLED_MigrateOnSignIn) {
   base::test::TestFuture<void> future;
   ScopedRestartAttemptForTesting scoped_restart_attempt(
       future.GetRepeatingCallback());
@@ -367,8 +368,9 @@ class BrowserDataMigratorMoveMigrateOnRestartInSessionByPolicy
 
 // Test that enabling LacrosOnly by policy triggers move migration during
 // restart.
+// Disabled since Lacros can no longer be enabled via policy.
 IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnRestartInSessionByPolicy,
-                       RunMoveMigration) {
+                       DISABLED_RunMoveMigration) {
   EXPECT_TRUE(
       FakeSessionManagerClient::Get()->request_browser_data_migration_called());
   EXPECT_TRUE(FakeSessionManagerClient::Get()

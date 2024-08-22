@@ -133,7 +133,8 @@ bool IsEnabledInternal(const user_manager::User* user,
                                   // before.
       return false;
     case LacrosAvailability::kLacrosOnly:
-      return true;
+      // Lacros can no longer be enabled via policy.
+      break;
   }
 
   if (IsLacrosEnabledForTesting()) {

@@ -186,7 +186,8 @@ TEST_F(BrowserUtilTest, IsLacrosEnabledForMigrationBeforePolicyInit) {
       ash::standalone_browser::kLacrosAvailabilityPolicyLacrosOnly);
   cmdline->AppendSwitchASCII(ash::switches::kLoginUser, kUserEmail);
 
-  EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
+  // Policy should not enable Lacros anymore.
+  EXPECT_FALSE(browser_util::IsLacrosEnabledForMigration(
       user,
       ash::standalone_browser::migrator_util::PolicyInitState::kBeforeInit));
 }
@@ -281,14 +282,14 @@ TEST_F(BrowserUtilTest, AshWebBrowserEnabled) {
         ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
   }
 
-  // Lacros is allowed and enabled by policy.
+  // Lacros cannot be enabled via policy.
   {
     ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosOnly);
 
     EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
-    EXPECT_TRUE(browser_util::IsLacrosEnabled());
-    EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
-    EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
+    EXPECT_FALSE(browser_util::IsLacrosEnabled());
+    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
+    EXPECT_FALSE(browser_util::IsLacrosEnabledForMigration(
         user,
         ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
   }
@@ -302,11 +303,10 @@ TEST_F(BrowserUtilTest, IsAshWebBrowserDisabled) {
       ash::standalone_browser::migrator_util::MigrationMode::kMove);
   ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosOnly);
 
-  // Lacros is allowed and enabled and is the only browser by policy.
-
-  EXPECT_TRUE(browser_util::IsLacrosEnabled());
-  EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
-  EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
+  // Lacros cannot be enabled via policy.
+  EXPECT_FALSE(browser_util::IsLacrosEnabled());
+  EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
+  EXPECT_FALSE(browser_util::IsLacrosEnabledForMigration(
       user,
       ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
 }
