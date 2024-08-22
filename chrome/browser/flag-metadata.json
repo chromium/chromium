@@ -2925,7 +2925,7 @@
   {
     "name": "enable-desks-templates",
     "owners": [ "dandersson@chromium.org", "janetmac@chromium.org", "richui@chromium.org", "yongshun@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 150
   },
   {
     "name": "enable-desktop-pwas-additional-windowing-controls",
