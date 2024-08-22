@@ -272,16 +272,11 @@ final class SignOutDialogCoordinator {
                         IdentityServicesProvider.get().getSigninManager(mProfile);
                 signinManager.runAfterOperationInProgress(
                         () -> {
-                            // In case sign-out allowed changed while the dialog was displayed, we
-                            // return early to avoid a native crash.
-                            if (!signinManager.isSignOutAllowed()) {
-                                return;
-                            }
                             if (mSignOutReason
                                     == SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS) {
                                 signinManager.revokeSyncConsent(
                                         mSignOutReason, dataWipeCallback, forceWipeUserData);
-                            } else {
+                            } else if (signinManager.isSignOutAllowed()) {
                                 signinManager.signOut(
                                         mSignOutReason, dataWipeCallback, forceWipeUserData);
                             }
