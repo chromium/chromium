@@ -93,7 +93,8 @@ bool IsJavaModule(const base::ModuleCache::Module* module) {
     return false;
   }
 
-  const std::string& debug_basename = module->GetDebugBasename().value();
+  const auto path = module->GetDebugBasename();
+  const std::string& debug_basename = path.value();
 
   return debug_basename.find("chrome.apk") != std::string::npos ||
          debug_basename.find("base.apk") != std::string::npos;
