@@ -69,6 +69,15 @@ bool IsEdidBasedDisplayIdsEnabled() {
   return base::FeatureList::IsEnabled(kEnableEdidBasedDisplayIds);
 }
 
+// Enable display scale factor meant for OLED display.
+BASE_FEATURE(kOledScaleFactorEnabled,
+             "OledScaleFactorEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsOledScaleFactorEnabled() {
+  return base::FeatureList::IsEnabled(kOledScaleFactorEnabled);
+}
+
 // A temporary flag to control hardware mirroring until it is decided whether to
 // permanently remove hardware mirroring support. See crbug.com/1161556 for
 // details.

@@ -275,6 +275,8 @@ float DisplayChangeObserver::FindDeviceScaleFactor(
   // Keep the Chell's scale factor 2.252 until we make decision.
   constexpr gfx::Size k2DisplaySizeHackChell(3200, 1800);
   constexpr gfx::Size k18DisplaySizeHackCoachZ(2160, 1440);
+  // Only change the OLED display scale factor for Xol device.
+  constexpr gfx::Size k12DisplaySizeHackXol(1920, 1080);
 
   if (size_in_pixels == k225DisplaySizeHackNocturne) {
     return kDsf_2_252;
@@ -285,6 +287,12 @@ float DisplayChangeObserver::FindDeviceScaleFactor(
   if (size_in_pixels == k18DisplaySizeHackCoachZ) {
     return kDsf_1_8;
   }
+
+  if (display::features::IsOledScaleFactorEnabled() &&
+      size_in_pixels == k12DisplaySizeHackXol) {
+    return 1.2f;
+  }
+
   for (size_t i = 0; i < std::size(kThresholdTableForInternal); ++i) {
     if (dpi >= kThresholdTableForInternal[i].dpi) {
       return kThresholdTableForInternal[i].device_scale_factor;
