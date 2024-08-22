@@ -28,12 +28,16 @@ export function getHtml(this: DisclosureAppElement) {
         </div>`)}
     </div>
   </div>
-
+  <localized-link id="learnMoreLink"
+    .localizedString="${this.i18nAdvanced('disclosureLearnMore')}"
+    @link-clicked="${this.onLearnMoreClicked_}"
+    link-url="${this.i18n('compareLearnMoreUrl')}">
+  </localized-link>
   <div id="actionsContainer">
-    <cr-button class="tonal-button" @click=${this.declineDisclosure}>
+    <cr-button class="tonal-button" @click=${this.declineDisclosure_}>
       ${this.i18n('declineDisclosure')}
     </cr-button>
-    <cr-button class="action-button" @click=${this.acceptDisclosure}>
+    <cr-button class="action-button" @click=${this.acceptDisclosure_}>
       ${this.i18n('acceptDisclosure')}
     </cr-button>
   </div>`;

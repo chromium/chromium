@@ -16,6 +16,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/commerce/shopping_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
@@ -117,6 +118,17 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
 
   source->AddString("productSpecificationsManagementUrl",
                     kChromeUICompareListsUrl);
+  source->AddString("compareLearnMoreUrl", kChromeUICompareLearnMoreUrl);
+
+  std::string email;
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (identity_manager) {
+    CoreAccountInfo account_info =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    email = account_info.email;
+  }
+  source->AddString("userEmail", email);
 }
 
 void ProductSpecificationsUI::BindInterface(
