@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
@@ -42,16 +43,6 @@
 namespace policy::local_user_files {
 
 namespace {
-
-// Delay the migration for a total of 24 hours.
-const base::TimeDelta kTotalMigrationTimeout = base::Hours(24);
-
-// Show another dialog 1 hour before the migration.
-const base::TimeDelta kRemainingMigrationTimeout = base::Hours(1);
-
-// The prefix of the directory the files should be uploaded to. Used with the
-// unique identifier of the device to form the directory's full name.
-constexpr char kDestinationDirName[] = "ChromeOS device";
 
 // Returns true if `cloud_provider` is set to Google Drive or OneDrive.
 bool IsMigrationEnabled(CloudProvider cloud_provider) {
@@ -203,14 +194,15 @@ void LocalFilesMigrationManager::InformUser() {
   CHECK(!local_user_files_allowed_);
   CHECK(IsMigrationEnabled(cloud_provider_));
 
+  migration_start_time_ = base::Time::Now() + kTotalMigrationTimeout;
+
   notification_manager_->ShowMigrationInfoDialog(
-      cloud_provider_, kTotalMigrationTimeout,
+      cloud_provider_, migration_start_time_,
       base::BindOnce(&LocalFilesMigrationManager::SkipMigrationDelay,
                      weak_factory_.GetWeakPtr()));
   // Schedule another dialog closer to the migration.
   scheduling_timer_->Start(
-      FROM_HERE,
-      base::Time::Now() + (kTotalMigrationTimeout - kRemainingMigrationTimeout),
+      FROM_HERE, migration_start_time_ - kFinalMigrationTimeout,
       base::BindOnce(
           &LocalFilesMigrationManager::ScheduleMigrationAndInformUser,
           weak_factory_.GetWeakPtr()));
@@ -222,12 +214,12 @@ void LocalFilesMigrationManager::ScheduleMigrationAndInformUser() {
   }
 
   notification_manager_->ShowMigrationInfoDialog(
-      cloud_provider_, kRemainingMigrationTimeout,
+      cloud_provider_, migration_start_time_,
       base::BindOnce(&LocalFilesMigrationManager::SkipMigrationDelay,
                      weak_factory_.GetWeakPtr()));
   // Also schedule migration to automatically start after the timeout.
   scheduling_timer_->Start(
-      FROM_HERE, base::Time::Now() + kRemainingMigrationTimeout,
+      FROM_HERE, migration_start_time_,
       base::BindOnce(&LocalFilesMigrationManager::OnTimeoutExpired,
                      weak_factory_.GetWeakPtr()));
 }

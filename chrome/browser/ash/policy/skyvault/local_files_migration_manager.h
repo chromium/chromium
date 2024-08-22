@@ -130,6 +130,9 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // happens.
   CloudProvider cloud_provider_ = CloudProvider::kNotSpecified;
 
+  // The time at which the migration will start automatically.
+  base::Time migration_start_time_;
+
   // Context for which this instance is created.
   raw_ptr<content::BrowserContext> context_;
 

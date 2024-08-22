@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest, ShowDialog) {
 
   base::MockCallback<StartMigrationCallback> mock_cb;
   manager()->ShowMigrationInfoDialog(
-      CloudProvider(), base::TimeDelta(base::Minutes(5)), mock_cb.Get());
+      CloudProvider(), base::Time::Now() + base::Minutes(5), mock_cb.Get());
 
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());

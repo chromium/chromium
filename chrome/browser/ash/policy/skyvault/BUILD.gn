@@ -16,6 +16,7 @@ static_library("skyvault") {
     "file_location_utils.h",
     "local_files_cleanup.cc",
     "local_files_cleanup.h",
+    "local_files_migration_constants.h",
     "local_files_migration_manager.cc",
     "local_files_migration_manager.h",
     "local_user_files_policy_observer.cc",

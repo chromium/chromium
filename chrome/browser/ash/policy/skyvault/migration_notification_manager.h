@@ -44,12 +44,13 @@ class MigrationNotificationManager : public KeyedService {
   explicit MigrationNotificationManager(content::BrowserContext* context);
   ~MigrationNotificationManager() override;
 
-  // Shows a dialog informing the user that the migration will happen after
-  // `migration_delay` (e.g. 24 h or 1 h). From the dialog, the user can select
-  // to start the migration immediately which executes the `migration_callback`.
+  // Shows a dialog informing the user that the migration will happen at
+  // `migration_start_time`, e.g. 24 h or 1 h from now. From the dialog, the
+  // user can select to start the migration immediately which executes the
+  // `migration_callback`.
   // Virtual to override in tests.
   virtual void ShowMigrationInfoDialog(CloudProvider provider,
-                                       base::TimeDelta migration_delay,
+                                       base::Time migration_start_time,
                                        base::OnceClosure migration_callback);
 
   // Shows the migration in progress notification.

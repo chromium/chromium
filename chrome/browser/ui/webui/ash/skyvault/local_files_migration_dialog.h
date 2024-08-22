@@ -29,7 +29,7 @@ class LocalFilesMigrationDialog : public ash::SystemWebDialogDelegate {
   // If a dialog is already open, brings it to the front and returns false.
   // Otherwise, shows the dialog and returns true.
   static bool Show(CloudProvider cloud_provider,
-                   base::TimeDelta migration_delay,
+                   base::Time migration_start_time,
                    StartMigrationCallback migration_callback);
 
   // Returns a pointer to the instance of LocalFilesMigrationDialog, if it
@@ -45,7 +45,7 @@ class LocalFilesMigrationDialog : public ash::SystemWebDialogDelegate {
 
  private:
   LocalFilesMigrationDialog(CloudProvider cloud_provider,
-                            base::TimeDelta migration_delay,
+                            base::Time migration_start_time,
                             StartMigrationCallback migration_callback);
   ~LocalFilesMigrationDialog() override;
 
@@ -60,8 +60,8 @@ class LocalFilesMigrationDialog : public ash::SystemWebDialogDelegate {
   // Cloud provider to which files are uploaded.
   CloudProvider cloud_provider_;
 
-  // The time until automatic migration starts.
-  base::TimeDelta migration_delay_;
+  // The time at which migration automatically starts.
+  base::Time migration_start_time_;
 
   // Called if the user starts migration immediately.
   StartMigrationCallback migration_callback_;

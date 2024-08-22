@@ -7,6 +7,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -70,9 +71,9 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationDialogTest, ShowDialog_Dismiss) {
 
   base::MockCallback<StartMigrationCallback> mock_cb;
   EXPECT_CALL(mock_cb, Run).Times(0);
-  ASSERT_TRUE(LocalFilesMigrationDialog::Show(CloudProvider::kOneDrive,
-                                              base::TimeDelta(base::Hours(1)),
-                                              mock_cb.Get()));
+  const base::TimeDelta delay = base::Hours(1);
+  ASSERT_TRUE(LocalFilesMigrationDialog::Show(
+      CloudProvider::kOneDrive, base::Time::Now() + delay, mock_cb.Get()));
 
   // Wait for chrome://local-files-migration to load.
   navigation_observer_dialog.Wait();
@@ -96,9 +97,8 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationDialogTest, ShowDialog_Dismiss) {
   ASSERT_TRUE(widget->IsStackedAbove(dialog->GetDialogWindowForTesting()));
 
   // Show dialog again - the same instance should just be shown on top.
-  ASSERT_FALSE(LocalFilesMigrationDialog::Show(CloudProvider::kOneDrive,
-                                               base::TimeDelta(base::Hours(1)),
-                                               base::DoNothing()));
+  ASSERT_FALSE(LocalFilesMigrationDialog::Show(
+      CloudProvider::kOneDrive, base::Time::Now() + delay, base::DoNothing()));
   ASSERT_FALSE(widget->IsStackedAbove(dialog->GetDialogWindowForTesting()));
 
   // Click the OK button and wait for the dialog to close.
@@ -122,9 +122,9 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationDialogTest, ShowDialog_UploadNow) {
 
   base::MockCallback<StartMigrationCallback> mock_cb;
   EXPECT_CALL(mock_cb, Run).Times(1);
-  ASSERT_TRUE(LocalFilesMigrationDialog::Show(CloudProvider::kGoogleDrive,
-                                              base::TimeDelta(base::Hours(1)),
-                                              mock_cb.Get()));
+  ASSERT_TRUE(LocalFilesMigrationDialog::Show(
+      CloudProvider::kGoogleDrive, base::Time::Now() + base::Hours(1),
+      mock_cb.Get()));
 
   // Wait for chrome://local-files-migration to load.
   navigation_observer_dialog.Wait();
