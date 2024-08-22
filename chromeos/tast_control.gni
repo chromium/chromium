@@ -104,8 +104,9 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.PhysicalKeyboardEmojiSuggestion.incognito_lacros",
   "inputs.PhysicalKeyboardEmojiSuggestion.lacros",
 
-  # b/355351792, tests failing on jacuzzi.
+  # b/355351792, b/352703668: tests failing on jacuzzi and trogdor.
   "security.SELinuxFilesDataDir.arcvm_user@jacuzzi",
+  "security.SELinuxFilesDataDir.arcvm_user@trogdor",
 
   # b/358087592, re-enable once the test is updated to handle the new
   # PWA change.
