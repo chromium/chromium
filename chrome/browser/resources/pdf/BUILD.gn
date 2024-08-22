@@ -53,6 +53,7 @@ build_webui("build") {
   }
 
   non_web_component_files = [
+    "before_unload_proxy.ts",
     "bookmark_type.ts",
     "browser_api.ts",
     "constants.ts",

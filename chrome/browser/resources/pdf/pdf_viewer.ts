@@ -26,6 +26,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
 
+import {BeforeUnloadProxyImpl} from './before_unload_proxy.js';
 import type {Bookmark} from './bookmark_type.js';
 import type {BrowserApi} from './browser_api.js';
 import type {Attachment, DocumentMetadata, ExtendedKeyEvent, Point} from './constants.js';
@@ -1272,10 +1273,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    */
   override onBeforeUnload(event: BeforeUnloadEvent) {
     super.onBeforeUnload(event);
-    // When user tries to leave PDF with unsaved changes, show the 'Leave site'
-    // dialog.
+    // When a user tries to leave PDF with unsaved changes, show the 'Leave
+    // site' dialog. OOPIF PDF only, since MimeHandler handles the beforeunload
+    // event instead.
     if (this.pdfOopifEnabled && this.showBeforeUnloadDialog_) {
-      event.preventDefault();
+      BeforeUnloadProxyImpl.getInstance().preventDefault(event);
     }
   }
 
