@@ -63,6 +63,7 @@ const base::FeatureParam<std::string> kEnterprisePlusAddressServerUrl{
     &kPlusAddressesEnabled, kEnterprisePlusAddressServerUrlName, ""};
 const base::FeatureParam<bool> kSyncWithEnterprisePlusAddressServer{
     &kPlusAddressesEnabled, kSyncWithEnterprisePlusAddressServerName, false};
+// TODO(crbug.com/322147254): Remove.
 const base::FeatureParam<base::TimeDelta> kEnterprisePlusAddressTimerDelay{
     &kPlusAddressesEnabled, kEnterprisePlusAddressTimerDelayName,
     base::Hours(24)};

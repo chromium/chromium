@@ -381,7 +381,7 @@ TEST_F(AddressAccessoryControllerTest,
   // should not be displayed.
   EXPECT_EQ(controller()->GetSheetData(),
             AddressAccessorySheetDataBuilder(std::u16string())
-                .AddPlusAddressSection("foo.com", u"plus+foo@plus.plus")
+                .AddPlusAddressSection("https://foo.com", u"plus+foo@plus.plus")
                 .Build());
 }
 
@@ -397,11 +397,10 @@ TEST_F(AddressAccessoryControllerTest, AppendsPlusAddressesSection) {
       .WillRepeatedly(Return(base::make_span(profiles)));
   controller()->RefreshSuggestions();
 
-  EXPECT_EQ(
-      controller()->GetSheetData(),
-      AddressAccessorySheetDataBuilder(std::u16string())
-          .AddPlusAddressSection("foo.com", u"plus+foo@plus.plus")
-          .Build());
+  EXPECT_EQ(controller()->GetSheetData(),
+            AddressAccessorySheetDataBuilder(std::u16string())
+                .AddPlusAddressSection("https://foo.com", u"plus+foo@plus.plus")
+                .Build());
 }
 
 TEST_F(AddressAccessoryControllerTest, TriggersPlusAddressCreationBottomSheet) {

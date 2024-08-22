@@ -1171,7 +1171,7 @@ TEST_F(PasswordAccessoryControllerTest,
   EXPECT_EQ(
       controller()->GetSheetData(),
       PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
-          .AddPlusAddressSection("foo.com", u"plus+foo@plus.plus")
+          .AddPlusAddressSection("https://foo.com", u"plus+foo@plus.plus")
           .Build());
 }
 

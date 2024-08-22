@@ -34,13 +34,13 @@ inline constexpr char16_t kFakePlusAddressRefreshU16[] =
 PlusProfile CreatePlusProfile(std::string plus_address,
                               bool is_confirmed,
                               bool use_full_domain);
-PlusProfile CreatePlusProfile(bool use_full_domain = false);
+PlusProfile CreatePlusProfile(bool use_full_domain = true);
 // Returns a fully populated, confirmed PlusProfile different from
 // `CreatePlusProfile()`. If `use_full_domain` is true, a full domain (as
 // opposed to eTLD+1) is used as facet.
 // TODO(b/322147254): Remove parameter once plus addresses starts fully relying
 // on sync data.
-PlusProfile CreatePlusProfile2(bool use_full_domain = false);
+PlusProfile CreatePlusProfile2(bool use_full_domain = true);
 
 // Returns a fully populated, confirmed PlusProfile with the given `facet`.
 PlusProfile CreatePlusProfileWithFacet(const affiliations::FacetURI& facet);

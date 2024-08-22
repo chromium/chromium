@@ -91,9 +91,8 @@ class SyncServiceFactoryTest : public PlatformTest {
       datatypes.Put(syncer::COLLABORATION_GROUP);
       datatypes.Put(syncer::SHARED_TAB_GROUP_DATA);
     }
-    if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddress)) {
-      datatypes.Put(syncer::PLUS_ADDRESS);
-    }
+    // syncer::PLUS_ADDRESS is excluded because GoogleGroupsManagerFactory is
+    // null for testing and hence no controller gets instantiated for the type.
     if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
       datatypes.Put(syncer::PLUS_ADDRESS_SETTING);
     }

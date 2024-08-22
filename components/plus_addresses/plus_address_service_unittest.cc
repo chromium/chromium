@@ -135,7 +135,8 @@ MATCHER_P(IsPreallocatedPlusAddress, address, "") {
 }
 
 url::Origin OriginFromFacet(const plus_addresses::PlusProfile::facet_t& facet) {
-  return url::Origin::Create(GURL("https://" + absl::get<std::string>(facet)));
+  return url::Origin::Create(
+      GURL(absl::get<affiliations::FacetURI>(facet).canonical_spec()));
 }
 
 }  // namespace
@@ -758,155 +759,6 @@ TEST_F(PlusAddressHttpForbiddenResponseTest, NoDisablingAfterSuccess) {
   }
 }
 
-// Tests the PlusAddressService ability to make network requests.
-class PlusAddressServicePolling : public PlusAddressServiceRequestsTest {
- public:
-  PlusAddressServicePolling() {
-    base::FieldTrialParams params =
-        PlusAddressServiceRequestsTest::GetFieldTrialParams();
-    params["sync-with-server"] = "true";
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPlusAddressesEnabled, params);
-    InitService();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(PlusAddressServicePolling, CallsGetAllPlusAddresses) {
-  // The service starts the timer on construction and issues a request to
-  // poll. Unblock the initial polling request.
-  url_loader_factory().SimulateResponseForPendingRequest(
-      kPlusProfilesEndpoint, test::MakeListResponse({}));
-
-  const PlusProfile profile1 = test::CreatePlusProfile();
-  const PlusProfile profile2 = test::CreatePlusProfile2();
-  EXPECT_FALSE(service().IsPlusAddress(*profile1.plus_address));
-  EXPECT_FALSE(service().IsPlusAddress(*profile2.plus_address));
-
-  task_environment().FastForwardBy(
-      features::kEnterprisePlusAddressTimerDelay.Get() + base::Seconds(1));
-  EXPECT_EQ(url_loader_factory().NumPending(), 1);
-  url_loader_factory().SimulateResponseForPendingRequest(
-      kPlusProfilesEndpoint, test::MakeListResponse({profile1, profile2}));
-
-  // The service's mapping should be updated now.
-  for (const PlusProfile& profile : {profile1, profile2}) {
-    SCOPED_TRACE(testing::Message() << profile.plus_address);
-    EXPECT_EQ(service().GetPlusAddress(profile.facet), profile.plus_address);
-    EXPECT_TRUE(service().IsPlusAddress(*profile.plus_address));
-  }
-}
-
-TEST_F(PlusAddressServicePolling,
-       DisableForForbiddenUsers_Enabled_404sDontDisableFeature) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kPlusAddressesEnabled,
-      {
-          {"server-url", kServerUrl.spec()},
-          {"oauth-scope", "scope.example"},
-          {"sync-with-server", "true"},
-          {"disable-for-forbidden-users", "true"},
-      });
-  InitService();
-
-  EXPECT_TRUE(service().IsEnabled());
-  // Unblock the initial polling request.
-  ASSERT_EQ(url_loader_factory().NumPending(), 1);
-  url_loader_factory().SimulateResponseForPendingRequest(
-      kPlusProfilesEndpoint, "", net::HTTP_NOT_FOUND);
-  EXPECT_TRUE(service().IsEnabled());
-}
-
-TEST_F(PlusAddressServicePolling,
-       DisableForForbiddenUsers_Enabled_403sDisableFeature) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kPlusAddressesEnabled,
-      {
-          {"server-url", kServerUrl.spec()},
-          {"oauth-scope", "scope.example"},
-          {"sync-with-server", "true"},
-          {"disable-for-forbidden-users", "true"},
-      });
-  InitService();
-
-  EXPECT_TRUE(service().IsEnabled());
-  // Unblock the initial polling request.
-  ASSERT_EQ(url_loader_factory().NumPending(), 1);
-  url_loader_factory().SimulateResponseForPendingRequest(
-      kPlusProfilesEndpoint, "", net::HTTP_FORBIDDEN);
-  // Simulate failed responses for the successive retry requests
-  for (int i = 0; i < PlusAddressService::kMaxHttpForbiddenResponses; i++) {
-    EXPECT_TRUE(service().IsEnabled());
-    ASSERT_EQ(url_loader_factory().NumPending(), 1);
-    url_loader_factory().SimulateResponseForPendingRequest(
-        kPlusProfilesEndpoint, "", net::HTTP_FORBIDDEN);
-  }
-  // Service is finally disabled once retries are exhausted.
-  EXPECT_FALSE(service().IsEnabled());
-}
-
-TEST_F(PlusAddressServicePolling,
-       DisableForForbiddenUsers_Disabled_403DoesntRetryOrDisableFeature) {
-  EXPECT_TRUE(service().IsEnabled());
-  // Unblock the initial polling request.
-  url_loader_factory().SimulateResponseForPendingRequest(
-      kPlusProfilesEndpoint, "", net::HTTP_FORBIDDEN);
-  EXPECT_EQ(url_loader_factory().NumPending(), 0);
-  EXPECT_TRUE(service().IsEnabled());
-}
-
-// Doesn't run on ChromeOS since ClearPrimaryAccount() doesn't exist for it.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(PlusAddressServicePolling, PrimaryAccountCleared_TogglesPollingOff) {
-  // Unblock initial poll.
-  url_loader_factory().SimulateResponseForPendingRequest(
-      kPlusProfilesEndpoint, test::MakeListResponse({}));
-  identity_env().ClearPrimaryAccount();
-
-  // Toggle polling back on by signing into a primary account.
-  identity_env().MakePrimaryAccountAvailable("plus2@plus.plus",
-                                             signin::ConsentLevel::kSignin);
-  const PlusProfile profile = test::CreatePlusProfile();
-  url_loader_factory().SimulateResponseForPendingRequest(
-      kPlusProfilesEndpoint, test::MakeListResponse({profile}));
-  EXPECT_EQ(service().GetPlusAddress(profile.facet), profile.plus_address);
-  EXPECT_TRUE(service().IsPlusAddress(*profile.plus_address));
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-TEST_F(PlusAddressServicePolling, PrimaryRefreshTokenError_TogglesPollingOff) {
-  CoreAccountInfo primary_account =
-      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  // Unblock initial poll.
-  url_loader_factory().SimulateResponseForPendingRequest(
-      kPlusProfilesEndpoint, test::MakeListResponse({}));
-
-  // Toggle creation off by triggering an error for the primary refresh token.
-  identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
-      primary_account.account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
-  task_environment().RunUntilIdle();
-  // No network requests are expected because the service is not enabled.
-  EXPECT_EQ(url_loader_factory().NumPending(), 0);
-
-  // Toggle creation back on by removing the error.
-  identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
-      primary_account.account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::NONE));
-  task_environment().RunUntilIdle();
-
-  EXPECT_EQ(url_loader_factory().NumPending(), 1);
-  const PlusProfile profile = test::CreatePlusProfile();
-  url_loader_factory().SimulateResponseForPendingRequest(
-      kPlusProfilesEndpoint, test::MakeListResponse({profile}));
-  EXPECT_EQ(service().GetPlusAddress(profile.facet), profile.plus_address);
-  EXPECT_TRUE(service().IsPlusAddress("plus+foo@plus.plus"));
-}
-
 // Tests that communication with `PlusAddressTable` works.
 class PlusAddressServiceWebDataTest : public ::testing::Test {
  protected:
@@ -1219,7 +1071,8 @@ TEST_F(PlusAddressServiceEnabledTest,
                                       {signin::ConsentLevel::kSignin});
   InitService();
   PlusProfile profile = test::CreatePlusProfile();
-  profile.facet = kNoSubdomainOrigin.host();
+  profile.facet =
+      FacetURI::FromPotentiallyInvalidSpec(kNoSubdomainOrigin.GetURL().spec());
   service().SavePlusProfile(profile);
   EXPECT_TRUE(service().GetPlusProfile(profile.facet));
 
@@ -1296,7 +1149,6 @@ TEST_F(PlusAddressServiceSignoutTest, PrimaryAccountCleared_TogglesIsEnabled) {
   // Ensure that the local data is cleared on disabling.
   EXPECT_FALSE(service().ShouldShowManualFallback(origin,
                                                   /*is_off_the_record=*/false));
-  EXPECT_FALSE(service().IsPlusAddress(*profile.plus_address));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1336,7 +1188,6 @@ TEST_F(PlusAddressServiceSignoutTest,
   // Ensure that the local data is cleared on disabling.
   EXPECT_FALSE(
       service().ShouldShowManualFallback(origin, /*is_off_the_record=*/false));
-  EXPECT_FALSE(service().IsPlusAddress(*profile.plus_address));
 }
 
 // A test fixture with a `PlusAddressService` that is enabled to allow testing
@@ -1404,25 +1255,6 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kExistingPlusAddressSuggested, 2);
-}
-
-// Tests that `GetSuggestions()` suggests plus profiles across eTLD+1s.
-TEST_F(PlusAddressSuggestionsTest, SuggestionsForETLD) {
-  const PlusProfile profile(/*profile_id=*/"123", "foo.com",
-                            PlusAddress("plus+foo@plus.plus"),
-                            /*is_confirmed=*/true);
-  service().SavePlusProfile(profile);
-  FormFieldData focused_field;
-  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
-      OriginFromFacet(profile.facet),
-      /*is_off_the_record=*/false, PasswordFormClassification(), focused_field,
-      AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
-  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
-      OriginFromFacet("asd.foo.com"),
-      /*is_off_the_record=*/false, PasswordFormClassification(), focused_field,
-      AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      IsSingleFillPlusAddressSuggestion(*profile.plus_address)));
 }
 
 // Tests that fill plus address suggestions regardless of whether there is

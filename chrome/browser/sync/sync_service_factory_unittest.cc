@@ -186,9 +186,10 @@ class SyncServiceFactoryTest : public testing::Test {
       datatypes.Put(syncer::WEB_APKS);
     }
 #endif  // BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddress)) {
-      datatypes.Put(syncer::PLUS_ADDRESS);
-    }
+
+    // syncer::PLUS_ADDRESS is excluded because GoogleGroupsManagerFactory is
+    // null for testing and hence no controller gets instantiated for the type.
+
     if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
       datatypes.Put(syncer::PLUS_ADDRESS_SETTING);
     }
