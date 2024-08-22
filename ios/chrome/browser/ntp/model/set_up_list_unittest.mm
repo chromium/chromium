@@ -26,6 +26,8 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -93,10 +95,17 @@ class SetUpListTest : public PlatformTest {
                           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
     auth_service_->GrantSyncConsent(
         identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-    browser_state_manager_.GetBrowserStateInfoCache()
-        ->SetAuthInfoOfBrowserStateAtIndex(
-            0, base::SysNSStringToUTF8(identity.gaiaID),
-            base::SysNSStringToUTF8(identity.userEmail));
+
+    browser_state_manager_.GetProfileAttributesStorage()
+        ->UpdateAttributesForProfileAtIndex(
+            0, base::BindOnce(
+                   [](id<SystemIdentity> identity, ProfileAttributesIOS attr) {
+                     attr.SetAuthenticationInfo(
+                         base::SysNSStringToUTF8(identity.gaiaID),
+                         base::SysNSStringToUTF8(identity.userEmail));
+                     return attr;
+                   },
+                   identity));
   }
 
   // Ensures that Chrome is considered as default browser.
