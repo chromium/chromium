@@ -106,14 +106,22 @@ suite('<facegaze-actions-add-dialog>', () => {
     return gestureSlider;
   }
 
-  function assertGestureSlider() {
+  function assertGestureSlider(): CrSliderElement {
     const gestureSlider = getGestureSlider();
     assertTrue(!!gestureSlider);
+    return gestureSlider;
   }
 
   function assertNullGestureSlider() {
     const gestureSlider = getGestureSlider();
     assertNull(gestureSlider);
+  }
+
+  function assertGestureDynamicBar(): HTMLElement {
+    const slider = assertGestureSlider();
+    const sliderBar = slider.shadowRoot!.querySelector<HTMLElement>('#bar');
+    assertTrue(!!sliderBar);
+    return sliderBar;
   }
 
   function getGestureCountDiv(): HTMLElement {
@@ -442,5 +450,23 @@ suite('<facegaze-actions-add-dialog>', () => {
                 FaceGazeUtils.getGestureDisplayText(
                     FacialGesture.BROW_INNER_UP)} detected (0)`,
             gestureCountDiv.innerText);
+      });
+  test(
+      'gesture threshold dynamic bar updates when gesture info received with selected gesture info at any confidence',
+      async () => {
+        await initPage();
+        navigateToThresholdPage();
+
+        const sliderBar = assertGestureDynamicBar();
+
+        webUIListenerCallback('settings.sendGestureInfoToSettings', [
+          {gesture: FacialGesture.BROW_INNER_UP, confidence: 70},
+        ]);
+        assertEquals('70%', sliderBar.style.width);
+
+        webUIListenerCallback('settings.sendGestureInfoToSettings', [
+          {gesture: FacialGesture.BROW_INNER_UP, confidence: 30},
+        ]);
+        assertEquals('30%', sliderBar.style.width);
       });
 });

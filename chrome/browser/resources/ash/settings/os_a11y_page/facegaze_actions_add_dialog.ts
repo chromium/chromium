@@ -357,10 +357,15 @@ export class FaceGazeAddActionDialogElement extends
 
     info.forEach((entry) => {
       if (entry.gesture === this.selectedGesture_) {
-        // TODO(b:355659370): Show confidence for all gestures in dynamic bar
         if (entry.confidence >= this.gestureThresholdValue_) {
           this.detectedGestureCount_++;
         }
+
+        // Show confidence values for all gestures in dynamic bar.
+        const slider = this.getThresholdSlider();
+        const sliderBar = slider.shadowRoot!.querySelector<HTMLElement>('#bar');
+        assert(sliderBar);
+        sliderBar.style.width = `${entry.confidence}%`;
       }
     });
   }
