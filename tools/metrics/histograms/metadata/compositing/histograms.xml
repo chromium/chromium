@@ -302,8 +302,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.AdpfHintUs" units="microseconds"
-    expires_after="2024-09-01">
+    expires_after="2025-09-01">
   <owner>boliu@chromium.org</owner>
+  <owner>kraskevich@google.com</owner>
   <owner>vasilyt@chromium.org</owner>
   <summary>
     This is logged once for every ADPF performance hint report, which is
