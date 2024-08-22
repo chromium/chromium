@@ -27,6 +27,7 @@
 #include "device/fido/fido_types.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
+class AuthenticatorRequestDialogController;
 class GPMEnclaveController;
 class PrefService;
 class Profile;

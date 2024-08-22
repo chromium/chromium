@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
@@ -200,18 +201,18 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       controller_->StartInlineBioEnrollment(base::DoNothing());
       timer_.Start(
           FROM_HERE, base::Seconds(2),
-          base::BindLambdaForTesting([&, weak_controller =
-                                             controller_->GetWeakPtr()] {
-            if (!weak_controller || weak_controller->model()->step() !=
-                                        AuthenticatorRequestDialogController::
-                                            Step::kInlineBioEnrollment) {
-              return;
-            }
-            weak_controller->OnSampleCollected(--bio_samples_remaining_);
-            if (bio_samples_remaining_ <= 0) {
-              timer_.Stop();
-            }
-          }));
+          base::BindLambdaForTesting(
+              [&, weak_controller = controller_->GetWeakPtr()] {
+                if (!weak_controller || weak_controller->model()->step() !=
+                                            AuthenticatorRequestDialogModel::
+                                                Step::kInlineBioEnrollment) {
+                  return;
+                }
+                weak_controller->OnSampleCollected(--bio_samples_remaining_);
+                if (bio_samples_remaining_ <= 0) {
+                  timer_.Stop();
+                }
+              }));
     } else if (name == "retry_uv") {
       controller_->OnRetryUserVerification(5);
     } else if (name == "retry_uv_two_tries_remaining") {

@@ -4195,6 +4195,8 @@ static_library("browser") {
       "webauthn/authenticator_list_observer.h",
       "webauthn/authenticator_reference.cc",
       "webauthn/authenticator_reference.h",
+      "webauthn/authenticator_request_dialog_controller.cc",
+      "webauthn/authenticator_request_dialog_controller.h",
       "webauthn/authenticator_request_dialog_model.cc",
       "webauthn/authenticator_request_dialog_model.h",
       "webauthn/authenticator_request_scheduler.cc",

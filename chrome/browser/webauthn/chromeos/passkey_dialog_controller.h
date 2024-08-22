@@ -13,11 +13,12 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/chromeos/passkey_service.h"
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "content/public/browser/render_frame_host.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"
 
-namespace {
+namespace webauthn {
 class PasskeyModel;
 }
 
