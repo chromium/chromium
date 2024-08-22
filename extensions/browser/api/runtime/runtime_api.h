@@ -200,7 +200,7 @@ class RuntimeEventRouter {
                                      const ExtensionId& extension_id);
 
   // Dispatches the onInstalled event to the given extension.
-  static void DispatchOnInstalledEvent(content::BrowserContext* context,
+  static void DispatchOnInstalledEvent(void* context_id,
                                        const ExtensionId& extension_id,
                                        const base::Version& old_version,
                                        bool chrome_updated);

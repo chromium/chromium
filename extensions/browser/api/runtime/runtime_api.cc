@@ -274,9 +274,9 @@ void RuntimeAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
 
   // Dispatch the onInstalled event with reason "chrome_update".
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RuntimeEventRouter::DispatchOnInstalledEvent,
-                     browser_context_, extension->id(), base::Version(), true));
+      FROM_HERE, base::BindOnce(&RuntimeEventRouter::DispatchOnInstalledEvent,
+                                static_cast<void*>(browser_context_),
+                                extension->id(), base::Version(), true));
 }
 
 void RuntimeAPI::OnExtensionUninstalled(
@@ -481,13 +481,15 @@ void RuntimeEventRouter::DispatchOnStartupEvent(
 
 // static
 void RuntimeEventRouter::DispatchOnInstalledEvent(
-    content::BrowserContext* context,
+    void* context_id,
     const ExtensionId& extension_id,
     const base::Version& old_version,
     bool chrome_updated) {
-  if (!ExtensionsBrowserClient::Get()->IsValidContext(context)) {
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(context_id)) {
     return;
   }
+  content::BrowserContext* context =
+      reinterpret_cast<content::BrowserContext*>(context_id);
   ExtensionSystem* system = ExtensionSystem::Get(context);
   if (!system) {
     return;
@@ -638,8 +640,8 @@ void RuntimeAPI::OnExtensionInstalledAndLoaded(
     const base::Version& previous_version) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&RuntimeEventRouter::DispatchOnInstalledEvent,
-                                browser_context_, extension->id(),
-                                previous_version, false));
+                                static_cast<void*>(browser_context_),
+                                extension->id(), previous_version, false));
 }
 
 ExtensionFunction::ResponseAction RuntimeGetBackgroundPageFunction::Run() {
