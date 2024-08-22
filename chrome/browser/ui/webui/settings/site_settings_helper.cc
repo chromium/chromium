@@ -166,6 +166,8 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     // is not used for desktop. Note some exceptions do have UI in Content
     // Settings but do not require a separate string.
     {ContentSettingsType::DEFAULT, nullptr},
+    // TODO(crbug.com/359418633): Implement site settings page.
+    {ContentSettingsType::HAND_TRACKING, nullptr},
     {ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr},
     {ContentSettingsType::SSL_CERT_DECISIONS, nullptr},
     {ContentSettingsType::APP_BANNER, nullptr},

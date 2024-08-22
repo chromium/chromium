@@ -2699,6 +2699,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="CapturedSurfaceControl"
       label="Captured Surface Control permission"/>
   <suffix name="Geolocation" label="Geolocation permission"/>
+  <suffix name="HandTracking" label="Hand tracking permission"/>
   <suffix name="KeyboardAndPointerLock"
       label="Keyboard and pointer lock permission"/>
   <suffix name="KeyboardLock" label="Keyboard lock permission"/>

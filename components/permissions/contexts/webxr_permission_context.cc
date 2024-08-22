@@ -30,7 +30,8 @@ WebXrPermissionContext::WebXrPermissionContext(
                             blink::mojom::PermissionsPolicyFeature::kWebXr),
       content_settings_type_(content_settings_type) {
   DCHECK(content_settings_type_ == ContentSettingsType::VR ||
-         content_settings_type_ == ContentSettingsType::AR);
+         content_settings_type_ == ContentSettingsType::AR ||
+         content_settings_type_ == ContentSettingsType::HAND_TRACKING);
 }
 
 WebXrPermissionContext::~WebXrPermissionContext() = default;

@@ -94,6 +94,8 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
 #endif
     case RequestType::kGeolocation:
       return RequestTypeForUma::PERMISSION_GEOLOCATION;
+    case RequestType::kHandTracking:
+      return RequestTypeForUma::PERMISSION_HAND_TRACKING;
     case RequestType::kIdleDetection:
       return RequestTypeForUma::PERMISSION_IDLE_DETECTION;
 #if !BUILDFLAG(IS_ANDROID)
@@ -212,6 +214,8 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "VR";
     case RequestTypeForUma::PERMISSION_AR:
       return "AR";
+    case RequestTypeForUma::PERMISSION_HAND_TRACKING:
+      return "HandTracking";
     case RequestTypeForUma::PERMISSION_STORAGE_ACCESS:
       return "StorageAccess";
     case RequestTypeForUma::PERMISSION_TOP_LEVEL_STORAGE_ACCESS:
@@ -1356,6 +1360,10 @@ void PermissionUmaUtil::RecordPermissionAction(
       break;
     case ContentSettingsType::AR:
       base::UmaHistogramEnumeration("Permissions.Action.AR", action,
+                                    PermissionAction::NUM);
+      break;
+    case ContentSettingsType::HAND_TRACKING:
+      base::UmaHistogramEnumeration("Permissions.Action.HandTracking", action,
                                     PermissionAction::NUM);
       break;
     case ContentSettingsType::STORAGE_ACCESS:

@@ -37,6 +37,7 @@ enum class RequestType {
   kFileSystemAccess,
 #endif
   kGeolocation,
+  kHandTracking,
   kIdentityProvider,
   kIdleDetection,
 #if !BUILDFLAG(IS_ANDROID)

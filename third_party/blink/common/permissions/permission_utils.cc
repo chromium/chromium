@@ -72,6 +72,8 @@ std::string GetPermissionString(PermissionType permission) {
       return "VR";
     case PermissionType::AR:
       return "AR";
+    case PermissionType::HAND_TRACKING:
+      return "HandTracking";
     case PermissionType::SMART_CARD:
       return "SmartCard";
     case PermissionType::STORAGE_ACCESS_GRANT:
@@ -129,6 +131,8 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
       return mojom::PermissionsPolicyFeature::kIdleDetection;
     case PermissionType::WAKE_LOCK_SCREEN:
       return mojom::PermissionsPolicyFeature::kScreenWakeLock;
+    case PermissionType::HAND_TRACKING:
+      return mojom::PermissionsPolicyFeature::kWebXr;
     case PermissionType::VR:
       return mojom::PermissionsPolicyFeature::kWebXr;
     case PermissionType::AR:

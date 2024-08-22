@@ -102,6 +102,7 @@ enum class RequestTypeForUma {
   PERMISSION_KEYBOARD_LOCK = 37,
   PERMISSION_POINTER_LOCK = 38,
   MULTIPLE_KEYBOARD_AND_POINTER_LOCK = 39,
+  PERMISSION_HAND_TRACKING = 40,
   // NUM must be the last value in the enum.
   NUM,
 };

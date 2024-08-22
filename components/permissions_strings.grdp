@@ -24,6 +24,9 @@
     <message name="IDS_AR_INFOBAR_TEXT" desc="Text requesting permission for a site to use AR">
       <ph name="URL">$1<ex>google.com</ex></ph> wants to create a 3D map of your surroundings and track camera position
     </message>
+    <message name="IDS_HAND_TRACKING_INFOBAR_TEXT" desc="Text requesting permission for a site to use Hand tracking">
+      <ph name="URL">$1<ex>google.com</ex></ph> wants to track your hands
+    </message>
     <message name="IDS_IDLE_DETECTION_INFOBAR_TEXT" desc="Text requesting permission for a site to know when the user is idle.">
       <ph name="URL">$1<ex>google.com</ex></ph> wants to know when you're actively using this device
     </message>
@@ -135,6 +138,9 @@
   </message>
   <message name="IDS_AR_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to use AR. Follows a prompt: 'This site would like to:">
     Create a 3D map of your surroundings and track camera position
+  </message>
+  <message name="IDS_HAND_TRACKING_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to use Hand tracking. Follows a prompt: 'This site would like to:">
+    Track your hands
   </message>
   <message name="IDS_KEYBOARD_LOCK_PERMISSIONS_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to lock the user's keyboard. When the keyboard is locked, any keyboard input usually handled by the browser or the OS is handled by the website instead. Follows a prompt: 'This site would like to:">
     Lock and use your keyboard
@@ -304,6 +310,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     </message>
     <message name="IDS_AR_PERMISSION_CHIP" desc="Button text representing a request for using AR from a website. When clicked, shows a permission prompt bubble with more information.">
       Allow AR?
+    </message>
+    <message name="IDS_HAND_TRACKING_PERMISSION_CHIP" desc="Button text representing a request for using Hand tracking from a website. When clicked, shows a permission prompt bubble with more information.">
+      Allow hand tracking?
     </message>
     <message name="IDS_IDLE_DETECTION_PERMISSION_CHIP" desc="Button text representing a request for using using idle detection from a website. When clicked, shows a permission prompt bubble with more information.">
       Know your device use?

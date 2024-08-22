@@ -167,6 +167,9 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     case ContentSettingsType::AR:
       *out = PermissionType::AR;
       break;
+    case ContentSettingsType::HAND_TRACKING:
+      *out = PermissionType::HAND_TRACKING;
+      break;
     case ContentSettingsType::SMART_CARD_DATA:
       *out = PermissionType::SMART_CARD;
       break;
@@ -329,6 +332,8 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingTypeSafe(
       return ContentSettingsType::WAKE_LOCK_SYSTEM;
     case PermissionType::NFC:
       return ContentSettingsType::NFC;
+    case PermissionType::HAND_TRACKING:
+      return ContentSettingsType::HAND_TRACKING;
     case PermissionType::VR:
       return ContentSettingsType::VR;
     case PermissionType::AR:

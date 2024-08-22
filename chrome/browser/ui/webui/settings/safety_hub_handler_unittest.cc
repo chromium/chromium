@@ -1029,6 +1029,8 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
   static constexpr auto kNoNameTypes =
       base::MakeFixedFlatSet<ContentSettingsType>({
           // clang-format off
+          // TODO(crbug.com/359418633): Add SiteSettings page for Hand Tracking.
+          ContentSettingsType::HAND_TRACKING,
           ContentSettingsType::MIDI,
           ContentSettingsType::DURABLE_STORAGE,
           ContentSettingsType::ACCESSIBILITY_EVENTS,

@@ -98,6 +98,9 @@ PermissionRequest::GetDialogAnnotatedMessageText(
       // Handled by an override in `QuotaPermissionRequest`.
       NOTREACHED_IN_MIGRATION();
       break;
+    case RequestType::kHandTracking:
+      message_id = IDS_HAND_TRACKING_INFOBAR_TEXT;
+      break;
     case RequestType::kGeolocation:
       message_id = IDS_GEOLOCATION_INFOBAR_TEXT;
       break;
@@ -233,6 +236,8 @@ std::optional<std::u16string> PermissionRequest::GetRequestChipText(
          IDS_PERMISSIONS_GEOLOCATION_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT,
          IDS_PERMISSIONS_PERMISSION_ALLOWED_ONCE_CONFIRMATION,
          IDS_PERMISSIONS_GEOLOCATION_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT}},
+       {RequestType::kHandTracking,
+        {IDS_HAND_TRACKING_PERMISSION_CHIP, -1, -1, -1, -1, -1, -1, -1}},
        {RequestType::kIdleDetection,
         {IDS_IDLE_DETECTION_PERMISSION_CHIP, -1, -1, -1, -1, -1, -1, -1}},
        {RequestType::kKeyboardLock,
@@ -314,6 +319,9 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
       break;
     case RequestType::kGeolocation:
       message_id = IDS_GEOLOCATION_INFOBAR_PERMISSION_FRAGMENT;
+      break;
+    case RequestType::kHandTracking:
+      message_id = IDS_HAND_TRACKING_PERMISSION_FRAGMENT;
       break;
     case RequestType::kIdleDetection:
       message_id = IDS_IDLE_DETECTION_PERMISSION_FRAGMENT;
