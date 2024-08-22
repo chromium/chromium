@@ -371,6 +371,7 @@ que se instale.</translation>
 <translation id="1257550411839719984">Establecer el directorio de descarga predeterminado</translation>
 <translation id="1262993197422487260">No mostrar el botón para ver la contraseña en la pantalla de acceso o de bloqueo</translation>
 <translation id="1265053460044691532">Permite limitar el tiempo durante el cual un usuario autenticado mediante SAML puede acceder sin conexión.</translation>
+<translation id="1265076559723566171">Configuración de los controles para usuarios de EDU</translation>
 <translation id="1271811620059192171">Habilitar grupos atómicos de políticas</translation>
 <translation id="127264587838521316">Habilita las solicitudes de instalación de extensiones de <ph name="PRODUCT_NAME" /></translation>
 <translation id="1272798957154751008">Habilitar la migración de los dispositivos Chromad a la administración de la nube</translation>
@@ -469,6 +470,27 @@ los nombres de host o patrones de nombre de host específicos.</translation>
 <translation id="1348603614848418219">Deshabilitar la migración de los dispositivos administrados por <ph name="MS_AD_NAME" /> a la administración en la nube</translation>
 <translation id="1352799151662469739">El período sin intervención del usuario después del cual se bloquea la pantalla cuando el dispositivo está funcionando con CA (en milisegundos).</translation>
 <translation id="1353416417709895349">Inhabilita las revisiones de intercepción de DNS y las barras de información de "http://intranetsite/" para "quisiste decir".</translation>
+<translation id="1353910503649343481">Si estableces la política, se especificará la configuración del proxy para Chrome y las apps de ARC, por lo que se ignorarán todas las opciones relacionadas con el proxy que se especificaron en la línea de comandos.
+
+       Si no la estableces, los usuarios podrán elegir su configuración de proxy.
+
+       Si estableces la política <ph name="PROXY_SETTINGS_POLICY_NAME" />, se aceptarán los siguientes campos:
+        * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, que te permite especificar el servidor proxy que usa Chrome y evitar que los usuarios cambien la configuración del proxy
+        * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, una URL a un archivo .pac de proxy o una secuencia de comandos de PAC codificada como una URL de datos con el tipo de MIME application/x-ns-proxy-autoconfig
+        * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />, que evita que la pila de red recurra a conexiones directas con una secuencia de comandos de PAC no válida o no disponible
+        * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, una URL del servidor proxy
+        * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, una lista de hosts para los que se omitirá el proxy
+
+       El campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> está obsoleto y se recomienda usar el campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
+
+        Para <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, si eliges uno de estos valores:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />: no se usará nunca un proxy y se ignorará el resto de los campos.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />: se usará el proxy del sistema y se ignorará el resto de los campos.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: se ignorará el resto de los campos.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: se usarán los campos <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> y <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: se usarán los campos <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> y <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+
+      Nota: Para obtener más ejemplos detallados, visita The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="1354280967938151061">Inhabilitar ARC</translation>
 <translation id="1354424209129232709">Máximo:</translation>
 <translation id="1355050231181289439"> Esta política controla si se habilita la asignación mejorada de combinaciones de teclas internacionales.
@@ -841,6 +863,7 @@ No se traducirá la etiqueta personalizada.</translation>
       Si no estableces <ph name="IDLE_ACTION_FIELD_NAME" />, se utilizará <ph name="IDLE_ACTION_ENUM_SUSPEND" />.
 
       Nota: Existen opciones de configuración diferentes para la alimentación de CA y de batería.</translation>
+<translation id="1607734317623618500">La app web de kiosco es compatible con el modo sin conexión</translation>
 <translation id="1608755754295374538">Las URL que recibirán acceso a dispositivos de captura de audio sin solicitarlo</translation>
 <translation id="1608901087213748889">Activa una acción cuando la computadora está inactiva.
 
@@ -936,6 +959,7 @@ Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> podrá seleccionar 
 <translation id="165769015320654523">Otorgar permiso automáticamente a estos sitios para que se conecten a dispositivos HID con los ID de producto y proveedor correspondientes</translation>
 <translation id="1659406551862245683">Se modifica el comportamiento predeterminado de cambio de tamaño del teclado virtual para cambiar el tamaño del diseño del viewport</translation>
 <translation id="166427968280387991">Servidor proxy</translation>
+<translation id="1666001345366986837">Configuración de la función Generative AI VC Background</translation>
 <translation id="1670638264428789878">Habilitar Conjuntos de sitios web relacionados</translation>
 <translation id="1671405606278443620">Configuración de AI-powered history search</translation>
 <translation id="1673097259557436886">Indicar siempre a los sitios web que no se guardan las formas de pago</translation>
@@ -965,27 +989,6 @@ Si la estableces como falsa o no la estableces, no se capturará ningún evento.
       Esta política permite especificar una resolución para usarla cuando se rasterizan archivos PDF para la impresión.
 
       Si la política se establece con el valor cero o no se establece, se usará la resolución predeterminada del sistema durante la rasterización de imágenes de páginas</translation>
-<translation id="1700458869527146675">Si estableces la política, se especificará la configuración del proxy para Chrome y las apps de ARC, por lo que se ignorarán todas las opciones relacionadas con el proxy que se especificaron en la línea de comandos.
-
-       Si no la estableces, los usuarios podrán elegir su configuración de proxy.
-
-       Si estableces la política <ph name="PROXY_SETTINGS_POLICY_NAME" />, se aceptarán los siguientes campos:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> (podrás especificar el servidor proxy que usa Chrome y evitar que los usuarios cambien la configuración del proxy)
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> (una dirección URL a un archivo de proxy en formato .pac)
-         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> (evita que la pila de red recurra a conexiones directas con una secuencia de comandos PAC no válida o no disponible)
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> (URL del servidor proxy)
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> (lista de hosts que determinarán que se evite el proxy)
-
-       El campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> está obsoleto y ha sido sustituido por el campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
-
-        Para <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, puedes elegir alguno de los valores siguientes:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />: no se usará nunca un proxy y se ignorará el resto de los campos.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />: se usará el proxy del sistema y se ignorará el resto de los campos.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: se ignorará el resto de los campos.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: se usarán los campos <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> y <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: se usarán los campos <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> y <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-
-      Nota: Para obtener más ejemplos detallados, visita The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="1700811900332333712">Permite que el dispositivo solicite Powerwash</translation>
 <translation id="1705215165572785706">Tratar las teclas de la fila superior como teclas multimedia, pero permitir que el usuario las modifique</translation>
 <translation id="1708496595873025510">Establece la restricción en la obtención del valor de inicialización de las variaciones.</translation>
@@ -1185,6 +1188,7 @@ Si la inhabilitas o no la estableces, es posible que, después de que acceda una
 Esta política no tiene efecto cuando se configura al nivel de la máquina.</translation>
 <translation id="1837165432382702436">Altura de la página en micrómetros.</translation>
 <translation id="1838910874018595451">Configuración ya completada para tickets de Kerberos</translation>
+<translation id="1839042185432919430">Permitir que la app web de kiosco muestre el mensaje de red cuando se inicie la app si el dispositivo está sin conexión</translation>
 <translation id="1843102210803941014">Habilitar solo las cookies y los datos esenciales en la búsqueda</translation>
 <translation id="1843117931376765605">Frecuencia de actualización de la política de usuario</translation>
 <translation id="1844620919405873871">Configura políticas relacionadas con el desbloqueo rápido.</translation>
@@ -3103,6 +3107,13 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
 
       Los sitios web configurados se abrirán automáticamente en otro navegador que no sea <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3252724033247471310">Permitir que estos orígenes capturen pestañas del mismo origen</translation>
+<translation id="325374928725737694">Si inhabilitas la política, la app web de kiosco no funcionará sin conexión. Se mostrará un mensaje de red al inicio de una sesión de kiosco solo si el dispositivo está sin conexión. De esta forma, se garantiza que el dispositivo esté en línea antes de que se inicie la app correctamente.
+
+Es posible que no se muestre este mensaje de red si se configuró una app para que se inicie automáticamente y <ph name="PROMPT_POLICY_NAME" /> (<ph name="PROMPT_POLICY_URL" />) está inhabilitada.
+
+Esta política no tiene efecto en las apps de Chrome ni en las apps web que tienen una URL de instalación que realiza una redirección entre orígenes a una app web diferente (p. ej., si la URL de instalación de la app es <ph name="APP_INSTALL_URL" />, pero, al cargarla, se redirige a una app web diferente, p. ej., <ph name="APP_REDIRECTED_URL" />).
+
+Si estableces la política como verdadera o no la estableces, se iniciarán las apps web incluso si el dispositivo está sin conexión.</translation>
 <translation id="3255624750680556186">Si habilitas la política o no la estableces, los dispositivos podrán activar Powerwash.
 
       Si la inhabilitas, los dispositivos no podrán activar Powerwash. Se puede configurar una excepción para permitir un Powerwash si estableces <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> en un valor que permita la actualización del firmware TPM, pero que todavía no se haya actualizado.</translation>
@@ -3630,6 +3641,17 @@ incluir ambos en los certificados RSA para HTTPS.</translation>
 <translation id="3660562134618097814">Transferir cookies del IdP de SAML durante el acceso</translation>
 <translation id="3662660961914441274">Inhabilitar el almacenamiento local de archivos del usuario</translation>
 <translation id="3665437376055221832">Solo notificar al usuario cuando ningún certificado coincide con la selección automática</translation>
+<translation id="3667467644216039144">Configura una lista de los tipos de datos de navegación que deben borrarse cuando el usuario cierra todas las ventanas del navegador.
+
+Advertencia: Si estableces esta política, es posible que se vean afectados los datos personales locales y que se quiten de forma permanente. Se recomienda probar la configuración antes de la implementación para evitar la eliminación accidental de datos personales.
+
+Los tipos de datos disponibles son el historial de navegación (<ph name="DATA_TYPE_BROWSING_HISTORY" />), el historial de descargas (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), las cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), la memoria caché <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, las opciones de Autocompletar (<ph name="DATA_TYPE_AUTOFILL" />), las contraseñas (<ph name="DATA_TYPE_PASSWORD" />), la configuración de los sitios (<ph name="DATA_TYPE_SITE_SETTINGS" />) y los datos de las apps alojadas (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Esta política no tendrá prioridad sobre <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+Hasta la versión 114 de Chrome, esta política requería que se estableciera la política <ph name="SYNC_DISABLED_POLICY_NAME" /> como verdadera. A partir de la versión 115 de Chrome, si estableces esta política, se inhabilitará la sincronización de los tipos de datos correspondientes si no inhabilitas "<ph name="CHROME_SYNC_NAME" />" al establecer la política <ph name="SYNC_DISABLED_POLICY_NAME" /> ni inhabilitas <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
+
+Si por algún motivo se inició la eliminación de datos y no se completó, se borrarán los datos de navegación la próxima vez que se cargue el perfil.
+
+Si se produce un error al salir de <ph name="PRODUCT_NAME" /> (por ejemplo, si falla el navegador o el SO), no se borrarán los datos de navegación, ya que la salida del navegador no fue el resultado de que el usuario cerrara todas las ventanas del navegador.</translation>
 <translation id="3671773704245936868">Inhabilitar el enfoque del teclado destacado</translation>
 <translation id="3674010627788940405">No admitir encabezados de solicitudes sin comodín CORS</translation>
 <translation id="3675303748198647471">setTimeout(…, 0) se usa en general para desglosar tareas largas de JavaScript.
@@ -3645,6 +3667,7 @@ incluir ambos en los certificados RSA para HTTPS.</translation>
 
           Esta es una política temporal que se planea quitar en <ph name="PRODUCT_NAME" /> 107. Es posible que se extienda la fecha límite si las empresas lo necesitan.
           </translation>
+<translation id="3677660004554019617">No permitir Generative AI VC Background</translation>
 <translation id="3678069907945250643">Permitir el acceso a Google Fotos desde la app de personalización</translation>
 <translation id="3680529017993214255">Habilitar las funciones y enviar datos para entrenar modelos de IA</translation>
 <translation id="3685979383016152590">Si estableces la política, se designará la política de acceso que se utilizará para la configuración de impresoras en lote, lo que permitirá determinar las impresoras de <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> que estarán disponibles para los usuarios.
@@ -3666,6 +3689,19 @@ incluir ambos en los certificados RSA para HTTPS.</translation>
 <translation id="3701121231485832347">Controla la configuración específica de los dispositivos <ph name="PRODUCT_OS_NAME" /> administrados por <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Certificación remota</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Pronto dejará de estar disponible el campo de una línea y desaparecerá. Empieza a usar el cuadro de texto de varias líneas que se encuentra a continuación).</translation>
+<translation id="3705648857103435170">Esta política habilita la app de Graduation para los usuarios administrados. La app de Graduation ayuda a los usuarios a transferir sus datos de una cuenta administrada a una cuenta personal.
+
+    Si estableces <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> como <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, la app de Graduation se mostrará en las fechas de inicio y finalización, y entre ellas, según la hora local.
+
+    Si estableces <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> como <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> o no la estableces, no se mostrará la app.
+
+    Si no estableces <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" />, la app se mostrará hasta la fecha de finalización.
+
+    Si no estableces <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" />, la app se mostrará de forma indefinida a partir de la fecha de inicio.
+
+    Si no estableces <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> ni <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" />, se mostrará la app de forma indefinida. Si las fechas de inicio y finalización no son válidas, no se mostrará la app de Graduation. Por ejemplo, si las fechas proporcionadas no existen o si la fecha de finalización es anterior a la fecha de inicio.
+
+    También se debe habilitar la transferencia de datos con Takeout para que la app de Graduation funcione correctamente. Consulta https://support.google.com/a/answer/6364687 para obtener más información.</translation>
 <translation id="3711561721191203926">Si habilitas esta política, cada vez que se deba mostrar
 una advertencia en <ph name="DEV_TOOLS_NAME" /> debido a errores en las verificaciones de <ph name="PRIVATE_NETWORK_ACCESS" />, se
 bloqueará la solicitud principal.
@@ -3828,6 +3864,7 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
       Los usuarios no podrán quitar un controlador de protocolo que haya registrado la política. Sin embargo, al instalar un nuevo controlador predeterminado, los usuarios podrán cambiar los controladores de protocolo que haya instalado la política.</translation>
 <translation id="3842619997238271109">No permite que el host de acceso remoto use las autenticaciones con PIN y con vinculación cuando acepte conexiones de clientes</translation>
+<translation id="3845318141474759319">Permitir Generative AI Wallpaper sin mejorar los modelos de IA</translation>
 <translation id="3851443303439635700">Controlar el umbral de anidación antes de que la función de JavaScript setTimeout() comience a restringirse</translation>
 <translation id="3858658082795336534">Modo predeterminado de impresión doble</translation>
 <translation id="3859780406608282662">Permite agregar un parámetro para la obtención del valor de inicialización de variaciones en <ph name="PRODUCT_OS_NAME" />.
@@ -4359,6 +4396,7 @@ Nota: Si bloqueas las URLs internas chrome://* y chrome-untrusted://*, es posibl
       Si la estableces como falsa, se ejecutará la resolución de DNS del sistema (getaddrinfo()) en el proceso de red, en lugar de ejecutarse en el proceso del navegador. Esto puede forzar la inhabilitación de la zona de pruebas del servicio de red, lo que degrada la seguridad de <ph name="PRODUCT_NAME" />.
 
       Si no la estableces, es posible que la resolución de DNS del sistema se ejecute en el servicio de red, fuera del servicio de red, o bien parcialmente dentro y parcialmente fuera, según la configuración del sistema y las marcas de función.</translation>
+<translation id="4232128469957872687">Configuración de EDU</translation>
 <translation id="4234788818648224034">Lista de dominios que se excluirán de la resolución con DNS-over-HTTPS. Esta política se ignora cuando el modo de DNS seguro está desactivado (siempre usa DNS en texto sin formato).
 
 Si también se establece <ph name="DOH_TEMPLATES_POLICY_NAME" />, se prefiere un dominio más específico. La especificidad se refiere a la cantidad de puntos (".") en el dominio. Cuando un dominio coincide con ambas políticas, se usa el protocolo DNS-over-HTTPS de forma predeterminada para el dominio.
@@ -4568,6 +4606,25 @@ Si no la estableces, se inhabilitará la sintaxis obsoleta anterior.</translatio
           Si la estableces como verdadera, WebSQL en contextos no seguros estará disponible.
           Si estableces esta política como falsa o no la estableces, WebSQL en contextos no seguros seguirá disponible hasta la versión M109 y, luego, no estará disponible a partir de M110.
 Esto se quitó en M112.</translation>
+<translation id="4401357095119743747">Lista de parámetros de configuración para los servicios de Chrome Enterprise Connectors que se aplicarán al Enterprise Connector <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" />, el cual se activa cuando se transfiere un archivo en <ph name="PRODUCT_OS_NAME" />.
+
+      Los campos <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> se usan para determinar si el conector debe enviar un archivo para que se analice cuando se transfiere entre una fuente y un destino, y qué etiquetas debe incluir la solicitud de análisis del archivo. La solicitud de análisis incluirá la etiqueta correspondiente a una regla "enable" si la fuente y el destino coinciden con la regla asociada a esa etiqueta, siempre y cuando la regla "disable" que tenga la misma etiqueta no coincida con la transferencia. Si la solicitud incluye al menos 1 etiqueta, se realizará el análisis. Una regla <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" /> se define con una lista de pares, en la que cada par contiene una lista de fuentes y una lista de destinos. El campo <ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> define para qué sistema de archivos se debe aplicar una regla.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> especifica el proveedor de servicios de análisis al que corresponde la configuración.
+
+      Si se establece el valor "1" en el campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />, <ph name="PRODUCT_OS_NAME" /> esperará a recibir una respuesta del servicio de análisis para permitir la transferencia. Si se indica cualquier otro valor entero, <ph name="PRODUCT_OS_NAME" /> permitirá la transferencia de inmediato.
+
+      Si estableces que se bloquee el campo <ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD" />, <ph name="PRODUCT_OS_NAME" /> no permitirá que los usuarios transfieran el archivo si se produce un error durante la comunicación con el servicio de análisis. Si se indica cualquier otro valor, <ph name="PRODUCT_OS_NAME" /> permitirá las transferencias del archivo si se produce un error durante la comunicación con el servicio de análisis.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> controla si <ph name="PRODUCT_OS_NAME" /> bloquea o permite los archivos protegidos con contraseña.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> controla si <ph name="PRODUCT_OS_NAME" /> bloquea o permite los archivos que son demasiado grandes para ser analizados.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> se utiliza para determinar en qué etiquetas el conector requerirá que el usuario ingrese una justificación para evitar un análisis que derive en una advertencia evitable. Si no estableces el campo, se asumirá que no se requiere una justificación.
+
+      Los campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> se usan para configurar el mensaje que verá el usuario cuando se muestre una advertencia después de que un análisis determine una infracción de política. El campo del mensaje incluye el texto que se le mostrará al usuario. Este puede tener un máximo de 200 caracteres. El administrador puede incluir una URL en el campo <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" /> para que el usuario obtenga con un clic más información del cliente sobre los motivos para bloquear la acción. El campo <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> es opcional. Indica el idioma del mensaje. Si el campo <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> se deja vacío o con el valor "default", se utilizará el mensaje correspondiente cuando no haya ningún mensaje en el idioma del usuario. El campo de la etiqueta especifica para qué tipo de análisis se mostrará el mensaje. La lista <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" /> puede tener cero o más entradas, y cada una deberá tener completos los campos del mensaje y de la etiqueta.
+
+      Esta política requiere configuración adicional para tener efecto. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para obtener más información.</translation>
 <translation id="4402887080007986374">La versión válida de las Condiciones del Servicio de Edu Coexistence</translation>
 <translation id="4408428864159735559">Lista de archivos compartidos de red configurados previamente</translation>
 <translation id="4410236409016356088">Habilitar la velocidad moderada del ancho de banda de la red</translation>
@@ -7003,6 +7060,27 @@ En la versión 114 y en versiones posteriores, esta política es opcional si se 
       Si habilitas esta política o no la estableces, los usuarios podrán instalar y ejecutar Chrome for Testing.
 
       Si la inhabilitas, los usuarios no podrán ejecutar Chrome for Testing. Los usuarios aún podrán instalar Chrome for Testing. Sin embargo, no se ejecutará con los perfiles en los que inhabilites esta política.</translation>
+<translation id="6258646807927528870">Configura una lista de reglas de control de datos para evitar la filtración de datos.
+
+      Cada regla consta de lo siguiente:
+      - Campos de condición para activar esa regla Una regla solo se activará si una acción del usuario coincide con todos los campos completados en sus campos <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> y <ph name="DATA_CONTROLS_NOT" />. Para los subcampos de lista, solo debe coincidir una entrada; por ejemplo, solo un patrón de URL debe coincidir para activar la regla.
+      - Una lista de restricciones que se aplicarán Según la restricción, solo pueden estar disponibles las condiciones <ph name="DATA_CONTROLS_SOURCES" /> o <ph name="DATA_CONTROLS_DESTINATIONS" />.
+
+      Se pueden definir reglas para realizar lo siguiente:
+      - Controlar los datos del portapapeles que se comparten entre los orígenes y los destinos
+      - Controlar el bloqueo de capturas de pantalla según las pestañas de origen
+
+      Si estableces la política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> como verdadera, las reglas activadas se informarán al administrador.
+      Puedes establecer el nivel de restricción como BLOCK, WARN o REPORT.
+      - Si estableces el nivel de restricción como BLOCK, no se permitirá la acción.
+      - Si estableces el nivel de restricción como WARN, se enviará una advertencia a un usuario que podrá elegir proceder o cancelar la acción.
+      - Si estableces el nivel de restricción como REPORT, no se interrumpirá la acción del usuario, pero se enviará un informe si se habilita la política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />.
+
+      Notas:
+      - Los patrones de URL deben presentar un formato conforme a lo especificado en (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+      - En el caso de las reglas de prevención de filtración de datos específicas de <ph name="PRODUCT_OS_NAME" />, consulta también la política <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
+
+      Si no estableces la política, no se aplicarán restricciones.</translation>
 <translation id="6258658183356534534">Controlar la función de actualización de GREASE de optimización del cliente de usuario-cliente</translation>
 <translation id="6261643884958898336">Enviar la información de identificación de la máquina</translation>
 <translation id="6264247808139384018">Si habilitas la política o no la estableces, los usuarios que se autentiquen con una contraseña podrán bloquear la pantalla.
@@ -7622,6 +7700,7 @@ Si no estableces la política, se aplicará la tasa predeterminada de 15 minutos
 
       Si no se configura esta política, el usuario podrá usar cualquier complemento instalado en el sistema, excepto aquellos que sean peligrosos, obsoletos o incompatibles por el código.</translation>
 <translation id="6571055160227165318">Permitir que una función experimental de Chrome inhabilite WebSQL</translation>
+<translation id="6574216414580419109">Configuración de la función Generative AI Wallpaper</translation>
 <translation id="6574903167639386816">Borrar los datos de perfil en el disco cuando finalice la sesión del usuario</translation>
 <translation id="6575403002861093126">Si estableces la política, se especificará la duración (expresada en horas) de almacenamiento en caché del Objeto de directiva de grupo (GPO). Este valor indica el tiempo máximo en el que pueden reutilizarse los GPO antes de que se vuelvan a descargar. En lugar de volverlos a descargar en cada recuperación de la política, el sistema volverá a utilizar los GPO almacenados en caché, siempre que no cambien de versión.
 
@@ -8165,6 +8244,7 @@ Esta política se quitará en el futuro, cuando se lance por completo la funció
 
       Si no se establece, se inhabilitará HTTP/0.9 en los puertos no predeterminados.</translation>
 <translation id="6969332115615661188">Inhabilitar la entrada de video</translation>
+<translation id="6969949359984470271">La app web de kiosco no es compatible con el modo sin conexión</translation>
 <translation id="6971579036359007697">Controla la migración de archivos locales a la nube.
 Se aplica solo a los usuarios de SkyVault, es decir, cuando LocalUserFilesAllowed se establece como falsa, y se ignora en otros casos.
 
@@ -8560,23 +8640,6 @@ Nota importante: Es posible que los programas establecidos por esta política no
 * Si seleccionas Combinar, se combinará la política del usuario de los GPO del usuario con la de los GPO de la computadora. Tendrán prioridad los GPO de la computadora.
 
 * Si seleccionas Reemplazar, se reemplazará la política del usuario de los GPO del usuario por la de los GPO de la computadora. Se ignorarán los GPO del usuario.</translation>
-<translation id="7258250780552783197">Lista de parámetros de configuración para los servicios de Chrome Enterprise Connectors que se aplicarán al Enterprise Connector <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" />, el cual se activa cuando se transfiere un archivo en <ph name="PRODUCT_OS_NAME" />.
-
-      Los campos <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> se usan para determinar si el conector debe enviar un archivo para que se analice cuando se transfiere entre una fuente y un destino, y qué etiquetas debe incluir la solicitud de análisis del archivo. La solicitud de análisis incluirá la etiqueta correspondiente a una regla "enable" si la fuente y el destino coinciden con la regla asociada a esa etiqueta, siempre y cuando la regla "disable" que tenga la misma etiqueta no coincida con la transferencia. Si la solicitud incluye al menos 1 etiqueta, se realizará el análisis. Una regla <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" /> se define mediante una lista de pares, en la que cada par contiene una lista de fuentes y una lista de destinos. El campo <ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> define para qué sistema de archivos se debe aplicar una regla.
-
-      El campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> especifica el proveedor de servicios de análisis al que corresponde la configuración.
-
-      Si se establece el valor "1" en el campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />, <ph name="PRODUCT_OS_NAME" /> esperará a recibir una respuesta del servicio de análisis para permitir la transferencia. Si se indica cualquier otro valor entero, <ph name="PRODUCT_OS_NAME" /> permitirá la transferencia de inmediato.
-
-      El campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> controla si <ph name="PRODUCT_OS_NAME" /> bloquea o permite el acceso a archivos protegidos con contraseña.
-
-      El campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> controla si <ph name="PRODUCT_OS_NAME" /> bloquea o permite los archivos que son demasiado grandes para ser analizados.
-
-      El campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> se utiliza para determinar en qué etiquetas el conector requerirá que el usuario ingrese una justificación para evitar un análisis que derive en una advertencia evitable. Si no estableces el campo, se asumirá que no se requiere una justificación.
-
-      Los campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> se usan para configurar el mensaje que verá el usuario cuando se muestre una advertencia después de que un análisis determine una infracción de política. El campo del mensaje incluye el texto que se le mostrará al usuario. Este puede tener un máximo de 200 caracteres. El administrador puede incluir una URL en el campo <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" /> a fin de que el usuario obtenga con un clic más información del cliente sobre los motivos para bloquear la acción. El campo <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> es opcional. Indica el idioma del mensaje. Si el campo <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> se deja vacío o con el valor "default", se utilizará el mensaje correspondiente cuando no haya ningún mensaje en el idioma del usuario. El campo de la etiqueta especifica para qué tipo de análisis se mostrará el mensaje. La lista <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" /> puede tener cero o más entradas, y cada una deberá tener completos los campos del mensaje y de la etiqueta.
-
-      Esta política requiere configuración adicional para tener efecto. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para obtener más información.</translation>
 <translation id="7258823566580374486">Habilitar modo de cortina en hosts de acceso remoto</translation>
 <translation id="7260204423892780600">Controla la configuración del Asistente de Google.</translation>
 <translation id="7261140115553020049">Habilitar el servicio Floating Workspace</translation>
@@ -8948,6 +9011,7 @@ Si dejas la política vacía, no se permitirán excepciones a <ph name="FLOATING
 
       Si habilitas la política o no la estableces, se habilitará la conversión de unidades de Respuestas rápidas.
       Si inhabilitas la política, se inhabilitará la conversión de unidades de Respuestas rápidas.</translation>
+<translation id="7584363090329234690">Permitir Generative AI VC Background sin mejorar los modelos de IA</translation>
 <translation id="7585312329612243723">Habilitar el flujo de certificación de <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para una lista de las URLs en los navegadores administrados</translation>
 <translation id="7587345076013230465">Notificar al usuario que debe seleccionar el certificado de cliente cada vez que la política de selección automática coincida con varios certificados en la pantalla de acceso</translation>
 <translation id="7587921466180902617">Habilitar la prueba interna de Screencast para los usuarios de Family Link</translation>
@@ -9523,6 +9587,7 @@ también es seguro.</translation>
 <translation id="802776363472387903">El hash SHA-256 de la imagen del <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Habilitar el proveedor de búsqueda predeterminado y permitir que los usuarios modifiquen la lista de proveedores de búsqueda</translation>
 <translation id="8029201909194194377">Duración máxima de la sesión que se permite para las conexiones de acceso remoto</translation>
+<translation id="8031651557770840616">No permitir Generative AI Wallpaper</translation>
 <translation id="8033450879690820321">Esta política ofrece una inhabilitación temporal para el nuevo comportamiento de los desplazadores enfocables del teclado.
 
 Si habilitas esta política o no la estableces, los desplazadores sin elementos secundarios enfocables se enfocarán con el teclado de forma predeterminada. Además, los desplazadores se pueden enfocar con clics y de forma programática según la configuración predeterminada.
@@ -11161,6 +11226,7 @@ Para obtener más información sobre el manejo de datos de las funciones de IA g
 
       Si la estableces como verdadera o no la configuras, todos los usuarios podrán acceder.</translation>
 <translation id="966425658642788645">Aplicar el comportamiento predeterminado</translation>
+<translation id="970144760302377175">Configurar en qué momento estará disponible la herramienta Graduation de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="971677226939413180">La opción Imprimir como imagen no está disponible para el usuario</translation>
 <translation id="974349541138387272">Especifica la plantilla de URI del agente de resolución de DNS sobre HTTPS</translation>
 <translation id="978658824596356870">Formato de reloj de 24 horas</translation>

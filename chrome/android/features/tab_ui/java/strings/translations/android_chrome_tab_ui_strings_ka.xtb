@@ -20,6 +20,7 @@
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ჩანართი დაჯგუფდა</translation>
 <translation id="1657719826150349398">ჩანართის ქვემოთ გადატანა</translation>
 <translation id="1713541401465507417">ყველა ჩანართისა და ჯგუფის დახურვა</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />შეიტყვეთ მეტი<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ჩანართი დაჯგუფდა</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართი}other{<ph name="TABS_COUNT_MANY" /> ჩანართი}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის სანიშნეებში დამატება}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის სანიშნეებში დამატება}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">შეიქმნა ახლახან</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{დახურვა 1 დღის შემდეგ}other{დახურვა <ph name="DAY_COUNT_MANY" /> დღის შემდეგ}}</translation>
 <translation id="4777866634702576038">წაიშალოს ჩანართების ეს ჯგუფი?</translation>
+<translation id="4783638485675352219">ამ მოწყობილობაში არსებული ღია ჩანართების სათაურებისა და URL-ების გაზიარება ოპერაციულ სისტემასთან</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> მიმოხილვა)}other{(<ph name="REVIEWS_COUNT_MANY" /> მიმოხილვა)}}</translation>
 <translation id="4850886885716139402">გადახედვა</translation>
 <translation id="4870911314065352661">გსურთ, ყველა ჩანართი დაიხუროს?</translation>

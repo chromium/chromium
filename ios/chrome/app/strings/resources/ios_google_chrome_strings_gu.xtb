@@ -37,8 +37,6 @@
 <translation id="1615715390546812898">Chromeમાં વૉઇસની સુવિધા વડે શોધો.</translation>
 <translation id="1657395063736185342">Chromeમાં વિઝ્યુઅલ શોધો</translation>
 <translation id="1670609221633730681">Chrome વિશે ટિપ: તમારા ઍડ્રેસ બાર માટે જગ્યા પસંદ કરો</translation>
-<translation id="1675955119303651351">Chromeનો તમારો અમુક ડેટા હજી સુધી તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યો નથી.
-        સાઇન આઉટ કરતા પહેલાં થોડી મિનિટ રાહ જોવાનો પ્રયાસ કરી જુઓ. જો તમે હમણાં જ સાઇન આઉટ કરશો, તો આ ડેટા ડિલીટ કરવામાં આવશે.</translation>
 <translation id="1682483655351012182">તમારા Chrome ડેટાને સિંક કરો</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Chromeમાં ઇનપુટ કરેલા URLsને તમારા બુકમાર્કમાં ઉમેરે છે.</translation>
@@ -81,7 +79,6 @@
 <translation id="2767464022270041271">કોઈ સાચવેલો પાસવર્ડ નથી. જ્યારે તમે તમારા પાસવર્ડ સાચવો, ત્યારે Google Password Manager તેને ચેક કરી શકે છે.</translation>
 <translation id="2869959624320573933">Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome તમારા ડેટાને કેવી રીતે ખાનગી રાખે છે<ph name="END_LINK" /> તે વિશે વધુ જાણો</translation>
-<translation id="2952581218264071393">1. Chrome સેટિંગ ખોલો</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome <ph name="END_BOLD" />પસંદ કરો</translation>
 <translation id="3030414234702425231">કારણ કે તમે <ph name="SIGNOUT_MANAGED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવેલ એકાઉન્ટમાંથી સાઇન આઉટ કરી રહ્યાં છો, આ ડિવાઇસમાંથી તમારા Chrome ડેટા ડિલીટ થઈ જશે. તમારો ડેટા તમારા Google એકાઉન્ટમાં જળવાઈ રહેશે.</translation>
 <translation id="309672519329227863">તમારા Chrome પાસવર્ડ અને બીજું ઘણું અન્ય ઍપ પર ઍક્સેસ કરો.</translation>
@@ -93,7 +90,6 @@
 <translation id="3340938510625667914">Chrome ઍક્શન</translation>
 <translation id="3345341804167540816">સર્વત્ર Chrome નો ઉપયોગ કરો</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{જ્યારે {THRESHOLD} મિનિટ સુધી Chromeનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે}one{જ્યારે {THRESHOLD} મિનિટ સુધી Chromeનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે}other{જ્યારે {THRESHOLD} મિનિટ સુધી Chromeનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે}}</translation>
-<translation id="3399930248910934354">Chrome સેટિંગ ખોલો</translation>
 <translation id="344736123700721678">તમારા હોમ સ્ક્રીનના ડૉકમાંથી Chrome વધુ ઝડપથી ઍક્સેસ કરો</translation>
 <translation id="3472587960215700950">Chrome ભાળ મેળવેલા સરનામાઓ વિશે તમને દિશાનિર્દેશો તેમજ સ્થાનિક માહિતી આપવા માટે, Google Mapsનો ઉપયોગ કરે છે.</translation>
 <translation id="3503014945441706099">આ Chrome પ્રોફાઇલ માટે પણ Safe Browsingમાં વધારેલી સુરક્ષા મેળવો</translation>
@@ -131,9 +127,6 @@
 <translation id="4761869838909035636">Chromeની સલામતી માટે તપાસ ચલાવો</translation>
 <translation id="4798859546468762093">મનગમતું બનાવવાની અને અન્ય સુવિધાઓ મેળવવા માટે, Chromeનો <ph name="FEATURE_NAME_1" /> અને <ph name="FEATURE_NAME_2" />માં સમાવેશ કરો</translation>
 <translation id="4819268619367838612">ઍપને બહેતર બનાવવામાં સહાય કરવા માટે, Chrome વપરાશ અને ક્રૅશ થવા સંબંધિત ડેટા Googleને મોકલે છે. <ph name="BEGIN_LINK" />મેનેજ કરો<ph name="END_LINK" /></translation>
-<translation id="4831642696589369971">Chromeનો તમારો અમુક ડેટા હજી સુધી તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યો નથી.
-
-        સાઇન આઉટ કરતા પહેલાં થોડી મિનિટ રાહ જોવાનો પ્રયાસ કરી જુઓ. જો તમે હમણાં જ સાઇન આઉટ કરશો, તો આ ડેટા ડિલીટ કરવામાં આવશે.</translation>
 <translation id="484033449593719797">Chrome બીટા પર સપોર્ટ કરવામાં આવતી નથી</translation>
 <translation id="4840404732697892756">જ્યારે તમે તમારા Google એકાઉન્ટ વડે સાઇન ઇન કરો, ત્યારે Google Password Manager તમારા પાસવર્ડ ચેક કરી શકે છે.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome તમને નવા ટૅબ પેજ પર આ પૅકેજને ટ્રૅક કરવામાં સહાય કરી શકે છે.}one{Chrome તમને નવા ટૅબ પેજ પર આ પૅકેજને ટ્રૅક કરવામાં સહાય કરી શકે છે.}other{Chrome તમને નવા ટૅબ પેજ પર આ પૅકેજને ટ્રૅક કરવામાં સહાય કરી શકે છે.}}</translation>
@@ -237,7 +230,6 @@
 <translation id="7394108421562933108">Chromeમાં Maps</translation>
 <translation id="7400722733683201933">Google Chrome વિશે</translation>
 <translation id="7466693328838535498">શોધ વિજેટ બૉક્સમાં, Chrome દાખલ કરો</translation>
-<translation id="746684838091935575">3. Chrome પસંદ કરો</translation>
 <translation id="7492574581995589075">તમારી સંસ્થાએ તમારા Google એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવાની અને તેને સાચવવાની ક્ષમતા બંધ કરી છે. નવા બુકમાર્ક, પાસવર્ડ વગેરે માત્ર આ ડિવાઇસમાં સાચવવામાં આવશે.</translation>
 <translation id="7581063337314642333">Chromeમાં ટૅબ ગ્રિડની મુલાકાત લો</translation>
 <translation id="7642373780953416937">તમારા માટે Chrome ઑટોમૅટિક રીતે ભાળ મેળવે તેવી પ્રાઇવસી કે સુરક્ષા સંબંધિત કોઈપણ સમસ્યાઓ માટે અલર્ટ મેળવો.</translation>
@@ -301,7 +293,6 @@
 <translation id="8857676124663337448">Google Password Manager બધા પાસવર્ડ ચેક કરી શક્યું નથી. આવતી કાલે ફરી પ્રયાસ કરો.</translation>
 <translation id="8865415417596392024">તમારા એકાઉન્ટમાંનો Chrome ડેટા</translation>
 <translation id="8874688701962049679">Chromeનો વધુને વધુ લાભ મેળવવા માટેની ટિપ.</translation>
-<translation id="8891935667620843985">તમે Chromeને તમારી ડિફૉલ્ટ બ્રાઉઝર ઍપ બનાવીને ઑટોમૅટિક રીતે તેમાં લિંક ખોલી શકો છો.</translation>
 <translation id="8897749957032330183">પાસવર્ડ આ ડિવાઇસના Google Password Managerમાં સાચવવામાં આવે છે</translation>
 <translation id="8949681853939555434">Chromeને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="9068336935206019333">Chromeના છૂપા મોડમાં ખોલો</translation>

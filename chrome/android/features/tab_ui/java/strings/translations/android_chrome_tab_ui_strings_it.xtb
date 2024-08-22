@@ -20,6 +20,7 @@
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> di schede raggruppate</translation>
 <translation id="1657719826150349398">Sposta scheda in basso</translation>
 <translation id="1713541401465507417">Chiudi tutte le schede e tutti i gruppi</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Scopri di più<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> scheda raggruppata</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda}other{<ph name="TABS_COUNT_MANY" /> schede}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Aggiungi <ph name="TABS_COUNT_ONE" /> scheda selezionata ai preferiti}other{Aggiungi <ph name="TABS_COUNT_MANY" /> schede selezionate ai preferiti}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Creato un attimo fa</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Chiudi dopo 1 giorno}other{Chiudi dopo <ph name="DAY_COUNT_MANY" /> giorni}}</translation>
 <translation id="4777866634702576038">Eliminare il gruppo di schede?</translation>
+<translation id="4783638485675352219">Condividi i titoli e gli URL delle schede aperte da questo dispositivo con il sistema operativo</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recensione)}other{(<ph name="REVIEWS_COUNT_MANY" /> recensioni)}}</translation>
 <translation id="4850886885716139402">Visualizza</translation>
 <translation id="4870911314065352661">Vuoi chiudere tutte le schede?</translation>

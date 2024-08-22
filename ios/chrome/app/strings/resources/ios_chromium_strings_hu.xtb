@@ -5,7 +5,6 @@
 <translation id="1047130070405668746">Válassza ki a Chromium böngészőt.</translation>
 <translation id="1091252999271033193">Ez azt jelenti, hogy a Chromium mindig a mobilwebhelyet kéri majd.</translation>
 <translation id="1115463765356382667">Hajtsa végre az alábbi javasolt műveleteket, hogy a lehető legtöbbet ki tudja hozni a Chromiumból.</translation>
-<translation id="1141230343006904201">1. Nyissa meg a Chromium beállításait.</translation>
 <translation id="1171824629317156389">Nyissa meg a Chromium beállításait iOS rendszeren, majd koppintson az „Alapértelmezett böngészőalkalmazás” elemre, és válassza ki a Chromiumot.</translation>
 <translation id="1185134272377778587">A Chromium névjegye</translation>
 <translation id="1257458525759135959">A képek mentéséhez koppintson a Beállítások lehetőségre, hogy a Chromium hozzáadhassa őket a fotóihoz.</translation>
@@ -82,8 +81,6 @@ Az adatokat a Chromium-élmény javítására használó további beállítások
 <translation id="3078941082359356771">{COUNT,plural, =1{A Chromium segíthet a csomag nyomon követésében az Új lap oldalon.}other{A Chromium segíthet a csomagok nyomon követésében az Új lap oldalon.}}</translation>
 <translation id="3102849287235003384">Ha az összes webhelyen ki szeretne jelentkezni Google-fiókjából, <ph name="BEGIN_LINK" />jelentkezzen ki a Chromiumból<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Hangalapú keresés a Chromiumban</translation>
-<translation id="3228349498066165585">A Chromium egyes adatait még nem mentette a rendszer a Google-fiókjába.
-        A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor ezek az adatok törlődnek.</translation>
 <translation id="328933489847748230">{count,plural, =1{Jelenleg 1 Chromium-ablak látható}other{Jelenleg {count} Chromium-ablak látható}}</translation>
 <translation id="3344973607274501920">A Chromium nem tudta ellenőrizni a jelszavakat. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="3366305173356742781">A fiókjában lévő Chromium-adatok</translation>
@@ -92,7 +89,6 @@ Az adatokat a Chromium-élmény javítására használó további beállítások
 <translation id="347967311580159871">Az adatokat a Chromium-élmény javítására használó további beállításokért keresse fel a <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> oldalát.</translation>
 <translation id="3512168799938877162">A jelszó megosztása nem sikerült. Ellenőrizze az internetkapcsolatot, és győződjön meg arról, hogy be van jelentkezve a Chromiumba. Ezután próbálja újra.</translation>
 <translation id="3567399274263440288">Annak érdekében, hogy a legtöbbet hozhassa ki a Chromiumból, jelentkezzen be Google-fiókjával a Chromiumba.</translation>
-<translation id="3634039384458740619">Nyissa meg a Chromium beállításait.</translation>
 <translation id="3639997914391704523">A Chromium ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával.</translation>
 <translation id="3688710892786762883">A Chromium észleli a csomagkövetési számokat az Ön által felkeresett webhelyeken, és a csomagokkal kapcsolatos friss információkat megjeleníti az Új lap oldalon. Adatait megosztjuk a Google-lal, hogy biztosítani tudjuk ezt a funkciót, és mindenki számára jobbá tehessük a Shopping szolgáltatást.</translation>
 <translation id="372658070733623520">Ha Chromium-adatokat szeretne használni és tárolni Google-fiókjában, igazolja személyazonosságát.</translation>
@@ -120,6 +116,7 @@ Adatai az összetett jelszavával vannak titkosítva. Adja meg, ha Google-fiókj
 <translation id="4432744876818348753">Jelentkezzen be, hogy a legtöbbet hozhassa ki a Chromiumból.</translation>
 <translation id="4445228361214254027">Szervezete letiltotta a Chromium-adatok Google-fiókban való használatát és mentését. Az új könyvjelzők, jelszavak és egyebek csak erre az eszközre lesznek mentve.</translation>
 <translation id="4498832288620833153">A bevitt URL-eket felveszi a Chromiumban használt olvasólistájára.</translation>
+<translation id="451793238785269934">Önnek készült egyéni feed. Tartalmaz híreket, sportot és időjárást.</translation>
 <translation id="452436063477828504">Biztosítsa, hogy mindig használhassa a Google-fiókjában lévő Chromium-adatokat</translation>
 <translation id="4555020257205549924">Ha a funkció be van kapcsolva, a Chromium felajánlja a más nyelveken írt oldalak lefordítását a Google Fordító segítségével. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="4572441104543926904">Az összetett jelszavas titkosítás nem tartalmazza a fizetési módokat és a címeket.
@@ -151,9 +148,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="5203483872492817335">Gyorsabb hozzáférés a Chromiumhoz a Főképernyő Dockjáról.</translation>
 <translation id="5213683223491576284">Megnyitja a Jelszókezelőt a Chromiumban.</translation>
 <translation id="5224391634244552924">Nincsenek mentett jelszavak. A Chromium képes a jelszavak ellenőrzésére, ha Ön elmenti őket.</translation>
-<translation id="5242782538551259282">A Chromium egyes adatait még nem mentette a rendszer a Google-fiókjába.
-
-        A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor ezek az adatok törlődnek.</translation>
 <translation id="5308226104666789935">A Chromium nem tud frissítéseket keresni</translation>
 <translation id="5311557153294205270">A bevitt URL-eket felveszi a könyvjelzők közé a Chromiumban.</translation>
 <translation id="5396916991083608703">Beállítja a Chromiumot alapértelmezettként?</translation>
@@ -204,7 +198,6 @@ Megjegyzések:
 <translation id="632825460376924298">Chromium-bejelentkezés engedélyezése</translation>
 <translation id="6332129548244419716">A Chromiumban tárolt böngészési adatok törlése.</translation>
 <translation id="6337530241089703714">Döntse el, hogy törli-e a Chromium adatait erről az eszközről, vagy megtartja őket</translation>
-<translation id="6348483005826990855">3. Válassza ki a Chromium böngészőt.</translation>
 <translation id="6383607155624074112">Gyorsabb hozzáférés a Chromiumhoz a Főképernyő Dockjáról</translation>
 <translation id="6424492062988593837">A Chromium most még jobb lett! Új verzió áll rendelkezésre.</translation>
 <translation id="6433172051771630690">Tippek arra vonatkozóan, hogy miként hozhatja ki a legtöbbet a Chromiumból.</translation>
@@ -268,11 +261,11 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="8235427517854598594">A Chromium legyen az alapértelmezett böngésző?</translation>
 <translation id="8240981428553046115">A Chromium nem tudott frissítéseket keresni. Próbálja újra később.</translation>
 <translation id="8254729934443216898">Fedezze fel az új funkciókat, amelyek segítségével a legtöbbet hozhatja ki a Chromiumból.</translation>
+<translation id="829047622686389424">Önnek készült egyéni feed.</translation>
 <translation id="8303579360494576778">Fizetési módok kezelése a Chromiumban</translation>
 <translation id="830951810931292870">Inkognitó módban nyitja meg a bevitt URL-eket a Chromiumban.</translation>
 <translation id="8386869251364507178">Chromium-műveletek</translation>
 <translation id="8409374867500149834">A Chromium a legerősebb védelmet biztosítja a kártékony webhelyek ellen</translation>
-<translation id="8458950033462118672">Ha szeretné, hogy automatikusan a Chromium nyissa meg a linkeket, állítsa be alapértelmezett böngészőként.</translation>
 <translation id="8473874987831035139">Chromium-tipp: Helyezze át a Chromiumot a Dockra</translation>
 <translation id="8502918057530111907">Használja a Chromiumot alapértelmezett böngészőként, hogy egyszerűen hozzáférhessen az árváltozások és -összehasonlítások funkcióhoz</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Erre akkor kerül sor, ha a Chromium {THRESHOLD} percig nincs használatban. Törlődni fognak azok az adatok, amelyek csak erre az eszközre lettek mentve, miközben be volt jelentkezve. Ezek közé tartozhatnak az előzmények és a jelszavak is.}other{Erre akkor kerül sor, ha a Chromium {THRESHOLD} percig nincs használatban. Törlődni fognak azok az adatok, amelyek csak erre az eszközre lettek mentve, miközben be volt jelentkezve. Ezek közé tartozhatnak az előzmények és a jelszavak is.}}</translation>

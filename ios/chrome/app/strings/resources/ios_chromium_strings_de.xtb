@@ -5,7 +5,6 @@
 <translation id="1047130070405668746">Wähle Chromium aus</translation>
 <translation id="1091252999271033193">Das bedeutet, dass Chromium immer die mobile Website anfordert.</translation>
 <translation id="1115463765356382667">Mit den unten vorgeschlagenen Aktionen lässt sich Chromium optimal nutzen.</translation>
-<translation id="1141230343006904201">1. Chromium-Einstellungen öffnen</translation>
 <translation id="1171824629317156389">Öffne unter iOS die Chromium-Einstellungen, tippe auf „Standard-Browser-App“ und wähle „Chromium“ aus.</translation>
 <translation id="1185134272377778587">Über Chromium</translation>
 <translation id="1257458525759135959">Um Bilder zu speichern, gib Chromium unter „Einstellungen“ die Berechtigung zum Hinzufügen von Fotos</translation>
@@ -81,8 +80,6 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chromium verwendet w
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium kann dir dabei helfen, dieses Paket auf der Seite „Neuer Tab“ zu verfolgen.}other{Chromium kann dir dabei helfen, diese Pakete auf der Seite „Neuer Tab“ zu verfolgen.}}</translation>
 <translation id="3102849287235003384">Du kannst dich auf allen Websites aus deinem Google-Konto abmelden, indem du dich <ph name="BEGIN_LINK" />von Chromium abmeldest<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Sprachsuche in Chromium</translation>
-<translation id="3228349498066165585">Einige deiner Chromium-Daten wurden noch nicht in deinem Google-Konto gespeichert.
-        Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="328933489847748230">{count,plural, =1{Aktuell wird 1 Chromium-Fenster angezeigt}other{Aktuell werden {count} Chromium-Fenster angezeigt}}</translation>
 <translation id="3344973607274501920">Chromium konnte deine Passwörter nicht prüfen. Prüfe deine Internetverbindung.</translation>
 <translation id="3366305173356742781">Chromium-Daten in deinem Konto</translation>
@@ -91,7 +88,6 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chromium verwendet w
 <translation id="347967311580159871">Weitere Einstellungen, bei denen Daten zur Verbesserung von Chromium verwendet werden, findest du in den <ph name="BEGIN_LINK" />Google-Diensten<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Dein Passwort wurde nicht geteilt. Prüfe deine Internetverbindung und vergewissere dich, dass du in Chromium angemeldet bist. Versuch es dann noch einmal.</translation>
 <translation id="3567399274263440288">Wenn du Chromium optimal nutzen möchtest, melde dich mit deinem Google-Konto in Chromium an.</translation>
-<translation id="3634039384458740619">Chromium-Einstellungen öffnen</translation>
 <translation id="3639997914391704523">Chromium kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest.</translation>
 <translation id="3688710892786762883">Chromium erkennt Sendungsnummern auf Websites, die du besuchst, und zeigt dir aktuelle Informationen zu deinen Paketen auf der Seite „Neuer Tab“ an. Deine Daten werden mit Google geteilt, um diese Funktion bereitzustellen und das Onlineshopping für alle zu verbessern.</translation>
 <translation id="372658070733623520">Bestätige deine Identität, um Chromium-Daten in deinem Google-Konto zu verwenden und zu speichern.</translation>
@@ -119,6 +115,7 @@ Deine Daten werden mit deiner Passphrase verschlüsselt. Gib sie ein, um Chromiu
 <translation id="4432744876818348753">Wenn du Chromium optimal nutzen möchtest, melde dich an.</translation>
 <translation id="4445228361214254027">Deine Organisation hat die Möglichkeit deaktiviert, Chromium-Daten in deinem Google-Konto zu speichern und zu nutzen. Neue Lesezeichen, Passwörter und weitere Informationen werden nur auf diesem Gerät gespeichert.</translation>
 <translation id="4498832288620833153">Fügt die eingegebenen URLs deiner Leseliste in Chromium hinzu.</translation>
+<translation id="451793238785269934">Ein personalisierter Feed für dich. Er enthält Nachrichten, Sport und das Wetter.</translation>
 <translation id="452436063477828504">Achte darauf, dass du die Chromium-Daten in deinem Google-Konto jederzeit verwenden kannst</translation>
 <translation id="4555020257205549924">Wenn diese Funktion aktiviert ist, hast du in Chromium die Möglichkeit, Seiten in anderen Sprachen mithilfe von Google Übersetzer zu übersetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4572441104543926904">Die Passphrasenverschlüsselung erstreckt sich nicht auf Zahlungsmethoden und Adressen.
@@ -150,9 +147,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="5203483872492817335">Über das Startbildschirm-Dock deines iPads kannst du schneller auf Chromium zugreifen.</translation>
 <translation id="5213683223491576284">Dadurch wird der Passwortmanager in Chromium geöffnet.</translation>
 <translation id="5224391634244552924">Keine gespeicherten Passwörter. Chromium kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
-<translation id="5242782538551259282">Einige deiner Chromium-Daten wurden noch nicht in deinem Google-Konto gespeichert.
-
-        Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="5308226104666789935">Chromium kann nicht nach Aktualisierungen suchen</translation>
 <translation id="5311557153294205270">Fügt die eingegebenen URLs zu deinen Lesezeichen in Chromium hinzu.</translation>
 <translation id="5396916991083608703">Chromium als Standardbrowser festlegen?</translation>
@@ -203,7 +197,6 @@ Wichtige Hinweise:
 <translation id="632825460376924298">Anmeldung in Chromium zulassen</translation>
 <translation id="6332129548244419716">Browserdaten in Chromium löschen.</translation>
 <translation id="6337530241089703714">Möchtest du deine Chromium-Daten von diesem Gerät löschen oder sie behalten?</translation>
-<translation id="6348483005826990855">3. Chromium auswählen</translation>
 <translation id="6383607155624074112">Über das Startbildschirm-Dock schneller auf Chromium zugreifen</translation>
 <translation id="6424492062988593837">Chromium ist jetzt noch besser! Es ist eine neue Version verfügbar.</translation>
 <translation id="6433172051771630690">Tipps erhalten, wie du Chromium noch besser nutzen kannst.</translation>
@@ -267,11 +260,11 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="8235427517854598594">Chromium als Standardbrowser festlegen?</translation>
 <translation id="8240981428553046115">Chromium konnte nicht nach Updates suchen. Versuche es später noch einmal.</translation>
 <translation id="8254729934443216898">Entdecke neue Funktionen, mit denen du Chromium noch besser nutzen kannst.</translation>
+<translation id="829047622686389424">Ein personalisierter Feed für dich.</translation>
 <translation id="8303579360494576778">Zahlungsmethoden in Chromium verwalten</translation>
 <translation id="830951810931292870">Öffnet die eingegebenen URLs in Chromium im Inkognitomodus.</translation>
 <translation id="8386869251364507178">Chromium-Aktionen</translation>
 <translation id="8409374867500149834">Du nutzt den umfangreichen Schutz von Chromium vor schädlichen Websites</translation>
-<translation id="8458950033462118672">Wenn du Chromium als Standard-Browser-App festlegst, werden Links automatisch dort geöffnet.</translation>
 <translation id="8473874987831035139">Chromium-Tipp: Chromium ins Dock verschieben</translation>
 <translation id="8502918057530111907">Chromium standardmäßig verwenden, um bequem Preisinformationen zu erhalten</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Das passiert, wenn Chromium {THRESHOLD} Minute lang nicht verwendet wird. Daten, die nur auf diesem Gerät gespeichert wurden, während du angemeldet warst, werden gelöscht. Dazu können beispielsweise der Verlauf und Passwörter gehören.}other{Das passiert, wenn Chromium {THRESHOLD} Minuten lang nicht verwendet wird. Daten, die nur auf diesem Gerät gespeichert wurden, während du angemeldet warst, werden gelöscht. Dazu können beispielsweise der Verlauf und Passwörter gehören.}}</translation>

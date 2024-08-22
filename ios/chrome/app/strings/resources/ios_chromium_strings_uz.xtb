@@ -5,7 +5,6 @@
 <translation id="1047130070405668746">Chromium brauzerini tanlang</translation>
 <translation id="1091252999271033193">Bunda Chromium har safar saytning mobil versiyasini talab qiladi.</translation>
 <translation id="1115463765356382667">Chromiumdan maksimal foydalanish uchun quyidagi tavsiya etilgan amallarni bajaring.</translation>
-<translation id="1141230343006904201">1. Chromium sozlamalarini ochish</translation>
 <translation id="1171824629317156389">iOSda Chromium sozlamalarini ochib, keyin “Birlamchi brauzer ilovasi” ustiga bosib, Chromiumni tanlang.</translation>
 <translation id="1185134272377778587">Chromium haqida</translation>
 <translation id="1257458525759135959">Rasmlarni saqlash uchun Sozlamalar ustiga bosib, Chromiumga rasmlarni ochishga ruxsat bering.</translation>
@@ -81,8 +80,6 @@ Chromiumni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <p
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium bu paketni Yangi varaqda kuzatishingizda yordam beradi.}other{Chromium bu paketlarni Yangi varaqda kuzatishingizda yordam beradi.}}</translation>
 <translation id="3102849287235003384">Barcha saytlarda Google hisobingizdan chiqish uchun <ph name="BEGIN_LINK" />Chromium brauzerida hisobdan chiqing<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Chromiumda ovoz bilan qidirish</translation>
-<translation id="3228349498066165585">Ayrim Chromium maʼlumotlari Google hisobingizga hali saqlanmagan.
-        Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi.</translation>
 <translation id="328933489847748230">{count,plural, =1{Hozir 1 ta Chromium oynasi chiqarilgan}other{Hozir {count} ta Chromium oynasi chiqarilgan}}</translation>
 <translation id="3344973607274501920">Chromium parollaringizni tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="3366305173356742781">Hisobingizdagi Chromium maʼlumotlari</translation>
@@ -91,7 +88,6 @@ Chromiumni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <p
 <translation id="347967311580159871">Chromiumni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph name="BEGIN_LINK" />Google xizmatlari<ph name="END_LINK" /> sahifasida ochish mumkin.</translation>
 <translation id="3512168799938877162">Parolingiz ulashilmadi. Internet aloqasini tekshiring va Chromium hisobiga kiring. Keyin qaytadan urining.</translation>
 <translation id="3567399274263440288">Chromium imkoniyatlaridan maksimal foydalanish uchun Chromiumga Google hisobingiz bilan kiring.</translation>
-<translation id="3634039384458740619">Chromium sozlamalarini ochish</translation>
 <translation id="3639997914391704523">Google hisobingizga kirsangiz, Chromium parollaringizni tekshira oladi.</translation>
 <translation id="3688710892786762883">Chromium siz ochgan saytlardagi joʻnatmani kuzatish raqamlarini aniqlaydi va yangi varaqda paket yangilanishlarini koʻrsatadi. Bu funksiyani taqdim etish va xaridlarni yaxshilash uchun maʼlumotlaringiz Googleʼga ulashiladi.</translation>
 <translation id="372658070733623520">Chromium maʼlumotlarini Google hisobida saqlash va ulardan foydalanish uchun shaxsingizni tasdiqlang.</translation>
@@ -151,9 +147,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chromium m
 <translation id="5203483872492817335">Chromiumni iPad bosh ekraniga mahkamlab, tezroq oching.</translation>
 <translation id="5213683223491576284">Chromiumda parollar menejerini ochadi.</translation>
 <translation id="5224391634244552924">Hech qanday parol saqlanmagan. Chromium faqat saqlangan parollaringizni tekshira oladi.</translation>
-<translation id="5242782538551259282">Ayrim Chromium maʼlumotlari Google hisobingizga hali saqlanmagan.
-
-        Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi.</translation>
 <translation id="5308226104666789935">Chromium yangilanishlar chiqqanini tekshira olmadi.</translation>
 <translation id="5311557153294205270">Kiritilgan URL manzillarni Chromium bukmarklariga kiritadi.</translation>
 <translation id="5396916991083608703">Chromium asosiy brauzer sifatida tanlansinmi?</translation>
@@ -204,7 +197,6 @@ Bularni hisobga olish kerak:
 <translation id="632825460376924298">Chromium hisobiga kirishga ruxsat berish</translation>
 <translation id="6332129548244419716">Chromium brauzeri maʼlumotlarini oʻchirish.</translation>
 <translation id="6337530241089703714">Chromium maʼlumotlari bu qurilmadan tozalanishi yoki saqlanib qolishini tanlang</translation>
-<translation id="6348483005826990855">3. Chromium brauzerini tanlang</translation>
 <translation id="6383607155624074112">Chromiumni bosh ekranga mahkamlab, tezroq oching</translation>
 <translation id="6424492062988593837">Chromium ancha yaxshilandi! Yangi versiya mavjud.</translation>
 <translation id="6433172051771630690">Chromiumdan unumli foydalanish maslahatlari.</translation>
@@ -273,7 +265,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="830951810931292870">Kiritilgan URL manzillar Chromium brauzerida Inkognito rejimda ochiladi.</translation>
 <translation id="8386869251364507178">Chromium amallari</translation>
 <translation id="8409374867500149834">Sizdagi Chromium zararli saytlarga qarshi eng kuchli himoya tizimiga ega</translation>
-<translation id="8458950033462118672">Saytlar Chromium brauzerida avtomatik ochilishi uchun uni birlamchi brauzer etib tayinlash kifoya.</translation>
 <translation id="8473874987831035139">Chromium maslahati: Chromiumni ekranga mahkamlang</translation>
 <translation id="8502918057530111907">Narxlarni tez bilish uchun Chromiumni birlamchi brauzer etib tayinlang</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromium {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Hisobga kirilganda faqat shu qurilmada saqlangan maʼlumotlar oʻchirib tashlanadi. Bunga tarix va parollar kirishi mumkin.}other{Chromium {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Hisobga kirilganda faqat shu qurilmada saqlangan maʼlumotlar oʻchirib tashlanadi. Bunga tarix va parollar kirishi mumkin.}}</translation>

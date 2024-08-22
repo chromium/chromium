@@ -20,6 +20,7 @@
 <translation id="1645759014353344461">Картице су груписане (<ph name="TABS_COUNT_MANY" />)</translation>
 <translation id="1657719826150349398">Преместите картицу надоле</translation>
 <translation id="1713541401465507417">Затвори све картице и групе</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Сазнајте више<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> картица је груписана</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картица}one{<ph name="TABS_COUNT_MANY" /> картица}few{<ph name="TABS_COUNT_MANY" /> картице}other{<ph name="TABS_COUNT_MANY" /> картица}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Обележите <ph name="TABS_COUNT_ONE" /> изабрану картицу}one{Обележите <ph name="TABS_COUNT_MANY" /> изабрану картицу}few{Обележите <ph name="TABS_COUNT_MANY" /> изабране картице}other{Обележите <ph name="TABS_COUNT_MANY" /> изабраних картица}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Направљено је малопре</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Затвори после 1 дана}one{Затвори после <ph name="DAY_COUNT_MANY" /> дана}few{Затвори после <ph name="DAY_COUNT_MANY" /> дана}other{Затвори после <ph name="DAY_COUNT_MANY" /> дана}}</translation>
 <translation id="4777866634702576038">Желите да избришете групу картица?</translation>
+<translation id="4783638485675352219">Делите наслове и URL-ове отворених картица са овог уређаја са оперативним системом</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> рецензија)}one{(<ph name="REVIEWS_COUNT_MANY" /> рецензија)}few{(<ph name="REVIEWS_COUNT_MANY" /> рецензије)}other{(<ph name="REVIEWS_COUNT_MANY" /> рецензија)}}</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="4870911314065352661">Желите да затворите све картице?</translation>

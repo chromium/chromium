@@ -373,7 +373,6 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2789552044937754463">{COUNT,plural, =1{Kata laluan disimpan dalam Google Account anda, {EMAIL}}other{Kata laluan disimpan dalam Google Account anda, {EMAIL}}}</translation>
 <translation id="2797029671965852011">Tunjukkan Sejarah</translation>
 <translation id="2800683595868705743">Tinggalkan Penukar Tab</translation>
-<translation id="2815198996063984598">2. Ketik Apl Penyemak Imbas Lalai</translation>
 <translation id="2818821771744632548">Anda telah dilog keluar daripada akaun anda, <ph name="USER_NAME" />, sebagai sebahagian daripada tetapan semula iPhone anda. Untuk log masuk semula, ketik "Teruskan" di bawah.</translation>
 <translation id="2819667972867209401">Apabila dihidupkan, data disimpan pada Google Account anda. Apabila dimatikan, data akan disimpan hanya pada peranti ini dan akan dipadamkan jika anda log keluar.</translation>
 <translation id="2830972654601096923">Urus Alamat...</translation>
@@ -539,6 +538,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3607167657931203000">Autolengkap Data</translation>
 <translation id="3609785682760573515">Menyegerakkan...</translation>
 <translation id="3625008969091706597">Anda boleh meleret bahagian tepi untuk kembali.</translation>
+<translation id="362709345066740529">Sesuaikan kad dan suapan anda serta pelbagai lagi di sini</translation>
 <translation id="3630104167004786843">Jangan dapatkan kemaskinian</translation>
 <translation id="3631443864840848029">Pastikan anda menyimpan kata laluan semasa anda untuk laman ini.</translation>
 <translation id="3638472932233958418">Pramuat Halaman Web</translation>
@@ -567,7 +567,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3775743491439407556">Penyegerakan Tidak Berfungsi</translation>
 <translation id="3779810277399252432">Tiada sambungan Internet.</translation>
 <translation id="3785672280731998727">Nama Paparan</translation>
-<translation id="3789294999358192700">Ikut langkah di bawah:</translation>
 <translation id="3789841737615482174">Pasang</translation>
 <translation id="380329542618494757">Nama</translation>
 <translation id="3803696231112616155">Tawarkan untuk menterjemahkan tapak ini</translation>
@@ -778,6 +777,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4808646838864186379">Penghantaran anda telah dibatalkan</translation>
 <translation id="4808744395915275922">Kemaskinian</translation>
 <translation id="4813345808229079766">Sambungan</translation>
+<translation id="4817408188311787415">Autoisi Borang dengan <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4818522717893377262">Tambahkan Bahasa...</translation>
 <translation id="481968316161811770">Kuki, Data Tapak</translation>
 <translation id="4821595350501541683">Tab telah ditutup dan data semakan imbas dipadamkan</translation>
@@ -888,6 +888,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5316356981864168850"><ph name="INDEX" /> daripada <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5318298563956633672">Anda telah menjejaki produk ini.</translation>
+<translation id="5327248766486351172">Nama</translation>
 <translation id="5327753393331509826">Dapatkan Pemberitahuan Kandungan</translation>
 <translation id="5329451663851195956">Anda boleh menarik ke bawah untuk menyegarkan semula.</translation>
 <translation id="5333148247954006827">Tukar kepada Profil Lain</translation>
@@ -1227,6 +1228,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="6797885426782475225">Carian Suara</translation>
 <translation id="6800349425672670802">Anda boleh mengakses semua tab terbuka anda daripada Penukar Tab.</translation>
 <translation id="6807889908376551050">Paparkan Semua...</translation>
+<translation id="6810455365609435460">Tab Inkognito</translation>
 <translation id="681368974849482173">Item dibuat</translation>
 <translation id="6824350924364057989">Tetapan</translation>
 <translation id="6831043979455480757">Terjemah</translation>

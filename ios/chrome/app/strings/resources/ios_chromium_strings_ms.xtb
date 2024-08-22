@@ -5,7 +5,6 @@
 <translation id="1047130070405668746">Pilih Chromium</translation>
 <translation id="1091252999271033193">Ini bermakna Chromium akan meminta laman mudah alih setiap masa.</translation>
 <translation id="1115463765356382667">Lengkapkan tindakan yang dicadangkan di bawah untuk memanfaatkan Chromium sepenuhnya.</translation>
-<translation id="1141230343006904201">1. Buka Tetapan Chromium</translation>
 <translation id="1171824629317156389">Buka Tetapan Chromium dalam iOS, kemudian ketik "Apl Penyemak imbas Lalai" dan pilih Chromium.</translation>
 <translation id="1185134272377778587">Mengenai Chromium</translation>
 <translation id="1257458525759135959">Untuk menyimpan imej, ketik Tetapan untuk membolehkan Chromium membuat penambahan pada foto anda.</translation>
@@ -82,8 +81,6 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium boleh membantu anda menjejaki pakej ini pada Halaman Tab Baharu.}other{Chromium boleh membantu anda menjejaki pakej ini pada Halaman Tab Baharu.}}</translation>
 <translation id="3102849287235003384">Untuk log keluar daripada Google Account dalam semua laman web, <ph name="BEGIN_LINK" />log keluar daripada Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Cari Dengan Suara dalam Chromium</translation>
-<translation id="3228349498066165585">Sesetengah data Chromium anda belum disimpan dalam Google Account anda.
-        Tunggu beberapa minit sebelum log keluar. Jika anda log keluar sekarang, data ini akan dipadamkan.</translation>
 <translation id="328933489847748230">{count,plural, =1{Kini memaparkan 1 tetingkap Chromium}other{Kini memaparkan {count} tetingkap Chromium}}</translation>
 <translation id="3344973607274501920">Chromium tidak dapat menyemak kata laluan anda. Cuba periksa sambungan Internet anda.</translation>
 <translation id="3366305173356742781">Data Chromium pada akaun anda</translation>
@@ -92,7 +89,6 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="347967311580159871">Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan pengalaman Chromium anda, akses <ph name="BEGIN_LINK" />Perkhidmatan Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Kata laluan anda tidak dikongsi. Semak sambungan Internet anda dan pastikan anda dilog masuk ke Chromium. Kemudian cuba lagi.</translation>
 <translation id="3567399274263440288">Untuk memanfaatkan Chromium sepenuhnya, log masuk ke Chromium dengan Google Account anda.</translation>
-<translation id="3634039384458740619">Buka Tetapan Chromium</translation>
 <translation id="3639997914391704523">Chromium boleh menyemak kata laluan anda apabila anda log masuk menggunakan Google Account anda.</translation>
 <translation id="3688710892786762883">Chromium akan mengesan nombor penjejakan pakej pada laman yang anda lawati dan menunjukkan kepada anda kemaskinian pakej pada halaman Tab Baharu. Data anda akan dikongsi dengan Google untuk memberikan ciri ini dan meningkatkan Shopping untuk semua orang.</translation>
 <translation id="372658070733623520">Untuk menggunakan dan menyimpan data Chromium dalam Google Account anda, sahkan identiti anda.</translation>
@@ -152,9 +148,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chromium dalam 
 <translation id="5203483872492817335">Akses Chromium dengan lebih pantas daripada Dok Skrin Utama iPad anda.</translation>
 <translation id="5213683223491576284">Buka Password Manager dalam Chromium.</translation>
 <translation id="5224391634244552924">Tiada kata laluan yang disimpan. Chromium boleh menyemak kata laluan anda yang disimpan.</translation>
-<translation id="5242782538551259282">Sesetengah data Chromium anda belum disimpan dalam Google Account anda.
-
-        Tunggu beberapa minit sebelum log keluar. Jika anda log keluar sekarang, data ini akan dipadamkan.</translation>
 <translation id="5308226104666789935">Chromium tidak dapat menyemak kemaskinian</translation>
 <translation id="5311557153294205270">Menambahkan URL yang diinput pada penanda halaman anda dalam Chromium.</translation>
 <translation id="5396916991083608703">Tetapkan Chromium sebagai Penyemak Imbas Lalai?</translation>
@@ -205,7 +198,6 @@ Perkara yang perlu dipertimbangkan:
 <translation id="632825460376924298">Benarkan Log Masuk Chromium</translation>
 <translation id="6332129548244419716">Padamkan Data Semakan Imbas dalam Chromium.</translation>
 <translation id="6337530241089703714">Pilih sama ada anda hendak mengosongkan data Chromium anda daripada peranti ini atau mengekalkan data tersebut</translation>
-<translation id="6348483005826990855">3. Pilih Chromium</translation>
 <translation id="6383607155624074112">Akses Chromium lebih pantas daripada Dok Skrin Utama anda</translation>
 <translation id="6424492062988593837">Chromium telah dipertingkatkan! Versi baharu kini boleh didapati.</translation>
 <translation id="6433172051771630690">Petua tentang memanfaatkan Chromium sepenuhnya.</translation>
@@ -274,7 +266,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="830951810931292870">Buka URL yang dimasukkan pada Chromium dalam Inkognito.</translation>
 <translation id="8386869251364507178">Tindakan Chromium</translation>
 <translation id="8409374867500149834">Anda mempunyai keselamatan terkuat Chromium terhadap laman web berbahaya</translation>
-<translation id="8458950033462118672">Anda boleh membuka pautan dalam Chromium secara automatik dengan menjadikan Chromium sebagai Apl Penyemak Imbas Lalai anda.</translation>
 <translation id="8473874987831035139">Petua Chromium: Alihkan Chromium kepada Dok</translation>
 <translation id="8502918057530111907">Gunakan Chromium secara Lalai untuk Mendapatkan Cerapan Harga dengan Mudah</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Perkara ini berlaku apabila Chromium tidak digunakan selama {THRESHOLD} minit. Data yang disimpan hanya pada peranti ini semasa anda log masuk akan dipadamkan. Data ini boleh termasuk sejarah dan kata laluan.}other{Perkara ini berlaku apabila Chromium tidak digunakan selama {THRESHOLD} minit. Data yang disimpan hanya pada peranti ini semasa anda log masuk akan dipadamkan. Data ini boleh termasuk sejarah dan kata laluan.}}</translation>

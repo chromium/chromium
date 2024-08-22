@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">ଏକ୍ସକ୍ଲୁସିଭ <ph name="PRODUCT_NAME" /> ଆସେଟଗୁଡ଼ିକ ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="1022628058306505708">ଆର୍ଥ ଫ୍ଲୋ</translation>
 <translation id="1026212596705997935">ସର୍ଟକଟକୁ "<ph name="CONFLICT_ACCEL_NAME" />" ପାଇଁ ବ୍ୟବହାର କରାଯାଉଛି। ଏକ ନୂଆ ସର୍ଟକଟକୁ ଦବାନ୍ତୁ। ପୂର୍ବରୁ ଥିବା ସର୍ଟକଟକୁ ବଦଳାଇବା ପାଇଁ ଏହି ସର୍ଟକଟକୁ ପୁଣି ଦବାନ୍ତୁ।</translation>
+<translation id="1030856839388844477">ଡାଟା ବ୍ୟବହାର ରିସେଟ କରନ୍ତୁ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />ଟି ଥ୍ରେଡ୍, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ନୂଆ ଫିଚର୍ ଉପଲବ୍ଧ ଅଛି, ଅଧିକ ଜାଣିବାକୁ ଅପ୍ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1049663189809099096">ପେଷ୍ଟେଲ ହଳଦିଆ</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">ଦୁର୍ବଳ ସିଗ୍‌‌‌‌‌‌‌ନାଲ୍</translation>
 <translation id="1300115153046603471">APN ପ୍ରକାର ଡିଫଲ୍ଟ ଏବଂ <ph name="ATTACH" /> ଅଟେ।</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">କନଭର୍ଟ କରନ୍ତୁ</translation>
 <translation id="1304014921944666344">ତିଆରି କରାଯାଇଥିବା ତାରିଖ</translation>
 <translation id="1308754910631152188">ଅପଡେଟ କରାଯାଉଛି (<ph name="PERCENTAGE_VALUE" />% ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> ମିନିଟ</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">ଲୁଣି ହ୍ରଦ</translation>
 <translation id="1367951781824006909">ଏକ ଫାଇଲ୍ ବାଛନ୍ତୁ</translation>
 <translation id="1371650399987522809">Google AI ଦ୍ୱାରା ପରିଚାଳିତ ୱାଲପେପର ପାଇଁ ମତାମତ</translation>
+<translation id="1374385338586507108">ପରିଭାଷିତ କରନ୍ତୁ</translation>
 <translation id="1387854245479784695">ଏହା ସମସ୍ତ କୋରର ଏକ ଏକତ୍ରୀକରଣ ଅଟେ</translation>
 <translation id="1393206549145430405">କେସଲ</translation>
 <translation id="1394661041439318933">ଡିଭାଇସ କେସରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">କରେଣ୍ଟ</translation>
 <translation id="346539236881580388">ପୁଣି ଉଠାନ୍ତୁ</translation>
 <translation id="3484914941826596830">ଫାର୍ମୱେରକୁ ଅପଡେଟ କରାଯାଉଥିବା ସମୟରେ ଏହି ଏକ୍ସଟର୍ନଲ ଡିଭାଇସକୁ ଅନପ୍ଲଗ କରନ୍ତୁ ନାହିଁ କିମ୍ବା ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ ବନ୍ଦ କରନ୍ତୁ ନାହିଁ। ଆପଣ ଏହି ୱିଣ୍ଡୋକୁ ଛୋଟ କରିପାରିବେ। ଏହି ଅପଡେଟ ପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ ଏବଂ ଏହି ସମୟରେ ଆପଣଙ୍କ ଏକ୍ସଟର୍ନଲ ଡିଭାଇସ କାମ କରିନପାରେ।</translation>
-<translation id="3485555238092220889">ଆକ୍ସେସିବିଲିଟୀ ଆକ୍ସନ</translation>
 <translation id="3486220673238053218">ସଂଜ୍ଞା</translation>
 <translation id="3487866404496702283">ମାହି ଫିଚର ପାଇଁ ମତାମତ</translation>
 <translation id="3488065109653206955">ଆଶିଂକ ଭାବେ ସକ୍ରିୟ କରାଯାଇଛି</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">କୌଣସି ସେବା ନାହିଁ</translation>
 <translation id="4570558255126759859">ରେକର୍ଡିଂଗୁଡ଼ିକର ସାରାଂଶ ପ୍ରସ୍ତୁତ କରିବା ପାଇଁ Gemini ମଡେଲ ଡାଉନଲୋଡ କରିବେ?</translation>
 <translation id="4573777384450697571">ବିଫଳ ହୋଇଛି - ସାର୍ଟିଫିକେଟର ମିଆଦ ଶେଷ ହୋଇଯାଇଛି</translation>
+<translation id="4575450106703099687">ଆକ୍ସେସିବିଲିଟୀ ବିକଳ୍ପଗୁଡ଼ିକ</translation>
 <translation id="458794348635939462">ହୋଷ୍ଟ ସମ୍ବନ୍ଧିତ ସମସ୍ତ ସମସ୍ୟାର ସମାଧାନ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="4593212453765072419">ପ୍ରକ୍ସି ପ୍ରାମାଣିକତା ଆବଶ୍ୟକ</translation>
 <translation id="4594021849294327751">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ତିଆରି କରନ୍ତୁ</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />ରୁ <ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> ପାଇଁ "ଏଡିଟ କରନ୍ତୁ" ବଟନ।</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" />କୁ ଅପଡେଟ କରନ୍ତୁ</translation>
+<translation id="5736820754189340309">ଡାଟା ବ୍ୟବହାରକୁ ରିସେଟ କରାଯାଇଛି</translation>
 <translation id="574392208103952083">ମଧ୍ୟମ</translation>
 <translation id="5757187557809630523">ପରବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
 <translation id="5760715441271661976">ପୋର୍ଟାଲ୍ ସ୍ଥିତି</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">ମ୍ୟୁଟ୍‌</translation>
 <translation id="5784136236926853061">HTTPର ଅଧିକ ଲାଟେନ୍ସି</translation>
 <translation id="5790391387506209808">ଲେପିସ ଲାଜୁଲି</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">କୌଣସି ସର୍ଟକଟ ଆସାଇନ କରାଯାଇନାହିଁ</translation>
 <translation id="5826644637650799838">ଆର୍ଟ ବିଷୟରେ</translation>
 <translation id="5832805196449965646">ଲୋକଙ୍କୁ ଯୋଗ କରନ୍ତୁ</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">ଟେକ୍ସଟ ନାଭିଗେସନ</translation>
 <translation id="680983167891198932">କୀ</translation>
 <translation id="6816797338148849397">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା ଉପଲବ୍ଧ ଅଛି। ଆକ୍ସେସ୍ କରିବାକୁ ଅପ୍ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="6853312040151791195">ଡିସଚାର୍ଜିଂ ରେଟ୍</translation>
 <translation id="6862416241246624313">ମତାମତ ଦାଖଲ କରାଯାଇଛି</translation>
 <translation id="6866732840889595464">ଡେଇଜି</translation>
@@ -1551,6 +1557,7 @@
 <translation id="9087578468327036362">ଏହି କ୍ୱେରୀ ବିଷୟରେ ରିପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="9088306295921699330">ବର୍ତ୍ତମାନର ବ୍ୟବହାର</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">ତାରିଖ ରିସେଟ କରନ୍ତୁ ବିଷୟରେ ଅଧିକ ସୂଚନା</translation>
 <translation id="9100765901046053179">ଉନ୍ନତ ସେଟିଂସ୍</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> ପାଇଁ ଟିକେଟ୍ ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
 <translation id="9106415115617144481">ପୃଷ୍ଠା <ph name="PAGE_NUMBER" />କୁ ସ୍କାନ୍ କରାଯାଉଛି</translation>

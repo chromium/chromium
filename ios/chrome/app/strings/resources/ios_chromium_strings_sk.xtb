@@ -5,7 +5,6 @@
 <translation id="1047130070405668746">Vyberte Chromium</translation>
 <translation id="1091252999271033193">Znamená to, že Chromium bude zakaždým žiadať o mobilný web.</translation>
 <translation id="1115463765356382667">Vykonajte tieto navrhované akcie nižšie, ktoré vám umožnia využívať Chromium naplno.</translation>
-<translation id="1141230343006904201">1. Otvoriť Nastavenia prehliadača Chromium</translation>
 <translation id="1171824629317156389">V zariadení so systémom iOS otvorte nastavenia prehliadača Chromium, klepnite na Predvolený prehliadač a vyberte Chromium.</translation>
 <translation id="1185134272377778587">Informácie o prehliadači Chromium</translation>
 <translation id="1257458525759135959">Ak chcete ukladať obrázky, klepnutím na Nastavenia povoľte prehliadaču Chromium pridávať do vašich fotiek</translation>
@@ -82,8 +81,6 @@
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium vám môže pomôcť sledovať túto zásielku na stránke na novej karte.}few{Chromium vám môže pomôcť sledovať tieto zásielky na stránke na novej karte.}many{Chromium can help you track these packages on the New Tab Page.}other{Chromium vám môže pomôcť sledovať tieto zásielky na stránke na novej karte.}}</translation>
 <translation id="3102849287235003384">Ak sa chcete odhlásiť zo svojho účtu Google na všetkých weboch, <ph name="BEGIN_LINK" />odhláste sa z prehliadača Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Vyhľadávať hlasom v prehliadači Chromium</translation>
-<translation id="3228349498066165585">Niektoré údaje prehliadača Chromium zatiaľ neboli vo vašom účte Google uložené.
-        Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tieto údaje budú odstránené.</translation>
 <translation id="328933489847748230">{count,plural, =1{Práve sa zobrazuje 1 okno prehliadača Chromium}few{Práve sa zobrazujú {count} okná prehliadača Chromium}many{Now showing {count} Chromium windows}other{Práve sa zobrazuje {count} okien prehliadača Chromium}}</translation>
 <translation id="3344973607274501920">Prehliadaču Chromium sa nepodarilo skontrolovať heslá. Skontrolujte internetové pripojenie.</translation>
 <translation id="3366305173356742781">Údaje prehliadača Chromium vo vašom účte</translation>
@@ -92,7 +89,6 @@
 <translation id="347967311580159871">Ďalšie nastavenia, ktoré zlepšujú prostredie prehliadača Chromium pomocou údajov, nájdete v <ph name="BEGIN_LINK" />službách Googlu<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Vaše heslo nebolo zdieľané. Skontrolujte internetové pripojenie a uistite sa, že ste sa prihlásili do prehliadača Chromium. Potom to skúste znova.</translation>
 <translation id="3567399274263440288">Ak chcete využívať Chromium naplno, prihláste sa doň svojím účtom Google.</translation>
-<translation id="3634039384458740619">Otvoriť Nastavenia prehliadača Chromium</translation>
 <translation id="3639997914391704523">Keď sa prihlásite účtom Google, Chromium môže skontrolovať vaše heslá.</translation>
 <translation id="3688710892786762883">Chromium zistí sledovacie čísla zásielok na weboch, ktoré navštívite, a zobrazí aktuality o zásielke na stránke na novej karte. Vaše údaje sa budú zdieľať s Googlom na účely poskytovania tejto funkcie a zlepšovania Nákupov pre všetkých.</translation>
 <translation id="372658070733623520">Ak chcete vo svojom účte Google používať a ukladať údaje prehliadača Chromium, overte svoju totožnosť.</translation>
@@ -120,6 +116,7 @@
 <translation id="4432744876818348753">Prihláste sa, aby ste mohli Chromium využívať naplno.</translation>
 <translation id="4445228361214254027">Vaša organizácia vypla možnosť používať a ukladať údaje prehliadača Chromium vo vašom účte Google. Nové záložky, heslá a ďalšie položky sa budú ukladať iba do tohto zariadenia.</translation>
 <translation id="4498832288620833153">Pridá vložené webové adresy do vášho čitateľského zoznamu v prehliadači Chromium.</translation>
+<translation id="451793238785269934">Vlastný kanál vytvorený pre vás. Vrátane správ, športu a počasia.</translation>
 <translation id="452436063477828504">Uistite sa, že vo svojom účte Google môžete kedykoľvek použiť údaje prehliadača Chromium</translation>
 <translation id="4555020257205549924">Po zapnutí tejto funkcie bude prehliadač Chromium ponúkať preloženie stránok napísaných v inom jazyku pomocou Prekladača Google. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4572441104543926904">Šifrovanie pomocou prístupovej frázy nezahŕňa spôsoby platby ani adresy.
@@ -151,9 +148,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="5203483872492817335">Získavajte prístup k prehliadaču Chromium rýchlejšie v ponuke aplikácií na ploche iPadu.</translation>
 <translation id="5213683223491576284">Otvorí Správcu hesiel v prehliadači Chromium.</translation>
 <translation id="5224391634244552924">Žiadne uložené heslá. Chromium môže skontrolovať heslá, keď ich uložíte.</translation>
-<translation id="5242782538551259282">Niektoré údaje prehliadača Chromium zatiaľ neboli vo vašom účte Google uložené.
-
-        Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tieto údaje budú odstránené.</translation>
 <translation id="5308226104666789935">Chromium nemôže skontrolovať dostupnosť aktualizácií</translation>
 <translation id="5311557153294205270">Pridá vložené webové adresy do vašich záložiek v prehliadači Chromium.</translation>
 <translation id="5396916991083608703">Chcete nastaviť Chromium ako predvolený prehliadač?</translation>
@@ -204,7 +198,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="632825460376924298">Povoliť prihlásenie do prehliadača Chromium</translation>
 <translation id="6332129548244419716">Odstráňte dáta prehliadania v prehliadači Chromium.</translation>
 <translation id="6337530241089703714">Vyberte, či chcete údaje prehliadača Chromium v tomto zariadení vymazať alebo ponechať</translation>
-<translation id="6348483005826990855">3. Vyberte Chromium</translation>
 <translation id="6383607155624074112">Získajte prístup k prehliadaču Chromium rýchlejšie z ponuky aplikácií na ploche</translation>
 <translation id="6424492062988593837">Systém Chromium bol práve vylepšený. K dispozícii je nová verzia.</translation>
 <translation id="6433172051771630690">Tipy, ako využívať Chromium naplno</translation>
@@ -268,11 +261,11 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="8235427517854598594">Chcete nastaviť Chromium ako predvolený prehliadač?</translation>
 <translation id="8240981428553046115">Prehliadaču Chromium sa nepodarilo skontrolovať dostupnosť aktualizácií. Skúste to neskôr.</translation>
 <translation id="8254729934443216898">Preskúmajte nové funkcie, ktoré vám pomôžu využívať Chromium naplno.</translation>
+<translation id="829047622686389424">Vlastný kanál vytvorený pre vás.</translation>
 <translation id="8303579360494576778">Spravovať spôsoby platby v prehliadači Chromium</translation>
 <translation id="830951810931292870">Otvorí zadané webové adresy v režime inkognito prehliadača Chromium.</translation>
 <translation id="8386869251364507178">Akcie v prehliadači Chromium</translation>
 <translation id="8409374867500149834">Máte nasilnejšie zabezpečenie prehliadača Chromium proti škodlivým webom</translation>
-<translation id="8458950033462118672">Ak nastavíte Chromium ako predvolený prehliadač, budete v ňom môcť automaticky otvárať odkazy.</translation>
 <translation id="8473874987831035139">Tip pre Chromium: presuňte Chromium do ponuky aplikácií</translation>
 <translation id="8502918057530111907">Používajte Chromium predvolene, aby ste mohli jednoducho získavať cenové štatistiky</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minútu. Údaje uložené iba do tohto zariadenia, keď ste mali prihlásený účet, sa odstránia. Môže to zahŕňať históriu a heslá.}few{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minúty. Údaje uložené iba do tohto zariadenia, keď ste mali prihlásený účet, sa odstránia. Môže to zahŕňať históriu a heslá.}many{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minúty. Údaje uložené iba do tohto zariadenia, keď ste mali prihlásený účet, sa odstránia. Môže to zahŕňať históriu a heslá.}other{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minút. Údaje uložené iba do tohto zariadenia, keď ste mali prihlásený účet, sa odstránia. Môže to zahŕňať históriu a heslá.}}</translation>

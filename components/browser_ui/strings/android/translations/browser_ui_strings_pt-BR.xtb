@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">Silenciar sites com áudio</translation>
 <translation id="3602290021589620013">Visualizar</translation>
 <translation id="3628308229821498208">Pesquisas sugeridas</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{Há <ph name="RWS_MEMBERS_COUNT" /> site que pode ver sua atividade no grupo <ph name="RWS_OWNER" />}one{Há <ph name="RWS_MEMBERS_COUNT" /> site que pode ver sua atividade no grupo <ph name="RWS_OWNER" />}other{Há <ph name="RWS_MEMBERS_COUNT" /> sites que podem ver sua atividade no grupo <ph name="RWS_OWNER" />}}</translation>
 <translation id="3697164069658504920">Quando essa configuração está ativada, os sites podem pedir para usar dispositivos USB. Quando está desativada, os sites não podem usar dispositivos USB.</translation>
 <translation id="3707034683772193706">Os sites visitados podem salvar uma pequena quantidade de informações com o Chrome, principalmente para validar que você não é um bot</translation>
 <translation id="3721953990244350188">Dispensar e mostrar a próxima ação disponível</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">Compartilhar via</translation>
 <translation id="5001526427543320409">Cookies de terceiros</translation>
 <translation id="5007392906805964215">Revisar</translation>
+<translation id="5014182796621173645">Visitado <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5048398596102334565">Permitir o acesso de sites aos seus sensores de movimento (recomendado)</translation>
 <translation id="5050380848339752099">Este site compartilhará informações com um app fora do modo de navegação anônima.</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">Ver mais</translation>
 <translation id="6561560012278703671">Usar mensagens mais silenciosas (bloqueia notificações que interrompem você)</translation>
 <translation id="6593061639179217415">Para computador</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Cookies permitidos para <ph name="RWS_MEMBERS_COUNT" /> site de <ph name="RWS_OWNER" />}one{Cookies permitidos para <ph name="RWS_MEMBERS_COUNT" /> site de <ph name="RWS_OWNER" />}other{Cookies permitidos para <ph name="RWS_MEMBERS_COUNT" /> sites de <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Conteúdo protegido</translation>
 <translation id="662080504995468778">Ficar</translation>
 <translation id="6653342741369270081">Pressione o botão "Voltar" para sair da tela cheia.</translation>
+<translation id="6683865262523156564">Este site está em um grupo que pode ver sua atividade. O grupo é definido por <ph name="RWS_OWNER" />.</translation>
 <translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6697925417670533197">Downloads ativos</translation>
 <translation id="6722828510648505498">Bloquear solicitações de login de serviços de identificação.</translation>

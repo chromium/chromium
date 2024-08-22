@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">Izklop zvoka na spletnih mestih, ki predvajajo zvok</translation>
 <translation id="3602290021589620013">Predogled</translation>
 <translation id="3628308229821498208">Predlagane iskalne poizvedbe</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> spletno mesto v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}one{<ph name="RWS_MEMBERS_COUNT" /> spletno mesto v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}two{<ph name="RWS_MEMBERS_COUNT" /> spletni mesti v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}few{<ph name="RWS_MEMBERS_COUNT" /> spletna mesta v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}other{<ph name="RWS_MEMBERS_COUNT" /> spletnih mest v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}}</translation>
 <translation id="3697164069658504920">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo naprav USB. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati naprav USB.</translation>
 <translation id="3707034683772193706">Spletno mesto, ki ga obiščete, lahko v Chromu shrani majhno količino podatkov, predvsem za potrditev, da niste bot.</translation>
 <translation id="3721953990244350188">Opustitev in prikaz naslednjega razpoložljivega dejanja.</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">Skupna raba prek</translation>
 <translation id="5001526427543320409">Piškotki tretjih oseb</translation>
 <translation id="5007392906805964215">Pregled</translation>
+<translation id="5014182796621173645">Obiskali ste: <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Dovoli</translation>
 <translation id="5048398596102334565">Spletnim mestom dovoli dostop do tipal gibanja (priporočeno)</translation>
 <translation id="5050380848339752099">To spletno mesto bo delilo podatke z aplikacijo zunaj anonimnega načina.</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">Prikaži več</translation>
 <translation id="6561560012278703671">Uporaba manj vsiljivih sporočil (preprečuje, da bi vas motili pozivi za pošiljanje obvestil)</translation>
 <translation id="6593061639179217415">Mesto za namizne račun.</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Piškotki so dovoljeni za <ph name="RWS_MEMBERS_COUNT" /> spletno mesto <ph name="RWS_OWNER" />}one{Piškotki so dovoljeni za <ph name="RWS_MEMBERS_COUNT" /> spletno mesto <ph name="RWS_OWNER" />}two{Piškotki so dovoljeni za <ph name="RWS_MEMBERS_COUNT" /> spletni mesti <ph name="RWS_OWNER" />}few{Piškotki so dovoljeni za <ph name="RWS_MEMBERS_COUNT" /> spletna mesta <ph name="RWS_OWNER" />}other{Piškotki so dovoljeni za <ph name="RWS_MEMBERS_COUNT" /> spletnih mest <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Zaščitena vsebina</translation>
 <translation id="662080504995468778">Ostani</translation>
 <translation id="6653342741369270081">Pritisnite gumb za nazaj, če želite zapreti celozaslonski način.</translation>
+<translation id="6683865262523156564">To spletno mesto je v skupini, ki si lahko ogleda vašo dejavnost. To skupino je definiralo spletno mesto <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profilne fotografije</translation>
 <translation id="6697925417670533197">Aktivni prenosi</translation>
 <translation id="6722828510648505498">Blokiranje poskusov prijav storitev za identiteto.</translation>

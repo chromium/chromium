@@ -373,7 +373,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ, {EMAIL}}one{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ, {EMAIL}}other{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ, {EMAIL}}}</translation>
 <translation id="2797029671965852011">ಇತಿಹಾಸವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2800683595868705743">ಟ್ಯಾಬ್ ಸ್ವಿಚರ್ ತ್ಯಜಿಸಿ</translation>
-<translation id="2815198996063984598">2. ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆ್ಯಪ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="2818821771744632548">ನಿಮ್ಮ iPhone ರೀಸೆಟ್‌ನ ಭಾಗವಾಗಿ ನಿಮ್ಮ ಖಾತೆ <ph name="USER_NAME" /> ನಿಂದ ನಿಮ್ಮನ್ನು ಸೈನ್‌ಔಟ್ ಮಾಡಲಾಗಿದೆ. ಮತ್ತೆ ಸೈನ್ ಇನ್ ಮಾಡಲು, ಕೆಳಗೆ "ಮುಂದುವರಿಸಿ" ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="2819667972867209401">ಆನ್ ಆಗಿರುವಾಗ, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಡೇಟಾವನ್ನು ಸೇವ್‌ ಮಾಡಲಾಗುತ್ತದೆ. ಆಫ್ ಆಗಿರುವಾಗ, ಡೇಟಾವನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್‌ ಮಾಡಲಾಗುತ್ತದೆ ಮತ್ತು ನೀವು ಸೈನ್ ಔಟ್ ಮಾಡಿದರೆ ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="2830972654601096923">ವಿಳಾಸಗಳನ್ನು ನಿರ್ವಹಿಸಿ...</translation>
@@ -539,6 +538,7 @@
 <translation id="3607167657931203000">ಸ್ವಯಂಭರ್ತಿ ಡೇಟಾ</translation>
 <translation id="3609785682760573515">ಸಿಂಕ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="3625008969091706597">ಹಿಂತಿರುಗಲು ನೀವು ಅಂಚನ್ನು ಸ್ವೈಪ್ ಮಾಡಬಹುದು.</translation>
+<translation id="362709345066740529">ನಿಮ್ಮ ಕಾರ್ಡ್‌ಗಳು, ಫೀಡ್ ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಇಲ್ಲಿ ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="3630104167004786843">ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸಬೇಡಿ</translation>
 <translation id="3631443864840848029">ಈ ಸೈಟ್‌ಗೆ ಸಂಬಂಧಿಸಿದ ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನೀವು ಉಳಿಸುತ್ತಿದ್ದೀರಿ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="3638472932233958418">ವೆಬ್ ಪುಟಗಳನ್ನು ಪೂರ್ವಲೋಡ್ ಮಾಡಿ</translation>
@@ -567,7 +567,6 @@
 <translation id="3775743491439407556">ಸಿಂಕ್ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ</translation>
 <translation id="3779810277399252432">ಇಂಟರ್ನೆಟ್‌ ಸಂಪರ್ಕ ಇಲ್ಲ.</translation>
 <translation id="3785672280731998727">ಡಿಸ್‌ಪ್ಲೇ ಹೆಸರು</translation>
-<translation id="3789294999358192700">ಕೆಳಗಿನ ಹಂತಗಳನ್ನು ಅನುಸರಿಸಿ:</translation>
 <translation id="3789841737615482174">ಇನ್‌ಸ್ಟಾಲ್</translation>
 <translation id="380329542618494757">ಹೆಸರು</translation>
 <translation id="3803696231112616155">ಈ ಸೈಟ್ ಅನ್ನು ಅನುವಾದಿಸುವ ಕೊಡುಗೆ</translation>
@@ -778,6 +777,7 @@
 <translation id="4808646838864186379">ನಿಮ್ಮ ಡೆಲಿವರಿಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4808744395915275922">ಅಪ್‌ಡೇಟ್‌ಗಳು</translation>
 <translation id="4813345808229079766">ಸಂಪರ್ಕ</translation>
+<translation id="4817408188311787415"><ph name="CELL_ACCESSIBILITY_LABEL" /> ಮೂಲಕ ಫಾರ್ಮ್ ಅನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಿ</translation>
 <translation id="4818522717893377262">ಭಾಷೆ ಸೇರಿಸಿ...</translation>
 <translation id="481968316161811770">ಕುಕೀಗಳು, ಸೈಟ್‌ ಡೇಟಾ</translation>
 <translation id="4821595350501541683">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗಿದೆ ಮತ್ತು ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
@@ -888,6 +888,7 @@
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> ರಲ್ಲಿ <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="5318298563956633672">ನೀವು ಈ ಉತ್ಪನ್ನವನ್ನು ಈಗಾಗಲೇ ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತಿದ್ದೀರಿ.</translation>
+<translation id="5327248766486351172">ಹೆಸರು</translation>
 <translation id="5327753393331509826">ಕಂಟೆಂಟ್‌ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="5329451663851195956">ರಿಫ್ರೆಶ್ ಮಾಡಲು ನೀವು ಕೆಳಗೆ ಎಳೆಯಬಹುದು.</translation>
 <translation id="5333148247954006827">ಮತ್ತೊಂದು ಪ್ರೊಫೈಲ್‌ಗೆ ಬದಲಿಸಿ</translation>
@@ -1227,6 +1228,7 @@
 <translation id="6797885426782475225">ಧ್ವನಿ ಹುಡುಕಾಟ</translation>
 <translation id="6800349425672670802">ಟ್ಯಾಬ್ ಸ್ವಿಚರ್‌ನಿಂದ ನಿಮ್ಮ ಎಲ್ಲಾ ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೀವು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು.</translation>
 <translation id="6807889908376551050">ಎಲ್ಲಾ ತೋರಿಸಿ...</translation>
+<translation id="6810455365609435460">ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="681368974849482173">ಐಟಂ ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="6824350924364057989">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="6831043979455480757">Translate</translation>

@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Exklusive <ph name="PRODUCT_NAME" />-Assets jetzt verfügbar</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1026212596705997935">Tastenkombination wird bereits für „<ph name="CONFLICT_ACCEL_NAME" />“ verwendet. Soll diese nicht ersetzt werden, drücke eine andere Kombination. Wenn du die ursprüngliche Tastenkombination ersetzen möchtest, drücke diese Tastenkombination noch einmal.</translation>
+<translation id="1030856839388844477">Datennutzung zurücksetzen</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> Threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Neue Funktion verfügbar. Verwende den Aufwärtspfeil, um mehr zu erfahren.</translation>
 <translation id="1049663189809099096">pastellgelb</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Schwaches Signal</translation>
 <translation id="1300115153046603471">APN hat den Typ „Standard“ und „<ph name="ATTACH" />“.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Umwandeln</translation>
 <translation id="1304014921944666344">Erstellungsdatum</translation>
 <translation id="1308754910631152188">Wird aktualisiert (<ph name="PERCENTAGE_VALUE" /> % abgeschlossen)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> Minuten</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">Salzsee</translation>
 <translation id="1367951781824006909">Datei auswählen</translation>
 <translation id="1371650399987522809">Feedback zu einem Hintergrund, der auf Google AI basiert</translation>
+<translation id="1374385338586507108">Definieren</translation>
 <translation id="1387854245479784695">Alle Kerne zusammengerechnet</translation>
 <translation id="1393206549145430405">Schloss</translation>
 <translation id="1394661041439318933">Der Akkustand des Case liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -151,7 +154,7 @@
 <translation id="1715359911173058521">Bei der Kommunikation mit dem Scanner ist ein Problem aufgetreten. Prüfe die Netzwerk- oder USB-Verbindung und versuche es noch einmal.</translation>
 <translation id="1717874160321062422">Verwaltet von <ph name="FIRST_MANAGER" /> und <ph name="SECOND_MANAGER" /></translation>
 <translation id="1718553040985966377">See</translation>
-<translation id="1720424726586960395">Glühwürmchenwald</translation>
+<translation id="1720424726586960395">Glühwürm­chenwald</translation>
 <translation id="1726100011689679555">Nameserver</translation>
 <translation id="1731082422893354635">Bluetooth-Touchpad</translation>
 <translation id="1738949837603788263">Bereich <ph name="ZONE_NUMBER" /></translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Strom</translation>
 <translation id="346539236881580388">Neu aufnehmen</translation>
 <translation id="3484914941826596830">Während die Firmware aktualisiert wird, darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Du kannst dieses Fenster minimieren. Die Aktualisierung dauert einige Minuten und dein externes Gerät funktioniert während dieser Zeit eventuell nicht.</translation>
-<translation id="3485555238092220889">Aktion für Bedienungshilfen</translation>
 <translation id="3486220673238053218">Definition</translation>
 <translation id="3487866404496702283">Feedback zur Mahi-Funktion</translation>
 <translation id="3488065109653206955">Teilweise aktiviert</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Dienst nicht verfügbar</translation>
 <translation id="4570558255126759859">Gemini-Modell herunterladen, um Aufnahmen zusammenzufassen?</translation>
 <translation id="4573777384450697571">Fehler – Zertifikat abgelaufen</translation>
+<translation id="4575450106703099687">Optionen für Bedienungshilfen</translation>
 <translation id="458794348635939462">Es konnten nicht alle Hosts aufgelöst werden</translation>
 <translation id="4593212453765072419">Proxy-Authentifizierung erforderlich</translation>
 <translation id="4594021849294327751">Transkript erstellen</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> von <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Schaltfläche zum Bearbeiten von „<ph name="SHORTCUT_DESCRIPTION" />“.</translation>
 <translation id="5733298426544876109">„<ph name="DEVICE_NAME" />“ aktualisieren</translation>
+<translation id="5736820754189340309">Datennutzung wurde zurückgesetzt</translation>
 <translation id="574392208103952083">Mittel</translation>
 <translation id="5757187557809630523">nächster Titel</translation>
 <translation id="5760715441271661976">Portal-Status</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Stummschalten</translation>
 <translation id="5784136236926853061">Hohe HTTP-Latenz</translation>
 <translation id="5790391387506209808">Lapislazuli</translation>
+<translation id="5810692306010756935">Umstellen</translation>
 <translation id="5816802250591013230">Keine Tastenkombination zugewiesen</translation>
 <translation id="5826644637650799838">Informationen zum Bild</translation>
 <translation id="5832805196449965646">Person hinzufügen</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Textnavigation</translation>
 <translation id="680983167891198932">Schlüssel</translation>
 <translation id="6816797338148849397">Informationen in Bezug auf deine Auswahl sind verfügbar. Verwende für Zugriff den Aufwärtspfeil.</translation>
+<translation id="6831043979455480757">Übersetzen</translation>
 <translation id="6853312040151791195">Entladestrom</translation>
 <translation id="6862416241246624313">Feedback gesendet</translation>
 <translation id="6866732840889595464">Gänseblümchen</translation>
@@ -1551,6 +1557,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="9087578468327036362">Diese Anfrage melden</translation>
 <translation id="9088306295921699330">Aktuelle Nutzung</translation>
 <translation id="9095775724867566971">PluginVM</translation>
+<translation id="909856219855259344">Weitere Informationen zum Datum der Zurücksetzung</translation>
 <translation id="9100765901046053179">Erweiterte Einstellungen</translation>
 <translation id="910415269708673980">Aktualisiere das Ticket für <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Seite <ph name="PAGE_NUMBER" /> wird gescannt</translation>

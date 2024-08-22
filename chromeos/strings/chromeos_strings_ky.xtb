@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Өзгөчө <ph name="PRODUCT_NAME" /> объекттери азыр жеткиликтүү</translation>
 <translation id="1022628058306505708">Жер</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />" үчүн колдонулган ыкчам баскыч. Жаңы ыкчам баскычты басыңыз. Учурдагы ыкчам баскычты алмаштыруу үчүн жаңысын кайра басыңыз.</translation>
+<translation id="1030856839388844477">Дайын-даректердин өткөрүлүшүн калыбына келтирүү</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> топтом, <ph name="CPU_MAX_CLOCK_SPEED" />ГГц)</translation>
 <translation id="1047773237499189053">Жаңы функциялар бар. Кеңири маалымат алуу үчүн Өйдө жебе баскычын басыңыз.</translation>
 <translation id="1049663189809099096">пастель сары</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Начар сигнал</translation>
 <translation id="1300115153046603471">APN түрү – default жана <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Өзгөртүү</translation>
 <translation id="1304014921944666344">Түзүлгөн күнү</translation>
 <translation id="1308754910631152188">Жаңырууда (<ph name="PERCENTAGE_VALUE" />% аткарылды)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> мүнөт</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">туздуу көл</translation>
 <translation id="1367951781824006909">Файл тандаңыз</translation>
 <translation id="1371650399987522809">Google сунуштаган ЖИ технологиялары менен түзүлгөн тушкагаздар тууралуу пикир</translation>
+<translation id="1374385338586507108">Аныктоо</translation>
 <translation id="1387854245479784695">Бул бардык зымдардын бириктирилген жери болуп эсептелет</translation>
 <translation id="1393206549145430405">сепил</translation>
 <translation id="1394661041439318933">Түзмөк кутучасынын батареясынын деңгээли: <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Электр кубатын керектөө</translation>
 <translation id="346539236881580388">Кайра тартуу</translation>
 <translation id="3484914941826596830">Орнотулган программа жаңыртылып жатканда, тышкы түзмөктү ажыратпаңыз же компьютерди өчүрбөңүз. Бул терезени кичирейтип койсоңуз болот. Жаңыртуу бир нече мүнөткө созулуп, ал эми тышкы түзмөгүңүз бул убакытта иштебеши мүмкүн.</translation>
-<translation id="3485555238092220889">атайын мүмкүнчүлүктөр аракети</translation>
 <translation id="3486220673238053218">аныктама</translation>
 <translation id="3487866404496702283">Mahi функциясы тууралуу пикир</translation>
 <translation id="3488065109653206955">Жарым-жартылай жандырылган</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Тейленбейт</translation>
 <translation id="4570558255126759859">Жаздырууларды жыйынтыктоо үчүн Gemini үлгүсү жүктөлүп алынсынбы?</translation>
 <translation id="4573777384450697571">Аткарылган жок — Тастыктаманын мөөнөтү бүттү</translation>
+<translation id="4575450106703099687">атайын мүмкүнчүлүк параметрлери</translation>
 <translation id="458794348635939462">Бардык башкы түйүндөр чечилген жок</translation>
 <translation id="4593212453765072419">Проксиде аныктыгын текшерүү талап кылынат</translation>
 <translation id="4594021849294327751">Транскрипт түзүү</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> ичинен <ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> үчүн Түзөтүү баскычы.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> түзмөгүн жаңыртыңыз</translation>
+<translation id="5736820754189340309">Дайын-даректердин өткөрүлүшү калыбына келтирилди</translation>
 <translation id="574392208103952083">Орточо</translation>
 <translation id="5757187557809630523">кийинки трек</translation>
 <translation id="5760715441271661976">Порталдын абалы</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Үнсүз</translation>
 <translation id="5784136236926853061">HTTP күтүү убакыты жогору</translation>
 <translation id="5790391387506209808">лазурит</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Ыкчам баскыч дайындалган эмес</translation>
 <translation id="5826644637650799838">Көркөм өнөр жөнүндө</translation>
 <translation id="5832805196449965646">Адам кошуу</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Текстте өтүү</translation>
 <translation id="680983167891198932">Ачкыч</translation>
 <translation id="6816797338148849397">Сиз тандаган нерсеге тиешелүү маалымат бар. Көрүү үчүн Өйдө жебе баскычын басыңыз.</translation>
+<translation id="6831043979455480757">Которуу</translation>
 <translation id="6853312040151791195">Батареянын кубатынын түгөнүү көрсөткүчү</translation>
 <translation id="6862416241246624313">Пикир жөнөтүлдү</translation>
 <translation id="6866732840889595464">ромашка</translation>
@@ -1551,6 +1557,7 @@
 <translation id="9087578468327036362">Бул сурам тууралуу кабарлоо</translation>
 <translation id="9088306295921699330">Учурдагы колдонулушу</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Дайын-даректерди баштапкы абалга келтирүү жөнүндө кошумча маалымат</translation>
 <translation id="9100765901046053179">Өркүндөтүлгөн жөндөөлөр</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үчүн билетти жаңыртыңыз</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет скандалууда</translation>

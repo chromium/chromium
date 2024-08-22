@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">სიგნალი სუსტია</translation>
 <translation id="1300115153046603471">APN-ის ტიპია „ნაგულისხმევი“ და „<ph name="ATTACH" />“.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">გარდაქმნა</translation>
 <translation id="1304014921944666344">შექმნის თარიღი</translation>
 <translation id="1308754910631152188">მიმდინარეობს განახლება (დასრულებულია <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> წუთი</translation>
@@ -77,6 +78,7 @@
 <translation id="1343442362630695901">მარილიანი ტბა</translation>
 <translation id="1367951781824006909">აირჩიეთ ფაილი</translation>
 <translation id="1371650399987522809">გამოხმაურება Google-ის ხელოვნური ინტელექტის მიერ უზრუნველყოფილ ფონთან დაკავშირებით</translation>
+<translation id="1374385338586507108">განსაზღვრა</translation>
 <translation id="1387854245479784695">მონაცემები აგრეგირებულია ყველა ბირთვისთვის</translation>
 <translation id="1393206549145430405">ციხე-სიმაგრე</translation>
 <translation id="1394661041439318933">მოწყობილობის სათავსოს ბატარეის დონეა <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -463,7 +465,6 @@
 <translation id="346423161771747987">ამჟამინდელი</translation>
 <translation id="346539236881580388">ხელახლა გადაღება</translation>
 <translation id="3484914941826596830">ჩაშენებული პროგრამული უზრუნველყოფის განახლების პროცესში არ გამოაერთოთ ეს გარე მოწყობილობა ან არ გამორთოთ კომპიუტერი. შეგიძლიათ ამ ფანჯრის ჩაკეცვა. ამ განახლებას შეიძლება დასჭირდეს რამდენიმე წუთი და გარე მოწყობილობამ შეიძლება ამ დროს არ იმუშაოს.</translation>
-<translation id="3485555238092220889">მარტივი წვდომის მოქმედება</translation>
 <translation id="3486220673238053218">განსაზღვრება</translation>
 <translation id="3487866404496702283">გამოხმაურება mahi-ფუნქციასთან დაკავშირებით</translation>
 <translation id="3488065109653206955">ნაწილობრივ გააქტიურებული</translation>
@@ -672,6 +673,7 @@
 <translation id="4562494484721939086">მომსახურება არ არის</translation>
 <translation id="4570558255126759859">ჩამოიტვირთოს Gemini-ს მოდელი ჩანაწერების შეჯამებისთვის?</translation>
 <translation id="4573777384450697571">ვერ მოხერხდა — სერტიფიკატს მოქმედების ვადა გაუვიდა</translation>
+<translation id="4575450106703099687">მარტივი წვდომის ვარიანტები</translation>
 <translation id="458794348635939462">ჰოსტების გარდაქმნა ვერ მოხერხდა</translation>
 <translation id="4593212453765072419">საჭიროა პროქსი-სერვერის ავტორიზაცია</translation>
 <translation id="4594021849294327751">ტრანსკრიპტის შექმნა</translation>
@@ -894,6 +896,7 @@
 <translation id="57838592816432529">დადუმება</translation>
 <translation id="5784136236926853061">HTTP რეაგირების დრო დიდია</translation>
 <translation id="5790391387506209808">ლილაქვა</translation>
+<translation id="5810692306010756935">სწავლის დასრულება</translation>
 <translation id="5816802250591013230">დანიშნული მალსახმობები არ არის</translation>
 <translation id="5826644637650799838">ხელოვნების შესახებ</translation>
 <translation id="5832805196449965646">მომხმარებლის დამატება</translation>
@@ -1106,6 +1109,7 @@
 <translation id="6798678288485555829">ნავიგაცია ტექსტში</translation>
 <translation id="680983167891198932">გასაღები</translation>
 <translation id="6816797338148849397">ხელმისაწვდომია თქვენს არჩევანთან დაკავშირებული ინფორმაცია. წვდომისთვის გამოიყენეთ კლავიში ზემოთ მიმართული ისრით.</translation>
+<translation id="6831043979455480757">თარგმნა</translation>
 <translation id="6853312040151791195">განმუხტვის სიჩქარე</translation>
 <translation id="6862416241246624313">გამოხმაურება გაიგზავნა</translation>
 <translation id="6866732840889595464">გვირილა</translation>

@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Eksklusiivsed teenuse <ph name="PRODUCT_NAME" /> varad on nüüd saadaval</translation>
 <translation id="1022628058306505708">Maa vool</translation>
 <translation id="1026212596705997935">Otseteed kasutatakse käsu „<ph name="CONFLICT_ACCEL_NAME" />“ jaoks. Vajutage uut klahvikombinatsiooni. Olemasoleva otsetee asendamiseks vajutage seda klahvikombinatsiooni uuesti.</translation>
+<translation id="1030856839388844477">Andmekasutuse lähtestamine</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> haru, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Uued funktsioonid on saadaval. Lisateabe saamiseks kasutage ülesnoolt.</translation>
 <translation id="1049663189809099096">pastellkollane</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Nõrk signaal</translation>
 <translation id="1300115153046603471">APN-i tüüp on vaike-APN ja <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Teisenda</translation>
 <translation id="1304014921944666344">Loomisaeg</translation>
 <translation id="1308754910631152188">Värskendamine (<ph name="PERCENTAGE_VALUE" />% lõpetatud)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutit</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">soolajärv</translation>
 <translation id="1367951781824006909">Vali fail</translation>
 <translation id="1371650399987522809">Tagasiside Google'i AI toetatavate taustapiltide kohta</translation>
+<translation id="1374385338586507108">Määra</translation>
 <translation id="1387854245479784695">See on kõigi tuumade koondväärtus</translation>
 <translation id="1393206549145430405">loss</translation>
 <translation id="1394661041439318933">Seadme ümbrise aku laetus on <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Praegune</translation>
 <translation id="346539236881580388">Tee uuesti</translation>
 <translation id="3484914941826596830">Püsivara värskendamise ajal ärge seda välist seadet eemaldage ega arvutit välja lülitage. Võite selle akna minimeerida. Selle värskenduse lõpuleviimiseks võib kuluda mõni minut ja teie väline seade ei pruugi sel ajal töötada.</translation>
-<translation id="3485555238092220889">juuurdepääsetavuse toiming</translation>
 <translation id="3486220673238053218">definitsioon</translation>
 <translation id="3487866404496702283">Mahi funktsiooni tagasiside</translation>
 <translation id="3488065109653206955">Osaliselt aktiveeritud</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Levi puudub</translation>
 <translation id="4570558255126759859">Kas soovite salvestuste kokkuvõtte tegemiseks Gemini mudeli alla laadida?</translation>
 <translation id="4573777384450697571">Ebaõnnestus – sertifikaat on aegunud</translation>
+<translation id="4575450106703099687">juurdepääsetavuse valikud</translation>
 <translation id="458794348635939462">Kõikide hostide lahendamine ebaõnnestus</translation>
 <translation id="4593212453765072419">Vajalik on puhverserveri autentimine</translation>
 <translation id="4594021849294327751">Loo transkriptsioon</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Muutmisnupp funktsioonile <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Värskenda seadet <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Andmekasutus on lähtestatud</translation>
 <translation id="574392208103952083">Keskmine</translation>
 <translation id="5757187557809630523">järgmine lugu</translation>
 <translation id="5760715441271661976">Portaali olek</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Vaigista</translation>
 <translation id="5784136236926853061">Pikk HTTP latentsusaeg</translation>
 <translation id="5790391387506209808">lasuriidist</translation>
+<translation id="5810692306010756935">Tavakontole üleminek</translation>
 <translation id="5816802250591013230">Ühtki otseteed pole määratud</translation>
 <translation id="5826644637650799838">Kunsti teave</translation>
 <translation id="5832805196449965646">Lisa inimene</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Tekstis navigeerimine</translation>
 <translation id="680983167891198932">Võti</translation>
 <translation id="6816797338148849397">Teie valikuga seotud teave on saadaval. Kasutage juurdepääsemiseks ülesnooleklahvi.</translation>
+<translation id="6831043979455480757">Tõlgi</translation>
 <translation id="6853312040151791195">Tühjenemise kiirus</translation>
 <translation id="6862416241246624313">Tagasiside on saadetud</translation>
 <translation id="6866732840889595464">karikakar</translation>
@@ -1551,6 +1557,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="9087578468327036362">Teatage sellest päringust</translation>
 <translation id="9088306295921699330">Praegune kasutus</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Lisateave kuupäeva lähtestamise kohta</translation>
 <translation id="9100765901046053179">Täpsemad seaded</translation>
 <translation id="910415269708673980">Kasutaja <ph name="PRINCIPAL_NAME" /> pileti värskendamine</translation>
 <translation id="9106415115617144481">Lehe <ph name="PAGE_NUMBER" /> skannimine</translation>
@@ -1589,7 +1596,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="966787709310836684">menüü</translation>
 <translation id="979450713603643090">Heleroosa</translation>
 <translation id="982713511914535780">Käita tühjenemise test</translation>
-<translation id="98515147261107953">Horisontaalpaigutus</translation>
+<translation id="98515147261107953">Maastik</translation>
 <translation id="987264212798334818">Üldine</translation>
 <translation id="995062385528875723">Täpitähti, mitte-ladina tähestikku ega sümboleid ei saa kasutada</translation>
 </translationbundle>

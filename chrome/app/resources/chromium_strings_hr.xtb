@@ -428,6 +428,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="7398989605938454041">Pomoću Chromiumovih profila možete razdvojiti sve svoje sadržaje u Chromiumu. To olakšava odvajanje posla i zabave.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium treba dopuštenje za pristup kameri za ovu web-lokaciju</translation>
+<translation id="7458892263350425044">Da biste upotrebljavali mikrofon, odobrite Chromiumu pristup u <ph name="BEGIN_LINK" />sistemskim postavkama<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">Da biste primali buduća Chromiumova ažuriranja, trebat će vam Windows 10 ili novija verzija. Na ovom se računalu upotrebljava Windows 7.</translation>
 <translation id="7467949745582939695">Ponovo pokrenuti Chromium?</translation>
 <translation id="7483335560992089831">Ne možete instalirati istu verziju Chromiuma koja se trenutačno izvršava. Zatvorite Chromium i pokušajte ponovo.</translation>
@@ -456,6 +457,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="7872446069773932638">Preuzimanje... Još <ph name="SECONDS" /> s</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Kako možete upravljati svojim podacima<ph name="END_BOLD" />: da bismo zaštitili vašu privatnost, automatski brišemo vaše interese starije od četiri tjedna. Tijekom vašeg daljnjeg pregledavanja neki se interes može ponovo pojaviti na popisu. Možete i ukloniti interese za koje ne želite da ih Chromium razmatra.</translation>
 <translation id="7888981273428720788">Postavite Chromium kao zadani preglednik</translation>
+<translation id="7934340546140346950">Chromium automatski nadograđuje nesigurne veze na HTTPS kad je to moguće</translation>
 <translation id="7937630085815544518">Bili ste prijavljeni na Chromium kao <ph name="USER_EMAIL_ADDRESS" />. Prijavite se ponovo istim računom.</translation>
 <translation id="7975919845073681630">Ovo je sekundarna instalacija Chromiuma, pa on ne može biti vaš zadani preglednik.</translation>
 <translation id="7997934263947464652">Proširenja, aplikacije i teme iz nepoznatih izvora mogu naštetiti vašem uređaju. Chromium preporučuje da ih instalirate samo s usluge <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
@@ -468,6 +470,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="813913629614996137">Pokretanje...</translation>
 <translation id="8166782796394721554">Uključite dodatnu zaštitu u Chromiumovom alatu za JavaScript i WebAssembly</translation>
 <translation id="81770708095080097">Datoteka je opasna i Chromium ju je blokirao.</translation>
+<translation id="8223363452568144035">Da biste upotrebljavali kameru, odobrite Chromiumu pristup u <ph name="BEGIN_LINK" />sistemskim postavkama<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Chromium ne može provjeriti odakle dolazi ovo proširenje, pa bi moglo biti nesigurno. Uklonite ga iz Chromiuma kako više ne bi moglo vidjeti i mijenjati vaše podatke na web-lokacijama koje posjećujete, uključujući osobne podatke.</translation>
 <translation id="8248265253516264921">Ako slika nema koristan opis, Chromium će ga pokušati pružiti. Da bi se izradili opisi, slike se šalju Googleu. To možete isključiti u bilo kojem trenutku u postavkama.</translation>
 <translation id="8254601181414348851">Želite li se prijaviti na Chromium s novim profilom?</translation>
@@ -538,4 +541,5 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="983803489796659991">Instalacija nije uspjela jer poslužitelj za ažuriranje nema hashiranih podataka za aplikaciju.</translation>
 <translation id="985498048907240953">Koristi Chromium bez računa</translation>
 <translation id="985602178874221306">Autori Chromiuma</translation>
+<translation id="992780518932311116">Da biste upotrebljavali lokaciju, odobrite Chromiumu pristup u <ph name="BEGIN_LINK" />sistemskim postavkama<ph name="END_LINK" /></translation>
 </translationbundle>

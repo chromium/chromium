@@ -37,8 +37,6 @@
 <translation id="1615715390546812898">Chrome තුළ Voice සමග සොයන්න.</translation>
 <translation id="1657395063736185342">Chrome තුළ දෘශ්‍ය සොයන්න</translation>
 <translation id="1670609221633730681">Chrome ඉඟිය: ඔබේ ලිපින තීරුවේ පිහිටීම තෝරන්න</translation>
-<translation id="1675955119303651351">ඔබේ Chrome දත්ත සමහරක් තවම ඔබේ Google ගිණුම තුළ සුරැකී නැත.
-        වරන්නට පෙර විනාඩි කිහිපයක් රැඳී සිටීමට උත්සාහ කරන්න. ඔබ දැන් වරන්නේ නම් මෙම දත්ත මකනු ලැබේ.</translation>
 <translation id="1682483655351012182">ඔබේ Chrome දත්ත සමමුහූර්ත කරන්න</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Chrome තුළ ඔබේ පිටුසන් වෙත ආදානය කළ URLs එක් කරයි.</translation>
@@ -81,7 +79,6 @@
 <translation id="2767464022270041271">සුරැකි මුරපද නැත. ඔබ ඔබේ මුරපද සුරකින විට Google මුරපද කළමනාකරු හට ඒවා පරීක්ෂා කළ හැක.</translation>
 <translation id="2869959624320573933">Chrome වෙත පුරන්න</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome ඔබේ දත්ත පෞද්ගලිකව තබා ගන්නා ආකාරය<ph name="END_LINK" /> පිළිබඳව තව දැන ගන්න</translation>
-<translation id="2952581218264071393">1. Chrome සැකසීම් විවෘත කරන්න</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> තෝරන්න</translation>
 <translation id="3030414234702425231">ඔබ <ph name="SIGNOUT_MANAGED_DOMAIN" /> විසින් කළමනාකරණය කරන ගිණුමකින් වරන නිසා, ඔබේ Chrome දත්ත මෙම උපාංගයෙන් මකනු ඇත. ඔබේ දත්ත ඔබේ Google ගිණුම තුළ පවතිනු ඇත.</translation>
 <translation id="309672519329227863">අනෙකුත් යෙදුම් හරහා ඔබේ Chrome මුරපද සහ තවත් දේ වෙත ප්‍රවේශ වන්න.</translation>
@@ -93,7 +90,6 @@
 <translation id="3340938510625667914">Chrome ක්‍රියා</translation>
 <translation id="3345341804167540816">සෑම තැනකම Chrome භාවිතා කරන්න</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome මිනිත්තු {THRESHOLD}ක් භාවිතා නොකරන විට මෙය සිදු වේ}one{Chrome මිනිත්තු {THRESHOLD}ක් භාවිතා නොකරන විට මෙය සිදු වේ}other{Chrome මිනිත්තු {THRESHOLD}ක් භාවිතා නොකරන විට මෙය සිදු වේ}}</translation>
-<translation id="3399930248910934354">Chrome සැකසීම් විවෘත කරන්න</translation>
 <translation id="344736123700721678">ඔබේ මුල් තිර ඩොක් එකෙන් Chrome වෙත වේගයෙන් ප්‍රවේශ වන්න</translation>
 <translation id="3472587960215700950">අනාවරණය කරගත් ලිපින පිළිබඳ ඔබට උපදෙස් සහ ස්ථානික තතු ලබා දීමට Chrome Google සිතියම් භාවිත කරයි.</translation>
 <translation id="3503014945441706099">මෙම Chrome පැතිකඩ සඳහා ද ඉහළ නැංවූ සුරක්ෂිත පිරික්සුම ලබා ගන්න</translation>
@@ -131,9 +127,6 @@
 <translation id="4761869838909035636">Chrome ආරක්ෂක පරීක්ෂාව ධාවනය කරන්න</translation>
 <translation id="4798859546468762093">පුද්ගලායන සහ අනෙකුත් විශේෂාංග ලබා ගැනීමට, <ph name="FEATURE_NAME_1" /> සහ <ph name="FEATURE_NAME_2" /> තුළ Chrome ඇතුළු කරන්න</translation>
 <translation id="4819268619367838612">යෙදුම වැඩිදියුණු කිරීමට උදවු කිරීමට, Chrome පරිශීලන සහ බිඳ වැටීම් දත්ත Google වෙත යවයි. <ph name="BEGIN_LINK" />කළමනාකරණය කරන්න<ph name="END_LINK" /></translation>
-<translation id="4831642696589369971">ඔබේ Chrome දත්ත සමහරක් තවම ඔබේ Google ගිණුම තුළ සුරැකී නැත.
-
-        වරන්නට පෙර විනාඩි කිහිපයක් රැඳී සිටීමට උත්සාහ කරන්න. ඔබ දැන් වරන්නේ නම් මෙම දත්ත මකනු ලැබේ.</translation>
 <translation id="484033449593719797">Chrome බීටා තුළ සහාය නොදක්වයි</translation>
 <translation id="4840404732697892756">ඔබ ඔබේ Google ගිණුම සමග පුරන විට Google මුරපද කළමනාකරු හට ඔබේ මුරපද පරීක්ෂා කළ හැක.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome හට නව පටිති පිටුවෙහි මෙම පැකේජය නිරීක්ෂණය කිරීමට ඔබට උදවු කළ හැක.}one{Chrome හට නව පටිති පිටුවෙහි මෙම පැකේජ නිරීක්ෂණය කිරීමට ඔබට උදවු කළ හැක.}other{Chrome හට නව පටිති පිටුවෙහි මෙම පැකේජ නිරීක්ෂණය කිරීමට ඔබට උදවු කළ හැක.}}</translation>
@@ -211,6 +204,7 @@
 ඔබේ Chrome අත්දැකීම වැඩි දියුණු කිරීමට දත්ත භාවිතා කරන තවත් සැකසීම් සඳහා, <ph name="BEGIN_LINK" />Google සේවා<ph name="END_LINK" /> වෙත යන්න.</translation>
 <translation id="6916015246697034114">Chrome හි Voice සමග සොයන්න</translation>
 <translation id="6975725306479268850">ස්වයං පිරවුම සඳහා Chrome තෝරා ගන්න</translation>
+<translation id="6979238427560462592">Google විසින් ඔබ වෙනුවෙන් සාදන ලද අභිරුචි සංග්‍රහයක්. පුවත්, ක්‍රීඩා සහ කාලගුණය ඇතුළුව.</translation>
 <translation id="7004159181872656283">Chrome තුළ දෘශ්‍ය සොයන්න.</translation>
 <translation id="7056826488869329999">Chrome තුළ ආරක්ෂක පරීක්ෂාව විවෘත කර ධාවනය කරයි.</translation>
 <translation id="7059914902409643750">Chrome ඔබගේම කර ගන්න</translation>
@@ -236,7 +230,6 @@
 <translation id="7394108421562933108">Chrome තුළ සිතියම්</translation>
 <translation id="7400722733683201933">Google Chrome පිළිබඳ</translation>
 <translation id="7466693328838535498">සෙවීම් විජට්ටු කොටුව තුළ, Chrome ඇතුළු කරන්න</translation>
-<translation id="746684838091935575">3. Chrome තෝරන්න</translation>
 <translation id="7492574581995589075">ඔබේ සංවිධානය ඔබේ Google ගිණුම තුළ Chrome දත්ත භාවිත කිරීමේ සහ සුරැකීමේ හැකියාව අක්‍රිය කළා. නව පිටුසන්, මුරපද, සහ තවත් ඒවා මෙම උපාංගයට පමණක් සුරකිනු ලැබේ.</translation>
 <translation id="7581063337314642333">Chrome තුළ පටිති ජාලක වෙත පිවිසෙන්න</translation>
 <translation id="7642373780953416937">Chrome ඔබ වෙනුවෙන් ස්වයංක්‍රීයව අනාවරණය කරන ඕනෑම පෞද්ගලිකත්ව හෝ ආරක්ෂක ගැටලු පිළිබඳ ඇඟවීම් ලබා ගන්න.</translation>
@@ -299,7 +292,6 @@
 <translation id="8857676124663337448">Google මුරපද කළමනාකරු හට සියලු මුරපද පරීක්ෂා කළ නොහැකි විය. හෙට නැවත උත්සාහ කරන්න.</translation>
 <translation id="8865415417596392024">ඔබේ ගිණුමේ Chrome දත්ත</translation>
 <translation id="8874688701962049679">Chrome වෙතින් උපරිම දේ ලබා ගැනීම සඳහා ඉඟි.</translation>
-<translation id="8891935667620843985">එය ඔබේ පෙරනිමි බ්‍රව්සර යෙදුම බවට පත් කිරීමෙන් ඔබට Chrome තුළ සබැඳි ස්වයංක්‍රීයව විවෘත කළ හැක.</translation>
 <translation id="8897749957032330183">මුරපද මෙම උපාංගයෙහි Google මුරපද කළමනාකරු තුළ සුරැකේ.</translation>
 <translation id="8949681853939555434">Chrome ඔබේ පෙරනිමි බ්‍රවුසරය ලෙස සකසන්න</translation>
 <translation id="9068336935206019333">Chrome අප්‍රසිද්ධ තුළ විවෘත කරන්න</translation>
@@ -307,6 +299,7 @@
 <translation id="9112744793181547300">Chrome පෙරනිමිය ලෙස සකසන්නද?</translation>
 <translation id="9122931302567044771">මෙයින් අදහස් කරන්නේ Chrome සැම විටම ඩෙස්ක්ටොප් අඩවිය ඉල්ලනු ඇති බවය.</translation>
 <translation id="9181628561061032322">Chrome මෑත කාලීන පටිති විවෘත කරයි.</translation>
+<translation id="9194404253580584015">Google විසින් ඔබ වෙනුවෙන් සාදන ලද අභිරුචි සංග්‍රහයක්.</translation>
 <translation id="953008885340860025">Chrome වරනය වී ඇත</translation>
 <translation id="97300214378190234">ඔබ වෙනත් යෙදුම්වල සබැඳි තට්ටු කරන ඕනෑම වේලාවක Chrome භාවිතා කරන්න.</translation>
 </translationbundle>

@@ -20,6 +20,7 @@
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> file grupate</translation>
 <translation id="1657719826150349398">Mută fila mai jos</translation>
 <translation id="1713541401465507417">Închide toate filele și grupurile</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Află mai multe<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> filă grupată</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> filă}few{<ph name="TABS_COUNT_MANY" /> file}other{<ph name="TABS_COUNT_MANY" /> de file}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Marchează <ph name="TABS_COUNT_ONE" /> filă selectată}few{Marchează <ph name="TABS_COUNT_MANY" /> file selectate}other{Marchează <ph name="TABS_COUNT_MANY" /> de file selectate}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Creat chiar acum</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Închide după 1 zi}few{Închide după <ph name="DAY_COUNT_MANY" /> zile}other{Închide după <ph name="DAY_COUNT_MANY" /> de zile}}</translation>
 <translation id="4777866634702576038">Ștergi grupul de file?</translation>
+<translation id="4783638485675352219">Permite accesul sistemului de operare la titlurile și adresele URL ale filelor deschise de pe acest dispozitiv</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzie)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzii)}other{(<ph name="REVIEWS_COUNT_MANY" /> de recenzii)}}</translation>
 <translation id="4850886885716139402">Afișează</translation>
 <translation id="4870911314065352661">Închizi toate filele?</translation>

@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Eksklusiewe <ph name="PRODUCT_NAME" />-komponente is nou beskikbaar</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1026212596705997935">Kortpad word gebruik vir “<ph name="CONFLICT_ACCEL_NAME" />”. Druk ’n nuwe kortpad. Druk hierdie kortpad weer om die oorspronklike kortpad te vervang.</translation>
+<translation id="1030856839388844477">Terugsteldatagebruik</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> drade, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nuwe kenmerk is beskikbaar. Gebruik oppylsleutel om meer te wete te kom.</translation>
 <translation id="1049663189809099096">pastelgeel</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Swak sein</translation>
 <translation id="1300115153046603471">APN is verstektipe en <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Skakel om</translation>
 <translation id="1304014921944666344">Datum geskep</translation>
 <translation id="1308754910631152188">Opdatering is (<ph name="PERCENTAGE_VALUE" />% voltooi)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minute</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">soutmeer</translation>
 <translation id="1367951781824006909">Kies 'n lêer</translation>
 <translation id="1371650399987522809">Terugvoer vir muurpapier wat deur Google AI aangedryf is</translation>
+<translation id="1374385338586507108">Definieer</translation>
 <translation id="1387854245479784695">Dit is 'n samevoeging van alle kerns</translation>
 <translation id="1393206549145430405">kasteel</translation>
 <translation id="1394661041439318933">Toestel het <ph name="BATTERY_PERCENTAGE" />% batterykrag in houer.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Stroom</translation>
 <translation id="346539236881580388">Neem weer</translation>
 <translation id="3484914941826596830">Moenie hierdie eksterne toestel uitprop of jou rekenaar afskakel terwyl die fermware opdateer nie. Jy kan hierdie venster klein maak. Hierdie opdatering kan 'n paar minute neem, en jou eksterne toestel sal dalk nie in hierdie tyd werk nie.</translation>
-<translation id="3485555238092220889">toeganklikheidhandeling</translation>
 <translation id="3486220673238053218">definisie</translation>
 <translation id="3487866404496702283">Terugvoer vir mahi-kenmerk</translation>
 <translation id="3488065109653206955">Deels geaktiveer</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Geen diens nie</translation>
 <translation id="4570558255126759859">Laai Gemini-model af om opnames op te som?</translation>
 <translation id="4573777384450697571">Het misluk – sertifikaat het verval</translation>
+<translation id="4575450106703099687">toeganklikheidopsies</translation>
 <translation id="458794348635939462">Kon nie alle gashere bepaal nie</translation>
 <translation id="4593212453765072419">Instaanstawing word vereis</translation>
 <translation id="4594021849294327751">Skep transkripsie</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> van <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Wysig-knoppie vir <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Dateer <ph name="DEVICE_NAME" /> op</translation>
+<translation id="5736820754189340309">Datagebruik is teruggestel</translation>
 <translation id="574392208103952083">Medium</translation>
 <translation id="5757187557809630523">volgende snit</translation>
 <translation id="5760715441271661976">Portaalstatus</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Demp</translation>
 <translation id="5784136236926853061">Hoë HTTP-traagheid</translation>
 <translation id="5790391387506209808">lapis lazuli</translation>
+<translation id="5810692306010756935">Gradeplegtigheid</translation>
 <translation id="5816802250591013230">Geen kortpad toegewys nie</translation>
 <translation id="5826644637650799838">Meer oor die kuns</translation>
 <translation id="5832805196449965646">Voeg persoon by</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Teksnavigasie</translation>
 <translation id="680983167891198932">Sleutel</translation>
 <translation id="6816797338148849397">Inligting is beskikbaar wat met jou keuse verband hou. Gebruik oppylsleutel om dit te sien.</translation>
+<translation id="6831043979455480757">Vertaal</translation>
 <translation id="6853312040151791195">Ontlaaikoers</translation>
 <translation id="6862416241246624313">Terugvoer is ingedien</translation>
 <translation id="6866732840889595464">madeliefie</translation>
@@ -1551,6 +1557,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="9087578468327036362">Gee hierdie navraag aan</translation>
 <translation id="9088306295921699330">Huidige gebruik</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Meer inligting oor terugsteldatum</translation>
 <translation id="9100765901046053179">Gevorderde instellings</translation>
 <translation id="910415269708673980">Herlaai kaartjie vir <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skandeer tans bladsy <ph name="PAGE_NUMBER" /></translation>

@@ -373,7 +373,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{మీ Google ఖాతా, {EMAIL}‌లో పాస్‌వర్డ్ సేవ్ చేయబడింది}other{మీ Google ఖాతా, {EMAIL}‌లో పాస్‌వర్డ్‌లను సేవ్ చేయబడ్డాయి}}</translation>
 <translation id="2797029671965852011">హిస్టరీని చూడండి</translation>
 <translation id="2800683595868705743">ట్యాబ్ స్విచర్ నుండి నిష్క్రమించండి</translation>
-<translation id="2815198996063984598">2. ఆటోమేటిక్ బ్రౌజర్ యాప్‌ను ట్యాప్ చేయండి</translation>
 <translation id="2818821771744632548">మీ iPhone రీసెట్ ప్రాసెస్‌లో భాగంగా మీరు మీ ఖాతా <ph name="USER_NAME" /> నుండి సైన్ అవుట్ చేయబడ్డారు. తిరిగి సైన్ ఇన్ చేయడానికి, దిగువున ఉన్న "కొనసాగండి" అనే ఆప్షన్‌ను ట్యాప్ చేయండి.</translation>
 <translation id="2819667972867209401">ఆన్‌లో ఉన్నప్పుడు, మీ Google ఖాతాలో డేటా సేవ్ చేయబడుతుంది. ఆఫ్‌లో ఉన్నప్పుడు, డేటా ఈ పరికరంలో మాత్రమే సేవ్ అవుతుంది, మీరు సైన్ అవుట్ చేస్తే తొలగించబడుతుంది.</translation>
 <translation id="2830972654601096923">అడ్రస్‌లను మేనేజ్ చేయండి...</translation>
@@ -567,8 +566,7 @@
 <translation id="3775743491439407556">సింక్ పని చేయడం లేదు</translation>
 <translation id="3779810277399252432">ఇంటర్నెట్ కనెక్షన్ లేదు.</translation>
 <translation id="3785672280731998727">డిస్‌ప్లే పేరు</translation>
-<translation id="3789294999358192700">కింది దశలను ఫాలో అవ్వండి:</translation>
-<translation id="3789841737615482174">ఇన్‌స్టాల్ చేయి</translation>
+<translation id="3789841737615482174">ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="380329542618494757">పేరు</translation>
 <translation id="3803696231112616155">ఈ సైట్‌కు అనువాదం అందించే సూచన</translation>
 <translation id="3808311849069021992">సెర్చ్ ఇంజిన్ వివరాలను చూడండి</translation>
@@ -778,6 +776,7 @@
 <translation id="4808646838864186379">మీ డెలివరీ రద్దు చేయబడింది</translation>
 <translation id="4808744395915275922">అప్‌డేట్‌లు</translation>
 <translation id="4813345808229079766">కనెక్షన్</translation>
+<translation id="4817408188311787415"><ph name="CELL_ACCESSIBILITY_LABEL" />‌తో ఫారమ్‌ను ఆటోఫిల్ చేయండి</translation>
 <translation id="4818522717893377262">భాషను జోడించండి...</translation>
 <translation id="481968316161811770">కుక్కీలు, సైట్ డేటా</translation>
 <translation id="4821595350501541683">ట్యాబ్‌లు మూసివేయబడ్డాయి, ఆపై బ్రౌజింగ్ డేటా తొలగించబడింది</translation>
@@ -888,6 +887,7 @@
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />లో <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">సేవ్ చేయండి</translation>
 <translation id="5318298563956633672">మీరు ఇప్పటికే ఈ ప్రోడక్ట్‌ను ట్రాక్ చేస్తున్నారు.</translation>
+<translation id="5327248766486351172">పేరు</translation>
 <translation id="5327753393331509826">కంటెంట్ నోటిఫికేషన్‌లను పొందండి</translation>
 <translation id="5329451663851195956">రిఫ్రెష్ చేయడానికి మీరు కిందికి లాగవచ్చు.</translation>
 <translation id="5333148247954006827">మరొక ప్రొఫైల్‌కు స్విచ్ అవ్వండి</translation>
@@ -1227,6 +1227,7 @@
 <translation id="6797885426782475225">వాయిస్ శోధన</translation>
 <translation id="6800349425672670802">ట్యాబ్ స్విచర్ ఫీచర్‌ను ఉపయోగించి తెరిచి ఉన్న మీ ట్యాబ్‌లన్నింటినీ మీరు యాక్సెస్ చేయవచ్చు.</translation>
 <translation id="6807889908376551050">అన్నీ చూపు...</translation>
+<translation id="6810455365609435460">అజ్ఞాత ట్యాబ్‌లు</translation>
 <translation id="681368974849482173">అంశం క్రియేట్ చేయబడింది</translation>
 <translation id="6824350924364057989">సెట్టింగ్‌లు</translation>
 <translation id="6831043979455480757">అనువదించు</translation>
@@ -1359,7 +1360,7 @@
 <translation id="750493650310597496">0 ఎంచుకోబడ్డాయి</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">మీ అజ్ఞాత ట్యాబ్‌లను లాక్ చేయడానికి, టచ్ ID, ఫేస్ ID లేదా పాస్‌కోడ్‌ను సెటప్ చేయండి.</translation>
-<translation id="7514365320538308">డౌన్‌లోడ్ చేయి</translation>
+<translation id="7514365320538308">డౌన్‌లోడ్ చేయండి</translation>
 <translation id="7521117365186708026">Chrome నుండి అత్యధిక ప్రయోజనాలను పొందడంలో మీకు సహాయపడే చిట్కాలను సెటప్ చేయండి.</translation>
 <translation id="7524055474074101597">యాప్‌లలో మీ పాస్‌వర్డ్‌లను, ఇంకా మరిన్నింటిని యాక్సెస్ చేయండి.</translation>
 <translation id="7527917367892640435">ప్యాకేజీ ఇప్పటికే ట్రాక్ చేయబడింది</translation>
@@ -1460,7 +1461,7 @@
 <translation id="7939856641500914040">బ్రౌజింగ్ డేటాను తొలగించండి…</translation>
 <translation id="794799177247607889">లాగ్ చేయడం ఆపివేయి</translation>
 <translation id="7959441099968534758">ఫీడ్‌కు వెళ్లండి</translation>
-<translation id="7961015016161918242">ఎప్పుడూ లేదు</translation>
+<translation id="7961015016161918242">ఎప్పుడూ వద్దు</translation>
 <translation id="7966516440812255683">సైట్‌లు మీ బ్రౌజింగ్ అనుభవాన్ని మెరుగుపరచడానికి కుక్కీలను ఉపయోగిస్తాయి, ఉదాహరణకు, మిమ్మల్ని సైన్ ఇన్ చేసి ఉంచడం లేదా మీ షాపింగ్ కార్ట్‌లోని ఐటెమ్‌లను గుర్తు చేయడం లాంటివి.
 
 వివిధ సైట్‌లలో మీ బ్రౌజింగ్ యాక్టివిటీని చూడటానికి సైట్‌లు కుక్కీలను ఉపయోగించవచ్చు, ఉదాహరణకు, యాడ్‌లను వ్యక్తిగతీకరించడం.</translation>
@@ -1578,7 +1579,7 @@
 <translation id="8487894141648868716">USPS</translation>
 <translation id="8488923644885757471">కొత్త విండో</translation>
 <translation id="8490978609246021741">మార్పులను సేవ్ చేయండి</translation>
-<translation id="8503813439785031346">యూజర్‌పేరు</translation>
+<translation id="8503813439785031346">యూజర్‌నేమ్</translation>
 <translation id="850600235656508448">అజ్ఞాత మోడ్‌లో తెరువు</translation>
 <translation id="8517375800490286174">ఓపెన్ సోర్స్ లైసెన్స్‌లు</translation>
 <translation id="8522147671363140027">{count,plural, =1{ఈ పరికరంలో {count} పాస్‌వర్డ్, ఇతర ఐటెమ్‌లు మాత్రమే సేవ్ చేయబడతాయి. వాటిని మీ ఇతర పరికరాలలో ఉపయోగించడానికి, వాటిని మీ Google ఖాతా, {email}‌లో సేవ్ చేయండి.}other{ఈ పరికరంలో {count} పాస్‌వర్డ్‌లు, ఇతర ఐటెమ్‌లు మాత్రమే సేవ్ చేయబడతాయి. వాటిని మీ ఇతర పరికరాలలో ఉపయోగించడానికి, వాటిని మీ Google ఖాతా, {email}‌లో సేవ్ చేయండి.}}</translation>

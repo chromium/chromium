@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Éléments <ph name="PRODUCT_NAME" /> exclusifs désormais disponibles</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1026212596705997935">Le raccourci est utilisé pour « <ph name="CONFLICT_ACCEL_NAME" /> ». Appuyez sur un nouveau raccourci. Pour remplacer le raccourci d'origine, appuyez à nouveau sur ce raccourci.</translation>
+<translation id="1030856839388844477">Réinitialiser l'utilisation de données</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fils d'exécution, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Une nouvelle fonctionnalité est proposée, servez-vous de la touche de flèche vers le haut pour en savoir plus.</translation>
 <translation id="1049663189809099096">jaune pastel</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Signal faible</translation>
 <translation id="1300115153046603471">Le nom de point d'accès est de type par défaut et <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Convertir</translation>
 <translation id="1304014921944666344">Date de création</translation>
 <translation id="1308754910631152188">Mise à jour en cours… (<ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutes</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">lac salé</translation>
 <translation id="1367951781824006909">Choisir un fichier</translation>
 <translation id="1371650399987522809">Commentaires sur les fonds d'écran propulsés par l'IA de Google</translation>
+<translation id="1374385338586507108">Définir</translation>
 <translation id="1387854245479784695">Il s'agit d'une agrégation de tous les cœurs</translation>
 <translation id="1393206549145430405">château</translation>
 <translation id="1394661041439318933">Le niveau de la pile du boîtier est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Courant</translation>
 <translation id="346539236881580388">Recommencer</translation>
 <translation id="3484914941826596830">Pendant la mise à jour du micrologiciel, ne débranchez pas cet appareil externe et n'éteignez pas votre ordinateur. Vous pouvez réduire cette fenêtre. Cette mise à jour peut prendre quelques minutes, et votre appareil externe peut ne pas fonctionner pendant ce temps.</translation>
-<translation id="3485555238092220889">action d'accessibilité</translation>
 <translation id="3486220673238053218">définition</translation>
 <translation id="3487866404496702283">Commentaires sur la fonctionnalité mahi</translation>
 <translation id="3488065109653206955">Partiellement activé</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Aucun service</translation>
 <translation id="4570558255126759859">Télécharger le modèle Gemini pour résumer les enregistrements?</translation>
 <translation id="4573777384450697571">Échec – Certificat expiré</translation>
+<translation id="4575450106703099687">options d'accessibilité</translation>
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4593212453765072419">Authentification requise du mandataire</translation>
 <translation id="4594021849294327751">Créer une transcription</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sur <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Bouton Modifier pour <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Mettre à jour <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">L'utilisation des données a été réinitialisée</translation>
 <translation id="574392208103952083">Moyenne</translation>
 <translation id="5757187557809630523">chanson suivante</translation>
 <translation id="5760715441271661976">État du portail</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Désactiver le son</translation>
 <translation id="5784136236926853061">Latence HTTP élevée</translation>
 <translation id="5790391387506209808">lapis-lazuli</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Aucun raccourci attribué</translation>
 <translation id="5826644637650799838">À propos du fond d'écran</translation>
 <translation id="5832805196449965646">Ajouter une personne</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Navigation dans le texte</translation>
 <translation id="680983167891198932">Clé</translation>
 <translation id="6816797338148849397">Des renseignements concernant votre sélection sont accessibles. Servez-vous de la touche de flèche vers le haut pour y accéder.</translation>
+<translation id="6831043979455480757">Traduire</translation>
 <translation id="6853312040151791195">Vitesse de décharge</translation>
 <translation id="6862416241246624313">Commentaires envoyés</translation>
 <translation id="6866732840889595464">marguerite</translation>
@@ -1551,6 +1557,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="9087578468327036362">Signalez cette requête</translation>
 <translation id="9088306295921699330">Utilisation actuelle</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Plus d'informations sur la date de réinitialisation</translation>
 <translation id="9100765901046053179">Paramètres avancés</translation>
 <translation id="910415269708673980">Actualiser le ticket pour <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>

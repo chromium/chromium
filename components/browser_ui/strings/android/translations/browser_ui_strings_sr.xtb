@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">Искључи звук сајтова који пуштају звук</translation>
 <translation id="3602290021589620013">Преглед</translation>
 <translation id="3628308229821498208">Предложене претраге</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> сајт у групи сајтова власника <ph name="RWS_OWNER" /> који могу да виде ваше активности у групи}one{<ph name="RWS_MEMBERS_COUNT" /> сајт у групи сајтова власника <ph name="RWS_OWNER" /> који могу да виде ваше активности у групи}few{<ph name="RWS_MEMBERS_COUNT" /> сајта у групи сајтова власника <ph name="RWS_OWNER" /> који могу да виде ваше активности у групи}other{<ph name="RWS_MEMBERS_COUNT" /> сајтова у групи сајтова власника <ph name="RWS_OWNER" /> који могу да виде ваше активности у групи}}</translation>
 <translation id="3697164069658504920">Када је укључено, сајтови могу да траже да користе USB уређаје. Када је искључено, сајтови не могу да користе USB уређаје.</translation>
 <translation id="3707034683772193706">Сајт који посећујете може да сачува малу количину информација у Chrome-у, углавном да би потврдио да нисте бот</translation>
 <translation id="3721953990244350188">Одбаците и прегледајте следећу доступну радњу</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">Дељење преко</translation>
 <translation id="5001526427543320409">Колачићи треће стране</translation>
 <translation id="5007392906805964215">Прегледај</translation>
+<translation id="5014182796621173645">Посетили сте <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Дозволи</translation>
 <translation id="5048398596102334565">Дозволи сајтовима да приступају сензорима за покрет (препоручено)</translation>
 <translation id="5050380848339752099">Овај сајт ће делити информације са апликацијом изван режима без архивирања.</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">Прикажи још</translation>
 <translation id="6561560012278703671">Користите ненаметљиву размену порука (спречава упите са обавештењима да вас ометају)</translation>
 <translation id="6593061639179217415">Верзија сајта за рачунар</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Колачићи су дозвољени за <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> сајт}one{Колачићи су дозвољени за <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> сајт}few{Колачићи су дозвољени за <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> сајта}other{Колачићи су дозвољени за <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> сајтова}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Заштићени садржај</translation>
 <translation id="662080504995468778">Не затварај</translation>
 <translation id="6653342741369270081">Додирните дугме Назад да бисте изашли из режима целог екрана.</translation>
+<translation id="6683865262523156564">Овај сајт је у групи која може да види ваше активности. Групу дефинише <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Слике профила</translation>
 <translation id="6697925417670533197">Активна преузимања</translation>
 <translation id="6722828510648505498">Блокирајте упите за пријављивање које приказују услуге за идентитет.</translation>

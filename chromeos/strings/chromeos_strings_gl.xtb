@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Xa están dispoñibles os recursos exclusivos de <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Fluxo da Terra</translation>
 <translation id="1026212596705997935">Este atallo está usándose para <ph name="CONFLICT_ACCEL_NAME" />. Preme outro novo. Para substituír o atallo orixinal, preme estoutro de novo.</translation>
+<translation id="1030856839388844477">Restablecer uso de datos</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Novas funcións dispoñibles. Utilizar frecha arriba para obter máis información.</translation>
 <translation id="1049663189809099096">amarela pastel</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Sinal feble</translation>
 <translation id="1300115153046603471">O APN é de tipo predeterminado e <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Converter</translation>
 <translation id="1304014921944666344">Data de creación</translation>
 <translation id="1308754910631152188">Actualizando (<ph name="PERCENTAGE_VALUE" /> % completado)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutos</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">lago de auga salgada</translation>
 <translation id="1367951781824006909">Selecciona un ficheiro</translation>
 <translation id="1371650399987522809">Comentarios sobre os fondos de pantalla coa tecnoloxía da IA de Google</translation>
+<translation id="1374385338586507108">Definir</translation>
 <translation id="1387854245479784695">Esta é a suma de todos os núcleos</translation>
 <translation id="1393206549145430405">castelo</translation>
 <translation id="1394661041439318933">Nivel de batería do estoxo do dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Actual</translation>
 <translation id="346539236881580388">Repetir</translation>
 <translation id="3484914941826596830">Mentres se actualiza o firmware, non desenchufes este dispositivo externo nin apagues o ordenador. Podes minimizar esta ventá. Esta actualización pode tardar uns minutos en completarse e é posible que o dispositivo externo non funcione durante o proceso.</translation>
-<translation id="3485555238092220889">acción de accesibilidade</translation>
 <translation id="3486220673238053218">definición</translation>
 <translation id="3487866404496702283">Comentarios sobre a función mahi</translation>
 <translation id="3488065109653206955">Activado parcialmente</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Sen servizo</translation>
 <translation id="4570558255126759859">Queres descargar o modelo de Gemini para resumir as gravacións?</translation>
 <translation id="4573777384450697571">Erro: Certificado caducado</translation>
+<translation id="4575450106703099687">opcións de accesibilidade</translation>
 <translation id="458794348635939462">Produciuse un erro ao resolver todos os hosts</translation>
 <translation id="4593212453765072419">Requírese autenticación proxy</translation>
 <translation id="4594021849294327751">Crear transcrición</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Botón para editar de <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Actualizar <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Uso de datos restablecido</translation>
 <translation id="574392208103952083">Medio</translation>
 <translation id="5757187557809630523">pista seguinte</translation>
 <translation id="5760715441271661976">Estado do portal</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5784136236926853061">Latencia de HTTP alta</translation>
 <translation id="5790391387506209808">lapislázuli</translation>
+<translation id="5810692306010756935">Graduación</translation>
 <translation id="5816802250591013230">Non hai ningún atallo asignado</translation>
 <translation id="5826644637650799838">Acerca da imaxe</translation>
 <translation id="5832805196449965646">Engadir unha persoa</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Navegación polo texto</translation>
 <translation id="680983167891198932">Clave</translation>
 <translation id="6816797338148849397">Hai dispoñible información sobre a túa selección. Utilizar frecha arriba para acceder.</translation>
+<translation id="6831043979455480757">Traducir</translation>
 <translation id="6853312040151791195">Taxa de descarga</translation>
 <translation id="6862416241246624313">Comentarios enviados</translation>
 <translation id="6866732840889595464">margarida</translation>
@@ -1551,6 +1557,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="9087578468327036362">Informar desta consulta</translation>
 <translation id="9088306295921699330">En uso</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Máis información sobre a data de restablecemento</translation>
 <translation id="9100765901046053179">Configuración avanzada</translation>
 <translation id="910415269708673980">Actualiza o tícket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando páxina <ph name="PAGE_NUMBER" /></translation>

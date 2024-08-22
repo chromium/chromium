@@ -373,7 +373,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, {EMAIL}}other{ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, {EMAIL}}}</translation>
 <translation id="2797029671965852011">ສະແດງປະຫວັດ</translation>
 <translation id="2800683595868705743">ອອກ​ໄປ​ຈາກ​ປຸ່ມ​ຕົວ​ສະ​ຫຼັບ​ແຖບ</translation>
-<translation id="2815198996063984598">2. ແຕະແອັບໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ</translation>
 <translation id="2818821771744632548">ທ່ານຖືກໃຫ້ອອກຈາກລະບົບບັນຊີຂອງທ່ານ, <ph name="USER_NAME" />, ເຊິ່ງເປັນສ່ວນໜຶ່ງຂອງການຣີເຊັດ iPhone ທ່ານ. ເພື່ອເຂົ້າສູ່ລະບົບຄືນໃໝ່, ໃຫ້ແຕະ "ສືບຕໍ່" ທາງລຸ່ມ.</translation>
 <translation id="2819667972867209401">ເມື່ອເປີດໄວ້, ລະບົບຈະບັນທຶກຂໍ້ມູນໃສ່ໃນບັນຊີ Google ຂອງທ່ານ. ເມື່ອປິດໄວ້, ລະບົບຈະບັນທຶກຂໍ້ມູນໄວ້ໃນອຸປະກອນເຄື່ອງນີ້ເທົ່ານັ້ນ ແລະ ຂໍ້ມູນຈະຖືກລຶບຫາກທ່ານອອກຈາກລະບົບ.</translation>
 <translation id="2830972654601096923">ຈັດການທີ່ຢູ່...</translation>
@@ -567,7 +566,6 @@
 <translation id="3775743491439407556">ການຊິ້ງຂໍ້ມູນໃຊ້ບໍ່ໄດ້</translation>
 <translation id="3779810277399252432">ບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ.</translation>
 <translation id="3785672280731998727">ຊື່ສະແດງ</translation>
-<translation id="3789294999358192700">ປະຕິບັດຕາມຂັ້ນຕອນລຸ່ມນີ້:</translation>
 <translation id="3789841737615482174">​ຕິດ​ຕັ້ງ</translation>
 <translation id="380329542618494757">ຊື່</translation>
 <translation id="3803696231112616155">ສະເໜີແປເວັບໄຊນີ້</translation>
@@ -778,6 +776,7 @@
 <translation id="4808646838864186379">ການຈັດສົ່ງຂອງທ່ານຖືກຍົກເລີກແລ້ວ</translation>
 <translation id="4808744395915275922">ອັບເດດ</translation>
 <translation id="4813345808229079766">ການ​ເຊື່ອມ​ຕໍ່</translation>
+<translation id="4817408188311787415">ຕື່ມຂໍ້ມູນແບບຟອມອັດຕະໂນມັດດ້ວຍ <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4818522717893377262">ເພີ່ມພາສາ...</translation>
 <translation id="481968316161811770">ຄຸກກີ້, ຂໍ້ມູນເວັບໄຊ</translation>
 <translation id="4821595350501541683">ປິດແຖບແລ້ວ ແລະ ລຶບຂໍ້ມູນການທ່ອງເວັບແລ້ວ</translation>
@@ -888,6 +887,7 @@
 <translation id="5316356981864168850"><ph name="INDEX" /> ຈາກທັງໝົດ <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5318298563956633672">ທ່ານກຳລັງຕິດຕາມສິນຄ້ານີ້ຢູ່ກ່ອນແລ້ວ.</translation>
+<translation id="5327248766486351172">ຊື່</translation>
 <translation id="5327753393331509826">ຮັບການແຈ້ງເຕືອນເນື້ອຫາ</translation>
 <translation id="5329451663851195956">ທ່ານສາມາດດຶງລົງເພື່ອໂຫຼດຂໍ້ມູນຄືນໃໝ່ໄດ້.</translation>
 <translation id="5333148247954006827">ສະຫຼັບໄປໃຊ້ໂປຣໄຟລ໌ອື່ນ</translation>
@@ -1227,6 +1227,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6797885426782475225">​ການຊອກຫາ​ດ້ວຍສຽງ</translation>
 <translation id="6800349425672670802">ທ່ານສາມາດເຂົ້າເຖິງແຖບທີ່ເປີດທັງໝົດຂອງທ່ານຈາກຕົວປ່ຽນແຖບໄດ້.</translation>
 <translation id="6807889908376551050">ສະ​ແດງ​ທັງ​ຫມົດ...</translation>
+<translation id="6810455365609435460">ແຖບບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="681368974849482173">ສ້າງ​ລາຍ​ການ​ຂຶ້ນ​ແລ້ວ</translation>
 <translation id="6824350924364057989">ການຕັ້ງຄ່າ</translation>
 <translation id="6831043979455480757">ແປພາສາ</translation>

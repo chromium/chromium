@@ -20,6 +20,7 @@
 <translation id="1645759014353344461">Utworzono grupę kart. Ich liczba to <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1657719826150349398">Przesuń kartę w dół</translation>
 <translation id="1713541401465507417">Zamknij wszystkie karty i grupy</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Więcej informacji<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Utworzono grupę, w której znajduje się <ph name="TABS_COUNT_ONE" /> karta</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> kart}other{<ph name="TABS_COUNT_MANY" /> karty}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Dodaj do zakładek <ph name="TABS_COUNT_ONE" /> wybraną kartę}few{Dodaj do zakładek <ph name="TABS_COUNT_MANY" /> wybrane karty}many{Dodaj do zakładek <ph name="TABS_COUNT_MANY" /> wybranych kart}other{Dodaj do zakładek <ph name="TABS_COUNT_MANY" /> wybranej karty}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Utworzono przed chwilą</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Zamknij po 1 dniu}few{Zamknij po <ph name="DAY_COUNT_MANY" /> dniach}many{Zamknij po <ph name="DAY_COUNT_MANY" /> dniach}other{Zamknij po <ph name="DAY_COUNT_MANY" /> dnia}}</translation>
 <translation id="4777866634702576038">Usunąć grupę kart?</translation>
+<translation id="4783638485675352219">Udostępniaj systemowi operacyjnemu tytuły i adresy URL otwartych kart z tego urządzenia</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> opinia)}few{(<ph name="REVIEWS_COUNT_MANY" /> opinie)}many{(<ph name="REVIEWS_COUNT_MANY" /> opinii)}other{(<ph name="REVIEWS_COUNT_MANY" /> opinii)}}</translation>
 <translation id="4850886885716139402">Widok</translation>
 <translation id="4870911314065352661">Zamknąć wszystkie karty?</translation>

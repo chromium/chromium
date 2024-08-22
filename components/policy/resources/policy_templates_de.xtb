@@ -359,6 +359,7 @@ Die Muster für diese Richtlinie dürfen allerdings keine „/path“- oder „@
 <translation id="1257550411839719984">Standard-Downloadverzeichnis festlegen</translation>
 <translation id="1262993197422487260">Schaltfläche zum Anzeigen des Passworts nicht auf dem Anmelde- oder Sperrbildschirm anzeigen</translation>
 <translation id="1265053460044691532">Zeit beschränken, für die sich ein über SAML authentifizierter Nutzer offline anmelden kann</translation>
+<translation id="1265076559723566171">Für die Konfiguration der Einstellungen für EDU-Nutzer</translation>
 <translation id="1271811620059192171">Gruppen aus Einzelrichtlinien aktivieren</translation>
 <translation id="127264587838521316">Mit dieser Richtlinie werden Anfragen für die Installation von Erweiterungen für <ph name="PRODUCT_NAME" /> aktiviert</translation>
 <translation id="1272798957154751008">Migration von Chromad-Geräten zur Cloud-Verwaltung aktivieren</translation>
@@ -803,6 +804,7 @@ Das benutzerdefinierte Label wird nicht übersetzt.</translation>
       Wenn „<ph name="IDLE_ACTION_FIELD_NAME" />“ nicht festgelegt ist, wird die Aktion „<ph name="IDLE_ACTION_ENUM_SUSPEND" />“ ausgeführt.
 
       Hinweis: Es können jeweils eigene Einstellungen für den Netz- und Akkubetrieb vorgenommen werden.</translation>
+<translation id="1607734317623618500">Kiosk-Web-App kann offline verwendet werden</translation>
 <translation id="1608755754295374538">URLs, denen ohne Nachfrage Zugriff auf Audioaufnahmegeräte gestattet wird</translation>
 <translation id="1608901087213748889">Löst eine Aktion aus, wenn der Computer inaktiv ist.
 
@@ -890,6 +892,7 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_OS_NAME" /> g
 <translation id="165769015320654523">Websites automatisch die Berechtigung erteilen, eine Verbindung zu HID-Geräten mit den angegebenen Anbieter- und Produkt-IDs herzustellen.</translation>
 <translation id="1659406551862245683">Das Standardverhalten der Bildschirmtastatur wird geändert, um die Größe des Layout-Darstellungsbereichs anzupassen</translation>
 <translation id="166427968280387991">Proxyserver</translation>
+<translation id="1666001345366986837">Einstellungen für die Funktion „VC‑Hintergrund basierend auf generativer KI“</translation>
 <translation id="1670638264428789878">Gruppen ähnlicher Websites aktivieren</translation>
 <translation id="1671405606278443620">Einstellungen für die KI‑basierte Verlaufssuche</translation>
 <translation id="1673097259557436886">Websites immer mitteilen, dass keine Zahlungsmethoden gespeichert sind</translation>
@@ -919,27 +922,6 @@ Ist die Richtlinie auf „False“ gesetzt oder nicht konfiguriert, werden keine
       Diese Richtlinie gestattet die Angabe einer bestimmten Auflösung beim Rastern von PDFs für den Druck.
 
       Wenn diese Richtlinie auf null gesetzt oder nicht konfiguriert ist, wird beim Rastern von Seitenbildern die Standardauflösung des Systems verwendet.</translation>
-<translation id="1700458869527146675">Durch Festlegen der Richtlinie werden die Proxyeinstellungen für Chrome- und ARC-Apps so konfiguriert, dass alle Proxyoptionen, die über die Befehlszeile eingegeben werden, ignoriert werden.
-
-       Wird die Richtlinie nicht festgelegt, können Nutzer die Proxyeinstellungen auswählen.
-
-       Durch Festlegen der Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“ werden die folgenden Felder übernommen:
-* „<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />“ legt fest, welcher Proxyserver von Chrome verwendet werden soll, und verhindert, dass Nutzer die Proxyeinstellungen ändern
-* „<ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />“, eine URL zu einer PAC-Proxydatei
-* „<ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />“ sorgt dafür, dass der Netzwerkstapel auch bei ungültigem oder nicht verfügbarem PAC-Script keine direkten Verbindungen nutzt
-* „<ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />“, eine URL des Proxyservers
-* „<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />“, eine Liste mit Hosts, für die der Proxy umgangen wird
-
-Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zugunsten des Felds „<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />“ eingestellt.
-
-        Für „<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />“ können folgende Werte festgelegt werden:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" /> – kein Proxy wird verwendet und alle anderen Felder werden ignoriert.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" /> – der Proxy des Systems wird verwendet und alle anderen Felder werden ignoriert.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> – alle anderen Felder werden ignoriert.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> – die Felder „<ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />“ und „<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />“ werden verwendet.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> – die Felder „<ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />“, „<ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />“ und „<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />“ werden verwendet.
-
-      Hinweis: Ausführliche Beispiele findest du in den Chromium-Projekten unter https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett.</translation>
 <translation id="1700811900332333712">Powerwash-Anfrage durch Gerät zulassen</translation>
 <translation id="1705215165572785706">Tasten der obersten Reihe als Medientasten nutzen (Nutzer kann dies ändern)</translation>
 <translation id="1708496595873025510">Beschränkung für Abruf des Varianten-Seeds festlegen</translation>
@@ -1115,6 +1097,7 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, kann der Nutzer n
 Diese Richtlinie hat keine Auswirkungen, wenn sie auf Geräteebene konfiguriert wird.</translation>
 <translation id="1837165432382702436">Seitenhöhe in Mikrometern</translation>
 <translation id="1838910874018595451">Voreingestellte Konfiguration für Kerberos-Tickets</translation>
+<translation id="1839042185432919430">Zulassen, dass die Kiosk-Web-App beim Start der App eine Netzwerkaufforderung anzeigt, wenn das Gerät offline ist</translation>
 <translation id="1843102210803941014">Nur notwendige Cookies und Daten in der Suche aktivieren</translation>
 <translation id="1843117931376765605">Aktualisierungsrate für Nutzerrichtlinien</translation>
 <translation id="1844620919405873871">Konfiguriert Richtlinien zum schnellen Entsperren.</translation>
@@ -2981,6 +2964,13 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chr
 
       Konfigurierte Websites werden automatisch in einem anderen Browser als <ph name="PRODUCT_NAME" /> geöffnet.</translation>
 <translation id="3252724033247471310">Same-Origin-Tabaufnahme für diese Ursprünge zulassen</translation>
+<translation id="325374928725737694">Wenn diese Richtlinie deaktiviert ist, wird die Kiosk-Web-App nicht gestartet, wenn das Gerät offline ist. Stattdessen wird beim Start einer Kiosksitzung eine Netzwerkaufforderung angezeigt. So wird sichergestellt, dass das Gerät online ist, bevor die App gestartet wird.
+
+Diese Netzwerkaufforderung wird möglicherweise nicht angezeigt, wenn die App automatisch gestartet wird und die Richtlinie <ph name="PROMPT_POLICY_NAME" /> (<ph name="PROMPT_POLICY_URL" />) deaktiviert ist.
+
+Diese Richtlinie wirkt sich nicht auf Chrome-Apps oder Web-Apps aus, deren Installations‑URL eine ursprungsübergreifende Weiterleitung zu einer anderen Web-App ausführt. Beispiel: Die Installations-URL der App lautet <ph name="APP_INSTALL_URL" />, sie nimmt beim Laden aber eine Weiterleitung zu einer anderen Web-App vor, etwa <ph name="APP_REDIRECTED_URL" />.
+
+Wenn die Richtlinie auf „true“ festgelegt oder nicht konfiguriert ist, werden Web-Apps auch dann gestartet, wenn das Gerät offline ist.</translation>
 <translation id="3255624750680556186">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann ein Gerät Powerwash auslösen.
 
       Ist sie deaktiviert, kann ein Gerät Powerwash nicht auslösen. Als Ausnahme ist Powerwash dennoch möglich, wenn <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> auf einen Wert gesetzt wird, der ein Update der TPM-Firmware zulässt, dieses aber noch nicht durchgeführt wurde.</translation>
@@ -3518,6 +3508,7 @@ Wenn <ph name="PRODUCT_NAME" /> nicht ordnungsgemäß beendet wird, z. B. beim 
 
           Diese Richtlinie kommt nur vorübergehend zum Einsatz und wird voraussichtlich in <ph name="PRODUCT_NAME" /> 107 entfernt. Die Frist kann verlängert werden, sofern bei Unternehmen Bedarf besteht.
           </translation>
+<translation id="3677660004554019617">VC‑Hintergrund basierend auf generativer KI nicht zulassen</translation>
 <translation id="3678069907945250643">Google Fotos den Zugriff über die Personalisierungs-App erlauben</translation>
 <translation id="3680529017993214255">Funktionen aktivieren und Daten zum Trainieren von KI-Modellen senden</translation>
 <translation id="3685979383016152590">Durch die Richtlinie wird angegeben, welche Zugriffsrichtlinie für die Massenkonfiguration von Druckern verwendet wird. Dadurch wird festgelegt, welche Drucker von <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> für Nutzer verfügbar sind.
@@ -3539,6 +3530,19 @@ Wenn <ph name="PRODUCT_NAME" /> nicht ordnungsgemäß beendet wird, z. B. beim 
 <translation id="3701121231485832347">Legt die Einstellungen für mit <ph name="MS_AD_NAME" /> verwaltete <ph name="PRODUCT_OS_NAME" />-Geräte fest.</translation>
 <translation id="3702518095257671450">Remote-Attestierung</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> – Das einzeilige Feld ist veraltet und wird in Zukunft entfernt. Bitte nutze das mehrzeilige Textfeld unten.</translation>
+<translation id="3705648857103435170">Mit dieser Richtlinie wird die App zur Umstellung verwalteter Nutzer aktiviert. Mit der App zur Umstellung können Nutzer ihre Daten von ihrem verwalteten Konto in ein Privatnutzerkonto übertragen.
+
+    Wenn „<ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" />“ auf „<ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />“ festgelegt ist, wird die App zur Umstellung am Start- und Enddatum sowie zwischen diesen beiden Tagen gemäß Ortszeit angezeigt.
+
+    Wenn „<ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" />“ auf „<ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" />“ festgelegt oder nicht konfiguriert ist, wird die App nicht angezeigt.
+
+    Wenn „<ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" />“ nicht konfiguriert ist, wird die App bis zum Enddatum angezeigt.
+
+    Wenn „<ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" />“ nicht konfiguriert ist, wird die App ab dem Startdatum dauerhaft angezeigt.
+
+    Wenn weder „<ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" />“ noch „<ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" />“ konfiguriert sind, wird die App dauerhaft angezeigt. Bei Ungültigkeit des Start- und Enddatums wird die App zur Umstellung nicht angezeigt. Dies gilt auch, wenn die Datumsangaben nicht existieren oder das Enddatum vor dem Startdatum liegt.
+
+    Die Datenübertragung mit Datenexport muss ebenfalls aktiviert sein, damit die App zur Umstellung richtig funktioniert. Weitere Informationen findest du unter https://support.google.com/a/answer/6364687.</translation>
 <translation id="3711561721191203926">Wenn diese Richtlinie aktiviert ist und aufgrund fehlgeschlagener <ph name="PRIVATE_NETWORK_ACCESS" />-Prüfungen in <ph name="DEV_TOOLS_NAME" /> eine Warnung angezeigt werden sollte, wird stattdessen die Hauptanfrage blockiert.
 
 Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden keine <ph name="PRIVATE_NETWORK_ACCESS" />-Warnungen erzwungen und Anfragen nicht blockiert.
@@ -3697,6 +3701,7 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
       Ein von der Richtlinie registrierter Protokoll-Handler kann vom Nutzer nicht entfernt werden. Allerdings können durch Installation eines neuen Standard-Handlers die von der Richtlinie installierten Protokoll-Handler geändert werden.</translation>
 <translation id="3842619997238271109">Verhindert, dass der Host für den Remote-Zugriff eine PIN- und Kopplungsauthentifizierung beim Akzeptieren von Clientverbindungen verwendet</translation>
+<translation id="3845318141474759319">Hintergrund basierend auf generativer KI ohne Verbesserung von KI‑Modellen zulassen</translation>
 <translation id="3851443303439635700">Steuert den Verschachtelungsgrenzwert, bevor die JavaScript-Funktion „setTimeout()“ verzögert wird</translation>
 <translation id="3858658082795336534">Standardmäßiger Duplexmodus</translation>
 <translation id="3859780406608282662">Fügt einen Parameter für den Abruf des Varianten-Seeds in <ph name="PRODUCT_OS_NAME" /> hinzu.
@@ -4189,6 +4194,7 @@ Hinweis: Wenn interne URLs von „chrome://*“ und „chrome-untrusted://*“ b
       Ist sie auf „false“ gesetzt, wird die DNS-Auflösung des Systems (getaddrinfo()) im Netzwerkprozess und nicht im Browserprozess ausgeführt. Dadurch kann die Deaktivierung der Netzwerkdienst-Sandbox erzwungen werden, wodurch die Sicherheit von <ph name="PRODUCT_NAME" /> beeinträchtigt wird.
 
       Wenn diese Richtlinie nicht konfiguriert ist, kann die DNS-Auflösung des Systems je nach Systemkonfiguration und Funktions-Flags innerhalb, außerhalb oder teils innerhalb, teils außerhalb des Netzwerkprozesses erfolgen.</translation>
+<translation id="4232128469957872687">EDU-Einstellungen</translation>
 <translation id="4234788818648224034">Liste der Domains, die nicht über DNS-over-HTTPS aufgelöst werden sollen. Diese Richtlinie wird ignoriert, wenn der sichere DNS-Modus deaktiviert ist (immer Nur-Text-DNS verwenden).
 
 Wenn „<ph name="DOH_TEMPLATES_POLICY_NAME" />“ ebenfalls konfiguriert ist, wird eine spezifischere Domain bevorzugt. Die Spezifität bezieht sich auf die Anzahl der Punkte („.“) in der Domain. Wenn eine Domain beide Richtlinien erfüllt, wird standardmäßig DNS-over-HTTPS für die Domain verwendet.
@@ -7299,6 +7305,7 @@ Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmä
 
       Wenn die Richtlinie nicht konfiguriert ist, kann der Nutzer beliebige auf dem System installierte Plug-ins verwenden, ausgenommen inkompatible, veraltete oder gefährliche Plug-ins, die hartcodiert sind.</translation>
 <translation id="6571055160227165318">Aktivieren von WebSQL per Chrome-Flag zulassen.</translation>
+<translation id="6574216414580419109">Einstellungen für die Funktion „Hintergrund basierend auf generativer KI“</translation>
 <translation id="6574903167639386816">Profildaten auf dem Laufwerk löschen, wenn die Nutzersitzung endet</translation>
 <translation id="6575403002861093126">Wenn die Richtlinie konfiguriert ist, wird die Cache-Lebensdauer von Gruppenrichtlinienobjekten (Group Policy Objects, GPOs) in Stunden festgelegt. Das ist die maximale Dauer, während der GPOs wiederverwendet werden können, bevor sie nochmals heruntergeladen werden. Anstatt sie bei jedem Richtlinienabruf herunterzuladen, kann das System die im Cache gespeicherten GPOs nochmals verwenden, solange die Version dieselbe ist.
 
@@ -7826,6 +7833,7 @@ Diese Richtlinie wird entfernt, nachdem die Funktion für Out-of-Process-Drucker
 
       Ist die Richtlinie nicht konfiguriert, wird HTTP/0.9 auf nicht standardmäßigen Ports deaktiviert.</translation>
 <translation id="6969332115615661188">Videoeingabe deaktivieren</translation>
+<translation id="6969949359984470271">Kiosk-Web-App ist nicht offlinefähig</translation>
 <translation id="6971579036359007697">Steuert die Migration lokaler Dateien in die Cloud.
 Gilt nur für SkyVault-Nutzer, d. h. wenn „LocalUserFilesAllowed“ auf „false“ gesetzt ist. Ansonsten wird die Option ignoriert.
 
@@ -8211,23 +8219,6 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 * Bei „Zusammenführen“ werden die Nutzerrichtlinien in den Nutzer-GPOs mit denen der Computer-GPOs zusammengeführt. Computer-GPOs haben dabei Vorrang.
 
 * Bei „Ersetzen“ werden die Nutzerrichtlinien in den Nutzer-GPOs mit denen der Computer-GPOs ersetzt. Nutzer-GPOs werden ignoriert.</translation>
-<translation id="7258250780552783197">Liste der Einstellungen für Chrome Enterprise Connectors-Dienste für den Enterprise Connector „<ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" />“. Dieser wird ausgelöst, wenn eine Datei über <ph name="PRODUCT_OS_NAME" /> übertragen wird.
-
-      Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />“ wird festgelegt, ob der Connector eine Datei zur Analyse senden soll, wenn sie zwischen einer Quelle und einem Ziel übertragen wird, und welche Tags in der Analyseanfrage für diese Datei enthalten sein sollen. Ein Tag, das einer „enable“-Regel entspricht, wird der Analyseanfrage hinzugefügt, wenn die Quelle und das Ziel mit der Regel für dieses Tag übereinstimmen – jedoch nur, wenn keine „disable“-Regel mit demselben Tag mit der Übertragung übereinstimmt. Die Analyse wird durchgeführt, wenn die Anfrage mindestens ein Tag enthält. Eine „<ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />“-Regel wird durch eine Paarliste definiert, wobei jedes Paar eine Liste mit Quellen und eine Liste mit Zielen enthält. Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" />“ wird definiert, auf welches Dateisystem eine Regel angewendet werden soll.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />“ wird festgelegt, für welchen Analyseanbieter die Einstellungen gelten.
-
-      Wenn das Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />“ auf 1 gesetzt ist, wartet <ph name="PRODUCT_OS_NAME" /> auf eine Antwort des Analyseanbieters, bevor die Übertragung zugelassen wird. Wenn es auf einen anderen Ganzzahlwert gesetzt ist, ermöglicht <ph name="PRODUCT_OS_NAME" /> die sofortige Übertragung.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" />“ wird festgelegt, ob <ph name="PRODUCT_OS_NAME" /> den Zugriff auf Dateien, die durch ein Passwort geschützt sind, blockiert oder erlaubt.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" />“ wird festgelegt, ob <ph name="PRODUCT_OS_NAME" /> den Zugriff auf Dateien, die zu groß für die Analyse sind, blockiert oder erlaubt.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" />“ wird festgelegt, für welche Tags der Connector vom Nutzer eine Begründung für das Umgehen eines Scans anfordern soll, die zu einer Genehmigung für die Umgehung führt. Wenn das Feld nicht festgelegt ist, wird angenommen, dass keine Begründung erforderlich ist.
-
-      Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" />“ wird festgelegt, welche Nachricht der Nutzer sieht, wenn eine Warnung angezeigt wird, nachdem beim Scan ein potenzielles Problem gefunden wurde. Das Nachrichtenfeld enthält den Text, den der Nutzer sieht (maximal 200 Zeichen). Das Feld „<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />“ enthält eine vom Administrator festgelegte URL, die der Nutzer anklicken kann, um weitere benutzerdefinierte Informationen darüber zu erhalten, warum die Aktion blockiert wurde. Das Feld „<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />” ist optional und enthält die Sprache der Nachricht. Wenn das Feld „<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />“ leer oder auf „default“ festgelegt ist, wird die entsprechende Nachricht angezeigt, wenn es für die Sprache des Nutzers keine eigene Nachricht gibt. Das Tag-Feld gibt an, für welche Arten von Scans die Nachricht angezeigt wird. Die Liste „<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />“ kann keine oder mehrere Einträge haben – das Nachrichten- und das Tag-Feld der einzelnen Einträge dürfen dabei nicht leer sein.
-
-      Für diese Richtlinie sind zusätzliche Einrichtungen nötig. Weitere Informationen dazu finden Sie unter https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="7258823566580374486">Zugangsbeschränkung für Remote-Zugriff-Hosts aktivieren</translation>
 <translation id="7260204423892780600">Legt die Einstellungen für Google Assistant fest.</translation>
 <translation id="7261140115553020049">Dienst für unverankerten Arbeitsbereich aktivieren</translation>
@@ -8593,6 +8584,7 @@ Wenn die Richtlinie leer bleibt, sind keine Ausnahmen zu „<ph name="FLOATING_S
 
       Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist die Einheitenumrechnung über „Schnellinfo“ aktiviert.
       Wenn die Richtlinie deaktiviert ist, ist die Einheitenumrechnung über „Schnellinfo“ deaktiviert.</translation>
+<translation id="7584363090329234690">VC-Hintergrund basierend auf generativer KI ohne Verbesserung von KI‑Modellen zulassen</translation>
 <translation id="7585312329612243723">Attestierungsablauf <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> für eine Liste von URLs in verwalteten Browsern aktivieren</translation>
 <translation id="7587345076013230465">Nutzer auffordern, auf dem Anmeldebildschirm das Clientzertifikat auszuwählen, wenn die Richtlinie für die automatische Auswahl zu mehreren Zertifikaten passt</translation>
 <translation id="7587921466180902617">Screencast-Dogfood für Family Link-Nutzer aktivieren</translation>
@@ -9146,6 +9138,7 @@ Wenn man <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> oder <ph name="LACROS_
 <translation id="802776363472387903">SHA-256-Hash des <ph name="PLUGIN_VM_NAME" />-Image.</translation>
 <translation id="8028814157747157754">Den Standardsuchanbieter aktivieren und zulassen, dass Nutzer die Liste der Suchanbieter ändern</translation>
 <translation id="8029201909194194377">Maximal zulässige Sitzungsdauer für Verbindungen per Remote-Zugriff</translation>
+<translation id="8031651557770840616">Hintergrund basierend auf generativer KI nicht zulassen</translation>
 <translation id="8033450879690820321">Diese Richtlinie bietet die Möglichkeit, das neue Verhalten „Mit der Tastatur fokussierbare Scroller“ vorübergehend zu deaktivieren.
 
 Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, können Scroller ohne untergeordnete fokussierbare Elemente standardmäßig mit der Tastatur fokussiert werden. Darüber hinaus sind Scroller standardmäßig per Klick fokussierbar und programmatisch fokussierbar.
@@ -10720,6 +10713,7 @@ Weitere Informationen zur Datenverarbeitung bei Funktionen für generative KI f
 
       Wenn die Richtlinie auf „true“ gesetzt oder nicht konfiguriert ist, können sich alle Nutzer anmelden.</translation>
 <translation id="966425658642788645">Standardverhalten anwenden</translation>
+<translation id="970144760302377175">Konfigurieren, wann das <ph name="PRODUCT_OS_NAME" />-Umstellungstool verfügbar ist</translation>
 <translation id="971677226939413180">Macht die Option „Als Bild drucken“ nicht zur Auswahl durch den Nutzer verfügbar.</translation>
 <translation id="974349541138387272">Die URI-Vorlage des gewünschten DoH-Resolvers (DNS over HTTPS) angeben</translation>
 <translation id="978658824596356870">24-Stunden-Format</translation>

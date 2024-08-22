@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">Zayıf sinyal</translation>
 <translation id="1300115153046603471">APN, varsayılan ve <ph name="ATTACH" /> türünde.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Dönüştür</translation>
 <translation id="1304014921944666344">Oluşturulma tarihi</translation>
 <translation id="1308754910631152188">Güncelleniyor (%<ph name="PERCENTAGE_VALUE" /> tamamlandı)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> dakika</translation>
@@ -77,6 +78,7 @@
 <translation id="1343442362630695901">tuz gölü</translation>
 <translation id="1367951781824006909">Dosya seç</translation>
 <translation id="1371650399987522809">Google Yapay Zeka destekli duvar kağıdı ile ilgili geri bildirim</translation>
+<translation id="1374385338586507108">Tanımla</translation>
 <translation id="1387854245479784695">Bu değer tüm çekirdeklerin toplamıdır</translation>
 <translation id="1393206549145430405">kale</translation>
 <translation id="1394661041439318933">Cihazın kılıf pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
@@ -463,7 +465,6 @@
 <translation id="346423161771747987">Mevcut güç tüketimi</translation>
 <translation id="346539236881580388">Tekrar çek</translation>
 <translation id="3484914941826596830">Donanım yazılımı güncellenirken bu harici cihazı çıkarmayın ya da bilgisayarınızı kapatmayın. Bu pencereyi simge durumuna küçültebilirsiniz. Güncelleme birkaç dakika sürebilir ve bu süre boyunca harici cihazınız çalışmayabilir.</translation>
-<translation id="3485555238092220889">erişilebilirlik işlemi</translation>
 <translation id="3486220673238053218">tanım</translation>
 <translation id="3487866404496702283">Mahi özelliği ile ilgili geri bildirim</translation>
 <translation id="3488065109653206955">Kısmen etkinleştirildi</translation>
@@ -672,6 +673,7 @@
 <translation id="4562494484721939086">Hizmet yok</translation>
 <translation id="4570558255126759859">Kayıtları özetlemek için Gemini modeli indirilsin mi?</translation>
 <translation id="4573777384450697571">Başarısız - Sertifikanın Süresi Doldu</translation>
+<translation id="4575450106703099687">erişilebilirlik seçenekleri</translation>
 <translation id="458794348635939462">Tüm ana makineler çözümlenemedi</translation>
 <translation id="4593212453765072419">Proxy kimlik doğrulaması gerekli</translation>
 <translation id="4594021849294327751">Transkript oluştur</translation>
@@ -884,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> için düzenle düğmesi.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> cihazı güncelle</translation>
+<translation id="5736820754189340309">Veri kullanımı sıfırlandı</translation>
 <translation id="574392208103952083">Orta</translation>
 <translation id="5757187557809630523">sonraki parça</translation>
 <translation id="5760715441271661976">Portal Durumu</translation>
@@ -893,6 +896,7 @@
 <translation id="57838592816432529">Sesi kapat</translation>
 <translation id="5784136236926853061">Yüksek HTTP gecikmesi</translation>
 <translation id="5790391387506209808">laciverttaş</translation>
+<translation id="5810692306010756935">Mezuniyet</translation>
 <translation id="5816802250591013230">Kısayol atanmadı</translation>
 <translation id="5826644637650799838">Eser hakkında</translation>
 <translation id="5832805196449965646">Kişi Ekle</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6798678288485555829">Metinde gezinme</translation>
 <translation id="680983167891198932">Anahtar</translation>
 <translation id="6816797338148849397">Seçiminizle ilgili bilgi mevcut. Erişmek için yukarı ok tuşunu kullanın.</translation>
+<translation id="6831043979455480757">Çevir</translation>
 <translation id="6853312040151791195">Şarjın boşalma hızı</translation>
 <translation id="6862416241246624313">Geri bildirim gönderildi</translation>
 <translation id="6866732840889595464">papatya</translation>
@@ -1591,7 +1596,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="966787709310836684">menü</translation>
 <translation id="979450713603643090">Açık pembe</translation>
 <translation id="982713511914535780">Deşarj testini çalıştır</translation>
-<translation id="98515147261107953">Yatay</translation>
+<translation id="98515147261107953">Manzara</translation>
 <translation id="987264212798334818">Genel</translation>
 <translation id="995062385528875723">Aksanlı harfler, Latin alfabesinde olmayan karakterler veya semboller kullanılamaz</translation>
 </translationbundle>

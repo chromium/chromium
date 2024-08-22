@@ -430,6 +430,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="7398989605938454041">Помоћу Chromium профила можете да раздвојите све Chromium садржаје. На тај начин ћете лакше моћи да раздвојите посао и забаву.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Програмерска верзија Chromium-а</translation>
 <translation id="7451052299415159299">Chromium тражи дозволу да приступи камери за овај сајт</translation>
+<translation id="7458892263350425044">Да бисте користили микрофон, одобрите Chromium-у приступ у <ph name="BEGIN_LINK" />подешавањима система<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">Да бисте добијали будућа Chromium ажурирања, треба вам Windows 10 или новија верзија. Овај рачунар користи Windows 7.</translation>
 <translation id="7467949745582939695">Желите поново да покренете Chromium?</translation>
 <translation id="7483335560992089831">Није могуће инсталирати исту верзију Chromium-а која се тренутно користи. Затворите Chromium и покушајте поново.</translation>
@@ -458,6 +459,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="7872446069773932638">Преузима се... Још <ph name="SECONDS" /> сек</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Како можете да управљате подацима:<ph name="END_BOLD" /> Ради заштите приватности аутоматски бришемо интересовања старија од 4 недеље. Када наставите да прегледате, интересовање ће се можда поново појавити на листи. Можете и да уклањате интересовања за која не желите да их Chromium узима у обзир.</translation>
 <translation id="7888981273428720788">Подесите Chromium као подразумевани прегледач</translation>
+<translation id="7934340546140346950">Chromium аутоматски надограђује небезбедне везе на HTTPS када је то могуће</translation>
 <translation id="7937630085815544518">Били сте пријављени на Chromium као <ph name="USER_EMAIL_ADDRESS" />. Користите исти налог да бисте се поново пријавили.</translation>
 <translation id="7975919845073681630">Ово је секундарна инсталација Chromium-а па не можете да га подесите као подразумевани прегледач.</translation>
 <translation id="7997934263947464652">Додаци, апликације и теме из непознатих извора могу да нашкоде уређају. Chromium препоручује да их инсталирате само из: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
@@ -470,6 +472,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="813913629614996137">Покреће се…</translation>
 <translation id="8166782796394721554">Укључите додатну заштиту у Chromium алатки за JavaScript и WebAssembly</translation>
 <translation id="81770708095080097">Ова датотека је опасна, па ју је Chromium блокирао.</translation>
+<translation id="8223363452568144035">Да бисте користили камеру, одобрите Chromium-у приступ у <ph name="BEGIN_LINK" />подешавањима система<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Chromium не може да потврди одакле потиче овај додатак и можда није безбедан. Уклоните га из Chromium-а да више не би могао да види и мења податке на сајтовима које посећујете, укључујући личне податке.</translation>
 <translation id="8248265253516264921">Ако слика нема користан опис, Chromium ће пробати да вам га пружи. Слике се шаљу Google-у ради прављења описа. То можете да искључите у подешавањима у сваком тренутку.</translation>
 <translation id="8254601181414348851">Желите ли да се пријавите у Chromium на новом профилу?</translation>
@@ -540,4 +543,5 @@ Chromium не може да врати подешавања.</translation>
 <translation id="983803489796659991">Инсталација није успела зато што сервер за ажурирање нема никакве хеширане податке за апликацију.</translation>
 <translation id="985498048907240953">Користите Chromium без налога</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
+<translation id="992780518932311116">Да бисте користили локацију, одобрите Chromium-у приступ у <ph name="BEGIN_LINK" />подешавањима система<ph name="END_LINK" /></translation>
 </translationbundle>

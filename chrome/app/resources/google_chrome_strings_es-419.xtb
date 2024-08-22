@@ -71,6 +71,7 @@
 <translation id="2018528049276128029">Cada perfil conserva su propia información de Chrome, como los favoritos, el historial, las contraseñas y más.</translation>
 <translation id="2018879682492276940">No se completó la instalación. Vuelve a intentarlo.</translation>
 <translation id="2022471217832964798">Mientras configuramos el acceso a la cuenta, puedes seguir usando Chrome. Es posible que no tengas acceso a algunos recursos hasta que se complete la configuración.</translation>
+<translation id="2034233344106846793">Chrome actualiza automáticamente las conexiones no seguras a HTTPS cuando es posible</translation>
 <translation id="207902854391093810">Cuando comienzan las pruebas, la medición de anuncios les permite a los sitios que visitas solicitar información a Chrome a fin de medir el rendimiento de los anuncios. La medición de anuncios restringe el seguimiento entre sitios web, ya que se transfiere la menor cantidad de información posible entre sitios.</translation>
 <translation id="2091012649849228750">Para recibir las próximas actualizaciones de Google Chrome, necesitarás Windows 10 o una versión posterior. Esta computadora usa Windows 8.</translation>
 <translation id="2094648590148273905">Condiciones de ChromeOS Flex</translation>
@@ -361,6 +362,7 @@
 <translation id="608006075545470555">Agrega un perfil de trabajo a este navegador</translation>
 <translation id="6097822892606850415">Escribe con más confianza gracias a la ayuda de la IA</translation>
 <translation id="6113794647360055231">Chrome mejorado</translation>
+<translation id="6134085236017727171">Para usar el micrófono, otorga acceso a Chrome en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Estas pestañas están usando recursos adicionales. Para mejorar el rendimiento, permite que Chrome las desactive.</translation>
 <translation id="6145313976051292476">Abrir archivos PDF en Chrome</translation>
 <translation id="6157638032135951407">Tu organización borra los datos de Chrome cuando no se usan durante <ph name="TIMEOUT_DURATION" />. Esto puede incluir el historial, los datos de Autocompletar y las descargas.</translation>
@@ -396,6 +398,7 @@
 <translation id="6497147134301593682">Chrome se cerró automáticamente</translation>
 <translation id="6506909944137591434">Chrome necesita permiso de acceso a la cámara para crear un mapa 3D de tu entorno.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" />: Versión para desarrolladores de Google Chrome</translation>
+<translation id="6520670145826811516">Para usar la ubicación, otorga acceso a Chrome en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">En el Administrador de contraseñas de Google en este dispositivo</translation>
 <translation id="6632473616050862500">ChromeOS Flex funciona gracias a <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="6660596345553328257">¿Quieres acceder a Chrome?</translation>
@@ -558,6 +561,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8718062187489036808">Salir de Chrome</translation>
 <translation id="873133009373065397">Google Chrome no puede determinar ni establecer el navegador predeterminado</translation>
 <translation id="8765470054473112089">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
+<translation id="8781673607513845160">Para usar la cámara, otorga acceso a Chrome en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Error de instalación: El administrador de red aplicó una política de grupo que impide la instalación (<ph name="INSTALL_ERROR" />).</translation>
 <translation id="8796073561259064743">Chrome bloqueó esta descarga porque el archivo puede dañar tus cuentas personales y de redes sociales, incluida <ph name="USER_EMAIL" /></translation>
 <translation id="8797423385604279835">Organiza tus pestañas con la ayuda de la IA</translation>

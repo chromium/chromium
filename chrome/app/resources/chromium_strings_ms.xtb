@@ -428,6 +428,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="7398989605938454041">Dengan profil Chromium anda dapat mengasingkan semua bahan Chromium anda. Ini akan lebih memudahkan pengasingan antara bahan kerja dengan bahan untuk keseronokan.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium memerlukan kebenaran untuk mengakses kamera anda bagi tapak ini</translation>
+<translation id="7458892263350425044">Untuk menggunakan mikrofon anda, berikan akses kepada Chromium dalam <ph name="BEGIN_LINK" />tetapan sistem<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">Untuk mendapatkan kemaskinian Chromium yang akan datang, anda memerlukan Windows 10 atau yang lebih baharu. Komputer ini menggunakan Windows 7.</translation>
 <translation id="7467949745582939695">Lancarkan Semula Chromium?</translation>
 <translation id="7483335560992089831">Tidak boleh memasang versi Chromium yang sama dengan yang sedang dijalankan. Sila tutup Chromium dan cuba lagi.</translation>
@@ -456,6 +457,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="7872446069773932638">Memuat turun... <ph name="SECONDS" /> saat lagi</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Cara anda boleh mengurus data anda:<ph name="END_BOLD" /> Untuk melindungi privasi anda, kami memadamkan minat anda yang disimpan melebihi 4 minggu secara automatik. Semasa anda terus menyemak imbas, minat itu mungkin muncul semula dalam senarai. Anda juga boleh mengalih keluar minat yang anda tidak mahu dipertimbangkan Chromium.</translation>
 <translation id="7888981273428720788">Tetapkan Chromium sebagai lalai anda</translation>
+<translation id="7934340546140346950">Chromium meningkatkan sambungan tidak selamat kepada HTTPS secara automatik jika boleh</translation>
 <translation id="7937630085815544518">Anda telah log masuk ke Chromium sebagai <ph name="USER_EMAIL_ADDRESS" />. Sila gunakan akaun yang sama untuk log masuk lagi.</translation>
 <translation id="7975919845073681630">Ini adalah pemasangan kedua Chromium dan tidak boleh dijadikan penyemak imbas lalai anda.</translation>
 <translation id="7997934263947464652">Sambungan, apl dan tema daripada sumber yang tidak diketahui boleh membahayakan peranti anda. Chrome mengesyorkan agar memasang fail daripada <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> sahaja</translation>
@@ -468,6 +470,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="813913629614996137">Memulakan...</translation>
 <translation id="8166782796394721554">Hidupkan perlindungan tambahan dalam JavaScript Chromium dan enjin WebAssembly</translation>
 <translation id="81770708095080097">Fail ini berbahaya, maka Chromium telah menyekatnya.</translation>
+<translation id="8223363452568144035">Untuk menggunakan kamera anda, berikan akses kepada Chromium dalam <ph name="BEGIN_LINK" />tetapan sistem<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Chromium tidak dapat mengesahkan tempat asal sambungan ini, maka tindakan ini mungkin tidak selamat. Alih keluar sambungan ini daripada Chromium supaya sambungan ini tidak dapat melihat dan mengubah data anda pada laman yang anda lawati lagi, termasuk maklumat peribadi.</translation>
 <translation id="8248265253516264921">Jika imej tiada perihalan yang berguna, Chromium akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google. Anda boleh mematikan pilihan ini dalam tetapan pada bila-bila masa.</translation>
 <translation id="8254601181414348851">Log masuk ke Chromium dalam profil baharu?</translation>
@@ -538,4 +541,5 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="983803489796659991">Pemasangan gagal akibat pelayan kemaskinian tidak mengandungi sebarang data cincang untuk aplikasi.</translation>
 <translation id="985498048907240953">Gunakan Chromium Tanpa Akaun</translation>
 <translation id="985602178874221306">Pengarang Chromium</translation>
+<translation id="992780518932311116">Untuk menggunakan lokasi anda, berikan akses kepada Chromium dalam <ph name="BEGIN_LINK" />tetapan sistem<ph name="END_LINK" /></translation>
 </translationbundle>

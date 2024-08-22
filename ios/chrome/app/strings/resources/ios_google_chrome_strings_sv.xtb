@@ -37,8 +37,6 @@ Tänk på detta:
 <translation id="1615715390546812898">Sök med rösten i Chrome</translation>
 <translation id="1657395063736185342">Sök efter bilder i Chrome</translation>
 <translation id="1670609221633730681">Tips för Chrome: Välj adressfältets position</translation>
-<translation id="1675955119303651351">Viss Chrome-data har inte sparats i ditt Google-konto ännu.
-        Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
 <translation id="1682483655351012182">Synkronisera data i Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Lägger till de angivna webbadresserna i dina bokmärken i Chrome.</translation>
@@ -81,7 +79,6 @@ Tänk på detta:
 <translation id="2767464022270041271">Inga sparade lösenord. Google Lösenordshantering kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="2869959624320573933">Logga in i Chrome</translation>
 <translation id="2876628302275096482">Läs mer om <ph name="BEGIN_LINK" />hur Chrome skyddar din data<ph name="END_LINK" /></translation>
-<translation id="2952581218264071393">1. Öppna inställningarna för Chrome</translation>
 <translation id="2957447865124070833">Välj <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Din data i Chrome raderas från den här enheten eftersom du loggar ut från ett konto som hanteras av <ph name="SIGNOUT_MANAGED_DOMAIN" />. Din data finns kvar i Google-kontot.</translation>
 <translation id="309672519329227863">Få tillgång till dina lösenord i Chrome och mer i andra appar.</translation>
@@ -93,7 +90,6 @@ Tänk på detta:
 <translation id="3340938510625667914">Chrome-åtgärder</translation>
 <translation id="3345341804167540816">Använd Chrome överallt</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Detta händer när Chrome inte har använts på {THRESHOLD} minut}other{Detta händer när Chrome inte används på {THRESHOLD} minuter}}</translation>
-<translation id="3399930248910934354">Öppna inställningarna för Chrome</translation>
 <translation id="344736123700721678">Kom åt Chrome snabbare från hemskärmens Dock</translation>
 <translation id="3472587960215700950">Google Maps används i Chrome för att ge dig vägbeskrivningar och lokal information om identifierade adresser.</translation>
 <translation id="3503014945441706099">Få Förbättrad säker webbsökning även för den här Chromium-profilen</translation>
@@ -131,9 +127,6 @@ Tänk på detta:
 <translation id="4761869838909035636">Kör säkerhetskontroll i Chrome</translation>
 <translation id="4798859546468762093">Om du vill få tillgång till anpassning och andra funktioner kan du ta med Chrome i <ph name="FEATURE_NAME_1" /> och <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Chrome skickar data om användning och krascher till Google i syfte att förbättra appen. <ph name="BEGIN_LINK" />Hantera<ph name="END_LINK" /></translation>
-<translation id="4831642696589369971">Viss Chrome-data har inte sparats i ditt Google-konto ännu.
-
-        Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
 <translation id="484033449593719797">Stöds inte på Chrome Beta</translation>
 <translation id="4840404732697892756">Google Lösenordshantering kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Du kan spåra paketet på sidan Ny flik i Chrome.}other{Du kan spåra paketen på sidan Ny flik i Chrome.}}</translation>
@@ -211,6 +204,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 Du hittar fler inställningar som använder data för att förbättra Chrome-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Sök med rösten i Chrome</translation>
 <translation id="6975725306479268850">Välj Chrome för Autofyll</translation>
+<translation id="6979238427560462592">Ett flöde som anpassats för dig av Google. Inklusive nyheter, sport och väder.</translation>
 <translation id="7004159181872656283">Sök efter bilder i Chrome.</translation>
 <translation id="7056826488869329999">Öppnar och kör en säkerhetskontroll i Chrome.</translation>
 <translation id="7059914902409643750">Anpassa Chrome</translation>
@@ -236,7 +230,6 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="7394108421562933108">Maps i Chrome</translation>
 <translation id="7400722733683201933">Om Google Chrome</translation>
 <translation id="7466693328838535498">Skriv ”Chrome” i rutan Sökwidgetar</translation>
-<translation id="746684838091935575">3. Välj Chrome</translation>
 <translation id="7492574581995589075">Din organisation har inaktiverat möjligheten att använda och spara Chrome-data i ditt Google-konto. Nya bokmärken, lösenord med mera sparas endast på den här enheten.</translation>
 <translation id="7581063337314642333">Öppna rutnätet med flikar i Chrome</translation>
 <translation id="7642373780953416937">Få varningar om integritets- eller säkerhetsproblem som identifieras automatiskt av Chrome.</translation>
@@ -300,7 +293,6 @@ Din data krypterades med lösenfrasen den <ph name="TIME" />. Ange den om du vil
 <translation id="8857676124663337448">Google Lösenordshantering kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
 <translation id="8865415417596392024">Chrome-data i ditt konto</translation>
 <translation id="8874688701962049679">Tips om hur du får ut mesta möjliga av Chrome.</translation>
-<translation id="8891935667620843985">Du kan öppna länkar i Chrome automatiskt genom att ställa in den som standardwebbläsare.</translation>
 <translation id="8897749957032330183">Lösenorden sparas med Google Lösenordshantering på den här enheten.</translation>
 <translation id="8949681853939555434">Ställ in Chrome som standardwebbläsare</translation>
 <translation id="9068336935206019333">Öppna i Chromes inkognitoläge</translation>
@@ -308,6 +300,7 @@ Din data krypterades med lösenfrasen den <ph name="TIME" />. Ange den om du vil
 <translation id="9112744793181547300">Vill du ställa in Chrome som standardwebbläsare?</translation>
 <translation id="9122931302567044771">Detta betyder att datorversionen av webbplatsen begärs varje gång i Chrome.</translation>
 <translation id="9181628561061032322">Öppnar de senaste flikarna i Chrome.</translation>
+<translation id="9194404253580584015">Ett flöde som anpassats för dig av Google.</translation>
 <translation id="953008885340860025">Utloggad från Chrome</translation>
 <translation id="97300214378190234">Använd Chrome varje gång du trycker på länkar i andra appar.</translation>
 </translationbundle>

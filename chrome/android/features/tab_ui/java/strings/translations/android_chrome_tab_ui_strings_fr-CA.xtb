@@ -20,6 +20,7 @@
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> onglets groupés</translation>
 <translation id="1657719826150349398">Déplacer l'onglet vers le bas</translation>
 <translation id="1713541401465507417">Fermer tous les onglets et tous les groupes</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> onglet groupé</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Ajouter <ph name="TABS_COUNT_ONE" /> onglet sélectionné aux favoris}one{Ajouter <ph name="TABS_COUNT_MANY" /> onglet sélectionné aux favoris}other{Ajouter <ph name="TABS_COUNT_MANY" /> onglets sélectionnés aux favoris}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Créé à l'instant</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Fermer après 1 jour}one{Fermer après <ph name="DAY_COUNT_MANY" /> jour}other{Fermer après <ph name="DAY_COUNT_MANY" /> jours}}</translation>
 <translation id="4777866634702576038">Supprimer le groupe d'onglets?</translation>
+<translation id="4783638485675352219">Partagez les titres et les URL des onglets ouverts sur cet appareil avec le système d'exploitation</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> avis)}one{(<ph name="REVIEWS_COUNT_MANY" /> avis)}other{(<ph name="REVIEWS_COUNT_MANY" /> avis)}}</translation>
 <translation id="4850886885716139402">Affichage</translation>
 <translation id="4870911314065352661">Fermer tous les onglets?</translation>

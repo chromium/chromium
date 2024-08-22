@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">ສັນຍານອ່ອນ</translation>
 <translation id="1300115153046603471">APN ເປັນແບບຄ່າເລີ່ມຕົ້ນ ແລະ <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">ປ່ຽນແປງ</translation>
 <translation id="1304014921944666344">ວັນທີທີ່ສ້າງ</translation>
 <translation id="1308754910631152188">ກຳລັງອັບເດດ (ສຳເລັດແລ້ວ <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> ນາທີ</translation>
@@ -77,6 +78,7 @@
 <translation id="1343442362630695901">ຊໍລທ໌ເລກ</translation>
 <translation id="1367951781824006909">ເລືອກໄຟລ໌</translation>
 <translation id="1371650399987522809">ຄຳຕິຊົມສຳລັບຮູບພື້ນຫຼັງທີ່ຂັບເຄື່ອນໂດຍ Google AI</translation>
+<translation id="1374385338586507108">ນິຍາມ</translation>
 <translation id="1387854245479784695">ນີ້ແມ່ນການຮວບຮວມ core ທັງໝົດ</translation>
 <translation id="1393206549145430405">ຜາສາດ</translation>
 <translation id="1394661041439318933">ອຸປະກອນມີແບັດເຕີຣີເຄສ <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -463,7 +465,6 @@
 <translation id="346423161771747987">ກະແສໄຟຟ້າ</translation>
 <translation id="346539236881580388">ຖ່າຍໃໝ່</translation>
 <translation id="3484914941826596830">ໃນຂະນະທີ່ກຳລັງອັບເດດເຟີມແວຢູ່, ກະລຸນາຢ່າຖອດອຸປະກອນພາຍນອກນີ້ອອກ ຫຼື ຢ່າປິດເຄື່ອງຄອມພິວເຕີຂອງທ່ານ. ທ່ານສາມາດຫຍໍ້ໜ້າຈໍນີ້ລົງໄດ້. ອັບເດດນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ ແລະ ອຸປະກອນພາຍນອກຂອງທ່ານອາດບໍ່ເຮັດວຽກໃນລະຫວ່າງນີ້.</translation>
-<translation id="3485555238092220889">ຄຳສັ່ງເພື່ອການຊ່ວຍເຂົ້າເຖິງ</translation>
 <translation id="3486220673238053218">ຄໍາ​ນິ​ຍາມ</translation>
 <translation id="3487866404496702283">ຄຳຕິຊົມສຳລັບຄຸນສົມບັດວຽກ</translation>
 <translation id="3488065109653206955">ເປີດ​​ໃຊ້ງານ​ບາງ​ສ່ວນເທົ່ານັ້ນ</translation>
@@ -672,6 +673,7 @@
 <translation id="4562494484721939086">ບໍ່ມີການບໍລິການ</translation>
 <translation id="4570558255126759859">ດາວໂຫຼດໂມເດວ Gemini ເພື່ອສະຫຼຸບໄຟລ໌ບັນທຶກສຽງບໍ?</translation>
 <translation id="4573777384450697571">ບໍ່ສຳເລັດ - ໃບຮັບຮອງໝົດອາຍຸ</translation>
+<translation id="4575450106703099687">ຕົວເລືອກການຊ່ວຍເຂົ້າເຖິງ</translation>
 <translation id="458794348635939462">ແກ້ໄຂບັນຫາໂຮສທັງໝົດບໍ່ສຳເລັດ</translation>
 <translation id="4593212453765072419">ຈຳເປັນຕ້ອງພິສູດຢືນຢັນພຣັອກຊີ</translation>
 <translation id="4594021849294327751">ສ້າງການຖອດຂໍ້ຄວາມຈາກສຽງ</translation>
@@ -884,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">ແກ້ໄຂປຸ່ມສຳລັບ <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">ອັບເດດ <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">ຣີເຊັດການນຳໃຊ້ອິນເຕີເນັດແລ້ວ</translation>
 <translation id="574392208103952083">ສື່ກາງ</translation>
 <translation id="5757187557809630523">ເພງຕໍ່ໄປ</translation>
 <translation id="5760715441271661976">ສະຖານະຜອດໂທລ</translation>
@@ -893,6 +896,7 @@
 <translation id="57838592816432529">ປິດສຽງ</translation>
 <translation id="5784136236926853061">ການຕອບສະໜອງ HTTP ສູງ</translation>
 <translation id="5790391387506209808">ລາພິສ ລາຊູລີ</translation>
+<translation id="5810692306010756935">ການຈົບການສຶກສາ</translation>
 <translation id="5816802250591013230">ບໍ່ໄດ້ມອບໝາຍທາງລັດເທື່ອ</translation>
 <translation id="5826644637650799838">ກ່ຽວກັບສິນລະປະ</translation>
 <translation id="5832805196449965646">ເພີ່ມບຸກຄົນ</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6798678288485555829">ການນຳທາງຂໍ້ຄວາມ</translation>
 <translation id="680983167891198932">ກະແຈ</translation>
 <translation id="6816797338148849397">ມີຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ. ໃຊ້ລູກສອນຂຶ້ນເພື່ອເຂົ້າເຖິງ.</translation>
+<translation id="6831043979455480757">ແປພາສາ</translation>
 <translation id="6853312040151791195">ອັດຕາການຄາຍປະຈຸ</translation>
 <translation id="6862416241246624313">ສົ່ງຄຳຕິຊົມແລ້ວ</translation>
 <translation id="6866732840889595464">ເດຊີ</translation>

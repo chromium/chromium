@@ -37,8 +37,6 @@
 <translation id="1615715390546812898">ค้นหาด้วยเสียงใน Chrome</translation>
 <translation id="1657395063736185342">ค้นหาภาพใน Chrome</translation>
 <translation id="1670609221633730681">เคล็ดลับสำหรับ Chrome: เลือกตำแหน่งของแถบที่อยู่</translation>
-<translation id="1675955119303651351">ยังไม่ได้บันทึกข้อมูล Chrome ของคุณบางอย่างในบัญชี Google
-        โปรดรอสักครู่ก่อนออกจากระบบ หากคุณออกจากระบบตอนนี้ ระบบจะลบข้อมูลนี้</translation>
 <translation id="1682483655351012182">ซิงค์ข้อมูล Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">เพิ่ม URL ที่ป้อนไปยังบุ๊กมาร์กใน Chrome</translation>
@@ -78,10 +76,12 @@
 <translation id="2703746758996815929">หากต้องการรับเคล็ดลับที่มีประโยชน์เกี่ยวกับ Chrome ให้เปิดการแจ้งเตือนในการตั้งค่า iOS</translation>
 <translation id="2736805085127235148">ตอนนี้การแจ้งเตือนของ Chrome ปิดอยู่ในการตั้งค่าอุปกรณ์</translation>
 <translation id="2750626042242931740">คุณอัปเดตสิ่งที่เลือกไว้ได้ทุกเมื่อในการตั้งค่า Chrome</translation>
+<translation id="2754428955276778271">ยังไม่ได้บันทึกข้อมูล Chrome ของคุณบางอย่างในบัญชี Google
+
+โปรดรอสักครู่ก่อนออกจากระบบ หากคุณออกจากระบบตอนนี้ ระบบจะลบข้อมูลนี้</translation>
 <translation id="2767464022270041271">ไม่มีรหัสผ่านที่บันทึกไว้ เครื่องมือจัดการรหัสผ่านบน Google จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกไว้</translation>
 <translation id="2869959624320573933">ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="2876628302275096482">ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK" />วิธีที่ Chrome ช่วยรักษาข้อมูลของคุณให้เป็นส่วนตัว<ph name="END_LINK" /></translation>
-<translation id="2952581218264071393">1. เปิดการตั้งค่า Chrome</translation>
 <translation id="2957447865124070833">เลือก <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">เนื่องจากคุณกำลังออกจากระบบบัญชีที่จัดการโดย <ph name="SIGNOUT_MANAGED_DOMAIN" /> ข้อมูล Chrome ของคุณจะถูกลบออกจากอุปกรณ์นี้ แต่ข้อมูลจะยังคงอยู่ในบัญชี Google</translation>
 <translation id="309672519329227863">เข้าถึงรหัสผ่าน Chrome และอีกมากมายจากแอปอื่นๆ</translation>
@@ -93,7 +93,6 @@
 <translation id="3340938510625667914">การดำเนินการใน Chrome</translation>
 <translation id="3345341804167540816">ใช้ Chrome ในทุกที่</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{การดำเนินการนี้จะเกิดขึ้นเมื่อไม่ได้ใช้ Chrome เป็นเวลา {THRESHOLD} นาที}other{การดำเนินการนี้จะเกิดขึ้นเมื่อไม่ได้ใช้ Chrome เป็นเวลา {THRESHOLD} นาที}}</translation>
-<translation id="3399930248910934354">เปิดการตั้งค่า Chrome</translation>
 <translation id="344736123700721678">เข้าถึง Chrome ได้เร็วขึ้นจากแถบแอปในหน้าจอหลัก</translation>
 <translation id="3472587960215700950">Chrome ใช้ Google Maps เพื่อแสดงเส้นทางและข้อมูลในพื้นที่ของที่อยู่ที่ตรวจพบ</translation>
 <translation id="3503014945441706099">รับ Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นสำหรับโปรไฟล์ Chrome นี้ด้วย</translation>
@@ -131,9 +130,6 @@
 <translation id="4761869838909035636">เรียกใช้การตรวจสอบความปลอดภัยของ Chrome</translation>
 <translation id="4798859546468762093">รวม Chrome ไว้ใน <ph name="FEATURE_NAME_1" /> และ <ph name="FEATURE_NAME_2" /> เพื่อรับการปรับเปลี่ยนในแบบของคุณและฟีเจอร์อื่นๆ</translation>
 <translation id="4819268619367838612">Chrome จะส่งข้อมูลการใช้งานและข้อขัดข้องไปยัง Google เพื่อช่วยปรับปรุงแอป <ph name="BEGIN_LINK" />จัดการ<ph name="END_LINK" /></translation>
-<translation id="4831642696589369971">ยังไม่ได้บันทึกข้อมูล Chrome ของคุณบางอย่างในบัญชี Google
-
-        โปรดรอสักครู่ก่อนออกจากระบบ หากคุณออกจากระบบตอนนี้ ระบบจะลบข้อมูลนี้</translation>
 <translation id="484033449593719797">ไม่รองรับใน Chrome เบต้า</translation>
 <translation id="4840404732697892756">เครื่องมือจัดการรหัสผ่านบน Google จะตรวจสอบรหัสผ่านได้เมื่อคุณลงชื่อเข้าใช้ด้วยบัญชี Google</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome จะช่วยคุณติดตามพัสดุนี้ในหน้าแท็บใหม่ได้}other{Chrome จะช่วยคุณติดตามพัสดุเหล่านี้ในหน้าแท็บใหม่ได้}}</translation>
@@ -152,6 +148,8 @@
 <translation id="5190139289262548459">องค์กร <ph name="DOMAIN" /> ของคุณจะเป็นผู้จัดการบัญชีที่คุณลงชื่อเข้าใช้และวิธีใช้ Chrome</translation>
 <translation id="5256908199795498284">Chrome จะตรวจหาหมายเลขติดตามพัสดุในเว็บไซต์ที่คุณเข้าชมและแสดงข้อมูลอัปเดตเกี่ยวกับพัสดุในหน้า "แท็บใหม่" ระบบจะแชร์ข้อมูลของคุณกับ Google เพื่อให้บริการฟีเจอร์นี้และปรับปรุง Shopping สำหรับทุกคน</translation>
 <translation id="5278862365980079760">ล็อกแท็บที่ไม่ระบุตัวตนเมื่อคุณออกจาก Chrome หรือเปลี่ยนไปใช้แอปอื่น</translation>
+<translation id="5310957470610282541">ยังไม่ได้บันทึกข้อมูล Chrome ของคุณบางอย่างในบัญชี Google
+โปรดรอสักครู่ก่อนออกจากระบบ หากคุณออกจากระบบตอนนี้ ระบบจะลบข้อมูลนี้</translation>
 <translation id="5389212809648216794">Google Chrome ไม่สามารถใช้กล้องถ่ายรูปเนื่องจากแอปพลิเคชันอื่นใช้งานอยู่</translation>
 <translation id="5395376160638294582">ตรวจสอบว่าคุณใช้ข้อมูล Chrome ในบัญชี Google ได้เสมอ</translation>
 <translation id="5439191312780166229">เตือนคุณเกี่ยวกับเว็บไซต์ที่เป็นอันตราย แม้แต่เว็บไซต์ที่ Google ไม่เคยรู้จักมาก่อนด้วยการวิเคราะห์ข้อมูลจากเว็บไซต์มากกว่าการปกป้องแบบมาตรฐาน คุณเลือกข้ามคำเตือนของ Chrome ได้</translation>
@@ -211,6 +209,7 @@
 หากต้องการการตั้งค่าเพิ่มเติมที่ใช้ข้อมูลเพื่อปรับปรุงประสบการณ์การใช้งาน Chrome ให้ไปที่<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>
 <translation id="6916015246697034114">ค้นหาด้วยเสียงใน Chrome</translation>
 <translation id="6975725306479268850">เลือก Chrome สำหรับการป้อนข้อความอัตโนมัติ</translation>
+<translation id="6979238427560462592">ฟีดที่กำหนดมาเพื่อคุณโดยเฉพาะจาก Google ประกอบด้วยข่าว กีฬา และสภาพอากาศ</translation>
 <translation id="7004159181872656283">ค้นหาภาพใน Chrome</translation>
 <translation id="7056826488869329999">เปิดและเรียกใช้การตรวจสอบความปลอดภัยใน Chrome</translation>
 <translation id="7059914902409643750">ปรับเปลี่ยน Chrome ในแบบของคุณ</translation>
@@ -236,7 +235,6 @@
 <translation id="7394108421562933108">Maps ใน Chrome</translation>
 <translation id="7400722733683201933">เกี่ยวกับ Google Chrome</translation>
 <translation id="7466693328838535498">ในช่องวิดเจ็ต Search ให้ป้อน Chrome</translation>
-<translation id="746684838091935575">3. เลือก Chrome</translation>
 <translation id="7492574581995589075">องค์กรได้ปิดความสามารถในการใช้และบันทึกข้อมูล Chrome ในบัญชี Google ของคุณ บุ๊กมาร์ก รหัสผ่านใหม่ และข้อมูลอื่นๆ จะบันทึกไว้ในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="7581063337314642333">ไปที่ตารางกริดของแท็บใน Chrome</translation>
 <translation id="7642373780953416937">รับการแจ้งเตือนเกี่ยวกับปัญหาความเป็นส่วนตัวหรือความปลอดภัยที่ Chrome ตรวจหาให้คุณโดยอัตโนมัติ</translation>
@@ -300,7 +298,6 @@
 <translation id="8857676124663337448">เครื่องมือจัดการรหัสผ่านบน Google ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้</translation>
 <translation id="8865415417596392024">ข้อมูล Chrome ในบัญชี</translation>
 <translation id="8874688701962049679">เคล็ดลับในการรับประโยชน์สูงสุดจาก Chrome</translation>
-<translation id="8891935667620843985">คุณเปิดลิงก์ใน Chrome โดยอัตโนมัติได้ด้วยการตั้งเป็นแอปเบราว์เซอร์เริ่มต้น</translation>
 <translation id="8897749957032330183">รหัสผ่านจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านบน Google ในอุปกรณ์นี้</translation>
 <translation id="8949681853939555434">ตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="9068336935206019333">เปิดในโหมดไม่ระบุตัวตนของ Chrome</translation>
@@ -308,6 +305,7 @@
 <translation id="9112744793181547300">ตั้งค่า Chrome เป็นค่าเริ่มต้นไหม</translation>
 <translation id="9122931302567044771">ซึ่งหมายความว่า Chrome จะขอเว็บไซต์ในเดสก์ท็อปทุกครั้ง</translation>
 <translation id="9181628561061032322">เปิดแท็บล่าสุดใน Chrome</translation>
+<translation id="9194404253580584015">ฟีดที่กำหนดมาเพื่อคุณโดยเฉพาะจาก Google</translation>
 <translation id="953008885340860025">Chrome ออกจากระบบแล้ว</translation>
 <translation id="97300214378190234">ใช้ Chrome ทุกครั้งที่แตะลิงก์ในแอปอื่นๆ</translation>
 </translationbundle>

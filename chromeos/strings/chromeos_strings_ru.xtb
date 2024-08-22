@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Эксклюзивный контент для <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Движения земли</translation>
 <translation id="1026212596705997935">Это сочетание клавиш используется для действия "<ph name="CONFLICT_ACCEL_NAME" />". Нажмите его ещё раз, чтобы заменить исходное сочетание клавиш, или выберите новое.</translation>
+<translation id="1030856839388844477">Сбросить данные</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоки: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">Доступна новая функция. Чтобы получить подробную информацию, нажмите на стрелку вверх.</translation>
 <translation id="1049663189809099096">пастельно-желтый</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">слабый сигнал</translation>
 <translation id="1300115153046603471">Тип точки доступа – <ph name="ATTACH" />, используется по умолчанию.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Конвертирование</translation>
 <translation id="1304014921944666344">Дата и время создания</translation>
 <translation id="1308754910631152188">Обновление (выполнено <ph name="PERCENTAGE_VALUE" /> %)…</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> мин.</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">соленое озеро</translation>
 <translation id="1367951781824006909">Выберите файл</translation>
 <translation id="1371650399987522809">Отзыв об обоях, созданных при помощи технологий ИИ от Google</translation>
+<translation id="1374385338586507108">Определение</translation>
 <translation id="1387854245479784695">Использование ЦП всеми ядрами</translation>
 <translation id="1393206549145430405">замок</translation>
 <translation id="1394661041439318933">Чехол заряжен на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Потребление электроэнергии</translation>
 <translation id="346539236881580388">Переснять</translation>
 <translation id="3484914941826596830">Пока выполняется обновление встроенного ПО, не отключайте внешнее устройство и не выключайте компьютер. Это окно можно свернуть. Обновление займет несколько минут, в течение которых внешнее устройство может не работать.</translation>
-<translation id="3485555238092220889">Специальные возможности</translation>
 <translation id="3486220673238053218">узнать определение</translation>
 <translation id="3487866404496702283">Отзыв о функции mahi</translation>
 <translation id="3488065109653206955">Частично активировано</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Сеть не найдена</translation>
 <translation id="4570558255126759859">Скачать модель Gemini для создания кратких пересказов записей?</translation>
 <translation id="4573777384450697571">Сбой: срок действия сертификата истек</translation>
+<translation id="4575450106703099687">настройки специальных возможностей</translation>
 <translation id="458794348635939462">Не удалось преобразовать имена всех хостов.</translation>
 <translation id="4593212453765072419">Требуется аутентификация на прокси-сервере</translation>
 <translation id="4594021849294327751">Создать расшифровку</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> из <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Кнопка, позволяющая изменить сочетание клавиш для действия "<ph name="SHORTCUT_DESCRIPTION" />".</translation>
 <translation id="5733298426544876109">Обновить программное обеспечение устройства "<ph name="DEVICE_NAME" />"</translation>
+<translation id="5736820754189340309">Счетчик расхода трафика сброшен</translation>
 <translation id="574392208103952083">Средний</translation>
 <translation id="5757187557809630523">следующий трек</translation>
 <translation id="5760715441271661976">Состояние страницы входа</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Отключить звук</translation>
 <translation id="5784136236926853061">большое время ожидания HTTP</translation>
 <translation id="5790391387506209808">лазурит</translation>
+<translation id="5810692306010756935">Перенос данных из учебного аккаунта</translation>
 <translation id="5816802250591013230">Сочетание клавиш не назначено.</translation>
 <translation id="5826644637650799838">Подробнее</translation>
 <translation id="5832805196449965646">Добавить пользователя</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Навигация по тексту</translation>
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Доступна информация на основе выделенного текста. Чтобы перейти к ней, нажмите стрелку вверх.</translation>
+<translation id="6831043979455480757">Перевести</translation>
 <translation id="6853312040151791195">Скорость разрядки</translation>
 <translation id="6862416241246624313">Отзыв отправлен</translation>
 <translation id="6866732840889595464">маргаритка</translation>
@@ -1551,6 +1557,7 @@
 <translation id="9087578468327036362">Сообщить о запросе</translation>
 <translation id="9088306295921699330">Используется</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Подробная информация о дате сброса данных</translation>
 <translation id="9100765901046053179">Дополнительные настройки</translation>
 <translation id="910415269708673980">Обновите билет для аккаунта <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Сканирование страницы <ph name="PAGE_NUMBER" /></translation>
@@ -1589,7 +1596,7 @@
 <translation id="966787709310836684">меню</translation>
 <translation id="979450713603643090">Светло-розовый</translation>
 <translation id="982713511914535780">Запустить проверку расхода заряда</translation>
-<translation id="98515147261107953">Горизонтальная</translation>
+<translation id="98515147261107953">Пейзаж</translation>
 <translation id="987264212798334818">Общие</translation>
 <translation id="995062385528875723">Невозможно использовать знаки любых алфавитов, кроме латинского, буквы с диакритическими знаками и специальные символы.</translation>
 </translationbundle>

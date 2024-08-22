@@ -37,8 +37,6 @@ Mga bagay na dapat isaalang-alang:
 <translation id="1615715390546812898">Maghanap Gamit ang Boses sa Chrome.</translation>
 <translation id="1657395063736185342">Maghanap ng Mga Visual sa Chrome</translation>
 <translation id="1670609221633730681">Tip sa Chrome: Piliin ang posisyon ng iyong address bar</translation>
-<translation id="1675955119303651351">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chrome.
-        Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito.</translation>
 <translation id="1682483655351012182">I-sync ang Iyong Data sa Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Idaragdag ang mga in-input na URL sa iyong mga bookmark sa Chrome.</translation>
@@ -81,7 +79,6 @@ Mga bagay na dapat isaalang-alang:
 <translation id="2767464022270041271">Walang naka-save na password. Masusuri ng Google Password Manager ang iyong mga password kapag na-save mo ang mga ito.</translation>
 <translation id="2869959624320573933">Mag-sign In sa Chrome</translation>
 <translation id="2876628302275096482">Matuto pa tungkol sa kung <ph name="BEGIN_LINK" />paano pinapanatiling pribado ng Chrome ang iyong data<ph name="END_LINK" /></translation>
-<translation id="2952581218264071393">1. Buksan ang Mga Setting ng Chrome</translation>
 <translation id="2957447865124070833">Piliin ang <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Dahil magsa-sign out ka sa account na pinapamahalaan ng <ph name="SIGNOUT_MANAGED_DOMAIN" />, made-delete ang iyong data sa Chrome sa device na ito. Mananatili ang data mo sa iyong Google Account.</translation>
 <translation id="309672519329227863">I-access ang iyong mga password sa Chrome at higit pa sa iba pang app.</translation>
@@ -93,7 +90,6 @@ Mga bagay na dapat isaalang-alang:
 <translation id="3340938510625667914">Mga Pagkilos sa Chrome</translation>
 <translation id="3345341804167540816">Gamitin ang Chrome sa Lahat ng Lugar</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Nangyayari ito kapag hindi ginamit ang Chrome nang {THRESHOLD} minuto}one{Nangyayari ito kapag hindi ginamit ang Chrome nang {THRESHOLD} minuto}other{Nangyayari ito kapag hindi ginamit ang Chrome nang {THRESHOLD} na minuto}}</translation>
-<translation id="3399930248910934354">Buksan ang Mga Setting ng Chrome</translation>
 <translation id="344736123700721678">Mas mabilis na i-access ang Chrome mula sa Dock ng iyong Home Screen</translation>
 <translation id="3472587960215700950">Gumagamit ang Chrome ng Google Maps para mabigyan ka ng mga direksyon at lokal na impormasyon tungkol sa mga na-detect na address.</translation>
 <translation id="3503014945441706099">Kunin din ang Pinahusay na Ligtas na Pag-browse para sa profile sa Chrome na ito</translation>
@@ -131,9 +127,6 @@ Mga bagay na dapat isaalang-alang:
 <translation id="4761869838909035636">Magpatakbo ng Pag-check sa Kaligtasan sa Chrome</translation>
 <translation id="4798859546468762093">Para makuha ang pag-personalize at iba pang feature, isama ang Chrome sa <ph name="FEATURE_NAME_1" /> at <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Para makatulong na mapaganda ang app, nagpapadala ang Chrome ng data ng paggamit at pag-crash sa Google. <ph name="BEGIN_LINK" />Pamahalaan<ph name="END_LINK" /></translation>
-<translation id="4831642696589369971">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chrome.
-
-        Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito.</translation>
 <translation id="484033449593719797">Hindi sinusuportahan sa Chrome Beta</translation>
 <translation id="4840404732697892756">Masusuri ng Google Password Manager ang iyong mga password kapag nag-sign in ka sa Google Account mo.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Matutulungan ka ng Chrome na subaybayan ang package na ito sa Page ng Bagong Tab.}one{Matutulungan ka ng Chrome na subaybayan ang mga package na ito sa Page ng Bagong Tab.}other{Matutulungan ka ng Chrome na subaybayan ang mga package na ito sa Page ng Bagong Tab.}}</translation>
@@ -211,6 +204,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experience sa Chrome, pumunta sa <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Maghanap Gamit ang Boses sa Chrome</translation>
 <translation id="6975725306479268850">Piliin ang Chrome para sa AutoFill</translation>
+<translation id="6979238427560462592">Isang custom na feed na ginawa ng Google para sa iyo. May News, Sports, at Lagay ng Panahon.</translation>
 <translation id="7004159181872656283">Maghanap ng Mga Visual sa Chrome.</translation>
 <translation id="7056826488869329999">Magbubukas at Magpapatakbo ng Pag-check sa Kaligtasan sa Chrome.</translation>
 <translation id="7059914902409643750">Gawing Iyo ang Chrome</translation>
@@ -236,7 +230,6 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="7394108421562933108">Maps sa Chrome</translation>
 <translation id="7400722733683201933">Tungkol sa Google Chrome</translation>
 <translation id="7466693328838535498">Sa box ng Mga Search Widget, ilagay ang salitang Chrome</translation>
-<translation id="746684838091935575">3. Piliin ang Chrome</translation>
 <translation id="7492574581995589075">Ini-off ng iyong organisasyon ang kakayahang gumamit at mag-save ng data sa Chrome sa iyong Google Account. Sa device na ito lang mase-save ang mga bagong bookmark, password, at higit pa.</translation>
 <translation id="7581063337314642333">Bisitahin ang Tab Grid sa Chrome</translation>
 <translation id="7642373780953416937">Makatanggap ng mga alerto sa anumang isyu sa privacy o seguridad na awtomatikong dine-detect ng Chrome para sa iyo.</translation>
@@ -300,7 +293,6 @@ Na-encrypt ang iyong data gamit ang passphrase mo noong <ph name="TIME" />. Ilag
 <translation id="8857676124663337448">Hindi masuri ng Google Password Manager ang lahat ng password. Subukan ulit bukas.</translation>
 <translation id="8865415417596392024">Data ng Chrome sa iyong account</translation>
 <translation id="8874688701962049679">Mga tip para masulit ang Chrome.</translation>
-<translation id="8891935667620843985">Awtomatiko mong mabubuksan ang mga link sa Chrome sa pamamagitan ng pagtatakda nito bilang iyong Default na Browser App.</translation>
 <translation id="8897749957032330183">Sine-save ang mga password sa Google Password Manager sa device na ito.</translation>
 <translation id="8949681853939555434">Itakda ang Chrome bilang iyong Default na Browser</translation>
 <translation id="9068336935206019333">Buksan sa Chrome Incognito</translation>
@@ -308,6 +300,7 @@ Na-encrypt ang iyong data gamit ang passphrase mo noong <ph name="TIME" />. Ilag
 <translation id="9112744793181547300">Itakda ang Chrome bilang Default?</translation>
 <translation id="9122931302567044771">Nangangahulugan itong hihilingin ng Chrome ang pang-desktop na site sa lahat ng pagkakataon.</translation>
 <translation id="9181628561061032322">Mabubuksan ang Mga Kamakailang Tab sa Chrome.</translation>
+<translation id="9194404253580584015">Isang custom na feed na ginawa ng Google para sa iyo.</translation>
 <translation id="953008885340860025">Naka-sign Out ang Chrome</translation>
 <translation id="97300214378190234">Gamitin ang Chrome sa tuwing magta-tap ka ng mga link sa iba pang app.</translation>
 </translationbundle>

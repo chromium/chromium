@@ -157,11 +157,13 @@
 <translation id="3600792891314830896">Distewi gwefannau sy'n chwarae sain</translation>
 <translation id="3602290021589620013">Rhagolwg</translation>
 <translation id="3628308229821498208">Chwiliadau a awgrymir</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> wefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}zero{<ph name="RWS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}two{<ph name="RWS_MEMBERS_COUNT" /> wefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}few{<ph name="RWS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}many{<ph name="RWS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}other{<ph name="RWS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}}</translation>
 <translation id="3697164069658504920">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am ddefnyddio dyfeisiau USB. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio dyfeisiau USB.</translation>
 <translation id="3707034683772193706">Gall gwefan rydych chi'n ymweld â hi gadw ychydig o wybodaeth gyda Chrome, yn bennaf i gadarnhau nad bot ydych chi</translation>
 <translation id="3721953990244350188">Diystyru a dangos y cam nesaf sydd ar gael</translation>
 <translation id="3744111561329211289">Cysoni yn y cefndir</translation>
 <translation id="3763247130972274048">Tapiwch ddwywaith ar ochr chwith neu dde'r i neidio 10 eiliad</translation>
+<translation id="3779154269823594982">Newid cyfrineiriau</translation>
 <translation id="3797520601150691162">Peidio â defnyddio'r thema dywyll ar gyfer gwefan benodol</translation>
 <translation id="3803367742635802571">Mae'n bosib y bydd gwefannau y byddwch yn ymweld â nhw yn peidio â gweithio fel y'u cynlluniwyd</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -235,6 +237,7 @@
 <translation id="4996978546172906250">Rhannu drwy</translation>
 <translation id="5001526427543320409">Cwcis trydydd parti</translation>
 <translation id="5007392906805964215">Adolygu</translation>
+<translation id="5014182796621173645">Gwnaethoch ymweld â <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Caniatáu</translation>
 <translation id="5048398596102334565">Caniatáu i wefannau gael mynediad at synwyryddion symudiad (argymhellir)</translation>
 <translation id="5050380848339752099">Mae'r wefan hon ar fin rhannu gwybodaeth ag ap y tu allan i'r modd Anhysbys.</translation>
@@ -346,10 +349,12 @@
 <translation id="656065428026159829">Gweld rhagor</translation>
 <translation id="6561560012278703671">Defnyddiwch negeseuon tawelach (mae'n rhwystro anogwyr hysbysiadau rhag torri ar eich traws)</translation>
 <translation id="6593061639179217415">Gwefan bwrdd gwaith</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Caniateir cwcis ar gyfer <ph name="RWS_MEMBERS_COUNT" /> wefan <ph name="RWS_OWNER" />}zero{Caniateir cwcis ar gyfer <ph name="RWS_MEMBERS_COUNT" /> gwefan <ph name="RWS_OWNER" />}two{Caniateir cwcis ar gyfer <ph name="RWS_MEMBERS_COUNT" /> wefan <ph name="RWS_OWNER" />}few{Caniateir cwcis ar gyfer <ph name="RWS_MEMBERS_COUNT" /> gwefan <ph name="RWS_OWNER" />}many{Caniateir cwcis ar gyfer <ph name="RWS_MEMBERS_COUNT" /> gwefan <ph name="RWS_OWNER" />}other{Caniateir cwcis ar gyfer <ph name="RWS_MEMBERS_COUNT" /> gwefan <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Cynnwys gwarchodedig</translation>
 <translation id="662080504995468778">Aros</translation>
 <translation id="6653342741369270081">Pwyswch y botwm yn ôl i adael y sgrin lawn.</translation>
+<translation id="6683865262523156564">Mae'r wefan hon mewn grŵp sy'n gallu gweld eich gweithgarwch. Diffinnir y grŵp gan <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Lluniau proffil</translation>
 <translation id="6697925417670533197">Lawrlwythiadau gweithredol</translation>
 <translation id="6722828510648505498">Rhwystro anogwyr mewngofnodi o wasanaethau hunaniaeth.</translation>

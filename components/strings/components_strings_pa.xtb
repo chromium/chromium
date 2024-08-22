@@ -166,7 +166,6 @@
 <translation id="1282358575813748144">ਕਿਸ਼ਤੀਆਂ ਅਤੇ ਪਾਣੀ 'ਤੇ ਚੱਲਣ ਵਾਲੇ ਵਾਹਨ</translation>
 <translation id="1283977499362032052">ਰੈਜ਼ਿਊਮੇ ਅਤੇ ਪੋਰਟਫੋਲੀਓ</translation>
 <translation id="1285320974508926690">ਕਦੇ ਵੀ ਇਸ ਸਾਈਟ ਦਾ ਅਨੁਵਾਦ ਨਾ ਕਰੋ</translation>
-<translation id="1288259082801959119">ਜਦੋਂ ਤੁਸੀਂ ਇਸ ਦੇ ਹੇਠਾਂ ਡ੍ਰੌਪ-ਡਾਊਨ ਵਿੱਚੋਂ ਕੁਝ ਚੁਣਦੇ ਹੋ, ਤਾਂ ਇੱਥੇ ਕੁਝ ਦਿਖਾਈ ਦੇਵੇਗਾ</translation>
 <translation id="1292571435393770077">ਟ੍ਰੇਅ 16</translation>
 <translation id="1292701964462482250">"ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਦਾ ਸਾਫ਼ਟਵੇਅਰ Chrome ਨੂੰ ਵੈੱਬ ਨਾਲ ਸੁਰੱਖਿਅਤ ਤੌਰ 'ਤੇ ਕਨੈਕਟ ਹੋਣ ਤੋਂ ਰੋਕ ਰਿਹਾ ਹੈ" (ਸਿਰਫ਼ Windows ਕੰਪਿਊਟਰ)</translation>
 <translation id="1293797321964802402">9 x 11 ਇੰਚ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
@@ -234,6 +233,7 @@
 <translation id="1391625539203220400">ਕੀ IBAN ਨੂੰ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ਨੇ ਕੋਈ ਵੀ  ਡਾਟਾ  ਨਹੀਂ ਭੇਜਿਆ।</translation>
 <translation id="1405567553485452995">ਹਲਕਾ ਹਰਾ</translation>
+<translation id="1406500794671479665">ਪ੍ਰਮਾਣਿਤ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="1406812885827747674">ਇਸ ਵਾਰੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="14070772729708640"><ph name="CLOUD_PROVIDER" /> 'ਤੇ ਮੌਜੂਦ <ph name="FOLDER_NAME" /> ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਨੂੰ ਸਫਲਤਾਪੂਰਵਕ ਅੱਪਲੋਡ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1407135791313364759">ਸਾਰੇ ਖੋਲ੍ਹੋ</translation>
@@ -483,6 +483,7 @@
 <translation id="1839551713262164453">ਨੀਤੀ ਮੁੱਲਾਂ ਦਾ ਪ੍ਰਮਾਣੀਕਰਨ ਗੜਬੜਾਂ ਦੇ ਕਾਰਨ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="1840009953725035797">ਹੋਮ ਥੀਏਟਰ ਸਿਸਟਮ</translation>
 <translation id="1842969606798536927">ਭੁਗਤਾਨ ਕਰੋ</translation>
+<translation id="184517536440397176">ਮਾਂ-ਪਿਓ ਜਾਂ ਸਰਪ੍ਰਸਤ ਨੂੰ ਇਹ ਕਹਿਣਾ ਹੋਵੇਗਾ ਕਿ ਤੁਸੀਂ ਇਸ ਵੈੱਬਸਾਈਟ 'ਤੇ ਜਾ ਸਕਦੇ ਹੋ। ਉਨ੍ਹਾਂ ਨੂੰ ਪੁੱਛਣ ਤੋਂ ਪਹਿਲਾਂ, ਸਾਨੂੰ ਤੁਹਾਡੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ।</translation>
 <translation id="1846432862466000825">ਪਲਾਸਟਿਕ (ਆਰਕਾਈਵਲ)</translation>
 <translation id="1848640291751752317">ਡਾਊਨਲੋਡ</translation>
 <translation id="1848982255014129637">ਫ਼ੋਟੋ (ਹਾਈ-ਗਲੋਸ)</translation>
@@ -767,6 +768,7 @@
 <translation id="23703388716193220">ਗੋਲਫ਼ ਸੰਬੰਧੀ ਉਪਕਰਨ</translation>
 <translation id="2370368710215137370">ਫ਼ਾਈਲ ਅੱਪਲੋਡ</translation>
 <translation id="2374629208601905275">ਤੁਹਾਡੇ ਖੇਤਰ ਦੇ ਕਨੂੰਨ ਦੇ ਆਧਾਰ 'ਤੇ, Chrome ਤੁਹਾਨੂੰ ਆਪਣਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਇੰਜਣ ਚੁਣਨ ਲਈ ਕਹਿੰਦਾ ਹੈ। ਇਹ ਖੋਜ ਇੰਜਣ ਤੁਹਾਡੇ ਖੇਤਰ ਵਿੱਚ ਪ੍ਰਸਿੱਧ ਹਨ ਅਤੇ ਬੇਤਰਤੀਬਵਾਰ ਕ੍ਰਮ ਵਿੱਚ ਦਿਖਾਏ ਜਾਂਦੇ ਹਨ।</translation>
+<translation id="2376455483361831781">ਨਵੀਂ ਸਾਰਨੀ</translation>
 <translation id="2377241607395428273">ਗ੍ਰਾਫ਼ਿਕ ਅਤੇ ਐਨੀਮੇਸ਼ਨ ਸਾਫ਼ਟਵੇਅਰ</translation>
 <translation id="2378084239755710604">"ਕਾਰਡ ਰੱਖਿਅਤ ਕਰੋ" ਉਤਪ੍ਰੇਰਕ ਬੰਦ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="237978325638124213">ਇਤਰ ਅਤੇ ਖੁਸ਼ਬੋਆਂ</translation>
@@ -819,6 +821,7 @@
 <translation id="2469153820345007638">1-ਤੋਂ-N ਕ੍ਰਮ</translation>
 <translation id="24699311393038040">ਪੇਪਰ (ਕੋਟੇਡ)</translation>
 <translation id="2470767536994572628">ਜਦੋਂ ਤੁਸੀਂ ਐਨੋਟੇਸ਼ਨਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਦੇ ਹੋ, ਤਾਂ ਇਹ ਦਸਤਾਵੇਜ਼ ਇਕਹਿਰੇ ਪੰਨਾ-ਦ੍ਰਿਸ਼ ਅਤੇ ਆਪਣੇ ਮੂਲ ਘੁਮਾਅ 'ਤੇ ਵਾਪਸ ਆ ਜਾਵੇਗਾ</translation>
+<translation id="2471632709106952369">ਤੁਲਨਾ ਸਾਰਨੀਆਂ</translation>
 <translation id="2473810985261856484">ਕਨੂੰਨੀ ਸੇਵਾਵਾਂ</translation>
 <translation id="2479148705183875116">ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="2479410451996844060">ਅਵੈਧ ਖੋਜ URL.</translation>
@@ -1055,6 +1058,7 @@
 <translation id="2959274854674276289">ਸ਼ਾਕਾਹਾਰੀ ਪਕਵਾਨ</translation>
 <translation id="2961809451460302960">ਜੀਵਨ ਬੀਮਾ</translation>
 <translation id="2962073860865348475">12 x 18 ਇੰਚ</translation>
+<translation id="2967082089043584472"><ph name="SET" /> ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤੀ ਗਈ</translation>
 <translation id="2967098518029543669">ਇਸ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="297173220375858963">ਡੈਸਕਟਾਪ ਪ੍ਰਕਾਸ਼ਨ</translation>
 <translation id="2972581237482394796">&amp;ਰੀਡੂ</translation>
@@ -1385,7 +1389,7 @@
 <translation id="3568886473829759308">ਜਾਣਕਾਰੀ, ਸਰੋਤਾਂ ਜਾਂ ਕਾਰੋਬਾਰ ਵੱਲੋਂ ਮੁਹੱਈਆ ਕਰਵਾਈਆਂ ਗਈਆਂ ਸੇਵਾਵਾਂ ਦੇਖਣ ਲਈ ਵੈੱਬਸਾਈਟ ਤੱਕ ਪਹੁੰਚ ਕਰੋ।</translation>
 <translation id="3570079787344939099">ਸਕ੍ਰੋਲ ਕਰਨਾ ਅਤੇ ਜ਼ੂਮ ਕਰਨਾ</translation>
 <translation id="357244642999988503">ਕਾਲਮ ਹਟਾਓ</translation>
-<translation id="3572827863357388784">ਇਹ ਪ੍ਰਯੋਗਮਈ ਵਿਸ਼ੇਸ਼ਤਾ ਹੈ ਅਤੇ ਇਹ ਜ਼ਰੂਰੀ ਨਹੀਂ ਕਿ ਇਹ ਹਮੇਸ਼ਾਂ ਸਹੀ ਹੋਵੇ।</translation>
+<translation id="3572827863357388784">ਇਹ ਪ੍ਰਯੋਗਮਈ ਵਿਸ਼ੇਸ਼ਤਾ ਹੈ ਅਤੇ ਜ਼ਰੂਰੀ ਨਹੀਂ ਕਿ ਇਹ ਹਮੇਸ਼ਾਂ ਸਹੀ ਹੋਵੇ।</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">ਇਸ ਸਾਈਟ ਨੂੰ ਦਿਖਾਉਣ ਦਿਓ</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1417,6 +1421,7 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾ ਕੇ, ਫਿਰ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸੁਰੱਖਿਆ ਜਾਂਚ ਚਲਾਉਣ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="3615309852743236517">ਹੱਥਾਂ ਅਤੇ ਨਹੁੰਆਂ ਦੀ ਸਫ਼ਾਈ ਅਤੇ ਪੈਰਾਂ ਦੀ ਸਫ਼ਾਈ</translation>
 <translation id="3620239073311576716">ਵਰਦੀਆਂ ਅਤੇ ਕੰਮ 'ਤੇ ਪਾਉਣ ਵਾਲੇ ਕੱਪੜੇ</translation>
+<translation id="3621401353678567613">ਤੁਹਾਡੇ ਵੱਲੋਂ ਟਰੈਕ ਕੀਤੇ ਜਾਣ ਵਾਲੇ ਉਤਪਾਦਾਂ ਲਈ ਕੀਮਤ ਘਟਣ ਸੰਬੰਧੀ ਅਲਰਟ ਪ੍ਰਾਪਤ ਕਰਨ ਵਾਸਤੇ, ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸੂਚਨਾਵਾਂ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="362276910939193118">ਪੂਰਾ ਇਤਿਹਾਸ ਦਿਖਾਓ</translation>
 <translation id="3623041590998910684">ਆਪਣੇ ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ, <ph name="LINK" /> ਵਿੱਚ ਜਾ ਕੇ Chrome ਨੂੰ ਇਸ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ।</translation>
 <translation id="3623398832322170566">ਰੁਮਾਂਸ ਵਾਲੀਆਂ ਫ਼ਿਲਮਾਂ</translation>
@@ -1520,7 +1525,6 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ਇੰਚ)</translation>
 <translation id="3792826587784915501">ਪ੍ਰਸਿੱਧ ਅਤੇ ਇੰਡੀ ਫ਼ਿਲਮਾਂ</translation>
 <translation id="3793574014653384240">ਹਾਲ ਹੀ ਵਿੱਚ ਵਾਪਰੇ ਕ੍ਰੈਸ਼ਾਂ ਦੀ ਗਿਣਤੀ ਅਤੇ ਕਾਰਨ</translation>
-<translation id="3796417399166194741"><ph name="SITE" /> Chrome ਨੂੰ ਇੱਕ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਬਣਾਉਣ ਤੋਂ ਰੋਕ ਰਹੀ ਹੈ</translation>
 <translation id="3799805948399000906">ਫ਼ੌਂਟ ਲਈ ਬੇਨਤੀ ਕੀਤੀ</translation>
 <translation id="3801265110651850478">ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਟਰੈਫ਼ਿਕ ਨਾਲ "Do Not Track" ਬੇਨਤੀ ਭੇਜੋ</translation>
 <translation id="380329542618494757">ਨਾਮ</translation>
@@ -1581,6 +1585,7 @@
 <translation id="3910231615117880630">ਜੋੜੀ ਗਈ ਸਮੱਗਰੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />ਤੁਸੀਂ ਆਪਣੇ ਡਾਟੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਿਵੇਂ ਕਰ ਸਕਦੇ ਹੋ:<ph name="END_BOLD" /> Chrome 30 ਦਿਨਾਂ ਤੋਂ ਵੱਧ ਪੁਰਾਣੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਸਵੈਚਲਿਤ-ਮਿਟਾਉਂਦਾ ਹੈ। ਉਹ ਸਾਈਟ ਸੂਚੀ ਵਿੱਚ ਮੁੜ ਦਿਖਾਈ ਦੇ ਸਕਦੀ ਹੈ, ਜਿਸ 'ਤੇ ਤੁਸੀਂ ਦੁਬਾਰਾ ਜਾਂਦੇ ਹੋ। ਤੁਸੀਂ ਕਿਸੇ ਸਾਈਟ ਨੂੰ ਤੁਹਾਡੇ ਲਈ ਵਿਗਿਆਪਨਾਂ ਦੇ ਸੁਝਾਅ ਦੇਣ ਤੋਂ ਬਲਾਕ ਵੀ ਕਰ ਸਕਦੇ ਹੋ ਅਤੇ ਕਿਸੇ ਵੇਲੇ ਵੀ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਸਾਈਟਾਂ ਵੱਲੋਂ ਸੁਝਾਏ ਗਏ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3921869355029467742">ਆਪਣਾ ਸੁਰੱਖਿਆ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
+<translation id="3927538228901078312">ਕੋਈ ਤੁਲਨਾਤਮਕ ਸਾਰਨੀ ਨਹੀਂ ਹੈ</translation>
 <translation id="3927932062596804919">ਅਸਵੀਕਾਰ ਕਰੋ</translation>
 <translation id="3930260846839546333">ਛੋਟੇ ਬੈਗ ਅਤੇ ਪਰਸ</translation>
 <translation id="3937834511546249636">ਡਿਫੈਂਸ ਉਦਯੋਗ</translation>
@@ -1629,6 +1634,12 @@
 <translation id="4023431997072828269">ਕਿਉਂਕਿ ਇਸ ਫ਼ਾਰਮ ਨੂੰ ਅਜਿਹੇ ਕਨੈਕਸ਼ਨ ਦੀ ਵਰਤੋਂ ਨਾਲ ਸਪੁਰਦ ਕੀਤਾ ਗਿਆ ਹੈ ਜੋ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ, ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਹੋਰਾਂ ਨੂੰ ਦਿਸੇਗੀ।</translation>
 <translation id="4025325634010721551">ਨੀਤੀਆਂ ਨੂੰ ਰੀਲੋਡ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4025338605225449265">ਮੁਦਰਾਵਾਂ ਅਤੇ ਵਿਦੇਸ਼ੀ ਮੁਦਰਾ ਵਟਾਂਦਰਾ</translation>
+<translation id="4027270464942389997"><ph name="BEGIN_LIST" />
+      <ph name="LIST_ITEM" />ਇਸ ਸਾਈਟ ਨੂੰ ਭੇਜੀ ਗਈ ਜਾਂ ਇਸ ਤੋਂ ਪ੍ਰਾਪਤ ਕੀਤੀ ਗਈ ਜਾਣਕਾਰੀ ਨੂੰ <ph name="BEGIN_STRONG" />ਹਮਲਾਵਰਾਂ ਵੱਲੋਂ ਦੇਖਿਆ ਅਤੇ ਬਦਲਿਆ ਜਾ ਸਕਦਾ ਹੈ<ph name="END_STRONG" />।
+      <ph name="LIST_ITEM" />ਜੇ ਤੁਸੀਂ ਜਨਤਕ ਨੈੱਟਵਰਕ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹੋ, ਤਾਂ<ph name="BEGIN_STRONG" />ਇਸ ਸਾਈਟ ਨੂੰ ਬਾਅਦ ਵਿੱਚ ਦੇਖਿਆ ਜਾਣਾ ਸੁਰੱਖਿਅਤ ਰਹੇਗਾ<ph name="END_STRONG" />। ਤੁਹਾਡੇ ਘਰ ਜਾਂ ਕਾਰਜ-ਸਥਾਨ ਦੇ ਵਾਈ-ਫਾਈ ਵਰਗੇ ਭਰੋਸੇਯੋਗ ਨੈੱਟਵਰਕ ਰਾਹੀਂ ਦੇਖੇ ਜਾਣ 'ਤੇ ਜੋਖਮ ਘੱਟ ਹੁੰਦਾ ਹੈ।
+    <ph name="END_LIST" />
+
+    ਤੁਸੀਂ ਸਾਈਟ ਦੇ ਮਾਲਕ ਨੂੰ ਵੀ ਸੰਪਰਕ ਕਰ ਸਕਦੇ ਹੋ ਅਤੇ ਉਨ੍ਹਾਂ ਨੂੰ HTTPS 'ਤੇ ਅੱਪਗ੍ਰੇਡ ਕਰਨ ਦਾ ਸੁਝਾਅ ਦੇ ਸਕਦੇ ਹੋ। <ph name="BEGIN_LEARN_MORE_LINK" />ਇਸ ਚਿਤਾਵਨੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4030383055268325496">&amp;ਜੋੜਨਾ ਅਨਡੂ ਕਰੋ</translation>
 <translation id="4030545038933060179">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਤੁਹਾਡੇ ਹਾਲੀਆ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ ਵਿਸ਼ਿਆਂ ਦੀ ਸੂਚੀ ਇੱਥੇ ਦਿਸਦੀ ਹੈ</translation>
 <translation id="4031179711345676612">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
@@ -1642,11 +1653,13 @@
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4059523390906550209">ਸੰਵੇਦਨਸ਼ੀਲ ਡਾਟਾ ਸੁਰੱਖਿਆ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="4060880210388108757">ਇੰਡੀ ਅਤੇ ਅਲਟਰਨੇਟਿਵ ਸੰਗੀਤ</translation>
+<translation id="4060883793524802469">ਸਾਰਨੀਆਂ ਤੋਂ ਹਟਾਓ</translation>
 <translation id="4063063121357725926">ਤੁਹਾਡੇ ਕਾਰਟਾਂ ਵਾਸਤੇ ਛੋਟਾਂ ਲੱਭਣ ਲਈ Google ਨੂੰ ਤੁਹਾਡੀ ਮਦਦ ਕਰਨ ਦਿਓ</translation>
 <translation id="406358100705415968">ਕੰਮ 'ਤੇ ਬਚਾਅ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ ਉਪਕਰਨ</translation>
 <translation id="4065659219963895623">ਰੈਸਟੋਰੈਂਟ</translation>
 <translation id="4067774859633143413">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਣ ਅਤੇ ਡਾਊਨਲੋਡ ਦੇਖਣ ਲਈ, |<ph name="ACCELERATOR" />| ਨੂੰ ਦਬਾਈ ਰੱਖੋ</translation>
 <translation id="4067947977115446013">ਵੈਧ ਪਤਾ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="4069116422999284300">ਚੁਣੇ ਗਏ ਟੈਬ ਸਿਰਲੇਖ ਅਤੇ ਵਰਤੇ ਜਾ ਰਹੇ URL, Google ਨੂੰ ਭੇਜੇ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="4072486802667267160">ਤੁਹਾਡੇ ਆਰਡਰ 'ਤੇ ਪ੍ਰਕਿਰਿਆ ਕਰਨ ਦੌਰਾਨ ਗੜਬੜ ਹੋਈ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="4073376909608563327">ਡੀਵਾਈਸ ਅਣਲਾਕ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਵਰਤਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ</translation>
 <translation id="4073797364926776829">ਕਾਰਡ ਦੇਖੋ</translation>
@@ -1656,6 +1669,7 @@
 <translation id="4082393374666368382">ਸੈਟਿੰਗਾਂ - ਪ੍ਰਬੰਧਨ</translation>
 <translation id="4084219288110917128">C1 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="4085326869263783566">ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ। ਖੋਲ੍ਹਣ ਲਈ ਟੈਬ ਕਰੋ ਅਤੇ Enter ਦਬਾਓ</translation>
+<translation id="4085769736382018559">ਉਤਪਾਦਾਂ ਦੀ ਤੁਲਨਾ ਕਰੋ</translation>
 <translation id="4088981014127559358">ਸਾਈਡ 1 ਚਿੱਤਰ Y ਸ਼ਿਫਟ</translation>
 <translation id="4089152113577680600">ਟ੍ਰੇਅ 14</translation>
 <translation id="4092349052316400070">ਪਤਾ ਭਰੋ</translation>
@@ -1775,6 +1789,7 @@
 <translation id="4277028893293644418">ਪਾਸਵਰਡ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="4277529130885813215">ਕੋਈ ਹੋਰ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="4277937682389409325">ਸਥਾਨਕ ਪਤਾ</translation>
+<translation id="4278090321534187713">ਇਸ ਵਪਾਰੀ ਵੱਲੋਂ ਸਵੀਕਾਰ ਨਾ ਕੀਤਾ ਜਾਣ ਵਾਲੇ ਕਾਰਡਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="4278390842282768270">ਆਗਿਆ ਦਿੱਤੀ</translation>
 <translation id="4281998142035485137">{0,plural, =1{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲ ਨੂੰ ਖੋਲ੍ਹਣਾ ਹੈ?}one{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲ ਨੂੰ ਖੋਲ੍ਹਣਾ ਹੈ?}other{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲਾਂ ਨੂੰ ਖੋਲ੍ਹਣਾ ਹੈ?}}</translation>
 <translation id="4282280603030594840">ਵਾਹਨ ਖਰੀਦਦਾਰੀ</translation>
@@ -1886,6 +1901,7 @@
 <translation id="4493480324863638523">ਅਵੈਧ URL ਕਿਸੇ ਮਿਆਰੀ ਸਕੀਮ ਵਾਲਾ URL ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈੇ, ਜਿਵੇਂ ਕਿ http://example.com ਜਾਂ https://example.com</translation>
 <translation id="4494323206460475851">ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਵਿਗਿਆਪਨ ਵਿਸ਼ੇ ਦੇਖ ਸਕਦੇ ਹੋ ਅਤੇ ਉਨ੍ਹਾਂ ਵਿਸ਼ਿਆਂ ਨੂੰ ਬਲਾਕ ਕਰ ਸਕਦੇ ਹੋ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਸਾਈਟਾਂ ਨਾਲ ਸਾਂਝਾ ਨਹੀਂ ਕਰਨਾ ਚਾਹੁੰਦੇ। Chrome ਵੀ 4 ਹਫ਼ਤਿਆਂ ਤੋਂ ਵੱਧ ਪੁਰਾਣੇ ਵਿਗਿਆਪਨ ਵਿਸ਼ਿਆਂ ਨੂੰ ਸਵੈਚਲਿਤ-ਮਿਟਾਉਂਦਾ ਰਹਿੰਦਾ ਹੈ।</translation>
 <translation id="4500587658229086076">ਅਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ</translation>
+<translation id="450602096898954067">ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਮਾਹਰ ਸਮੀਖਿਅਕਾਂ ਵੱਲੋਂ ਡਾਟਾ ਦੇਖਿਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="4506176782989081258">ਪ੍ਰਮਾਣੀਕਰਨ ਗੜਬੜ: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ</translation>
 <translation id="450710068430902550">ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸ਼ੇਅਰਿੰਗ</translation>
@@ -1908,6 +1924,7 @@
 <translation id="4541810033354695636">ਆਗਮੈਂਟਿਡ ਰਿਐਲਿਟੀ</translation>
 <translation id="4542971377163063093">ਟ੍ਰੇਅ 6</translation>
 <translation id="4543072026714825470">ਅਗਲੀ ਵਾਰ ਵਧੇਰੇ ਤੇਜ਼ੀ ਨਾਲ ਭੁਗਤਾਨ ਕਰਨ ਲਈ, ਆਪਣੇ ਕਾਰਡ ਅਤੇ ਬਿਲਿੰਗ ਪਤੇ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
+<translation id="454441086898495030">ਕੀ <ph name="SET" /> ਵਿੱਚ ਸ਼ਾਮਲ ਕਰਨਾ ਹੈ?</translation>
 <translation id="4546730006268514143">ਟ੍ਰਾਂਸਫ਼ਰ ਕਰਨ ਦਾ ਟਾਈਮ-ਆਊਟ ਹੋ ਗਿਆ ਹੈ</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">ਪਾਸਵਰਡ ਭਰਨ ਲਈ ਤੁਸੀਂ ਆਪਣੇ ਸਕ੍ਰੀਨ ਲਾਕ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹੋ</translation>
@@ -1976,6 +1993,7 @@
 <translation id="4702504834785592287">ਪਾਸਾ</translation>
 <translation id="4702656508969495934">ਲਾਈਵ ਸੁਰਖੀਆਂ ਦਿਖਣਯੋਗ ਹਨ, ਫੋਕਸ ਕਰਨ ਲਈ ਵਿੰਡੋ ਸਵਿੱਚਰ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="4703342001883078444">ਪਰਿਵਾਰ ਅਤੇ ਰਿਸ਼ਤੇ</translation>
+<translation id="4704745399240123930">ਇਸ ਵਪਾਰੀ ਵੱਲੋਂ ਸਵੀਕਾਰ ਨਾ ਕੀਤਾ ਜਾਣ ਵਾਲੇ ਕਾਰਡਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ, ਜਿਵੇਂ ਕਿ ਆਭਾਸੀ ਕਾਰਡ।</translation>
 <translation id="4708268264240856090">ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਵਿੱਚ ਰੁਕਾਵਟ ਆਈ ਸੀ</translation>
 <translation id="4708276642004148190">ਜਲ ਸਪਲਾਈ ਅਤੇ ਉਪਚਾਰ</translation>
 <translation id="471880041731876836">ਤੁਹਾਨੂੰ ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
@@ -2061,6 +2079,7 @@
 <translation id="4850886885716139402">ਦੇਖੋ</translation>
 <translation id="4854853140771946034">Google Keep ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਨਵਾਂ ਨੋਟ-ਕਥਨ ਬਣਾਓ</translation>
 <translation id="485902285759009870">ਕੋਡ ਦੀ ਪੁਸ਼ਟੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
+<translation id="4860260582253463350">YouTube 'ਤੇ ਜਾਰੀ ਰੱਖਣ ਲਈ, ਸਾਨੂੰ ਤੁਹਾਡੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ। ਤੁਹਾਨੂੰ ਉਹ ਸੈਟਿੰਗਾਂ ਪ੍ਰਾਪਤ ਹੋਣਗੀਆਂ, ਜਿਨ੍ਹਾਂ ਦਾ ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਜਾਂ ਸਰਪ੍ਰਸਤ ਨੇ Family Link ਵਿੱਚ ਸੈੱਟਅੱਪ ਕੀਤਾ ਹੋਇਆ ਹੈ।</translation>
 <translation id="4864406669374375262">ਵਰਜਨ ਸਟ੍ਰਿੰਗ ਨੂੰ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="486459320933704969">ਮਾਂ-ਪਿਓ ਜਾਂ ਸਰਪ੍ਰਸਤ ਨੂੰ ਇਹ ਕਹਿਣਾ ਹੋਵੇਗਾ ਕਿ ਤੁਸੀਂ ਇਸ ਵੈੱਬਸਾਈਟ 'ਤੇ ਜਾ ਸਕਦੇ ਹੋ</translation>
 <translation id="4864801646102013152">ਘਰ ਸੰਬੰਧੀ ਸੁਧਾਰ</translation>
@@ -2162,6 +2181,7 @@
 <translation id="5030338702439866405">ਵੱਲੋਂ ਜਾਰੀ ਕੀਤਾ</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" ਲਈ 'ਰੂਟ ਪ੍ਰਮਾਣ-ਪੱਤਰ' ਲੋੜੀਂਦਾ ਹੈ ਪਰ ਸਥਾਪਤ ਨਹੀਂ ਹੈ। ਇਸ ਸਮੱਸਿਆ ਨੂੰ ਠੀਕ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਆਈ.ਟੀ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ "<ph name="SOFTWARE_NAME" />" ਲਈ ਰੂਪ-ਰੇਖਾ ਹਿਦਾਇਤਾਂ ਨੂੰ ਦੇਖਣਾ ਚਾਹੀਦਾ ਹੈ। <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google Translate ਬਾਰੇ</translation>
+<translation id="5034930251282078640">ਕੀ ਤੁਲਨਾ ਸਾਰਨੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰਨਾ ਹੈ?</translation>
 <translation id="503498442187459473"><ph name="HOST" /> ਦੀ ਤੁਹਾਡਾ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤਣ ਦੀ ਇੱਛਾ ਹੈ</translation>
 <translation id="5035135400558156732">ਬਾਗਬਾਨੀ</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -2189,6 +2209,7 @@
 <translation id="5087286274860437796">ਇਸ ਸਮੇਂ ਸਰਵਰ ਦਾ ਪ੍ਰਮਾਣ ਪੱਤਰ ਵੈਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="5087580092889165836">ਕਾਰਡ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="5088142053160410913">ਓਪਰੇਟਰ ਲਈ ਸੁਨੇਹਾ</translation>
+<translation id="5090647584136241764">ਤੁਹਾਡੇ ਲਈ ਮਹੱਤਵਪੂਰਨ ਵੇਰਵਿਆਂ ਦੀ ਆਸਾਨੀ ਨਾਲ ਤੁਲਨਾ ਕਰਨ ਲਈ ਮਿਲਦੇ-ਜੁਲਦੇ ਉਤਪਾਦਾਂ ਵਾਲੀਆਂ ਟੈਬਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="5093232627742069661">Z-ਤਹਿ</translation>
 <translation id="5094747076828555589">ਇਹ ਸਰਵਰ ਇਹ ਸਾਬਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ Chromium ਵੱਲੋਂ ਭਰੋਸੇਯੋਗ ਨਹੀਂ ਹੈ। ਇਹ ਇੱਕ ਗਲਤ ਸੰਰੂਪਣ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਰਾਹ ਵਿੱਚ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
 <translation id="5097099694988056070">CPU/RAM ਵਰਤੋਂ ਵਰਗੇ ਡੀਵਾਈਸ ਅੰਕੜੇ</translation>
@@ -2228,7 +2249,6 @@
 <translation id="5147633291963801297">ਸਾਈਡ ਪੈਨਲ ਵਿੱਚ ਕੀਮਤ 'ਚ ਆਈ ਗਿਰਾਵਟ ਦੇਖੋ</translation>
 <translation id="5148809049217731050">ਉੱਪਰ ਵੱਲ ਪਾਸਾ ਕੀਤੇ</translation>
 <translation id="5148889558173091794">ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੇ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ ਇਹ ਨੀਤੀ ਦੀ ਉਲੰਘਣਾ ਕਰਦੀ ਹੈ। <ph name="BEGIN_LEARN_MORE_LINK" />ਇਸ ਚਿਤਾਵਨੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
-<translation id="5153578295462758702">ਕੁਝ ਜਾਣਕਾਰੀ ਮੌਜੂਦ ਨਹੀਂ ਹੈ</translation>
 <translation id="5157504274688344097">ਵੱਡੇ ਵਪਾਰੀ ਅਤੇ ਡਿਪਾਰਟਮੈਂਟਲ ਸਟੋਰ</translation>
 <translation id="5158275234811857234">ਕਵਰ</translation>
 <translation id="5159010409087891077">ਕਿਸੇ ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਪੰਨਾ ਖੋਲ੍ਹੋ (⇧⌘N)</translation>
@@ -2400,6 +2420,7 @@
     ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="549333378215107354">ਆਕਾਰ 3</translation>
 <translation id="5496804587179176046">ਸੁਰੱਖਿਆ ਕੋਡ ਰੱਖਿਅਤ ਕਰੋ, ਇਸ ਵੇਲੇ ਕੋਈ ਸੁਰੱਖਿਆ ਕੋਡ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤੇ ਗਏ ਹਨ</translation>
+<translation id="5500138616054402841">Chrome ਮਿਲਦੇ-ਜੁਲਦੇ ਉਤਪਾਦਾਂ ਦੀ ਨਾਲ-ਨਾਲ ਤੁਲਨਾ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="550365051221576010">ਹਰ ਖੇਤਰ ਭਰੋ</translation>
 <translation id="5508443345185481044">ਕੈਮਰੇ ਅਤੇ ਕੈਮਕੋਰਡਰ</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2455,6 +2476,7 @@
 <translation id="5572851009514199876">ਕਿਰਪਾ ਕਰਕੇ ਸ਼ੁਰੂ ਕਰੋ ਅਤੇ Chrome 'ਤੇ ਸਾਈਨ ਇਨ ਕਰੋ ਤਾਂ ਕਿ Chrome ਇਹ ਜਾਂਚ ਸਕੇ ਕਿ ਤੁਹਾਨੂੰ ਇਸ ਸਾਈਟ 'ਤੇ ਪਹੁੰਚ ਲਈ ਇਜਾਜ਼ਤ ਹੈ ਜਾਂ ਨਹੀਂ।</translation>
 <translation id="5578606540385219379">ਸੇਵਾ ਪ੍ਰਦਾਨਕ</translation>
 <translation id="5580958916614886209">ਆਪਣੀ ਮਿਆਦ ਸਮਾਪਤੀ ਦੇ ਮਹੀਨੇ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
+<translation id="5583442610070676234">ਤੁਲਨਾ ਸਾਰਨੀ <ph name="COMPARE_SET_NAME" /> ਲਈ ਹੋਰ ਕਾਰਵਾਈਆਂ</translation>
 <translation id="558420943003240152">ਪਾਸਵਰਡਾਂ ਅਤੇ ਪਾਸਕੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ…</translation>
 <translation id="5586446728396275693">ਕੋਈ ਰੱਖਿਅਤ ਪਤੇ ਨਹੀਂ ਹਨ</translation>
 <translation id="5586831831248371458"><ph name="KEYWORD_SUFFIX" /> ਖੋਜੋ</translation>
@@ -2559,6 +2581,7 @@
 <translation id="5785756445106461925">ਅੱਗੇ, ਇਸ ਸਫ਼ੇ ਵਿੱਚ ਦੂਜੇ ਸ੍ਰੋਤ ਸ਼ਾਮਲ ਹਨ, ਜੋ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹਨ। ਇਹ ਸ੍ਰੋਤ ਟ੍ਰਾਂਜਿਟ ਵਿੱਚ ਹੋਣ ਵੇਲੇ ਦੂਜਿਆਂ ਵੱਲੋਂ ਦੇਖੇ ਜਾ ਸਕਦੇ ਹਨ ਅਤੇ ਸਫ਼ੇ ਦੇ ਰੂਪ ਨੂੰ ਬਦਲਣ ਲਈ ਇੱਕ ਹਮਲਾਵਰ ਵੱਲੋਂ ਸੰਸ਼ੋਧਿਤ ਕੀਤੇ ਜਾ ਸਕਦੇ ਹਨ।</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ਇਸ ਭੁਗਤਾਨ ਵਿਧੀ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਮਿਟਾਇਆ ਜਾਵੇਗਾ</translation>
+<translation id="5794065675298686371">ਕੀਮਤ ਸੰਬੰਧੀ ਟਰੈਕਿੰਗ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5800727402210090597">ਮੋਬਾਈਲ ਫ਼ੋਨ ਮੁਰੰਮਤ ਅਤੇ ਸੇਵਾਵਾਂ</translation>
 <translation id="580241730938216256">ਅੱਪਡੇਟ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="5804241973901381774">ਅਨੁਮਤੀਆਂ</translation>
@@ -2598,6 +2621,7 @@
 <translation id="5879989559903563723">ਮਹਿਮਾਨ ਮੋਡ ਵਿੱਚ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="5880050725127890683">Chrome ਸੁਰੱਖਿਆ ਜਾਂਚ 'ਤੇ ਜਾਓ</translation>
 <translation id="5884465125445718607">ਚੀਨੀ #6 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
+<translation id="5886961930368713749">ਤੁਲਨਾ ਕਰਨ ਲਈ ਵਿਚਾਰ ਭੇਜੋ</translation>
 <translation id="5887400589839399685">ਕਾਰਡ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5887687176710214216">ਪਿਛਲੀ ਵਾਰ ਕੱਲ੍ਹ ਦੇਖੀ ਗਈ</translation>
 <translation id="5895138241574237353">ਰੀਸਟਾਰਟ ਕਰੋ</translation>
@@ -2712,6 +2736,8 @@
 <translation id="6080696365213338172">ਤੁਸੀਂ ਇੱਕ ਪ੍ਰਬੰਧਕ ਵੱਲੋਂ-ਮੁਹੱਈਆ ਕੀਤਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਵਰਤਦੇ ਹੋਏ ਸਮੱਗਰੀ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕੀਤੀ ਹੈ। ਜੋ ਡਾਟਾ ਤੁਸੀਂ <ph name="DOMAIN" /> ਨੂੰ ਮੁਹੱਈਆ ਕਰਦੇ ਹੋ, ਉਹ ਤੁਹਾਡੇ ਪ੍ਰਬੰਧਕ ਵੱਲੋਂ ਰੋਕਿਆ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="6085149458302186532">ਲੇਬਲ (ਰੰਗੀਨ)</translation>
 <translation id="6087312102907839798">ਸੰਬੰਧਿਤ ਖੋਜਾਂ</translation>
+<translation id="6089505343295765444">ਜਿਨ੍ਹਾਂ ਟੈਬਾਂ ਨੂੰ ਤੁਸੀਂ ਆਪਣੇ Chrome ਇਤਿਹਾਸ ਤੋਂ ਮਿਟਾਉਂਦੇ ਹੋ, ਉਹ ਹਾਲੇ ਵੀ ਤੁਹਾਡੀਆਂ ਤੁਲਨਾ ਸਾਰਨੀਆਂ ਵਿੱਚ ਦਿਖਾਈ ਦੇਣਗੀਆਂ</translation>
+<translation id="6093795393556121384">ਤੁਹਾਡਾ ਕਾਰਡ ਪ੍ਰਮਾਣਿਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="6094273045989040137">ਐਨੋਟੇਟ ਕਰੋ</translation>
 <translation id="6094290315941448991">ਗੁਪਤ ਸਮੱਗਰੀ ਦੇ ਦਿਸਣਯੋਗ ਹੋਣ 'ਤੇ ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰ ਦਿੰਦੀ ਹੈ</translation>
 <translation id="6099269767116481177">22 x 29.5 ਇੰਚ</translation>
@@ -3054,6 +3080,7 @@
 <translation id="6710648923880003133">ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਦਾ ਸੁਝਾਅ ਦਿਓ</translation>
 <translation id="671076103358959139">ਦਰਜਾਬੰਦੀ ਟੋਕਨ:</translation>
 <translation id="6711464428925977395">ਪ੍ਰੌਕਸੀ ਸਰਵਰ ਨਾਲ ਕੋਈ ਸਮੱਸਿਆ ਹੈ ਜਾਂ ਪਤਾ ਗਲਤ ਹੈ।</translation>
+<translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> ਆਈਟਮਾਂ ਦੀ ਤੁਲਨਾ ਕਰੋ</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਉਣਾ ਅਤੇ ਕੈਮਰਾ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" /> ਤੋਂ ਭੇਜੀ ਗਈ ਟੈਬ</translation>
 <translation id="6718612893943028815">ਕੀ ਕੈਮਰਾ ਵਰਤਣਾ ਹੈ?</translation>
@@ -3081,6 +3108,7 @@
 <translation id="6770747695101757579">ਪੇਪਰ (ਕੌਟਨ)</translation>
 <translation id="677257480647123231">ਇੰਟਰਨੈੱਟ 'ਤੇ ਬੱਚਿਆਂ ਦੀ ਸੁਰੱਖਿਆ</translation>
 <translation id="6775759552199460396">JIS B2</translation>
+<translation id="6777088782163649345">ਆਪਣੇ ਮਾਂ-ਪਿਓ ਦੀਆਂ ਪਸੰਦਾਂ ਮੁਤਾਬਕ YouTube ਵਰਤੋ</translation>
 <translation id="6779348349813025131">Google Password Manager ਨੂੰ MacOS Keychain ਤੱਕ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="6782656837469339439">ਮਿਆਦ ਸਮਾਪਤੀ ਦਾ ਸਾਲ</translation>
 <translation id="6785990323398321538">ਤੁਸੀਂ Chrome ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਿਸੇ ਵੀ ਵੇਲੇ ਆਪਣੇ ਖੋਜ ਇੰਜਣ ਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
@@ -3124,11 +3152,13 @@
 <translation id="6865166112578825782">ਪਤਾ ਭਰੋ</translation>
 <translation id="6865412394715372076">ਇਸ ਕਾਰਡ ਦੀ ਫਿਲਹਾਲ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ।</translation>
 <translation id="6868573634057275953">ਅੱਪਡੇਟ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
+<translation id="6871813064737840684">ਇਸ ਵਿਕਲਪ ਲਈ ਵੈੱਬ 'ਤੇ ਕੀਮਤ ਇਤਿਹਾਸ</translation>
 <translation id="6873456682041376666">ਸਿਖਰਲੀ ਟ੍ਰੇਅ</translation>
 <translation id="6874604403660855544">&amp;ਜੋੜੋ ਨੂੰ ਰੀਡੂ ਕਰੋ</translation>
 <translation id="6880941331070119097">ਵੱਧ ਕੀਮਤ ਵਾਲੇ ਵਿਕਲਪ</translation>
 <translation id="6881240511396774766">ਤੁਰੰਤ ਨਵਾਂ Google ਡੌਕ ਬਣਾਓ</translation>
 <translation id="6882210908253838664">ਜੇ ਕੋਈ ਸਾਈਟ ਕੰਮ ਨਹੀਂ ਕਰ ਰਹੀ ਹੈ, ਤਾਂ ਤੁਸੀਂ ਉਸਨੂੰ ਕੁਝ ਸਮੇਂ ਲਈ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਵਰਤਣ ਦੀ ਇਜਾਜ਼ਤ ਦੇ ਸਕਦੇ ਹੋ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
+<translation id="6882418526420053414"><ph name="SITE" /> ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ</translation>
 <translation id="6883221904761970440">ਸੁਰੱਖਿਅਤ ਭੁਗਤਾਨ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਪ੍ਰਮਾਣੀਕਰਨ ਸ਼ੀਟ ਬੰਦ ਹੈ</translation>
 <translation id="6884662655240309489">ਆਕਾਰ 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3231,6 +3261,7 @@
 <translation id="7064443976734085921">ਛੋਟੀਆਂ ਕਾਰਾਂ</translation>
 <translation id="7064851114919012435">ਸੰਪਰਕ ਜਾਣਕਾਰੀ</translation>
 <translation id="7067633076996245366">ਸੋਲ ਅਤੇ R&amp;B</translation>
+<translation id="706960991003274248">ਤੁਲਨਾ ਸਾਰਨੀਆਂ ਨੂੰ ਤੁਹਾਡੇ ਖਾਤੇ <ph name="EMAIL" /> 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="7070144569727915108">ਸਿਸਟਮ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="70705239631109039">ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਪੂਰੀ ਤਰ੍ਹਾਂ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="7075452647191940183">ਬੇਨਤੀ ਬਹੁਤ ਜ਼ਿਆਦਾ ਵੱਡੀ ਹੈ</translation>
@@ -3495,12 +3526,6 @@
 <translation id="7535087603100972091">ਵੈਲਯੂ</translation>
 <translation id="753556296624075801">Google ਵੱਲੋਂ ਸੰਚਾਲਿਤ</translation>
 <translation id="7537536606612762813">ਲਾਜ਼ਮੀ</translation>
-<translation id="7541586907443866208">ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਅਤੇ ਇਸ ਸਾਈਟ ਵਿਚਾਲੇ ਭੇਜੇ ਗਏ ਕਿਸੇ ਵੀ ਤਰ੍ਹਾਂ ਦੇ ਡਾਟੇ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹਨ ਅਤੇ ਉਸ ਵਿੱਚ ਬਦਲਾਵ ਕਰ ਸਕਦੇ ਹਨ।
-    &lt;ul&gt;
-    &lt;li&gt;ਜੇ ਤੁਸੀਂ ਫ਼ਿਲਹਾਲ ਹਵਾਈ ਅੱਡੇ ਜਾਂ ਹੋਟਲ ਦੇ ਵਾਈ-ਫਾਈ ਵਰਗੇ ਕਿਸੇ ਜਨਤਕ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਹੋਇਆ ਹੋ, ਤਾਂ ਕਿਸੇ ਭਰੋਸੇਯੋਗ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਹੋਣ 'ਤੇ ਦੁਬਾਰਾ ਤੋਂ ਕੋਸ਼ਿਸ਼ ਕਰੋ (ਜਿਵੇਂ ਕਿ, ਘਰ ਜਾਂ ਕਿਸੇ ਕੰਮ ਵਾਲੀ ਜਗ੍ਹਾ ਦਾ ਨੈੱਟਵਰਕ)।&lt;/li&gt;
-    &lt;li&gt;ਜੇ ਤੁਸੀਂ ਸਾਈਟ ਦੇ ਮਾਲਕ ਨੂੰ ਜਾਣਦੇ ਹੋ, ਤਾਂ ਉਸਨੂੰ ਇਹ ਠੀਕ ਕਰਨ ਲਈ ਕਹੋ।&lt;/li&gt;
-    &lt;/ul&gt;
-    <ph name="BEGIN_LEARN_MORE_LINK" />ਇਸ ਚਿਤਾਵਨੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਦੀ ਜਾਣਕਾਰੀ ਨੂੰ ਸਵੈਚਲਿਤ ਢੰਗ ਨਾਲ ਭਰਨ ਦੀ ਵਿਸ਼ੇਸ਼ਤਾ ਬੰਦ ਹੈ ਕਿਉਂਕਿ ਇਹ ਫ਼ਾਰਮ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰਦਾ ਹੈ।</translation>
 <translation id="7543525346216957623">ਆਪਣੇ ਮਾਤਾ-ਪਿਤਾ ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> ਐਪ ਸ਼ੁਰੂ ਹੋ ਰਹੀ ਹੈ</translation>
@@ -3742,6 +3767,7 @@
 <translation id="7967636097426665267">ਸੰਚਾਰ ਸੰਬੰਧੀ ਉਪਕਰਨ</translation>
 <translation id="79682505114836835">ਮੁੱਲ "<ph name="VALUE" />" ਇੱਕ ਅਵੈਧ ਹੈਕਸ ਰੰਗ ਹੈ।</translation>
 <translation id="7968982339740310781">ਵੇਰਵੇ ਦੇਖੋ</translation>
+<translation id="7975858430722947486">ਤੁਲਨਾ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7976214039405368314">ਬਹੁਤ ਸਾਰੀਆਂ ਬੇਨਤੀਆਂ</translation>
 <translation id="7977538094055660992">ਆਊਟਪੁੱਟ ਡੀਵਾਈਸ</translation>
 <translation id="7979595116210197019">ਭੋਜਨ ਸੇਵਾ</translation>
@@ -4120,6 +4146,7 @@
 <translation id="8687429322371626002">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਅਤੇ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="MANAGER" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="8688672835843460752">ਉਪਲਬਧ</translation>
 <translation id="868922510921656628">ਪ੍ਰਤੀ ਸੈੱਟ ਪੰਨੇ</translation>
+<translation id="8695996513186494922">ਕੀ ਟੈਬਾਂ ਦੀ ਤੁਲਨਾ ਕਰਨੀ ਹੈ?</translation>
 <translation id="869891660844655955">ਮਿਆਦ ਪੁੱਗਣ ਦੀ ਤਾਰੀਖ</translation>
 <translation id="8699041776323235191">HID ਡੀਵਾਈਸ</translation>
 <translation id="8699985386408839112">ਕਾਕੂ 1 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
@@ -4187,7 +4214,7 @@
 <translation id="8811470563853401328">ਕੀ ਖਾਤੇ ਵਿੱਚ ਪਤਾ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="8811725516933141693">Gemini ਨਾਲ ਚੈਟ ਕਰਨ ਲਈ @gemini ਟਾਈਪ ਕਰੋ</translation>
 <translation id="8813277370772331957">ਮੈਨੂੰ ਬਾਅਦ ਵਿੱਚ ਯਾਦ ਕਰਵਾਓ</translation>
-<translation id="8814547618907885931">ਸਾਰੀਆਂ ਤੁਲਨਾ ਸਾਰਨੀਆਂ ਦੇਖੋ</translation>
+<translation id="8814547618907885931">ਤੁਲਨਾ ਵਾਲੀਆਂ ਸਾਰੀਆਂ ਸਾਰਨੀਆਂ ਦੇਖੋ</translation>
 <translation id="8814707942599948500">C8 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾਓ, ਫਿਰ ਆਪਣੀਆਂ Chrome ਸੈਟਿੰਗਾਂ ਤੋਂ Chrome ਅੱਪਡੇਟ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
@@ -4279,6 +4306,7 @@
 <translation id="9004367719664099443">VR ਸੈਸ਼ਨ ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="9005998258318286617">PDF ਦਸਤਾਵੇਜ਼ ਲੋਡ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="9008201768610948239">ਅਣਡਿੱਠ ਕਰੋ</translation>
+<translation id="9014413491147864781">ਤੁਲਨਾ ਸਾਰਨੀਆਂ ਬਾਰੇ <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="9014705027639070815">ਤੁਸੀਂ ਜਿਨ੍ਹਾਂ ਸਾਈਟਾਂ 'ਤੇ ਜਾਂਦੇ ਹੋ, ਉਹ ਆਪਣੇ ਵਿਗਿਆਪਨਾਂ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਦਾ ਮੁਲਾਂਕਣ ਕਰਨ ਵਿੱਚ ਉਨ੍ਹਾਂ ਦੀ ਮਦਦ ਵਾਸਤੇ Chrome ਤੋਂ ਜਾਣਕਾਰੀ ਮੰਗ ਸਕਦੀਆਂ ਹਨ। Chrome ਸਾਈਟਾਂ ਨੂੰ ਸੀਮਤ ਕਿਸਮ ਦਾ ਡਾਟਾ ਇਕੱਤਰ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿੰਦਾ ਹੈ, ਜਿਵੇਂ ਕਿ ਕਿਸੇ ਸਾਈਟ 'ਤੇ ਜਾਣ ਤੋਂ ਬਾਅਦ ਤੁਸੀਂ ਕੋਈ ਖਰੀਦ ਕੀਤੀ ਹੈ ਜਾਂ ਨਹੀਂ।</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" /> ਲਈ ਆਪਣਾ ਸੁਰੱਖਿਆ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="901834265349196618">ਈਮੇਲ</translation>
@@ -4416,6 +4444,7 @@
 <translation id="944540589955480312">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਅਤੇ ਪਾਸਕੀਆਂ ਨੂੰ ਵਰਤੋ</translation>
 <translation id="945646848072568856">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਦੇ ਨਾਲ-ਨਾਲ ਤੁਹਾਨੂੰ ਟਰੈਕ ਕਰਨ ਲਈ, Chrome ਸਾਈਟਾਂ ਨੂੰ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਵਰਤਣ ਤੋਂ ਬਲਾਕ ਕਰ ਦਿੰਦਾ ਹੈ।</translation>
 <translation id="945855313015696284">ਹੇਠਾਂ ਦਿੱਤੀ ਜਾਣਕਾਰੀ ਦੀ ਜਾਂਚ ਕਰਕੇ ਕੋਈ ਵੀ ਅਵੈਧ ਕਾਰਡ ਮਿਟਾਓ</translation>
+<translation id="94613679163347541">ਕੀ <ph name="CATEGORY" /> ਦੀ ਤੁਲਨਾ ਕਰਨੀ ਹੈ?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਨਵੀਂ ਸਾਈਟ ਬਣਾਉਣ ਲਈ Tab ਦਬਾ ਕੇ ਫਿਰ Enter ਦਬਾਓ</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome ਕੁਕੀਜ਼ ਨੂੰ ਅੱਜ ਦੁਬਾਰਾ ਸੀਮਤ ਕਰ ਦੇਵੇਗਾ}=1{Chrome ਕੁਕੀਜ਼ ਨੂੰ ਕੱਲ੍ਹ ਦੁਬਾਰਾ ਸੀਮਤ ਕਰ ਦੇਵੇਗਾ}other{Chrome ਕੁਕੀਜ਼ ਨੂੰ # ਦਿਨਾਂ ਵਿੱਚ ਦੁਬਾਰਾ ਸੀਮਤ ਕਰ ਦੇਵੇਗਾ}}</translation>
 <translation id="949314938206378263">ਤੁਸੀਂ ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਣ ਲਈ ਕਿਹਾ ਹੈ। ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ Family Link ਵਿੱਚ ਜਵਾਬ ਦੇ ਸਕਦੇ ਹਨ।</translation>

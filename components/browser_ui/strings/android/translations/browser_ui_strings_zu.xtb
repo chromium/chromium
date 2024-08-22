@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">Thulisa amasayithi adlala umsindo</translation>
 <translation id="3602290021589620013">Hlola kuqala</translation>
 <translation id="3628308229821498208">Usesho oluphakanyisiwe</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{Isayithi elingu-<ph name="RWS_MEMBERS_COUNT" /> eqenjini lamasayithi ka-<ph name="RWS_OWNER" /> lingabona umsebenzi wakho eqenjini}one{Amasayithi angu-<ph name="RWS_MEMBERS_COUNT" /> eqenjini lamasayithi ka-<ph name="RWS_OWNER" /> angabona umsebenzi wakho eqenjini}other{Amasayithi angu-<ph name="RWS_MEMBERS_COUNT" /> eqenjini lamasayithi ka-<ph name="RWS_OWNER" /> angabona umsebenzi wakho eqenjini}}</translation>
 <translation id="3697164069658504920">Lapho ivuliwe, amasayithi angacela ukusebenzisa amadivayisi e-USB. Lapho ivaliwe, amasayithi awakwazi ukusebenzisa amadivayisi e-USB.</translation>
 <translation id="3707034683772193706">Isayithi olivakashelayo lingalondoloza inani elincane lolwazi nge-Chrome, ikakhulukazi ukuze kuqinisekiswe ukuthi awuyona i-bot</translation>
 <translation id="3721953990244350188">Chitha futhi ubonise isenzo esilandelayo esitholakalayo</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">Yabelana nge-</translation>
 <translation id="5001526427543320409">Amakhukhi wongahlangene ngqo</translation>
 <translation id="5007392906805964215">Buyekeza</translation>
+<translation id="5014182796621173645">Uvakashele i-<ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Vumela</translation>
 <translation id="5048398596102334565">Vumela amasayithi ukuthi afinyelele kuzinzwa zokunyakaza (kunconyiwe)</translation>
 <translation id="5050380848339752099">Le sayithi limayelana nokwabelana ulwazi ne-app ngaphandle kwemodi ye-incognito.</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">Bona okwengeziwe</translation>
 <translation id="6561560012278703671">Sebenzisa umlayezo wokushiya (ivimbela isaziso esiyalela kusuka ekukuphazamiseni)</translation>
 <translation id="6593061639179217415">Isayithi ledeskithophu</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Amakhukhi avunyelwe angu-<ph name="RWS_MEMBERS_COUNT" /> kusayithi ka-<ph name="RWS_OWNER" />}one{Amakhukhi avunyelwe angu-<ph name="RWS_MEMBERS_COUNT" /> kumasayithi ka-<ph name="RWS_OWNER" />}other{Amakhukhi avunyelwe angu-<ph name="RWS_MEMBERS_COUNT" /> kumasayithi ka-<ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Okuqukethwe okuvikelekile</translation>
 <translation id="662080504995468778">Hlala</translation>
 <translation id="6653342741369270081">Cindezela inkinobho yokubuyela emuva ukuze uphume kusikrini esigcwele.</translation>
+<translation id="6683865262523156564">Le sayithi iseqenjini elikwazi ukubona izinto ozenzayo. Iqembu lichazwa ngu-<ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Izithombe zephrofayela</translation>
 <translation id="6697925417670533197">Ukulanda okusebenzayo</translation>
 <translation id="6722828510648505498">Vimba imiyalo yokungena ngemvume evela kumasevisi kamazisi.</translation>

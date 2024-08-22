@@ -71,6 +71,7 @@
 <translation id="2018528049276128029">Minden profil saját Chrome-adatokat (például könyvjelzőket, előzményeket, jelszavakat és egyebeket) tárol.</translation>
 <translation id="2018879682492276940">Sikertelen telepítés. Próbálja újra.</translation>
 <translation id="2022471217832964798">A fiókhozzáférés beállítása közben továbbra is használhatja a Chrome-ot. Előfordulhat, hogy a beállítás elvégzéséig nem tud hozzáférni egyes erőforrásokhoz.</translation>
+<translation id="2034233344106846793">A Chrome automatikusan frissíti a nem biztonságos kapcsolatokat HTTPS-re, amikor lehetséges</translation>
 <translation id="207902854391093810">A próbaidőszakok alatt a hirdetésmérés segítségével az Ön által felkeresett webhelyek olyan adatokat kérhetnek a Chrome-tól, amelyek segítségével a webhely mérheti hirdetéseinek teljesítményét. A hirdetésmérés azáltal korlátozza a webhelyeken átnyúló nyomon követést, hogy a lehető legkevesebb adatot továbbítja a webhelyek között.</translation>
 <translation id="2091012649849228750">Ha a jövőben Google Chrome-frissítéseket szeretne kapni, akkor a Windows 10 vagy újabb rendszerre lesz szüksége. Ezen a számítógépen a Windows 8 operációs rendszer fut.</translation>
 <translation id="2094648590148273905">A ChromeOS Flex feltételei</translation>
@@ -361,6 +362,7 @@
 <translation id="608006075545470555">Munkaprofil hozzáadása a böngészőhöz</translation>
 <translation id="6097822892606850415">Nagyobb magabiztossággal írhat az AI segítségével</translation>
 <translation id="6113794647360055231">A Chrome még jobb lett</translation>
+<translation id="6134085236017727171">A mikrofon használatához adjon hozzáférést a Chrome-nak a <ph name="BEGIN_LINK" />rendszerbeállításokban<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Ezek a lapok plusz erőforrásokat használnak. A teljesítmény javítása érdekében engedélyezze, hogy a Chrome inaktiválhassa őket.</translation>
 <translation id="6145313976051292476">PDF-fájlok megnyitása a Chrome-ban</translation>
 <translation id="6157638032135951407">Szervezete törli a Chrome-adatokat, ha nem használja a böngészőt ennyi ideig: <ph name="TIMEOUT_DURATION" />. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltött tartalom is.</translation>
@@ -396,6 +398,7 @@
 <translation id="6497147134301593682">A Chrome automatikusan bezárult</translation>
 <translation id="6506909944137591434">A Chrome-nak kamerahasználati engedélyre van szüksége, hogy 3D-s térképet készíthessen az Ön környezetéről</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
+<translation id="6520670145826811516">A helyadatok használatához adjon hozzáférést a Chrome-nak a <ph name="BEGIN_LINK" />rendszerbeállításokban<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">A Google Jelszókezelőben ezen az eszközön</translation>
 <translation id="6632473616050862500">A ChromeOS Flex létrejöttéhez egyéb <ph name="BEGIN_LINK_CROS_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_CROS_OSS" /> is hozzájárultak.</translation>
 <translation id="6660596345553328257">Bejelentkezik a Chrome-ba?</translation>
@@ -558,6 +561,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="8718062187489036808">Kijelentkezés a Chrome-ból</translation>
 <translation id="873133009373065397">A Google Chrome problémába ütközött az alapértelmezett böngésző megállapításakor vagy beállításakor</translation>
 <translation id="8765470054473112089">Amikor Ön beír valamit a címsávba vagy a keresőmezőbe, a Chrome a beírt szöveget elküldi az alapértelmezett keresőmotornak, hogy jobb javaslatokat biztosítson. Inkognitóban ki van kapcsolva ez a funkció.</translation>
+<translation id="8781673607513845160">A kamera használatához adjon hozzáférést a Chrome-nak a <ph name="BEGIN_LINK" />rendszerbeállításokban<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Telepítési hiba: A hálózati rendszergazda olyan csoportházirendet alkalmazott, amely megakadályozza a telepítést: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="8796073561259064743">A Chrome letiltotta ezt a letöltést, mert a fájl károkat okozhat az Ön személyes és közösségi fiókjaiban, például a következőben: <ph name="USER_EMAIL" /></translation>
 <translation id="8797423385604279835">A lapok rendszerezése az AI segítségével</translation>

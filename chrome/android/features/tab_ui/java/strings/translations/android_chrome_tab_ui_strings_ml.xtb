@@ -20,6 +20,7 @@
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ടാബുകൾ ഗ്രൂപ്പ് ചെയ്‌തു</translation>
 <translation id="1657719826150349398">ടാബ് താഴേക്ക് നീക്കുക</translation>
 <translation id="1713541401465507417">എല്ലാ ടാബുകളും ഗ്രൂപ്പുകളും അടയ്‌ക്കുക</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />കൂടുതലറിയുക<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ടാബ് ഗ്രൂപ്പ് ചെയ്‌തു</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ്}other{<ph name="TABS_COUNT_MANY" /> ടാബുകൾ}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ് ബുക്ക്‌മാർക്ക് ചെയ്യുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ ബുക്ക്‌മാർക്ക് ചെയ്യുക}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">ഇപ്പോൾ സൃഷ്‌ടിച്ചത്</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{ഒരു ദിവസത്തിന് ശേഷം അടയ്ക്കുക}other{<ph name="DAY_COUNT_MANY" /> ദിവസത്തിന് ശേഷം അടയ്ക്കുക}}</translation>
 <translation id="4777866634702576038">ടാബ് ഗ്രൂപ്പ് ഇല്ലാതാക്കണോ?</translation>
+<translation id="4783638485675352219">ഈ ഉപകരണത്തിൽ നിന്നുള്ള, തുറന്ന ടാബുകളുടെ തലക്കെട്ടുകളും URL-കളും ഓപ്പറേറ്റിംഗ് സിസ്റ്റവുമായി പങ്കിടുക</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> റിവ്യൂ)}other{(<ph name="REVIEWS_COUNT_MANY" /> റിവ്യൂകൾ)}}</translation>
 <translation id="4850886885716139402">കാണുക</translation>
 <translation id="4870911314065352661">എല്ലാ ടാബുകളും അടയ്‌ക്കണോ?</translation>

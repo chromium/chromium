@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Вече са налице специални активи за <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Земята</translation>
 <translation id="1026212596705997935">Клавишната комбинация служи за „<ph name="CONFLICT_ACCEL_NAME" />“. Използвайте друга. За да замените съществуващата комбинация, натиснете тази отново.</translation>
+<translation id="1030856839388844477">Нулиране на преноса на данни</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> нишки, <ph name="CPU_MAX_CLOCK_SPEED" /> ГХц)</translation>
 <translation id="1047773237499189053">Налице е нова функция. Използвайте стрелката нагоре, за да научите повече.</translation>
 <translation id="1049663189809099096">пастелножълто</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">слаб сигнал</translation>
 <translation id="1300115153046603471">Името на точката за достъп (APN) е стандартно и за <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Преобразуване</translation>
 <translation id="1304014921944666344">Дата на създаване</translation>
 <translation id="1308754910631152188">Актуализира се (<ph name="PERCENTAGE_VALUE" />% завършено)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> минути</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">солено езеро</translation>
 <translation id="1367951781824006909">Избор на файл</translation>
 <translation id="1371650399987522809">Отзиви за тапет, базиран на AI на Google</translation>
+<translation id="1374385338586507108">Дефиниране</translation>
 <translation id="1387854245479784695">Това е обобщена стойност за всички ядра</translation>
 <translation id="1393206549145430405">замък</translation>
 <translation id="1394661041439318933">Нивото на батерията на калъфа е <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -111,7 +114,7 @@
 <translation id="1526389707933164996">Анимация за скрийнсейвъра</translation>
 <translation id="152892567002884378">Увеличаване на силата на звука</translation>
 <translation id="1539864135338521185">лапис лазули</translation>
-<translation id="1555130319947370107">синьо</translation>
+<translation id="1555130319947370107">Синьо</translation>
 <translation id="155865706765934889">Сензорен панел</translation>
 <translation id="1561927818299383735">цвят на фоновото осветление</translation>
 <translation id="1564356849266217610">органза</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Ток</translation>
 <translation id="346539236881580388">Повторно заснемане</translation>
 <translation id="3484914941826596830">Докато фърмуерът се актуализира, не изключвайте това външно устройство, нито компютъра си. Можете да намалите прозореца. Възможно е актуализацията да отнеме няколко минути и през това време външното ви устройство може да не работи.</translation>
-<translation id="3485555238092220889">действие за достъпност</translation>
 <translation id="3486220673238053218">дефиниция</translation>
 <translation id="3487866404496702283">Отзиви за функцията mahi</translation>
 <translation id="3488065109653206955">Частично активиран</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Няма покритие</translation>
 <translation id="4570558255126759859">Да се изтегли ли моделът на Gemini с цел обобщаване на записите?</translation>
 <translation id="4573777384450697571">Неуспешно– сертификатът е изтекъл</translation>
+<translation id="4575450106703099687">опции за достъпност</translation>
 <translation id="458794348635939462">Името на нито един хост не бе преобразувано</translation>
 <translation id="4593212453765072419">Изисква се удостоверяване в прокси сървъра</translation>
 <translation id="4594021849294327751">Създаване на препис</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> от <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Бутон за редактиране на <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Актуализиране на <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Преносът на данни е нулиран</translation>
 <translation id="574392208103952083">Среден</translation>
 <translation id="5757187557809630523">следващ запис</translation>
 <translation id="5760715441271661976">Състояние на портала</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Заглушаване</translation>
 <translation id="5784136236926853061">Голямо забавяне на HTTP</translation>
 <translation id="5790391387506209808">лапис лазули</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Няма зададена клавишна комбинация</translation>
 <translation id="5826644637650799838">Всичко за произведението</translation>
 <translation id="5832805196449965646">Добавяне на човек</translation>
@@ -908,7 +913,7 @@
 <translation id="588258955323874662">Цял екран</translation>
 <translation id="5893975327266416093">Докоснете клавиш на клавиатурата, за да го зададете</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
-<translation id="5901630391730855834">жълто</translation>
+<translation id="5901630391730855834">Жълто</translation>
 <translation id="5903200662178656908">Устройството е комбинирана клавиатура и мишка.</translation>
 <translation id="5904994456462260490">Добавяне на ново име на точката за достъп (APN)</translation>
 <translation id="590746845088109442">котки</translation>
@@ -932,7 +937,7 @@
 <translation id="5975130252842127517">оранжево-червено</translation>
 <translation id="5984145644188835034">Тапет по подразбиране</translation>
 <translation id="5996832681196460718">коприна</translation>
-<translation id="6017514345406065928">зелено</translation>
+<translation id="6017514345406065928">Зелено</translation>
 <translation id="6019566113895157499">Клавишни комбинации</translation>
 <translation id="6034694447310538551">Активиране на автоматичното ежемесечно нулиране</translation>
 <translation id="6037291330010597344">Подавачът на документи на скенера е празен. Добавете документи и опитайте отново.</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Придвижване в текст</translation>
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Има информация, свързана с избраното от вас. За достъп използвайте стрелката нагоре.</translation>
+<translation id="6831043979455480757">Превод</translation>
 <translation id="6853312040151791195">Скорост на разреждане</translation>
 <translation id="6862416241246624313">Отзивите бяха изпратени</translation>
 <translation id="6866732840889595464">Маргаритка</translation>
@@ -1323,7 +1329,7 @@
 <translation id="7903695460270716054">Изберете подбрани произведения на изкуството и изображения</translation>
 <translation id="7915220255123750251">Управление на настройките за името на точката за достъп (APN) за мрежата. Чрез APN се установява връзка между мобилна мрежа и интернет.</translation>
 <translation id="7936303884198020182">Не са намерени сървъри за имена</translation>
-<translation id="7942349550061667556">червено</translation>
+<translation id="7942349550061667556">Червено</translation>
 <translation id="7943235353293548836">Постоянен интервал за проверка на връзката</translation>
 <translation id="7943516765291457328">Включете Bluetooth, за да сканирате за точки за достъп в близост</translation>
 <translation id="7944562637040950644">превключване на фоновото осветление на клавиатурата</translation>
@@ -1551,6 +1557,7 @@
 <translation id="9087578468327036362">Подаване на сигнал за тази заявка</translation>
 <translation id="9088306295921699330">Текущо използване</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Още информация за датата на нулиране</translation>
 <translation id="9100765901046053179">Разширени настройки</translation>
 <translation id="910415269708673980">Опресняване на пропуска за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканира се страница <ph name="PAGE_NUMBER" /></translation>

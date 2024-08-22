@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">נוספו נכסים בלעדיים ל-<ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">זרימה בכדור הארץ</translation>
 <translation id="1026212596705997935">מקש הקיצור הזה משמש לביצוע הפעולה '<ph name="CONFLICT_ACCEL_NAME" />'. עליך להקיש על מקש קיצור אחר. כדי להחליף את קיצור הדרך הקיים, צריך להקיש שוב על מקש הקיצור הזה.</translation>
+<translation id="1030856839388844477">איפוס השימוש בחבילת הגלישה</translation>
 <translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> שרשורים, GHz‏ <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">יש תכונה חדשה. למידע נוסף יש להקיש על מקש החץ למעלה.</translation>
 <translation id="1049663189809099096">בצבע צהוב פסטל</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">אות חלש</translation>
 <translation id="1300115153046603471">‏ה-APN הוא מסוג ברירת מחדל ו<ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">המרה</translation>
 <translation id="1304014921944666344">תאריך יצירה</translation>
 <translation id="1308754910631152188">מתבצע עדכון (%‏<ph name="PERCENTAGE_VALUE" /> הושלמו)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> דקות</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">אגם מלח</translation>
 <translation id="1367951781824006909">בחירת קובץ</translation>
 <translation id="1371650399987522809">‏משוב לגבי טפט שמבוסס על AI מבית Google</translation>
+<translation id="1374385338586507108">הגדרה</translation>
 <translation id="1387854245479784695">המדד הזה נצבר מכל הליבות</translation>
 <translation id="1393206549145430405">טירה</translation>
 <translation id="1394661041439318933">רמת הטעינה של סוללת הנרתיק במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">זרם</translation>
 <translation id="346539236881580388">צילום חוזר</translation>
 <translation id="3484914941826596830">במהלך עדכון הקושחה אין לנתק את המכשיר החיצוני הזה או לכבות את המחשב. אפשר למזער את החלון הזה. העדכון הזה עשוי לקחת כמה דקות ויכול להיות שהמכשיר החיצוני לא יפעל במהלכו.</translation>
-<translation id="3485555238092220889">פעולת נגישות</translation>
 <translation id="3486220673238053218">הגדרה</translation>
 <translation id="3487866404496702283">‏משוב על תכונת Mahi</translation>
 <translation id="3488065109653206955">מופעל חלקית</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">אין שירות</translation>
 <translation id="4570558255126759859">‏להוריד את מודל Gemini כדי לסכם הקלטות?</translation>
 <translation id="4573777384450697571">נכשל – פג תוקף האישור</translation>
+<translation id="4575450106703099687">אפשרויות נגישות</translation>
 <translation id="458794348635939462">לא ניתן היה להתאים את הנתונים של כל המארחים</translation>
 <translation id="4593212453765072419">‏יש צורך באימות שרת ה-proxy</translation>
 <translation id="4594021849294327751">יצירת תמליל</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> מתוך <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">לחצן לעריכת מקש הקיצור <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">עדכון של <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">השימוש בחבילת הגלישה אופס</translation>
 <translation id="574392208103952083">בינוני</translation>
 <translation id="5757187557809630523">הטראק הבא</translation>
 <translation id="5760715441271661976">מצב הפורטל</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">השתקה</translation>
 <translation id="5784136236926853061">‏משך זמן ההמתנה ל-HTTP ארוך</translation>
 <translation id="5790391387506209808">לפיס לזולי</translation>
+<translation id="5810692306010756935">סיום לימודים</translation>
 <translation id="5816802250591013230">לא הוקצה קיצור דרך</translation>
 <translation id="5826644637650799838">מידע על יצירת האומנות</translation>
 <translation id="5832805196449965646">הוספת משתמש</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">ניווט בטקסט</translation>
 <translation id="680983167891198932">מקש</translation>
 <translation id="6816797338148849397">יש מידע בקשר לבחירה שלך. כדי לגשת אליו, יש להקיש על מקש החץ למעלה.</translation>
+<translation id="6831043979455480757">תרגום</translation>
 <translation id="6853312040151791195">שיעור הפריקה</translation>
 <translation id="6862416241246624313">המשוב נשלח</translation>
 <translation id="6866732840889595464">חיננית</translation>
@@ -1551,6 +1557,7 @@
 <translation id="9087578468327036362">דיווח על השאילתה הזו</translation>
 <translation id="9088306295921699330">שימוש נוכחי</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">מידע נוסף על תאריך האיפוס</translation>
 <translation id="9100765901046053179">הגדרות מתקדמות</translation>
 <translation id="910415269708673980">רענון הכרטיס עבור <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" /></translation>

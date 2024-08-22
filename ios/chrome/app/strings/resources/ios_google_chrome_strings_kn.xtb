@@ -37,8 +37,6 @@
 <translation id="1615715390546812898">Chrome ನಲ್ಲಿ ಧ್ವನಿಯ ಮೂಲಕ ಹುಡುಕಿ.</translation>
 <translation id="1657395063736185342">Chrome ನಲ್ಲಿ ವಿಷುವಲ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="1670609221633730681">Chrome ಸಲಹೆ: ನಿಮ್ಮ ವಿಳಾಸ ಪಟ್ಟಿಯ ಸ್ಥಾನವನ್ನು ಆರಿಸಿ</translation>
-<translation id="1675955119303651351">ನಿಮ್ಮ ಕೆಲವು Chrome ಡೇಟಾವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಇನ್ನೂ ಸೇವ್ ಮಾಡಲಾಗಿಲ್ಲ.
-        ಸೈನ್ ಔಟ್ ಮಾಡುವ ಮೊದಲು ಕೆಲವು ನಿಮಿಷ ಕಾಯಲು ಪ್ರಯತ್ನಿಸಿ. ನೀವು ಈಗ ಸೈನ್ ಔಟ್ ಮಾಡಿದರೆ, ಈ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="1682483655351012182">ನಿಮ್ಮ Chrome ಡೇಟಾವನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Chrome ನಲ್ಲಿರುವ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳಿಗೆ ಇನ್‌ಪುಟ್ ಮಾಡಲಾದ URL ಗಳನ್ನು ಸೇರಿಸುತ್ತದೆ.</translation>
@@ -81,7 +79,6 @@
 <translation id="2767464022270041271">ಉಳಿಸಿರುವ ಯಾವುದೇ ಪಾಸ್‍‍ವರ್ಡ್‍ಗಳಿಲ್ಲ. ನೀವು ಅವುಗಳನ್ನು ಉಳಿಸಿದಾಗ Google Password Manager ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="2869959624320573933">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಹೇಗೆ ಖಾಸಗಿಯಾಗಿ ಇರಿಸುತ್ತದೆ<ph name="END_LINK" /> ಎಂಬುದರ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
-<translation id="2952581218264071393">1. Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲ್ಪಡುವ ಖಾತೆಯಿಂದ ನೀವು ಸೈನ್ ಔಟ್ ಮಾಡುತ್ತಿರುವ ಕಾರಣ, ನಿಮ್ಮ Chrome ಡೇಟಾವನ್ನು ಈ ಸಾಧನದಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ. ನಿಮ್ಮ ಡೇಟಾ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿಯೇ ಇರುತ್ತದೆ.</translation>
 <translation id="309672519329227863">ಇತರ ಆ್ಯಪ್‌ಗಳಾದ್ಯಂತ ನಿಮ್ಮ Chrome ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇನ್ನಷ್ಟನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಿ.</translation>
@@ -93,7 +90,6 @@
 <translation id="3340938510625667914">Chrome ಆ್ಯಕ್ಷನ್‌ಗಳು</translation>
 <translation id="3345341804167540816">Chrome ಎಲ್ಲೆಡೆ ಬಳಸಿ</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome ಅನ್ನು {THRESHOLD} ನಿಮಿಷ ಬಳಸದಿದ್ದಾಗ ಇದು ಸಂಭವಿಸುತ್ತದೆ}one{Chrome ಅನ್ನು {THRESHOLD} ನಿಮಿಷಗಳ ಕಾಲ ಬಳಸದಿದ್ದಾಗ ಇದು ಸಂಭವಿಸುತ್ತದೆ}other{Chrome ಅನ್ನು {THRESHOLD} ನಿಮಿಷಗಳ ಕಾಲ ಬಳಸದಿದ್ದಾಗ ಇದು ಸಂಭವಿಸುತ್ತದೆ}}</translation>
-<translation id="3399930248910934354">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="344736123700721678">ನಿಮ್ಮ ಹೋಮ್ ಸ್ಕ್ರೀನ್ ಡಾಕ್‌ನಿಂದ Chrome ಅನ್ನು ವೇಗವಾಗಿ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಿ</translation>
 <translation id="3472587960215700950">Chrome, ಪತ್ತೆಯಾದ ವಿಳಾಸಗಳಲ್ಲಿ ನಿಮಗೆ ನಿರ್ದೇಶನಗಳನ್ನು ಮತ್ತು ಸ್ಥಳೀಯ ಮಾಹಿತಿಯನ್ನು ನೀಡಲು Google Maps ಅನ್ನು ಬಳಸುತ್ತದೆ.</translation>
 <translation id="3503014945441706099">ಈ Chrome ಪ್ರೊಫೈಲ್‌ಗಾಗಿಯೂ ವರ್ಧಿತ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಪಡೆಯಿರಿ</translation>
@@ -131,9 +127,6 @@
 <translation id="4761869838909035636">Chrome ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆಯನ್ನು ರನ್ ಮಾಡಿ</translation>
 <translation id="4798859546468762093">ವೈಯಕ್ತೀಕರಣ ಮತ್ತು ಇತರ ಫೀಚರ್‌ಗಳನ್ನು ಪಡೆಯಲು, <ph name="FEATURE_NAME_1" /> ಮತ್ತು <ph name="FEATURE_NAME_2" /> ರಲ್ಲಿ Chrome ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="4819268619367838612">ಆ್ಯಪ್ ಅನ್ನು ಸುಧಾರಿಸುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು, Chrome ಬಳಕೆ ಮತ್ತು ಕ್ರ್ಯಾಶ್ ಡೇಟಾವನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ. <ph name="BEGIN_LINK" />ನಿರ್ವಹಿಸಿ<ph name="END_LINK" /></translation>
-<translation id="4831642696589369971">ನಿಮ್ಮ ಕೆಲವು Chrome ಡೇಟಾವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಇನ್ನೂ ಸೇವ್ ಮಾಡಲಾಗಿಲ್ಲ.
-
-        ಸೈನ್ ಔಟ್ ಮಾಡುವ ಮೊದಲು ಕೆಲವು ನಿಮಿಷ ಕಾಯಲು ಪ್ರಯತ್ನಿಸಿ. ನೀವು ಈಗ ಸೈನ್ ಔಟ್ ಮಾಡಿದರೆ, ಈ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="484033449593719797">Chrome ಬೀಟಾದಲ್ಲಿ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
 <translation id="4840404732697892756">ನೀವು Google ಖಾತೆಯ ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, Google Password Manager ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{ಹೊಸ ಟ್ಯಾಬ್ ಪುಟದಲ್ಲಿ ಈ ಪ್ಯಾಕೇಜ್ ಅನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು Chrome ನಿಮಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ.}one{ಹೊಸ ಟ್ಯಾಬ್ ಪುಟದಲ್ಲಿ ಈ ಪ್ಯಾಕೇಜ್‌ಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು Chrome ನಿಮಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ.}other{ಹೊಸ ಟ್ಯಾಬ್ ಪುಟದಲ್ಲಿ ಈ ಪ್ಯಾಕೇಜ್‌ಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು Chrome ನಿಮಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ.}}</translation>
@@ -237,7 +230,6 @@
 <translation id="7394108421562933108">Chrome ನಲ್ಲಿ Maps</translation>
 <translation id="7400722733683201933">Google Chrome ಕುರಿತು</translation>
 <translation id="7466693328838535498">ವಿಜೆಟ್‌ಗಳ ಹುಡುಕಾಟದ ಬಾಕ್ಸ್‌ನಲ್ಲಿ, Chrome ಅನ್ನು ನಮೂದಿಸಿ</translation>
-<translation id="746684838091935575">3. Chrome ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7492574581995589075">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ Chrome ಡೇಟಾವನ್ನು ಬಳಸುವ ಮತ್ತು ಸೇವ್ ಮಾಡುವ ಸಾಮರ್ಥ್ಯವನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ಆಫ್ ಮಾಡಿದೆ. ಹೊಸ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="7581063337314642333">Chrome ನಲ್ಲಿ ಟ್ಯಾಬ್ ಗ್ರಿಡ್‌ಗೆ ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="7642373780953416937">Chrome ನಿಮಗಾಗಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪತ್ತೆಹಚ್ಚುವ ಯಾವುದೇ ಗೌಪ್ಯತೆ ಅಥವಾ ಭದ್ರತೆ ಸಮಸ್ಯೆಗಳ ಕುರಿತು ಎಚ್ಚರಿಕೆಗಳನ್ನು ಸ್ವೀಕರಿಸಿ.</translation>
@@ -301,7 +293,6 @@
 <translation id="8857676124663337448">Google Password Manager ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಾಳೆ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="8865415417596392024">ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿರುವ Chrome ಡೇಟಾ</translation>
 <translation id="8874688701962049679">Chrome ನಿಂದ ಅತ್ಯಧಿಕ ಪ್ರಯೋಜನ ಪಡೆಯುವ ಕುರಿತು ಸಲಹೆಗಳು.</translation>
-<translation id="8891935667620843985">Chrome ಅನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆ್ಯಪ್ ಮಾಡಿಕೊಳ್ಳುವ ಮೂಲಕ ಅದರಲ್ಲಿ ಲಿಂಕ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆರೆಯಿರಿ.</translation>
 <translation id="8897749957032330183">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿನ Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="8949681853939555434">Chrome ಅನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿ ಸೆಟ್‌ ಮಾಡಿ</translation>
 <translation id="9068336935206019333">Chrome ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ತೆರಯಬೇಕೆ?</translation>

@@ -20,6 +20,7 @@
 <translation id="1645759014353344461">တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို အုပ်စုဖွဲ့ထားသည်</translation>
 <translation id="1657719826150349398">တဘ်ကို အောက်သို့ ရွှေ့ရန်</translation>
 <translation id="1713541401465507417">တဘ်နှင့် အုပ်စုအားလုံး ပိတ်ရန်</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />ပိုမိုလေ့လာရန်<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို အုပ်စုဖွဲ့ထားသည်</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{ရွေးထားသောတဘ် <ph name="TABS_COUNT_ONE" /> ခုကို လိပ်စာမှတ်ရန်}other{ရွေးထားသောတဘ် <ph name="TABS_COUNT_MANY" /> ခုကို လိပ်စာမှတ်ရန်}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">ယခုလေးတင် ပြုလုပ်ထားသည်</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{၁ ရက် ကြာပြီးနောက် ပိတ်ပါ}other{<ph name="DAY_COUNT_MANY" /> ရက် ကြာပြီးနောက် ပိတ်ပါ}}</translation>
 <translation id="4777866634702576038">တဘ်အုပ်စုကို ဖျက်မလား။</translation>
+<translation id="4783638485675352219">ဤစက်တွင် ဖွင့်ထားသောတဘ်များ၏ ခေါင်းစဉ်နှင့် URL များကို လည်ပတ်သည့်စနစ်နှင့် မျှဝေရန်</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(သုံးသပ်ချက် <ph name="REVIEWS_COUNT_ONE" /> ခု)}other{(သုံးသပ်ချက် <ph name="REVIEWS_COUNT_MANY" /> ခု)}}</translation>
 <translation id="4850886885716139402">မြင်ကွင်း</translation>
 <translation id="4870911314065352661">တဘ်အားလုံး ပိတ်မလား။</translation>

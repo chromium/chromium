@@ -373,7 +373,6 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="2789552044937754463">{COUNT,plural, =1{Parol Google hisobingizga ({EMAIL}) saqlandi}other{Parollar Google hisobingizga ({EMAIL}) saqlandi}}</translation>
 <translation id="2797029671965852011">Tarixni koʻrsatish</translation>
 <translation id="2800683595868705743">Sahifalarni tezkor almashtirish funksiyasini o‘chirib qo‘yish</translation>
-<translation id="2815198996063984598">2. Standart brauzer ilovasi ustiga bosing</translation>
 <translation id="2818821771744632548">iPhone qurilmasini tiklash mobaynida <ph name="USER_NAME" /> hisobingizdan chiqarildingiz. Hisobga qayta kirish uchun “Davom etish” ustiga bosing.</translation>
 <translation id="2819667972867209401">Yoqilganda maʼlumotlar Google hisobingizda saqlanadi. Oʻchiq boʻlsa, maʼlumotlar faqat shu qurilmada saqlanadi va hisobdan chiqilganda tozalanadi.</translation>
 <translation id="2830972654601096923">Manzillarni boshqarish...</translation>
@@ -567,7 +566,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3775743491439407556">Sinxronizatsiya ishlamayapti</translation>
 <translation id="3779810277399252432">Internetga ulanmagansiz</translation>
 <translation id="3785672280731998727">Chiqadigan ism</translation>
-<translation id="3789294999358192700">Quyidagi qadamlarni bajaring:</translation>
 <translation id="3789841737615482174">O‘rnatish</translation>
 <translation id="380329542618494757">Ism</translation>
 <translation id="3803696231112616155">Bu saytda tarjima taklif qilinsin</translation>
@@ -778,6 +776,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4808646838864186379">Joʻnatmangiz bekor qilindi</translation>
 <translation id="4808744395915275922">Yangilanishlar</translation>
 <translation id="4813345808229079766">Ulanish</translation>
+<translation id="4817408188311787415"><ph name="CELL_ACCESSIBILITY_LABEL" /> orqali avtomatik kiritish</translation>
 <translation id="4818522717893377262">Til kiritish...</translation>
 <translation id="481968316161811770">Cookie, sayt ma’lumotlari</translation>
 <translation id="4821595350501541683">Varaqlar yopiladi va brauzer tarixi tozalanadi</translation>
@@ -888,6 +887,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="5316356981864168850"><ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5318298563956633672">Siz bu mahsulotni kuzatyapsiz.</translation>
+<translation id="5327248766486351172">Nomi</translation>
 <translation id="5327753393331509826">Bildirishnomalar kontentini olish</translation>
 <translation id="5329451663851195956">Sahifani pastga tortib yangilang.</translation>
 <translation id="5333148247954006827">Boshqa profilga almashtirish</translation>
@@ -1227,6 +1227,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="6797885426782475225">Ovozli qidiruv</translation>
 <translation id="6800349425672670802">Barcha ochiq varaqlarni Varaqlar orasida almashish funksiyasi orqali ochish mumkin</translation>
 <translation id="6807889908376551050">Hammasini ochish...</translation>
+<translation id="6810455365609435460">Inkognito varaqlar</translation>
 <translation id="681368974849482173">Saqlandi</translation>
 <translation id="6824350924364057989">Sozlamalar</translation>
 <translation id="6831043979455480757">Tarjima</translation>

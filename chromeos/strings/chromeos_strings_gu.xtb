@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">નબળું સિગ્નલ</translation>
 <translation id="1300115153046603471">APNનો પ્રકાર ડિફૉલ્ટ અને <ph name="ATTACH" /> છે.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">રૂપાંતરણ કરો</translation>
 <translation id="1304014921944666344">બનાવ્યાની તારીખ</translation>
 <translation id="1308754910631152188">અપડેટ કરી રહ્યાં છીએ (<ph name="PERCENTAGE_VALUE" />% પૂર્ણ)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> મિનિટ</translation>
@@ -77,6 +78,7 @@
 <translation id="1343442362630695901">સોલ્ટ લેક</translation>
 <translation id="1367951781824006909">એક ફાઇલ પસંદ કરો</translation>
 <translation id="1371650399987522809">Google AI દ્વારા સંચાલિત વૉલપેપર માટે પ્રતિસાદ</translation>
+<translation id="1374385338586507108">વ્યાખ્યાતિત કરો</translation>
 <translation id="1387854245479784695">આ બધા કોરનો સરવાળો હોય છે</translation>
 <translation id="1393206549145430405">કિલ્લો</translation>
 <translation id="1394661041439318933">ડિવાઇસના કેસમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
@@ -463,7 +465,6 @@
 <translation id="346423161771747987">કરન્ટ</translation>
 <translation id="346539236881580388">ફરીથી લો</translation>
 <translation id="3484914941826596830">ફર્મવેયર અપડેટ થતું હોય ત્યારે આ બાહ્ય ડિવાઇસ પ્લગમાંથી દૂર કરશો નહીં અથવા તમારા કમ્પ્યુટરને શટ ડાઉન કરશો નહીં. તમે આ વિન્ડો નાની કરી શકો છો. આ અપડેટમાં થોડી મિનિટનો સમય લાગી શકે અને તમારું બાહ્ય ડિવાઇસ આ સમય દરમિયાન કામ ન કરે તેમ બની શકે છે.</translation>
-<translation id="3485555238092220889">ઍક્સેસિબિલિટી ઍક્શન</translation>
 <translation id="3486220673238053218">વિવરણ</translation>
 <translation id="3487866404496702283">mahi સુવિધા માટેનો પ્રતિસાદ</translation>
 <translation id="3488065109653206955">આંશિક રીતે સક્રિય કરેલું</translation>
@@ -672,6 +673,7 @@
 <translation id="4562494484721939086">કોઈ સેવા નથી</translation>
 <translation id="4570558255126759859">રેકોર્ડિંગનો સારાંશ આપવા માટે Gemini મૉડલ ડાઉનલોડ કરીએ?</translation>
 <translation id="4573777384450697571">નિષ્ફળ થયું - સર્ટિફિકેટની સમયસીમા સમાપ્ત થઈ ગઈ</translation>
+<translation id="4575450106703099687">ઍક્સેસિબિલિટીના વિકલ્પો</translation>
 <translation id="458794348635939462">બધા હોસ્ટ રિઝોલ્વ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="4593212453765072419">પ્રોક્સી પ્રમાણીકરણ આવશ્યક છે</translation>
 <translation id="4594021849294327751">ટ્રાન્સક્રિપ્ટ બનાવો</translation>
@@ -884,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />માંથી <ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> માટે ફેરફાર કરવાનું બટન.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> અપડેટ કરો</translation>
+<translation id="5736820754189340309">ડેટા વપરાશ રીસેટ કરવામાં આવ્યો છે</translation>
 <translation id="574392208103952083">મધ્યમ</translation>
 <translation id="5757187557809630523">આગલો ટ્રૅક</translation>
 <translation id="5760715441271661976">પોર્ટલની સ્થિતિ</translation>
@@ -893,6 +896,7 @@
 <translation id="57838592816432529">અવાજ બંધ કરો</translation>
 <translation id="5784136236926853061">HTTPની ઉચ્ચ વિલંબતા</translation>
 <translation id="5790391387506209808">લેપિસ લાઝુલી</translation>
+<translation id="5810692306010756935">સ્નાતક થવું</translation>
 <translation id="5816802250591013230">કોઈ શૉર્ટકટ અસાઇન કરવામાં આવ્યો નથી</translation>
 <translation id="5826644637650799838">આર્ટ વિશે</translation>
 <translation id="5832805196449965646">વ્યક્તિ ઉમેરો</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6798678288485555829">ટેક્સ્ટ નૅવિગેશન</translation>
 <translation id="680983167891198932">કી</translation>
 <translation id="6816797338148849397">તમારી પસંદગી સંબંધિત માહિતી ઉપલબ્ધ છે. તેને ઍક્સેસ કરવા માટે ઉપર એરો કીનો ઉપયોગ કરો.</translation>
+<translation id="6831043979455480757">અનુવાદ કરો</translation>
 <translation id="6853312040151791195">ડિસ્ચાર્જ થવાની ટકાવારી</translation>
 <translation id="6862416241246624313">પ્રતિસાદ સબમિટ કર્યો</translation>
 <translation id="6866732840889595464">ગુલબહાર</translation>

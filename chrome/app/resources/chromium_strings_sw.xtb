@@ -430,6 +430,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="7398989605938454041">Ukitumia kipengele cha wasifu kwenye Chromium, unaweza kutenganisha vitu vyako vyote vya Chromium. Hali hii hukurahisishia mchakato wa kutenganisha kazi na burudani.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium ya Wasanidi Programu</translation>
 <translation id="7451052299415159299">Chromium inahitaji ruhusa ya kufikia kamera yako katika tovuti hii</translation>
+<translation id="7458892263350425044">Ili utumie maikrofoni yako, ruhusu Chromium ifikie <ph name="BEGIN_LINK" />mipangilio ya mfumo<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">Ili upate masasisho yajayo ya Chromium, utahitaji kutumia toleo la Windows 10 au toleo jipya zaidi. Kompyuta hii inatumia toleo la Windows 7.</translation>
 <translation id="7467949745582939695">Ungependa kufungua Chromium tena?</translation>
 <translation id="7483335560992089831">Haiwezi kusakinisha toleo sawia la Chromium ambalo linaendeshwa hivi sasa. Tafadhali funga Chromium na ujaribu tena.</translation>
@@ -458,6 +459,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="7872446069773932638">Inapakua... Zimesalia sekunde <ph name="SECONDS" /></translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Jinsi unavyoweza kudhibiti data yako:<ph name="END_BOLD" /> Ili kulinda faragha yako, tunafuta kiotomatiki mambo yanayokuvutia ambayo yamehifadhiwa kwa zaidi ya wiki nne. Kadiri unavyoendelea kuvinjari, jambo linalokuvutia linaweza kuonekana tena kwenye orodha. Au unaweza kuondoa mambo yanayokuvutia ambayo usingependa Chromium iyazingatie.</translation>
 <translation id="7888981273428720788">Ifanye Chromium iwe kivinjari chako chaguomsingi</translation>
+<translation id="7934340546140346950">Chromium husasisha kiotomatiki miunganisho isiyo salama kuwa HTTPS inapowezekana</translation>
 <translation id="7937630085815544518">Uliingia kwenye Chromium kama <ph name="USER_EMAIL_ADDRESS" />. Tafadhali tumia akaunti hiyo hiyo kuingia tena.</translation>
 <translation id="7975919845073681630">Huu ni usakinishaji wa pili wa Chromium, na haiwezi kufanywa kuwa kivinjari chako chaguomsingi.</translation>
 <translation id="7997934263947464652">Viendelezi, programu na mandhari kutoka kwenye vyanzo visivyojulikana vinaweza kuathiri kifaa chako. Chromium inapendekeza usakinishaji kutoka <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> tu</translation>
@@ -470,6 +472,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="813913629614996137">Inaanzisha…</translation>
 <translation id="8166782796394721554">Washa ulinzi wa ziada katika mtambo wa JavaScript na WebAssembly wa Chromium</translation>
 <translation id="81770708095080097">Faili hii ni hatari, kwa hivyo Chromium imeizuia.</translation>
+<translation id="8223363452568144035">Ili utumie kamera yako, ruhusu Chromium ifikie <ph name="BEGIN_LINK" />mipangilio ya mfumo<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Chromium haiwezi kuthibitisha chanzo cha kiendelezi hiki na huenda si salama. Kiondoe kwenye Chromium ili kisiweze tena kuona na kubadilisha data yako kwenye tovuti unazotembelea, ikiwa ni pamoja na taarifa zako binafsi.</translation>
 <translation id="8248265253516264921">Ikiwa picha haina ufafanuzi muhimu, Chromium itajaribu kukuwekea. Ili kuweka ufafanuzi, tutatuma picha kwa Google. Unaweza kuzima mipangilio hii wakati wowote.</translation>
 <translation id="8254601181414348851">Ungependa kuingia katika akaunti kwenye Chromium ukitumia wasifu mpya?</translation>
@@ -540,4 +543,5 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="983803489796659991">Imeshindwa kusakinisha kwa sababu seva ya usasishaji haina data ya kupunguza urefu ya programu.</translation>
 <translation id="985498048907240953">Tumia Chromium Bila Akaunti</translation>
 <translation id="985602178874221306">Waandishi wa Chromium</translation>
+<translation id="992780518932311116">Ili utumie maelezo ya mahali uliko, ruhusu Chromium ifikie <ph name="BEGIN_LINK" />mipangilio ya mfumo<ph name="END_LINK" /></translation>
 </translationbundle>

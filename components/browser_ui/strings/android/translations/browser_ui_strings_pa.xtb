@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">ਧੁਨੀ ਵਜਾਉਣ ਵਾਲੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਮਿਊਟ ਕਰੋ</translation>
 <translation id="3602290021589620013">ਪ੍ਰੀਵਿਊ</translation>
 <translation id="3628308229821498208">ਸੁਝਾਈਆਂ ਗਈਆਂ ਖੋਜਾਂ</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> ਦੇ ਸਾਈਟਾਂ ਦੇ ਗਰੁੱਪ ਵਿਚਲੀ <ph name="RWS_MEMBERS_COUNT" /> ਸਾਈਟ, ਜੋ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਦੇਖ ਸਕਦੀ ਹੈ}one{<ph name="RWS_OWNER" /> ਦੇ ਸਾਈਟਾਂ ਦੇ ਗਰੁੱਪ ਵਿਚਲੀ <ph name="RWS_MEMBERS_COUNT" /> ਸਾਈਟ, ਜੋ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਦੇਖ ਸਕਦੀ ਹੈ}other{<ph name="RWS_OWNER" /> ਦੇ ਸਾਈਟਾਂ ਦੇ ਗਰੁੱਪ ਵਿਚਲੀਆਂ <ph name="RWS_MEMBERS_COUNT" /> ਸਾਈਟਾਂ, ਜੋ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਦੇਖ ਸਕਦੀਆਂ ਹਨ}}</translation>
 <translation id="3697164069658504920">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ USB ਡੀਵਾਈਸਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ USB ਡੀਵਾਈਸਾਂ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="3707034683772193706">ਜਿਸ ਸਾਈਟ 'ਤੇ ਤੁਸੀਂ ਜਾਂਦੇ ਹੋ, ਉਹ Chrome 'ਤੇ ਕੁਝ ਜਾਣਕਾਰੀ ਰੱਖਿਅਤ ਕਰ ਸਕਦੀ ਹੈ, ਮੁੱਖ ਤੌਰ 'ਤੇ ਪ੍ਰਮਾਣਿਤ ਕਰਨ ਲਈ ਕਿ ਤੁਸੀਂ ਬੋਟ ਨਹੀਂ ਹੋ</translation>
 <translation id="3721953990244350188">ਖਾਰਜ ਕਰੋ ਅਤੇ ਅਗਲੀ ਕਾਰਵਾਈ ਦਿਖਾਓ</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">ਰਾਹੀਂ ਸ਼ੇਅਰ ਕਰੋ</translation>
 <translation id="5001526427543320409">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼</translation>
 <translation id="5007392906805964215">ਸਮੀਖਿਆ ਕਰੋ</translation>
+<translation id="5014182796621173645">ਤੁਸੀਂ <ph name="RECENCY" /> ਗਏ</translation>
 <translation id="5039804452771397117">ਆਗਿਆ ਦਿਓ</translation>
 <translation id="5048398596102334565">ਸਾਈਟਾਂ ਨੂੰ ਗਤੀਸ਼ੀਲਤਾ ਸੈਂਸਰਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿਓ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="5050380848339752099">ਇਹ ਸਾਈਟ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਤੋਂ ਬਾਹਰ ਕਿਸੇ ਐਪ ਦੇ ਨਾਲ ਜਾਣਕਾਰੀ ਸਾਂਝੀ ਕਰਨ ਲੱਗੀ ਹੈ।</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">ਹੋਰ ਦੇਖੋ</translation>
 <translation id="6561560012278703671">ਵਧੇਰੇ ਸ਼ਾਂਤ ਸੁਨੇਹਾ ਸੇਵਾ ਵਰਤੋ (ਤੁਹਾਡਾ ਧਿਆਨ ਭਟਕਾਉਣ ਵਾਲੇ ਸੂਚਨਾ ਉਤਪ੍ਰੇਰਕਾਂ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਜਾਂਦਾ ਹੈ)</translation>
 <translation id="6593061639179217415">ਡੈਸਕਟਾਪ ਸਾਈਟ</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> ਸਾਈਟ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ}one{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> ਸਾਈਟ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ}other{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> ਸਾਈਟਾਂ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ</translation>
 <translation id="662080504995468778">ਇੱਥੇ ਰੁਕੋ</translation>
 <translation id="6653342741369270081">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਣ ਲਈ ਪਿੱਛੇ ਜਾਓ ਬਟਨ ਨੂੰ ਦਬਾਓ।</translation>
+<translation id="6683865262523156564">ਇਹ ਸਾਈਟ ਕਿਸੇ ਅਜਿਹੇ ਗਰੁੱਪ ਦਾ ਹਿੱਸਾ ਹੈ, ਜਿਸਨੂੰ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਦਿਖਾਈ ਦੇ ਸਕਦੀ ਹੈ। ਇਹ ਗਰੁੱਪ <ph name="RWS_OWNER" /> ਵੱਲੋਂ ਪਰਿਭਾਸ਼ਿਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="6689172468748959065">ਪ੍ਰੋਫਾਈਲ ਫ਼ੋਟੋਆਂ</translation>
 <translation id="6697925417670533197">ਕਿਰਿਆਸ਼ੀਲ ਡਾਊਨਲੋਡ</translation>
 <translation id="6722828510648505498">ਪਛਾਣ ਸੰਬੰਧੀ ਸੇਵਾਵਾਂ ਵੱਲੋਂ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੇ ਉਤਪ੍ਰੇਰਕਾਂ ਨੂੰ ਬਲਾਕ ਕਰੋ।</translation>

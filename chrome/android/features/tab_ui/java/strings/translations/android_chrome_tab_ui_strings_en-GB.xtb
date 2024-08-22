@@ -20,6 +20,7 @@
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> tabs grouped</translation>
 <translation id="1657719826150349398">Move tab down</translation>
 <translation id="1713541401465507417">Close all tabs and groups</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Learn more<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab grouped</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tabs}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Bookmark <ph name="TABS_COUNT_ONE" /> selected tab}other{Bookmark <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Created just now</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Close after 1 day}other{Close after <ph name="DAY_COUNT_MANY" /> days}}</translation>
 <translation id="4777866634702576038">Delete tab group?</translation>
+<translation id="4783638485675352219">Share titles and the URLs of open tabs from this device with the operating system</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> review)}other{(<ph name="REVIEWS_COUNT_MANY" /> reviews)}}</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="4870911314065352661">Close all tabs?</translation>

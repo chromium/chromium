@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">Slab signal</translation>
 <translation id="1300115153046603471">Tip naziva pristupne tačke je podrazumevani i <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Konverzija</translation>
 <translation id="1304014921944666344">Datum pravljenja</translation>
 <translation id="1308754910631152188">Ažurira se (završeno je <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minuta</translation>
@@ -77,6 +78,7 @@
 <translation id="1343442362630695901">slano jezero</translation>
 <translation id="1367951781824006909">Izaberi datoteku</translation>
 <translation id="1371650399987522809">Povratne informacije za pozadinu koju omogućava omogućava Google AI</translation>
+<translation id="1374385338586507108">Definicija</translation>
 <translation id="1387854245479784695">Ovo je zbir svih jezgara</translation>
 <translation id="1393206549145430405">Zamak</translation>
 <translation id="1394661041439318933">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije futrole.</translation>
@@ -463,7 +465,6 @@
 <translation id="346423161771747987">Struja</translation>
 <translation id="346539236881580388">Ponovo snimi</translation>
 <translation id="3484914941826596830">Ne isključujte spoljni uređaj ni računar dok se firmver ažurira. Možete da umanjite ovaj prozor. Ovo ažuriranje može da potraje nekoliko minuta, a spoljni uređaj možda neće raditi tokom tog perioda.</translation>
-<translation id="3485555238092220889">radnja pristupačnosti</translation>
 <translation id="3486220673238053218">definicija</translation>
 <translation id="3487866404496702283">Povratne informacije o funkciji mahi</translation>
 <translation id="3488065109653206955">Delimično aktivirano</translation>
@@ -672,6 +673,7 @@
 <translation id="4562494484721939086">Mobilna mreža nije dostupna</translation>
 <translation id="4570558255126759859">Želite da preuzmete Gemini model da biste rezimirali snimke?</translation>
 <translation id="4573777384450697571">Nije uspelo – sertifikat je istekao</translation>
+<translation id="4575450106703099687">opcije pristupačnosti</translation>
 <translation id="458794348635939462">Razrešenje svih hostova nije uspelo</translation>
 <translation id="4593212453765072419">Potrebna je potvrda autentičnosti proksija</translation>
 <translation id="4594021849294327751">Napravi transkript</translation>
@@ -884,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> od <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Dugme Izmeni za <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Ažurirajte <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Potrošnja podataka je resetovana</translation>
 <translation id="574392208103952083">Srednja</translation>
 <translation id="5757187557809630523">sledeća pesma</translation>
 <translation id="5760715441271661976">Status portala</translation>
@@ -893,6 +896,7 @@
 <translation id="57838592816432529">Isključi zvuk</translation>
 <translation id="5784136236926853061">Veliko HTTP kašnjenje</translation>
 <translation id="5790391387506209808">lazulita</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Nije dodeljena nijedna prečica</translation>
 <translation id="5826644637650799838">O pozadini</translation>
 <translation id="5832805196449965646">Dodaj osobu</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6798678288485555829">Kretanje kroz tekst</translation>
 <translation id="680983167891198932">Ključ</translation>
 <translation id="6816797338148849397">Dostupne su informacije vezane za vaš izbor. Koristite taster sa strelicom nagore da biste im pristupili.</translation>
+<translation id="6831043979455480757">Prevedi</translation>
 <translation id="6853312040151791195">Brzina pražnjenja</translation>
 <translation id="6862416241246624313">Povratne informacije su poslate</translation>
 <translation id="6866732840889595464">bela rada</translation>
@@ -1355,6 +1360,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="8082366717211101304">DNS ne može da se razreši iz Android aplikacija</translation>
 <translation id="8082644724189923105">zona tastature</translation>
 <translation id="808894953321890993">Promeni lozinku</translation>
+<translation id="8088963492174775412">Pritisnite da biste snimili</translation>
 <translation id="8094062939584182041">Dozvolite Google-u da vam pošalje imejl o ovom problemu</translation>
 <translation id="8104083085214006426">Koristite otvorenu i neobezbeđenu mrežu</translation>
 <translation id="811820734797650957">(Android) Mrežni prolaz može da se pinguje</translation>

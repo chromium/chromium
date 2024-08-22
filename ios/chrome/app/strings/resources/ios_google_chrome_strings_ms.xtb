@@ -37,8 +37,6 @@ Perkara yang perlu dipertimbangkan:
 <translation id="1615715390546812898">Cari Dengan Suara dalam Chrome.</translation>
 <translation id="1657395063736185342">Cari Visual dalam Chrome</translation>
 <translation id="1670609221633730681">Petua Chrome: Pilih kedudukan bar alamat anda</translation>
-<translation id="1675955119303651351">Sesetengah data Chrome anda belum disimpan dalam Google Account anda.
-        Tunggu beberapa minit sebelum log keluar. Jika anda log keluar sekarang, data ini akan dipadamkan.</translation>
 <translation id="1682483655351012182">Segerakkan Data Chrome Anda</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Menambahkan URL yang diinput pada penanda halaman anda dalam Chrome.</translation>
@@ -81,7 +79,6 @@ Perkara yang perlu dipertimbangkan:
 <translation id="2767464022270041271">Tiada kata laluan yang disimpan. Google Password Manager boleh menyemak kata laluan anda yang disimpan.</translation>
 <translation id="2869959624320573933">Log Masuk ke Chrome</translation>
 <translation id="2876628302275096482">Ketahui lebih lanjut tentang <ph name="BEGIN_LINK" />cara Chrome mengekalkan data anda peribadi<ph name="END_LINK" /></translation>
-<translation id="2952581218264071393">1. Buka Tetapan Chrome</translation>
 <translation id="2957447865124070833">Pilih <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Oleh sebab anda log keluar daripada akaun yang diurus oleh <ph name="SIGNOUT_MANAGED_DOMAIN" />, data Chrome anda akan dipadamkan daripada peranti ini. Data anda akan kekal dalam Google Account anda.</translation>
 <translation id="309672519329227863">Akses kata laluan Chrome anda dan pelbagai lagi merentas apl lain.</translation>
@@ -93,7 +90,6 @@ Perkara yang perlu dipertimbangkan:
 <translation id="3340938510625667914">Tindakan Chrome</translation>
 <translation id="3345341804167540816">Gunakan Chrome Everywhere</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Perkara ini berlaku apabila Chrome tidak digunakan selama {THRESHOLD} minit}other{Perkara ini berlaku apabila Chrome tidak digunakan selama {THRESHOLD} minit}}</translation>
-<translation id="3399930248910934354">Buka Tetapan Chrome</translation>
 <translation id="344736123700721678">Akses Chrome lebih pantas daripada Dok Skrin Utama anda</translation>
 <translation id="3472587960215700950">Chrome menggunakan Google Maps untuk memberi anda arah dan maklumat setempat pada alamat yang dikesan.</translation>
 <translation id="3503014945441706099">Dapatkan juga Penyemakan Imbas Selamat Dipertingkat untuk profil Chrome ini</translation>
@@ -131,9 +127,6 @@ Perkara yang perlu dipertimbangkan:
 <translation id="4761869838909035636">Jalankan Semakan Keselamatan Chrome</translation>
 <translation id="4798859546468762093">Untuk mendapatkan pemeribadian dan ciri lain, sertakan Chrome dalam <ph name="FEATURE_NAME_1" /> dan <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Untuk membantu dalam usaha meningkatkan apl, Chrome menghantar data penggunaan dan ranap sistem kepada Google. <ph name="BEGIN_LINK" />Urus<ph name="END_LINK" /></translation>
-<translation id="4831642696589369971">Sesetengah data Chrome anda belum disimpan dalam Google Account anda.
-
-        Tunggu beberapa minit sebelum log keluar. Jika anda log keluar sekarang, data ini akan dipadamkan.</translation>
 <translation id="484033449593719797">Tidak disokong pada Chrome Beta</translation>
 <translation id="4840404732697892756">Google Password Manager boleh menyemak kata laluan anda apabila anda log masuk menggunakan Google Account anda.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome boleh membantu anda menjejaki pakej ini pada Halaman Tab Baharu.}other{Chrome boleh membantu anda menjejaki pakej ini pada Halaman Tab Baharu.}}</translation>
@@ -237,7 +230,6 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="7394108421562933108">Maps pada Chrome</translation>
 <translation id="7400722733683201933">Mengenai Google Chrome</translation>
 <translation id="7466693328838535498">Masukkan Chrome dalam kotak Widget Carian</translation>
-<translation id="746684838091935575">3. Pilih Chrome</translation>
 <translation id="7492574581995589075">Organisasi anda mematikan keupayaan untuk menggunakan dan menyimpan data Chrome dalam Google Account anda. Penanda halaman, kata laluan baharu dan banyak lagi akan disimpan pada peranti ini sahaja.</translation>
 <translation id="7581063337314642333">Lawati Grid Tab dalam Chrome</translation>
 <translation id="7642373780953416937">Terima makluman tentang sebarang masalah privasi atau keselamatan yang dikesan secara automatik oleh Chrome untuk anda.</translation>
@@ -301,7 +293,6 @@ Data anda telah disulitkan dengan ungkapan laluan pada <ph name="TIME" />. Masuk
 <translation id="8857676124663337448">Google Password Manager tidak dapat menyemak semua kata laluan. Cuba lagi esok.</translation>
 <translation id="8865415417596392024">Data Chrome dalam akaun anda</translation>
 <translation id="8874688701962049679">Petua tentang memanfaatkan Chrome sepenuhnya.</translation>
-<translation id="8891935667620843985">Anda boleh membuka pautan dalam Chrome secara automatik dengan menjadikan Chrome sebagai Apl Penyemak Imbas Lalai anda.</translation>
 <translation id="8897749957032330183">Kata laluan disimpan pada Google Password Manager pada peranti ini.</translation>
 <translation id="8949681853939555434">Tetapkan Chrome sebagai Penyemak Imbas Lalai anda</translation>
 <translation id="9068336935206019333">Buka dalam Inkognito Chrome</translation>

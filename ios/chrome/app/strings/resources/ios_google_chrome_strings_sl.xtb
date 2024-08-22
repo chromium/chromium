@@ -37,8 +37,6 @@ Kaj je treba upoštevati:
 <translation id="1615715390546812898">Iskanje z govorom v Chromu.</translation>
 <translation id="1657395063736185342">Slikovno iskanje v Chromu</translation>
 <translation id="1670609221633730681">Nasvet za Chrome: Izberite položaj naslovne vrstice</translation>
-<translation id="1675955119303651351">Nekateri podatki v Chromu še niso shranjeni v računu Google.
-        Poskusite počakati nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
 <translation id="1682483655351012182">Sinhronizacija podatkov v Chromu</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Vnesene URL-je doda med zaznamke v Chromu.</translation>
@@ -78,10 +76,12 @@ Kaj je treba upoštevati:
 <translation id="2703746758996815929">Če želite prejemati uporabne nasvete za Chrome, v nastavitvah sistema iOS vklopite obvestila.</translation>
 <translation id="2736805085127235148">Obvestila za Chrome so trenutno izklopljena v nastavitvah naprave.</translation>
 <translation id="2750626042242931740">Izbire lahko kadar koli posodobite v nastavitvah za Chrome.</translation>
+<translation id="2754428955276778271">Nekateri podatki v Chromu še niso shranjeni v računu Google.
+
+Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
 <translation id="2767464022270041271">Ni shranjenih gesel. Googlov upravitelj gesel lahko preveri gesla, če jih shranite.</translation>
 <translation id="2869959624320573933">Prijava v Chrome</translation>
 <translation id="2876628302275096482">Preberite več o tem, <ph name="BEGIN_LINK" />kako Chrome zagotavlja zasebnost vaših podatkov<ph name="END_LINK" /></translation>
-<translation id="2952581218264071393">1. Odprite nastavitve brskalnika Chrome.</translation>
 <translation id="2957447865124070833">Izberite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Ker se boste odjavili iz računa, ki ga upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, boste iz te naprave izbrisali podatke v Chromu. Vaši podatki bodo še vedno na voljo v Google Računu.</translation>
 <translation id="309672519329227863">Dostopajte do gesel v Chromu in drugega v drugih aplikacijah.</translation>
@@ -93,7 +93,6 @@ Kaj je treba upoštevati:
 <translation id="3340938510625667914">Dejanja v Chromu</translation>
 <translation id="3345341804167540816">Use Chrome Everywhere</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{To se zgodi, če Chroma ne uporabljate {THRESHOLD} minuto}one{To se zgodi, če Chroma ne uporabljate {THRESHOLD} minuto}two{To se zgodi, če Chroma ne uporabljate {THRESHOLD} minuti}few{To se zgodi, če Chroma ne uporabljate {THRESHOLD} minute}other{To se zgodi, če Chroma ne uporabljate {THRESHOLD} minut}}</translation>
-<translation id="3399930248910934354">Odpri nastavitve Chroma</translation>
 <translation id="344736123700721678">Hitrejši dostop do Chroma iz vrstice Dock na začetnem zaslonu</translation>
 <translation id="3472587960215700950">Chrome z uporabo Google Zemljevidov prikazuje navodila za pot in lokalne podatke o zaznanih naslovih.</translation>
 <translation id="3503014945441706099">Zagotovite si izboljšano varno brskanje tudi za ta profil v Chromu.</translation>
@@ -131,9 +130,6 @@ Kaj je treba upoštevati:
 <translation id="4761869838909035636">Zaženi varnostno opravljanje v Chromu</translation>
 <translation id="4798859546468762093">Če želite uporabljati osebno prilagajanje in druge funkcije, vključite Chrome v <ph name="FEATURE_NAME_1" /> in <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Zaradi izboljšanja aplikacije Chrome Googlu pošlje podatke o uporabi in zrušitvah. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
-<translation id="4831642696589369971">Nekateri podatki v Chromu še niso shranjeni v računu Google.
-
-        Poskusite počakati nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
 <translation id="484033449593719797">Ni podprto v Chromu Beta</translation>
 <translation id="4840404732697892756">Googlov upravitelj gesel lahko preveri vaša gesla, ko se prijavite z računom Google.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome vam lahko pomaga slediti temu paketu na novem zavihku s povezavami.}one{Chrome vam lahko pomaga slediti tem paketom na novem zavihku s povezavami.}two{Chrome vam lahko pomaga slediti tem paketom na novem zavihku s povezavami.}few{Chrome vam lahko pomaga slediti tem paketom na novem zavihku s povezavami.}other{Chrome vam lahko pomaga slediti tem paketom na novem zavihku s povezavami.}}</translation>
@@ -152,6 +148,8 @@ Kaj je treba upoštevati:
 <translation id="5190139289262548459">Vaša organizacija <ph name="DOMAIN" /> upravlja račun, v katerega ste prijavljeni, in način uporabe Chroma.</translation>
 <translation id="5256908199795498284">Chrome bo zaznal številke za sledenje paketu na spletnih mestih, ki jih obiščete, in vam na novem zavihku s povezavami prikazal obvestila o paketu. Vaši podatki bodo deljeni z Googlom zaradi zagotavljanja te funkcije in izboljšanja Nakupovanja za vse.</translation>
 <translation id="5278862365980079760">Zaklepanje anonimnih zavihkov, ko zapustite Chrome ali preklopite na drugo aplikacijo.</translation>
+<translation id="5310957470610282541">Nekateri podatki v Chromu še niso shranjeni v računu Google.
+Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
 <translation id="5389212809648216794">Google Chrome ne more uporabljati fotoaparata, ker ga uporablja druga aplikacija</translation>
 <translation id="5395376160638294582">Poskrbite, da boste v računu Google vedno lahko uporabljali podatke v Chromu</translation>
 <translation id="5439191312780166229">Opozori vas o nevarnih spletnih mestih, celo tistih, za katere Google prej ni vedel, in sicer tako, da analizira več podatkov s spletnih mest kot standardna zaščita. Izberete lahko, da preskočite opozorila za Chrome.</translation>
@@ -211,6 +209,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 Če želite več nastavitev, ki uporabljajo podatke za izboljšanje izkušnje v Chromu, odprite <ph name="BEGIN_LINK" />Googlove storitve<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Iskanje z govorom v Chromu</translation>
 <translation id="6975725306479268850">Izbira Chroma za samodejno izpolnjevanje</translation>
+<translation id="6979238427560462592">Vir po meri, ki ga je za vas ustvaril Google. Vključuje novice, šport in vreme.</translation>
 <translation id="7004159181872656283">Slikovno iskanje v Chromu.</translation>
 <translation id="7056826488869329999">Odpre in izvede varnostno preverjanje v Chromu.</translation>
 <translation id="7059914902409643750">Prilagodite si Chrome</translation>
@@ -236,7 +235,6 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 <translation id="7394108421562933108">Google Zemljevidi v Chromu</translation>
 <translation id="7400722733683201933">O brskalniku Google Chrome</translation>
 <translation id="7466693328838535498">V polje »Pripomočki za iskanje« vnesite Chrome</translation>
-<translation id="746684838091935575">3. Izberite Chrome.</translation>
 <translation id="7492574581995589075">Vaša organizacija je izklopila možnost uporabe in shranjevanja podatkov v Chromu v računu Google. Novi zaznamki, gesla in drugo bodo shranjeni samo v tej napravi.</translation>
 <translation id="7581063337314642333">Odpiranje mreže zavihkov v Chromu</translation>
 <translation id="7642373780953416937">Prejemajte opozorila o težavah z zasebnostjo ali varnostjo, ki jih Chrome samodejno zazna.</translation>
@@ -300,7 +298,6 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
 <translation id="8857676124663337448">Googlovemu upravitelju gesel ni uspelo preveriti vseh gesel. Poskusite znova jutri.</translation>
 <translation id="8865415417596392024">Podatki v Chromu v računu</translation>
 <translation id="8874688701962049679">Nasveti, kako najbolje izkoristiti Chrome.</translation>
-<translation id="8891935667620843985">Če nastavite Chrome kot privzeto aplikacijo za brskanje, lahko samodejno odpirate povezave v njem.</translation>
 <translation id="8897749957032330183">Gesla so shranjena v Googlovem upravitelju gesel v tej napravi.</translation>
 <translation id="8949681853939555434">Nastavite Chrome kot privzeti brskalnik</translation>
 <translation id="9068336935206019333">Odpri v anonimnem oknu v Chromu</translation>
@@ -308,6 +305,7 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
 <translation id="9112744793181547300">Želite nastaviti Chrome kot privzeto možnost?</translation>
 <translation id="9122931302567044771">To pomeni, da bo Chrome vsakič zahteval spletno mesto za namizne naprave.</translation>
 <translation id="9181628561061032322">Odpiranje nedavnih zavihkov v Chromu.</translation>
+<translation id="9194404253580584015">Vir po meri, ki ga je za vas ustvaril Google.</translation>
 <translation id="953008885340860025">Chrome je odjavljen</translation>
 <translation id="97300214378190234">Chrome lahko uporabljate, kadar koli se dotaknete povezav v drugih aplikacijah.</translation>
 </translationbundle>

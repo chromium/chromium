@@ -75,6 +75,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2018528049276128029">Cada perfil almacena su propia información de Chrome, como los marcadores, el historial, las contraseñas y mucho más.</translation>
 <translation id="2018879682492276940">No se ha podido realizar la instalación. Vuelve a intentarlo.</translation>
 <translation id="2022471217832964798">Mientras configuramos el acceso a la cuenta, puedes seguir usando Chrome. Es posible que no puedas acceder a algunos recursos hasta que se haya completado la configuración.</translation>
+<translation id="2034233344106846793">Chrome cambia las conexiones no seguras a HTTPS automáticamente cuando es posible</translation>
 <translation id="207902854391093810">Cuando las pruebas están activas, la medición de anuncios permite a los sitios que visitas pedir a Chrome información que les ayude a medir el rendimiento de sus anuncios. La medición de anuncios restringe el seguimiento entre sitios al transferir la menor cantidad de información posible entre ellos.</translation>
 <translation id="2091012649849228750">Para recibir futuras actualizaciones de Google Chrome, deberás tener Windows 10 o una versión posterior. Este ordenador tiene Windows 8.</translation>
 <translation id="2094648590148273905">Términos de ChromeOS Flex</translation>

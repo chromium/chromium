@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">Ztlumit weby, které přehrávají zvuky</translation>
 <translation id="3602290021589620013">Náhled</translation>
 <translation id="3628308229821498208">Navrhovaná vyhledávání</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> web ve skupině webů vlastníka <ph name="RWS_OWNER" />, které vidí vaši aktivitu ve skupině}few{<ph name="RWS_MEMBERS_COUNT" /> weby ve skupině webů vlastníka <ph name="RWS_OWNER" />, které vidí vaši aktivitu ve skupině}many{<ph name="RWS_MEMBERS_COUNT" /> webu ve skupině webů vlastníka <ph name="RWS_OWNER" />, které vidí vaši aktivitu ve skupině}other{<ph name="RWS_MEMBERS_COUNT" /> webů ve skupině webů vlastníka <ph name="RWS_OWNER" />, které vidí vaši aktivitu ve skupině}}</translation>
 <translation id="3697164069658504920">Když je tato možnost zapnutá, weby mohou žádat o použití zařízení USB. Když je vypnutá, weby zařízení USB používat nemohou.</translation>
 <translation id="3707034683772193706">Navštívené weby mohou do Chromu uložit malé množství informací (zejména k ověření, že nejste robot)</translation>
 <translation id="3721953990244350188">Zavřít a zobrazit další dostupnou akci</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">Sdílet prostřednictvím</translation>
 <translation id="5001526427543320409">Soubory cookie třetích stran</translation>
 <translation id="5007392906805964215">Zkontrolovat</translation>
+<translation id="5014182796621173645">Navštívili jste <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Povolit</translation>
 <translation id="5048398596102334565">Povolit webům přístup k senzorům pohybu (doporučeno)</translation>
 <translation id="5050380848339752099">Tento web chce sdílet informace s aplikací mimo anonymní režim.</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">Zobrazit další</translation>
 <translation id="6561560012278703671">Použít méně rušivou zprávu (blokuje žádosti o zobrazení oznámení)</translation>
 <translation id="6593061639179217415">Stránky pro počítač</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Soubory cookie jsou povoleny pro <ph name="RWS_MEMBERS_COUNT" /> web <ph name="RWS_OWNER" />}few{Soubory cookie jsou povoleny pro <ph name="RWS_MEMBERS_COUNT" /> weby <ph name="RWS_OWNER" />}many{Soubory cookie jsou povoleny pro <ph name="RWS_MEMBERS_COUNT" /> webu <ph name="RWS_OWNER" />}other{Soubory cookie jsou povoleny pro <ph name="RWS_MEMBERS_COUNT" /> webů <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Chráněný obsah</translation>
 <translation id="662080504995468778">Zůstat</translation>
 <translation id="6653342741369270081">Režim celé obrazovky ukončíte stisknutím tlačítka Zpět.</translation>
+<translation id="6683865262523156564">Tento web je ve skupině, která může sledovat vaši aktivitu. Skupinu definoval vlastník <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profilové fotky</translation>
 <translation id="6697925417670533197">Aktivní stahování</translation>
 <translation id="6722828510648505498">Blokovat výzvy k přihlášení od služeb zjišťujících identitu</translation>

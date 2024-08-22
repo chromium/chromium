@@ -71,6 +71,7 @@
 <translation id="2018528049276128029">Svaki profil ima vlastite podatke u Chromeu kao što su oznake, povijest, zaporke i slično</translation>
 <translation id="2018879682492276940">Instaliranje nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="2022471217832964798">Chrome možete upotrebljavati i dok postavljamo pristup računu. Možda nećete moći pristupiti nekim resursima dok se postavljanje ne dovrši.</translation>
+<translation id="2034233344106846793">Chrome automatski nadograđuje nesigurne veze na HTTPS kad je to moguće</translation>
 <translation id="207902854391093810">Tijekom eksperimenata Ad measurement API omogućuje web-lokacijama koje posjećujete da od Chromea traže podatke koji im pomažu mjeriti izvedbu svojih oglasa. Ad measurement API ograničava praćenje na različitim web-lokacijama tako što se između web-lokacija prenosi što je manje moguće podataka.</translation>
 <translation id="2091012649849228750">Da biste primali buduća ažuriranja Google Chromea, trebat će vam Windows 10 ili novija verzija. Na ovom se računalu upotrebljava Windows 8.</translation>
 <translation id="2094648590148273905">Uvjeti za ChromeOS Flex</translation>
@@ -361,6 +362,7 @@
 <translation id="608006075545470555">Dodavanje poslovnog profila u ovaj preglednik</translation>
 <translation id="6097822892606850415">Pouzdanije pišite uz pomoć umjetne inteligencije</translation>
 <translation id="6113794647360055231">Chrome je upravo postao bolji</translation>
+<translation id="6134085236017727171">Da biste upotrebljavali mikrofon, odobrite Chromeu pristup u <ph name="BEGIN_LINK" />sistemskim postavkama<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Te kartice upotrebljavaju dodatne resurse. Da biste poboljšali izvedbu, dopustite Chromeu da ih deaktivira.</translation>
 <translation id="6145313976051292476">Otvaranje PDF-ova u Chromeu</translation>
 <translation id="6157638032135951407">Vaša organizacija briše Chromeove podatke kada se ne upotrebljava <ph name="TIMEOUT_DURATION" />. To može uključivati povijest, automatsko popunjavanje i preuzimanja.</translation>
@@ -396,6 +398,7 @@
 <translation id="6497147134301593682">Chrome je automatski zatvoren</translation>
 <translation id="6506909944137591434">Chrome treba dopuštenje za fotoaparat kako bi mogao izraditi 3D kartu vašeg okruženja</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
+<translation id="6520670145826811516">Da biste upotrebljavali lokaciju, odobrite Chromeu pristup u <ph name="BEGIN_LINK" />sistemskim postavkama<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Na Google upravitelju zaporki na ovom uređaju</translation>
 <translation id="6632473616050862500">ChromeOS Flex omogućuje dodatni <ph name="BEGIN_LINK_CROS_OSS" />softver otvorenog izvornog koda<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Prijaviti se u Chrome?</translation>
@@ -558,6 +561,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="8718062187489036808">Odjava s Chromea</translation>
 <translation id="873133009373065397">Google Chrome ne može utvrditi niti postaviti zadani preglednik</translation>
 <translation id="8765470054473112089">Kad upisujete u adresnu traku ili okvir za pretraživanje, ono što upisujete Chrome šalje vašoj zadanoj tražilici kako bi vam pružio bolje prijedloge. To je isključeno u anonimnom načinu.</translation>
+<translation id="8781673607513845160">Da biste upotrebljavali kameru, odobrite Chromeu pristup u <ph name="BEGIN_LINK" />sistemskim postavkama<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Pogreška pri instalaciji: vaš administrator mreže primijenio je pravilo grupe koje sprječava instalaciju: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796073561259064743">Chrome je blokirao ovo preuzimanje jer ta datoteka može naštetiti vašim osobnim računima i računima na društvenim mrežama, uključujući <ph name="USER_EMAIL" /></translation>
 <translation id="8797423385604279835">Organizirajte kartice pomoću AI-ja</translation>

@@ -20,6 +20,7 @@
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಗುಂಪು ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1657719826150349398">ಟ್ಯಾಬ್ ಅನ್ನು ಕೆಳಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="1713541401465507417">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಗುಂಪುಗಳನ್ನು ಮುಚ್ಚಿರಿ</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಗುಂಪು ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಿ}one{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಿ}other{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಿ}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">ಇದೀಗ ತಾನೇ ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 ದಿನದ ನಂತರ ಮುಚ್ಚಿರಿ}one{<ph name="DAY_COUNT_MANY" /> ದಿನಗಳ ನಂತರ ಮುಚ್ಚಿರಿ}other{<ph name="DAY_COUNT_MANY" /> ದಿನಗಳ ನಂತರ ಮುಚ್ಚಿರಿ}}</translation>
 <translation id="4777866634702576038">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೆ?</translation>
+<translation id="4783638485675352219">ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಮ್ ಮೂಲಕ ಈ ಸಾಧನದಿಂದ ಶೀರ್ಷಿಕೆಗಳು ಮತ್ತು ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳ URL ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ವಿಮರ್ಶೆ)}one{(<ph name="REVIEWS_COUNT_MANY" /> ವಿಮರ್ಶೆಗಳು)}other{(<ph name="REVIEWS_COUNT_MANY" /> ವಿಮರ್ಶೆಗಳು)}}</translation>
 <translation id="4850886885716139402">ವೀಕ್ಷಣೆ</translation>
 <translation id="4870911314065352661">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಬೇಕೇ?</translation>

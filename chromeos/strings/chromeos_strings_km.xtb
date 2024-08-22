@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">សេវាខ្សោយ</translation>
 <translation id="1300115153046603471">APN គឺជា​ប្រភេទ​លំនាំដើម និង <ph name="ATTACH" />។</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">បំប្លែង</translation>
 <translation id="1304014921944666344">កាលបរិច្ឆេទ​បង្កើត</translation>
 <translation id="1308754910631152188">កំពុងដំឡើងកំណែ (បានបញ្ចប់ <ph name="PERCENTAGE_VALUE" />% ហើយ)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> នាទី</translation>
@@ -77,6 +78,7 @@
 <translation id="1343442362630695901">បឹងទឹកប្រៃ</translation>
 <translation id="1367951781824006909">ជ្រើសរើសឯកសារមួយ</translation>
 <translation id="1371650399987522809">មតិកែលម្អ​អំពី​ផ្ទាំង​រូបភាព​ដែលដំណើរការដោយ Google AI</translation>
+<translation id="1374385338586507108">កំណត់​អត្ថន័យ</translation>
 <translation id="1387854245479784695">នេះគឺជា​ការវាស់ស្ទង់​ការប្រើប្រាស់សរុប​នៃស្នូលទាំងអស់</translation>
 <translation id="1393206549145430405">វិមាន</translation>
 <translation id="1394661041439318933">ឧបករណ៍មានថ្មប្រអប់កាស <ph name="BATTERY_PERCENTAGE" />%។</translation>
@@ -463,7 +465,6 @@
 <translation id="346423161771747987">បច្ចុប្បន្ន</translation>
 <translation id="346539236881580388">ថតឡើងវិញ</translation>
 <translation id="3484914941826596830">សូមកុំដកឧបករណ៍ខាងក្រៅនេះ ឬបិទកុំព្យូទ័ររបស់អ្នក ពេលកំពុងដំឡើងកំណែកម្មវិធី​បង្កប់។ អ្នកអាចបង្រួមវិនដូនេះបាន។ ការដំឡើងកំណែនេះអាចចំណាយពេលពីរបីនាទី ហើយឧបករណ៍ខាងក្រៅរបស់អ្នកអាចមិនដំណើរការនៅអំឡុងពេលនេះទេ។</translation>
-<translation id="3485555238092220889">សកម្មភាព​ភាពងាយស្រួល</translation>
 <translation id="3486220673238053218">និយមន័យ</translation>
 <translation id="3487866404496702283">មតិកែលម្អសម្រាប់មុខងារ mahi</translation>
 <translation id="3488065109653206955">បានធ្វើសកម្មភាពតាមផ្នែក</translation>
@@ -672,6 +673,7 @@
 <translation id="4562494484721939086">គ្មានសេវាទេ</translation>
 <translation id="4570558255126759859">ទាញយកគំរូ Gemini ដើម្បីសង្ខេបខ្លឹមសារថតឬ?</translation>
 <translation id="4573777384450697571">មិនបាន​សម្រេចទេ - វិញ្ញាបនបត្រ​ផុតកំណត់ហើយ</translation>
+<translation id="4575450106703099687">ជម្រើស​ភាពងាយស្រួល</translation>
 <translation id="458794348635939462">មិនអាចដោះស្រាយម៉ាស៊ីនទាំងអស់បានទេ</translation>
 <translation id="4593212453765072419">តម្រូវ​ឱ្យ​មាន​ការផ្ទៀងផ្ទាត់​ប្រូកស៊ី</translation>
 <translation id="4594021849294327751">បង្កើត​ប្រតិចារឹក</translation>
@@ -884,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> នៃ <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">ប៊ូតុងកែសម្រាប់ <ph name="SHORTCUT_DESCRIPTION" />។</translation>
 <translation id="5733298426544876109">ដំឡើងកំណែ <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">ការប្រើទិន្នន័យត្រូវបានកំណត់​ឡើងវិញ</translation>
 <translation id="574392208103952083">មធ្យម</translation>
 <translation id="5757187557809630523">ចម្រៀង​បន្ទាប់</translation>
 <translation id="5760715441271661976">ស្ថានភាពច្រក</translation>
@@ -893,6 +896,7 @@
 <translation id="57838592816432529">បិទសម្លេង</translation>
 <translation id="5784136236926853061">ការពន្យារ HTTP ខ្ពស់</translation>
 <translation id="5790391387506209808">ឡាពីសឡាហ្សូលី</translation>
+<translation id="5810692306010756935">ការបញ្ចប់​ការសិក្សា</translation>
 <translation id="5816802250591013230">គ្មាន​ផ្លូវកាត់​ដែលបានកំណត់ទេ</translation>
 <translation id="5826644637650799838">អំពីសិល្បៈ</translation>
 <translation id="5832805196449965646">បន្ថែមបុគ្គល</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6798678288485555829">ការ​រុករក​អក្សរ</translation>
 <translation id="680983167891198932">សោ</translation>
 <translation id="6816797338148849397">ព័ត៌មានពាក់ព័ន្ធនឹងការផ្ដល់ជូនការជ្រើសរើសរបស់អ្នក។ ប្រើគ្រាប់ចុចព្រួញឡើងលើ ដើម្បីចូលប្រើ។</translation>
+<translation id="6831043979455480757">បកប្រែ</translation>
 <translation id="6853312040151791195">អត្រា​ឈប់សាកថ្ម</translation>
 <translation id="6862416241246624313">បាន​ដាក់​បញ្ជូន​មតិ​កែ​លម្អហើយ</translation>
 <translation id="6866732840889595464">ផ្កាដេស៊ី</translation>
@@ -1355,6 +1360,7 @@
 <translation id="8082366717211101304">មិនអាចដោះស្រាយ DNS ពីកម្មវិធី Android បានទេ</translation>
 <translation id="8082644724189923105">តំបន់ក្ដារចុច</translation>
 <translation id="808894953321890993">ប្ដូរ​ពាក្យ​សម្ងាត់</translation>
+<translation id="8088963492174775412">ចុច​ដើម្បីថត</translation>
 <translation id="8094062939584182041">អនុញ្ញាត​ឱ្យ Google ផ្ញើអ៊ីមែល​ទៅអ្នក​អំពី​បញ្ហានេះ</translation>
 <translation id="8104083085214006426">អ្នកកំពុងប្រើបណ្ដាញចំហ និងគ្មានសុវត្ថិភាព</translation>
 <translation id="811820734797650957">(Android) អាចធ្វើតេស្ដ​ភីងលើច្រកបាន</translation>

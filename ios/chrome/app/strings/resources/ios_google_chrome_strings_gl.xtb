@@ -37,8 +37,6 @@ Cuestións que debes ter en conta:
 <translation id="1615715390546812898">Fai buscas por voz en Chrome.</translation>
 <translation id="1657395063736185342">Busca elementos visuais en Chrome</translation>
 <translation id="1670609221633730681">Consello de Chrome: Escolle a posición da barra de enderezos</translation>
-<translation id="1675955119303651351">Algúns dos teus datos Chrome aínda non se gardaron na túa Conta de Google.
-        Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos eliminaranse.</translation>
 <translation id="1682483655351012182">Sincronizar os teus datos de Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Engade os URL introducidos aos teus marcadores de Chrome.</translation>
@@ -81,7 +79,6 @@ Cuestións que debes ter en conta:
 <translation id="2767464022270041271">Non hai contrasinais gardados. O xestor de contrasinais de Google poderá comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="2869959624320573933">Inicia sesión en Chrome</translation>
 <translation id="2876628302275096482">Máis información sobre <ph name="BEGIN_LINK" />como protexe Chrome a privacidade dos teus datos<ph name="END_LINK" /></translation>
-<translation id="2952581218264071393">1. Abre a configuración de Chrome</translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Dado que estás pechando sesión nunha conta xestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, eliminaranse os teus datos de Chrome deste dispositivo, pero conservaranse na túa Conta de Google.</translation>
 <translation id="309672519329227863">Accede aos teus contrasinais de Chrome e moito máis noutras aplicacións.</translation>
@@ -93,7 +90,6 @@ Cuestións que debes ter en conta:
 <translation id="3340938510625667914">Accións de Chrome</translation>
 <translation id="3345341804167540816">Usar Chrome en todas partes</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minuto}other{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minutos}}</translation>
-<translation id="3399930248910934354">Abrir configuración de Chrome</translation>
 <translation id="344736123700721678">Accede a Chrome máis rápido desde a barra de aplicacións da pantalla de inicio</translation>
 <translation id="3472587960215700950">Chrome usa Google Maps para darche indicacións e información local sobre os enderezos detectados.</translation>
 <translation id="3503014945441706099">Activa tamén neste perfil de Chrome a función Navegación segura mellorada</translation>
@@ -131,9 +127,6 @@ Cuestións que debes ter en conta:
 <translation id="4761869838909035636">Executar Comprobación de seguranza de Chrome</translation>
 <translation id="4798859546468762093">Para beneficiarte da personalización e doutras funcións, inclúe Chrome en <ph name="FEATURE_NAME_1" /> e <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Para contribuír a mellorar a aplicación, Chrome envíalle a Google datos de uso e de fallos. <ph name="BEGIN_LINK" />Xestionar<ph name="END_LINK" /></translation>
-<translation id="4831642696589369971">Algúns dos teus datos Chrome aínda non se gardaron na túa Conta de Google.
-
-        Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos eliminaranse.</translation>
 <translation id="484033449593719797">Non compatible na versión beta de Chrome</translation>
 <translation id="4840404732697892756">O xestor de contrasinais de Google pode comprobar os teus contrasinais cando inicies sesión coa Conta de Google.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome axudarache a facer un seguimento deste paquete na páxina Nova pestana.}other{Chrome axudarache a facer un seguimento destes paquetes na páxina Nova pestana.}}</translation>
@@ -211,6 +204,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 Se queres ver máis opcións de configuración que usen datos para mellorar a túa experiencia con Chrome, vai a <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Fai buscas por voz en Chrome</translation>
 <translation id="6975725306479268850">Escolle Chrome para autocompletar</translation>
+<translation id="6979238427560462592">Un feed personalizado creado para ti por Google. Incluirá noticias, deportes e o tempo.</translation>
 <translation id="7004159181872656283">Busca elementos visuais en Chrome.</translation>
 <translation id="7056826488869329999">Abre e executa Comprobación de seguranza en Chrome.</translation>
 <translation id="7059914902409643750">Personaliza Chrome</translation>
@@ -236,7 +230,6 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="7394108421562933108">Maps en Chrome</translation>
 <translation id="7400722733683201933">Acerca de Google Chrome</translation>
 <translation id="7466693328838535498">Na caixa de widgets da Busca, introduce Chrome</translation>
-<translation id="746684838091935575">3. Selecciona Chrome</translation>
 <translation id="7492574581995589075">A túa organización desactivou a opción de usar e gardar os datos de Chrome na túa Conta de Google. Os marcadores, contrasinais e demais datos que engadas gardaranse só neste dispositivo.</translation>
 <translation id="7581063337314642333">Visita a grade de pestanas en Chrome</translation>
 <translation id="7642373780953416937">Recibe alertas sobre problemas de privacidade ou seguranza que detecte Chrome automaticamente.</translation>
@@ -300,7 +293,6 @@ Os teus datos encriptáronse coa túa frase de acceso o <ph name="TIME" />. Intr
 <translation id="8857676124663337448">O xestor de contrasinais de Google non puido comprobar todos os contrasinais. Téntao de novo mañá.</translation>
 <translation id="8865415417596392024">Datos de Chrome na túa conta</translation>
 <translation id="8874688701962049679">Consellos para tirar o máximo proveito de Chrome.</translation>
-<translation id="8891935667620843985">Se configuras Chrome como aplicación de navegador predeterminada, poderás abrir ligazóns nel automaticamente.</translation>
 <translation id="8897749957032330183">Os contrasinais gárdanse no xestor de contrasinais de Google neste dispositivo.</translation>
 <translation id="8949681853939555434">Define Chrome como o teu navegador predeterminado</translation>
 <translation id="9068336935206019333">Abrir no modo de incógnito de Chrome</translation>
@@ -308,6 +300,7 @@ Os teus datos encriptáronse coa túa frase de acceso o <ph name="TIME" />. Intr
 <translation id="9112744793181547300">Queres definir Chrome como navegador predeterminado?</translation>
 <translation id="9122931302567044771">En consecuencia, Chrome sempre solicitará abrir o sitio para ordenadores.</translation>
 <translation id="9181628561061032322">Abre as pestanas recentes de Chrome.</translation>
+<translation id="9194404253580584015">Un feed personalizado creado para ti por Google.</translation>
 <translation id="953008885340860025">Pechouse sesión en Chrome</translation>
 <translation id="97300214378190234">Utiliza Chrome sempre que toques ligazóns noutras aplicacións.</translation>
 </translationbundle>

@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">K dispozícii sú exkluzívne podklady pre zariadenie <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Tok zeme</translation>
 <translation id="1026212596705997935">Skratka sa používa na tento účel: <ph name="CONFLICT_ACCEL_NAME" />. Stlačte novú skratku. Ak chcete existujúcu skratku nahradiť, znova ju stlačte.</translation>
+<translation id="1030856839388844477">Resetovať spotrebu dát</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (počet vlákien: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">K dispozícii je nová funkcia. Viac sa dozviete pomocou šípky nahor.</translation>
 <translation id="1049663189809099096">pastelovožltý/-á</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">slabý signál</translation>
 <translation id="1300115153046603471">Názov prístupového bodu (APN) je predvolený typ a <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Konverzia</translation>
 <translation id="1304014921944666344">Dátum vytvorenia</translation>
 <translation id="1308754910631152188">Aktualizuje sa (dokončené na <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> min</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">slané jazero</translation>
 <translation id="1367951781824006909">Vybrať súbor</translation>
 <translation id="1371650399987522809">Spätná väzba k tapete používajúcej umelú inteligenciu od Googlu</translation>
+<translation id="1374385338586507108">Definícia</translation>
 <translation id="1387854245479784695">Toto je agregácia všetkých jadier</translation>
 <translation id="1393206549145430405">zámok</translation>
 <translation id="1394661041439318933">Úroveň batérie puzdra zariadenia je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Prúd</translation>
 <translation id="346539236881580388">Odfotiť znova</translation>
 <translation id="3484914941826596830">Počas aktualizovania firmvéru neodpájajte toto zariadenie ani nevypínajte počítač. Toto okno môžete minimalizovať. Táto aktualizácia môže trvať niekoľko minút a vaše externé zariadenie nemusí počas nej fungovať.</translation>
-<translation id="3485555238092220889">akcia dostupnosti</translation>
 <translation id="3486220673238053218">definícia</translation>
 <translation id="3487866404496702283">Spätná väzba k funkcii mahi</translation>
 <translation id="3488065109653206955">Čiastočne aktivované</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Žiadny signál</translation>
 <translation id="4570558255126759859">Chcete stiahnuť model Gemini na vytváranie zhrnutí nahrávok?</translation>
 <translation id="4573777384450697571">Nepodarilo sa – certifikát vypršal</translation>
+<translation id="4575450106703099687">možnosti dostupnosti</translation>
 <translation id="458794348635939462">Nepodarilo sa vybrať všetkých hostiteľov</translation>
 <translation id="4593212453765072419">Vyžaduje sa overenie servera proxy</translation>
 <translation id="4594021849294327751">Vytvoriť prepis</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> z <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Tlačidlo Upraviť pre <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Aktualizovať zariadenie <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Spotreba dát bola resetovaná</translation>
 <translation id="574392208103952083">Stredné</translation>
 <translation id="5757187557809630523">ďalšia stopa</translation>
 <translation id="5760715441271661976">Stav portálu</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Vypnúť zvuk</translation>
 <translation id="5784136236926853061">Vysoká latencia protokolu HTTPS</translation>
 <translation id="5790391387506209808">lapis lazuli</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Nebola priradená žiadna skratka</translation>
 <translation id="5826644637650799838">O umení</translation>
 <translation id="5832805196449965646">Pridať osobu</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Navigácia v texte</translation>
 <translation id="680983167891198932">Kľúč</translation>
 <translation id="6816797338148849397">K dispozícii sú informácie súvisiace s vaším výberom. Prístup získate pomocou šípky nahor.</translation>
+<translation id="6831043979455480757">Preložiť</translation>
 <translation id="6853312040151791195">Rýchlosť vybíjania</translation>
 <translation id="6862416241246624313">Spätná väzba bola odoslaná</translation>
 <translation id="6866732840889595464">sedmokráska</translation>
@@ -1220,7 +1226,7 @@
 <translation id="7343649194310845056">Sieťové zariadenia</translation>
 <translation id="7344788170842919262">zemitými</translation>
 <translation id="7346768383111016081">Vložte ovládací prvok do hernej akcie a hrajte pomocou klávesnice</translation>
-<translation id="7352651011704765696">Vyskytla sa chyba</translation>
+<translation id="7352651011704765696">Niečo sa pokazilo</translation>
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />. výsledok vyhľadávania z <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Na skratku prejdete stlačením klávesa Enter.</translation>
 <translation id="7359657277149375382">Typ súboru</translation>
 <translation id="73631062356239394">Zdieľanie diagnostických údajov</translation>
@@ -1551,6 +1557,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="9087578468327036362">Nahlásiť tento dopyt</translation>
 <translation id="9088306295921699330">Aktuálne využitie</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Ďalšie informácie o dátume resetu</translation>
 <translation id="9100765901046053179">Rozšírené nastavenia</translation>
 <translation id="910415269708673980">Obnoviť tiket pre <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenuje sa <ph name="PAGE_NUMBER" />. strana</translation>

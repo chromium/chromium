@@ -430,6 +430,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="7398989605938454041">S profili v Chromiumu lahko ločite vse stvari v Chromiumu. Tako laže ločite delo in zabavo.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – različica Chromiuma za razvijalce</translation>
 <translation id="7451052299415159299">Chromium potrebuje dovoljenje za dostop do fotoaparata za to spletno mesto</translation>
+<translation id="7458892263350425044">Če želite uporabljati mikrofon, omogočite Chromiumu dostop v <ph name="BEGIN_LINK" />sistemskih nastavitvah<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">Če želite prejemati prihodnje posodobitve Chromiuma, potrebujete Windows 10 ali novejšega. V tem računalniku je nameščen Windows 7.</translation>
 <translation id="7467949745582939695">Želite znova zagnati Chromium?</translation>
 <translation id="7483335560992089831">Ni mogoče namestiti iste različice Chromiuma, ki se trenutno izvaja. Zaprite Chromium in poskusite znova.</translation>
@@ -458,6 +459,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="7872446069773932638">Prenašanje … Še <ph name="SECONDS" /> s.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Kako lahko upravljate podatke:<ph name="END_BOLD" /> Zaradi zaščite vaše varnosti samodejno izbrišemo vaša zanimanja, starejša od 4 tednov. Ko brskate naprej, se zanimanje morda znova prikaže na seznamu. Odstranite lahko tudi zanimanja, za katera ne želite, da jih Chromium predlaga.</translation>
 <translation id="7888981273428720788">Nastavite Chromium kot privzeto možnost</translation>
+<translation id="7934340546140346950">Povezave, ki niso varne, Chromium samodejno nadgradi na HTTPS, ko je to mogoče</translation>
 <translation id="7937630085815544518">V Chromium ste bili prijavljeni kot <ph name="USER_EMAIL_ADDRESS" />. Pri vnovični prijavi uporabite isti račun.</translation>
 <translation id="7975919845073681630">To je sekundarna namestitev Chromiuma in ga ni mogoče nastaviti kot privzeti brskalnik.</translation>
 <translation id="7997934263947464652">Razširitve, aplikacije in teme iz neznanih virov lahko škodijo napravi. Chromium priporoča, da jih namestite samo tukaj: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
@@ -470,6 +472,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="813913629614996137">Inicializiranje ...</translation>
 <translation id="8166782796394721554">Vklopite dodatno zaščito v mehanizmih za JavaScript in WebAssembly za Chromium</translation>
 <translation id="81770708095080097">Ta datoteka je nevarna, zato jo je Chromium blokiral.</translation>
+<translation id="8223363452568144035">Če želite uporabljati kamero, omogočite Chromiumu dostop v <ph name="BEGIN_LINK" />sistemskih nastavitvah<ph name="END_LINK" />.</translation>
 <translation id="8232193495299001329">Chromium ne more preveriti, od kod je ta razširitev, in morda ni varna. Odstranite jo iz Chromiuma, da si ne bo mogla več ogledati vaših podatkov na obiskanih spletnih mestih, vključno z osebnimi podatki, in jih spreminjati.</translation>
 <translation id="8248265253516264921">Če slika nima koristnega opisa, ga bo Chromium poskušal zagotoviti. Opisi se ustvarijo tako, da se slike pošljejo Googlu. To lahko kadar koli izklopite v nastavitvah.</translation>
 <translation id="8254601181414348851">Se želite v Chromium prijaviti v novem profilu?</translation>
@@ -540,4 +543,5 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="983803489796659991">Namestitev ni uspela, ker strežnik za posodobitve nima podatkov o zgoščeni vrednosti za aplikacijo.</translation>
 <translation id="985498048907240953">Uporaba Chromiuma brez računa</translation>
 <translation id="985602178874221306">Ustvarjalci Chromiuma</translation>
+<translation id="992780518932311116">Če želite uporabljati lokacijo, omogočite Chromiumu dostop v <ph name="BEGIN_LINK" />sistemskih nastavitvah<ph name="END_LINK" /></translation>
 </translationbundle>

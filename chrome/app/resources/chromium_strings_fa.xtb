@@ -426,6 +426,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="7398989605938454041">‏با نمایه‌های Chromium می‌توانید همه‌چیزتان را در Chromium جدا کنید. با این کار، راحت‌تر می‌توان کار و سرگرمی را ازهم جدا کرد.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">‏Chromium برای این سایت به مجوز دسترسی به دوربین نیاز دارد</translation>
+<translation id="7458892263350425044">‏برای استفاده از میکروفون، در <ph name="BEGIN_LINK" />تنظیمات سیستم<ph name="END_LINK" /> به Chromium دسترسی دهید</translation>
 <translation id="7461356015007898716">‏برای دریافت به‌روزرسانی‌های آتی Chromium، باید Windows 10 یا بالاتر داشته باشید. این رایانه از Windows 7 استفاده می‌کند.</translation>
 <translation id="7467949745582939695">‏Chromium راه‌اندازی مجدد شود؟</translation>
 <translation id="7483335560992089831">‏نمی‌توانید Chromium دارای نسخه مشابه با نسخه در حال اجرا را نصب کنید. لطفاً Chromium را ببندید و دوباره سعی کنید.</translation>
@@ -454,6 +455,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="7872446069773932638">درحال بارگیری… <ph name="SECONDS" /> ثانیه باقی مانده است</translation>
 <translation id="7877292582355102282">‏<ph name="BEGIN_BOLD" />چگونه می‌توانید داده‌هایتان را مدیریت کنید:<ph name="END_BOLD" /> برای محافظت از حریم خصوصی شما، علایقی را که قدیمی‌تر از ۴ هفته باشد به‌طور خودکار حذف می‌کنیم. وقتی به مرور کردن ادامه می‌دهید، ممکن است علاقه‌ای مجدداً به فهرست اضافه شود. یا می‌توانید علایقی را که نمی‌خواهید Chromium مدنظر قرار دهد حذف کنید.</translation>
 <translation id="7888981273428720788">‏تنظیم Chromium به‌عنوان مرورگر پیش‌فرض</translation>
+<translation id="7934340546140346950">‏‫Chromium اتصال‌های ناامن را درصورت امکان به‌طور خودکار به HTTPS ارتقا می‌دهد</translation>
 <translation id="7937630085815544518">‏شما بعنوان <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم Chromium شده‌اید. لطفاً برای ورود به سیستم مجدد از همان حساب استفاده کنید.</translation>
 <translation id="7975919845073681630">‏این نصب ثانویه Chromium است و نمی‌تواند مرورگر پیش‌فرضتان شود.</translation>
 <translation id="7997934263947464652">‏افزونه‌ها، برنامه‌ها، و زمینه‌های دریافتی از منابع ناشناخته می‌توانند به دستگاهتان آسیب برسانند. Chromium توصیه می‌کند آن‌ها را فقط از <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> نصب کنید</translation>
@@ -466,6 +468,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="813913629614996137">درحال مقداردهی اولیه…</translation>
 <translation id="8166782796394721554">‏روشن کردن محافظت بیشتر در موتور WebAssembly و جاوا اسکریپت Chromium</translation>
 <translation id="81770708095080097">‏این فایل خطرناک است، بنابراین Chromium آن را مسدود کرده است.</translation>
+<translation id="8223363452568144035">‏برای استفاده از دوربین، در <ph name="BEGIN_LINK" />تنظیمات سیستم<ph name="END_LINK" /> به Chromium دسترسی دهید</translation>
 <translation id="8232193495299001329">‏‫Chromium نمی‌تواند منبع این افزونه را تأیید کند و این افزونه ممکن است ناامن باشد. آن را از Chromium حذف کنید تا دیگر نتواند داده‌های شما را (ازجمله اطلاعات شخصی) در سایت‌هایی که بازدید می‌کنید ببیند و تغییر دهد.</translation>
 <translation id="8248265253516264921">‏اگر تصویری توضیح مفیدی نداشته باشد، Chromium توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود. هروقت خواستید می‌توانید این گزینه را در تنظیمات خاموش کنید.</translation>
 <translation id="8254601181414348851">‏در نمایه جدید به سیستم Chromium وارد می‌شوید؟</translation>
@@ -536,4 +539,5 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="983803489796659991">نصب انجام نشد چون سرور به‌روزرسانی هیچ‌گونه داده درهمی برای برنامه ندارد.</translation>
 <translation id="985498048907240953">‏استفاده از Chromium بدون حساب</translation>
 <translation id="985602178874221306">Chromium Authors</translation>
+<translation id="992780518932311116">‏برای استفاده از مکان، در <ph name="BEGIN_LINK" />تنظیمات سیستم<ph name="END_LINK" /> به Chromium دسترسی دهید</translation>
 </translationbundle>

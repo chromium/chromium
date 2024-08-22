@@ -20,6 +20,7 @@
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ներդիր խմբավորվեց</translation>
 <translation id="1657719826150349398">Տեղափոխել ներդիրը ներքև</translation>
 <translation id="1713541401465507417">Փակել բոլոր ներդիրներն ու խմբերը</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Իմանալ ավելին<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ներդիր խմբավորվեց</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ներդիր}one{<ph name="TABS_COUNT_MANY" /> ներդիր}other{<ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Էջանշել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը}one{Էջանշել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը}other{Էջանշել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Ստեղծվել է քիչ առաջ</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Փակել 1 օր հետո}one{Փակել <ph name="DAY_COUNT_MANY" /> օր հետո}other{Փակել <ph name="DAY_COUNT_MANY" /> օր հետո}}</translation>
 <translation id="4777866634702576038">Ջնջե՞լ ներդիրների խումբը</translation>
+<translation id="4783638485675352219">Կիսվել այս սարքում բացված ներդիրների վերնագրերով և URL-ներով օպերացիոն համակարգի հետ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> կարծիք)}one{(<ph name="REVIEWS_COUNT_MANY" /> կարծիք)}other{(<ph name="REVIEWS_COUNT_MANY" /> կարծիք)}}</translation>
 <translation id="4850886885716139402">Տեսք</translation>
 <translation id="4870911314065352661">Փակե՞լ բոլոր ներդիրները</translation>

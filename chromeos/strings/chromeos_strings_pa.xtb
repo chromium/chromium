@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">ਕਮਜ਼ੋਰ ਸਿਗਨਲ</translation>
 <translation id="1300115153046603471">APN ਦੀ ਕਿਸਮ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਅਤੇ <ph name="ATTACH" /> 'ਤੇ ਸੈੱਟ ਹੈ।</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">ਬਦਲੋ</translation>
 <translation id="1304014921944666344">ਬਣਾਉਣ ਦੀ ਤਾਰੀਖ</translation>
 <translation id="1308754910631152188">ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ (<ph name="PERCENTAGE_VALUE" />% ਪੂਰਾ ਹੋ ਗਿਆ)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> ਮਿੰਟ</translation>
@@ -77,6 +78,7 @@
 <translation id="1343442362630695901">ਸਾਲਟ ਲੇਕ</translation>
 <translation id="1367951781824006909">ਇੱਕ ਫਾਈਲ ਚੁਣੋ</translation>
 <translation id="1371650399987522809">Google AI ਵੱਲੋਂ ਸੰਚਾਲਿਤ ਵਾਲਪੇਪਰ ਲਈ ਵਿਚਾਰ</translation>
+<translation id="1374385338586507108">ਪਰਿਭਾਸ਼ਾ ਦਿਓ</translation>
 <translation id="1387854245479784695">ਇਹ ਸਾਰੇ ਕੋਰ ਅੰਕੜਿਆਂ ਦਾ ਇਕੱਤਰੀਕਰਨ ਹੈ</translation>
 <translation id="1393206549145430405">ਕਿਲ੍ਹਾ</translation>
 <translation id="1394661041439318933">ਡੀਵਾਈਸ ਦੇ ਕੇਸ ਦੀ ਬੈਟਰੀ ਦਾ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />% ਹੈ।</translation>
@@ -463,7 +465,6 @@
 <translation id="346423161771747987">ਕਰੰਟ</translation>
 <translation id="346539236881580388">ਫ਼ੋਟੋ ਦੁਬਾਰਾ ਖਿੱਚੋ</translation>
 <translation id="3484914941826596830">ਫ਼ਰਮਵੇਅਰ ਦੇ ਅੱਪਡੇਟ ਹੋਣ ਦੌਰਾਨ ਇਸ ਬਾਹਰੀ ਡੀਵਾਈਸ ਨੂੰ ਅਣਪਲੱਗ ਨਾ ਕਰੋ ਜਾਂ ਆਪਣੇ ਕੰਪਿਊਟਰ ਨੂੰ ਬੰਦ ਨਾ ਕਰੋ। ਤੁਸੀਂ ਇਸ ਵਿੰਡੋ ਨੂੰ ਛੋਟਾ ਕਰ ਸਕਦੇ ਹੋ। ਇਸ ਅੱਪਡੇਟ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ ਅਤੇ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਸ ਸਮੇਂ ਦੌਰਾਨ ਤੁਹਾਡਾ ਬਾਹਰੀ ਡੀਵਾਈਸ ਕੰਮ ਨਾ ਕਰੇ।</translation>
-<translation id="3485555238092220889">ਪਹੁੰਚਯੋਗਤਾ ਸੰਬੰਧੀ ਕਾਰਵਾਈ</translation>
 <translation id="3486220673238053218">ਪਰਿਭਾਸ਼ਾ</translation>
 <translation id="3487866404496702283">mahi ਵਿਸ਼ੇਸ਼ਤਾ ਸੰਬੰਧੀ ਵਿਚਾਰ</translation>
 <translation id="3488065109653206955">ਅੰਸ਼ਕ ਤੌਰ ਤੇ ਸਕਿਰਿਆ ਕੀਤਾ</translation>
@@ -672,6 +673,7 @@
 <translation id="4562494484721939086">ਕੋਈ ਸੇਵਾ ਨਹੀਂ</translation>
 <translation id="4570558255126759859">ਕੀ ਰਿਕਾਰਡਿੰਗਾਂ ਦਾ ਸਾਰਾਂਸ਼ ਦੇਣ ਲਈ Gemini ਮਾਡਲ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨਾ ਹੈ?</translation>
 <translation id="4573777384450697571">ਅਸਫਲ ਰਿਹਾ - ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੀ ਮਿਆਦ ਸਮਾਪਤ ਹੋ ਗਈ</translation>
+<translation id="4575450106703099687">ਪਹੁੰਚਯੋਗਤਾ ਵਿਕਲਪ</translation>
 <translation id="458794348635939462">ਸਾਰੇ ਹੋਸਟਾਂ ਨੂੰ ਹੱਲ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="4593212453765072419">ਪ੍ਰੌਕਸੀ ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="4594021849294327751">ਪ੍ਰਤੀਲਿਪੀ ਬਣਾਓ</translation>
@@ -884,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> ਵਿੱਚੋਂ <ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> ਲਈ 'ਸੰਪਾਦਨ ਕਰੋ' ਬਟਨ।</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
+<translation id="5736820754189340309">ਡਾਟਾ ਵਰਤੋਂ ਨੂੰ ਰੀਸੈੱਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="574392208103952083">ਦਰਮਿਆਨਾ</translation>
 <translation id="5757187557809630523">ਅਗਲਾ ਟਰੈਕ</translation>
 <translation id="5760715441271661976">ਪੋਰਟਲ ਸਥਿਤੀ</translation>
@@ -893,6 +896,7 @@
 <translation id="57838592816432529">ਮਿਊਟ ਕਰੋ</translation>
 <translation id="5784136236926853061">ਜ਼ਿਆਦਾ HTTP ਵਿਲੰਬਤਾ</translation>
 <translation id="5790391387506209808">ਲੈਪਿਸ ਲਜ਼ੂਲੀ</translation>
+<translation id="5810692306010756935">ਗ੍ਰੈਜੂਏਸ਼ਨ</translation>
 <translation id="5816802250591013230">ਕੋਈ ਸ਼ਾਰਟਕੱਟ ਜ਼ਿੰਮੇ ਨਹੀਂ ਲਗਾਇਆ ਗਿਆ</translation>
 <translation id="5826644637650799838">ਕਲਾ ਬਾਰੇ</translation>
 <translation id="5832805196449965646">ਵਿਅਕਤੀ ਜੋੜੋ</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6798678288485555829">ਲਿਖਤ ਨੈਵੀਗੇਸ਼ਨ</translation>
 <translation id="680983167891198932">ਕੁੰਜੀ</translation>
 <translation id="6816797338148849397">ਤੁਹਾਡੀ ਚੋਣ ਨਾਲ ਸੰਬੰਧਿਤ ਜਾਣਕਾਰੀ ਉਪਲਬਧ ਹੈ। ਪਹੁੰਚ ਕਰਨ ਲਈ 'ਉੱਪਰ ਤੀਰ' ਕੁੰਜੀ ਵਰਤੋ।</translation>
+<translation id="6831043979455480757">ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="6853312040151791195">ਡਿਸਚਾਰਜ ਹੋਣ ਦੀ ਦਰ</translation>
 <translation id="6862416241246624313">ਵਿਚਾਰ ਸਪੁਰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6866732840889595464">ਡੇਜ਼ੀ</translation>

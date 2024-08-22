@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">Dezactivează sunetul pentru site-urile care îl redau</translation>
 <translation id="3602290021589620013">Previzualizare</translation>
 <translation id="3628308229821498208">Căutări sugerate</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site din grupul utilizatorului <ph name="RWS_OWNER" /> care îți poate vedea activitatea în grup}few{<ph name="RWS_MEMBERS_COUNT" /> site-uri din grupul utilizatorului <ph name="RWS_OWNER" /> care îți pot vedea activitatea în grup}other{<ph name="RWS_MEMBERS_COUNT" /> de site-uri din grupul utilizatorului <ph name="RWS_OWNER" /> care îți pot vedea activitatea în grup}}</translation>
 <translation id="3697164069658504920">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi dispozitive USB. Când opțiunea este dezactivată, site-urile nu pot folosi dispozitive USB.</translation>
 <translation id="3707034683772193706">Un site pe care îl accesezi poate salva un mic volum de informații în Chrome, în principal pentru a valida că nu ești o aplicație bot</translation>
 <translation id="3721953990244350188">Închide și afișează următoarea acțiune disponibilă</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">Trimite prin</translation>
 <translation id="5001526427543320409">Cookie-uri terță parte</translation>
 <translation id="5007392906805964215">Examinează</translation>
+<translation id="5014182796621173645">Ai accesat <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Permite</translation>
 <translation id="5048398596102334565">Permite accesul site-urilor la senzorii de mișcare (recomandat)</translation>
 <translation id="5050380848339752099">Site-ul este pe cale să permită accesul la informații unei aplicații în afara modului incognito.</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">Vezi mai multe</translation>
 <translation id="6561560012278703671">Folosește mesaje discrete (notificările nu te vor întrerupe)</translation>
 <translation id="6593061639179217415">Versiune site desktop</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Cookie-uri permise pentru <ph name="RWS_MEMBERS_COUNT" /> site <ph name="RWS_OWNER" />}few{Cookie-uri permise pentru <ph name="RWS_MEMBERS_COUNT" /> site-uri <ph name="RWS_OWNER" />}other{Cookie-uri permise pentru <ph name="RWS_MEMBERS_COUNT" /> de site-uri <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Conținut protejat</translation>
 <translation id="662080504995468778">Rămâi pe pagină</translation>
 <translation id="6653342741369270081">Apasă butonul Înapoi pentru a ieși din ecranul complet.</translation>
+<translation id="6683865262523156564">Site-ul este într-un grup care îți poate vedea activitatea. Grupul este definit de <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Fotografii de profil</translation>
 <translation id="6697925417670533197">Descărcări active</translation>
 <translation id="6722828510648505498">Blochează solicitările de conectare de la serviciile de identitate.</translation>

@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">ชิ้นงานสุดพิเศษจาก <ph name="PRODUCT_NAME" /> พร้อมใช้งานแล้ว</translation>
 <translation id="1022628058306505708">การเคลื่อนที่ของโลก</translation>
 <translation id="1026212596705997935">มีการใช้แป้นพิมพ์ลัดนี้สำหรับ "<ph name="CONFLICT_ACCEL_NAME" />" แล้ว โปรดกดแป้นพิมพ์ลัดใหม่ หากต้องการเปลี่ยนแป้นพิมพ์ลัดที่มีอยู่ ให้กดแป้นพิมพ์ลัดนี้อีกครั้ง</translation>
+<translation id="1030856839388844477">รีเซ็ตปริมาณการใช้อินเทอร์เน็ต</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> เทรด, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">มีฟีเจอร์ใหม่ ใช้แป้นลูกศรขึ้นเพื่อดูข้อมูลเพิ่มเติม</translation>
 <translation id="1049663189809099096">เหลืองพาสเทล</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">สัญญาณไม่ดี</translation>
 <translation id="1300115153046603471">APN เป็นแบบ Default และ <ph name="ATTACH" /></translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">แปลง</translation>
 <translation id="1304014921944666344">วันที่สร้าง</translation>
 <translation id="1308754910631152188">กำลังอัปเดต (เสร็จสมบูรณ์ <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> นาที</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">ทะเลสาบน้ำเค็ม</translation>
 <translation id="1367951781824006909">เลือกไฟล์</translation>
 <translation id="1371650399987522809">ความคิดเห็นเกี่ยวกับวอลเปเปอร์ที่ทำงานด้วย AI ของ Google</translation>
+<translation id="1374385338586507108">หาความหมาย</translation>
 <translation id="1387854245479784695">นี่เป็นการรวม Core ทั้งหมด</translation>
 <translation id="1393206549145430405">ปราสาท</translation>
 <translation id="1394661041439318933">อุปกรณ์มีระดับแบตเตอรี่ของเคส <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">กระแสไฟฟ้า</translation>
 <translation id="346539236881580388">ถ่ายใหม่</translation>
 <translation id="3484914941826596830">ขณะอัปเดตเฟิร์มแวร์ โปรดอย่าถอดปลั๊กอุปกรณ์ภายนอกเครื่องนี้หรือปิดคอมพิวเตอร์ คุณย่อหน้าต่างนี้ให้เล็กสุดได้ การอัปเดตอาจใช้เวลาสักครู่และอุปกรณ์ภายนอกอาจใช้ไม่ได้ในช่วงเวลานี้</translation>
-<translation id="3485555238092220889">การดำเนินการสำหรับการช่วยเหลือพิเศษ</translation>
 <translation id="3486220673238053218">คำจำกัดความ</translation>
 <translation id="3487866404496702283">ความคิดเห็นเกี่ยวกับฟีเจอร์ mahi</translation>
 <translation id="3488065109653206955">เปิดการใช้งานบางส่วน</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">ไม่มีบริการ</translation>
 <translation id="4570558255126759859">ดาวน์โหลดโมเดล Gemini เพื่อสรุปไฟล์บันทึกเสียงไหม</translation>
 <translation id="4573777384450697571">ไม่สําเร็จ - ใบรับรองหมดอายุ</translation>
+<translation id="4575450106703099687">ตัวเลือกการช่วยเหลือพิเศษ</translation>
 <translation id="458794348635939462">แก้ไขทุกโฮสต์ไม่สำเร็จ</translation>
 <translation id="4593212453765072419">จำเป็นต้องมีการตรวจสอบสิทธิ์พร็อกซี</translation>
 <translation id="4594021849294327751">สร้างข้อความถอดเสียง</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> จาก <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">ปุ่มแก้ไขสำหรับ<ph name="SHORTCUT_DESCRIPTION" /></translation>
 <translation id="5733298426544876109">อัปเดต <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">รีเซ็ตปริมาณการใช้อินเทอร์เน็ตแล้ว</translation>
 <translation id="574392208103952083">ปานกลาง</translation>
 <translation id="5757187557809630523">แทร็กถัดไป</translation>
 <translation id="5760715441271661976">สถานะพอร์ทัล</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">ปิดเสียง</translation>
 <translation id="5784136236926853061">เวลาในการตอบสนองของ HTTP สูง</translation>
 <translation id="5790391387506209808">ลาพิส ลูซูลี</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">ยังไม่ได้กำหนดแป้นพิมพ์ลัด</translation>
 <translation id="5826644637650799838">เกี่ยวกับงานศิลปะ</translation>
 <translation id="5832805196449965646">เพิ่มบุคคล</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">การนำทางสำหรับข้อความ</translation>
 <translation id="680983167891198932">คีย์</translation>
 <translation id="6816797338148849397">มีข้อมูลที่เกี่ยวข้องกับสิ่งที่คุณเลือก ใช้แป้นลูกศรขึ้นเพื่อดูข้อมูลนั้น</translation>
+<translation id="6831043979455480757">แปลภาษา</translation>
 <translation id="6853312040151791195">อัตราการคายประจุ</translation>
 <translation id="6862416241246624313">ส่งความคิดเห็นแล้ว</translation>
 <translation id="6866732840889595464">เดซี่</translation>
@@ -1354,6 +1360,7 @@
 <translation id="8082366717211101304">ไม่สามารถแปลง DNS จากแอป Android</translation>
 <translation id="8082644724189923105">โซนแป้นพิมพ์</translation>
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>
+<translation id="8088963492174775412">กดเพื่อบันทึก</translation>
 <translation id="8094062939584182041">อนุญาตให้ Google ส่งอีเมลถึงคุณเกี่ยวกับปัญหานี้</translation>
 <translation id="8104083085214006426">คุณกำลังใช้เครือข่ายแบบเปิดที่ไม่ปลอดภัย</translation>
 <translation id="811820734797650957">(Android) ปิงเกตเวย์ได้</translation>
@@ -1551,6 +1558,7 @@
 <translation id="9087578468327036362">โปรดรายงานการค้นหานี้</translation>
 <translation id="9088306295921699330">การใช้งานปัจจุบัน</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">ข้อมูลเพิ่มเติมเกี่ยวกับวันที่รีเซ็ต</translation>
 <translation id="9100765901046053179">การตั้งค่าขั้นสูง</translation>
 <translation id="910415269708673980">รีเฟรชตั๋วสำหรับ <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">กำลังสแกนหน้า <ph name="PAGE_NUMBER" /></translation>

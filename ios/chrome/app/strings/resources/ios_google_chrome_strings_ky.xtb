@@ -37,8 +37,6 @@
 <translation id="1615715390546812898">Chrome'до оозеки издеңиз.</translation>
 <translation id="1657395063736185342">Chrome'до визуалдык графикаларды издөө</translation>
 <translation id="1670609221633730681">Chrome кеңеши: Дарек тилкесинин абалын тандаңыз</translation>
-<translation id="1675955119303651351">Chrome'догу айрым маалымат Google аккаунтуңузга сактала элек.
-        Аккаунттан чыгуудан мурда бир нече мүнөт күтө туруңуз. Эгер азыр чыгып кетсеңиз, бул маалымат өчүрүлөт.</translation>
 <translation id="1682483655351012182">Chrome дайындарын шайкештирүү</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Киргизилген URL даректерин Chrome'догу кыстармаларыңызга кошот.</translation>
@@ -81,7 +79,6 @@
 <translation id="2767464022270041271">Сакталган сырсөздөр жок. Сырсөздөрүңүздү сактаганда Сырсөздөрдү башкаргыч аларды текшерет.</translation>
 <translation id="2869959624320573933">Chrome'го кириңиз</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome маалыматыңызды кантип купуя сактаары тууралуу<ph name="END_LINK" /> көбүрөөк билип алыңыз</translation>
-<translation id="2952581218264071393">1. Chrome'дун параметрлерин ачыңыз</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome’ду<ph name="END_BOLD" /> тандаңыз</translation>
 <translation id="3030414234702425231">Сиз <ph name="SIGNOUT_MANAGED_DOMAIN" /> домениндеги аккаунтуңуздан чыгып жатканыңызга байланыштуу, Chrome'догу дайын-даректериңиз бул түзмөктөн өчүрүлөт. Бирок дайын-даректериңиз Google аккаунтуңузда сакталып калат.</translation>
 <translation id="309672519329227863">Chrome сырсөздөрүңүзгө жана башка дайындарга башка колдонмолордон кириңиз.</translation>
@@ -93,7 +90,6 @@
 <translation id="3340938510625667914">Chrome'догу аракеттер</translation>
 <translation id="3345341804167540816">Бүт жерде Chrome колдонуңуз</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome {THRESHOLD} мүнөт бою колдонулбаса, күтүү режиминде болуп калат}other{Chrome {THRESHOLD} мүнөт бою колдонулбаса, күтүү режиминде болуп калат}}</translation>
-<translation id="3399930248910934354">Chrome'дун параметрлерин ачыңыз</translation>
 <translation id="344736123700721678">Chrome'го Башкы экрандагы доктон тез өтүңүз</translation>
 <translation id="3472587960215700950">Chrome багыттарды көрсөтүү жана табылган даректер боюнча пайдалуу маалыматты берүү үчүн Google Карталарды колдонот.</translation>
 <translation id="3503014945441706099">Chrome профилиңизде Өркүндөтүлгөн коопсуз серептөөнү да иштетиңиз</translation>
@@ -131,9 +127,6 @@
 <translation id="4761869838909035636">Chrome'дун коопсуздугун текшерүү</translation>
 <translation id="4798859546468762093">Жекелештирүүнү жана башка функцияларды пайдалануу үчүн Chrome'ду <ph name="FEATURE_NAME_1" /> жана <ph name="FEATURE_NAME_2" /> функцияларына кошуңуз</translation>
 <translation id="4819268619367838612">Колдонмону жакшыртууга жардам берүү үчүн Chrome колдонулушу жана ката тууралуу маалыматты Google'га жөнөтөт. <ph name="BEGIN_LINK" />Башкаруу<ph name="END_LINK" /></translation>
-<translation id="4831642696589369971">Chrome'догу айрым маалымат Google аккаунтуңузга сактала элек.
-
-        Аккаунттан чыгуудан мурда бир нече мүнөт күтө туруңуз. Эгер азыр чыгып кетсеңиз, бул маалымат өчүрүлөт.</translation>
 <translation id="484033449593719797">Chrome'дун Бета версиясында колдоого алынбайт</translation>
 <translation id="4840404732697892756">Google аккаунтуңуз менен киргенде Сырсөздөрдү башкаргыч сырсөздөрүңүздү текшерет.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome бул топтомго жаңы өтмөк бетинен көз салууга жардам бере алат.}other{Chrome бул топтомдорго жаңы өтмөк бетинен көз салууга жардам бере алат.}}</translation>
@@ -211,6 +204,7 @@
 Chrome'дун ишин жакшыртуу үчүн маалыматтарды колдоно турган кошумча параметрлерди <ph name="BEGIN_LINK" />Google кызматтары<ph name="END_LINK" /> бөлүмүнөн көрө аласыз.</translation>
 <translation id="6916015246697034114">Chrome'до оозеки издөө</translation>
 <translation id="6975725306479268850">Автотолтуруу үчүн Chrome'ду тандаңыз</translation>
+<translation id="6979238427560462592">Сиз үчүн Google түзгөн жеке түрмөк. Жаңылыктар, Спорт жана Аба ырайы камтылат.</translation>
 <translation id="7004159181872656283">Chrome'до визуалдык графикаларды издөө.</translation>
 <translation id="7056826488869329999">Chrome'до Коопсуздукту текшерүүнү ачып, иштетет.</translation>
 <translation id="7059914902409643750">Chrome'ду каалагандай ыңгайлаштырып алыңыз</translation>
@@ -236,7 +230,6 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="7394108421562933108">Chrome'догу Карталар</translation>
 <translation id="7400722733683201933">Google Chrome жөнүндө</translation>
 <translation id="7466693328838535498">Виджеттерди издөө кутусуна Chrome деп жазыңыз</translation>
-<translation id="746684838091935575">3. Chrome'ду тандаңыз</translation>
 <translation id="7492574581995589075">Уюмуңуз Chrome маалыматын Google аккаунтуңузга сактоо мүмкүндүгүн өчүрүп койду. Жаңы кыстармалар, сырсөздөр жана башкалар ушул түзмөккө гана сакталат.</translation>
 <translation id="7581063337314642333">Chrome'до өтмөк торчосуна өтүү</translation>
 <translation id="7642373780953416937">Chrome купуялык же коопсуздукка байланыштуу көйгөйлөрдү автоматтык түрдө аныктаганда, эскертүүлөрдү алыңыз.</translation>
@@ -300,7 +293,6 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="8857676124663337448">Сырсөздөрдү башкаргыч бардык сырсөздөрдү текшере алган жок. Эртең кайталап көрүңүз.</translation>
 <translation id="8865415417596392024">Аккаунтуңуздагы Chrome дайын-даректери</translation>
 <translation id="8874688701962049679">Chrome'дун бардык мүмкүнчүлүктөрүн колдонуу боюнча кеңештер.</translation>
-<translation id="8891935667620843985">Chrome'ду демейки серепчиңиз кылып алып, шилтемелерди автоматтык түрдө ачыңыз.</translation>
 <translation id="8897749957032330183">Сырсөздөр ушул түзмөктө Сырсөздөрдү башкаргычка сакталат.</translation>
 <translation id="8949681853939555434">Chrome'ду демейки серепчи катары коюп алыңыз</translation>
 <translation id="9068336935206019333">Chrome'до Жашыруун режимде ачуу</translation>
@@ -308,6 +300,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="9112744793181547300">Chrome демейки серепчи катары коюлсунбу?</translation>
 <translation id="9122931302567044771">Chrome'ду ар дайым компьютерде ачуу керек болот.</translation>
 <translation id="9181628561061032322">Chrome'догу акыркы өтмөктөр ачылат.</translation>
+<translation id="9194404253580584015">Сиз үчүн Google түзгөн жеке түрмөк.</translation>
 <translation id="953008885340860025">Chrome тутумдан чыгып кетти</translation>
 <translation id="97300214378190234">Эми башка колдонмолордогу шилтемелерди Chrome'до ача аласыз.</translation>
 </translationbundle>

@@ -373,7 +373,6 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2789552044937754463">{COUNT,plural, =1{Hasło zostało zapisane na Twoim koncie Google {EMAIL}}few{Hasła zostały zapisane na Twoim koncie Google {EMAIL}}many{Hasła zostały zapisane na Twoim koncie Google {EMAIL}}other{Hasła zostały zapisane na Twoim koncie Google {EMAIL}}}</translation>
 <translation id="2797029671965852011">Pokaż historię</translation>
 <translation id="2800683595868705743">Zamknij przełącznik kart</translation>
-<translation id="2815198996063984598">2. Kliknij opcję Domyślna przeglądarka.</translation>
 <translation id="2818821771744632548">W ramach resetowania iPhone'a nastąpiło wylogowanie z konta <ph name="USER_NAME" />. Aby ponownie się zalogować, kliknij „Dalej” poniżej.</translation>
 <translation id="2819667972867209401">Gdy ta opcja jest włączona, dane są zapisywane na Twoim koncie Google. Gdy jest wyłączona, dane są zapisywane tylko na tym urządzeniu i są usuwane po wylogowaniu.</translation>
 <translation id="2830972654601096923">Zarządzaj adresami...</translation>
@@ -489,6 +488,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3398509000872871492">Połączenie jest bezpieczne</translation>
 <translation id="3404232721752787413">Zapisz w Zdjęciach Google</translation>
 <translation id="3404744938087714423">Wylogowanie spowoduje wyłączenie synchronizacji.</translation>
+<translation id="340669334496430859">Ostatnia modyfikacja</translation>
 <translation id="3409785640040772790">Mapy</translation>
 <translation id="3416023309465857378">25 października 2023 r.</translation>
 <translation id="3425644765244388016">Nazwa karty</translation>
@@ -539,6 +539,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3607167657931203000">Autouzupełnianie</translation>
 <translation id="3609785682760573515">Synchronizuję...</translation>
 <translation id="3625008969091706597">Aby wrócić, możesz przesunąć palcem po krawędzi.</translation>
+<translation id="362709345066740529">Tutaj możesz dostosować karty, kanał i inne elementy</translation>
 <translation id="3630104167004786843">Nie otrzymuj powiadomień</translation>
 <translation id="3631443864840848029">Upewnij się, że zapisujesz bieżące hasło do witryny.</translation>
 <translation id="3638472932233958418">Wstępne wczytywanie stron</translation>
@@ -567,7 +568,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3775743491439407556">Synchronizacja nie działa</translation>
 <translation id="3779810277399252432">Brak połączenia z internetem.</translation>
 <translation id="3785672280731998727">Wyświetlana nazwa</translation>
-<translation id="3789294999358192700">Wykonaj te czynności:</translation>
 <translation id="3789841737615482174">Zainstaluj</translation>
 <translation id="380329542618494757">Imię i nazwisko</translation>
 <translation id="3803696231112616155">Proponuj tłumaczenie tej strony</translation>
@@ -778,6 +778,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4808646838864186379">Twoja dostawa została anulowana</translation>
 <translation id="4808744395915275922">Zmiany</translation>
 <translation id="4813345808229079766">Połączenie</translation>
+<translation id="4817408188311787415">Automatycznie uzupełnij formularz, używając <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4818522717893377262">Dodaj język...</translation>
 <translation id="481968316161811770">Cookie i dane stron</translation>
 <translation id="4821595350501541683">Karty zostały zamknięte, a dane przeglądania usunięte</translation>
@@ -802,6 +803,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="488785315393301722">Pokaż szczegóły</translation>
 <translation id="4889521386764567563">Bieżący profil</translation>
 <translation id="4894963374040315706">Umożliwia wyszukiwanie głosowe</translation>
+<translation id="4895540042460820904">Ostatnio otwarty</translation>
 <translation id="4896467949657706481">Karty zostały zamknięte i nastąpiło wylogowanie</translation>
 <translation id="489903206070130262">Ostatnio otwarta karta</translation>
 <translation id="4901778704868714008">Zapisz...</translation>
@@ -888,6 +890,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5316356981864168850"><ph name="INDEX" /> z <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5318298563956633672">Śledzisz już ten produkt.</translation>
+<translation id="5327248766486351172">Nazwa</translation>
 <translation id="5327753393331509826">Otrzymuj powiadomienia o treściach</translation>
 <translation id="5329451663851195956">Przeciągnij palcem w dół, aby odświeżyć widok.</translation>
 <translation id="5333148247954006827">Przełącz na inny profil</translation>
@@ -1227,6 +1230,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6797885426782475225">Wyszukiwanie głosowe</translation>
 <translation id="6800349425672670802">Wszystkie otwarte karty możesz wyświetlić za pomocą przełącznika kart.</translation>
 <translation id="6807889908376551050">Pokaż wszystkie...</translation>
+<translation id="6810455365609435460">Karty incognito</translation>
 <translation id="681368974849482173">Utworzono element</translation>
 <translation id="6824350924364057989">Ustawienia</translation>
 <translation id="6831043979455480757">Tłumacz</translation>

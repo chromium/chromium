@@ -8,6 +8,7 @@
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> gailuaren baliabide esklusiboak eskuragai</translation>
 <translation id="1022628058306505708">Lurraren fluxua</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />" funtziorako erabiltzen da lasterbidea. Sakatu beste lasterbide bat. Lehendik dagoen lasterbidea ordezteko, sakatu lasterbide hau berriro.</translation>
+<translation id="1030856839388844477">Berrezarri datu-erabilera</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> hari, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Eginbide berri bat eskuragarri dago. Erabili gora egiteko gezi-tekla informazio gehiago lortzeko.</translation>
 <translation id="1049663189809099096">hori argi</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Seinale ahula</translation>
 <translation id="1300115153046603471">APNa <ph name="ATTACH" /> motakoa eta mota lehenetsikoa da.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Bihurtu</translation>
 <translation id="1304014921944666344">Sortze-data</translation>
 <translation id="1308754910631152188">Eguneratzen (% <ph name="PERCENTAGE_VALUE" /> osatu da)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutu</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">laku gazia</translation>
 <translation id="1367951781824006909">Aukeratu fitxategi bat</translation>
 <translation id="1371650399987522809">Google-ren AA bidezko horma-paperari buruzko oharrak</translation>
+<translation id="1374385338586507108">Definitu</translation>
 <translation id="1387854245479784695">Nukleo guztien multzokatze bat da hau</translation>
 <translation id="1393206549145430405">Gaztelua</translation>
 <translation id="1394661041439318933">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuaren kutxari.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Oraingoa</translation>
 <translation id="346539236881580388">Atera berriro</translation>
 <translation id="3484914941826596830">Firmwarea eguneratu bitartean, ez deskonektatu kanpoko gailua edo ez itzali ordenagailua. Leihoa minimiza dezakezu. Agian minutu batzuk beharko dira eguneratzea instalatzeko, eta baliteke kanpoko gailuak denbora tarte horretan ez funtzionatzea.</translation>
-<translation id="3485555238092220889">erabilerraztasunaren ekintza</translation>
 <translation id="3486220673238053218">definizioa</translation>
 <translation id="3487866404496702283">Mahi eginbideari buruzko oharrak</translation>
 <translation id="3488065109653206955">Partzialki aktibatuta</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Zerbitzurik ez</translation>
 <translation id="4570558255126759859">Grabaketen laburpenak egiteko Gemini-ren eredua deskargatu nahi duzu?</translation>
 <translation id="4573777384450697571">Huts egin du: ziurtagiria iraungi egin da</translation>
+<translation id="4575450106703099687">erabilerraztasun-aukerak</translation>
 <translation id="458794348635939462">Ezin izan da ebatzi ostalari bat ere</translation>
 <translation id="4593212453765072419">Proxy-autentifikazioa behar da</translation>
 <translation id="4594021849294327751">Sortu transkripzioa</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> editatzeko botoia.</translation>
 <translation id="5733298426544876109">Eguneratu <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Berrezarri da datu-erabilera</translation>
 <translation id="574392208103952083">Ertaina</translation>
 <translation id="5757187557809630523">hurrengo pista</translation>
 <translation id="5760715441271661976">Atariaren egoera</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Desaktibatu audioa</translation>
 <translation id="5784136236926853061">HTTP eskaeren latentzia luzea da</translation>
 <translation id="5790391387506209808">lapis lazulia</translation>
+<translation id="5810692306010756935">Graduazioa</translation>
 <translation id="5816802250591013230">Ez da esleitu lasterbiderik</translation>
 <translation id="5826644637650799838">Artelanari buruz</translation>
 <translation id="5832805196449965646">Gehitu pertsona bat</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Testuetako nabigazioa</translation>
 <translation id="680983167891198932">Gakoa</translation>
 <translation id="6816797338148849397">Eskuragarri dago zure hautapenari buruzko informazioa. Erabili gora egiteko gezi-tekla informazioa atzitzeko.</translation>
+<translation id="6831043979455480757">Itzuli</translation>
 <translation id="6853312040151791195">Bateriaren deskargatze-abiadura</translation>
 <translation id="6862416241246624313">Bidali dira oharrak</translation>
 <translation id="6866732840889595464">Bitxilore</translation>
@@ -1551,6 +1557,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="9087578468327036362">Salatu kontsulta</translation>
 <translation id="9088306295921699330">Oraingo erabilera</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Berrezartzeko datari buruzko informazio gehiago</translation>
 <translation id="9100765901046053179">Ezarpen aurreratuak</translation>
 <translation id="910415269708673980">Freskatu <ph name="PRINCIPAL_NAME" /> erabiltzailearen txartela</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. orria eskaneatzen</translation>

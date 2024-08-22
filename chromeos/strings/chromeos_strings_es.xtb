@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Recursos exclusivos de <ph name="PRODUCT_NAME" /> ya disponibles</translation>
 <translation id="1022628058306505708">Movimiento de la Tierra</translation>
 <translation id="1026212596705997935">Se está usando la combinación de teclas para "<ph name="CONFLICT_ACCEL_NAME" />". Pulsa una nueva combinación de teclas. Para reemplazar la combinación de teclas actual, vuelve a pulsar esta combinación de teclas.</translation>
+<translation id="1030856839388844477">Reiniciar uso de datos</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> hilos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Hay una nueva función disponible. Utiliza la flecha hacia arriba para obtener más información.</translation>
 <translation id="1049663189809099096">amarillo pastel</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Señal débil</translation>
 <translation id="1300115153046603471">El APN es de tipo predeterminado y <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Convertir</translation>
 <translation id="1304014921944666344">Fecha de creación</translation>
 <translation id="1308754910631152188">Actualizando (<ph name="PERCENTAGE_VALUE" /> % completado)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutos</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">lago de agua salada</translation>
 <translation id="1367951781824006909">Selecciona un archivo</translation>
 <translation id="1371650399987522809">Comentarios sobre fondos de pantalla creados con la tecnología de la IA de Google</translation>
+<translation id="1374385338586507108">Definir</translation>
 <translation id="1387854245479784695">Esto es una combinación de todos los núcleos</translation>
 <translation id="1393206549145430405">castillo</translation>
 <translation id="1394661041439318933">Nivel de batería de la funda del dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Corriente</translation>
 <translation id="346539236881580388">Repetir foto</translation>
 <translation id="3484914941826596830">Mientras se actualiza el firmware, no desconectes este dispositivo externo ni apagues el ordenador. Puedes minimizar esta ventana. Es posible que esta actualización tarde unos minutos en instalarse y que tu dispositivo externo no funcione durante ese tiempo.</translation>
-<translation id="3485555238092220889">acción de accesibilidad</translation>
 <translation id="3486220673238053218">definición</translation>
 <translation id="3487866404496702283">Comentarios sobre la función Mahi</translation>
 <translation id="3488065109653206955">Activación parcial</translation>
@@ -536,7 +538,7 @@
 <translation id="3877066159641251281">Escuchar traducción</translation>
 <translation id="3880601782712134623">Detectará automáticamente voces distintas y asignar a cada interlocutor una etiqueta genérica, como Interlocutor 1 e Interlocutor 2</translation>
 <translation id="3885327323343477505">Cambiar salvapantallas</translation>
-<translation id="3889914174935857450">Restablecer fecha</translation>
+<translation id="3889914174935857450">Fecha de reinicio</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="391412459402535266">No se puede probar el dispositivo. Cambia al modo Portátil para hacer la prueba.</translation>
 <translation id="3916998944874125962">hacer captura de pantalla</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Sin servicio</translation>
 <translation id="4570558255126759859">¿Descargar el modelo de Gemini para resumir grabaciones?</translation>
 <translation id="4573777384450697571">Error: certificado caducado</translation>
+<translation id="4575450106703099687">opciones de accesibilidad</translation>
 <translation id="458794348635939462">No se han podido resolver todos los hosts</translation>
 <translation id="4593212453765072419">Se requiere autenticación de proxy</translation>
 <translation id="4594021849294327751">Crear transcripción</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Botón Editar para <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Actualizar <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Se ha restablecido el uso de datos</translation>
 <translation id="574392208103952083">Media</translation>
 <translation id="5757187557809630523">siguiente pista</translation>
 <translation id="5760715441271661976">Estado de portal</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5784136236926853061">Latencia de HTTP alta</translation>
 <translation id="5790391387506209808">lapislázuli</translation>
+<translation id="5810692306010756935">Graduación</translation>
 <translation id="5816802250591013230">No se ha asignado ninguna combinación de teclas</translation>
 <translation id="5826644637650799838">Acerca de la ilustración</translation>
 <translation id="5832805196449965646">Añadir perfil</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Navegación por el texto</translation>
 <translation id="680983167891198932">Clave</translation>
 <translation id="6816797338148849397">Hay disponible información relacionada con tu selección. Utiliza la flecha hacia arriba para consultarla.</translation>
+<translation id="6831043979455480757">Traducir</translation>
 <translation id="6853312040151791195">Velocidad de descarga</translation>
 <translation id="6862416241246624313">Comentarios enviados</translation>
 <translation id="6866732840889595464">Margarita</translation>
@@ -1551,6 +1557,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="9087578468327036362">Denunciar esta consulta</translation>
 <translation id="9088306295921699330">Uso actual</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Más información sobre la opción Fecha de reinicio</translation>
 <translation id="9100765901046053179">Configuración avanzada</translation>
 <translation id="910415269708673980">Actualiza el ticket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando página <ph name="PAGE_NUMBER" /></translation>

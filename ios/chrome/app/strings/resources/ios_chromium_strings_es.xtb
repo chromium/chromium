@@ -5,7 +5,6 @@
 <translation id="1047130070405668746">Selecciona Chromium</translation>
 <translation id="1091252999271033193">Esto significa que Chromium siempre solicitará la vista del sitio web como móvil.</translation>
 <translation id="1115463765356382667">Completa las acciones que te sugerimos a continuación para sacar el máximo partido a Chromium.</translation>
-<translation id="1141230343006904201">1. Abre la configuración de Chromium</translation>
 <translation id="1171824629317156389">En iOS, ve a Ajustes, selecciona Chromium, toca "App del navegador por omisión" y elige Chromium.</translation>
 <translation id="1185134272377778587">Información de Chromium</translation>
 <translation id="1257458525759135959">Para guardar imágenes, toca Ajustes y permite que Chromium añada fotos.</translation>
@@ -82,8 +81,6 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium puede ayudarte a seguir este paquete en la página Nueva pestaña.}other{Chromium puede ayudarte a seguir estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="3102849287235003384">Para cerrar sesión con tu cuenta de Google en todos los sitios web, <ph name="BEGIN_LINK" />cierra sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Buscar por voz en Chromium</translation>
-<translation id="3228349498066165585">Algunos de tus datos de Chromium aún no se han guardado en tu cuenta de Google.
-        Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="328933489847748230">{count,plural, =1{Mostrando 1 ventana de Chromium}other{Mostrando {count} ventanas de Chromium}}</translation>
 <translation id="3344973607274501920">Chromium no ha podido comprobar tus contraseñas. Revisa tu conexión a Internet.</translation>
 <translation id="3366305173356742781">Datos de Chromium en tu cuenta</translation>
@@ -92,7 +89,6 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="347967311580159871">Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chromium, ve a los <ph name="BEGIN_LINK" />servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">No se ha compartido tu contraseña. Comprueba tu conexión a Internet y asegúrate de haber iniciado sesión en Chromium. Después, inténtalo de nuevo.</translation>
 <translation id="3567399274263440288">Para sacarle el máximo partido a Chromium, inicia sesión en Chromium con tu cuenta de Google.</translation>
-<translation id="3634039384458740619">Abrir configuración de Chromium</translation>
 <translation id="3639997914391704523">Chromium puede comprobar tus contraseñas cuando inicias sesión con tu cuenta de Google.</translation>
 <translation id="3688710892786762883">Chromium detectará los números de seguimiento de envíos de los sitios que visites y te mostrará las novedades sobre los paquetes en la página Nueva pestaña. Tus datos se compartirán con Google para ofrecerte esta función y mejorar Shopping para todos.</translation>
 <translation id="372658070733623520">Para usar y guardar los datos de Chromium en tu cuenta de Google, debes verificar tu identidad.</translation>
@@ -120,6 +116,7 @@ Tus datos se han cifrado con tu frase de contraseña. Introdúcela para usar y g
 <translation id="4432744876818348753">Inicia sesión para sacarle el máximo partido a Chromium.</translation>
 <translation id="4445228361214254027">Tu organización ha desactivado la opción de usar y guardar datos de Chromium en tu cuenta de Google. Los marcadores, las contraseñas y otros elementos nuevos solo se guardarán en este dispositivo.</translation>
 <translation id="4498832288620833153">Añade las URLs introducidas a tu lista de lectura de Chromium.</translation>
+<translation id="451793238785269934">Un feed personalizado creado para ti. Incluye noticias, deportes y el tiempo.</translation>
 <translation id="452436063477828504">Asegúrate de que siempre puedas usar los datos de Chromium en tu cuenta de Google</translation>
 <translation id="4555020257205549924">Si esta función está activada, Chromium ofrecerá la posibilidad de traducir páginas escritas en otros idiomas con el Traductor de Google. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4572441104543926904">El cifrado con frase de contraseña no incluye los métodos de pago ni las direcciones.
@@ -151,9 +148,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chromium 
 <translation id="5203483872492817335">Accede más rápido a Chromium desde el Dock de la pantalla de inicio de tu iPad.</translation>
 <translation id="5213683223491576284">Abre el Gestor de contraseñas en Chromium.</translation>
 <translation id="5224391634244552924">No hay ninguna contraseña guardada. Chromium puede comprobar tus contraseñas si las guardas.</translation>
-<translation id="5242782538551259282">Algunos de tus datos de Chromium aún no se han guardado en tu cuenta de Google.
-
-        Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="5308226104666789935">Chromium no puede comprobar si hay actualizaciones</translation>
 <translation id="5311557153294205270">Añade las URLs introducidas a tus marcadores de Chromium.</translation>
 <translation id="5396916991083608703">¿Establecer Chromium como predeterminado?</translation>
@@ -204,7 +198,6 @@ Notas importantes:
 <translation id="632825460376924298">Permitir el inicio de sesión en Chromium</translation>
 <translation id="6332129548244419716">Elimina los datos de navegación en Chromium.</translation>
 <translation id="6337530241089703714">Elige si quieres borrar o conservar tus datos de Chromium en este dispositivo</translation>
-<translation id="6348483005826990855">3. Selecciona Chromium</translation>
 <translation id="6383607155624074112">Accede más rápido a Chromium desde el Dock de tu pantalla de inicio</translation>
 <translation id="6424492062988593837">Chromium sigue mejorando. Hay una nueva versión disponible.</translation>
 <translation id="6433172051771630690">Consejos para sacar el máximo partido a Chromium.</translation>
@@ -268,11 +261,11 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="8235427517854598594">¿Establecer Chromium como navegador predeterminado?</translation>
 <translation id="8240981428553046115">Chromium no ha podido comprobar si hay actualizaciones. Prueba de nuevo más tarde.</translation>
 <translation id="8254729934443216898">Descubre nuevas funciones que te ayudarán a sacar el máximo partido de Chromium.</translation>
+<translation id="829047622686389424">Un feed personalizado creado para ti.</translation>
 <translation id="8303579360494576778">Gestionar métodos de pago en Chromium</translation>
 <translation id="830951810931292870">Abre las URLs introducidas en Chromium en Incógnito.</translation>
 <translation id="8386869251364507178">Acciones de Chromium</translation>
 <translation id="8409374867500149834">Tienes la seguridad más potente de Chromium frente a sitios web dañinos</translation>
-<translation id="8458950033462118672">Puedes abrir enlaces en Chromium automáticamente estableciendo que sea tu aplicación de navegador predeterminada.</translation>
 <translation id="8473874987831035139">Consejo de Chromium: Mueve Chromium al Dock</translation>
 <translation id="8502918057530111907">Usa Chromium de forma predeterminada para obtener estadísticas sobre precios fácilmente</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Ocurre cuando Chromium lleva {THRESHOLD} minuto sin usarse. Se eliminarán los datos guardados solo en este dispositivo mientras tenías la sesión iniciada. Esto podría incluir el historial y las contraseñas.}other{Ocurre cuando Chromium lleva {THRESHOLD} minutos sin usarse. Se eliminarán los datos guardados solo en este dispositivo mientras tenías la sesión iniciada. Esto podría incluir el historial y las contraseñas.}}</translation>

@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Eksklusivt <ph name="PRODUCT_NAME" />-innhold er tilgjengelig nå</translation>
 <translation id="1022628058306505708">Jordflyt</translation>
 <translation id="1026212596705997935">Hurtigtasten brukes til «<ph name="CONFLICT_ACCEL_NAME" />». Trykk på en ny hurtigtast. For å erstatte den eksisterende hurtigtasten, trykk på denne hurtigtasten på nytt.</translation>
+<translation id="1030856839388844477">Tilbakestill databruk</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> tråder, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">En ny funksjon er tilgjengelig. Bruk oppoverpilen for å finne ut mer.</translation>
 <translation id="1049663189809099096">pastellgul</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Svakt signal</translation>
 <translation id="1300115153046603471">APN-et er type standard og <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Konverter</translation>
 <translation id="1304014921944666344">Opprettelsesdato</translation>
 <translation id="1308754910631152188">Oppdaterer (<ph name="PERCENTAGE_VALUE" /> % er fullført)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutter</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">saltsjø</translation>
 <translation id="1367951781824006909">Velg en fil</translation>
 <translation id="1371650399987522809">Tilbakemelding om bakgrunner basert på AI-løsninger fra Google</translation>
+<translation id="1374385338586507108">Definer</translation>
 <translation id="1387854245479784695">Dette er en sammenstilling av alle kjernene</translation>
 <translation id="1393206549145430405">borg</translation>
 <translation id="1394661041439318933">Enheten har <ph name="BATTERY_PERCENTAGE" /> % batteri i etuiet.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Nåværende</translation>
 <translation id="346539236881580388">Ta på nytt</translation>
 <translation id="3484914941826596830">Ikke koble fra denne eksterne enheten eller slå av datamaskinen mens fastvaren oppdateres. Du kan minimere dette vinduet. Denne oppdateringen kan ta noen minutter, og det kan hende den eksterne enheten ikke fungerer i dette tidsrommet.</translation>
-<translation id="3485555238092220889">tilgjengelighetshandling</translation>
 <translation id="3486220673238053218">definisjon</translation>
 <translation id="3487866404496702283">Tilbakemelding for mahi-funksjonen</translation>
 <translation id="3488065109653206955">Delvis aktivert</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Ingen tjeneste</translation>
 <translation id="4570558255126759859">Vil du laste ned Gemini-modellen for å oppsummere opptak?</translation>
 <translation id="4573777384450697571">Mislykket – sertifikatet er utløpt</translation>
+<translation id="4575450106703099687">tilgjengelighetsalternativer</translation>
 <translation id="458794348635939462">Kunne ikke finne tilknytning til alle vertene</translation>
 <translation id="4593212453765072419">Godkjenning av mellomtjener kreves</translation>
 <translation id="4594021849294327751">Opprett en transkripsjon</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Endreknapp for <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Oppdater <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Databruken er tilbakestilt</translation>
 <translation id="574392208103952083">Medium</translation>
 <translation id="5757187557809630523">neste spor</translation>
 <translation id="5760715441271661976">Portaltilstand</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Kutt lyden</translation>
 <translation id="5784136236926853061">Høy HTTP-tidsforsinkelse</translation>
 <translation id="5790391387506209808">lasurstein</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Ingen hurtigtast er tilordnet</translation>
 <translation id="5826644637650799838">Om kunsten</translation>
 <translation id="5832805196449965646">Legg til person</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Tekstnavigasjon</translation>
 <translation id="680983167891198932">Nøkkel</translation>
 <translation id="6816797338148849397">Informasjon om det du har markert, er tilgjengelig. Bruk oppoverpilen for å se informasjonen.</translation>
+<translation id="6831043979455480757">Oversett</translation>
 <translation id="6853312040151791195">Utladingsfrekvens</translation>
 <translation id="6862416241246624313">Tilbakemeldingen er sendt</translation>
 <translation id="6866732840889595464">tusenfryd</translation>
@@ -1551,6 +1557,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="9087578468327036362">Rapportér dette søket</translation>
 <translation id="9088306295921699330">Nåværende bruk</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Mer informasjon om tilbakestillingsdatoen</translation>
 <translation id="9100765901046053179">Avanserte innstillinger</translation>
 <translation id="910415269708673980">Oppdater saken for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skanner side <ph name="PAGE_NUMBER" /></translation>

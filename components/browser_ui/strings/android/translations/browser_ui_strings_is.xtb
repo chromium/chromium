@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">Slökkva á hljóði vefsvæða sem spila hljóð</translation>
 <translation id="3602290021589620013">Forskoða</translation>
 <translation id="3628308229821498208">Leitartillögur</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða í eigu <ph name="RWS_OWNER" /> sem geta séð virkni þína í hópnum}one{<ph name="RWS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða í eigu <ph name="RWS_OWNER" /> sem geta séð virkni þína í hópnum}other{<ph name="RWS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða í eigu <ph name="RWS_OWNER" /> sem geta séð virkni þína í hópnum}}</translation>
 <translation id="3697164069658504920">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota USB-tæki. Þegar slökkt er á þessu geta vefsvæði ekki notað USB-tæki.</translation>
 <translation id="3707034683772193706">Vefsvæði sem þú heimsækir getur vistað lítið magn upplýsinga í Chrome, aðallega til að staðfesta að þú sért raunverulegur notandi</translation>
 <translation id="3721953990244350188">Hunsa og sýna næstu tiltæku aðgerð</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">Deila með</translation>
 <translation id="5001526427543320409">Fótspor þriðju aðila</translation>
 <translation id="5007392906805964215">Yfirfara</translation>
+<translation id="5014182796621173645">Þú heimsóttir <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Leyfa</translation>
 <translation id="5048398596102334565">Leyfa vefsvæðum að fá aðgang að hreyfiskynjurunum (ráðlagt)</translation>
 <translation id="5050380848339752099">Vefsvæðið er við það að deila upplýsingum með forriti fyrir utan huliðsstillingu.</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">Sjá meira</translation>
 <translation id="6561560012278703671">Nota hljóðlátari skilaboð (útilokar truflun af tilkynningum)</translation>
 <translation id="6593061639179217415">Tölvuvefsvæði</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Fótspor leyfð fyrir <ph name="RWS_MEMBERS_COUNT" /> vefsvæði í eigu <ph name="RWS_OWNER" />}one{Fótspor leyfð fyrir <ph name="RWS_MEMBERS_COUNT" /> vefsvæði í eigu <ph name="RWS_OWNER" />}other{Fótspor leyfð fyrir <ph name="RWS_MEMBERS_COUNT" /> vefsvæði í eigu <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Varið efni</translation>
 <translation id="662080504995468778">Vera áfram</translation>
 <translation id="6653342741369270081">Ýttu á bakkhnappinn til að hætta að nota allan skjáinn.</translation>
+<translation id="6683865262523156564">Þetta vefsvæði er í hóp sem getur séð virknina þína. Hópurinn er skilgreindur af <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Prófílmyndir</translation>
 <translation id="6697925417670533197">Niðurhal í gangi</translation>
 <translation id="6722828510648505498">Útiloka innskráningartilkynningar frá auðkenningarþjónustum.</translation>

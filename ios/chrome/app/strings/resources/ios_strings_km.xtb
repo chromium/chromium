@@ -373,7 +373,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{បាន​រក្សាទុក​ពាក្យសម្ងាត់នៅ​ក្នុងគណនី Google របស់​អ្នក {EMAIL}}other{បាន​រក្សាទុក​ពាក្យសម្ងាត់នៅ​ក្នុងគណនី Google របស់​អ្នក {EMAIL}}}</translation>
 <translation id="2797029671965852011">បង្ហាញ​ប្រវត្តិ</translation>
 <translation id="2800683595868705743">ចេញពីទិដ្ឋភាពប្តូរផ្ទាំង</translation>
-<translation id="2815198996063984598">2. ចុច​កម្មវិធីរុករកតាមអ៊ីនធឺណិត​លំនាំដើម</translation>
 <translation id="2818821771744632548">អ្នកបានចេញ​ពីគណនី​របស់អ្នក <ph name="USER_NAME" /> ដែលជាផ្នែកមួយ​នៃការកំណត់ iPhone របស់អ្នកឡើងវិញ។ ដើម្បី​ចូលគណនីវិញ សូមចុច "បន្ត" ខាងក្រោម។</translation>
 <translation id="2819667972867209401">នៅពេល​បើក ទិន្នន័យ​ត្រូវបាន​រក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក។ នៅពេលបិទ ទិន្នន័យ​ត្រូវបាន​រក្សាទុក​តែនៅលើ​ឧបករណ៍នេះ​ប៉ុណ្ណោះ និង​ត្រូវបានលុប ប្រសិនបើ​អ្នកចេញពី​គណនី។</translation>
 <translation id="2830972654601096923">គ្រប់គ្រង​អាសយដ្ឋាន...</translation>
@@ -489,6 +488,7 @@
 <translation id="3398509000872871492">ការតភ្ជាប់មានសុវត្ថិភាព</translation>
 <translation id="3404232721752787413">រក្សា​ទុក​នៅ​ក្នុង Google រូបថត</translation>
 <translation id="3404744938087714423">ការចេញពីគណនីនឹងបិទសម​កាល​កម្ម។</translation>
+<translation id="340669334496430859">បានកែប្រែ​លើកចុងក្រោយ</translation>
 <translation id="3409785640040772790">ផែនទី</translation>
 <translation id="3416023309465857378">25 តុលា 2023</translation>
 <translation id="3425644765244388016">ឈ្មោះហៅក្រៅរបស់កាត</translation>
@@ -539,6 +539,7 @@
 <translation id="3607167657931203000">ទិន្នន័យបំពេញស្វ័យប្រវត្តិ</translation>
 <translation id="3609785682760573515">កំពុងធ្វើសមកម្ម...</translation>
 <translation id="3625008969091706597">អ្នកអាច​អូសគែម​ដើម្បី​ត្រឡប់ក្រោយ។</translation>
+<translation id="362709345066740529">ប្ដូរកាត ព័ត៌មាន និង​អ្វីៗជាច្រើនទៀត​របស់អ្នក​តាមបំណង​នៅទីនេះ</translation>
 <translation id="3630104167004786843">កុំទទួល​ការជូនដំណឹងថ្មីៗ</translation>
 <translation id="3631443864840848029">សូមប្រាកដថា អ្នកកំពុងរក្សាទុកពាក្យ​សម្ងាត់បច្ចុប្បន្នរបស់អ្នកសម្រាប់គេហទំព័រនេះ។</translation>
 <translation id="3638472932233958418">ផ្ទុកគេហទំព័រជាមុន</translation>
@@ -567,7 +568,6 @@
 <translation id="3775743491439407556">សមកាលកម្ម​មិនដំណើរការ​ទេ</translation>
 <translation id="3779810277399252432">គ្មានការតភ្ជាប់អ៊ីនធឺណិតទេ។</translation>
 <translation id="3785672280731998727">ឈ្មោះ​បង្ហាញ</translation>
-<translation id="3789294999358192700">សូមអនុវត្ត​តាម​ជំហាន​ខាងក្រោម៖</translation>
 <translation id="3789841737615482174">តំឡើង</translation>
 <translation id="380329542618494757">ឈ្មោះ</translation>
 <translation id="3803696231112616155">ផ្ដល់ការបកប្រែ​គេហទំព័រនេះ</translation>
@@ -778,6 +778,7 @@
 <translation id="4808646838864186379">ការដឹកជញ្ជូន​របស់អ្នក​ត្រូវបានបោះបង់</translation>
 <translation id="4808744395915275922">កំណែថ្មី</translation>
 <translation id="4813345808229079766">ការតភ្ជាប់</translation>
+<translation id="4817408188311787415">បំពេញទម្រង់បែបបទដោយ <ph name="CELL_ACCESSIBILITY_LABEL" /> ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="4818522717893377262">បញ្ចូល​ភាសា...</translation>
 <translation id="481968316161811770">ខុកឃី ទិន្នន័យគេហទំព័រ</translation>
 <translation id="4821595350501541683">ផ្ទាំងត្រូវបានបិទ ហើយទិន្នន័យរុករកត្រូវបានលុប</translation>
@@ -802,6 +803,7 @@
 <translation id="488785315393301722">បង្ហាញព័ត៌មានលំអិត</translation>
 <translation id="4889521386764567563">កម្រងព័ត៌មានបច្ចុប្បន្ន</translation>
 <translation id="4894963374040315706">វាអនុញ្ញាតឱ្យអ្នកធ្វើការស្វែងរកដោយប្រើសំឡេងរបស់អ្នក</translation>
+<translation id="4895540042460820904">បានបើក​លើកចុងក្រោយ</translation>
 <translation id="4896467949657706481">ផ្ទាំងត្រូវបានបិទ ហើយអ្នកត្រូវបាននាំចេញពីគណនី</translation>
 <translation id="489903206070130262">ផ្ទាំងដែល​អ្នកបើក​ចុងក្រោយ</translation>
 <translation id="4901778704868714008">រក្សាទុក...</translation>
@@ -888,6 +890,7 @@
 <translation id="5316356981864168850">ទី <ph name="INDEX" /> នៃ <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5318298563956633672">អ្នកកំពុងតាមដានផលិតផលនេះស្រាប់ហើយ។</translation>
+<translation id="5327248766486351172">ឈ្មោះ</translation>
 <translation id="5327753393331509826">ទទួលបានការជូនដំណឹងអំពីខ្លឹមសារ</translation>
 <translation id="5329451663851195956">អ្នកអាច​ទាញចុះ​ក្រោម ដើម្បី​ផ្ទុកឡើងវិញ។</translation>
 <translation id="5333148247954006827">ប្ដូរទៅកម្រងព័ត៌មាន​ផ្សេងទៀត</translation>
@@ -1227,6 +1230,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6797885426782475225">ស្វែងរកដោយសម្លេង</translation>
 <translation id="6800349425672670802">អ្នកអាច​ចូលប្រើ​ផ្ទាំងដែលបើក​ទាំងអស់​របស់អ្នក​ពី​មុខងារប្ដូរផ្ទាំង។</translation>
 <translation id="6807889908376551050">បង្ហាញទាំងអស់...</translation>
+<translation id="6810455365609435460">ផ្ទាំងឯកជន</translation>
 <translation id="681368974849482173">ធាតុត្រូវបានបង្កើត</translation>
 <translation id="6824350924364057989">ការកំណត់</translation>
 <translation id="6831043979455480757">បកប្រែ</translation>

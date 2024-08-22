@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">Mykistä ääniä toistavat sivustot</translation>
 <translation id="3602290021589620013">Esikatselu</translation>
 <translation id="3628308229821498208">Ehdotetut haut</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sivusto osoitteen <ph name="RWS_OWNER" /> sivustoryhmässä (toimintasi siellä näkyy sivustoille)}other{<ph name="RWS_MEMBERS_COUNT" /> sivustoa osoitteen <ph name="RWS_OWNER" /> sivustoryhmässä (toimintasi siellä näkyy sivustoille)}}</translation>
 <translation id="3697164069658504920">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää USB-laitteita. Kun tämä on pois päältä, sivustot eivät voi käyttää USB-laitteita.</translation>
 <translation id="3707034683772193706">Avaamasi sivusto voi tallentaa pienen määrän tietoja Chromeen tarkistaakseen, ettet ole botti</translation>
 <translation id="3721953990244350188">Hylkää ja näytä seuraava saatavilla oleva toiminto</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">Jaa palvelussa:</translation>
 <translation id="5001526427543320409">Kolmannen osapuolen evästeet</translation>
 <translation id="5007392906805964215">Tarkista</translation>
+<translation id="5014182796621173645">Kävit täällä <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Salli</translation>
 <translation id="5048398596102334565">Anna sivustojen käyttää liiketunnistimien lukemia (suositus)</translation>
 <translation id="5050380848339752099">Tämä sivusto aikoo jakaa tietoja sovellukselle incognito-tilan ulkopuolella.</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">Katso lisää</translation>
 <translation id="6561560012278703671">Hiljaisemmat viestit (estää ilmoituksia häiritsemästä sinua)</translation>
 <translation id="6593061639179217415">Tietokonesivusto</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Evästeet sallittu <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />-sivustolla}other{Evästeet sallittu <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />-sivustolla}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> Gt</translation>
 <translation id="6612358246767739896">Suojattu sisältö</translation>
 <translation id="662080504995468778">Jää</translation>
 <translation id="6653342741369270081">Poistu koko näytön tilasta Takaisin-painikkeella.</translation>
+<translation id="6683865262523156564">Tämä sivusto kuuluu ryhmään, joka voi nähdä toimintasi. <ph name="RWS_OWNER" /> on määrittänyt ryhmän</translation>
 <translation id="6689172468748959065">Profiilikuvat</translation>
 <translation id="6697925417670533197">Aktiiviset lataukset</translation>
 <translation id="6722828510648505498">Estä henkilöllisyyspalveluiden sisäänkirjautumiskehotteet.</translation>

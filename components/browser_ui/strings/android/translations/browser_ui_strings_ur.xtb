@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">آواز چلانے والی سائٹس کی آواز بند کریں</translation>
 <translation id="3602290021589620013">پیش منظر</translation>
 <translation id="3628308229821498208">تجویز کردہ تلاشیں</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> سائٹ <ph name="RWS_OWNER" /> کی سائٹس کے گروپ میں ہے جو گروپ میں آپ کی سرگرمی کو دیکھ سکتا ہے}other{<ph name="RWS_MEMBERS_COUNT" /> سائٹس <ph name="RWS_OWNER" /> کی سائٹس کے گروپ میں ہے جو گروپ میں آپ کی سرگرمی کو دیکھ سکتا ہے}}</translation>
 <translation id="3697164069658504920">‏آن ہونے پر، سائٹس USB آلات کا استعمال کرنے کے لیے پوچھ سکتی ہیں۔ آف ہونے پر، سائٹس USB آلات کا استعمال نہیں کر سکتیں۔</translation>
 <translation id="3707034683772193706">‏آپ جس سائٹ پر جاتے ہیں وہ Chrome کے ساتھ تھوڑی سی معلومات محفوظ کر سکتی ہے، بنیادی طور پر اس بات کی تصدیق کرنے کے لیے کہ آپ بوٹ نہیں ہیں</translation>
 <translation id="3721953990244350188">برخاست کریں اور اگلا دستیاب ایکشن دکھائیں</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">اشتراک کریں بذریعہ</translation>
 <translation id="5001526427543320409">فریق ثالث کوکیز</translation>
 <translation id="5007392906805964215">جائزہ لیں</translation>
+<translation id="5014182796621173645">آپ نے <ph name="RECENCY" /> ملاحظہ کیا</translation>
 <translation id="5039804452771397117">اجازت دیں</translation>
 <translation id="5048398596102334565">سائٹس کو موشن سینسرز تک رسائی حاصل کرنے کی اجازت دیں (تجویز کردہ)</translation>
 <translation id="5050380848339752099">یہ سائٹ پوشیدگی وضع سے باہر ایک ایپ کے ساتھ معلومات کا اشتراک کرنے والی ہے۔</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">مزید دیکھیں</translation>
 <translation id="6561560012278703671">پر سکون پیغام رسانی کا استعمال کریں (اطلاع کی پرامپٹس کو آپ کو خلل ڈالنے سے مسدود کرتا ہے)</translation>
 <translation id="6593061639179217415">ڈیسک ٹاپ سائٹ</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> سائٹ کے لیے کوکیز کی اجازت ہے}other{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> سائٹس کے لیے کوکیز کی اجازت ہے}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">تحفظ یافتہ مواد</translation>
 <translation id="662080504995468778">رکیں</translation>
 <translation id="6653342741369270081">پوری اسکرین سے باہر نکلنے کیلئے پیچھے جائیں بٹن کو دبائیں۔</translation>
+<translation id="6683865262523156564">یہ سائٹ ایک گروپ میں موجود ہے، جو آپ کی سرگرمی دیکھ سکتا ہے۔ گروپ کی وضاحت <ph name="RWS_OWNER" /> نے کی ہے</translation>
 <translation id="6689172468748959065">پروفائل کی تصاویر</translation>
 <translation id="6697925417670533197">فعال ڈاؤن لوڈز</translation>
 <translation id="6722828510648505498">شناختی سروسز سے سائن ان کے پرامپٹس مسدود کریں۔</translation>

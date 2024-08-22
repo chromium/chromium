@@ -373,7 +373,6 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{પાસવર્ડને તમારા Google એકાઉન્ટ, {EMAIL}માં સાચવ્યો}one{પાસવર્ડને તમારા Google એકાઉન્ટ, {EMAIL}માં સાચવ્યો}other{પાસવર્ડને તમારા Google એકાઉન્ટ, {EMAIL}માં સાચવ્યા}}</translation>
 <translation id="2797029671965852011">ઇતિહાસ બતાવો</translation>
 <translation id="2800683595868705743">ટેબ સ્વિચર છોડી દો</translation>
-<translation id="2815198996063984598">2. ડિફૉલ્ટ બ્રાઉઝર ઍપ પર ટૅપ કરો</translation>
 <translation id="2818821771744632548">તમારો iPhone રીસેટ કરવાની પ્રક્રિયાના ભાગ તરીકે, તમારા એકાઉન્ટ <ph name="USER_NAME" />માંથી તમને સાઇન આઉટ કરવામાં આવ્યા. ફરીથી સાઇન ઇન કરવા માટે, "ચાલુ રાખો" પર ટૅપ કરો.</translation>
 <translation id="2819667972867209401">જ્યારે ચાલુ હોય, ત્યારે ડેટા તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે. જ્યારે આ બંધ હોય, ત્યારે ડેટા માત્ર આ ડિવાઇસમાં સાચવવામાં આવે છે અને જો તમે સાઇન આઉટ કરો, તો ડિલીટ કરવામાં આવે છે.</translation>
 <translation id="2830972654601096923">સરનામા મેનેજ કરો…</translation>
@@ -539,6 +538,7 @@
 <translation id="3607167657931203000">સ્વતઃભરણ ડેટા</translation>
 <translation id="3609785682760573515">સમન્વય કરી રહ્યું છે...</translation>
 <translation id="3625008969091706597">તમે પાછળ જવા માટે, કિનારીને સ્વાઇપ કરી શકો છો.</translation>
+<translation id="362709345066740529">અહીં તમારા કાર્ડ, ફીડ અને બીજું ઘણું કસ્ટમાઇઝ કરો</translation>
 <translation id="3630104167004786843">અપડેટ મેળવશો નહીં</translation>
 <translation id="3631443864840848029">તમે આ સાઇટ માટેનો તમારો વર્તમાન પાસવર્ડ સાચવો છો એ વાતની ખાતરી કરો.</translation>
 <translation id="3638472932233958418">વેબપૃષ્ઠો પહેલાથી લોડ કરો</translation>
@@ -567,7 +567,6 @@
 <translation id="3775743491439407556">સિંક કાર્ય કરી રહ્યું નથી</translation>
 <translation id="3779810277399252432">કોઈ ઇન્ટરનેટ કનેક્શન નથી.</translation>
 <translation id="3785672280731998727">ડિસ્પ્લે નામ</translation>
-<translation id="3789294999358192700">નીચેના પગલાં અનુસરો:</translation>
 <translation id="3789841737615482174">ઇન્સ્ટોલ કરો</translation>
 <translation id="380329542618494757">નામ</translation>
 <translation id="3803696231112616155">આ સાઇટનો અનુવાદ કરવાનું કહો</translation>
@@ -778,6 +777,7 @@
 <translation id="4808646838864186379">તમારી ડિલિવરી રદ કરવામાં આવી હતી</translation>
 <translation id="4808744395915275922">અપડેટ</translation>
 <translation id="4813345808229079766">કનેક્શન</translation>
+<translation id="4817408188311787415"><ph name="CELL_ACCESSIBILITY_LABEL" /> સાથે ફોર્મને ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="4818522717893377262">ભાષા ઉમેરો...</translation>
 <translation id="481968316161811770">કુકીઝ, સાઇટ ડેટા</translation>
 <translation id="4821595350501541683">ટૅબ બંધ કરવામાં આવી અને બ્રાઉઝિંગ ડેટા ડિલીટ કર્યો</translation>
@@ -888,6 +888,7 @@
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />માંથી <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5318298563956633672">તમે આ પ્રોડક્ટને પહેલેથી જ ટ્રૅક કરી રહ્યાં છો.</translation>
+<translation id="5327248766486351172">નામ</translation>
 <translation id="5327753393331509826">કન્ટેન્ટ સંબંધિત નોટિફિકેશન મેળવો</translation>
 <translation id="5329451663851195956">રિફ્રેશ કરવા માટે નીચે તરફ ખેંચી શકો છો.</translation>
 <translation id="5333148247954006827">અન્ય પ્રોફાઇલ પર સ્વિચ કરો</translation>
@@ -1227,6 +1228,7 @@
 <translation id="6797885426782475225">વૉઇસ શોધ</translation>
 <translation id="6800349425672670802">તમે ટૅબ સ્વિચર મારફતે તમારા બધા ખુલ્લા ટૅબ ઍક્સેસ કરી શકો છો.</translation>
 <translation id="6807889908376551050">બધું બતાવો...</translation>
+<translation id="6810455365609435460">છૂપા ટૅબ</translation>
 <translation id="681368974849482173">આઇટમ બનાવી</translation>
 <translation id="6824350924364057989">સેટિંગ</translation>
 <translation id="6831043979455480757">અનુવાદ કરો</translation>

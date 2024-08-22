@@ -37,8 +37,6 @@
 <translation id="1615715390546812898">Որոնել ձայնի միջոցով Chrome-ում։</translation>
 <translation id="1657395063736185342">Տեսողական որոնում Chrome-ում</translation>
 <translation id="1670609221633730681">Խորհուրդ Chrome-ից․ ընտրեք հասցեագոտու դիրքը</translation>
-<translation id="1675955119303651351">Ձեր Chrome-ի որոշ տվյալներ դեռ չեն պահվել ձեր Google հաշվում։
-        Նախքան դուրս գալը մի քանի րոպե սպասեք։ Եթե դուրս գաք հիմա, այս տվյալները կջնջվեն։</translation>
 <translation id="1682483655351012182">Համաժամացնել Chrome-ի տվյալները</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Ավելացնում է մուտքագրված URL-ները Chrome-ի ձեր էջանիշներում։</translation>
@@ -81,7 +79,6 @@
 <translation id="2767464022270041271">Պահված գաղտնաբառեր չկան։ Google գաղտնաբառերի կառավարիչը կարող է ստուգել ձեր գաղտնաբառերը, երբ պահում եք դրանք։</translation>
 <translation id="2869959624320573933">Մուտք Chrome</translation>
 <translation id="2876628302275096482">Իմացեք ավելին, թե <ph name="BEGIN_LINK" />ինչպես է Chrome-ը պահպանում ձեր տվյալների գաղտնիությունը<ph name="END_LINK" /></translation>
-<translation id="2952581218264071393">1. Բացեք Chrome-ի կարգավորումները։</translation>
 <translation id="2957447865124070833">Ընտրեք <ph name="BEGIN_BOLD" />Chrome-ը<ph name="END_BOLD" />։</translation>
 <translation id="3030414234702425231">Դուք դուրս եք գալիս <ph name="SIGNOUT_MANAGED_DOMAIN" /> տիրույթի ադմինիստրատորի կողմից կառավարվող հաշվից: Նկատի առեք, որ Chrome-ի տվյալները սարքից կհեռացվեն, սակայն կմնան ձեր Google հաշվում:</translation>
 <translation id="309672519329227863">Օգտագործեք Chrome-ում պահված գաղտնաբառերը և այլ տվյալներ ուրիշ հավելվածներում։</translation>
@@ -93,7 +90,6 @@
 <translation id="3340938510625667914">Գործողություններ Chrome-ում</translation>
 <translation id="3345341804167540816">Օգտագործեք Chrome-ն ամենուրեք</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Սա տեղի է ունենում, երբ Chrome-ը {THRESHOLD} րոպե չի օգտագործվում}one{Սա տեղի է ունենում, երբ Chrome-ը {THRESHOLD} րոպե չի օգտագործվում}other{Սա տեղի է ունենում, երբ Chrome-ը {THRESHOLD} րոպե չի օգտագործվում}}</translation>
-<translation id="3399930248910934354">Բացել Chrome-ի կարգավորումները</translation>
 <translation id="344736123700721678">Ավելի արագ բացեք Chrome-ը հիմնական էկրանի Dock վահանակից</translation>
 <translation id="3472587960215700950">Chrome-ն օգտագործում է Google Քարտեզները՝ ձեզ գտնված հասցեների մասին տեղեկություններ ցուցադրելու և դեպի այդ վայրեր երթուղիներ գծելու համար։</translation>
 <translation id="3503014945441706099">Կիրառեք նաև բարելավված Ապահով դիտարկումն այս Chrome պրոֆիլի համար</translation>
@@ -131,9 +127,6 @@
 <translation id="4761869838909035636">Անցնել Chrome-ի անվտանգության ստուգում</translation>
 <translation id="4798859546468762093">Անհատականացումը և այլ գործառույթներ կարգավորելու համար ավելացրեք Chrome-ն այստեղ՝ <ph name="FEATURE_NAME_1" /> և <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Հավելվածը բարելավելու նպատակով Chrome-ը ուղարկում է օգտագործման և խափանումների մասին տվյալները Google-ին։ <ph name="BEGIN_LINK" />Կառավարել<ph name="END_LINK" /></translation>
-<translation id="4831642696589369971">Ձեր Chrome-ի որոշ տվյալներ դեռ չեն պահվել ձեր Google հաշվում։
-
-        Նախքան դուրս գալը մի քանի րոպե սպասեք։ Եթե դուրս գաք հիմա, այս տվյալները կջնջվեն։</translation>
 <translation id="484033449593719797">Չի աջակցվում Chrome-ի բետա տարբերակում</translation>
 <translation id="4840404732697892756">Google գաղտնաբառերի կառավարիչը կարող է ստուգել ձեր գաղտնաբառերը, երբ մտնեք Google հաշիվ։</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome-ը կարող է օգնել ձեզ հետագծել այս փաթեթը նոր ներդիրի էջում։}one{Chrome-ը կարող է օգնել ձեզ հետագծել այս փաթեթը նոր ներդիրի էջում։}other{Chrome-ը կարող է օգնել ձեզ հետագծել այս փաթեթները նոր ներդիրի էջում։}}</translation>
@@ -211,6 +204,7 @@
 Որպեսզի իմանաք ավելին կարգավորումների մասին, որոնք Chrome-ի բարելավման նպատակով տվյալներ են օգտագործում, անցեք <ph name="BEGIN_LINK" />Google-ի ծառայություններ<ph name="END_LINK" />։</translation>
 <translation id="6916015246697034114">Որոնել ձայնի միջոցով Chrome-ում</translation>
 <translation id="6975725306479268850">«Ինքնալրացում» պարամետրի համար ընտրեք Chrome-ը</translation>
+<translation id="6979238427560462592">Հատուկ ֆիդ, որը հատուկ ձեզ համար ստեղծվել է Google-ի կողմից։ Ֆիդը ներառում է լուրեր, սպորտային նորություններ և եղանակի տեսություն։</translation>
 <translation id="7004159181872656283">Տեսողական որոնում Chrome-ում։</translation>
 <translation id="7056826488869329999">Բացում և գործարկում է անվտանգության ստուգումը Chrome-ում։</translation>
 <translation id="7059914902409643750">Անհատականացրեք Chrome դիտարկիչը</translation>
@@ -236,7 +230,6 @@
 <translation id="7394108421562933108">Քարտեզները Chrome-ում</translation>
 <translation id="7400722733683201933">Google Chrome-ի մասին</translation>
 <translation id="7466693328838535498">«Որոնման վիջեթներ» դաշտում մուտքագրեք Chrome</translation>
-<translation id="746684838091935575">3. Ընտրեք Chrome-ը։</translation>
 <translation id="7492574581995589075">Ձեր կազմակերպությունն անջատել է Chrome-ի տվյալները ձեր Google հաշվում օգտագործելու և պահելու հնարավորությունը։ Նոր էջանիշները, գաղտնաբառերը և այլ տվյալներ կպահվեն միայն այս սարքում։</translation>
 <translation id="7581063337314642333">Այցելել ներդիրների ցանց Chrome-ում</translation>
 <translation id="7642373780953416937">Chrome-ը կզգուշացնի գաղտնիության և անվտանգության հետ կապված խնդիրների մասին, որոնք ավտոմատ կհայտնաբերի։</translation>
@@ -300,7 +293,6 @@
 <translation id="8857676124663337448">Google գաղտնաբառերի կառավարիչը չկարողացավ ստուգել բոլոր գաղտնաբառերը։ Վաղը նորից փորձեք։</translation>
 <translation id="8865415417596392024">Chrome-ի տվյալները ձեր հաշվում</translation>
 <translation id="8874688701962049679">Խորհուրդներ, թե ինչպես օգտվել Chrome-ի բոլոր հնարավորություններից։</translation>
-<translation id="8891935667620843985">Դուք կարող եք Chrome-ը դարձնել ձեր կանխադրված դիտարկիչը և կայքերը բացել այնտեղ ավտոմատ կերպով։</translation>
 <translation id="8897749957032330183">Գաղտնաբառերը պահվում են այս սարքի Google գաղտնաբառերի կառավարիչում։</translation>
 <translation id="8949681853939555434">Դարձրեք Chrome-ը ձեր կանխադրված դիտարկիչը</translation>
 <translation id="9068336935206019333">Բացել Chrome-ի ինկոգնիտո ներդիրում</translation>
@@ -308,6 +300,7 @@
 <translation id="9112744793181547300">Սահմանե՞լ Chrome-ը որպես կանխադրված դիտարկիչ</translation>
 <translation id="9122931302567044771">Սա նշանակում է, որ Chrome-ը միշտ կփորձի բացել կայքի ամբողջական տարբերակը։</translation>
 <translation id="9181628561061032322">Բացում է Chrome-ի վերջերս բեռնած ներդիրների ցանկը։</translation>
+<translation id="9194404253580584015">Հատուկ ֆիդ, որը հատուկ ձեզ համար ստեղծվել է Google-ի կողմից։</translation>
 <translation id="953008885340860025">Դուք դուրս եք գրվել Chrome-ից</translation>
 <translation id="97300214378190234">Օգտագործեք Chrome-ը՝ այլ հավելվածներում առկա հղումները բացելու համար։</translation>
 </translationbundle>

@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">ଯେଉଁ ୱେବ୍‌ସାଇଟ୍‌ଗୁଡ଼ିକରେ ସାଉଣ୍ଡ ଚାଲୁଛି ସେଗୁଡ଼ିକୁ ମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
 <translation id="3602290021589620013">ପ୍ରିଭ୍ୟୁ</translation>
 <translation id="3628308229821498208">ପ୍ରସ୍ତାବିତ ସନ୍ଧାନଗୁଡ଼ିକ</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" />ର ସାଇଟଗୁଡ଼ିକର ଗୋଷ୍ଠୀରେ ଥିବା <ph name="RWS_MEMBERS_COUNT" /> ସାଇଟ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଗୋଷ୍ଠୀରେ ଦେଖିପାରିବ}other{<ph name="RWS_OWNER" />ର ସାଇଟଗୁଡ଼ିକର ଗୋଷ୍ଠୀରେ ଥିବା <ph name="RWS_MEMBERS_COUNT" /> ସାଇଟ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଗୋଷ୍ଠୀରେ ଦେଖିପାରିବ}}</translation>
 <translation id="3697164069658504920">ଚାଲୁ ଥିବା ସମୟରେ, ସାଇଟଗୁଡ଼ିକ USB ଡିଭାଇସଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ପଚାରିପାରିବ। ବନ୍ଦ ଥିବା ସମୟରେ, ସାଇଟଗୁଡ଼ିକ USB ଡିଭାଇସଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବ ନାହିଁ।</translation>
 <translation id="3707034683772193706">ଆପଣ ଭିଜିଟ କରୁଥିବା ଏକ ସାଇଟ ମୁଖ୍ୟତଃ ଆପଣ ଏକ ବୋଟ ନୁହଁନ୍ତି ବୋଲି ବୈଧ କରିବାକୁ Chromeରେ କିଛି ସୂଚନା ସେଭ କରିପାରିବ</translation>
 <translation id="3721953990244350188">ଖାରଜ କରି ପରବର୍ତ୍ତୀ ଉପଲବ୍ଧ କାର୍ଯ୍ୟ ଦେଖାନ୍ତୁ</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">ଏହା ମାଧ୍ୟମରେ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="5001526427543320409">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକ</translation>
 <translation id="5007392906805964215">ସମୀକ୍ଷା କରନ୍ତୁ</translation>
+<translation id="5014182796621173645">ଆପଣ <ph name="RECENCY" />କୁ ଭିଜିଟ କରିଛନ୍ତି</translation>
 <translation id="5039804452771397117">ଅନୁମତି</translation>
 <translation id="5048398596102334565">ମୋସନ୍ ସେନ୍‌ସର୍ ଆକ୍ସେସ୍ କରିବାକୁ ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="5050380848339752099">ଇନକଗ୍ନିଟୋ ମୋଡ୍ ବାହାରେ କୌଣସି ଏକ ଆପ୍ ସହ ଏହି ସାଇଟ୍ ସୂଚନା ସେୟାର୍ କରିବାକୁ ଯାଉଛି।</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">ଅଧିକ ଦେଖନ୍ତୁ</translation>
 <translation id="6561560012278703671">’କ୍ୱାଇଟର୍ ମେସେଜିଂ’ ବ୍ୟବହାର କରନ୍ତୁ (ଆପଣଙ୍କୁ ବାଧା ଦେବାରୁ ବିଜ୍ଞପ୍ତି ପ୍ରମ୍ପ୍ଟଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରେ)</translation>
 <translation id="6593061639179217415">ଡେସ୍କଟପ୍ ସାଇଟ୍</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> ସାଇଟ ପାଇଁ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି}other{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> ସାଇଟ ପାଇଁ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ</translation>
 <translation id="662080504995468778">ରୁହନ୍ତୁ</translation>
 <translation id="6653342741369270081">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯିବା ପାଇଁ 'ପଛକୁ ଯାଆନ୍ତୁ' ବଟନ ଦବାନ୍ତୁ।</translation>
+<translation id="6683865262523156564">ଏହି ସାଇଟ ଏକ ଗୋଷ୍ଠୀରେ ଅଛି, ଯାହା ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଦେଖିପାରିବ। ଗୋଷ୍ଠୀଟି <ph name="RWS_OWNER" /> ଦ୍ୱାରା ନିର୍ଦ୍ଧାରିତ କରାଯାଇଛି</translation>
 <translation id="6689172468748959065">ପ୍ରୋଫାଇଲ୍ ଫଟୋ</translation>
 <translation id="6697925417670533197">ସକ୍ରିୟ ଡାଉନଲୋଡଗୁଡ଼ିକ</translation>
 <translation id="6722828510648505498">ପରିଚୟ ପ୍ରଦାନ କରୁଥିବା ସେବାଗୁଡ଼ିକରୁ ସାଇନ-ଇନ ପ୍ରମ୍ପ୍ଟଗୁଡ଼ିକୁ ବ୍ଲକ କରନ୍ତୁ।</translation>

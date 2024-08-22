@@ -430,6 +430,7 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="7398989605938454041">S Chromium profilima možete odvojiti sve svoje Chromium stvari. Tako ćete lakše razdvojiti posao i zabavu.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromiumu treba odobrenje za pristup vašoj kameri na ovoj web lokaciji</translation>
+<translation id="7458892263350425044">Da koristite mikrofon, odobrite Chromiumu pristup u <ph name="BEGIN_LINK" />postavkama sistema<ph name="END_LINK" /></translation>
 <translation id="7461356015007898716">Da primate buduća ažuriranja za Chromium, trebat će vam Windows 10 ili novija verzija. Računar koristi Windows 7.</translation>
 <translation id="7467949745582939695">Ponovo pokrenuti Chromium?</translation>
 <translation id="7483335560992089831">Nije moguće instalirati istu verziju Chromiuma koja je trenutno pokrenuta. Zatvorite Chromium i pokušajte ponovo.</translation>
@@ -458,6 +459,7 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="7872446069773932638">Preuzimanje… Preostalo je <ph name="SECONDS" /> s</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Kako možete upravljati svojim podacima:<ph name="END_BOLD" /> Da zaštitimo vašu privatnosti, automatski brišemo interesovanja koja su starija od 4 sedmice. Kada nastavite koristiti preglednik, interesovanje se može ponovo pojaviti na listi. Ili možete ukloniti interesovanja koja ne želite dati Chromiumu na razmatranje.</translation>
 <translation id="7888981273428720788">Postavite Chromium kao zadani preglednik</translation>
+<translation id="7934340546140346950">Chromium automatski nadograđuje nesigurne veze na HTTPS kada je moguće</translation>
 <translation id="7937630085815544518">Bili ste prijavljeni na Chrome kao <ph name="USER_EMAIL_ADDRESS" />. Koristite isti račun da se ponovo prijavite.</translation>
 <translation id="7975919845073681630">Ovo je sekundarno instaliranje Chromiuma i stoga on ne može biti vaš zadani preglednik.</translation>
 <translation id="7997934263947464652">Ekstenzije, aplikacije i teme iz nepoznatih izvora mogu naštetiti vašem uređaju. Chromium preporučuje da ih instalirate samo iz: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
@@ -470,6 +472,7 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="813913629614996137">Pokretanje…</translation>
 <translation id="8166782796394721554">Uključite dodatnu zaštitu za Chromiumov pokretač programskih jezika JavaScript i WebAssembly</translation>
 <translation id="81770708095080097">Ovaj fajl je opasan pa ga je Chromium blokirao.</translation>
+<translation id="8223363452568144035">Da koristite kameru, odobrite Chromiumu pristup u <ph name="BEGIN_LINK" />postavkama sistema<ph name="END_LINK" /></translation>
 <translation id="8232193495299001329">Chromium ne može potvrditi odakle potiče ova ekstenzija te može biti nesigurna. Uklonite je iz Chromiuma da više ne može vidjeti i mijenjati vaše podatke na web lokacijama koje posjećujete, uključujući lične informacije.</translation>
 <translation id="8248265253516264921">Ako slika ne sadrži koristan opis, Chromium će ga pokušati pružiti. Slike se šalju Googleu radi kreiranja opisa. To možete isključiti u postavkama kad god želite.</translation>
 <translation id="8254601181414348851">Prijaviti se u Chromium na novom profilu?</translation>
@@ -540,4 +543,5 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="983803489796659991">Instalacija nije uspjela jer server za ažuriranje nema podatke o raspršivanju za aplikaciju.</translation>
 <translation id="985498048907240953">Koristi Chromium bez računa</translation>
 <translation id="985602178874221306">Autori Chromiuma</translation>
+<translation id="992780518932311116">Da koristite lokaciju, odobrite Chromiumu pristup u <ph name="BEGIN_LINK" />postavkama sistema<ph name="END_LINK" /></translation>
 </translationbundle>

@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Sunt disponibile elemente <ph name="PRODUCT_NAME" /> exclusive</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1026212596705997935">Comanda rapidă este folosită pentru <ph name="CONFLICT_ACCEL_NAME" />. Introdu o nouă comandă rapidă. Pentru a înlocui comanda rapidă inițială, introdu din nou această comandă rapidă.</translation>
+<translation id="1030856839388844477">Resetează utilizarea datelor</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fire, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Funcție nouă disponibilă; folosește tasta săgeată în sus ca să afli mai multe.</translation>
 <translation id="1049663189809099096">galben pastelat</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Semnal slab</translation>
 <translation id="1300115153046603471">APN-ul este de tip prestabilit și <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Fă conversia</translation>
 <translation id="1304014921944666344">Data creării</translation>
 <translation id="1308754910631152188">Se actualizează (<ph name="PERCENTAGE_VALUE" /> % finalizat)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minute</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">lac sărat</translation>
 <translation id="1367951781824006909">Alege un fișier</translation>
 <translation id="1371650399987522809">Feedback pentru fundalul dezvoltat de Google AI</translation>
+<translation id="1374385338586507108">Definește</translation>
 <translation id="1387854245479784695">Aceasta este o valoare cumulată pentru toate nucleele</translation>
 <translation id="1393206549145430405">castel</translation>
 <translation id="1394661041439318933">Nivelul bateriei carcasei dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Actual</translation>
 <translation id="346539236881580388">Refă</translation>
 <translation id="3484914941826596830">Nu deconecta dispozitivul extern și nu închide computerul în timpul actualizării firmware-ului. Poți să minimizezi fereastra. Actualizarea poate să dureze câteva minute și este posibil ca dispozitivul extern să nu funcționeze în această perioadă.</translation>
-<translation id="3485555238092220889">acțiune de accesibilitate</translation>
 <translation id="3486220673238053218">definiție</translation>
 <translation id="3487866404496702283">Feedback pentru funcția mahi</translation>
 <translation id="3488065109653206955">Activat parțial</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Fără semnal</translation>
 <translation id="4570558255126759859">Descarci modelul Gemini pentru a rezuma înregistrările?</translation>
 <translation id="4573777384450697571">Nu a reușit – Certificatul a expirat</translation>
+<translation id="4575450106703099687">opțiuni de accesibilitate</translation>
 <translation id="458794348635939462">Nu s-au putut rezolva toate gazdele</translation>
 <translation id="4593212453765072419">Este necesară autentificarea la serverul proxy</translation>
 <translation id="4594021849294327751">Creează o transcriere</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> din <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Buton de editare pentru <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Actualizează <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Utilizarea datelor a fost resetată</translation>
 <translation id="574392208103952083">Mediu</translation>
 <translation id="5757187557809630523">melodia următoare</translation>
 <translation id="5760715441271661976">Starea portalului</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Dezactivează sunetul</translation>
 <translation id="5784136236926853061">Latență mare a solicitărilor HTTP</translation>
 <translation id="5790391387506209808">lapis lazuli</translation>
+<translation id="5810692306010756935">Treci la un cont obișnuit</translation>
 <translation id="5816802250591013230">Nu s-a atribuit nicio comandă rapidă</translation>
 <translation id="5826644637650799838">Despre lucrarea de artă</translation>
 <translation id="5832805196449965646">Adăugați un utilizator</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Navigare în text</translation>
 <translation id="680983167891198932">Cheie</translation>
 <translation id="6816797338148849397">Sunt disponibile informații despre selecția ta. Folosește tasta săgeată în sus pentru a le accesa.</translation>
+<translation id="6831043979455480757">Tradu</translation>
 <translation id="6853312040151791195">Rata de descărcare</translation>
 <translation id="6862416241246624313">Feedbackul a fost trimis</translation>
 <translation id="6866732840889595464">margaretă</translation>
@@ -1551,6 +1557,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="9087578468327036362">Raportează interogarea</translation>
 <translation id="9088306295921699330">Folosire actuală</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Mai multe informații despre data de resetare</translation>
 <translation id="9100765901046053179">Setări avansate</translation>
 <translation id="910415269708673980">Actualizează tichetul pentru <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Se scanează pagina <ph name="PAGE_NUMBER" /></translation>
