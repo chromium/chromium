@@ -43,8 +43,7 @@ class ForwardingDataTypeControllerDelegate
   void ReportBridgeErrorForTest() override;
 
  private:
-  const raw_ptr<DataTypeControllerDelegate, AcrossTasksDanglingUntriaged>
-      other_;
+  const raw_ptr<DataTypeControllerDelegate> other_;
 };
 
 }  // namespace syncer
