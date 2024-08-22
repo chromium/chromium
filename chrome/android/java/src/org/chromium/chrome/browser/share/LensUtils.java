@@ -5,12 +5,16 @@
 package org.chromium.chrome.browser.share;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
 import android.os.Build;
+import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.PackageUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
 /** This class provides utilities for intenting into Google Lens. */
@@ -22,6 +26,7 @@ public class LensUtils {
     private static final String DISABLE_ON_INCOGNITO_PARAM_NAME = "disableOnIncognito";
     private static final String ORDER_SHARE_IMAGE_BEFORE_LENS_PARAM_NAME =
             "orderShareImageBeforeLens";
+    private static final String AGSA_PACKAGE_NAME = "com.google.android.googlequicksearchbox";
 
     private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_POSTCAPTURE = "10.65";
 
@@ -54,7 +59,7 @@ public class LensUtils {
             if (context == null) {
                 return "";
             }
-            String agsaVersion = GSAState.getInstance().getAgsaVersionName();
+            String agsaVersion = getAgsaVersionName();
             if (agsaVersion == null) {
                 return "";
             } else {
@@ -125,5 +130,48 @@ public class LensUtils {
                     featureName, LOG_UKM_PARAM_NAME, true);
         }
         return false;
+    }
+
+    /**
+     * Checks if the AGSA version is below a certain {@code String} version name.
+     *
+     * @param installedVersionName The AGSA version installed on this device,
+     * @param minimumVersionName The minimum AGSA version allowed.
+     * @return Whether the AGSA version on the device is below the given minimum
+     */
+    public static boolean isAgsaVersionBelowMinimum(
+            String installedVersionName, String minimumVersionName) {
+        if (TextUtils.isEmpty(installedVersionName) || TextUtils.isEmpty(minimumVersionName)) {
+            return true;
+        }
+
+        String[] agsaNumbers = installedVersionName.split("\\.", -1);
+        String[] targetAgsaNumbers = minimumVersionName.split("\\.", -1);
+
+        // To avoid IndexOutOfBounds
+        int maxIndex = Math.min(agsaNumbers.length, targetAgsaNumbers.length);
+        for (int i = 0; i < maxIndex; ++i) {
+            int agsaNumber = Integer.parseInt(agsaNumbers[i]);
+            int targetAgsaNumber = Integer.parseInt(targetAgsaNumbers[i]);
+
+            if (agsaNumber < targetAgsaNumber) {
+                return true;
+            } else if (agsaNumber > targetAgsaNumber) {
+                return false;
+            }
+        }
+
+        // If versions are the same so far, but they have different length...
+        return agsaNumbers.length < targetAgsaNumbers.length;
+    }
+
+    /**
+     * Gets the version name of the Agsa package.
+     *
+     * @return The version name of the Agsa package or null if it can't be found.
+     */
+    private static @Nullable String getAgsaVersionName() {
+        PackageInfo packageInfo = PackageUtils.getPackageInfo(AGSA_PACKAGE_NAME, 0);
+        return packageInfo == null ? null : packageInfo.versionName;
     }
 }
