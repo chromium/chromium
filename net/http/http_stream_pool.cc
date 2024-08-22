@@ -147,6 +147,10 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
     AlternativeServiceInfo alternative_service_info,
     quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
+  if (observer_for_testing_) {
+    observer_for_testing_->OnRequestStream(stream_key);
+  }
+
   QuicSessionKey quic_session_key = stream_key.ToQuicSessionKey();
   if (CanUseExistingQuicSession(stream_key, quic_session_key,
                                 enable_ip_based_pooling,
@@ -328,6 +332,10 @@ bool HttpStreamPool::CanUseExistingQuicSession(
                     enable_alternative_services) &&
          http_network_session()->quic_session_pool()->CanUseExistingSession(
              quic_session_key, stream_key.destination());
+}
+
+void HttpStreamPool::SetObserverForTesting(std::unique_ptr<Observer> observer) {
+  observer_for_testing_ = std::move(observer);
 }
 
 HttpStreamPool::Group& HttpStreamPool::GetOrCreateGroupForTesting(

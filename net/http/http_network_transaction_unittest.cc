@@ -758,6 +758,25 @@ class CaptureGroupIdTransportSocketPool : public TransportClientSocketPool {
   bool socket_requested_ = false;
 };
 
+class CaptureKeyHttpStreamPoolObserver : public HttpStreamPool::Observer {
+ public:
+  CaptureKeyHttpStreamPoolObserver() = default;
+
+  CaptureKeyHttpStreamPoolObserver(const CaptureKeyHttpStreamPoolObserver&) =
+      delete;
+  CaptureKeyHttpStreamPoolObserver& operator=(
+      const CaptureKeyHttpStreamPoolObserver&) = delete;
+
+  ~CaptureKeyHttpStreamPoolObserver() override = default;
+
+  void OnRequestStream(const HttpStreamKey& key) override { last_key_ = key; }
+
+  const HttpStreamKey& last_key() const { return last_key_; }
+
+ private:
+  HttpStreamKey last_key_;
+};
+
 //-----------------------------------------------------------------------------
 
 // Helper functions for validating that AuthChallengeInfo's are correctly
@@ -15486,6 +15505,7 @@ struct GroupIdTest {
   std::string proxy_chain;
   std::string url;
   ClientSocketPool::GroupId expected_group_id;
+  HttpStreamKey expected_http_stream_key;
   bool ssl;
 };
 
@@ -15520,9 +15540,29 @@ int GroupIdTransactionHelper(const std::string& url,
   return trans.Start(&request, callback.callback(), NetLogWithSource());
 }
 
+int HttpStreamKeyTransactionHelper(std::string_view url,
+                                   HttpNetworkSession* session) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL(url);
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session);
+
+  TestCompletionCallback callback;
+
+  // Unlike GroupIdTransactionHelper(), we complete the request because
+  // HttpStreamKey is only set after the transaction switched to the
+  // HttpStreamPool.
+  int rv = trans.Start(&request, callback.callback(), NetLogWithSource());
+  CHECK_EQ(rv, ERR_IO_PENDING);
+  return callback.WaitForResult();
+}
+
 }  // namespace
 
-TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
+TEST_P(HttpNetworkTransactionTest, GroupIdOrHttpStreamKeyForDirectConnections) {
   const GroupIdTest tests[] = {
       {
           "",  // unused
@@ -15531,6 +15571,11 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(
+              url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
+              PrivacyMode::PRIVACY_MODE_DISABLED, SocketTag(),
+              NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+              /*disable_cert_network_fetches=*/false),
           false,
       },
       {
@@ -15540,6 +15585,11 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
               url::SchemeHostPort(url::kHttpScheme, "[2001:1418:13:1::25]", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(
+              url::SchemeHostPort(url::kHttpScheme, "[2001:1418:13:1::25]", 80),
+              PrivacyMode::PRIVACY_MODE_DISABLED, SocketTag(),
+              NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+              /*disable_cert_network_fetches=*/false),
           false,
       },
 
@@ -15551,6 +15601,11 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(
+              url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
+              PrivacyMode::PRIVACY_MODE_DISABLED, SocketTag(),
+              NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+              /*disable_cert_network_fetches=*/false),
           true,
       },
       {
@@ -15561,6 +15616,11 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
                                   443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(url::SchemeHostPort(url::kHttpsScheme,
+                                            "[2001:1418:13:1::25]", 443),
+                        PrivacyMode::PRIVACY_MODE_DISABLED, SocketTag(),
+                        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                        /*disable_cert_network_fetches=*/false),
           true,
       },
       {
@@ -15571,6 +15631,11 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
                                   443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(url::SchemeHostPort(url::kHttpsScheme,
+                                            "host.with.alternate", 443),
+                        PrivacyMode::PRIVACY_MODE_DISABLED, SocketTag(),
+                        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                        /*disable_cert_network_fetches=*/false),
           true,
       },
   };
@@ -15583,20 +15648,40 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
         SetupSessionForGroupIdTests(&session_deps_));
 
     HttpNetworkSessionPeer peer(session.get());
-    auto transport_conn_pool =
-        std::make_unique<CaptureGroupIdTransportSocketPool>(
-            &dummy_connect_job_params_);
-    auto* transport_conn_pool_ptr = transport_conn_pool.get();
-    auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
-    mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
-                                     std::move(transport_conn_pool));
-    peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
-    EXPECT_EQ(ERR_IO_PENDING,
-              GroupIdTransactionHelper(test.url, session.get()));
-    EXPECT_EQ(test.expected_group_id,
-              transport_conn_pool_ptr->last_group_id_received());
-    EXPECT_TRUE(transport_conn_pool_ptr->socket_requested());
+    if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+      // The result doesn't matter, so just fail the connection.
+      StaticSocketDataProvider data;
+      data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_FAILED));
+      session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+      auto http_pool_observer =
+          std::make_unique<CaptureKeyHttpStreamPoolObserver>();
+      CaptureKeyHttpStreamPoolObserver* http_pool_observer_ptr =
+          http_pool_observer.get();
+      session->http_stream_pool()->SetObserverForTesting(
+          std::move(http_pool_observer));
+
+      EXPECT_EQ(ERR_FAILED,
+                HttpStreamKeyTransactionHelper(test.url, session.get()));
+      EXPECT_EQ(test.expected_http_stream_key,
+                http_pool_observer_ptr->last_key());
+    } else {
+      auto transport_conn_pool =
+          std::make_unique<CaptureGroupIdTransportSocketPool>(
+              &dummy_connect_job_params_);
+      auto* transport_conn_pool_ptr = transport_conn_pool.get();
+      auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
+      mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
+                                       std::move(transport_conn_pool));
+      peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
+
+      EXPECT_EQ(ERR_IO_PENDING,
+                GroupIdTransactionHelper(test.url, session.get()));
+      EXPECT_EQ(test.expected_group_id,
+                transport_conn_pool_ptr->last_group_id_received());
+      EXPECT_TRUE(transport_conn_pool_ptr->socket_requested());
+    }
   }
 }
 
@@ -15609,6 +15694,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(),  // unused
           false,
       },
 
@@ -15620,6 +15706,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(),  // unused
           true,
       },
 
@@ -15631,6 +15718,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
                                   443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(),  // unused
           true,
       },
   };
@@ -15669,6 +15757,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(),  // unused
           false,
       },
       {
@@ -15678,6 +15767,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(),  // unused
           false,
       },
 
@@ -15689,6 +15779,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(),  // unused
           true,
       },
       {
@@ -15698,6 +15789,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(),  // unused
           true,
       },
 
@@ -15709,6 +15801,7 @@ TEST_P(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
                                   443),
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
+          HttpStreamKey(),  // unused
           true,
       },
   };

@@ -40,6 +40,15 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     : public NetworkChangeNotifier::IPAddressObserver,
       public SSLClientContext::Observer {
  public:
+  // Observes the HttpStreamPool. Used only for tests.
+  class NET_EXPORT_PRIVATE Observer {
+   public:
+    virtual ~Observer() = default;
+
+    // Called when a stream is requested.
+    virtual void OnRequestStream(const HttpStreamKey& stream_key) = 0;
+  };
+
   // Reasons for closing streams.
   static constexpr std::string_view kIpAddressChanged = "IP address changed";
   static constexpr std::string_view kSslConfigChanged =
@@ -166,6 +175,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
                                  bool enable_ip_based_pooling,
                                  bool enable_alternative_services);
 
+  void SetObserverForTesting(std::unique_ptr<Observer> observer);
+
   Group& GetOrCreateGroupForTesting(const HttpStreamKey& stream_key);
 
   HttpNetworkSession* http_network_session() const {
@@ -247,6 +258,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   std::set<std::unique_ptr<PooledStreamRequestHelper>,
            base::UniquePtrComparator>
       pooled_stream_request_helpers_;
+
+  std::unique_ptr<Observer> observer_for_testing_;
 };
 
 }  // namespace net
