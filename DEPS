@@ -275,13 +275,11 @@ vars = {
   'reclient_version': 're_client_version:0.158.0.ddc2270e-gomaip',
 
   # screen-ai CIPD packages
-  # TODO(b/281483558): Use a tag to download the latest version of screen-ai
-  # (e.g. 'version:121.3') and find a way to automate updating //DEPS with it.
-  'screen_ai_linux': 'version:125.1',
-  'screen_ai_macos_amd64': 'version:125.1',
-  'screen_ai_macos_arm64': 'version:125.1',
-  'screen_ai_windows_amd64': 'version:125.1',
-  'screen_ai_windows_386': 'version:125.1',
+  'screen_ai_linux': 'version:126.5',
+  'screen_ai_macos_amd64': 'version:126.5',
+  'screen_ai_macos_arm64': 'version:126.5',
+  'screen_ai_windows_amd64': 'version:126.5',
+  'screen_ai_windows_386': 'version:126.5',
 
   # siso CIPD package version.
   'siso_version': 'git_revision:250f32bbb04e51117d17db783c9535dd956f7d44',
