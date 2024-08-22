@@ -3515,7 +3515,6 @@ crbug.com/626703 external/wpt/web-animations/timing-model/timelines/update-and-s
 crbug.com/1380987 external/wpt/html/user-activation/detached-iframe.html [ Failure ]
 
 crbug.com/626703 external/wpt/fetch/security/redirect-to-url-with-credentials.https.html [ Timeout ]
-crbug.com/981970 external/wpt/fetch/http-cache/split-cache.html [ Crash Failure Pass Timeout ]
 crbug.com/626703 external/wpt/fetch/http-cache/basic-auth-cache-test.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-ui/text-overflow-026.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-tables/fixup-dynamic-anonymous-inline-table-002.html [ Failure ]
