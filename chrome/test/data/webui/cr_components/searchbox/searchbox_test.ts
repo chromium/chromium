@@ -85,7 +85,7 @@ function verifyMatch(match: AutocompleteMatch, matchEl: SearchboxMatchElement) {
   const matchDescription = mojoString16ToString(
       match.answer ? match.answer.secondLine : match.description);
   const separatorText =
-      matchDescription ? loadTimeData.getString('realboxSeparator') : '';
+      matchDescription ? loadTimeData.getString('searchboxSeparator') : '';
   const contents = matchEl.$['contents'].textContent!.trim();
   const separator = matchEl.$['separator'].textContent!.trim();
   const description = matchEl.$['description'].textContent!.trim();
@@ -106,8 +106,8 @@ suite('NewTabPageRealboxTest', () => {
 
   suiteSetup(() => {
     loadTimeData.overrideValues({
-      realboxSeparator: ' - ',
-      realboxVoiceSearch: true,
+      searchboxSeparator: ' - ',
+      searchboxVoiceSearch: true,
     });
   });
 
@@ -186,7 +186,7 @@ suite('NewTabPageRealboxTest', () => {
 
   test('Voice search button is not present when not enabled', async () => {
     // Arrange.
-    loadTimeData.overrideValues({realboxVoiceSearch: false});
+    loadTimeData.overrideValues({searchboxVoiceSearch: false});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     realbox = document.createElement('cr-searchbox');
     document.body.appendChild(realbox);
@@ -198,7 +198,7 @@ suite('NewTabPageRealboxTest', () => {
     assertFalse(!!voiceSearchButton);
 
     // Restore
-    loadTimeData.overrideValues({realboxVoiceSearch: true});
+    loadTimeData.overrideValues({searchboxVoiceSearch: true});
   });
 
   test('clicking voice search button send voice search event', async () => {
@@ -223,7 +223,7 @@ suite('NewTabPageRealboxTest', () => {
   test('realbox default loupe icon', async () => {
     // Arrange.
     loadTimeData.overrideValues({
-      realboxDefaultIcon: 'search.svg',
+      searchboxDefaultIcon: 'search.svg',
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     realbox = document.createElement('cr-searchbox');
@@ -236,7 +236,7 @@ suite('NewTabPageRealboxTest', () => {
   test('realbox default Google G icon', async () => {
     // Arrange.
     loadTimeData.overrideValues({
-      realboxDefaultIcon:
+      searchboxDefaultIcon:
           '//resources/cr_components/searchbox/icons/google_g.svg',
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -251,13 +251,13 @@ suite('NewTabPageRealboxTest', () => {
 
     // Restore.
     loadTimeData.overrideValues({
-      realboxDefaultIcon: 'search.svg',
+      searchboxDefaultIcon: 'search.svg',
     });
   });
 
   test('Color source baseline search icon has background image', async () => {
     // Arrange.
-    loadTimeData.overrideValues({realboxCr23Theming: true});
+    loadTimeData.overrideValues({searchboxCr23Theming: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     realbox = document.createElement('cr-searchbox');
     realbox.colorSourceIsBaseline = true;
@@ -273,12 +273,12 @@ suite('NewTabPageRealboxTest', () => {
         'url("chrome://resources/cr_components/searchbox/icons/mic.svg")');
 
     // Restore.
-    loadTimeData.overrideValues({realboxCr23Theming: false});
+    loadTimeData.overrideValues({searchboxCr23Theming: false});
   });
 
   test('Color source not baseline search icon has mask image', async () => {
     // Arrange.
-    loadTimeData.overrideValues({realboxCr23Theming: true});
+    loadTimeData.overrideValues({searchboxCr23Theming: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     realbox = document.createElement('cr-searchbox');
     realbox.colorSourceIsBaseline = false;
@@ -294,7 +294,7 @@ suite('NewTabPageRealboxTest', () => {
         'url("chrome://resources/cr_components/searchbox/icons/mic.svg")');
 
     // Restore.
-    loadTimeData.overrideValues({realboxCr23Theming: false});
+    loadTimeData.overrideValues({searchboxCr23Theming: false});
   });
 
   //============================================================================

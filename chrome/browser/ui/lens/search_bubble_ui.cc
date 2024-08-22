@@ -48,7 +48,7 @@ SearchBubbleUI::SearchBubbleUI(content::WebUI* web_ui)
   // Add required resources for the searchbox.
   SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
   source->AddBoolean("reportMetrics", false);
-  source->AddString("realboxDefaultIcon",
+  source->AddString("searchboxDefaultIcon",
                     "//resources/cr_components/searchbox/icons/google_g.svg");
   source->AddLocalizedString("searchBoxHint",
                              IDS_GOOGLE_LENS_SEARCH_BOX_EMPTY_HINT);

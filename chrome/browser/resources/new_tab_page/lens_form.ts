@@ -104,9 +104,9 @@ export class LensFormElement extends CrLitElement {
   protected uploadUrlEntrypoint_: string = UPLOAD_URL_ENTRYPOINT;
   protected startTime_: string|null = null;
   protected clientData_: string =
-      loadTimeData.getString('realboxLensVariations');
+      loadTimeData.getString('searchboxLensVariations');
   private useDirectUpload_: boolean =
-      loadTimeData.getBoolean('realboxLensDirectUpload');
+      loadTimeData.getBoolean('searchboxLensDirectUpload');
 
   openSystemFilePicker() {
     this.$.fileInput.click();

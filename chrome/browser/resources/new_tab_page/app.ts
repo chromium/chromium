@@ -192,7 +192,7 @@ export class AppElement extends AppElementBase {
       realboxShown_: {type: Boolean},
 
       /* Searchbox width behavior. */
-      realboxWidthBehavior_: {
+      searchboxWidthBehavior_: {
         type: String,
         reflect: true,
       },
@@ -272,8 +272,8 @@ export class AppElement extends AppElementBase {
   realboxHadSecondarySide: boolean;
   protected realboxIsTall_ = loadTimeData.getBoolean('realboxIsTall');
   protected realboxShown_: boolean;
-  protected realboxWidthBehavior_: string =
-      loadTimeData.getString('realboxWidthBehavior');
+  protected searchboxWidthBehavior_: string =
+      loadTimeData.getString('searchboxWidthBehavior');
   protected showLensUploadDialog_: boolean = false;
   protected logoEnabled_: boolean = loadTimeData.getBoolean('logoEnabled');
   protected oneGoogleBarEnabled_: boolean =

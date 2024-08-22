@@ -196,7 +196,7 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   SearchboxHandler::SetupWebUIDataSource(html_source,
                                          Profile::FromWebUI(web_ui));
   html_source->AddString(
-      "realboxDefaultIcon",
+      "searchboxDefaultIcon",
       "//resources/cr_components/searchbox/icons/google_g.svg");
   html_source->AddBoolean("reportMetrics", false);
   html_source->AddLocalizedString("searchBoxHint",

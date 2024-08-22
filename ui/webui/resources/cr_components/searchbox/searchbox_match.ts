@@ -195,7 +195,7 @@ export class SearchboxMatchElement extends PolymerElement {
   hasImage: boolean;
   match: AutocompleteMatch;
   matchIndex: number;
-  realboxConsistentRowHeight: boolean;
+  searchboxConsistentRowHeight: boolean;
   sideType: SideType;
   private actionIsVisible_: boolean;
   private contentsHtml_: TrustedHTML;
@@ -320,7 +320,7 @@ export class SearchboxMatchElement extends PolymerElement {
     // a prefix of the former. Thus `match.answer.firstLine` can be rendered
     // using the markup in `match.contentsClass` which contains positions in
     // `match.contents` and the markup to be applied to those positions.
-    // See //chrome/browser/ui/webui/realbox/realbox_handler.cc
+    // See //chrome/browser/ui/webui/searchbox/searchbox_handler.cc
     const matchContents =
         match.answer ? match.answer.firstLine : match.contents;
     return match.swapContentsAndDescription ?
@@ -395,7 +395,7 @@ export class SearchboxMatchElement extends PolymerElement {
 
   private computeSeparatorText_(): string {
     return this.match && decodeString16(this.match.description) ?
-        loadTimeData.getString('realboxSeparator') :
+        loadTimeData.getString('searchboxSeparator') :
         '';
   }
 

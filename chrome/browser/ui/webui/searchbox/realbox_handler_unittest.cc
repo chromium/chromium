@@ -179,7 +179,7 @@ TEST_F(RealboxHandlerTest, RealboxLensVariationsContainsVariations) {
                                        profile());
 
   EXPECT_EQ("CGQ", *source()->GetLocalizedStrings()->FindString(
-                       "realboxLensVariations"));
+                       "searchboxLensVariations"));
 }
 
 TEST_F(RealboxHandlerTest, RealboxUpdatesSelection) {

@@ -105,29 +105,29 @@ export class SearchboxElement extends SearchboxElementBase {
         reflectToAttribute: true,
       },
 
-      /** Whether the realbox should match the searchbox. */
+      /** Whether the searchbox should match the searchbox. */
       matchSearchbox: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxMatchSearchboxTheme'),
+        value: () => loadTimeData.getBoolean('searchboxMatchSearchboxTheme'),
         reflectToAttribute: true,
       },
 
       /** Whether the Google Lens icon should be visible in the searchbox. */
-      realboxLensSearchEnabled: {
+      searchboxLensSearchEnabled: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxLensSearch'),
+        value: () => loadTimeData.getBoolean('searchboxLensSearch'),
         reflectToAttribute: true,
       },
 
-      realboxChromeRefreshTheming: {
+      searchboxChromeRefreshTheming: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxCr23Theming'),
+        value: () => loadTimeData.getBoolean('searchboxCr23Theming'),
         reflectToAttribute: true,
       },
 
-      realboxSteadyStateShadow: {
+      searchboxSteadyStateShadow: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxCr23SteadyStateShadow'),
+        value: () => loadTimeData.getBoolean('searchboxCr23SteadyStateShadow'),
         reflectToAttribute: true,
       },
 
@@ -188,23 +188,23 @@ export class SearchboxElement extends SearchboxElementBase {
         computed: `computePlaceholderText_(showThumbnail)`,
       },
 
-      /** Realbox default icon (i.e., Google G icon or the search loupe). */
-      realboxIcon_: {
+      /** Searchbox default icon (i.e., Google G icon or the search loupe). */
+      searchboxIcon_: {
         type: String,
-        value: () => loadTimeData.getString('realboxDefaultIcon'),
+        value: () => loadTimeData.getString('searchboxDefaultIcon'),
       },
 
       /** Whether the voice search icon should be visible in the searchbox. */
-      realboxVoiceSearchEnabled_: {
+      searchboxVoiceSearchEnabled_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxVoiceSearch'),
+        value: () => loadTimeData.getBoolean('searchboxVoiceSearch'),
         reflectToAttribute: true,
       },
 
       /** Whether the Google Lens icon should be visible in the searchbox. */
-      realboxLensSearchEnabled_: {
+      searchboxLensSearchEnabled_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxLensSearch'),
+        value: () => loadTimeData.getBoolean('searchboxLensSearch'),
         reflectToAttribute: true,
       },
 
@@ -252,9 +252,9 @@ export class SearchboxElement extends SearchboxElementBase {
   hasSecondarySide: boolean;
   isDark: boolean;
   matchSearchbox: boolean;
-  realboxLensSearchEnabled: boolean;
-  realboxChromeRefreshTheming: boolean;
-  realboxSteadyStateShadow: boolean;
+  searchboxLensSearchEnabled: boolean;
+  searchboxChromeRefreshTheming: boolean;
+  searchboxSteadyStateShadow: boolean;
   showThumbnail: boolean;
   private inputAriaLive_: string;
   private isDeletingInput_: boolean;
@@ -263,9 +263,9 @@ export class SearchboxElement extends SearchboxElementBase {
   private lastQueriedInput_: string|null;
   private pastedInInput_: boolean;
   private placeholderText_: string;
-  private realboxIcon_: string;
-  private realboxVoiceSearchEnabled_: boolean;
-  private realboxLensSearchEnabled_: boolean;
+  private searchboxIcon_: string;
+  private searchboxVoiceSearchEnabled_: boolean;
+  private searchboxLensSearchEnabled_: boolean;
   private result_: AutocompleteResult|null;
   private selectedMatch_: AutocompleteMatch|null;
   private selectedMatchIndex_: number;
@@ -443,7 +443,7 @@ export class SearchboxElement extends SearchboxElementBase {
     if (inputValue.trim()) {
       // TODO(crbug.com/40732045): Rather than disabling inline autocompletion
       // when the input event is fired within a composition session, change the
-      // mechanism via which inline autocompletion is shown in the realbox.
+      // mechanism via which inline autocompletion is shown in the searchbox.
       this.queryAutocomplete_(inputValue, e.isComposing);
     } else {
       this.clearAutocompleteMatches_();
@@ -529,7 +529,7 @@ export class SearchboxElement extends SearchboxElementBase {
 
   private onInputWrapperFocusout_(e: FocusEvent) {
     // Hide the matches and stop autocomplete only when the focus goes outside
-    // of the realbox wrapper.
+    // of the searchbox wrapper.
     if (!this.$.inputWrapper.contains(e.relatedTarget as Element)) {
       if (this.lastQueriedInput_ === '') {
         // Clear the input as well as the matches if the input was empty when
@@ -542,7 +542,7 @@ export class SearchboxElement extends SearchboxElementBase {
         // Stop autocomplete but leave (potentially stale) results and continue
         // listening for key presses. These stale results should never be shown.
         // They correspond to the potentially stale suggestion left in the
-        // realbox when blurred. That stale result may be navigated to by
+        // searchbox when blurred. That stale result may be navigated to by
         // focusing and pressing 'Enter'.
         this.pageHandler_.stopAutocomplete(/*clearResult=*/ false);
       }

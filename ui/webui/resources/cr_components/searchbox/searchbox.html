@@ -24,15 +24,15 @@
     --cr-searchbox-thumbnail-icon-offset: 50px;
   }
 
-  :host([realbox-chrome-refresh-theming][dropdown-is-visible]) {
+  :host([searchbox-chrome-refresh-theming][dropdown-is-visible]) {
     --cr-searchbox-shadow: 0 0 12px 4px var(--color-searchbox-shadow)
   }
 
-  :host([realbox-chrome-refresh-theming]:not([realbox-steady-state-shadow]):not([dropdown-is-visible])) {
+  :host([searchbox-chrome-refresh-theming]:not([searchbox-steady-state-shadow]):not([dropdown-is-visible])) {
     --cr-searchbox-shadow: none;
   }
 
-  :host-context([realbox-width-behavior_='revert']):host([can-show-secondary-side]:not([dropdown-is-visible])) {
+  :host-context([searchbox-width-behavior_='revert']):host([can-show-secondary-side]:not([dropdown-is-visible])) {
     --cr-searchbox-width: var(--cr-searchbox-min-width);
   }
 
@@ -48,11 +48,11 @@
     --cr-searchbox-shadow: 0 2px 6px 0 var(--color-searchbox-shadow);
   }
 
-  :host([realbox-voice-search-enabled_]) {
+  :host([searchbox-voice-search-enabled_]) {
     --cr-searchbox-voice-search-button-width: var(--cr-searchbox-icon-width);
   }
 
-  :host([realbox-lens-search-enabled_]) {
+  :host([searchbox-lens-search-enabled_]) {
     --cr-searchbox-voice-icon-offset: 53px;
   }
 
@@ -105,7 +105,7 @@
     padding-inline-start: calc(22px + var(--cr-searchbox-thumbnail-icon-offset, 0px));
   }
 
-  :host([realbox-chrome-refresh-theming]) input::selection {
+  :host([searchbox-chrome-refresh-theming]) input::selection {
     background-color: var(--color-searchbox-selection-background);
     color: var(--color-searchbox-selection-foreground)
   }
@@ -118,7 +118,7 @@
 
   /* Visually hide the cancel button but do not set display to none or
    * visibility to hidden as this causes issues with NVDA not reading out the
-   * full value of the realbox input as the user selects suggestion matches.
+   * full value of the searchbox input as the user selects suggestion matches.
    * See crbug.com/1312442 for more context. */
   input::-webkit-search-cancel-button {
     appearance: none;
@@ -143,7 +143,7 @@
   }
 
   /* TODO(b/328294049): Switch all hard-coded colors to CSS color tokens. */
-  /* When input is focused and dropdown is not visible, switch realbox background
+  /* When input is focused and dropdown is not visible, switch searchbox background
    * to steady state color because side panel doesn't have box shadow. */
   :host([is-lens-searchbox_]:not([dropdown-is-visible])) input:focus {
     background-color: #F1F3F4;
@@ -153,11 +153,11 @@
     background-color: #303134;
   }
 
-  :host([realbox-chrome-refresh-theming]:not([realbox-steady-state-shadow]):not([dropdown-is-visible])) input {
+  :host([searchbox-chrome-refresh-theming]:not([searchbox-steady-state-shadow]):not([dropdown-is-visible])) input {
     background-color: var(--color-searchbox-background);
   }
 
-  :host([realbox-chrome-refresh-theming]:not([realbox-steady-state-shadow]):not([dropdown-is-visible])) input:hover,
+  :host([searchbox-chrome-refresh-theming]:not([searchbox-steady-state-shadow]):not([dropdown-is-visible])) input:hover,
   input:hover {
     background-color: var(--color-searchbox-background-hovered);
   }
@@ -196,7 +196,7 @@
     width: var(--cr-searchbox-icon-width);
   }
 
-  :host([realbox-chrome-refresh-theming]) .searchbox-icon-button {
+  :host([searchbox-chrome-refresh-theming]) .searchbox-icon-button {
     position: static;
   }
 
@@ -221,44 +221,44 @@
   }
 
 
-  :host(:not([realbox-chrome-refresh-theming])) #voiceSearchButton {
+  :host(:not([searchbox-chrome-refresh-theming])) #voiceSearchButton {
     background-image: url(//resources/cr_components/searchbox/icons/mic.svg);
   }
 
-  :host(:not([realbox-chrome-refresh-theming])) #lensSearchButton {
+  :host(:not([searchbox-chrome-refresh-theming])) #lensSearchButton {
     background-image: url(//resources/cr_components/searchbox/icons/camera.svg);
   }
 
-  :host([realbox-chrome-refresh-theming]:not([color-source-is-baseline])) #voiceSearchButton,
-  :host([realbox-chrome-refresh-theming]:not([color-source-is-baseline])) #lensSearchButton {
+  :host([searchbox-chrome-refresh-theming]:not([color-source-is-baseline])) #voiceSearchButton,
+  :host([searchbox-chrome-refresh-theming]:not([color-source-is-baseline])) #lensSearchButton {
     -webkit-mask-position: center;
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 21px 21px;
     background-color: var(--color-searchbox-lens-voice-icon-background);
   }
 
-  :host([realbox-chrome-refresh-theming]:not([color-source-is-baseline])) #voiceSearchButton {
+  :host([searchbox-chrome-refresh-theming]:not([color-source-is-baseline])) #voiceSearchButton {
     -webkit-mask-image: url(//resources/cr_components/searchbox/icons/mic.svg);
   }
 
-  :host([realbox-chrome-refresh-theming][color-source-is-baseline]) #voiceSearchButton {
+  :host([searchbox-chrome-refresh-theming][color-source-is-baseline]) #voiceSearchButton {
     background-image: url(//resources/cr_components/searchbox/icons/mic.svg);
   }
 
-  :host([realbox-chrome-refresh-theming]:not([color-source-is-baseline])) #lensSearchButton {
+  :host([searchbox-chrome-refresh-theming]:not([color-source-is-baseline])) #lensSearchButton {
     -webkit-mask-image: url(//resources/cr_components/searchbox/icons/camera.svg);
   }
 
-  :host([realbox-chrome-refresh-theming][color-source-is-baseline]) #lensSearchButton {
+  :host([searchbox-chrome-refresh-theming][color-source-is-baseline]) #lensSearchButton {
     background-image: url(//resources/cr_components/searchbox/icons/camera.svg);
   }
 
-  :host([realbox-lens-search-enabled_]):host-context([dir='rtl']) #voiceSearchButton {
+  :host([searchbox-lens-search-enabled_]):host-context([dir='rtl']) #voiceSearchButton {
     left: var(--cr-searchbox-voice-icon-offset);
     right: unset;
   }
 
-  :host([realbox-lens-search-enabled_]) #voiceSearchButton {
+  :host([searchbox-lens-search-enabled_]) #voiceSearchButton {
     right: var(--cr-searchbox-voice-icon-offset);
   }
 
@@ -272,7 +272,7 @@
     right: unset;
   }
 
-  :host([realbox-lens-search-enabled_]):host-context([dir='rtl']) .searchbox-icon-button-container.voice {
+  :host([searchbox-lens-search-enabled_]):host-context([dir='rtl']) .searchbox-icon-button-container.voice {
     left: var(--cr-searchbox-voice-icon-offset);
     right: unset;
   }
@@ -324,7 +324,7 @@
       on-paste="onInputPaste_">
   </input>
   <cr-searchbox-icon id="icon" match="[[selectedMatch_]]"
-      default-icon="[[realboxIcon_]]" in-searchbox>
+      default-icon="[[searchboxIcon_]]" in-searchbox>
   </cr-searchbox-icon>
   <template is="dom-if" if="[[showThumbnail]]">
     <div id="thumbnailContainer">
@@ -337,8 +337,8 @@
       </cr-searchbox-thumbnail>
     </div>
   </template>
-  <template is="dom-if" if="[[realboxChromeRefreshTheming]]">
-    <template is="dom-if" if="[[realboxVoiceSearchEnabled_]]">
+  <template is="dom-if" if="[[searchboxChromeRefreshTheming]]">
+    <template is="dom-if" if="[[searchboxVoiceSearchEnabled_]]">
       <div class="searchbox-icon-button-container voice">
         <button id="voiceSearchButton" class="searchbox-icon-button"
             on-click="onVoiceSearchClick_"
@@ -346,7 +346,7 @@
         </button>
       </div>
     </template>
-    <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
+    <template is="dom-if" if="[[searchboxLensSearchEnabled_]]">
       <div class="searchbox-icon-button-container lens">
           <button id="lensSearchButton" class="searchbox-icon-button"
               on-click="onLensSearchClick_"
@@ -355,14 +355,14 @@
       </div>
     </template>
   </template>
-  <template is="dom-if" if="[[!realboxChromeRefreshTheming]]">
-    <template is="dom-if" if="[[realboxVoiceSearchEnabled_]]">
+  <template is="dom-if" if="[[!searchboxChromeRefreshTheming]]">
+    <template is="dom-if" if="[[searchboxVoiceSearchEnabled_]]">
       <button id="voiceSearchButton" class="searchbox-icon-button"
           on-click="onVoiceSearchClick_"
           title="[[i18n('voiceSearchButtonLabel')]]">
       </button>
     </template>
-    <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
+    <template is="dom-if" if="[[searchboxLensSearchEnabled_]]">
       <button id="lensSearchButton" class="searchbox-icon-button"
           on-click="onLensSearchClick_"
           title="[[i18n('lensSearchButtonLabel')]]">

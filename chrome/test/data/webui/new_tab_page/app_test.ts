@@ -981,7 +981,7 @@ suite('NewTabPageAppTest', () => {
   suite('LensUploadDialog', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
-        realboxLensSearch: true,
+        searchboxLensSearch: true,
       });
     });
 

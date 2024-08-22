@@ -60,9 +60,9 @@ suite('Lens search', () => {
 
   suiteSetup(() => {
     loadTimeData.overrideValues({
-      realboxLensSearch: true,
+      searchboxLensSearch: true,
       realboxMatchOmniboxTheme: true,
-      realboxSeparator: ' - ',
+      searchboxSeparator: ' - ',
     });
   });
 
@@ -101,7 +101,7 @@ suite('Lens search', () => {
 
   test('Lens search button is not present when not enabled', async () => {
     // Arrange.
-    loadTimeData.overrideValues({realboxLensSearch: false});
+    loadTimeData.overrideValues({searchboxLensSearch: false});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     realbox = document.createElement('cr-searchbox');
     document.body.appendChild(realbox);
@@ -113,7 +113,7 @@ suite('Lens search', () => {
     assertFalse(!!lensButton);
 
     // Restore
-    loadTimeData.overrideValues({realboxLensSearch: true});
+    loadTimeData.overrideValues({searchboxLensSearch: true});
   });
 
   test('clicking Lens search button hides matches', async () => {

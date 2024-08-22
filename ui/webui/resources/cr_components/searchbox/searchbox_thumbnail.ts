@@ -11,7 +11,7 @@ import {getTemplate} from './searchbox_thumbnail.html.js';
 
 const ThumbnailElementBase = I18nMixin(PolymerElement);
 
-// Displays a thumbnail in the realbox input.
+// Displays a thumbnail in the searchbox input.
 class SearchboxThumbnailElement extends ThumbnailElementBase {
   static get is() {
     return 'cr-searchbox-thumbnail';

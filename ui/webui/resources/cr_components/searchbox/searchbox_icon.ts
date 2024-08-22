@@ -22,7 +22,7 @@ export interface SearchboxIconElement {
   };
 }
 
-// The LHS icon. Used on autocomplete matches as well as the realbox input to
+// The LHS icon. Used on autocomplete matches as well as the searchbox input to
 // render icons, favicons, and entity images.
 export class SearchboxIconElement extends PolymerElement {
   static get is() {
@@ -48,7 +48,7 @@ export class SearchboxIconElement extends PolymerElement {
 
       /**
        * The default icon to show when no match is selected and/or for
-       * non-navigation matches. Only set in the context of the realbox input.
+       * non-navigation matches. Only set in the context of the searchbox input.
        */
       defaultIcon: {
         type: String,
@@ -66,7 +66,7 @@ export class SearchboxIconElement extends PolymerElement {
       /**
        * Whether icon is in searchbox or not. Used to prevent
        * the match icon of rich suggestions from showing in the context of the
-       * realbox input.
+       * searchbox input.
        */
       inSearchbox: {
         type: Boolean,
@@ -207,7 +207,7 @@ export class SearchboxIconElement extends PolymerElement {
 
   // The following icons should not use the GM3 foreground color
   // TODO(niharm): Refactor logic in C++ and send via mojom in
-  // "chrome/browser/ui/webui/realbox/realbox_handler.cc".
+  // "chrome/browser/ui/webui/searchbox/searchbox_handler.cc".
   private showBackgroundImage_(): boolean {
     const imageUrl = this.backgroundImage;
     if (!imageUrl) {
@@ -273,7 +273,7 @@ export class SearchboxIconElement extends PolymerElement {
   // All pedals and AiS except weather should be have a background that
   // matches theme.
   // TODO(niharm): Refactor logic in C++ and send via mojom in
-  // "chrome/browser/ui/webui/realbox/realbox_handler.cc".
+  // "chrome/browser/ui/webui/searchbox/searchbox_handler.cc".
   private computeHasIconContainerBackground_(): boolean {
     if (this.match) {
       return this.match.type === PEDAL ||

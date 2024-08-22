@@ -463,7 +463,7 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   static constexpr webui::LocalizedString kStrings[] = {
       {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
       {"lensSearchButtonLabel", IDS_TOOLTIP_LENS_SEARCH},
-      {"realboxSeparator", IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR},
+      {"searchboxSeparator", IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR},
       {"removeSuggestion", IDS_OMNIBOX_REMOVE_SUGGESTION},
       {"searchBoxHint", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD},
       {"searchBoxHintMultimodal", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MULTIMODAL},
@@ -474,17 +474,17 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddLocalizedStrings(kStrings);
 
   source->AddBoolean(
-      "realboxMatchSearchboxTheme",
+      "searchboxMatchSearchboxTheme",
       base::FeatureList::IsEnabled(ntp_features::kRealboxMatchSearchboxTheme));
 
   bool redesigned_modules_enabled =
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned);
-  source->AddString("realboxWidthBehavior",
+  source->AddString("searchboxWidthBehavior",
                     redesigned_modules_enabled ? "wide" : "");
   source->AddBoolean("realboxIsTall", redesigned_modules_enabled);
   DefineChromeRefreshRealboxIcons();
   source->AddString(
-      "realboxDefaultIcon",
+      "searchboxDefaultIcon",
       base::FeatureList::IsEnabled(ntp_features::kRealboxUseGoogleGIcon)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
           ? kGoogleGIconResourceName
@@ -493,16 +493,16 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
 #endif
           : kSearchIconResourceName);
 
-  source->AddBoolean("realboxVoiceSearch", enable_voice_search);
-  source->AddBoolean("realboxLensSearch", enable_lens_search);
-  source->AddString("realboxLensVariations", GetBase64UrlVariations(profile));
+  source->AddBoolean("searchboxVoiceSearch", enable_voice_search);
+  source->AddBoolean("searchboxLensSearch", enable_lens_search);
+  source->AddString("searchboxLensVariations", GetBase64UrlVariations(profile));
   source->AddBoolean(
-      "realboxLensDirectUpload",
+      "searchboxLensDirectUpload",
       base::FeatureList::IsEnabled(ntp_features::kNtpLensDirectUpload));
   source->AddBoolean(
-      "realboxCr23Theming",
+      "searchboxCr23Theming",
       base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming));
-  source->AddBoolean("realboxCr23SteadyStateShadow",
+  source->AddBoolean("searchboxCr23SteadyStateShadow",
                      ntp_features::kNtpRealboxCr23SteadyStateShadow.Get());
 }
 
