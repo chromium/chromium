@@ -7,6 +7,7 @@
 #include "chrome/browser/preloading/prefetch/chrome_prefetch_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -17,9 +18,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {

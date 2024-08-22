@@ -25,6 +25,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -46,11 +47,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #endif
 
 namespace {

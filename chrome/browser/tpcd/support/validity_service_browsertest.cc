@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/tpcd/support/validity_service.h"
+
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -13,8 +15,8 @@
 #include "chrome/browser/tpcd/support/tpcd_support_service.h"
 #include "chrome/browser/tpcd/support/tpcd_support_service_factory.h"
 #include "chrome/browser/tpcd/support/trial_test_utils.h"
-#include "chrome/browser/tpcd/support/validity_service.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -40,12 +42,6 @@
 #include "net/cookies/cookie_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif
 
 using content::URLLoaderInterceptor;
 using content::WebContents;

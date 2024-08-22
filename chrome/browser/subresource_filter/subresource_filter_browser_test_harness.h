@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
@@ -28,12 +29,6 @@
 #include "content/public/test/prerender_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif
 
 namespace proto = url_pattern_index::proto;
 

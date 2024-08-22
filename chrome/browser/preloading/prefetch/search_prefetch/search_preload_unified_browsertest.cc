@@ -28,6 +28,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_result.h"
@@ -53,13 +54,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else  // BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/omnibox_controller.h"

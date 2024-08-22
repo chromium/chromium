@@ -48,6 +48,7 @@
 #include "chrome/browser/tpcd/heuristics/redirect_heuristic_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -95,15 +96,12 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/scoped_authenticator_environment_for_testing.h"
 #include "device/fido/virtual_fido_device_factory.h"
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using base::Bucket;
 using content::CookieAccessDetails;

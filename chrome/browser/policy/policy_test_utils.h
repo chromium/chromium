@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "url/gurl.h"

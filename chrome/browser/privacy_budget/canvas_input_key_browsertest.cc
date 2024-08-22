@@ -5,6 +5,7 @@
 #include "build/build_config.h"
 #include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -12,12 +13,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif
 
 namespace {
 

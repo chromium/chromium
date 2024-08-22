@@ -32,6 +32,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/content_settings/core/browser/content_settings_pref_provider.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -73,10 +74,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

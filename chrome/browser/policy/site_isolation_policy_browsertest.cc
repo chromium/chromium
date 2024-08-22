@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "content/public/browser/site_isolation_policy.h"
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,6 +18,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
@@ -23,7 +26,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/site_instance.h"
-#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"

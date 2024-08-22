@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "chrome/test/payments/payment_request_test_controller.h"
 #include "chrome/test/payments/personal_data_manager_test_util.h"
 #include "chrome/test/payments/test_event_waiter.h"
@@ -24,12 +25,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif
 
 namespace content {
 class RenderFrameHost;

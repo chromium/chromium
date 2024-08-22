@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/policy/core/common/cloud/device_management_service.h"
+
 #include <stdint.h>
 
 #include <memory>
@@ -13,8 +15,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/policy/proto/cloud_policy.pb.h"

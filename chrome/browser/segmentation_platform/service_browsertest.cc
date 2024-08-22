@@ -22,6 +22,7 @@
 #include "chrome/browser/segmentation_platform/ukm_data_manager_test_utils.h"
 #include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/proto/models.pb.h"

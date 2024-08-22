@@ -30,6 +30,7 @@
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 #include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
 #include "chrome/common/privacy_budget/types.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/ukm/ukm_recorder_observer.h"
@@ -47,12 +48,6 @@
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif
 
 class Profile;
 

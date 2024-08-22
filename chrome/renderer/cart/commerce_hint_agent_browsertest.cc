@@ -20,6 +20,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_heuristics_data.h"
 #include "components/commerce/core/commerce_heuristics_data_metrics_helper.h"
@@ -41,12 +42,9 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/scoped_browser_locale.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/session_proto_db/session_proto_db.h"

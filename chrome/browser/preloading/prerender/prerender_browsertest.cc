@@ -20,6 +20,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -36,12 +37,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif
 
 namespace {
 

@@ -529,8 +529,4 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 #endif
 };
 
-// When including either in_process_browser_test.h or android_browser_test.h
-// depending on the platform, use this type alias as the test base class.
-using PlatformBrowserTest = InProcessBrowserTest;
-
 #endif  // CHROME_TEST_BASE_IN_PROCESS_BROWSER_TEST_H_

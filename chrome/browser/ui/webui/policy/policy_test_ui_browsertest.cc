@@ -23,6 +23,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
@@ -46,11 +47,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)

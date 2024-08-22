@@ -24,6 +24,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_data.h"
@@ -41,11 +42,8 @@
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
 

@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/policy_pref_mapping_test.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"

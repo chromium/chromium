@@ -7,12 +7,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif
+#include "chrome/test/base/platform_browser_test.h"
 
 class FingerprintingProtectionFilterBrowserTest : public PlatformBrowserTest {
  public:

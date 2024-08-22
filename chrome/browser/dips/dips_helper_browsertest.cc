@@ -25,6 +25,7 @@
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"

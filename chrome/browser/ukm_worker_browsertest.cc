@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/worker_type.h"
 #include "content/public/test/browser_test.h"
@@ -18,12 +19,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif
 
 namespace {
 
