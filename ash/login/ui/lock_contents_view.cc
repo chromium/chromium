@@ -9,12 +9,6 @@
 
 #include "ash/login/ui/lock_contents_view.h"
 
-#include <algorithm>
-#include <memory>
-#include <optional>
-#include <string>
-#include <utility>
-
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -27,7 +21,6 @@
 #include "ash/login/ui/kiosk_app_default_message.h"
 #include "ash/login/ui/lock_contents_view_constants.h"
 #include "ash/login/ui/lock_screen.h"
-#include "ash/login/ui/lock_screen_media_controls_view.h"
 #include "ash/login/ui/lock_screen_media_view.h"
 #include "ash/login/ui/login_auth_user_view.h"
 #include "ash/login/ui/login_big_user_view.h"
@@ -65,11 +58,6 @@
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "base/command_line.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/logging.h"
-#include "base/memory/raw_ptr.h"
-#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/proximity_auth/public/mojom/auth_type.mojom.h"
@@ -79,7 +67,6 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "components/user_manager/user_type.h"
-#include "media/base/media_switches.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -93,15 +80,10 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/focus/focus_search.h"
@@ -109,7 +91,6 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
-#include "ui/views/view.h"
 
 namespace ash {
 
@@ -669,7 +650,6 @@ void LockContentsView::ApplyUserChanges(
   opt_secondary_big_view_ = nullptr;
   users_list_ = nullptr;
   middle_spacing_view_ = nullptr;
-  media_controls_view_ = nullptr;
   media_view_ = nullptr;
   layout_actions_.clear();
   pending_users_change_.reset();
@@ -1009,7 +989,7 @@ void LockContentsView::OnAuthDisabledForUser(
 
   if (auth_disabled_data.disable_lock_screen_media) {
     Shell::Get()->media_controller()->SuspendMediaSessions();
-    HideMediaControlsLayout();
+    HideMediaView();
   }
 
   LoginBigUserView* big_user =
@@ -1416,21 +1396,12 @@ void LockContentsView::SetLowDensitySpacing(views::View* spacing_middle,
                            std::min(available_width, desired_width));
 }
 
-void LockContentsView::SetMediaControlsSpacing(bool landscape) {
+void LockContentsView::SetMediaViewSpacing(bool landscape) {
   int total_width = GetPreferredSize().width();
 
-  auto get_media_view_width = [&media_controls_view = media_controls_view_,
-                               &media_view = media_view_]() {
-    if (media_controls_view) {
-      return media_controls_view->GetPreferredSize().width();
-    }
-    CHECK(media_view);
-    return media_view->GetPreferredSize().width();
-  };
-
   int available_width =
-      total_width -
-      (primary_big_view_->GetPreferredSize().width() + get_media_view_width());
+      total_width - (primary_big_view_->GetPreferredSize().width() +
+                     media_view_->GetPreferredSize().width());
   if (available_width <= 0) {
     SetPreferredWidthForView(middle_spacing_view_, 0);
     return;
@@ -1446,22 +1417,26 @@ void LockContentsView::SetMediaControlsSpacing(bool landscape) {
   SetPreferredWidthForView(middle_spacing_view_, desired_width);
 }
 
-bool LockContentsView::AreMediaControlsEnabled() const {
-  return screen_type_ == LockScreen::ScreenType::kLock &&
-         !expanded_view_->GetVisible() &&
-         Shell::Get()->media_controller()->AreLockScreenMediaKeysEnabled();
+void LockContentsView::CreateMediaView() {
+  CHECK(middle_spacing_view_);
+  middle_spacing_view_->SetVisible(true);
+
+  CHECK(media_view_);
+  media_view_->SetVisible(true);
+
+  // Set |spacing_middle|.
+  AddDisplayLayoutAction(base::BindRepeating(
+      &LockContentsView::SetMediaViewSpacing, base::Unretained(this)));
+
+  DeprecatedLayoutImmediately();
 }
 
-void LockContentsView::HideMediaControlsLayout() {
+void LockContentsView::HideMediaView() {
   CHECK(middle_spacing_view_);
   middle_spacing_view_->SetVisible(false);
 
-  if (media_controls_view_) {
-    media_controls_view_->SetVisible(false);
-  } else {
-    CHECK(media_view_);
-    media_view_->SetVisible(false);
-  }
+  CHECK(media_view_);
+  media_view_->SetVisible(false);
 
   // Don't allow media keys to be used on lock screen since controls are hidden.
   Shell::Get()->media_controller()->SetMediaControlsDismissed(true);
@@ -1469,22 +1444,10 @@ void LockContentsView::HideMediaControlsLayout() {
   DeprecatedLayoutImmediately();
 }
 
-void LockContentsView::CreateMediaControlsLayout() {
-  CHECK(middle_spacing_view_);
-  middle_spacing_view_->SetVisible(true);
-
-  if (media_controls_view_) {
-    media_controls_view_->SetVisible(true);
-  } else {
-    CHECK(media_view_);
-    media_view_->SetVisible(true);
-  }
-
-  // Set |spacing_middle|.
-  AddDisplayLayoutAction(base::BindRepeating(
-      &LockContentsView::SetMediaControlsSpacing, base::Unretained(this)));
-
-  DeprecatedLayoutImmediately();
+bool LockContentsView::AreMediaControlsEnabled() const {
+  return screen_type_ == LockScreen::ScreenType::kLock &&
+         !expanded_view_->GetVisible() &&
+         Shell::Get()->media_controller()->AreLockScreenMediaKeysEnabled();
 }
 
 void LockContentsView::OnWillChangeFocus(View* focused_before,
@@ -1559,36 +1522,21 @@ void LockContentsView::CreateLowDensityLayout(
 
   primary_big_view_ = main_view_->AddChildView(std::move(primary_big_view));
 
-  // Space between primary user and media controls.
+  // Space between primary user and the media view.
   middle_spacing_view_ =
       main_view_->AddChildView(std::make_unique<NonAccessibleView>());
   middle_spacing_view_->SetVisible(false);
 
   // Build the view for media controls. Using base::Unretained(this) is safe
   // here because these callbacks are used by a media view owned by |this|.
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
-    media_view_ =
-        main_view_->AddChildView(std::make_unique<LockScreenMediaView>(
-            base::BindRepeating(&LockContentsView::AreMediaControlsEnabled,
-                                base::Unretained(this)),
-            base::BindRepeating(&LockContentsView::CreateMediaControlsLayout,
-                                base::Unretained(this)),
-            base::BindRepeating(&LockContentsView::HideMediaControlsLayout,
-                                base::Unretained(this))));
-    media_view_->SetVisible(false);
-  } else {
-    LockScreenMediaControlsView::Callbacks media_controls_callbacks;
-    media_controls_callbacks.media_controls_enabled = base::BindRepeating(
-        &LockContentsView::AreMediaControlsEnabled, base::Unretained(this));
-    media_controls_callbacks.hide_media_controls = base::BindRepeating(
-        &LockContentsView::HideMediaControlsLayout, base::Unretained(this));
-    media_controls_callbacks.show_media_controls = base::BindRepeating(
-        &LockContentsView::CreateMediaControlsLayout, base::Unretained(this));
-    media_controls_view_ =
-        main_view_->AddChildView(std::make_unique<LockScreenMediaControlsView>(
-            media_controls_callbacks));
-    media_controls_view_->SetVisible(false);
-  }
+  media_view_ = main_view_->AddChildView(std::make_unique<LockScreenMediaView>(
+      base::BindRepeating(&LockContentsView::AreMediaControlsEnabled,
+                          base::Unretained(this)),
+      base::BindRepeating(&LockContentsView::CreateMediaView,
+                          base::Unretained(this)),
+      base::BindRepeating(&LockContentsView::HideMediaView,
+                          base::Unretained(this))));
+  media_view_->SetVisible(false);
 
   if (users.size() > 1) {
     // Space between primary user and secondary user.

@@ -5,12 +5,9 @@
 #ifndef ASH_LOGIN_UI_LOCK_CONTENTS_VIEW_TEST_API_H_
 #define ASH_LOGIN_UI_LOCK_CONTENTS_VIEW_TEST_API_H_
 
-#include <vector>
-
 #include "ash/login/ui/auth_error_bubble.h"
 #include "ash/login/ui/kiosk_app_default_message.h"
 #include "ash/login/ui/lock_contents_view.h"
-#include "ash/login/ui/lock_screen_media_controls_view.h"
 #include "ash/login/ui/login_big_user_view.h"
 #include "ash/login/ui/login_camera_timeout_view.h"
 #include "ash/login/ui/login_error_bubble.h"
@@ -19,9 +16,7 @@
 #include "ash/login/ui/scrollable_users_list_view.h"
 #include "ash/login/ui/user_state.h"
 #include "ash/public/cpp/login_types.h"
-#include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
-#include "ui/views/view.h"
 
 namespace ash {
 
@@ -36,7 +31,6 @@ class ASH_EXPORT LockContentsViewTestApi {
   LoginBigUserView* opt_secondary_big_view() const;
   AccountId focused_user() const;
   ScrollableUsersListView* users_list() const;
-  LockScreenMediaControlsView* media_controls_view() const;
   LockScreenMediaView* media_view() const;
   views::View* note_action() const;
   views::View* tooltip_bubble() const;

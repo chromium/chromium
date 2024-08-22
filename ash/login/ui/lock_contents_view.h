@@ -5,12 +5,6 @@
 #ifndef ASH_LOGIN_UI_LOCK_CONTENTS_VIEW_H_
 #define ASH_LOGIN_UI_LOCK_CONTENTS_VIEW_H_
 
-#include <map>
-#include <memory>
-#include <optional>
-#include <string>
-#include <vector>
-
 #include "ash/ash_export.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/login/ui/auth_error_bubble.h"
@@ -31,9 +25,6 @@
 #include "ash/system/tray/system_tray_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
@@ -43,8 +34,6 @@
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/view.h"
-#include "ui/views/widget/widget.h"
 
 namespace keyboard {
 class KeyboardUIController;
@@ -57,7 +46,6 @@ class BoxLayout;
 namespace ash {
 
 class KioskAppDefaultMessage;
-class LockScreenMediaControlsView;
 class LockScreenMediaView;
 class LoginAuthUserView;
 class LoginBigUserView;
@@ -211,13 +199,13 @@ class ASH_EXPORT LockContentsView
   // chromeos::PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
 
-  // ash::EnterpriseDomainObserver
+  // ash::EnterpriseDomainObserver:
   void OnDeviceEnterpriseInfoChanged() override;
   void OnEnterpriseAccountDomainChanged() override;
 
-  // Called by LockScreenMediaControlsView.
-  void CreateMediaControlsLayout();
-  void HideMediaControlsLayout();
+  // Called by LockScreenMediaView:
+  void CreateMediaView();
+  void HideMediaView();
   bool AreMediaControlsEnabled() const;
 
   void OnWillChangeFocus(View* focused_before, View* focused_now) override;
@@ -237,8 +225,8 @@ class ASH_EXPORT LockContentsView
                             int portrait_dist,
                             bool landscape);
 
-  // Set |spacing_middle| for media controls.
-  void SetMediaControlsSpacing(bool landscape);
+  // Set |spacing_middle| for |media_view_|.
+  void SetMediaViewSpacing(bool landscape);
 
   // 1-2 users.
   void CreateLowDensityLayout(
@@ -417,9 +405,6 @@ class ASH_EXPORT LockContentsView
   raw_ptr<ScrollableUsersListView> users_list_ = nullptr;
 
   // View for media controls that appear on the lock screen if it is enabled.
-  // |media_view_| is used if the flag media::kGlobalMediaControlsCrOSUpdatedUI
-  // is enabled, otherwise |media_controls_view_| is used.
-  raw_ptr<LockScreenMediaControlsView> media_controls_view_ = nullptr;
   raw_ptr<LockScreenMediaView> media_view_ = nullptr;
   raw_ptr<views::View> middle_spacing_view_ = nullptr;
 
