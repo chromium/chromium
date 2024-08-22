@@ -637,6 +637,11 @@
       name: "Canvas2dLayers",
     },
     {
+      name: "Canvas2dLayersWithOptions",
+      status: "experimental",
+      depends_on: ["Canvas2dLayers"],
+    },
+    {
       name: "Canvas2dMesh",
       origin_trial_feature_name: "Canvas2dMesh",
       origin_trial_allows_third_party: true,

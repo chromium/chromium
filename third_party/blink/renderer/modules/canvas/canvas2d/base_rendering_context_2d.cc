@@ -359,9 +359,9 @@ void BaseRenderingContext2D::restore(ExceptionState& exception_state) {
   ValidateStateStack();
 }
 
-void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
-                                        const BeginLayerOptions* options,
-                                        ExceptionState& exception_state) {
+void BaseRenderingContext2D::beginLayerImpl(ScriptState* script_state,
+                                            const BeginLayerOptions* options,
+                                            ExceptionState* exception_state) {
   if (isContextLost()) [[unlikely]] {
     return;
   }
@@ -381,28 +381,31 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
   ValidateStateStack();
 
   sk_sp<PaintFilter> filter;
-  if (const V8CanvasFilterInput* filter_input = CHECK_DEREF(options).filter();
-      filter_input != nullptr) {
-    AddLayerFilterUserCount(filter_input);
+  if (options != nullptr) {
+    CHECK(exception_state != nullptr);
+    if (const V8CanvasFilterInput* filter_input = options->filter();
+        filter_input != nullptr) {
+      AddLayerFilterUserCount(filter_input);
 
-    HTMLCanvasElement* canvas_for_filter = HostAsHTMLCanvasElement();
-    FilterOperations filter_operations = CanvasFilter::CreateFilterOperations(
-        *filter_input, AccessFont(canvas_for_filter), canvas_for_filter,
-        CHECK_DEREF(ExecutionContext::From(script_state)), exception_state);
-    if (exception_state.HadException()) {
-      return;
+      HTMLCanvasElement* canvas_for_filter = HostAsHTMLCanvasElement();
+      FilterOperations filter_operations = CanvasFilter::CreateFilterOperations(
+          *filter_input, AccessFont(canvas_for_filter), canvas_for_filter,
+          CHECK_DEREF(ExecutionContext::From(script_state)), *exception_state);
+      if (exception_state->HadException()) {
+        return;
+      }
+
+      const gfx::SizeF canvas_viewport(Width(), Height());
+      FilterEffectBuilder filter_effect_builder(
+          gfx::RectF(canvas_viewport), canvas_viewport,
+          1.0f,  // Deliberately ignore zoom on the canvas element.
+          Color::kBlack, mojom::blink::ColorScheme::kLight);
+
+      filter = paint_filter_builder::Build(
+          filter_effect_builder.BuildFilterEffect(std::move(filter_operations),
+                                                  !OriginClean()),
+          kInterpolationSpaceSRGB);
     }
-
-    const gfx::SizeF canvas_viewport(Width(), Height());
-    FilterEffectBuilder filter_effect_builder(
-        gfx::RectF(canvas_viewport), canvas_viewport,
-        1.0f,  // Deliberately ignore zoom on the canvas element.
-        Color::kBlack, mojom::blink::ColorScheme::kLight);
-
-    filter = paint_filter_builder::Build(
-        filter_effect_builder.BuildFilterEffect(std::move(filter_operations),
-                                                !OriginClean()),
-        kInterpolationSpaceSRGB);
   }
 
   if (layer_count_ == 0) {
