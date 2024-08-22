@@ -95937,7 +95937,7 @@
       ]
      ],
      "scope-part.html": [
-      "6583db20c07068bf7a272012fdc0a4649c3b4016",
+      "eb4af2394625c422fa37725ee28465b5d1e7132b",
       [
        null,
        [
@@ -244344,6 +244344,19 @@
         {}
        ]
       ],
+      "svg-transform.html": [
+       "e0adf0725e86b43d2b73e7121704631012236988",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/svg-transform-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "svg-viewBox.html": [
        "d5c2336bdd0402259ce94e9f83c69ce794fb2d1e",
        [
@@ -315842,7 +315855,7 @@
       []
      ],
      "scope-part-ref.html": [
-      "d0824e735722a568d86c46e822b8d9adb30fd5d5",
+      "8bb5f753b0f131f381f00a4546bfc17cf72cdaf3",
       []
      ],
      "scope-pseudo-element-ref.html": [
@@ -352028,6 +352041,10 @@
       ],
       "svg-ref.html": [
        "10bf2decaa74ae0108c86d5b97ad0480f85bf307",
+       []
+      ],
+      "svg-transform-ref.html": [
+       "abaed2accea09b8d4d6b790bab554ca83ac630ba",
        []
       ],
       "svg-viewBox-ref.html": [
