@@ -21,6 +21,7 @@
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/disable_trackpad_event_rewriter.h"
+#include "ash/accessibility/filter_keys_event_rewriter.h"
 #include "ash/accessibility/flash_screen_controller.h"
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
@@ -1944,6 +1945,11 @@ void AccessibilityController::SetDisableTrackpadEventRewriter(
   disable_trackpad_event_rewriter_ = rewriter;
 }
 
+void AccessibilityController::SetFilterKeysEventRewriter(
+    FilterKeysEventRewriter* rewriter) {
+  filter_keys_event_rewriter_ = rewriter;
+}
+
 void AccessibilityController::HideSwitchAccessBackButton() {
   if (IsSwitchAccessRunning()) {
     switch_access_bubble_controller_->HideBackButton();
@@ -2412,6 +2418,11 @@ AccessibilityController::GetAccessibilityEventRewriterForTest() {
 DisableTrackpadEventRewriter*
 AccessibilityController::GetDisableTrackpadEventRewriterForTest() {
   return disable_trackpad_event_rewriter_;
+}
+
+FilterKeysEventRewriter*
+AccessibilityController::GetFilterKeysEventRewriterForTest() {
+  return filter_keys_event_rewriter_;
 }
 
 void AccessibilityController::DisableAutoClickConfirmationDialogForTest() {

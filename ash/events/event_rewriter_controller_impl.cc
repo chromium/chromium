@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/accessibility/disable_trackpad_event_rewriter.h"
+#include "ash/accessibility/filter_keys_event_rewriter.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/mirror_window_controller.h"
@@ -135,6 +136,15 @@ void EventRewriterControllerImpl::Initialize(
     // The DisableTrackpadEventRewriter needs to be notified first, as it
     // should stop all trackpad events from propagating further into the system.
     AddEventRewriter(std::move(disable_trackpad_event_rewriter));
+  }
+  if (::features::IsAccessibilityFilterKeysEnabled()) {
+    std::unique_ptr<FilterKeysEventRewriter> filter_keys_event_rewriter =
+        std::make_unique<FilterKeysEventRewriter>();
+    filter_keys_event_rewriter_ = filter_keys_event_rewriter.get();
+    // The FilterKeysEventRewriter needs to be notified before any other
+    // rewriters that modify key events, as it should delay or cancel all key
+    // events from propagating further into the system.
+    AddEventRewriter(std::move(filter_keys_event_rewriter));
   }
   AddEventRewriter(std::move(keyboard_device_id_event_rewriter));
   if (features::IsKeyboardRewriterFixEnabled()) {

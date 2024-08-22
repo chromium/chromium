@@ -11,6 +11,7 @@
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/disable_trackpad_event_rewriter.h"
+#include "ash/accessibility/filter_keys_event_rewriter.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
@@ -1881,6 +1882,19 @@ TEST_F(AccessibilityControllerTest,
   // AccessibilityController shouldn't have a reference to the
   // DisableTrackpadEventRewriter.
   ASSERT_EQ(nullptr, controller->GetDisableTrackpadEventRewriterForTest());
+}
+
+// Verifies that the FilterKeysEventRewriter isn't initialized, since the
+// feature flag is off in this test suite.
+TEST_F(AccessibilityControllerTest, FilterKeysEventRewriterNotInitialized) {
+  // Initialize the EventRewriterController manually so that all EventRewriters
+  // get initialized.
+  EventRewriterController::Get()->Initialize(nullptr, nullptr);
+  AccessibilityController* controller =
+      Shell::Get()->accessibility_controller();
+  // AccessibilityController shouldn't have a reference to the
+  // FilterKeysEventRewriter.
+  ASSERT_EQ(controller->GetFilterKeysEventRewriterForTest(), nullptr);
 }
 
 TEST_F(AccessibilityControllerTest, FaceGazeNotificationsOnlyShownOnce) {

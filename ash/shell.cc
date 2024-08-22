@@ -821,6 +821,7 @@ Shell::~Shell() {
   // accessing invalid memory (see b/315127220).
   AccessibilityController::Get()->SetAccessibilityEventRewriter(nullptr);
   AccessibilityController::Get()->SetDisableTrackpadEventRewriter(nullptr);
+  AccessibilityController::Get()->SetFilterKeysEventRewriter(nullptr);
   event_rewriter_controller_.reset();
   keyboard_modifier_metrics_recorder_.reset();
   touchscreen_metrics_recorder_.reset();
