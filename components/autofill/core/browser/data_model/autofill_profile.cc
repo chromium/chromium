@@ -285,14 +285,12 @@ AutofillProfile CreateStarterProfile(
     const base::android::JavaParamRef<jobject>& jprofile,
     JNIEnv* env,
     const AutofillProfile* existing_profile) {
-  std::string guid = base::android::ConvertJavaStringToUTF8(
-      Java_AutofillProfile_getGUID(env, jprofile));
+  std::string guid = Java_AutofillProfile_getGUID(env, jprofile);
   if (!existing_profile) {
-    AutofillProfile::Source source = static_cast<AutofillProfile::Source>(
-        Java_AutofillProfile_getSource(env, jprofile));
+    AutofillProfile::Source source =
+        Java_AutofillProfile_getSource(env, jprofile);
     AddressCountryCode country_code =
-        AddressCountryCode(base::android::ConvertJavaStringToUTF8(
-            Java_AutofillProfile_getCountryCode(env, jprofile)));
+        AddressCountryCode(Java_AutofillProfile_getCountryCode(env, jprofile));
     AutofillProfile profile = AutofillProfile(source, country_code);
     // Only set the guid if CreateStartProfile is called on an existing profile
     // (java guid not empty). Otherwise, keep the generated one.
@@ -383,10 +381,8 @@ base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject(
     const std::string& app_locale) const {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> jprofile =
-      Java_AutofillProfile_Constructor(
-          env, base::android::ConvertUTF8ToJavaString(env, guid()),
-          static_cast<jint>(source()),
-          base::android::ConvertUTF8ToJavaString(env, language_code()));
+      Java_AutofillProfile_Constructor(env, guid(), static_cast<jint>(source()),
+                                       language_code());
 
   for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
     auto status = static_cast<jint>(GetVerificationStatus(type));
@@ -394,14 +390,10 @@ base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject(
     // below.
     if (type == NAME_FULL) {
       Java_AutofillProfile_setInfo(env, jprofile, static_cast<jint>(type),
-                                   base::android::ConvertUTF16ToJavaString(
-                                       env, GetInfo(type, app_locale)),
-                                   status);
+                                   GetInfo(type, app_locale), status);
     } else {
-      Java_AutofillProfile_setInfo(
-          env, jprofile, static_cast<jint>(type),
-          base::android::ConvertUTF16ToJavaString(env, GetRawInfo(type)),
-          status);
+      Java_AutofillProfile_setInfo(env, jprofile, static_cast<jint>(type),
+                                   GetRawInfo(type), status);
     }
   }
   return jprofile;
@@ -416,34 +408,31 @@ AutofillProfile AutofillProfile::CreateFromJavaObject(
   AutofillProfile profile =
       CreateStarterProfile(jprofile, env, existing_profile);
 
-  std::vector<int> field_types;
-  base::android::JavaIntArrayToIntVector(
-      env, Java_AutofillProfile_getFieldTypes(env, jprofile), &field_types);
+  std::vector<int> field_types =
+      Java_AutofillProfile_getFieldTypes(env, jprofile);
 
   for (int int_field_type : field_types) {
     FieldType field_type = ToSafeFieldType(int_field_type, NO_SERVER_DATA);
     CHECK(field_type != NO_SERVER_DATA);
-    VerificationStatus status = static_cast<VerificationStatus>(
-        Java_AutofillProfile_getInfoStatus(env, jprofile, field_type));
-    const base::android::ScopedJavaLocalRef<jstring> value =
+    VerificationStatus status =
+        Java_AutofillProfile_getInfoStatus(env, jprofile, field_type);
+    std::u16string value =
         Java_AutofillProfile_getInfo(env, jprofile, field_type);
-    if (!value) {
+    if (value.empty()) {
       continue;
     }
     // TODO(crbug.com/40278253): Reconcile usage of GetInfo and GetRawInfo
     // below.
     if (field_type == NAME_FULL || field_type == ADDRESS_HOME_COUNTRY) {
-      profile.SetInfoWithVerificationStatus(
-          field_type, base::android::ConvertJavaStringToUTF16(value),
-          app_locale, status);
+      profile.SetInfoWithVerificationStatus(field_type, value, app_locale,
+                                            status);
     } else {
-      profile.SetRawInfoWithVerificationStatus(
-          field_type, base::android::ConvertJavaStringToUTF16(value), status);
+      profile.SetRawInfoWithVerificationStatus(field_type, value, status);
     }
   }
 
-  profile.set_language_code(base::android::ConvertJavaStringToUTF8(
-      Java_AutofillProfile_getLanguageCode(env, jprofile)));
+  profile.set_language_code(
+      Java_AutofillProfile_getLanguageCode(env, jprofile));
   profile.FinalizeAfterImport();
 
   return profile;

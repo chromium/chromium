@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -224,7 +225,10 @@ public class AutofillProfile {
     }
 
     @CalledByNative
-    private AutofillProfile(String guid, @Source int source, String languageCode) {
+    private AutofillProfile(
+            @JniType("std::string") String guid,
+            @Source int source,
+            @JniType("std::string") String languageCode) {
         mGUID = guid;
         mSource = source;
         mLanguageCode = languageCode;
@@ -272,17 +276,17 @@ public class AutofillProfile {
     }
 
     @CalledByNative
-    private int[] getFieldTypes() {
+    private @JniType("std::vector<int32_t>") int[] getFieldTypes() {
         return mFields.keySet().stream().mapToInt(i -> i).toArray();
     }
 
     @CalledByNative
-    public String getGUID() {
+    public @JniType("std::string") String getGUID() {
         return mGUID;
     }
 
     @CalledByNative
-    public @Source int getSource() {
+    public @JniType("AutofillProfile::Source") @Source int getSource() {
         return mSource;
     }
 
@@ -291,7 +295,7 @@ public class AutofillProfile {
     }
 
     @CalledByNative
-    public String getInfo(@FieldType int fieldType) {
+    public @JniType("std::u16string") String getInfo(@FieldType int fieldType) {
         if (!mFields.containsKey(fieldType)) {
             return "";
         }
@@ -299,7 +303,8 @@ public class AutofillProfile {
     }
 
     @CalledByNative
-    public @VerificationStatus int getInfoStatus(@FieldType int fieldType) {
+    public @JniType("VerificationStatus") @VerificationStatus int getInfoStatus(
+            @FieldType int fieldType) {
         if (!mFields.containsKey(fieldType)) {
             return VerificationStatus.NO_STATUS;
         }
@@ -382,7 +387,7 @@ public class AutofillProfile {
     }
 
     @CalledByNative
-    public String getCountryCode() {
+    public @JniType("std::string") String getCountryCode() {
         return getInfo(FieldType.ADDRESS_HOME_COUNTRY);
     }
 
@@ -407,7 +412,7 @@ public class AutofillProfile {
     }
 
     @CalledByNative
-    public String getLanguageCode() {
+    public @JniType("std::string") String getLanguageCode() {
         return mLanguageCode;
     }
 
@@ -425,7 +430,9 @@ public class AutofillProfile {
 
     @CalledByNative
     public void setInfo(
-            @FieldType int fieldType, @Nullable String value, @VerificationStatus int status) {
+            @FieldType int fieldType,
+            @JniType("std::u16string") @Nullable String value,
+            @VerificationStatus int status) {
         value = value == null ? "" : value;
         mFields.put(fieldType, new ValueWithStatus(value, status));
     }
