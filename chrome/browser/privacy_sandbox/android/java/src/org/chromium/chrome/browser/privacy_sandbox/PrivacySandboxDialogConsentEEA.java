@@ -40,14 +40,19 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     private LinearLayout mActionButtons;
     private ScrollView mScrollView;
     private TextViewWithLeading mLearnMoreText;
+    private int mSurfaceType;
 
     private boolean mAreAnimationsDisabled;
 
     public PrivacySandboxDialogConsentEEA(
-            Context context, PrivacySandboxBridge privacySandboxBridge, boolean disableAnimations) {
+            Context context,
+            PrivacySandboxBridge privacySandboxBridge,
+            boolean disableAnimations,
+            @SurfaceType int surfaceType) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         mPrivacySandboxBridge = privacySandboxBridge;
         mAreAnimationsDisabled = disableAnimations;
+        mSurfaceType = surfaceType;
         mContentView =
                 LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_consent_eea, null);
         setContentView(mContentView);
@@ -92,7 +97,7 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
 
     @Override
     public void show() {
-        mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_SHOWN);
+        mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_SHOWN, mSurfaceType);
         super.show();
     }
 
@@ -101,13 +106,14 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.ack_button) {
-            mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_ACCEPTED);
+            mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_ACCEPTED, mSurfaceType);
             dismissAndMaybeShowNotice();
         } else if (id == R.id.no_button) {
-            mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_DECLINED);
+            mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_DECLINED, mSurfaceType);
             dismissAndMaybeShowNotice();
         } else if (id == R.id.more_button) {
-            mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_BUTTON_CLICKED);
+            mPrivacySandboxBridge.promptActionOccurred(
+                    PromptAction.CONSENT_MORE_BUTTON_CLICKED, mSurfaceType);
             if (mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
                 mScrollView.post(
                         () -> {
@@ -123,7 +129,8 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
             }
         } else if (id == R.id.dropdown_element) {
             if (isDropdownExpanded()) {
-                mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_INFO_CLOSED);
+                mPrivacySandboxBridge.promptActionOccurred(
+                        PromptAction.CONSENT_MORE_INFO_CLOSED, mSurfaceType);
                 mDropdownContainer.setVisibility(View.GONE);
                 mDropdownContainer.removeAllViews();
                 mScrollView.post(
@@ -132,7 +139,8 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
                         });
             } else {
                 mDropdownContainer.setVisibility(View.VISIBLE);
-                mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_INFO_OPENED);
+                mPrivacySandboxBridge.promptActionOccurred(
+                        PromptAction.CONSENT_MORE_INFO_OPENED, mSurfaceType);
                 LayoutInflater.from(getContext())
                         .inflate(R.layout.privacy_sandbox_consent_eea_dropdown, mDropdownContainer);
 
@@ -216,7 +224,8 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     }
 
     private void showNotice() {
-        PrivacySandboxDialogController.showNoticeEEA(getContext(), mPrivacySandboxBridge);
+        PrivacySandboxDialogController.showNoticeEEA(
+                getContext(), mPrivacySandboxBridge, mSurfaceType);
     }
 
     private boolean isDropdownExpanded() {
@@ -229,5 +238,9 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
 
     private long getSpinnerTimeout() {
         return mAreAnimationsDisabled ? 0 : SPINNER_DURATION_MS;
+    }
+
+    public int getSurfaceTypeForTesting() {
+        return mSurfaceType;
     }
 }

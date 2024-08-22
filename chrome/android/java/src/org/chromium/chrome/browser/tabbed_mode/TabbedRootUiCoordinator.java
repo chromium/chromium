@@ -89,6 +89,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
+import org.chromium.chrome.browser.privacy_sandbox.SurfaceType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
 import org.chromium.chrome.browser.readaloud.ReadAloudIPHController;
@@ -850,7 +851,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (!shouldSuppressPSDialog) {
             return PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                    mActivity, profile);
+                    mActivity, profile, SurfaceType.BR_APP);
         }
 
         return false;

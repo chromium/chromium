@@ -28,6 +28,7 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     private final Set<String> mBlockedFledgeSites = new LinkedHashSet<>();
     private @PromptType int mPromptType = PromptType.NONE;
     private Integer mLastPromptAction;
+    private Integer mLastSurfaceType;
     private boolean mLastTopicsToggleValue;
 
     public void setCurrentTopTopics(String... topics) {
@@ -201,10 +202,15 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     public void promptActionOccurred(
             Profile profile, @PromptAction int action, @SurfaceType int surfaceType) {
         mLastPromptAction = action;
+        mLastSurfaceType = surfaceType;
     }
 
     public Integer getLastPromptAction() {
         return mLastPromptAction;
+    }
+
+    public Integer getLastSurfaceType() {
+        return mLastSurfaceType;
     }
 
     public void resetLastPromptAction() {

@@ -94,11 +94,6 @@ public class PrivacySandboxBridge {
         PrivacySandboxBridgeJni.get().promptActionOccurred(mProfile, action, surfaceType);
     }
 
-    // TODO(crbug.com/355238694): Remove this method and hardcoded SurfaceType value.
-    public void promptActionOccurred(@PromptAction int action) {
-        this.promptActionOccurred(action, SurfaceType.BR_APP);
-    }
-
     public boolean isFirstPartySetsDataAccessEnabled() {
         return PrivacySandboxBridgeJni.get().isFirstPartySetsDataAccessEnabled(mProfile);
     }

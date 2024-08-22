@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
+import org.chromium.chrome.browser.privacy_sandbox.SurfaceType;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionSnackbarController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudIPHController;
@@ -666,7 +667,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                     didShowPrompt =
                                             PrivacySandboxDialogController
                                                     .maybeLaunchPrivacySandboxDialog(
-                                                            mActivity, currentModelProfile);
+                                                            mActivity,
+                                                            currentModelProfile,
+                                                            SurfaceType.AGACCT);
                                 }
                             }
                             if (!didShowPrompt) {

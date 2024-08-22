@@ -173,7 +173,8 @@ public class PrivacySandboxBridgeTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_SHOWN);
+                    mPrivacySandboxBridge.promptActionOccurred(
+                            PromptAction.CONSENT_SHOWN, SurfaceType.BR_APP);
                     assertTrue(
                             mUserActionTester
                                     .getActions()
