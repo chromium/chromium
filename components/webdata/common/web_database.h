@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "components/webdata/common/web_database_table.h"
 #include "components/webdata/common/webdata_export.h"
 #include "sql/database.h"
@@ -116,8 +117,7 @@ class WEBDATA_EXPORT WebDatabase {
 
   // Map of all the different tables that have been added to this
   // object. Non-owning.
-  typedef std::map<WebDatabaseTable::TypeKey, WebDatabaseTable*> TableMap;
-  TableMap tables_;
+  std::map<WebDatabaseTable::TypeKey, raw_ptr<WebDatabaseTable>> tables_;
 };
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_H_
