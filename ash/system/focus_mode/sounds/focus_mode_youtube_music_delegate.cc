@@ -384,7 +384,11 @@ void FocusModeYouTubeMusicDelegate::OnNextTrackDone(
   }
 
   std::move(next_track_state_.done_callback).Run(result);
-  next_track_state_.Reset();
+  next_track_state_.done_callback = base::NullCallback();
+
+  // For a successful request, reset the retry state so that it could handle
+  // failure correctly going forward.
+  next_track_state_.retry_state.Reset();
 }
 
 void FocusModeYouTubeMusicDelegate::OnReportPlaybackDone(
