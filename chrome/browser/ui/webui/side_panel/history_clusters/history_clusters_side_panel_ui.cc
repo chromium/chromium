@@ -14,6 +14,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -28,6 +29,7 @@
 #include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/history_clusters/core/features.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/page_image_service/image_service.h"
 #include "components/page_image_service/image_service_handler.h"
 #include "components/strings/grit/components_strings.h"
@@ -66,6 +68,11 @@ HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
+
+  source->AddBoolean(
+      "enableHistoryEmbeddings",
+      history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile) &&
+          history_embeddings::kEnableSidePanel.Get());
 
   webui::SetupWebUIDataSource(
       source,

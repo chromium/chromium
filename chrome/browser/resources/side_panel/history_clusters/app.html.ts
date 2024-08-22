@@ -12,7 +12,8 @@ export function getHtml(this: HistoryClustersAppElement) {
     @search-changed="${this.onSearchChanged_}"
     label="$i18n{historyClustersSearchPrompt}"
     clear-label="$i18n{clearSearch}"
-    @contextmenu="${this.onContextMenu_}">
+    @contextmenu="${this.onContextMenu_}"
+    icon-override="${this.searchIcon_}">
 </cr-toolbar-search-field>
 <history-clusters id="historyClusters"
     query="${this.query}"
