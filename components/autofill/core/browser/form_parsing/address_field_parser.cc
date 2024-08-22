@@ -397,9 +397,7 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
       continue;
     }
 
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForBetweenStreets) &&
-        i18n_model_definition::IsTypeEnabledForCountry(
+    if (i18n_model_definition::IsTypeEnabledForCountry(
             ADDRESS_HOME_BETWEEN_STREETS, country_code)) {
       if (!between_streets_ && !between_streets_line_1_ &&
           ParseField(context, scanner, between_streets_patterns,
@@ -986,8 +984,6 @@ AddressFieldParser::ParseNameAndLabelForBetweenStreets(
   AddressCountryCode country_code(context.client_country.value());
   // TODO(crbug.com/40266693) Remove feature check when launched.
   if (between_streets_ || between_streets_line_1_ ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreets) ||
       !i18n_model_definition::IsTypeEnabledForCountry(
           ADDRESS_HOME_BETWEEN_STREETS, country_code)) {
     return RESULT_MATCH_NONE;
@@ -1006,8 +1002,6 @@ AddressFieldParser::ParseNameAndLabelForBetweenStreetsLines12(
   AddressCountryCode country_code(context.client_country.value());
   // TODO(crbug.com/40266693) Remove feature check when launched.
   if (between_streets_line_2_ ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreets) ||
       !i18n_model_definition::IsTypeEnabledForCountry(
           ADDRESS_HOME_BETWEEN_STREETS, country_code)) {
     return RESULT_MATCH_NONE;

@@ -215,11 +215,7 @@ TEST_P(AddressFieldParserTest, ParseLandmark) {
 // Tests that between streets field is correctly classified.
 TEST_P(AddressFieldParserTest, ParseBetweenStreets) {
   // TODO(crbug.com/40266693): Remove once launched.
-  base::test::ScopedFeatureList enabled;
-  enabled.InitWithFeatures({features::kAutofillEnableSupportForBetweenStreets,
-                            features::kAutofillUseMXAddressModel},
-                           {});
-
+  base::test::ScopedFeatureList enabled{features::kAutofillUseMXAddressModel};
   AddTextFormFieldData("entre-calles", "Entre calles",
                        ADDRESS_HOME_BETWEEN_STREETS);
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("MX"),
@@ -229,11 +225,7 @@ TEST_P(AddressFieldParserTest, ParseBetweenStreets) {
 // Tests that multiple between streets field are correctly classified.
 TEST_P(AddressFieldParserTest, ParseBetweenStreetsLines) {
   // TODO(crbug.com/40266693): Remove once launched.
-  base::test::ScopedFeatureList enabled;
-  enabled.InitWithFeatures({features::kAutofillEnableSupportForBetweenStreets,
-                            features::kAutofillUseMXAddressModel},
-                           {});
-
+  base::test::ScopedFeatureList enabled{features::kAutofillUseMXAddressModel};
   std::vector<std::pair<std::pair<std::string, std::string>,
                         std::pair<std::string, std::string>>>
       // "Name", "Label" for ADDRESS_HOME_BETWEEN_STREETS_1
@@ -357,7 +349,6 @@ TEST_P(AddressFieldParserTest,
   base::test::ScopedFeatureList enabled;
   enabled.InitWithFeatures(
       {
-          features::kAutofillEnableSupportForBetweenStreets,
           features::kAutofillEnableSupportForAdminLevel2,
           features::kAutofillUseMXAddressModel,
       },

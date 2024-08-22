@@ -379,13 +379,6 @@ bool AddProfileTypeTokensToTable(sql::Database* db,
                                  const AutofillProfile& profile) {
   for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
     if (!base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForBetweenStreets) &&
-        (type == ADDRESS_HOME_BETWEEN_STREETS ||
-         type == ADDRESS_HOME_BETWEEN_STREETS_1 ||
-         type == ADDRESS_HOME_BETWEEN_STREETS_2)) {
-      continue;
-    }
-    if (!base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForAdminLevel2) &&
         type == ADDRESS_HOME_ADMIN_LEVEL2) {
       continue;

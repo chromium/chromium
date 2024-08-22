@@ -238,15 +238,12 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   s.Set(specifics.mutable_address_floor(), ADDRESS_HOME_FLOOR);
   s.Set(specifics.mutable_address_overflow(), ADDRESS_HOME_OVERFLOW);
   s.Set(specifics.mutable_address_landmark(), ADDRESS_HOME_LANDMARK);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreets)) {
-    s.Set(specifics.mutable_address_between_streets(),
-          ADDRESS_HOME_BETWEEN_STREETS);
-    s.Set(specifics.mutable_address_between_streets_1(),
-          ADDRESS_HOME_BETWEEN_STREETS_1);
-    s.Set(specifics.mutable_address_between_streets_2(),
-          ADDRESS_HOME_BETWEEN_STREETS_2);
-  }
+  s.Set(specifics.mutable_address_between_streets(),
+        ADDRESS_HOME_BETWEEN_STREETS);
+  s.Set(specifics.mutable_address_between_streets_1(),
+        ADDRESS_HOME_BETWEEN_STREETS_1);
+  s.Set(specifics.mutable_address_between_streets_2(),
+        ADDRESS_HOME_BETWEEN_STREETS_2);
   s.Set(specifics.mutable_address_between_streets_or_landmark(),
         ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK);
   s.Set(specifics.mutable_address_overflow_and_landmark(),
@@ -375,14 +372,9 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   s.Set(specifics.address_floor(), ADDRESS_HOME_FLOOR);
   s.Set(specifics.address_overflow(), ADDRESS_HOME_OVERFLOW);
   s.Set(specifics.address_landmark(), ADDRESS_HOME_LANDMARK);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreets)) {
-    s.Set(specifics.address_between_streets(), ADDRESS_HOME_BETWEEN_STREETS);
-    s.Set(specifics.address_between_streets_1(),
-          ADDRESS_HOME_BETWEEN_STREETS_1);
-    s.Set(specifics.address_between_streets_2(),
-          ADDRESS_HOME_BETWEEN_STREETS_2);
-  }
+  s.Set(specifics.address_between_streets(), ADDRESS_HOME_BETWEEN_STREETS);
+  s.Set(specifics.address_between_streets_1(), ADDRESS_HOME_BETWEEN_STREETS_1);
+  s.Set(specifics.address_between_streets_2(), ADDRESS_HOME_BETWEEN_STREETS_2);
   s.Set(specifics.address_between_streets_or_landmark(),
         ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK);
   s.Set(specifics.address_overflow_and_landmark(),

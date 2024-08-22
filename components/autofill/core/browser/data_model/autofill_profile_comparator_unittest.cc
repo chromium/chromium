@@ -54,13 +54,7 @@ class AutofillProfileComparatorTest : public testing::Test {
     using Super::SAME_TOKENS;
   };
 
-  AutofillProfileComparatorTest() {
-    features_.InitWithFeatures(
-        {features::kAutofillEnableSupportForBetweenStreets,
-         features::kAutofillEnableSupportForAdminLevel2},
-        {});
-  }
-
+  AutofillProfileComparatorTest() = default;
   AutofillProfileComparatorTest(const AutofillProfileComparatorTest&) = delete;
   AutofillProfileComparatorTest& operator=(
       const AutofillProfileComparatorTest&) = delete;
@@ -270,7 +264,8 @@ class AutofillProfileComparatorTest : public testing::Test {
   }
 
   AutofillProfileComparator comparator_{kLocale};
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList features_{
+      features::kAutofillEnableSupportForAdminLevel2};
 };
 
 TEST_F(AutofillProfileComparatorTest, UniqueTokens) {

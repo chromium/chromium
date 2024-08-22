@@ -1371,7 +1371,6 @@ TEST_F(AutofillProfileTest, Compare_StructuredTypes) {
        features::kAutofillUseINAddressModel,
        features::kAutofillUseITAddressModel,
        features::kAutofillUseMXAddressModel,
-       features::kAutofillEnableSupportForBetweenStreets,
        features::kAutofillEnableSupportForAdminLevel2,
        features::kAutofillEnableSupportForApartmentNumbers},
       {});
@@ -1541,11 +1540,9 @@ TEST_F(AutofillProfileTest, SetRawInfoWorksForLandmark) {
 
 TEST_F(AutofillProfileTest, SetRawInfoWorksForBetweenStreets) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAutofillEnableSupportForBetweenStreets,
-       features::kAutofillUseI18nAddressModel,
-       features::kAutofillUseMXAddressModel},
-      {});
+  feature_list.InitWithFeatures({features::kAutofillUseI18nAddressModel,
+                                 features::kAutofillUseMXAddressModel},
+                                {});
   AutofillProfile profile(AddressCountryCode("MX"));
 
   profile.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Between streets example");

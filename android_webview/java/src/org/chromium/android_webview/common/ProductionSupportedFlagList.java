@@ -277,9 +277,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, Autofill local heuristics consider the placeholder attribute "
                         + "for determining field types."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_BETWEEN_STREETS,
-                "When enabled, Autofill supports between streets fields."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_ADMIN_LEVEL2,
                 "When enabled, Autofill supports admin-level2 fields."),
         Flag.baseFeature(

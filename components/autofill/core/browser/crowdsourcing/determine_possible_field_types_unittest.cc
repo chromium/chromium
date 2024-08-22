@@ -127,8 +127,7 @@ class ProfileMatchingTypesTest
  public:
   ProfileMatchingTypesTest() {
     features_.InitWithFeatures(
-        {features::kAutofillEnableSupportForBetweenStreets,
-         features::kAutofillEnableSupportForAdminLevel2,
+        {features::kAutofillEnableSupportForAdminLevel2,
          features::kAutofillEnableSupportForApartmentNumbers,
          features::kAutofillUseI18nAddressModel,
          features::kAutofillUseBRAddressModel,

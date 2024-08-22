@@ -54,13 +54,6 @@ class AddressAutofillTableProfileTest
     : public AddressAutofillTableTest,
       public testing::WithParamInterface<AutofillProfile::Source> {
  public:
-  void SetUp() override {
-    AddressAutofillTableTest::SetUp();
-    features_.InitWithFeatures(
-        {features::kAutofillEnableSupportForBetweenStreets,
-         features::kAutofillEnableSupportForAdminLevel2},
-        {});
-  }
   AutofillProfile::Source profile_source() const { return GetParam(); }
 
   // Creates an `AutofillProfile` with `profile_source()` as its source.
@@ -77,7 +70,8 @@ class AddressAutofillTableProfileTest
   }
 
  private:
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList features_{
+      features::kAutofillEnableSupportForAdminLevel2};
 };
 
 INSTANTIATE_TEST_SUITE_P(

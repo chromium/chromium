@@ -586,9 +586,7 @@ void FormStructureRationalizer::RationalizeStreetAddressAndAddressLine(
 
 void FormStructureRationalizer::RationalizeBetweenStreetFields(
     LogManager* log_manager) {
-  if (fields_->size() < 2 ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreets)) {
+  if (fields_->size() < 2) {
     return;
   }
   for (auto field = fields_->begin(); field != fields_->end() - 1; ++field) {

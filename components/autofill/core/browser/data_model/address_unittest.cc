@@ -28,7 +28,6 @@ class AddressTest : public testing::Test {
   AddressTest() {
     features_.InitWithFeatures(
         {
-            features::kAutofillEnableSupportForBetweenStreets,
             features::kAutofillEnableSupportForAdminLevel2,
             features::kAutofillEnableSupportForApartmentNumbers,
             features::kAutofillUseAUAddressModel,

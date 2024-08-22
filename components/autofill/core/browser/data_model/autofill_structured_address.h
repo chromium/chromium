@@ -81,17 +81,17 @@ class LandmarkNode : public AddressComponent {
 };
 
 // Stores the streets intersection of an address profile.
-class BetweenStreetsNode : public FeatureGuardedAddressComponent {
+class BetweenStreetsNode : public AddressComponent {
  public:
   explicit BetweenStreetsNode(SubcomponentsList children);
   ~BetweenStreetsNode() override;
 };
-class BetweenStreets1Node : public FeatureGuardedAddressComponent {
+class BetweenStreets1Node : public AddressComponent {
  public:
   explicit BetweenStreets1Node(SubcomponentsList children);
   ~BetweenStreets1Node() override;
 };
-class BetweenStreets2Node : public FeatureGuardedAddressComponent {
+class BetweenStreets2Node : public AddressComponent {
  public:
   explicit BetweenStreets2Node(SubcomponentsList children);
   ~BetweenStreets2Node() override;

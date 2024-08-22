@@ -118,11 +118,6 @@ const char kAutofillEnableSupportForAdminLevel2Description[] =
     "When enabled, Autofill will parse, save and fill administrative area "
     "level 2 fields in forms.";
 
-const char kAutofillEnableSupportForBetweenStreetsName[] =
-    "Enables parsing and filling of between street fields";
-const char kAutofillEnableSupportForBetweenStreetsDescription[] =
-    "When enabled, Autofill will parse, save and fill between street "
-    "fields in forms.";
 const char kAutofillEnableCardProductNameName[] =
     "Enable showing card product name";
 const char kAutofillEnableCardProductNameDescription[] =

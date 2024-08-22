@@ -79,8 +79,7 @@ class AutofillStructuredAddress : public testing::Test {
  public:
   AutofillStructuredAddress() {
     features_.InitWithFeatures(
-        {features::kAutofillEnableSupportForBetweenStreets,
-         features::kAutofillEnableSupportForAdminLevel2,
+        {features::kAutofillEnableSupportForAdminLevel2,
          features::kAutofillEnableSupportForApartmentNumbers,
          features::kAutofillUseI18nAddressModel,
          features::kAutofillUseAUAddressModel,
