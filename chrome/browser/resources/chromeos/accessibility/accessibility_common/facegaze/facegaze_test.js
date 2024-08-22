@@ -66,6 +66,75 @@ AX_TEST_F(
       assertTrue(GestureDetector.shouldSendGestureDetectionInfo_);
     });
 
+AX_TEST_F(
+    'FaceGazeTest',
+    'GestureDetectorSendsGestureInfoAfterToggleGestureInfoForSettingsEvent',
+    async function() {
+      const gestureToMacroName =
+          new Map()
+              .set(FacialGesture.BROW_INNER_UP, MacroName.MOUSE_CLICK_RIGHT)
+              .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
+      const gestureToConfidence = new Map()
+                                      .set(FacialGesture.BROW_INNER_UP, 0.6)
+                                      .set(FacialGesture.JAW_OPEN, 0.6);
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withGestureToMacroName(gestureToMacroName)
+                         .withGestureToConfidence(gestureToConfidence);
+      await this.configureFaceGaze(config);
+
+      // Toggle sending on.
+      this.mockAccessibilityPrivate.toggleGestureInfoForSettings(true);
+      assertTrue(GestureDetector.shouldSendGestureDetectionInfo_);
+
+      const result =
+          new MockFaceLandmarkerResult()
+              .addGestureWithConfidence(
+                  MediapipeFacialGesture.BROW_INNER_UP, 0.3)
+              .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9);
+      this.processFaceLandmarkerResult(result);
+
+      // Assert both values are sent.
+      assertEquals(
+          this.mockAccessibilityPrivate.getSendGestureInfoToSettingsCount(), 1);
+      const gestureInfo =
+          this.mockAccessibilityPrivate.getFaceGazeGestureInfo();
+      assertEquals(gestureInfo.length, 2);
+      assertEquals(gestureInfo[0].gesture, FacialGesture.BROW_INNER_UP);
+      assertEquals(gestureInfo[0].confidence, 30);
+      assertEquals(gestureInfo[1].gesture, FacialGesture.JAW_OPEN);
+      assertEquals(gestureInfo[1].confidence, 90);
+    });
+
+AX_TEST_F(
+    'FaceGazeTest',
+    'GestureDetectorDoesNotSendGestureInfoIfNoToggleGestureInfoForSettingsEvent',
+    async function() {
+      const gestureToMacroName =
+          new Map()
+              .set(FacialGesture.BROW_INNER_UP, MacroName.MOUSE_CLICK_RIGHT)
+              .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
+      const gestureToConfidence = new Map()
+                                      .set(FacialGesture.BROW_INNER_UP, 0.6)
+                                      .set(FacialGesture.JAW_OPEN, 0.6);
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withGestureToMacroName(gestureToMacroName)
+                         .withGestureToConfidence(gestureToConfidence);
+      await this.configureFaceGaze(config);
+
+      const result =
+          new MockFaceLandmarkerResult()
+              .addGestureWithConfidence(
+                  MediapipeFacialGesture.BROW_INNER_UP, 0.3)
+              .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9);
+      this.processFaceLandmarkerResult(result);
+
+      // Assert no call is made.
+      assertEquals(
+          0, this.mockAccessibilityPrivate.getSendGestureInfoToSettingsCount());
+    });
+
 AX_TEST_F('FaceGazeTest', 'IntervalReusesForeheadLocation', async function() {
   const config =
       new Config().withMouseLocation({x: 600, y: 400}).withBufferSize(1);

@@ -24,6 +24,7 @@ static_library("accessibility") {
     "dictation.h",
     "event_handler_common.cc",
     "event_handler_common.h",
+    "facegaze_settings_event_handler.h",
     "magnification_manager.cc",
     "magnification_manager.h",
     "magnifier_type.h",

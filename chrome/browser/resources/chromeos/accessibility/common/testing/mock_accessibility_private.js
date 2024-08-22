@@ -125,6 +125,12 @@ class MockAccessibilityPrivate {
     /** @private {function<boolean>} */
     this.faceGazeGestureInfoToggleListener_ = null;
 
+    /** @private {number} */
+    this.sendGestureInfoToSettingsCount_ = 0;
+
+    /** @private {!Array<!chrome.accessibilityPrivate.GestureInfo>} */
+    this.faceGazeGestureInfo_ = null;
+
     /**
      * @private {function(!chrome.accessibilityPrivate.SelectToSpeakPanelAction,
      *     number=)}
@@ -403,6 +409,10 @@ class MockAccessibilityPrivate {
     this.callOnToggleGestureInfoForSettings(enabled);
   }
 
+  sendGestureInfoToSettings(gestureInfo) {
+    this.callSendGestureInfoToSettings(gestureInfo);
+  }
+
   /** @param {!chrome.accessibilityPrivate.ScreenPoint} point */
   setCursorPosition(point) {
     this.latestCursorPosition_ = point;
@@ -565,12 +575,32 @@ class MockAccessibilityPrivate {
    * Simulates toggling gesture info for FaceGaze Settings from
    * AccessibilityManager, which occurs when the user activates or deactivates
    * the page for FaceGaze gesture configuration settings.
-   * @param {boolean} activated
+   * @param {boolean} enabled
    */
   callOnToggleGestureInfoForSettings(enabled) {
     if (this.faceGazeGestureInfoToggleListener_) {
       this.faceGazeGestureInfoToggleListener_(enabled);
     }
+  }
+
+  /**
+   * Simulates sending gesture info from FaceGaze to Settings.
+   * @param {!Array<!chrome.accessibilityPrivate.GestureInfo>} gestureInfo
+   *     Facial gestures.
+   */
+  callSendGestureInfoToSettings(gestureInfo) {
+    this.sendGestureInfoToSettingsCount_++;
+    this.faceGazeGestureInfo_ = gestureInfo;
+  }
+
+  /** @return {number} */
+  getSendGestureInfoToSettingsCount() {
+    return this.sendGestureInfoToSettingsCount_;
+  }
+
+  /** @return {!Array<!chrome.accessibilityPrivate.GestureInfo>} */
+  getFaceGazeGestureInfo() {
+    return this.faceGazeGestureInfo_;
   }
 
   /** Simulates silencing ChromeVox */

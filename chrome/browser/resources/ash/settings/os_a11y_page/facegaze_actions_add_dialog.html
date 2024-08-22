@@ -92,6 +92,10 @@
     max-width: 200px;
   }
 
+  #faceGazeGestureCount {
+    text-align: center;
+  }
+
 </style>
 
 <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
@@ -204,10 +208,9 @@
               on-click="onIncreaseThresholdButtonClick_">
           </cr-icon-button>
         </div>
-        <!-- TODO(b:341770753): Reflect count of gesture detection in this string. -->
         <!-- TODO(b:341770655): Localize this string. -->
-        <div class="start settings-box-text">
-          [[getGestureDisplayText_(selectedGesture_)]] detected (0)
+        <div id="faceGazeGestureCount" class="start settings-box-text">
+          [[getGestureDisplayText_(selectedGesture_)]] detected ([[detectedGestureCount_]])
         </div>
     </div>
     <div slot="button-container" class="justify-space-between">

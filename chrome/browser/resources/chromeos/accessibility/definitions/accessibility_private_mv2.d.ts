@@ -335,6 +335,31 @@ declare global {
         RIGHT = 'right',
       }
 
+      export enum FacialGesture {
+        BROW_INNER_UP = 'browInnerUp',
+        BROWS_DOWN = 'browsDown',
+        EYE_SQUINT_LEFT = 'eyeSquintLeft',
+        EYE_SQUINT_RIGHT = 'eyeSquintRight',
+        EYES_BLINK = 'eyesBlink',
+        EYES_LOOK_DOWN = 'eyesLookDown',
+        EYES_LOOK_LEFT = 'eyesLookLeft',
+        EYES_LOOK_RIGHT = 'eyesLookRight',
+        EYES_LOOK_UP = 'eyesLookUp',
+        JAW_LEFT = 'jawLeft',
+        JAW_OPEN = 'jawOpen',
+        JAW_RIGHT = 'jawRight',
+        MOUTH_FUNNEL = 'mouthFunnel',
+        MOUTH_LEFT = 'mouthLeft',
+        MOUTH_PUCKER = 'mouthPucker',
+        MOUTH_RIGHT = 'mouthRight',
+        MOUTH_SMILE = 'mouthSmile',
+        MOUTH_UPPER_UP = 'mouthUpperUp',
+      }
+
+      export interface GestureInfo {
+        gesture: FacialGesture;
+        confidence: number;
+      }
 
       export function getDisplayNameForLocale(
           localeCodeToTranslate: string, displayLocaleCode: string): string;
@@ -455,6 +480,9 @@ declare global {
 
       export function scrollAtPoint(
           target: ScreenPoint, direction: ScrollDirection): void;
+
+      export function sendGestureInfoToSettings(gestureInfo: GestureInfo[]):
+          void;
 
       export const onIntroduceChromeVox: ChromeEvent<() => void>;
 

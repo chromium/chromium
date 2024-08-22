@@ -142,6 +142,16 @@ class AccessibilityPrivateInstallFaceGazeAssetsFunction
           assets);
 };
 
+// API function that sends gesture and confidence information for a detected
+// gesture in FaceGaze.
+class AccessibilityPrivateSendGestureInfoToSettingsFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateSendGestureInfoToSettingsFunction() override = default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.sendGestureInfoToSettings",
+                             ACCESSIBILITY_PRIVATE_SENDGESTUREINFOTOSETTINGS)
+};
+
 // API function that initiates a Pumpkin download for Dictation and responds
 // with the file bytes via a callback.
 class AccessibilityPrivateInstallPumpkinForDictationFunction

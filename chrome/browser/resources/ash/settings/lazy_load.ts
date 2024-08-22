@@ -236,7 +236,7 @@ export {SettingsCursorAndTouchpadPageElement} from './os_a11y_page/cursor_and_to
 export {SettingsDisplayAndMagnificationSubpageElement} from './os_a11y_page/display_and_magnification_subpage.js';
 export {AddDialogPage, FaceGazeAddActionDialogElement} from './os_a11y_page/facegaze_actions_add_dialog.js';
 export {FaceGazeActionsCardElement} from './os_a11y_page/facegaze_actions_card.js';
-export {FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeCommandPair} from './os_a11y_page/facegaze_constants.js';
+export {FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeCommandPair, FaceGazeUtils} from './os_a11y_page/facegaze_constants.js';
 export {FaceGazeCursorCardElement} from './os_a11y_page/facegaze_cursor_card.js';
 export {SettingsFaceGazeSubpageElement} from './os_a11y_page/facegaze_subpage.js';
 export {SettingsKeyboardAndTextInputPageElement} from './os_a11y_page/keyboard_and_text_input_page.js';

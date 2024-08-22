@@ -21,6 +21,7 @@ import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {CrScrollableMixin} from 'chrome://resources/ash/common/cr_elements/cr_scrollable_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -40,13 +41,18 @@ export enum AddDialogPage {
   GESTURE_THRESHOLD = 2,
 }
 
+export class FaceGazeGestureConfidence {
+  gesture: FacialGesture;
+  confidence: number;
+}
+
 export const FACEGAZE_CONFIDENCE_DEFAULT = 60;
 export const FACEGAZE_CONFIDENCE_MIN = 1;
 export const FACEGAZE_CONFIDENCE_MAX = 100;
 export const FACEGAZE_CONFIDENCE_BUTTON_STEP = 5;
 
-const FaceGazeAddActionDialogElementBase =
-    PrefsMixin(I18nMixin(CrScrollableMixin(PolymerElement)));
+const FaceGazeAddActionDialogElementBase = PrefsMixin(
+    I18nMixin(CrScrollableMixin(WebUiListenerMixin(PolymerElement))));
 
 export class FaceGazeAddActionDialogElement extends
     FaceGazeAddActionDialogElementBase {
@@ -124,7 +130,7 @@ export class FaceGazeAddActionDialogElement extends
       selectedGesture_: {
         type: Object,
         value: null,
-        observer: 'updateGestureThresholdValueFromGesture_',
+        observer: 'onSelectedGestureChanged_',
       },
 
       localizedGestureThresholdTitle_: {
@@ -133,6 +139,11 @@ export class FaceGazeAddActionDialogElement extends
       },
 
       gestureThresholdValue_: {
+        type: Number,
+        observer: 'onGestureThresholdChanged_',
+      },
+
+      detectedGestureCount_: {
         type: Number,
       },
 
@@ -158,10 +169,6 @@ export class FaceGazeAddActionDialogElement extends
     };
   }
 
-  static get observers() {
-    return ['updateGestureThresholdValueFromGesture_(selectedGesture_)'];
-  }
-
   actionToAssignGesture: MacroName|null = null;
   initialPage: AddDialogPage = AddDialogPage.SELECT_ACTION;
   gestureToConfigure: FacialGesture|null = null;
@@ -172,6 +179,7 @@ export class FaceGazeAddActionDialogElement extends
   private selectedGesture_: FacialGesture|null = null;
   private gestureThresholdValue_: number;
   private currentPage_: AddDialogPage = AddDialogPage.SELECT_ACTION;
+  private detectedGestureCount_ = 0;
 
   // Computed properties.
   private displayedActions_: MacroName[] = FaceGazeActions;
@@ -183,6 +191,10 @@ export class FaceGazeAddActionDialogElement extends
     super();
     this.faceGazeSubpageBrowserProxy_ =
         FaceGazeSubpageBrowserProxyImpl.getInstance();
+    this.addWebUiListener(
+        'settings.sendGestureInfoToSettings',
+        (gestureConfidences: FaceGazeGestureConfidence[]) =>
+            this.onGestureConfidencesReceived_(gestureConfidences));
   }
 
   private getItemClass_(selected: boolean): 'selected'|'' {
@@ -336,7 +348,25 @@ export class FaceGazeAddActionDialogElement extends
     this.gestureThresholdValue_ = this.getThresholdSlider().value;
   }
 
-  private updateGestureThresholdValueFromGesture_(): void {
+  private onGestureConfidencesReceived_(info: FaceGazeGestureConfidence[]):
+      void {
+    if (!this.selectedGesture_ ||
+        this.currentPage_ !== AddDialogPage.GESTURE_THRESHOLD) {
+      return;
+    }
+
+    info.forEach((entry) => {
+      if (entry.gesture === this.selectedGesture_) {
+        // TODO(b:355659370): Show confidence for all gestures in dynamic bar
+        if (entry.confidence >= this.gestureThresholdValue_) {
+          this.detectedGestureCount_++;
+        }
+      }
+    });
+  }
+
+  private onSelectedGestureChanged_(): void {
+    this.detectedGestureCount_ = 0;
     this.gestureThresholdValue_ = FACEGAZE_CONFIDENCE_DEFAULT;
     const gesturesToConfidence = this.get(FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF);
 
@@ -344,6 +374,10 @@ export class FaceGazeAddActionDialogElement extends
         this.selectedGesture_ in gesturesToConfidence) {
       this.gestureThresholdValue_ = gesturesToConfidence[this.selectedGesture_];
     }
+  }
+
+  private onGestureThresholdChanged_(): void {
+    this.detectedGestureCount_ = 0;
   }
 
   private onSaveButtonClick_(): void {

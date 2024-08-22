@@ -11,9 +11,13 @@
 
 namespace ash::settings {
 
-FaceGazeSettingsHandler::FaceGazeSettingsHandler() = default;
+FaceGazeSettingsHandler::FaceGazeSettingsHandler() {
+  AccessibilityManager::Get()->AddFaceGazeSettingsEventHandler(this);
+}
 
-FaceGazeSettingsHandler::~FaceGazeSettingsHandler() {}
+FaceGazeSettingsHandler::~FaceGazeSettingsHandler() {
+  AccessibilityManager::Get()->RemoveFaceGazeSettingsEventHandler();
+}
 
 void FaceGazeSettingsHandler::HandleToggleGestureInfoForSettings(
     const base::Value::List& args) {
@@ -21,6 +25,20 @@ void FaceGazeSettingsHandler::HandleToggleGestureInfoForSettings(
   const bool& enabled = args[0].GetBool();
 
   AccessibilityManager::Get()->ToggleGestureInfoForSettings(enabled);
+}
+
+void FaceGazeSettingsHandler::HandleSendGestureInfoToSettings(
+    const std::vector<ash::FaceGazeGestureInfo>& gesture_info) {
+  base::Value::List gesture_info_list;
+  for (const auto& gesture_info_entry : gesture_info) {
+    base::Value::Dict gesture;
+    gesture.Set("gesture", gesture_info_entry.gesture);
+    gesture.Set("confidence", gesture_info_entry.confidence);
+    gesture_info_list.Append(std::move(gesture));
+  }
+
+  AllowJavascript();
+  FireWebUIListener("settings.sendGestureInfoToSettings", gesture_info_list);
 }
 
 void FaceGazeSettingsHandler::RegisterMessages() {

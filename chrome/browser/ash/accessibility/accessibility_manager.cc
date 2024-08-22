@@ -918,6 +918,15 @@ bool AccessibilityManager::IsFaceGazeEnabled() const {
          profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityFaceGazeEnabled);
 }
 
+void AccessibilityManager::AddFaceGazeSettingsEventHandler(
+    FaceGazeSettingsEventHandler* handler) {
+  facegaze_settings_event_handler_ = handler;
+}
+
+void AccessibilityManager::RemoveFaceGazeSettingsEventHandler() {
+  facegaze_settings_event_handler_ = nullptr;
+}
+
 void AccessibilityManager::ToggleGestureInfoForSettings(bool enabled) const {
   if (!profile_) {
     return;
@@ -938,6 +947,16 @@ void AccessibilityManager::ToggleGestureInfoForSettings(bool enabled) const {
 
   event_router->DispatchEventWithLazyListener(
       extension_misc::kAccessibilityCommonExtensionId, std::move(event));
+}
+
+void AccessibilityManager::SendGestureInfoToSettings(
+    const std::vector<FaceGazeGestureInfo>& gesture_info) const {
+  if (!facegaze_settings_event_handler_) {
+    return;
+  }
+
+  facegaze_settings_event_handler_->HandleSendGestureInfoToSettings(
+      gesture_info);
 }
 
 void AccessibilityManager::OnAccessibilityCommonChanged(

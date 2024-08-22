@@ -435,6 +435,39 @@ chrome.accessibilityPrivate.ScrollDirection = {
 };
 
 /**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.FacialGesture = {
+  BROW_INNER_UP: 'browInnerUp',
+  BROWS_DOWN: 'browsDown',
+  EYE_SQUINT_LEFT: 'eyeSquintLeft',
+  EYE_SQUINT_RIGHT: 'eyeSquintRight',
+  EYES_BLINK: 'eyesBlink',
+  EYES_LOOK_DOWN: 'eyesLookDown',
+  EYES_LOOK_LEFT: 'eyesLookLeft',
+  EYES_LOOK_RIGHT: 'eyesLookRight',
+  EYES_LOOK_UP: 'eyesLookUp',
+  JAW_LEFT: 'jawLeft',
+  JAW_OPEN: 'jawOpen',
+  JAW_RIGHT: 'jawRight',
+  MOUTH_FUNNEL: 'mouthFunnel',
+  MOUTH_LEFT: 'mouthLeft',
+  MOUTH_PUCKER: 'mouthPucker',
+  MOUTH_RIGHT: 'mouthRight',
+  MOUTH_SMILE: 'mouthSmile',
+  MOUTH_UPPER_UP: 'mouthUpperUp',
+};
+
+/**
+ * Information about a detected facial gesture.
+ * @typedef {{
+ *   gesture: !chrome.accessibilityPrivate.FacialGesture,
+ *   confidence: number
+ * }}
+ */
+chrome.accessibilityPrivate.GestureInfo;
+
+/**
  * Property to indicate whether event source should default to touch.
  * @type {number}
  */
@@ -768,6 +801,16 @@ chrome.accessibilityPrivate.showToast = function(type) {};
  * @param {!chrome.accessibilityPrivate.ScrollDirection} direction
  */
 chrome.accessibilityPrivate.scrollAtPoint = function(target, direction) {};
+
+/**
+ * Fired when FaceGaze processes a video frame, detects facial gestures from the
+ * frame, then sends information about the recognized facial gesture to the
+ * settings.
+ * @param {!Array<!chrome.accessibilityPrivate.GestureInfo>} gestureInfo The
+ *     recognized facial gestures and their associated confidence values.
+ */
+chrome.accessibilityPrivate.sendGestureInfoToSettings = function(
+    gestureInfo) {};
 
 /**
  * Fired whenever ChromeVox should output introduction.

@@ -19,11 +19,13 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -117,6 +119,50 @@ ash::AccessibilityScrollDirection ConvertScrollDirection(
     case accessibility_private::ScrollDirection::kRight:
       return ash::AccessibilityScrollDirection::kRight;
     case accessibility_private::ScrollDirection::kNone:
+      NOTREACHED_NORETURN();
+  }
+}
+
+std::string ConvertFacialGestureType(
+    accessibility_private::FacialGesture gesture_type) {
+  switch (gesture_type) {
+    case accessibility_private::FacialGesture::kBrowInnerUp:
+      return "browInnerUp";
+    case accessibility_private::FacialGesture::kBrowsDown:
+      return "browsDown";
+    case accessibility_private::FacialGesture::kEyeSquintLeft:
+      return "eyeSquintLeft";
+    case accessibility_private::FacialGesture::kEyeSquintRight:
+      return "eyeSquintRight";
+    case accessibility_private::FacialGesture::kEyesBlink:
+      return "eyesBlink";
+    case accessibility_private::FacialGesture::kEyesLookDown:
+      return "eyesLookDown";
+    case accessibility_private::FacialGesture::kEyesLookLeft:
+      return "eyesLookLeft";
+    case accessibility_private::FacialGesture::kEyesLookRight:
+      return "eyesLookRight";
+    case accessibility_private::FacialGesture::kEyesLookUp:
+      return "eyesLookUp";
+    case accessibility_private::FacialGesture::kJawLeft:
+      return "jawLeft";
+    case accessibility_private::FacialGesture::kJawOpen:
+      return "jawOpen";
+    case accessibility_private::FacialGesture::kJawRight:
+      return "jawRight";
+    case accessibility_private::FacialGesture::kMouthFunnel:
+      return "mouthFunnel";
+    case accessibility_private::FacialGesture::kMouthLeft:
+      return "mouthLeft";
+    case accessibility_private::FacialGesture::kMouthPucker:
+      return "mouthPucker";
+    case accessibility_private::FacialGesture::kMouthRight:
+      return "mouthRight";
+    case accessibility_private::FacialGesture::kMouthSmile:
+      return "mouthSmile";
+    case accessibility_private::FacialGesture::kMouthUpperUp:
+      return "mouthUpperUp";
+    case accessibility_private::FacialGesture::kNone:
       NOTREACHED_NORETURN();
   }
 }
@@ -377,6 +423,30 @@ void AccessibilityPrivateInstallFaceGazeAssetsFunction::OnInstallFinished(
   }
 
   Respond(WithArguments(assets->ToValue()));
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateSendGestureInfoToSettingsFunction::Run() {
+  std::optional<accessibility_private::SendGestureInfoToSettings::Params>
+      params(accessibility_private::SendGestureInfoToSettings::Params::Create(
+          args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  std::vector<ash::FaceGazeGestureInfo> converted_gesture_info_array;
+
+  for (const accessibility_private::GestureInfo& gesture_info :
+       params->gesture_info) {
+    auto converted_gesture_info = ash::FaceGazeGestureInfo();
+    converted_gesture_info.confidence = gesture_info.confidence;
+    converted_gesture_info.gesture =
+        ConvertFacialGestureType(gesture_info.gesture);
+
+    converted_gesture_info_array.push_back(converted_gesture_info);
+  }
+
+  AccessibilityManager::Get()->SendGestureInfoToSettings(
+      std::move(converted_gesture_info_array));
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction
