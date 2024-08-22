@@ -209,9 +209,17 @@ class TabStripViewController: UIViewController,
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     self.ensureSelectedItemIsSelected()
+    // In case the device orientation was updated while the tab strip was not
+    // visible, recalculate the item size.
+    layout.needsSizeUpdate = true
     NotificationCenter.default.addObserver(
       self, selector: #selector(voiceOverChanged),
       name: UIAccessibility.voiceOverStatusDidChangeNotification, object: nil)
+  }
+
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    layout.needsSizeUpdate = false
   }
 
   override func viewDidDisappear(_ animated: Bool) {
