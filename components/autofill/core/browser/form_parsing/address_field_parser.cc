@@ -371,8 +371,6 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
     // we don't want them both to be in the same form section. This would
     // probably point to some problem in the classification.
     if (!(overflow_and_landmark_ || overflow_) &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForAddressOverflow) &&
         i18n_model_definition::IsTypeEnabledForCountry(ADDRESS_HOME_OVERFLOW,
                                                        country_code) &&
         ParseField(context, scanner, overflow_patterns, &overflow_,
@@ -956,8 +954,6 @@ AddressFieldParser::ParseNameAndLabelForOverflow(ParsingContext& context,
   AddressCountryCode country_code(context.client_country.value());
   // TODO(crbug.com/40266693) Remove feature check when launched.
   if (overflow_and_landmark_ || overflow_ ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAddressOverflow) ||
       !i18n_model_definition::IsTypeEnabledForCountry(ADDRESS_HOME_OVERFLOW,
                                                       country_code)) {
     return RESULT_MATCH_NONE;

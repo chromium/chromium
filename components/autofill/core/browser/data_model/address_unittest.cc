@@ -31,7 +31,6 @@ class AddressTest : public testing::Test {
             features::kAutofillEnableSupportForBetweenStreets,
             features::kAutofillEnableSupportForAdminLevel2,
             features::kAutofillEnableSupportForApartmentNumbers,
-            features::kAutofillEnableSupportForAddressOverflow,
             features::kAutofillUseAUAddressModel,
             features::kAutofillUseBRAddressModel,
             features::kAutofillUseCAAddressModel,

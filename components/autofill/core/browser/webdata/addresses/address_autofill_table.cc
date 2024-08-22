@@ -379,11 +379,6 @@ bool AddProfileTypeTokensToTable(sql::Database* db,
                                  const AutofillProfile& profile) {
   for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
     if (!base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForAddressOverflow) &&
-        type == ADDRESS_HOME_OVERFLOW) {
-      continue;
-    }
-    if (!base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForBetweenStreets) &&
         (type == ADDRESS_HOME_BETWEEN_STREETS ||
          type == ADDRESS_HOME_BETWEEN_STREETS_1 ||

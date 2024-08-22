@@ -232,7 +232,6 @@ class AutofillStructuredAddressAddressComponent : public testing::Test {
          features::kAutofillUseINAddressModel,
          features::kAutofillUseMXAddressModel,
          features::kAutofillEnableSupportForBetweenStreets,
-         features::kAutofillEnableSupportForAddressOverflow,
          features::kAutofillEnableSupportForAdminLevel2,
          features::kAutofillEnableSupportForApartmentNumbers},
         {});

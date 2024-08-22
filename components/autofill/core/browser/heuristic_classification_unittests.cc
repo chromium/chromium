@@ -558,7 +558,6 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillUsePLAddressModel,
       features::kAutofillEnableSupportForBetweenStreets,
       features::kAutofillEnableSupportForAdminLevel2,
-      features::kAutofillEnableSupportForAddressOverflow,
       features::kAutofillEnableSupportForApartmentNumbers,
       features::kAutofillEnableExpirationDateImprovements,
       features::kAutofillEnableParsingOfStreetLocation,

@@ -109,7 +109,7 @@ class AdminLevel2Node : public FeatureGuardedAddressComponent {
 // overflow fields, meaning that forms follow a consistent structure that is
 // typically identical across domains while also providing an option for an
 // overflow field.
-class AddressOverflowNode : public FeatureGuardedAddressComponent {
+class AddressOverflowNode : public AddressComponent {
  public:
   explicit AddressOverflowNode(SubcomponentsList children);
   ~AddressOverflowNode() override;

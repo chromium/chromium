@@ -186,12 +186,6 @@ BASE_FEATURE(kAutofillEnableSupportForAdminLevel2,
              "AutofillEnableSupportForAdminLevel2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls if Chrome support filling and importing address overflow fields.
-// TODO(crbug.com/40266693) Remove once launched.
-BASE_FEATURE(kAutofillEnableSupportForAddressOverflow,
-             "AutofillEnableSupportForAddressOverflow",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls if Chrome parses fields at street locations. This field type is
 // generally supported in the legacy hierarchy but there is a risk of confusing
 // an address line 1 with a street location. We don't have a good strategy for

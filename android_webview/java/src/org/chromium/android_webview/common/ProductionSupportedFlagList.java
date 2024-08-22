@@ -283,9 +283,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_ADMIN_LEVEL2,
                 "When enabled, Autofill supports admin-level2 fields."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_ADDRESS_OVERFLOW,
-                "When enabled, Autofill supports overflow fields."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_PARSING_OF_STREET_LOCATION,
                 "When enabled, Autofill supports parsing fields as street locations."),
         Flag.baseFeature(

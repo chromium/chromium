@@ -283,8 +283,7 @@ TEST_P(AddressFieldParserTest, ParseOverflow) {
       {"adresszusatz", "Adresszusatz", "DE", "de"},
   };
   base::test::ScopedFeatureList enabled;
-  enabled.InitWithFeatures({features::kAutofillEnableSupportForAddressOverflow,
-                            features::kAutofillUseBRAddressModel,
+  enabled.InitWithFeatures({features::kAutofillUseBRAddressModel,
                             features::kAutofillUseDEAddressModel},
                            {});
 
@@ -304,13 +303,7 @@ TEST_P(AddressFieldParserTest, ParseOverflow) {
 // Tests that overflow field is correctly classified.
 TEST_P(AddressFieldParserTest, ParseOverflowAndLandmark) {
   // TODO(crbug.com/40266693): Remove once launched.
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kAutofillEnableSupportForAddressOverflow,
-       features::kAutofillUseBRAddressModel},
-      /*disabled_features=*/{});
-
+  base::test::ScopedFeatureList features{features::kAutofillUseBRAddressModel};
   AddTextFormFieldData("additional_info", "Complemento e ponto de referência",
                        ADDRESS_HOME_OVERFLOW_AND_LANDMARK);
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("BR"),
@@ -364,7 +357,6 @@ TEST_P(AddressFieldParserTest,
   base::test::ScopedFeatureList enabled;
   enabled.InitWithFeatures(
       {
-          features::kAutofillEnableSupportForAddressOverflow,
           features::kAutofillEnableSupportForBetweenStreets,
           features::kAutofillEnableSupportForAdminLevel2,
           features::kAutofillUseMXAddressModel,

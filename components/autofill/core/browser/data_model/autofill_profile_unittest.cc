@@ -1373,8 +1373,7 @@ TEST_F(AutofillProfileTest, Compare_StructuredTypes) {
        features::kAutofillUseMXAddressModel,
        features::kAutofillEnableSupportForBetweenStreets,
        features::kAutofillEnableSupportForAdminLevel2,
-       features::kAutofillEnableSupportForApartmentNumbers,
-       features::kAutofillEnableSupportForAddressOverflow},
+       features::kAutofillEnableSupportForApartmentNumbers},
       {});
   // Those types do store a verification status.
   FieldTypeSet structured_types{

@@ -162,11 +162,8 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY))));
   specifics->set_address_home_country(data_util::TruncateUTF8(
       base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_COUNTRY))));
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAddressOverflow)) {
-    specifics->set_address_home_overflow(data_util::TruncateUTF8(
-        base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_OVERFLOW))));
-  }
+  specifics->set_address_home_overflow(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_OVERFLOW))));
   specifics->set_address_home_landmark(data_util::TruncateUTF8(
       base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_LANDMARK))));
   specifics->set_address_home_between_streets_or_landmark(
@@ -239,16 +236,12 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   specifics->set_address_home_country_status(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_COUNTRY)));
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAddressOverflow)) {
-    specifics->set_address_home_overflow_status(
-        ConvertProfileToSpecificsVerificationStatus(
-            entry.GetVerificationStatus(ADDRESS_HOME_OVERFLOW)));
-  }
-    specifics->set_address_home_landmark_status(
-        ConvertProfileToSpecificsVerificationStatus(
-            entry.GetVerificationStatus(ADDRESS_HOME_LANDMARK)));
-
+  specifics->set_address_home_overflow_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_OVERFLOW)));
+  specifics->set_address_home_landmark_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_LANDMARK)));
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForBetweenStreets)) {
     specifics->set_address_home_between_streets_status(
@@ -463,14 +456,11 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_country_status()));
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAddressOverflow)) {
-    profile->SetRawInfoWithVerificationStatus(
-        ADDRESS_HOME_OVERFLOW,
-        base::UTF8ToUTF16(specifics.address_home_overflow()),
-        ConvertSpecificsToProfileVerificationStatus(
-            specifics.address_home_overflow_status()));
-  }
+  profile->SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_OVERFLOW,
+      base::UTF8ToUTF16(specifics.address_home_overflow()),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.address_home_overflow_status()));
 
   profile->SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,

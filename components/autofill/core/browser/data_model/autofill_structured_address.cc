@@ -357,11 +357,9 @@ AdminLevel2Node::AdminLevel2Node(SubcomponentsList children)
 AdminLevel2Node::~AdminLevel2Node() = default;
 
 AddressOverflowNode::AddressOverflowNode(SubcomponentsList children)
-    : FeatureGuardedAddressComponent(
-          &features::kAutofillEnableSupportForAddressOverflow,
-          ADDRESS_HOME_OVERFLOW,
-          std::move(children),
-          MergeMode::kReplaceEmpty | kReplaceSubset) {}
+    : AddressComponent(ADDRESS_HOME_OVERFLOW,
+                       std::move(children),
+                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
 
 AddressOverflowNode::~AddressOverflowNode() = default;
 
