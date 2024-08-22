@@ -23,6 +23,7 @@
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/profiles/profile.h"
@@ -80,6 +81,21 @@ constexpr char kValueTargetSelf[] = "SELF";
 constexpr char kValueTargetFrame[] = "FRAME";
 constexpr char kValueTargetBlank[] = "BLANK";
 constexpr char kValueTargetNoFrame[] = "NO_FRAME";
+
+// Whether Link capturing is turned on:
+enum class LinkCapturing {
+  kEnabled,
+  kDisabled,
+};
+
+std::string_view ToParamString(LinkCapturing capturing) {
+  switch (capturing) {
+    case LinkCapturing::kEnabled:
+      return "CaptureOn";
+    case LinkCapturing::kDisabled:
+      return "CaptureOff";
+  }
+}
 
 // The starting point for the test:
 enum class StartingPoint {
@@ -269,6 +285,7 @@ std::string_view ToParamString(NavigationTarget target) {
 // be used to construct the values.
 using LinkCaptureTestParam =
     std::tuple<blink::mojom::ManifestLaunchHandler_ClientMode,
+               LinkCapturing,
                StartingPoint,
                Destination,
                RedirectType,
@@ -630,6 +647,10 @@ class WebAppLinkCapturingParameterizedBrowserTest
     ASSERT_TRUE(base::WriteFile(json_file_path_, *json_string));
   }
 
+  LinkCapturing GetLinkCapturing() const {
+    return std::get<LinkCapturing>(GetParam());
+  }
+
   blink::mojom::ManifestLaunchHandler_ClientMode GetClientMode() const {
     return std::get<blink::mojom::ManifestLaunchHandler_ClientMode>(GetParam());
   }
@@ -853,6 +874,13 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
   const webapps::AppId app_b =
       InstallTestWebApp(embedded_test_server()->GetURL(kDestinationPageScopeB));
 
+  if (GetLinkCapturing() == LinkCapturing::kDisabled) {
+    ASSERT_EQ(apps::test::DisableLinkCapturingByUser(profile(), app_a),
+              base::ok());
+    ASSERT_EQ(apps::test::DisableLinkCapturingByUser(profile(), app_b),
+              base::ok());
+  }
+
   std::string element_id = GetElementId();
 
   // Setup the initial page.
@@ -921,13 +949,17 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
 
 // Pro-tip: To run only one combination from the below list, supply this...
 // WebAppLinkCapturingParameterizedBrowserTest.CheckLinkCaptureCombinations/foo
-// Where foo can be: AppWnd_ScopeA2A_ViaLink_LeftClick_WithOpener_TargetSelf
+// Where foo can be:
+// CaptureOn_AppWnd_ScopeA2A_Direct_ViaLink_LeftClick_WithOpener_TargetSelf
 // See ParamToString above for possible values.
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
+                        LinkCapturing::kDisabled  // LinkCapturing turned off.
+                        ),
         testing::Values(
             StartingPoint::kAppWindow,  // Starting point is app window.
             StartingPoint::kTab         // Starting point is a tab.
@@ -960,6 +992,9 @@ INSTANTIATE_TEST_SUITE_P(
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
+                        LinkCapturing::kDisabled  // LinkCapturing turned off.
+                        ),
         testing::Values(
             StartingPoint::kAppWindow,  // Starting point is app window.
             StartingPoint::kTab         // Starting point is a tab.
@@ -980,6 +1015,9 @@ INSTANTIATE_TEST_SUITE_P(
         // TODO: Add kNavigateExisting.
         testing::Values(
             blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting),
+        testing::Values(LinkCapturing::kEnabled,  // LinkCapturing turned on.
+                        LinkCapturing::kDisabled  // LinkCapturing turned off.
+                        ),
         testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
         testing::Values(Destination::kScopeA2A,  // Navigate A -> A.
                         Destination::kScopeA2B   // Navigate A -> B.
