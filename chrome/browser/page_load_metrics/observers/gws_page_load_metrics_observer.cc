@@ -81,6 +81,11 @@ const char kHistogramGWSDomainLookupStart[] =
 const char kHistogramGWSDomainLookupEnd[] =
     HISTOGRAM_PREFIX "DomainLookupTiming.NavigationToDomainLookupEnd2";
 
+const char kHistogramGWSHCT[] = HISTOGRAM_PREFIX "CSI.HeadChunkContentTime";
+const char kHistogramGWSSCT[] = HISTOGRAM_PREFIX "CSI.SearchContentTime";
+const char kHistogramGWSTimeBetweenHCTAndSCT[] =
+    HISTOGRAM_PREFIX "CSI.TimeBetweenHCTAndSCT";
+
 }  // namespace internal
 
 GWSPageLoadMetricsObserver::GWSPageLoadMetricsObserver() {
@@ -210,17 +215,21 @@ void GWSPageLoadMetricsObserver::OnCustomUserTimingMarkObserved(
   for (const auto& mark : timings) {
     if (mark->mark_name == internal::kGwsAFTStartMarkName) {
       PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSAFTStart, mark->start_time);
+      aft_start_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsAFTEndMarkName) {
       PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSAFTEnd, mark->start_time);
     } else if (mark->mark_name == internal::kGwsHeaderChunkStartMarkName) {
       PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSHeaderChunkStart,
                           mark->start_time);
+      header_chunk_start_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsHeaderChunkEndMarkName) {
       PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSHeaderChunkEnd,
                           mark->start_time);
+      header_chunk_end_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsBodyChunkStartMarkName) {
       PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSBodyChunkStart,
                           mark->start_time);
+      body_chunk_start_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsBodyChunkEndMarkName) {
       PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSBodyChunkEnd,
                           mark->start_time);
@@ -249,6 +258,24 @@ void GWSPageLoadMetricsObserver::LogMetricsOnComplete() {
   RecordNavigationTimingHistograms();
   PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSLargestContentfulPaint,
                       all_frames_largest_contentful_paint.Time().value());
+
+  // Log some important CSI metrics only when related submetrics are recorded.
+  std::optional<base::TimeDelta> sct_time;
+  std::optional<base::TimeDelta> hct_time;
+  if (aft_start_time_.has_value() && body_chunk_start_time_.has_value()) {
+    sct_time = body_chunk_start_time_.value() - aft_start_time_.value();
+    PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSSCT, sct_time.value());
+  }
+  if (header_chunk_start_time_.has_value() &&
+      header_chunk_end_time_.has_value()) {
+    hct_time =
+        header_chunk_end_time_.value() - header_chunk_start_time_.value();
+    PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSHCT, hct_time.value());
+  }
+  if (sct_time.has_value() && hct_time.has_value()) {
+    PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSTimeBetweenHCTAndSCT,
+                        sct_time.value() - hct_time.value());
+  }
 }
 
 void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {

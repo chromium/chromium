@@ -1171,6 +1171,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Clients.GoogleSearch.CSI.{Event}" units="ms"
+    expires_after="2024-12-30">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time {Event}, for Google Search page loads. The recorded values
+    are calculated based on the metrics recorded by the JavaScript, which is
+    done after the naivagation commit phase in Search. The metric is emitted
+    when the navigation is completed or the app is backgrounded on Android. This
+    is onlly recorded in the outermost main frame.
+
+    Note that this event is randomly sampled based on the JavaScript in the
+    page, recorded at the frequency of 1%.
+  </summary>
+  <token key="Event">
+    <variant name="HeadChunkContentTime" summary="to process header chunk"/>
+    <variant name="SearchContentTime"
+        summary="from the server response time to receive the body chunk"/>
+    <variant name="TimeBetweenHCTAndSCT"
+        summary="between HeadChunkContentTime and SearchContentTime"/>
+  </token>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.GoogleSearch.DomainLookupTiming.NavigationToDomainLookupEnd2.{NavigationCountType}{BrowserInitializationStatus}{TabInitializationStatus}"
     units="ms" expires_after="2025-08-01">
