@@ -8,11 +8,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -116,7 +116,7 @@ class TaskManagerImpl : public TaskManagerInterface,
 
  private:
   using PidToTaskGroupMap =
-      std::map<base::ProcessId, std::unique_ptr<TaskGroup>>;
+      base::flat_map<base::ProcessId, std::unique_ptr<TaskGroup>>;
 
   friend struct base::LazyInstanceTraitsBase<TaskManagerImpl>;
 
@@ -164,7 +164,7 @@ class TaskManagerImpl : public TaskManagerInterface,
   // Map each task by its ID to the TaskGroup on which it resides.
   // Keys are unique but values will have duplicates (i.e. multiple tasks
   // running on the same process represented by a single TaskGroup).
-  std::map<TaskId, TaskGroup*> task_groups_by_task_id_;
+  base::flat_map<TaskId, TaskGroup*> task_groups_by_task_id_;
 
   // A cached sorted list of the task IDs.
   mutable std::vector<TaskId> sorted_task_ids_;
