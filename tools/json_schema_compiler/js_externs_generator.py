@@ -23,11 +23,15 @@ NOTE = """// NOTE: The format of types has changed. 'FooType' is now
 // See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 """
 
+
 class JsExternsGenerator(object):
+
   def Generate(self, namespace):
     return _Generator(namespace).Generate()
 
+
 class _Generator(object):
+
   def __init__(self, namespace):
     self._namespace = namespace
     self._class_name = None
@@ -45,7 +49,7 @@ class _Generator(object):
     src_to_script = os.path.relpath(script_dir, src_root)
     # tools/json_schema_compiler/compiler.py
     compiler_path = os.path.join(src_to_script, 'compiler.py')
-    (c.Append(self._GetHeader(compiler_path, self._namespace.name))
+    (c.Append(self._GetHeader(compiler_path, self._namespace.name)) \
       .Append())
 
     self._AppendNamespaceObject(c)
@@ -69,13 +73,10 @@ class _Generator(object):
   def _GetHeader(self, tool, namespace):
     """Returns the file header text.
     """
-    return (self._js_util.GetLicense() + '\n' +
-            self._js_util.GetInfo(tool) + (NOTE % namespace) + '\n' +
-            '/**\n' +
+    return (self._js_util.GetLicense() + '\n' + self._js_util.GetInfo(tool) +
+            (NOTE % namespace) + '\n' + '/**\n' +
             (' * @fileoverview Externs generated from namespace: %s\n' %
-             namespace) +
-            ' * @externs\n' +
-            ' */')
+             namespace) + ' * @externs\n' + ' */')
 
   def _AppendType(self, c, js_type):
     """Given a Type object, generates the Code for this type's definition.
@@ -95,9 +96,10 @@ class _Generator(object):
                                 js_type.simple_name)
     c.Eblock(' */')
     c.Append('%s.%s = {' % (self._GetNamespace(), js_type.name))
-    c.Append('\n'.join(
-        ["  %s: '%s'," % (self._js_util.GetPropertyName(v.name), v.name)
-            for v in js_type.enum_values]))
+    c.Append('\n'.join([
+        "  %s: '%s'," % (self._js_util.GetPropertyName(v.name), v.name)
+        for v in js_type.enum_values
+    ]))
     c.Append('};')
 
   def _IsTypeConstructor(self, js_type):
@@ -120,8 +122,8 @@ class _Generator(object):
     if js_type.property_type is not PropertyType.OBJECT:
       self._js_util.AppendTypeJsDoc(c, self._namespace.name, js_type, optional)
     elif is_constructor:
-      c.Comment('@constructor', comment_prefix = '', wrap_indent=4)
-      c.Comment('@private', comment_prefix = '', wrap_indent=4)
+      c.Comment('@constructor', comment_prefix='', wrap_indent=4)
+      c.Comment('@private', comment_prefix='', wrap_indent=4)
     else:
       self._AppendTypedef(c, js_type.properties)
 
@@ -151,8 +153,10 @@ class _Generator(object):
 
     c.Append('@typedef {')
     if properties:
-      self._js_util.AppendObjectDefinition(
-              c, self._namespace.name, properties, new_line=False)
+      self._js_util.AppendObjectDefinition(c,
+                                           self._namespace.name,
+                                           properties,
+                                           new_line=False)
     else:
       c.Append('Object', new_line=False)
     c.Append('}', new_line=False)
@@ -178,8 +182,8 @@ class _Generator(object):
     """
     self._js_util.AppendFunctionJsDoc(c, self._namespace.name, function)
     params = self._GetFunctionParams(function)
-    c.Append('%s.%s = function(%s) {};' % (self._GetNamespace(),
-                                           function.name, params))
+    c.Append('%s.%s = function(%s) {};' %
+             (self._GetNamespace(), function.name, params))
     c.Append()
 
   def _AppendEvent(self, c, event):

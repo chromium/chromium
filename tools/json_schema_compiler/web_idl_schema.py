@@ -21,9 +21,8 @@ from json_parse import OrderedDict
 
 # idl_parser expects to be able to import certain files in its directory,
 # so let's set things up the way it wants.
-_idl_generators_path = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)), os.pardir, os.pardir, 'tools'
-)
+_idl_generators_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                    os.pardir, os.pardir, 'tools')
 if _idl_generators_path in sys.path:
   from idl_parser import idl_parser, idl_lexer, idl_node
 else:
@@ -40,8 +39,7 @@ class SchemaCompilerError(Exception):
 
   def __init__(self, message: str, node: IDLNode):
     super().__init__(
-        node.GetLogLine(f'Error processing node {node}: {message}')
-    )
+        node.GetLogLine(f'Error processing node {node}: {message}'))
 
 
 def GetChildWithName(node: IDLNode, name: str) -> Optional[IDLNode]:
@@ -56,8 +54,7 @@ def GetChildWithName(node: IDLNode, name: str) -> Optional[IDLNode]:
     name was not found.
   """
   return next(
-      (child for child in node.GetChildren() if child.GetName() == name), None
-  )
+      (child for child in node.GetChildren() if child.GetName() == name), None)
 
 
 def GetTypeName(node: IDLNode) -> str:
@@ -76,8 +73,7 @@ def GetTypeName(node: IDLNode) -> str:
     if child_node.GetClass() == 'Type':
       return child_node.GetOneOf('Typeref').GetName()
   raise SchemaCompilerError(
-      'Could not find Type node when looking for Typeref name.', node
-  )
+      'Could not find Type node when looking for Typeref name.', node)
 
 
 def GetExtendedAttributes(node: IDLNode) -> Optional[List[IDLNode]]:
@@ -111,9 +107,8 @@ class Type:
 
   def __init__(self, node: IDLNode, additional_properties: dict) -> None:
     assert node.GetClass() == 'Type', node.GetLogLine(
-        'Attempted to process a "Type" node, but was passed a "%s" node.'
-        % (node.GetClass())
-    )
+        'Attempted to process a "Type" node, but was passed a "%s" node.' %
+        (node.GetClass()))
     self.node = node
     self.additional_properties = additional_properties
 
@@ -136,13 +131,11 @@ class Type:
         properties['type'] = 'string'
       else:
         raise SchemaCompilerError(
-            'Unsupported basic type found when processing type.', basic_type
-        )
+            'Unsupported basic type found when processing type.', basic_type)
     else:
       unknown_child = self.node.GetChildren()[0]
-      raise SchemaCompilerError(
-          'Unsupported type class when processing type.', unknown_child
-      )
+      raise SchemaCompilerError('Unsupported type class when processing type.',
+                                unknown_child)
 
     return properties
 
@@ -241,8 +234,7 @@ class IDLSchema:
     browser_node = GetChildWithName(self.idl, 'Browser')
     if browser_node is None or browser_node.GetClass() != 'Interface':
       raise SchemaCompilerError(
-          'Required partial Browser interface not found in schema.', self.idl
-      )
+          'Required partial Browser interface not found in schema.', self.idl)
 
     # The 'Browser' Interface has one attribute describing the name this API is
     # exposed on.
@@ -298,9 +290,8 @@ def Main():
     for i, char in enumerate(contents):
       if not char.isascii():
         raise Exception(
-            'Non-ascii character "%s" (ord %d) found at offset %d.'
-            % (char, ord(char), i)
-        )
+            'Non-ascii character "%s" (ord %d) found at offset %d.' %
+            (char, ord(char), i))
     idl = idl_parser.IDLParser().ParseData(contents, '<stdin>')
     schema = IDLSchema(idl).process()
     print(json.dumps(schema, indent=2))

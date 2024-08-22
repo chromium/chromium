@@ -12,7 +12,9 @@ import unittest
 
 from collections import defaultdict
 
+
 class _FakeSchemaLoader(object):
+
   def __init__(self, model):
     self._model = model
 
@@ -22,13 +24,15 @@ class _FakeSchemaLoader(object):
       return default if type_name in default.types else None
     return self._model.namespaces[parts[0]]
 
+
 class CppTypeGeneratorTest(unittest.TestCase):
+
   def setUp(self):
     self.models = defaultdict(model.Model)
 
     forbidden_json = CachedLoad('test/forbidden.json')
-    self.models['forbidden'].AddNamespace(
-        forbidden_json[0], 'path/to/forbidden.json')
+    self.models['forbidden'].AddNamespace(forbidden_json[0],
+                                          'path/to/forbidden.json')
 
     permissions_json = CachedLoad('test/permissions.json')
     self.permissions = self.models['permissions'].AddNamespace(
@@ -59,12 +63,13 @@ class CppTypeGeneratorTest(unittest.TestCase):
 
     objects_movable_idl = idl_schema.Load('test/objects_movable.idl')
     self.objects_movable = self.models['objects_movable'].AddNamespace(
-        objects_movable_idl[0], 'path/to/objects_movable.idl',
+        objects_movable_idl[0],
+        'path/to/objects_movable.idl',
         include_compiler_options=True)
 
     self.simple_api_json = CachedLoad('test/simple_api.json')
-    self.models['simple_api'].AddNamespace(
-        self.simple_api_json[0], 'path/to/simple_api.json')
+    self.models['simple_api'].AddNamespace(self.simple_api_json[0],
+                                           'path/to/simple_api.json')
 
     self.crossref_enums_json = CachedLoad('test/crossref_enums.json')
     self.crossref_enums = self.models['crossref_enums'].AddNamespace(
@@ -73,8 +78,7 @@ class CppTypeGeneratorTest(unittest.TestCase):
     self.crossref_enums_array_json = CachedLoad(
         'test/crossref_enums_array.json')
     self.models['crossref_enums_array'].AddNamespace(
-        self.crossref_enums_array_json[0],
-        'path/to/crossref_enums_array.json')
+        self.crossref_enums_array_json[0], 'path/to/crossref_enums_array.json')
 
   def testGenerateIncludesAndForwardDeclarations(self):
     m = model.Model()
@@ -88,7 +92,7 @@ class CppTypeGeneratorTest(unittest.TestCase):
 
     self.assertEqual('', manager.GenerateIncludes().Render())
     self.assertEqual('#include "path/to/tabs.h"',
-                      manager.GenerateIncludes(include_soft=True).Render())
+                     manager.GenerateIncludes(include_soft=True).Render())
     self.assertEqual(
         'namespace tabs {\n'
         'struct Tab;\n'
@@ -96,14 +100,14 @@ class CppTypeGeneratorTest(unittest.TestCase):
         manager.GenerateForwardDeclarations().Render())
 
     m = model.Model()
-    m.AddNamespace(self.windows_json[0],
-                   'path/to/windows.json',
-                   environment=CppNamespaceEnvironment(
-                       'foo::bar::%(namespace)s'))
-    m.AddNamespace(self.tabs_json[0],
-                   'path/to/tabs.json',
-                   environment=CppNamespaceEnvironment(
-                       'foo::bar::%(namespace)s'))
+    m.AddNamespace(
+        self.windows_json[0],
+        'path/to/windows.json',
+        environment=CppNamespaceEnvironment('foo::bar::%(namespace)s'))
+    m.AddNamespace(
+        self.tabs_json[0],
+        'path/to/tabs.json',
+        environment=CppNamespaceEnvironment('foo::bar::%(namespace)s'))
     manager = CppTypeGenerator(m, _FakeSchemaLoader(m))
     self.assertEqual(
         'namespace foo {\n'
@@ -134,9 +138,10 @@ class CppTypeGeneratorTest(unittest.TestCase):
     manager = CppTypeGenerator(m,
                                _FakeSchemaLoader(m),
                                default_namespace=dependency_tester)
-    self.assertEqual('#include "path/to/browser_action.h"\n'
-                      '#include "path/to/font_settings.h"',
-                      manager.GenerateIncludes().Render())
+    self.assertEqual(
+        '#include "path/to/browser_action.h"\n'
+        '#include "path/to/font_settings.h"',
+        manager.GenerateIncludes().Render())
     self.assertEqual('', manager.GenerateForwardDeclarations().Render())
 
   def testGetCppTypeSimple(self):
@@ -167,7 +172,7 @@ class CppTypeGeneratorTest(unittest.TestCase):
 
   def testGetCppTypeArray(self):
     manager = CppTypeGenerator(self.models.get('windows'),
-                                _FakeSchemaLoader(None))
+                               _FakeSchemaLoader(None))
     self.assertEqual(
         'std::vector<Window>',
         manager.GetCppType(
@@ -183,9 +188,8 @@ class CppTypeGeneratorTest(unittest.TestCase):
                                _FakeSchemaLoader(None))
     self.assertEqual(
         'std::vector<MovablePod>',
-        manager.GetCppType(
-            self.objects_movable.types['MovableParent'].
-                properties['pods'].type_))
+        manager.GetCppType(self.objects_movable.types['MovableParent'].
+                           properties['pods'].type_))
 
   def testGetCppTypeLocalRef(self):
     manager = CppTypeGenerator(self.models.get('tabs'), _FakeSchemaLoader(None))
@@ -211,7 +215,8 @@ class CppTypeGeneratorTest(unittest.TestCase):
   def testGetCppTypeWithPadForGeneric(self):
     manager = CppTypeGenerator(self.models.get('permissions'),
                                _FakeSchemaLoader(None))
-    self.assertEqual('std::vector<std::string>',
+    self.assertEqual(
+        'std::vector<std::string>',
         manager.GetCppType(
             self.permissions.types['Permissions'].properties['origins'].type_))
     self.assertEqual(
@@ -235,7 +240,7 @@ class CppTypeGeneratorTest(unittest.TestCase):
                                _FakeSchemaLoader(m))
 
     self.assertEqual('#include "path/to/simple_api.h"',
-                      manager.GenerateIncludes().Render())
+                     manager.GenerateIncludes().Render())
 
   def testHardIncludesForEnumArrays(self):
     """Tests that enums in arrays generate hard includes. Note that it's
@@ -253,7 +258,7 @@ class CppTypeGeneratorTest(unittest.TestCase):
                                _FakeSchemaLoader(m))
 
     self.assertEqual('#include "path/to/simple_api.h"',
-                      manager.GenerateIncludes().Render())
+                     manager.GenerateIncludes().Render())
 
   def testCrossNamespaceGetEnumDefaultValue(self):
     m = model.Model()
@@ -272,9 +277,9 @@ class CppTypeGeneratorTest(unittest.TestCase):
     self.assertEqual(
         'namespace1::api::simple_api::TestEnum()',
         manager.GetEnumDefaultValue(
-            self.crossref_enums.types['CrossrefType']
-            .properties['testEnumOptional'].type_,
-            self.crossref_enums))
+            self.crossref_enums.types['CrossrefType'].
+            properties['testEnumOptional'].type_, self.crossref_enums))
+
 
 if __name__ == '__main__':
   unittest.main()

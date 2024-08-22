@@ -5,35 +5,27 @@
 
 import unittest
 
-from cpp_util import (
-    Classname,
-    CloseNamespace,
-    GetCppNamespace,
-    GenerateIfndefName,
-    OpenNamespace
-)
+from cpp_util import (Classname, CloseNamespace, GetCppNamespace,
+                      GenerateIfndefName, OpenNamespace)
+
 
 class CppUtilTest(unittest.TestCase):
+
   def testClassname(self):
     self.assertEqual('Permissions', Classname('permissions'))
-    self.assertEqual('UpdateAllTheThings',
-        Classname('updateAllTheThings'))
+    self.assertEqual('UpdateAllTheThings', Classname('updateAllTheThings'))
     self.assertEqual('Aa_Bb_Cc', Classname('aa.bb.cc'))
 
   def testNamespaceDeclaration(self):
-    self.assertEqual('namespace foo {',
-                      OpenNamespace('foo').Render())
-    self.assertEqual('}  // namespace foo',
-                      CloseNamespace('foo').Render())
+    self.assertEqual('namespace foo {', OpenNamespace('foo').Render())
+    self.assertEqual('}  // namespace foo', CloseNamespace('foo').Render())
 
-    self.assertEqual(
-        'namespace extensions {\n'
-        'namespace foo {',
-        OpenNamespace('extensions::foo').Render())
-    self.assertEqual(
-        '}  // namespace foo\n'
-        '}  // namespace extensions',
-        CloseNamespace('extensions::foo').Render())
+    self.assertEqual('namespace extensions {\n'
+                     'namespace foo {',
+                     OpenNamespace('extensions::foo').Render())
+    self.assertEqual('}  // namespace foo\n'
+                     '}  // namespace extensions',
+                     CloseNamespace('extensions::foo').Render())
 
     self.assertEqual(
         'namespace extensions {\n'

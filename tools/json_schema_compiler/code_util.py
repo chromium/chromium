@@ -2,19 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+
 class Code(object):
   """A convenience object for constructing code.
 
   Logically each object should be a block of code. All methods except |Render|
   and |IsEmpty| return self.
   """
+
   def __init__(self, indent_size=2, comment_length=80):
     self._code = []
     self._indent_size = indent_size
     self._comment_length = comment_length
     self._line_prefixes = []
 
-  def Append(self, line='',
+  def Append(self,
+             line='',
              substitute=True,
              indent_level=None,
              new_line=True,
@@ -110,8 +113,11 @@ class Code(object):
       self.Append(line)
     return self
 
-  def Comment(self, comment, comment_prefix='// ',
-              wrap_indent=0, new_line=True):
+  def Comment(self,
+              comment,
+              comment_prefix='// ',
+              wrap_indent=0,
+              new_line=True):
     """Adds the given string as a comment.
 
     Will split the comment if it's too long. Use mainly for variable length
@@ -119,6 +125,7 @@ class Code(object):
 
     Unaffected by code.Substitute().
     """
+
     # Helper function to trim a comment to the maximum length, and return one
     # line and the remainder of the comment.
     def trim_comment(comment, max_len):
@@ -196,6 +203,7 @@ class Code(object):
 class Line(object):
   """A line of code.
   """
+
   def __init__(self, value, substitute=True):
     self.value = value
     self.substitute = substitute

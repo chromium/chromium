@@ -17,14 +17,16 @@ def _IsTypeFromManifestKeys(namespace, typename, fallback):
 
   return fallback
 
+
 class ParseException(Exception):
   """Thrown when data in the model is invalid.
   """
+
   def __init__(self, parent, message):
     hierarchy = _GetModelHierarchy(parent)
     hierarchy.append(message)
-    Exception.__init__(
-        self, 'Model parse exception at:\n' + '\n'.join(hierarchy))
+    Exception.__init__(self,
+                       'Model parse exception at:\n' + '\n'.join(hierarchy))
 
 
 class Model(object):
@@ -33,6 +35,7 @@ class Model(object):
   Properties:
   - |namespaces| a map of a namespace name to its model.Namespace
   """
+
   def __init__(self, allow_inline_enums=True):
     self._allow_inline_enums = allow_inline_enums
     self.namespaces = {}
@@ -67,10 +70,12 @@ class ComplexFeature(object):
   - |unix_name| the unix_name of the feature
   - |feature_list| a list of simple features which make up the feature
   """
+
   def __init__(self, feature_name, features):
     self.name = feature_name
     self.unix_name = UnixName(self.name)
     self.feature_list = features
+
 
 class SimpleFeature(object):
   """A simple feature, which can make up a complex feature, as specified in
@@ -83,6 +88,7 @@ class SimpleFeature(object):
   - |extension_types| the types which can use the feature
   - |allowlist| a list of extensions allowed to use the feature
   """
+
   def __init__(self, feature_name, feature_def):
     self.name = feature_name
     self.unix_name = UnixName(self.name)
@@ -112,6 +118,7 @@ class Namespace(object):
                        |include_compiler_options| is True
   - |manifest_keys| is a Type representing the manifest keys for this namespace.
   """
+
   def __init__(self,
                json,
                source_file,
@@ -122,7 +129,7 @@ class Namespace(object):
     if 'description' not in json:
       # TODO(kalman): Go back to throwing an error here.
       print('%s must have a "description" field. This will appear '
-                       'on the API summary page.' % self.name)
+            'on the API summary page.' % self.name)
       json['description'] = ''
     self.description = json['description']
     self.nodoc = json.get('nodoc', False)
@@ -198,12 +205,8 @@ class Type(object):
   - |additional_properties| the type of the additional properties, if any is
                             specified
   """
-  def __init__(self,
-               parent,
-               name,
-               json,
-               namespace,
-               input_origin):
+
+  def __init__(self, parent, name, json, namespace, input_origin):
     self.name = name
 
     # The typename "ManifestKeys" is reserved.
@@ -221,8 +224,9 @@ class Type(object):
     # We need to do this to ensure types reference by manifest types have the
     # correct value for |origin.from_manifest_keys|.
     self.origin = Origin(
-      input_origin.from_client, input_origin.from_json,
-      _IsTypeFromManifestKeys(namespace, name, input_origin.from_manifest_keys))
+        input_origin.from_client, input_origin.from_json,
+        _IsTypeFromManifestKeys(namespace, name,
+                                input_origin.from_manifest_keys))
 
     self.parent = parent
     self.instance_of = json.get('isInstanceOf', None)
@@ -252,7 +256,7 @@ class Type(object):
         raise ParseException(
             self,
             'Inline enum "%s" found in namespace "%s". These are not allowed. '
-                'See crbug.com/472279' % (name, namespace.name))
+            'See crbug.com/472279' % (name, namespace.name))
       self.property_type = PropertyType.ENUM
       self.enum_values = [EnumValue(value, namespace) for value in json['enum']]
       self.cpp_enum_prefix_override = json.get('cpp_enum_prefix_override', None)
@@ -264,13 +268,13 @@ class Type(object):
       self.property_type = PropertyType.BOOLEAN
     elif json_type == 'integer':
       self.property_type = PropertyType.INTEGER
-    elif (json_type == 'double' or
-          json_type == 'number'):
+    elif (json_type == 'double' or json_type == 'number'):
       self.property_type = PropertyType.DOUBLE
     elif json_type == 'string':
       self.property_type = PropertyType.STRING
     elif 'choices' in json:
       self.property_type = PropertyType.CHOICES
+
       def generate_type_name(type_json):
         if 'items' in type_json:
           return '%ss' % generate_type_name(type_json['items'])
@@ -279,28 +283,22 @@ class Type(object):
         if 'type' in type_json:
           return type_json['type']
         return None
+
       self.choices = [
           Type(self,
-               generate_type_name(choice) or 'choice%s' % i,
-               choice,
-               namespace,
-               self.origin)
-          for i, choice in enumerate(json['choices'])]
+               generate_type_name(choice) or 'choice%s' % i, choice, namespace,
+               self.origin) for i, choice in enumerate(json['choices'])
+      ]
     elif json_type == 'object':
-      if not (
-          'isInstanceOf' in json or
-          'properties' in json or
-          'additionalProperties' in json or
-          'functions' in json or
-          'events' in json):
+      if not ('isInstanceOf' in json or 'properties' in json
+              or 'additionalProperties' in json or 'functions' in json
+              or 'events' in json):
         raise ParseException(self, name + " has no properties or functions")
       self.property_type = PropertyType.OBJECT
       additional_properties_json = json.get('additionalProperties', None)
       if additional_properties_json is not None:
-        self.additional_properties = Type(self,
-                                          'additionalProperties',
-                                          additional_properties_json,
-                                          namespace,
+        self.additional_properties = Type(self, 'additionalProperties',
+                                          additional_properties_json, namespace,
                                           self.origin)
       else:
         self.additional_properties = None
@@ -309,8 +307,8 @@ class Type(object):
       # Sometimes we might have an unnamed function, e.g. if it's a property
       # of an object. Use the name of the property in that case.
       function_name = json.get('name', name)
-      self.function = Function(
-        self, function_name, json, namespace, self.origin)
+      self.function = Function(self, function_name, json, namespace,
+                               self.origin)
     else:
       raise ParseException(self, 'Unsupported JSON type %s' % json_type)
 
@@ -320,6 +318,7 @@ class Type(object):
     type.
     '''
     return self.name == 'ManifestKeys'
+
 
 class Function(object):
   """A Function defined in the API.
@@ -340,12 +339,8 @@ class Function(object):
   - |returns| the return type of the function; None if the function does not
     return a value
   """
-  def __init__(self,
-               parent,
-               name,
-               json,
-               namespace,
-               origin):
+
+  def __init__(self, parent, name, json, namespace, origin):
     self.name = name
     self.simple_name = _StripNamespace(self.name, namespace)
     self.platforms = _GetPlatforms(json)
@@ -367,8 +362,10 @@ class Function(object):
     def GeneratePropertyFromParam(p):
       return Property(self, p['name'], p, namespace, origin)
 
-    self.filters = [GeneratePropertyFromParam(filter_instance)
-                    for filter_instance in json.get('filters', [])]
+    self.filters = [
+        GeneratePropertyFromParam(filter_instance)
+        for filter_instance in json.get('filters', [])
+    ]
 
     # Any asynchronous return should be defined using the returns_async field.
     returns_async = json.get('returns_async', None)
@@ -383,14 +380,11 @@ class Function(object):
       # incompatible with returning a promise. There are APIs that specify this,
       # though, so we make sure they have specified does_not_support_promises if
       # they do.
-      if (
-          json.get('returns') is not None
-          and self.returns_async.can_return_promise
-      ):
+      if (json.get('returns') is not None
+          and self.returns_async.can_return_promise):
         raise ValueError(
             'Cannot specify both returns and returns_async on a function '
-            'which supports promies: %s.%s' % (namespace.name, name)
-        )
+            'which supports promies: %s.%s' % (namespace.name, name))
 
     params = json.get('parameters', [])
     for i, param in enumerate(params):
@@ -398,11 +392,8 @@ class Function(object):
 
     self.returns = None
     if 'returns' in json:
-      self.returns = Type(self,
-                          '%sReturnType' % name,
-                          json['returns'],
-                          namespace,
-                          origin)
+      self.returns = Type(self, '%sReturnType' % name, json['returns'],
+                          namespace, origin)
 
 
 class ReturnsAsync(object):
@@ -423,6 +414,7 @@ class ReturnsAsync(object):
                          callback. Currently only consumed for documentation
                          purposes
   """
+
   def __init__(self, parent, json, namespace, origin):
     self.name = json.get('name')
     self.simple_name = _StripNamespace(self.name, namespace)
@@ -434,25 +426,21 @@ class ReturnsAsync(object):
 
     if json.get('returns') is not None:
       raise ValueError(
-          'Cannot return a value from an asynchronous return: %s.%s in %s'
-          % (namespace.name, parent.name, namespace.source_file)
-      )
+          'Cannot return a value from an asynchronous return: %s.%s in %s' %
+          (namespace.name, parent.name, namespace.source_file))
     if json.get('deprecated') is not None:
       raise ValueError(
-          'Cannot specify deprecated on an asynchronous return: %s.%s in %s'
-          % (namespace.name, parent.name, namespace.source_file)
-      )
+          'Cannot specify deprecated on an asynchronous return: %s.%s in %s' %
+          (namespace.name, parent.name, namespace.source_file))
     if json.get('parameters') is None:
       raise ValueError(
-          'parameters key not specified on returns_async: %s.%s in %s'
-          % (namespace.name, parent.name, namespace.source_file)
-      )
+          'parameters key not specified on returns_async: %s.%s in %s' %
+          (namespace.name, parent.name, namespace.source_file))
     if len(json.get('parameters')) > 1 and self.can_return_promise:
       raise ValueError(
           'Only a single parameter can be specific on a returns_async which'
-          ' supports promises: %s.%s in %s'
-          % (namespace.name, parent.name, namespace.source_file)
-      )
+          ' supports promises: %s.%s in %s' %
+          (namespace.name, parent.name, namespace.source_file))
 
     def GeneratePropertyFromParam(p):
       return Property(self, p['name'], p, namespace, origin)
@@ -475,6 +463,7 @@ class Property(object):
   - |simple_name| the name of this Property without a namespace
   - |deprecated| a reason and possible alternative for a deprecated property
   """
+
   def __init__(self, parent, name, json, namespace, origin):
     """Creates a Property from JSON.
     """
@@ -491,11 +480,10 @@ class Property(object):
     self.nodoc = json.get('nodoc', False)
 
     # HACK: only support very specific value types.
-    is_allowed_value = (
-        '$ref' not in json and
-        ('type' not in json or json['type'] == 'integer'
-                            or json['type'] == 'number'
-                            or json['type'] == 'string'))
+    is_allowed_value = ('$ref' not in json
+                        and ('type' not in json or json['type'] == 'integer'
+                             or json['type'] == 'number'
+                             or json['type'] == 'string'))
 
     self.value = None
     if 'value' in json and is_allowed_value:
@@ -532,13 +520,13 @@ class Property(object):
     if unix_name == self._unix_name:
       return
     if self._unix_name_used:
-      raise AttributeError(
-          'Cannot set the unix_name on %s; '
-          'it is already used elsewhere as %s' %
-          (self.name, self._unix_name))
+      raise AttributeError('Cannot set the unix_name on %s; '
+                           'it is already used elsewhere as %s' %
+                           (self.name, self._unix_name))
     self._unix_name = unix_name
 
   unix_name = property(GetUnixName, SetUnixName)
+
 
 class EnumValue(object):
   """A single value from an enum.
@@ -546,6 +534,7 @@ class EnumValue(object):
   - |name| name of the property as in the json.
   - |description| a description of the property (if provided)
   """
+
   def __init__(self, json, namespace):
     if isinstance(json, dict):
       self.name = json['name']
@@ -556,17 +545,18 @@ class EnumValue(object):
 
     # Using empty string values as enum key is only allowed in a few namespaces,
     # as an exception to the rule, and we should not add more.
-    if (not self.name and
-        namespace.name not in ['enums', 'webstorePrivate']):
+    if (not self.name and namespace.name not in ['enums', 'webstorePrivate']):
       raise ValueError('Enum value cannot be an empty string')
 
   def CamelName(self):
     return CamelName(self.name)
 
+
 class _Enum(object):
   """Superclass for enum types with a "name" field, setting up repr/eq/ne.
   Enums need to do this so that equality/non-equality work over pickling.
   """
+
   @staticmethod
   def GetAll(cls):
     """Yields all _Enum objects declared in |cls|.
@@ -581,6 +571,7 @@ class _Enum(object):
 
   def __eq__(self, other):
     return type(other) == type(self) and other.name == self.name
+
   def __ne__(self, other):
     return not (self == other)
 
@@ -595,12 +586,14 @@ class _Enum(object):
 
 
 class _PropertyTypeInfo(_Enum):
+
   def __init__(self, is_fundamental, name):
     _Enum.__init__(self, name)
     self.is_fundamental = is_fundamental
 
   def __repr__(self):
     return self.name
+
 
 class PropertyType(object):
   """Enum of different types of properties/parameters.
@@ -619,110 +612,112 @@ class PropertyType(object):
   REF = _PropertyTypeInfo(False, "ref")
   STRING = _PropertyTypeInfo(True, "string")
 
+
 def IsCPlusPlusKeyword(name):
   """Returns true if `name` is a C++ reserved keyword.
   """
   # Obtained from https://en.cppreference.com/w/cpp/keyword.
   keywords = {
-    "alignas",
-    "alignof",
-    "and",
-    "and_eq",
-    "asm",
-    "atomic_cancel",
-    "atomic_commit",
-    "atomic_noexcept",
-    "auto",
-    "bitand",
-    "bitor",
-    "bool",
-    "break",
-    "case",
-    "catch",
-    "char",
-    "char8_t",
-    "char16_t",
-    "char32_t",
-    "class",
-    "compl",
-    "concept",
-    "const",
-    "consteval",
-    "constexpr",
-    "constinit",
-    "const_cast",
-    "continue",
-    "co_await",
-    "co_return",
-    "co_yield",
-    "decltype",
-    "default",
-    "delete",
-    "do",
-    "double",
-    "dynamic_cast",
-    "else",
-    "enum",
-    "explicit",
-    "export",
-    "extern",
-    "false",
-    "float",
-    "for",
-    "friend",
-    "goto",
-    "if",
-    "inline",
-    "int",
-    "long",
-    "mutable",
-    "namespace",
-    "new",
-    "noexcept",
-    "not",
-    "not_eq",
-    "nullptr",
-    "operator",
-    "or",
-    "or_eq",
-    "private",
-    "protected",
-    "public",
-    "reflexpr",
-    "register",
-    "reinterpret_cast",
-    "requires",
-    "return",
-    "short",
-    "signed",
-    "sizeof",
-    "static",
-    "static_assert",
-    "static_cast",
-    "struct",
-    "switch",
-    "synchronized",
-    "template",
-    "this",
-    "thread_local",
-    "throw",
-    "true",
-    "try",
-    "typedef",
-    "typeid",
-    "typename",
-    "union",
-    "unsigned",
-    "using",
-    "virtual",
-    "void",
-    "volatile",
-    "wchar_t",
-    "while",
-    "xor",
-    "xor_eq"
+      "alignas",
+      "alignof",
+      "and",
+      "and_eq",
+      "asm",
+      "atomic_cancel",
+      "atomic_commit",
+      "atomic_noexcept",
+      "auto",
+      "bitand",
+      "bitor",
+      "bool",
+      "break",
+      "case",
+      "catch",
+      "char",
+      "char8_t",
+      "char16_t",
+      "char32_t",
+      "class",
+      "compl",
+      "concept",
+      "const",
+      "consteval",
+      "constexpr",
+      "constinit",
+      "const_cast",
+      "continue",
+      "co_await",
+      "co_return",
+      "co_yield",
+      "decltype",
+      "default",
+      "delete",
+      "do",
+      "double",
+      "dynamic_cast",
+      "else",
+      "enum",
+      "explicit",
+      "export",
+      "extern",
+      "false",
+      "float",
+      "for",
+      "friend",
+      "goto",
+      "if",
+      "inline",
+      "int",
+      "long",
+      "mutable",
+      "namespace",
+      "new",
+      "noexcept",
+      "not",
+      "not_eq",
+      "nullptr",
+      "operator",
+      "or",
+      "or_eq",
+      "private",
+      "protected",
+      "public",
+      "reflexpr",
+      "register",
+      "reinterpret_cast",
+      "requires",
+      "return",
+      "short",
+      "signed",
+      "sizeof",
+      "static",
+      "static_assert",
+      "static_cast",
+      "struct",
+      "switch",
+      "synchronized",
+      "template",
+      "this",
+      "thread_local",
+      "throw",
+      "true",
+      "try",
+      "typedef",
+      "typeid",
+      "typename",
+      "union",
+      "unsigned",
+      "using",
+      "virtual",
+      "void",
+      "volatile",
+      "wchar_t",
+      "while",
+      "xor",
+      "xor_eq",
   }
   return name in keywords
+
 
 @memoize
 def UnixName(name):
@@ -740,7 +735,7 @@ def UnixName(name):
   # Prepend an extra underscore to the |name|'s start if it doesn't start with a
   # letter or underscore to ensure the generated unix name follows C++
   # identifier rules.
-  assert(name)
+  assert (name)
   if name[0].isdigit():
     name = '_' + name
 
@@ -811,10 +806,7 @@ def _GetFunctions(parent, json, namespace):
   """
   functions = OrderedDict()
   for function_json in json.get('functions', []):
-    function = Function(parent,
-                        function_json['name'],
-                        function_json,
-                        namespace,
+    function = Function(parent, function_json['name'], function_json, namespace,
                         Origin(from_json=True))
     functions[function.name] = function
   return functions
@@ -825,10 +817,7 @@ def _GetEvents(parent, json, namespace):
   """
   events = OrderedDict()
   for event_json in json.get('events', []):
-    event = Function(parent,
-                     event_json['name'],
-                     event_json,
-                     namespace,
+    event = Function(parent, event_json['name'], event_json, namespace,
                      Origin(from_client=True))
     events[event.name] = event
   return events
@@ -853,11 +842,12 @@ def _GetManifestKeysType(self, json):
 
   # Create a dummy object to parse "manifest_keys" as a type.
   manifest_keys_type = {
-    'type': 'object',
-    'properties': json['manifest_keys'],
+      'type': 'object',
+      'properties': json['manifest_keys'],
   }
   return Type(self, 'ManifestKeys', manifest_keys_type, self,
               Origin(from_manifest_keys=True))
+
 
 def _GetWithDefaultChecked(self, json, key, default):
   if json.get(key) == default:
@@ -867,7 +857,9 @@ def _GetWithDefaultChecked(self, json, key, default):
         % (key, default))
   return json.get(key, default)
 
+
 class _PlatformInfo(_Enum):
+
   def __init__(self, name):
     _Enum.__init__(self, name)
 

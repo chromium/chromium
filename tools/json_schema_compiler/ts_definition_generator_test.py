@@ -17,11 +17,8 @@ class TsDefinitionGeneratorTest(unittest.TestCase):
   def _GetNamespace(self, fake_content, filename):
     """Returns a namespace object for the given content"""
     is_idl = filename.endswith('.idl')
-    api_def = (
-        idl_schema.Process(fake_content, filename)
-        if is_idl
-        else json_parse.Parse(fake_content)
-    )
+    api_def = (idl_schema.Process(fake_content, filename)
+               if is_idl else json_parse.Parse(fake_content))
     m = model.Model()
     return m.AddNamespace(api_def[0], filename)
 
