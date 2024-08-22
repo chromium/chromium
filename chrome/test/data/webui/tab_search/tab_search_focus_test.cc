@@ -21,3 +21,9 @@ class TabSearchFocusTest : public WebUIMochaBrowserTest {
 IN_PROC_BROWSER_TEST_F(TabSearchFocusTest, MAYBE_App) {
   RunTest("tab_search/tab_search_page_focus_test.js", "mocha.run()");
 }
+
+// Some of the organization tests require checking focus and blur logic. This
+// must be run as an interactive_ui_test.
+IN_PROC_BROWSER_TEST_F(TabSearchFocusTest, Organization) {
+  RunTest("tab_search/auto_tab_groups_page_test.js", "mocha.run()");
+}

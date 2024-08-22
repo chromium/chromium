@@ -9,7 +9,7 @@ import {TabOrganizationError, TabOrganizationState, TabSearchApiProxyImpl, TabSe
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createTab} from './tab_search_test_data.js';
+import {createProfileData, createTab} from './tab_search_test_data.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 import {TestTabSearchSyncBrowserProxy} from './test_tab_search_sync_browser_proxy.js';
 
@@ -23,6 +23,7 @@ suite('AutoTabGroupsPageTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testApiProxy = new TestTabSearchApiProxy();
+    testApiProxy.setProfileData(createProfileData());
     const session = createSession();
     testApiProxy.setSession(session);
     TabSearchApiProxyImpl.setInstance(testApiProxy);
@@ -40,6 +41,7 @@ suite('AutoTabGroupsPageTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testApiProxy = new TestTabSearchApiProxy();
+    testApiProxy.setProfileData(createProfileData());
     const session = createSession();
     testApiProxy.setSession(session);
     TabSearchApiProxyImpl.setInstance(testApiProxy);
