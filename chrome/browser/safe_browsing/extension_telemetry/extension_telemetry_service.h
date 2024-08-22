@@ -152,6 +152,11 @@ class ExtensionTelemetryService : public KeyedService {
                        ExtensionStore& store,
                        SignalSubscribers& subscribers);
 
+  // Creates a telemetry report with common fields shared by both ESB and
+  // enterprise reporting.
+  std::unique_ptr<ExtensionTelemetryReportRequest>
+  CreateReportWithCommonFieldsPopulated();
+
   // Creates and uploads telemetry reports.
   void CreateAndUploadReport();
 

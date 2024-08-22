@@ -10,6 +10,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router_factory.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
@@ -26,16 +27,19 @@
 #include "components/crx_file/id_util.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
@@ -70,6 +74,9 @@ constexpr auto kExtensionName =
     std::to_array({"Test Extension 0", "Test Extension 1", "Test Extension 2",
                    "Test Extension 3", "Test Extension 4"});
 constexpr const char kExtensionVersion[] = "1";
+constexpr const char kTestUpdateUrl[] = "http://example.com/update_url";
+constexpr const char kInstallationMode[] = "installation_mode";
+constexpr const char kUpdateUrl[] = "update_url";
 constexpr const char kScriptCode[] = "document.write('Hello World')";
 constexpr const char kCookieName[] = "cookie-1";
 constexpr const char kCookieStoreId[] = "store-1";
@@ -641,6 +648,81 @@ TEST_F(ExtensionTelemetryServiceTest,
   EXPECT_TRUE(telemetry_report_pb_2->developer_mode_enabled());
 }
 
+TEST_F(ExtensionTelemetryServiceTest,
+       GeneratesTelemetryReportWithManagementAuthorityTrustworthiness) {
+  {
+    // Test NONE trustworthiness with setting NONE authority for both platform
+    // and profile.
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::NONE);
+    policy::ScopedManagementServiceOverrideForTesting profile_management(
+        policy::ManagementServiceFactory::GetForProfile(&profile_),
+        policy::EnterpriseManagementAuthority::NONE);
+
+    // Generate a telemetry report and verify.
+    task_environment_.FastForwardBy(
+        telemetry_service_->current_reporting_interval());
+
+    EXPECT_EQ(GetTelemetryReport()->management_authority_trustworthiness(),
+              TelemetryReport::NONE);
+  }
+
+  {
+    // Test LOW trustworthiness with setting COMPUTER_LOCAL authority for
+    // platform and NONE authority for profile.
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
+    policy::ScopedManagementServiceOverrideForTesting profile_management(
+        policy::ManagementServiceFactory::GetForProfile(&profile_),
+        policy::EnterpriseManagementAuthority::NONE);
+
+    // Generate a telemetry report and verify.
+    task_environment_.FastForwardBy(
+        telemetry_service_->current_reporting_interval());
+
+    EXPECT_EQ(GetTelemetryReport()->management_authority_trustworthiness(),
+              TelemetryReport::LOW);
+  }
+
+  {
+    // Test TRUSTED trustworthiness with setting NONE authority for
+    // platform and CLOUD authority for profile.
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::NONE);
+    policy::ScopedManagementServiceOverrideForTesting profile_management(
+        policy::ManagementServiceFactory::GetForProfile(&profile_),
+        policy::EnterpriseManagementAuthority::CLOUD);
+
+    // Generate a telemetry report and verify.
+    task_environment_.FastForwardBy(
+        telemetry_service_->current_reporting_interval());
+
+    EXPECT_EQ(GetTelemetryReport()->management_authority_trustworthiness(),
+              TelemetryReport::TRUSTED);
+  }
+
+  {
+    // Test FULLY_TRUSTED trustworthiness with setting CLOUD_DOMAIN authority
+    // for platform and DOMAIN_LOCAL authority for profile.
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+    policy::ScopedManagementServiceOverrideForTesting profile_management(
+        policy::ManagementServiceFactory::GetForProfile(&profile_),
+        policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+
+    // Generate a telemetry report and verify.
+    task_environment_.FastForwardBy(
+        telemetry_service_->current_reporting_interval());
+
+    EXPECT_EQ(GetTelemetryReport()->management_authority_trustworthiness(),
+              TelemetryReport::FULLY_TRUSTED);
+  }
+}
+
 TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
   // Clear out registered extensions first.
   UnregisterExtensionWithExtensionService(kExtensionId[0]);
@@ -690,6 +772,9 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
 
     EXPECT_TRUE(extension_pb->has_disable_reasons());
     EXPECT_EQ(extension_pb->disable_reasons(), static_cast<uint32_t>(0));
+
+    EXPECT_TRUE(extension_pb->has_installation_policy());
+    EXPECT_EQ(extension_pb->installation_policy(), ExtensionInfo::NO_POLICY);
   }
 
   // It's not helpful to exhaustively test each possible variation of each
@@ -780,6 +865,46 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
     std::unique_ptr<ExtensionInfo> extension_pb = GetExtensionInfo(*extension);
     EXPECT_EQ(extension_pb->telemetry_blocklist_state(),
               ExtensionInfo::BLOCKLISTED_MALWARE);
+  }
+
+  {
+    // Test installation policy.
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("unpacked")
+            .SetLocation(ManifestLocation::kUnpacked)
+            .Build();
+    add_extension(extension.get());
+    {
+      // Test NO_POLICY.
+      std::unique_ptr<ExtensionInfo> unmanaged_allowed_extension_pb =
+          GetExtensionInfo(*extension);
+      EXPECT_EQ(unmanaged_allowed_extension_pb->installation_policy(),
+                ExtensionInfo::NO_POLICY);
+    }
+    {
+      // Test INSTALLATION_ALLOWED, INSTALLATION_BLOCKED, INSTALLATION_FORCED,
+      // and INSTALLATION_RECOMMENDED.
+      const std::vector<
+          std::tuple<std::string, ExtensionInfo::InstallationPolicy>>
+          installation_policies = {
+              {"allowed", ExtensionInfo::INSTALLATION_ALLOWED},
+              {"blocked", ExtensionInfo::INSTALLATION_BLOCKED},
+              {"force_installed", ExtensionInfo::INSTALLATION_FORCED},
+              {"normal_installed", ExtensionInfo::INSTALLATION_RECOMMENDED}};
+
+      for (const auto& [mode, policy] : installation_policies) {
+        base::Value::Dict entry = base::Value::Dict()
+                                      .Set(kInstallationMode, mode)
+                                      .Set(kUpdateUrl, kTestUpdateUrl);
+        profile_.GetTestingPrefService()->SetManagedPref(
+            extensions::pref_names::kExtensionManagement,
+            base::Value::Dict().Set(extension->id(), std::move(entry)));
+
+        std::unique_ptr<ExtensionInfo> extension_pb =
+            GetExtensionInfo(*extension);
+        EXPECT_EQ(extension_pb->installation_policy(), policy);
+      }
+    }
   }
 }
 
