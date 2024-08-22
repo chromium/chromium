@@ -13,11 +13,10 @@
 #include "services/on_device_model/ml/on_device_model_executor.h"
 #include "services/on_device_model/ml/utils.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
-#include "services/on_device_model/public/cpp/on_device_model.h"
 
 namespace ml {
 
-base::expected<std::unique_ptr<on_device_model::OnDeviceModel>,
+base::expected<std::unique_ptr<OnDeviceModelExecutor>,
                on_device_model::mojom::LoadModelResult>
 OnDeviceModelInternalImpl::CreateModel(
     on_device_model::mojom::LoadModelParamsPtr params,
@@ -53,14 +52,14 @@ OnDeviceModelInternalImpl::OnDeviceModelInternalImpl(const ChromeML* chrome_ml,
 OnDeviceModelInternalImpl::~OnDeviceModelInternalImpl() = default;
 
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
-const on_device_model::OnDeviceModelShim* GetOnDeviceModelInternalImpl() {
+const OnDeviceModelInternalImpl* GetOnDeviceModelInternalImpl() {
   static const base::NoDestructor<OnDeviceModelInternalImpl> impl(
       ::ml::ChromeML::Get(), GpuBlocklist{});
   return impl.get();
 }
 
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
-const on_device_model::OnDeviceModelShim*
+const OnDeviceModelInternalImpl*
 GetOnDeviceModelInternalImplWithoutGpuBlocklistForTesting() {
   static const base::NoDestructor<OnDeviceModelInternalImpl> impl(
       ::ml::ChromeML::Get(), GpuBlocklist{

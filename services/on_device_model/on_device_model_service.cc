@@ -12,11 +12,10 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/uuid.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "services/on_device_model/public/cpp/on_device_model.h"
+#include "services/on_device_model/ml/on_device_model_executor.h"
+#include "services/on_device_model/ml/on_device_model_internal.h"
 
-#if defined(ENABLE_ML_INTERNAL)
-#include "services/on_device_model/ml/on_device_model_internal.h"  //nogncheck
-#else
+#if !defined(ENABLE_ML_INTERNAL)
 #include "services/on_device_model/on_device_model_fake.h"  //nogncheck
 #endif
 
@@ -29,7 +28,7 @@ class SessionWrapper final : public mojom::Session {
  public:
   SessionWrapper(base::WeakPtr<ModelWrapper> model,
                  mojo::PendingReceiver<mojom::Session> receiver,
-                 std::unique_ptr<OnDeviceModel::Session> session)
+                 std::unique_ptr<ml::SessionImpl> session)
       : model_(model),
         receiver_(this, std::move(receiver)),
         session_(std::move(session)) {}
@@ -86,7 +85,7 @@ class SessionWrapper final : public mojom::Session {
 
   base::WeakPtr<ModelWrapper> model_;
   mojo::Receiver<mojom::Session> receiver_;
-  std::unique_ptr<OnDeviceModel::Session> session_;
+  std::unique_ptr<ml::SessionImpl> session_;
   std::vector<mojom::InputOptionsPtr> previous_contexts_;
   base::WeakPtrFactory<SessionWrapper> weak_ptr_factory_{this};
 };
@@ -95,7 +94,7 @@ class ModelWrapper final : public mojom::OnDeviceModel {
  public:
   explicit ModelWrapper(
       bool support_multiple_sessions,
-      std::unique_ptr<on_device_model::OnDeviceModel> model,
+      std::unique_ptr<ml::OnDeviceModelExecutor> model,
       mojo::PendingReceiver<mojom::OnDeviceModel> receiver,
       base::OnceCallback<void(base::WeakPtr<mojom::OnDeviceModel>)> on_delete)
       : support_multiple_sessions_(support_multiple_sessions),
@@ -162,7 +161,7 @@ class ModelWrapper final : public mojom::OnDeviceModel {
 
   void AddSession(
       mojo::PendingReceiver<mojom::Session> receiver,
-      std::unique_ptr<on_device_model::OnDeviceModel::Session> session,
+      std::unique_ptr<ml::SessionImpl> session,
       const std::vector<mojom::InputOptionsPtr>& previous_contexts) {
     auto current_session = std::make_unique<SessionWrapper>(
         weak_ptr_factory_.GetWeakPtr(), std::move(receiver),
@@ -252,7 +251,7 @@ class ModelWrapper final : public mojom::OnDeviceModel {
   bool support_multiple_sessions_;
   std::set<std::unique_ptr<SessionWrapper>, base::UniquePtrComparator>
       sessions_;
-  std::unique_ptr<on_device_model::OnDeviceModel> model_;
+  std::unique_ptr<ml::OnDeviceModelExecutor> model_;
   mojo::ReceiverSet<mojom::OnDeviceModel, std::optional<uint32_t>> receivers_;
   base::OnceCallback<void(base::WeakPtr<mojom::OnDeviceModel>)> on_delete_;
   std::queue<PendingTask> pending_tasks_;
@@ -354,7 +353,7 @@ void SessionWrapper::CloneInternal(
   model_->AddSession(std::move(session), session_->Clone(), previous_contexts_);
 }
 
-const OnDeviceModelShim* DefaultImpl() {
+const ml::OnDeviceModelInternalImpl* DefaultImpl() {
 #if defined(ENABLE_ML_INTERNAL)
   return ml::GetOnDeviceModelInternalImpl();
 #else
@@ -370,7 +369,7 @@ OnDeviceModelService::OnDeviceModelService(
 
 OnDeviceModelService::OnDeviceModelService(
     mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
-    const OnDeviceModelShim* impl)
+    const ml::OnDeviceModelInternalImpl* impl)
     : receiver_(this, std::move(receiver)), impl_(impl) {}
 
 OnDeviceModelService::~OnDeviceModelService() = default;

@@ -6,12 +6,12 @@
 #define SERVICES_ON_DEVICE_MODEL_ON_DEVICE_MODEL_FAKE_H_
 
 #include "base/component_export.h"
-#include "services/on_device_model/public/cpp/on_device_model.h"
+#include "services/on_device_model/ml/on_device_model_internal.h"
 
 namespace on_device_model {
 
 COMPONENT_EXPORT(ON_DEVICE_MODEL_FAKE)
-const OnDeviceModelShim* GetOnDeviceModelFakeImpl();
+const ml::OnDeviceModelInternalImpl* GetOnDeviceModelFakeImpl();
 
 }  // namespace on_device_model
 

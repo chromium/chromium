@@ -8,7 +8,6 @@
 #include "services/on_device_model/fake/fake_chrome_ml_api.h"
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/ml/on_device_model_internal.h"
-#include "services/on_device_model/public/cpp/on_device_model.h"
 
 namespace on_device_model {
 
@@ -22,7 +21,7 @@ const ml::ChromeML* GetFakeChromeML() {
 }  // namespace
 
 COMPONENT_EXPORT(ON_DEVICE_MODEL_FAKE)
-const OnDeviceModelShim* GetOnDeviceModelFakeImpl() {
+const ml::OnDeviceModelInternalImpl* GetOnDeviceModelFakeImpl() {
   static const base::NoDestructor<ml::OnDeviceModelInternalImpl> impl(
       GetFakeChromeML(), ml::GpuBlocklist{.skip_for_testing = true});
   return impl.get();

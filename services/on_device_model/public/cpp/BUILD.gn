@@ -7,7 +7,9 @@ import("//services/on_device_model/on_device_model.gni")
 
 source_set("cpp") {
   output_name = "on_device_model_cpp"
-  sources = [ "on_device_model.h" ]
+  sources = [
+    # TODO b/361619655 - Move some client logic here.
+  ]
   public_deps = [
     ":buildflags",
     ":model_assets",

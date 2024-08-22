@@ -15,7 +15,6 @@ component("on_device_model_fake") {
     "//services/on_device_model/ml:ml_no_internal",
     "//services/on_device_model/public/mojom",
   ]
-  public_deps = [ "//services/on_device_model/public/cpp" ]
   defines = [ "IS_ON_DEVICE_MODEL_FAKE_IMPL" ]
 }
 

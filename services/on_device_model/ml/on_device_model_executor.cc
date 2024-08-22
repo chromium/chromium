@@ -105,6 +105,8 @@ uint32_t GetTopK(std::optional<uint32_t> top_k) {
                   std::max(1u, top_k.value_or(1)));
 }
 
+}  // namespace
+
 // Handles sending and canceling responses.
 class Responder final {
  public:
@@ -266,103 +268,85 @@ class ContextHolder final {
   base::WeakPtrFactory<ContextHolder> weak_ptr_factory_{this};
 };
 
-class SessionImpl : public on_device_model::OnDeviceModel::Session {
- public:
-  SessionImpl(const ChromeML& chrome_ml,
-              ChromeMLModel model,
-              SessionAccessor::Ptr session,
-              SessionAccessor::Ptr empty_session,
-              uint32_t max_tokens,
-              std::optional<uint32_t> adaptation_id)
-      : chrome_ml_(chrome_ml),
-        model_(model),
-        session_(std::move(session)),
-        empty_session_(std::move(empty_session)),
-        max_tokens_(max_tokens),
-        adaptation_id_(adaptation_id) {}
-  ~SessionImpl() override = default;
+SessionImpl::SessionImpl(const ChromeML& chrome_ml,
+                         ChromeMLModel model,
+                         SessionAccessor::Ptr session,
+                         SessionAccessor::Ptr empty_session,
+                         uint32_t max_tokens,
+                         std::optional<uint32_t> adaptation_id)
+    : chrome_ml_(chrome_ml),
+      model_(model),
+      session_(std::move(session)),
+      empty_session_(std::move(empty_session)),
+      max_tokens_(max_tokens),
+      adaptation_id_(adaptation_id) {}
+SessionImpl::~SessionImpl() = default;
 
-  SessionImpl(const SessionImpl&) = delete;
-  SessionImpl& operator=(const SessionImpl&) = delete;
+DISABLE_CFI_DLSYM
+void SessionImpl::AddContext(
+    on_device_model::mojom::InputOptionsPtr input,
+    mojo::PendingRemote<on_device_model::mojom::ContextClient> client,
+    base::OnceClosure on_complete) {
+  auto context_holder = std::make_unique<ContextHolder>(
+      std::move(client),
+      base::BindOnce(&SessionImpl::RemoveContext, base::Unretained(this)),
+      std::move(on_complete));
+  input->max_tokens =
+      std::min(input->max_tokens.value_or(max_tokens_), max_tokens_);
+  input->top_k = GetTopK(input->top_k);
+  input->temperature = GetTemperature(input->temperature);
+  ChromeMLContextSavedFn context_saved_fn =
+      context_holder->CreateContextSavedFn();
+  *context_holder->GetCancelFn() =
+      session_->Execute(std::move(input), nullptr, context_saved_fn);
+  context_holders_.insert(std::move(context_holder));
+}
 
-  DISABLE_CFI_DLSYM
-  void AddContext(
-      on_device_model::mojom::InputOptionsPtr input,
-      mojo::PendingRemote<on_device_model::mojom::ContextClient> client,
-      base::OnceClosure on_complete) override {
-    auto context_holder = std::make_unique<ContextHolder>(
-        std::move(client),
-        base::BindOnce(&SessionImpl::RemoveContext, base::Unretained(this)),
-        std::move(on_complete));
-    input->max_tokens =
-        std::min(input->max_tokens.value_or(max_tokens_), max_tokens_);
-    input->top_k = GetTopK(input->top_k);
-    input->temperature = GetTemperature(input->temperature);
-    ChromeMLContextSavedFn context_saved_fn =
-        context_holder->CreateContextSavedFn();
-    *context_holder->GetCancelFn() =
-        session_->Execute(std::move(input), nullptr, context_saved_fn);
-    context_holders_.insert(std::move(context_holder));
-  }
+DISABLE_CFI_DLSYM
+void SessionImpl::Execute(
+    on_device_model::mojom::InputOptionsPtr input,
+    mojo::PendingRemote<on_device_model::mojom::StreamingResponder> response,
+    base::OnceClosure on_complete) {
+  auto cloned =
+      input->ignore_context ? empty_session_->Clone() : session_->Clone();
+  auto cloned_raw = cloned.get();  // For Execute after std::move
+  responder_ = std::make_unique<Responder>(
+      std::move(response), std::move(on_complete), std::move(cloned));
+  ChromeMLExecutionOutputFn output_fn = responder_->CreateOutputFn();
+  input->max_tokens =
+      std::min(input->max_tokens.value_or(max_tokens_), max_tokens_);
+  input->top_k = GetTopK(input->top_k);
+  input->temperature = GetTemperature(input->temperature);
+  *responder_->GetCancelFn() =
+      cloned_raw->Execute(std::move(input), output_fn, nullptr);
+}
 
-  DISABLE_CFI_DLSYM
-  void Execute(
-      on_device_model::mojom::InputOptionsPtr input,
-      mojo::PendingRemote<on_device_model::mojom::StreamingResponder> response,
-      base::OnceClosure on_complete) override {
-    auto cloned =
-        input->ignore_context ? empty_session_->Clone() : session_->Clone();
-    auto cloned_raw = cloned.get();  // For Execute after std::move
-    responder_ = std::make_unique<Responder>(
-        std::move(response), std::move(on_complete), std::move(cloned));
-    ChromeMLExecutionOutputFn output_fn = responder_->CreateOutputFn();
-    input->max_tokens =
-        std::min(input->max_tokens.value_or(max_tokens_), max_tokens_);
-    input->top_k = GetTopK(input->top_k);
-    input->temperature = GetTemperature(input->temperature);
-    *responder_->GetCancelFn() =
-        cloned_raw->Execute(std::move(input), output_fn, nullptr);
-  }
+DISABLE_CFI_DLSYM
+void SessionImpl::SizeInTokens(const std::string& text,
+                               base::OnceCallback<void(uint32_t)> callback) {
+  session_->SizeInTokens(text, ConvertCallbackToFn(std::move(callback)));
+}
 
-  DISABLE_CFI_DLSYM
-  void SizeInTokens(const std::string& text,
-                    base::OnceCallback<void(uint32_t)> callback) override {
-      session_->SizeInTokens(text, ConvertCallbackToFn(std::move(callback)));
-  }
+DISABLE_CFI_DLSYM
+void SessionImpl::Score(const std::string& text,
+                        base::OnceCallback<void(float)> callback) {
+  session_->Score(text, ConvertCallbackToFn(std::move(callback)));
+}
 
-  DISABLE_CFI_DLSYM
-  void Score(const std::string& text,
-             base::OnceCallback<void(float)> callback) override {
-    session_->Score(text, ConvertCallbackToFn(std::move(callback)));
-  }
+std::unique_ptr<SessionImpl> SessionImpl::Clone() {
+  return std::make_unique<SessionImpl>(
+      chrome_ml_.get(), model_, session_->Clone(), empty_session_->Clone(),
+      max_tokens_, adaptation_id_);
+}
 
-  std::unique_ptr<Session> Clone() override {
-    return std::make_unique<SessionImpl>(
-        chrome_ml_.get(), model_, session_->Clone(), empty_session_->Clone(),
-        max_tokens_, adaptation_id_);
-  }
-
- private:
-  void RemoveContext(ContextHolder* context) {
-    std::erase_if(context_holders_, base::MatchesUniquePtr(context));
-  }
-
-  const raw_ref<const ChromeML> chrome_ml_;
-  ChromeMLModel model_;
-  SessionAccessor::Ptr session_;
-  SessionAccessor::Ptr empty_session_;
-  const uint32_t max_tokens_;
-  std::unique_ptr<Responder> responder_;
-  std::set<std::unique_ptr<ContextHolder>> context_holders_;
-  std::optional<uint32_t> adaptation_id_;
-};
+void SessionImpl::RemoveContext(ContextHolder* context) {
+  std::erase_if(context_holders_, base::MatchesUniquePtr(context));
+}
 
 DISABLE_CFI_DLSYM
 void DestroyModel(const ChromeML* chrome_ml, ChromeMLModel model) {
   chrome_ml->api().DestroyModel(model);
 }
-
-}  // namespace
 
 OnDeviceModelExecutor::OnDeviceModelExecutor(
     base::PassKey<OnDeviceModelExecutor>,
@@ -396,8 +380,8 @@ OnDeviceModelExecutor::CreateWithResult(
   return base::unexpected(load_model_result);
 }
 
-std::unique_ptr<on_device_model::OnDeviceModel::Session>
-OnDeviceModelExecutor::CreateSession(std::optional<uint32_t> adaptation_id) {
+std::unique_ptr<SessionImpl> OnDeviceModelExecutor::CreateSession(
+    std::optional<uint32_t> adaptation_id) {
   auto it = base_sessions_.find(adaptation_id);
   CHECK(it != base_sessions_.end());
   return std::make_unique<SessionImpl>(
