@@ -322,6 +322,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/chromeos",
     "//chrome/browser/chromeos:test_support",
+    "//chrome/browser/chromeos/policy/dlp/dialogs",
     "//chrome/browser/enterprise/connectors/test:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/extensions:test_support",

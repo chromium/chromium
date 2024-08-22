@@ -26,6 +26,7 @@ static_library("dialogs") {
     "//ash/style",
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/browser/chromeos/policy/dlp/dialogs",
     "//chrome/common:chrome_features",
     "//components/enterprise/data_controls/core/browser",
     "//components/strings:components_strings",
