@@ -364,6 +364,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   [_incognitoGridCoordinator stopChildCoordinators];
   [_regularGridCoordinator stopChildCoordinators];
+  if (IsTabGroupSyncEnabled()) {
+    [_tabGroupsPanelCoordinator stopChildCoordinators];
+  }
 
   [self dismissPopovers];
 

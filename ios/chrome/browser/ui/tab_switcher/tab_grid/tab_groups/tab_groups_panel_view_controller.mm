@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item_data.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mutator.h"
+#import "ios/public/provider/chrome/browser/modals/modals_api.h"
 
 namespace {
 
@@ -188,6 +189,10 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
   }
   [snapshot reconfigureItemsWithIdentifiers:@[ item ]];
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+- (void)dismissModals {
+  ios::provider::DismissModalsForCollectionView(_collectionView);
 }
 
 #pragma mark UICollectionViewDelegate

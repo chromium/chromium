@@ -122,6 +122,14 @@
   [_gridViewController prepareForAppearance];
 }
 
+- (void)stopChildCoordinators {
+  if (_tabGroupConfirmationCoordinator) {
+    [_tabGroupConfirmationCoordinator stop];
+    _tabGroupConfirmationCoordinator = nil;
+  }
+  [_gridViewController dismissModals];
+}
+
 #pragma mark - TabGroupsPanelMediatorDelegate
 
 - (void)tabGroupsPanelMediator:(TabGroupsPanelMediator*)tabGroupsPanelMediator

@@ -57,6 +57,9 @@ const char* kSelectTabGroupsUMA = "MobileTabGridSelectTabGroups";
   _reconfigureItemCallCount++;
 }
 
+- (void)dismissModals {
+}
+
 @end
 
 class TabGroupsPanelMediatorTest : public PlatformTest {
