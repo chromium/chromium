@@ -15,21 +15,11 @@ public interface MediaIntegrityProvider {
      * @param contentBinding An optional content binding string.
      * @param callback Callback to be called with the result of the request.
      */
-    void requestToken(
+    default void requestToken(
             @Nullable String contentBinding,
-            @NonNull ValueOrErrorCallback<String, Integer> callback);
-
-    /**
-     * Asynchronously request a token.
-     *
-     * @param contentBinding An optional content binding string.
-     * @param callback Callback to be called with the result of the request.
-     */
-    default void requestToken2(
-            @Nullable String contentBinding,
-            @NonNull ValueOrErrorCallback<String, MediaIntegrityErrorWrapper> callback) {
+            @NonNull ValueOrErrorCallback<String, Integer> callback) {
         // TODO(https://crbug.com/359452901): Temporary default implementation while migrating.
-        requestToken(
+        requestToken2(
                 contentBinding,
                 new ValueOrErrorCallback<>() {
                     @Override
@@ -38,9 +28,19 @@ public interface MediaIntegrityProvider {
                     }
 
                     @Override
-                    public void onError(Integer error) {
-                        callback.onError(new MediaIntegrityErrorWrapper(error));
+                    public void onError(MediaIntegrityErrorWrapper error) {
+                        callback.onError(error.value);
                     }
                 });
     }
+
+    /**
+     * Asynchronously request a token.
+     *
+     * @param contentBinding An optional content binding string.
+     * @param callback Callback to be called with the result of the request.
+     */
+    void requestToken2(
+            @Nullable String contentBinding,
+            @NonNull ValueOrErrorCallback<String, MediaIntegrityErrorWrapper> callback);
 }
