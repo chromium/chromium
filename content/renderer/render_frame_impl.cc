@@ -2581,10 +2581,12 @@ void RenderFrameImpl::GetInterfaceProvider(
   interface_provider_receivers_.Add(this, std::move(receiver), task_runner);
 }
 
-void RenderFrameImpl::AllowBindings(int32_t enabled_bindings_flags) {
-  enabled_bindings_ |= enabled_bindings_flags;
+void RenderFrameImpl::AllowBindings(int64_t enabled_bindings_flags) {
+  auto new_bindings =
+      BindingsPolicySet::FromEnumBitmask(enabled_bindings_flags);
+  enabled_bindings_.PutAll(new_bindings);
 
-  if (enabled_bindings_flags & BINDINGS_POLICY_MOJO_WEB_UI) {
+  if (new_bindings.Has(BindingsPolicyValue::kMojoWebUi)) {
     // If mojo web UI is being enabled, update the protected memory bool to
     // allow MojoJS binding in this process.
     blink::WebV8Features::AllowMojoJSForProcess();
@@ -2611,7 +2613,7 @@ void RenderFrameImpl::EnableMojoJsBindingsWithBroker(
 void RenderFrameImpl::BindWebUI(
     mojo::PendingAssociatedReceiver<mojom::WebUI> receiver,
     mojo::PendingAssociatedRemote<mojom::WebUIHost> remote) {
-  DCHECK(enabled_bindings_ & BINDINGS_POLICY_WEB_UI);
+  DCHECK(enabled_bindings_.Has(BindingsPolicyValue::kWebUi));
   WebUIExtensionData::Create(this, std::move(receiver), std::move(remote));
 }
 
@@ -4130,8 +4132,9 @@ void RenderFrameImpl::DidClearWindowObject() {
   TRACE_EVENT_WITH_FLOW0("navigation", "RenderFrameImpl::DidClearWindowObject",
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  if (enabled_bindings_ & BINDINGS_POLICY_WEB_UI)
+  if (enabled_bindings_.Has(BindingsPolicyValue::kWebUi)) {
     WebUIExtension::Install(frame_);
+  }
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
@@ -4697,7 +4700,7 @@ void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
   v8::MicrotasksScope microtasks(GetAgentGroupScheduler().Isolate(),
                                  context->GetMicrotaskQueue(),
                                  v8::MicrotasksScope::kDoNotRunMicrotasks);
-  if (((enabled_bindings_ & BINDINGS_POLICY_MOJO_WEB_UI) ||
+  if (((enabled_bindings_.Has(BindingsPolicyValue::kMojoWebUi)) ||
        enable_mojo_js_bindings_) &&
       IsMainFrame() && world_id == ISOLATED_WORLD_ID_GLOBAL) {
     // We only allow these bindings to be installed when creating the main
@@ -5510,7 +5513,7 @@ void RenderFrameImpl::BeginNavigation(
     // All frames in a WebUI process must have the same enabled_bindings_, so
     // we can do a per-frame check here rather than a process-wide check.
     bool should_fork = HasWebUIScheme(url) || HasWebUIScheme(old_url) ||
-                       (enabled_bindings_ & kWebUIBindingsPolicyMask);
+                       !enabled_bindings_.empty();
     if (should_fork) {
       OpenURL(std::move(info));
       return;  // Suppress the load here.
@@ -6461,7 +6464,7 @@ scoped_refptr<base::SingleThreadTaskRunner> RenderFrameImpl::GetTaskRunner(
   return GetWebFrame()->GetTaskRunner(task_type);
 }
 
-int RenderFrameImpl::GetEnabledBindings() {
+BindingsPolicySet RenderFrameImpl::GetEnabledBindings() {
   return enabled_bindings_;
 }
 

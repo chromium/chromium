@@ -110,8 +110,9 @@ class WebUITestWebUIControllerFactory : public WebUIControllerFactory {
       WebUI* web_ui,
       const GURL& url) override {
     std::string foo(url.path());
-    if (url.path() == "/nobinding/")
-      web_ui->SetBindings(BINDINGS_POLICY_NONE);
+    if (url.path() == "/nobinding/") {
+      web_ui->SetBindings(BindingsPolicySet());
+    }
     return HasWebUIScheme(url) ? std::make_unique<WebUIController>(web_ui)
                                : nullptr;
   }

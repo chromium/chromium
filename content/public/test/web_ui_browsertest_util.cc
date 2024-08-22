@@ -56,7 +56,8 @@ void GetResource(const std::string& id,
 struct WebUIControllerConfig {
   WebUIControllerConfig();
   ~WebUIControllerConfig();
-  int bindings = BINDINGS_POLICY_WEB_UI;
+
+  BindingsPolicySet bindings = BindingsPolicySet({BindingsPolicyValue::kWebUi});
   std::string child_src = "child-src 'self' chrome://web-ui-subframe/;";
   bool disable_xfo = false;
   bool disable_trusted_types = false;
@@ -85,20 +86,26 @@ std::unique_ptr<WebUIController> CreateTestWebUIControllerForURL(
   if (url.has_query()) {
     std::string value;
     bool has_value = net::GetValueForKeyInQuery(url, "bindings", &value);
-    if (has_value)
-      CHECK(base::StringToInt(value, &(config.bindings)));
+    if (has_value) {
+      int64_t int_value;
+      CHECK(base::StringToInt64(value, &int_value));
+      config.bindings = BindingsPolicySet::FromEnumBitmask(int_value);
+    }
 
     has_value = net::GetValueForKeyInQuery(url, "noxfo", &value);
-    if (has_value && value == "true")
+    if (has_value && value == "true") {
       config.disable_xfo = true;
+    }
 
     has_value = net::GetValueForKeyInQuery(url, "notrustedtypes", &value);
-    if (has_value && value == "true")
+    if (has_value && value == "true") {
       config.disable_trusted_types = true;
+    }
 
     has_value = net::GetValueForKeyInQuery(url, "childsrc", &value);
-    if (has_value)
+    if (has_value) {
       config.child_src = value;
+    }
 
     has_value = net::GetValueForKeyInQuery(url, "requestableschemes", &value);
     if (has_value) {

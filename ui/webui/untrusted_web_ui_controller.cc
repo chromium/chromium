@@ -12,7 +12,7 @@ namespace ui {
 UntrustedWebUIController::UntrustedWebUIController(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   // UntrustedWebUIController should never enable bindings.
-  web_ui->SetBindings(content::BINDINGS_POLICY_NONE);
+  web_ui->SetBindings(content::BindingsPolicySet());
 }
 
 UntrustedWebUIController::~UntrustedWebUIController() = default;

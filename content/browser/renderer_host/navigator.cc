@@ -361,8 +361,8 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
   if (process_lock.is_error_page())
     return true;
 
-  bool frame_has_bindings = ((render_frame_host->GetEnabledBindings() &
-                              kWebUIBindingsPolicyMask) != 0);
+  bool frame_has_webui_bindings =
+      render_frame_host->GetEnabledBindings().HasAny(kWebUIBindingsPolicySet);
   bool is_allowed_in_web_ui_renderer =
       WebUIControllerFactoryRegistry::GetInstance()->IsURLAcceptableForWebUI(
           render_frame_host->GetProcess()->GetBrowserContext(), url);
@@ -376,7 +376,7 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
 
   // If the |render_frame_host| has any WebUI bindings, disallow URLs that are
   // not allowed in a WebUI renderer process.
-  if (frame_has_bindings) {
+  if (frame_has_webui_bindings) {
     // The process itself must have WebUI bit in the security policy.
     // Otherwise it indicates that there is a bug in browser process logic and
     // the browser process must be terminated.

@@ -527,7 +527,7 @@ interface FrameBindingsControl {
   // Used to tell a render frame whether it should expose various bindings
   // that allow JS content extended privileges. See BindingsPolicy for valid
   // flag values.
-  AllowBindings(int32 enabled_bindings_flags);
+  AllowBindings(int64 enabled_bindings_flags);
 
   // Used to tell the RenderFrame to enable Mojo JS bindings, which allows
   // JS code running in the renderer process to connect to Mojo interfaces

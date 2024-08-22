@@ -45,7 +45,6 @@ FrameNavigationEntry::FrameNavigationEntry(
       initiator_base_url_(initiator_base_url),
       redirect_chain_(redirect_chain),
       page_state_(page_state),
-      bindings_(kInvalidBindings),
       method_(method),
       post_id_(post_id),
       blob_url_loader_factory_(std::move(blob_url_loader_factory)),
@@ -150,18 +149,21 @@ void FrameNavigationEntry::SetPageState(const blink::PageState& page_state) {
       exploded_state.top.navigation_api_key.value_or(std::u16string()));
 }
 
-void FrameNavigationEntry::SetBindings(int bindings) {
-  // TODO(nasko): Remove this debugging info once https://crbug.com/1456884
+void FrameNavigationEntry::SetBindings(BindingsPolicySet bindings) {
+  // TODO(nasko): Remove this debugging info once https://crbug.com/40066194
   // is understood and resolved.
-  base::debug::Alias(&bindings);
-  base::debug::Alias(&bindings_);
-  SCOPED_CRASH_KEY_NUMBER("SetBindings", "bindings", bindings);
-  SCOPED_CRASH_KEY_NUMBER("SetBindings", "bindings_", bindings_);
+  uint64_t new_bindings = bindings.ToEnumBitmask();
+  uint64_t existing_bindings = bindings_.has_value()
+                                   ? bindings_->ToEnumBitmask()
+                                   : 0xFFFF'FFFF'FFFF'FFFF;
+  base::debug::Alias(&new_bindings);
+  base::debug::Alias(&existing_bindings);
+  SCOPED_CRASH_KEY_NUMBER("SetBindings", "bindings", new_bindings);
+  SCOPED_CRASH_KEY_NUMBER("SetBindings", "bindings_", existing_bindings);
 
   // Ensure this is set to a valid value, and that it stays the same once set.
-  CHECK_NE(bindings, kInvalidBindings);
-  CHECK(bindings_ == kInvalidBindings || bindings_ == bindings)
-      << "bindings:" << bindings << " | bindings_: " << bindings_;
+  CHECK(!bindings_.has_value() || bindings_.value() == bindings)
+      << "bindings:" << new_bindings << " | bindings_: " << existing_bindings;
   bindings_ = bindings;
 }
 

@@ -885,7 +885,8 @@ TEST_F(RenderViewImplTest, BeginNavigationHandlesAllTopLevel) {
 
 TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
   // Enable bindings to simulate a WebUI view.
-  frame()->AllowBindings(BINDINGS_POLICY_WEB_UI);
+  frame()->AllowBindings(
+      BindingsPolicySet({BindingsPolicyValue::kWebUi}).ToEnumBitmask());
 
   blink::WebSecurityOrigin requestor_origin =
       blink::WebSecurityOrigin::Create(GURL("http://foo.com"));

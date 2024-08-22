@@ -15,7 +15,8 @@ UntrustedTopChromeWebUIController::UntrustedTopChromeWebUIController(
   CHECK(!enable_chrome_send);
   // UntrustedWebUIController should never enable WebUI bindings that expose
   // all of the browser interfaces.
-  web_ui->SetBindings(content::BINDINGS_POLICY_NONE);
+  web_ui->SetBindings(content::BindingsPolicySet());
 }
 
-UntrustedTopChromeWebUIController::~UntrustedTopChromeWebUIController() = default;
+UntrustedTopChromeWebUIController::~UntrustedTopChromeWebUIController() =
+    default;

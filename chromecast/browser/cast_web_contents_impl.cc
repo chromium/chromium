@@ -210,7 +210,7 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
 
   if (params_->enable_webui_bindings_permission) {
     web_contents_->GetPrimaryMainFrame()->AllowBindings(
-        content::BINDINGS_POLICY_WEB_UI | content::BINDINGS_POLICY_MOJO_WEB_UI);
+        content::kWebUIBindingsPolicySet);
   }
 }
 

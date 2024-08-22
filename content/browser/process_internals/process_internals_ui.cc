@@ -33,7 +33,7 @@ ProcessInternalsUI::ProcessInternalsUI(WebUI* web_ui)
     : WebUIController(web_ui) {
   // This WebUI does not require any process bindings, so disable it early in
   // initialization time.
-  web_ui->SetBindings(BINDINGS_POLICY_NONE);
+  web_ui->SetBindings(BindingsPolicySet());
 
   // Create a WebUIDataSource to serve the HTML/JS files to the WebUI.
   WebUIDataSource* source = WebUIDataSource::CreateAndAdd(

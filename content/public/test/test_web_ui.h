@@ -49,8 +49,8 @@ class TestWebUI : public WebUI {
   float GetDeviceScaleFactor() override;
   const std::u16string& GetOverriddenTitle() override;
   void OverrideTitle(const std::u16string& title) override {}
-  int GetBindings() override;
-  void SetBindings(int bindings) override;
+  BindingsPolicySet GetBindings() override;
+  void SetBindings(BindingsPolicySet bindings) override;
   const std::vector<std::string>& GetRequestableSchemes() override;
   void AddRequestableScheme(const char* scheme) override;
   void AddMessageHandler(std::unique_ptr<WebUIMessageHandler> handler) override;
@@ -113,7 +113,7 @@ class TestWebUI : public WebUI {
   base::flat_map<std::string, std::vector<MessageCallback>> message_callbacks_;
   std::vector<std::unique_ptr<CallData>> call_data_;
   std::vector<std::unique_ptr<WebUIMessageHandler>> handlers_;
-  int bindings_ = 0;
+  BindingsPolicySet bindings_;
   std::u16string temp_string_;
   raw_ptr<WebContents, AcrossTasksDanglingUntriaged> web_contents_ = nullptr;
   raw_ptr<RenderFrameHost, AcrossTasksDanglingUntriaged> render_frame_host_ =

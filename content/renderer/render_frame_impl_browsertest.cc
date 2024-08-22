@@ -1429,10 +1429,10 @@ class RenderFrameImplMojoJsTest : public RenderViewTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Verifies enabling MojoJS bindings via allowing the
-// BINDINGS_POLICY_MOJO_WEB_UI binding.
+// Verifies enabling MojoJS bindings.
 TEST_F(RenderFrameImplMojoJsTest, AllowMojoWebUIBindings) {
-  GetMainRenderFrame()->AllowBindings(BINDINGS_POLICY_MOJO_WEB_UI);
+  GetMainRenderFrame()->AllowBindings(
+      BindingsPolicySet({BindingsPolicyValue::kMojoWebUi}).ToEnumBitmask());
   LoadHTML(kSimpleScriptHtml);
 
   // Expect no crash and MojoJs bindings are enabled in the context.
@@ -1470,7 +1470,8 @@ TEST_F(RenderFrameImplMojoJsDeathTest, EnabledBindingsTampered) {
   // memory value.
   BASE_EXPECT_DEATH(
       {
-        GetMainRenderFrame()->enabled_bindings_ |= BINDINGS_POLICY_MOJO_WEB_UI;
+        GetMainRenderFrame()->enabled_bindings_.Put(
+            BindingsPolicyValue::kMojoWebUi);
 
         LoadHTML(kSimpleScriptHtml);
       },

@@ -64,11 +64,11 @@ const std::u16string& TestWebUI::GetOverriddenTitle() {
   return temp_string_;
 }
 
-int TestWebUI::GetBindings() {
+BindingsPolicySet TestWebUI::GetBindings() {
   return bindings_;
 }
 
-void TestWebUI::SetBindings(int bindings) {
+void TestWebUI::SetBindings(BindingsPolicySet bindings) {
   bindings_ = bindings;
 }
 

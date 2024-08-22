@@ -1412,16 +1412,16 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWebUI) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), webui_url));
   content::WebContents* old_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::BINDINGS_POLICY_MOJO_WEB_UI &
-              old_tab->GetPrimaryMainFrame()->GetEnabledBindings());
+  EXPECT_TRUE(old_tab->GetPrimaryMainFrame()->GetEnabledBindings().Has(
+      content::BindingsPolicyValue::kMojoWebUi));
 
   Browser* new_browser = QuitBrowserAndRestore(browser());
   ASSERT_EQ(1u, active_browser_list_->size());
   content::WebContents* new_tab =
       new_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(webui_url, new_tab->GetURL());
-  EXPECT_TRUE(content::BINDINGS_POLICY_MOJO_WEB_UI &
-              new_tab->GetPrimaryMainFrame()->GetEnabledBindings());
+  EXPECT_TRUE(new_tab->GetPrimaryMainFrame()->GetEnabledBindings().Has(
+      content::BindingsPolicyValue::kMojoWebUi));
 }
 
 // http://crbug.com/803510 : Flaky on dbg and ASan bots.
@@ -1435,16 +1435,16 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MAYBE_RestoreWebUISettings) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), webui_url));
   content::WebContents* old_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(old_tab->GetPrimaryMainFrame()->GetEnabledBindings() &
-              content::BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(old_tab->GetPrimaryMainFrame()->GetEnabledBindings().Has(
+      content::BindingsPolicyValue::kWebUi));
 
   Browser* new_browser = QuitBrowserAndRestore(browser());
   ASSERT_EQ(1u, active_browser_list_->size());
   content::WebContents* new_tab =
       new_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(webui_url, new_tab->GetURL());
-  EXPECT_TRUE(new_tab->GetPrimaryMainFrame()->GetEnabledBindings() &
-              content::BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(new_tab->GetPrimaryMainFrame()->GetEnabledBindings().Has(
+      content::BindingsPolicyValue::kWebUi));
 }
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoresForwardAndBackwardNavs) {

@@ -43,6 +43,7 @@
 #include "content/common/renderer.mojom.h"
 #include "content/common/web_ui.mojom.h"
 #include "content/public/common/alternative_error_page_override_info.mojom.h"
+#include "content/public/common/bindings_policy.h"
 #include "content/public/common/extra_mojo_js_features.mojom.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/stop_find_action.h"
@@ -413,7 +414,7 @@ class CONTENT_EXPORT RenderFrameImpl
                                 bool replace_current_item) override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       blink::TaskType task_type) override;
-  int GetEnabledBindings() override;
+  BindingsPolicySet GetEnabledBindings() override;
   void SetAccessibilityModeForTest(ui::AXMode new_mode) override;
   const RenderFrameMediaPlaybackOptions& GetRenderFrameMediaPlaybackOptions()
       override;
@@ -452,7 +453,7 @@ class CONTENT_EXPORT RenderFrameImpl
                  pending_resource_load_info_notifier) override;
 
   // mojom::FrameBindingsControl implementation:
-  void AllowBindings(int32_t enabled_bindings_flags) override;
+  void AllowBindings(int64_t enabled_bindings_flags) override;
   void EnableMojoJsBindings(
       content::mojom::ExtraMojoJsFeaturesPtr features) override;
   void EnableMojoJsBindingsWithBroker(
@@ -1457,9 +1458,8 @@ class CONTENT_EXPORT RenderFrameImpl
   // process), so this will only stay false until we triggered that navigation.
   bool had_started_any_navigation_ = false;
 
-  // A bitwise OR of bindings types that have been enabled for this RenderFrame.
-  // See BindingsPolicy for details.
-  int enabled_bindings_ = 0;
+  // The bindings types that have been enabled for this RenderFrame.
+  BindingsPolicySet enabled_bindings_;
 
   // This boolean indicates whether JS bindings for Mojo should be enabled at
   // the time the next script context is created.

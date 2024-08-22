@@ -13,6 +13,7 @@
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_export.h"
+#include "content/public/common/bindings_policy.h"
 #include "content/public/common/referrer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
@@ -39,9 +40,6 @@ namespace content {
 class CONTENT_EXPORT FrameNavigationEntry
     : public base::RefCounted<FrameNavigationEntry> {
  public:
-  // The value of bindings() before it is set during commit.
-  enum : int { kInvalidBindings = -1 };
-
   FrameNavigationEntry(
       const std::string& frame_unique_name,
       int64_t item_sequence_number,
@@ -182,8 +180,9 @@ class CONTENT_EXPORT FrameNavigationEntry
   // Remember the set of bindings granted to this FrameNavigationEntry at the
   // time of commit, to ensure that we do not grant it additional bindings if we
   // navigate back to it in the future.  This can only be changed once.
-  void SetBindings(int bindings);
-  int bindings() const { return bindings_; }
+  // bindings() will return nullopt before the bindings are set.
+  void SetBindings(BindingsPolicySet bindings);
+  std::optional<BindingsPolicySet> bindings() const { return bindings_; }
 
   // The HTTP method used to navigate.
   const std::string& method() const { return method_; }
@@ -271,8 +270,8 @@ class CONTENT_EXPORT FrameNavigationEntry
   std::vector<GURL> redirect_chain_;
   // TODO(creis): Change this to FrameState.
   blink::PageState page_state_;
-  // TODO(creis): Persist bindings_. https://crbug.com/173672.
-  int bindings_ = kInvalidBindings;
+  // TODO(creis): Persist bindings_. https://crbug.com/40076915.
+  std::optional<BindingsPolicySet> bindings_;
   std::string method_;
   int64_t post_id_;
   scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory_;

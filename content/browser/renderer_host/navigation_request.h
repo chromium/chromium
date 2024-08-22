@@ -505,7 +505,7 @@ class CONTENT_EXPORT NavigationRequest
     return dest_site_instance_.get();
   }
 
-  int bindings() const { return bindings_; }
+  std::optional<BindingsPolicySet> bindings() const { return bindings_; }
 
   bool browser_initiated() const {
     return commit_params_->is_browser_initiated;
@@ -2172,7 +2172,7 @@ class CONTENT_EXPORT NavigationRequest
   const RestoreType restore_type_;
   const ReloadType reload_type_;
   const int nav_entry_id_;
-  int bindings_ = FrameNavigationEntry::kInvalidBindings;
+  std::optional<BindingsPolicySet> bindings_;
 
   scoped_refptr<SiteInstanceImpl> starting_site_instance_;
 
