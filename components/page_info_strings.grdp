@@ -388,6 +388,9 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_FILE_SYSTEM_WRITE_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the file system permission is in the ask state and the site can prompt the user to ask if they allow the site to edit files and folders on your device.">
       Can ask to edit files and folders on your device
     </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_HAND_TRACKING_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the hand tracking permission is in the ask state and the site can prompt the user to ask if they want to allow the site to track their hands.">
+      Can ask to track your hands
+    </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_HID_DEVICES_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the HID permission is in the ask state and the site can prompt the user to ask if they allow the site to connect to HID devices.">
       Can ask to connect to HID devices
     </message>

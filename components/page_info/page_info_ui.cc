@@ -203,6 +203,8 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
        IDS_SITE_SETTINGS_TYPE_VR_MID_SENTENCE},
       {ContentSettingsType::AR, IDS_SITE_SETTINGS_TYPE_AR,
        IDS_SITE_SETTINGS_TYPE_AR_MID_SENTENCE},
+      {ContentSettingsType::HAND_TRACKING, IDS_SITE_SETTINGS_TYPE_HAND_TRACKING,
+       IDS_SITE_SETTINGS_TYPE_HAND_TRACKING_MID_SENTENCE},
       {ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
        IDS_SITE_SETTINGS_TYPE_CAMERA_PAN_TILT_ZOOM,
        IDS_SITE_SETTINGS_TYPE_CAMERA_PAN_TILT_ZOOM_MID_SENTENCE},
@@ -353,6 +355,9 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
       break;
     case ContentSettingsType::AUTOMATIC_DOWNLOADS:
       message_id = IDS_PAGE_INFO_STATE_TEXT_AUTOMATIC_DOWNLOADS_ASK;
+      break;
+    case ContentSettingsType::HAND_TRACKING:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_HAND_TRACKING_ASK;
       break;
     case ContentSettingsType::VR:
       message_id = IDS_PAGE_INFO_STATE_TEXT_VR_ASK;
