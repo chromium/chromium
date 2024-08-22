@@ -409,7 +409,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.CheckBrowseUrl.HasLocalMatch"
+<histogram name="SafeBrowsing.CheckBrowseUrl.HasLocalMatch2"
     enum="BooleanMatched" expires_after="2025-01-05">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>

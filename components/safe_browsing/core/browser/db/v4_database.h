@@ -149,9 +149,9 @@ class V4Database {
       const StoresToCheck& stores_to_check) const;
 
   // Searches for hash prefixes matching the |full_hashes| in stores in the
-  // database, filtered by |stores_to_check|. The callback is run synchronously,
-  // or asynchronously if MmapSafeBrowsingDatabaseAsync is enabled, with the
-  // identifier of the stores along with the matching hash prefixes.
+  // database, filtered by |stores_to_check|. The callback is run
+  // asynchronously, with the identifier of the stores along with the matching
+  // hash prefixes.
   virtual void GetStoresMatchingFullHash(
       const std::vector<FullHashStr>& full_hashes,
       const StoresToCheck& stores_to_check,

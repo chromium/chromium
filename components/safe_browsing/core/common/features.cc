@@ -210,11 +210,6 @@ BASE_FEATURE(kMmapSafeBrowsingDatabase,
              base::FEATURE_ENABLED_BY_DEFAULT
 );
 
-constexpr base::FeatureParam<bool> kMmapSafeBrowsingDatabaseAsync{
-    &kMmapSafeBrowsingDatabase, "MmapSafeBrowsingDatabaseAsync",
-    /*default_value=*/true
-};
-
 BASE_FEATURE(kRealTimeUrlFilteringCustomMessage,
              "RealTimeUrlFilteringCustomMessage",
              base::FEATURE_ENABLED_BY_DEFAULT);

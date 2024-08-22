@@ -196,10 +196,6 @@ BASE_DECLARE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings);
 // mapped into memory.
 BASE_DECLARE_FEATURE(kMmapSafeBrowsingDatabase);
 
-// Whether hash prefix lookups are done on a background thread when
-// kMmapSafeBrowsingDatabase is enabled.
-extern const base::FeatureParam<bool> kMmapSafeBrowsingDatabaseAsync;
-
 // Controls whether custom messages from admin are shown for warn and block
 // enterprise interstitials.
 BASE_DECLARE_FEATURE(kRealTimeUrlFilteringCustomMessage);

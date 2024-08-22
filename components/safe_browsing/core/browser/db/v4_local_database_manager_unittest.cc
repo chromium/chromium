@@ -187,8 +187,7 @@ class FakeV4Database : public V4Database {
         }
       }
     }
-    if (base::FeatureList::IsEnabled(kMmapSafeBrowsingDatabase) &&
-        kMmapSafeBrowsingDatabaseAsync.Get()) {
+    if (base::FeatureList::IsEnabled(kMmapSafeBrowsingDatabase)) {
       // Simulate async behavior of real implementation.
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), std::move(results)));
@@ -584,15 +583,10 @@ TEST_F(V4LocalDatabaseManagerTest,
   bool result = v4_local_database_manager_->CheckBrowseUrl(
       url, usual_threat_types_, &client, CheckBrowseUrlType::kHashDatabase);
 
-  if (kMmapSafeBrowsingDatabaseAsync.Get()) {
-    EXPECT_FALSE(result);
-    EXPECT_FALSE(client.on_check_browse_url_result_called());
-    WaitForTasksOnTaskRunner();
-    EXPECT_TRUE(client.on_check_browse_url_result_called());
-  } else {
-    // Both the stores are empty right now so CheckBrowseUrl should return true.
-    EXPECT_TRUE(result);
-  }
+  EXPECT_FALSE(result);
+  EXPECT_FALSE(client.on_check_browse_url_result_called());
+  WaitForTasksOnTaskRunner();
+  EXPECT_TRUE(client.on_check_browse_url_result_called());
 }
 
 TEST_F(V4LocalDatabaseManagerTest, TestCheckBrowseUrlWithFakeDbReturnsMatch) {
@@ -699,16 +693,10 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithFullMatch) {
   auto result =
       v4_local_database_manager_->CheckCsdAllowlistUrl(url_check, &client);
 
-  if (kMmapSafeBrowsingDatabaseAsync.Get()) {
-    EXPECT_EQ(AsyncMatch::ASYNC, result);
-    EXPECT_FALSE(client.callback_called());
-    WaitForTasksOnTaskRunner();
-    EXPECT_TRUE(client.callback_called());
-  } else {
-    EXPECT_EQ(AsyncMatch::MATCH, result);
-    WaitForTasksOnTaskRunner();
-    EXPECT_FALSE(client.callback_called());
-  }
+  EXPECT_EQ(AsyncMatch::ASYNC, result);
+  EXPECT_FALSE(client.callback_called());
+  WaitForTasksOnTaskRunner();
+  EXPECT_TRUE(client.callback_called());
 }
 
 TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithNoMatch) {
@@ -731,16 +719,10 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithNoMatch) {
   auto result =
       v4_local_database_manager_->CheckCsdAllowlistUrl(url_check, &client);
 
-  if (kMmapSafeBrowsingDatabaseAsync.Get()) {
-    EXPECT_EQ(AsyncMatch::ASYNC, result);
-    EXPECT_FALSE(client.callback_called());
-    WaitForTasksOnTaskRunner();
-    EXPECT_TRUE(client.callback_called());
-  } else {
-    EXPECT_EQ(AsyncMatch::NO_MATCH, result);
-    WaitForTasksOnTaskRunner();
-    EXPECT_FALSE(client.callback_called());
-  }
+  EXPECT_EQ(AsyncMatch::ASYNC, result);
+  EXPECT_FALSE(client.callback_called());
+  WaitForTasksOnTaskRunner();
+  EXPECT_TRUE(client.callback_called());
 }
 
 // When allowlist is unavailable, all URLS should be allowed.
@@ -894,10 +876,6 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistUnavailable) {
 }
 
 TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistAfterStopping) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kMmapSafeBrowsingDatabase, {{"MmapSafeBrowsingDatabaseAsync", "true"}});
-
   SetupFakeManager();
   std::string url_safe_no_scheme("example.com/safe/");
   FullHashStr safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
@@ -1558,14 +1536,10 @@ TEST_F(V4LocalDatabaseManagerTest, FlagOneUrlAsPhishing) {
       url_good, usual_threat_types_, &client,
       CheckBrowseUrlType::kHashDatabase);
 
-  if (kMmapSafeBrowsingDatabaseAsync.Get()) {
     EXPECT_FALSE(result);
     EXPECT_FALSE(client.on_check_browse_url_result_called());
     WaitForTasksOnTaskRunner();
     EXPECT_TRUE(client.on_check_browse_url_result_called());
-  } else {
-    EXPECT_TRUE(result);
-  }
 
   WaitForTasksOnTaskRunner();
   StopLocalDatabaseManager();
@@ -1593,14 +1567,10 @@ TEST_F(V4LocalDatabaseManagerTest, FlagOneUrlAsMalware) {
       url_good, usual_threat_types_, &client,
       CheckBrowseUrlType::kHashDatabase);
 
-  if (kMmapSafeBrowsingDatabaseAsync.Get()) {
     EXPECT_FALSE(result);
     EXPECT_FALSE(client.on_check_browse_url_result_called());
     WaitForTasksOnTaskRunner();
     EXPECT_TRUE(client.on_check_browse_url_result_called());
-  } else {
-    EXPECT_TRUE(result);
-  }
 
   WaitForTasksOnTaskRunner();
   StopLocalDatabaseManager();
@@ -1628,14 +1598,10 @@ TEST_F(V4LocalDatabaseManagerTest, FlagOneUrlAsUWS) {
       url_good, usual_threat_types_, &client,
       CheckBrowseUrlType::kHashDatabase);
 
-  if (kMmapSafeBrowsingDatabaseAsync.Get()) {
     EXPECT_FALSE(result);
     EXPECT_FALSE(client.on_check_browse_url_result_called());
     WaitForTasksOnTaskRunner();
     EXPECT_TRUE(client.on_check_browse_url_result_called());
-  } else {
-    EXPECT_TRUE(result);
-  }
 
   WaitForTasksOnTaskRunner();
   StopLocalDatabaseManager();
@@ -1678,14 +1644,10 @@ TEST_F(V4LocalDatabaseManagerTest, FlagMultipleUrls) {
       url_good, usual_threat_types_, &client_good,
       CheckBrowseUrlType::kHashDatabase);
 
-  if (kMmapSafeBrowsingDatabaseAsync.Get()) {
     EXPECT_FALSE(result);
     EXPECT_FALSE(client_good.on_check_browse_url_result_called());
     WaitForTasksOnTaskRunner();
     EXPECT_TRUE(client_good.on_check_browse_url_result_called());
-  } else {
-    EXPECT_TRUE(result);
-  }
 
   StopLocalDatabaseManager();
 }
@@ -1744,10 +1706,8 @@ TEST_F(V4LocalDatabaseManagerTest, TestQueuedChecksMatchArtificialPrefixes) {
       "mark_as_malware", "https://example.com/");
   WaitForTasksOnTaskRunner();
 
-  if (kMmapSafeBrowsingDatabaseAsync.Get()) {
-    EXPECT_FALSE(client.on_check_browse_url_result_called());
-    WaitForTasksOnTaskRunner();
-  }
+  EXPECT_FALSE(client.on_check_browse_url_result_called());
+  WaitForTasksOnTaskRunner();
 
   EXPECT_TRUE(client.on_check_browse_url_result_called());
   EXPECT_TRUE(GetQueuedChecks().empty());

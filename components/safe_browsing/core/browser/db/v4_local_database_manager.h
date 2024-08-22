@@ -260,10 +260,9 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // prefix and store.
   void GetArtificialPrefixMatches(const std::unique_ptr<PendingCheck>& check);
 
-  // Identifies the prefixes and the store they matched in, for a given |check|.
-  // The callback is run synchronously, or asynchronously if
-  // MmapSafeBrowsingDatabaseAsync is enabled, with the identifier of the stores
-  // along with the matching hash prefixes.
+  // Identifies the prefixes and the store they matched in, for a given
+  // |check|.  The callback is run asynchronously with the identifier of
+  // the stores along with the matching hash prefixes.
   void GetPrefixMatches(
       PendingCheck* check,
       base::OnceCallback<void(FullHashToStoreAndHashPrefixesMap)> callback);
@@ -282,34 +281,23 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // Returns the SBThreatType for a given ListIdentifier.
   SBThreatType GetSBThreatTypeForList(const ListIdentifier& list_id);
 
-  // Queues the check for async response if the database isn't ready yet.
-  // If the database is ready, checks the database for prefix matches and
-  // returns true immediately if there's no match. If a match is found, it
-  // schedules a task to perform full hash check and returns false.
-  bool HandleCheck(std::unique_ptr<PendingCheck> check);
+  // Queues the check for async response.
+  void HandleCheck(std::unique_ptr<PendingCheck> check);
 
-  // `match` is only valid if kMmapSafeBrowsingDatabaseAsync is false.
   void HandleCheckContinuation(std::unique_ptr<PendingCheck> check,
-                               AsyncMatch* match,
                                FullHashToStoreAndHashPrefixesMap results);
 
   // Like HandleCheck, but for allowlists that have both full-hashes and
-  // partial hashes in the DB. If |allow_async_full_hash_check| is false, it
-  // will only return either MATCH or NO_MATCH unless
-  // kMmapSafeBrowsingDatabaseAsync is enabled in which case it will return
-  // ASYNC. If |allow_async_full_hash_check| is true, it returns
-  // MATCH, NO_MATCH, or ASYNC. In the ASYNC case, it will schedule performing
+  // partial hashes in the DB. It will schedule performing
   // the full hash check.
-  AsyncMatch HandleAllowlistCheck(std::unique_ptr<PendingCheck> check,
-                                  bool allow_async_full_hash_check,
-                                  base::OnceCallback<void(bool)> callback);
+  void HandleAllowlistCheck(std::unique_ptr<PendingCheck> check,
+                            bool allow_async_full_hash_check,
+                            base::OnceCallback<void(bool)> callback);
 
-  // `match` is only valid if async is kMmapSafeBrowsingDatabaseAsync is false.
   void HandleAllowlistCheckContinuation(
       std::unique_ptr<PendingCheck> check,
       bool allow_async_full_hash_check,
       base::OnceCallback<void(bool)> callback,
-      AsyncMatch* match,
       FullHashToStoreAndHashPrefixesMap results);
 
   // Computes the hashes of URLs that have artificially been marked as unsafe
@@ -449,11 +437,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
 
   // These are used to avoid responding to a client if it cancels a pending
   // check, and to respond back "safe" to all waiting clients if SafeBrowsing is
-  // stopped. This occurs in two conditions:
-  // 1) If kMmapSafeBrowsingDatabaseAsync is enabled then the hash prefix map
-  // lookup is asynchronous.
-  // 2) Checks are awaiting for a full hash response from the SafeBrowsing
-  // service.
+  // stopped.
   PendingChecks pending_checks_;
 
   // The checks that need to be scheduled when the database becomes ready for
