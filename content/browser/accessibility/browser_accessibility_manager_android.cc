@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/i18n/char_iterator.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
@@ -565,7 +566,13 @@ void BrowserAccessibilityManagerAndroid::HandleHoverEvent(
 
 void BrowserAccessibilityManagerAndroid::OnNodeWillBeDeleted(ui::AXTree* tree,
                                                              ui::AXNode* node) {
+  // https://crbug.com/361196029 looks like a nullptr deref. It's unexpected
+  // that ui::AXTree would pass a null node to an observer, and that the
+  // manager would not have a BrowserAccessibility wrapper for it.
+  DUMP_WILL_BE_CHECK(node);
   BrowserAccessibility* wrapper = GetFromAXNode(node);
+  DUMP_WILL_BE_CHECK(wrapper);
+
   BrowserAccessibilityAndroid* android_node =
       static_cast<BrowserAccessibilityAndroid*>(wrapper);
 
