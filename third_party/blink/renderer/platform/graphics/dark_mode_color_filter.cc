@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/dark_mode_color_filter.h"
+
+#include <array>
 
 #include "base/check.h"
 #include "base/notreached.h"
@@ -166,13 +163,13 @@ std::unique_ptr<DarkModeColorFilter> DarkModeColorFilter::FromSettings(
     const DarkModeSettings& settings) {
   switch (settings.mode) {
     case DarkModeInversionAlgorithm::kSimpleInvertForTesting:
-      uint8_t identity[256], invert[256];
+      std::array<uint8_t, 256> identity, invert;
       for (int i = 0; i < 256; ++i) {
         identity[i] = i;
         invert[i] = 255 - i;
       }
-      return ColorFilterWrapper::Create(
-          cc::ColorFilter::MakeTableARGB(identity, invert, invert, invert));
+      return ColorFilterWrapper::Create(cc::ColorFilter::MakeTableARGB(
+          identity.data(), invert.data(), invert.data(), invert.data()));
 
     case DarkModeInversionAlgorithm::kInvertBrightness:
       return ColorFilterWrapper::Create(
