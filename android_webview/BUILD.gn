@@ -701,6 +701,7 @@ android_library("browser_java") {
     ":resources",
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//base:base_java",
+    "//base:content_uri_utils_java",
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//cc/mojom:mojom_java",

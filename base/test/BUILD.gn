@@ -488,6 +488,7 @@ if (is_android) {
     deps = [
       ":file_provider_resources",
       "//base:base_java",
+      "//base:content_uri_utils_java",
       "//base:process_launcher_java",
       "//testing/android/native_test:native_main_runner_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",

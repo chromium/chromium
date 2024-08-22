@@ -108,6 +108,7 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//base:content_uri_utils_java",
     "//build/android:build_java",
     "//chrome/browser/download/android:file_provider_java",
     "//chrome/browser/download/android:java",

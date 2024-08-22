@@ -19,8 +19,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
-import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileProviderUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
@@ -243,7 +243,7 @@ public class ExportFlow implements ExportFlowInterface {
         passwordsFile.deleteOnExit();
 
         try {
-            mExportFileUri = ContentUriUtils.getContentUriFromFile(passwordsFile);
+            mExportFileUri = FileProviderUtils.getContentUriFromFile(passwordsFile);
         } catch (IllegalArgumentException e) {
             showExportErrorAndAbort(
                     R.string.password_settings_export_tips,

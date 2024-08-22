@@ -20,8 +20,8 @@ import androidx.annotation.WorkerThread;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BuildInfo;
-import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileProviderUtils;
 import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
@@ -469,7 +469,7 @@ public class ProcessInitializationHandler {
      */
     @CallSuper
     protected void handlePostNativeInitializationFollowingActivityInit() {
-        ContentUriUtils.setFileProviderUtil(new FileProviderHelper());
+        FileProviderUtils.setFileProviderUtil(new FileProviderHelper());
 
         // When a child process crashes, search for the most recent minidump for the child's process
         // ID and attach a logcat to it. Then upload it to the crash server. Note that the logcat

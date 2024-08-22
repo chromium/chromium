@@ -11,8 +11,8 @@ import android.view.WindowManager;
 
 import androidx.core.content.FileProvider;
 
-import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileProviderUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
@@ -34,7 +34,7 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
     private ShellManager mShellManager;
     private WindowAndroid mWindowAndroid;
 
-    private static class FileProviderHelper implements ContentUriUtils.FileProviderUtil {
+    private static class FileProviderHelper implements FileProviderUtils.FileProviderUtil {
         // Keep this variable in sync with the value defined in file_paths.xml.
         private static final String API_AUTHORITY_SUFFIX = ".FileProvider";
 
@@ -58,7 +58,7 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
             LibraryLoader.getInstance().ensureInitialized();
         }
 
-        ContentUriUtils.setFileProviderUtil(new FileProviderHelper());
+        FileProviderUtils.setFileProviderUtil(new FileProviderHelper());
         setContentView(getTestActivityViewId());
         mShellManager = (ShellManager) findViewById(getShellManagerViewId());
         IntentRequestTracker intentRequestTracker = IntentRequestTracker.createFromActivity(this);

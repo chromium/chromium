@@ -38,9 +38,9 @@ import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowContentResolver;
 import org.robolectric.shadows.ShadowDialog;
 
-import org.chromium.base.ContentUriUtils;
-import org.chromium.base.ContentUriUtils.FileProviderUtil;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileProviderUtils;
+import org.chromium.base.FileProviderUtils.FileProviderUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -115,7 +115,7 @@ public class PasswordAccessLossExportDialogTest {
 
     private void setUpContentResolver() {
         // Mocks writing passwords to the file.
-        ContentUriUtils.setFileProviderUtil(mFileProviderUtil);
+        FileProviderUtils.setFileProviderUtil(mFileProviderUtil);
         when(mFileProviderUtil.getContentUriFromFile(any())).thenReturn(TEMP_EXPORT_FILE_URI);
         ShadowContentResolver shadowContentResolver =
                 shadowOf(ContextUtils.getApplicationContext().getContentResolver());

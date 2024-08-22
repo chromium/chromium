@@ -9,13 +9,13 @@ import android.net.Uri;
 
 import androidx.core.content.FileProvider;
 
-import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileProviderUtils;
 
 import java.io.File;
 
 /** Utilities for translating a file into content URI. */
-public class FileProviderHelper implements ContentUriUtils.FileProviderUtil {
+public class FileProviderHelper implements FileProviderUtils.FileProviderUtil {
     // Keep this variable in sync with the value defined in file_paths.xml.
     private static final String API_AUTHORITY_SUFFIX = ".FileProvider";
 

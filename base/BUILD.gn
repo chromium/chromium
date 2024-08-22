@@ -1265,6 +1265,7 @@ component("base") {
       ":base_shared_preferences_jni",
       ":callback_jni",
       ":command_line_jni",
+      ":content_uri_utils_jni",
       ":jank_tracker_jni",
       ":library_loader_jni",
       ":memory_jni",
@@ -4252,7 +4253,6 @@ if (is_android || is_robolectric) {
       "android/java/src/org/chromium/base/BaseFeatureMap.java",
       "android/java/src/org/chromium/base/BuildInfo.java",
       "android/java/src/org/chromium/base/BundleUtils.java",
-      "android/java/src/org/chromium/base/ContentUriUtils.java",
       "android/java/src/org/chromium/base/CpuFeatures.java",
       "android/java/src/org/chromium/base/EventLog.java",
       "android/java/src/org/chromium/base/FeatureList.java",
@@ -4394,7 +4394,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/CallbackController.java",
       "android/java/src/org/chromium/base/CollectionUtil.java",
       "android/java/src/org/chromium/base/CommandLineInitUtil.java",
-      "android/java/src/org/chromium/base/ContentUriUtils.java",
       "android/java/src/org/chromium/base/CpuFeatures.java",
       "android/java/src/org/chromium/base/DiscardableReferencePool.java",
       "android/java/src/org/chromium/base/EventLog.java",
@@ -4403,6 +4402,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/FeatureParam.java",
       "android/java/src/org/chromium/base/Features.java",
       "android/java/src/org/chromium/base/FieldTrialList.java",
+      "android/java/src/org/chromium/base/FileProviderUtils.java",
       "android/java/src/org/chromium/base/FileUtils.java",
       "android/java/src/org/chromium/base/Flag.java",
       "android/java/src/org/chromium/base/ImportantFileWriterAndroid.java",
@@ -4775,6 +4775,21 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
+  }
+
+  generate_jni("content_uri_utils_jni") {
+    sources = [ "android/java/src/org/chromium/base/ContentUriUtils.java" ]
+  }
+  android_library("content_uri_utils_java") {
+    srcjar_deps = [ ":content_uri_utils_jni" ]
+    deps = [
+      ":log_java",
+      ":stream_util_java",
+      ":tasks_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+    sources = [ "android/java/src/org/chromium/base/ContentUriUtils.java" ]
   }
 
   android_library("activity_state_java") {
@@ -5325,6 +5340,7 @@ if (is_android) {
 
     deps = [
       ":base_java",
+      ":content_uri_utils_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
     srcjar_deps = [ ":base_unittest_support_jni" ]
