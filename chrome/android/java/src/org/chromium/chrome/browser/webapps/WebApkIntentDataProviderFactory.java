@@ -598,8 +598,7 @@ public class WebApkIntentDataProviderFactory {
             return ShortcutSource.UNKNOWN;
         }
         if (source == ShortcutSource.EXTERNAL_INTENT
-                && IntentHandler.determineExternalIntentSource(intent)
-                        == IntentHandler.ExternalAppId.CHROME) {
+                && IntentHandler.isExternalIntentSourceChrome(intent)) {
             return ShortcutSource.EXTERNAL_INTENT_FROM_CHROME;
         }
 

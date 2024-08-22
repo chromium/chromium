@@ -6,6 +6,7 @@ package org.chromium.chrome.browser;
 
 import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
 
+import android.app.Activity;
 import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -20,6 +21,7 @@ import android.text.TextUtils;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
@@ -278,10 +280,10 @@ public class IntentHandler {
     public static final String SHARE_INTENT_HISTOGRAM = "Android.Intent.ShareIntentUrlCount";
 
     /**
-     * Represents popular external applications that can load a page in Chrome via intent.
-     * DO NOT reorder items in this interface, because it's mirrored to UMA (as ClientAppId).
-     * Values should be enumerated from 0 and can't have gaps. When removing items,
-     * comment them out and keep existing numeric values stable.
+     * Represents popular external applications that can load a page in Chrome via intent. DO NOT
+     * reorder items in this interface, because it's mirrored to UMA (as ClientAppId). Values should
+     * be enumerated from 0 and can't have gaps. When removing items, comment them out and keep
+     * existing numeric values stable.
      */
     @IntDef({
         ExternalAppId.OTHER,
@@ -300,6 +302,7 @@ public class IntentHandler {
         ExternalAppId.YAHOO_MAIL,
         ExternalAppId.VIBER,
         ExternalAppId.YOUTUBE,
+        ExternalAppId.CAMERA,
         ExternalAppId.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -320,8 +323,9 @@ public class IntentHandler {
         int YAHOO_MAIL = 13;
         int VIBER = 14;
         int YOUTUBE = 15;
+        int CAMERA = 16;
         // Update ClientAppId in enums.xml when adding new items.
-        int NUM_ENTRIES = 16;
+        int NUM_ENTRIES = 17;
     }
 
     /**
@@ -424,11 +428,36 @@ public class IntentHandler {
     private IntentHandler() {}
 
     /**
+     * Returns information on the activity referrer. Queries the intent in case that the activity
+     * was launched through the Chrome launcher activity, falling back to {@link
+     * Activity#getReferrer()}.
+     */
+    public static String getActivityReferrer(Intent intent, @NonNull Activity activity) {
+        String activityReferrer =
+                IntentUtils.safeGetStringExtra(intent, IntentHandler.EXTRA_ACTIVITY_REFERRER);
+        if (activityReferrer != null) {
+            return activityReferrer;
+        }
+        Uri activityReferrerUri = activity.getReferrer();
+        return (activityReferrerUri != null) ? activityReferrerUri.toString() : null;
+    }
+
+    /** Determines if Chrome was used to fire this intent. */
+    public static boolean isExternalIntentSourceChrome(Intent intent) {
+        // Intent should be sufficient for determining whether the intent originated from Chrome.
+        return determineExternalIntentSource(intent, /* activity= */ null) == ExternalAppId.CHROME;
+    }
+
+    /**
      * Determines what App was used to fire this Intent.
+     *
      * @param intent Intent that was used to launch Chrome.
+     * @param activity Queried if the app which launched Chrome could not be determined from the
+     *     intent.
      * @return ExternalAppId representing the app.
      */
-    public static @ExternalAppId int determineExternalIntentSource(Intent intent) {
+    public static @ExternalAppId int determineExternalIntentSource(
+            Intent intent, @Nullable Activity activity) {
         if (wasIntentSenderChrome(intent)) return ExternalAppId.CHROME;
 
         String appId = IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID);
@@ -459,6 +488,15 @@ public class IntentHandler {
         } else {
             externalId = mapPackageToExternalAppId(appId);
         }
+
+        if (externalId == ExternalAppId.OTHER && activity != null) {
+            String activityReferrer = getActivityReferrer(intent, activity);
+            if (activityReferrer != null
+                    && activityReferrer.toLowerCase(Locale.getDefault()).endsWith("camera")) {
+                return ExternalAppId.CAMERA;
+            }
+        }
+
         return externalId;
     }
 

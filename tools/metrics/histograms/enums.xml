@@ -2540,6 +2540,7 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="13" label="Yahoo Mail"/>
   <int value="14" label="Viber"/>
   <int value="15" label="YouTube"/>
+  <int value="16" label="Camera"/>
 </enum>
 
 <enum name="ClientSummarizedResultType">

@@ -103,7 +103,7 @@ public class CustomTabActivityLifecycleUmaTracker
                 // Incognito CCT, falling back to check if they provided EXTRA_APPLICATION_ID.
                 externalId =
                         IntentHandler.determineExternalIntentSource(
-                                mIntentDataProvider.getIntent());
+                                mIntentDataProvider.getIntent(), mActivity);
                 RecordHistogram.recordEnumeratedHistogram(
                         "CustomTabs.ClientAppId.Incognito",
                         externalId,
@@ -126,7 +126,8 @@ public class CustomTabActivityLifecycleUmaTracker
         } else {
             @IntentHandler.ExternalAppId
             int externalId =
-                    IntentHandler.determineExternalIntentSource(mIntentDataProvider.getIntent());
+                    IntentHandler.determineExternalIntentSource(
+                            mIntentDataProvider.getIntent(), mActivity);
             RecordHistogram.recordEnumeratedHistogram(
                     "CustomTabs.ClientAppId", externalId, IntentHandler.ExternalAppId.NUM_ENTRIES);
         }
