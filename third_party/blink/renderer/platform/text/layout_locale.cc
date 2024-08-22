@@ -4,6 +4,12 @@
 
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 
+#include <hb.h>
+#include <unicode/locid.h>
+#include <unicode/ulocdata.h>
+
+#include <array>
+
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -15,10 +21,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
-
-#include <hb.h>
-#include <unicode/locid.h>
-#include <unicode/ulocdata.h>
 
 namespace blink {
 
@@ -57,15 +59,14 @@ scoped_refptr<QuotesData> GetQuotesDataForLanguage(const char* locale) {
     ulocdata_close(uld);
     return nullptr;
   }
-  UChar open1[ucharDelimMaxLength], close1[ucharDelimMaxLength],
-      open2[ucharDelimMaxLength], close2[ucharDelimMaxLength];
+  std::array<UChar, ucharDelimMaxLength> open1, close1, open2, close2;
 
   int32_t delimResultLength;
   struct DelimiterConfig delimiters[] = {
-      {ULOCDATA_QUOTATION_START, open1},
-      {ULOCDATA_QUOTATION_END, close1},
-      {ULOCDATA_ALT_QUOTATION_START, open2},
-      {ULOCDATA_ALT_QUOTATION_END, close2},
+      {ULOCDATA_QUOTATION_START, open1.data()},
+      {ULOCDATA_QUOTATION_END, close1.data()},
+      {ULOCDATA_ALT_QUOTATION_START, open2.data()},
+      {ULOCDATA_ALT_QUOTATION_END, close2.data()},
   };
   for (DelimiterConfig delim : delimiters) {
     delimResultLength = ulocdata_getDelimiter(uld, delim.type, delim.result,
