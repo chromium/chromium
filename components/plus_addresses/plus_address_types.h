@@ -44,10 +44,8 @@ struct PreallocatedPlusAddress final {
 };
 
 struct PlusProfile {
-  // When `syncer::kSyncPlusAddress` is enabled, the facet is stored as a
-  // `FacetURI`. Before sync support, the facet represents an eTLD+1, stored as
-  // a string.
-  // TODO(b/322147254): Remove variant when sync support is launched.
+  // The facet is stored as a `FacetURI`.
+  // TODO(b/322147254): Remove unnecessary variant.
   using facet_t = absl::variant<std::string, affiliations::FacetURI>;
 
   PlusProfile(std::optional<std::string> profile_id,

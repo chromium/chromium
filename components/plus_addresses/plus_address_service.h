@@ -14,7 +14,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
-#include "base/timer/timer.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/plus_addresses/affiliations/plus_address_affiliation_match_helper.h"
@@ -200,16 +199,6 @@ class PlusAddressService : public KeyedService,
   bool IsEnabled() const;
 
  private:
-  // Creates and starts a timer to keep `plus_profiles_` and
-  // `plus_addresses_` in sync with a remote plus address server.
-  // This has no effect if this service is not enabled or the timer is already
-  // running.
-  void CreateAndStartTimer();
-
-  // Gets the up-to-date plus address mapping mapping from the remote server
-  // from the PlusAddressHttpClient.
-  void SyncPlusAddressMapping();
-
   // Checks whether `error` is a `HTTP_FORBIDDEN` network error and, if there
   // have been more than `kMaxAllowedForbiddenResponses` such calls without a
   // successful one, disables plus addresses for the session.
@@ -238,10 +227,6 @@ class PlusAddressService : public KeyedService,
   // on `excluded_sites_` set, and scheme is http or https.
   bool IsSupportedOrigin(const url::Origin& origin) const;
 
-  // Updates `plus_profiles_` and `plus_addresses_` using `map`.
-  // TODO(b/322147254): Remove once integration has finished.
-  void UpdatePlusAddressMap(const PlusAddressMap& map);
-
   // Called when PlusAddressService::OnGetAffiliatedPlusProfiles is resolved.
   // Builds a list of suggestions from the list of `affiliated_profiles` and
   // returns it via the `callback`.
@@ -265,11 +250,8 @@ class PlusAddressService : public KeyedService,
 
   metrics::PlusAddressSubmissionLogger submission_logger_;
 
-  // A timer to periodically retrieve all plus addresses from a remote server
-  // to keep this service in sync.
-  base::RepeatingTimer polling_timer_;
-
   // Handles requests to a remote server that this service uses.
+  // TODO(crbug.com/322147254): Move to allocator.
   std::unique_ptr<PlusAddressHttpClient> plus_address_http_client_;
 
   // Responsible for communicating with `PlusAddressTable`.

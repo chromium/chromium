@@ -67,10 +67,6 @@ std::optional<PlusProfile> ParsePlusProfileFromV1Dict(base::Value::Dict dict) {
       !is_confirmed.has_value()) {
     return std::nullopt;
   }
-  if (!IsSyncingPlusAddresses()) {
-    return PlusProfile(std::move(profile_id), std::move(facet_str),
-                       std::move(plus_address), *is_confirmed);
-  }
   affiliations::FacetURI facet =
       affiliations::FacetURI::FromPotentiallyInvalidSpec(facet_str);
   if (!facet.is_valid()) {

@@ -36,39 +36,36 @@ PlusAddressWebDataService::PlusAddressWebDataService(
     : WebDataServiceBase(wdbs, ui_task_runner),
       ui_task_runner_(std::move(ui_task_runner)),
       db_task_runner_(std::move(db_task_runner)) {
-  if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddress)) {
-    sync_bridge_wrapper_ =
-        base::MakeRefCounted<SyncBridgeDBSequenceWrapper>(db_task_runner_);
+  sync_bridge_wrapper_ =
+      base::MakeRefCounted<SyncBridgeDBSequenceWrapper>(db_task_runner_);
 
-    // When sync changes `PlusAddressTable`, observers on the `ui_task_runner_`
-    // are notified. To avoid round trips to the `db_task_runner_`, this
-    // notification includes the set of addition and removal operations
-    // committed to the database from the sync bridge.
-    PlusAddressSyncBridge::DataChangedBySyncCallback notify_sync_observers =
-        base::BindPostTask(
-            ui_task_runner_,
-            base::BindRepeating(
-                &PlusAddressWebDataService::NotifyOnWebDataChangedBySync,
-                weak_factory_.GetWeakPtr()));
+  // When sync changes `PlusAddressTable`, observers on the `ui_task_runner_`
+  // are notified. To avoid round trips to the `db_task_runner_`, this
+  // notification includes the set of addition and removal operations
+  // committed to the database from the sync bridge.
+  PlusAddressSyncBridge::DataChangedBySyncCallback notify_sync_observers =
+      base::BindPostTask(
+          ui_task_runner_,
+          base::BindRepeating(
+              &PlusAddressWebDataService::NotifyOnWebDataChangedBySync,
+              weak_factory_.GetWeakPtr()));
 
-    // The `state->sync_bridge` can only be used on the sequence that it
-    // was constructed on. Ensure it is created on the `db_task_runner_`.
-    db_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](scoped_refptr<WebDatabaseBackend> db_backend,
-               PlusAddressSyncBridge::DataChangedBySyncCallback
-                   notify_observers,
-               SyncBridgeDBSequenceWrapper* wrapper) {
-              wrapper->sync_bridge = std::make_unique<PlusAddressSyncBridge>(
-                  std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-                      syncer::PLUS_ADDRESS,
-                      /*dump_stack=*/base::DoNothing()),
-                  std::move(db_backend), std::move(notify_observers));
-            },
-            wdbs_->GetBackend(), std::move(notify_sync_observers),
-            base::RetainedRef(sync_bridge_wrapper_)));
-  }
+  // The `state->sync_bridge` can only be used on the sequence that it
+  // was constructed on. Ensure it is created on the `db_task_runner_`.
+  db_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<WebDatabaseBackend> db_backend,
+             PlusAddressSyncBridge::DataChangedBySyncCallback notify_observers,
+             SyncBridgeDBSequenceWrapper* wrapper) {
+            wrapper->sync_bridge = std::make_unique<PlusAddressSyncBridge>(
+                std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+                    syncer::PLUS_ADDRESS,
+                    /*dump_stack=*/base::DoNothing()),
+                std::move(db_backend), std::move(notify_observers));
+          },
+          wdbs_->GetBackend(), std::move(notify_sync_observers),
+          base::RetainedRef(sync_bridge_wrapper_)));
 }
 
 PlusAddressWebDataService::~PlusAddressWebDataService() = default;
@@ -122,7 +119,6 @@ void PlusAddressWebDataService::ClearPlusProfiles() {
 std::unique_ptr<syncer::DataTypeControllerDelegate>
 PlusAddressWebDataService::GetSyncControllerDelegate() {
   CHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  CHECK(base::FeatureList::IsEnabled(syncer::kSyncPlusAddress));
   // `sync_bridge` operates on the `db_task_runner_` - use a
   // `ProxyDataTypeControllerDelegate` to forward calls to that sequence.
   // Because `db_task_runner_` is a `SequencedTaskRunner`, the `sync_bridge`
@@ -143,14 +139,6 @@ void PlusAddressWebDataService::NotifyOnWebDataChangedBySync(
   for (Observer& o : observers_) {
     o.OnWebDataChangedBySync(changes);
   }
-}
-
-bool IsSyncingPlusAddresses() {
-  return base::FeatureList::IsEnabled(syncer::kSyncPlusAddress);
-}
-
-const base::Feature& GetSyncPlusAddressFeatureForTests() {
-  return syncer::kSyncPlusAddress;
 }
 
 }  // namespace plus_addresses

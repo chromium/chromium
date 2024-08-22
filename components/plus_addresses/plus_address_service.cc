@@ -74,24 +74,14 @@ base::flat_set<std::string> GetAndParseExcludedSites() {
 }
 
 PlusProfile::facet_t OriginToFacet(const url::Origin& origin) {
-  PlusProfile::facet_t facet;
-  if (IsSyncingPlusAddresses()) {
-    // For a valid `origin`, `origin.GetURL().spec()` is always a valid spec.
-    // However, using `FacetURI::FromCanonicalSpec(spec)` can lead to mismatches
-    // in the underlying representation, since it uses the spec verbatim. E.g.,
-    // a trailing "/" is removed by `FacetURI::FromPotentiallyInvalidSpec()`,
-    // but kept by `FacetURI::FromCanonicalSpec(spec)`.
-    // TODO(b/338342346): Revise `FacetURI::FromCanonicalSpec()`.
-    facet = affiliations::FacetURI::FromPotentiallyInvalidSpec(
-        origin.GetURL().spec());
-  } else {
-    std::string etld_plus_one = GetEtldPlusOne(origin);
-    // TODO(crbug.com/327838014): Remove the fallback and use
-    // `affiliations::FacetURI` in the tests.
-    // For empty `etld_plus_one`, fallback to `origin`.
-    facet = etld_plus_one.empty() ? origin.GetURL().spec() : etld_plus_one;
-  }
-  return facet;
+  // For a valid `origin`, `origin.GetURL().spec()` is always a valid spec.
+  // However, using `FacetURI::FromCanonicalSpec(spec)` can lead to mismatches
+  // in the underlying representation, since it uses the spec verbatim. E.g.,
+  // a trailing "/" is removed by `FacetURI::FromPotentiallyInvalidSpec()`,
+  // but kept by `FacetURI::FromCanonicalSpec(spec)`.
+  // TODO(b/338342346): Revise `FacetURI::FromCanonicalSpec()`.
+  return affiliations::FacetURI::FromPotentiallyInvalidSpec(
+      origin.GetURL().spec());
 }
 
 // Returns `true` when we wish to offer plus address creation on a form with
@@ -190,13 +180,12 @@ PlusAddressService::PlusAddressService(
                       base::BindRepeating(&PlusAddressService::IsEnabled,
                                           base::Unretained(this)));
 
-  if (IsSyncingPlusAddresses() && webdata_service_) {
+  if (webdata_service_) {
     webdata_service_observation_.Observe(webdata_service_.get());
     if (IsEnabled()) {
       webdata_service_->GetPlusProfiles(this);
     }
   }
-  CreateAndStartTimer();
   identity_manager_observation_.Observe(identity_manager);
 
   if (!base::FeatureList::IsEnabled(features::kPlusAddressBlocklistEnabled)) {
@@ -299,12 +288,12 @@ std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
 void PlusAddressService::SavePlusProfile(const PlusProfile& profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(profile.is_confirmed);
-  // New plus addresses are requested directly from the PlusAddress backend. If
-  // `IsSyncingPlusAddresses()`, these addresses become later available through
-  // sync. Until the address shows up in sync, it should still be available
-  // through `PlusAddressService`, even after reloading the data. This requires
-  // adding the address to the database.
-  if (webdata_service_ && IsSyncingPlusAddresses()) {
+  // New plus addresses are requested directly from the PlusAddress backend.
+  // These addresses become later available through sync. Until the address
+  // shows up in sync, it should still be available through
+  // `PlusAddressService`, even after reloading the data. This requires adding
+  // the address to the database.
+  if (webdata_service_) {
     webdata_service_->AddOrUpdatePlusProfile(profile);
   }
   // Update the in-memory plus profiles cache.
@@ -500,13 +489,7 @@ void PlusAddressService::HandleCreateOrConfirmResponse(
   if (maybe_profile.has_value()) {
     account_is_forbidden_ = false;
     if (maybe_profile->is_confirmed) {
-      if (IsSyncingPlusAddresses()) {
-        SavePlusProfile(*maybe_profile);
-      } else {
-        PlusProfile profile_to_save = *maybe_profile;
-        profile_to_save.facet = GetEtldPlusOne(origin);
-        SavePlusProfile(profile_to_save);
-      }
+      SavePlusProfile(*maybe_profile);
     }
   } else {
     HandlePlusAddressRequestError(maybe_profile.error());
@@ -544,62 +527,6 @@ bool PlusAddressService::IsEnabled() const {
          identity_manager_
                  ->GetErrorStateOfRefreshTokenForAccount(primary_account_id)
                  .state() == GoogleServiceAuthError::State::NONE;
-}
-
-void PlusAddressService::CreateAndStartTimer() {
-  if (!IsEnabled() || !features::kSyncWithEnterprisePlusAddressServer.Get() ||
-      polling_timer_.IsRunning()) {
-    return;
-  }
-  if (IsSyncingPlusAddresses()) {
-    return;
-  }
-  SyncPlusAddressMapping();
-  polling_timer_.Start(
-      FROM_HERE, features::kEnterprisePlusAddressTimerDelay.Get(),
-      base::BindRepeating(&PlusAddressService::SyncPlusAddressMapping,
-                          // base::Unretained(this) is safe here since the timer
-                          // that is created has same lifetime as this service.
-                          base::Unretained(this)));
-}
-
-void PlusAddressService::SyncPlusAddressMapping() {
-  if (!IsEnabled()) {
-    return;
-  }
-  plus_address_http_client_->GetAllPlusAddresses(base::BindOnce(
-      [](PlusAddressService* service,
-         const PlusAddressMapOrError& maybe_mapping) {
-        if (maybe_mapping.has_value()) {
-          if (service->IsEnabled()) {
-            service->UpdatePlusAddressMap(maybe_mapping.value());
-          }
-          service->account_is_forbidden_ = false;
-        } else {
-          service->HandlePlusAddressRequestError(maybe_mapping.error());
-          // If `kDisableForForbiddenUsers` is on, we retry 403 responses.
-          if (features::kDisableForForbiddenUsers.Get() &&
-              maybe_mapping.error() == PlusAddressRequestError::AsNetworkError(
-                                           net::HTTP_FORBIDDEN) &&
-              !service->account_is_forbidden_.value_or(false)) {
-            service->SyncPlusAddressMapping();
-          }
-        }
-      },
-      // base::Unretained is safe here since PlusAddressService owns
-      // the PlusAddressHttpClient and they have the same lifetime.
-      base::Unretained(this)));
-}
-
-void PlusAddressService::UpdatePlusAddressMap(const PlusAddressMap& map) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  plus_address_cache_.Clear();
-  for (const auto& [facet, address] : map) {
-    // `UpdatePlusAddressMap()` is only called when sync support is disabled.
-    // In this case, profile_ids don't matter.
-    plus_address_cache_.InsertProfile(
-        PlusProfile(/*profile_id=*/"", facet, address, /*is_confirmed=*/true));
-  }
 }
 
 void PlusAddressService::OnWebDataChangedBySync(
@@ -678,8 +605,6 @@ void PlusAddressService::OnPrimaryAccountChanged(
       event.GetEventTypeFor(signin::ConsentLevel::kSignin);
   if (type == signin::PrimaryAccountChangeEvent::Type::kCleared) {
     HandleSignout();
-  } else if (type == signin::PrimaryAccountChangeEvent::Type::kSet) {
-    CreateAndStartTimer();
   }
 }
 
@@ -695,17 +620,11 @@ void PlusAddressService::OnErrorStateOfRefreshTokenUpdatedForAccount(
   }
   if (error.state() != GoogleServiceAuthError::NONE) {
     HandleSignout();
-  } else {
-    CreateAndStartTimer();
   }
 }
 
 void PlusAddressService::HandleSignout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsSyncingPlusAddresses()) {
-    plus_address_cache_.Clear();
-    polling_timer_.Stop();
-  }
   plus_address_http_client_->Reset();
 }
 

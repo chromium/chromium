@@ -88,8 +88,7 @@ class SingleClientPlusAddressSyncTest
         /*enabled_features=*/{{plus_addresses::features::kPlusAddressesEnabled,
                                {{plus_addresses::features::
                                      kEnterprisePlusAddressServerUrl.name,
-                                 "https://not-used.com"}}},
-                              {syncer::kSyncPlusAddress, {}}},
+                                 "https://not-used.com"}}}},
         /*disabled_features=*/{});
   }
 

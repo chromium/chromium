@@ -498,8 +498,6 @@ TEST_F(PlusAddressServiceRequestsTest,
 // the request ends in an error and the eventual server response is ignored.
 TEST_F(PlusAddressServiceRequestsTest,
        PrimaryRefreshTokenError_ResetsHttpRequests) {
-  base::test::ScopedFeatureList sync_feature_{
-      GetSyncPlusAddressFeatureForTests()};
   PlusProfile profile = test::CreatePlusProfile();
   base::test::TestFuture<const PlusProfileOrError&> future;
   service().ReservePlusAddress(OriginFromFacet(profile.facet),
@@ -1560,8 +1558,6 @@ class PlusAddressAffiliationsTest : public PlusAddressServiceTest {
              features::kPlusAddressesEnabled,
              {{"server-url", "https://server.example"},
               {"oauth-scope", "scope.example"}}),
-         base::test::FeatureRefAndParams(
-             {GetSyncPlusAddressFeatureForTests(), {}}),
          base::test::FeatureRefAndParams(
              {features::kPlusAddressAffiliations, {}})},
         // Disable features:

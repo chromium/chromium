@@ -64,6 +64,7 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
                           PlusAddressRequestCallback on_completed) override;
   void PreallocatePlusAddresses(
       PreallocatePlusAddressesCallback callback) override;
+  // TODO(crbug.com/322147254): Remove unused method.
   void GetAllPlusAddresses(PlusAddressMapRequestCallback on_completed) override;
   void Reset() override;
 

@@ -1130,10 +1130,12 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
           syncer::kSyncEnableContactInfoDataTypeInTransportMode)) {
     allowed_types.Put(syncer::CONTACT_INFO);
   }
-  if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddress)) {
-    allowed_types.Put(syncer::PLUS_ADDRESS);
+
+  allowed_types.Put(syncer::PLUS_ADDRESS);
+  if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
     allowed_types.Put(syncer::PLUS_ADDRESS_SETTING);
   }
+
   if (base::FeatureList::IsEnabled(
           syncer::kSyncEnableWalletMetadataInTransportMode)) {
     allowed_types.Put(syncer::AUTOFILL_WALLET_METADATA);
