@@ -309,14 +309,10 @@ void V4Database::GetStoresMatchingFullHash(
   auto check_stores =
       base::BindOnce(CheckStores, full_hashes, std::move(stores));
 
-  if (base::FeatureList::IsEnabled(kMmapSafeBrowsingDatabase)) {
     // The V4Stores ptrs are guaranteed to be valid because their deletion would
     // be sequenced on the DB thread, after this posted task is serviced.
     db_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE, std::move(check_stores), std::move(callback));
-  } else {
-    std::move(callback).Run(std::move(check_stores).Run());
-  }
 }
 
 void V4Database::ResetStores(

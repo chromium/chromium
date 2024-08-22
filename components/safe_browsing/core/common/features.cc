@@ -212,11 +212,6 @@ BASE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings,
              "TailoredSecurityLogAccountEnhancedProtectionStateInProtegoPings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMmapSafeBrowsingDatabase,
-             "MmapSafeBrowsingDatabase",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
-
 BASE_FEATURE(kRealTimeUrlFilteringCustomMessage,
              "RealTimeUrlFilteringCustomMessage",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -349,7 +344,6 @@ base::Value::List GetFeatureStatusList() {
       &kHashPrefixRealTimeLookups,
       &kHashPrefixRealTimeLookupsFasterOhttpKeyRotation,
       &kLogAccountEnhancedProtectionStateInProtegoPings,
-      &kMmapSafeBrowsingDatabase,
       &kRealTimeUrlFilteringCustomMessage,
       &kSafeBrowsingAsyncRealTimeCheck,
       &kSafeBrowsingRemoveCookiesInAuthRequests,

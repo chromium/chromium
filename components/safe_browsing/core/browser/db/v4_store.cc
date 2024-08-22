@@ -183,15 +183,6 @@ const base::FilePath TemporaryFileForFilename(const base::FilePath& filename) {
   return base::FilePath(filename.value() + FILE_PATH_LITERAL("_new"));
 }
 
-std::unique_ptr<HashPrefixMap> CreateHashPrefixMap(
-    const base::FilePath& store_path,
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  if (base::FeatureList::IsEnabled(kMmapSafeBrowsingDatabase))
-    return std::make_unique<MmapHashPrefixMap>(store_path,
-                                               std::move(task_runner));
-  return std::make_unique<InMemoryHashPrefixMap>();
-}
-
 // Cleans up files that are no longer needed after a successful write. These are
 // hash files that may be left behind in the event of a crash or other failure
 // which fails to clean up.
@@ -356,7 +347,7 @@ V4StorePtr V4StoreFactory::CreateV4Store(
     const base::FilePath& store_path) {
   V4StorePtr new_store(
       new V4Store(task_runner, store_path,
-                  CreateHashPrefixMap(store_path, task_runner)),
+                  std::make_unique<MmapHashPrefixMap>(store_path, task_runner)),
       V4StoreDeleter(task_runner));
   new_store->Initialize();
   return new_store;
@@ -531,10 +522,11 @@ void V4Store::ApplyUpdate(
     const scoped_refptr<base::SequencedTaskRunner>& callback_task_runner,
     UpdatedStoreReadyCallback callback) {
   base::ElapsedThreadTimer thread_timer;
-  V4StorePtr new_store(
-      new V4Store(task_runner_, store_path_,
-                  CreateHashPrefixMap(store_path_, task_runner_), file_size_),
-      V4StoreDeleter(task_runner_));
+  V4StorePtr new_store(new V4Store(task_runner_, store_path_,
+                                   std::make_unique<MmapHashPrefixMap>(
+                                       store_path_, task_runner_),
+                                   file_size_),
+                       V4StoreDeleter(task_runner_));
   ApplyUpdateResult apply_update_result;
   std::string metric;
   if (response->response_type() == ListUpdateResponse::PARTIAL_UPDATE) {

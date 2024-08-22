@@ -198,10 +198,6 @@ extern const base::FeatureParam<int> kHashDatabaseOffsetMapBytesPerOffset;
 // Enable logging of the account enhanced protection setting in Protego pings.
 BASE_DECLARE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings);
 
-// If enabled, the Safe Browsing database will be stored in a separate file and
-// mapped into memory.
-BASE_DECLARE_FEATURE(kMmapSafeBrowsingDatabase);
-
 // Controls whether custom messages from admin are shown for warn and block
 // enterprise interstitials.
 BASE_DECLARE_FEATURE(kRealTimeUrlFilteringCustomMessage);

@@ -187,13 +187,9 @@ class FakeV4Database : public V4Database {
         }
       }
     }
-    if (base::FeatureList::IsEnabled(kMmapSafeBrowsingDatabase)) {
       // Simulate async behavior of real implementation.
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), std::move(results)));
-    } else {
-      std::move(callback).Run(std::move(results));
-    }
   }
 
   // V4Database implementation
