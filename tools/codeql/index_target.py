@@ -54,7 +54,8 @@ def index_one_target(target_name,
                      codeql_binary_path,
                      out_path,
                      logger,
-                     gn_path=None,
+                     ninja_path='ninja',
+                     gn_path='gn',
                      logfile=None):
   try:
     process_stdout = subprocess.check_output([gn_path, 'clean', out_path])
@@ -81,7 +82,8 @@ def index_one_target(target_name,
   try:
     process_stdout = subprocess.check_output([
         codeql_binary_path, 'database', 'trace-command', db_path,
-        f'--working-dir={src_path}', '--', 'ninja', '-C', out_path, target_name
+        f'--working-dir={src_path}', '--', ninja_path, '-C', out_path,
+        target_name
     ])
     log_subprocess_output(process_stdout)
   except subprocess.CalledProcessError as e:
@@ -158,6 +160,12 @@ def main():
       default='gn',
       help=('Path to the gn executable. If this is not set, the script assumes '
             'it is located at `gn` somehwere in the user\'s PATH.'))
+  parser.add_argument(
+      '--ninja_path',
+      type=str,
+      default='ninja',
+      help=('Path to the ninja executable. If this is not set, the script '
+            'assumes it is located at `ninja` somehwere in the user\'s PATH.'))
   args = parser.parse_args()
 
   if (args.logfile):
@@ -176,7 +184,8 @@ def main():
     actual_targets_to_index = args.gn_targets
   for target in actual_targets_to_index:
     index_one_target(target, src_path, args.db_path, args.codeql_binary_path,
-                     args.out_path, logger, args.gn_path, args.logfile)
+                     args.out_path, logger, args.ninja_path, args.gn_path,
+                     args.logfile)
 
 if __name__ == '__main__':
   main()
