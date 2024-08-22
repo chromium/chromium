@@ -494,11 +494,6 @@ extern const char kIOSProactivePasswordGenerationBottomSheetDescription[];
 extern const char kSyncWebauthnCredentialsName[];
 extern const char kSyncWebauthnCredentialsDescription[];
 
-// Title and description for the flag to enable filling the username of single
-// username forms in sign-in UFF.
-extern const char kIOSPasswordSignInUffName[];
-extern const char kIOSPasswordSignInUffDescription[];
-
 // Title and description for the flag to enable iOS Quick Delete feature.
 extern const char kIOSQuickDeleteName[];
 extern const char kIOSQuickDeleteDescription[];

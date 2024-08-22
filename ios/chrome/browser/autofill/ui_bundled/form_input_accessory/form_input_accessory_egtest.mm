@@ -117,15 +117,6 @@ id<GREYMatcher> KeyboardAccessoryPasswordSuggestion() {
   AppLaunchConfiguration config;
   config.features_disabled.push_back(
       autofill::features::test::kAutofillServerCommunication);
-
-  if ([self isRunningTest:@selector(testFillFieldOnFormWithSingleUsername)] ||
-      [self isRunningTest:@selector(testFillFieldOnFormWithSinglePassword)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kIOSPasswordSignInUff);
-  } else {
-    config.features_disabled.push_back(
-        password_manager::features::kIOSPasswordSignInUff);
-  }
   if ([self isRunningTest:@selector(testOpenExpandedManualFillView)]) {
     config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
   }

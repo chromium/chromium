@@ -327,37 +327,9 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, WithSuggestions) {
 }
 
 // Tests setting the consumer when suggestions are available for a single
-// username form and the feature is disabled.
-TEST_F(PasswordSuggestionBottomSheetMediatorTest,
-       WithSuggestions_ForSingleUsernameForm_FeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::kIOSPasswordSignInUff);
-
-  id<FormSuggestionProvider> provider =
-      [[PasswordSuggestionBottomSheetMediatorTestSuggestionProvider alloc]
-          initWithSuggestions:@[ SuggestionForSingleUsernameForm() ]];
-
-  CreateMediatorWithSuggestions(@[ provider ]);
-  ASSERT_TRUE(mediator_);
-
-  OCMExpect([consumer_ setSuggestions:[OCMArg isNotNil]
-                            andDomain:[OCMArg isNotNil]]);
-  [[consumer_ expect]
-      setPrimaryActionString:PrimaryActionLabelForPasswordFill()];
-
-  [mediator_ setConsumer:consumer_];
-  EXPECT_OCMOCK_VERIFY(consumer_);
-}
-
-// Tests setting the consumer when suggestions are available for a single
 // username form and the feature is enabled.
 TEST_F(PasswordSuggestionBottomSheetMediatorTest,
        WithSuggestions_ForSingleUsernameForm_FeatureEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kIOSPasswordSignInUff);
-
   id<FormSuggestionProvider> provider =
       [[PasswordSuggestionBottomSheetMediatorTestSuggestionProvider alloc]
           initWithSuggestions:@[ SuggestionForSingleUsernameForm() ]];

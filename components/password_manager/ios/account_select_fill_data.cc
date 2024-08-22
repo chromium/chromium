@@ -17,11 +17,6 @@ namespace password_manager {
 
 namespace {
 
-bool IsSigninUffEnabled() {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kIOSPasswordSignInUff);
-}
-
 // Returns true if credentials are eligible. For example, credentials are
 // ineglible when there are only credentials with an empty username available
 // for a single username form.
@@ -38,8 +33,7 @@ bool AreCredentialsEligibleForFilling(
     return c.username.empty();
   };
   return !(is_single_username &&
-           base::ranges::all_of(credentials, has_empty_username) &&
-           IsSigninUffEnabled());
+           base::ranges::all_of(credentials, has_empty_username));
 }
 
 }  // namespace

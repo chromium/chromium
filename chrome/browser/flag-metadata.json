@@ -7009,11 +7009,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "password-manager-signin-uff",
-    "owners": ["vincb@google.com", "eic@google.com"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "password-manual-fallback-available",
     "owners": ["tchudakov@google.com", "vasilii@google.com", "chrome-password-manager-team@google.com"],
     "expiry_milestone": 131

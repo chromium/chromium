@@ -3539,11 +3539,6 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowSendVotesOnRecentFields) {
 
 // Test that the username field in a single username form can be filled.
 TEST_P(PasswordFormManagerTest, UsernameFirstFlowFillSingleUsernameForm) {
-#if BUILDFLAG(IS_IOS)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kIOSPasswordSignInUff);
-#endif  // BUILDFLAG(IS_IOS)
-
   // Create the form manager for a form with only a username in it.
   CreateFormManager(non_password_form_);
 
@@ -3569,32 +3564,6 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowFillSingleUsernameForm) {
   EXPECT_EQ(saved_match_.password_value,
             fill_data.preferred_login.password_value);
 }
-
-#if BUILDFLAG(IS_IOS)
-// TODO(b/305833151): Remove this test once sign-in uff on iOS is launched.
-// Test that the username field in a single username form isn't filled if the
-// feature isn't enabled.
-TEST_P(PasswordFormManagerTest,
-       UsernameFirstFlowFillSingleUsernameForm_SingleUsernameNotEnabledOnIos) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kIOSPasswordSignInUff);
-
-  // Create the form manager for a form with only a username in it.
-  CreateFormManager(non_password_form_);
-
-  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
-
-  PasswordFormFillData fill_data;
-  EXPECT_CALL(driver_, SetPasswordFillData).Times(0);
-
-  // Provide server predictions for the single username form, which will trigger
-  // FillNow().
-  std::map<FormSignature, FormPredictions> predictions =
-      CreatePredictions(non_password_form_,
-                        {std::make_pair(kUsernameFieldIndex, SINGLE_USERNAME)});
-  form_manager_->ProcessServerPredictions(predictions);
-}
-#endif
 
 // Tests that a negative vote is sent when a single username candidate is
 // populated in a prompt, but then is removed by the user in the prompt.

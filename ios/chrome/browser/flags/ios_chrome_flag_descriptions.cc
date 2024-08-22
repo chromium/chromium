@@ -605,10 +605,6 @@ const char kSyncWebauthnCredentialsDescription[] =
     "Allow syncing, managing, and displaying Google Password Manager WebAuthn "
     "credential ('passkey') metadata";
 
-const char kIOSPasswordSignInUffName[] = "Password sign-in uff";
-const char kIOSPasswordSignInUffDescription[] =
-    "Enables filling the username in username-first sign-in flows.";
-
 const char kIOSQuickDeleteName[] = "Quick Delete for iOS";
 const char kIOSQuickDeleteDescription[] =
     "Enables a new way for users to more easily delete their browsing data in "

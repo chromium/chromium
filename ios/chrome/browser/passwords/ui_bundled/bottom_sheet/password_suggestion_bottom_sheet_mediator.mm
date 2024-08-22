@@ -57,11 +57,6 @@ using ReauthenticationEvent::kMissingPasscode;
 using ReauthenticationEvent::kSuccess;
 
 int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kIOSPasswordSignInUff)) {
-    return IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD;
-  }
-
   return suggestion.metadata.is_single_username_form
              ? IDS_IOS_PASSWORD_BOTTOM_SHEET_CONTINUE
              : IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD;
