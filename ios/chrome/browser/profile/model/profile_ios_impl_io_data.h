@@ -5,10 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_PROFILE_MODEL_PROFILE_IOS_IMPL_IO_DATA_H_
 #define IOS_CHROME_BROWSER_PROFILE_MODEL_PROFILE_IOS_IMPL_IO_DATA_H_
 
-// Copyright 2015 The Chromium Authors
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 #import "base/functional/callback_forward.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted.h"
@@ -26,7 +22,12 @@ class HttpTransactionFactory;
 class URLRequestJobFactory;
 }  // namespace net
 
-class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
+// TODO(crbug.com/361047031): Remove this forward declaration and typedef when
+// no usage of ChromeBrowserStateIOData remains.
+class ProfileIOSImplIOData;
+using ChromeBrowserStateImplIOData = ProfileIOSImplIOData;
+
+class ProfileIOSImplIOData : public ProfileIOSIOData {
  public:
   class Handle {
    public:
@@ -86,19 +87,18 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
     mutable scoped_refptr<IOSChromeURLRequestContextGetter>
         main_request_context_getter_;
     mutable IOSChromeURLRequestContextGetterMap app_request_context_getter_map_;
-    const raw_ptr<ChromeBrowserStateImplIOData> io_data_;
+    const raw_ptr<ProfileIOSImplIOData> io_data_;
 
     const raw_ptr<ChromeBrowserState> browser_state_;
 
     mutable bool initialized_;
   };
 
-  ChromeBrowserStateImplIOData(const ChromeBrowserStateImplIOData&) = delete;
-  ChromeBrowserStateImplIOData& operator=(const ChromeBrowserStateImplIOData&) =
-      delete;
+  ProfileIOSImplIOData(const ProfileIOSImplIOData&) = delete;
+  ProfileIOSImplIOData& operator=(const ProfileIOSImplIOData&) = delete;
 
  private:
-  friend class base::RefCountedThreadSafe<ChromeBrowserStateImplIOData>;
+  friend class base::RefCountedThreadSafe<ProfileIOSImplIOData>;
 
   struct LazyParams {
     LazyParams();
@@ -110,8 +110,8 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
     int cache_max_size;
   };
 
-  ChromeBrowserStateImplIOData();
-  ~ChromeBrowserStateImplIOData() override;
+  ProfileIOSImplIOData();
+  ~ProfileIOSImplIOData() override;
 
   void InitializeInternal(net::URLRequestContextBuilder* context_builder,
                           ProfileParams* profile_params) const override;

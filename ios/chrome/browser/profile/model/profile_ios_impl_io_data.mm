@@ -37,21 +37,21 @@
 #import "net/http/transport_security_state.h"
 #import "net/url_request/url_request_context_builder.h"
 
-ChromeBrowserStateImplIOData::Handle::Handle(ChromeBrowserState* browser_state)
-    : io_data_(new ChromeBrowserStateImplIOData),
+ProfileIOSImplIOData::Handle::Handle(ChromeBrowserState* browser_state)
+    : io_data_(new ProfileIOSImplIOData),
       browser_state_(browser_state),
       initialized_(false) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   DCHECK(browser_state);
 }
 
-ChromeBrowserStateImplIOData::Handle::~Handle() {
+ProfileIOSImplIOData::Handle::~Handle() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
   io_data_->ShutdownOnUIThread(GetAllContextGetters());
 }
 
-void ChromeBrowserStateImplIOData::Handle::Init(
+void ProfileIOSImplIOData::Handle::Init(
     const base::FilePath& cookie_path,
     const base::FilePath& cache_path,
     int cache_max_size,
@@ -75,7 +75,7 @@ void ChromeBrowserStateImplIOData::Handle::Init(
 }
 
 scoped_refptr<IOSChromeURLRequestContextGetter>
-ChromeBrowserStateImplIOData::Handle::CreateMainRequestContextGetter(
+ProfileIOSImplIOData::Handle::CreateMainRequestContextGetter(
     ProtocolHandlerMap* protocol_handlers,
     PrefService* local_state,
     IOSChromeIOThread* io_thread) const {
@@ -88,13 +88,13 @@ ChromeBrowserStateImplIOData::Handle::CreateMainRequestContextGetter(
   return main_request_context_getter_;
 }
 
-ChromeBrowserStateIOData* ChromeBrowserStateImplIOData::Handle::io_data()
+ChromeBrowserStateIOData* ProfileIOSImplIOData::Handle::io_data()
     const {
   LazyInitialize();
   return io_data_;
 }
 
-void ChromeBrowserStateImplIOData::Handle::ClearNetworkingHistorySince(
+void ProfileIOSImplIOData::Handle::ClearNetworkingHistorySince(
     base::Time time,
     base::OnceClosure completion) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
@@ -103,11 +103,11 @@ void ChromeBrowserStateImplIOData::Handle::ClearNetworkingHistorySince(
   web::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &ChromeBrowserStateImplIOData::ClearNetworkingHistorySinceOnIOThread,
+          &ProfileIOSImplIOData::ClearNetworkingHistorySinceOnIOThread,
           base::Unretained(io_data_), time, std::move(completion)));
 }
 
-void ChromeBrowserStateImplIOData::Handle::LazyInitialize() const {
+void ProfileIOSImplIOData::Handle::LazyInitialize() const {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   if (initialized_) {
     return;
@@ -121,7 +121,7 @@ void ChromeBrowserStateImplIOData::Handle::LazyInitialize() const {
 
 std::unique_ptr<
     ChromeBrowserStateIOData::IOSChromeURLRequestContextGetterVector>
-ChromeBrowserStateImplIOData::Handle::GetAllContextGetters() {
+ProfileIOSImplIOData::Handle::GetAllContextGetters() {
   IOSChromeURLRequestContextGetterMap::iterator iter;
   std::unique_ptr<IOSChromeURLRequestContextGetterVector> context_getters(
       new IOSChromeURLRequestContextGetterVector());
@@ -138,17 +138,17 @@ ChromeBrowserStateImplIOData::Handle::GetAllContextGetters() {
   return context_getters;
 }
 
-ChromeBrowserStateImplIOData::LazyParams::LazyParams() : cache_max_size(0) {}
+ProfileIOSImplIOData::LazyParams::LazyParams() : cache_max_size(0) {}
 
-ChromeBrowserStateImplIOData::LazyParams::~LazyParams() {}
+ProfileIOSImplIOData::LazyParams::~LazyParams() {}
 
-ChromeBrowserStateImplIOData::ChromeBrowserStateImplIOData()
+ProfileIOSImplIOData::ProfileIOSImplIOData()
     : ChromeBrowserStateIOData(ChromeBrowserStateType::REGULAR_BROWSER_STATE),
       app_cache_max_size_(0) {}
 
-ChromeBrowserStateImplIOData::~ChromeBrowserStateImplIOData() {}
+ProfileIOSImplIOData::~ProfileIOSImplIOData() {}
 
-void ChromeBrowserStateImplIOData::InitializeInternal(
+void ProfileIOSImplIOData::InitializeInternal(
     net::URLRequestContextBuilder* context_builder,
     ProfileParams* profile_params) const {
   // Set up a persistent store for use by the network stack on the IO thread.
@@ -186,7 +186,7 @@ void ChromeBrowserStateImplIOData::InitializeInternal(
   lazy_params_.reset();
 }
 
-void ChromeBrowserStateImplIOData::ClearNetworkingHistorySinceOnIOThread(
+void ProfileIOSImplIOData::ClearNetworkingHistorySinceOnIOThread(
     base::Time time,
     base::OnceClosure completion) {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
