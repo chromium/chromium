@@ -24,10 +24,10 @@ public class Playground {
     }
 
     public static void main(String[] args) {
-        // No error
-        // System.out.println(swappedIndirection(FirstIntDef.CONST_0, SecondIntDef.ANOTHER_0));
+        // Used to be no error, but fixed by https://crbug.com/330149608.
+        System.out.println(swappedIndirection(FirstIntDef.CONST_0, SecondIntDef.ANOTHER_0));
 
         // IntDef error
-        System.out.println(test(SecondIntDef.ANOTHER_0, FirstIntDef.CONST_0));
+        // System.out.println(test(SecondIntDef.ANOTHER_0, FirstIntDef.CONST_0));
     }
 }
