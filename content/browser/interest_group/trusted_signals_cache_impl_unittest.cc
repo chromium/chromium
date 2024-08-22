@@ -435,7 +435,7 @@ template <class PendingSignalsFetch>
 void RespondToFetchWithError(PendingSignalsFetch& trusted_signals_fetch) {
   CHECK(trusted_signals_fetch.callback);
   std::move(trusted_signals_fetch.callback)
-      .Run(base::unexpected(TrustedSignalsFetcher::ErrorInfo{kErrorMessage}));
+      .Run(base::unexpected(kErrorMessage));
 }
 
 // Single use auction_worklet::mojom::TrustedSignalsCacheClient. Requests

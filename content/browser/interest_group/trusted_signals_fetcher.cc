@@ -298,16 +298,16 @@ void TrustedSignalsFetcher::StartRequest(
 void TrustedSignalsFetcher::OnRequestComplete(
     std::unique_ptr<std::string> response_body) {
   if (!response_body) {
-    std::move(callback_).Run(base::unexpected(ErrorInfo(base::StringPrintf(
+    std::move(callback_).Run(base::unexpected(base::StringPrintf(
         "Failed to load %s error = %s.", trusted_signals_url_.spec().c_str(),
-        net::ErrorToString(simple_url_loader_->NetError()).c_str()))));
+        net::ErrorToString(simple_url_loader_->NetError()).c_str())));
     return;
   }
 
   if (simple_url_loader_->ResponseInfo()->mime_type != kResponseMediaType) {
-    std::move(callback_).Run(base::unexpected(ErrorInfo(
+    std::move(callback_).Run(base::unexpected(
         base::StringPrintf("Rejecting load of %s due to unexpected MIME type.",
-                           trusted_signals_url_.spec().c_str()))));
+                           trusted_signals_url_.spec().c_str())));
     return;
   }
 
@@ -402,8 +402,7 @@ TrustedSignalsFetcher::ParseDataDecoderResult(
   return compression_groups_out;
 }
 
-base::expected<TrustedSignalsFetcher::CompressionGroupResult,
-               TrustedSignalsFetcher::ErrorInfo>
+base::expected<TrustedSignalsFetcher::CompressionGroupResult, std::string>
 TrustedSignalsFetcher::ParseCompressionGroup(
     const base::Value& compression_group_value,
     int& compression_group_id) {
@@ -459,11 +458,11 @@ TrustedSignalsFetcher::ParseCompressionGroup(
   return result;
 }
 
-TrustedSignalsFetcher::ErrorInfo TrustedSignalsFetcher::CreateError(
+std::string TrustedSignalsFetcher::CreateError(
     const std::string& error_message) {
-  return ErrorInfo(base::StringPrintf("Failed to load %s: %s.",
-                                      trusted_signals_url_.spec().c_str(),
-                                      error_message.c_str()));
+  return base::StringPrintf("Failed to load %s: %s.",
+                            trusted_signals_url_.spec().c_str(),
+                            error_message.c_str());
 }
 
 }  // namespace content

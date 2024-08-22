@@ -44,8 +44,7 @@ namespace {
 
 // The data stored in each CompressionGroupData.
 using CachedResult =
-    base::expected<TrustedSignalsFetcher::CompressionGroupResult,
-                   TrustedSignalsFetcher::ErrorInfo>;
+    base::expected<TrustedSignalsFetcher::CompressionGroupResult, std::string>;
 
 // Bind `pending_client` and then send result` to it.
 void SendResultToClient(
@@ -62,7 +61,7 @@ void SendResultToClient(
     client->OnSuccess(result.value().compression_scheme,
                       result.value().compression_group_data);
   } else {
-    client->OnError(result.error().error_msg);
+    client->OnError(result.error());
   }
 }
 
@@ -72,9 +71,8 @@ void SendResultToClient(
 void SendNoLiveEntryErrorToClient(
     mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCacheClient>
         pending_client) {
-  SendResultToClient(
-      std::move(pending_client),
-      base::unexpected(TrustedSignalsFetcher::ErrorInfo{"Request cancelled"}));
+  SendResultToClient(std::move(pending_client),
+                     base::unexpected("Request cancelled"));
 }
 
 }  // namespace
@@ -972,9 +970,8 @@ void TrustedSignalsCacheImpl::OnFetchComplete(
         compression_group_results.clear();
 
         signals_fetch_result = base::unexpected(
-            TrustedSignalsFetcher::ErrorInfo{base::StringPrintf(
-                "Fetched signals missing compression group %i.",
-                compression_group->compression_group_id)});
+            base::StringPrintf("Fetched signals missing compression group %i.",
+                               compression_group->compression_group_id));
         break;
       }
       result = std::move(signals_fetch_result_it->second);

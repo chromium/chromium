@@ -338,7 +338,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignals404) {
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
-      result.error().error_msg,
+      result.error(),
       base::StringPrintf(
           "Failed to load %s error = net::ERR_HTTP_RESPONSE_CODE_FAILURE.",
           TrustedBiddingSignalsUrl().spec().c_str()));
@@ -355,7 +355,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsRedirect) {
   ASSERT_FALSE(result.has_value());
   // RedirectMode::kError results in ERR_FAILED errors on redirects, which
   // results in rather unhelpful error messages.
-  EXPECT_EQ(result.error().error_msg,
+  EXPECT_EQ(result.error(),
             base::StringPrintf("Failed to load %s error = net::ERR_FAILED.",
                                server_redirect_url.spec().c_str()));
 }
@@ -367,7 +367,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMimeType) {
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
-      result.error().error_msg,
+      result.error(),
       base::StringPrintf("Rejecting load of %s due to unexpected MIME type.",
                          TrustedBiddingSignalsUrl().spec().c_str()));
   ValidateRequestBody(kBasicBiddingSignalsRequestBody);
@@ -384,7 +384,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCanSetNoCookies) {
 
   // Request should have failed due to a missing MIME type.
   EXPECT_EQ(
-      result.error().error_msg,
+      result.error(),
       base::StringPrintf("Rejecting load of %s due to unexpected MIME type.",
                          set_cookie_url.spec().c_str()));
 
@@ -749,7 +749,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsResponseBodyShorterThanHeader) {
     auto result =
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
     ASSERT_FALSE(result.has_value());
-    EXPECT_EQ(result.error().error_msg,
+    EXPECT_EQ(result.error(),
               base::StringPrintf(
                   "Failed to load %s: Response body is shorter than a "
                   "message/ad-auction-trusted-signals-response header.",
@@ -801,7 +801,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCompressionSchemeUnsupported) {
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
     ASSERT_FALSE(result.has_value());
     EXPECT_EQ(
-        result.error().error_msg,
+        result.error(),
         base::StringPrintf(
             "Failed to load %s: Unsupported compression scheme: %u.",
             TrustedBiddingSignalsUrl().spec().c_str(), compression_scheme));
@@ -838,7 +838,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsAdvertisedLengthTooLong) {
     auto result =
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
     ASSERT_FALSE(result.has_value());
-    EXPECT_EQ(result.error().error_msg,
+    EXPECT_EQ(result.error(),
               base::StringPrintf(
                   "Failed to load %s: Length header exceeds body size.",
                   TrustedBiddingSignalsUrl().spec().c_str()));
@@ -855,7 +855,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsAdvertisedLengthTooShort) {
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
-      result.error().error_msg,
+      result.error(),
       base::StringPrintf("Failed to load %s: Failed to parse response as CBOR.",
                          TrustedBiddingSignalsUrl().spec().c_str()));
   ValidateRequestBody(kBasicBiddingSignalsRequestBody);
@@ -909,7 +909,7 @@ TEST_F(TrustedSignalsFetcherTest, NotCbor) {
     auto result =
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
     ASSERT_FALSE(result.has_value());
-    EXPECT_EQ(result.error().error_msg,
+    EXPECT_EQ(result.error(),
               base::StringPrintf(
                   "Failed to load %s: Failed to parse response as CBOR.",
                   TrustedBiddingSignalsUrl().spec().c_str()));
@@ -942,7 +942,7 @@ TEST_F(TrustedSignalsFetcherTest, NotCborMap) {
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
     ASSERT_FALSE(result.has_value());
     EXPECT_EQ(
-        result.error().error_msg,
+        result.error(),
         base::StringPrintf("Failed to load %s: Response body is not a map.",
                            TrustedBiddingSignalsUrl().spec().c_str()));
     ValidateRequestBody(kBasicBiddingSignalsRequestBody);
@@ -956,7 +956,7 @@ TEST_F(TrustedSignalsFetcherTest, NoCompressionGroupMap) {
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
-      result.error().error_msg,
+      result.error(),
       base::StringPrintf(
           "Failed to load %s: Response is missing compressionGroups array.",
           TrustedBiddingSignalsUrl().spec().c_str()));
@@ -971,7 +971,7 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupsNotArray) {
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
-      result.error().error_msg,
+      result.error(),
       base::StringPrintf(
           "Failed to load %s: Response is missing compressionGroups array.",
           TrustedBiddingSignalsUrl().spec().c_str()));
@@ -999,7 +999,7 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupNotMap) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().error_msg,
+  EXPECT_EQ(result.error(),
             base::StringPrintf(
                 "Failed to load %s: Compression group is not of type map.",
                 TrustedBiddingSignalsUrl().spec().c_str()));
@@ -1061,7 +1061,7 @@ TEST_F(TrustedSignalsFetcherTest,
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
     ASSERT_FALSE(result.has_value());
     EXPECT_EQ(
-        result.error().error_msg,
+        result.error(),
         base::StringPrintf("Failed to load %s: Compression group must have a "
                            "non-negative integer compressionGroupId.",
                            TrustedBiddingSignalsUrl().spec().c_str()));
@@ -1116,7 +1116,7 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithBadOrNoContent) {
     auto result =
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
     ASSERT_FALSE(result.has_value());
-    EXPECT_EQ(result.error().error_msg,
+    EXPECT_EQ(result.error(),
               base::StringPrintf("Failed to load %s: Compression group %" PRIuS
                                  " missing content string.",
                                  TrustedBiddingSignalsUrl().spec().c_str(), i));
@@ -1164,7 +1164,7 @@ TEST_F(TrustedSignalsFetcherTest, CompressionGroupWithBadTtl) {
     auto result =
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
     ASSERT_FALSE(result.has_value());
-    EXPECT_EQ(result.error().error_msg,
+    EXPECT_EQ(result.error(),
               base::StringPrintf("Failed to load %s: Compression group %" PRIuS
                                  " ttlMs value is not an integer.",
                                  TrustedBiddingSignalsUrl().spec().c_str(), i));
@@ -1373,7 +1373,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsDuplicateCompressionGroups) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().error_msg,
+  EXPECT_EQ(result.error(),
             base::StringPrintf("Failed to load %s: Response contains two "
                                "compression groups with id 0.",
                                TrustedBiddingSignalsUrl().spec().c_str()));
@@ -1659,7 +1659,7 @@ TEST_F(TrustedSignalsFetcherTest,
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
-      result.error().error_msg,
+      result.error(),
       base::StringPrintf(
           "Failed to load %s: Compression group 1 missing content string.",
           TrustedBiddingSignalsUrl().spec().c_str()));

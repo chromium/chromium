@@ -127,15 +127,10 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // A map of compression group ids to results, in the case of success.
   using CompressionGroupResultMap = std::map<int, CompressionGroupResult>;
 
-  // The result type in the case of an error. Errors don't have a TTL.
-  struct CONTENT_EXPORT ErrorInfo {
-    std::string error_msg;
-  };
-
   // The result of a fetch. Either the entire fetch succeeds or it fails with a
   // single error.
   using SignalsFetchResult =
-      base::expected<CompressionGroupResultMap, ErrorInfo>;
+      base::expected<CompressionGroupResultMap, std::string>;
 
   using Callback = base::OnceCallback<void(SignalsFetchResult)>;
 
@@ -188,13 +183,14 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // array of the parsed CBOR value. On success, returns a
   // CompressionGroupResult and sets `compression_group_id` to the ID from the
   // passed in value. On failure, leaves `compression_group_id` alone, and
-  // returns an ErrorInfo.
-  base::expected<CompressionGroupResult, ErrorInfo> ParseCompressionGroup(
+  // returns a string.
+  base::expected<CompressionGroupResult, std::string> ParseCompressionGroup(
       const base::Value& compression_group_value,
       int& compression_group_id);
 
-  // Returns an ErrorInfo, prefixing the passed in message with the URL.
-  ErrorInfo CreateError(const std::string& error_message);
+  // Returns a string error message, prefixing the passed in message with the
+  // URL.
+  std::string CreateError(const std::string& error_message);
 
   // The URL being fetched. Cached for using in error strings.
   GURL trusted_signals_url_;
