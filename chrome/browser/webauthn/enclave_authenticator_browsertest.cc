@@ -2742,7 +2742,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Enroll) {
 }
 
 // Tests enrolling an iCloud recovery key when there is already a recovery key
-// stored in iCloud keychain. The existing key should be added to the SDS.
+// stored in iCloud keychain. A new key should be created.
+// Regression test for https://crbug.com/360321350.
 IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest,
                        EnrollWithExistingKeyInICloud) {
   // Create an iCloud recovery key.
@@ -2751,9 +2752,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest,
   device::enclave::ICloudRecoveryKey::Create(
       future.GetCallback(), kICloudKeychainRecoveryKeyAccessGroup);
   EXPECT_TRUE(future.Wait());
-  std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_key =
+  std::unique_ptr<device::enclave::ICloudRecoveryKey> existing_icloud_key =
       future.Take();
-  ASSERT_TRUE(icloud_key);
+  ASSERT_TRUE(existing_icloud_key);
 
   // Do a make credential request and enroll a PIN.
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
@@ -2794,11 +2795,11 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest,
       });
   ASSERT_NE(icloud_member, security_domain_service_->members().end());
 
-  // Make sure it matches the existing key.
-  EXPECT_EQ(trusted_vault::ProtoStringToBytes(icloud_member->public_key()),
-            icloud_key->key()->public_key().ExportToBytes());
+  // Make sure it does not match the existing key.
+  EXPECT_NE(trusted_vault::ProtoStringToBytes(icloud_member->public_key()),
+            existing_icloud_key->key()->public_key().ExportToBytes());
 
-  // No additional key should be stored in iCloud keychain.
+  // Instead, a new key should have been created.
   base::test::TestFuture<
       std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>>
       list_future;
@@ -2807,7 +2808,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest,
   EXPECT_TRUE(list_future.Wait());
   std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
       recovery_keys = list_future.Take();
-  EXPECT_EQ(recovery_keys.size(), 1u);
+  EXPECT_EQ(recovery_keys.size(), 2u);
 }
 
 // Tests enrolling an iCloud recovery key, then recovering from it. Recovery is
