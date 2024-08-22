@@ -1,0 +1,38 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("input_method") {
+  sources = [
+    "ime_controller_client_impl.cc",
+    "ime_controller_client_impl.h",
+  ]
+
+  public_deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash/input_method/ui",
+    "//ui/base/ime/ash",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "ime_controller_client_impl_unittest.cc" ]
+
+  deps = [
+    ":input_method",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui/ash",
+    "//testing/gtest",
+    "//ui/base:test_support",
+    "//ui/base/ime/ash",
+  ]
+}

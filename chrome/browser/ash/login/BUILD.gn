@@ -166,6 +166,7 @@ static_library("login") {
     "//chrome/browser/ash/system",
     "//chrome/browser/profiles",
     "//chrome/browser/sync",
+    "//chrome/browser/ui/ash/input_method",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/login/osauth",

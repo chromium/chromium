@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_IME_CONTROLLER_CLIENT_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_IME_CONTROLLER_CLIENT_IMPL_H_
+#ifndef CHROME_BROWSER_UI_ASH_INPUT_METHOD_IME_CONTROLLER_CLIENT_IMPL_H_
+#define CHROME_BROWSER_UI_ASH_INPUT_METHOD_IME_CONTROLLER_CLIENT_IMPL_H_
 
 #include "ash/public/cpp/ime_controller.h"
 #include "ash/public/cpp/ime_info.h"
@@ -95,4 +95,4 @@ class ImeControllerClientImpl
       observation_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_IME_CONTROLLER_CLIENT_IMPL_H_
+#endif  // CHROME_BROWSER_UI_ASH_INPUT_METHOD_IME_CONTROLLER_CLIENT_IMPL_H_
