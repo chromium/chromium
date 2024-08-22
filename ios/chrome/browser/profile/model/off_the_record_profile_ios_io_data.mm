@@ -39,14 +39,14 @@ void OnMemoryWarningReceived(CFNotificationCenterRef center,
                              CFStringRef name,
                              const void* object,
                              CFDictionaryRef userInfo) {
-  OffTheRecordChromeBrowserStateIOData::Handle* handle =
-      (OffTheRecordChromeBrowserStateIOData::Handle*)observer;
+  OffTheRecordProfileIOSIOData::Handle* handle =
+      (OffTheRecordProfileIOSIOData::Handle*)observer;
   handle->DoomIncognitoCache();
 }
 
 }  // namespace
 
-void OffTheRecordChromeBrowserStateIOData::Handle::DoomIncognitoCache() {
+void OffTheRecordProfileIOSIOData::Handle::DoomIncognitoCache() {
   // The cache for the incognito profile is in RAM.
   scoped_refptr<net::URLRequestContextGetter> getter =
       main_request_context_getter_;
@@ -63,9 +63,9 @@ void OffTheRecordChromeBrowserStateIOData::Handle::DoomIncognitoCache() {
       }));
 }
 
-OffTheRecordChromeBrowserStateIOData::Handle::Handle(
+OffTheRecordProfileIOSIOData::Handle::Handle(
     ChromeBrowserState* browser_state)
-    : io_data_(new OffTheRecordChromeBrowserStateIOData()),
+    : io_data_(new OffTheRecordProfileIOSIOData()),
       browser_state_(browser_state),
       initialized_(false) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
@@ -74,7 +74,7 @@ OffTheRecordChromeBrowserStateIOData::Handle::Handle(
       browser_state->GetStatePath().Append(kIOSChromeCookieFilename);
 }
 
-OffTheRecordChromeBrowserStateIOData::Handle::~Handle() {
+OffTheRecordProfileIOSIOData::Handle::~Handle() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
   // Stop listening to notifications.
@@ -85,7 +85,7 @@ OffTheRecordChromeBrowserStateIOData::Handle::~Handle() {
 }
 
 scoped_refptr<IOSChromeURLRequestContextGetter>
-OffTheRecordChromeBrowserStateIOData::Handle::CreateMainRequestContextGetter(
+OffTheRecordProfileIOSIOData::Handle::CreateMainRequestContextGetter(
     ProtocolHandlerMap* protocol_handlers) const {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   LazyInitialize();
@@ -95,13 +95,12 @@ OffTheRecordChromeBrowserStateIOData::Handle::CreateMainRequestContextGetter(
   return main_request_context_getter_;
 }
 
-ChromeBrowserStateIOData*
-OffTheRecordChromeBrowserStateIOData::Handle::io_data() const {
+ProfileIOSIOData* OffTheRecordProfileIOSIOData::Handle::io_data() const {
   LazyInitialize();
   return io_data_;
 }
 
-void OffTheRecordChromeBrowserStateIOData::Handle::LazyInitialize() const {
+void OffTheRecordProfileIOSIOData::Handle::LazyInitialize() const {
   if (initialized_) {
     return;
   }
@@ -120,8 +119,8 @@ void OffTheRecordChromeBrowserStateIOData::Handle::LazyInitialize() const {
 }
 
 std::unique_ptr<
-    ChromeBrowserStateIOData::IOSChromeURLRequestContextGetterVector>
-OffTheRecordChromeBrowserStateIOData::Handle::GetAllContextGetters() {
+    ProfileIOSIOData::IOSChromeURLRequestContextGetterVector>
+OffTheRecordProfileIOSIOData::Handle::GetAllContextGetters() {
   std::unique_ptr<IOSChromeURLRequestContextGetterVector> context_getters(
       new IOSChromeURLRequestContextGetterVector());
   if (main_request_context_getter_.get()) {
@@ -131,13 +130,13 @@ OffTheRecordChromeBrowserStateIOData::Handle::GetAllContextGetters() {
   return context_getters;
 }
 
-OffTheRecordChromeBrowserStateIOData::OffTheRecordChromeBrowserStateIOData()
-    : ChromeBrowserStateIOData(
+OffTheRecordProfileIOSIOData::OffTheRecordProfileIOSIOData()
+    : ProfileIOSIOData(
           ChromeBrowserStateType::INCOGNITO_BROWSER_STATE) {}
 
-OffTheRecordChromeBrowserStateIOData::~OffTheRecordChromeBrowserStateIOData() {}
+OffTheRecordProfileIOSIOData::~OffTheRecordProfileIOSIOData() {}
 
-void OffTheRecordChromeBrowserStateIOData::InitializeInternal(
+void OffTheRecordProfileIOSIOData::InitializeInternal(
     net::URLRequestContextBuilder* context_builder,
     ProfileParams* profile_params) const {
   IOSChromeIOThread* const io_thread = profile_params->io_thread;

@@ -34,7 +34,6 @@ source_set("model") {
     "off_the_record_chrome_browser_state_impl.h",
     "off_the_record_chrome_browser_state_impl.mm",
     "off_the_record_chrome_browser_state_io_data.h",
-    "off_the_record_chrome_browser_state_io_data.mm",
   ]
 
   deps = [
