@@ -51,7 +51,7 @@
         "policies": {},
         "prefs": {
           "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
-            "value": 2
+            "value": 1
           }
         }
       }

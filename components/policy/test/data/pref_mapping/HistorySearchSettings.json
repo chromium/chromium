@@ -50,7 +50,7 @@
         "policies": {},
         "prefs": {
           "optimization_guide.model_execution.history_search_enterprise_policy_allowed": {
-            "value": 2
+            "value": 1
           }
         }
       }
