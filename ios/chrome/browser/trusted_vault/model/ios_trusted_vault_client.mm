@@ -31,13 +31,14 @@ IOSTrustedVaultClient::~IOSTrustedVaultClient() = default;
 void IOSTrustedVaultClient::AddObserver(Observer* observer) {
   std::string security_domain_string =
       GetSecurityDomainPath(security_domain_id_);
-  backend_->AddObserver(observer, security_domain_string);
+  backend_->AddObserver(observer, security_domain_string, security_domain_id_);
 }
 
 void IOSTrustedVaultClient::RemoveObserver(Observer* observer) {
   std::string security_domain_string =
       GetSecurityDomainPath(security_domain_id_);
-  backend_->RemoveObserver(observer, security_domain_string);
+  backend_->RemoveObserver(observer, security_domain_string,
+                           security_domain_id_);
 }
 
 void IOSTrustedVaultClient::FetchKeys(

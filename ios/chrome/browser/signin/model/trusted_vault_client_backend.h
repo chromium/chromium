@@ -16,6 +16,7 @@
 #import "base/observer_list.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/trusted_vault/trusted_vault_client.h"
+#import "components/trusted_vault/trusted_vault_server_constants.h"
 
 @protocol SystemIdentity;
 
@@ -51,9 +52,12 @@ class TrustedVaultClientBackend : public KeyedService {
   ~TrustedVaultClientBackend() override;
 
   // Adds/removes observers.
-  void AddObserver(Observer* observer, const std::string& security_domain_path);
+  void AddObserver(Observer* observer,
+                   const std::string& security_domain_path,
+                   trusted_vault::SecurityDomainId security_domain_id);
   void RemoveObserver(Observer* observer,
-                      const std::string& security_domain_path);
+                      const std::string& security_domain_path,
+                      trusted_vault::SecurityDomainId security_domain_id);
 
   // Registers a delegate-like callback that implements device registration
   // verification.
@@ -66,23 +70,40 @@ class TrustedVaultClientBackend : public KeyedService {
   // `callback` with the fetched keys.
   virtual void FetchKeys(id<SystemIdentity> identity,
                          const std::string& security_domain_path,
-                         KeyFetchedCallback completion) = 0;
+                         trusted_vault::SecurityDomainId security_domain_id,
+                         KeyFetchedCallback completion);
+  // Deprecated
+  virtual void FetchKeys(id<SystemIdentity> identity,
+                         const std::string& security_domain_path,
+                         KeyFetchedCallback completion);
 
   // Invoked when the result of FetchKeys() contains keys that are not
   // up-to-date. During the execution, before `callback` is invoked, the
   // behavior is unspecified if FetchKeys() is invoked, that is, FetchKeys()
   // may or may not treat existing keys as stale (only guaranteed upon
   // completion of MarkLocalKeysAsStale()).
+  virtual void MarkLocalKeysAsStale(
+      id<SystemIdentity> identity,
+      const std::string& security_domain_path,
+      trusted_vault::SecurityDomainId security_domain_id,
+      base::OnceClosure completion);
+  // Deprecated
   virtual void MarkLocalKeysAsStale(id<SystemIdentity> identity,
                                     const std::string& security_domain_path,
-                                    base::OnceClosure completion) = 0;
+                                    base::OnceClosure completion);
 
   // Returns whether recoverability of the keys is degraded and user action is
   // required to add a new method.
   virtual void GetDegradedRecoverabilityStatus(
       id<SystemIdentity> identity,
       const std::string& security_domain_path,
-      base::OnceCallback<void(bool)> completion) = 0;
+      trusted_vault::SecurityDomainId security_domain_id,
+      base::OnceCallback<void(bool)> completion);
+  // Deprecated
+  virtual void GetDegradedRecoverabilityStatus(
+      id<SystemIdentity> identity,
+      const std::string& security_domain_path,
+      base::OnceCallback<void(bool)> completion);
 
   // Presents the trusted vault key reauthentication UI for `identity` for the
   // purpose of extending the set of keys returned via FetchKeys(). Once the
@@ -91,8 +112,15 @@ class TrustedVaultClientBackend : public KeyedService {
   virtual CancelDialogCallback Reauthentication(
       id<SystemIdentity> identity,
       const std::string& security_domain_path,
+      trusted_vault::SecurityDomainId security_domain_id,
       UIViewController* presenting_view_controller,
-      CompletionBlock completion) = 0;
+      CompletionBlock completion);
+  // Deprecated
+  virtual CancelDialogCallback Reauthentication(
+      id<SystemIdentity> identity,
+      const std::string& security_domain_path,
+      UIViewController* presenting_view_controller,
+      CompletionBlock completion);
 
   // Presents the trusted vault key reauthentication UI for `identity` for the
   // purpose of improving recoverability as returned via
@@ -102,14 +130,27 @@ class TrustedVaultClientBackend : public KeyedService {
   virtual CancelDialogCallback FixDegradedRecoverability(
       id<SystemIdentity> identity,
       const std::string& security_domain_path,
+      trusted_vault::SecurityDomainId security_domain_id,
       UIViewController* presenting_view_controller,
-      CompletionBlock completion) = 0;
+      CompletionBlock completion);
+  // Deprecated
+  virtual CancelDialogCallback FixDegradedRecoverability(
+      id<SystemIdentity> identity,
+      const std::string& security_domain_path,
+      UIViewController* presenting_view_controller,
+      CompletionBlock completion);
 
   // Clears local data belonging to `identity`, such as shared keys. This
   // excludes the physical client's key pair, which remains unchanged.
+  virtual void ClearLocalData(
+      id<SystemIdentity> identity,
+      const std::string& security_domain_path,
+      trusted_vault::SecurityDomainId security_domain_id,
+      base::OnceCallback<void(bool)> completion);
+  // Deprecated
   virtual void ClearLocalData(id<SystemIdentity> identity,
                               const std::string& security_domain_path,
-                              base::OnceCallback<void(bool)> completion) = 0;
+                              base::OnceCallback<void(bool)> completion);
 
   // Returns the member public key used to enroll the local device.
   virtual void GetPublicKeyForIdentity(id<SystemIdentity> identity,
@@ -117,7 +158,16 @@ class TrustedVaultClientBackend : public KeyedService {
 
  protected:
   // Functions to notify observers.
+  void NotifyKeysChangedWithTwoSecurityDomainParameter(
+      const std::string& security_domain_path,
+      trusted_vault::SecurityDomainId security_domain_id);
+  // Deprecated
   void NotifyKeysChanged(const std::string& security_domain_path);
+
+  void NotifyRecoverabilityChangedWithTwoSecurityDomainParameter(
+      const std::string& security_domain_path,
+      trusted_vault::SecurityDomainId security_domain_id);
+  // Deprecated
   void NotifyRecoverabilityChanged(const std::string& security_domain_path);
 
  private:
