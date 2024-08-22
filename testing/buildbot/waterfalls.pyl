@@ -122,6 +122,20 @@
         'cros_dut_pool': 'vmlab',
         'run_cft': True,
       },
+      'chromeos-trogdor-chrome': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'os_type': 'chromeos',
+        'cros_board': 'trogdor',
+      },
+      'chromeos-trogdor-chrome-tests': {
+        'test_suites': {
+          'skylab_tests': 'chromeos_trogdor_skylab_tests',
+        },
+        'os_type': 'chromeos',
+        'cros_board': 'trogdor',
+      },
       'chromeos-volteer-chrome-skylab': {
         'additional_compile_targets': [
           'chromiumos_preflight',
@@ -6368,6 +6382,7 @@
         'os_type': 'chromeos',
         'cros_board': 'jacuzzi',
       },
+      # TODO(b/330335155): Remove after infra config changed to non-fyi builder.
       'chromeos-trogdor-chrome-skylab-fyi': {
         'additional_compile_targets': [
           'chromiumos_preflight',
