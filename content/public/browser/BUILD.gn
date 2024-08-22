@@ -312,6 +312,8 @@ source_set("browser_sources") {
     "permission_request_description.h",
     "permission_result.cc",
     "permission_result.h",
+    "permission_status_subscription.cc",
+    "permission_status_subscription.h",
     "picture_in_picture_window_controller.h",
     "platform_notification_context.h",
     "platform_notification_service.h",

@@ -210,19 +210,5 @@ CastPermissionManager::GetPermissionStatusForEmbeddedRequester(
                                      requesting_origin.GetURL());
 }
 
-CastPermissionManager::SubscriptionId
-CastPermissionManager::SubscribeToPermissionStatusChange(
-    blink::PermissionType permission,
-    content::RenderProcessHost* render_process_host,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    bool should_include_device_status,
-    base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback) {
-  return SubscriptionId();
-}
-
-void CastPermissionManager::UnsubscribeFromPermissionStatusChange(
-    SubscriptionId subscription_id) {}
-
 }  // namespace shell
 }  // namespace chromecast

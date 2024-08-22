@@ -178,7 +178,9 @@ class PermissionControllerImplTest : public ::testing::Test {
   PermissionControllerImplTest& operator=(const PermissionControllerImplTest&) =
       delete;
 
-  ~PermissionControllerImplTest() override {}
+  ~PermissionControllerImplTest() override {
+    browser_context_.SetPermissionControllerDelegate(nullptr);
+  }
 
   void SetUp() override {
     ON_CALL(*mock_manager(), IsPermissionOverridable)
