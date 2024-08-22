@@ -46,8 +46,8 @@ PrefService* DemographicsClient::GetProfilePrefs() {
 
 int DemographicsClient::GetNumberOfProfilesOnDisk() {
   return GetApplicationContext()
-      ->GetChromeBrowserStateManager()
-      ->GetBrowserStateInfoCache()
+      ->GetProfileManager()
+      ->GetProfileAttributesStorage()
       ->GetNumberOfProfiles();
 }
 

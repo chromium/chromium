@@ -520,9 +520,10 @@ SystemIdentityManager* ApplicationContextImpl::GetSystemIdentityManager() {
 AccountProfileMapper* ApplicationContextImpl::GetAccountProfileMapper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!account_profile_mapper_) {
-    ChromeBrowserStateManager* manager = GetChromeBrowserStateManager();
-    BrowserStateInfoCache* info_cache = manager->GetBrowserStateInfoCache();
-    size_t profile_count = info_cache->GetNumberOfProfiles();
+    size_t profile_count = GetProfileManager()
+                               ->GetProfileAttributesStorage()
+                               ->GetNumberOfProfiles();
+
     if (profile_count == 0) {
       // This case can happens on the first startup.
       // TODO(crbug.com/331783685): AccountProfileMapper needs to listen for

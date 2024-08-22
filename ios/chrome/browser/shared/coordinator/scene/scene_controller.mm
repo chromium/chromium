@@ -1016,8 +1016,8 @@ void OnListFamilyMembersResponse(
       self.sceneState.appState.mainProfile.browserState;
 
   GetApplicationContext()
-      ->GetChromeBrowserStateManager()
-      ->GetBrowserStateInfoCache()
+      ->GetProfileManager()
+      ->GetProfileAttributesStorage()
       ->SetBrowserStateForSceneID(
           base::SysNSStringToUTF8(sceneState.sceneSessionID),
           browserState->GetBrowserStateName());
