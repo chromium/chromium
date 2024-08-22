@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.view.View;
 import android.widget.RadioButton;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -232,6 +233,14 @@ public class VoiceMenuSheetContentUnitTest {
         assertEquals("English (United States)", getText(mMenu.getItem(0), R.id.item_header));
         assertEquals("", getText(mMenu.getItem(1), R.id.item_header));
         assertEquals("English (India)", getText(mMenu.getItem(2), R.id.item_header));
+    }
+
+    @Test
+    public void testGetVerticalScrollOffset() {
+        ScrollView scrollView = mMenu.findViewById(R.id.items_scroll_view);
+        scrollView.setPadding(0, 100, 0, 100);
+        scrollView.scrollTo(0, 100);
+        assertEquals(100, mContent.getVerticalScrollOffset());
     }
 
     private static PlaybackVoice createVoice(String id, String displayName) {

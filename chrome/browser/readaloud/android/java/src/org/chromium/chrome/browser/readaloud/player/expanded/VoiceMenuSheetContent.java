@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Locale;
 
 /** Bottom sheet content for Read Aloud voices menu. */
-class VoiceMenuSheetContent extends MenuSheetContent {
+class VoiceMenuSheetContent extends SingleMenuSheetContent {
     private static final String TAG = "ReadAloudVoices";
     private final Context mContext;
     private PlaybackVoice[] mVoices;

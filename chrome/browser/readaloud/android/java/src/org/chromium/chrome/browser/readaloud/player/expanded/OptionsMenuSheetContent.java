@@ -9,7 +9,6 @@ import android.content.res.Resources;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
@@ -21,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Bottom sheet content for Read Aloud expanded player advanced options menu. */
-class OptionsMenuSheetContent extends MenuSheetContent {
+class OptionsMenuSheetContent extends SingleMenuSheetContent {
     private static final String TAG = "ReadAloudOptions";
     private final Context mContext;
     private final PropertyModel mModel;
@@ -44,23 +43,7 @@ class OptionsMenuSheetContent extends MenuSheetContent {
         super(context, parent, bottomSheetController, R.string.readaloud_options_menu_title);
         mContext = context;
         mModel = model;
-        setUp();
-    }
 
-    @VisibleForTesting
-    OptionsMenuSheetContent(
-            Context context,
-            BottomSheetContent parent,
-            BottomSheetController bottomSheetController,
-            Menu menu,
-            PropertyModel model) {
-        super(context, parent, bottomSheetController, R.string.readaloud_options_menu_title, menu);
-        mContext = context;
-        mModel = model;
-        setUp();
-    }
-
-    private void setUp() {
         Resources res = mContext.getResources();
 
         mMenu.addItem(

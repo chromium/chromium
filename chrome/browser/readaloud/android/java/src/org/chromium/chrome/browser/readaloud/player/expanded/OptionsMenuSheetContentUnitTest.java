@@ -53,10 +53,10 @@ public class OptionsMenuSheetContentUnitTest {
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         // Need to set theme before inflating layout.
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mMenu = (Menu) mActivity.getLayoutInflater().inflate(R.layout.readaloud_menu, null);
         mContent =
                 new OptionsMenuSheetContent(
-                        mActivity, mBottomSheetContent, mBottomSheetController, mMenu, mModel);
+                        mActivity, mBottomSheetContent, mBottomSheetController, mModel);
+        mMenu = mContent.getMenuForTesting();
     }
 
     @Test

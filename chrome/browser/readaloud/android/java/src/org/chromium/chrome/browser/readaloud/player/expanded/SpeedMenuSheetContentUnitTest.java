@@ -9,11 +9,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.content.Context;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,23 +37,21 @@ public class SpeedMenuSheetContentUnitTest {
     @Mock private InteractionHandler mHandler;
     private PropertyModel mModel;
     private Activity mActivity;
-    private Context mContext;
     private Menu mMenu;
     private SpeedMenuSheetContent mContent;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mContext = ApplicationProvider.getApplicationContext();
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         // Need to set theme before inflating layout.
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mMenu = (Menu) mActivity.getLayoutInflater().inflate(R.layout.readaloud_menu, null);
         mModel = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
         mModel.set(PlayerProperties.SPEED, 1.0f);
         mContent =
                 new SpeedMenuSheetContent(
-                        mContext, mBottomSheetContent, mBottomSheetController, mMenu, mModel);
+                        mActivity, mBottomSheetContent, mBottomSheetController, mModel);
+        mMenu = mContent.getMenuForTesting();
     }
 
     @Test

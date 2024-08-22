@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
-import android.widget.ScrollView;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.core.app.ApplicationProvider;
@@ -40,6 +40,31 @@ public class MenuSheetContentUnitTest {
     private Activity mActivity;
     private Context mContext;
     private Menu mMenu;
+
+    static class TestMenuSheetContent extends MenuSheetContent {
+        TestMenuSheetContent(
+                BottomSheetContent parent, BottomSheetController bottomSheetController) {
+            super(parent, bottomSheetController);
+        }
+
+        @Override
+        public View getContentView() {
+            return null;
+        }
+
+        @Override
+        public int getVerticalScrollOffset() {
+            return 0;
+        }
+
+        @Override
+        public int getSheetContentDescriptionStringId() {
+            // "Options menu"
+            // Automatically appended: "Swipe down to close."
+            return R.string.readaloud_options_menu_description;
+        }
+    }
+
     private MenuSheetContent mContent;
 
     @Before
@@ -49,10 +74,7 @@ public class MenuSheetContentUnitTest {
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         // Need to set theme before inflating layout.
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mMenu = (Menu) mActivity.getLayoutInflater().inflate(R.layout.readaloud_menu, null);
-        mContent =
-                new MenuSheetContent(
-                        mContext, mBottomSheetContent, mBottomSheetController, 0, mMenu);
+        mContent = new TestMenuSheetContent(mBottomSheetContent, mBottomSheetController);
     }
 
     @Test
@@ -75,21 +97,8 @@ public class MenuSheetContentUnitTest {
     }
 
     @Test
-    public void testGetContentView() {
-        assertEquals(mContent.getContentView(), mMenu);
-    }
-
-    @Test
     public void testGetToolbarView() {
         assertEquals(mContent.getToolbarView(), null);
-    }
-
-    @Test
-    public void testGetVerticalScrollOffset() {
-        ScrollView scrollView = mMenu.findViewById(R.id.items_scroll_view);
-        scrollView.setPadding(0, 100, 0, 100);
-        scrollView.scrollTo(0, 100);
-        assertEquals(100, mContent.getVerticalScrollOffset());
     }
 
     @Test
