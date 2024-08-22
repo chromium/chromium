@@ -452,13 +452,10 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
                                metavar='FILE',
                                help='read filters for tests to run')
     testing_group.add_argument(
-        '--exclude-test-list',
-        dest='exclude_test_lists',
+        '--inverted-test-launcher-filter-file',
         action='append',
         metavar='FILE',
-        help=('read test (directories) that should not run '
-              '(the most specific prefix among `--(exclude-)test-list` and '
-              'the positional arguments wins)'))
+        help=('Filters in the file will be inverted before applied.'))
     testing_group.add_argument(
         '--isolated-script-test-filter-file',
         '--test-launcher-filter-file',

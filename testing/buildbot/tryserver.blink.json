@@ -61,7 +61,7 @@
       },
       {
         "args": [
-          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
         ],
         "merge": {
           "args": [
@@ -315,7 +315,7 @@
       },
       {
         "args": [
-          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
         ],
         "merge": {
           "args": [
@@ -403,7 +403,7 @@
       },
       {
         "args": [
-          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
         ],
         "merge": {
           "args": [
@@ -491,7 +491,7 @@
       },
       {
         "args": [
-          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
         ],
         "merge": {
           "args": [
@@ -579,7 +579,7 @@
       },
       {
         "args": [
-          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
         ],
         "merge": {
           "args": [
@@ -665,7 +665,7 @@
       },
       {
         "args": [
-          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
         ],
         "merge": {
           "args": [
@@ -751,7 +751,7 @@
       },
       {
         "args": [
-          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
         ],
         "merge": {
           "args": [
@@ -837,7 +837,7 @@
       },
       {
         "args": [
-          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
         ],
         "merge": {
           "args": [
@@ -923,7 +923,7 @@
       },
       {
         "args": [
-          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
         ],
         "merge": {
           "args": [
@@ -1009,7 +1009,7 @@
       },
       {
         "args": [
-          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
         ],
         "merge": {
           "args": [
@@ -1095,7 +1095,7 @@
       },
       {
         "args": [
-          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
         ],
         "merge": {
           "args": [
@@ -1181,7 +1181,7 @@
       },
       {
         "args": [
-          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
         ],
         "merge": {
           "args": [
@@ -1269,7 +1269,7 @@
       },
       {
         "args": [
-          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
         ],
         "merge": {
           "args": [
@@ -1356,7 +1356,7 @@
       },
       {
         "args": [
-          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
         ],
         "merge": {
           "args": [

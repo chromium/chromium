@@ -398,8 +398,9 @@ class WPTAdapter:
             self.paths, all_test_names, _ = finder.find_tests(
                 self.paths,
                 test_lists=self.options.test_list,
-                exclude_test_lists=self.options.exclude_test_lists,
                 filter_files=self.options.isolated_script_test_filter_file,
+                inverted_filter_files=self.options.
+                inverted_test_launcher_filter_file,
                 fastest_percentile=None,
                 filters=self.options.isolated_script_test_filter)
         except IOError:

@@ -529,7 +529,7 @@ targets.tests.isolated_script_test(
         "has_native_resultdb_integration",
     ],
     args = [
-        "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter",
+        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
     ],
 )
 
