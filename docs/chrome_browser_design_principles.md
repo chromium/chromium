@@ -78,6 +78,16 @@ code. Some code is used on Android.
           from production behavior, and logic is added to production code to
           work around test-only behaviors.
 
+```cpp
+// Do not do this:
+FooFeature(Browser* browser) : browser_(browser) {}
+FooFeature::DoStuff() { DoStuffWith(browser_->profile()->GetPrefs()); }
+
+// Do this:
+FooFeature(PrefService* prefs) : prefs_(prefs) {}
+FooFeature::DoStuff() { DoStuffWith(prefs_); }
+```
+
 * Features should have a core controller with precise lifetime semantics. The
   core controller for most desktop features should be owned and instantiated by
   one of the following classes:
@@ -142,6 +152,48 @@ code. Some code is used on Android.
             * This is not making any statements about initialization (e.g.
               performing non-trivial setup).
     * The core controller should not be a `NoDestructor` singleton.
+
+```cpp
+// Properly scoped state avoids categories of bugs and subtle issues. For
+// example: one common mistake is to store window-scoped state on a tab-scoped
+// object. This results in subtle bugs (or crashes) when tab is dragged into a
+// new window.
+
+// Do not do this:
+FooTabFeature {
+  // As per (1) above, we shouldn't be passing or storing Browser* anyways.
+  // Another common anti-pattern is to dynamically look up Browser* via
+  // browser_finder methods. These often result in the wrong Browser*
+  Browser* browser_;
+
+  // This will point to the wrong BrowserView if the tab is dragged into a new
+  // window. Furthermore, BrowserView* itself is a container of hundreds of
+  // other views. The tab-scoped feature typically wants something much more
+  // specific.
+  BrowserView* browser_view_;
+
+  // Extensions are profile-scoped, and thus any state/logic should be in a
+  // ProfileKeyedService. If the user has multiple tabs (possibly across
+  // multiple windows) simultaneously interacting with FooTabFeature, then it's
+  // likely that the extension will uninstall while it's still in use.
+  void InstallExtension();
+  void UninstallExtension();
+};
+
+// Instead do this:
+FooTabFeature {
+  // Guaranteed to remain valid for the lifetime of this class. This can be used
+  // to dynamically access relevant window state via
+  // tab_->GetBrowserWindowInterface()->GetFeatures().GetFooWindowFeature()
+  TabInterface* tab_;
+};
+
+FooService : public KeyedService {
+  void InstallExtension();
+  void UninstallExtension();
+};
+```
+
 * Global functions should not access non-global state.
     * Pure functions do not access global state and are allowed. e.g. `base::UTF8ToWide()`
     * Global functions that wrap global state are allowed, e.g.
