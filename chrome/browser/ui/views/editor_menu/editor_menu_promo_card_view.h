@@ -46,7 +46,6 @@ class EditorMenuPromoCardView : public views::View,
   // views::View:
   void AddedToWidget() override;
   void RequestFocus() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   int GetHeightForWidth(int width) const override;
 
   // views::WidgetObserver:

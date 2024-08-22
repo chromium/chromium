@@ -89,6 +89,9 @@ EditorMenuView::EditorMenuView(EditorMenuMode editor_menu_mode,
   InitLayout(preset_text_queries);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  GetViewAccessibility().SetName(editor_menu_mode_ == EditorMenuMode::kWrite
+                                     ? GetEditorMenuWriteCardTitle()
+                                     : GetEditorMenuRewriteCardTitle());
 }
 
 EditorMenuView::~EditorMenuView() = default;
@@ -126,12 +129,6 @@ void EditorMenuView::AddedToWidget() {
 void EditorMenuView::RequestFocus() {
   views::View::RequestFocus();
   settings_button_->RequestFocus();
-}
-
-void EditorMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->SetName(editor_menu_mode_ == EditorMenuMode::kWrite
-                         ? GetEditorMenuWriteCardTitle()
-                         : GetEditorMenuRewriteCardTitle());
 }
 
 int EditorMenuView::GetHeightForWidth(int width) const {

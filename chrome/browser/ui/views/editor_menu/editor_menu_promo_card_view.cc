@@ -73,6 +73,7 @@ EditorMenuPromoCardView::EditorMenuPromoCardView(
   InitLayout();
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  GetViewAccessibility().SetName(GetEditorMenuPromoCardTitle());
 }
 
 EditorMenuPromoCardView::~EditorMenuPromoCardView() = default;
@@ -108,10 +109,6 @@ void EditorMenuPromoCardView::AddedToWidget() {
 void EditorMenuPromoCardView::RequestFocus() {
   views::View::RequestFocus();
   dismiss_button_->RequestFocus();
-}
-
-void EditorMenuPromoCardView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->SetName(GetEditorMenuPromoCardTitle());
 }
 
 int EditorMenuPromoCardView::GetHeightForWidth(int width) const {
