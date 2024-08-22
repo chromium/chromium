@@ -24,11 +24,10 @@ class SignatureVerifier {
 
   // Ed25519 |verification_public_key| must consist of kKeySize bytes.
   explicit SignatureVerifier(std::string_view verification_public_key);
-  ~SignatureVerifier();
 
   // Actual verification - returns error status if provided |signature| does not
   // match |message|. Signature must be kSignatureSize bytes.
-  Status Verify(std::string_view message, std::string_view signature) const;
+  Status Verify(std::string_view message, std::string_view signature);
 
  private:
   std::string verification_public_key_;

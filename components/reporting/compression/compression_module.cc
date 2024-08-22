@@ -42,7 +42,7 @@ void CompressionModule::CompressRecord(
     return;
   }
   // Compress if record is larger than the compression threshold and compression
-  // enabled.
+  // enabled
   switch (compression_type_) {
     case CompressionInformation::COMPRESSION_NONE: {
       // Don't compress, simply return serialized record

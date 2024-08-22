@@ -4,11 +4,12 @@
 
 #include "components/reporting/compression/compression_module.h"
 
-#include <optional>
+#include <memory>
 #include <string>
-#include <string_view>
 #include <tuple>
+#include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/memory/scoped_refptr.h"

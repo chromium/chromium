@@ -38,7 +38,7 @@ class StorageModuleInterface
   virtual void Flush(Priority priority, FlushCallback callback) = 0;
 
  protected:
-  // Constructor for subclasses to use only.
+  // Constructor can only be called by |Create| factory method.
   StorageModuleInterface();
 
   // Refcounted object must have destructor declared protected or private.

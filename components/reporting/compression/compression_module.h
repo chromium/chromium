@@ -10,10 +10,10 @@
 #include <string_view>
 
 #include "base/feature_list.h"
-#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_manager.h"
+#include "components/reporting/util/statusor.h"
 
 namespace reporting {
 
@@ -29,8 +29,8 @@ class CompressionModule : public base::RefCountedThreadSafe<CompressionModule> {
 
   // Factory method creates |CompressionModule| object.
   static scoped_refptr<CompressionModule> Create(
-      uint64_t compression_threshold,
-      CompressionInformation::CompressionAlgorithm compression_type);
+      uint64_t compression_threshold_,
+      CompressionInformation::CompressionAlgorithm compression_type_);
 
   // CompressRecord will attempt to compress the provided |record| and respond
   // with the callback. On success the returned std::string sink will
@@ -47,11 +47,14 @@ class CompressionModule : public base::RefCountedThreadSafe<CompressionModule> {
   // Returns 'true' if |kCompressReportingPipeline| feature is enabled.
   static bool is_enabled();
 
+  // Variable which defines which compression type to use
+  const CompressionInformation::CompressionAlgorithm compression_type_;
+
  protected:
   // Constructor can only be called by |Create| factory method.
   CompressionModule(
-      uint64_t compression_threshold,
-      CompressionInformation::CompressionAlgorithm compression_type);
+      uint64_t compression_threshold_,
+      CompressionInformation::CompressionAlgorithm compression_type_);
 
   // Refcounted object must have destructor declared protected or private.
   virtual ~CompressionModule();
@@ -64,9 +67,6 @@ class CompressionModule : public base::RefCountedThreadSafe<CompressionModule> {
       std::string record,
       base::OnceCallback<void(std::string,
                               std::optional<CompressionInformation>)> cb) const;
-
-  // Compression type to use.
-  const CompressionInformation::CompressionAlgorithm compression_type_;
 
   // Minimum compression threshold (in bytes) for when a record will be
   // compressed
