@@ -366,9 +366,9 @@ void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
     // raw_ptr::get() so we truly have a raw pointer to bind into the callback.
     remove_listener = base::BindOnce(
         &WebRequestAPI::UpdateActiveListener, weak_factory_.GetWeakPtr(),
-        static_cast<void*>(details.browser_context.get()), update_type,
-        details.extension_id, sub_event_name, details.worker_thread_id,
-        details.service_worker_version_id);
+        base::UnsafeDanglingUntriaged(details.browser_context.get()),
+        update_type, details.extension_id, sub_event_name,
+        details.worker_thread_id, details.service_worker_version_id);
   }
 
   // This PostTask is necessary even though we are already on the UI thread to
@@ -663,18 +663,15 @@ void WebRequestAPI::OnExtensionUnloaded(
 }
 
 void WebRequestAPI::UpdateActiveListener(
-    void* browser_context_id,
+    content::BrowserContext* browser_context,
     WebRequestEventRouter::ListenerUpdateType update_type,
     const ExtensionId& extension_id,
     const std::string& sub_event_name,
     int worker_thread_id,
     int64_t service_worker_version_id) {
-  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context_id)) {
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context)) {
     return;
   }
-
-  content::BrowserContext* browser_context =
-      reinterpret_cast<content::BrowserContext*>(browser_context_id);
   WebRequestEventRouter::Get(browser_context)
       ->UpdateActiveListener(browser_context, update_type, extension_id,
                              sub_event_name, worker_thread_id,

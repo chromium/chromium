@@ -299,7 +299,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // in ExtensionWebRequestEventRouter, or not, if the owning BrowserContext
   // goes away or the WeakPtr instance bound in the callback is invalidated.
   void UpdateActiveListener(
-      void* browser_context_id,
+      content::BrowserContext* browser_context,
       WebRequestEventRouter::ListenerUpdateType update_type,
       const ExtensionId& extension_id,
       const std::string& sub_event_name,
