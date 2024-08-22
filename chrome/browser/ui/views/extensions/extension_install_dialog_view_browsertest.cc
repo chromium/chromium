@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/message_formatter.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -710,6 +711,18 @@ void ExtensionInstallDialogRatingsSectionTest::TestRatingsSectionA11y(
     EXPECT_EQ(ax::mojom::Role::kStaticText, node_data.role);
     EXPECT_EQ(expected_text,
               node_data.GetStringAttribute(ax::mojom::StringAttribute::kName));
+
+    if (num_ratings == 0) {
+      EXPECT_EQ(rating_view->GetViewAccessibility().GetCachedName(),
+                l10n_util::GetStringUTF16(
+                    IDS_EXTENSION_PROMPT_NO_RATINGS_ACCESSIBLE_TEXT));
+    } else {
+      EXPECT_EQ(rating_view->GetViewAccessibility().GetCachedName(),
+                base::i18n::MessageFormatter::FormatWithNumberedArgs(
+                    l10n_util::GetStringUTF16(
+                        IDS_EXTENSION_PROMPT_RATING_ACCESSIBLE_TEXT),
+                    average_rating, num_ratings));
+    }
   }
 
   for (views::View* child : rating_view->children()) {

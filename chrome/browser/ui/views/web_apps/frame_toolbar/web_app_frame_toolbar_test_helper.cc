@@ -319,3 +319,8 @@ WebAppOriginText* WebAppFrameToolbarTestHelper::origin_text_view() {
   return static_cast<WebAppOriginText*>(
       web_app_frame_toolbar()->GetViewByID(VIEW_ID_WEB_APP_ORIGIN_TEXT));
 }
+
+void WebAppFrameToolbarTestHelper::SetOriginTextLabelForTesting(
+    const std::u16string label_text) {
+  origin_text_view()->label_->SetText(label_text);
+}

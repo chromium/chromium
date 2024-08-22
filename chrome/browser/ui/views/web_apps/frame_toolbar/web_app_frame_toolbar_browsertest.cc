@@ -2535,6 +2535,19 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
   ASSERT_TRUE(origin_text);
   origin_text->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kApplication);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            origin_text->GetLabelTextForTesting());
+  EXPECT_EQ(origin_text->GetViewAccessibility().GetCachedName(),
+            origin_text->GetLabelTextForTesting());
+
+  helper()->SetOriginTextLabelForTesting(u"Sample Accessible Text");
+
+  data = ui::AXNodeData();
+  origin_text->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            origin_text->GetLabelTextForTesting());
+  EXPECT_EQ(origin_text->GetViewAccessibility().GetCachedName(),
+            origin_text->GetLabelTextForTesting());
 }
 
 INSTANTIATE_TEST_SUITE_P(

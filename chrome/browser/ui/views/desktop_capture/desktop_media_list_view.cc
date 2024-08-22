@@ -73,11 +73,11 @@ DesktopMediaListView::DesktopMediaListView(
       controller_(controller),
       single_style_(single_style),
       generic_style_(generic_style),
-      active_style_(&single_style_),
-      accessible_name_(accessible_name) {
+      active_style_(&single_style_) {
   SetStyle(&single_style_);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
+  GetViewAccessibility().SetName(accessible_name);
 }
 
 DesktopMediaListView::~DesktopMediaListView() {}
@@ -279,8 +279,4 @@ DesktopMediaSourceView* DesktopMediaListView::GetSelectedView() {
       base::ranges::find_if(children(), &DesktopMediaSourceView::GetSelected,
                             &AsDesktopMediaSourceView);
   return (i == children().cend()) ? nullptr : AsDesktopMediaSourceView(*i);
-}
-
-void DesktopMediaListView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->SetNameChecked(accessible_name_);
 }

@@ -44,9 +44,6 @@ class WebAppOriginText : public views::View,
   // Fades the text in and out.
   void StartFadeAnimation();
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   // ui::LayerAnimationObserver:
   void OnLayerAnimationStarted(ui::LayerAnimationSequence* sequence) override {}
   void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;
@@ -57,6 +54,8 @@ class WebAppOriginText : public views::View,
   const std::u16string& GetLabelTextForTesting();
 
  private:
+  friend class WebAppFrameToolbarTestHelper;
+
   // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
@@ -65,6 +64,8 @@ class WebAppOriginText : public views::View,
 
   // content::WebContentsObserver:
   void DidFinishNavigation(content::NavigationHandle* handle) override;
+
+  void UpdateAccessibleName();
 
   // origin_text_ is populated by ReadyToCommitNavigation.
   std::u16string origin_text_;
@@ -75,6 +76,8 @@ class WebAppOriginText : public views::View,
 
   // Owned by the views hierarchy.
   raw_ptr<views::Label, DanglingUntriaged> label_ = nullptr;
+
+  base::CallbackListSubscription label_text_changed_callback_;
 
   base::WeakPtrFactory<WebAppOriginText> weak_factory_{this};
 };

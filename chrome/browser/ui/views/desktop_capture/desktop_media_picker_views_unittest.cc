@@ -815,12 +815,17 @@ TEST_F(DesktopMediaPickerViewsSingleTabPaneTest, AccessibleProperties) {
       /*image_rect=*/gfx::Rect(8, 8, 250, 180));
 
   // DesktopMediaListView accessible properties test.
+
+  std::u16string sample_accessible_name = u"Sample accessible name";
   auto list_view = std::make_unique<DesktopMediaListView>(
-      test_api_.GetSelectedController(), style, style,
-      u"Sample accessible name");
+      test_api_.GetSelectedController(), style, style, sample_accessible_name);
 
   list_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kGroup);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            sample_accessible_name);
+  EXPECT_EQ(list_view->GetViewAccessibility().GetCachedName(),
+            sample_accessible_name);
 
   // DesktopMediaSourceView accessible properties test.
   const content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_SCREEN,
@@ -832,6 +837,21 @@ TEST_F(DesktopMediaPickerViewsSingleTabPaneTest, AccessibleProperties) {
   ASSERT_TRUE(source_view);
   source_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(
+                IDS_DESKTOP_MEDIA_SOURCE_EMPTY_ACCESSIBLE_NAME));
+  EXPECT_EQ(source_view->GetViewAccessibility().GetCachedName(),
+            l10n_util::GetStringUTF16(
+                IDS_DESKTOP_MEDIA_SOURCE_EMPTY_ACCESSIBLE_NAME));
+
+  source_view->SetName(sample_accessible_name);
+
+  data = ui::AXNodeData();
+  source_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            sample_accessible_name);
+  EXPECT_EQ(source_view->GetViewAccessibility().GetCachedName(),
+            sample_accessible_name);
 }
 
 class DesktopMediaPickerPreferredDisplaySurfaceTest

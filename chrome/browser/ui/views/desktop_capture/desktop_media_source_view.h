@@ -82,7 +82,6 @@ class DesktopMediaSourceView : public views::View {
   void OnFocus() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
   // Updates selection state of the element. If |selected| is true then also
@@ -90,6 +89,11 @@ class DesktopMediaSourceView : public views::View {
   // (if any).
   void SetSelected(bool selected);
 
+  void OnLabelTextChanged();
+
+  void UpdateAccessibleName();
+
+  base::CallbackListSubscription label_text_changed_callback_;
   raw_ptr<DesktopMediaListView> parent_;
   content::DesktopMediaID source_id_;
 

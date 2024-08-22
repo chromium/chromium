@@ -92,12 +92,13 @@ class RatingsView : public views::View {
         views::BoxLayout::Orientation::kHorizontal));
 
     GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
+    UpdateAccessibleName();
   }
   RatingsView(const RatingsView&) = delete;
   RatingsView& operator=(const RatingsView&) = delete;
   ~RatingsView() override = default;
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+  void UpdateAccessibleName() {
     std::u16string accessible_text;
     if (rating_count_ == 0) {
       accessible_text = l10n_util::GetStringUTF16(
@@ -108,7 +109,7 @@ class RatingsView : public views::View {
               IDS_EXTENSION_PROMPT_RATING_ACCESSIBLE_TEXT),
           rating_, rating_count_);
     }
-    node_data->SetNameChecked(accessible_text);
+    GetViewAccessibility().SetName(accessible_text);
   }
 
  private:
