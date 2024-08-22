@@ -40,6 +40,8 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/dom/range.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"  // For firstPositionInOrBeforeNode
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -75,6 +77,34 @@
 namespace blink {
 
 namespace {
+
+const Element* MaybeAdjustSearchElementForFocusGroup(const Element& element,
+                                                     bool get_last) {
+  auto* scroll_marker = DynamicTo<ScrollMarkerPseudoElement>(element);
+  if (!scroll_marker) {
+    return &element;
+  }
+  CHECK(scroll_marker->ScrollMarkerGroup());
+  const auto& scroll_markers =
+      scroll_marker->ScrollMarkerGroup()->ScrollMarkers();
+  return get_last ? scroll_markers.back() : scroll_markers.front();
+}
+
+// https://open-ui.org/components/focusgroup.explainer/#last-focused-memory
+Element* MaybeRestoreFocusedElementForFocusGroup(Element* element) {
+  if (!element) {
+    return nullptr;
+  }
+  auto* scroll_marker = DynamicTo<ScrollMarkerPseudoElement>(element);
+  if (!scroll_marker) {
+    return element;
+  }
+  CHECK(scroll_marker->ScrollMarkerGroup());
+  if (!scroll_marker->ScrollMarkerGroup()->Selected()) {
+    return scroll_marker;
+  }
+  return scroll_marker->ScrollMarkerGroup()->Selected();
+}
 
 bool IsOpenPopoverWithInvoker(const Node* node) {
   auto* popover = DynamicTo<HTMLElement>(node);
@@ -250,10 +280,13 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
   const Element* NextInDomOrder(const Element& current) {
     Element* next;
     if (RuntimeEnabledFeatures::PseudoElementsFocusableEnabled()) {
-      next = ElementTraversal::NextIncludingPseudo(current, root_);
+      const Element* adjusted_current =
+          MaybeAdjustSearchElementForFocusGroup(current, /*get_last=*/true);
+      next = ElementTraversal::NextIncludingPseudo(*adjusted_current, root_);
       while (next && !IsOwnedByRoot(*next)) {
         next = ElementTraversal::NextIncludingPseudo(*next, root_);
       }
+      next = MaybeRestoreFocusedElementForFocusGroup(next);
     } else {
       next = ElementTraversal::Next(current, root_);
       while (next && !IsOwnedByRoot(*next)) {
@@ -309,13 +342,17 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
   const Element* PreviousInDomOrder(const Element& current) {
     Element* previous;
     if (RuntimeEnabledFeatures::PseudoElementsFocusableEnabled()) {
-      previous = ElementTraversal::PreviousIncludingPseudo(current, root_);
+      const Element* adjusted_current =
+          MaybeAdjustSearchElementForFocusGroup(current, /*get_last=*/false);
+      previous =
+          ElementTraversal::PreviousIncludingPseudo(*adjusted_current, root_);
       if (previous == root_) {
         return nullptr;
       }
       while (previous && !IsOwnedByRoot(*previous)) {
         previous = ElementTraversal::PreviousIncludingPseudo(*previous, root_);
       }
+      previous = MaybeRestoreFocusedElementForFocusGroup(previous);
     } else {
       previous = ElementTraversal::Previous(current, root_);
       if (previous == root_) {

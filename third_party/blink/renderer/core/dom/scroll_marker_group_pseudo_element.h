@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SCROLL_MARKER_GROUP_PSEUDO_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SCROLL_MARKER_GROUP_PSEUDO_ELEMENT_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 
@@ -31,7 +32,7 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement {
   const HeapVector<Member<ScrollMarkerPseudoElement>>& ScrollMarkers() {
     return focus_group_;
   }
-  void SetSelected(ScrollMarkerPseudoElement& scroll_marker);
+  CORE_EXPORT void SetSelected(ScrollMarkerPseudoElement& scroll_marker);
   ScrollMarkerPseudoElement* Selected() { return selected_marker_; }
   void ActivateNextScrollMarker();
   void ActivatePrevScrollMarker();
