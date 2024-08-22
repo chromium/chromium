@@ -100,8 +100,14 @@ class ProfileManagerIOS {
   // tests. Returns null if loading or creating the ChromeBrowserState failed.
   virtual ChromeBrowserState* CreateBrowserState(std::string_view name) = 0;
 
-  // Returns the BrowserStateInfoCache associated with this manager.
-  virtual BrowserStateInfoCache* GetBrowserStateInfoCache() = 0;
+  // Returns the ProfileAttributesStorageIOS associated with this manager.
+  virtual ProfileAttributesStorageIOS* GetProfileAttributesStorage() = 0;
+
+  // Returns the ProfileAttributesStorageIOS associated with this manager.
+  // DEPRECATED: use GetProfileAttributesStorage() instead.
+  ProfileAttributesStorageIOS* GetBrowserStateInfoCache() {
+    return GetProfileAttributesStorage();
+  }
 
  protected:
   ProfileManagerIOS() {}

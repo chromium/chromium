@@ -55,7 +55,7 @@ class ChromeBrowserStateManagerImpl : public ChromeBrowserStateManager,
       ChromeBrowserStateLoadedCallback created_callback) override;
   ChromeBrowserState* LoadBrowserState(std::string_view name) override;
   ChromeBrowserState* CreateBrowserState(std::string_view name) override;
-  BrowserStateInfoCache* GetBrowserStateInfoCache() override;
+  ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
 
   // ChromeBrowserState::Delegate:
   void OnChromeBrowserStateCreationStarted(
@@ -111,8 +111,8 @@ class ChromeBrowserStateManagerImpl : public ChromeBrowserStateManager,
   // Holds the ChromeBrowserState instances that this instance has created.
   ChromeBrowserMap browser_states_;
 
-  // The owned BrowserStateInfoCache instance. Lazily created.
-  std::unique_ptr<BrowserStateInfoCache> browser_state_info_cache_;
+  // The owned ProfileAttributesStorageIOS instance.
+  ProfileAttributesStorageIOS profile_attributes_storage_;
 
   // The list of registered observers.
   base::ObserverList<ChromeBrowserStateManagerObserver, true> observers_;

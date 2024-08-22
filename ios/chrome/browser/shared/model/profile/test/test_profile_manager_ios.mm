@@ -14,7 +14,7 @@
 #import "ios/chrome/test/testing_application_context.h"
 
 TestProfileManagerIOS::TestProfileManagerIOS()
-    : browser_state_info_cache_(GetApplicationContext()->GetLocalState()),
+    : profile_attributes_storage_(GetApplicationContext()->GetLocalState()),
       data_dir_(base::CreateUniqueTempDirectoryScopedToTest()) {
   CHECK_EQ(GetApplicationContext()->GetChromeBrowserStateManager(), nullptr);
   TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(this);
@@ -112,9 +112,9 @@ ChromeBrowserState* TestProfileManagerIOS::CreateBrowserState(
   return GetBrowserStateByName(name);
 }
 
-BrowserStateInfoCache*
-TestProfileManagerIOS::GetBrowserStateInfoCache() {
-  return &browser_state_info_cache_;
+ProfileAttributesStorageIOS*
+TestProfileManagerIOS::GetProfileAttributesStorage() {
+  return &profile_attributes_storage_;
 }
 
 TestChromeBrowserState*
@@ -141,9 +141,9 @@ TestProfileManagerIOS::AddBrowserStateWithBuilder(
     last_used_browser_state_name_ = browser_state_name;
   }
 
-  browser_state_info_cache_.AddBrowserState(browser_state_name,
-                                            /*gaia_id=*/std::string(),
-                                            /*user_name=*/std::string());
+  profile_attributes_storage_.AddBrowserState(browser_state_name,
+                                              /*gaia_id=*/std::string(),
+                                              /*user_name=*/std::string());
 
   for (auto& observer : observers_) {
     observer.OnChromeBrowserStateLoaded(this, iterator->second.get());

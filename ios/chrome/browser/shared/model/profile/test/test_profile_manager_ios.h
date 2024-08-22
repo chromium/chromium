@@ -48,7 +48,7 @@ class TestProfileManagerIOS : public ChromeBrowserStateManager {
       ChromeBrowserStateLoadedCallback created_callback) override;
   ChromeBrowserState* LoadBrowserState(std::string_view name) override;
   ChromeBrowserState* CreateBrowserState(std::string_view name) override;
-  BrowserStateInfoCache* GetBrowserStateInfoCache() override;
+  ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
 
   // Builds and adds a TestChromeBrowserState using `builder`. Asserts that
   // no BrowserState share the same name. Returns a pointer to the new object.
@@ -56,8 +56,8 @@ class TestProfileManagerIOS : public ChromeBrowserStateManager {
       TestChromeBrowserState::Builder builder);
 
  private:
-  // The BrowserStateInfoCache owned by this instance.
-  BrowserStateInfoCache browser_state_info_cache_;
+  // The ProfileAttributesStorageIOS owned by this instance.
+  ProfileAttributesStorageIOS profile_attributes_storage_;
 
   // The path in which the ChromeBrowserStates are stored.
   const base::FilePath data_dir_;

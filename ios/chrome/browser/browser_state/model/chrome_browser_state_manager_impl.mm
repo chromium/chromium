@@ -31,7 +31,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_profile_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
 #import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
@@ -153,7 +153,9 @@ void ChromeBrowserStateManagerImpl::BrowserStateInfo::AddCallback(
 ChromeBrowserStateManagerImpl::ChromeBrowserStateManagerImpl(
     PrefService* local_state,
     const base::FilePath& data_dir)
-    : local_state_(local_state), data_dir_(data_dir) {
+    : local_state_(local_state),
+      data_dir_(data_dir),
+      profile_attributes_storage_(local_state) {
   CHECK(local_state_);
   CHECK(!data_dir_.empty());
 }
@@ -320,14 +322,10 @@ ChromeBrowserState* ChromeBrowserStateManagerImpl::CreateBrowserState(
   return iter->second.browser_state();
 }
 
-BrowserStateInfoCache*
-ChromeBrowserStateManagerImpl::GetBrowserStateInfoCache() {
+ProfileAttributesStorageIOS*
+ChromeBrowserStateManagerImpl::GetProfileAttributesStorage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!browser_state_info_cache_) {
-    browser_state_info_cache_ =
-        std::make_unique<BrowserStateInfoCache>(local_state_.get());
-  }
-  return browser_state_info_cache_.get();
+  return &profile_attributes_storage_;
 }
 
 void ChromeBrowserStateManagerImpl::OnChromeBrowserStateCreationStarted(
@@ -395,7 +393,7 @@ std::string ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateName() const {
 bool ChromeBrowserStateManagerImpl::BrowserStateWithNameExists(
     std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetBrowserStateInfoCache()->GetIndexOfBrowserStateWithName(name) !=
+  return profile_attributes_storage_.GetIndexOfBrowserStateWithName(name) !=
          std::string::npos;
 }
 
@@ -477,22 +475,28 @@ void ChromeBrowserStateManagerImpl::AddBrowserStateToCache(
     ChromeBrowserState* browser_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!browser_state->IsOffTheRecord());
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
-  const CoreAccountInfo account_info =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  CoreAccountInfo account_info =
+      IdentityManagerFactory::GetForBrowserState(browser_state)
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
-  BrowserStateInfoCache* cache = GetBrowserStateInfoCache();
-  const size_t browser_state_index = cache->GetIndexOfBrowserStateWithName(
-      browser_state->GetBrowserStateName());
-  if (browser_state_index != std::string::npos) {
-    // The BrowserStateInfoCache's info must match the IdentityManager.
-    cache->SetAuthInfoOfBrowserStateAtIndex(
-        browser_state_index, account_info.gaia, account_info.email);
+  const std::string& profile_name = browser_state->GetBrowserStateName();
+  const size_t index =
+      profile_attributes_storage_.GetIndexOfBrowserStateWithName(profile_name);
+  if (index == std::string::npos) {
+    profile_attributes_storage_.AddBrowserState(profile_name, account_info.gaia,
+                                                account_info.email);
     return;
   }
-  cache->AddBrowserState(browser_state->GetBrowserStateName(),
-                         account_info.gaia, account_info.email);
+
+  // The ProfileAttributes's info must match the IdentityManager.
+  profile_attributes_storage_.UpdateAttributesForProfileAtIndex(
+      index, base::BindOnce(
+                 [](CoreAccountInfo account_info, ProfileAttributesIOS attr) {
+                   attr.SetAuthenticationInfo(account_info.gaia,
+                                              account_info.email);
+                   return attr;
+                 },
+                 std::move(account_info)));
 }
 
 void ChromeBrowserStateManagerImpl::DoFinalInit(
