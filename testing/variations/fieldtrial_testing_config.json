@@ -16134,23 +16134,6 @@
             ]
         }
     ],
-    "PartitionAllocLargeEmptySlotSpanRing": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PartitionAllocLargeEmptySlotSpanRing"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionAllocLargeThreadCacheSizeAndroid": [
         {
             "platforms": [
@@ -16295,6 +16278,30 @@
                     "disable_features": [
                         "PartitionAllocSortActiveSlotSpans",
                         "PartitionAllocStraightenLargerSlotSpanFreeLists"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PartitionAllocParameterTuning": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BlinkUseLargeEmptySlotSpanRingForBufferRoot",
+                        "PartitionAllocAdjustSizeWhenInForeground",
+                        "PartitionAllocLargeEmptySlotSpanRing"
                     ]
                 }
             ]
