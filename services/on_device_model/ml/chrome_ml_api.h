@@ -39,6 +39,8 @@ using ChromeMLSession = uintptr_t;
 using ChromeMLCancel = uintptr_t;
 // Opaque handle to an instance of a ChromeMLTS model.
 using ChromeMLTSModel = uintptr_t;
+// Opaque handle to a video-frame-specific ML inference engine.
+using ChromeMLInferenceEngine = uintptr_t;
 
 // Type of the backend to run the model.
 enum ModelBackendType {
@@ -356,6 +358,27 @@ struct ChromeMLAPI {
   ChromeMLCancel (*CreateCancel)();
   void (*DestroyCancel)(ChromeMLCancel cancel);
   void (*CancelExecuteModel)(ChromeMLCancel cancel);
+
+  // Create new instance of ML inference engine, using the passed in `device`.
+  // `model_blob` should contain a binary blob of a TFLite model (read from
+  // .tflite file). `model_blob_size` is the size in bytes of `model_blob`. On
+  // failure, will return `0`.
+  ChromeMLInferenceEngine (*CreateInferenceEngine)(
+      WGPUAdapterProperties adapter_properties,
+      WGPUDevice device,
+      const char* model_blob,
+      size_t model_blob_size);
+
+  // Runs inference on `source`, producing results into `destination`. `engine`
+  // must have been obtained from `CreateInferenceEngine()` call.
+  bool (*RunInference)(ChromeMLInferenceEngine engine,
+                       WGPUTexture source,
+                       WGPUTexture destination);
+
+  // Cleans up the instance of ML inference engine returned from
+  // `CreateInferenceEngine()` call. It is invalid to use `engine` for inference
+  // after this call.
+  void (*DestroyInferenceEngine)(ChromeMLInferenceEngine engine);
 
   ChromeMLTSAPI ts_api;
 };
