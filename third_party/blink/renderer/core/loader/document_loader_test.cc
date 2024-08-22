@@ -13,6 +13,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/span.h"
+#include "base/rand_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"

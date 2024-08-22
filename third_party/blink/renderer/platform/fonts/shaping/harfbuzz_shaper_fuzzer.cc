@@ -2,20 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
+
+#include <stddef.h>
+#include <stdint.h>
+#include <unicode/ustring.h>
+
 #include "base/command_line.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shaper.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_bloberizer.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
-
-#include <stddef.h>
-#include <stdint.h>
-#include <unicode/ustring.h>
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -25,6 +27,7 @@ constexpr size_t kMaxInputLength = 256;
 // custom fontconfig configuration that we use for content_shell.
 int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static BlinkFuzzerTestSupport fuzzer_support = BlinkFuzzerTestSupport();
+  test::TaskEnvironment task_environment;
 
   if ((false)) {  // Add extra parenthesis to disable dead code warning.
     // The fuzzer driver does not pass along command line arguments, so add any

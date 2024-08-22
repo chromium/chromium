@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
@@ -24,10 +26,9 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-
-#include <string>
 
 namespace blink {
 
@@ -79,15 +80,13 @@ void RunFuzzingLoop(ImageDecoderExternal* image_decoder,
 DEFINE_BINARY_PROTO_FUZZER(
     const wc_fuzzer::ImageDecoderApiInvocationSequence& proto) {
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
-  static DummyPageHolder* page_holder = []() {
-    auto page_holder = std::make_unique<DummyPageHolder>();
-    page_holder->GetFrame().GetSettings()->SetScriptEnabled(true);
-    return page_holder.release();
-  }();
+  test::TaskEnvironment task_environment;
+  auto page_holder = std::make_unique<DummyPageHolder>();
+  page_holder->GetFrame().GetSettings()->SetScriptEnabled(true);
 
   // Request a full GC upon returning.
   auto scoped_gc =
-      MakeScopedGarbageCollectionRequest(test_support.GetIsolate());
+      MakeScopedGarbageCollectionRequest(task_environment.isolate());
 
   //
   // NOTE: GC objects that need to survive iterations of the loop below

@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
