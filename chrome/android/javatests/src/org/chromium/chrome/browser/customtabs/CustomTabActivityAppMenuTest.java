@@ -621,6 +621,7 @@ public class CustomTabActivityAppMenuTest {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/361629264")
     public void testOpenInBrowser() throws Exception {
         // Augment the CustomTabsSession to catch the callback.
         CallbackHelper callbackTriggered = new CallbackHelper();
