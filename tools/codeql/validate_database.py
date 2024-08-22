@@ -122,8 +122,10 @@ def main():
   print("Paths of logfiles containing unknown errors:")
   for filepath in extractor_logs_containing_unknown_errors:
     print(filepath)
-  print(f"({num_files_with_errors}/{num_files_scanned}"
-        " files contained errors)")
+  print(f"{num_files_with_errors}/{num_files_scanned}"
+        " files contained errors")
+  print(f"{len(extractor_logs_containing_unknown_errors)} unknown errors")
+  print(f"{len(extractor_logs_indicating_integrity_errors)} integrity errors")
   return -1
 
 
