@@ -73,10 +73,15 @@ class WebAppOpaqueBrowserFrameViewTest : public web_app::WebAppBrowserTestBase {
 
   ~WebAppOpaqueBrowserFrameViewTest() override = default;
 
-  static GURL GetAppURL() { return GURL("https://test.org"); }
+  GURL GetAppURL() {
+    // The page shouldn't have a manifest so no updating will occur to override
+    // our settings.
+    return embedded_https_test_server().GetURL("/web_apps/no_manifest.html");
+  }
 
   void SetUpOnMainThread() override {
     web_app::WebAppBrowserTestBase::SetUpOnMainThread();
+    CHECK(embedded_https_test_server().Start());
     SetThemeMode(ThemeMode::kDefault);
 #if BUILDFLAG(IS_LINUX)
     ui::LinuxUiGetter::set_instance(nullptr);

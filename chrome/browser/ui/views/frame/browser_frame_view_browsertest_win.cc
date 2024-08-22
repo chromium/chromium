@@ -148,18 +148,19 @@ class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
       const WebAppBrowserFrameViewWinTest&) = delete;
   ~WebAppBrowserFrameViewWinTest() override = default;
 
-  GURL GetStartURL() { return GURL("https://test.org"); }
+  GURL GetStartURL() {
+    return embedded_test_server()->GetURL("/web_apps/no_manifest.html");
+  }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-
+    CHECK(embedded_test_server()->Start());
     WebAppToolbarButtonContainer::DisableAnimationForTesting(true);
   }
 
   void InstallAndLaunchWebApp() {
     auto web_app_info =
         web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(GetStartURL());
-    web_app_info->scope = GetStartURL().GetWithoutFilename();
     if (theme_color_) {
       web_app_info->theme_color = *theme_color_;
     }

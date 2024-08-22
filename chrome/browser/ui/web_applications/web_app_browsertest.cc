@@ -310,6 +310,7 @@ class WebAppBrowserTest : public WebAppBrowserTestBase {
         EvalJs(web_contents,
                "window.matchMedia('(display-mode: minimal-ui)').matches"));
     CloseAndWait(app_browser);
+    UninstallWebApp(app_id);
 
     return result;
   }
@@ -344,13 +345,14 @@ using WebAppBrowserTest_ShortcutMenu = WebAppBrowserTest;
 #endif
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ThemeColor) {
+  GURL start_url = https_server()->GetURL("/web_apps/no_manifest.html");
   {
     const SkColor theme_color = SkColorSetA(SK_ColorBLUE, 0xF0);
     blink::mojom::Manifest manifest;
     manifest.manifest_url = GURL(kExampleManifestURL);
-    manifest.start_url = GURL(kExampleURL);
-    manifest.id = GenerateManifestIdFromStartUrlOnly(manifest.start_url);
-    manifest.scope = GURL(kExampleURL);
+    manifest.start_url = start_url;
+    manifest.id = GenerateManifestIdFromStartUrlOnly(start_url);
+    manifest.scope = manifest.start_url.GetWithoutFilename();
     manifest.has_theme_color = true;
     manifest.theme_color = theme_color;
     auto web_app_info =
@@ -363,11 +365,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ThemeColor) {
     EXPECT_EQ(GetAppIdFromApplicationName(app_browser->app_name()), app_id);
     EXPECT_EQ(SkColorSetA(theme_color, SK_AlphaOPAQUE),
               app_browser->app_controller()->GetThemeColor());
+    test::UninstallWebApp(profile(), app_id);
   }
   {
-    auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-        GURL("http://example.org/2"));
-    web_app_info->scope = GURL("http://example.org/");
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->theme_color = std::optional<SkColor>();
     webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
     Browser* app_browser = LaunchWebAppBrowser(app_id);

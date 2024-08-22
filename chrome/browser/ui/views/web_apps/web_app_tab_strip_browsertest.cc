@@ -64,7 +64,10 @@ using content::Referrer;
 namespace {
 
 constexpr SkColor kAppBackgroundColor = SK_ColorBLUE;
-constexpr char kAppPath[] = "/web_apps/no_service_worker.html";
+
+// The page shouldn't have a manifest so no updating will occur to override
+// our settings.
+constexpr char kAppPath[] = "/web_apps/no_manifest.html";
 
 }  // namespace
 namespace web_app {
