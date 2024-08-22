@@ -36,6 +36,9 @@ class WEBDATA_EXPORT WebDatabaseTable {
   // Stores the passed members as instance variables.
   void Init(sql::Database* db, sql::MetaTable* meta_table);
 
+  // Resets the members stored during `Init()`.
+  void Shutdown();
+
   // Create all of the expected SQL tables if they do not already exist.
   // Returns true on success, false on failure.
   virtual bool CreateTablesIfNecessary() = 0;
@@ -51,12 +54,12 @@ class WEBDATA_EXPORT WebDatabaseTable {
                                 bool* update_compatible_version) = 0;
 
  protected:
-  // Non-owning. These are owned by WebDatabase, valid as long as that
-  // class exists. Since lifetime of WebDatabaseTable objects slightly
-  // exceeds that of WebDatabase, they should not be used in
-  // ~WebDatabaseTable.
-  raw_ptr<sql::Database, AcrossTasksDanglingUntriaged> db_;
-  raw_ptr<sql::MetaTable, AcrossTasksDanglingUntriaged> meta_table_;
+  // Non-null, except before `Init()` and after `Shutdown()`. Effectively, this
+  // means that they are non-null except during the constructor and destructor.
+  // They point to objects owned by `WebDatabase` whose lifetime is slightly
+  // shorter than that of the `WebDatabaseBackend` owning `this`.
+  raw_ptr<sql::Database> db_;
+  raw_ptr<sql::MetaTable> meta_table_;
 };
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_TABLE_H_

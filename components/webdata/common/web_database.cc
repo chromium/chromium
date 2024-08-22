@@ -81,7 +81,11 @@ WebDatabase::WebDatabase()
            // quite infrequent. So we go with a small cache size.
            .cache_size = 32}) {}
 
-WebDatabase::~WebDatabase() = default;
+WebDatabase::~WebDatabase() {
+  for (auto& [key, table] : tables_) {
+    table->Shutdown();
+  }
+}
 
 void WebDatabase::AddTable(WebDatabaseTable* table) {
   tables_[table->GetTypeKey()] = table;

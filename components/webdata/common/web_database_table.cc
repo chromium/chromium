@@ -11,3 +11,8 @@ void WebDatabaseTable::Init(sql::Database* db, sql::MetaTable* meta_table) {
   db_ = db;
   meta_table_ = meta_table;
 }
+
+void WebDatabaseTable::Shutdown() {
+  db_ = nullptr;
+  meta_table_ = nullptr;
+}
