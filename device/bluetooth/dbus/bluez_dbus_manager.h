@@ -168,6 +168,7 @@ class DEVICE_BLUETOOTH_EXPORT BluezDBusManager {
   void OnObjectManagerSupported(dbus::Response* response);
   void OnObjectManagerNotSupported(dbus::ErrorResponse* response);
 
+  void OnFlossManagerServiceAvailable(bool is_available);
   void OnFlossObjectManagerSupported(dbus::Response* response);
   void OnFlossObjectManagerNotSupported(dbus::ErrorResponse* response);
 
