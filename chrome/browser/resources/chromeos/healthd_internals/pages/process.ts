@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
+import '//resources/ash/common/cr_elements/md_select.css.js';
 
 import {sendWithPromise} from '//resources/js/cr.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -46,6 +47,40 @@ interface DisplayedProcessInfo {
   writeSystemCallsCount: number;
   // Command which started the process.
   command: string;
+}
+
+/**
+ * The ID of sort column. Note that the value should be the same as the
+ * corresponding field name in `DisplayedProcessInfo`.
+ */
+enum SortColumnEnum {
+  PROCESS_ID = 'processId',
+  NAME = 'name',
+  PRIORITY = 'priority',
+  NICE = 'nice',
+  STATE = 'state',
+  THREADS_NUMBER = 'threadsNumber',
+  USER_ID = 'userId',
+  PARENT_ID = 'parentProcessId',
+  GROUP_ID = 'processGroupId',
+  RESIDENT_MEMORY = 'residentMemoryKib',
+  UPTIME = 'uptimeTicks',
+  READ_SYSCALL_COUNT = 'readSystemCallsCount',
+  WRITE_SYSCALL_COUNT = 'writeSystemCallsCount',
+  COMMAND = 'command',
+}
+
+/**
+ * The ID of sort order.
+ */
+enum SortOrderEnum {
+  ASCEND = 'ascend',
+  DESCEND = 'descend',
+}
+
+interface ProcessHeader {
+  title: string;
+  sortColumnId: SortColumnEnum;
 }
 
 function filterProcessData(data: HealthdApiProcessInfo[], filterQuery: string):
@@ -102,6 +137,32 @@ function convertProcessData(processes: HealthdApiProcessInfo[]):
       }));
 }
 
+function sortProcessData(
+    processes: DisplayedProcessInfo[], sortColumn: SortColumnEnum,
+    sortOrder: SortOrderEnum): DisplayedProcessInfo[] {
+  return processes.sort((a, b) => {
+    if (a[sortColumn] === b[sortColumn]) {
+      return 0;
+    }
+    if (sortOrder === SortOrderEnum.ASCEND) {
+      return (a[sortColumn] < b[sortColumn]) ? -1 : 1;
+    }
+    if (sortOrder === SortOrderEnum.DESCEND) {
+      return (a[sortColumn] < b[sortColumn]) ? 1 : -1;
+    }
+
+    console.error('Unknown sort order: ', sortOrder);
+    return 0;
+  });
+}
+
+export interface HealthdInternalsProcessElement {
+  $: {
+    sortColumnSelector: HTMLSelectElement,
+    sortOrderSelector: HTMLSelectElement,
+  };
+}
+
 export class HealthdInternalsProcessElement extends PolymerElement implements
     HealthdInternalsPage {
   static get is() {
@@ -114,11 +175,15 @@ export class HealthdInternalsProcessElement extends PolymerElement implements
 
   static get properties() {
     return {
+      displayedHeaders: {type: Array},
       processData: {type: Array},
       filterQuery: {type: String},
+      sortColumn: {type: String},
+      sortOrder: {type: String},
       displayedData: {
         type: Array,
-        computed: 'getDisplayedData(processData, filterQuery)',
+        computed:
+            'getDisplayedData(processData, filterQuery, sortColumn, sortOrder)',
       },
     };
   }
@@ -136,11 +201,44 @@ export class HealthdInternalsProcessElement extends PolymerElement implements
     });
   }
 
+  // The title and column ID for headers and selected menu in process table.
+  private readonly displayedHeaders: ProcessHeader[] = [
+    {title: 'Process ID', sortColumnId: SortColumnEnum.PROCESS_ID},
+    {title: 'Name', sortColumnId: SortColumnEnum.NAME},
+    {title: 'Priority', sortColumnId: SortColumnEnum.PRIORITY},
+    {title: 'Nice', sortColumnId: SortColumnEnum.NICE},
+    {title: 'Process State', sortColumnId: SortColumnEnum.STATE},
+    {title: 'Threads Number', sortColumnId: SortColumnEnum.THREADS_NUMBER},
+    {title: 'User ID', sortColumnId: SortColumnEnum.USER_ID},
+    {title: 'Parent ID', sortColumnId: SortColumnEnum.PARENT_ID},
+    {title: 'Group ID', sortColumnId: SortColumnEnum.GROUP_ID},
+    {
+      title: 'Resident Memory (KiB)',
+      sortColumnId: SortColumnEnum.RESIDENT_MEMORY,
+    },
+    {title: 'Uptime Ticks', sortColumnId: SortColumnEnum.UPTIME},
+    {
+      title: 'Count of read syscall',
+      sortColumnId: SortColumnEnum.READ_SYSCALL_COUNT,
+    },
+    {
+      title: 'Count of write syscall',
+      sortColumnId: SortColumnEnum.WRITE_SYSCALL_COUNT,
+    },
+    {title: 'Command', sortColumnId: SortColumnEnum.COMMAND},
+  ];
+
   // Latest process data from healthd.
   private processData: HealthdApiProcessInfo[] = [];
 
   // The user entered filter query.
   private filterQuery: string = '';
+
+  // The target column for sorting.
+  private sortColumn: SortColumnEnum = SortColumnEnum.PROCESS_ID;
+
+  // Sorting order.
+  private sortOrder: SortOrderEnum = SortOrderEnum.ASCEND;
 
   // Data displayed in the process table.
   private displayedData: DisplayedProcessInfo[] = [];
@@ -156,9 +254,21 @@ export class HealthdInternalsProcessElement extends PolymerElement implements
     this.updateHelper.updateUiUpdateInterval(intervalSeconds);
   }
 
-  private getDisplayedData(data: HealthdApiProcessInfo[], filterQuery: string):
-      DisplayedProcessInfo[] {
-    return convertProcessData(filterProcessData(data, filterQuery));
+  private getDisplayedData(
+      data: HealthdApiProcessInfo[], filterQuery: string,
+      sortColumn: SortColumnEnum,
+      sortOrder: SortOrderEnum): DisplayedProcessInfo[] {
+    return sortProcessData(
+        convertProcessData(filterProcessData(data, filterQuery)), sortColumn,
+        sortOrder);
+  }
+
+  private onSortColumnChanged() {
+    this.sortColumn = this.$.sortColumnSelector.value as SortColumnEnum;
+  }
+
+  private onSortOrderChanged() {
+    this.sortOrder = this.$.sortOrderSelector.value as SortOrderEnum;
   }
 }
 

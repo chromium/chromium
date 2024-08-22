@@ -1,4 +1,4 @@
-<style include="healthd-internals-shared cr-shared-style">
+<style include="healthd-internals-shared cr-shared-style md-select">
   #pageHeader {
     height: 20px;
   }
@@ -37,9 +37,8 @@
   table {
     overflow: auto;
     border-collapse: collapse;
-    margin: 0 auto;
+    margin: 0 auto 16px auto;
     border: 1px solid var(--cr-primary-text-color);
-    margin: 0px 16px 16px 16px;
   }
 
   thead th {
@@ -73,25 +72,31 @@
     <cr-input type="text" value="{{filterQuery}}" placeholder="Enter query...">
     </cr-input>
   </div>
+  <div class="setting-with-label-container">
+    <label>Sort column</label>
+    <select id="sortColumnSelector" class="md-select"
+        on-change="onSortColumnChanged" value="[[sortColumn]]">
+      <template is="dom-repeat" items="[[displayedHeaders]]">
+        <option value="[[item.sortColumnId]]">[[item.title]]</option>
+      </template>
+    </select>
+  </div>
+  <div class="setting-with-label-container">
+    <label>Sort order</label>
+    <select id="sortOrderSelector" class="md-select"
+        on-change="onSortOrderChanged" value="[[sortOrder]]">
+      <option value="ascend">Ascend</option>
+      <option value="descend">Dscend</option>
+    </select>
+  </div>
 </div>
 
 <div id="tableContainer"><table>
   <thead>
     <tr>
-      <th>Process ID</th>
-      <th>Name</th>
-      <th>Priority</th>
-      <th>Nice</th>
-      <th>Process State</th>
-      <th>Threads Number</th>
-      <th>User ID</th>
-      <th>Parent ID</th>
-      <th>Group ID</th>
-      <th>Resident Memory (KiB)</th>
-      <th>Uptime Ticks</th>
-      <th>Count of read syscall</th>
-      <th>Count of write syscall</th>
-      <th class="command-column">Command</th>
+      <template is="dom-repeat" items="[[displayedHeaders]]">
+        <th>[[item.title]]</th>
+      </template>
     </tr>
   </thead>
   <tbody>
