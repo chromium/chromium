@@ -223,6 +223,9 @@ interface PageHandler {
   // Reject the tab organization.
   RejectTabOrganization(int32 session_id, int32 organization_id);
 
+  // Exclude the given tab from the stale tabs list.
+  ExcludeFromStaleTabs(int32 tab_id);
+
   // Get window and tab data for the current profile.
   GetProfileData() => (ProfileData profile_data);
 

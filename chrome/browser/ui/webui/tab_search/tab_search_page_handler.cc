@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 
+#include <stdint.h>
+
 #include <iterator>
 #include <memory>
 #include <set>
@@ -324,6 +326,13 @@ void TabSearchPageHandler::RejectTabOrganization(int32_t session_id,
   }
 
   organization->Reject();
+}
+
+void TabSearchPageHandler::ExcludeFromStaleTabs(int32_t tab_id) {
+  // TODO(crbug.com/358381117): Plumb this data through TabDeclutterService to
+  // store multiple excluded tabs for a single declutter action. This is a
+  // placeholder for now, only excluding the most recently excluded tab.
+  page_->StaleTabsChanged(FindStaleTabs(tab_id));
 }
 
 void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
@@ -788,7 +797,8 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
   return profile_data;
 }
 
-std::vector<tab_search::mojom::TabPtr> TabSearchPageHandler::FindStaleTabs() {
+std::vector<tab_search::mojom::TabPtr> TabSearchPageHandler::FindStaleTabs(
+    int32_t excluded_id) {
   // TODO(crbug.com/358381117): Replace with actual stale tab data as provided
   // by TabDeclutterService. This is a placeholder for now, returning all tabs
   // from the current window regardless of last active time.
@@ -797,7 +807,10 @@ std::vector<tab_search::mojom::TabPtr> TabSearchPageHandler::FindStaleTabs() {
   std::vector<tab_search::mojom::TabPtr> tabs;
   for (int i = 0; i < tab_strip_model->count(); ++i) {
     auto* web_contents = tab_strip_model->GetWebContentsAt(i);
-    tabs.push_back(GetTab(tab_strip_model, web_contents, i));
+    const auto tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+    if (tab_id != excluded_id) {
+      tabs.push_back(GetTab(tab_strip_model, web_contents, i));
+    }
   }
   return tabs;
 }

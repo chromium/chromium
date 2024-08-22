@@ -15,6 +15,10 @@ import {TabSearchApiProxyImpl} from '../tab_search_api_proxy.js';
 import {getCss} from './declutter_page.css.js';
 import {getHtml} from './declutter_page.html.js';
 
+function getEventTargetIndex(e: Event): number {
+  return Number((e.currentTarget as HTMLElement).dataset['index']);
+}
+
 export class DeclutterPageElement extends CrLitElement {
   static get is() {
     return 'declutter-page';
@@ -55,6 +59,12 @@ export class DeclutterPageElement extends CrLitElement {
   protected onCloseTabsClick_() {
     const tabIds = this.staleTabDatas_.map((tabData) => tabData.tab.tabId);
     this.apiProxy_.declutterTabs(tabIds);
+  }
+
+  protected onTabRemove_(e: Event) {
+    const index = getEventTargetIndex(e);
+    const tabData = this.staleTabDatas_[index]!;
+    this.apiProxy_.excludeFromStaleTabs(tabData.tab.tabId);
   }
 
   private setStaleTabs_(tabs: Tab[]): void {

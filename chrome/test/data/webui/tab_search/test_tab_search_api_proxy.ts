@@ -20,6 +20,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'declutterTabs',
       'acceptTabOrganization',
       'rejectTabOrganization',
+      'excludeFromStaleTabs',
       'getProfileData',
       'getStaleTabs',
       'getTabOrganizationSession',
@@ -64,6 +65,10 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
 
   rejectTabOrganization(sessionId: number, organizationId: number) {
     this.methodCalled('rejectTabOrganization', [sessionId, organizationId]);
+  }
+
+  excludeFromStaleTabs(tabId: number) {
+    this.methodCalled('excludeFromStaleTabs', [tabId]);
   }
 
   getProfileData() {

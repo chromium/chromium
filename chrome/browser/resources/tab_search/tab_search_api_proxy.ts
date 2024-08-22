@@ -27,6 +27,8 @@ export interface TabSearchApiProxy {
 
   rejectTabOrganization(sessionId: number, organizationId: number): void;
 
+  excludeFromStaleTabs(tabId: number): void;
+
   getProfileData(): Promise<{profileData: ProfileData}>;
 
   getStaleTabs(): Promise<{tabs: Tab[]}>;
@@ -101,6 +103,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   rejectTabOrganization(sessionId: number, organizationId: number) {
     this.handler.rejectTabOrganization(sessionId, organizationId);
+  }
+
+  excludeFromStaleTabs(tabId: number) {
+    this.handler.excludeFromStaleTabs(tabId);
   }
 
   getProfileData() {

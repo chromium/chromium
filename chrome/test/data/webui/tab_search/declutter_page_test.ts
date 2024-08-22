@@ -56,4 +56,20 @@ suite('DeclutterPageTest', () => {
     const [tabIds] = await testApiProxy.whenCalled('declutterTabs');
     assertEquals(staleTabElements.length, tabIds.length);
   });
+
+  test('Excludes from stale tabs', async () => {
+    await declutterPageSetup();
+    assertEquals(0, testApiProxy.getCallCount('excludeFromStaleTabs'));
+
+    const staleTabElement =
+        declutterPage.shadowRoot!.querySelector('tab-search-item');
+    assertTrue(!!staleTabElement);
+    const removeButton =
+        staleTabElement.shadowRoot!.querySelector('cr-icon-button');
+    assertTrue(!!removeButton);
+    removeButton.click();
+
+    const [tabId] = await testApiProxy.whenCalled('excludeFromStaleTabs');
+    assertEquals(staleTabElement.data.tab.tabId, tabId);
+  });
 });

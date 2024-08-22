@@ -12,7 +12,8 @@ export function getHtml(this: DeclutterPageElement) {
     ${this.staleTabDatas_.map((item, index) => html`
         <tab-search-item class="mwb-list-item" .data="${item}"
             role="option"
-            data-index="${index}">
+            data-index="${index}"
+            @close="${this.onTabRemove_}">
         </tab-search-item>
     `)}
   </div>
