@@ -81,7 +81,7 @@ WEB_TESTS_PATH_PREFIX = '/third_party/blink/' + WEB_TESTS_LAST_COMPONENT
 # content/shell/app/blink_test_platform_support_fuchsia.cc .
 FONTS_DEVICE_PATH = '/system/fonts'
 
-PROCESS_START_TIMEOUT = 20
+PROCESS_START_TIMEOUT = 60
 
 _log = logging.getLogger(__name__)
 
