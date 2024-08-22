@@ -11,6 +11,7 @@ import os
 import sys
 import urllib.request
 from mojom.generate.template_expander import UseJinja
+from pathlib import Path
 
 _kind_to_javascript_default_value = {
     mojom.BOOL: "false",
@@ -236,7 +237,7 @@ class Generator(generator.Generator):
         "js_module_imports": self._GetJsModuleImports(),
         "kinds": self.module.kinds,
         "module": self.module,
-        "module_filename": self._GetModuleFilename(filetype='js'),
+        "module_filename": Path(self._GetModuleFilename(filetype='js')).name,
         "mojom_namespace": self.module.mojom_namespace,
         "structs": self.module.structs + self._GetStructsFromMethods(),
         "unions": self.module.unions,
