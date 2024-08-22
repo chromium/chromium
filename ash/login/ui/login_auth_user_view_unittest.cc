@@ -52,23 +52,34 @@ struct InputFieldVisibility {
   bool password;
   bool pin_input;
   bool toggle;
+  bool pin_pad;
 };
 const std::map<LoginAuthUserView::InputFieldMode, InputFieldVisibility>
     expected_visibilities = {
         {LoginAuthUserView::InputFieldMode::kNone,
-         {/*pwd*/ false, /*pin_input*/ false, /*toggle*/ false}},
+         {/*pwd*/ false, /*pin_input*/ false, /*toggle*/ false,
+          /*pin_pad*/ false}},
         {LoginAuthUserView::InputFieldMode::kPasswordOnly,
-         {/*pwd*/ true, /*pin_input*/ false, /*toggle*/ false}},
+         {/*pwd*/ true, /*pin_input*/ false, /*toggle*/ false,
+          /*pin_pad*/ false}},
         {LoginAuthUserView::InputFieldMode::kPinOnlyAutosubmitOn,
-         {/*pwd*/ false, /*pin_input*/ true, /*toggle*/ false}},
+         {/*pwd*/ false, /*pin_input*/ true, /*toggle*/ false,
+          /*pin_pad*/ true}},
         {LoginAuthUserView::InputFieldMode::kPinOnlyAutosubmitOff,
-         {/*pwd*/ true, /*pin_input*/ false, /*toggle*/ false}},
+         {/*pwd*/ true, /*pin_input*/ false, /*toggle*/ false,
+          /*pin_pad*/ true}},
         {LoginAuthUserView::InputFieldMode::kPasswordAndPin,
-         {/*pwd*/ true, /*pin_input*/ false, /*toggle*/ false}},
-        {LoginAuthUserView::InputFieldMode::kPinWithToggle,
-         {/*pwd*/ false, /*pin_input*/ true, /*toggle*/ true}},
-        {LoginAuthUserView::InputFieldMode::kPwdWithToggle,
-         {/*pwd*/ true, /*pin_input*/ false, /*toggle*/ true}},
+         {/*pwd*/ true, /*pin_input*/ false, /*toggle*/ false,
+          /*pin_pad*/ true}},
+        {LoginAuthUserView::InputFieldMode::kPinWithToggleAutosubmitOn,
+         {/*pwd*/ false, /*pin_input*/ true, /*toggle*/ true,
+          /*pin_pad*/ true}},
+        {LoginAuthUserView::InputFieldMode::kPinWithToggleAutosubmitOff,
+         {/*pwd*/ true, /*pin_input*/ false, /*toggle*/ true,
+          /*pin_pad*/ true}},
+        {LoginAuthUserView::InputFieldMode::kPasswordWithToggle,
+         {/*pwd*/ true, /*pin_input*/ false, /*toggle*/ true,
+          /*pin_pad*/ false}},
 };
 
 }  // namespace
@@ -124,6 +135,7 @@ class LoginAuthUserViewTestBase : public LoginTestBase {
     EXPECT_EQ(test.password_view()->GetVisible(), visibility.password);
     EXPECT_EQ(test.pin_input_view()->GetVisible(), visibility.pin_input);
     EXPECT_EQ(test.pin_password_toggle()->GetVisible(), visibility.toggle);
+    EXPECT_EQ(test.pin_view()->GetVisible(), visibility.pin_pad);
   }
 
   void InitializeViewForUser(LoginUserInfo user) {
@@ -269,7 +281,8 @@ TEST_F(LoginAuthUserViewUnittest, ResetPinFieldOnUpdateUser) {
   // Set up PIN with auto submit.
   SetUserCount(1);
   SetAuthPasswordAndPin(/*autosubmit_length*/ 6);
-  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::kPinWithToggle);
+  ExpectModeVisibility(
+      LoginAuthUserView::InputFieldMode::kPinWithToggleAutosubmitOn);
 
   // Insert some random digits.
   pin_input->InsertDigit(1);
@@ -293,7 +306,8 @@ TEST_F(LoginAuthUserViewUnittest, CorrectFieldModeForExposedPinLength) {
     SetAuthPasswordAndPin(/*autosubmit_length*/ pin_length);
 
     if (LoginPinInputView::IsAutosubmitSupported(pin_length)) {
-      ExpectModeVisibility(LoginAuthUserView::InputFieldMode::kPinWithToggle);
+      ExpectModeVisibility(
+          LoginAuthUserView::InputFieldMode::kPinWithToggleAutosubmitOn);
     } else {
       ExpectModeVisibility(LoginAuthUserView::InputFieldMode::kPasswordAndPin);
     }
@@ -415,8 +429,8 @@ TEST_F(LoginAuthUserViewPinOnlyUnittest, PinOnlyModeWithAutosubmitDisabled) {
 }
 
 /**
- * Tests the correctness of InputFieldMode::kPasswordAndPin by ensuring the
- * following:
+ * Tests the correctness of InputFieldMode::kPasswordAndPin by
+ * ensuring the following:
  * - Clicking on the pin pad inserts digits into the field
  * - Digits are correctly ignored when the field is set to read-only
  * - Submitting the credentials results in the correct auth call
@@ -458,14 +472,15 @@ TEST_F(LoginAuthUserViewUnittest, PinAndPasswordFieldModeCorrectness) {
 }
 
 /**
- * Tests the correctness of InputFieldMode::kPinWithToggle - the default
- * input mode when using a PIN with auto submit enabled, by ensuring the
+ * Tests the correctness of InputFieldMode::kPinWithToggleAutosubmitOn - the
+ * default input mode when using a PIN with auto submit enabled, by ensuring the
  * following:
  * - Clicking on the pin pad inserts digits into the field
  * - Digits are correctly ignored when the field is set to read-only
  * - Submitting the last digit triggers the correct auth call
  */
-TEST_F(LoginAuthUserViewUnittest, PinWithToggleFieldModeCorrectness) {
+TEST_F(LoginAuthUserViewUnittest,
+       PinWithToggleAutosubmitOnFieldModeCorrectness) {
   LoginAuthUserView::TestApi auth_test(view_);
   auto client = std::make_unique<MockLoginScreenClient>();
   LoginUserView* user_view(auth_test.user_view());
@@ -475,7 +490,8 @@ TEST_F(LoginAuthUserViewUnittest, PinWithToggleFieldModeCorrectness) {
   // Set up PIN with auto submit.
   SetUserCount(1);
   SetAuthPasswordAndPin(/*autosubmit_length*/ 6);
-  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::kPinWithToggle);
+  ExpectModeVisibility(
+      LoginAuthUserView::InputFieldMode::kPinWithToggleAutosubmitOn);
 
   const auto pin = std::string("123456");
   EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(
@@ -502,7 +518,7 @@ TEST_F(LoginAuthUserViewUnittest, PinWithToggleFieldModeCorrectness) {
 }
 
 /**
- * Tests the correctness of InputFieldMode::kPwdWithToggle. This is the
+ * Tests the correctness of InputFieldMode::kPasswordWithToggle. This is the
  * mode that shows just the password field with the option to switch to PIN.
  * It is only available when the user has auto submit enabled.
  */
@@ -516,13 +532,110 @@ TEST_F(LoginAuthUserViewUnittest, PwdWithToggleFieldModeCorrectness) {
   // Set up PIN with auto submit and click on the toggle to switch to password.
   SetUserCount(1);
   SetAuthPasswordAndPin(/*autosubmit_length*/ 6);
-  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::kPinWithToggle);
+  ExpectModeVisibility(
+      LoginAuthUserView::InputFieldMode::kPinWithToggleAutosubmitOn);
   const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
                              gfx::Point(), ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi(auth_test.pin_password_toggle())
       .NotifyClick(event);
   base::RunLoop().RunUntilIdle();
-  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::kPwdWithToggle);
+  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::kPasswordWithToggle);
+
+  // Insert a password consisting of numbers only and expect it to be treated
+  // as a password, not a PIN. This means 'authenticated_by_pin' must be false.
+  password_test.textfield()->SetText(u"12345678");
+
+  EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(
+                           user_view->current_user().basic_user_info.account_id,
+                           /*password=*/"12345678",
+                           /*authenticated_by_pin=*/false,
+                           /*callback=*/_));
+
+  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  base::RunLoop().RunUntilIdle();
+}
+
+class LoginAuthUserViewSeparatePasswordAndPinUnittest
+    : public LoginAuthUserViewUnittest {
+ public:
+  LoginAuthUserViewSeparatePasswordAndPinUnittest() {
+    feature_list_.Reset();
+    feature_list_.InitAndEnableFeature(
+        features::kSeparatePasswordAndPinOnLogin);
+  }
+};
+
+/**
+ * Tests the correctness of InputFieldMode::kPinWithToggleAutosubmitOff - the
+ * default input mode when using a PIN with auto submit disabled, by ensuring
+ * the following:
+ * - Clicking on the pin pad inserts digits into the field
+ * - Digits are correctly ignored when the field is set to read-only
+ * - Submitting the credentials results in the correct auth call
+ */
+TEST_F(LoginAuthUserViewSeparatePasswordAndPinUnittest,
+       PinWithToggleAutosubmitOffFieldModeCorrectness) {
+  LoginAuthUserView::TestApi auth_test(view_);
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  auto client = std::make_unique<MockLoginScreenClient>();
+  LoginUserView* user_view(auth_test.user_view());
+  LoginPinView::TestApi pin_pad_api{auth_test.pin_view()};
+
+  // PIN length not exposed and thus no auto submit.
+  SetUserCount(1);
+  SetAuthPasswordAndPin(/*autosubmit_length*/ 0);
+  ExpectModeVisibility(
+      LoginAuthUserView::InputFieldMode::kPinWithToggleAutosubmitOff);
+
+  // Typing '123456789'.
+  pin_pad_api.ClickOnDigit(1);
+  pin_pad_api.ClickOnDigit(2);
+  pin_pad_api.ClickOnDigit(3);
+  // '456' must be ignored.
+  auth_test.password_view()->SetReadOnly(true);
+  pin_pad_api.ClickOnDigit(4);
+  pin_pad_api.ClickOnDigit(5);
+  pin_pad_api.ClickOnDigit(6);
+  auth_test.password_view()->SetReadOnly(false);
+  pin_pad_api.ClickOnDigit(7);
+  pin_pad_api.ClickOnDigit(8);
+  pin_pad_api.ClickOnDigit(9);
+
+  EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(
+                           user_view->current_user().basic_user_info.account_id,
+                           /*password=*/"123789",
+                           /*authenticated_by_pin=*/true,
+                           /*callback=*/_));
+
+  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  base::RunLoop().RunUntilIdle();
+}
+
+/**
+ * Tests the correctness of InputFieldMode::kPasswordWithToggle when PIN
+ * autosubmit is disabled. This is the mode that shows just the password field
+ * with the option to switch to PIN.
+ */
+TEST_F(LoginAuthUserViewSeparatePasswordAndPinUnittest,
+       PasswordWithToggleFieldModeWithPinAutosubmitDisabled) {
+  LoginAuthUserView::TestApi auth_test(view_);
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  auto client = std::make_unique<MockLoginScreenClient>();
+  LoginUserView* user_view(auth_test.user_view());
+  LoginPasswordView::TestApi password_test(view_->password_view());
+
+  // Set up PIN with auto submit disabled and click on the toggle to switch to
+  // password.
+  SetUserCount(1);
+  SetAuthPasswordAndPin(/*autosubmit_length*/ 0);
+  ExpectModeVisibility(
+      LoginAuthUserView::InputFieldMode::kPinWithToggleAutosubmitOff);
+  const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi(auth_test.pin_password_toggle())
+      .NotifyClick(event);
+  base::RunLoop().RunUntilIdle();
+  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::kPasswordWithToggle);
 
   // Insert a password consisting of numbers only and expect it to be treated
   // as a password, not a PIN. This means 'authenticated_by_pin' must be false.

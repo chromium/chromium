@@ -96,16 +96,18 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // might be in. This is determined by the current authentication methods
   // that a user has.
   enum class InputFieldMode {
-    kNone,                  // Not showing any input field.
-    kPasswordOnly,          // Password only field, no PIN set.
-    kPinOnlyAutosubmitOn,   // PIN only field, auto-submit feature enabled, no
-                            // password set.
-    kPinOnlyAutosubmitOff,  // PIN only field, auto-submit feature disabled, no
-                            // password set.
-    kPwdWithToggle,         // Password field with toggle, PIN auto-submit
-                            // feature enabled.
-    kPinWithToggle,         // PIN field with toggle, auto-submit feature
-                            // enabled.
+    kNone,                        // Not showing any input field.
+    kPasswordOnly,                // Password only field, no PIN set.
+    kPinOnlyAutosubmitOn,         // PIN only field, auto-submit feature
+                                  // enabled, no password set.
+    kPinOnlyAutosubmitOff,        // PIN only field, auto-submit feature
+                                  // disabled, no password set.
+    kPasswordWithToggle,          // Password field with toggle to switch to PIN
+                                  // field.
+    kPinWithToggleAutosubmitOn,   // PIN field with toggle, auto-submit
+                                  // feature enabled.
+    kPinWithToggleAutosubmitOff,  // PIN field with toggle, auto-submit feature
+                                  // disabled.
     // TODO(b/357606198): Separate password and PIN field.
     kPasswordAndPin,  // Both password and PIN are set, PIN auto-submit feature
                       // disabled.
@@ -277,6 +279,9 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // Helper method to check if an auth method is enable. Use it like this:
   // bool has_tap = HasAuthMethod(AUTH_PASSWORD).
   bool HasAuthMethod(AuthMethods auth_method) const;
+
+  // Whether the authentication attempt should use the user's password only.
+  bool ShouldAuthenticateWithPassword() const;
 
   // Whether the authentication attempt should use the user's PIN.
   bool ShouldAuthenticateWithPin() const;

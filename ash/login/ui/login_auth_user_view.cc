@@ -217,6 +217,21 @@ void AnimateOpacity(T* view, bool towards_visible, bool observe_completion) {
   }
 }
 
+LoginAuthUserView::InputFieldMode GetPinInputMode(bool has_password,
+                                                  int pin_length) {
+  const bool is_auto_submit_supported =
+      LoginPinInputView::IsAutosubmitSupported(pin_length);
+  if (has_password) {
+    return is_auto_submit_supported
+               ? LoginAuthUserView::InputFieldMode::kPinWithToggleAutosubmitOn
+               : LoginAuthUserView::InputFieldMode::kPinWithToggleAutosubmitOff;
+  } else {
+    return is_auto_submit_supported
+               ? LoginAuthUserView::InputFieldMode::kPinOnlyAutosubmitOn
+               : LoginAuthUserView::InputFieldMode::kPinOnlyAutosubmitOff;
+  }
+}
+
 }  // namespace
 
 // Consists of challenge-response icon view and a label.
@@ -1272,11 +1287,16 @@ bool LoginAuthUserView::HasAuthMethod(AuthMethods auth_method) const {
   return (auth_methods_ & auth_method) != 0;
 }
 
+bool LoginAuthUserView::ShouldAuthenticateWithPassword() const {
+  return input_field_mode_ ==
+             LoginAuthUserView::InputFieldMode::kPasswordOnly ||
+         input_field_mode_ ==
+             LoginAuthUserView::InputFieldMode::kPasswordWithToggle;
+}
+
 bool LoginAuthUserView::ShouldAuthenticateWithPin() const {
-  return input_field_mode_ == InputFieldMode::kPinOnlyAutosubmitOn ||
-         input_field_mode_ == InputFieldMode::kPinOnlyAutosubmitOff ||
-         input_field_mode_ == InputFieldMode::kPasswordAndPin ||
-         input_field_mode_ == InputFieldMode::kPinWithToggle;
+  return input_field_mode_ != LoginAuthUserView::InputFieldMode::kNone &&
+         !ShouldAuthenticateWithPassword();
 }
 
 void LoginAuthUserView::AttemptAuthenticateWithChallengeResponse() {
@@ -1332,8 +1352,7 @@ void LoginAuthUserView::UpdateFocus() {
 
 void LoginAuthUserView::OnSwitchButtonClicked() {
   // Ignore events from the switch button if no longer present.
-  if (input_field_mode_ != InputFieldMode::kPinWithToggle &&
-      input_field_mode_ != InputFieldMode::kPwdWithToggle) {
+  if (!ShouldShowToggle()) {
     return;
   }
 
@@ -1343,9 +1362,13 @@ void LoginAuthUserView::OnSwitchButtonClicked() {
   // Cache the current state of the UI.
   CaptureStateForAnimationPreLayout();
   // Same auth methods, but the input field mode has changed.
-  input_field_mode_ = (input_field_mode_ == InputFieldMode::kPinWithToggle)
-                          ? InputFieldMode::kPwdWithToggle
-                          : InputFieldMode::kPinWithToggle;
+  if (input_field_mode_ == InputFieldMode::kPinWithToggleAutosubmitOn ||
+      input_field_mode_ == InputFieldMode::kPinWithToggleAutosubmitOff) {
+    input_field_mode_ = InputFieldMode::kPasswordWithToggle;
+  } else if (input_field_mode_ == InputFieldMode::kPasswordWithToggle) {
+    input_field_mode_ = GetPinInputMode(/*has_password*/ true,
+                                        auth_metadata_.autosubmit_pin_length);
+  }
   SetAuthMethods(auth_methods_, auth_metadata_);
   // Layout and animate.
   DeprecatedLayoutImmediately();
@@ -1391,67 +1414,60 @@ void LoginAuthUserView::UpdateInputFieldMode() {
   if (features::IsAllowPasswordlessSetupEnabled()) {
     CHECK(HasAuthMethod(AUTH_PASSWORD) || HasAuthMethod(AUTH_PIN));
     if (!HasAuthMethod(AUTH_PASSWORD)) {
-      input_field_mode_ = is_auto_submit_supported
-                              ? InputFieldMode::kPinOnlyAutosubmitOn
-                              : InputFieldMode::kPinOnlyAutosubmitOff;
+      input_field_mode_ = GetPinInputMode(/*has_password*/ false, pin_length);
       return;
     }
   }
 
-  // Default to combined password/pin if autosubmit is disabled.
-  if (!is_auto_submit_supported) {
+  // Uses combined password/pin if autosubmit is disabled.
+  if (!is_auto_submit_supported &&
+      !features::IsSeparatePasswordAndPinOnLoginEnabled()) {
     input_field_mode_ = InputFieldMode::kPasswordAndPin;
     return;
   }
 
   // Defaults to PIN + switch button if not showing the switch button already.
-  if (input_field_mode_ != InputFieldMode::kPinWithToggle &&
-      input_field_mode_ != InputFieldMode::kPwdWithToggle) {
-    input_field_mode_ = InputFieldMode::kPinWithToggle;
+  auto pin_with_toggle_mode =
+      GetPinInputMode(/*has_password*/ true, pin_length);
+  if (input_field_mode_ != pin_with_toggle_mode &&
+      input_field_mode_ != InputFieldMode::kPasswordWithToggle) {
+    input_field_mode_ = pin_with_toggle_mode;
     return;
   }
 
   // If none of the conditions above are met, it means the user has both
-  // password and PIN auth and is already in kPinWithToggle or kPwdWithToggle
-  // mode.
+  // password and PIN auth and is already in kPinWithToggle or
+  // kPasswordWithToggle mode.
   DCHECK(HasAuthMethod(AUTH_PASSWORD) && HasAuthMethod(AUTH_PIN));
-  DCHECK(input_field_mode_ == InputFieldMode::kPinWithToggle ||
-         input_field_mode_ == InputFieldMode::kPwdWithToggle);
+  DCHECK(input_field_mode_ == pin_with_toggle_mode ||
+         input_field_mode_ == InputFieldMode::kPasswordWithToggle);
 }
 
 bool LoginAuthUserView::ShouldShowPinPad() const {
-  if (auth_metadata_.virtual_keyboard_visible) {
+  if (input_field_mode_ == InputFieldMode::kNone ||
+      auth_metadata_.virtual_keyboard_visible) {
     return false;
   }
-  switch (input_field_mode_) {
-    case InputFieldMode::kNone:
-      return false;
-    case InputFieldMode::kPasswordOnly:
-    case InputFieldMode::kPwdWithToggle:
-      return auth_metadata_.show_pinpad_for_pw;
-    case InputFieldMode::kPinOnlyAutosubmitOn:
-    case InputFieldMode::kPinOnlyAutosubmitOff:
-    case InputFieldMode::kPasswordAndPin:
-    case InputFieldMode::kPinWithToggle:
-      return true;
+  if (ShouldAuthenticateWithPassword()) {
+    return auth_metadata_.show_pinpad_for_pw;
   }
+  return true;
 }
 
 bool LoginAuthUserView::ShouldShowPasswordField() const {
-  return input_field_mode_ == InputFieldMode::kPasswordOnly ||
-         input_field_mode_ == InputFieldMode::kPasswordAndPin ||
-         input_field_mode_ == InputFieldMode::kPinOnlyAutosubmitOff ||
-         input_field_mode_ == InputFieldMode::kPwdWithToggle;
+  return input_field_mode_ != InputFieldMode::kNone &&
+         !ShouldShowPinInputField();
 }
 
 bool LoginAuthUserView::ShouldShowPinInputField() const {
   return input_field_mode_ == InputFieldMode::kPinOnlyAutosubmitOn ||
-         input_field_mode_ == InputFieldMode::kPinWithToggle;
+         input_field_mode_ == InputFieldMode::kPinWithToggleAutosubmitOn;
 }
 
 bool LoginAuthUserView::ShouldShowToggle() const {
-  return input_field_mode_ == InputFieldMode::kPinWithToggle ||
-         input_field_mode_ == InputFieldMode::kPwdWithToggle;
+  return input_field_mode_ == InputFieldMode::kPinWithToggleAutosubmitOn ||
+         input_field_mode_ == InputFieldMode::kPinWithToggleAutosubmitOff ||
+         input_field_mode_ == InputFieldMode::kPasswordWithToggle;
 }
 
 gfx::Size LoginAuthUserView::GetPaddingBelowUserView() const {
@@ -1491,7 +1507,7 @@ gfx::Size LoginAuthUserView::GetPaddingBelowPasswordView() const {
 }
 
 std::u16string LoginAuthUserView::GetPinPasswordToggleText() const {
-  if (input_field_mode_ == InputFieldMode::kPwdWithToggle) {
+  if (input_field_mode_ == InputFieldMode::kPasswordWithToggle) {
     return l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SWITCH_TO_PIN);
   } else {
     return l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SWITCH_TO_PASSWORD);
@@ -1503,7 +1519,7 @@ std::u16string LoginAuthUserView::GetPasswordViewPlaceholder() const {
     return l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_POD_PASSWORD_PIN_PLACEHOLDER);
   }
-  if (input_field_mode_ == InputFieldMode::kPinOnlyAutosubmitOff) {
+  if (ShouldAuthenticateWithPin()) {
     return l10n_util::GetStringUTF16(IDS_ASH_LOGIN_POD_PIN_PLACEHOLDER);
   }
   return l10n_util::GetStringUTF16(IDS_ASH_LOGIN_POD_PASSWORD_PLACEHOLDER);

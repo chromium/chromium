@@ -2775,6 +2775,12 @@ BASE_FEATURE(kSeparateNetworkIcons,
              "SeparateNetworkIcons",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables separate password and PIN fields on the login screen when PIN
+// autosubmit is off, instead of a combined "Password or PIN" field.
+BASE_FEATURE(kSeparatePasswordAndPinOnLogin,
+             "SeparatePasswordAndPinOnLogin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // With this feature enabled, the shortcut app badge is painted in the UI
 // instead of being part of the shortcut app icon.
 BASE_FEATURE(kSeparateWebAppShortcutBadgeIcon,
@@ -4690,6 +4696,10 @@ bool IsSeaPenEnterpriseEnabled() {
 
 bool IsSeparateNetworkIconsEnabled() {
   return base::FeatureList::IsEnabled(kSeparateNetworkIcons);
+}
+
+bool IsSeparatePasswordAndPinOnLoginEnabled() {
+  return base::FeatureList::IsEnabled(kSeparatePasswordAndPinOnLogin);
 }
 
 bool IsSeparateWebAppShortcutBadgeIconEnabled() {
