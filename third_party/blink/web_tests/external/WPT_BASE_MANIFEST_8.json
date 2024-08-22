@@ -357873,6 +357873,22 @@
      "5c4a3b206c3f733dc0fe3e9255e7698d30f4b028",
      []
     ],
+    "disabled-by-permissions-policy.https.sub-expected.txt": [
+     "f97bf6f85b138a137e8525b61eed52cceb4c9b2a",
+     []
+    ],
+    "disabled-by-permissions-policy.https.sub.html.headers": [
+     "02a76b7c3f289bed45a44e7c949b4792fd798dbc",
+     []
+    ],
+    "enabled-on-self-origin-by-permissions-policy.https.sub-expected.txt": [
+     "c5f2c23035bc575dd0d8df64642f784cf6a2702e",
+     []
+    ],
+    "enabled-on-self-origin-by-permissions-policy.https.sub.html.headers": [
+     "1207d9e29a111a46b920d27dd3188bae1e6cf8f4",
+     []
+    ],
     "get-user-activation.https-expected.txt": [
      "46153d34349e8c7a9c065233b385ff0a04ce7e77",
      []
@@ -393094,6 +393110,10 @@
       "56780cf6dc05879731bff0bbb1486c51b0b4141b",
       []
      ],
+     "digital-credentials-get.html": [
+      "4b212756c229101ab1d1cbb908767033edbb6367",
+      []
+     ],
      "nested-sandbox.html": [
       "4ba512140dae5d9df8d1b1bd19178a34ff5b40c0",
       []
@@ -393219,7 +393239,7 @@
       []
      ],
      "permissions-policy.js": [
-      "d700cb086b362229e194cd2596f151bdf74d0039",
+      "cfc6d3caab103427f5de5ab8ebb4949bbc2ef334",
       []
      ],
      "picture-in-picture.js": [
@@ -458264,7 +458284,7 @@
        ]
       ],
       "custom-property-style-queries.html": [
-       "96a80904521ae3e92c43c87c4f05098d7e2376fd",
+       "17ee5b4184bf9b71ca559031ef136aa5f7016277",
        [
         null,
         {}
@@ -493871,11 +493891,45 @@
     ]
    },
    "digital-credentials": {
+    "allow-attribute.https.html": [
+     "a42a3b68f0e888b8a745429bff1f14819d741e65",
+     [
+      null,
+      {}
+     ]
+    ],
+    "default-permissions-policy.https.sub.html": [
+     "fa3309ac2b40328550f1b576ce372929c2bfd1f5",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "digital-credentials-static-methods.tentative.https.html": [
      "5e00861124fd1755f90f4107824c4f3aae3bf5b0",
      [
       null,
       {}
+     ]
+    ],
+    "disabled-by-permissions-policy.https.sub.html": [
+     "2adff986164ca7342ec98f440ac27d87ce55a987",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "enabled-on-self-origin-by-permissions-policy.https.sub.html": [
+     "4b928b035784b8ac445180c5db39e19d01233748",
+     [
+      null,
+      {
+       "testdriver": true
+      }
      ]
     ],
     "get-user-activation.https.html": [
@@ -711499,6 +711553,201 @@
       ],
       [
        "webnn/validation_tests/destroyContext.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "title",
+          "validation tests for WebNN API MLContext::destroy()"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "destroyGraph.https.any.js": [
+      "8d4f5121c2f338de423d734855af855813672c66",
+      [
+       "webnn/validation_tests/destroyGraph.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "title",
+          "validation tests for WebNN API MLContext::destroy()"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/validation_tests/destroyGraph.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "title",
+          "validation tests for WebNN API MLContext::destroy()"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/validation_tests/destroyGraph.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "title",
+          "validation tests for WebNN API MLContext::destroy()"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/validation_tests/destroyGraph.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "title",
+          "validation tests for WebNN API MLContext::destroy()"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/validation_tests/destroyGraph.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "title",
+          "validation tests for WebNN API MLContext::destroy()"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/validation_tests/destroyGraph.https.any.worker.html?npu",
        {
         "script_metadata": [
          [
