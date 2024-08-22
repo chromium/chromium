@@ -6318,6 +6318,11 @@ const char kCrosBatterySaverAlwaysOnDescription[] =
     "Turns on ChomeOS Battery Saver all the time, even when charging or fully "
     "charged. Used for testing ChromeOS Battery Saver Mode.";
 
+const char kCrosContentAdjustedRefreshRateName[] =
+    "Content Adjusted Refresh Rate";
+const char kCrosContentAdjustedRefreshRateDescription[] =
+    "Allows the display to adjust the refresh rate in order to match content.";
+
 const char kCrosSoulName[] = "CrOS SOUL";
 const char kCrosSoulDescription[] = "Enable the CrOS SOUL feature.";
 

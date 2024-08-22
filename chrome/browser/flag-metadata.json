@@ -1724,6 +1724,11 @@
     "expiry_milestone": 137
   },
   {
+    "name": "cros-content-adjusted-refresh-rate",
+    "owners": [ "aswolfers@chromium.org", "chromeos-gfx-compositor@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "cros-focus-mode",
     "owners": [
       "richui@chromium.org",

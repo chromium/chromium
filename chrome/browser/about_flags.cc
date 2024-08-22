@@ -11965,6 +11965,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDataSharingDescription, kOsAll,
      FEATURE_VALUE_TYPE(data_sharing::features::kDataSharingFeature)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"cros-content-adjusted-refresh-rate",
+     flag_descriptions::kCrosContentAdjustedRefreshRateName,
+     flag_descriptions::kCrosContentAdjustedRefreshRateDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kCrosContentAdjustedRefreshRate)}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -15728,6 +15728,7 @@ from previous Chrome versions.
   <int value="-2009172938" label="DragToPinTabs:disabled"/>
   <int value="-2007947679" label="OmniboxMostVisitedTilesOnSrp:disabled"/>
   <int value="-2007377632" label="DiscoverFeedMultiColumn:enabled"/>
+  <int value="-2007080863" label="CrosContentAdjustedRefreshRate:disabled"/>
   <int value="-2006505465"
       label="AutofillRemoveCardExpirationAndTypeTitles:disabled"/>
   <int value="-2005716090" label="ShareSheetMigrationAndroid:disabled"/>
@@ -18818,6 +18819,7 @@ from previous Chrome versions.
   <int value="-716973822" label="PasswordManualFallbackAvailable:disabled"/>
   <int value="-716965886" label="NtpRealboxRoundedCorners:disabled"/>
   <int value="-716953514" label="disable-password-separated-signin-flow"/>
+  <int value="-716422020" label="CrosContentAdjustedRefreshRate:enabled"/>
   <int value="-716272467" label="AssistantAppSupport:disabled"/>
   <int value="-715865629" label="HideShelfControlsInTabletMode:enabled"/>
   <int value="-715733307" label="force-effective-connection-type"/>
