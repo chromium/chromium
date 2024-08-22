@@ -175,6 +175,13 @@ webapps::AppId InstallWebAppFromManifest(Browser* browser,
 Browser* LaunchWebAppBrowser(Profile* profile,
                              const webapps::AppId& app_id,
                              WindowOpenDisposition disposition) {
+  WebAppRegistrar& registrar =
+      WebAppProvider::GetForLocalAppsUnchecked(profile)->registrar_unsafe();
+  GURL start_url = registrar.GetAppLaunchUrl(app_id);
+  GURL scope = registrar.GetAppScope(app_id);
+  SCOPED_TRACE(base::StrCat({"Attempted to launch ", app_id, " at ",
+                             start_url.possibly_invalid_spec(), " with scope ",
+                             scope.possibly_invalid_spec()}));
   content::WebContents* web_contents =
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppLauncher()
@@ -183,6 +190,27 @@ Browser* LaunchWebAppBrowser(Profile* profile,
               disposition, apps::LaunchSource::kFromTest));
 
   if (!web_contents) {
+    return nullptr;
+  }
+
+  // Some tests load the "/hung" url, which never finishes loading. Thus exclude
+  // that case from waiting for loading to stop.
+  bool will_url_finish_loading = start_url.path() != "/hung";
+  if (will_url_finish_loading) {
+    content::WaitForLoadStop(web_contents);
+  }
+
+  WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
+  if (!tab_helper) {
+    ADD_FAILURE() << "No WebAppTabHelper attached to returned web contents";
+    return nullptr;
+  }
+  // If the navigation never commits, then the tab helper's app_id is never set.
+  if (will_url_finish_loading && tab_helper->app_id() != app_id) {
+    ADD_FAILURE() << "Launch of " << app_id
+                  << " failed to associate web contents " << web_contents
+                  << " with the the app. Instead, has app_id: "
+                  << tab_helper->app_id().value_or("<none>");
     return nullptr;
   }
 
@@ -206,6 +234,13 @@ Browser* LaunchWebAppBrowserAndWait(Profile* profile,
 
 Browser* LaunchBrowserForWebAppInTab(Profile* profile,
                                      const webapps::AppId& app_id) {
+  WebAppRegistrar& registrar =
+      WebAppProvider::GetForLocalAppsUnchecked(profile)->registrar_unsafe();
+  GURL start_url = registrar.GetAppLaunchUrl(app_id);
+  GURL scope = registrar.GetAppScope(app_id);
+  SCOPED_TRACE(base::StrCat({"Attempted to launch ", app_id, " at ",
+                             start_url.possibly_invalid_spec(), " with scope ",
+                             scope.possibly_invalid_spec()}));
   content::WebContents* web_contents =
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppLauncher()
@@ -218,7 +253,26 @@ Browser* LaunchBrowserForWebAppInTab(Profile* profile,
     return nullptr;
   }
 
-  EXPECT_EQ(app_id, *WebAppTabHelper::GetAppId(web_contents));
+  // Some tests load the "/hung" url, which never finishes loading. Thus exclude
+  // that case from waiting for loading to stop.
+  bool will_url_finish_loading = start_url.path() != "/hung";
+  if (will_url_finish_loading) {
+    content::WaitForLoadStop(web_contents);
+  }
+
+  WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
+  if (!tab_helper) {
+    ADD_FAILURE() << "No WebAppTabHelper attached to returned web contents";
+    return nullptr;
+  }
+  // If the navigation never commits, then the tab helper's app_id is never set.
+  if (will_url_finish_loading && tab_helper->app_id() != app_id) {
+    ADD_FAILURE() << "Launch of " << app_id
+                  << " failed to associate web contents " << web_contents
+                  << " with the the app. Instead, has app_id: "
+                  << tab_helper->app_id().value_or("<none>");
+    return nullptr;
+  }
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   ui_test_utils::WaitForBrowserSetLastActive(browser);

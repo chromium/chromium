@@ -53,6 +53,8 @@ class WebKioskBaseTest : public OobeBaseTest {
 
   void SetAppInstallUrl(const std::string& app_install_url);
 
+  const std::string& app_install_url() const { return app_install_url_; }
+
  private:
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
   DeviceStateMixin device_state_mixin_{

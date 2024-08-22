@@ -8,6 +8,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -98,7 +101,7 @@ class WebAppTabStripBrowserTest : public WebAppBrowserTestBase {
     content::WebContents* web_contents;
   };
 
-  App InstallAndLaunch() {
+  webapps::AppId Install() {
     Profile* profile = browser()->profile();
     GURL start_url = embedded_test_server()->GetURL(kAppPath);
 
@@ -109,8 +112,12 @@ class WebAppTabStripBrowserTest : public WebAppBrowserTestBase {
     web_app_info->background_color = kAppBackgroundColor;
     web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     web_app_info->display_override = {blink::mojom::DisplayMode::kTabbed};
-    webapps::AppId app_id =
-        test::InstallWebApp(profile, std::move(web_app_info));
+    return test::InstallWebApp(profile, std::move(web_app_info));
+  }
+
+  App InstallAndLaunch() {
+    Profile* profile = browser()->profile();
+    webapps::AppId app_id = Install();
 
     Browser* app_browser = ::web_app::LaunchWebAppBrowser(profile, app_id);
     return App{app_id, app_browser,
@@ -255,7 +262,21 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
       ThemeServiceFactory::GetForProfile(browser()->profile());
   theme_service->UseDefaultTheme();
 
-  App app = InstallAndLaunch();
+  webapps::AppId app_id = Install();
+
+  // Trigger the launch but do not wait for the web contents to load.
+  content::WebContents* web_contents =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->BrowserAppLauncher()
+          ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+              app_id, apps::LaunchContainer::kLaunchContainerWindow,
+              WindowOpenDisposition::CURRENT_TAB,
+              apps::LaunchSource::kFromTest));
+  ASSERT_TRUE(web_contents);
+  Browser* app_browser = chrome::FindBrowserWithTab(web_contents);
+  App app{app_id, app_browser,
+          BrowserView::GetBrowserViewForBrowser(app_browser), web_contents};
+
   EXPECT_EQ(registrar().GetAppBackgroundColor(app.id), kAppBackgroundColor);
 
   // Expect manifest background color prior to page loading.

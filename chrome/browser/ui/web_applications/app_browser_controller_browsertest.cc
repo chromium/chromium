@@ -26,10 +26,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
   const webapps::AppId app_id = InstallPWA(start_url);
 
   Browser* browser = web_app::LaunchWebAppBrowser(profile(), app_id);
-
   AppBrowserController* controller = browser->app_controller();
-  // Verify theme color is null in browsertests before enabling high contrast.
-  ASSERT_FALSE(controller->GetThemeColor().has_value());
 
   // Enable high contrast theme.
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();

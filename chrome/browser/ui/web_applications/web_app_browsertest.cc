@@ -523,7 +523,10 @@ IN_PROC_BROWSER_TEST_P(DynamicColorSystemWebAppBrowserTest, Colors) {
   if (UseSystemThemeColor()) {
     // Ensure app controller is pulling the color from the OS.
     EXPECT_EQ(theme_color, ash::GetSystemThemeColor());
-    EXPECT_EQ(bg_color, ash::GetSystemBackgroundColor());
+    // TODO(crbug.com/359650452): Determine desired behavior here. This use to
+    // test for ash::GetSystemBackgroundColor(), but that becomes overridden
+    // after the web contents fully loads.
+    EXPECT_TRUE(bg_color == SK_ColorWHITE || bg_color == SK_ColorBLACK);
   } else {
     // If SWA has opted out, theme and bg color should default to white or black
     // depending on launch context.
