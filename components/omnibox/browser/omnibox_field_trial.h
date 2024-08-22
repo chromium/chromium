@@ -716,27 +716,6 @@ std::vector<std::pair<double, int>> GetPiecewiseMappingBreakPoints(
 
 // <- ML Relevance Scoring
 // ---------------------------------------------------------
-// Inspire Me ->
-
-// Specify number of additional Related and Trending queries appended to the
-// suggestion list, when the Inspire Me feature is enabled.
-
-constexpr base::FeatureParam<int> kQueryTilesCacheMaxAge(
-    &omnibox::kQueryTilesInZPSOnNTP,
-    "QueryTilesMaxCacheAgeHours",
-    8);
-
-constexpr base::FeatureParam<bool> kQueryTilesShowAboveTrends(
-    &omnibox::kQueryTilesInZPSOnNTP,
-    "QueryTilesShowAboveTrends",
-    true);
-
-constexpr base::FeatureParam<bool> kQueryTilesShowAsCarousel(
-    &omnibox::kQueryTilesInZPSOnNTP,
-    "QueryTilesShowAsCarousel",
-    false);
-// <- Inspire Me
-// ---------------------------------------------------------
 // Actions In Suggest ->
 //
 // When set to true, permits Entity suggestion with associated Actions to be

@@ -93,9 +93,6 @@ class MockAutocompleteProviderClient
       KeywordProvider* keyword_provider) override {
     return nullptr;
   }
-  query_tiles::TileService* GetQueryTileService() const override {
-    return nullptr;
-  }
   OmniboxTriggeredFeatureService* GetOmniboxTriggeredFeatureService()
       const override {
     return omnibox_triggered_feature_service_.get();

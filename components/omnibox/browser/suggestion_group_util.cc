@@ -47,12 +47,6 @@ const GroupConfigMap& BuildDefaultGroups() {
                          ? GroupConfig_RenderType_HORIZONTAL
                          : GroupConfig_RenderType_DEFAULT_VERTICAL)},
 
-        {GROUP_MOBILE_QUERY_TILES,
-          CreateGroup(SECTION_MOBILE_QUERY_TILES,
-              OmniboxFieldTrial::kQueryTilesShowAsCarousel.Get()
-              ? GroupConfig_RenderType_HORIZONTAL
-              : GroupConfig_RenderType_DEFAULT_VERTICAL,
-              IDS_OMNIBOX_HEADER_POPULAR_TOPICS)},
         {GROUP_MOBILE_RICH_ANSWER,
             OmniboxFieldTrial::kAnswerActionsShowRichCard.Get()
           ? CreateGroup(SECTION_MOBILE_RICH_ANSWER)

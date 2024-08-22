@@ -67,7 +67,6 @@
 #include "components/omnibox/browser/on_device_head_provider.h"
 #include "components/omnibox/browser/open_tab_provider.h"
 #include "components/omnibox/browser/page_classification_functions.h"
-#include "components/omnibox/browser/query_tile_provider.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/search_scoring_signals_annotator.h"
 #include "components/omnibox/browser/shortcuts_provider.h"
@@ -419,11 +418,6 @@ void AutocompleteController::ExtendMatchSubtypes(
       } else if (match.type == AutocompleteMatchType::SEARCH_SUGGEST) {
         subtypes->emplace(omnibox::SUBTYPE_URL_BASED);
       }
-    } else if (match.provider->type() ==
-               AutocompleteProvider::TYPE_QUERY_TILE) {
-      DCHECK(is_android);
-      // QueryTiles are now shown in zero-prefix context on Android.
-      subtypes->emplace(omnibox::SUBTYPE_ZERO_PREFIX_QUERY_TILE);
     } else if (match.provider->type() ==
                AutocompleteProvider::TYPE_ON_DEVICE_HEAD) {
       // This subtype indicates a match from an on-device head provider.
@@ -1245,8 +1239,6 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
       providers_.push_back(clipboard_provider_.get());
     }
   }
-  if (provider_types & AutocompleteProvider::TYPE_QUERY_TILE)
-    providers_.push_back(new QueryTileProvider(provider_client_.get(), this));
   if (provider_types & AutocompleteProvider::TYPE_VOICE_SUGGEST) {
     voice_suggest_provider_ = new VoiceSuggestProvider(provider_client_.get());
     providers_.push_back(voice_suggest_provider_.get());
@@ -1742,8 +1734,7 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
           subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX) ||
           subtypes.contains(omnibox::SUBTYPE_CLIPBOARD_IMAGE) ||
           subtypes.contains(omnibox::SUBTYPE_CLIPBOARD_TEXT) ||
-          subtypes.contains(omnibox::SUBTYPE_CLIPBOARD_URL) ||
-          subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX_QUERY_TILE)) {
+          subtypes.contains(omnibox::SUBTYPE_CLIPBOARD_URL)) {
         num_zero_prefix_suggestions_shown++;
       }
     }

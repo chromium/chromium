@@ -15,13 +15,11 @@
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
-#include "components/query_tiles/test/fake_tile_service.h"
 
 FakeAutocompleteProviderClient::FakeAutocompleteProviderClient() {
   set_template_url_service(
       search_engines_test_enviroment_.template_url_service());
 
-  tile_service_ = std::make_unique<query_tiles::FakeTileService>();
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   on_device_tail_model_service_ =
       std::make_unique<FakeOnDeviceTailModelService>();
@@ -93,11 +91,6 @@ FakeAutocompleteProviderClient::GetShortcutsBackend() {
 scoped_refptr<ShortcutsBackend>
 FakeAutocompleteProviderClient::GetShortcutsBackendIfExists() {
   return shortcuts_backend_;
-}
-
-query_tiles::TileService* FakeAutocompleteProviderClient::GetQueryTileService()
-    const {
-  return tile_service_.get();
 }
 
 const TabMatcher& FakeAutocompleteProviderClient::GetTabMatcher() const {

@@ -180,11 +180,6 @@ AutocompleteProviderClientImpl::GetKeywordExtensionsDelegate(
   return nullptr;
 }
 
-query_tiles::TileService* AutocompleteProviderClientImpl::GetQueryTileService()
-    const {
-  return nullptr;
-}
-
 OmniboxTriggeredFeatureService*
 AutocompleteProviderClientImpl::GetOmniboxTriggeredFeatureService() const {
   return omnibox_triggered_feature_service_.get();

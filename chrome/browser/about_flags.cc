@@ -1645,31 +1645,6 @@ constexpr FeatureEntry::FeatureVariation kOmniboxAnswerActionsVariants[] = {
      std::size(kOmniboxAnswerActionsTreatment5), "t3379051"},
 };
 
-constexpr FeatureEntry::FeatureParam kOmniboxQueryTilesShowListAboveTrends[] = {
-    {OmniboxFieldTrial::kQueryTilesShowAboveTrends.name, "true"},
-    {OmniboxFieldTrial::kQueryTilesShowAsCarousel.name, "false"}};
-constexpr FeatureEntry::FeatureParam kOmniboxQueryTilesShowListBelowTrends[] = {
-    {OmniboxFieldTrial::kQueryTilesShowAboveTrends.name, "false"},
-    {OmniboxFieldTrial::kQueryTilesShowAsCarousel.name, "false"}};
-constexpr FeatureEntry::FeatureParam
-    kOmniboxQueryTilesShowCarouselAboveTrends[] = {
-        {OmniboxFieldTrial::kQueryTilesShowAboveTrends.name, "true"},
-        {OmniboxFieldTrial::kQueryTilesShowAsCarousel.name, "true"}};
-constexpr FeatureEntry::FeatureParam
-    kOmniboxQueryTilesShowCarouselBelowTrends[] = {
-        {OmniboxFieldTrial::kQueryTilesShowAboveTrends.name, "false"},
-        {OmniboxFieldTrial::kQueryTilesShowAsCarousel.name, "true"}};
-
-constexpr FeatureEntry::FeatureVariation kOmniboxQueryTilesVariations[] = {
-    {"List Above Trends", kOmniboxQueryTilesShowListAboveTrends,
-     std::size(kOmniboxQueryTilesShowListAboveTrends), nullptr},
-    {"List Below Trends", kOmniboxQueryTilesShowListBelowTrends,
-     std::size(kOmniboxQueryTilesShowListBelowTrends), nullptr},
-    {"Carousel Above Trends", kOmniboxQueryTilesShowCarouselAboveTrends,
-     std::size(kOmniboxQueryTilesShowCarouselAboveTrends), nullptr},
-    {"Carousel Below Trends", kOmniboxQueryTilesShowCarouselBelowTrends,
-     std::size(kOmniboxQueryTilesShowCarouselBelowTrends), nullptr},
-};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconFavicons[] = {
@@ -6283,13 +6258,6 @@ const FeatureEntry kFeatureEntries[] = {
          kOmniboxMostVisitedTilesHorizontalRenderGroupDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kMostVisitedTilesHorizontalRenderGroup)},
-
-    {"omnibox-query-tiles-in-zps-on-ntp",
-     flag_descriptions::kOmniboxQueryTilesInZPSOnNTPName,
-     flag_descriptions::kOmniboxQueryTilesInZPSOnNTPDesc, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kQueryTilesInZPSOnNTP,
-                                    kOmniboxQueryTilesVariations,
-                                    "OmniboxQueryTilesInZPSOnNTP")},
 
     {"android-app-integration", flag_descriptions::kAndroidAppIntegrationName,
      flag_descriptions::kAndroidAppIntegrationDescription, kOsAndroid,

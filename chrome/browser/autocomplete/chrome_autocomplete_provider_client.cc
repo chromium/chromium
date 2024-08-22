@@ -35,7 +35,6 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/query_tiles/tile_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -325,12 +324,6 @@ ChromeAutocompleteProviderClient::GetBuiltinsToProvideAsUserTypes() {
 component_updater::ComponentUpdateService*
 ChromeAutocompleteProviderClient::GetComponentUpdateService() {
   return g_browser_process->component_updater();
-}
-
-query_tiles::TileService*
-ChromeAutocompleteProviderClient::GetQueryTileService() const {
-  ProfileKey* profile_key = profile_->GetProfileKey();
-  return query_tiles::TileServiceFactory::GetForKey(profile_key);
 }
 
 OmniboxTriggeredFeatureService*

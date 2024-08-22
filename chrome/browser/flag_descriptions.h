@@ -1535,9 +1535,6 @@ extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
 extern const char kOmniboxPrefBasedDataCollectionConsentHelperName[];
 extern const char kOmniboxPrefBasedDataCollectionConsentHelperDescription[];
 
-extern const char kOmniboxQueryTilesInZPSOnNTPName[];
-extern const char kOmniboxQueryTilesInZPSOnNTPDesc[];
-
 extern const char kOmniboxSuppressClipboardSuggestionAfterFirstUsedName[];
 extern const char
     kOmniboxSuppressClipboardSuggestionAfterFirstUsedDescription[];

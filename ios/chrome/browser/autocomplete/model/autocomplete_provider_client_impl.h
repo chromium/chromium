@@ -60,7 +60,6 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() override;
   std::unique_ptr<KeywordExtensionsDelegate> GetKeywordExtensionsDelegate(
       KeywordProvider* keyword_provider) override;
-  query_tiles::TileService* GetQueryTileService() const override;
   OmniboxTriggeredFeatureService* GetOmniboxTriggeredFeatureService()
       const override;
   AutocompleteScoringModelService* GetAutocompleteScoringModelService()

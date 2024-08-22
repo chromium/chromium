@@ -89,7 +89,6 @@ BASE_DECLARE_FEATURE(kExpandedStateColors);
 BASE_DECLARE_FEATURE(kExpandedStateSuggestIcons);
 BASE_DECLARE_FEATURE(kExpandedLayout);
 BASE_DECLARE_FEATURE(kSuggestionHoverFillShape);
-BASE_DECLARE_FEATURE(kQueryTilesInZPSOnNTP);
 
 // Omnibox UI - these affect the UI or function of the location bar (not the
 // popup).

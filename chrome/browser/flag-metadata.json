@@ -6663,11 +6663,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "omnibox-query-tiles-in-zps-on-ntp",
-    "owners": ["ender@chromium.org", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "omnibox-report-assisted-query-stats",
     "owners": [ "mahmadi@chromium.org", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 120

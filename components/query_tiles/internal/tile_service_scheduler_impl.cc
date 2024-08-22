@@ -12,7 +12,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "components/background_task_scheduler/background_task_scheduler.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_tiles/internal/stats.h"
 #include "components/query_tiles/internal/tile_config.h"
@@ -27,9 +26,8 @@ const int kInstantScheduleWindowStartMs = 10 * 1000;  // 10 seconds
 const int kInstantScheduleWindowEndMs = 20 * 60 * 1000;    // 20 minutes
 
 bool IsInstantFetchMode() {
-  return base::FeatureList::IsEnabled(omnibox::kQueryTilesInZPSOnNTP) ||
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kQueryTilesInstantBackgroundTask);
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kQueryTilesInstantBackgroundTask);
 }
 
 }  // namespace

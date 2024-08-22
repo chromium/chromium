@@ -77,7 +77,6 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   std::vector<std::u16string> GetBuiltinsToProvideAsUserTypes() override;
   component_updater::ComponentUpdateService* GetComponentUpdateService()
       override;
-  query_tiles::TileService* GetQueryTileService() const override;
   OmniboxTriggeredFeatureService* GetOmniboxTriggeredFeatureService()
       const override;
   signin::IdentityManager* GetIdentityManager() const override;

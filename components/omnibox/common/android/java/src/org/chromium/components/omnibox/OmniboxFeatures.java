@@ -45,9 +45,6 @@ public class OmniboxFeatures {
     public static final CachedFlag sTouchDownTriggerForPrefetch =
             newFlag(OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH, false);
 
-    public static final CachedFlag sQueryTilesInZPSOnNTP =
-            newFlag(OmniboxFeatureList.QUERY_TILES_IN_ZPS_ON_NTP, false);
-
     public static final CachedFlag sRichInlineAutocomplete =
             newFlag(OmniboxFeatureList.RICH_AUTOCOMPLETION, false);
 
@@ -67,9 +64,6 @@ public class OmniboxFeatures {
 
     public static final CachedFlag sElegantTextHeight =
             newFlag(OmniboxFeatureList.OMNIBOX_ELEGANT_TEXT_HEIGHT, false);
-
-    public static final BooleanCachedFieldTrialParameter QUERY_TILES_SHOW_AS_CAROUSEL =
-            newBooleanParam(sQueryTilesInZPSOnNTP, "QueryTilesShowAsCarousel", false);
 
     public static final BooleanCachedFieldTrialParameter sAnswerActionsShowAboveKeyboard =
             newBooleanParam(sOmniboxAnswerActions, "AnswerActionsShowAboveKeyboard", false);

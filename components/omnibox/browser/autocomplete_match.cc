@@ -326,7 +326,6 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
                        : nullptr),
       additional_info(match.additional_info),
       duplicate_matches(match.duplicate_matches),
-      query_tiles(match.query_tiles),
       suggest_tiles(match.suggest_tiles),
       scoring_signals(match.scoring_signals),
       culled_by_provider(match.culled_by_provider),
@@ -390,7 +389,6 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   post_content = std::move(match.post_content);
   additional_info = std::move(match.additional_info);
   duplicate_matches = std::move(match.duplicate_matches);
-  query_tiles = std::move(match.query_tiles);
   suggest_tiles = std::move(match.suggest_tiles);
   scoring_signals = std::move(match.scoring_signals);
   culled_by_provider = std::move(match.culled_by_provider);
@@ -472,7 +470,6 @@ AutocompleteMatch& AutocompleteMatch::operator=(
                          : nullptr);
   additional_info = match.additional_info;
   duplicate_matches = match.duplicate_matches;
-  query_tiles = match.query_tiles;
   suggest_tiles = match.suggest_tiles;
   scoring_signals = match.scoring_signals;
   culled_by_provider = match.culled_by_provider;
