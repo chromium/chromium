@@ -20,7 +20,6 @@
 
 namespace syncer {
 class DataTypeControllerDelegate;
-class DataTypeLocalChangeProcessor;
 }  // namespace syncer
 
 class PrefService;
@@ -31,11 +30,9 @@ class FloatingSsoService : public KeyedService,
                            public network::mojom::CookieChangeListener,
                            public FloatingSsoSyncBridge::Observer {
  public:
-  FloatingSsoService(
-      PrefService* prefs,
-      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      network::mojom::CookieManager* cookie_manager,
-      syncer::OnceDataTypeStoreFactory create_store_callback);
+  FloatingSsoService(PrefService* prefs,
+                     std::unique_ptr<FloatingSsoSyncBridge> bridge,
+                     network::mojom::CookieManager* cookie_manager);
   FloatingSsoService(const FloatingSsoService&) = delete;
   FloatingSsoService& operator=(const FloatingSsoService&) = delete;
 
@@ -57,13 +54,6 @@ class FloatingSsoService : public KeyedService,
 
   FloatingSsoSyncBridge* GetBridgeForTesting() { return bridge_.get(); }
   bool IsBoundToCookieManagerForTesting() { return receiver_.is_bound(); }
-
-  // TODO: b/360878519 - pass the bridge to the constructor instead and move
-  // bridge creation to the factory. This is currently blocked by browser tests
-  // relying on the same factory code to construct FloatingSsoService. Once we
-  // rewrite them as unit tests which explicitly construct the service, we can
-  // get rid of this test-only method.
-  void SetBridgeForTesting(std::unique_ptr<FloatingSsoSyncBridge> bridge);
 
  private:
   // Check if the feature is enabled based on the corresponding enterprise

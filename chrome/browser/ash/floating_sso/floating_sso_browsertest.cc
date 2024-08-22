@@ -32,6 +32,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_store_service.h"
 #include "components/sync/model/entity_change.h"
@@ -617,24 +618,38 @@ class MockFloatingSsoSyncBridge : public FloatingSsoSyncBridge {
 
 class FloatingSsoWithMockedBridgeTest : public FloatingSsoTest {
  public:
-  void SetUpOnMainThread() override {
-    FloatingSsoTest::SetUpOnMainThread();
-    std::unique_ptr<testing::NiceMock<MockFloatingSsoSyncBridge>> mock_bridge =
-        std::make_unique<testing::NiceMock<MockFloatingSsoSyncBridge>>(
-            processor_.CreateForwardingProcessor(),
-            DataTypeStoreServiceFactory::GetForProfile(profile())
-                ->GetStoreFactory());
-    bridge_ = mock_bridge.get();
-    // Wait until the bridge finishes reading initial data from the store.
-    ASSERT_TRUE(base::test::RunUntil([&mock_bridge]() {
-      return mock_bridge->IsInitialDataReadFinishedForTest();
-    }));
-    floating_sso_service().SetBridgeForTesting(std::move(mock_bridge));
+  void SetUpInProcessBrowserTestFixture() override {
+    FloatingSsoTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&FloatingSsoWithMockedBridgeTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
   }
 
-  void TearDownOnMainThread() override {
-    bridge_ = nullptr;
-    FloatingSsoTest::TearDownOnMainThread();
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    FloatingSsoServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindOnce([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+          Profile* profile = Profile::FromBrowserContext(context);
+          return std::make_unique<FloatingSsoService>(
+              profile->GetPrefs(),
+              std::make_unique<testing::NiceMock<MockFloatingSsoSyncBridge>>(
+                  std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+                      syncer::COOKIES, base::DoNothing()),
+                  DataTypeStoreServiceFactory::GetForProfile(profile)
+                      ->GetStoreFactory()),
+              profile->GetDefaultStoragePartition()
+                  ->GetCookieManagerForBrowserProcess());
+        }));
+  }
+
+  void SetUpOnMainThread() override {
+    FloatingSsoTest::SetUpOnMainThread();
+    // Wait until the bridge finishes reading initial data from the store.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return bridge().IsInitialDataReadFinishedForTest(); }));
   }
 
   // Add a cookie as if requested by the Sync server, i.e. by calling
@@ -673,11 +688,13 @@ class FloatingSsoWithMockedBridgeTest : public FloatingSsoTest {
               net::CookieChangeCause::EXPLICIT);
   }
 
-  testing::NiceMock<MockFloatingSsoSyncBridge>& bridge() { return *bridge_; }
+  testing::NiceMock<MockFloatingSsoSyncBridge>& bridge() {
+    return static_cast<testing::NiceMock<MockFloatingSsoSyncBridge>&>(
+        *floating_sso_service().GetBridgeForTesting());
+  }
 
  private:
-  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
-  raw_ptr<testing::NiceMock<MockFloatingSsoSyncBridge>> bridge_;
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(FloatingSsoWithMockedBridgeTest,
@@ -691,8 +708,8 @@ IN_PROC_BROWSER_TEST_F(FloatingSsoWithMockedBridgeTest,
   // `FloatingSsoService` observes all cookie changes, it could in theory notify
   // the bridge about these changes. Check that this doesn't happen (because the
   // service should not ask the bridge to perform no-op changes).
-  EXPECT_CALL(bridge(), AddOrUpdateCookie(_)).Times(0);
-  EXPECT_CALL(bridge(), DeleteCookie(_)).Times(0);
+  EXPECT_CALL(bridge(), AddOrUpdateCookie).Times(0);
+  EXPECT_CALL(bridge(), DeleteCookie).Times(0);
 
   const sync_pb::CookieSpecifics specifics =
       CreatePredefinedCookieSpecificsForTest(

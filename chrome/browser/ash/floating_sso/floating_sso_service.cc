@@ -18,8 +18,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
-#include "components/sync/model/data_type_local_change_processor.h"
-#include "components/sync/model/data_type_store.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_util.h"
 
@@ -43,14 +41,11 @@ bool IsGoogleCookie(const net::CanonicalCookie& cookie) {
 
 FloatingSsoService::FloatingSsoService(
     PrefService* prefs,
-    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-    network::mojom::CookieManager* cookie_manager,
-    syncer::OnceDataTypeStoreFactory create_store_callback)
+    std::unique_ptr<FloatingSsoSyncBridge> bridge,
+    network::mojom::CookieManager* cookie_manager)
     : prefs_(prefs),
       cookie_manager_(cookie_manager),
-      bridge_(std::make_unique<FloatingSsoSyncBridge>(
-          std::move(change_processor),
-          std::move(create_store_callback))),
+      bridge_(std::move(bridge)),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
   pref_change_registrar_->Init(prefs_);
   pref_change_registrar_->Add(
@@ -263,18 +258,6 @@ void FloatingSsoService::OnConnectionError() {
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 FloatingSsoService::GetControllerDelegate() {
   return bridge_->change_processor()->GetControllerDelegate();
-}
-
-void FloatingSsoService::SetBridgeForTesting(
-    std::unique_ptr<FloatingSsoSyncBridge> bridge) {
-  bool bridge_is_being_observed = scoped_observation_.IsObserving();
-  if (bridge_is_being_observed) {
-    scoped_observation_.Reset();
-  }
-  bridge_ = std::move(bridge);
-  if (bridge_is_being_observed) {
-    scoped_observation_.Observe(bridge_.get());
-  }
 }
 
 }  // namespace ash::floating_sso

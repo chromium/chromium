@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/ash/floating_sso/floating_sso_service.h"
+#include "chrome/browser/ash/floating_sso/floating_sso_sync_bridge.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
@@ -54,18 +55,19 @@ FloatingSsoServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   PrefService* prefs = profile->GetPrefs();
-  syncer::OnceDataTypeStoreFactory create_store_callback =
-      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
   network::mojom::CookieManager* cookie_manager =
       profile->GetDefaultStoragePartition()
           ->GetCookieManagerForBrowserProcess();
   return std::make_unique<FloatingSsoService>(
       prefs,
-      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-          syncer::COOKIES,
-          base::BindRepeating(&syncer::ReportUnrecoverableError,
-                              chrome::GetChannel())),
-      cookie_manager, std::move(create_store_callback));
+      std::make_unique<FloatingSsoSyncBridge>(
+          std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+              syncer::COOKIES,
+              base::BindRepeating(&syncer::ReportUnrecoverableError,
+                                  chrome::GetChannel())),
+          DataTypeStoreServiceFactory::GetForProfile(profile)
+              ->GetStoreFactory()),
+      cookie_manager);
 }
 
 bool FloatingSsoServiceFactory::ServiceIsCreatedWithBrowserContext() const {
