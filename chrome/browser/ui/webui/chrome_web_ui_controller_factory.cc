@@ -172,6 +172,7 @@
 #include "chrome/browser/ash/extensions/url_constants.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_ui.h"
+#include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
 #include "chromeos/ash/components/kiosk/vision/webui/constants.h"
 #include "chromeos/ash/components/kiosk/vision/webui/ui_controller.h"
@@ -1056,6 +1057,7 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUIUntrustedTerminalURL),
     GURL(chrome::kChromeUIUserImageURL),
     GURL(chrome::kChromeUIVmUrl),
+    GURL(growth::kGrowthInternalsUntrustedURL),
     GURL(scalable_iph::kScalableIphDebugURL),
 
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)

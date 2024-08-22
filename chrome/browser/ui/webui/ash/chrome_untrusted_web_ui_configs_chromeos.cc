@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/media_app/media_app_guest_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/projector_app/untrusted_projector_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/terminal_ui.h"
+#include "chrome/browser/ui/webui/ash/growth_internals/growth_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 #include "chrome/browser/ui/webui/ash/scalable_iph/scalable_iph_debug_ui.h"
 #include "content/public/browser/webui_config.h"
@@ -70,6 +71,7 @@ void RegisterAshChromeUntrustedWebUIConfigs() {
       std::make_unique<feedback::OsFeedbackUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(MakeDemoModeAppUntrustedUIConfig());
   map.AddUntrustedWebUIConfig(std::make_unique<MakoUntrustedUIConfig>());
+  map.AddUntrustedWebUIConfig(std::make_unique<GrowthInternalsUIConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<ScalableIphDebugUIConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<FocusModeUntrustedUIConfig>());
 #if !defined(OFFICIAL_BUILD)

@@ -1502,6 +1502,11 @@ BASE_FEATURE(kGrowthCampaignsTriggerByBrowser,
              "GrowthCampaignsTriggerByBrowser",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables internals page of ChromeOS growth framework.
+BASE_FEATURE(kGrowthInternals,
+             "GrowthInternals",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables showing the menu tabs in chrome://healthd-internals for displaying
 // information from `cros_healthd`.
 BASE_FEATURE(kHealthdInternalsTabs,
@@ -3991,6 +3996,10 @@ bool IsGrowthCampaignsTriggerByEventEnabled() {
 
 bool IsGrowthCampaignsTriggerByBrowserEnabled() {
   return base::FeatureList::IsEnabled(kGrowthCampaignsTriggerByBrowser);
+}
+
+bool IsGrowthInternalsEnabled() {
+  return base::FeatureList::IsEnabled(kGrowthInternals);
 }
 
 bool IsGlanceablesTimeManagementClassroomStudentViewEnabled() {
