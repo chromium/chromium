@@ -212,15 +212,6 @@
 #define DISABLE_CFI_DLSYM
 #endif
 
-// Macro useful for writing cross-platform function pointers.
-#if !defined(CDECL)
-#if BUILDFLAG(IS_WIN)
-#define CDECL __cdecl
-#else  // BUILDFLAG(IS_WIN)
-#define CDECL
-#endif  // BUILDFLAG(IS_WIN)
-#endif  // !defined(CDECL)
-
 // Compiler feature-detection.
 // clang.llvm.org/docs/LanguageExtensions.html#has-feature-and-has-extension
 #if defined(__has_feature)

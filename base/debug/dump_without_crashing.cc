@@ -19,7 +19,7 @@ namespace {
 
 // Pointer to the function that's called by DumpWithoutCrashing* to dump the
 // process's memory.
-void(CDECL* dump_without_crashing_function_)() = nullptr;
+void (*dump_without_crashing_function_)() = nullptr;
 
 template <typename Map, typename Key>
 bool ShouldDump(Map& map, Key& key, base::TimeDelta time_between_dumps) {
@@ -132,7 +132,7 @@ bool DumpWithoutCrashingWithUniqueId(size_t unique_identifier,
   return false;
 }
 
-void SetDumpWithoutCrashingFunction(void (CDECL *function)()) {
+void SetDumpWithoutCrashingFunction(void (*function)()) {
 #if !defined(COMPONENT_BUILD)
   // In component builds, the same base is shared between modules
   // so might be initialized several times. However in non-
