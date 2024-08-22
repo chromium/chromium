@@ -971,6 +971,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/glanceables",
     "//chrome/browser/ui/ash/global_media_controls",
     "//chrome/browser/ui/ash/holding_space",
+    "//chrome/browser/ui/ash/image_downloader",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/ash/session",
     "//chrome/browser/ui/ash/system_web_apps",

@@ -40,8 +40,6 @@ static_library("ash") {
     "chrome_shell_delegate.h",
     "crosapi_new_window_delegate.cc",
     "crosapi_new_window_delegate.h",
-    "image_downloader_impl.cc",
-    "image_downloader_impl.h",
     "ime_controller_client_impl.cc",
     "ime_controller_client_impl.h",
     "in_session_auth_dialog_client.cc",

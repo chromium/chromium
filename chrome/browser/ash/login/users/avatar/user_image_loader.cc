@@ -19,7 +19,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/ash/image_downloader_impl.h"
+#include "chrome/browser/ui/ash/image_downloader/image_downloader_impl.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "google_apis/credentials_mode.h"
 #include "ipc/ipc_channel.h"
