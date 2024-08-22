@@ -19,27 +19,27 @@ class FakeTrustedVaultClientBackend final : public TrustedVaultClientBackend {
   void SetDeviceRegistrationPublicKeyVerifierForUMA(
       VerifierCallback verifier) final;
   void FetchKeys(id<SystemIdentity> identity,
-                 const std::string& security_domain_path,
+                 trusted_vault::SecurityDomainId security_domain_id,
                  KeyFetchedCallback completion) final;
   void MarkLocalKeysAsStale(id<SystemIdentity> identity,
-                            const std::string& security_domain_path,
+                            trusted_vault::SecurityDomainId security_domain_id,
                             base::OnceClosure completion) final;
   void GetDegradedRecoverabilityStatus(
       id<SystemIdentity> identity,
-      const std::string& security_domain_path,
+      trusted_vault::SecurityDomainId security_domain_id,
       base::OnceCallback<void(bool)> completion) final;
   CancelDialogCallback Reauthentication(
       id<SystemIdentity> identity,
-      const std::string& security_domain_path,
+      trusted_vault::SecurityDomainId security_domain_id,
       UIViewController* presenting_view_controller,
       CompletionBlock completion) final;
   CancelDialogCallback FixDegradedRecoverability(
       id<SystemIdentity> identity,
-      const std::string& security_domain_path,
+      trusted_vault::SecurityDomainId security_domain_id,
       UIViewController* presenting_view_controller,
       CompletionBlock completion) final;
   void ClearLocalData(id<SystemIdentity> identity,
-                      const std::string& security_domain_path,
+                      trusted_vault::SecurityDomainId security_domain_id,
                       base::OnceCallback<void(bool)> completion) final;
   void GetPublicKeyForIdentity(id<SystemIdentity> identity,
                                GetPublicKeyCallback completion) final;

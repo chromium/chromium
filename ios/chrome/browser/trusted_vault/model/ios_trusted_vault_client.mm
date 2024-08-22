@@ -31,14 +31,13 @@ IOSTrustedVaultClient::~IOSTrustedVaultClient() = default;
 void IOSTrustedVaultClient::AddObserver(Observer* observer) {
   std::string security_domain_string =
       GetSecurityDomainPath(security_domain_id_);
-  backend_->AddObserver(observer, security_domain_string, security_domain_id_);
+  backend_->AddObserver(observer, security_domain_id_);
 }
 
 void IOSTrustedVaultClient::RemoveObserver(Observer* observer) {
   std::string security_domain_string =
       GetSecurityDomainPath(security_domain_id_);
-  backend_->RemoveObserver(observer, security_domain_string,
-                           security_domain_id_);
+  backend_->RemoveObserver(observer, security_domain_id_);
 }
 
 void IOSTrustedVaultClient::FetchKeys(
@@ -48,7 +47,7 @@ void IOSTrustedVaultClient::FetchKeys(
   std::string security_domain_string =
       GetSecurityDomainPath(security_domain_id_);
   backend_->FetchKeys(IdentityForAccount(account_info), security_domain_string,
-                      std::move(callback));
+                      security_domain_id_, std::move(callback));
 }
 
 void IOSTrustedVaultClient::StoreKeys(
@@ -66,6 +65,7 @@ void IOSTrustedVaultClient::MarkLocalKeysAsStale(
       GetSecurityDomainPath(security_domain_id_);
   backend_->MarkLocalKeysAsStale(
       IdentityForAccount(account_info), security_domain_string,
+      security_domain_id_,
       // Since false positives are allowed in the API, always invoke `callback`
       // with true, indicating that something may have changed.
       base::BindOnce(std::move(callback), true));
@@ -76,9 +76,9 @@ void IOSTrustedVaultClient::GetIsRecoverabilityDegraded(
     base::OnceCallback<void(bool)> callback) {
   std::string security_domain_string =
       GetSecurityDomainPath(security_domain_id_);
-  backend_->GetDegradedRecoverabilityStatus(IdentityForAccount(account_info),
-                                            security_domain_string,
-                                            std::move(callback));
+  backend_->GetDegradedRecoverabilityStatus(
+      IdentityForAccount(account_info), security_domain_string,
+      security_domain_id_, std::move(callback));
 }
 
 void IOSTrustedVaultClient::AddTrustedRecoveryMethod(
@@ -95,7 +95,8 @@ void IOSTrustedVaultClient::ClearLocalDataForAccount(
   std::string security_domain_string =
       GetSecurityDomainPath(security_domain_id_);
   backend_->ClearLocalData(IdentityForAccount(account_info),
-                           security_domain_string, base::DoNothing());
+                           security_domain_string, security_domain_id_,
+                           base::DoNothing());
 }
 
 id<SystemIdentity> IOSTrustedVaultClient::IdentityForAccount(

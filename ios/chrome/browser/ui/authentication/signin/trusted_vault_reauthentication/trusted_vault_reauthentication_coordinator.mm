@@ -141,13 +141,15 @@ using l10n_util::GetNSStringF;
           TrustedVaultClientBackendFactory::GetForBrowserState(
               self.browser->GetBrowserState())
               ->Reauthentication(self.identity, securityDomainPath,
-                                 self.baseViewController, callback);
+                                 _securityDomainID, self.baseViewController,
+                                 callback);
       break;
     case SigninTrustedVaultDialogIntentDegradedRecoverability:
       _dialogCancelCallback =
           TrustedVaultClientBackendFactory::GetForBrowserState(
               self.browser->GetBrowserState())
               ->FixDegradedRecoverability(self.identity, securityDomainPath,
+                                          _securityDomainID,
                                           self.baseViewController, callback);
       break;
   }
