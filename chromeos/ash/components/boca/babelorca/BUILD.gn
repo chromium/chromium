@@ -9,6 +9,8 @@ assert(is_chromeos_ash,
 
 static_library("babelorca") {
   sources = [
+    "babel_orca_manager.cc",
+    "babel_orca_manager.h",
     "oauth_token_fetcher.cc",
     "oauth_token_fetcher.h",
     "request_data_wrapper.cc",
@@ -38,7 +40,9 @@ static_library("babelorca") {
 
   deps = [
     "//base",
+    "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/babelorca/proto",
+    "//chromeos/ash/components/boca/proto",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//google_apis",
