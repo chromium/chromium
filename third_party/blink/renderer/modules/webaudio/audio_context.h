@@ -46,9 +46,10 @@ class WebAudioLatencyHint;
 
 // This is an BaseAudioContext which actually plays sound, unlike an
 // OfflineAudioContext which renders sound into a buffer.
-class MODULES_EXPORT AudioContext : public BaseAudioContext,
-                                    public mojom::blink::PermissionObserver,
-                                    public mojom::blink::MediaDevicesListener {
+class MODULES_EXPORT AudioContext final
+    : public BaseAudioContext,
+      public mojom::blink::PermissionObserver,
+      public mojom::blink::MediaDevicesListener {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -61,35 +62,56 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
                std::optional<float> sample_rate,
                WebAudioSinkDescriptor sink_descriptor,
                bool update_echo_cancellation_on_first_start);
+  AudioContext(const AudioContext&) = delete;
+  AudioContext& operator=(const AudioContext&) = delete;
   ~AudioContext() override;
-
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(error, kError)
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(sinkchange, kSinkchange)
 
   void Trace(Visitor*) const override;
 
   // For ContextLifeCycleObserver
-  void ContextDestroyed() final;
+  void ContextDestroyed() override;
   bool HasPendingActivity() const override;
 
-  // Cannot be called from the audio thread.
-  RealtimeAudioDestinationNode* GetRealtimeAudioDestinationNode() const;
+  bool IsContextCleared() const override;
 
-  ScriptPromise<IDLUndefined> closeContext(ScriptState*, ExceptionState&);
-  bool IsContextCleared() const final;
+  bool HasRealtimeConstraint() override { return true; }
 
-  ScriptPromise<IDLUndefined> suspendContext(ScriptState*, ExceptionState&);
-  ScriptPromise<IDLUndefined> resumeContext(ScriptState*, ExceptionState&);
+  bool IsPullingAudioGraph() const override;
 
-  bool HasRealtimeConstraint() final { return true; }
+  // Called by handlers of AudioScheduledSourceNode and AudioBufferSourceNode to
+  // notify their associated AudioContext when start() is called. It may resume
+  // the AudioContext if it is now allowed to start.
+  void NotifySourceNodeStart() override;
 
-  bool IsPullingAudioGraph() const final;
+  bool HandlePreRenderTasks(uint32_t frames_to_process,
+                            const AudioIOPosition* output_position,
+                            const AudioCallbackMetric* metric,
+                            base::TimeDelta playout_delay,
+                            const media::AudioGlitchInfo& glitch_info) override;
 
-  AudioTimestamp* getOutputTimestamp(ScriptState*) const;
+  // Called at the end of each render quantum.
+  void HandlePostRenderTasks() override;
+
+  // mojom::blink::PermissionObserver
+  void OnPermissionStatusChange(mojom::blink::PermissionStatus) override;
+
+  // mojom::blink::MediaDevicesListener
+  void OnDevicesChanged(mojom::blink::MediaDeviceType,
+                        const Vector<WebMediaDeviceInfo>&) override;
+
+  // https://webaudio.github.io/web-audio-api/#AudioContext
   double baseLatency() const;
   double outputLatency() const;
-  AudioPlayoutStats* playoutStats();
-
+  Member<V8UnionAudioSinkInfoOrString> sinkId() const { return v8_sink_id_; }
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(sinkchange, kSinkchange)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(error, kError)
+  AudioTimestamp* getOutputTimestamp(ScriptState*) const;
+  ScriptPromise<IDLUndefined> resumeContext(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUndefined> suspendContext(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUndefined> closeContext(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUndefined> setSinkId(ScriptState*,
+                                        const V8UnionAudioSinkOptionsOrString*,
+                                        ExceptionState&);
   MediaElementAudioSourceNode* createMediaElementSource(HTMLMediaElement*,
                                                         ExceptionState&);
   MediaStreamAudioSourceNode* createMediaStreamSource(MediaStream*,
@@ -97,19 +119,11 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   MediaStreamAudioDestinationNode* createMediaStreamDestination(
       ExceptionState&);
 
-  // Called by handlers of AudioScheduledSourceNode and AudioBufferSourceNode to
-  // notify their associated AudioContext when start() is called. It may resume
-  // the AudioContext if it is now allowed to start.
-  void NotifySourceNodeStart() final;
+  // https://wicg.github.io/web_audio_playout
+  AudioPlayoutStats* playoutStats();
 
-  bool HandlePreRenderTasks(uint32_t frames_to_process,
-                            const AudioIOPosition* output_position,
-                            const AudioCallbackMetric* metric,
-                            base::TimeDelta playout_delay,
-                            const media::AudioGlitchInfo& glitch_info) final;
-
-  // Called at the end of each render quantum.
-  void HandlePostRenderTasks() final;
+  // Cannot be called from the audio thread.
+  RealtimeAudioDestinationNode* GetRealtimeAudioDestinationNode() const;
 
   void HandleAudibility(AudioBus* destination_bus);
 
@@ -119,16 +133,7 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   // AudioDestination.
   base::TimeDelta PlatformBufferDuration() const;
 
-  // mojom::blink::PermissionObserver
-  void OnPermissionStatusChange(mojom::blink::PermissionStatus) override;
-
-  Member<V8UnionAudioSinkInfoOrString> sinkId() const { return v8_sink_id_; }
-
   WebAudioSinkDescriptor GetSinkDescriptor() const { return sink_descriptor_; }
-
-  ScriptPromise<IDLUndefined> setSinkId(ScriptState*,
-                                        const V8UnionAudioSinkOptionsOrString*,
-                                        ExceptionState&);
 
   void NotifySetSinkIdBegins();
   void NotifySetSinkIdIsDone(WebAudioSinkDescriptor);
@@ -136,10 +141,6 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   HeapDeque<Member<SetSinkIdResolver>>& GetSetSinkIdResolver() {
     return set_sink_id_resolvers_;
   }
-
-  // mojom::blink::MediaDevicesListener
-  void OnDevicesChanged(mojom::blink::MediaDeviceType,
-                        const Vector<WebMediaDeviceInfo>&) override;
 
   // A helper function to validate the given sink descriptor. See:
   // webaudio.github.io/web-audio-api/#validating-sink-identifier
@@ -150,9 +151,6 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   // Methods for unit tests
   void set_was_audible_for_testing(bool value) { was_audible_ = value; }
   void invoke_onrendererror_from_platform_for_testing();
-
- protected:
-  void Uninitialize() final;
 
  private:
   friend class AudioPlayoutStats;  // For TransferAudioFrameStatsTo().
@@ -228,12 +226,6 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
     kMaxValue = kSucceeded,
   };
 
-  // Returns the AutoplayPolicy currently applying to this instance.
-  AutoplayPolicy::Type GetAutoplayPolicy() const;
-
-  // Returns whether the autoplay requirements are fulfilled.
-  bool AreAutoplayRequirementsFulfilled() const;
-
   // Do not change the order of this enum, it is used for metrics.
   enum class AutoplayUnlockType {
     kContextConstructor = 0,
@@ -241,6 +233,14 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
     kSourceNodeStart = 2,
     kMaxValue = kSourceNodeStart,
   };
+
+  void Uninitialize() override;
+
+  // Returns the AutoplayPolicy currently applying to this instance.
+  AutoplayPolicy::Type GetAutoplayPolicy() const;
+
+  // Returns whether the autoplay requirements are fulfilled.
+  bool AreAutoplayRequirementsFulfilled() const;
 
   // If possible, allows autoplay for the AudioContext and marke it as allowed
   // by the given type.
