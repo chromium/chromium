@@ -67,12 +67,6 @@ class PSIMemoryParser {
                                  int* metric_some,
                                  int* metric_full);
 
-  // Raw buffer overload
-  ParsePSIMemStatus ParseMetrics(const uint8_t* content,
-                                 uint32_t len,
-                                 int* metric_some,
-                                 int* metric_full);
-
   uint32_t GetPeriod() const;
   void LogParseStatus(ParsePSIMemStatus stat);
 
