@@ -5,7 +5,6 @@
 <translation id="1047130070405668746">‏בוחרים באפשרות Chromium</translation>
 <translation id="1091252999271033193">‏כלומר, Chromium תמיד יבקש את האתר לנייד.</translation>
 <translation id="1115463765356382667">‏השלמת הפעולות המוצעות הבאות תעזור לך להשתמש ב-Chromium בדרך היעילה ביותר.</translation>
-<translation id="1141230343006904201">‏1. פתיחת ההגדרות של Chromium</translation>
 <translation id="1171824629317156389">‏פותחים את הגדרות Chromium ב-iOS, מקישים על 'אפליקציית ברירת המחדל לדפדפן' ובוחרים ב-Chromium.</translation>
 <translation id="1185134272377778587">‏על Chromium</translation>
 <translation id="1257458525759135959">‏כדי לשמור תמונות צריך להקיש על 'הגדרות' על מנת לאפשר ל-Chromium להוסיף תמונות לגלריה שלך</translation>
@@ -92,7 +91,6 @@
 <translation id="347967311580159871">‏כדי לראות אילו הגדרות נוספות מתבססות על נתונים לצורך שיפור חוויית השימוש ב-Chromium, אפשר לעבור אל <ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">‏הסיסמה שלך לא שותפה. רצוי לבדוק את החיבור לאינטרנט ולוודא שנכנסת לחשבון ב-Chromium. אחר כך אפשר לנסות שוב.</translation>
 <translation id="3567399274263440288">‏אפשר להיכנס ל-Chromium באמצעות חשבון Google כדי להפיק את המרב מ-Chromium.</translation>
-<translation id="3634039384458740619">‏פתיחת ההגדרות של Chromium</translation>
 <translation id="3639997914391704523">‏Chromium יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google.</translation>
 <translation id="3688710892786762883">‏Chromium יזהה מספרי מעקב אחר חבילות באתרים שבהם ביקרת, ואפשר יהיה לראות עדכונים על חבילות בדף 'כרטיסייה חדשה'. כדי שניתן יהיה לספק את התכונה הזו, וגם לשפר את שופינג לכולם, הנתונים שלך ישותפו עם Google.</translation>
 <translation id="372658070733623520">‏כדי להשתמש בנתוני Chromium ולשמור אותם בחשבון Google, עליך לאמת את הזהות שלך.</translation>
@@ -120,6 +118,7 @@
 <translation id="4432744876818348753">‏כדי להפיק את המרב מ-Chromium, עליך להיכנס לחשבון.</translation>
 <translation id="4445228361214254027">‏הארגון שלך השבית את האפשרות להשתמש בנתוני Chromium ולשמור אותם בחשבון Google. סימניות, סיסמאות ונתונים נוספים חדשים יישמרו רק במכשיר הזה.</translation>
 <translation id="4498832288620833153">‏הוספה של כתובות ה-URL שהוזנו לרשימת הקריאה ב-Chromium.</translation>
+<translation id="451793238785269934">פיד מותאם אישית שנוצר במיוחד בשבילך. כולל חדשות, ספורט ומזג האוויר.</translation>
 <translation id="452436063477828504">‏כדאי לוודא שתמיד תהיה לך אפשרות להשתמש בנתוני Chromium בחשבון Google שלך</translation>
 <translation id="4555020257205549924">‏כשהתכונה הזו פועלת, Chromium יציע לתרגם באמצעות Google Translate דפים שנכתבו בשפות אחרות‏. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4572441104543926904">‏הצפנה בעזרת ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות.
@@ -204,7 +203,6 @@
 <translation id="632825460376924298">‏התרת כניסה אל Chromium</translation>
 <translation id="6332129548244419716">‏מחיקה של נתוני הגלישה ב-Chromium.</translation>
 <translation id="6337530241089703714">‏האם למחוק את נתוני Chromium ממכשיר זה או לשמור אותם?</translation>
-<translation id="6348483005826990855">‏3. בוחרים באפשרות Chromium</translation>
 <translation id="6383607155624074112">‏גישה מהירה יותר ל-Chromium דרך ה-Dock של מסך הבית</translation>
 <translation id="6424492062988593837">‏‫Chromium ממשיך להשתפר! קיימת גרסה חדשה.</translation>
 <translation id="6433172051771630690">‏טיפים שיעזרו לך ליהנות מהמיטב של Chromium.</translation>
@@ -268,11 +266,11 @@
 <translation id="8235427517854598594">‏להגדיר את Chromium כדפדפן ברירת המחדל?</translation>
 <translation id="8240981428553046115">‏Chromium לא הצליח לחפש עדכונים. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="8254729934443216898">‏יש לך הזדמנות לגלות תכונות חדשות שיעזרו לך להפיק את המירב מ-Chromium.</translation>
+<translation id="829047622686389424">פיד מותאם אישית שנוצר במיוחד בשבילך.</translation>
 <translation id="8303579360494576778">‏ניהול אמצעי תשלום ב-Chromium</translation>
 <translation id="830951810931292870">‏פתיחת כתובות ה-URL שהוזנו ב-Chromium במצב פרטי.</translation>
 <translation id="8386869251364507178">‏פעולות ב-Chromium</translation>
 <translation id="8409374867500149834">‏האבטחה החזקה ביותר של Chromium מגינה עליך מפני אתרים מזיקים</translation>
-<translation id="8458950033462118672">‏אפשר לפתוח קישורים ב-Chromium באופן אוטומטי. כדי לעשות זאת, מגדירים אותו כדפדפן ברירת המחדל.</translation>
 <translation id="8473874987831035139">‏טיפ ל-Chromium: כדאי להעביר את Chromium ל-Dock</translation>
 <translation id="8502918057530111907">‏כדאי להגדיר את Chromium כדפדפן ברירת המחדל כדי לקבל את מדדי המחירים בקלות</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך דקה ({THRESHOLD}). נתונים שנשמרו רק במכשיר הזה בזמן שהיית מחובר לחשבון יימחקו. הנתונים האלה יכולים לכלול היסטוריה וסיסמאות.}one{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות. נתונים שנשמרו רק במכשיר הזה בזמן שהיית מחובר לחשבון יימחקו. הנתונים האלה יכולים לכלול היסטוריה וסיסמאות.}two{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות. נתונים שנשמרו רק במכשיר הזה בזמן שהיית מחובר לחשבון יימחקו. הנתונים האלה יכולים לכלול היסטוריה וסיסמאות.}other{‏הפעולה הזו מתבצעת כשלא משתמשים ב-Chromium במשך {THRESHOLD} דקות. נתונים שנשמרו רק במכשיר הזה בזמן שהיית מחובר לחשבון יימחקו. הנתונים האלה יכולים לכלול היסטוריה וסיסמאות.}}</translation>

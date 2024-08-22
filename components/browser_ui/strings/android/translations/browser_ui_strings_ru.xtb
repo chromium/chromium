@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">Отключить звуки на сайтах</translation>
 <translation id="3602290021589620013">Предварительный просмотр</translation>
 <translation id="3628308229821498208">Варианты поисковых запросов</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> сайт в группе сайтов <ph name="RWS_OWNER" />, на которых отслеживаются ваши действия}one{<ph name="RWS_MEMBERS_COUNT" /> сайт в группе сайтов <ph name="RWS_OWNER" />, на которых отслеживаются ваши действия}few{<ph name="RWS_MEMBERS_COUNT" /> сайта в группе сайтов <ph name="RWS_OWNER" />, на которых отслеживаются ваши действия}many{<ph name="RWS_MEMBERS_COUNT" /> сайтов в группе сайтов <ph name="RWS_OWNER" />, на которых отслеживаются ваши действия}other{<ph name="RWS_MEMBERS_COUNT" /> сайта в группе сайтов <ph name="RWS_OWNER" />, на которых отслеживаются ваши действия}}</translation>
 <translation id="3697164069658504920">Когда этот параметр включен, сайты могут запрашивать разрешение на использование USB-устройств. Когда параметр отключен, сайтам запрещено использовать такие устройства.</translation>
 <translation id="3707034683772193706">Сайт, который вы посещаете, может сохранять небольшой объем информации в Chrome, в основном для подтверждения того, что вы не бот.</translation>
 <translation id="3721953990244350188">Закрыть и показать следующее доступное действие</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">Способ отправки</translation>
 <translation id="5001526427543320409">Сторонние файлы cookie</translation>
 <translation id="5007392906805964215">Посмотреть</translation>
+<translation id="5014182796621173645">Вы посещали <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Разрешить</translation>
 <translation id="5048398596102334565">Предоставить сайтам доступ к датчикам движения (рекомендуется)</translation>
 <translation id="5050380848339752099">Этот сайт передает информацию стороннему приложению, пока вы находитесь в режиме инкогнито.</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">Ещё</translation>
 <translation id="6561560012278703671">Не прерывать мою работу при запросе разрешения на показ уведомлений</translation>
 <translation id="6593061639179217415">Версия для ПК</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Файлы cookie разрешены для <ph name="RWS_MEMBERS_COUNT" /> сайта <ph name="RWS_OWNER" />}one{Файлы cookie разрешены для <ph name="RWS_MEMBERS_COUNT" /> сайта <ph name="RWS_OWNER" />}few{Файлы cookie разрешены для <ph name="RWS_MEMBERS_COUNT" /> сайтов <ph name="RWS_OWNER" />}many{Файлы cookie разрешены для <ph name="RWS_MEMBERS_COUNT" /> сайтов <ph name="RWS_OWNER" />}other{Файлы cookie разрешены для <ph name="RWS_MEMBERS_COUNT" /> сайта <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Защищенный контент</translation>
 <translation id="662080504995468778">Остаться</translation>
 <translation id="6653342741369270081">Чтобы выйти из полноэкранного режима, нажмите кнопку "Назад".</translation>
+<translation id="6683865262523156564">Этот сайт может отслеживать ваши действия. Он входит в группу <ph name="RWS_OWNER" />.</translation>
 <translation id="6689172468748959065">Фото профиля</translation>
 <translation id="6697925417670533197">Текущие скачивания</translation>
 <translation id="6722828510648505498">Вы можете запретить предложения войти в аккаунт от сервисов подтверждения личности.</translation>

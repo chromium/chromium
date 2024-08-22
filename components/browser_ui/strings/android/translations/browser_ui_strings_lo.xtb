@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">ປິດສຽງເວັບໄຊທີ່ຫຼິ້ນສຽງ</translation>
 <translation id="3602290021589620013">ເບິ່ງຕົວຢ່າງ</translation>
 <translation id="3628308229821498208">ການຊອກຫາທີ່ແນະນຳ</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> ເວັບໄຊໃນກຸ່ມເວັບໄຊຂອງ <ph name="RWS_OWNER" /> ທີ່ສາມາດເບິ່ງການເຄື່ອນໄຫວຂອງທ່ານໃນກຸ່ມໄດ້}other{<ph name="RWS_MEMBERS_COUNT" /> ເວັບໄຊໃນກຸ່ມເວັບໄຊຂອງ <ph name="RWS_OWNER" /> ທີ່ສາມາດເບິ່ງການເຄື່ອນໄຫວຂອງທ່ານໃນກຸ່ມໄດ້}}</translation>
 <translation id="3697164069658504920">ເມື່ອເປີດ, ເວັບໄຊສາມາດຂໍໃຊ້ອຸປະກອນ USB ໄດ້. ເມື່ອປິດ, ເວັບໄຊບໍ່ສາມາດໃຊ້ອຸປະກອນ USB ໄດ້.</translation>
 <translation id="3707034683772193706">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງສາມາດບັນທຶກຂໍ້ມູນຈຳນວນໜ້ອຍໜຶ່ງໄດ້ດ້ວຍ Chrome, ສ່ວນໃຫຍ່ແລ້ວແມ່ນໃຊ້ເພື່ອກວດສອບວ່າທ່ານບໍ່ແມ່ນບັອດ</translation>
 <translation id="3721953990244350188">ປິດ ແລະ ສະແດງຄຳສັ່ງຕໍ່ໄປທີ່ພ້ອມໃຫ້ນຳໃຊ້</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">ແຊຣ໌ຜ່ານ</translation>
 <translation id="5001526427543320409">ຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="5007392906805964215">ກວດສອບ</translation>
+<translation id="5014182796621173645">ທ່ານໄດ້ເຂົ້າເບິ່ງເມື່ອ <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">ອະ​ນຸ​ຍາດ​</translation>
 <translation id="5048398596102334565">ອະນຸຍາດໃຫ້ເວັບໄຊເຂົ້າເຖິງເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວ (ແນະນຳ)</translation>
 <translation id="5050380848339752099">ເວັບໄຊນີ້ກຳລັງຈະແບ່ງປັນຂໍ້ມູນກັບແອັບນອກໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">ເບິ່ງເພີ່ມເຕີມ</translation>
 <translation id="6561560012278703671">ໃຊ້ການສົ່ງຂໍ້ຄວາມທີ່ງຽບກວ່າ (ບລັອກບໍ່ໃຫ້ການແຈ້ງເຕືອນຂັດຈັງຫວະທ່ານ)</translation>
 <translation id="6593061639179217415">ເວັບໄຊສຳລັບເດັສທັອບ</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{ອະນຸຍາດຄຸກກີ້ສຳລັບ <ph name="RWS_MEMBERS_COUNT" /> ເວັບໄຊຂອງ <ph name="RWS_OWNER" /> ແລ້ວ}other{ອະນຸຍາດຄຸກກີ້ສຳລັບ <ph name="RWS_MEMBERS_COUNT" /> ເວັບໄຊຂອງ <ph name="RWS_OWNER" /> ແລ້ວ}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">ເນື້ອ​ໃນ​ທີ່ຖືກ​ປົກ​ປ້ອງ</translation>
 <translation id="662080504995468778">ຢູ່ຕໍ່</translation>
 <translation id="6653342741369270081">ກົດປຸ່ມກັບຄືນເພື່ອອອກຈາກໂໝດເຕັມຈໍ.</translation>
+<translation id="6683865262523156564">ເວັບໄຊນີ້ຢູ່ໃນກຸ່ມທີ່ສາມາດເບິ່ງການເຄື່ອນໄຫວຂອງທ່ານໄດ້. ກຸ່ມທີ່ <ph name="RWS_OWNER" /> ກຳນົດໄວ້</translation>
 <translation id="6689172468748959065">ຮູບໂປຣໄຟລ໌</translation>
 <translation id="6697925417670533197">ການດາວໂຫຼດທີ່ດຳເນີນຢູ່</translation>
 <translation id="6722828510648505498">ບລັອກຂໍ້ຄວາມການເຂົ້າສູ່ລະບົບຈາກບໍລິການຕົວຕົນຕ່າງໆ.</translation>

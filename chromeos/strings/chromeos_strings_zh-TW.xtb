@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">現已推出 <ph name="PRODUCT_NAME" /> 專屬素材資源</translation>
 <translation id="1022628058306505708">地球動態</translation>
 <translation id="1026212596705997935">「<ph name="CONFLICT_ACCEL_NAME" />」正在使用這組快速鍵。請按下新的快速鍵。如要取代現有快速鍵，請再次按下這組快速鍵。</translation>
+<translation id="1030856839388844477">重設數據用量</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> 個執行緒；<ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">已推出新功能，請使用向上鍵瞭解詳情。</translation>
 <translation id="1049663189809099096">淡彩黃</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">訊號微弱</translation>
 <translation id="1300115153046603471">APN 類型為預設和「<ph name="ATTACH" />」。</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">轉換</translation>
 <translation id="1304014921944666344">建立日期</translation>
 <translation id="1308754910631152188">正在更新 (已完成 <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> 分鐘</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">鹽湖</translation>
 <translation id="1367951781824006909">選擇檔案</translation>
 <translation id="1371650399987522809">對 Google AI 桌布提供意見</translation>
+<translation id="1374385338586507108">定義</translation>
 <translation id="1387854245479784695">這是所有核心的匯總值</translation>
 <translation id="1393206549145430405">城堡</translation>
 <translation id="1394661041439318933">裝置的充電盒電量為 <ph name="BATTERY_PERCENTAGE" />%。</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">電流</translation>
 <translation id="346539236881580388">重拍</translation>
 <translation id="3484914941826596830">在韌體更新期間，請勿拔除這台外部裝置的插頭或關閉電腦。你可以將這個視窗縮到最小。更新作業可能需要幾分鐘才會完成，這段期間外部裝置可能無法正常運作。</translation>
-<translation id="3485555238092220889">無障礙動作</translation>
 <translation id="3486220673238053218">定義</translation>
 <translation id="3487866404496702283">對 Mahi 功能提供意見</translation>
 <translation id="3488065109653206955">部分已啟用</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">不提供服務</translation>
 <translation id="4570558255126759859">要下載 Gemini 模型來摘要錄音重點嗎？</translation>
 <translation id="4573777384450697571">失敗 - 憑證已過期</translation>
+<translation id="4575450106703099687">無障礙功能選項</translation>
 <translation id="458794348635939462">無法解析所有主機</translation>
 <translation id="4593212453765072419">需要 Proxy 驗證</translation>
 <translation id="4594021849294327751">建立轉錄稿</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">「<ph name="SHORTCUT_DESCRIPTION" />」的編輯按鈕。</translation>
 <translation id="5733298426544876109">更新「<ph name="DEVICE_NAME" />」</translation>
+<translation id="5736820754189340309">已重設數據用量</translation>
 <translation id="574392208103952083">中</translation>
 <translation id="5757187557809630523">播放下一首曲目</translation>
 <translation id="5760715441271661976">入口網站狀態</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">靜音</translation>
 <translation id="5784136236926853061">HTTP 延遲時間過長</translation>
 <translation id="5790391387506209808">青金石</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">未指派任何快速鍵</translation>
 <translation id="5826644637650799838">關於這張桌布</translation>
 <translation id="5832805196449965646">新增使用者</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">文字導覽</translation>
 <translation id="680983167891198932">金鑰</translation>
 <translation id="6816797338148849397">提供所選內容的相關資訊。請使用向上鍵存取。</translation>
+<translation id="6831043979455480757">翻譯</translation>
 <translation id="6853312040151791195">放電率</translation>
 <translation id="6862416241246624313">已提交意見</translation>
 <translation id="6866732840889595464">雛菊</translation>
@@ -1551,6 +1557,7 @@
 <translation id="9087578468327036362">請回報這項查詢</translation>
 <translation id="9088306295921699330">目前用量</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">「重設日期」的詳細資訊</translation>
 <translation id="9100765901046053179">進階設定</translation>
 <translation id="910415269708673980">更新 <ph name="PRINCIPAL_NAME" /> 的票證</translation>
 <translation id="9106415115617144481">正在掃描第 <ph name="PAGE_NUMBER" /> 頁</translation>

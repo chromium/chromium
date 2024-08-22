@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">සුවිශේෂී <ph name="PRODUCT_NAME" /> වත්කම් දැන් ලබා ගත හැක</translation>
 <translation id="1022628058306505708">පෘථිවි ප්‍රවාහය</translation>
 <translation id="1026212596705997935">කෙටිමඟ "<ph name="CONFLICT_ACCEL_NAME" />" සඳහා භාවිත කරනු ලැබේ. නව කෙටිමඟක් ඔබන්න. පවතින කෙටිමඟ ප්‍රතිස්ථාපනය කිරීම සඳහා, මෙම කෙටිමඟ නැවත ඔබන්න.</translation>
+<translation id="1030856839388844477">දත්ත භාවිතය නැවත සකසන්න</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (පොටවල් <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">නව විශේෂාංගයක් ලබා ගත හැකිය, තව දැන ගැනීමට ඉහළට ඊතල යතුර භාවිත කරන්න.</translation>
 <translation id="1049663189809099096">පැස්ටල් කහ</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">දුර්වල සංඥාව</translation>
 <translation id="1300115153046603471">APN වර්ගය පෙරනිමි සහ <ph name="ATTACH" /> වේ.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">හරවන්න</translation>
 <translation id="1304014921944666344">තැනූ දිනය</translation>
 <translation id="1308754910631152188">යාවත්කාලීන කරමින් (<ph name="PERCENTAGE_VALUE" />% සම්පූර්ණයි)</translation>
 <translation id="1309341072016605398">විනාඩි <ph name="MINUTES" />ක්</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">ලුණු විල</translation>
 <translation id="1367951781824006909">ගොනුවක් තෝරන්න</translation>
 <translation id="1371650399987522809">Google AI මගින් බල ගැන්වෙන වෝල්පේපරය සඳහා ප්‍රතිපෝෂණය</translation>
+<translation id="1374385338586507108">නිර්වචනය කරන්න</translation>
 <translation id="1387854245479784695">මෙය සියලු කටයුතුවල එකතුවකි</translation>
 <translation id="1393206549145430405">බලකොටුව</translation>
 <translation id="1394661041439318933">උපාංගයෙහි ආවරණ බැටරිය <ph name="BATTERY_PERCENTAGE" />% ක් ඇත.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">වත්මන්</translation>
 <translation id="346539236881580388">නැවත ගන්න</translation>
 <translation id="3484914941826596830">නිත්‍ය මෘදුකාංග යාවත්කාලීන වන අතරතුර, මෙම බාහිර උපාංගය විසන්ධි කිරීම හෝ ඔබගේ පරිගණකය වැසීම නොකරන්න. ඔබට මෙම කවුළුව කුඩා කළ හැකිය. මෙම යාවත්කාලීන කිරීමට මිනිත්තු කිහිපයක් ගත විය හැකි අතර මෙම කාලය තුළ ඔබගේ බාහිර උපාංගය ක්‍රියා නොකළ හැකිය.</translation>
-<translation id="3485555238092220889">ප්‍රවේශ්‍යතා ක්‍රියාව</translation>
 <translation id="3486220673238053218">නිර්වචනය</translation>
 <translation id="3487866404496702283">මහී විශේෂාංගය සඳහා ප්‍රතිපෝෂණ</translation>
 <translation id="3488065109653206955">අර්ධව සක්‍රිය කළ</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">සේවාව නැත</translation>
 <translation id="4570558255126759859">පටිගත කිරීම් සාරාංශ කිරීමට Gemini ආකෘතිය බාගන්න ද?</translation>
 <translation id="4573777384450697571">අසමත් විය - සහතිකය කල් ඉකුත් විය</translation>
+<translation id="4575450106703099687">ප්‍රවේශ්‍යතා විකල්ප</translation>
 <translation id="458794348635939462">සියලු සත්කාරක විසඳීම අසාර්ථක විය</translation>
 <translation id="4593212453765072419">ප්‍රොක්සි සත්‍යාපනය අවශ්‍යයි</translation>
 <translation id="4594021849294327751">අනුපත තනන්න</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />න් <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> සඳහා බොත්තම සංස්කරණය කරන්න.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> යාවත්කාලීන කරන්න</translation>
+<translation id="5736820754189340309">දත්ත භාවිතය යළි සකසා ඇත</translation>
 <translation id="574392208103952083">මධ්‍යම</translation>
 <translation id="5757187557809630523">මීළඟ ඛණ්ඩය</translation>
 <translation id="5760715441271661976">ද්වාර තත්වය</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">නිහඬ කරන්න</translation>
 <translation id="5784136236926853061">ඉහළ HTTP පමාව</translation>
 <translation id="5790391387506209808">ලැපිස් ලැසූලි</translation>
+<translation id="5810692306010756935">උපාධිය</translation>
 <translation id="5816802250591013230">කෙටිමං කිසිවක් නොපවරන ලදි</translation>
 <translation id="5826644637650799838">කලාව පිළිබඳව</translation>
 <translation id="5832805196449965646">පුද්ගලයා එක් කරන්න</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">පෙළ සංචාලනය</translation>
 <translation id="680983167891198932">යතුර</translation>
 <translation id="6816797338148849397">ඔබේ තේරීමට අදාළ තොරතුරු ලබා ගත නොහැකිය. ප්‍රවේශ වීමට ඉහළට ඊතල යතුර භාවිත කරන්න.</translation>
+<translation id="6831043979455480757">පරිවර්තනය කරන්න</translation>
 <translation id="6853312040151791195">විසර්ජන වේගය</translation>
 <translation id="6862416241246624313">ප්‍රතිචාරය ඉදිරිපත් කළා</translation>
 <translation id="6866732840889595464">ඩේසි</translation>
@@ -1551,6 +1557,7 @@
 <translation id="9087578468327036362">මෙම විමසුම වාර්තා කරන්න</translation>
 <translation id="9088306295921699330">වත්මන් භාවිතය</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">යළි පිහිටුවීමේ දිනය පිළිබඳ තව තතු</translation>
 <translation id="9100765901046053179">උසස් සැකසුම්</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> සඳහා ප්‍රවේශපත්‍රය නැවුම් කරන්න</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> පිටුව ස්කෑන් කරමින්</translation>

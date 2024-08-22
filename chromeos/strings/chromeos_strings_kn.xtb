@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">ದುರ್ಬಲ ಸಿಗ್ನಲ್</translation>
 <translation id="1300115153046603471">APN ಎಂಬುದು ಡೀಫಾಲ್ಟ್ ಮತ್ತು <ph name="ATTACH" /> ಪ್ರಕಾರವಾಗಿದೆ.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">ಪರಿವರ್ತಿಸಿ</translation>
 <translation id="1304014921944666344">ರಚಿಸಲಾದ ದಿನಾಂಕ</translation>
 <translation id="1308754910631152188">ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ (<ph name="PERCENTAGE_VALUE" />% ಪೂರ್ಣಗೊಂಡಿದೆ)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> ನಿಮಿಷಗಳು</translation>
@@ -77,6 +78,7 @@
 <translation id="1343442362630695901">ಸಾಲ್ಟ್ ಲೇಕ್</translation>
 <translation id="1367951781824006909">ಫೈಲ್‌ವೊಂದನ್ನು ಆರಿಸಿ</translation>
 <translation id="1371650399987522809">Google AI ನಿಂದ ಬೆಂಬಲಿತವಾದ ವಾಲ್‌ಪೇಪರ್‌ಗಾಗಿ ಪ್ರತಿಕ್ರಿಯೆ</translation>
+<translation id="1374385338586507108">ವಿವರಿಸಿ</translation>
 <translation id="1387854245479784695">ಇದು ಎಲ್ಲಾ ಕೋರ್‌ಗಳ ಒಟ್ಟುಗೂಡಿಸುವಿಕೆಯಾಗಿದೆ</translation>
 <translation id="1393206549145430405">ಕೋಟೆ</translation>
 <translation id="1394661041439318933">ಸಾಧನವು <ph name="BATTERY_PERCENTAGE" />% ಕೇಸ್ ಬ್ಯಾಟರಿಯನ್ನು ಹೊಂದಿದೆ.</translation>
@@ -463,7 +465,6 @@
 <translation id="346423161771747987">ಕರೆಂಟ್</translation>
 <translation id="346539236881580388">ರೀಟೇಕ್</translation>
 <translation id="3484914941826596830">ಫರ್ಮ್‌ವೇರ್ ಅಪ್‌ಡೇಟ್ ಆಗುತ್ತಿರುವ ಸಮಯದಲ್ಲಿ, ಈ ಬಾಹ್ಯ ಸಾಧನವನ್ನು ಅನ್‌ಪ್ಲಗ್ ಮಾಡಬೇಡಿ ಅಥವಾ ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ಸ್ಥಶಟ್ ಡೌನ್ ಮಾಡಬೇಡಿ. ನೀವು ಈ ವಿಂಡೋವನ್ನು ಕುಗ್ಗಿಸಬಹುದು. ಈ ಅಪ್‌ಡೇಟ್, ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು ಮತ್ತು ಈ ಸಮಯದಲ್ಲಿ ನಿಮ್ಮ ಬಾಹ್ಯ ಸಾಧನವು ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು.</translation>
-<translation id="3485555238092220889">ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಆ್ಯಕ್ಷನ್</translation>
 <translation id="3486220673238053218">ವಿವರಣೆ</translation>
 <translation id="3487866404496702283">ಮಾಹಿ ಫೀಚರ್‌ಗಾಗಿ ಫೀಡ್‌ಬ್ಯಾಕ್</translation>
 <translation id="3488065109653206955">ಭಾಗಶಃ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -672,6 +673,7 @@
 <translation id="4562494484721939086">ಸೇವೆ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="4570558255126759859">ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಸಾರಾಂಶಗೊಳಿಸಲು Gemini ಮಾದರಿಯನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="4573777384450697571">ವಿಫಲವಾಗಿದೆ - ಪ್ರಮಾಣಪತ್ರದ ಅವಧಿ ಮೀರಿದೆ</translation>
+<translation id="4575450106703099687">ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಆಯ್ಕೆಗಳು</translation>
 <translation id="458794348635939462">ಎಲ್ಲಾ ಹೋಸ್ಟ್‌ಗಳನ್ನು ಪರಿಹರಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="4593212453765072419">ಪ್ರಾಕ್ಸಿ ದೃಢೀಕರಣ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="4594021849294327751">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್ ಅನ್ನು ರಚಿಸಿ</translation>
@@ -884,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> ರಲ್ಲಿ <ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> ಗಾಗಿ ಎಡಿಟ್ ಮಾಡುವ ಬಟನ್.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
+<translation id="5736820754189340309">ಡೇಟಾ ಬಳಕೆಯನ್ನು ರೀಸೆಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="574392208103952083">ಮಧ್ಯಮ</translation>
 <translation id="5757187557809630523">ಮುಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="5760715441271661976">ಪೋರ್ಟಲ್ ಸ್ಥಿತಿ</translation>
@@ -893,6 +896,7 @@
 <translation id="57838592816432529">ಮ್ಯೂಟ್</translation>
 <translation id="5784136236926853061">ಅಧಿಕ HTTP ವಿಳಂಬ</translation>
 <translation id="5790391387506209808">ಲ್ಯಾಪಿಸ್ ಲಾಜುಲಿ</translation>
+<translation id="5810692306010756935">ಪದವಿ</translation>
 <translation id="5816802250591013230">ಯಾವುದೇ ಶಾರ್ಟ್‌ಕಟ್ ನಿಯೋಜಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="5826644637650799838">ಕಲೆಯ ಕುರಿತು</translation>
 <translation id="5832805196449965646">ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸು</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6798678288485555829">ಪಠ್ಯದ ನ್ಯಾವಿಗೇಷನ್</translation>
 <translation id="680983167891198932">ಕೀ</translation>
 <translation id="6816797338148849397">ನಿಮ್ಮ ಆಯ್ಕೆಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಲಭ್ಯವಿದೆ. ಇದಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಪಡೆಯಲು, ಅಪ್ ಆ್ಯರೋ ಬಳಸಿ.</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="6853312040151791195">ಡಿಸ್‌ಚಾರ್ಜಿಂಗ್ ರೇಟ್</translation>
 <translation id="6862416241246624313">ಫೀಡ್‌ಬ್ಯಾಕ್ ಸಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="6866732840889595464">ಡೈಸಿ</translation>
@@ -1533,7 +1538,7 @@
 <translation id="9003704114456258138">ಫ್ರೀಕ್ವೆನ್ಸಿ</translation>
 <translation id="901834265349196618">ಇಮೇಲ್</translation>
 <translation id="9022897536196898720">ಹೂವುಗಳು</translation>
-<translation id="9024331582947483881">ಪೂರ್ಣ ಪರದೆ</translation>
+<translation id="9024331582947483881">ಫುಲ್ ಸ್ಕ್ರೀನ್</translation>
 <translation id="9025198690966128418">ವೈಯಕ್ತಿಕ ಸಾಧನವಾಗಿ ಬಳಸಿ</translation>
 <translation id="902638246363752736">ಕೀಬೋರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="9028832514430399253">ಸ್ಕ್ರೀನ್‌ಸೇವರ್ ಆಯ್ಕೆಗಳನ್ನು ಆರಿಸಲು ಟಾಗಲ್ ಆನ್ ಮಾಡಿ</translation>

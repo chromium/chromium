@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Asset esclusivi di <ph name="PRODUCT_NAME" /> ora disponibili</translation>
 <translation id="1022628058306505708">Flusso terrestre</translation>
 <translation id="1026212596705997935">Scorciatoia utilizzata per "<ph name="CONFLICT_ACCEL_NAME" />". Premi una nuova scorciatoia. Per sostituire la scorciatoia esistente, premi di nuovo questa scorciatoia.</translation>
+<translation id="1030856839388844477">Reimposta utilizzo dei dati</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> thread, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Sono disponibili nuove funzionalità: utilizza il tasto Freccia su per saperne di più.</translation>
 <translation id="1049663189809099096">giallo pastello</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Segnale debole</translation>
 <translation id="1300115153046603471">APN è di tipo predefinito e <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Converti</translation>
 <translation id="1304014921944666344">Data creazione</translation>
 <translation id="1308754910631152188">Aggiornamento in corso (percentuale di completamento: <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minuti</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">lago salato</translation>
 <translation id="1367951781824006909">Scegli un file</translation>
 <translation id="1371650399987522809">Feedback per lo sfondo con IA di Google integrata</translation>
+<translation id="1374385338586507108">Definisci</translation>
 <translation id="1387854245479784695">Si tratta di un valore aggregato di tutti i core</translation>
 <translation id="1393206549145430405">castello</translation>
 <translation id="1394661041439318933">Percentuale di batteria della custodia del dispositivo a <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Corrente</translation>
 <translation id="346539236881580388">Nuovo scatto</translation>
 <translation id="3484914941826596830">Durante l'aggiornamento del firmware, non scollegare questo dispositivo esterno o non arrestare il computer. Puoi ridurre a icona questa finestra. Questo aggiornamento potrebbe richiedere qualche minuto e nel frattempo il dispositivo esterno potrebbe non funzionare.</translation>
-<translation id="3485555238092220889">azione di accessibilità</translation>
 <translation id="3486220673238053218">definizione</translation>
 <translation id="3487866404496702283">Feedback per la funzionalità mahi</translation>
 <translation id="3488065109653206955">Attivato parzialmente</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Nessun servizio</translation>
 <translation id="4570558255126759859">Scaricare il modello Gemini per riepilogare le registrazioni?</translation>
 <translation id="4573777384450697571">Non riuscito - Certificato scaduto</translation>
+<translation id="4575450106703099687">opzioni di accessibilità</translation>
 <translation id="458794348635939462">impossibile risolvere tutti gli host</translation>
 <translation id="4593212453765072419">Autenticazione proxy richiesta</translation>
 <translation id="4594021849294327751">Crea trascrizione</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> di <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Pulsante Modifica per <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Aggiorna <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">L'utilizzo dei dati è stato reimpostato</translation>
 <translation id="574392208103952083">Medio</translation>
 <translation id="5757187557809630523">traccia successiva</translation>
 <translation id="5760715441271661976">Stato portale</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Disattiva audio</translation>
 <translation id="5784136236926853061">Latenza HTTP elevata</translation>
 <translation id="5790391387506209808">lapislazzuli</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Nessuna scorciatoia assegnata</translation>
 <translation id="5826644637650799838">Informazioni sullo sfondo</translation>
 <translation id="5832805196449965646">Aggiungi persona</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Navigazione nel testo</translation>
 <translation id="680983167891198932">Chiave</translation>
 <translation id="6816797338148849397">Sono disponibili informazioni relative al testo selezionato. Per accedere, utilizza il tasto Freccia su.</translation>
+<translation id="6831043979455480757">Traduci</translation>
 <translation id="6853312040151791195">Velocità di riduzione della carica</translation>
 <translation id="6862416241246624313">Feedback inviato</translation>
 <translation id="6866732840889595464">margherite</translation>
@@ -1551,6 +1557,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="9087578468327036362">Segnala questa query</translation>
 <translation id="9088306295921699330">Spazio utilizzato</translation>
 <translation id="9095775724867566971">PluginVm</translation>
+<translation id="909856219855259344">Scopri di più sulla data di reimpostazione</translation>
 <translation id="9100765901046053179">Impostazioni avanzate</translation>
 <translation id="910415269708673980">Aggiorna la richiesta per <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scansione pagina <ph name="PAGE_NUMBER" />…</translation>

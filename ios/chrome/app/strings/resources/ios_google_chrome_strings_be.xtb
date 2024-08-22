@@ -81,7 +81,6 @@
 <translation id="2767464022270041271">Няма захаваных пароляў. Менеджар пароляў Google можа правяраць толькі захаваныя паролі.</translation>
 <translation id="2869959624320573933">Увайдзіце ў Chrome</translation>
 <translation id="2876628302275096482">Даведайцеся больш пра тое, <ph name="BEGIN_LINK" />як Chrome забяспечвае прыватнасць вашых даных<ph name="END_LINK" /></translation>
-<translation id="2952581218264071393">1. Адкрыйце налады Chrome.</translation>
 <translation id="2957447865124070833">Выберыце <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Даныя Chrome будуць выдалены з гэтай прылады, паколькі вы выходзіце з уліковага запісу, якім кіруе <ph name="SIGNOUT_MANAGED_DOMAIN" />. Вашы даныя застануцца ва Уліковым запісе Google.</translation>
 <translation id="309672519329227863">Атрымлівайце доступ да пароляў і іншых даных Chrome для ўваходу ў праграмы.</translation>
@@ -93,7 +92,6 @@
 <translation id="3340938510625667914">Дзеянні ў Chrome</translation>
 <translation id="3345341804167540816">Выкарыстоўвайце Chrome усюды</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Гэта адбываецца, калі Chrome не выкарыстоўваецца на працягу {THRESHOLD} хвіліны}one{Гэта адбываецца, калі Chrome не выкарыстоўваецца на працягу {THRESHOLD} хвіліны}few{Гэта адбываецца, калі Chrome не выкарыстоўваецца на працягу {THRESHOLD} хвілін}many{Гэта адбываецца, калі Chrome не выкарыстоўваецца на працягу {THRESHOLD} хвілін}other{Гэта адбываецца, калі Chrome не выкарыстоўваецца на працягу {THRESHOLD} хвіліны}}</translation>
-<translation id="3399930248910934354">Адкрыць налады Chrome</translation>
 <translation id="344736123700721678">Адкрывайце Chrome хутчэй, выкарыстоўваючы панэль Dock галоўнага экрана</translation>
 <translation id="3472587960215700950">Chrome выкарыстоўвае Google Карты, каб пракладаць маршруты і паказваць інфармацыю пра выяўленыя мясцовыя адрасы.</translation>
 <translation id="3503014945441706099">Для гэтага профілю Chrome даступны таксама Палепшаны Бяспечны прагляд</translation>
@@ -237,7 +235,6 @@
 <translation id="7394108421562933108">Карты ў Chrome</translation>
 <translation id="7400722733683201933">Пра браўзер Google Chrome</translation>
 <translation id="7466693328838535498">У полі пошуку віджэтаў увядзіце слова "Chrome"</translation>
-<translation id="746684838091935575">3. Выберыце Chrome.</translation>
 <translation id="7492574581995589075">Ваша арганізацыя адключыла магчымасць выкарыстання і захавання даных Chrome ва Уліковым запісе Google. Новыя закладкі, паролі і іншыя даныя будуць захоўвацца толькі на гэтай прыладзе.</translation>
 <translation id="7581063337314642333">Перайсці да сеткі ўкладак у Chrome</translation>
 <translation id="7642373780953416937">Вы будзеце атрымліваць абвесткі аб праблемах з прыватнасцю і бяспекай, якія аўтаматычна выяўляе Chrome.</translation>
@@ -301,7 +298,6 @@
 <translation id="8857676124663337448">Менеджару пароляў Google не ўдалося праверыць усе паролі. Паўтарыце спробу заўтра.</translation>
 <translation id="8865415417596392024">Даныя Chrome у вашым уліковым запісе</translation>
 <translation id="8874688701962049679">Парады па эфектыўным выкарыстанні Chrome.</translation>
-<translation id="8891935667620843985">Спасылкі будуць аўтаматычна адкрывацца ў Chrome, калі вы зробіце яго стандартным браўзерам.</translation>
 <translation id="8897749957032330183">Паролі захоўваюцца ў Менеджары пароляў Google на гэтай прыладзе.</translation>
 <translation id="8949681853939555434">Зрабіце Chrome стандартным браўзерам</translation>
 <translation id="9068336935206019333">Адкрыць у Chrome у рэжыме інкогніта</translation>

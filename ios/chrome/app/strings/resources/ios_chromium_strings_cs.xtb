@@ -5,7 +5,6 @@
 <translation id="1047130070405668746">Vyberte Chromium.</translation>
 <translation id="1091252999271033193">To znamená, že Chromium bude pokaždé odesílat požadavek na mobilní web.</translation>
 <translation id="1115463765356382667">Pokud Chromium chcete využít na maximum, proveďte níže uvedené navrhované akce.</translation>
-<translation id="1141230343006904201">1. Otevřete nastavení prohlížeče Chromium</translation>
 <translation id="1171824629317156389">V systému iOS otevřete Nastavení prohlížeče Chromium, klepněte na Výchozí prohlížeč a vyberte Chromium.</translation>
 <translation id="1185134272377778587">O prohlížeči Chromium</translation>
 <translation id="1257458525759135959">Pokud chcete ukládat obrázky, klepněte na Nastavení a povolte prohlížeči Chromium přidávat obrázky do vašich fotek</translation>
@@ -91,7 +90,6 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="347967311580159871">Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chromium najdete v sekci <ph name="BEGIN_LINK" />Služby Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Vaše heslo nebylo sdíleno. Zkontrolujte připojení k internetu a ujistěte se, že jste do prohlížeče Chromium přihlášeni. Poté to zkuste znovu.</translation>
 <translation id="3567399274263440288">Pokud z prohlížeče Chromium chcete získat maximum, přihlaste se do něj pomocí účtu Google.</translation>
-<translation id="3634039384458740619">Otevřít nastavení prohlížeče Chromium</translation>
 <translation id="3639997914391704523">Když se přihlásíte pomocí účtu Google, může vám Chromium kontrolovat hesla.</translation>
 <translation id="3688710892786762883">Chromium na navštívených webech rozpozná čísla zásilek a bude vám na stránce Nová karta zobrazovat aktuální informace o zásilkách. Vaše data budou sdílena se společností Google za účelem poskytování této funkce a zlepšování Nákupů pro všechny.</translation>
 <translation id="372658070733623520">Pokud chcete používat a ukládat data prohlížeče Chromium ve svém účtu Google, ověřte svoji totožnost.</translation>
@@ -119,6 +117,7 @@ Vaše data jsou šifrována pomocí heslové fráze. Pokud chcete používat a 
 <translation id="4432744876818348753">Pokud z Chromia chcete získat maximum, přihlaste se.</translation>
 <translation id="4445228361214254027">Vaše organizace vypnula možnost používat a ukládat data prohlížeče Chromium v účtu Google. Nové záložky, hesla a další položky se budou ukládat pouze do tohoto zařízení.</translation>
 <translation id="4498832288620833153">Přidá zadané adresy URL do vašeho seznamu četby v prohlížeči Chromium.</translation>
+<translation id="451793238785269934">Feed přizpůsobený pro vás – včetně zpráv, sportu a počasí.</translation>
 <translation id="452436063477828504">Zajistěte, abyste mohli vždy používat data prohlížeče Chromium ve svém účtu Google</translation>
 <translation id="4555020257205549924">Pokud je tato funkce zapnutá, bude Chromium nabízet překlad stránek v jiných jazycích pomocí Překladače Google.<ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="4572441104543926904">Šifrování pomocí heslové fráze se nevztahuje na platební metody a adresy.
@@ -203,7 +202,6 @@ Co je třeba zvážit:
 <translation id="632825460376924298">Povolit přihlášení do Chromia</translation>
 <translation id="6332129548244419716">Vymazat údaje o prohlížení v prohlížeči Chromium.</translation>
 <translation id="6337530241089703714">Zvolte, zda z tohoto zařízení chcete vymazat data prohlížeče Chromium, nebo je ponechat</translation>
-<translation id="6348483005826990855">3. Vyberte Chromium.</translation>
 <translation id="6383607155624074112">Získejte rychlejší přístup k prohlížeči Chromium z Docku na ploše</translation>
 <translation id="6424492062988593837">Chromium je opět o něco lepší. K dispozici je nová verze.</translation>
 <translation id="6433172051771630690">Tipy, jak Chromium využít na maximum.</translation>
@@ -267,11 +265,11 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="8235427517854598594">Nastavit Chromium jako výchozí prohlížeč?</translation>
 <translation id="8240981428553046115">Chromium nemůže vyhledat dostupné aktualizace. Zkuste to znovu později.</translation>
 <translation id="8254729934443216898">Prozkoumejte nové funkce, které vám pomohou využít Chromium na maximum.</translation>
+<translation id="829047622686389424">Feed přizpůsobený pro vás.</translation>
 <translation id="8303579360494576778">Spravovat platební metody v prohlížeči Chromium</translation>
 <translation id="830951810931292870">Otevře zadané adresy URL v prohlížeči Chromium v anonymním režimu.</translation>
 <translation id="8386869251364507178">Akce v prohlížeči Chromium</translation>
 <translation id="8409374867500149834">Máte nejsilnější zabezpečení prohlížeče Chromium proti škodlivým webům</translation>
-<translation id="8458950033462118672">Pokud chcete odkazy otevírat automaticky v prohlížeči Chromium, nastavte ho jako výchozí prohlížeč.</translation>
 <translation id="8473874987831035139">Tip pro Chromium: Přesuňte Chromium do Docku</translation>
 <translation id="8502918057530111907">Používejte Chromium ve výchozím nastavení, abyste snadno získali informace o cenách</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{K tomuto dochází, když Chromium {THRESHOLD} minutu nepoužíváte. Data uložená pouze na tomto zařízení v době, kdy jste byli přihlášeni, se vymažou. Může to zahrnovat historii a hesla.}few{K tomuto dochází, když Chromium {THRESHOLD} minuty nepoužíváte. Data uložená pouze na tomto zařízení v době, kdy jste byli přihlášeni, se vymažou. Může to zahrnovat historii a hesla.}many{K tomuto dochází, když Chromium {THRESHOLD} minuty nepoužíváte. Data uložená pouze na tomto zařízení v době, kdy jste byli přihlášeni, se vymažou. Může to zahrnovat historii a hesla.}other{K tomuto dochází, když Chromium {THRESHOLD} minut nepoužíváte. Data uložená pouze na tomto zařízení v době, kdy jste byli přihlášeni, se vymažou. Může to zahrnovat historii a hesla.}}</translation>

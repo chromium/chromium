@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Exkluzív <ph name="PRODUCT_NAME" />-elemek váltak hozzáférhetővé</translation>
 <translation id="1022628058306505708">A Föld mozgása</translation>
 <translation id="1026212596705997935">A billentyűparancs már használatban van a következőhöz: „<ph name="CONFLICT_ACCEL_NAME" />”. Nyomjon meg egy új billentyűparancsot. A meglévő billentyűparancs lecseréléséhez nyomja meg újra ezt a billentyűparancsot.</translation>
+<translation id="1030856839388844477">Adathasználat visszaállítása</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> szál, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Új funkciók állnak rendelkezésre. További információért használja a felfelé mutató nyilat.</translation>
 <translation id="1049663189809099096">pasztellsárga</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Gyenge jel</translation>
 <translation id="1300115153046603471">Az APN típusa: alapértelmezett és <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Konvertálás</translation>
 <translation id="1304014921944666344">Létrehozás dátuma</translation>
 <translation id="1308754910631152188">Frissítés (<ph name="PERCENTAGE_VALUE" />% kész)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> perc</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">sóstó</translation>
 <translation id="1367951781824006909">Válasszon egy fájlt</translation>
 <translation id="1371650399987522809">Visszajelzés a Google AI által működtetett háttérképről</translation>
+<translation id="1374385338586507108">Definiálás</translation>
 <translation id="1387854245479784695">Ez az összes mag összesítése</translation>
 <translation id="1393206549145430405">kastély</translation>
 <translation id="1394661041439318933">Az eszköz tokjának akkumulátorszintje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Áram</translation>
 <translation id="346539236881580388">Új kép készítése</translation>
 <translation id="3484914941826596830">A firmware frissítése közben ne húzza ki a külső eszközt, és ne kapcsolja ki számítógépét. Ezt az ablakot kis méretre állíthatja. A frissítés eltarthat néhány percig, és előfordulhat, hogy közben nem működik a külső eszköz.</translation>
-<translation id="3485555238092220889">kisegítő lehetőségek művelet</translation>
 <translation id="3486220673238053218">definíció</translation>
 <translation id="3487866404496702283">Visszajelzés a mahi funkcióról</translation>
 <translation id="3488065109653206955">Részben aktiválva</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Nincs szolgáltatás</translation>
 <translation id="4570558255126759859">Letölti a Gemini modellt a felvételek összegzéséhez?</translation>
 <translation id="4573777384450697571">Sikertelen – Lejárt tanúsítvány</translation>
+<translation id="4575450106703099687">kisegítő beállítások</translation>
 <translation id="458794348635939462">Nem sikerült az összes gazdagép feloldása</translation>
 <translation id="4593212453765072419">Proxyhitelesítés szükséges</translation>
 <translation id="4594021849294327751">Átirat létrehozása</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />/<ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605">Szerkesztés gomb a következőnél: <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">A(z) <ph name="DEVICE_NAME" /> frissítése</translation>
+<translation id="5736820754189340309">Az adathasználat visszaállítva</translation>
 <translation id="574392208103952083">Közepes</translation>
 <translation id="5757187557809630523">következő szám</translation>
 <translation id="5760715441271661976">Portál állapota</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Némítás</translation>
 <translation id="5784136236926853061">Hosszú HTTP várakozási idő</translation>
 <translation id="5790391387506209808">lazúrkő</translation>
+<translation id="5810692306010756935">Diplomázás</translation>
 <translation id="5816802250591013230">Nincs hozzárendelve billentyűparancs</translation>
 <translation id="5826644637650799838">A műalkotásról</translation>
 <translation id="5832805196449965646">Személy hozzáadása</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Szöveges navigáció</translation>
 <translation id="680983167891198932">Kulcs</translation>
 <translation id="6816797338148849397">Rendelkezésre áll információ a kiválasztott elemmel kapcsolatban. A felfelé nyíllal érheti el.</translation>
+<translation id="6831043979455480757">Fordítás</translation>
 <translation id="6853312040151791195">Lemerítési sebesség</translation>
 <translation id="6862416241246624313">Visszajelzés elküldve</translation>
 <translation id="6866732840889595464">százszorszép</translation>
@@ -1551,6 +1557,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="9087578468327036362">Bejelentheti ezt a lekérdezést.</translation>
 <translation id="9088306295921699330">Jelenleg felhasznált</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">További információ a visszaállítási dátumról</translation>
 <translation id="9100765901046053179">Speciális beállítások</translation>
 <translation id="910415269708673980">Frissítse a következőhöz tartozó jegyet: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. oldal beolvasása…</translation>
@@ -1589,7 +1596,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="966787709310836684">menü</translation>
 <translation id="979450713603643090">Világos rózsaszín</translation>
 <translation id="982713511914535780">Lemerítési teszt futtatása</translation>
-<translation id="98515147261107953">Fekvő</translation>
+<translation id="98515147261107953">Táj</translation>
 <translation id="987264212798334818">Általános</translation>
 <translation id="995062385528875723">Nem használható ékezetes betű, a latin betűstől eltérő ábécé betűje, továbbá szimbólum</translation>
 </translationbundle>

@@ -20,6 +20,7 @@
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ટૅબનું ગ્રૂપ બનાવ્યું</translation>
 <translation id="1657719826150349398">ટૅબને નીચે ખસેડો</translation>
 <translation id="1713541401465507417">બધા ટૅબ અને ગ્રૂપ બંધ કરો</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ટૅબનું ગ્રૂપ બનાવ્યું</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ}one{<ph name="TABS_COUNT_MANY" /> ટૅબ}other{<ph name="TABS_COUNT_MANY" /> ટૅબ}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{પસંદ કરેલા <ph name="TABS_COUNT_ONE" /> ટૅબને બુકમાર્ક કરો}one{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બુકમાર્ક કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બુકમાર્ક કરો}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">હમણાં જ બનાવ્યું</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 દિવસ પછી બંધ કરો}one{<ph name="DAY_COUNT_MANY" /> દિવસ પછી બંધ કરો}other{<ph name="DAY_COUNT_MANY" /> દિવસ પછી બંધ કરો}}</translation>
 <translation id="4777866634702576038">શું ટૅબનું ગ્રૂપ ડિલીટ કરીએ?</translation>
+<translation id="4783638485675352219">ઑપરેટિંગ સિસ્ટમ સાથે આ ડિવાઇસમાંથી ખુલ્લા ટૅબના શીર્ષકો અને URLs શેર કરો</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> રિવ્યૂ)}one{(<ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ)}other{(<ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ)}}</translation>
 <translation id="4850886885716139402">જુઓ</translation>
 <translation id="4870911314065352661">શું બધી ટૅબ બંધ કરીએ?</translation>

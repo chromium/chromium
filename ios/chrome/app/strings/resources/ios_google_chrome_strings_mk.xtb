@@ -81,7 +81,6 @@
 <translation id="2767464022270041271">Немате зачувани лозинки. Google Password Manager може да ги проверува вашите лозинки кога ги зачувувате.</translation>
 <translation id="2869959624320573933">Најавете се на Chrome</translation>
 <translation id="2876628302275096482">Дознајте повеќе за тоа <ph name="BEGIN_LINK" />како Chrome ја штити приватноста на вашите податоци<ph name="END_LINK" /></translation>
-<translation id="2952581218264071393">1. Отворете ги поставките за Chrome</translation>
 <translation id="2957447865124070833">Изберете <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Бидејќи се одјавувате од сметка управувана од <ph name="SIGNOUT_MANAGED_DOMAIN" />, вашите податоци на Chrome ќе се избришат од уредов. Податоците ќе останат на сметката на Google.</translation>
 <translation id="309672519329227863">Пристапувајте до вашите лозинки и друго на Chrome на други апликации.</translation>
@@ -93,7 +92,6 @@
 <translation id="3340938510625667914">Дејства во Chrome</translation>
 <translation id="3345341804167540816">Користете го Chrome секаде</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Ова се случува кога Chrome не се користи {THRESHOLD} минута}one{Ова се случува кога Chrome не се користи {THRESHOLD} минута}other{Ова се случува кога Chrome не се користи {THRESHOLD} минути}}</translation>
-<translation id="3399930248910934354">Отворете ги поставките за Chrome</translation>
 <translation id="344736123700721678">Пристапувајте до Chrome побрзо од докот на почетниот екран</translation>
 <translation id="3472587960215700950">Chrome користи „Карти на Google“ за да ви обезбедува насоки и локални информации за откриените адреси.</translation>
 <translation id="3503014945441706099">Добијте „Подобрено безбедно прелистување“ и за овој профил на Chrome</translation>
@@ -211,6 +209,7 @@
 За повеќе поставки што ги користат податоците за подобрување на вашето доживување на Chrome, одете на <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Пребарување со глас во Chrome</translation>
 <translation id="6975725306479268850">Избирање Chrome за „Автоматско пополнување“</translation>
+<translation id="6979238427560462592">Приспособена активност создадена за вас од Google. Опфаќа „Вести“, „Спорт“ и „Време“.</translation>
 <translation id="7004159181872656283">Пребарување визуелни елементи во Chrome.</translation>
 <translation id="7056826488869329999">Отвора и врши безбедносна проверка во Chrome.</translation>
 <translation id="7059914902409643750">Направете го Chrome свој</translation>
@@ -236,7 +235,6 @@
 <translation id="7394108421562933108">„Карти“ во Chrome</translation>
 <translation id="7400722733683201933">За Google Chrome</translation>
 <translation id="7466693328838535498">Во полето за виџети за „Пребарување“, внесете Chrome</translation>
-<translation id="746684838091935575">3. Изберете Chrome</translation>
 <translation id="7492574581995589075">Вашата организација ја исклучи способноста да се користат и зачувуваат податоци од Chrome во вашата сметка на Google. Новите обележувачи, лозинки и друго ќе се зачувуваат само на овој уред.</translation>
 <translation id="7581063337314642333">Отворање на мрежата со картички во Chrome</translation>
 <translation id="7642373780953416937">Добивајте известувања за проблеми со приватноста или безбедноста што Chrome ќе ги открие за вас автоматски.</translation>
@@ -300,7 +298,6 @@
 <translation id="8857676124663337448">Google Password Manager не можеше да ги провери сите лозинки. Обидете се повторно утре.</translation>
 <translation id="8865415417596392024">Податоци од Chrome во вашата сметка</translation>
 <translation id="8874688701962049679">Совети како да извлечете максимум од Chrome.</translation>
-<translation id="8891935667620843985">Може да отворате сајтови во Chrome автоматски така што ќе го направите ваша стандардна апликација за прелистувач.</translation>
 <translation id="8897749957032330183">Лозинките се зачувуваат во Google Password Manager на уредов.</translation>
 <translation id="8949681853939555434">Поставете го Chrome како стандарден прелистувач</translation>
 <translation id="9068336935206019333">Отвори во „Инкогнито“ на Chrome</translation>
@@ -308,6 +305,7 @@
 <translation id="9112744793181547300">Да се постави Chrome како стандарден?</translation>
 <translation id="9122931302567044771">Ова значи дека Chrome ќе го бара сајтот за компјутер секој пат.</translation>
 <translation id="9181628561061032322">Ги отвора неодамнешните картички во Chrome.</translation>
+<translation id="9194404253580584015">Приспособена активност создадена за вас од Google.</translation>
 <translation id="953008885340860025">Chrome е одјавен</translation>
 <translation id="97300214378190234">Користете Chrome секогаш кога ќе допрете линкови во други апликации.</translation>
 </translationbundle>

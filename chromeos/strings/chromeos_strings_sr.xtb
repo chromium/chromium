@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">Слаб сигнал</translation>
 <translation id="1300115153046603471">Тип назива приступне тачке је подразумевани и <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Конверзија</translation>
 <translation id="1304014921944666344">Датум прављења</translation>
 <translation id="1308754910631152188">Ажурира се (завршено је <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> минута</translation>
@@ -77,6 +78,7 @@
 <translation id="1343442362630695901">слано језеро</translation>
 <translation id="1367951781824006909">Изабери датотеку</translation>
 <translation id="1371650399987522809">Повратне информације за позадину коју омогућава oмогућава Google AI</translation>
+<translation id="1374385338586507108">Дефиниција</translation>
 <translation id="1387854245479784695">Ово је збир свих језгара</translation>
 <translation id="1393206549145430405">Замак</translation>
 <translation id="1394661041439318933">Уређај има <ph name="BATTERY_PERCENTAGE" />% батерије футроле.</translation>
@@ -463,7 +465,6 @@
 <translation id="346423161771747987">Струја</translation>
 <translation id="346539236881580388">Поново сними</translation>
 <translation id="3484914941826596830">Не искључујте спољни уређај ни рачунар док се фирмвер ажурира. Можете да умањите овај прозор. Ово ажурирање може да потраје неколико минута, а спољни уређај можда неће радити током тог периода.</translation>
-<translation id="3485555238092220889">радња приступачности</translation>
 <translation id="3486220673238053218">дефиниција</translation>
 <translation id="3487866404496702283">Повратне информације о функцији махи</translation>
 <translation id="3488065109653206955">Делимично активирано</translation>
@@ -672,6 +673,7 @@
 <translation id="4562494484721939086">Мобилна мрежа није доступна</translation>
 <translation id="4570558255126759859">Желите да преузмете Gemini модел да бисте резимирали снимке?</translation>
 <translation id="4573777384450697571">Није успело – сертификат је истекао</translation>
+<translation id="4575450106703099687">опције приступачности</translation>
 <translation id="458794348635939462">Разрешење свих хостова није успело</translation>
 <translation id="4593212453765072419">Потребна је потврда аутентичности проксија</translation>
 <translation id="4594021849294327751">Направи транскрипт</translation>
@@ -884,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> од <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Дугме Измени за <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Ажурирајте <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Потрошња података је ресетована</translation>
 <translation id="574392208103952083">Средња</translation>
 <translation id="5757187557809630523">следећа песма</translation>
 <translation id="5760715441271661976">Статус портала</translation>
@@ -893,6 +896,7 @@
 <translation id="57838592816432529">Искључи звук</translation>
 <translation id="5784136236926853061">Велико HTTP кашњење</translation>
 <translation id="5790391387506209808">лазулита</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Није додељена ниједна пречица</translation>
 <translation id="5826644637650799838">О позадини</translation>
 <translation id="5832805196449965646">Додај особу</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6798678288485555829">Кретање кроз текст</translation>
 <translation id="680983167891198932">Кључ</translation>
 <translation id="6816797338148849397">Доступне су информације везане за ваш избор. Користите тастер са стрелицом нагоре да бисте им приступили.</translation>
+<translation id="6831043979455480757">Преведи</translation>
 <translation id="6853312040151791195">Брзина пражњења</translation>
 <translation id="6862416241246624313">Повратне информације су послате</translation>
 <translation id="6866732840889595464">бела рада</translation>

@@ -359,6 +359,7 @@ I pattern corrispondenti alle origini di questo criterio non possono però conte
 <translation id="1257550411839719984">Imposta directory di download predefinita</translation>
 <translation id="1262993197422487260">Non mostrare il pulsante di visualizzazione della password nella schermata di accesso e di blocco</translation>
 <translation id="1265053460044691532">Limita il tempo per cui un utente autenticato tramite SAML può eseguire l'accesso offline</translation>
+<translation id="1265076559723566171">Consente di gestire le impostazioni per gli utenti EDU</translation>
 <translation id="1271811620059192171">Attiva gruppi atomici di criteri</translation>
 <translation id="127264587838521316">Attiva le richieste di installazione delle estensioni di <ph name="PRODUCT_NAME" /></translation>
 <translation id="1272798957154751008">Attiva la migrazione dei dispositivi Chromad nella gestione del cloud</translation>
@@ -827,6 +828,7 @@ L'etichetta personalizzata non verrà tradotta.</translation>
       Se il valore <ph name="IDLE_ACTION_FIELD_NAME" /> non viene impostato, viene usato il valore <ph name="IDLE_ACTION_ENUM_SUSPEND" />.
 
       Nota: esistono impostazioni separate per l'alimentazione CA e la batteria.</translation>
+<translation id="1607734317623618500">L'app web kiosk è in grado di funzionare offline</translation>
 <translation id="1608755754295374538">URL a cui verrà concesso l'accesso ai dispositivi di acquisizione audio senza richieste</translation>
 <translation id="1608901087213748889">Consente di attivare un'azione quando il computer è inattivo.
 
@@ -921,6 +923,7 @@ Se il criterio non viene configurato, <ph name="PRODUCT_OS_NAME" /> può selezio
 <translation id="165769015320654523">Concedi automaticamente a questi siti l'autorizzazione di connessione a dispositivi HID con gli ID fornitore e prodotto forniti.</translation>
 <translation id="1659406551862245683">Il comportamento predefinito di ridimensionamento della tastiera virtuale viene modificato per ridimensionare l'area visibile del layout</translation>
 <translation id="166427968280387991">Server proxy</translation>
+<translation id="1666001345366986837">Impostazioni per la funzionalità Sfondo AI generativa per videoconferenze</translation>
 <translation id="1670638264428789878">Attiva insiemi di siti web correlati</translation>
 <translation id="1671405606278443620">Impostazioni per la ricerca nella cronologia basata sull'AI</translation>
 <translation id="1673097259557436886">Comunica sempre ai siti web che non è stato salvato alcun metodo di pagamento</translation>
@@ -950,27 +953,6 @@ Se il criterio viene impostato su False o se non viene configurato, non viene re
       Questo criterio consente di specificare una risoluzione specifica da usare durante la rasterizzazione dei file PDF da stampare.
 
       Se questo criterio viene impostato su 0 o se non viene configurato, verrà usata la risoluzione predefinita di sistema durante la rasterizzazione delle immagini delle pagine.</translation>
-<translation id="1700458869527146675">L'impostazione del criterio consente di configurare le impostazioni del proxy per Chrome e le app ARC, ignorando tutte le opzioni relative al proxy specificate dalla riga di comando.
-
-       Se il criterio non viene configurato, gli utenti possono scegliere le impostazioni del proxy.
-
-       L'impostazione del criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> consente di accettare i seguenti campi:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, che consente di specificare il server proxy utilizzato da Chrome e impedisce agli utenti di modificare le impostazioni del proxy
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, un URL a un file proxy .pac
-         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />, che impedisce allo stack di rete di utilizzare connessioni dirette con uno script PAC non valido o non disponibile
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, un URL del server proxy
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, un elenco di host per i quali verrà bypassato il proxy
-
-       Il campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> è deprecato a favore del campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
-
-        Per il campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, se scegli il valore:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, non viene mai utilizzato un proxy e tutti gli altri campi vengono ignorati.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, viene utilizzato il proxy del sistema e tutti gli altri campi vengono ignorati.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, tutti gli altri campi vengono ignorati.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, vengono utilizzati i campi <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, vengono utilizzati i campi <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-
-      Nota: per esempi più dettagliati, consulta la pagina The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="1700811900332333712">Consenti al dispositivo di richiedere il powerwash</translation>
 <translation id="1705215165572785706">Imposta i tasti della fila superiore come tasti multimediali, ma consenti la modifica da parte degli utenti</translation>
 <translation id="1708496595873025510">Imposta la limitazione sul recupero del numero di inizializzazione delle varianti</translation>
@@ -1161,6 +1143,7 @@ Se questo criterio viene impostato su Disabled o se non viene impostato, dopo l'
 Questo criterio non ha effetto se viene impostato a livello di macchina.</translation>
 <translation id="1837165432382702436">L'altezza della pagina in micron.</translation>
 <translation id="1838910874018595451">Configurazione precompilata per i ticket Kerberos</translation>
+<translation id="1839042185432919430">Consenti all'app web kiosk di mostrare la richiesta di accesso alla rete all'avvio dell'app se il dispositivo è offline</translation>
 <translation id="1843102210803941014">Attiva solo dati e cookie essenziali nella ricerca</translation>
 <translation id="1843117931376765605">Frequenza di aggiornamento criteri relativi agli utenti</translation>
 <translation id="1844620919405873871">Consente di configurare le norme relative allo sblocco rapido.</translation>
@@ -2661,6 +2644,7 @@ Il criterio <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> h
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Tieni presente, tuttavia, che il pattern "*", che corrisponde a qualsiasi URL, non è supportato da questo criterio.</translation>
 <translation id="2979696534869541158">Forza implementazione precedente</translation>
+<translation id="2983209019593449150">A seconda della procedura di avvio della funzionalità, è possibile utilizzare firme di codice ad hoc per shim di app web progressive.</translation>
 <translation id="2985927503455169394">Usa la modalità predefinita dell'esperienza di onboarding dell'assistente</translation>
 <translation id="2987155890997901449">Attiva ARC</translation>
 <translation id="2987227569419001736">Controlla l'utilizzo dell'API Web Bluetooth</translation>
@@ -3041,6 +3025,13 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 
       I siti web configurati verranno aperti automaticamente in un browser diverso da <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3252724033247471310">Consenti acquisizione schede con stessa origine in base a queste origini</translation>
+<translation id="325374928725737694">Se il criterio viene disattivato, l'app web kiosk non può funzionare offline. All'avvio di una sessione kiosk, verrà visualizzata una richiesta di accesso alla rete solo se il dispositivo è offline. In questo modo, il dispositivo sarà online prima che l'app venga avviata correttamente.
+
+Questa richiesta di accesso alla rete potrebbe non essere visualizzata se per un'app è impostato l'avvio automatico e il criterio <ph name="PROMPT_POLICY_NAME" /> (<ph name="PROMPT_POLICY_URL" />) è disattivato.
+
+Questo criterio non ha alcun effetto sulle app di Chrome o web che hanno un URL di installazione che esegue un reindirizzamento multiorigine a un'app web diversa (ad es. se l'URL di installazione dell'app è <ph name="APP_INSTALL_URL" />, ma in fase di caricamento reindirizza a un'app web diversa, ad es. <ph name="APP_REDIRECTED_URL" />).
+
+Se il criterio viene impostato su true o non viene configurato, le app web verranno avviate anche se il dispositivo è offline.</translation>
 <translation id="3255624750680556186">Se il criterio viene impostato su Attivato o se non viene configurato, la funzione Powerwash può essere attivata da un dispositivo.
 
       Se viene impostato su Disattivato, la funzione non può essere attivata da un dispositivo. Si può verificare un'eccezione per l'attivazione della funzione Powerwash, se il criterio <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> viene impostato su un valore che consente l'aggiornamento del firmware TPM, ma tale firmware non è ancora stato aggiornato.</translation>
@@ -3515,6 +3506,7 @@ Se il criterio viene impostato su False, le informazioni sulla versione non veng
 Questo criterio viene applicato soltanto se la macchina viene registrata con <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> per <ph name="PRODUCT_NAME" />.
 Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3644735978203799620">Consente di attivare la selezione automatica per le acquisizioni multischermo</translation>
+<translation id="3645639974927907813">Firma del codice ad hoc per shim di app web progressive</translation>
 <translation id="3646859102161347133">Impostazione tipo di ingrandimento dello schermo</translation>
 <translation id="3647212518036289905">La configurazione del criterio consente di specificare quale libreria GSSAPI utilizzare per l'autenticazione HTTP. Imposta il criterio sul nome di una libreria o su un percorso completo.
 
@@ -3577,6 +3569,7 @@ Se <ph name="PRODUCT_NAME" /> non si chiude correttamente (ad esempio, in caso d
 
           Si tratta di un criterio temporaneo di cui è prevista la rimozione in <ph name="PRODUCT_NAME" /> 107. Questo termine ultimo potrebbe essere esteso nel caso in cui le aziende dovessero averne bisogno.
           </translation>
+<translation id="3677660004554019617">Non consentire lo Sfondo AI generativa per videoconferenze</translation>
 <translation id="3678069907945250643">Consenti l'accesso a Google Foto dall'app di personalizzazione</translation>
 <translation id="3680529017993214255">Attiva le funzionalità e invia dati per contribuire ad addestrare i modelli di IA</translation>
 <translation id="3685979383016152590">La configurazione del criterio consente di determinare quale criterio di accesso applicare per la configurazione collettiva delle stampanti, al fine di stabilire quali stampanti del criterio <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> mettere a disposizione degli utenti.
@@ -3598,6 +3591,19 @@ Se <ph name="PRODUCT_NAME" /> non si chiude correttamente (ad esempio, in caso d
 <translation id="3701121231485832347">Consente di gestire le impostazioni specifiche dei dispositivi <ph name="PRODUCT_OS_NAME" /> gestiti da <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Attestazione da remoto</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Il campo a una sola riga è obsoleto e sarà rimosso a breve. Inizia a usare la casella di testo multiriga qui sotto).</translation>
+<translation id="3705648857103435170">Questo criterio consente di attivare l'app Graduation per gli utenti gestiti. L'app Graduation aiuta gli utenti a trasferire i propri dati dal loro account gestito a un account consumer.
+
+    Se il criterio <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> è impostato su <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, l'app Graduation verrà mostrata tra le date di inizio e fine (comprese) in base all'ora locale.
+
+    Se il criterio <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> è impostato su <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> o se non viene configurato, l'app non verrà mostrata.
+
+    Se il criterio <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> non viene configurato, l'app viene mostrata fino alla data di fine.
+
+    Se il criterio <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" /> non viene configurato, l'app viene mostrata a tempo indeterminato dalla data di inizio.
+
+    Se non vengono impostati né <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> né <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" />, l'app viene mostrata a tempo indeterminato. Se le date di inizio e fine non sono valide, l'app Graduation non verrà mostrata. Ciò include i casi in cui le date fornite non esistono o la data di fine è precedente alla data di inizio.
+
+    Per il corretto funzionamento dell'app Graduation, è necessario attivare anche il trasferimento dei dati con Takeout. Per ulteriori informazioni, visita la pagina https://support.google.com/a/answer/6364687.</translation>
 <translation id="3711561721191203926">Se questo criterio viene impostato su Attivato, ogni volta che dovrebbe essere visualizzato un avviso in <ph name="DEV_TOOLS_NAME" /> a causa di controlli <ph name="PRIVATE_NETWORK_ACCESS" /> non riusciti, la richiesta principale verrà bloccata.
 
 Se questo criterio viene impostato su Disattivato o se non viene configurato, tutti gli avvisi di <ph name="PRIVATE_NETWORK_ACCESS" /> non verranno applicati in modo forzato e le richieste non verranno bloccate.
@@ -3757,6 +3763,7 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
 
       Gli utenti non possono rimuovere un gestore di protocollo registrato tramite il criterio. Se però installano un nuovo gestore predefinito, possono cambiare i gestori di protocolli installati in base al criterio.</translation>
 <translation id="3842619997238271109">Non consente all'host di accesso remoto di usare le autenticazioni con PIN e accoppiamento quando le connessioni client vengono accettate</translation>
+<translation id="3845318141474759319">Consenti Sfondo AI generativa senza migliorare i modelli di AI</translation>
 <translation id="3851443303439635700">Controlla la soglia di nidificazione prima della quale la funzione JavaScript setTimeout() inizia a essere bloccata</translation>
 <translation id="3858658082795336534">Modalità di stampa fronte/retro predefinita</translation>
 <translation id="3859780406608282662">Consente di aggiungere un parametro al recupero del numero di inizializzazione delle varianti in <ph name="PRODUCT_OS_NAME" />.
@@ -4254,6 +4261,7 @@ Nota: il blocco degli URL interni chrome://* e chrome-untrusted://* può causare
       Se questo criterio viene impostato su false, la risoluzione DNS di sistema (getaddrinfo()) viene eseguita nel processo di rete anziché nel browser. Questa operazione potrebbe forzare la disattivazione della sandbox del servizio di rete, riducendo la sicurezza di <ph name="PRODUCT_NAME" />.
 
       Se questo criterio non viene configurato, la risoluzione DNS di sistema potrebbe essere eseguita nel servizio di rete, all'esterno del servizio di rete o parzialmente all'interno e all'esterno, a seconda della configurazione del sistema e dei flag funzionalità.</translation>
+<translation id="4232128469957872687">Impostazioni EDU</translation>
 <translation id="4234788818648224034">Elenco di domini da escludere dalla risoluzione tramite DNS over HTTPS. Questo criterio viene ignorato quando la modalità DNS sicuro è disattivata (usa sempre DNS in testo normale).
 
 Se è impostato anche il criterio <ph name="DOH_TEMPLATES_POLICY_NAME" />, viene preferito un dominio più specifico. La specificità si riferisce al numero di punti ('.') nel dominio. Quando un dominio corrisponde a entrambi i criteri, per impostazione predefinita viene utilizzato il protocollo DNS over HTTPS per il dominio.
@@ -4733,6 +4741,7 @@ Se questo criterio non viene configurato, tutte le origini richiederanno un gest
 <translation id="4615892138881859957">Controlla la scorciatoia usata per attivare il tasto Inserisci del "pacchetto da sei"</translation>
 <translation id="4617338332148204752">Salta il controllo dei metatag in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Funzionalità NewBaseUrlInheritanceBehavior disponibile</translation>
+<translation id="4623516906510429751">Usa firme di codice ad hoc per shim di app web progressive.</translation>
 <translation id="4624417808625504735">Impedisci a JavaScript di utilizzare JIT su questi siti</translation>
 <translation id="46321462262887935">Imposta i tasti della fila superiore come tasti funzione, ma consenti la modifica da parte degli utenti</translation>
 <translation id="4632343302005518762">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i tipi di contenuti elencati</translation>
@@ -6781,6 +6790,7 @@ Se il criterio non viene configurato, viene utilizzato il valore predefinito glo
 <translation id="6207607210601267301">Disattiva l'autenticazione senza PIN per l'host di accesso remoto</translation>
 <translation id="6208896993204286313">Segnala informazioni sulle norme di <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Segnala informazioni sulla versione del sistema operativo e di <ph name="PRODUCT_NAME" /></translation>
+<translation id="6213560283141495655">Non utilizzare firme di codice ad hoc per shim di app web progressive.</translation>
 <translation id="6220835555850906733">Se il criterio viene attivato o se non viene configurato, tutti gli output audio supportati sono consentiti sui dispositivi degli utenti.
 
       Se il criterio viene disattivato, nessun output audio è consentito se gli utenti hanno effettuato l'accesso.
@@ -7005,6 +7015,14 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi (dalla v
 <translation id="632248221998836641">Sostituisci il controllo della connettività IPv6. Esegui sempre una query sul record AAAA per la risoluzione dei nomi host.</translation>
 <translation id="6324274808543634377">Le impostazioni F11/F12 utilizzano la scorciatoia che contiene il tasto di modifica Alt</translation>
 <translation id="6327643515544933974">Impostazioni USB web</translation>
+<translation id="6328272502368270191">Questo criterio attiva o disattiva la funzionalità Sfondo AI generativa per <ph name="PRODUCT_OS_NAME" />.
+1 è il valore predefinito.
+
+1 = consenti lo Sfondo AI generativa senza migliorare i modelli di AI. 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = non consentire lo Sfondo AI generativa.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6330882599388782338">Consenti ai siti di accedere ai sensori</translation>
 <translation id="6331167725613770725">Tieni presente che questo criterio è obsoleto e verrà rimosso nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa il criterio <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
@@ -7441,6 +7459,7 @@ Se il criterio non viene configurato, viene applicata la frequenza predefinita d
 
       Se il criterio non viene impostato, l'utente potrà usare qualsiasi plug-in installato sul sistema ad eccezione di quelli hardcoded incompatibili, obsoleti o pericolosi.</translation>
 <translation id="6571055160227165318">Consenti l'attivazione di WebSQL da parte del flag di Chrome.</translation>
+<translation id="6574216414580419109">Impostazioni per la funzionalità Sfondo AI generativa</translation>
 <translation id="6574903167639386816">Cancella i dati del profilo su disco al termine della sessione utente</translation>
 <translation id="6575403002861093126">La configurazione del criterio consente di specificare la durata in ore della cache dell'oggetto Criteri di gruppo (Group Policy Object, GPO): tempo massimo in cui i GPO possono essere riutilizzati prima di essere scaricati nuovamente. Invece di scaricarli di nuovo a ogni recupero del criterio, il sistema riutilizza i GPO memorizzati nella cache finché la loro versione non viene modificata.
 
@@ -7975,6 +7994,7 @@ Questo criterio verrà rimosso in futuro, una volta completata l'implementazione
 
       Se questo criterio non viene configurato, HTTP/0.9 verrà disattivato per le porte non predefinite.</translation>
 <translation id="6969332115615661188">Disattiva l'input video</translation>
+<translation id="6969949359984470271">L'app web kiosk non è in grado di funzionare offline</translation>
 <translation id="6971579036359007697">Controlla la migrazione dei file locali sul cloud.
 Si applica solo agli utenti di SkyVault, ovvero quando LocalUserFilesAllowed è False. In caso contrario, viene ignorato.
 
@@ -8370,23 +8390,6 @@ Nota importante: le pianificazioni impostate da questo criterio potrebbero non e
 * Se vengono impostati su Unisci, i criteri relativi agli utenti nei GPO degli utenti vengono uniti a quelli dei GPO del computer. I GPO del computer hanno la precedenza.
 
 * Se vengono impostati su Sostituisci, i criteri relativi agli utenti nei GPO degli utenti vengono sostituiti da quelli dei GPO del computer. I GPO degli utenti vengono ignorati.</translation>
-<translation id="7258250780552783197">Elenco di impostazioni per i servizi di Chrome Enterprise Connectors da applicare al connettore di Enterprise <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" />, che si attiva quando un file viene trasferito all'interno di <ph name="PRODUCT_OS_NAME" />.
-
-      I campi <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> vengono utilizzati per stabilire se il connettore deve inviare un file per l'analisi quando viene trasferito tra un'origine e una destinazione e quali tag includere nella richiesta di analisi di quel file. Un tag che corrisponde a una regola "enable" verrà incluso nella richiesta di analisi se l'origine e la destinazione corrispondono alla regola associata a questo tag, purché nessuna regola "disable" con lo stesso tag corrisponda al trasferimento. L'analisi viene eseguita se almeno un tag deve essere incluso nella richiesta. Una regola <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" /> è definita da un elenco di coppie, dove ogni coppia contiene un elenco di origini e un elenco di destinazioni. Il campo <ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> definisce il file system a cui deve essere applicata una regola.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica il fornitore di servizi di analisi a cui corrispondono le impostazioni.
-
-      Se il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> viene impostato su 1, <ph name="PRODUCT_OS_NAME" /> attende di ricevere una risposta dal servizio di analisi prima di consentire il trasferimento. Con qualsiasi altro valore intero, <ph name="PRODUCT_OS_NAME" /> consente immediatamente il trasferimento.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> consente di stabilire se <ph name="PRODUCT_OS_NAME" /> blocca o autorizza i file protetti tramite password.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> consente di controllare se <ph name="PRODUCT_OS_NAME" /> blocca o autorizza i file troppo grandi per essere analizzati.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> viene utilizzato per determinare per quali tag il connettore deve richiedere all'utente di inserire una giustificazione per ignorare una scansione che risulti in un avviso ignorabile. Se il campo non viene configurato, si presume che non sia richiesta alcuna giustificazione.
-
-      I campi <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> vengono utilizzati per configurare un messaggio da mostrare all'utente quando viene visualizzato un avviso dopo una scansione che ha rilevato dei problemi. Il campo del messaggio contiene il testo da mostrare all'utente e può includere al massimo 200 caratteri. Il campo <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" /> contiene un URL fornito dall'amministratore su cui l'utente potrà fare clic per ricevere maggiori informazioni fornite dal cliente sul motivo per cui l'azione è stata bloccata. Il campo <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> è facoltativo e contiene la lingua del messaggio. Un campo <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> vuoto o con il valore "default" indica il messaggio da utilizzare se non è disponibile alcun messaggio nella lingua dell'utente. Il campo dei tag specifica il tipo di scansioni per cui viene visualizzato il messaggio. L'elenco <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" /> può avere alcune voci o nessuna, e per ciascuna voce i campi del messaggio e dei tag non devono essere vuoti.
-
-      Questo criterio richiede una configurazione aggiuntiva per essere applicato. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting per maggiori informazioni.</translation>
 <translation id="7258823566580374486">Attiva separazione degli host di accesso remoto</translation>
 <translation id="7260204423892780600">Consente di gestire le impostazioni dell'Assistente Google.</translation>
 <translation id="7261140115553020049">Abilita il servizio Area di lavoro mobile</translation>
@@ -8635,6 +8638,14 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
 <translation id="748292668225669178">Configura il montaggio di <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="7485481791539008776">Regole di selezione della stampante predefinita</translation>
 <translation id="7486205887492534734">Mostra una richiesta in caso di corrispondenza tra più certificati nella schermata di accesso</translation>
+<translation id="7487148156560435405">Questo criterio attiva o disattiva la funzionalità Sfondo AI generativa per videoconferenze su <ph name="PRODUCT_OS_NAME" />.
+1 è il valore predefinito.
+
+1 = consenti lo Sfondo AI generativa per videoconferenze senza migliorare i modelli di AI. 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = non consentire lo Sfondo AI generativa per videoconferenze.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="748873163367340515">Usa solo dati e cookie essenziali nella ricerca.</translation>
 <translation id="7489169777107143496">Disattiva le analisi approfondite dei download di Navigazione sicura</translation>
 <translation id="7489661071474025727">Specifica se il servizio di recupero dell'account è attivato per i tuoi utenti su dispositivi <ph name="PRODUCT_OS_NAME" />.
@@ -8691,6 +8702,11 @@ Se questo criterio viene impostato su true, <ph name="PRODUCT_OS_NAME" /> tenter
 <translation id="7519218194072744342">L'URL del gestore di protocollo.</translation>
 <translation id="7519251620064708155">Consenti la generazione di chiavi su questi siti</translation>
 <translation id="7521864460386999758">Impedisci l'inserimento di codici di terze parti in Chrome</translation>
+<translation id="7522636035703637613">Se il criterio viene attivato o se non viene configurato, è possibile utilizzare firme ad hoc per le applicazioni create durante l'installazione di un'applicazione web progressiva (PWA). In questo modo, ogni applicazione installata ha un'identità univoca per i componenti di sistema di <ph name="MAC_OS_NAME" />.
+
+Se il criterio viene disattivato, tutte le applicazioni create durante l'installazione di un'applicazione web progressiva (PWA) avranno la stessa identità. Questo può interferire con la funzionalità di <ph name="MAC_OS_NAME" />.
+
+Disattiva il criterio solo se utilizzi una soluzione di sicurezza degli endpoint che blocca le applicazioni con una firma ad hoc.</translation>
 <translation id="7524983116584990314">Cancella i suggerimenti di compilazione automatica</translation>
 <translation id="7529144158022474049">Fattore di dispersione aggiornamento automatico</translation>
 <translation id="7529332889403151669">Specifica se mostrare l'avviso di schermo intero quando il dispositivo disattiva la sospensione o lo schermo scuro.
@@ -8754,6 +8770,7 @@ Se il criterio viene lasciato vuoto, non sono consentite eccezioni a <ph name="F
 
       Se il criterio è attivato o non impostato, la funzionalità di conversione delle unità di Risposte rapide sarà attiva.
       Se il criterio è disattivato, la funzionalità di conversione delle unità di Risposte rapide sarà disattivata.</translation>
+<translation id="7584363090329234690">Consenti Sfondo AI generativa per videoconferenze senza migliorare i modelli di AI</translation>
 <translation id="7585312329612243723">Attiva flusso di attestazione <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL su browser gestiti</translation>
 <translation id="7587345076013230465">Richiedi all'utente di selezionare il certificato client quando il criterio di selezione automatica corrisponde a più certificati nella schermata di accesso</translation>
 <translation id="7587921466180902617">Attiva la versione sperimentale di Registra schermo per gli utenti di Family Link</translation>
@@ -9307,6 +9324,7 @@ In questo tipo di scenari non è garantita la corretta migrazione dei dati.
 <translation id="802776363472387903">L'hash SHA-256 dell'immagine <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Attiva il provider di ricerca predefinito e consenti agli utenti di modificare l'elenco dei provider di ricerca</translation>
 <translation id="8029201909194194377">Durata massima della sessione consentita per le connessioni di accesso remoto</translation>
+<translation id="8031651557770840616">Non consentire Sfondo AI generativa</translation>
 <translation id="8033450879690820321">Questo criterio consente di disattivare temporaneamente il nuovo comportamento delle barre di scorrimento attivabili da tastiera.
 
 Se viene attivato o se non viene configurato, le barre di scorrimento senza elementi secondari attivabili sono attivabili con la tastiera per impostazione predefinita. Inoltre, le barre di scorrimento sono attivabili con un clic e tramite programmazione per impostazione predefinita.
@@ -10870,6 +10888,7 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 
       Se il criterio è impostato su Vero o non viene configurato, tutti gli utenti potranno accedere.</translation>
 <translation id="966425658642788645">Applica il comportamento predefinito</translation>
+<translation id="970144760302377175">Configura quando lo strumento Graduation di <ph name="PRODUCT_OS_NAME" /> è disponibile</translation>
 <translation id="971677226939413180">L'opzione Stampa come immagine non può essere selezionata dagli utenti</translation>
 <translation id="974349541138387272">Specifica il modello URI del resolver DNS over HTTPS desiderato</translation>
 <translation id="978658824596356870">Formato dell'orologio di 24 ore</translation>

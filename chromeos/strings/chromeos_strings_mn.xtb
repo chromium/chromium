@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Одоо <ph name="PRODUCT_NAME" />-н онцгой өмчүүд боломжтой</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1026212596705997935">Товчлолыг "<ph name="CONFLICT_ACCEL_NAME" />"-д ашиглаж байна. Шинэ товчлолыг дарна уу. Одоо байгаа товчлолыг солихын тулд энэ товчлолыг дахин дарна уу.</translation>
+<translation id="1030856839388844477">Дата ашиглалтыг шинэчлэх</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> уялдаат, <ph name="CPU_MAX_CLOCK_SPEED" />Гц)</translation>
 <translation id="1047773237499189053">Шинэ онцлог боломжтой байна. Нэмэлт мэдээлэл авах бол Дээш суман товчийг ашиглана уу.</translation>
 <translation id="1049663189809099096">пастел шар</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Муу дохио</translation>
 <translation id="1300115153046603471">APN нь өгөгдмөл бөгөөд <ph name="ATTACH" /> төрөл юм.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Хөрвүүлэх</translation>
 <translation id="1304014921944666344">Үүсгэсэн огноо</translation>
 <translation id="1308754910631152188">Шинэчилж байна (<ph name="PERCENTAGE_VALUE" />% дууссан)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> минут</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">давст нуур</translation>
 <translation id="1367951781824006909">Файлыг сонгоно уу</translation>
 <translation id="1371650399987522809">Google AI-аар дэмжигдсэн дэлгэцийн зургийн санал хүсэлт</translation>
+<translation id="1374385338586507108">Тодорхойлох</translation>
 <translation id="1387854245479784695">Энэ нь бүх цөмийн хуримтлал юм</translation>
 <translation id="1393206549145430405">цайз</translation>
 <translation id="1394661041439318933">Төхөөрөмжийн гэрийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Одоогийн</translation>
 <translation id="346539236881580388">Дахин авах</translation>
 <translation id="3484914941826596830">Жижиг программыг шинэчилж байх үед энэ гадны төхөөрөмжийг бүү салгаарай. Мөн компьютероо бүү унтраагаарай. Та энэ цонхыг багасгах боломжтой. Энэ шинэчлэлтэд хэдэн минут зарцуулж магадгүй бөгөөд энэ хугацаанд таны гадны төхөөрөмж ажиллахгүй байж магадгүй.</translation>
-<translation id="3485555238092220889">хандалтын үйлдэл</translation>
 <translation id="3486220673238053218">тодорхойлолт</translation>
 <translation id="3487866404496702283">Mahi онцлогийн санал хүсэлт</translation>
 <translation id="3488065109653206955">Хагас идэвхжсэн</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Үйлчилгээ байхгүй</translation>
 <translation id="4570558255126759859">Бичлэгийг хураангуйлахын тулд Gemini-н загварыг татах уу?</translation>
 <translation id="4573777384450697571">Амжилтгүй болсон - Сертификатын хугацаа дууссан</translation>
+<translation id="4575450106703099687">хандалтын сонголтууд</translation>
 <translation id="458794348635939462">Бүх хостыг шийдвэрлэж чадсангүй</translation>
 <translation id="4593212453765072419">Проксиг баталгаажуулах шаардлагатай</translation>
 <translation id="4594021849294327751">Сийрүүлэг үүсгэх</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />-н <ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" />-н засах товчлуур.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" />-г шинэчлэх</translation>
+<translation id="5736820754189340309">Датат ашиглалтыг шинэчилсэн</translation>
 <translation id="574392208103952083">Дунд зэрэг</translation>
 <translation id="5757187557809630523">дараагийн бичлэг</translation>
 <translation id="5760715441271661976">Порталын төлөв</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Дууг хаах</translation>
 <translation id="5784136236926853061">HTTP-н өндөр хоцролт</translation>
 <translation id="5790391387506209808">номин</translation>
+<translation id="5810692306010756935">Төгсөлт</translation>
 <translation id="5816802250591013230">Ямар ч товчлол оноогоогүй</translation>
 <translation id="5826644637650799838">Урлагийн тухай</translation>
 <translation id="5832805196449965646">Хүн нэм</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Текстийн навигац</translation>
 <translation id="680983167891198932">Түлхүүр</translation>
 <translation id="6816797338148849397">Таны сонголттой холбоотой мэдээлэл боломжтой байна. Хандахын тулд Дээш суман товчийг ашиглана уу.</translation>
+<translation id="6831043979455480757">Хөрвүүлэх</translation>
 <translation id="6853312040151791195">Цэнэггүй болох хурд</translation>
 <translation id="6862416241246624313">Санал хүсэлт илгээсэн</translation>
 <translation id="6866732840889595464">хонин нүдэн цэцэг</translation>
@@ -1551,6 +1557,7 @@
 <translation id="9087578468327036362">Энэ асуулгыг мэдээлэх</translation>
 <translation id="9088306295921699330">Одоогийн ашиглалт</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Шинэчлэх огнооны талаарх нэмэлт мэдээлэл</translation>
 <translation id="9100765901046053179">Сайжруулсан тохиргоонууд</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-н тасалбарыг дахин шинэчлэх</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна</translation>

@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Tani ofrohen elemente ekskluzive për <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Rrjedha e tokës</translation>
 <translation id="1026212596705997935">Shkurtorja po përdoret për "<ph name="CONFLICT_ACCEL_NAME" />". Shtyp një shkurtore të re. Për të zëvendësuar shkurtoren ekzistuese, shtyp përsëri këtë shkurtore.</translation>
+<translation id="1030856839388844477">Rivendos përdorimin e të dhënave</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> nënprocese, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Ka veçori të re, përdor tastin "Shigjeta lart" për të mësuar më shumë.</translation>
 <translation id="1049663189809099096">e verdhë pastel</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Sinjal i dobët</translation>
 <translation id="1300115153046603471">APN-ja është e llojit të parazgjedhur dhe <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Konverto</translation>
 <translation id="1304014921944666344">Data e krijimit</translation>
 <translation id="1308754910631152188">Po përditësohet (<ph name="PERCENTAGE_VALUE" />% e përfunduar)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minuta</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">liqen i kripur</translation>
 <translation id="1367951781824006909">Zgjidh një skedar</translation>
 <translation id="1371650399987522809">Komentet për imazhin e sfondit të mundësuara nga inteligjenca artificiale e Google</translation>
+<translation id="1374385338586507108">Përkufizo</translation>
 <translation id="1387854245479784695">Kjo është një përmbledhje e të gjitha të dhënave kryesore</translation>
 <translation id="1393206549145430405">kështjellë</translation>
 <translation id="1394661041439318933">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kasë.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Rryma</translation>
 <translation id="346539236881580388">Nxirr përsëri</translation>
 <translation id="3484914941826596830">Mos e shkëput këtë pajisje të jashtme dhe mos e fik kompjuterin gjatë përditësimit të firmuerit. Mund ta minimizosh këtë dritare. Ky përditësim mund të zgjasë disa minuta dhe pajisja jote e jashtme mund të mos funksionojë gjatë kësaj kohe.</translation>
-<translation id="3485555238092220889">veprimi i qasshmërisë</translation>
 <translation id="3486220673238053218">përkufizimi</translation>
 <translation id="3487866404496702283">Komentet për veçorinë mahi</translation>
 <translation id="3488065109653206955">I aktivizuar pjesërisht</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Nuk ka shërbim</translation>
 <translation id="4570558255126759859">Të shkarkohet modeli i Gemini për të përmbledhur regjistrimet?</translation>
 <translation id="4573777384450697571">Dështoi - Certifikata skadoi</translation>
+<translation id="4575450106703099687">opsionet e qasshmërisë</translation>
 <translation id="458794348635939462">Zgjidhja e të gjithë pritësve dështoi</translation>
 <translation id="4593212453765072419">Kërkohet vërtetimi i serverit përfaqësues</translation>
 <translation id="4594021849294327751">Krijo transkriptin</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> nga <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Butoni i modifikimit për <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Përditëso <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Përdorimi i të dhënave është rivendosur</translation>
 <translation id="574392208103952083">Mesatar</translation>
 <translation id="5757187557809630523">pjesa tjetër muzikore</translation>
 <translation id="5760715441271661976">Gjendja e portalit</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Hiqi zërin</translation>
 <translation id="5784136236926853061">Vonesë shumë e lartë e HTTP-së</translation>
 <translation id="5790391387506209808">lapis</translation>
+<translation id="5810692306010756935">Diplomimi</translation>
 <translation id="5816802250591013230">Nuk është caktuar asnjë shkurtore</translation>
 <translation id="5826644637650799838">Rreth artit</translation>
 <translation id="5832805196449965646">Shto person</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Navigimi në tekst</translation>
 <translation id="680983167891198932">Çelësi</translation>
 <translation id="6816797338148849397">Ka informacion në lidhje me zgjedhjen tënde. Përdor tastin "Shigjeta lart" për ta hapur.</translation>
+<translation id="6831043979455480757">Përkthe</translation>
 <translation id="6853312040151791195">Shpejtësia e shkarkimit</translation>
 <translation id="6862416241246624313">Komentet u dërguan</translation>
 <translation id="6866732840889595464">luledele</translation>
@@ -1551,6 +1557,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="9087578468327036362">Raportoje këtë kërkesë</translation>
 <translation id="9088306295921699330">Përdorimi aktual</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Më shumë informacione për "Datën e rivendosjes"</translation>
 <translation id="9100765901046053179">Cilësimet e përparuara</translation>
 <translation id="910415269708673980">Rifresko biletën për <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Po skanon faqen <ph name="PAGE_NUMBER" /></translation>

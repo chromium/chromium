@@ -20,6 +20,7 @@
 <translation id="1645759014353344461">จัดกลุ่มไว้ <ph name="TABS_COUNT_MANY" /> แท็บ</translation>
 <translation id="1657719826150349398">ย้ายแท็บลงล่าง</translation>
 <translation id="1713541401465507417">ปิดแท็บและกลุ่มทั้งหมด</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">จัดกลุ่มไว้ <ph name="TABS_COUNT_ONE" /> แท็บ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> แท็บ}other{<ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{บุ๊กมาร์กแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{บุ๊กมาร์กแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">สร้างเมื่อสักครู่</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{ปิดหลังจาก 1 วัน}other{ปิดหลังจาก <ph name="DAY_COUNT_MANY" /> วัน}}</translation>
 <translation id="4777866634702576038">ลบกลุ่มแท็บใช่ไหม</translation>
+<translation id="4783638485675352219">แชร์ชื่อและ URL ของแท็บที่เปิดอยู่จากอุปกรณ์นี้กับระบบปฏิบัติการ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> รีวิว)}other{(<ph name="REVIEWS_COUNT_MANY" /> รีวิว)}}</translation>
 <translation id="4850886885716139402">ดู</translation>
 <translation id="4870911314065352661">ปิดแท็บทั้งหมดใช่ไหม</translation>

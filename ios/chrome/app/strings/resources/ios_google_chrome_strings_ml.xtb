@@ -81,7 +81,6 @@
 <translation id="2767464022270041271">സംരക്ഷിച്ച പാസ്‌വേഡുകളൊന്നുമില്ല. നിങ്ങളുടെ പാസ്‌വേഡുകൾ സംരക്ഷിക്കുകയാണെങ്കിൽ, Google Password Manager-ന് അവ പരിശോധിക്കാനാകും.</translation>
 <translation id="2869959624320573933">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome നിങ്ങളുടെ ഡാറ്റ എങ്ങനെ സ്വകാര്യമായി നിലനിർത്തുന്നു<ph name="END_LINK" /> എന്നതിനെക്കുറിച്ച് കൂടുതലറിയുക</translation>
-<translation id="2952581218264071393">1. Chrome ക്രമീകരണം തുറക്കുക</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> മാനേജ് ചെയ്യുന്ന ഒരു അക്കൗണ്ടിൽ നിന്നും നിങ്ങള്‍ സൈൻ ഔട്ട് ചെയ്യുന്നത് കാരണം, ഈ ഉപകരണത്തില്‍ നിന്ന് Chrome ഡാറ്റ ഇല്ലാതാക്കപ്പെടും. നിങ്ങളുടെ ഡാറ്റ തുടര്‍ന്നും Google അക്കൗണ്ടില്‍ ഉണ്ടായിരിക്കും.</translation>
 <translation id="309672519329227863">മറ്റ് ആപ്പുകളിലുടനീളം നിങ്ങളുടെ Chrome പാസ്‌വേഡുകളും മറ്റും ആക്‌സസ് ചെയ്യുക.</translation>
@@ -93,7 +92,6 @@
 <translation id="3340938510625667914">Chrome-ലെ പ്രവർത്തനങ്ങൾ</translation>
 <translation id="3345341804167540816">എല്ലായിടത്തും Chrome ഉപയോഗിക്കുക</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{{THRESHOLD} മിനിറ്റ് Chrome ഉപയോഗിക്കാതിരുന്നാലാണ് ഇത് സംഭവിക്കുക}other{{THRESHOLD} മിനിറ്റ് Chrome ഉപയോഗിക്കാതിരുന്നാലാണ് ഇത് സംഭവിക്കുക}}</translation>
-<translation id="3399930248910934354">Chrome ക്രമീകരണം തുറക്കുക</translation>
 <translation id="344736123700721678">നിങ്ങളുടെ ഹോം സ്ക്രീൻ ഡോക്കിൽ നിന്ന് വേഗത്തിൽ Chrome ആക്‌സസ് ചെയ്യൂ</translation>
 <translation id="3472587960215700950">കണ്ടെത്തിയ വിലാസങ്ങളിൽ വഴികളും പ്രാദേശിക വിവരങ്ങളും നൽകുന്നതിന് Chrome, Google Maps ഉപയോഗിക്കുന്നു.</translation>
 <translation id="3503014945441706099">ഈ Chrome പ്രൊഫൈലിനായി മെച്ചപ്പെടുത്തിയ സുരക്ഷിത ബ്രൗസിംഗും നേടൂ</translation>
@@ -211,6 +209,7 @@
 നിങ്ങളുടെ Chrome അനുഭവം മെച്ചപ്പെടുത്താനായി ഡാറ്റ ഉപയോഗിക്കുന്ന കൂടുതൽ ക്രമീകരണത്തിന് <ph name="BEGIN_LINK" />Google സേവനങ്ങളിലേക്ക്<ph name="END_LINK" /> പോകുക.</translation>
 <translation id="6916015246697034114">Chrome-ലെ, ശബ്ദം ഉപയോഗിച്ചുള്ള തിരയൽ</translation>
 <translation id="6975725306479268850">സ്വയമേവ പൂരിപ്പിക്കുന്നതിന് Chrome തിരഞ്ഞെടുക്കുക</translation>
+<translation id="6979238427560462592">Google നിങ്ങൾക്കായി നിർമ്മിച്ച ഇഷ്ടാനുസൃത ഫീഡ്. News, സ്പോർട്‌സ്, കാലാവസ്ഥ എന്നിവ ഉൾപ്പെടെ.</translation>
 <translation id="7004159181872656283">Chrome-ൽ വിഷ്വലുകൾ തിരയുക.</translation>
 <translation id="7056826488869329999">Chrome-ൽ സുരക്ഷാ പരിശോധന തുറക്കുന്നു, റണ്‍ ചെയ്യുന്നു.</translation>
 <translation id="7059914902409643750">Chrome-നെ നിങ്ങളുടേതാക്കുക</translation>
@@ -236,7 +235,6 @@
 <translation id="7394108421562933108">Chrome-ലെ Maps</translation>
 <translation id="7400722733683201933">Google Chrome-നെ കുറിച്ച്</translation>
 <translation id="7466693328838535498">'വിജറ്റ് തിരയുക' ബോക്‌സിൽ, Chrome നൽകുക</translation>
-<translation id="746684838091935575">3. Chrome തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7492574581995589075">നിങ്ങളുടെ Google Account-ൽ Chrome ഡാറ്റ ഉപയോഗിക്കാനും സംരക്ഷിക്കാനുമുള്ള ശേഷി നിങ്ങളുടെ ഓർഗനൈസേഷൻ ഓഫാക്കി. പുതിയ ബുക്ക്‌മാർക്കുകളും പാസ്‌വേഡുകളും മറ്റും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിക്കൂ.</translation>
 <translation id="7581063337314642333">Chrome-ലെ ടാബ് ഗ്രിഡ് സന്ദർശിക്കുക</translation>
 <translation id="7642373780953416937">Chrome നിങ്ങൾക്കായി സ്വയമേവ കണ്ടെത്തുന്ന, സ്വകാര്യതയുമായോ സുരക്ഷയുമായോ ബന്ധപ്പെട്ട എല്ലാ പ്രശ്നങ്ങളെയും കുറിച്ചുള്ള മുന്നറിയിപ്പുകൾ നേടുക.</translation>
@@ -300,7 +298,6 @@
 <translation id="8857676124663337448">Google Password Manager-ന് എല്ലാ പാസ്‌വേഡുകളും പരിശോധിക്കാനായില്ല. നാളെ വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="8865415417596392024">നിങ്ങളുടെ അക്കൗണ്ടിലെ Chrome ഡാറ്റ</translation>
 <translation id="8874688701962049679">Chrome പരമാവധി പ്രയോജനപ്പെടുത്തുന്നതിനുള്ള നുറുങ്ങുകൾ.</translation>
-<translation id="8891935667620843985">നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസർ ആപ്പ് ആയി Chrome സജ്ജീകരിച്ചാൽ നിങ്ങൾക്ക് അതിൽ ലിങ്കുകൾ സ്വയമേവ തുറക്കാം.</translation>
 <translation id="8897749957032330183">ഈ ഉപകരണത്തിലെ Google Password Manager-ൽ പാസ്‌വേഡുകൾ സംരക്ഷിക്കുന്നു.</translation>
 <translation id="8949681853939555434">Chrome-നെ നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസറായി സജ്ജീകരിക്കുക</translation>
 <translation id="9068336935206019333">Chrome-ന്റെ അദൃശ്യ മോഡിൽ തുറക്കുക</translation>
@@ -308,6 +305,7 @@
 <translation id="9112744793181547300">Chrome-നെ ഡിഫോൾട്ട് ബ്രൗസറായി സജ്ജീകരിക്കണോ?</translation>
 <translation id="9122931302567044771">Chrome ഓരോ തവണയും ഡെസ്‌ക്ടോപ്പ് സൈറ്റ് ആവശ്യപ്പെടുമെന്നാണ് ഇതിനർത്ഥം.</translation>
 <translation id="9181628561061032322">Chrom-ലെ, അടുത്തിടെ തുറന്ന ടാബുകൾ തുറക്കുന്നു.</translation>
+<translation id="9194404253580584015">Google നിങ്ങൾക്കായി നിർമ്മിച്ച ഇഷ്ടാനുസൃത ഫീഡ്.</translation>
 <translation id="953008885340860025">Chrome-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്തു</translation>
 <translation id="97300214378190234">നിങ്ങൾ മറ്റ് ആപ്പുകളിലെ ലിങ്കുകളിൽ ടാപ്പ് ചെയ്യുമ്പോഴെല്ലാം Chrome ഉപയോഗിക്കുക.</translation>
 </translationbundle>

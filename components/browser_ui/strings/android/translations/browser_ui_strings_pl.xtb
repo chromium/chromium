@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">Wycisz strony, które odtwarzają dźwięk</translation>
 <translation id="3602290021589620013">Podgląd</translation>
 <translation id="3628308229821498208">Sugerowane wyszukiwania</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> witryna w grupie witryn <ph name="RWS_OWNER" />, które mają dostęp do danych o Twojej aktywności w tej grupie}few{<ph name="RWS_MEMBERS_COUNT" /> witryny w grupie witryn <ph name="RWS_OWNER" />, które mają dostęp do danych o Twojej aktywności w tej grupie}many{<ph name="RWS_MEMBERS_COUNT" /> witryn w grupie witryn <ph name="RWS_OWNER" />, które mają dostęp do danych o Twojej aktywności w tej grupie}other{<ph name="RWS_MEMBERS_COUNT" /> witryny w grupie witryn <ph name="RWS_OWNER" />, które mają dostęp do danych o Twojej aktywności w tej grupie}}</translation>
 <translation id="3697164069658504920">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na używanie urządzeń USB. Gdy jest wyłączona, strony nie mogą używać urządzeń USB.</translation>
 <translation id="3707034683772193706">Witryna, którą odwiedzasz, może zapisywać w Chrome niewielką ilość informacji, głównie po to, żeby potwierdzić, że nie jesteś botem.</translation>
 <translation id="3721953990244350188">Zamknij i pokaż kolejne dostępne działanie</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">Udostępnij przez</translation>
 <translation id="5001526427543320409">Pliki cookie innych firm</translation>
 <translation id="5007392906805964215">Sprawdź</translation>
+<translation id="5014182796621173645">Odwiedzone: <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Zezwalaj</translation>
 <translation id="5048398596102334565">Zezwalaj stronom na dostęp do czujników ruchu (zalecane)</translation>
 <translation id="5050380848339752099">Ta strona zamierza udostępnić informacje aplikacji poza trybem incognito.</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">Pokaż więcej</translation>
 <translation id="6561560012278703671">Pokazuj wiadomości dyskretnie (blokuje powiadomienia, by Ci nie przeszkadzały)</translation>
 <translation id="6593061639179217415">Wersja na komputer</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Pliki cookie dozwolone w przypadku <ph name="RWS_MEMBERS_COUNT" /> witryny <ph name="RWS_OWNER" />}few{Pliki cookie dozwolone w przypadku <ph name="RWS_MEMBERS_COUNT" /> witryn <ph name="RWS_OWNER" />}many{Pliki cookie dozwolone w przypadku <ph name="RWS_MEMBERS_COUNT" /> witryn <ph name="RWS_OWNER" />}other{Pliki cookie dozwolone w przypadku <ph name="RWS_MEMBERS_COUNT" /> witryny <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Treść chroniona</translation>
 <translation id="662080504995468778">Zostań</translation>
 <translation id="6653342741369270081">Naciśnij przycisk Wstecz, aby zamknąć pełny ekran.</translation>
+<translation id="6683865262523156564">Ta witryna należy do grupy, która ma dostęp do danych o Twojej aktywności. Grupa jest zdefiniowana przez <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Zdjęcia profilowe</translation>
 <translation id="6697925417670533197">W trakcie pobierania</translation>
 <translation id="6722828510648505498">Blokuj prośby o zalogowanie się pochodzące od usług tożsamości.</translation>

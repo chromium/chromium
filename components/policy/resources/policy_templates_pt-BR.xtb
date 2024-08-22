@@ -367,6 +367,7 @@ instalação.</translation>
 <translation id="1257550411839719984">Definir diretório de download padrão</translation>
 <translation id="1262993197422487260">Não mostrar o botão de exibição de senha nas telas de login e de bloqueio</translation>
 <translation id="1265053460044691532">Limite o tempo pelo qual um usuário autenticado via SAML pode fazer login off-line</translation>
+<translation id="1265076559723566171">Controla as configurações para usuários de uma instituição educacional</translation>
 <translation id="1271811620059192171">Ativar grupos atômicos de política</translation>
 <translation id="127264587838521316">Ativa as solicitações de instalação de extensões do <ph name="PRODUCT_NAME" /></translation>
 <translation id="1272798957154751008">Ativar a migração de dispositivos Chromad no gerenciamento de nuvem.</translation>
@@ -837,6 +838,7 @@ O rótulo personalizado não será traduzido.</translation>
       Se <ph name="IDLE_ACTION_FIELD_NAME" /> não for definida, a ação <ph name="IDLE_ACTION_ENUM_SUSPEND" /> será realizada.
 
       Observação: há configurações separadas para bateria e alimentação CA.</translation>
+<translation id="1607734317623618500">O app da Web de quiosque pode ser usado off-line</translation>
 <translation id="1608755754295374538">URLs que terão acesso a dispositivos de captura de áudio sem solicitação</translation>
 <translation id="1608901087213748889">Acionar uma ação quando o computador está inativo.
 
@@ -937,6 +939,7 @@ Caso a política seja deixada sem definição, é possível que o <ph name="PROD
 <translation id="165769015320654523">Conceder automaticamente permissão a esses sites para se conectarem a dispositivos HID com determinados IDs de fornecedores e de produtos.</translation>
 <translation id="1659406551862245683">O comportamento padrão de redimensionamento do teclado virtual é modificado para redimensionar a janela de visualização de layout</translation>
 <translation id="166427968280387991">Servidor proxy</translation>
+<translation id="1666001345366986837">Configurações do recurso de segundo plano de IA generativa para videochamadas</translation>
 <translation id="1670638264428789878">Ativar conjuntos de sites relacionados</translation>
 <translation id="1671405606278443620">Configurações da pesquisa no histórico com tecnologia de IA</translation>
 <translation id="1673097259557436886">Sempre informar os sites de que não existem formas de pagamento salvas</translation>
@@ -966,27 +969,6 @@ Se a política for definida como falsa ou não for definida, nenhum evento será
       Esta política permite que uma resolução seja especificada na rasterização de PDFs para impressão.
 
       Se ela for definida como 0 ou for deixada sem definição, a resolução padrão do sistema será usada na rasterização de imagens das páginas.</translation>
-<translation id="1700458869527146675">Se a política for definida, haverá configurações de proxy para o Chrome e apps ARC, ignorando todas as opções relacionadas a proxy especificadas na linha de comando.
-
-       Se a política for deixada sem definição, os usuários poderão escolher as configurações de proxy.
-
-       Se a política <ph name="PROXY_SETTINGS_POLICY_NAME" /> for definida, os campos a seguir serão aceitos:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, que permite especificar o servidor proxy usado pelo Chrome e evitar que os usuários mudem as configurações de proxy.
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, um URL de um arquivo de proxy .pac.
-         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />, que evita que a pilha de rede retome as conexões diretas com um script de PAC inválido ou indisponível.
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, um URL do servidor proxy.
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, uma lista de hosts que ignorarão o proxy.
-
-       O campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> foi descontinuado e substituído pelo campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
-
-        Para o <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, se você escolher o valor:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, um proxy nunca será usado e todos os outros campos serão ignorados;
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, o proxy do sistema será usado e todos os outros campos serão ignorados;
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, todos os outros campos serão ignorados;
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, os campos <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> serão usados;
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, os campos <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> serão usados.
-
-      Observação: para ver mais exemplos detalhados, acesse The Chromium Projects em https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett (link em inglês).</translation>
 <translation id="1700811900332333712">Permitir que o dispositivo solicite um Powerwash</translation>
 <translation id="1705215165572785706">Tratar teclas da linha superior como teclas de mídia, mas permitir que o usuário faça mudanças</translation>
 <translation id="1708496595873025510">Definir a restrição para busca do termo-semente "Variações"</translation>
@@ -1186,6 +1168,7 @@ Se a política for desativada ou deixada sem definição, após o login em uma c
 Esta política não terá efeito se for definida no nível da máquina.</translation>
 <translation id="1837165432382702436">Altura da página em micrômetros.</translation>
 <translation id="1838910874018595451">Configuração pré-preenchida para tíquetes do Kerberos</translation>
+<translation id="1839042185432919430">Permitir que o app da Web de quiosque mostre uma tela para se conectar a uma rede ao iniciar o app se o dispositivo estiver off-line</translation>
 <translation id="1843102210803941014">Ativa somente cookies e dados essenciais na pesquisa</translation>
 <translation id="1843117931376765605">Taxa de atualização da política do usuário</translation>
 <translation id="1844620919405873871">Configura as políticas relacionadas ao desbloqueio rápido.</translation>
@@ -2724,6 +2707,7 @@ A política <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> t
 
       Para ver informações detalhadas sobre os padrões de <ph name="URL_LABEL" /> válidos, acesse https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. No entanto, o padrão "*", que corresponde a qualquer URL, não é compatível com esta política.</translation>
 <translation id="2979696534869541158">Forçar implementação antiga</translation>
+<translation id="2983209019593449150">As assinaturas de código ad-hoc para shims de Apps Web Progressivos podem ser usadas dependendo do processo de inicialização do recurso.</translation>
 <translation id="2985927503455169394">Usa o modo padrão da experiência de integração do Assistente</translation>
 <translation id="2987155890997901449">Ativar ARC</translation>
 <translation id="2987227569419001736">Controla o uso da API Web Bluetooth</translation>
@@ -3106,6 +3090,13 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 
       Os sites configurados serão abertos automaticamente em um navegador diferente de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3252724033247471310">Permitir captura de guia da mesma origem por estas origens</translation>
+<translation id="325374928725737694">Se a política for desativada, o app da Web de quiosque não poderá funcionar off-line. Uma tela para se conectar a uma rede será mostrada no início de uma sessão de quiosque somente se o dispositivo estiver off-line. Isso acontece para garantir que o dispositivo esteja on-line antes do app ser iniciado.
+
+Essa tela pode não aparecer se um app estiver configurado para inicialização automática e a política <ph name="PROMPT_POLICY_NAME" /> (<ph name="PROMPT_POLICY_URL" />) estiver desativada.
+
+Esta política não afeta apps da Web ou do Chrome que tenham um URL de instalação que realiza um redirecionamento entre origens para um app da Web diferente (por exemplo, quando o URL de instalação do app é <ph name="APP_INSTALL_URL" />, mas no carregamento ele redireciona para um app da Web diferente, como <ph name="APP_REDIRECTED_URL" />).
+
+Se a política for definida como "true" (verdadeira) ou for deixada sem definição, os apps da Web serão iniciados mesmo quando o dispositivo estiver off-line.</translation>
 <translation id="3255624750680556186">Se a política for definida como "Ativada" ou não for definida, um dispositivo poderá acionar o Powerwash.
 
       Se a política for definida como "Desativada", o dispositivo não poderá acionar o Powerwash. Uma exceção para permitir o Powerwash poderá ocorrer se a <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> for definida com um valor que permita a atualização de firmware TPM, mas a atualização ainda não tiver ocorrido.</translation>
@@ -3575,6 +3566,7 @@ Quando ela for definida como falsa, as informações da versão não serão cole
 Esta política só é eficaz quando a máquina está registrada na <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> do <ph name="PRODUCT_NAME" />.
 Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 <translation id="3644735978203799620">Permite a seleção automática de várias capturas de tela</translation>
+<translation id="3645639974927907813">Assinatura de código ad-hoc para shims de Apps Web Progressivos</translation>
 <translation id="3646859102161347133">Definir tipo de lupa</translation>
 <translation id="3647212518036289905">Definir a política especifica qual biblioteca GSSAPI será usada para a autenticação HTTP. Defina a política como um nome de biblioteca ou um caminho completo.
 
@@ -3657,6 +3649,7 @@ Se o <ph name="PRODUCT_NAME" /> não for fechado corretamente (por exemplo, se o
 
           Essa é uma política temporária e tem remoção planejada para a versão 107 do <ph name="PRODUCT_NAME" />. Esse prazo pode ser prorrogado caso as empresas precisem de mais tempo.
           </translation>
+<translation id="3677660004554019617">Não permitir segundo plano de IA generativa para videochamadas</translation>
 <translation id="3678069907945250643">Permitir acesso do app de personalização ao Google Fotos</translation>
 <translation id="3680529017993214255">Ativar os recursos e enviar dados para treinar os modelos de IA</translation>
 <translation id="3685979383016152590">A definição da política designa qual política de acesso se aplica à configuração em massa de impressoras, controlando quais impressoras da <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> estão disponíveis para os usuários.
@@ -3678,6 +3671,19 @@ Se o <ph name="PRODUCT_NAME" /> não for fechado corretamente (por exemplo, se o
 <translation id="3701121231485832347">Controla configurações específicas de dispositivos <ph name="PRODUCT_OS_NAME" /> gerenciados pelo <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Atestado remoto</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" />: o campo de linha única é obsoleto e será removido no futuro. Comece a usar a caixa de texto de várias linhas abaixo.</translation>
+<translation id="3705648857103435170">Esta política ativa o app Graduation para usuários gerenciados. O app Graduation ajuda os usuários a transferir os dados da conta gerenciada para uma conta pessoal.
+
+    Se a <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> for definida como <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, o app será mostrado nas datas de início e término e entre elas, de acordo com o horário local.
+
+    Se a <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> for definida como <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> ou deixada sem definição, o app não será mostrado.
+
+    Se a <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> não for definida, o app será mostrado até a data de término.
+
+    Se a <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" /> for deixada sem definição, o app será mostrado indefinidamente a partir da data de início.
+
+    Se a <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> e a <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" /> não forem definidas, o app será mostrado por tempo indefinido. Se as datas de início e término forem inválidas, o app não será mostrado. Isso inclui situações em que as datas fornecidas não existem ou quando a data de término é anterior à data de início.
+
+    A transferência de dados com o Takeout também precisa estar ativada para que o app Graduation funcione corretamente. Para saber mais, consulte https://support.google.com/a/answer/6364687.</translation>
 <translation id="3711561721191203926">Se esta política for ativada, a solicitação principal será bloqueada sempre que um aviso precisar ser
 mostrado no <ph name="DEV_TOOLS_NAME" /> devido a falhas nas verificações do <ph name="PRIVATE_NETWORK_ACCESS" />.
 
@@ -3839,6 +3845,7 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 
       Os usuários não podem remover um gerenciador de protocolo registrado pela política. No entanto, ao instalar um novo gerenciador padrão, eles podem mudar os gerenciadores de protocolo instalados pela política.</translation>
 <translation id="3842619997238271109">Não permite que o host de acesso remoto use autenticações com PIN e pareamento ao aceitar conexões de clientes</translation>
+<translation id="3845318141474759319">Permitir plano de fundo de IA generativa sem melhorar os modelos de IA</translation>
 <translation id="3851443303439635700">Controla o limite de aninhamento antes que a função setTimeout() do JavaScript comece a ser ajustada.</translation>
 <translation id="3858658082795336534">Modo duplex de impressão padrão</translation>
 <translation id="3859780406608282662">Adicionar um parâmetro para a busca do termo-semente "Variações" no <ph name="PRODUCT_OS_NAME" />.
@@ -4372,6 +4379,7 @@ Observação: o bloqueio de URLs internos chrome://* e chrome-untrusted://* pode
       Se a política for definida como falsa, a resolução de DNS do sistema (getaddrinfo()) será executada no processo de rede, e não no navegador. Isso pode forçar a desativação do sandbox do serviço de rede, prejudicando a segurança do <ph name="PRODUCT_NAME" />.
 
       Se a política for deixada sem definição, a resolução de DNS poderá ser executada no serviço de rede, fora dele ou parcialmente dentro e parcialmente fora, dependendo da configuração do sistema e das flags de recursos.</translation>
+<translation id="4232128469957872687">Configurações para usuários de uma instituição educacional</translation>
 <translation id="4234788818648224034">Lista de domínios que não serão resolvidos usando DNS sobre HTTPS. Esta política é ignorada quando o modo de DNS seguro está desativado (DNS em texto simples usado sempre).
 
 Se a política <ph name="DOH_TEMPLATES_POLICY_NAME" /> também estiver definida, um domínio mais específico será preferido. A especificidade se refere ao número de pontos (".") no domínio. Quando um domínio corresponder às duas políticas, o padrão será usar DNS sobre HTTPS para o domínio.
@@ -4868,6 +4876,7 @@ essas APIs.</translation>
 <translation id="4615892138881859957">Controla o atalho usado para acionar a tecla "Insert"</translation>
 <translation id="4617338332148204752">Ignorar a verificação de metatags em <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Recurso NewBaseUrlInheritanceBehavior disponível</translation>
+<translation id="4623516906510429751">Usar assinaturas de código ad-hoc para shims de Apps Web Progressivos.</translation>
 <translation id="4624417808625504735">Bloquear o uso de JIT pelo JavaScript nestes sites</translation>
 <translation id="46321462262887935">Tratar teclas da linha superior como teclas de função, mas permitir que os usuários façam mudanças</translation>
 <translation id="4632343302005518762">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> trabalhe com os tipos de conteúdo listados</translation>
@@ -6944,6 +6953,7 @@ Se a política não for definida, o valor padrão global será usado para todos 
 <translation id="6207607210601267301">Desativar a autenticação sem PIN para o host de acesso remoto</translation>
 <translation id="6208896993204286313">Reportar informações da política do <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Reportar informações sobre a versão do SO e do <ph name="PRODUCT_NAME" /></translation>
+<translation id="6213560283141495655">Não usar assinaturas de código ad-hoc para shims de Apps Web Progressivos.</translation>
 <translation id="6220835555850906733">Se a política for definida como ativada ou não for definida, todas as saídas de áudio compatíveis nos dispositivos dos usuários terão permissão.
 
       Se a política for definida como desativada, nenhuma saída de áudio terá permissão enquanto as contas dos usuários estiverem conectadas.
@@ -7204,6 +7214,14 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
 <translation id="632248221998836641">Substituir a verificação de acessibilidade do IPv6. Sempre consulte o registro AAAA para a resolução do nome do host.</translation>
 <translation id="6324274808543634377">As configurações F11/F12 usam o atalho que contém a tecla modificadora Alt</translation>
 <translation id="6327643515544933974">Configurações de USB na Web</translation>
+<translation id="6328272502368270191">Esta política ativa ou desativa o recurso de plano de fundo de IA generativa no <ph name="PRODUCT_OS_NAME" />.
+O valor padrão é 1.
+
+Se a política for definida como 1, o plano de fundo de IA generativa poderá ser usado sem melhorar os modelos de IA. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Se a política for definida como 2, o plano de fundo de IA generativa não poderá ser usado.
+
+Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6330882599388782338">Permite que os sites acessem sensores</translation>
 <translation id="6331167725613770725">Esta política está obsoleta e será removida na versão 85 do <ph name="PRODUCT_OS_NAME" />. Por isso, passe a usar <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
@@ -7646,6 +7664,7 @@ Se deixada sem definição, a frequência padrão de 15 minutos será usada.</tr
 
       Quando esta política não for definida, o usuário poderá usar qualquer plug-in instalado no sistema, a não ser plug-ins codificados incompatíveis, obsoletos ou perigosos.</translation>
 <translation id="6571055160227165318">Permita que o WebSQL seja ativado por uma sinalização do Chrome.</translation>
+<translation id="6574216414580419109">Configurações do recurso de plano de fundo de IA generativa</translation>
 <translation id="6574903167639386816">Remover os dados do perfil no disco quando a sessão do usuário terminar</translation>
 <translation id="6575403002861093126">A definição da política especifica, em horas, o ciclo de vida em cache do Objeto de Política de Grupo (GPO, na sigla em inglês), que é o período máximo de reutilização dos GPOs antes do download deles ser feito novamente. Em vez de fazer o download novamente a cada busca da política, o sistema reutiliza os GPOs armazenados em cache enquanto as versões deles não são modificadas.
 
@@ -8188,6 +8207,7 @@ Esta política será removida após o lançamento do recurso de drivers de impre
 
       Se esta política não for definida, o HTTP/0.9 será desativado em portas não padrão.</translation>
 <translation id="6969332115615661188">Desativar entrada de vídeo</translation>
+<translation id="6969949359984470271">O app da Web de quiosque não pode ser usado off-line.</translation>
 <translation id="6971579036359007697">Controla a migração de arquivos locais para a nuvem.
 Aplicável apenas a usuários do SkyVault, ou seja, quando o valor LocalUserFilesAllowed é falso. Caso contrário, a política é ignorada.
 
@@ -8581,23 +8601,6 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 * "Mesclar" faz com que a política do usuário nos GPOs do usuário seja mesclada à dos GPOs do computador. Os GPOs do computador têm precedência.
 
 * "Substituir" troca a política do usuário nos GPOs do usuário pela referente aos GPOs do computador. Os GPOs do usuário serão ignorados.</translation>
-<translation id="7258250780552783197">Lista de configurações para os serviços do Chrome Enterprise Connectors que vão ser aplicados ao conector <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" />, que é acionado quando um arquivo é transferido no <ph name="PRODUCT_OS_NAME" />.
-
-      Os campos <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> são usados para determinar se o conector envia um arquivo para análise quando ele é transferido entre uma origem e um destino e quais tags são incluídas na solicitação de análise. Uma tag correspondente a uma regra "ativar" vai ser incluída na solicitação de análise se a origem e o destino corresponderem à regra associada à tag. Isso vai acontecer apenas se nenhuma regra "desativar" com a mesma tag corresponder à transferência. A análise vai ser feita se pelo menos uma tag for incluída na solicitação. Uma regra <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" /> é definida por uma lista de pares, em que cada par contém uma lista de origens e uma lista de destinos. O campo <ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> define para qual sistema de arquivos uma regra é aplicada.
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica o provedor de serviços de análise correspondente às configurações.
-
-      Se o campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> for definido como 1, o <ph name="PRODUCT_OS_NAME" /> vai esperar uma resposta do serviço de análise antes de permitir a transferência. Qualquer outro valor inteiro significa que o <ph name="PRODUCT_OS_NAME" /> permite a transferência imediatamente.
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> controla se o <ph name="PRODUCT_OS_NAME" /> bloqueia ou permite arquivos protegidos por senha.
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> controla se o <ph name="PRODUCT_OS_NAME" /> bloqueia ou permite que arquivos grandes demais sejam analisados.
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> é usado com o objetivo de determinar para quais tags o conector precisa de uma justificativa do usuário para ignorar uma verificação que resulta em um aviso que pode ser ignorado. Se o campo não for definido, presume-se que uma justificativa não é necessária.
-
-      Os campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> são usados para configurar uma mensagem que informa o usuário quando um aviso é mostrado após uma verificação ter um resultado não limpo. O campo message contém o texto que é mostrado ao usuário e pode ter no máximo 200 caracteres. O campo <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" /> contém um URL fornecido pelo administrador em que o usuário pode clicar para receber mais informações fornecidas pelo cliente sobre o motivo da ação ter sido bloqueada. O campo <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> é opcional e contém o idioma da mensagem. Deixar o campo <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> vazio ou com um valor "padrão" indica uma mensagem que é usada quando o idioma do usuário não tem uma mensagem associada. O campo tag especifica para quais tipos de verificação a mensagem é mostrada. A lista <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" /> pode ter zero ou mais entradas. Cada uma precisa ter campos message e tag não vazios.
-
-      Configurações extras são necessárias para que essa política seja aplicada. Acesse https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para mais informações.</translation>
 <translation id="7258823566580374486">Ativar cortinas de hosts de acesso remoto</translation>
 <translation id="7260204423892780600">Controla as configurações do Google Assistente.</translation>
 <translation id="7261140115553020049">Ativar serviço do Workspace flutuante</translation>
@@ -8849,6 +8852,14 @@ a leitura em voz alta será ativada.</translation>
 <translation id="748292668225669178">Configura a instalação do <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="7485481791539008776">Regras de seleção de impressora padrão</translation>
 <translation id="7486205887492534734">Pedir quando houver várias correspondências de certificado na tela de login</translation>
+<translation id="7487148156560435405">Esta política ativa ou desativa o recurso de segundo plano de IA generativa para videochamadas no <ph name="PRODUCT_OS_NAME" />.
+O valor padrão é 1.
+
+Se a política for definida como 1, o segundo plano de IA generativa para videochamadas poderá ser usado sem melhorar os modelos de IA. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Se a política for definida como 2, o segundo plano de IA generativa para videochamadas não poderá ser usado.
+
+Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="748873163367340515">Usa apenas dados e cookies essenciais na pesquisa.</translation>
 <translation id="7489169777107143496">Desativar verificações detalhadas de downloads com a Navegação Segura</translation>
 <translation id="7489661071474025727">Especifica se o serviço de recuperação de conta está ativado para usuários em dispositivos <ph name="PRODUCT_OS_NAME" />.
@@ -8905,6 +8916,11 @@ Se essa política for definida como verdadeira, o <ph name="PRODUCT_OS_NAME" /> 
 <translation id="7519218194072744342">O URL do gerenciador de protocolos.</translation>
 <translation id="7519251620064708155">Permitir a geração de chaves nesses sites</translation>
 <translation id="7521864460386999758">Impedir que código de terceiros seja injetado no Chrome</translation>
+<translation id="7522636035703637613">Se a política for ativada ou deixada sem definição, será possível usar assinaturas ad-hoc em aplicativos criados ao instalar um App Web Progressivo (PWA). Isso garante que cada aplicativo instalado tenha uma identidade exclusiva para os componentes do sistema <ph name="MAC_OS_NAME" />.
+
+Se a política for desativada, todos os aplicativos criados na instalação de um App Web Progressivo (PWA) vão ter a mesma identidade. Isso pode interferir na funcionalidade do <ph name="MAC_OS_NAME" />.
+
+Desative a política somente se você estiver usando uma solução de segurança de endpoint que bloqueie aplicativos com uma assinatura ad-hoc.</translation>
 <translation id="7524983116584990314">Limpar preenchimento automático</translation>
 <translation id="7529144158022474049">Fator de dispersão de atualizações automáticas</translation>
 <translation id="7529332889403151669">Especifica se alertas de tela cheia serão exibidos quando o dispositivo retornar de uma tela desligada ou do modo de Suspensão.
@@ -8968,6 +8984,7 @@ Se a política não for definida, nenhuma exceção a <ph name="FLOATING_SSO_DOM
 
       Se ela estiver ativada ou for deixada sem definição, a conversão de unidades das Respostas rápidas ficará ativada.
       Se a política for desativada, a conversão de unidades das Respostas rápidas ficará desativada.</translation>
+<translation id="7584363090329234690">Permitir o segundo plano de IA generativa para videochamadas sem melhorar os modelos de IA</translation>
 <translation id="7585312329612243723">Ativar o fluxo de atestado do <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para uma lista de URLs em navegadores gerenciados</translation>
 <translation id="7587345076013230465">Pedir para o usuário selecionar o certificado do cliente sempre que a política de seleção automática corresponder a vários certificados na tela de login</translation>
 <translation id="7587921466180902617">Ativar o dogfood do Screencast para usuários do Family Link</translation>
@@ -9543,6 +9560,7 @@ também é seguro.</translation>
 <translation id="802776363472387903">Hash SHA-256 da imagem do <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Ativar o provedor de pesquisa padrão e permitir que os usuários modifiquem a lista de provedores de pesquisa</translation>
 <translation id="8029201909194194377">Duração máxima da seção permitida por conexões de acesso remoto</translation>
+<translation id="8031651557770840616">Não permitir o plano de fundo de IA generativa</translation>
 <translation id="8033450879690820321">Esta política oferece uma recusa temporária para o novo comportamento de rolagem focalizável do teclado.
 
 Quando ela está ativada ou sem definição, os botões de rolagem que não têm filhos focalizáveis podem ser focalizados pelo teclado por padrão. Além disso, os controles de rolagem podem ser focalizados por clique e programaticamente por padrão.
@@ -11156,6 +11174,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 
       Se a política for definida como verdadeira ou for deixada sem definição, todos os usuários poderão fazer login.</translation>
 <translation id="966425658642788645">Aplicar comportamento padrão</translation>
+<translation id="970144760302377175">Configurar a disponibilidade da ferramenta Graduation do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="971677226939413180">A opção "Imprimir como imagem" não está disponível para a seleção do usuário.</translation>
 <translation id="974349541138387272">Especifica o modelo de URI do resolvedor DNS sobre HTTPS desejado</translation>
 <translation id="978658824596356870">Formato de relógio de 24 horas</translation>

@@ -81,7 +81,6 @@
 <translation id="2767464022270041271">‏ما مِن كلمات مرور محفوظة. لا يستطيع "مدير كلمات المرور في Google" التأكد من كلمات المرور إلّا عند حفظها.</translation>
 <translation id="2869959624320573933">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="2876628302275096482">‏مزيد من المعلومات حول <ph name="BEGIN_LINK" />الطريقة التي يتّبعها Chrome للحفاظ على خصوصية بياناتك<ph name="END_LINK" /></translation>
-<translation id="2952581218264071393">‏1- افتَح إعدادات Chrome.</translation>
 <translation id="2957447865124070833">‏اختيار <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">‏نظرًا لتسجيل خروجك من حساب يديره <ph name="SIGNOUT_MANAGED_DOMAIN" />، ستُحذَف بيانات Chrome من هذا الجهاز، ولكن ستظل البيانات محفوظة في حسابك على Google.</translation>
 <translation id="309672519329227863">‏يمكنك الوصول إلى كلمات مرورك على Chrome وغيرها من البيانات في التطبيقات الأخرى.</translation>
@@ -93,7 +92,6 @@
 <translation id="3340938510625667914">‏إجراءات Chrome</translation>
 <translation id="3345341804167540816">‏استخدم Chrome في كل مكان</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة دقيقة واحدة ({THRESHOLD}).}zero{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقيقة.}two{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة دقيقتَين ({THRESHOLD}).}few{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقائق.}many{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقيقة.}other{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقيقة.}}</translation>
-<translation id="3399930248910934354">‏افتَح إعدادات Chrome.</translation>
 <translation id="344736123700721678">‏يمكنك الوصول إلى Chrome بصورة أسرع من خلال شريط التطبيقات في الشاشة الرئيسية</translation>
 <translation id="3472587960215700950">‏يستخدم Chrome "خرائط Google" لإعلامك بالاتجاهات مع معلومات محلية عن العناوين المكتشفة.</translation>
 <translation id="3503014945441706099">‏يمكنك الاستفادة من ميزة "الحماية المحسّنة للتصفّح الآمن" لهذا الملف الشخصي على Chrome أيضًا.</translation>
@@ -211,6 +209,7 @@
 وللوصول إلى الإعدادات الإضافية التي تستخدم البيانات لتحسين تجربة استخدام Chrome، انتقِل إلى <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">‏البحث باستخدام الصوت في Chrome</translation>
 <translation id="6975725306479268850">‏اختيار Chrome للاستفادة من ميزة "الملء التلقائي"</translation>
+<translation id="6979238427560462592">‏اطّلِع على خلاصة مخصَّصة لك من Google تشمل محتوى عن الأخبار والرياضة والطقس وغير ذلك.</translation>
 <translation id="7004159181872656283">‏البحث عن العناصر المرئية في Chrome</translation>
 <translation id="7056826488869329999">‏يؤدي هذا الاختصار إلى فتح صفحة "التحقّق من الأمان" وإجرائه في Chrome.</translation>
 <translation id="7059914902409643750">‏اجعل Chrome متصفِّحك الدائم.</translation>
@@ -236,7 +235,6 @@
 <translation id="7394108421562933108">‏"خرائط Google" في Chrome</translation>
 <translation id="7400722733683201933">‏لمحة عن Google Chrome</translation>
 <translation id="7466693328838535498">‏أدخِل كلمة "Chrome" في مربّع "البحث في التطبيقات المصغّرة"</translation>
-<translation id="746684838091935575">‏3- اختَر Chrome.</translation>
 <translation id="7492574581995589075">‏أوقفت مؤسستك إمكانية استخدام وحفظ بيانات Chrome في حسابك على Google. سيتم حفظ كلمات المرور والإشارات المرجعية الجديدة وغيرها على هذا الجهاز فقط.</translation>
 <translation id="7581063337314642333">‏الانتقال إلى شبكة علامات التبويب في Chrome</translation>
 <translation id="7642373780953416937">‏يمكنك تلقّي تنبيهات بشأن أي مشاكل تتعلّق بالخصوصية أو الأمان يرصدها Chrome تلقائيًا.</translation>
@@ -300,7 +298,6 @@
 <translation id="8857676124663337448">‏تعذَّر على "مدير كلمات المرور في Google" التأكد من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا.</translation>
 <translation id="8865415417596392024">‏بيانات Chrome في حسابك</translation>
 <translation id="8874688701962049679">‏نصائح حول الاستفادة إلى أقصى حدّ من Chrome</translation>
-<translation id="8891935667620843985">‏يمكنك فتح الروابط في Chrome تلقائيًا من خلال جعله تطبيق المتصفّح التلقائي.</translation>
 <translation id="8897749957032330183">‏يتم حفظ كلمات المرور في "مدير كلمات المرور في Google" على هذا الجهاز.</translation>
 <translation id="8949681853939555434">‏اختيار Chrome ليكون متصفِّحك التلقائي</translation>
 <translation id="9068336935206019333">‏فتح الرابط في وضع "التصفُّح المتخفي" في Chrome</translation>
@@ -308,6 +305,7 @@
 <translation id="9112744793181547300">‏هل تريد ضبط Chrome كمتصفّح تلقائي؟</translation>
 <translation id="9122931302567044771">‏يعني هذا أنّ Chrome سيطلب دائمًا استخدام الموقع الإلكتروني المتوافق مع الكمبيوتر المكتبي.</translation>
 <translation id="9181628561061032322">‏فتح علامات التبويب الأخيرة في Chrome</translation>
+<translation id="9194404253580584015">‏اطّلِع على خلاصة مخصَّصة لك من Google.</translation>
 <translation id="953008885340860025">‏تم تسجيل الخروج من Chrome</translation>
 <translation id="97300214378190234">‏يؤدي هذا الإعداد إلى فتح Chrome عند النقر على الروابط في التطبيقات الأخرى.</translation>
 </translationbundle>

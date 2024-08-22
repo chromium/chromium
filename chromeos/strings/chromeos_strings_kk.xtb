@@ -8,6 +8,7 @@
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> эксклюзивті активтері енді қолжетімді</translation>
 <translation id="1022628058306505708">Жер ағыны</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />" үшін пернелер тіркесімі пайдаланылып жатыр. Жаңа тіркесімді басыңыз. Бар пернелер тіркесімін ауыстыру үшін оны қайта басыңыз.</translation>
+<translation id="1030856839388844477">Дерек трафигін бастапқы күйге қайтару</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> тізбек, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">Жаңа функция қолжетімді. Толығырақ ақпарат алу үшін жоғарыға бағыттауыш пернені қолданыңыз.</translation>
 <translation id="1049663189809099096">пастель сары</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Әлсіз сигнал</translation>
 <translation id="1300115153046603471">APN түрі — әдепкі және <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Түрлендіру</translation>
 <translation id="1304014921944666344">Жасалған күні</translation>
 <translation id="1308754910631152188">Жаңартылуда (<ph name="PERCENTAGE_VALUE" />% орындалды)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> минут</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">тұзды көл</translation>
 <translation id="1367951781824006909">Файлды таңдау</translation>
 <translation id="1371650399987522809">Google AI технологиясына негізделген тұсқағазға қатысты пікір</translation>
+<translation id="1374385338586507108">Анықтау</translation>
 <translation id="1387854245479784695">Бұл – барлық ядролар жинағы.</translation>
 <translation id="1393206549145430405">қамал</translation>
 <translation id="1394661041439318933">Қаптың батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Ағымдағы</translation>
 <translation id="346539236881580388">Қайта түсіру</translation>
 <translation id="3484914941826596830">Микробағдарлама жаңартылып жатқанда, сыртқы құрылғыны ажыратпаңыз немесе компьютерді өшірмеңіз. Бұл терезені кішірейте аласыз. Бұл жаңарту бірнеше минутқа созылып, ол кезде сыртқы құрылғы жұмыс істемей қалуы мүмкін.</translation>
-<translation id="3485555238092220889">арнайы мүмкіндіктер әрекеті</translation>
 <translation id="3486220673238053218">анықтама</translation>
 <translation id="3487866404496702283">Mahi функциясына қатысты пікір</translation>
 <translation id="3488065109653206955">Ішінара белсендірілген</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Қызмет жоқ</translation>
 <translation id="4570558255126759859">Жазбаларды қорытындылау үшін Gemini моделін жүктеп алу қажет пе?</translation>
 <translation id="4573777384450697571">Сәтсіз болды – сертификат мерзімі біткен</translation>
+<translation id="4575450106703099687">арнайы мүмкіндіктер опциялары</translation>
 <translation id="458794348635939462">Барлық хост атаулары түрлендірілмеді.</translation>
 <translation id="4593212453765072419">Прокси растауы талап етіледі.</translation>
 <translation id="4594021849294327751">Транскрипция жасау</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />/<ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> бойынша өзгерту түймесі.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> жаңарту</translation>
+<translation id="5736820754189340309">Дерек трафигі бастапқы күйге қайтарылды.</translation>
 <translation id="574392208103952083">Орташа</translation>
 <translation id="5757187557809630523">келесі трек</translation>
 <translation id="5760715441271661976">Портал күйі</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Дыбысын өшіру</translation>
 <translation id="5784136236926853061">HTTP кідірісі жоғары.</translation>
 <translation id="5790391387506209808">ауған лазуриті</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Пернелер тіркесімі тағайындалмаған</translation>
 <translation id="5826644637650799838">Өнер туралы</translation>
 <translation id="5832805196449965646">Адам қосу</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Мәтін навигациясы</translation>
 <translation id="680983167891198932">Кілт</translation>
 <translation id="6816797338148849397">Таңдауға қатысты ақпарат қолжетімді. Оны пайдалану үшін жоғарыға бағыттауыш пернені қолданыңыз.</translation>
+<translation id="6831043979455480757">Аудару</translation>
 <translation id="6853312040151791195">Заряд азаюының жылдамдығы</translation>
 <translation id="6862416241246624313">Пікір жіберілді.</translation>
 <translation id="6866732840889595464">дәстүргүл</translation>
@@ -1551,6 +1557,7 @@
 <translation id="9087578468327036362">Осы сұрау туралы хабарлау</translation>
 <translation id="9088306295921699330">Қазір пайдаланылуы</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Бастапқы күйге қайтару күні туралы қосымша ақпарат</translation>
 <translation id="9100765901046053179">Кеңейтілген параметрлер</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үшін билетті жаңарту</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет сканерленуде</translation>

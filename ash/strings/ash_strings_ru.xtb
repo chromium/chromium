@@ -304,6 +304,8 @@
 <translation id="2049240716062114887">Название рабочего стола изменилось на "<ph name="DESK_NAME" />"</translation>
 <translation id="2050339315714019657">Вертикальная</translation>
 <translation id="2064048859448024834">Предварительный просмотр для камеры включен</translation>
+<translation id="2065098273523946419">Ссылка на дополнительные сведения. При нажатии откроется страница в браузере.</translation>
+<translation id="2067220651560163985">Использовать градусы Цельсия</translation>
 <translation id="2067602449040652523">Яркость клавиатуры</translation>
 <translation id="2075520525463668108">Включить или отключить функцию "<ph name="CAPTURE_MEDIUM" />". Функция "<ph name="CAPTURE_MEDIUM" />" <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2079545284768500474">Отмена</translation>
@@ -359,6 +361,7 @@
 <translation id="2318576281648121272">Сегодня, <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060">Категория результата поиска: <ph name="CATEGORY" /></translation>
 <translation id="2322173485024759474">Назад на одну букву</translation>
+<translation id="2326112202058075478">Ещё эмодзи</translation>
 <translation id="2335091074961603075">На вашем устройстве устаревшая версия Bluetooth. Воспользуйтесь встроенным микрофоном для более высокого качества звука.</translation>
 <translation id="2339073806695260576">Нажмите кнопку стилуса на панели запуска, чтобы создать заметку, сделать скриншот или использовать стилус в качестве лупы или лазерной указки.</translation>
 <translation id="2341729377289034582">Заблокировано в вертикальном положении</translation>
@@ -392,6 +395,7 @@
 <translation id="2426051945783024481">Центрировано автоматически.</translation>
 <translation id="2427507373259914951">Нажатие на левую кнопку мыши</translation>
 <translation id="2429753432712299108">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth. Проверьте, отображается ли на нем код: <ph name="PASSKEY" />.</translation>
+<translation id="2430444791038754658">Время закончилось</translation>
 <translation id="2435457462613246316">Показать пароль</translation>
 <translation id="2437771564543046790">Низкий заряд батареи. Включен режим энергосбережения</translation>
 <translation id="243878895369688216">Открыто вчера</translation>
@@ -405,6 +409,7 @@
 <translation id="246052086404491029">Подробности</translation>
 <translation id="2465145153332031561">Состояние батареи: <ph name="BATTERY_HEALTH_PERCENTAGE" /> %. Количество циклов: <ph name="CYCLE_COUNT" />.</translation>
 <translation id="2473177541599297363">Разрешение экрана было изменено</translation>
+<translation id="2475783092753560388">Вставить результат "<ph name="SEARCH_RESULT_TEXT" />"</translation>
 <translation id="2475982808118771221">Произошел сбой.</translation>
 <translation id="2478076885740497414">Установить приложение</translation>
 <translation id="2482878487686419369">Уведомления</translation>
@@ -420,6 +425,7 @@
 <translation id="2509468283778169019">Включен режим CAPS LOCK</translation>
 <translation id="2514415433888497495">Отключить функцию "<ph name="CAPTURE_MEDIUM" />". Функция "<ph name="CAPTURE_MEDIUM" />" <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2515962024736506925">Открыть настройки специальных возможностей</translation>
 <translation id="2516416533263263796">Режим концентрации внимания включен. Осталось 10 минут.</translation>
 <translation id="2516637483312286228">Настроить элементы управления</translation>
 <translation id="252054055865191167">Фломастер</translation>
@@ -462,6 +468,7 @@
 <translation id="2670350619068134931">Меньше анимаций</translation>
 <translation id="2673968385134502798">Игры</translation>
 <translation id="2678852583403169292">Меню озвучивания при нажатии</translation>
+<translation id="2683887737780133806">День прошлой недели: <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">Сочетание клавиш изменено</translation>
 <translation id="2689613560355655046">Рабочий стол 8</translation>
 <translation id="2695305337569143674">веб</translation>
@@ -512,6 +519,7 @@
 <translation id="2849936225196189499">Критическое</translation>
 <translation id="2860184359326882502">Лучшие результаты</translation>
 <translation id="2865888419503095837">Информация о сети</translation>
+<translation id="2869095047958348710">Прошедший день недели: <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2872353916818027657">Переключить основной монитор</translation>
 <translation id="2872961005593481000">Завершить работу</translation>
 <translation id="2876338922445400217">Увеличить масштаб</translation>
@@ -540,6 +548,7 @@
 <translation id="2968761508099987738">Пока в вашем регионе эта функция не работает.</translation>
 <translation id="2970920913501714344">Устанавливать приложения, расширения и темы.</translation>
 <translation id="2977598380246111477">Следующая цифра</translation>
+<translation id="2980700224869191055">Смайлик "<ph name="EMOTICON_NAME" />"</translation>
 <translation id="2985148236010982088">Посмотреть все приложения</translation>
 <translation id="2992272421330787632">Скрыть все подсказки для мультимедиа</translation>
 <translation id="2992327365391326550">Кнопка микрофона на устройстве отключена</translation>
@@ -618,6 +627,7 @@
 <translation id="3264031581203585083">Скрыть все подсказки Google Диска</translation>
 <translation id="3265032511221679826">Открыть доступ к данным о точном местоположении?</translation>
 <translation id="3269597722229482060">Правый клик</translation>
+<translation id="3271554781793662131">Найдите то, что хотите вставить</translation>
 <translation id="3273040715184276344">Режим Caps Lock отключен.</translation>
 <translation id="3274634049061007184">Просматривайте приложения с телефона.</translation>
 <translation id="3289364673986435196">Меню кнопки питания</translation>
@@ -727,6 +737,7 @@
 <translation id="3619536907358025872">Настройки записи экрана</translation>
 <translation id="3621202678540785336">Вход</translation>
 <translation id="3621712662352432595">Настройки звука</translation>
+<translation id="362253242168828226">Эмодзи "<ph name="EMOJI_NAME" />"</translation>
 <translation id="3626281679859535460">Яркость</translation>
 <translation id="3628323833346754646">Передняя кнопка</translation>
 <translation id="3630697955794050612">выключена</translation>
@@ -761,6 +772,7 @@
 <translation id="3706423975342040244">Развлечения</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> и <ph name="UNAVAILABLE_DLC_TWO" /> недоступны.</translation>
 <translation id="3708186454126126312">Ранее подключенные устройства</translation>
+<translation id="3711282657843423160">Время таймера истекло</translation>
 <translation id="3712143870407382523">Выберите окно для этой стороны.</translation>
 <translation id="371370241367527062">Фронтальный микрофон</translation>
 <translation id="3713734891607377840">Открыть после скачивания</translation>
@@ -785,6 +797,7 @@
 <translation id="3799080171973636491">Вы нажали сочетание клавиш для включения полноэкранной лупы. Выполнить это действие?</translation>
 <translation id="380165613292957338">Привет! Чем могу помочь?</translation>
 <translation id="3804737937830804242">Скрыть кнопку изменения размера</translation>
+<translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 эмодзи. Это все результаты.}one{# эмодзи. Это все результаты.}few{# эмодзи. Это все результаты.}many{# эмодзи. Это все результаты.}other{# эмодзи. Это все результаты.}}</translation>
 <translation id="3824784079442479685">Доступ к камере получит приложение "<ph name="APP_NAME" />", а также все приложения и сайты с разрешением "Камера". Возможно, потребуется обновить веб-страницу или перезапустить приложение.</translation>
 <translation id="3826099427150913765">Войти с помощью пароля</translation>
 <translation id="383058930331066723">Включен режим энергосбережения</translation>
@@ -1032,6 +1045,7 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Функция ChromeVox включена</translation>
+<translation id="4665182893355091947">Время таймера вышло</translation>
 <translation id="4666911709726371538">Больше приложений</translation>
 <translation id="4667099493359681081">Скачивание файла <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Режим энергосбережения включен.</translation>
@@ -1045,6 +1059,7 @@
 <translation id="4706121060329443414">Повторное скачивание запустится позже. Сейчас запись речи будет передана для обработки в Google.</translation>
 <translation id="470644585772471629">Инверсия цветов</translation>
 <translation id="4708065238214351979">Увеличить яркость подсветки клавиатуры</translation>
+<translation id="4708185346211948049">День следующей недели: <ph name="DAY_OF_WEEK" /></translation>
 <translation id="4717575069099566988">Кабель USB-C не поддерживает интерфейс USB4. Производительность устройства может быть ограничена.</translation>
 <translation id="4724328513667182700">6 советов для начинающих пользователей (<ph name="PRODUCT_NAME" />)</translation>
 <translation id="4730374152663651037">ЧАСТО ИСПОЛЬЗУЕМЫЕ</translation>
@@ -1148,6 +1163,7 @@
 <translation id="5013847959275396160">Скрыть панель инструментов</translation>
 <translation id="5016558321564993266">Статус фломастера: <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Категории поиска</translation>
+<translation id="5025389392398927910">Найдите текст, который хотите изменить</translation>
 <translation id="5030659775136592441">Открыть менеджер закладок</translation>
 <translation id="5030687792513154421">Время вышло</translation>
 <translation id="5033299697334913360">Чтобы снять экран полностью, нажмите в любом его месте</translation>
@@ -1253,6 +1269,7 @@
 <translation id="5369573834963677938">Функция отслеживания лица будет доступна другим пользователям устройства</translation>
 <translation id="5369717264580061086">Посмотреть файл в приложении "Файлы"</translation>
 <translation id="5377367976106153749">Разрешить доступ к камере?</translation>
+<translation id="5378450298115733949">Ещё</translation>
 <translation id="5379115545237091094">Слишком много попыток</translation>
 <translation id="5383434787520761436">Нет результатов из Google Диска.</translation>
 <translation id="5391307769715781764">Заменить сохраненный рабочий стол?</translation>
@@ -1333,6 +1350,7 @@
 <translation id="5652575806481723716">Приложение "<ph name="FOCUSED_APP_NAME" />" требует вашего внимания.</translation>
 <translation id="5662075790140998213">Рабочий стол 10</translation>
 <translation id="5662709761327382534">Запись аудио с микрофона <ph name="CURRENT_STATE" />. Нажмите Ввод, чтобы она стала <ph name="NEW_STATE" />.</translation>
+<translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
 <translation id="5669267381087807207">Активация</translation>
 <translation id="5672890847723042801">Утилиты</translation>
 <translation id="5673434351075758678">В результате синхронизации настроек язык изменен. Теперь используется <ph name="TO_LOCALE" />, а не <ph name="FROM_LOCALE" />.</translation>
@@ -1486,6 +1504,7 @@
 <translation id="6141988275892716286">Подтвердите скачивание</translation>
 <translation id="6143578372829139382">Поделиться на YouTube</translation>
 <translation id="6147182561428020853">Теперь вы можете блокировать приложения, установленные на этом <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6153745728877356366">Найдите то, что хотите открыть</translation>
 <translation id="6154006699632741460">Периферийное устройство не поддерживается</translation>
 <translation id="6156960295318603523">Языковые настройки</translation>
 <translation id="6158923546703693047">Сведения об источнике информации</translation>
@@ -1671,6 +1690,7 @@
 <translation id="6782919488259222803">Выполнить поиск по текущей странице</translation>
 <translation id="6786750046913594791">Закрыть папку.</translation>
 <translation id="6790428901817661496">Воспроизвести</translation>
+<translation id="6792262051831399889">Недоступно</translation>
 <translation id="679368458793552943">Увеличить, когда включена лупа</translation>
 <translation id="6794287755901682422">Метаданные задачи: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
 <translation id="6797745268063125932">Не отключать</translation>
@@ -1745,8 +1765,10 @@
 <translation id="7051244143160304048">Устройство "<ph name="DEVICE_NAME" />" отключено.</translation>
 <translation id="7055910611768509537">Стилус не использовался больше недели</translation>
 <translation id="7061457967428964661">Окно предварительного просмотра камеры. Чтобы переместить его в другой угол, нажмите Ctrl + клавиша со стрелкой.</translation>
+<translation id="7064351585062927183">Предстоящий день недели: <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">Эта сеть отключена администратором.</translation>
 <translation id="7067196344162293536">Автоповорот</translation>
+<translation id="7067569040620564762">Время вышло</translation>
 <translation id="7068360136237591149">Открыть файлы</translation>
 <translation id="7076293881109082629">Вход</translation>
 <translation id="7076878155205969899">Выключить звук</translation>
@@ -1760,6 +1782,7 @@
 <translation id="7108254681523785542">Выберите элемент, который нужно вставить. Чтобы открыть историю буфера обмена, нажмите <ph name="SHORTCUT_KEY_NAME" /> + V.</translation>
 <translation id="7116969082764510092">Рабочий стол 11</translation>
 <translation id="7118268675952955085">скриншот</translation>
+<translation id="7118597077555700347">Открыть результат "<ph name="SEARCH_RESULT_TEXT" />"</translation>
 <translation id="7119327711295338600">Выбрать следующее слово или букву</translation>
 <translation id="7126996685418858413">Открыто на прошлой неделе</translation>
 <translation id="7130207228079676353">САМЫЕ ПОДХОДЯЩИЕ</translation>
@@ -1780,6 +1803,7 @@
 <translation id="7189412385142492784">Расстояние до Венеры</translation>
 <translation id="7198435252016571249">Окно предварительного просмотра камеры привязано к правому нижнему углу, так как перекрывало элементы системного интерфейса</translation>
 <translation id="7219573373513695352">Нет подключенных устройств.</translation>
+<translation id="7226347284543965442">Время истекло</translation>
 <translation id="7229029500464092426">Доступно памяти: <ph name="AVAILABLE_MEMORY" /> | Всего памяти: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Уровень заряда батареи: <ph name="PERCENTAGE" /> %. Подключите устройство к источнику питания.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" /> Для установки обновления необходимо перезапустить Chromebook. Это может занять около минуты.</translation>
@@ -1881,6 +1905,7 @@
 <translation id="7579778809502851308">Запись экрана</translation>
 <translation id="7593891976182323525">Search или Shift</translation>
 <translation id="7598054670902114203">Использование процессора: <ph name="CPU_USEAGE" /> %. Температура в градусах Цельсия: <ph name="TEMPERATURE" />. Тактовая частота: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> ГГц.</translation>
+<translation id="7599378375976398913">Вставить выбранный результат</translation>
 <translation id="7600875258240007829">Показать все уведомления</translation>
 <translation id="7601417191446344542">Напоминать включить микрофон?</translation>
 <translation id="7607002721634913082">Приостановлен</translation>
@@ -2071,6 +2096,7 @@
 <translation id="8198456017687137612">Трансляция вкладки</translation>
 <translation id="8200772114523450471">Возобновить</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Время в режиме концентрации внимания: <ph name="FOCUSED_TIME" />. Чтобы снова сфокусироваться на задаче, откройте быстрые настройки.</translation>
+<translation id="8203224998425013577">Ещё эмодзи и GIF</translation>
 <translation id="8203795194971602413">Нажатие правой кнопкой мыши</translation>
 <translation id="8214996719228530800">Версия Canary</translation>
 <translation id="8219451629189078428">В течение этого времени устройство Chromebook должно быть включено, а кабели зарядного устройства или адаптера – надежно подсоединены к нему и подключены к сети электропитания. Не выключайте устройство Chromebook.</translation>
@@ -2171,6 +2197,7 @@
 <translation id="8615778328722901791">Открыть панель инструментов</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Уменьшить громкость</translation>
+<translation id="862543346640737572">Эмодзи и GIF</translation>
 <translation id="8627191004499078455">Подключено устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="8631727435199967028">Настройки специальных возможностей</translation>
 <translation id="8634326941504371857">Ваши файлы на этом устройстве и Google Диске</translation>
@@ -2237,6 +2264,7 @@
 <translation id="8841375032071747811">Назад</translation>
 <translation id="8843682306134542540">Изменить настройки автоповорота экрана. <ph name="STATE_TEXT" />.</translation>
 <translation id="8845001906332463065">Справка</translation>
+<translation id="8847100217801213944">Использовать градусы Фаренгейта</translation>
 <translation id="8849001918648564819">Скрытые</translation>
 <translation id="8853703225951107899">Введенный PIN-код или пароль снова оказался недействительным. Если вы недавно меняли пароль, введите прежний. Новый пароль вступит в силу после того, как вы выйдете из аккаунта.</translation>
 <translation id="8855885154700222542">Клавиша полноэкранного режима</translation>
@@ -2270,7 +2298,6 @@
 <translation id="8951539504029375108">Chromebook совместим только с одобренными устройствами Thunderbolt.</translation>
 <translation id="8956420987536947088">Откройте предыдущие окна и приложения.</translation>
 <translation id="8959380109429710384">Вы нажали сочетание клавиш для полноэкранной лупы. Для перемещения по экрану, когда масштаб увеличен, нажимайте клавиши со стрелками, удерживая Ctrl и Alt.</translation>
-<translation id="896335827708646237">Открыть меню быстрых настроек для специальных возможностей</translation>
 <translation id="8964525410783593407">1 час</translation>
 <translation id="8973885907461690937">Переключиться на значок меню</translation>
 <translation id="8980862970816311842">Переместить значок приложения в папку или из папки в сетке приложений</translation>
@@ -2280,6 +2307,7 @@
 <translation id="899350903320462459">Чтобы выполнить действие, предложенное в уведомлении, разблокируйте устройство с помощью аккаунта <ph name="LOGIN_ID" />.</translation>
 <translation id="8993733019280019776">Микрофон отключен. Выберите микрофон, чтобы включить его.</translation>
 <translation id="9000771174482730261">ОЧИСТИТЬ ХРАНИЛИЩЕ</translation>
+<translation id="9003374957546315126">Эмодзи и другое</translation>
 <translation id="9005984960510803406">Открыть окно Crosh</translation>
 <translation id="9017320285115481645">Введите родительский код доступа Family Link.</translation>
 <translation id="9024331582947483881">полноэкранный режим</translation>
@@ -2288,6 +2316,7 @@
 <translation id="9030665205623277906">Использование процессора: <ph name="CPU_USEAGE" /> %</translation>
 <translation id="9034924485347205037">Файлы Linux</translation>
 <translation id="9047624247355796468">Открыть настройки сети "<ph name="NETWORK_NAME" />"</translation>
+<translation id="9050012935252397793">Подключение по Bluetooth недоступно</translation>
 <translation id="906458777597946297">Развернуть окно</translation>
 <translation id="9065203028668620118">Изменить</translation>
 <translation id="9070640332319875144">Настройки Ассистента</translation>
@@ -2356,7 +2385,7 @@
 <translation id="974545358917229949">Показано результатов поиска по запросу "<ph name="QUERY" />": <ph name="RESULT_COUNT" /></translation>
 <translation id="981011780479609956">Срок сдачи не указан</translation>
 <translation id="98120814841227350">Перейти к концу документа</translation>
-<translation id="98515147261107953">Горизонтальная</translation>
+<translation id="98515147261107953">Пейзаж</translation>
 <translation id="987589956647469042">Мобильный интернет включен.</translation>
 <translation id="989374776391122812">Настройки камеры и аудио</translation>
 <translation id="990277280839877440">Окно "<ph name="WINDOW_TITILE" />" закрыто.</translation>

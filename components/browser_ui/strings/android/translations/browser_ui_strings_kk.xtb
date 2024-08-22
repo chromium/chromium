@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">Сайттардың дыбысы өшірілді</translation>
 <translation id="3602290021589620013">Алдын ала көру</translation>
 <translation id="3628308229821498208">Ұсынылған іздеу сұраулары</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{Топтағы әрекетіңізді көре алатын <ph name="RWS_OWNER" /> сайттар тобындағы <ph name="RWS_MEMBERS_COUNT" /> сайт}other{Топтағы әрекетіңізді көре алатын <ph name="RWS_OWNER" /> сайттар тобындағы <ph name="RWS_MEMBERS_COUNT" /> сайт}}</translation>
 <translation id="3697164069658504920">Қосылса, сайттар USB құрылғыларын пайдалануға рұқсат сұрай алады. Өшірілсе, пайдалана алмайды.</translation>
 <translation id="3707034683772193706">Сіз кірген сайт көбінесе бот емес екеніңізді растау үшін Chrome-мен ақпараттың шағын көлемін сақтай алады</translation>
 <translation id="3721953990244350188">Жауып, келесі қолжетімді әрекетті көрсету</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">Бөлісу</translation>
 <translation id="5001526427543320409">Үшінші тарап cookie файлдары</translation>
 <translation id="5007392906805964215">Көру</translation>
+<translation id="5014182796621173645"><ph name="RECENCY" /> кірдіңіз</translation>
 <translation id="5039804452771397117">Рұқсат беру</translation>
 <translation id="5048398596102334565">Сайттардың қозғалыс датчиктеріне кіруіне рұқсат ету (ұсынылады)</translation>
 <translation id="5050380848339752099">Бұл сайт инкогнито режимінен тыс қолданбамен ақпаратты бөліскелі тұр.</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">Басқаларын көру</translation>
 <translation id="6561560012278703671">Дыбыссыз хабарландыру функциясын пайдалану (хабарландырулар кедергі келтірмейді)</translation>
 <translation id="6593061639179217415">Компьютерге арналған сайт</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Cookie файлдарына <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> сайтында рұқсат етілді.}other{Cookie файлдарына <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> сайтында рұқсат етілді.}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Қорғалған контент</translation>
 <translation id="662080504995468778">Қалу</translation>
 <translation id="6653342741369270081">Толық экраннан шығу үшін "Артқа" түймесін басыңыз.</translation>
+<translation id="6683865262523156564">Бұл сайт әрекетіңізді көре алатын топқа кіреді. Топты <ph name="RWS_OWNER" /> белгілеген.</translation>
 <translation id="6689172468748959065">Профиль фотосуреттері</translation>
 <translation id="6697925417670533197">Жүктеп алынып жатқандар</translation>
 <translation id="6722828510648505498">Идентификация қызметтері жіберген аккаунтқа кіру хабарлары бөгеледі.</translation>

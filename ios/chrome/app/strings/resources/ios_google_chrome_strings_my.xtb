@@ -81,7 +81,6 @@
 <translation id="2767464022270041271">သိမ်းထားသော စကားဝှက် မရှိပါ။ သင်စကားဝှက်များကို သိမ်းသည့်အခါ Google Password Manager က ၎င်းတို့ကို စစ်ဆေးနိုင်သည်။</translation>
 <translation id="2869959624320573933">Chrome တွင် လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome က သင့်ဒေတာကို သီးသန့်ထားပေးပုံ<ph name="END_LINK" /> အကြောင်း ပိုမိုလေ့လာရန်</translation>
-<translation id="2952581218264071393">၁။ 'Chrome ဆက်တင်များ' ဖွင့်ပါ</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> ကို ရွေးပါ</translation>
 <translation id="3030414234702425231">သင်သည် <ph name="SIGNOUT_MANAGED_DOMAIN" /> က ကြီးကြပ်သည့် အကောင့်မှ ထွက်သွားသောကြောင့် သင်၏ Chrome ဒေတာများကို ဤစက်မှ ဖျက်လိုက်ပါမည်။ သင်၏ ဒေတာများသည် သင့် Google အကောင့်အတွင်းတွင် ရှိနေပါဦးမည်။</translation>
 <translation id="309672519329227863">သင်၏ Chrome စကားဝှက် စသည်တို့ကို အခြားအက်ပ်များတွင် သုံးနိုင်သည်။</translation>
@@ -93,7 +92,6 @@
 <translation id="3340938510625667914">Chrome Actions</translation>
 <translation id="3345341804167540816">Chrome ကို နေရာတိုင်းမှာ သုံးပါ</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome ကို {THRESHOLD} မိနစ်ကြာ မသုံးပါက ဤသို့ဖြစ်ပါသည်}other{Chrome ကို {THRESHOLD} မိနစ်ကြာ မသုံးပါက ဤသို့ဖြစ်ပါသည်}}</translation>
-<translation id="3399930248910934354">'Chrome ဆက်တင်များ' ဖွင့်ရန်</translation>
 <translation id="344736123700721678">သင့် ‘ပင်မစာမျက်နှာ ပုံသေအထိုင်နေရာ’ မှတစ်ဆင့် Chrome ကို ပိုမိုမြန်ဆန်စွာ အသုံးပြုပါ</translation>
 <translation id="3472587960215700950">မှတ်မိသိရှိထားသော လိပ်စာများတွင် သင့်အား ခရီးလမ်းညွှန်ချက်နှင့် ဒေသတွင်းအချက်အလက်များ ပေးရန် Chrome က Google Maps သုံးသည်။</translation>
 <translation id="3503014945441706099">ဤ Chrome ပရိုဖိုင်အတွက်လည်း ‘အရည်အသွေးမြှင့် ဘေးကင်းလုံခြုံသည့် အသုံးပြုမှု’ ရယူနိုင်သည်</translation>
@@ -211,6 +209,7 @@
 သင်၏ Chrome အသုံးပြုမှု ပိုကောင်းစေရန် ဒေတာအသုံးပြုသော နောက်ထပ်ဆက်တင်များအတွက် <ph name="BEGIN_LINK" />Google ဝန်ဆောင်မှုများ<ph name="END_LINK" /> သို့သွားပါ။</translation>
 <translation id="6916015246697034114">Chrome တွင် အသံဖြင့်ရှာရန်</translation>
 <translation id="6975725306479268850">‘အော်တိုဖြည့်’ အတွက် Chrome ကိုရွေးပါ</translation>
+<translation id="6979238427560462592">Google က သင့်အတွက် ပြုလုပ်ထားသော စိတ်ကြိုက်ဖိဒ်။ သတင်း၊ အားကစားနှင့် မိုးလေဝသ ပါဝင်သည်။</translation>
 <translation id="7004159181872656283">Chrome တွင် ကြည့်ရှုစရာများရှာရန်။</translation>
 <translation id="7056826488869329999">Chrome တွင် လုံခြုံရေး စစ်ဆေးမှု ဖွင့်ပြီးလုပ်ဆောင်ရန်။</translation>
 <translation id="7059914902409643750">Chrome ကို သင့်စိတ်ကြိုက်ပြင်ဆင်လိုက်ပါ</translation>
@@ -236,7 +235,6 @@
 <translation id="7394108421562933108">Chrome ရှိ Maps</translation>
 <translation id="7400722733683201933">Google Chrome အကြောင်း</translation>
 <translation id="7466693328838535498">‘ရှာဖွေမှု ဝိဂျက်များ’ အကွက်တွင် Chrome ထည့်ပါ</translation>
-<translation id="746684838091935575">၃။ Chrome ကိုရွေးပါ</translation>
 <translation id="7492574581995589075">သင့်အဖွဲ့အစည်းက သင့် Google Account ရှိ Chrome ဒေတာ သုံးခွင့်နှင့် သိမ်းခွင့်ကို ပိတ်ထားသည်။ လိပ်စာအသစ်၊ စကားဝှက်အသစ် စသည်တို့ကို ဤစက်တွင်သာ သိမ်းပါမည်။</translation>
 <translation id="7581063337314642333">Chrome တွင် တဘ်ဇယားကွက်ကို ဝင်ကြည့်ရန်</translation>
 <translation id="7642373780953416937">သင့်အတွက် Chrome က အလိုအလျောက်သိရှိသော ကိုယ်ရေးအချက်အလက် လုံခြုံရေး (သို့) ဘေးကင်းရေး ပြဿနာများနှင့်ပတ်သက်သည့် သတိပေးချက်များ ရယူပါ။</translation>
@@ -300,7 +298,6 @@
 <translation id="8857676124663337448">Google Password Manager က စကားဝှက်အားလုံးကို စစ်ဆေး၍မရပါ။ မနက်ဖြန် ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="8865415417596392024">သင့်အကောင့်ရှိ Chrome ဒေတာ</translation>
 <translation id="8874688701962049679">Chrome ကို အကောင်းဆုံးအသုံးချနိုင်ရန် အကြံပြုချက်များ။</translation>
-<translation id="8891935667620843985">Chrome ကို ‘မူရင်းဘရောင်ဇာအက်ပ်’ အဖြစ် သတ်မှတ်ပြီး ၎င်းဖြင့် လင့်ခ်များကို အလိုအလျောက် ဖွင့်နိုင်သည်။</translation>
 <translation id="8897749957032330183">စကားဝှက်များကို ဤစက်ရှိ ‘Google စကားဝှက်မန်နေဂျာ’ တွင် သိမ်းသည်။</translation>
 <translation id="8949681853939555434">Chrome ကို ‘မူရင်းဘရောင်ဇာ’ အဖြစ် သတ်မှတ်ပါ</translation>
 <translation id="9068336935206019333">Chrome ရုပ်ဖျက်မုဒ်တွင် ဖွင့်ရန်</translation>
@@ -308,6 +305,7 @@
 <translation id="9112744793181547300">Chrome ကို မူရင်းအဖြစ် သတ်မှတ်မလား။</translation>
 <translation id="9122931302567044771">Chrome က ဒက်စ်တော့ဝဘ်ဆိုက်ကို အမြဲတောင်းမည်ဟု ဆိုလိုခြင်းဖြစ်သည်။</translation>
 <translation id="9181628561061032322">Chrome လတ်တလော တဘ်များ ဖွင့်ရန်။</translation>
+<translation id="9194404253580584015">Google က သင့်အတွက် ပြုလုပ်ထားသော စိတ်ကြိုက်ဖိဒ်။</translation>
 <translation id="953008885340860025">Chrome ထွက်သွားသည်</translation>
 <translation id="97300214378190234">အခြားအက်ပ်များရှိ လင့်ခ်ကို တို့တိုင်း Chrome ကို သုံးနိုင်သည်။</translation>
 </translationbundle>

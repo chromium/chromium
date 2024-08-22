@@ -81,7 +81,6 @@
 <translation id="2767464022270041271">సేవ్ చేసిన పాస్‌వర్డ్‌లు ఏవీ లేవు. మీరు వాటిని సేవ్ చేసినప్పుడు Google Password Manager మీ పాస్‌వర్డ్‌లను చెక్ చేయవచ్చు.</translation>
 <translation id="2869959624320573933">Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome మీ డేటాను ఎలా ప్రైవేట్‌గా ఉంచుతుంది<ph name="END_LINK" /> అనే దాని గురించి మరింత తెలుసుకోండి</translation>
-<translation id="2952581218264071393">1. Chrome సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />ను ఎంచుకోండి</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> నిర్వహిస్తున్న ఖాతా నుండి మీరు సైన్ అవుట్ చేస్తున్నారు కనుక మీ Chrome డేటా ఈ పరికరం నుండి తొలగించబడుతుంది. మీ డేటా మీ Google ఖాతాలో అలాగే ఉంటుంది.</translation>
 <translation id="309672519329227863">ఇతర యాప్‌లలో మీ Chrome పాస్‌వర్డ్‌లను, మరిన్నింటిని యాక్సెస్ చేయండి.</translation>
@@ -93,7 +92,6 @@
 <translation id="3340938510625667914">Chrome చర్యలు</translation>
 <translation id="3345341804167540816">Chromeని అంతటా ఉపయోగించండి</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Chromeను {THRESHOLD} నిమిషం పాటు ఉపయోగించనప్పుడు ఇలా జరుగుతుంది}other{Chromeను {THRESHOLD} నిమిషాల పాటు ఉపయోగించనప్పుడు ఇలా జరుగుతుంది}}</translation>
-<translation id="3399930248910934354">Chrome సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="344736123700721678">మీ మొదటి స్క్రీన్ డాక్ నుండి Chromeను మరింత వేగంగా యాక్సెస్ చేయండి</translation>
 <translation id="3472587960215700950">కనుగొనబడిన అడ్రస్‌లపై మీకు దిశలను, స్థానిక సమాచారాన్ని అందించడానికి Chrome, Google Mapsను ఉపయోగిస్తుంది.</translation>
 <translation id="3503014945441706099">ఈ Chrome ప్రొఫైల్ కోసం కూడా మెరుగైన సురక్షిత బ్రౌజింగ్‌ను పొందండి</translation>
@@ -237,7 +235,6 @@
 <translation id="7394108421562933108">Chromeలో Maps</translation>
 <translation id="7400722733683201933">Google Chrome గురించి</translation>
 <translation id="7466693328838535498">Search విడ్జెట్‌ల బాక్స్‌లో, Chromeను ఎంటర్ చేయండి</translation>
-<translation id="746684838091935575">3. Chromeను ఎంచుకోండి</translation>
 <translation id="7492574581995589075">మీ సంస్థ మీ Google ఖాతాలో Chrome డేటాను ఉపయోగించే వీలు పాటు, సేవ్ చేసే వీలును కూడా ఆఫ్ చేసింది. కొత్త బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, ఇంకా మరిన్ని ఈ పరికరంలో మాత్రమే సేవ్ అవుతాయి.</translation>
 <translation id="7581063337314642333">Chromeలో ట్యాబ్ గ్రిడ్‌ను చూడండి</translation>
 <translation id="7642373780953416937">Chrome మీ కోసం ఆటోమేటిక్‌గా గుర్తించే ఏవైనా గోప్యత లేదా సెక్యూరిటీ సమస్యలకు సంబంధించిన అలర్ట్‌లను స్వీకరించండి.</translation>
@@ -301,7 +298,6 @@
 <translation id="8857676124663337448">Google Password Manager అన్ని పాస్‌వర్డ్‌లను చెక్ చేయలేకపోయింది. రేపు మళ్లీ ట్రై చేయండి.</translation>
 <translation id="8865415417596392024">మీ ఖాతాలోని Chrome డేటా</translation>
 <translation id="8874688701962049679">Chrome నుండి అత్యధిక ప్రయోజనాలను పొందడానికి చిట్కాలు.</translation>
-<translation id="8891935667620843985">Chromeను మీ ఆటోమేటిక్ బ్రౌజర్ యాప్‌గా చేయడం ద్వారా, దానిలో లింక్‌లను ఆటోమేటిక్‌గా తెరవవచ్చు.</translation>
 <translation id="8897749957032330183">పాస్‌వర్డ్‌లు ఈ పరికరంలోని Google Password Managerలో సేవ్ చేయబడతాయి.</translation>
 <translation id="8949681853939555434">Chromeను మీ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
 <translation id="9068336935206019333">Chrome అజ్ఞాత మోడ్‌లో తెరవండి</translation>

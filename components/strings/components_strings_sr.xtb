@@ -166,7 +166,6 @@
 <translation id="1282358575813748144">Чамци и пловила</translation>
 <translation id="1283977499362032052">Радне биографије и портфолији</translation>
 <translation id="1285320974508926690">Никад не преводи овај сајт</translation>
-<translation id="1288259082801959119">Нешто ће се приказати овде када изаберете нешто из падајућег менија у оквиру ове ставке</translation>
 <translation id="1292571435393770077">16. фиока</translation>
 <translation id="1292701964462482250">„Софтвер на вашем рачунару онемогућава Chrome-у да се безбедно повеже на веб“ (само на Windows рачунарима)</translation>
 <translation id="1293797321964802402">Коверта 23×28 cm</translation>
@@ -234,6 +233,7 @@
 <translation id="1391625539203220400">Желите да сачувате IBAN на овом уређају?</translation>
 <translation id="139305205187523129">Хост <ph name="HOST_NAME" /> није послао никакве податке.</translation>
 <translation id="1405567553485452995">Светлозелена</translation>
+<translation id="1406500794671479665">Верификовање...</translation>
 <translation id="1406812885827747674">Дозволи овај пут</translation>
 <translation id="14070772729708640">Фајлови су отпремљени у <ph name="FOLDER_NAME" /> у услузи <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="1407135791313364759">Отвори све</translation>
@@ -483,6 +483,7 @@
 <translation id="1839551713262164453">Валидација вредности смерница није успела уз грешке</translation>
 <translation id="1840009953725035797">Кућни биоскопи</translation>
 <translation id="1842969606798536927">Плати</translation>
+<translation id="184517536440397176">Родитељ или старатељ мора да каже да је у реду да посетиш овај веб-сајт. Пре него што затражиш то од њега, морамо да се уверимо да си то стварно ти.</translation>
 <translation id="1846432862466000825">Пластика (архивска)</translation>
 <translation id="1848640291751752317">преузимања</translation>
 <translation id="1848982255014129637">Слика (високи сјај)</translation>
@@ -767,6 +768,7 @@
 <translation id="23703388716193220">Опрема за голф</translation>
 <translation id="2370368710215137370">Учитавање фајлова</translation>
 <translation id="2374629208601905275">На основу закона у вашем региону Chrome тражи да одаберете подразумевани претраживач. Ови претраживачи су популарни у вашем региону и приказују се насумичним редоследом.</translation>
+<translation id="2376455483361831781">Нова табела</translation>
 <translation id="2377241607395428273">Софтвер за графику и анимацију</translation>
 <translation id="2378084239755710604">Упит за чување картице је затворен.</translation>
 <translation id="237978325638124213">Парфеми и мириси</translation>
@@ -819,6 +821,7 @@
 <translation id="2469153820345007638">Редослед од 1 до n</translation>
 <translation id="24699311393038040">Папир (премаз)</translation>
 <translation id="2470767536994572628">Када измените коментаре, овај документ се враћа на приказ појединачне странице и у првобитни положај.</translation>
+<translation id="2471632709106952369">Табеле за поређење</translation>
 <translation id="2473810985261856484">Правне услуге</translation>
 <translation id="2479148705183875116">Иди у Подешавања</translation>
 <translation id="2479410451996844060">Неважећа URL адреса претраге.</translation>
@@ -970,6 +973,7 @@
 <translation id="2773388851563527404">Chrome спречава већину сајтова да користе колачиће треће стране. Међутим, колачићи треће стране су дозвољени на овом сајту зато што се Chrome ослања на њих да би пружао основне услуге. Посетите Подешавања да бисте <ph name="LINK" />.</translation>
 <translation id="277499241957683684">Недостаје евиденција уређаја</translation>
 <translation id="2775884851269838147">Прва страница за штампање</translation>
+<translation id="2779356973213509298">Обучени прегледачи могу да виде податке ради побољшања функције</translation>
 <translation id="2781185443919227679">Плаже и острва</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782088940970074970">Изнајмљивање аутомобила</translation>
@@ -1055,6 +1059,7 @@
 <translation id="2959274854674276289">Вегетаријанска кухиња</translation>
 <translation id="2961809451460302960">Животно осигурање</translation>
 <translation id="2962073860865348475">12×18 in</translation>
+<translation id="2967082089043584472">Додато у табелу за поређење <ph name="SET" /></translation>
 <translation id="2967098518029543669">сачувајте је на Google налогу</translation>
 <translation id="297173220375858963">Стоно издаваштво</translation>
 <translation id="2972581237482394796">&amp;Понови радњу</translation>
@@ -1419,6 +1424,7 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте покренули проверу безбедности у Chrome подешавањима</translation>
 <translation id="3615309852743236517">Маникири и педикири</translation>
 <translation id="3620239073311576716">Униформе и радна одећа</translation>
+<translation id="3621401353678567613">Да бисте добијали обавештења о снижењима за производе које пратите, укључите обавештења у подешавањима.</translation>
 <translation id="362276910939193118">Прикажи комплетну историју</translation>
 <translation id="3623041590998910684">Да бисте користили камеру, одобрите Chrome-у приступ у: <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Љубавни филмови</translation>
@@ -1523,7 +1529,6 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" />x<ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Култни и инди филмови</translation>
 <translation id="3793574014653384240">Број недавних отказивања и разлози</translation>
-<translation id="3796417399166194741"><ph name="SITE" /> спречава Chrome да успостави безбедну везу</translation>
 <translation id="3799805948399000906">Фонт је затражен</translation>
 <translation id="3801265110651850478">Шаљи захтев „Не прати“ уз саобраћај прегледања</translation>
 <translation id="380329542618494757">Име</translation>
@@ -1584,6 +1589,7 @@
 <translation id="3910231615117880630">Сазнајте више о уграђеном садржају</translation>
 <translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Како можете да управљате подацима:<ph name="END_BOLD" /> Chrome аутоматски брише сајтове старије од 30 дана. Сајт који поново посетите може опет да се појави на листи. У сваком тренутку у подешавањима Chrome-а можете и да блокирате сајт да вам не би предлагао огласе, као и да искључите огласе које сајтови предлажу.</translation>
 <translation id="3921869355029467742">Унесите безбедносни кôд</translation>
+<translation id="3927538228901078312">Нема табела за поређење</translation>
 <translation id="3927932062596804919">Одбиј</translation>
 <translation id="3930260846839546333">Женске ташне и торбе</translation>
 <translation id="3937834511546249636">Војна индустрија</translation>
@@ -1632,6 +1638,12 @@
 <translation id="4023431997072828269">Овај образац се шаље помоћу везе која није безбедна, па ће информације бити видљиве другима.</translation>
 <translation id="4025325634010721551">Смернице су поново учитане</translation>
 <translation id="4025338605225449265">Валуте и мењачки послови</translation>
+<translation id="4027270464942389997"><ph name="BEGIN_LIST" />
+      <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Нападачи могу да виде и промене<ph name="END_STRONG" /> информације које шаљете или примате са сајта.
+      <ph name="LIST_ITEM" /><ph name="BEGIN_STRONG" />Најбезбедније је да посетите овај сајт касније<ph name="END_STRONG" /> ако користите јавну мрежу. Ризик је мањи са поуздане мреже, попут кућне или пословне WiFi мреже.
+    <ph name="END_LIST" />.
+
+    Можете и да се обратите власнику сајта и предложите му да надогради на HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више о овом упозорењу<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4030383055268325496">&amp;Опозови додавање</translation>
 <translation id="4030545038933060179">Када је ово подешавање укључено, листа тема се приказује овде на основу недавне историје прегледања</translation>
 <translation id="4031179711345676612">Микрофон је дозвољен</translation>
@@ -1645,11 +1657,13 @@
 <translation id="4056223980640387499">Сепија</translation>
 <translation id="4059523390906550209">Сазнајте више о заштити од осетљивих података</translation>
 <translation id="4060880210388108757">Инди и алтернативна музика</translation>
+<translation id="4060883793524802469">Уклони из табела</translation>
 <translation id="4063063121357725926">Дозволите Google-у да вам помогне у проналажењу попуста за корпе</translation>
 <translation id="406358100705415968">Заштитна опрема за безбедност на раду</translation>
 <translation id="4065659219963895623">Ресторани</translation>
 <translation id="4067774859633143413">Да бисте изашли из режима целог екрана и прегледали преузимање, притисните и задржите |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Додајте важећу адресу</translation>
+<translation id="4069116422999284300">Изабрани наслови картица и URL-ови који се користе шаљу се Google-у</translation>
 <translation id="4072486802667267160">Дошло је до грешке при обради поруџбине. Пробајте поново.</translation>
 <translation id="4073376909608563327">Откључавање уређаја није успело</translation>
 <translation id="4073797364926776829">Прикажи картицу</translation>
@@ -1659,6 +1673,7 @@
 <translation id="4082393374666368382">Подешавања – управљање</translation>
 <translation id="4084219288110917128">Коверта C1</translation>
 <translation id="4085326869263783566">Помоћ при писању. Притисните Tab и Enter да бисте отворили</translation>
+<translation id="4085769736382018559">Упоредите производе</translation>
 <translation id="4088981014127559358">Померање слике 1. стране по Y оси</translation>
 <translation id="4089152113577680600">14. фиока</translation>
 <translation id="4092349052316400070">Попуните поље за адресу</translation>
@@ -1778,6 +1793,7 @@
 <translation id="4277028893293644418">Ресетујте лозинку</translation>
 <translation id="4277529130885813215">Користи други уређај</translation>
 <translation id="4277937682389409325">Локална адреса</translation>
+<translation id="4278090321534187713">Картице које овај продавац не прихвата су онемогућене</translation>
 <translation id="4278390842282768270">Дозвољено</translation>
 <translation id="4281998142035485137">{0,plural, =1{Желите да отворите поверљив фајл?}one{Желите да отворите поверљиве фајлове?}few{Желите да отворите поверљиве фајлове?}other{Желите да отворите поверљиве фајлове?}}</translation>
 <translation id="4282280603030594840">Куповина возила</translation>
@@ -1911,6 +1927,7 @@
 <translation id="4541810033354695636">проширена реалност</translation>
 <translation id="4542971377163063093">6. фиока</translation>
 <translation id="4543072026714825470">Да бисте следећи пут платили брже, сачувајте картицу и адресу за обрачун на Google налогу</translation>
+<translation id="454441086898495030">Желите ли да додате у табелу за поређење <ph name="SET" />?</translation>
 <translation id="4546730006268514143">Време за пренос је истекло</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Користите откључавање екрана за попуњавање лозинки</translation>
@@ -1979,6 +1996,7 @@
 <translation id="4702504834785592287">Страна</translation>
 <translation id="4702656508969495934">Види се титл уживо. Користите дугме за промену прозора да бисте фокусирали</translation>
 <translation id="4703342001883078444">Породични и други односи</translation>
+<translation id="4704745399240123930">Картице које овај продавац не прихвата су онемогућене, попут виртуелних картица.</translation>
 <translation id="4708268264240856090">Веза је прекинута</translation>
 <translation id="4708276642004148190">Снабдевање водом и прерада</translation>
 <translation id="471880041731876836">Немате дозволу да посетите овај сајт</translation>
@@ -2064,6 +2082,7 @@
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="4854853140771946034">Брзо направите нову белешку у Google Keep-у</translation>
 <translation id="485902285759009870">Кôд се верификује...</translation>
+<translation id="4860260582253463350">Ако желиш да наставиш на YouTube, морамо да се уверимо да си то стварно ти. Добићеш подешавања која је родитељ или старатељ подесио у Family Link-у.</translation>
 <translation id="4864406669374375262">Стринг верзије је копиран у привремену меморију</translation>
 <translation id="486459320933704969">Родитељ или старатељ мора да каже да је у реду да посетите овај веб-сајт</translation>
 <translation id="4864801646102013152">Уређење дома</translation>
@@ -2165,6 +2184,7 @@
 <translation id="5030338702439866405">Издао/ла</translation>
 <translation id="503069730517007720">Основни сертификат за софтвер „<ph name="SOFTWARE_NAME" />“ је обавезан, али није инсталиран. ИТ администратор треба да прегледа упутства за конфигурацију софтвера „<ph name="SOFTWARE_NAME" />“ да би решио овај проблем. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">О Google преводиоцу</translation>
+<translation id="5034930251282078640">Желите да додате у поређење?</translation>
 <translation id="503498442187459473"><ph name="HOST" /> жели да користи камеру и микрофон</translation>
 <translation id="5035135400558156732">Баштованство</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -2192,6 +2212,7 @@
 <translation id="5087286274860437796">Сертификат сервера тренутно није важећи.</translation>
 <translation id="5087580092889165836">Додај картицу</translation>
 <translation id="5088142053160410913">Порука оператеру</translation>
+<translation id="5090647584136241764">Додајте картице са сличним производима да бисте лако поредили детаље који су вам важни</translation>
 <translation id="5093232627742069661">Пресавијање у облику слова Z</translation>
 <translation id="5094747076828555589">Овај сервер не може да докаже да је <ph name="DOMAIN" />; Chromium нема поверења у његов безбедносни сертификат. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="5097099694988056070">Статистички подаци о уређају, попут искоришћености процесора/RAM меморије</translation>
@@ -2231,7 +2252,6 @@
 <translation id="5147633291963801297">Погледајте снижења на бочној табли</translation>
 <translation id="5148809049217731050">Са одштампаном страном нагоре</translation>
 <translation id="5148889558173091794">Организација је блокирала <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> зато што крши смернице. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више о овом упозорењу<ph name="END_LEARN_MORE_LINK" /></translation>
-<translation id="5153578295462758702">Недостају неке информације</translation>
 <translation id="5157504274688344097">Велетрговине и робне куће</translation>
 <translation id="5158275234811857234">Корице</translation>
 <translation id="5159010409087891077">Отворите страницу у новом прозору без архивирања (⇧⌘N)</translation>
@@ -2403,6 +2423,7 @@
     Покушајте да се обратите администратору система.</translation>
 <translation id="549333378215107354">Величина 3</translation>
 <translation id="5496804587179176046">Чувај безбедносне кодове, тренутно нема сачуваних безбедносних кодова</translation>
+<translation id="5500138616054402841">Chrome може да вам помогне да упоредите сличне производе</translation>
 <translation id="550365051221576010">Попуни све</translation>
 <translation id="5508443345185481044">Фото-апарати и камкордери</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -2458,6 +2479,7 @@
 <translation id="5572851009514199876">Отворите и пријавите се у Chrome да би Chrome могао да провери да ли имате дозволу за приступ овом сајту.</translation>
 <translation id="5578606540385219379">Добављачи услуга</translation>
 <translation id="5580958916614886209">Проверите месец истека и пробајте поново</translation>
+<translation id="5583442610070676234">Још радњи за табелу за поређење <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="558420943003240152">Управљајте лозинкама и приступним кодовима…</translation>
 <translation id="5586446728396275693">Нема сачуваних адреса</translation>
 <translation id="5586831831248371458">Претражите <ph name="KEYWORD_SUFFIX" /></translation>
@@ -2562,6 +2584,7 @@
 <translation id="5785756445106461925">Поред тога, ова страница садржи и друге ресурсе који нису безбедни. Ове ресурсе могу да виде и други док су у пролазу и нападач може да их измени како би променио изглед странице.</translation>
 <translation id="5789643057113097023">,</translation>
 <translation id="5793317771769868848">Овај начин плаћања ће бити избрисан са овог уређаја</translation>
+<translation id="5794065675298686371">Укључите обавештења о праћењу цена</translation>
 <translation id="5800727402210090597">Поправке и услуге у вези са мобилним телефонима</translation>
 <translation id="580241730938216256">Покрени ажурирање</translation>
 <translation id="5804241973901381774">Дозволе</translation>
@@ -2601,6 +2624,7 @@
 <translation id="5879989559903563723">Није дозвољено у режиму госта</translation>
 <translation id="5880050725127890683">Иди на Chrome проверу безбедности</translation>
 <translation id="5884465125445718607">Кинеска коверта бр. 6</translation>
+<translation id="5886961930368713749">Пошаљите повратне информације за поређење</translation>
 <translation id="5887400589839399685">Картица је сачувана</translation>
 <translation id="5887687176710214216">Последња посета: јуче</translation>
 <translation id="5895138241574237353">Покрени поново</translation>
@@ -2715,6 +2739,8 @@
 <translation id="6080696365213338172">Приступали сте садржају помоћу сертификата који је обезбедио администратор. Администратор може да пресретне податке које обезбедите домену <ph name="DOMAIN" />.</translation>
 <translation id="6085149458302186532">Налепнице (у боји)</translation>
 <translation id="6087312102907839798">Сродне претраге</translation>
+<translation id="6089505343295765444">Картице које избришете из историје Chrome-а и даље ће се приказивати у табелама за поређење</translation>
+<translation id="6093795393556121384">Картица је верификована</translation>
 <translation id="6094273045989040137">Додајте напомене</translation>
 <translation id="6094290315941448991">Смернице администратора онемогућавају снимање екрана када је видљив поверљив садржај</translation>
 <translation id="6099269767116481177">22×29,5 in</translation>
@@ -3057,6 +3083,7 @@
 <translation id="6710648923880003133">Предложи јаку лозинку</translation>
 <translation id="671076103358959139">Токен за регистрацију:</translation>
 <translation id="6711464428925977395">Дошло је до грешке са прокси сервером или је адреса нетачна.</translation>
+<translation id="6716039223770814796">Упоредите категорији <ph name="COMPARE_SET_NAME" /> · Ставки: <ph name="ITEMS" /></translation>
 <translation id="6716672519412350405"><ph name="URL" /> жели да прави 3D мапу окружења и да прати положај камере</translation>
 <translation id="6717692133381953670">Картица је послата са уређаја <ph name="DEVICE_NAME" /></translation>
 <translation id="6718612893943028815">Дозволићете коришћење камере?</translation>
@@ -3084,6 +3111,7 @@
 <translation id="6770747695101757579">Папир (памук)</translation>
 <translation id="677257480647123231">Безбедност деце на интернету</translation>
 <translation id="6775759552199460396">JIS B2</translation>
+<translation id="6777088782163649345">Користи YouTube са подешавањима родитеља</translation>
 <translation id="6779348349813025131">Google менаџер лозинки тражи приступ MacOS Keychain-у</translation>
 <translation id="6782656837469339439">Година истека</translation>
 <translation id="6785990323398321538">Можете да промените претраживач у сваком тренутку у подешавањима Chrome-а.</translation>
@@ -3127,11 +3155,13 @@
 <translation id="6865166112578825782">Попуните поље за адресу</translation>
 <translation id="6865412394715372076">Тренутно не можемо да верификујемо ову картицу</translation>
 <translation id="6868573634057275953">Наставите ажурирање</translation>
+<translation id="6871813064737840684">Историја цена широм веба за ову опцију</translation>
 <translation id="6873456682041376666">Горња фиока</translation>
 <translation id="6874604403660855544">&amp;Понови додавање</translation>
 <translation id="6880941331070119097">Опција високе цене</translation>
 <translation id="6881240511396774766">Брзо направите нов Google документ</translation>
 <translation id="6882210908253838664">Ако сајт не ради, можете да пробате да му дате привремену дозволу за коришћење колачића треће стране. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
+<translation id="6882418526420053414"><ph name="SITE" /> не подржава безбедну везу</translation>
 <translation id="6883221904761970440">Табела за потврду акредитива за безбедно плаћање је затворена</translation>
 <translation id="6884662655240309489">Величина 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3234,6 +3264,7 @@
 <translation id="7064443976734085921">Компактни аутомобили</translation>
 <translation id="7064851114919012435">Контакт информације</translation>
 <translation id="7067633076996245366">Соул и ритам и блуз</translation>
+<translation id="706960991003274248">Табеле за поређење се чувају на налогу <ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">системска подешавања</translation>
 <translation id="70705239631109039">Веза није потпуно безбедна</translation>
 <translation id="7075452647191940183">Захтев је превелик</translation>
@@ -3498,14 +3529,6 @@
 <translation id="7535087603100972091">Вредност</translation>
 <translation id="753556296624075801">Омогућава Google</translation>
 <translation id="7537536606612762813">Обавезно</translation>
-<translation id="7541586907443866208">Нападачи ће моћи да виде и промене све податке које сте разменили са овим сајтом.
-    &lt;ul&gt;
-
-    &lt;li&gt;Ако тренутно користите јавну мрежу, као што је WiFi на аеродрому или у хотелу, размислите о томе да пробате поново када се повежете на поуздану мрежу (нпр. код куће или на послу).&lt;/li&gt;
-    &lt;li&gt;Ако знате власника сајта, затражите од њега да реши овај проблем.&lt;/li&gt;
-    &lt;/ul&gt;
-
-    <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више о овом упозорењу<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">Онемогућено је аутоматско попуњавање кредитне картице зато што овај образац не користи безбедну везу.</translation>
 <translation id="7543525346216957623">Питај родитеља</translation>
 <translation id="7546409722674205727">Покреће се <ph name="APP_NAME" /></translation>
@@ -3747,6 +3770,7 @@
 <translation id="7967636097426665267">Комуникациона опрема</translation>
 <translation id="79682505114836835">Вредност <ph name="VALUE" /> је неважећа хексадецимална боја.</translation>
 <translation id="7968982339740310781">Прикажи детаље</translation>
+<translation id="7975858430722947486">Додато је у поређење</translation>
 <translation id="7976214039405368314">Превише је захтева</translation>
 <translation id="7977538094055660992">Излазни уређај</translation>
 <translation id="7979595116210197019">Припрема и достава хране</translation>
@@ -4126,6 +4150,7 @@
 <translation id="8687429322371626002">Уређајем и налогом управља <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Доступно</translation>
 <translation id="868922510921656628">Странице по скупу</translation>
+<translation id="8695996513186494922">Желите да упоредите картице?</translation>
 <translation id="869891660844655955">Датум истека</translation>
 <translation id="8699041776323235191">Уређај са интерфејсом</translation>
 <translation id="8699985386408839112">Коверта Kaku 1</translation>
@@ -4285,6 +4310,7 @@
 <translation id="9004367719664099443">ВР сесија је у току</translation>
 <translation id="9005998258318286617">Учитавање PDF документа није успело.</translation>
 <translation id="9008201768610948239">Игнориши</translation>
+<translation id="9014413491147864781"><ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /> о табелама за поређење</translation>
 <translation id="9014705027639070815">Сајтови које посећујете могу да затраже од Chrome-а информације које им помажу да измере учинак огласа. Chrome омогућава сајтовима да прикупљају ограничене типове података, на пример, да ли сте обавили куповину после посете сајту.</translation>
 <translation id="9018120810758822233">Унесите безбедносни кôд за: <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">имејл</translation>
@@ -4422,6 +4448,7 @@
 <translation id="944540589955480312">Користите лозинке и приступне кодове сачуване на Google налогу</translation>
 <translation id="945646848072568856">Chrome блокира сајтове да користе колачиће треће стране да би вас пратили док прегледате.</translation>
 <translation id="945855313015696284">Проверите информације у наставку и избришите све неважеће картице</translation>
+<translation id="94613679163347541">Желите да упоредите у категорији <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте брзо направили нов сајт у Google сајтовима</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome ће данас поново ограничити колачиће}=1{Chrome ће сутра поново ограничити колачиће}one{# дан док Chrome поново не ограничи колачиће}few{# дана док Chrome поново не ограничи колачиће}other{# дана док Chrome поново не ограничи колачиће}}</translation>
 <translation id="949314938206378263">Затражили сте да посетите овај сајт. Родитељ може да одговори у Family Link-у.</translation>

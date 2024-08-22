@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">సిగ్నల్ బలహీనంగా ఉంది</translation>
 <translation id="1300115153046603471">APN అనేది ఆటోమేటిక్ సెట్టింగ్ రకం, <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">మార్చండి</translation>
 <translation id="1304014921944666344">క్రియేట్ చేసిన తేదీ</translation>
 <translation id="1308754910631152188">అప్‌డేట్ అవుతోంది (<ph name="PERCENTAGE_VALUE" />% పూర్తయింది)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> నిమిషాలు</translation>
@@ -77,6 +78,7 @@
 <translation id="1343442362630695901">ఉప్పునీటి సరస్సు</translation>
 <translation id="1367951781824006909">ఒక ఫైల్‌ని ఎంచుకోండి</translation>
 <translation id="1371650399987522809">Googleకు చెందిన AI టెక్నాలజీల ద్వారా అందించబడుతున్న వాల్‌పేపర్ కోసం ఫీడ్‌బ్యాక్</translation>
+<translation id="1374385338586507108">నిర్వచించండి</translation>
 <translation id="1387854245479784695">ఇది అన్ని కోర్‌ల సముదాయం</translation>
 <translation id="1393206549145430405">కోట</translation>
 <translation id="1394661041439318933">పరికరంలో <ph name="BATTERY_PERCENTAGE" />% కేస్ బ్యాటరీ ఉంది.</translation>
@@ -463,7 +465,6 @@
 <translation id="346423161771747987">విద్యుత్తు</translation>
 <translation id="346539236881580388">మళ్లీ తీయండి</translation>
 <translation id="3484914941826596830">ఫర్మ్‌వేర్ అప్‌డేట్ అవుతున్నప్పుడు, ఈ బాహ్య పరికరాన్ని అన్‌ప్లగ్ చేయవద్దు లేదా మీ కంప్యూటర్‌ను షట్ డౌన్ చేయవద్దు. మీరు ఈ విండోను చిన్నదిగా చేయవచ్చు. ఈ అప్‌డేట్‌కు కొన్ని నిమిషాల సమయం పట్టవచ్చు, ఇంకా ఈ సమయంలో మీ బాహ్య పరికరం పని చేయకపోవచ్చు.</translation>
-<translation id="3485555238092220889">యాక్సెసిబిలిటీ చర్య</translation>
 <translation id="3486220673238053218">నిర్వచనం</translation>
 <translation id="3487866404496702283">mahi ఫీచర్ కోసం ఫీడ్‌బ్యాక్.</translation>
 <translation id="3488065109653206955">పాక్షికంగా సక్రియం చేయబడింది</translation>
@@ -672,6 +673,7 @@
 <translation id="4562494484721939086">సేవ లేదు</translation>
 <translation id="4570558255126759859">రికార్డింగ్‌లను సారాంసీకరించడానికి Gemini మోడల్‌ను డౌన్‌లోడ్ చేయాలా?</translation>
 <translation id="4573777384450697571">విఫలమైంది - సర్టిఫికెట్ గడువు ముగిసింది</translation>
+<translation id="4575450106703099687">యాక్సెసిబిలిటీ ఆప్షన్‌లు</translation>
 <translation id="458794348635939462">హోస్ట్‌లను పరిష్కరించడంలో విఫలమైంది</translation>
 <translation id="4593212453765072419">ప్రాక్సీ ప్రామాణీకరణ అవసరం</translation>
 <translation id="4594021849294327751">టైప్ చేసిన మాటల ఫైల్‌ను క్రియేట్ చేయండి</translation>
@@ -884,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />లో <ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> కోసం ఎడిట్ బటన్.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" />‌ను అప్‌డేట్ చేయండి</translation>
+<translation id="5736820754189340309">డేటా వినియోగం రీసెట్ అయింది</translation>
 <translation id="574392208103952083">మధ్యస్థం</translation>
 <translation id="5757187557809630523">తర్వాతి ట్రాక్</translation>
 <translation id="5760715441271661976">పోర్టల్ స్థితి</translation>
@@ -893,6 +896,7 @@
 <translation id="57838592816432529">మ్యూట్ చేయి</translation>
 <translation id="5784136236926853061">అధిక HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="5790391387506209808">లాపస్ లాజులై</translation>
+<translation id="5810692306010756935">గ్రాడ్యుయేషన్</translation>
 <translation id="5816802250591013230">ఏ షార్ట్‌కట్ కూడా కేటాయించబడలేదు</translation>
 <translation id="5826644637650799838">ఆర్ట్ గురించి</translation>
 <translation id="5832805196449965646">వ్యక్తిని జోడించండి</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6798678288485555829">టెక్స్ట్ నావిగేషన్</translation>
 <translation id="680983167891198932">కీ</translation>
 <translation id="6816797338148849397">మీ ఎంచుకున్న దానికి సంబంధించిన సమాచారం అందుబాటులో ఉంది. యాక్సెస్ చేయడానికి పై వైపు బాణం కీని ఉపయోగించండి.</translation>
+<translation id="6831043979455480757">అనువదించు</translation>
 <translation id="6853312040151791195">డిశ్చార్జింగ్ రేట్</translation>
 <translation id="6862416241246624313">ఫీడ్‌బ్యాక్‌ను సమర్పించారు</translation>
 <translation id="6866732840889595464">డైసీ</translation>
@@ -1248,7 +1253,7 @@
 <translation id="7502658306369382406">IPv6 అడ్రస్‌</translation>
 <translation id="7507061649493508884">ప్రకాశవంతమైన <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">దిగువ</translation>
-<translation id="7514365320538308">డౌన్‌లోడ్ చేయి</translation>
+<translation id="7514365320538308">డౌన్‌లోడ్ చేయండి</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">క్రియేట్ చేయండి</translation>
 <translation id="7528507600602050979">సహాయక కంటెంట్ అందుబాటులో లేదు</translation>
@@ -1433,7 +1438,7 @@
 <translation id="8491311378305535241">Android యాప్‌ల నుండి HTTP వెబ్‌సైట్‌లకు ఫైర్‌వాల్ ద్వారా కనెక్ట్ చేయడం సాధ్యపడదు</translation>
 <translation id="8495070016475833911">కంబళి లాంటి బట్ట</translation>
 <translation id="8498220429738806196">ట్రాఫిక్ కౌంటర్‌లు</translation>
-<translation id="8503813439785031346">యూజర్‌పేరు</translation>
+<translation id="8503813439785031346">యూజర్‌నేమ్</translation>
 <translation id="8503836310948963452">మరికొన్ని నిమిషాలు మాత్రమే…</translation>
 <translation id="8505011850330200833">Gemini మోడల్‌కు ట్రాన్‌స్క్రిప్ట్‌లను ప్రాసెస్ చేయడానికి, అలాగే సారాంశాలను రూపొందించడానికి 2GB స్టోరేజ్ అవసరం</translation>
 <translation id="8508640263392900755">APN వివరాలు</translation>

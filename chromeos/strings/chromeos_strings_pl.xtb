@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">słaby sygnał</translation>
 <translation id="1300115153046603471">APN jest typu domyślnego i: <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Konwertuj</translation>
 <translation id="1304014921944666344">Data utworzenia</translation>
 <translation id="1308754910631152188">Aktualizuję (ukończone <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> min</translation>
@@ -77,6 +78,7 @@
 <translation id="1343442362630695901">słone jezioro</translation>
 <translation id="1367951781824006909">Wybierz plik</translation>
 <translation id="1371650399987522809">Opinia o tapecie wygenerowanej z wykorzystaniem AI od Google</translation>
+<translation id="1374385338586507108">Zdefiniuj</translation>
 <translation id="1387854245479784695">To łączne obciążenie wszystkich rdzeni</translation>
 <translation id="1393206549145430405">zamka</translation>
 <translation id="1394661041439318933">Poziom naładowania baterii obudowy urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -463,7 +465,6 @@
 <translation id="346423161771747987">Prąd</translation>
 <translation id="346539236881580388">Zrób ponownie</translation>
 <translation id="3484914941826596830">Podczas aktualizowania oprogramowania układowego nie odłączaj tego urządzenia zewnętrznego ani nie wyłączaj komputera. To okno możesz zminimalizować. Aktualizowanie może potrwać kilka minut i w tym czasie urządzenie zewnętrzne może nie działać.</translation>
-<translation id="3485555238092220889">działanie związane z ułatwieniami dostępu</translation>
 <translation id="3486220673238053218">definicja</translation>
 <translation id="3487866404496702283">Opinia na temat funkcji mahi</translation>
 <translation id="3488065109653206955">Częściowo aktywowane</translation>
@@ -672,6 +673,7 @@
 <translation id="4562494484721939086">Brak usługi</translation>
 <translation id="4570558255126759859">Pobrać model Gemini, aby podsumowywać nagrania?</translation>
 <translation id="4573777384450697571">Niepowodzenie – certyfikat wygasł</translation>
+<translation id="4575450106703099687">opcje ułatwień dostępu</translation>
 <translation id="458794348635939462">Nie udało się znaleźć wszystkich hostów</translation>
 <translation id="4593212453765072419">Wymagane uwierzytelnienie na serwerze proxy</translation>
 <translation id="4594021849294327751">Utwórz transkrypcję</translation>
@@ -884,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Przycisk edytowania elementu <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Zaktualizuj: <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Użycie danych zostało zresetowane</translation>
 <translation id="574392208103952083">Średni</translation>
 <translation id="5757187557809630523">następny utwór</translation>
 <translation id="5760715441271661976">Stan portalu</translation>
@@ -893,6 +896,7 @@
 <translation id="57838592816432529">Wycisz</translation>
 <translation id="5784136236926853061">Duże opóźnienie HTTP</translation>
 <translation id="5790391387506209808">lapis-luzuli</translation>
+<translation id="5810692306010756935">Ukończenie szkoły</translation>
 <translation id="5816802250591013230">Brak przypisanego skrótu</translation>
 <translation id="5826644637650799838">Informacje o grafice</translation>
 <translation id="5832805196449965646">Dodaj osobę</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6798678288485555829">Nawigacja po tekście</translation>
 <translation id="680983167891198932">Klucz</translation>
 <translation id="6816797338148849397">Dostępne są informacje związane z zaznaczoną treścią. Aby je otworzyć, naciśnij klawisz strzałki w górę.</translation>
+<translation id="6831043979455480757">Tłumacz</translation>
 <translation id="6853312040151791195">Szybkość rozładowywania</translation>
 <translation id="6862416241246624313">Opinia przesłana</translation>
 <translation id="6866732840889595464">stokrotka</translation>

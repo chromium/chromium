@@ -8,6 +8,7 @@
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> का खास एसेटहरू उपलब्ध भएका छन्</translation>
 <translation id="1022628058306505708">अर्थ फ्लो</translation>
 <translation id="1026212596705997935">यो सर्टकट "<ph name="CONFLICT_ACCEL_NAME" />" का निम्ति प्रयोग भइरहेको छ। नयाँ सर्टकट थिच्नुहोस्। मूल सर्टकट बदल्न यो सर्टकट फेरि थिच्नुहोस्।</translation>
+<translation id="1030856839388844477">डेटा प्रयोग रिसेट गर्नुहोस्</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> वटा थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">नयाँ सुविधा उपलब्ध छ, थप जान्न अप एरो की प्रयोग गर्नुहोस्।</translation>
 <translation id="1049663189809099096">प्यास्टेल पहेँलो</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">कमजोर सिग्नल</translation>
 <translation id="1300115153046603471">APN को प्रकार डिफल्ट र <ph name="ATTACH" /> सेट गरिएको छ।</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">रूपान्तरण गर्नुहोस्</translation>
 <translation id="1304014921944666344">बनाइएको मिति</translation>
 <translation id="1308754910631152188">अपडेट हुँदै छ (<ph name="PERCENTAGE_VALUE" />% पूरा भयो)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> मिनेट</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">सल्ट लेक</translation>
 <translation id="1367951781824006909">एउटा फाइल रोज्नुहोस्</translation>
 <translation id="1371650399987522809">Google AI का सहायताले वालपेपर बनाउने सुविधासम्बन्धी प्रतिक्रिया</translation>
+<translation id="1374385338586507108">परिभाषा दिनुहोस्</translation>
 <translation id="1387854245479784695">यसमा सबै कोरहरूको डेटा समावेश हुन्छ</translation>
 <translation id="1393206549145430405">किल्ला</translation>
 <translation id="1394661041439318933">यो डिभाइसको केसमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">करेन्ट</translation>
 <translation id="346539236881580388">पुनः खिच्नुहोस्</translation>
 <translation id="3484914941826596830">फर्मवेयर अपडेट भइरहेका बेला यो बाह्य डिभाइस अनप्लग गर्ने वा कम्प्युटर सट डाउन गर्ने काम नगर्नुहोस्। तपाईं यो विन्डो मिनिमाइज गर्न सक्नुहुन्छ। फर्मवेयर अपडेट गर्न केही मिनेट लाग्न सक्छ र अपडेट भइरहेका बेला तपाईंको बाह्य डिभाइसले काम नगर्न सक्छ।</translation>
-<translation id="3485555238092220889">सर्वसुलभतासम्बन्धी कारबाही</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3487866404496702283">Mahi सुविधाका बारेमा प्रतिक्रिया दिनुहोस्</translation>
 <translation id="3488065109653206955">आंशिक रूपमा सक्रिय बनाइएको</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">कुनै पनि सेवा छैन</translation>
 <translation id="4570558255126759859">रेकर्डिङहरूको सारांश निकाल्न Gemini डाउनलोड गर्ने हो?</translation>
 <translation id="4573777384450697571">प्रिन्ट गर्न सकिएन - प्रमाणपत्रको म्याद सकिएको छ</translation>
+<translation id="4575450106703099687">सर्वसुलभतासम्बन्धी विकल्पहरू</translation>
 <translation id="458794348635939462">सबै होस्टहरूको समस्या समाधान गर्न सकिएन</translation>
 <translation id="4593212453765072419">प्रोक्सी प्रमाणित गर्नु पर्ने हुन्छ</translation>
 <translation id="4594021849294327751">ट्रान्सक्रिप्ट बनाउनुहोस्</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> मध्ये <ph name="CURRENT_PAGE" /> पृष्ठ</translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> परिवर्तन गर्ने बटन।</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> अपडेट गर्नुहोस्</translation>
+<translation id="5736820754189340309">डेटाको प्रयोगसम्बन्धी तथ्याङ्क रिसेट गरिएको छ</translation>
 <translation id="574392208103952083">मध्यम</translation>
 <translation id="5757187557809630523">"अर्को ट्र्याक" जनाउने आइकन</translation>
 <translation id="5760715441271661976">पोर्टलको स्थिति</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">म्यूट गर्नुहोस्</translation>
 <translation id="5784136236926853061">HTTP को विलम्बता धेरै छ</translation>
 <translation id="5790391387506209808">लापिस ‌लाजुली</translation>
+<translation id="5810692306010756935">ग्र्याजुएसन</translation>
 <translation id="5816802250591013230">कुनै पनि सर्टकट तोकिएको छैन</translation>
 <translation id="5826644637650799838">यस कलाकृतिसम्बन्धी जानकारी</translation>
 <translation id="5832805196449965646">व्यक्ति थप्नुहोस्</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">टेक्स्ट नेभिगेसन</translation>
 <translation id="680983167891198932">की</translation>
 <translation id="6816797338148849397">तपाईंले चयन गर्नुभएको पाठसँग सम्बन्धित जानकारी उपलब्ध छ। उक्त जानकारी प्राप्त गर्न अप एरो की प्रयोग गर्नुहोस्।</translation>
+<translation id="6831043979455480757">अनुवाद गर्नुहोस्</translation>
 <translation id="6853312040151791195">डिस्चार्ज हुने दर</translation>
 <translation id="6862416241246624313">प्रतिक्रिया पेस गरियो</translation>
 <translation id="6866732840889595464">डेजी</translation>
@@ -1551,6 +1557,7 @@
 <translation id="9087578468327036362">यो क्वेरीका बारेमा रिपोर्ट गर्नुहोस्</translation>
 <translation id="9088306295921699330">हालको प्रयोग</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">रिसेट गरिने मितिका बारेमा थप जानकारी</translation>
 <translation id="9100765901046053179">उन्नत सेटिङहरू</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> को टिकट पुन: ताजा गर्नुहोस्</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्क्यान गरिँदै छ</translation>

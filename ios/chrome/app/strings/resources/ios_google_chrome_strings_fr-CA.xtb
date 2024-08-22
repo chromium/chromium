@@ -81,7 +81,6 @@
 <translation id="2767464022270041271">Aucun mot de passe enregistré. Le gestionnaire de mots de passe de Google peut vérifier vos mots de passe lorsque vous les enregistrez.</translation>
 <translation id="2869959624320573933">Connectez-vous à Chrome</translation>
 <translation id="2876628302275096482">En savoir plus sur la <ph name="BEGIN_LINK" />manière dont Chrome préserve la confidentialité de vos données<ph name="END_LINK" /></translation>
-<translation id="2952581218264071393">1. Ouvrez les paramètres de Chrome</translation>
 <translation id="2957447865124070833">Sélectionnez <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Puisque vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chrome seront supprimées de cet appareil. Toutefois, vos données resteront dans votre compte Google.</translation>
 <translation id="309672519329227863">Accédez à vos mots de passe Chrome et plus encore dans d'autres applications.</translation>
@@ -93,7 +92,6 @@
 <translation id="3340938510625667914">Actions de Chrome</translation>
 <translation id="3345341804167540816">Utiliser Chrome sur toutes les plateformes</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Cela se produit lorsque Chrome n'est pas utilisé pendant {THRESHOLD} minute}one{Cela se produit lorsque Chrome n'est pas utilisé pendant {THRESHOLD} minute}other{Cela se produit lorsque Chrome n'est pas utilisé pendant {THRESHOLD} minutes}}</translation>
-<translation id="3399930248910934354">Ouvrir les paramètres de Chrome</translation>
 <translation id="344736123700721678">Accéder plus rapidement à Chrome à partir du Dock de l'écran d'accueil</translation>
 <translation id="3472587960215700950">Chrome utilise Google Maps pour vous fournir des itinéraires et des informations locales sur les adresses détectées.</translation>
 <translation id="3503014945441706099">Bénéficiez également de la navigation sécurisée améliorée pour ce profil Chrome</translation>
@@ -211,6 +209,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 Afin d'accéder à plus de paramètres utilisant des données pour améliorer votre expérience Chrome, accédez aux <ph name="BEGIN_LINK" />services Google<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Effectuer une recherche vocale dans Chrome</translation>
 <translation id="6975725306479268850">Choisissez Chrome pour le remplissage automatique</translation>
+<translation id="6979238427560462592">Un flux personnalisé créé pour vous par Google. Comprend les actualités, les sports et la météo.</translation>
 <translation id="7004159181872656283">Recherchez des visuels dans Chrome.</translation>
 <translation id="7056826488869329999">Ouvre et exécute la Vérification de sécurité dans Chromium.</translation>
 <translation id="7059914902409643750">Personnalisez Chrome</translation>
@@ -236,7 +235,6 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="7394108421562933108">Maps dans Chrome</translation>
 <translation id="7400722733683201933">À propos de Google Chrome</translation>
 <translation id="7466693328838535498">Dans le champ Widgets de recherche, entrez Chrome</translation>
-<translation id="746684838091935575">3. Sélectionnez Chrome</translation>
 <translation id="7492574581995589075">Votre organisation a désactivé la possibilité d'utiliser et d'enregistrer des données Chrome dans votre compte Google. Les nouveaux favoris, mots de passe et plus ne seront enregistrés que sur cet appareil.</translation>
 <translation id="7581063337314642333">Consulter la grille d'onglets dans Chrome</translation>
 <translation id="7642373780953416937">Recevez des alertes concernant tout problème de confidentialité ou de sécurité que Chrome détecte automatiquement pour vous.</translation>
@@ -300,7 +298,6 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <translation id="8857676124663337448">Le gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez demain.</translation>
 <translation id="8865415417596392024">Données relatives à Chrome dans votre compte</translation>
 <translation id="8874688701962049679">Conseils pour tirer le meilleur parti de Chrome.</translation>
-<translation id="8891935667620843985">Vous pouvez ouvrir automatiquement les liens dans Chrome en le définissant comme navigateur par défaut.</translation>
 <translation id="8897749957032330183">Les mots de passe sont enregistrés dans le gestionnaire de mots de passe de Google sur cet appareil</translation>
 <translation id="8949681853939555434">Faire de Chrome votre navigateur par défaut</translation>
 <translation id="9068336935206019333">Ouvrir dans Chrome en navigation privée</translation>
@@ -308,6 +305,7 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <translation id="9112744793181547300">Définir Chrome comme navigateur par défaut?</translation>
 <translation id="9122931302567044771">Cela signifie que Chrome demandera toujours la version bureau du site.</translation>
 <translation id="9181628561061032322">Ouvre les onglets récents de Chrome.</translation>
+<translation id="9194404253580584015">Un flux personnalisé créé pour vous par Google.</translation>
 <translation id="953008885340860025">Chrome est déconnecté</translation>
 <translation id="97300214378190234">Utilisez Chrome chaque fois que vous touchez des liens dans d'autres applications.</translation>
 </translationbundle>

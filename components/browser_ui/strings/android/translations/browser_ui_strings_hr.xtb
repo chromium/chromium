@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">Isključen je zvuk na web-lokacijama koje ga reproduciraju</translation>
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3628308229821498208">Predložena pretraživanja</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> web-lokacija u grupi web-lokacija vlasnika <ph name="RWS_OWNER" /> koja može vidjeti vaše aktivnosti u grupi}one{<ph name="RWS_MEMBERS_COUNT" /> web-lokacija u grupi web-lokacija vlasnika <ph name="RWS_OWNER" /> koja može vidjeti vaše aktivnosti u grupi}few{<ph name="RWS_MEMBERS_COUNT" /> web-lokacije u grupi web-lokacija vlasnika <ph name="RWS_OWNER" /> koje mogu vidjeti vaše aktivnosti u grupi}other{<ph name="RWS_MEMBERS_COUNT" /> web-lokacija u grupi web-lokacija vlasnika <ph name="RWS_OWNER" /> koje mogu vidjeti vaše aktivnosti u grupi}}</translation>
 <translation id="3697164069658504920">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu USB uređaja. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati USB uređaje.</translation>
 <translation id="3707034683772193706">Web-lokacija koju posjetite može spremiti male količine podataka pomoću Chromea, uglavnom kako bi potvrdila da niste bot</translation>
 <translation id="3721953990244350188">Odbacivanje i prikazivanje sljedeće dostupne radnje</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">Dijeli putem</translation>
 <translation id="5001526427543320409">Kolačići trećih strana</translation>
 <translation id="5007392906805964215">Pregled</translation>
+<translation id="5014182796621173645">Posjetili ste <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Dopusti</translation>
 <translation id="5048398596102334565">Dopuštanje pristupa senzorima kretanja za web-lokacije (preporučeno)</translation>
 <translation id="5050380848339752099">Ova će web-lokacija dijeliti podatke s aplikacijom izvan anonimnog načina.</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">Prikaži više</translation>
 <translation id="6561560012278703671">Koristi tiše poruke (onemogućuje upitima za obavijesti da vas ometaju)</translation>
 <translation id="6593061639179217415">Klasični prikaz</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Kolačići dopušteni za <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> web-lokaciju}one{Kolačići dopušteni za <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> web-lokaciju}few{Kolačići dopušteni za <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> web-lokacije}other{Kolačići dopušteni za <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> web-lokacija}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Zaštićeni sadržaj</translation>
 <translation id="662080504995468778">Ostani</translation>
 <translation id="6653342741369270081">Pritisnite gumb za natrag da biste zatvorili prikaz na cijelom zaslonu.</translation>
+<translation id="6683865262523156564">Ova je web-lokacija u grupi koja može vidjeti vaše aktivnosti. Grupu je definirao <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Fotografije profila</translation>
 <translation id="6697925417670533197">Aktivna preuzimanja</translation>
 <translation id="6722828510648505498">Blokiraj upite za prijavu s usluga za provjeru identiteta.</translation>

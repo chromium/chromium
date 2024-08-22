@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">Sinal fraco</translation>
 <translation id="1300115153046603471">O tipo de APN é predefinido e <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Converter</translation>
 <translation id="1304014921944666344">Data de criação</translation>
 <translation id="1308754910631152188">A atualizar (<ph name="PERCENTAGE_VALUE" />% concluído)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutos</translation>
@@ -77,6 +78,7 @@
 <translation id="1343442362630695901">lago salgado</translation>
 <translation id="1367951781824006909">Selecione um ficheiro</translation>
 <translation id="1371650399987522809">Feedback sobre a imagem de fundo com tecnologia de IA da Google</translation>
+<translation id="1374385338586507108">Definir</translation>
 <translation id="1387854245479784695">Isto é uma agregação de todos os núcleos.</translation>
 <translation id="1393206549145430405">castelo</translation>
 <translation id="1394661041439318933">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% de bateria na caixa.</translation>
@@ -463,7 +465,6 @@
 <translation id="346423161771747987">Corrente</translation>
 <translation id="346539236881580388">Repetir</translation>
 <translation id="3484914941826596830">Enquanto o firmware está a ser atualizado, não desligue este dispositivo externo nem encerre o computador. Pode minimizar esta janela. Esta atualização pode demorar alguns minutos e o seu dispositivo externo pode não funcionar durante este período.</translation>
-<translation id="3485555238092220889">ação de acessibilidade</translation>
 <translation id="3486220673238053218">definição</translation>
 <translation id="3487866404496702283">Feedback sobre a caraterística do mahi</translation>
 <translation id="3488065109653206955">Parcialmente activado</translation>
@@ -672,6 +673,7 @@
 <translation id="4562494484721939086">Sem serviço</translation>
 <translation id="4570558255126759859">Transferir o modelo do Gemini para resumir as gravações?</translation>
 <translation id="4573777384450697571">Falha – Certificado expirado</translation>
+<translation id="4575450106703099687">opções de acessibilidade</translation>
 <translation id="458794348635939462">Falha ao resolver todos os anfitriões.</translation>
 <translation id="4593212453765072419">Autenticação proxy necessária</translation>
 <translation id="4594021849294327751">Criar transcrição</translation>
@@ -884,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Botão de edição para <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Atualizar <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">A utilização de dados foi reposta</translation>
 <translation id="574392208103952083">Médio</translation>
 <translation id="5757187557809630523">faixa seguinte</translation>
 <translation id="5760715441271661976">Estado do portal</translation>
@@ -893,6 +896,7 @@
 <translation id="57838592816432529">Desativar som</translation>
 <translation id="5784136236926853061">Latência elevada de HTTP</translation>
 <translation id="5790391387506209808">lápis-lazúli</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Nenhum atalho atribuído</translation>
 <translation id="5826644637650799838">Acerca da arte</translation>
 <translation id="5832805196449965646">Adicionar pessoa</translation>
@@ -949,7 +953,7 @@
 <translation id="6073292342939316679">diminuir o brilho do teclado</translation>
 <translation id="6073451960410192870">Parar gravação</translation>
 <translation id="6075872808778243331">(Android) Latência de HTTP</translation>
-<translation id="6078323886959318429">Adicionar atalho</translation>
+<translation id="6078323886959318429">Atalho</translation>
 <translation id="6091080061796993741">amarela</translation>
 <translation id="6104112872696127344">A digitalização foi cancelada.</translation>
 <translation id="6106186594183574873">Para terminar, introduza a palavra-passe antiga</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6798678288485555829">Navegação em texto</translation>
 <translation id="680983167891198932">Chave</translation>
 <translation id="6816797338148849397">Informações disponíveis relacionadas com a sua seleção. Utilize a tecla da seta para cima para aceder.</translation>
+<translation id="6831043979455480757">Traduzir</translation>
 <translation id="6853312040151791195">Velocidade de descarregamento</translation>
 <translation id="6862416241246624313">Feedback enviado</translation>
 <translation id="6866732840889595464">margarida</translation>
@@ -1591,7 +1596,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="966787709310836684">menu</translation>
 <translation id="979450713603643090">Rosa-claro</translation>
 <translation id="982713511914535780">Executar teste de descarga</translation>
-<translation id="98515147261107953">Horizontal</translation>
+<translation id="98515147261107953">Paisagem</translation>
 <translation id="987264212798334818">Geral</translation>
 <translation id="995062385528875723">Não pode usar letras acentuadas, alfabeto não latino nem símbolos</translation>
 </translationbundle>

@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Er zijn nu exclusieve <ph name="PRODUCT_NAME" />-items beschikbaar</translation>
 <translation id="1022628058306505708">Aardestroom</translation>
 <translation id="1026212596705997935">Sneltoets wordt gebruikt voor <ph name="CONFLICT_ACCEL_NAME" />. Druk op een nieuwe sneltoets. Druk opnieuw op deze sneltoets om de bestaande sneltoets te vervangen.</translation>
+<translation id="1030856839388844477">Datagebruik resetten</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nieuwe functie beschikbaar, gebruik de pijl-omhoog voor meer informatie.</translation>
 <translation id="1049663189809099096">pastelgeel</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Zwak signaal</translation>
 <translation id="1300115153046603471">APN is van het type standaard en <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Converteren</translation>
 <translation id="1304014921944666344">Datum gemaakt</translation>
 <translation id="1308754910631152188">Updaten (<ph name="PERCENTAGE_VALUE" />% klaar)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minuten</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">zoutmeer</translation>
 <translation id="1367951781824006909">Een bestand selecteren</translation>
 <translation id="1371650399987522809">Feedback voor achtergrond mogelijk gemaakt door AI van Google</translation>
+<translation id="1374385338586507108">Definiëren</translation>
 <translation id="1387854245479784695">Dit is het totaal voor alle kernen</translation>
 <translation id="1393206549145430405">kasteel</translation>
 <translation id="1394661041439318933">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in de case.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Stroomsterkte</translation>
 <translation id="346539236881580388">Opnieuw maken</translation>
 <translation id="3484914941826596830">Koppel dit externe apparaat niet los en zet je computer niet uit terwijl de firmware wordt geüpdatet. Je kunt dit venster minimaliseren. Deze update kan een paar minuten duren en je externe apparaat werkt misschien niet tijdens het updaten.</translation>
-<translation id="3485555238092220889">toegankelijkheidsactie</translation>
 <translation id="3486220673238053218">definitie</translation>
 <translation id="3487866404496702283">Feedback voor de mahi-functie</translation>
 <translation id="3488065109653206955">Gedeeltelijk geactiveerd</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Geen service</translation>
 <translation id="4570558255126759859">Gemini-model downloaden om opnamen samen te vatten?</translation>
 <translation id="4573777384450697571">Mislukt: certificaat verlopen</translation>
+<translation id="4575450106703099687">toegankelijkheidsopties</translation>
 <translation id="458794348635939462">Kan niet alle hosts omzetten</translation>
 <translation id="4593212453765072419">Proxyverificatie vereist</translation>
 <translation id="4594021849294327751">Transcript maken</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> van <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Knop Bewerken voor <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> updaten</translation>
+<translation id="5736820754189340309">Datagebruik is gereset</translation>
 <translation id="574392208103952083">Gemiddeld</translation>
 <translation id="5757187557809630523">volgend nummer</translation>
 <translation id="5760715441271661976">Status van portal</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Geluid uitzetten</translation>
 <translation id="5784136236926853061">Hoge HTTP-vertraging</translation>
 <translation id="5790391387506209808">lapis lazuli</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Geen sneltoets toegewezen</translation>
 <translation id="5826644637650799838">Over de achtergrond</translation>
 <translation id="5832805196449965646">Persoon toevoegen</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Tekstnavigatie</translation>
 <translation id="680983167891198932">Sleutel</translation>
 <translation id="6816797338148849397">Er is informatie met betrekking tot je selectie beschikbaar. Gebruik de pijl-omhoog om deze te openen.</translation>
+<translation id="6831043979455480757">Vertalen</translation>
 <translation id="6853312040151791195">Ontlaadsnelheid</translation>
 <translation id="6862416241246624313">Feedback ingediend</translation>
 <translation id="6866732840889595464">madeliefje</translation>
@@ -1551,6 +1557,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="9087578468327036362">Deze zoekopdracht melden</translation>
 <translation id="9088306295921699330">Huidig gebruik</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Meer informatie over de resetdatum</translation>
 <translation id="9100765901046053179">Geavanceerde instellingen</translation>
 <translation id="910415269708673980">Ticket voor <ph name="PRINCIPAL_NAME" /> vernieuwen</translation>
 <translation id="9106415115617144481">Pagina <ph name="PAGE_NUMBER" /> scannen</translation>

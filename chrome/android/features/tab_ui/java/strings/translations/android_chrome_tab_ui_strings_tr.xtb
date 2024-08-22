@@ -20,6 +20,7 @@
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> sekme gruplandı</translation>
 <translation id="1657719826150349398">Sekmeyi aşağı taşı</translation>
 <translation id="1713541401465507417">Tüm sekmeleri ve grupları kapat</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Daha fazla bilgi<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> sekme gruplandı</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme}other{<ph name="TABS_COUNT_MANY" /> sekme}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Seçili <ph name="TABS_COUNT_ONE" /> sekmeye yer işareti koy}other{Seçili <ph name="TABS_COUNT_MANY" /> sekmeye yer işareti koy}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Az önce oluşturuldu</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 gün sonra kapat}other{<ph name="DAY_COUNT_MANY" /> gün sonra kapat}}</translation>
 <translation id="4777866634702576038">Sekme grubu silinsin mi?</translation>
+<translation id="4783638485675352219">Bu cihazdaki açık sekmelerin başlıklarını ve URL'lerini işletim sistemiyle paylaş</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> yorum)}other{(<ph name="REVIEWS_COUNT_MANY" /> yorum)}}</translation>
 <translation id="4850886885716139402">Görüntüle</translation>
 <translation id="4870911314065352661">Tüm sekmeler kapatılsın mı?</translation>

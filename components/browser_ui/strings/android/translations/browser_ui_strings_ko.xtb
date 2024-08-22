@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">소리를 재생하는 사이트 음소거</translation>
 <translation id="3602290021589620013">미리보기</translation>
 <translation id="3628308229821498208">추천 검색어</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{사이트 <ph name="RWS_MEMBERS_COUNT" />개는 <ph name="RWS_OWNER" />의 사이트 그룹에 있으며, 여기에서는 그룹 내 활동을 볼 수 있습니다.}other{사이트 <ph name="RWS_MEMBERS_COUNT" />개는 <ph name="RWS_OWNER" />의 사이트 그룹에 있으며, 여기에서는 그룹 내 활동을 볼 수 있습니다.}}</translation>
 <translation id="3697164069658504920">사용 설정하면 사이트에서 USB 기기 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 USB 기기를 사용할 수 없습니다.</translation>
 <translation id="3707034683772193706">방문하는 사이트에서 주로 내가 봇이 아님을 확인하기 위해 Chrome에 약간의 정보를 저장할 수 있습니다.</translation>
 <translation id="3721953990244350188">닫기 후 가능한 다음 작업 표시</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">공유 방법</translation>
 <translation id="5001526427543320409">서드 파티 쿠키</translation>
 <translation id="5007392906805964215">검토</translation>
+<translation id="5014182796621173645"><ph name="RECENCY" />에 방문함</translation>
 <translation id="5039804452771397117">허용</translation>
 <translation id="5048398596102334565">사이트의 움직임 감지 센서 액세스 허용(권장)</translation>
 <translation id="5050380848339752099">이 사이트에서 시크릿 모드 외부의 앱을 사용하여 정보를 공유하려고 합니다.</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">더보기</translation>
 <translation id="6561560012278703671">조용한 메시지 사용(방해가 되지 않도록 알림 메시지 차단)</translation>
 <translation id="6593061639179217415">데스크톱 사이트</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_OWNER" /> 사이트 <ph name="RWS_MEMBERS_COUNT" />개에 쿠키가 허용됨}other{<ph name="RWS_OWNER" /> 사이트 <ph name="RWS_MEMBERS_COUNT" />개에 쿠키가 허용됨}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" />GB</translation>
 <translation id="6612358246767739896">보호된 콘텐츠</translation>
 <translation id="662080504995468778">머무르기</translation>
 <translation id="6653342741369270081">전체화면을 종료하려면 뒤로 버튼을 누르세요.</translation>
+<translation id="6683865262523156564">이 사이트는 내 활동을 볼 수 있는 그룹에 있습니다. 그룹 정의 기준: <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">프로필 사진</translation>
 <translation id="6697925417670533197">진행 중인 다운로드</translation>
 <translation id="6722828510648505498">ID 서비스의 로그인 메시지를 차단합니다.</translation>

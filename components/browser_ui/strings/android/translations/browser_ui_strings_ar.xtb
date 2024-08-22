@@ -158,6 +158,7 @@
 <translation id="3600792891314830896">كتم صوت المواقع الإلكترونية التي تشغّل الصوت</translation>
 <translation id="3602290021589620013">معاينة</translation>
 <translation id="3628308229821498208">عمليات البحث المُقترَحة</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{موقع إلكتروني واحد (<ph name="RWS_MEMBERS_COUNT" />) في مجموعة مواقع "<ph name="RWS_OWNER" />" الإلكترونية التي يمكنها الاطّلاع على نشاطك في المجموعة}zero{<ph name="RWS_MEMBERS_COUNT" /> موقع إلكتروني في مجموعة مواقع "<ph name="RWS_OWNER" />" الإلكترونية التي يمكنها الاطّلاع على نشاطك في المجموعة}two{موقعان إلكترونيان (<ph name="RWS_MEMBERS_COUNT" />) في مجموعة مواقع "<ph name="RWS_OWNER" />" الإلكترونية التي يمكنها الاطّلاع على نشاطك في المجموعة}few{<ph name="RWS_MEMBERS_COUNT" /> مواقع إلكترونية في مجموعة مواقع "<ph name="RWS_OWNER" />" الإلكترونية التي يمكنها الاطّلاع على نشاطك في المجموعة}many{<ph name="RWS_MEMBERS_COUNT" /> موقعًا إلكترونيًا في مجموعة مواقع "<ph name="RWS_OWNER" />" الإلكترونية التي يمكنها الاطّلاع على نشاطك في المجموعة}other{<ph name="RWS_MEMBERS_COUNT" /> موقع إلكتروني في مجموعة مواقع "<ph name="RWS_OWNER" />" الإلكترونية التي يمكنها الاطّلاع على نشاطك في المجموعة}}</translation>
 <translation id="3697164069658504920">‏عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية طلب استخدام أجهزة USB. وعند إيقافه، لا يمكن للمواقع الإلكترونية استخدام تلك الأجهزة.</translation>
 <translation id="3707034683772193706">‏يمكن للمواقع الإلكترونية التي تزورها أن تحفظ قليلاً من المعلومات في متصفّح Chrome للتأكّد من أنّك لست برنامج تتبُّع بشكل رئيسي.</translation>
 <translation id="3721953990244350188">إغلاق الرسالة وعرض الإجراء المتاح التالي</translation>
@@ -237,6 +238,7 @@
 <translation id="4996978546172906250">المشاركة عن طريق</translation>
 <translation id="5001526427543320409">ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="5007392906805964215">مراجعة</translation>
+<translation id="5014182796621173645">لقد زرت هذا المكان <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">سماح</translation>
 <translation id="5048398596102334565">السماح للمواقع الإلكترونية بالوصول إلى مستشعرات الحركة (مُقترَح)</translation>
 <translation id="5050380848339752099">هذا الموقع الإلكتروني على وشك مشاركة معلومات مع أحد التطبيقات خارج وضع التصفُّح المتخفي.</translation>
@@ -348,10 +350,12 @@
 <translation id="656065428026159829">عرض المزيد</translation>
 <translation id="6561560012278703671">استخدام طريقة أقل بروزًا لإرسال الإشعارات (منع رسائل الإشعارات من إزعاجك)</translation>
 <translation id="6593061639179217415">الموقع على الكمبيوتر</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{تم السماح باستخدام ملفات تعريف الارتباط لموقع إلكتروني واحد (<ph name="RWS_MEMBERS_COUNT" />) ضمن مجموعة "<ph name="RWS_OWNER" />"}zero{تم السماح باستخدام ملفات تعريف الارتباط لـ <ph name="RWS_MEMBERS_COUNT" /> موقع إلكتروني ضمن مجموعة "<ph name="RWS_OWNER" />"}two{تم السماح باستخدام ملفات تعريف الارتباط لموقعَين إلكترونيَّين (<ph name="RWS_MEMBERS_COUNT" />) ضمن مجموعة "<ph name="RWS_OWNER" />"}few{تم السماح باستخدام ملفات تعريف الارتباط لـ <ph name="RWS_MEMBERS_COUNT" /> مواقع إلكترونية ضمن مجموعة "<ph name="RWS_OWNER" />"}many{تم السماح باستخدام ملفات تعريف الارتباط لـ <ph name="RWS_MEMBERS_COUNT" /> موقعًا إلكترونيًّا ضمن مجموعة "<ph name="RWS_OWNER" />"}other{تم السماح باستخدام ملفات تعريف الارتباط لـ <ph name="RWS_MEMBERS_COUNT" /> موقع إلكتروني ضمن مجموعة "<ph name="RWS_OWNER" />"}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> غيغابايت</translation>
 <translation id="6612358246767739896">المحتوى المحمي</translation>
 <translation id="662080504995468778">البقاء</translation>
 <translation id="6653342741369270081">اضغط على زر الرجوع للخروج من وضع ملء الشاشة.</translation>
+<translation id="6683865262523156564">يندرج هذا الموقع الإلكتروني ضمن مجموعة يمكنها الاطّلاع على نشاطك. وهذه المجموعة تم تحديدها بواسطة "<ph name="RWS_OWNER" />"</translation>
 <translation id="6689172468748959065">صور الملف الشخصي</translation>
 <translation id="6697925417670533197">عمليات التنزيل النشِطة</translation>
 <translation id="6722828510648505498">بإمكانك حظر الطلبات بتسجيل الدخول من خدمات تقديم الهويات.</translation>

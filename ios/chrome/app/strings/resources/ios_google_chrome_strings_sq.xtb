@@ -80,7 +80,6 @@ Gjëra për të pasur parasysh:
 <translation id="2767464022270041271">Nuk ka asnjë fjalëkalim të ruajtur. "Menaxheri i fjalëkalimeve i Google" mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
 <translation id="2869959624320573933">Identifikohu në Chrome</translation>
 <translation id="2876628302275096482">Mëso më shumë se <ph name="BEGIN_LINK" />si Chrome i mban private të dhënat e tua<ph name="END_LINK" /></translation>
-<translation id="2952581218264071393">1. Hap "Cilësimet" e Chrome</translation>
 <translation id="2957447865124070833">Zgjidh <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Duke qenë se po del nga një llogari e menaxhuar nga <ph name="SIGNOUT_MANAGED_DOMAIN" />, të dhënat e tua të Chrome do të fshihen nga kjo pajisje. Të dhënat e tua do të mbeten në "Llogarinë tënde të Google".</translation>
 <translation id="309672519329227863">Qasu te fjalëkalimet e tua të Chrome etj. nëpër aplikacione të tjera.</translation>
@@ -92,7 +91,6 @@ Gjëra për të pasur parasysh:
 <translation id="3340938510625667914">Veprimet në Chrome</translation>
 <translation id="3345341804167540816">Përdor Chrome kudo</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Kjo ndodh kur Chrome nuk përdoret për {THRESHOLD} minutë}other{Kjo ndodh kur Chrome nuk përdoret për {THRESHOLD} minuta}}</translation>
-<translation id="3399930248910934354">Hap "Cilësimet" e Chrome</translation>
 <translation id="344736123700721678">Qasu më shpejt në Chrome nga stacioni i ekranit bazë</translation>
 <translation id="3472587960215700950">Chrome përdor Google Maps për të të dhënë udhëzime dhe informacione lokale në adresat e zbuluara.</translation>
 <translation id="3503014945441706099">Merr gjithashtu "Shfletimin e sigurt të përmirësuar" për këtë profil të Chrome</translation>
@@ -210,6 +208,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 Për më shumë cilësime që përdorin të dhënat për të përmirësuar përvojën tënde me Chrome, shko te <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Kërko me zë në Chrome</translation>
 <translation id="6975725306479268850">Zgjidh Chrome për AutoFill</translation>
+<translation id="6979238427560462592">Një furnizim i personalizuar i krijuar për ty nga Google. Duke përfshirë lajmet, sportet dhe motin.</translation>
 <translation id="7004159181872656283">Kërko pamje në Chrome.</translation>
 <translation id="7056826488869329999">Hap dhe ekzekuton kontrollin e sigurisë në Chrome.</translation>
 <translation id="7059914902409643750">Bëje Chrome tëndin</translation>
@@ -235,7 +234,6 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="7394108421562933108">Maps në Chrome</translation>
 <translation id="7400722733683201933">Informacion për Google Chrome</translation>
 <translation id="7466693328838535498">Në kutinë e "Miniaplikacioneve të kërkimit", shkruaj Chrome</translation>
-<translation id="746684838091935575">3. Zgjidh Chrome</translation>
 <translation id="7492574581995589075">Organizata jote e ka çaktivizuar aftësinë për të përdorur dhe ruajtur të dhënat e Chrome në "Llogarinë tënde të Google". Faqeshënuesit e rinj, fjalëkalimet etj. do të ruhen vetëm në këtë pajisje.</translation>
 <translation id="7581063337314642333">Vizito rrjetën e skedave në Chrome</translation>
 <translation id="7642373780953416937">Merr sinjalizime për çdo problem të privatësisë ose sigurisë që Chrome zbulon automatikisht për ty.</translation>
@@ -299,7 +297,6 @@ Të dhënat e tua janë enkriptuar me frazën tënde të kalimit më <ph name="T
 <translation id="8857676124663337448">"Menaxheri i fjalëkalimeve i Google" nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo përsëri nesër.</translation>
 <translation id="8865415417596392024">Të dhënat e Chrome në llogarinë tënde</translation>
 <translation id="8874688701962049679">Këshilla për të përfituar sa më shumë nga Chrome.</translation>
-<translation id="8891935667620843985">Mund t'i hapësh automatikisht lidhjet në Chrome duke e bërë atë aplikacionin e parazgjedhur të shfletuesit.</translation>
 <translation id="8897749957032330183">Fjalëkalimet ruhen në "Menaxherin e fjalëkalimeve të Google" në këtë pajisje.</translation>
 <translation id="8949681853939555434">Caktoje Chrome si shfletuesin tënd të parazgjedhur</translation>
 <translation id="9068336935206019333">Hape në modalitetin "e fshehtë" në Chrome</translation>
@@ -307,6 +304,7 @@ Të dhënat e tua janë enkriptuar me frazën tënde të kalimit më <ph name="T
 <translation id="9112744793181547300">Të caktohet Chrome si parazgjedhje?</translation>
 <translation id="9122931302567044771">Kjo do të thotë që Chrome do kërkojë sajtin në desktop çdo herë.</translation>
 <translation id="9181628561061032322">Hap skedat e fundit në Chrome.</translation>
+<translation id="9194404253580584015">Një furnizim i personalizuar i krijuar për ty nga Google.</translation>
 <translation id="953008885340860025">Ke dalë nga Chrome</translation>
 <translation id="97300214378190234">Përdor Chrome sa herë që troket te lidhjet në aplikacione të tjera.</translation>
 </translationbundle>

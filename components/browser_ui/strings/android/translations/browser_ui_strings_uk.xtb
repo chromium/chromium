@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">Вимкнути звук на сайтах, які відтворюють його</translation>
 <translation id="3602290021589620013">Попередній перегляд</translation>
 <translation id="3628308229821498208">Рекомендовані пошукові запити</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> сайт у групі сайту-власника <ph name="RWS_OWNER" />, який може переглядати ваші дії в групі}one{<ph name="RWS_MEMBERS_COUNT" /> сайт у групі сайту-власника <ph name="RWS_OWNER" />, які можуть переглядати ваші дії в групі}few{<ph name="RWS_MEMBERS_COUNT" /> сайти в групі сайту-власника <ph name="RWS_OWNER" />, які можуть переглядати ваші дії в групі}many{<ph name="RWS_MEMBERS_COUNT" /> сайтів у групі сайту-власника <ph name="RWS_OWNER" />, які можуть переглядати ваші дії в групі}other{<ph name="RWS_MEMBERS_COUNT" /> сайту в групі сайту-власника <ph name="RWS_OWNER" />, які можуть переглядати ваші дії в групі}}</translation>
 <translation id="3697164069658504920">Якщо цей параметр увімкнено, сайти можуть запитувати дозвіл використовувати пристрої USB. Якщо його вимкнено, сайти не можуть використовувати пристрої USB.</translation>
 <translation id="3707034683772193706">Сайт, який ви відвідуєте, може зберігати в Chrome невелику кількість інформації, яка підтверджує, що ви не бот</translation>
 <translation id="3721953990244350188">Закрити й показати наступну доступну дію</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">Надіслати</translation>
 <translation id="5001526427543320409">Сторонні файли cookie</translation>
 <translation id="5007392906805964215">Переглянути</translation>
+<translation id="5014182796621173645">Ви відвідали цей сайт <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Дозволити</translation>
 <translation id="5048398596102334565">Надати сайтам доступ до датчиків руху (рекомендовано)</translation>
 <translation id="5050380848339752099">Цей сайт збирається надіслати інформацію зовнішньому додатку, поки ви в режимі анонімного перегляду.</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">Показати більше</translation>
 <translation id="6561560012278703671">Показувати лише значок повідомлення (блокувати сповіщення)</translation>
 <translation id="6593061639179217415">Версія для комп’ютера</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Файли cookie дозволено для <ph name="RWS_MEMBERS_COUNT" /> сайту в групі сайту-власника <ph name="RWS_OWNER" />}one{Файли cookie дозволено для <ph name="RWS_MEMBERS_COUNT" /> сайту в групі сайту-власника <ph name="RWS_OWNER" />}few{Файли cookie дозволено для <ph name="RWS_MEMBERS_COUNT" /> сайтів у групі сайту-власника <ph name="RWS_OWNER" />}many{Файли cookie дозволено для <ph name="RWS_MEMBERS_COUNT" /> сайтів у групі сайту-власника <ph name="RWS_OWNER" />}other{Файли cookie дозволено для <ph name="RWS_MEMBERS_COUNT" /> сайту в групі сайту-власника <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Захищений контент</translation>
 <translation id="662080504995468778">Залишитися</translation>
 <translation id="6653342741369270081">Щоб вийти з повноекранного режиму, натисніть кнопку "Назад".</translation>
+<translation id="6683865262523156564">Цей сайт належить до групи, учасники якої можуть бачити ваші дії. Групу визначив сайт-власник <ph name="RWS_OWNER" />.</translation>
 <translation id="6689172468748959065">Фотографії профілів</translation>
 <translation id="6697925417670533197">Активні завантаження</translation>
 <translation id="6722828510648505498">Блокувати підказки щодо входу від сервісів ідентифікації</translation>

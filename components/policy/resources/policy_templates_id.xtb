@@ -371,6 +371,7 @@ diinstal.</translation>
 <translation id="1257550411839719984">Setel direktori download default</translation>
 <translation id="1262993197422487260">Jangan perlihatkan tombol tampilkan sandi pada layar login dan layar kunci</translation>
 <translation id="1265053460044691532">Batasi waktu bagi pengguna yang diautentikasi melalui SAML untuk dapat masuk saat offline.</translation>
+<translation id="1265076559723566171">Mengontrol setelan untuk pengguna EDU</translation>
 <translation id="1271811620059192171">Aktifkan grup atom kebijakan</translation>
 <translation id="127264587838521316">Mengaktifkan permintaan penginstalan ekstensi <ph name="PRODUCT_NAME" /></translation>
 <translation id="1272798957154751008">Mengaktifkan migrasi perangkat Chromad ke pengelolaan cloud</translation>
@@ -469,6 +470,27 @@ diupgrade ke HTTPS oleh fitur ini.</translation>
 <translation id="1348603614848418219">Nonaktifkan migrasi perangkat yang dikelola <ph name="MS_AD_NAME" /> ke pengelolaan cloud.</translation>
 <translation id="1352799151662469739">Durasi waktu tanpa input pengguna sebelum layar terkunci saat menggunakan daya AC, dalam milidetik.</translation>
 <translation id="1353416417709895349">Nonaktifkan pemeriksaan intersepsi DNS dan infobar "Mungkin maksud Anda http://intranetsite/".</translation>
+<translation id="1353910503649343481">Menyetel kebijakan ini akan mengonfigurasi setelan proxy untuk Chrome dan aplikasi ARC, yang mengabaikan semua opsi terkait proxy yang ditentukan dari command line.
+
+       Jika kebijakan ini tidak disetel, pengguna dapat memilih setelan proxy-nya.
+
+       Jika kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" /> disetel, kolom berikut akan disetujui:
+         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, yang memungkinkan Anda menentukan server proxy yang digunakan Chrome dan mencegah pengguna mengubah setelan proxy
+         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, URL ke file .pac proxy, atau skrip PAC yang dienkode sebagai URL data dengan application/x-ns-proxy-autoconfig jenis MIME
+         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />, yang mencegah stack jaringan beralih kembali ke koneksi langsung dengan skrip PAC yang tidak valid atau tidak tersedia
+         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, URL server proxy
+         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, daftar host yang proxy-nya akan diabaikan
+
+       Kolom <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> tidak digunakan lagi dan digantikan dengan kolom <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
+
+        Untuk <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, jika Anda memilih nilai:
+          * <ph name="PROXY_MODE_ENUM_DIRECT" />, proxy tidak akan pernah digunakan dan semua kolom lainnya akan diabaikan.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, proxy sistem akan digunakan dan semua kolom lainnya akan diabaikan.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, semua kolom lainnya akan diabaikan.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, kolom <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> dan <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> akan digunakan.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, kolom <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />, dan <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> akan digunakan.
+
+      Catatan: Untuk mengetahui contoh yang lebih mendetail, buka Project Chromium ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="1354280967938151061">Nonaktifkan ARC</translation>
 <translation id="1354424209129232709">Maksimum:</translation>
 <translation id="1355050231181289439"> Kebijakan ini mengontrol apakah pemetaan pintasan keyboard internasional yang ditingkatkan aktif.
@@ -841,6 +863,7 @@ Label khusus tidak akan diterjemahkan.</translation>
       Jika <ph name="IDLE_ACTION_FIELD_NAME" /> tidak disetel, <ph name="IDLE_ACTION_ENUM_SUSPEND" /> akan diambil.
 
       Catatan: Terdapat setelan terpisah untuk daya AC dan baterai.</translation>
+<translation id="1607734317623618500">Aplikasi web kios dapat digunakan secara offline</translation>
 <translation id="1608755754295374538">URL yang akan diberi akses ke perangkat perekam audio tanpa peringatan</translation>
 <translation id="1608901087213748889">Memicu tindakan saat komputer sedang tidak ada aktivitas.
 
@@ -939,6 +962,7 @@ Jika kebijakan ini tidak disetel, <ph name="PRODUCT_OS_NAME" /> dapat memilih ha
 <translation id="165769015320654523">Otomatis memberikan izin ke situs ini untuk terhubung ke perangkat HID dengan ID produk dan vendor tertentu.</translation>
 <translation id="1659406551862245683">Perilaku pengubahan ukuran keyboard virtual default diubah untuk mengubah ukuran area pandang tata letak</translation>
 <translation id="166427968280387991">Server proxy</translation>
+<translation id="1666001345366986837">Setelan untuk fitur Latar Belakang VC AI Generatif</translation>
 <translation id="1670638264428789878">Aktifkan Set Situs Terkait</translation>
 <translation id="1671405606278443620">Setelan untuk Penelusuran Histori yang didukung AI</translation>
 <translation id="1673097259557436886">Selalu beri tahu situs bahwa tidak ada metode pembayaran yang disimpan</translation>
@@ -968,27 +992,6 @@ Jika kebijakan disetel ke Salah (False) atau tidak disetel, tidak ada peristiwa 
       Kebijakan ini memungkinkan penentuan resolusi tertentu yang akan digunakan saat meraster PDF untuk pencetakan.
 
       Jika kebijakan ini disetel ke nol atau tidak disetel sama sekali, resolusi default sistem akan digunakan selama rasterisasi gambar halaman.</translation>
-<translation id="1700458869527146675">Menyetel kebijakan akan mengonfigurasi setelan proxy untuk Chrome dan aplikasi ARC, yang mengabaikan semua opsi terkait proxy yang ditentukan dari command line.
-
-       Jika kebijakan tidak disetel, pengguna dapat memilih setelan proxy mereka.
-
-       Menyetel kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" /> akan menyetujui kolom berikut:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, yang memungkinkan Anda menentukan server proxy yang digunakan oleh Chrome dan mencegah pengguna mengubah setelan proxy
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, URL ke file .pac proxy
-         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />, yang mencegah stack jaringan kembali ke koneksi langsung dengan skrip PAC yang tidak valid atau tidak tersedia
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, URL server proxy
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, daftar host proxy yang diabaikan
-
-       Kolom <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> tidak digunakan lagi dan digantikan dengan kolom <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
-
-        Untuk <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, jika Anda memilih nilai:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, proxy tidak akan pernah digunakan dan semua kolom lainnya akan diabaikan.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, proxy sistem akan digunakan dan semua kolom lainnya akan diabaikan.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, semua kolom lainnya akan diabaikan.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, kolom <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> dan <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> akan digunakan.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, kolom <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />, dan <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> akan digunakan.
-
-      Catatan: Untuk contoh yang lebih mendetail, buka Project Chromium ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="1700811900332333712">Izinkan perangkat untuk meminta powerwash</translation>
 <translation id="1705215165572785706">Perlakukan tombol baris atas sebagai tombol media, tetapi izinkan pengguna mengubahnya</translation>
 <translation id="1708496595873025510">Setel batasan pada pengambilan bibit Varietas</translation>
@@ -1187,6 +1190,7 @@ Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pengguna mungkin akan
 Kebijakan ini tidak berpengaruh jika disetel di tingkat perangkat.</translation>
 <translation id="1837165432382702436">Tinggi halaman dalam mikrometer.</translation>
 <translation id="1838910874018595451">Konfigurasi yang diisi otomatis untuk tiket Kerberos</translation>
+<translation id="1839042185432919430">Mengizinkan aplikasi web kios menampilkan perintah jaringan saat peluncuran aplikasi jika perangkat sedang offline</translation>
 <translation id="1843102210803941014">Hanya mengaktifkan cookie dan data penting di penelusuran</translation>
 <translation id="1843117931376765605">Segarkan peringkat untuk kebijakan pengguna</translation>
 <translation id="1844620919405873871">Mengonfigurasi kebijakan terkait buka kunci cepat.</translation>
@@ -2729,6 +2733,7 @@ Kebijakan <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> leb
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Namun, perlu diperhatikan bahwa pola "*", yang cocok dengan URL apa pun, tidak didukung oleh kebijakan ini.</translation>
 <translation id="2979696534869541158">Paksa implementasi lama</translation>
+<translation id="2983209019593449150">Tanda tangan kode ad-hoc untuk shim Progressive Web App dapat digunakan bergantung pada proses peluncuran fitur.</translation>
 <translation id="2985927503455169394">Gunakan mode default pengalaman aktivasi Asisten</translation>
 <translation id="2987155890997901449">Aktifkan ARC</translation>
 <translation id="2987227569419001736">Mengontrol penggunaan API Bluetooth Web</translation>
@@ -3110,6 +3115,13 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
 
       Situs yang dikonfigurasi akan otomatis terbuka di browser selain <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3252724033247471310">Mengizinkan tangkapan Tab Asal yang Sama berdasarkan asal berikut</translation>
+<translation id="325374928725737694">Jika kebijakan ini disetel ke nonaktif, hal ini menunjukkan bahwa aplikasi web kios tidak dapat berfungsi secara offline. Perintah jaringan akan ditampilkan saat sesi kios dimulai hanya jika perangkat sedang offline. Hal ini akan memastikan bahwa perangkat dalam keadaan online sebelum aplikasi berhasil diluncurkan.
+
+Perintah jaringan ini mungkin tidak ditampilkan jika aplikasi disetel ke peluncuran otomatis dan <ph name="PROMPT_POLICY_NAME" /> (<ph name="PROMPT_POLICY_URL" />) dinonaktifkan.
+
+Kebijakan ini tidak berpengaruh pada Aplikasi Chrome atau aplikasi Web yang memiliki URL instal yang melakukan pengalihan lintas origin ke aplikasi Web lain (misalnya, jika URL instal aplikasi adalah <ph name="APP_INSTALL_URL" />, tetapi, saat dimuat, URL tersebut mengalihkan ke Aplikasi Web lain, yaitu <ph name="APP_REDIRECTED_URL" />).
+
+Jika kebijakan ini disetel ke benar atau tidak disetel, aplikasi web akan diluncurkan meskipun perangkat sedang offline.</translation>
 <translation id="3255624750680556186">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat akan dapat memicu powerwash.
 
       Jika kebijakan disetel ke Nonaktif, perangkat tidak akan dapat memicu powerwash. Meski demikian, powerwash masih dapat terjadi jika <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> disetel ke nilai yang mengizinkan update firmware TPM, tetapi firmware belum diupdate.</translation>
@@ -3585,6 +3597,7 @@ Jika kebijakan ini disetel ke Salah (False), informasi versi tidak akan dikumpul
 Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> untuk <ph name="PRODUCT_NAME" />.
 Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3644735978203799620">Mengaktifkan pemilihan otomatis untuk multi-screenshot</translation>
+<translation id="3645639974927907813">Penandatanganan kode ad-hoc untuk shim Progressive Web App</translation>
 <translation id="3646859102161347133">Menyetel jenis lup</translation>
 <translation id="3647212518036289905">Menyetel kebijakan akan menentukan library GSSAPI mana yang akan digunakan untuk autentikasi HTTP. Setel kebijakan ke nama library atau jalur lengkap.
 
@@ -3666,6 +3679,7 @@ Jika <ph name="PRODUCT_NAME" /> tidak ditutup dengan benar (misalnya, browser at
 
           Kebijakan ini bersifat sementara dan akan dihapus di <ph name="PRODUCT_NAME" /> 107. Batas waktu ini dapat diperpanjang jika diperlukan di antara perusahaan.
           </translation>
+<translation id="3677660004554019617">Jangan izinkan Latar Belakang VC AI Generatif</translation>
 <translation id="3678069907945250643">Izinkan akses Google Foto dari aplikasi personalisasi</translation>
 <translation id="3680529017993214255">Aktifkan fitur dan kirim data untuk membantu melatih model AI</translation>
 <translation id="3685979383016152590">Menyetel kebijakan akan menentukan kebijakan akses yang berlaku untuk konfigurasi printer massal sehingga akan mengontrol printer mana dari <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> yang akan tersedia bagi pengguna.
@@ -3687,6 +3701,19 @@ Jika <ph name="PRODUCT_NAME" /> tidak ditutup dengan benar (misalnya, browser at
 <translation id="3701121231485832347">Mengontrol setelan khusus perangkat <ph name="PRODUCT_OS_NAME" />.yang dikelola <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Pengesahan jarak jauh</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Kolom 1 baris sudah tidak digunakan lagi dan akan dihapus di masa mendatang. Mulai gunakan kotak teks multibaris di bawah.)</translation>
+<translation id="3705648857103435170">Kebijakan ini mengaktifkan aplikasi Graduation untuk pengguna terkelola. Aplikasi Graduation membantu pengguna mentransfer data mereka dari akun terkelola ke akun konsumen.
+
+    Jika <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> disetel ke <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, aplikasi Graduation akan ditampilkan pada dan di antara tanggal mulai dan tanggal akhir sesuai dengan waktu setempat.
+
+    Jika <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> disetel ke <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> atau tidak disetel, aplikasi tidak akan ditampilkan.
+
+    Jika <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> tidak disetel, aplikasi akan ditampilkan hingga tanggal akhir.
+
+    Jika <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" /> tidak disetel, aplikasi akan ditampilkan tanpa batas waktu sejak tanggal mulai.
+
+    Jika <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> dan <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" /> tidak disetel, aplikasi akan ditampilkan tanpa batas waktu. Jika tanggal mulai dan akhir tidak valid, aplikasi Graduation tidak akan ditampilkan. Hal ini mencakup jika tanggal yang diberikan tidak ada atau tanggal akhir jatuh sebelum tanggal mulai.
+
+    Transfer data dengan Takeout juga harus diaktifkan agar aplikasi Graduation berfungsi dengan benar. Lihat https://support.google.com/a/answer/6364687 untuk melihat informasi tambahan.</translation>
 <translation id="3711561721191203926">Jika kebijakan ini disetel ke Aktif, permintaan utama akan diblokir setiap kali peringatan seharusnya
 ditampilkan di <ph name="DEV_TOOLS_NAME" /> karena pemeriksaan <ph name="PRIVATE_NETWORK_ACCESS" /> gagal.
 
@@ -3849,6 +3876,7 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 
       Pengguna tidak dapat menghapus pengendali protokol yang didaftarkan oleh kebijakan. Namun, dengan menginstal pengendali default baru, pengguna dapat mengubah pengendali protokol yang diinstal oleh kebijakan.</translation>
 <translation id="3842619997238271109">Jangan izinkan host akses jarak jauh menggunakan autentikasi PIN dan penyambungan saat menerima koneksi klien</translation>
+<translation id="3845318141474759319">Mengizinkan Wallpaper AI Generatif tanpa meningkatkan kualitas model AI</translation>
 <translation id="3851443303439635700">Mengontrol batas bertingkat sebelum fungsi setTimeout() JavaScript mulai dibatasi</translation>
 <translation id="3858658082795336534">Mode dupleks pencetakan default</translation>
 <translation id="3859780406608282662">Tambahkan parameter untuk mengambil sumber Variasi di <ph name="PRODUCT_OS_NAME" />.
@@ -4383,6 +4411,7 @@ Catatan: Jika diblokir, URL chrome://* dan chrome-untrusted://* internal dapat m
       Menyetel kebijakan ini ke salah (false) akan menyebabkan resolusi DNS sistem (getaddrinfo()) berjalan di proses jaringan, bukan proses browser. Hal ini dapat memaksa penonaktifan sandbox layanan jaringan, sehingga menurunkan keamanan <ph name="PRODUCT_NAME" />.
 
       Jika kebijakan ini tidak disetel, resolusi DNS sistem dapat berjalan di dalam layanan jaringan, di luar layanan jaringan, atau sebagian di dalam dan sebagian di luar layanan jaringan, bergantung pada konfigurasi sistem dan tombol fitur.</translation>
+<translation id="4232128469957872687">Setelan EDU</translation>
 <translation id="4234788818648224034">Daftar domain yang akan dikecualikan agar tidak di-resolve menggunakan DNS-over-HTTPS. Kebijakan ini diabaikan jika mode DNS aman disetel ke nonaktif (selalu gunakan DNS teks biasa).
 
 Jika <ph name="DOH_TEMPLATES_POLICY_NAME" /> juga ditetapkan, domain yang lebih spesifik akan dipilih. Kekhususan mengacu pada jumlah titik ('.') dalam domain. Jika domain cocok dengan kedua kebijakan, gunakan DNS-over-HTTPS untuk domain secara default.
@@ -4591,6 +4620,25 @@ Jika kebijakan ini tidak disetel, sintaksis lama yang sudah tidak digunakan lagi
           Jika kebijakan ini disetel ke benar (true), WebSQL dalam konteks yang tidak aman akan tersedia.
           Jika kebijakan ini disetel ke salah (false) atau tidak disetel, WebSQL dalam konteks yang tidak aman akan tetap tersedia hingga M109, lalu tidak tersedia mulai M110.
 Hal ini dihapus di M112.</translation>
+<translation id="4401357095119743747">Daftar setelan layanan Chrome Enterprise Connectors yang akan diterapkan ke <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" /> Enterprise Connector, yang aktif saat file ditransfer dalam <ph name="PRODUCT_OS_NAME" />.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> digunakan untuk menentukan apakah konektor perlu mengirimkan file untuk dianalisis saat ditransfer antara sumber dan tujuan, serta jenis tag yang perlu disertakan dalam permintaan analisis untuk file tersebut. Tag yang sesuai dengan aturan 'enable' akan disertakan dalam permintaan analisis jika sumber dan tujuan cocok dengan aturan yang terkait dengan tag tersebut, selama tidak ada aturan 'disable' ber-tag sama yang cocok dengan transfer. Analisis dilakukan jika terdapat minimal 1 tag yang disertakan dalam permintaan. Aturan <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" /> ditentukan oleh daftar pasangan, dengan setiap pasangan berisi daftar sumber dan daftar tujuan. <ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> menentukan pada sistem file mana aturan harus diterapkan.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> akan mengidentifikasi penyedia layanan analisis yang sesuai dengan setelan.
+
+      Jika kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> disetel ke 1, <ph name="PRODUCT_OS_NAME" /> akan menunggu untuk mendapatkan respons dari layanan analisis sebelum mengizinkan transfer. Jika nilai berupa bilangan bulat lainnya, <ph name="PRODUCT_OS_NAME" /> akan langsung mengizinkan transfer.
+
+      Jika kolom <ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD" /> disetel ke blokir, <ph name="PRODUCT_OS_NAME" /> tidak akan mengizinkan pengguna mentransfer file jika terjadi error saat berkomunikasi dengan layanan analisis. Jika nilai berupa nilai lainnya, <ph name="PRODUCT_OS_NAME" /> akan mengizinkan transfer file jika terjadi error saat berkomunikasi dengan layanan analisis.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> mengontrol apakah <ph name="PRODUCT_OS_NAME" /> akan memblokir atau mengizinkan file yang dilindungi sandi.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> mengontrol apakah <ph name="PRODUCT_OS_NAME" /> akan memblokir atau mengizinkan file yang berukuran terlalu besar untuk dianalisis.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> digunakan untuk menentukan tag mana yang diperlukan saat konektor mewajibkan pengguna memasukkan justifikasi agar dapat mengabaikan pemindaian yang menghasilkan peringatan yang dapat diabaikan. Jika kolom tidak disetel, tidak perlu justifikasi.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> digunakan untuk mengonfigurasi pesan yang akan ditampilkan kepada pengguna, yaitu saat peringatan ditampilkan setelah hasil pemindaian menunjukkan ada masalah. Kolom pesan berisi teks yang akan ditampilkan kepada pengguna dan tidak boleh melebihi 200 karakter. Kolom <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" /> berisi URL yang disediakan oleh admin. Pengguna dapat mengklik URL untuk mengetahui lebih lanjut penyebab diblokirnya tindakan tersebut. Kolom <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> bersifat opsional dan berisi bahasa pesan. Kolom <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> yang kosong atau nilai 'default' menunjukkan pesan yang akan digunakan saat bahasa pengguna tidak memiliki pesan. Kolom tag menentukan jenis pemindaian yang akan menampilkan pesan. Daftar <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" /> dapat memiliki nol atau beberapa entri, dengan tiap entri perlu memiliki kolom message dan tag yang tidak kosong.
+
+      Kebijakan ini memerlukan penyiapan tambahan agar dapat berlaku. Buka https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting untuk informasi selengkapnya.</translation>
 <translation id="4402887080007986374">Versi Persyaratan Layanan akun sekolah yang valid</translation>
 <translation id="4408428864159735559">Daftar berbagi file jaringan yang telah dikonfigurasikan sebelumnya.</translation>
 <translation id="4410236409016356088">Aktifkan pembatasan bandwidth jaringan</translation>
@@ -4877,6 +4925,7 @@ API ini.</translation>
 <translation id="4615892138881859957">Mengontrol pintasan yang digunakan untuk memicu tombol "six pack" Insert</translation>
 <translation id="4617338332148204752">Lewati pemeriksaan tag meta pada <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Fitur NewBaseUrlInheritanceBehavior tersedia</translation>
+<translation id="4623516906510429751">Menggunakan tanda tangan kode ad-hoc untuk shim Progressive Web App.</translation>
 <translation id="4624417808625504735">Memblokir JavaScript agar tidak menggunakan JIT di situs ini</translation>
 <translation id="46321462262887935">Perlakukan tombol baris atas sebagai tombol fungsi, tetapi izinkan pengguna mengubahnya</translation>
 <translation id="4632343302005518762">Izinkan <ph name="PRODUCT_FRAME_NAME" /> menangani jenis konten yang tercantum</translation>
@@ -6960,6 +7009,7 @@ Jika kebijakan tidak disetel, nilai default global akan digunakan untuk semua si
 <translation id="6207607210601267301">Nonaktifkan autentikasi tanpa PIN untuk host akses jarak jauh</translation>
 <translation id="6208896993204286313">Melaporkan Informasi Kebijakan <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Laporkan OS dan Informasi Versi <ph name="PRODUCT_NAME" /></translation>
+<translation id="6213560283141495655">Tidak menggunakan tanda tangan kode ad-hoc untuk shim Progressive Web App.</translation>
 <translation id="6220835555850906733">Jika kebijakan disetel ke Aktif atau tidak disetel, semua output audio yang didukung di perangkat pengguna akan diizinkan.
 
       Jika kebijakan disetel ke Nonaktif, output audio pengguna tidak akan diizinkan saat pengguna login.
@@ -7224,6 +7274,14 @@ Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid (se
 <translation id="632248221998836641">Ganti pemeriksaan keterjangkauan IPv6. Selalu buat kueri data AAAA untuk resolusi nama host.</translation>
 <translation id="6324274808543634377">Setelan F11/F12 menggunakan pintasan yang berisi tombol pengubah alt</translation>
 <translation id="6327643515544933974">Setelan Web USB</translation>
+<translation id="6328272502368270191">Kebijakan ini mengaktifkan atau menonaktifkan fitur Wallpaper AI Generatif untuk <ph name="PRODUCT_OS_NAME" />.
+Nilai 1 adalah nilai defaultnya.
+
+1 = Mengizinkan Wallpaper AI Generatif tanpa meningkatkan model AI. Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> dan akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Tidak mengizinkan Wallpaper AI Generatif.
+
+Untuk informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6330882599388782338">Izinkan situs mengakses sensor</translation>
 <translation id="6331167725613770725">Perhatikan bahwa kebijakan ini sudah tidak digunakan lagi dan akan dihapus di <ph name="PRODUCT_OS_NAME" /> versi 85. Sebagai gantinya, gunakan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
@@ -7666,6 +7724,7 @@ Jika tidak disetel, interval default 15 menit akan berlaku.</translation>
 
       Jika kebijakan ini tidak ditetapkan, pengguna dapat menggunakan plugin mana pun yang diinstal di sistem kecuali plugin yang tidak kompatibel saat dilakukan hard code, usang, atau berbahaya.</translation>
 <translation id="6571055160227165318">Izinkan WebSQL diaktifkan oleh tanda Chrome.</translation>
+<translation id="6574216414580419109">Setelan untuk fitur Wallpaper AI Generatif</translation>
 <translation id="6574903167639386816">Hapus data profil di disk saat sesi pengguna berakhir</translation>
 <translation id="6575403002861093126">Jika kebijakan disetel, durasi cache Objek Kebijakan Grup (GPO) akan ditetapkan dalam hitungan jam. Durasi GPO maksimum dapat digunakan kembali sebelum didownload ulang. Daripada mendownload ulang GPO pada setiap pengambilan kebijakan, sistem akan menggunakan kembali GPO yang di-cache selama versinya tidak berubah.
 
@@ -8211,6 +8270,7 @@ Kebijakan ini akan dihapus pada masa mendatang, setelah fitur driver cetak di lu
 
       Jika kebijakan ini tidak disetel, HTTP/0.9 akan dinonaktifkan di port non-default.</translation>
 <translation id="6969332115615661188">Nonaktifkan input video</translation>
+<translation id="6969949359984470271">Aplikasi web kios tidak dapat digunakan secara offline</translation>
 <translation id="6971579036359007697">Mengontrol migrasi file lokal ke cloud.
 Hanya berlaku untuk pengguna SkyVault, yaitu ketika LocalUserFilesAllowed di setel ke salah (false) dan jika diabaikan.
 
@@ -8606,23 +8666,6 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 * Merge akan menggabungkan kebijakan pengguna di GPO pengguna dengan yang ada di GPO komputer. GPO komputer akan diprioritaskan.
 
 * Replace akan menggantikan kebijakan pengguna di GPO pengguna dengan yang ada di GPO komputer. GPO pengguna akan diabaikan.</translation>
-<translation id="7258250780552783197">Daftar setelan layanan Chrome Enterprise Connectors yang akan diterapkan ke <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" /> Enterprise Connector, yang aktif saat file ditransfer dalam <ph name="PRODUCT_OS_NAME" />.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> digunakan untuk menentukan apakah konektor perlu mengirimkan file untuk dianalisis saat ditransfer antara sumber dan tujuan, serta jenis tag yang perlu disertakan dalam permintaan analisis untuk file tersebut. Tag yang sesuai dengan aturan 'enable' akan disertakan dalam permintaan analisis jika sumber dan tujuan cocok dengan aturan yang terkait dengan tag tersebut, selama tidak ada aturan 'disable' ber-tag sama yang cocok dengan transfer. Analisis dilakukan jika terdapat minimal 1 tag yang disertakan dalam permintaan. Aturan <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" /> ditentukan oleh daftar pasangan, dengan setiap pasangan berisi daftar sumber dan daftar tujuan. <ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> menentukan pada sistem file mana aturan harus diterapkan.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> akan mengidentifikasi penyedia layanan analisis yang sesuai dengan setelan.
-
-      Jika kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> disetel ke 1, <ph name="PRODUCT_OS_NAME" /> akan menunggu untuk mendapatkan respons dari layanan analisis sebelum mengizinkan transfer. Jika nilai berupa bilangan bulat lainnya, <ph name="PRODUCT_OS_NAME" /> akan langsung mengizinkan transfer.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> mengontrol apakah <ph name="PRODUCT_OS_NAME" /> akan memblokir atau mengizinkan file yang dilindungi sandi.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> mengontrol apakah <ph name="PRODUCT_OS_NAME" /> akan memblokir atau mengizinkan file yang berukuran terlalu besar untuk dianalisis.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> digunakan untuk menentukan tag mana yang diperlukan saat konektor mewajibkan pengguna memasukkan justifikasi agar dapat mengabaikan pemindaian yang menghasilkan peringatan yang dapat diabaikan. Jika kolom tidak disetel, tidak perlu justifikasi.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> digunakan untuk mengonfigurasi pesan yang akan ditampilkan kepada pengguna, yaitu saat peringatan dimunculkan setelah hasil pemindaian menunjukkan ada masalah. Kolom message berisi teks yang akan ditampilkan kepada pengguna dan tidak boleh melebihi 200 karakter. Kolom <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" /> berisi URL yang disediakan oleh admin. Pengguna dapat mengklik URL untuk mengetahui lebih lanjut penyebab diblokirnya tindakan tersebut. Kolom <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> bersifat opsional dan berisi bahasa pesan. Kolom <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> yang kosong atau nilai 'default' menunjukkan pesan yang akan digunakan saat bahasa pengguna tidak memiliki pesan. Kolom tag menentukan jenis pemindaian yang akan menampilkan pesan. Daftar <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" /> dapat memiliki nol atau beberapa entri, dengan tiap entri perlu memiliki kolom message dan tag yang tidak kosong.
-
-      Kebijakan ini memerlukan penyiapan tambahan agar dapat berlaku. Buka https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting untuk informasi selengkapnya.</translation>
 <translation id="7258823566580374486">Mengaktifkan pemberian tirai hosting akses jarak jauh</translation>
 <translation id="7260204423892780600">Mengontrol setelan untuk Asisten Google.</translation>
 <translation id="7261140115553020049">Mengaktifkan Layanan Ruang Kerja Mengambang</translation>
@@ -8874,6 +8917,14 @@ baca lisan akan diaktifkan.</translation>
 <translation id="748292668225669178">Mengonfigurasi pemasangan <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="7485481791539008776">Aturan pemilihan printer default</translation>
 <translation id="7486205887492534734">Meminta pengguna memilih saat beberapa sertifikat cocok pada layar login</translation>
+<translation id="7487148156560435405">Kebijakan ini mengaktifkan atau menonaktifkan fitur Latar Belakang VC AI Generatif untuk <ph name="PRODUCT_OS_NAME" />.
+Nilai 1 adalah nilai defaultnya.
+
+1 = Mengizinkan Latar Belakang VC AI Generatif tanpa meningkatkan kualitas model AI. Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> dan akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Tidak mengizinkan Latar Belakang VC AI Generatif.
+
+Untuk informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="748873163367340515">Hanya gunakan cookie dan data penting di penelusuran.</translation>
 <translation id="7489169777107143496">Nonaktifkan pemindaian mendalam download Safe Browsing</translation>
 <translation id="7489661071474025727">Menentukan apakah layanan pemulihan akun diaktifkan untuk pengguna Anda di perangkat <ph name="PRODUCT_OS_NAME" />.
@@ -8930,6 +8981,11 @@ Jika kebijakan ini disetel ke benar (true), <ph name="PRODUCT_OS_NAME" /> akan b
 <translation id="7519218194072744342">URL pengendali protokol.</translation>
 <translation id="7519251620064708155">Izinkan pembuatan kunci di situs ini</translation>
 <translation id="7521864460386999758">Cegah kode pihak ketiga dimasukkan ke Chrome</translation>
+<translation id="7522636035703637613">Jika kebijakan disetel ke Aktif atau tidak disetel, penggunaan tanda tangan ad-hoc akan diaktifkan untuk aplikasi yang dibuat saat menginstal Progressive Web Application (PWA). Hal ini memastikan bahwa setiap aplikasi yang diinstal memiliki identitas unik untuk komponen sistem <ph name="MAC_OS_NAME" />.
+
+Jika kebijakan disetel ke Nonaktif, setiap aplikasi yang dibuat saat menginstal Progressive Web Application (PWA) akan memiliki identitas yang sama. Hal ini dapat mengganggu fungsi <ph name="MAC_OS_NAME" />.
+
+Nonaktifkan kebijakan ini hanya jika Anda menggunakan solusi keamanan endpoint yang memblokir aplikasi dengan tanda tangan ad-hoc.</translation>
 <translation id="7524983116584990314">Hapus Isi Otomatis</translation>
 <translation id="7529144158022474049">Faktor penyebaran pembaruan otomatis</translation>
 <translation id="7529332889403151669">Menentukan apakah peringatan layar penuh harus ditampilkan saat perangkat kembali dari mode tidur atau layar gelap.
@@ -8993,6 +9049,7 @@ Jika kebijakan ini dikosongkan, tidak akan ada pengecualian untuk <ph name="FLOA
 
       Jika kebijakan ini disetel ke aktif atau tidak disetel, konversi unit Jawaban Instan akan diaktifkan.
       Jika kebijakan ini disetel ke nonaktif, konversi unit Jawaban Instan akan dinonaktifkan.</translation>
+<translation id="7584363090329234690">Mengizinkan Latar Belakang VC AI Generatif tanpa meningkatkan kualitas model AI</translation>
 <translation id="7585312329612243723">Mengaktifkan alur pengesahan <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> untuk daftar URL di Browser Terkelola</translation>
 <translation id="7587345076013230465">Minta pengguna memilih sertifikat klien setiap kali kebijakan pemilihan otomatis cocok dengan beberapa sertifikat di layar login</translation>
 <translation id="7587921466180902617">Aktifkan dogfood Screencast untuk pengguna Family Link</translation>
@@ -9563,6 +9620,7 @@ juga aman.</translation>
 <translation id="802776363472387903">Hash SHA-256 gambar <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Aktifkan penyedia penelusuran default dan izinkan pengguna mengubah daftar penyedia penelusuran</translation>
 <translation id="8029201909194194377">Durasi sesi maksimum yang diizinkan untuk koneksi akses jarak jauh</translation>
+<translation id="8031651557770840616">Tidak mengizinkan Wallpaper AI Generatif</translation>
 <translation id="8033450879690820321">Kebijakan ini menyediakan pilihan penonaktifan sementara untuk perilaku scroller baru yang dapat difokuskan keyboard.
 
 Jika kebijakan ini disetel ke Aktif atau tidak disetel, scroller tanpa turunan yang dapat difokuskan secara default dapat difokuskan oleh keyboard. Selain itu, scroller dapat difokuskan dengan klik dan dapat difokuskan secara terprogram secara default.
@@ -11179,6 +11237,7 @@ Untuk informasi selengkapnya tentang penanganan data untuk fitur AI generatif, l
 
       Jika kebijakan ini disetel ke benar (true) atau tidak dikonfigurasi, semua pengguna akan dapat login.</translation>
 <translation id="966425658642788645">Terapkan perilaku default</translation>
+<translation id="970144760302377175">Mengonfigurasi saat alat Graduation <ph name="PRODUCT_OS_NAME" /> tersedia</translation>
 <translation id="971677226939413180">Opsi Cetak sebagai gambar tidak tersedia bagi pilihan pengguna.</translation>
 <translation id="974349541138387272">Menentukan template URI pada resolver DNS-over-HTTPS yang diinginkan</translation>
 <translation id="978658824596356870">Format jam 24 jam</translation>

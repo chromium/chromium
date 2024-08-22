@@ -81,7 +81,6 @@
 <translation id="2767464022270041271">Žiadne uložené heslá. Správca hesiel Google môže kontrolovať heslá, keď ich uložíte.</translation>
 <translation id="2869959624320573933">Prihláste sa do Chromu</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Ako Chrome uchováva vaše údaje v súkromí<ph name="END_LINK" /></translation>
-<translation id="2952581218264071393">1. Otvorte nastavenia Chromu</translation>
 <translation id="2957447865124070833">Vyberte <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Odhlasujete sa z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, takže údaje Chromu budú z tohto zariadenia odstránené. Vaše údaje zostanú vo vašom účte Google.</translation>
 <translation id="309672519329227863">Majte prístup k heslám Chromu a ďalšiemu obsahu v iných aplikáciách.</translation>
@@ -93,7 +92,6 @@
 <translation id="3340938510625667914">Akcie v Chrome</translation>
 <translation id="3345341804167540816">Používajte prehliadač Chrome kdekoľvek</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Dochádza k tomu, keď Chrome nepoužívate {THRESHOLD} minútu}few{Dochádza k tomu, keď Chrome nepoužívate {THRESHOLD} minúty}many{Dochádza k tomu, keď Chrome nepoužívate {THRESHOLD} minúty}other{Dochádza k tomu, keď Chrome nepoužívate {THRESHOLD} minút}}</translation>
-<translation id="3399930248910934354">Otvoriť nastavenia Chromu</translation>
 <translation id="344736123700721678">Získajte prístup k Chromu rýchlejšie z ponuky aplikácií na ploche</translation>
 <translation id="3472587960215700950">Chrome vám pomocou Máp Google poskytuje trasy a miestne informácie o rozpoznaných adresách.</translation>
 <translation id="3503014945441706099">Získajte Zlepšené bezpečné prehliadanie aj pre tento profil Chromu</translation>
@@ -211,6 +209,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 Ďalšie nastavenia, ktoré zlepšujú prostredie Chromu pomocou údajov, nájdete v <ph name="BEGIN_LINK" />službách Googlu<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Vyhľadávať hlasom v Chrome</translation>
 <translation id="6975725306479268850">Ak chcete využívať automatické dopĺňanie, vyberte si Chrome</translation>
+<translation id="6979238427560462592">Vlastný kanál, ktorý pre vás vytvoril Google. Vrátane správ, športu a počasia.</translation>
 <translation id="7004159181872656283">Vyhľadať vizuálne prvky v Chrome.</translation>
 <translation id="7056826488869329999">Otvorí a spustí kontrolu bezpečnosti v Chrome.</translation>
 <translation id="7059914902409643750">Upravte Chrome podľa seba</translation>
@@ -236,7 +235,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7394108421562933108">Mapy v Chrome</translation>
 <translation id="7400722733683201933">O prehliadači Google Chrome</translation>
 <translation id="7466693328838535498">Do poľa Miniaplikácie Vyhľadávanie zadajte Chrome</translation>
-<translation id="746684838091935575">3. Vyberte Chrome</translation>
 <translation id="7492574581995589075">Vaša organizácia vypla možnosť používať a ukladať údaje Chromu vo vašom účte Google. Nové záložky, heslá a ďalšie položky sa budú ukladať iba do tohto zariadenia.</translation>
 <translation id="7581063337314642333">Prejsť na mriežku kariet v Chrome</translation>
 <translation id="7642373780953416937">Dostávajte upozornenia na všetky problémy s ochranou súkromia alebo zabezpečením, ktoré pre vás Chrome automaticky zisťuje.</translation>
@@ -300,7 +298,6 @@ Vaše údaje boli zašifrované pomocou prístupovej frázy <ph name="TIME" />. 
 <translation id="8857676124663337448">Správcovi hesiel Google sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra.</translation>
 <translation id="8865415417596392024">Údaje Chromu vo vašom účte</translation>
 <translation id="8874688701962049679">Tipy, ako využívať Chrome naplno</translation>
-<translation id="8891935667620843985">Ak nastavíte Chrome ako predvolený prehliadač, budete v ňom môcť automaticky otvárať odkazy.</translation>
 <translation id="8897749957032330183">Heslá sa ukladajú do Správcu hesiel Google v tomto zariadení.</translation>
 <translation id="8949681853939555434">Nastavte si Chrome ako predvolený prehliadač</translation>
 <translation id="9068336935206019333">Otvoriť v Chrome v režime inkognito</translation>
@@ -308,6 +305,7 @@ Vaše údaje boli zašifrované pomocou prístupovej frázy <ph name="TIME" />. 
 <translation id="9112744793181547300">Chcete nastaviť Chrome ako predvolený prehliadač?</translation>
 <translation id="9122931302567044771">Znamená to, že Chrome bude zakaždým žiadať o verziu webu pre počítače.</translation>
 <translation id="9181628561061032322">Otvorí nedávne karty v Chrome.</translation>
+<translation id="9194404253580584015">Vlastný kanál, ktorý pre vás vytvoril Google.</translation>
 <translation id="953008885340860025">Chrome je odhlásený</translation>
 <translation id="97300214378190234">Chrome môžete kedykoľvek použiť klepnutím na odkazy v iných aplikáciách.</translation>
 </translationbundle>

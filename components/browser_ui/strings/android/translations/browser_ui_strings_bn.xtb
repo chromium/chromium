@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">সাউন্ড প্লে করা হয় যে সাইটগুলিতে সেগুলি মিউট করুন</translation>
 <translation id="3602290021589620013">প্রিভিউ</translation>
 <translation id="3628308229821498208">সাজেস্ট করা সার্চ</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" />-এর সাইটের গ্রুপে <ph name="RWS_MEMBERS_COUNT" />টি সাইট আছে যারা গ্রুপে আপনার অ্যাক্টিভিটি দেখতে পারে}one{<ph name="RWS_OWNER" />-এর সাইটের গ্রুপে <ph name="RWS_MEMBERS_COUNT" />টি সাইট আছে যারা গ্রুপে আপনার অ্যাক্টিভিটি দেখতে পারে}other{<ph name="RWS_OWNER" />-এর সাইটের গ্রুপে <ph name="RWS_MEMBERS_COUNT" />টি সাইট আছে যারা গ্রুপে আপনার অ্যাক্টিভিটি দেখতে পারে}}</translation>
 <translation id="3697164069658504920">চালু থাকলে, সাইট আপনার USB ডিভাইস ব্যবহার করার জন্য অনুমতি চাইতে পারে। চালু থাকলে, সাইট আপনার USB ডিভাইস ব্যবহার করতে পারে না।</translation>
 <translation id="3707034683772193706">আপনার দেখা সাইট Chrome-এর মাধ্যমে অল্প পরিমাণ তথ্য সেভ করতে পারে। আপনি যে আসলে বট নন এটি যাচাই করতেই তা করা হয়</translation>
 <translation id="3721953990244350188">এই অ্যাকশন বাতিল করে উপলভ্য পরবর্তী অ্যাকশন দেখুন</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">এর মাধ্যমে শেয়ার করুন</translation>
 <translation id="5001526427543320409">থার্ড-পার্টি কুকি</translation>
 <translation id="5007392906805964215">পর্যালোচনা করুন</translation>
+<translation id="5014182796621173645">আপনি <ph name="RECENCY" /> আগে দেখেছেন</translation>
 <translation id="5039804452771397117">অনুমতি দিন</translation>
 <translation id="5048398596102334565">সাইটকে মোশন সেন্সর অ্যাক্সেস করার অনুমতি দিন (সাজেস্ট করা হয়)</translation>
 <translation id="5050380848339752099">এই সাইট ছদ্মবেশী মোডের বাইরে একটি অ্যাপের সাথে তথ্য শেয়ার করতে চলেছে।</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">আরও দেখুন</translation>
 <translation id="6561560012278703671">আওয়াজ ছাড়া বিজ্ঞপ্তি (বিজ্ঞপ্তির ক্ষেত্রে আওয়াজ সহ প্রম্পট ব্লক করা হয়, যাতে কাজের সময় ব্যাঘাত না ঘটে)</translation>
 <translation id="6593061639179217415">ডেস্কটপ সাইট</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_OWNER" />-এর <ph name="RWS_MEMBERS_COUNT" />টি সাইটের জন্য কুকির অনুমতি আছে}one{<ph name="RWS_OWNER" />-এর <ph name="RWS_MEMBERS_COUNT" />টি সাইটের জন্য কুকির অনুমতি আছে}other{<ph name="RWS_OWNER" />-এর <ph name="RWS_MEMBERS_COUNT" />টি সাইটের জন্য কুকির অনুমতি আছে}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> জিবি</translation>
 <translation id="6612358246767739896">সুরক্ষিত কন্টেন্ট</translation>
 <translation id="662080504995468778">থাকুন</translation>
 <translation id="6653342741369270081">'ফুল-স্ক্রিন' মোড থেকে বেরিয়ে আসতে ফিরে যাওয়ার বোতামটি প্রেস করুন।</translation>
+<translation id="6683865262523156564">এই সাইটটি এমন গ্রুপে রয়েছে যা আপনার অ্যাক্টিভিটি দেখতে পাবে। গ্রুপটি <ph name="RWS_OWNER" /> দ্বারা সংজ্ঞায়িত</translation>
 <translation id="6689172468748959065">প্রোফাইল ফটো</translation>
 <translation id="6697925417670533197">ডাউনলোড করা হচ্ছে</translation>
 <translation id="6722828510648505498">পরিচয় পরিষেবা প্রদানকারী থেকে সাইন-ইন প্রম্পট ব্লক করুন।</translation>

@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Διατίθενται πλέον αποκλειστικά στοιχεία <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Κίνηση της Γης</translation>
 <translation id="1026212596705997935">Η συντόμευση χρησιμοποιείται για τη λειτουργία <ph name="CONFLICT_ACCEL_NAME" />. Πατήστε μια νέα συντόμευση. Για να αντικαταστήσετε την υπάρχουσα συντόμευση, πατήστε ξανά αυτή τη συντόμευση.</translation>
+<translation id="1030856839388844477">Επαναφορά χρήσης δεδομένων</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> νήματα, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Νέα διαθέσιμη λειτουργία. Χρησιμοποιήστε το πάνω βέλος για να μάθετε περισσότερα.</translation>
 <translation id="1049663189809099096">παστέλ κίτρινο</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Ασθενές σήμα</translation>
 <translation id="1300115153046603471">Το APN είναι τύπου προεπιλογής και <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Μετατροπή</translation>
 <translation id="1304014921944666344">Ημερομηνία δημιουργίας</translation>
 <translation id="1308754910631152188">Πραγματοποιείται ενημέρωση (ολοκληρώθηκε το <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> λεπτά</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">αλυκή</translation>
 <translation id="1367951781824006909">Επιλογή αρχείου</translation>
 <translation id="1371650399987522809">Σχόλια για την ταπετσαρία με την υποστήριξη του Google AI</translation>
+<translation id="1374385338586507108">Ορισμός</translation>
 <translation id="1387854245479784695">Αυτή είναι μια αθροιστική προβολή όλων των πυρήνων</translation>
 <translation id="1393206549145430405">κάστρο</translation>
 <translation id="1394661041439318933">Η μπαταρία θήκης της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Τρέχουσα</translation>
 <translation id="346539236881580388">Νέα λήψη</translation>
 <translation id="3484914941826596830">Κατά την ενημέρωση του υλικολογισμικού, μην αποσυνδέσετε αυτή την εξωτερική συσκευή και μην τερματίσετε τη λειτουργία του υπολογιστή. Μπορείτε να ελαχιστοποιήσετε αυτό το παράθυρο. Μπορεί να χρειαστούν λίγα λεπτά για αυτή την ενημέρωση και η εξωτερική συσκευή σας μπορεί να μην λειτουργεί αυτό το διάστημα.</translation>
-<translation id="3485555238092220889">ενέργεια προσβασιμότητας</translation>
 <translation id="3486220673238053218">ορισμός</translation>
 <translation id="3487866404496702283">Σχόλια για τη λειτουργία mahi</translation>
 <translation id="3488065109653206955">Μερικώς ενεργοποιημένο</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Εκτός υπηρεσίας</translation>
 <translation id="4570558255126759859">Να γίνει λήψη του μοντέλου Gemini για τη σύνοψη των εγγραφών;</translation>
 <translation id="4573777384450697571">Αποτυχία - Το πιστοποιητικό έληξε</translation>
+<translation id="4575450106703099687">επιλογές προσβασιμότητας</translation>
 <translation id="458794348635939462">Αποτυχία επίλυσης όλων των κεντρικών υπολογιστών.</translation>
 <translation id="4593212453765072419">Απαιτείται έλεγχος ταυτότητας του διακομιστή μεσολάβησης</translation>
 <translation id="4594021849294327751">Δημιουργία μεταγραφής</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> από <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Κουμπί επεξεργασίας για <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Ενημέρωση της συσκευής <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Έγινε επαναφορά της χρήσης δεδομένων</translation>
 <translation id="574392208103952083">Μέτριο</translation>
 <translation id="5757187557809630523">επόμενο κομμάτι</translation>
 <translation id="5760715441271661976">Κατάσταση πύλης</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Σίγαση</translation>
 <translation id="5784136236926853061">Υψηλός λανθάνων χρόνος HTTP</translation>
 <translation id="5790391387506209808">λάπις λάζουλι</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Δεν έχει αντιστοιχιστεί συντόμευση.</translation>
 <translation id="5826644637650799838">Σχετικά με το έργο τέχνης</translation>
 <translation id="5832805196449965646">Προσθήκη ατόμου</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Πλοήγηση σε κείμενο</translation>
 <translation id="680983167891198932">Κλειδί</translation>
 <translation id="6816797338148849397">Πληροφορίες που σχετίζονται με τη διαθέσιμη επιλογή σας. Χρησιμοποιήστε το πλήκτρο πάνω βέλους για πρόσβαση.</translation>
+<translation id="6831043979455480757">Μετάφραση</translation>
 <translation id="6853312040151791195">Ρυθμός εκφόρτισης</translation>
 <translation id="6862416241246624313">Τα σχόλια υποβλήθηκαν</translation>
 <translation id="6866732840889595464">μαργαρίτα</translation>
@@ -1551,6 +1557,7 @@
 <translation id="9087578468327036362">Υποβάλετε αναφορά για αυτό το ερώτημα.</translation>
 <translation id="9088306295921699330">Τρέχουσα χρήση</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Περισσότερες πληροφορίες για την ημερομηνία επαναφοράς</translation>
 <translation id="9100765901046053179">Σύνθετες ρυθμίσεις</translation>
 <translation id="910415269708673980">Ανανέωση εισιτηρίου για το <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Σάρωση σελίδας <ph name="PAGE_NUMBER" /></translation>

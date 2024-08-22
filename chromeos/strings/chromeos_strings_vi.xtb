@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">Tín hiệu yếu</translation>
 <translation id="1300115153046603471">APN thuộc loại mặc định và <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Chuyển đổi</translation>
 <translation id="1304014921944666344">Ngày tạo</translation>
 <translation id="1308754910631152188">Đang cập nhật (đã xong <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> phút</translation>
@@ -77,6 +78,7 @@
 <translation id="1343442362630695901">hồ muối</translation>
 <translation id="1367951781824006909">Chọn tệp</translation>
 <translation id="1371650399987522809">Phản hồi về hình nền dựa trên công nghệ AI của Google</translation>
+<translation id="1374385338586507108">Định nghĩa</translation>
 <translation id="1387854245479784695">Đây là số liệu tổng hợp của tất cả lõi</translation>
 <translation id="1393206549145430405">lâu đài</translation>
 <translation id="1394661041439318933">Hộp đựng còn <ph name="BATTERY_PERCENTAGE" />% pin.</translation>
@@ -463,7 +465,6 @@
 <translation id="346423161771747987">Cường độ dòng điện</translation>
 <translation id="346539236881580388">Chụp lại</translation>
 <translation id="3484914941826596830">Khi chương trình cơ sở đang cập nhật, đừng rút thiết bị bên ngoài này ra hay tắt máy tính. Bạn có thể thu nhỏ cửa sổ này. Quá trình cập nhật có thể mất vài phút và thiết bị bên ngoài của bạn có thể không hoạt động được trong thời gian này.</translation>
-<translation id="3485555238092220889">hành động hỗ trợ tiếp cận</translation>
 <translation id="3486220673238053218">định nghĩa</translation>
 <translation id="3487866404496702283">Phản hồi về tính năng mahi</translation>
 <translation id="3488065109653206955">Được kích hoạt một phần</translation>
@@ -672,6 +673,7 @@
 <translation id="4562494484721939086">Không có dịch vụ</translation>
 <translation id="4570558255126759859">Bạn muốn tải mô hình Gemini xuống để tóm tắt các bản ghi?</translation>
 <translation id="4573777384450697571">Không thành công – Chứng chỉ đã hết hạn</translation>
+<translation id="4575450106703099687">lựa chọn hỗ trợ tiếp cận</translation>
 <translation id="458794348635939462">Không phân giải được một số máy chủ</translation>
 <translation id="4593212453765072419">Yêu cầu xác thực proxy</translation>
 <translation id="4594021849294327751">Tạo bản chép lời</translation>
@@ -884,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Nút chỉnh sửa dành cho <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Cập nhật <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Đã đặt lại mức sử dụng dữ liệu</translation>
 <translation id="574392208103952083">Trung bình</translation>
 <translation id="5757187557809630523">bản nhạc tiếp theo</translation>
 <translation id="5760715441271661976">Trạng thái trang xác thực</translation>
@@ -893,6 +896,7 @@
 <translation id="57838592816432529">Tắt tiếng</translation>
 <translation id="5784136236926853061">Yêu cầu HTTP có độ trễ cao</translation>
 <translation id="5790391387506209808">ngọc lưu ly</translation>
+<translation id="5810692306010756935">Chuyển đổi</translation>
 <translation id="5816802250591013230">Chưa chỉ định phím tắt nào</translation>
 <translation id="5826644637650799838">Giới thiệu về hình nền</translation>
 <translation id="5832805196449965646">Thêm người</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6798678288485555829">Điều hướng văn bản</translation>
 <translation id="680983167891198932">Khóa</translation>
 <translation id="6816797338148849397">Có thông tin liên quan đến nội dung bạn chọn. Sử dụng phím Mũi tên lên để truy cập.</translation>
+<translation id="6831043979455480757">Dịch</translation>
 <translation id="6853312040151791195">Tốc độ xả pin</translation>
 <translation id="6862416241246624313">Đã gửi phản hồi</translation>
 <translation id="6866732840889595464">hoa cúc</translation>

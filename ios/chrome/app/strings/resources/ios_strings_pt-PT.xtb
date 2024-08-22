@@ -373,7 +373,6 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2789552044937754463">{COUNT,plural, =1{Palavra-passe guardada na sua Conta Google, {EMAIL}}other{Palavras-passe guardadas na sua Conta Google, {EMAIL}}}</translation>
 <translation id="2797029671965852011">Mostrar histórico</translation>
 <translation id="2800683595868705743">Sair do Comutador de separadores</translation>
-<translation id="2815198996063984598">2. Toque em App de navegador predefinida.</translation>
 <translation id="2818821771744632548">Como parte da reposição do iPhone, a sua sessão na conta <ph name="USER_NAME" /> foi terminada. Para voltar a iniciar sessão, toque em "Continuar" abaixo.</translation>
 <translation id="2819667972867209401">Quando esta opção está ativada, os dados são guardados na sua Conta Google. Quando esta opção está desativada, os dados são guardados apenas neste dispositivo e são eliminados se terminar sessão.</translation>
 <translation id="2830972654601096923">Gerir endereços…</translation>
@@ -539,6 +538,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3607167657931203000">Dados de preenchimento automático</translation>
 <translation id="3609785682760573515">A sincronizar…</translation>
 <translation id="3625008969091706597">Pode deslizar rapidamente na extremidade para retroceder.</translation>
+<translation id="362709345066740529">Personalize os seus cartões, feed e muito mais aqui</translation>
 <translation id="3630104167004786843">Não receber atualizações</translation>
 <translation id="3631443864840848029">Certifique-se de que está a guardar a sua palavra-passe atual para este site.</translation>
 <translation id="3638472932233958418">Pré-carregar Páginas Web</translation>
@@ -567,7 +567,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3775743491439407556">A sincronização não está a funcionar</translation>
 <translation id="3779810277399252432">Sem ligação à Internet.</translation>
 <translation id="3785672280731998727">Nome a apresentar</translation>
-<translation id="3789294999358192700">Siga os passos abaixo:</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803696231112616155">Propor tradução deste site</translation>
@@ -778,6 +777,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4808646838864186379">A sua entrega foi cancelada</translation>
 <translation id="4808744395915275922">Atualizações</translation>
 <translation id="4813345808229079766">Ligação</translation>
+<translation id="4817408188311787415">Preencher automaticamente o formulário com <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4818522717893377262">Adicionar idioma…</translation>
 <translation id="481968316161811770">Cookies, dados de sites</translation>
 <translation id="4821595350501541683">Os separadores foram fechados e os dados de navegação foram eliminados</translation>
@@ -1227,6 +1227,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6797885426782475225">Pesquisa por voz</translation>
 <translation id="6800349425672670802">Pode aceder a todos os separadores abertos a partir do Comutador de separadores.</translation>
 <translation id="6807889908376551050">Mostrar todos...</translation>
+<translation id="6810455365609435460">Separadores de navegação anónima</translation>
 <translation id="681368974849482173">Item criado</translation>
 <translation id="6824350924364057989">Definições</translation>
 <translation id="6831043979455480757">Traduzir</translation>

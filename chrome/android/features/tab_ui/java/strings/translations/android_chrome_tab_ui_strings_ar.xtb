@@ -20,6 +20,7 @@
 <translation id="1645759014353344461">عدد علامات التبويب المجمَّعة: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1657719826150349398">نقل علامة التبويب إلى الأسفل</translation>
 <translation id="1713541401465507417">إغلاق جميع علامات التبويب والمجموعات</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />مزيد من المعلومات<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">تم تجميع علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{<ph name="TABS_COUNT_MANY" /> علامة تبويب}two{علامتا تبويب (<ph name="TABS_COUNT_MANY" />)}few{<ph name="TABS_COUNT_MANY" /> علامات تبويب}many{<ph name="TABS_COUNT_MANY" /> علامة تبويب}other{<ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{وضع إشارة على علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) محدَّدة}zero{وضع إشارة على <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}two{وضع إشارة على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />) محدَّدتين}few{وضع إشارة على <ph name="TABS_COUNT_MANY" /> علامات تبويب محدَّدة}many{وضع إشارة على <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}other{وضع إشارة على <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">تم إنشاء المجموعة للتو</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{الإغلاق بعد يوم واحد}zero{الإغلاق بعد <ph name="DAY_COUNT_MANY" /> يوم}two{الإغلاق بعد يومين (<ph name="DAY_COUNT_MANY" />)}few{الإغلاق بعد <ph name="DAY_COUNT_MANY" /> أيام}many{الإغلاق بعد <ph name="DAY_COUNT_MANY" /> يومًا}other{الإغلاق بعد <ph name="DAY_COUNT_MANY" /> يوم}}</translation>
 <translation id="4777866634702576038">هل تريد حذف مجموعة علامات التبويب؟</translation>
+<translation id="4783638485675352219">‏مشاركة عناوين علامات التبويب المفتوحة وعناوين URL الخاصة بها من هذا الجهاز مع نظام التشغيل</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(مراجعة واحدة (<ph name="REVIEWS_COUNT_ONE" />))}zero{(<ph name="REVIEWS_COUNT_MANY" /> مراجعة)}two{(مراجعتان (<ph name="REVIEWS_COUNT_MANY" />))}few{(<ph name="REVIEWS_COUNT_MANY" /> مراجعات)}many{(<ph name="REVIEWS_COUNT_MANY" /> مراجعة)}other{(<ph name="REVIEWS_COUNT_MANY" /> مراجعة)}}</translation>
 <translation id="4850886885716139402">عرض</translation>
 <translation id="4870911314065352661">هل تريد إغلاق جميع علامات التبويب؟</translation>

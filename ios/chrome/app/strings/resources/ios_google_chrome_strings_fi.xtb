@@ -81,7 +81,6 @@ Huomioitavaa:
 <translation id="2767464022270041271">Ei tallennettuja salasanoja Google Salasanat voi tarkistaa salasanasi tallennuksen yhteydessä.</translation>
 <translation id="2869959624320573933">Kirjaudu Chromeen</translation>
 <translation id="2876628302275096482">Lue lisää siitä, <ph name="BEGIN_LINK" />miten Chrome pitää datasi yksityisenä<ph name="END_LINK" /></translation>
-<translation id="2952581218264071393">1. Avaa Chromen asetukset</translation>
 <translation id="2957447865124070833">Valitse <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Koska kirjaudut ulos verkkotunnuksen <ph name="SIGNOUT_MANAGED_DOMAIN" /> ylläpitämältä tililtä, Chrome-datasi poistetaan tältä laitteelta. Se säilyy edelleen Google-tililläsi.</translation>
 <translation id="309672519329227863">Käytä Chrome-salasanojasi ja muita ominaisuuksia eri sovelluksissa.</translation>
@@ -93,7 +92,6 @@ Huomioitavaa:
 <translation id="3340938510625667914">Chrome-pikavalinnat</translation>
 <translation id="3345341804167540816">Käytä Chromea missä tahansa</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Näin käy, kun Chromea ei ole käytetty {THRESHOLD} minuuttiin.}other{Näin käy, kun Chromea ei ole käytetty {THRESHOLD} minuuttiin.}}</translation>
-<translation id="3399930248910934354">Avaa Chromen asetukset</translation>
 <translation id="344736123700721678">Käytä Chromea nopeammin aloitusnäytön alapalkista</translation>
 <translation id="3472587960215700950">Chrome käyttää Google Mapsia reittiohjeiden ja paikallisten tietojen tarjoamiseen havaituissa osoitteissa.</translation>
 <translation id="3503014945441706099">Lisää Parannettu selaussuoja myös tälle Chrome-profiilille</translation>
@@ -211,6 +209,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos haluat nähdä lisää asetuksia, jotka käyttävät dataa Chromen käyttökokemuksen parantamiseen.</translation>
 <translation id="6916015246697034114">Hae puhumalla Chromesta</translation>
 <translation id="6975725306479268850">Chromen valinta automaattiseen täyttöön</translation>
+<translation id="6979238427560462592">Googlen sinulle luoma fiidi. Sisältää uutiset, urheilun ja sään.</translation>
 <translation id="7004159181872656283">Hae visuaalisesti Chromessa.</translation>
 <translation id="7056826488869329999">Avaa ja suorittaa turvatarkistuksen Chromessa.</translation>
 <translation id="7059914902409643750">Tee Chromesta näköisesi</translation>
@@ -236,7 +235,6 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos ha
 <translation id="7394108421562933108">Maps Chromessa</translation>
 <translation id="7400722733683201933">Tietoja Google Chromesta</translation>
 <translation id="7466693328838535498">Kirjoita widgetien hakukenttään "Chrome"</translation>
-<translation id="746684838091935575">3. Valitse Chrome</translation>
 <translation id="7492574581995589075">Organisaatiosi on laittanut Chrome-datan käyttämisen ja tallentamisen Google-tilillä pois päältä. Uudet kirjanmerkit, salasanat ja muut tiedot tallennetaan vain tälle laitteelle.</translation>
 <translation id="7581063337314642333">Siirry Chromen älilehtiruudukkoon</translation>
 <translation id="7642373780953416937">Saat ilmoituksia kaikista yksityisyys- tai tietoturvaongelmista, jotka Chrome havaitsee automaattisesti puolestasi.</translation>
@@ -300,7 +298,6 @@ Datasi salataan tunnuslauseella <ph name="TIME" />. Lisää se, niin voit käytt
 <translation id="8857676124663337448">Google Salasanat ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna.</translation>
 <translation id="8865415417596392024">Tilisi Chrome-data</translation>
 <translation id="8874688701962049679">Näillä vinkeillä saat Chromesta mahdollisimman paljon irti.</translation>
-<translation id="8891935667620843985">Voit avata linkkejä Chromessa automaattisesti tekemällä siitä oletusselainsovelluksesi.</translation>
 <translation id="8897749957032330183">Salasanat tallennetaan Google Salasanoihin tällä laitteella.</translation>
 <translation id="8949681853939555434">Valitse Chrome oletusselaimeksi</translation>
 <translation id="9068336935206019333">Avaa Chromen incognito-tilassa</translation>
@@ -308,6 +305,7 @@ Datasi salataan tunnuslauseella <ph name="TIME" />. Lisää se, niin voit käytt
 <translation id="9112744793181547300">Valitaanko Chrome oletukseksi?</translation>
 <translation id="9122931302567044771">Tämä tarkoittaa, että Chrome pyytää aina tietokonesivustoa.</translation>
 <translation id="9181628561061032322">Avaa Chromen viimeaikaiset välilehdet.</translation>
+<translation id="9194404253580584015">Googlen sinulle luoma fiidi.</translation>
 <translation id="953008885340860025">Olet kirjautunut ulos Chromesta</translation>
 <translation id="97300214378190234">Käytä Chromea aina, kun napautat linkkejä muissa sovelluksissa.</translation>
 </translationbundle>

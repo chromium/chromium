@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">Isyarat lemah</translation>
 <translation id="1300115153046603471">APN merupakan jenis lalai dan <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Tukar</translation>
 <translation id="1304014921944666344">Tarikh dibuat</translation>
 <translation id="1308754910631152188">Mengemas kini (<ph name="PERCENTAGE_VALUE" />% selesai)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minit</translation>
@@ -77,6 +78,7 @@
 <translation id="1343442362630695901">tasik garam</translation>
 <translation id="1367951781824006909">Pilih fail</translation>
 <translation id="1371650399987522809">Maklum balas untuk hiasan latar yang dikuasakan oleh Google AI</translation>
+<translation id="1374385338586507108">Takrifkan</translation>
 <translation id="1387854245479784695">Ini ialah pengagregatan bagi semua teras</translation>
 <translation id="1393206549145430405">istana kota</translation>
 <translation id="1394661041439318933">Peranti mempunyai <ph name="BATTERY_PERCENTAGE" />% bateri sarung.</translation>
@@ -463,7 +465,6 @@
 <translation id="346423161771747987">Arus</translation>
 <translation id="346539236881580388">Ambil semula</translation>
 <translation id="3484914941826596830">Semasa perisian tegar sedang dikemas kini, jangan cabut palam peranti luaran ini atau matikan komputer anda. Anda boleh meminimumkan tetingkap ini. Kemaskinian ini mungkin mengambil masa beberapa minit dan peranti luaran anda mungkin tidak berfungsi pada masa ini.</translation>
-<translation id="3485555238092220889">tindakan kebolehaksesan</translation>
 <translation id="3486220673238053218">takrif</translation>
 <translation id="3487866404496702283">Maklum balas untuk ciri mahi</translation>
 <translation id="3488065109653206955">Diaktifkan sebahagian</translation>
@@ -672,6 +673,7 @@
 <translation id="4562494484721939086">Tiada perkhidmatan</translation>
 <translation id="4570558255126759859">Muat turun model Gemini untuk meringkaskan rakaman?</translation>
 <translation id="4573777384450697571">Gagal - Sijil Tamat Tempoh</translation>
+<translation id="4575450106703099687">pilihan kebolehaksesan</translation>
 <translation id="458794348635939462">Gagal untuk menyelesaikan semua hos</translation>
 <translation id="4593212453765072419">Pengesahan proksi diperlukan</translation>
 <translation id="4594021849294327751">Buat transkrip</translation>
@@ -884,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> daripada <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Edit butang untuk <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Kemas kini <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Penggunaan data telah ditetapkan semula</translation>
 <translation id="574392208103952083">Sederhana</translation>
 <translation id="5757187557809630523">lagu seterusnya</translation>
 <translation id="5760715441271661976">Keadaan Portal</translation>
@@ -893,6 +896,7 @@
 <translation id="57838592816432529">Redam</translation>
 <translation id="5784136236926853061">Kependaman HTTP tinggi</translation>
 <translation id="5790391387506209808">lapis luzuli</translation>
+<translation id="5810692306010756935">Pengijazahan</translation>
 <translation id="5816802250591013230">Tiada pintasan ditugaskan</translation>
 <translation id="5826644637650799838">Perihal seni</translation>
 <translation id="5832805196449965646">Tambah Orang</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6798678288485555829">Navigasi teks</translation>
 <translation id="680983167891198932">Kunci</translation>
 <translation id="6816797338148849397">Maklumat yang berkaitan dengan pilihan anda tersedia. Gunakan kekunci Anak panah ke atas untuk mengakses.</translation>
+<translation id="6831043979455480757">Terjemah</translation>
 <translation id="6853312040151791195">Kadar penyahcasan</translation>
 <translation id="6862416241246624313">Maklum balas diserahkan</translation>
 <translation id="6866732840889595464">bunga daisi</translation>

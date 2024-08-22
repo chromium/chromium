@@ -8,6 +8,7 @@
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> 专有资源现已推出</translation>
 <translation id="1022628058306505708">地球的风景变化</translation>
 <translation id="1026212596705997935">此快捷键已用于“<ph name="CONFLICT_ACCEL_NAME" />”。请按新的快捷键。如要替换现有的快捷键，请再次按这个快捷键。</translation>
+<translation id="1030856839388844477">重置流量使用情况</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（<ph name="THREAD_COUNT" /> 个线程，<ph name="CPU_MAX_CLOCK_SPEED" />GHz）</translation>
 <translation id="1047773237499189053">有可用的新功能，使用向上键即可了解详情。</translation>
 <translation id="1049663189809099096">粉黄色</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">信号较弱</translation>
 <translation id="1300115153046603471">APN 是默认<ph name="ATTACH" />类型。</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">转换</translation>
 <translation id="1304014921944666344">创建日期</translation>
 <translation id="1308754910631152188">正在更新（已完成 <ph name="PERCENTAGE_VALUE" />%）</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> 分钟</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">咸水湖</translation>
 <translation id="1367951781824006909">选择文件</translation>
 <translation id="1371650399987522809">针对 Google AI 赋能的壁纸的反馈</translation>
+<translation id="1374385338586507108">定义</translation>
 <translation id="1387854245479784695">此指标是所有核心的汇总数据</translation>
 <translation id="1393206549145430405">城堡</translation>
 <translation id="1394661041439318933">设备保护套电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">电流</translation>
 <translation id="346539236881580388">重拍</translation>
 <translation id="3484914941826596830">固件更新期间，请不要拔掉此外部设备的电源插头或关闭您的计算机。您可以最小化此窗口。此更新可能需要几分钟时间，在此期间，您的外部设备可能无法正常使用。</translation>
-<translation id="3485555238092220889">无障碍操作</translation>
 <translation id="3486220673238053218">定义</translation>
 <translation id="3487866404496702283">针对 Mahi 功能的反馈</translation>
 <translation id="3488065109653206955">部分激活</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">无服务</translation>
 <translation id="4570558255126759859">要下载 Gemini 模型来创建录音摘要吗？</translation>
 <translation id="4573777384450697571">失败 - 证书已过期</translation>
+<translation id="4575450106703099687">无障碍选项</translation>
 <translation id="458794348635939462">未能解析所有主机</translation>
 <translation id="4593212453765072419">需要验证代理身份</translation>
 <translation id="4594021849294327751">创建转写文本</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> / <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">“<ph name="SHORTCUT_DESCRIPTION" />”的修改按钮。</translation>
 <translation id="5733298426544876109">更新“<ph name="DEVICE_NAME" />”</translation>
+<translation id="5736820754189340309">流量消耗已重置</translation>
 <translation id="574392208103952083">中等</translation>
 <translation id="5757187557809630523">下一首</translation>
 <translation id="5760715441271661976">门户状态</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">静音</translation>
 <translation id="5784136236926853061">HTTP 延迟时间较长</translation>
 <translation id="5790391387506209808">青金石</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">未分配任何快捷键</translation>
 <translation id="5826644637650799838">关于该壁纸</translation>
 <translation id="5832805196449965646">添加用户</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">文字导航</translation>
 <translation id="680983167891198932">密钥</translation>
 <translation id="6816797338148849397">有与您所选内容相关的信息。使用向上键即可获取这些信息。</translation>
+<translation id="6831043979455480757">翻译</translation>
 <translation id="6853312040151791195">放电速率</translation>
 <translation id="6862416241246624313">已提交反馈</translation>
 <translation id="6866732840889595464">雏菊</translation>
@@ -1551,6 +1557,7 @@
 <translation id="9087578468327036362">报告此次查询</translation>
 <translation id="9088306295921699330">目前用量</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">关于重置日期的更多信息</translation>
 <translation id="9100765901046053179">高级设置</translation>
 <translation id="910415269708673980">刷新 <ph name="PRINCIPAL_NAME" /> 的票据</translation>
 <translation id="9106415115617144481">正在扫描第 <ph name="PAGE_NUMBER" /> 页</translation>

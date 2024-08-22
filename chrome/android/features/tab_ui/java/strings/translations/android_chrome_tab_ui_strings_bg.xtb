@@ -15,11 +15,12 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Създадено преди <ph name="NUM_MINS_ONE" /> минута}other{Създадено преди <ph name="NUM_MINS_MANY" /> минути}}</translation>
 <translation id="1499635324672558517">Да се затворят ли всички раздели в режим „инкогнито“?</translation>
 <translation id="1501480321619201731">Изтриване на групата</translation>
-<translation id="1555130319947370107">синьо</translation>
+<translation id="1555130319947370107">Синьо</translation>
 <translation id="161042844686301425">синьозелено</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> раздела са групирани</translation>
 <translation id="1657719826150349398">Преместване на раздела надолу</translation>
 <translation id="1713541401465507417">Затваряне на всички раздели и групи</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Научете повече<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> раздел е групиран</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> раздел}other{<ph name="TABS_COUNT_MANY" /> раздела}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Запазване на отметка към <ph name="TABS_COUNT_ONE" /> избран раздел}other{Запазване на отметка към <ph name="TABS_COUNT_MANY" /> избрани раздела}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Създадено току-що</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Затваряне след 1 ден}other{Затваряне след <ph name="DAY_COUNT_MANY" /> дни}}</translation>
 <translation id="4777866634702576038">Да се изтрие ли групата раздели?</translation>
+<translation id="4783638485675352219">Споделяне с операционната система на заглавията и URL адресите на отворените раздели от това устройство</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> отзив)}other{(<ph name="REVIEWS_COUNT_MANY" /> отзива)}}</translation>
 <translation id="4850886885716139402">Изглед</translation>
 <translation id="4870911314065352661">Искате ли да затворите всички раздели?</translation>
@@ -110,9 +112,9 @@
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> връзка от Chrome}other{<ph name="TABS_COUNT_MANY" /> връзки от Chrome}}</translation>
 <translation id="575494663145460764">Искате ли да получавате сигнали за понижение на цените?</translation>
 <translation id="58326064309361797">Преместете с плъзгане разделите, за да ги групирате</translation>
-<translation id="5901630391730855834">жълто</translation>
+<translation id="5901630391730855834">Жълто</translation>
 <translation id="5972844218283131174">Премахване на избора от всички</translation>
-<translation id="6017514345406065928">зелено</translation>
+<translation id="6017514345406065928">Зелено</translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6051432659151380973">Групите раздели се запазват автоматично</translation>
 <translation id="6054741997831917303">Цената на този артикул наскоро бе намалена от <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
@@ -159,7 +161,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> отзив}other{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзива}}</translation>
 <translation id="7885132941432959125">Преместване на раздела надясно</translation>
 <translation id="7939917283308035850">Не сте избрали: <ph name="COLOR_NAME" /></translation>
-<translation id="7942349550061667556">червено</translation>
+<translation id="7942349550061667556">Червено</translation>
 <translation id="7961015016161918242">Никога</translation>
 <translation id="7966321538264951561">Отхвърляне на предложенията.</translation>
 <translation id="799469866974412355">Нова група от другото ви устройство</translation>

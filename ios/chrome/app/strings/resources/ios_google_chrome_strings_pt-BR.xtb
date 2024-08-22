@@ -81,7 +81,6 @@ Considerações:
 <translation id="2767464022270041271">Nenhuma senha salva. O Gerenciador de senhas do Google pode verificar suas senhas quando você as salva.</translation>
 <translation id="2869959624320573933">Faça login no Chrome</translation>
 <translation id="2876628302275096482">Saiba mais sobre <ph name="BEGIN_LINK" />como o Chrome mantém a privacidade dos seus dados<ph name="END_LINK" /></translation>
-<translation id="2952581218264071393">1. Abrir configurações do Chrome</translation>
 <translation id="2957447865124070833">Selecione o <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Como você está saindo de uma conta gerenciada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os dados do Chrome serão excluídos deste dispositivo, mas permanecerão na sua Conta do Google.</translation>
 <translation id="309672519329227863">Acesse suas senhas do Chrome e muito mais em outros apps.</translation>
@@ -93,7 +92,6 @@ Considerações:
 <translation id="3340938510625667914">Ações do Chrome</translation>
 <translation id="3345341804167540816">Usar o Chrome em qualquer lugar</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Isso acontece quando o Chrome não é usado por {THRESHOLD} minuto}one{Isso acontece quando o Chrome não é usado por {THRESHOLD} minuto}other{Isso acontece quando o Chrome não é usado por {THRESHOLD} minutos}}</translation>
-<translation id="3399930248910934354">Abrir configurações do Chrome</translation>
 <translation id="344736123700721678">Acesse o Chrome com mais rapidez no Dock da tela de início</translation>
 <translation id="3472587960215700950">O Chrome usa o Google Maps para fornecer rotas e informações locais sobre endereços detectados.</translation>
 <translation id="3503014945441706099">Use também o recurso Navegação segura com proteção reforçada neste perfil do Chrome</translation>
@@ -211,6 +209,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 Para conferir mais configurações que usam dados para melhorar sua experiência do Chrome, acesse os <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Pesquisar com voz no Chrome</translation>
 <translation id="6975725306479268850">Escolha o Chrome para o preenchimento automático</translation>
+<translation id="6979238427560462592">Um feed personalizado feito pelo Google. Inclui o Google Notícias, Esportes e Clima.</translation>
 <translation id="7004159181872656283">Pesquise recursos visuais no Chrome.</translation>
 <translation id="7056826488869329999">Abre e realiza a Confirmação de segurança no Chrome.</translation>
 <translation id="7059914902409643750">Personalize o Chrome</translation>
@@ -236,7 +235,6 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="7394108421562933108">Maps no Chrome</translation>
 <translation id="7400722733683201933">Sobre o Google Chrome</translation>
 <translation id="7466693328838535498">Na caixa "Widgets da Pesquisa", digite "Chrome".</translation>
-<translation id="746684838091935575">3. Selecione o Chrome</translation>
 <translation id="7492574581995589075">Sua organização desativou a capacidade de usar e salvar dados do Chrome na Conta do Google. Novos favoritos, senhas e outros itens serão salvos apenas neste dispositivo.</translation>
 <translation id="7581063337314642333">Acessar a grade de guias no Chrome</translation>
 <translation id="7642373780953416937">Mostra alertas sobre problemas de privacidade ou segurança que o Chrome detectar automaticamente.</translation>
@@ -300,7 +298,6 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 <translation id="8857676124663337448">O Gerenciador de senhas do Google não conseguiu verificar todas as senhas. Tente de novo amanhã.</translation>
 <translation id="8865415417596392024">Dados do Chrome na sua conta</translation>
 <translation id="8874688701962049679">Dicas para aproveitar o Chrome ao máximo.</translation>
-<translation id="8891935667620843985">Defina o Chrome como seu navegador padrão para abrir links nele automaticamente.</translation>
 <translation id="8897749957032330183">As senhas são salvas no Gerenciador de senhas do Google neste dispositivo.</translation>
 <translation id="8949681853939555434">Definir o Chrome como seu navegador padrão</translation>
 <translation id="9068336935206019333">Abrir na navegação anônima do Chrome</translation>
@@ -308,6 +305,7 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 <translation id="9112744793181547300">Definir o Chrome como padrão?</translation>
 <translation id="9122931302567044771">Isso significa que o Chrome vai solicitar sempre o site para computador.</translation>
 <translation id="9181628561061032322">Abre as guias recentes do Chrome.</translation>
+<translation id="9194404253580584015">Um feed personalizado feito pelo Google.</translation>
 <translation id="953008885340860025">A conta foi desconectada do Chrome</translation>
 <translation id="97300214378190234">Use o Chrome sempre que abrir links em outros apps.</translation>
 </translationbundle>

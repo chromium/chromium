@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Exclusive <ph name="PRODUCT_NAME" /> assets now available</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1026212596705997935">Shortcut is being used for '<ph name="CONFLICT_ACCEL_NAME" />'. Press a new shortcut. To replace the existing shortcut, press this shortcut again.</translation>
+<translation id="1030856839388844477">Reset data usage</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">New feature available; use the up arrow key to learn more.</translation>
 <translation id="1049663189809099096">pastel yellow</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Weak signal</translation>
 <translation id="1300115153046603471">APN is type default and <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Convert</translation>
 <translation id="1304014921944666344">Date created</translation>
 <translation id="1308754910631152188">Updating (<ph name="PERCENTAGE_VALUE" />% complete)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutes</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">salt lake</translation>
 <translation id="1367951781824006909">Choose a file</translation>
 <translation id="1371650399987522809">Feedback for wallpaper powered by Google AI</translation>
+<translation id="1374385338586507108">Define</translation>
 <translation id="1387854245479784695">This is an aggregation of all cores</translation>
 <translation id="1393206549145430405">castle</translation>
 <translation id="1394661041439318933">Device has <ph name="BATTERY_PERCENTAGE" />% case battery.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Current</translation>
 <translation id="346539236881580388">Retake</translation>
 <translation id="3484914941826596830">While the firmware is updating, do not unplug this external device or shut down your computer. You can minimise this window. This update may take a few minutes and your external device may not work during this time.</translation>
-<translation id="3485555238092220889">accessibility action</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3487866404496702283">Feedback for mahi feature</translation>
 <translation id="3488065109653206955">Partially activated</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">No service</translation>
 <translation id="4570558255126759859">Download Gemini model to summarise recordings?</translation>
 <translation id="4573777384450697571">Failed – Certificate expired</translation>
+<translation id="4575450106703099687">accessibility options</translation>
 <translation id="458794348635939462">Failed to resolve all hosts</translation>
 <translation id="4593212453765072419">Proxy authentication required</translation>
 <translation id="4594021849294327751">Create transcript</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> of <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Edit button for <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Update <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Data usage has been reset</translation>
 <translation id="574392208103952083">Medium</translation>
 <translation id="5757187557809630523">next track</translation>
 <translation id="5760715441271661976">Portal state</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Mute</translation>
 <translation id="5784136236926853061">High HTTP latency</translation>
 <translation id="5790391387506209808">lapis luzuli</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">No shortcut assigned</translation>
 <translation id="5826644637650799838">About the art</translation>
 <translation id="5832805196449965646">Add Person</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Text navigation</translation>
 <translation id="680983167891198932">Key</translation>
 <translation id="6816797338148849397">Info related to your selection available. Use the up arrow key to access.</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="6853312040151791195">Discharging rate</translation>
 <translation id="6862416241246624313">Feedback submitted</translation>
 <translation id="6866732840889595464">daisy</translation>
@@ -1551,6 +1557,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="9087578468327036362">Report this query</translation>
 <translation id="9088306295921699330">Current usage</translation>
 <translation id="9095775724867566971">PluginVm</translation>
+<translation id="909856219855259344">More info on reset date</translation>
 <translation id="9100765901046053179">Advanced settings</translation>
 <translation id="910415269708673980">Refresh ticket for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scanning page <ph name="PAGE_NUMBER" /></translation>

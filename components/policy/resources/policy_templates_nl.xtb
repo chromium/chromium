@@ -358,6 +358,7 @@ Patronen voor overeenkomende herkomst voor dit beleid mogen geen '/path' or '@qu
 <translation id="1257550411839719984">Standaardmap voor downloads instellen</translation>
 <translation id="1262993197422487260">De knop Wachtwoord bekijken niet tonen op het inlog- en vergrendelscherm</translation>
 <translation id="1265053460044691532">De offline inlogtijd beperken voor een gebruiker die is geverifieerd via SAML</translation>
+<translation id="1265076559723566171">Bepaalt instellingen voor EDU-gebruikers</translation>
 <translation id="1271811620059192171">Atomische beleidsgroepen aanzetten</translation>
 <translation id="127264587838521316">Hiermee worden installatieverzoeken voor <ph name="PRODUCT_NAME" />-extensies aangezet</translation>
 <translation id="1272798957154751008">De migratie van Chromad-apparatten naar cloudbeheer aanzetten</translation>
@@ -454,6 +455,27 @@ Het afzonderlijke beleid <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> kan worden geb
 <translation id="1348603614848418219">De migratie van door <ph name="MS_AD_NAME" /> beheerde apparaten naar cloudbeheer uitzetten.</translation>
 <translation id="1352799151662469739">De tijdsduur zonder gebruikersinvoer waarna het scherm wordt vergrendeld als er op netvoeding wordt gewerkt (in milliseconden)</translation>
 <translation id="1353416417709895349">Controles voor DNS-onderschepping en infobalken voor 'bedoelde je http://intranetsite/' uitzetten.</translation>
+<translation id="1353910503649343481">Als je het beleid instelt, bepaal je de proxyinstellingen voor Chrome en ARC-apps, die alle proxygerelateerde opties negeren die via de opdrachtregel worden ingevoerd.
+
+       Als je het beleid niet instelt, kunnen gebruikers hun proxyinstellingen kiezen.
+
+       Als je het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" /> instelt, worden de volgende velden geaccepteerd:
+* <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />: Hiermee verstrek je de proxyserver die Chrome gebruikt en voorkom je dat gebruikers de proxy-instellingen kunnen wijzigen.
+* <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />: Een URL naar een proxy-pac-bestand of een PAC-script dat is gecodeerd als een gegevens-URL met het MIME-type application/x-ns-proxy-autoconfig.
+* <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />: Hiermee wordt voorkomen dat de netwerkstack terugvalt op directe verbindingen met een ongeldig of niet-beschikbaar PAC-script.
+* <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />: Een URL van de proxyserver.
+* <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />: Een lijst met proxyhosts die de proxy omzeilen.
+
+Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd en vervangen door het veld <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
+
+        Als je voor <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> de volgende waarde kiest:
+* <ph name="PROXY_MODE_ENUM_DIRECT" />: Er wordt nooit een proxy gebruikt en alle andere velden worden genegeerd.
+          * <ph name="PROXY_MODE_ENUM_SYSTEM" />: De proxy van het systeem wordt gebruikt en alle andere velden worden genegeerd.
+          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: Alle andere velden worden genegeerd.
+          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: De velden <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> en <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> worden gebruikt.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: De velden <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> en <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> worden gebruikt.
+
+      Opmerking: Voor gedetailleerdere voorbeelden ga je naar The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="1354280967938151061">ARC uitzetten</translation>
 <translation id="1354424209129232709">Maximum:</translation>
 <translation id="1355050231181289439"> Dit beleid bepaalt of de toewijzing van verbeterde sneltoetsen voor internationale toetsenborden aanstaat.
@@ -801,6 +823,7 @@ Het aangepaste label wordt niet vertaald.</translation>
       Als <ph name="IDLE_ACTION_FIELD_NAME" /> niet is ingesteld, wordt <ph name="IDLE_ACTION_ENUM_SUSPEND" /> uitgevoerd.
 
       Opmerking: Er zijn afzonderlijke instellingen voor wanneer het apparaat op netstroom of op de batterij werkt.</translation>
+<translation id="1607734317623618500">Kiosk-web-app kan offline worden gebruikt</translation>
 <translation id="1608755754295374538">URL's die zonder prompt toegang krijgen tot apparaten voor het vastleggen van audio</translation>
 <translation id="1608901087213748889">Hiermee wordt een actie gestart als de computer inactief is.
 
@@ -887,6 +910,7 @@ Als je het beleid niet instelt, kan <ph name="PRODUCT_OS_NAME" /> standaardhandl
 <translation id="165769015320654523">Automatisch rechten aan deze sites geven om verbinding te maken met HID-apparaten met de opgegeven leveranciers- en product-ID's.</translation>
 <translation id="1659406551862245683">Het standaardgedrag voor formaataanpassing van het virtuele toetsenbord is gewijzigd om het formaat van het opmaakkijkvenster aan te passen</translation>
 <translation id="166427968280387991">Proxyserver</translation>
+<translation id="1666001345366986837">Instellingen voor de functie VC-achtergrond met generatieve AI</translation>
 <translation id="1670638264428789878">Gerelateerde websitesets aanzetten</translation>
 <translation id="1671405606278443620">Instellingen voor AI-gestuurd zoeken in geschiedenis</translation>
 <translation id="1673097259557436886">Websites altijd laten weten dat er geen betaalmethoden zijn opgeslagen</translation>
@@ -916,27 +940,6 @@ Als je het beleid instelt op False, of niet instelt, worden er geen gebeurteniss
       Met dit beleid kan een bepaalde resolutie worden ingesteld voor gebruik bij rastering van pdf's voor afdrukken.
 
       Als het beleid op nul staat of helemaal niet is ingesteld, wordt de standaardresolutie van het systeem gebruikt bij het rasteren van pagina-afbeeldingen.</translation>
-<translation id="1700458869527146675">Als je het beleid instelt, bepaal je de proxyinstellingen voor Chrome en ARC-apps, die alle proxygerelateerde opties negeren die via de opdrachtregel worden opgegeven.
-
-       Als je het beleid niet instelt, kunnen gebruikers hun proxyinstellingen kiezen.
-
-       Als je het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" /> instelt, worden de volgende velden geaccepteerd:
-* <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />: Hiermee kun je de proxyserver opgeven die Chrome gebruikt en voorkomen dat gebruikers de proxyinstellingen wijzigen.
-* <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />: Een URL naar een pac-bestand van de proxy.
-* <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />: Hiermee wordt voorkomen dat de netwerkstack terugvalt op directe verbindingen met een ongeldig of niet-beschikbaar PAC-script.
-* <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />: Een URL van de proxyserver.
-* <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />: Een lijst met hosts die de proxy omzeilen.
-
-Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten gunste van het veld <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
-
-        Als je voor <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> de volgende waarde kiest:
-* <ph name="PROXY_MODE_ENUM_DIRECT" />: Er wordt nooit een proxy gebruikt en alle andere velden worden genegeerd.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />: De proxy van het systeem wordt gebruikt en alle andere velden worden genegeerd.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: Alle andere velden worden genegeerd.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: De velden <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> en <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> worden gebruikt.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: De velden <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> en <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> worden gebruikt.
-
-      Opmerking: Voor gedetailleerdere voorbeelden ga je naar The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="1700811900332333712">Geef het apparaat toestemming om Powerwash te activeren</translation>
 <translation id="1705215165572785706">Toetsen op de bovenste rij gebruiken als mediatoetsen, maar de gebruiker toestaan dit te wijzigen</translation>
 <translation id="1708496595873025510">De beperking voor het ophalen van de seed voor varianten instellen</translation>
@@ -1112,6 +1115,7 @@ Als je dit beleid niet toepast of niet instelt, kan de gebruiker na het inloggen
 Dit beleid heeft geen effect als het is ingesteld op apparaatniveau.</translation>
 <translation id="1837165432382702436">Hoogte van de pagina in micrometers</translation>
 <translation id="1838910874018595451">Vooraf ingestelde configuratie voor Kerberos-tickets</translation>
+<translation id="1839042185432919430">Toestaan dat de web-kiosk-app een netwerkprompt toont als de app wordt gestart terwijl het apparaat offline is</translation>
 <translation id="1843102210803941014">Alleen essentiële cookies en gegevens aanzetten voor zoeken</translation>
 <translation id="1843117931376765605">Vernieuwingsfrequentie voor gebruikersbeleid</translation>
 <translation id="1844620919405873871">Hiermee configureer je het beleid ten aanzien van snel ontgrendelen.</translation>
@@ -2601,6 +2605,7 @@ Het beleid <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> kr
 
 Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. Houd er wel rekening mee dat het patroon *, dat overeenkomt met elke URL, niet wordt ondersteund door dit beleid.</translation>
 <translation id="2979696534869541158">Oude implementatie afdwingen</translation>
+<translation id="2983209019593449150">Ad-hoc-handtekeningen bij programmacode voor shims voor progressive web-apps kunnen misschien worden gebruikt, afhankelijk van het lanceerproces voor de functie.</translation>
 <translation id="2985927503455169394">De standaard modus voor introductie van de Assistent gebruiken</translation>
 <translation id="2987155890997901449">ARC aanzetten</translation>
 <translation id="2987227569419001736">Gebruik van de Web Bluetooth API beheren</translation>
@@ -2980,6 +2985,13 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
 
       Geconfigureerde websites worden automatisch geopend in een andere browser dan <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3252724033247471310">Toestaan dat deze oorsprongen tabbladen met dezelfde oorsprong opnemen</translation>
+<translation id="325374928725737694">Als je het beleid uitzet, betekent dit dat de kiosk-web-app niet offline werkt. Er wordt alleen een netwerkprompt getoond als een kiosksessie wordt gestart terwijl het apparaat offline is. Zo kun je zorgen dat het apparaat online is voordat de app wordt gelanceerd.
+
+Deze netwerkprompt wordt misschien niet getoond als een app is ingesteld op automatisch starten en <ph name="PROMPT_POLICY_NAME" /> (<ph name="PROMPT_POLICY_URL" />) uitstaat.
+
+Dit beleid heeft geen effect op Chrome-apps of web-apps met een installatie-URL die een cross-origin-omleiding naar een andere web-app uitvoeren (bijvoorbeeld als de installatie-URL van de app <ph name="APP_INSTALL_URL" /> is, maar deze bij het laden omleidt naar een andere web-app, bijvoorbeeld <ph name="APP_REDIRECTED_URL" />).
+
+Als het beleid is ingesteld op True of niet is ingesteld, worden web-apps zelfs gestart als het apparaat offline is.</translation>
 <translation id="3255624750680556186">Als je het beleid toepast of niet instelt, kan een apparaat Powerwash activeren.
 
       Als je het beleid niet toepast, kan een apparaat Powerwash niet activeren. Een uitzondering waarbij Powerwash nog wel is toegestaan, is als <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> is ingesteld op een waarde die de TPM-firmware-update toestaat en de TPM-firmware nog niet is geüpdatet.</translation>
@@ -3448,6 +3460,7 @@ Als je dit beleid instelt op False, worden er geen versiegegevens verzameld.
 Dit beleid is alleen van kracht als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> voor <ph name="PRODUCT_NAME" />.
 Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3644735978203799620">Zet automatisch selecteren aan voor opnamen van meerdere schermen</translation>
+<translation id="3645639974927907813">Ad-hoc-handtekening bij programmacode voor shims voor progressive web-apps</translation>
 <translation id="3646859102161347133">Het type vergrootglas instellen</translation>
 <translation id="3647212518036289905">Als je het beleid instelt, geef je aan welke GSSAPI-bibliotheek moet worden gebruikt voor HTTP-verificatie. Stel het beleid in op een bibliotheeknaam of een volledig pad.
 
@@ -3510,6 +3523,7 @@ Als <ph name="PRODUCT_NAME" /> niet correct wordt afgesloten (bijvoorbeeld als d
 
           Dit is een tijdelijk beleid dat volgens planning wordt verwijderd in <ph name="PRODUCT_NAME" /> 107. Deze deadline kan worden verlengd als daar bij bedrijven behoefte aan is.
           </translation>
+<translation id="3677660004554019617">VC-achtergrond met generatieve AI niet toestaan</translation>
 <translation id="3678069907945250643">Toestaan dat Google Foto's toegang krijgt vanuit de personalisatie-app</translation>
 <translation id="3680529017993214255">De functies aanzetten en gegevens versturen om AI-modellen te trainen</translation>
 <translation id="3685979383016152590">Als je dit beleid instelt, kun je aangeven welk toegangsbeleid wordt toegepast op bulksgewijze printerconfiguratie en beheren welke printers van <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> beschikbaar zijn voor gebruikers.
@@ -3531,6 +3545,19 @@ Als <ph name="PRODUCT_NAME" /> niet correct wordt afgesloten (bijvoorbeeld als d
 <translation id="3701121231485832347">Beheert instellingen die specifiek zijn voor <ph name="PRODUCT_OS_NAME" />-apparaten die via <ph name="MS_AD_NAME" /> worden beheerd.</translation>
 <translation id="3702518095257671450">Externe bevestiging</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Het veld met één regel is beëindigd en wordt in de toekomst verwijderd. Gebruik het tekstvak met meerdere regels hieronder.)</translation>
+<translation id="3705648857103435170">Met dit beleid wordt de Graduation-app aangezet voor beheerde gebruikers. Met de Graduation-app kunnen gebruikers hun gegevens overzetten van hun beheerde account naar een consumentenaccount.
+
+    Als <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> is ingesteld op <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, wordt de Graduation-app getoond op en tussen de start- en einddatum volgens de lokale tijd.
+
+    Als <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> is ingesteld op <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> of niet is ingesteld, wordt de app niet getoond.
+
+    Als <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> niet is ingesteld, wordt de app getoond tot de einddatum.
+
+    Als <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" /> niet is ingesteld, wordt de app vanaf de startdatum voor onbepaalde tijd getoond.
+
+    Als zowel <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> als <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" /> niet zijn ingesteld, wordt de app voor onbepaalde tijd getoond. Als de start- en einddatum ongeldig zijn, wordt de Graduation-app niet getoond. Dit geldt ook als de ingevoerde datums niet bestaan of als de einddatum vóór de startdatum ligt.
+
+    Gegevensoverdracht met Takeout moet ook aanstaan voor een goede werking van de Graduation-app. Ga naar https://support.google.com/a/answer/6364687 voor meer informatie.</translation>
 <translation id="3711561721191203926">Als je dit beleid toepast, wordt het hoofdverzoek geblokkeerd als er een waarschuwing moet worden getoond in de <ph name="DEV_TOOLS_NAME" /> omdat de <ph name="PRIVATE_NETWORK_ACCESS" />-controles mislukken.
 
 Als je dit beleid niet toepast of niet instelt, worden alle <ph name="PRIVATE_NETWORK_ACCESS" />-waarschuwingen niet afgedwongen en worden de verzoeken niet geblokkeerd.
@@ -3690,6 +3717,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
       Gebruikers kunnen een protocolhandler niet verwijderen als deze is geregistreerd door een beleid. Als ze een nieuwe standaard handler installeren, kunnen ze de protocolhandlers wijzigen die door het beleid zijn geïnstalleerd.</translation>
 <translation id="3842619997238271109">Staat niet toe dat de host voor externe toegang pincode- en koppelingsverificaties gebruikt bij de acceptatie van clientverbindingen</translation>
+<translation id="3845318141474759319">Generatieve AI-achtergronden toestaan zonder AI-modellen te verbeteren</translation>
 <translation id="3851443303439635700">De nestdrempel bepalen waarvoor de JavaScript-functie setTimeout() wordt vastgezet</translation>
 <translation id="3858658082795336534">Standaard afdrukken in duplexmodus</translation>
 <translation id="3859780406608282662">Voeg een parameter toe aan het ophalen van de varianten-seed in <ph name="PRODUCT_OS_NAME" />.
@@ -4180,6 +4208,7 @@ Opmerking: Als je interne URL's met chrome://* en chrome-untrusted://* blokkeert
       Als je dit beleid instelt op False, wordt de DNS-omzetting van het systeem (getaddrinfo()) uitgevoerd binnen het netwerkproces in plaats van binnen het browserproces. Hierdoor kan de sandbox van de netwerkservice worden uitgezet, waardoor de beveiliging van <ph name="PRODUCT_NAME" /> kan verminderen.
 
       Als je dit beleid niet instelt, kan de DNS-omzetting van het systeem worden uitgevoerd binnen de netwerkservice, buiten de netwerkservice of gedeeltelijk binnen en gedeeltelijk buiten, afhankelijk van de systeemconfiguratie en functievlaggen.</translation>
+<translation id="4232128469957872687">EDU-instellingen</translation>
 <translation id="4234788818648224034">Lijst met domeinen die zijn uitgesloten voor omzetting via DNS-over-HTTPS. Dit beleid wordt genegeerd als de beveiligde DNS-modus is uitgezet (gebruik altijd DNS in platte tekst).
 
 Als <ph name="DOH_TEMPLATES_POLICY_NAME" /> ook is ingesteld, krijgt een specifieker domein de voorkeur. Specificiteit verwijst naar het aantal punten ('.') in het domein. Als een domein overeenkomt met beide beleidsregels, wordt standaard DNS-over-HTTPS gebruikt voor het domein.
@@ -4376,6 +4405,25 @@ Als je dit beleid niet instelt, wordt de oude beëindigde syntaxis uitgezet.</tr
           Als je dit beleid instelt op True, is WebSQL in niet-beveiligde contexten beschikbaar.
           Als je dit beleid instelt op False of niet instelt, blijft WebSQL in niet-beveiligde contexten beschikbaar tot M109 en is dit niet meer beschikbaar vanaf M110.
 Dit is verwijderd in M112.</translation>
+<translation id="4401357095119743747">Een lijst met instellingen voor Chrome Enterprise Connectors-services die moeten worden toegepast op de Enterprise Connector <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als een bestand wordt overgedragen binnen <ph name="PRODUCT_OS_NAME" />.
+
+      De velden <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> worden gebruikt om te bepalen of de connector een bestand voor analyse moet sturen als het tussen een bron en bestemming wordt overgedragen en welke tags moeten worden opgenomen in dit analyseverzoek. Een tag die overeenkomt met een 'enable'-regel, wordt opgenomen in het analyseverzoek als de bron en bestemming overeenkomen met de regel die is gekoppeld aan die tag, op voorwaarde dat er geen 'disable'-regel met dezelfde tag overeenkomt met de overdracht. De analyse vindt plaats als er minstens 1 tag moet worden opgenomen in het verzoek. Een <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />-regel wordt gedefinieerd door een lijst van paren. Elk paar bevat een lijst van bronnen en een lijst van bestemmingen. De <ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> bepaalt op welk bestandssysteem een regel moet worden toegepast.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> geeft aan bij welke analyseserviceprovider de instellingen horen.
+
+      Als je het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> instelt op 1, betekent dit dat <ph name="PRODUCT_OS_NAME" /> wacht op een reactie van de analyseservice voordat de overdracht wordt toegestaan. Elke andere waarde met een geheel getal betekent dat <ph name="PRODUCT_OS_NAME" /> de overdracht onmiddellijk kan uitvoeren.
+
+      Als je het veld <ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD" /> instelt op blokkeren, staat <ph name="PRODUCT_OS_NAME" /> niet toe dat gebruikers het bestand overzetten als er een fout optreedt tijdens de communicatie met de analyseservice. Elke andere waarde betekent dat <ph name="PRODUCT_OS_NAME" /> overdrachten van het bestand toestaat als er een fout optreedt tijdens de communicatie met de analyseservice.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> bepaalt of <ph name="PRODUCT_OS_NAME" /> met een wachtwoord beveiligde bestanden blokkeert of toestaat.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> bepaalt of <ph name="PRODUCT_OS_NAME" /> bestanden blokkeert of toestaat die te groot zijn om te worden geanalyseerd.
+
+      Het veld <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> wordt gebruikt om te bepalen voor welke tags de connector moet vereisen dat de gebruiker een verantwoording verstrekt om een scan over te slaan die resulteert in een waarschuwing die kan worden genegeerd. Als je het veld niet instelt, wordt aangenomen dat er geen verantwoording vereist is.
+
+      De velden <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> worden gebruikt om een bericht in te stellen dat de gebruiker krijgt als een waarschuwing wordt getoond nadat een scan problemen heeft gevonden. Het veld 'message' bevat de tekst die de gebruiker te zien krijgt en mag maximaal 200 tekens bevatten. Het veld <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" /> bevat een door de beheerder geleverde URL waarop de gebruiker kan klikken voor meer door de klant geleverde informatie over waarom de actie is geblokkeerd. Het veld <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> is optioneel en geeft de taal van het bericht aan. Met een leeg veld <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> of de waarde 'default' wordt een bericht aangegeven dat moet worden gebruikt als er geen bericht is in de taal van de gebruiker. Het veld 'tag' geeft aan voor welk type scans het bericht wordt getoond. De lijst <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" /> kan nul of meer items bevatten. Voor elk item moeten de velden 'message' en 'tag' zijn ingevuld.
+
+      Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting voor meer informatie.</translation>
 <translation id="4402887080007986374">De geldige versie van de servicevoorwaarden van Edu Coexistence</translation>
 <translation id="4408428864159735559">Lijst met vooraf geconfigureerde netwerkfileshares.</translation>
 <translation id="4410236409016356088">Netwerkbandbreedte beperken</translation>
@@ -4644,6 +4692,7 @@ Als je dit beleid niet instelt, is voor alle oorsprongen een eerder gebruikersge
 <translation id="4615892138881859957">De sneltoets beheren die wordt gebruikt om de 'six pack'-toets voor Invoegen te activeren</translation>
 <translation id="4617338332148204752">De metatagcontrole in <ph name="PRODUCT_FRAME_NAME" /> overslaan</translation>
 <translation id="461901491675418689">De functie NewBaseUrlInheritanceBehavior is beschikbaar</translation>
+<translation id="4623516906510429751">Ad-hoc-handtekeningen bij programmacode gebruiken voor shims voor progressive web-apps</translation>
 <translation id="4624417808625504735">Voorkomen dat JavaScript op deze sites JIT kan gebruiken</translation>
 <translation id="46321462262887935">Toetsen op de bovenste rij gebruiken als functietoetsen, maar de gebruiker toestaan dit te wijzigen</translation>
 <translation id="4632343302005518762"><ph name="PRODUCT_FRAME_NAME" /> toestaan de vermelde soorten content te verwerken.</translation>
@@ -6661,6 +6710,7 @@ Als je het beleid niet instelt, wordt de algemene standaardwaarde gebruikt voor 
 <translation id="6207607210601267301">Verificatie zonder pincode uitzetten voor de host voor externe toegang</translation>
 <translation id="6208896993204286313">Beleidsgegevens van <ph name="PRODUCT_NAME" /> rapporteren</translation>
 <translation id="6210259502936598222">OS- en <ph name="PRODUCT_NAME" />-versiegegevens rapporteren</translation>
+<translation id="6213560283141495655">Gebruik geen ad-hoc-handtekeningen bij programmacode voor shims voor progressive web-apps.</translation>
 <translation id="6220835555850906733">Als je het beleid toepast of niet instelt, is alle ondersteunde audio-uitvoer op de apparaten van gebruikers toegestaan.
 
       Als je het beleid niet toepast, is er geen audio-uitvoer toegestaan terwijl gebruikers zijn ingelogd.
@@ -6880,6 +6930,14 @@ Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns vo
 <translation id="632248221998836641">De IPv6-bereikbaarheidscheck overschrijven. Vraag de AAAA-record altijd op voor hostnaamresolutie.</translation>
 <translation id="6324274808543634377">F11-/F12-instellingen gebruiken de sneltoets met de functietoets Alt</translation>
 <translation id="6327643515544933974">Web-USB-instellingen</translation>
+<translation id="6328272502368270191">Met dit beleid kun je de functie VC-achtergrond met generatieve AI aan- of uitzetten voor <ph name="PRODUCT_OS_NAME" />.
+De standaardwaarde is 1.
+
+1 = Generatieve AI-achtergrond toestaan zonder AI-modellen te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Generatieve AI-achtergrond niet toestaan.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="6330882599388782338">Toestaan dat sites toegang hebben tot sensoren</translation>
 <translation id="6331167725613770725">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
@@ -7287,6 +7345,7 @@ Als je ervoor kiest het volgende te gebruiken:
 
       Als dit beleid niet is ingesteld, kan de gebruiker elke op het systeem geïnstalleerde plug-in gebruiken, behalve hardgecodeerde ongeschikte, verouderde of gevaarlijke plug-ins.</translation>
 <translation id="6571055160227165318">Toestaan dat WebSQL wordt aangezet door Chrome-flag.</translation>
+<translation id="6574216414580419109">Instellingen voor de functie Generatieve AI-achtergrond</translation>
 <translation id="6574903167639386816">Profielgegevens op schijf wissen als gebruikerssessie eindigt</translation>
 <translation id="6575403002861093126">Als je dit beleid instelt, geef je aan hoeveel uur het Group Policy Object (GPO) in het cachegeheugen wordt bewaard. Dit is de maximale periode dat GPO's kunnen worden hergebruikt tot ze opnieuw worden gedownload. Het systeem gebruikt de in het cachegeheugen opgeslagen GPO's opnieuw in plaats van die opnieuw te downloaden bij het ophalen van elk beleid, zolang de versie van de GPO's niet is gewijzigd.
 
@@ -7812,6 +7871,7 @@ Dit beleid wordt in de toekomst verwijderd nadat de functie voor afdrukstuurprog
 
       Als dit beleid niet wordt ingesteld, wordt HTTP/0.9 uitgezet op niet-standaardpoorten.</translation>
 <translation id="6969332115615661188">Video-invoer uitzetten</translation>
+<translation id="6969949359984470271">Kiosk-web-app kan niet offline worden gebruikt</translation>
 <translation id="6971579036359007697">Bepaalt de migratie van lokale bestanden naar de cloud.
 Geldt alleen voor SkyVault-gebruikers, d.w.z. als LocalUserFilesAllowed is ingesteld op False. Anders wordt dit genegeerd.
 
@@ -8196,23 +8256,6 @@ Belangrijke opmerking: De planningen die door dit beleid zijn ingesteld, worden 
 * Als je het beleid instelt op Merge (Samenvoegen), wordt het gebruikersbeleid in gebruikers-GPO's samengevoegd met het gebruikersbeleid van computer-GPO's. Computer-GPO's hebben voorrang.
 
 * Als je het beleid instelt op Replace (Vervangen), wordt het gebruikersbeleid in gebruikers-GPO's vervangen door het gebruikersbeleid van computer-GPO's. Gebruikers-GPO's worden genegeerd.</translation>
-<translation id="7258250780552783197">Lijst met instellingen voor Chrome Enterprise Connectors-services die moeten worden toegepast op de Enterprise Connector <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" />. Die wordt geactiveerd als een bestand wordt overgedragen binnen <ph name="PRODUCT_OS_NAME" />.
-
-      De velden <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> worden gebruikt om te bepalen of de connector een bestand voor analyse moet sturen als het tussen een bron en bestemming wordt overgedragen en welke tags moeten worden opgenomen in dit analyseverzoek. Een tag die overeenkomt met een 'enable'-regel, wordt opgenomen in het analyseverzoek als de bron en bestemming overeenkomen met de regel die is gekoppeld aan die tag, op voorwaarde dat er geen 'disable'-regel met dezelfde tag overeenkomt met de overdracht. De analyse vindt plaats als er minstens 1 tag moet worden opgenomen in het verzoek. Een <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />-regel wordt gedefinieerd door een lijst van paren. Elk paar bevat een lijst van bronnen en een lijst van bestemmingen. De <ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> bepaalt op welk bestandssysteem een regel moet worden toegepast.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> geeft aan bij welke analyseserviceprovider de instellingen horen.
-
-      Als je het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> instelt op 1, betekent dit dat <ph name="PRODUCT_OS_NAME" /> wacht op een reactie van de analyseservice voordat de overdracht wordt toegestaan. Elke andere waarde met een geheel getal betekent dat <ph name="PRODUCT_OS_NAME" /> de overdracht onmiddellijk kan uitvoeren.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> bepaalt of <ph name="PRODUCT_OS_NAME" /> bestanden blokkeert of toestaat die zijn beveiligd met een wachtwoord.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> bepaalt of <ph name="PRODUCT_OS_NAME" /> bestanden blokkeert of toestaat die te groot zijn om te worden geanalyseerd.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> wordt gebruikt om te bepalen voor welke tags de connector moet vereisen dat de gebruiker een verantwoording opgeeft om een scan over te slaan die resulteert in een waarschuwing die kan worden overgeslagen. Als je het veld niet instelt, wordt aangenomen dat er geen verantwoording vereist is.
-
-      De velden <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> worden gebruikt om een bericht in te stellen dat de gebruiker te zien krijgt als een waarschuwing wordt getoond nadat een scan problemen heeft gevonden. Het veld 'message' bevat de tekst die de gebruiker te zien krijgt en mag maximaal 200 tekens bevatten. Het veld <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" /> bevat een door de beheerder geleverde URL waarop de gebruiker kan klikken voor meer door de klant geleverde informatie over waarom de actie is geblokkeerd. Het veld <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> is optioneel en bevat de taal van het bericht. Met een leeg veld <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> of de waarde 'default' wordt een bericht aangegeven dat moet worden gebruikt als er geen bericht is in de taal van de gebruiker. Het veld 'tag' geeft aan voor welk type scans het bericht wordt getoond. De lijst <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" /> kan nul of meer items bevatten. Voor elk item moeten de velden 'message' en 'tag' zijn ingevuld.
-
-      Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting voor meer informatie.</translation>
 <translation id="7258823566580374486">Afscherming van hosts voor externe toegang aanzetten</translation>
 <translation id="7260204423892780600">Hiermee bepaal je de instellingen voor de Google Assistent.</translation>
 <translation id="7261140115553020049">Floating Workspace-service aanzetten</translation>
@@ -8463,6 +8506,14 @@ Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instell
 <translation id="748292668225669178">Hiermee stel je de activering van <ph name="MICROSOFT_ONE_DRIVE_NAME" /> in</translation>
 <translation id="7485481791539008776">Regels voor selectie van standaardprinter</translation>
 <translation id="7486205887492534734">Prompt voor als meerdere certificaten overeenkomen op het inlogscherm</translation>
+<translation id="7487148156560435405">Met dit beleid kun je de functie VC-achtergrond met generatieve AI aan- of uitzetten voor <ph name="PRODUCT_OS_NAME" />.
+De standaardwaarde is 1.
+
+1 = VC-achtergrond met generatieve AI toestaan zonder AI-modellen te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = VC-achtergrond met generatieve AI niet toestaan.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="748873163367340515">Alleen essentiële cookies en gegevens gebruiken voor zoeken.</translation>
 <translation id="7489169777107143496">Uitgebreide Safe Browsing-scans van downloads uitzetten</translation>
 <translation id="7489661071474025727">Hiermee bepaal je of de service voor accountherstel is geactiveerd voor je gebruikers op <ph name="PRODUCT_OS_NAME" />-apparaten.
@@ -8519,6 +8570,11 @@ Als je dit beleid instelt op True, probeert <ph name="PRODUCT_OS_NAME" /> payloa
 <translation id="7519218194072744342">De URL van de protocolhandler.</translation>
 <translation id="7519251620064708155">Het genereren van sleutels toestaan op deze sites</translation>
 <translation id="7521864460386999758">Niet toestaan dat code van derden wordt geïnjecteerd in Chrome</translation>
+<translation id="7522636035703637613">Als je het beleid aanzet of niet instelt, wordt het gebruik van ad-hoc-handtekeningen aangezet voor apps die worden gemaakt bij de installatie van een progressive web-app (PWA). Hierdoor heeft elke geïnstalleerde app een unieke identiteit voor <ph name="MAC_OS_NAME" />-systeemcomponenten.
+
+Als je het beleid uitzet, heeft elke app die wordt gemaakt bij de installatie van een progressive web-app (PWA) dezelfde identiteit. Dit kan de <ph name="MAC_OS_NAME" />-functionaliteit verstoren.
+
+Zet het beleid alleen uit als je een oplossing voor beveiliging van eindpunten gebruikt die apps met een ad-hoc-handtekening blokkeert.</translation>
 <translation id="7524983116584990314">Automatisch invullen wissen</translation>
 <translation id="7529144158022474049">Spreidingsfactor voor automatische update</translation>
 <translation id="7529332889403151669">Geeft aan of de melding voor volledig scherm moet worden getoond als het apparaat uit de slaapstand wordt gehaald of het donkere scherm wordt uitgezet.
@@ -8582,6 +8638,7 @@ Als je geen beleid opgeeft, zijn er geen uitzonderingen toegestaan op <ph name="
 
       Als je het beleid toepast of niet instelt, wordt Eenheidsconversie van Snelle antwoorden aangezet.
       Als je het beleid niet toepast, wordt Eenheidsconversie van Snelle antwoorden uitgezet.</translation>
+<translation id="7584363090329234690">VC-achtergrond met generatieve AI toestaan zonder AI-modellen te verbeteren</translation>
 <translation id="7585312329612243723">Het attestproces <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> aanzetten voor een lijst met URL's in beheerde browsers</translation>
 <translation id="7587345076013230465">De gebruiker vragen om het clientcertificaat te selecteren als het beleid voor automatische selectie overeenkomt met meerdere certificaten op het inlogscherm</translation>
 <translation id="7587921466180902617">Dogfood-versie van Screencast aanzetten voor gebruikers van Family Link</translation>
@@ -9139,6 +9196,7 @@ Het gebruik van <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> of <ph name="LA
 <translation id="802776363472387903">De SHA-256-hash van de <ph name="PLUGIN_VM_NAME" />-afbeelding.</translation>
 <translation id="8028814157747157754">De standaard zoekprovider aanzetten en toestaan dat gebruikers de lijst met zoekproviders wijzigen</translation>
 <translation id="8029201909194194377">Maximale toegestane sessieduur voor verbindingen voor externe toegang</translation>
+<translation id="8031651557770840616">Generatieve AI-achtergrond niet toestaan</translation>
 <translation id="8033450879690820321">Dit beleid biedt een tijdelijke afmelding voor het nieuwe gedrag van focusbare scrollers voor het toetsenbord.
 
 Als je dit beleid aanzet of niet instelt, kunnen scrollers zonder onderliggende focusbare items standaard worden gefocust met het toetsenbord. Daarnaast zijn scrollers standaard klik-focusbaar en programmatic focusbaar.
@@ -10691,6 +10749,7 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
 
       Als dit beleid is ingesteld op True of niet is ingesteld, kunnen alle gebruikers inloggen.</translation>
 <translation id="966425658642788645">Standaardgedrag toepassen</translation>
+<translation id="970144760302377175">Instellen wanneer de Graduation-tool van <ph name="PRODUCT_OS_NAME" /> beschikbaar is</translation>
 <translation id="971677226939413180">Optie 'Afdrukken als afbeelding' niet beschikbaar voor gebruikersselectie.</translation>
 <translation id="974349541138387272">URI-template van gewenste DNS-over-HTTPS-resolver opgeven</translation>
 <translation id="978658824596356870">24-uurs klok</translation>

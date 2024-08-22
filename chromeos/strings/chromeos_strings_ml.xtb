@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">എക്സ്ക്ലൂസീവ് <ph name="PRODUCT_NAME" /> അസറ്റുകൾ ഇപ്പോൾ ലഭ്യമാണ്</translation>
 <translation id="1022628058306505708">എർത്ത് ഫ്ലോ</translation>
 <translation id="1026212596705997935">കുറുക്കുവഴി "<ph name="CONFLICT_ACCEL_NAME" />" എന്നതിനായി നിലവിൽ ഉപയോഗിക്കുന്നു. പുതിയൊരു കുറുക്കുവഴി അമർത്തുക. നിലവിലുള്ള കുറുക്കുവഴിക്ക് പകരം മറ്റൊന്ന് നൽകാൻ, ഈ കുറുക്കുവഴി വീണ്ടും അമർത്തുക.</translation>
+<translation id="1030856839388844477">ഡാറ്റ ഉപയോഗം റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ത്രെഡുകൾ, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">പുതിയ ഫീച്ചർ ലഭ്യമാണ്, കൂടുതലറിയാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാളം കീ ഉപയോഗിക്കുക.</translation>
 <translation id="1049663189809099096">പാസ്‌റ്റൽ മഞ്ഞ</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">ദുർബലമായ സിഗ്നൽ</translation>
 <translation id="1300115153046603471">APN തരം ഡിഫോൾട്ടും <ph name="ATTACH" />-ഉം ആണ്.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">പരിവർത്തനം ചെയ്യുക</translation>
 <translation id="1304014921944666344">സൃഷ്‌ടിച്ച തീയതി</translation>
 <translation id="1308754910631152188">അപ്ഡേറ്റ് ചെയ്യുന്നു (<ph name="PERCENTAGE_VALUE" />% പൂർത്തിയായി)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> മിനിറ്റ്</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">സാൾട്ട് ലേക്ക്</translation>
 <translation id="1367951781824006909">ഒരു ഫയല്‍ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1371650399987522809">Google AI കൊണ്ട് പ്രവർത്തിക്കുന്ന, വാൾപേപ്പറിനെ സംബന്ധിച്ച ഫീഡ്‌ബാക്ക്</translation>
+<translation id="1374385338586507108">നിർവചിക്കുക</translation>
 <translation id="1387854245479784695">ഇത് എല്ലാ കോറുകളുടെയും സംഗ്രഹമാണ്</translation>
 <translation id="1393206549145430405">കോട്ട</translation>
 <translation id="1394661041439318933">ഉപകരണത്തിന്റെ കെയ്‌സിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">വൈദ്യുതി</translation>
 <translation id="346539236881580388">വീണ്ടും എടുക്കുക</translation>
 <translation id="3484914941826596830">ഫേംവെയർ അപ്ഡേറ്റ് ചെയ്തുകൊണ്ടിരിക്കുമ്പോൾ ഈ എക്സ്റ്റേണൽ ഉപകരണം അൺപ്ലഗ് ചെയ്യാനോ നിങ്ങളുടെ കമ്പ്യൂട്ടർ ഷട്ട് ഡൗൺ ചെയ്യാനോ പാടില്ല. നിങ്ങൾക്ക് ഈ വിൻഡോ ചെറുതാക്കാം. ഈ അപ്ഡേറ്റ് പൂർത്തിയാകാൻ ഏതാനും മിനിറ്റുകൾ എടുത്തേക്കാം, അതുവരെ നിങ്ങളുടെ എക്സ്റ്റേണൽ ഉപകരണം പ്രവർത്തിക്കില്ല.</translation>
-<translation id="3485555238092220889">ഉപയോഗസഹായി പ്രവർത്തനം</translation>
 <translation id="3486220673238053218">നിർവചനം</translation>
 <translation id="3487866404496702283">mahi ഫീച്ചറിനുള്ള ഫീഡ്ബാക്ക്</translation>
 <translation id="3488065109653206955">ഭാഗികമായി പ്രവര്‍ത്തനക്ഷമമാക്കി</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">സേവനമില്ല</translation>
 <translation id="4570558255126759859">റെക്കോർഡിംഗുകൾ സംഗ്രഹിക്കാൻ Gemini മോഡൽ ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="4573777384450697571">പരാജയപ്പെട്ടു - സർട്ടിഫിക്കറ്റ് കാലഹരണപ്പെട്ടു</translation>
+<translation id="4575450106703099687">ഉപയോഗസഹായി ഓപ്ഷനുകൾ</translation>
 <translation id="458794348635939462">എല്ലാ ഹോസ്‌റ്റുകളും പരിഹരിക്കാനായില്ല</translation>
 <translation id="4593212453765072419">പ്രോക്‌സി പ്രാമാണീകരണം ആവശ്യമാണ്</translation>
 <translation id="4594021849294327751">ട്രാൻസ്‌ക്രിപ്റ്റ് സൃഷ്ടിക്കുക</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />-ൽ <ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> എന്നതിനുള്ള 'എഡിറ്റ് ചെയ്യുക' ബട്ടൺ.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
+<translation id="5736820754189340309">ഡാറ്റ ഉപയോഗം റീസെറ്റ് ചെയ്തു</translation>
 <translation id="574392208103952083">ഇടത്തരം</translation>
 <translation id="5757187557809630523">അടുത്ത ട്രാക്ക്</translation>
 <translation id="5760715441271661976">പോര്‍ട്ടല്‍ നില</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="5784136236926853061">ഉയർന്ന HTTP പ്രതികരണ സമയം</translation>
 <translation id="5790391387506209808">ലാപിസ് ലസുലി</translation>
+<translation id="5810692306010756935">ബിരുദം</translation>
 <translation id="5816802250591013230">കുറുക്കുവഴിയൊന്നും സജ്ജീകരിച്ചിട്ടില്ല</translation>
 <translation id="5826644637650799838">ആർട്ടിനെ കുറിച്ച്</translation>
 <translation id="5832805196449965646">വ്യക്തിയെ ചേർക്കുക</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">ടെക്സ്റ്റ് നാവിഗേഷൻ</translation>
 <translation id="680983167891198932">കീ</translation>
 <translation id="6816797338148849397">നിങ്ങളുടെ തിരഞ്ഞെടുപ്പുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ ലഭ്യമാണ്. ആക്‌സസ് ചെയ്യാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാളം കീ ഉപയോഗിക്കുക.</translation>
+<translation id="6831043979455480757">വിവർത്തനം ചെയ്യുക</translation>
 <translation id="6853312040151791195">ഡിസ്‌ചാർജ് ചെയ്യൽ റേറ്റ്</translation>
 <translation id="6862416241246624313">ഫീഡ്‌ബാക്ക് സമർപ്പിച്ചു</translation>
 <translation id="6866732840889595464">ഡെയ്‌സി</translation>
@@ -1551,6 +1557,7 @@
 <translation id="9087578468327036362">ഈ ചോദ്യം റിപ്പോർട്ട് ചെയ്യുക</translation>
 <translation id="9088306295921699330">നിലവിലെ ഉപയോഗം</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">തീയതി റീസെറ്റ് ചെയ്യുന്നതിനെ കുറിച്ചുള്ള കൂടുതൽ വിവരങ്ങൾ</translation>
 <translation id="9100765901046053179">വിപുലമായ ക്രമീകരണം</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> എന്നതിനുള്ള ടിക്കറ്റ് റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു</translation>

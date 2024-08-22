@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Vipengee vya kipekee vya <ph name="PRODUCT_NAME" /> sasa vinapatikana</translation>
 <translation id="1022628058306505708">Kulingana na Dunia</translation>
 <translation id="1026212596705997935">Njia ya mkato inatumika katika kitendo cha "<ph name="CONFLICT_ACCEL_NAME" />". Bonyeza njia mpya ya mkato. Ili ubadilishe njia ya mkato iliyopo, bonyeza njia hii ya mkato tena.</translation>
+<translation id="1030856839388844477">Weka upya matumizi ya data</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (michakato <ph name="THREAD_COUNT" />, GHz <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">Kipengele kipya kinapatikana, tumia kishale cha Juu ili upate maelezo zaidi.</translation>
 <translation id="1049663189809099096">rangi ya krayoni ya manjano</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Mtandao si thabiti</translation>
 <translation id="1300115153046603471">APN ni aina chaguomsingi na <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Badilisha</translation>
 <translation id="1304014921944666344">Tarehe ilipotayarishwa</translation>
 <translation id="1308754910631152188">Inasasisha (imekamilika kwa asilimia <ph name="PERCENTAGE_VALUE" />)</translation>
 <translation id="1309341072016605398">Dakika <ph name="MINUTES" /></translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">ziwa lenye chumvi</translation>
 <translation id="1367951781824006909">Chagua faili</translation>
 <translation id="1371650399987522809">Maoni kuhusu mandhari yanayoendeshwa na Google AI</translation>
+<translation id="1374385338586507108">Fafanua</translation>
 <translation id="1387854245479784695">Huu ni ujumlisho wa viini vyote</translation>
 <translation id="1393206549145430405">ngome</translation>
 <translation id="1394661041439318933">Kiwango cha chaji cha kipochi ni asilimia <ph name="BATTERY_PERCENTAGE" />.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Ya sasa</translation>
 <translation id="346539236881580388">Piga picha tena</translation>
 <translation id="3484914941826596830">Usichomoe kifaa hiki cha nje wala usizime kompyuta yako programu dhibiti ikisasishwa. Unaweza kupunguza kidirisha hiki. Sasisho hili linaweza kuchukua dakika chache na kifaa chako cha nje huenda kisifanye kazi kwa wakati huu.</translation>
-<translation id="3485555238092220889">kitendo cha ufikivu</translation>
 <translation id="3486220673238053218">ufafanuzi</translation>
 <translation id="3487866404496702283">Maoni kuhusu kipengele cha mahi</translation>
 <translation id="3488065109653206955">Imaeamilisha kidogo</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Hakuna huduma</translation>
 <translation id="4570558255126759859">Ungependa kupakua mfumo wa Gemini ili uandae muhtasari wa rekodi?</translation>
 <translation id="4573777384450697571">Imeshindwa Kuchapisha - Muda wa Kutumia Cheti Umekwisha</translation>
+<translation id="4575450106703099687">chaguo za ufikivu</translation>
 <translation id="458794348635939462">Imeshindwa kusuluhisha seva pangishi zote</translation>
 <translation id="4593212453765072419">Uthibitishaji wa proksi unahitajika</translation>
 <translation id="4594021849294327751">Tayarisha manukuu</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> kati ya <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Kitufe cha kubadilisha cha <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Sasisha <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Matumizi ya data yamewekwa upya</translation>
 <translation id="574392208103952083">Wastani</translation>
 <translation id="5757187557809630523">wimbo unaofuata</translation>
 <translation id="5760715441271661976">Hali ya Ukurasa wa Mwanzo</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Zima sauti</translation>
 <translation id="5784136236926853061">Muda mwingi wa kusubiri maombi ya HTTP</translation>
 <translation id="5790391387506209808">kito cha nili na zari</translation>
+<translation id="5810692306010756935">Kuhitimu</translation>
 <translation id="5816802250591013230">Hakuna njia ya mkato iliyokabidhiwa</translation>
 <translation id="5826644637650799838">Kuhusu sanaa hii</translation>
 <translation id="5832805196449965646">Ongeza Mtumiaji Mwingine</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Usogezaji kwenye maandishi</translation>
 <translation id="680983167891198932">Ufunguo</translation>
 <translation id="6816797338148849397">Maelezo yanayohusiana na chaguo lako yanapatikana. Tumia kishale cha Juu ili uyafikie.</translation>
+<translation id="6831043979455480757">Tafsiri</translation>
 <translation id="6853312040151791195">Kasi ya kutumia chaji</translation>
 <translation id="6862416241246624313">Maoni yametumwa</translation>
 <translation id="6866732840889595464">ua la daisy</translation>
@@ -1551,6 +1557,7 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="9087578468327036362">Ripoti hoja hii</translation>
 <translation id="9088306295921699330">Matumizi ya sasa</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Maelezo zaidi kuhusu tarehe ya Kuwekwa upya</translation>
 <translation id="9100765901046053179">Mipangilio ya kina</translation>
 <translation id="910415269708673980">Onyesha upya tiketi ya <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Inachanganua ukurasa wa <ph name="PAGE_NUMBER" /></translation>

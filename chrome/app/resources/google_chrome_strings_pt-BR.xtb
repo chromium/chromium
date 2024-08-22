@@ -71,6 +71,7 @@
 <translation id="2018528049276128029">Cada perfil armazena as próprias informações do Chrome, como favoritos, histórico, senhas, entre outras</translation>
 <translation id="2018879682492276940">Falha na instalação. Tente novamente.</translation>
 <translation id="2022471217832964798">Enquanto configuramos o acesso à conta, você ainda pode usar o Chrome. Talvez não seja possível acessar alguns recursos até que a configuração seja concluída.</translation>
+<translation id="2034233344106846793">Quando possível, o Chrome faz upgrade automático de conexões sem segurança para HTTPS</translation>
 <translation id="207902854391093810">Quando os testes estão ativados, a medição de anúncios permite que os sites que você visita solicitem informações do Chrome, ajudando a medir o desempenho dos anúncios. Ela também restringe o rastreamento entre sites transferindo o mínimo de informações possível entre eles.</translation>
 <translation id="2091012649849228750">Para receber as futuras atualizações do Google Chrome, você precisa do Windows 10 ou versão mais recente. Este computador está usando o Windows 8.</translation>
 <translation id="2094648590148273905">Termos do ChromeOS Flex</translation>
@@ -161,7 +162,7 @@
 <translation id="3065168410429928842">Guia do Chrome</translation>
 <translation id="3080151273017101988">Executar aplicativos em segundo plano quando o Google Chrome estiver fechado</translation>
 <translation id="3100998948628680988">Nomear seu perfil do Chrome</translation>
-<translation id="3112458742631356345">O Chrome bloqueou o download porque o arquivo não é transferido com frequência e pode ser perigoso</translation>
+<translation id="3112458742631356345">O Chrome bloqueou o download porque o arquivo não é baixado com frequência e pode ser perigoso</translation>
 <translation id="3114643501466072395">Para verificar se suas outras senhas estão protegidas contra violações de dados e outros problemas de segurança, <ph name="BEGIN_LINK" />faça login no Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">O Chrome bloqueou o download porque o arquivo inclui outros arquivos que podem estar ocultando malware</translation>
 <translation id="3140883423282498090">Suas alterações terão efeito na próxima vez que você reiniciar o Google Chrome.</translation>
@@ -471,7 +472,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7641148173327520642">O administrador do seu sistema configurou o Google Chrome para abrir o <ph name="ALTERNATIVE_BROWSER_NAME" /> ao acessar <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7651907282515937834">Logotipo do Chrome Enterprise</translation>
-<translation id="76531479118467370">O Chrome bloqueou o download porque você desativou o recurso Navegação segura e não é possível verificar o arquivo</translation>
+<translation id="76531479118467370">O Chrome bloqueou o download porque você desativou o recurso Navegação segura, e não é possível verificar o arquivo</translation>
 <translation id="7655455401911432608">Seu histórico de navegação, um registro de sites visitados usando o Chrome neste dispositivo.</translation>
 <translation id="7655472416356262023">Remover conta do Chrome</translation>
 <translation id="7661924425853052955">Você não visitou os sites recentemente. O Chrome removeu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="COUNT" /></translation>

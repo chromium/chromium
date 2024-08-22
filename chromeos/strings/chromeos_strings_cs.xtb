@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Jsou k dispozici exkluzivní položky pro <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Plynoucí Země</translation>
 <translation id="1026212596705997935">Zkratka se používá pro „<ph name="CONFLICT_ACCEL_NAME" />“. Stiskněte novou zkratku. Pokud existující zkratku chcete nahradit, stiskněte tuto zkratku znovu.</translation>
+<translation id="1030856839388844477">Resetovat využití dat</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (počet vláken: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">K dispozici je nová funkce, další informace zobrazíte šipkou nahoru.</translation>
 <translation id="1049663189809099096">pastelově žlutá</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Slabý signál</translation>
 <translation id="1300115153046603471">APN je typu výchozí a <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Převést</translation>
 <translation id="1304014921944666344">Datum vytvoření</translation>
 <translation id="1308754910631152188">Aktualizace (dokončeno <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> min</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">slané jezero</translation>
 <translation id="1367951781824006909">Vybrat soubor</translation>
 <translation id="1371650399987522809">Zpětná vazba k tapetě vytvořené pomocí Googlu AI</translation>
+<translation id="1374385338586507108">Definovat</translation>
 <translation id="1387854245479784695">Jedná se o agregaci všech jader</translation>
 <translation id="1393206549145430405">hrad</translation>
 <translation id="1394661041439318933">Stav baterie pouzdra je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -295,7 +298,7 @@
 <translation id="2407209115954268704">Stav uzamčení SIM karty</translation>
 <translation id="241419523391571119">Pokud to chcete otestovat, znovu otevřete víko</translation>
 <translation id="2414660853550118611">O tapetě</translation>
-<translation id="2414886740292270097">Tmavé</translation>
+<translation id="2414886740292270097">Tmavá</translation>
 <translation id="2418150275289244458">Otevřít v nastavení</translation>
 <translation id="2421798028054665193">Obrázek <ph name="CURRENT_PAGE" /> z <ph name="TOTAL_PAGES" /></translation>
 <translation id="242825218556404975">Nebyla zjištěna žádná řeč</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Aktuální</translation>
 <translation id="346539236881580388">Pořídit další</translation>
 <translation id="3484914941826596830">Během aktualizace firmwaru neodpojujte externí zařízení ani nevypínejte počítač. Toto okno můžete minimalizovat. Aktualizace může trvat několik minut a externí zařízení po tuto dobu nemusí fungovat.</translation>
-<translation id="3485555238092220889">akce přístupnosti</translation>
 <translation id="3486220673238053218">definice</translation>
 <translation id="3487866404496702283">Zpětná vazba k funkci mahi</translation>
 <translation id="3488065109653206955">Částečně aktivováno</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Žádný signál</translation>
 <translation id="4570558255126759859">Stáhnout model Gemini k vytváření shrnutí nahrávek?</translation>
 <translation id="4573777384450697571">Selhalo – vypršela platnost certifikátu</translation>
+<translation id="4575450106703099687">možnosti usnadnění přístupu</translation>
 <translation id="458794348635939462">Všechny hostitele se nepodařilo vyřešit</translation>
 <translation id="4593212453765072419">Vyžadováno ověření proxy serveru</translation>
 <translation id="4594021849294327751">Vytvořit přepis</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> z <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Tlačítko Upravit pro <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Aktualizovat <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Využití dat bylo resetováno</translation>
 <translation id="574392208103952083">Střední</translation>
 <translation id="5757187557809630523">další skladba</translation>
 <translation id="5760715441271661976">Stav portálu</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Ztlumit</translation>
 <translation id="5784136236926853061">Vysoká latence požadavků HTTP</translation>
 <translation id="5790391387506209808">lazurit</translation>
+<translation id="5810692306010756935">Dokončení studia</translation>
 <translation id="5816802250591013230">Není přiřazena žádná zkratka</translation>
 <translation id="5826644637650799838">O tomto uměleckém dílu</translation>
 <translation id="5832805196449965646">Přidat uživatele</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Navigace v textu</translation>
 <translation id="680983167891198932">Klíč</translation>
 <translation id="6816797338148849397">K dispozici jsou informace související s vaším výběrem. Zobrazíte je pomocí šipky nahoru.</translation>
+<translation id="6831043979455480757">Přeložit</translation>
 <translation id="6853312040151791195">Rychlost vybíjení</translation>
 <translation id="6862416241246624313">Zpětná vazba byla odeslána</translation>
 <translation id="6866732840889595464">sedmikráska</translation>
@@ -1551,6 +1557,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="9087578468327036362">Nahlaste tento dotaz</translation>
 <translation id="9088306295921699330">Současné využití</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Další informace o datu resetování</translation>
 <translation id="9100765901046053179">Rozšířená nastavení</translation>
 <translation id="910415269708673980">Obnovte lístek pro <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenování stránky <ph name="PAGE_NUMBER" /></translation>
@@ -1589,7 +1596,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="966787709310836684">nabídka</translation>
 <translation id="979450713603643090">Světle růžová</translation>
 <translation id="982713511914535780">Spustit test vybíjení</translation>
-<translation id="98515147261107953">Na šířku</translation>
+<translation id="98515147261107953">Krajina</translation>
 <translation id="987264212798334818">Všeobecné</translation>
 <translation id="995062385528875723">Nelze použít písmena s diakritikou, jinou než latinskou abecedu ani symboly</translation>
 </translationbundle>

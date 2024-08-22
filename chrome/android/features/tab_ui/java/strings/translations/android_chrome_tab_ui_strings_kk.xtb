@@ -20,6 +20,7 @@
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> қойынды топтастырылды.</translation>
 <translation id="1657719826150349398">Қойындыны төмен жылжыту</translation>
 <translation id="1713541401465507417">Барлық қойынды мен топты жабу</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Толық ақпарат<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> қойынды топтастырылды.</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойынды}other{<ph name="TABS_COUNT_MANY" /> қойынды}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> таңдалған қойындыға бетбелгі қою}other{<ph name="TABS_COUNT_MANY" /> таңдалған қойындыға бетбелгі қою}}</translation>
@@ -83,6 +84,7 @@
 <translation id="4686942373615810936">Жаңа ғана жасалды.</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 күннен кейін жабу}other{<ph name="DAY_COUNT_MANY" /> күннен кейін жабу}}</translation>
 <translation id="4777866634702576038">Қойындылар тобын жою қажет пе?</translation>
+<translation id="4783638485675352219">Бұл құрылғыдағы ашық қойындылардың атаулары мен URL мекенжайларын операциялық жүйемен бөлісу</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> пікір)}other{(<ph name="REVIEWS_COUNT_MANY" /> пікір)}}</translation>
 <translation id="4850886885716139402">Көрініс</translation>
 <translation id="4870911314065352661">Барлық қойынды жабылсын ба?</translation>

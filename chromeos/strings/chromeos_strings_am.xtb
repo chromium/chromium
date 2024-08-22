@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">ለሚመለከተው የተወሰኑ የ<ph name="PRODUCT_NAME" /> ንብረቶች አሁን ይገኛሉ</translation>
 <translation id="1022628058306505708">የዓለም ፍሰት</translation>
 <translation id="1026212596705997935">የ«<ph name="CONFLICT_ACCEL_NAME" />» አቋራጭ ጥቅም ላይ እየዋለ ነው። አዲስ አቋራጭ ይጫኑ። የነበረውን አቋራጭ ለመተካት ይህን አቋራጭ እንደገና ይጫኑ።</translation>
+<translation id="1030856839388844477">የውሂብ አጠቃቀምን ዳግም አስጀምር</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ተከታታይ፣ <ph name="CPU_MAX_CLOCK_SPEED" />ጊኸ)</translation>
 <translation id="1047773237499189053">አዲስ ባህሪ ይገኛል፣ የበለጠ ለመረዳት የላይ ቀስት ቁልፍን ይጠቀሙ።</translation>
 <translation id="1049663189809099096">ፓስቴል ቢጫ</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">ደካማ ሲግናል</translation>
 <translation id="1300115153046603471">ኤፒኤን ነባሪ ዓይነት እና <ph name="ATTACH" />ነው።</translation>
 <translation id="1301069673413256657">ጂኤስኤም</translation>
+<translation id="1301340234286078471">ቀይር</translation>
 <translation id="1304014921944666344">የተፈጠረበት ቀን</translation>
 <translation id="1308754910631152188">በማዘመን ላይ (<ph name="PERCENTAGE_VALUE" />% ተጠናቅቋል)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> ደቂቃዎች</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">የጨው ሀይቅ</translation>
 <translation id="1367951781824006909">ፋይል ይምረጡ</translation>
 <translation id="1371650399987522809">በGoogle ሰው ሠራሽ አስተውሎት የተጎላበተ ልጣፍ ግብረመልስ</translation>
+<translation id="1374385338586507108">ግለጽ</translation>
 <translation id="1387854245479784695">ይህ የሁሉም ኮሮች ድምር ነው</translation>
 <translation id="1393206549145430405">ቤተ-መንግስት</translation>
 <translation id="1394661041439318933">መሣሪያው <ph name="BATTERY_PERCENTAGE" />% የመያዣ ባትሪ አለው።</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">የአሁኑ ጊዜ</translation>
 <translation id="346539236881580388">ዳግም አንሳ</translation>
 <translation id="3484914941826596830">ፊርምዌር በማዘመን ላይ ሳለ ይህን ውጫዊ መሣሪያ አይንቀሉት ወይም ኮምፒውተርዎን አይዝጉት። ይህን መስኮት መቀነስ ይችላሉ። ይህ ዝማኔ ጥቂት ደቂቃዎች ሊወስድ ይችላል፣ እና በዚህ ጊዜ የእርስዎ ውጫዊ መሣሪያ ላይሰራ ይችላል።</translation>
-<translation id="3485555238092220889">የተደራሽነት እርምጃ</translation>
 <translation id="3486220673238053218">ብየና</translation>
 <translation id="3487866404496702283">ለmahi ባህሪ ግብረመልስ</translation>
 <translation id="3488065109653206955">በከፊል ገብሯል</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">ምንም አገልግሎት የለም</translation>
 <translation id="4570558255126759859">ቅጂዎችን ለማጠቃለል የGemini ሞዴል ይውረድ?</translation>
 <translation id="4573777384450697571">አልተሳካም - የዕውቅና ማረጋገጫ ጊዜው አልፎበታል</translation>
+<translation id="4575450106703099687">የተደራሽነት አማራጮች</translation>
 <translation id="458794348635939462">ለሁሉም አስተናጋጆች መፍትሔ መስጠት አልተሳካም</translation>
 <translation id="4593212453765072419">የተኪ ማረጋገጥ ያስፈልጋል</translation>
 <translation id="4594021849294327751">ጽሁፍ ግልባጭ ፍጠር</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> ከ<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">ለ<ph name="SHORTCUT_DESCRIPTION" /> የአርትዕ አዝራር።</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" />ን አዘምን</translation>
+<translation id="5736820754189340309">የውሂብ አጠቃቀም ዳግም ጀምሯል</translation>
 <translation id="574392208103952083">መካከለኛ</translation>
 <translation id="5757187557809630523">ቀጣይ ትራክ</translation>
 <translation id="5760715441271661976">የመተላለፊያ ሁኔታ</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">ድምፅ ይዝጉ</translation>
 <translation id="5784136236926853061">ከፍተኛ የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="5790391387506209808">ላፒስ ሉዙሊ</translation>
+<translation id="5810692306010756935">ደረጃ ማሳደግ</translation>
 <translation id="5816802250591013230">ምንም አቋራጭ አልተመደበም</translation>
 <translation id="5826644637650799838">ስለሥነ ጥበቡ</translation>
 <translation id="5832805196449965646">ሰው አክል</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">የጽሁፍ አሰሳ</translation>
 <translation id="680983167891198932">ቁልፍ</translation>
 <translation id="6816797338148849397">ከሚገኘው የእርስዎ ምርጫ ጋር የተገናኘ መረጃ ለመድረስ የላይ ቀስት ቁልፍን ይጠቀሙ።</translation>
+<translation id="6831043979455480757">መተርጎም</translation>
 <translation id="6853312040151791195">የኃይል ማለቂያ ፍጥነት</translation>
 <translation id="6862416241246624313">ግብረመልስ ገብቷል</translation>
 <translation id="6866732840889595464">ዴይዚ</translation>
@@ -1551,6 +1557,7 @@
 <translation id="9087578468327036362">ይህንን መጠይቅ ሪፖርት ያድርጉ</translation>
 <translation id="9088306295921699330">የአሁኑ አጠቃቀም</translation>
 <translation id="9095775724867566971">PluginVm</translation>
+<translation id="909856219855259344">በዳግም ማስጀመር ቀን ተጨማሪ መረጃ</translation>
 <translation id="9100765901046053179">የላቁ ቅንብሮች</translation>
 <translation id="910415269708673980">የ<ph name="PRINCIPAL_NAME" /> ቲኬትን ያድሱ</translation>
 <translation id="9106415115617144481">ገፅ <ph name="PAGE_NUMBER" />ን በመቃኘት ላይ</translation>

@@ -81,7 +81,6 @@
 <translation id="2767464022270041271">Нема сачуваних лозинки. Google менаџер лозинки може да вам проверава лозинке када их сачувате.</translation>
 <translation id="2869959624320573933">Пријавите се у Chrome</translation>
 <translation id="2876628302275096482">Сазнајте више о томе <ph name="BEGIN_LINK" />како Chrome штити приватност података<ph name="END_LINK" /></translation>
-<translation id="2952581218264071393">1. Отворите подешавања Chrome-а</translation>
 <translation id="2957447865124070833">Изаберите <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Одјављујете се са налога којим управља <ph name="SIGNOUT_MANAGED_DOMAIN" />, што ће избрисати Chrome податке са овог уређаја. Подаци ће остати на Google налогу.</translation>
 <translation id="309672519329227863">Приступајте Chrome лозинкама и осталим функцијама у другим апликацијама.</translation>
@@ -93,7 +92,6 @@
 <translation id="3340938510625667914">Chrome радње</translation>
 <translation id="3345341804167540816">Користите Chrome свуда</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{То се дешава када се Chrome не користи {THRESHOLD} минут}one{То се дешава када се Chrome не користи {THRESHOLD} минут}few{То се дешава када се Chrome не користи {THRESHOLD} минута}other{То се дешава када се Chrome не користи {THRESHOLD} минута}}</translation>
-<translation id="3399930248910934354">Отвори подешавања Chrome-а</translation>
 <translation id="344736123700721678">Брже приступајте Chrome-у са фиксираног почетног екрана</translation>
 <translation id="3472587960215700950">Chrome користи Google мапе да би вам пружао путању и локалне информације о откривеним адресама.</translation>
 <translation id="3503014945441706099">Набавите побољшано безбедно прегледање и за овај Chrome профил</translation>
@@ -237,7 +235,6 @@
 <translation id="7394108421562933108">Мапе у Chrome-у</translation>
 <translation id="7400722733683201933">О програму Google Chrome</translation>
 <translation id="7466693328838535498">У оквир Претражите виџете унесите Chrome</translation>
-<translation id="746684838091935575">3. Изаберите Chrome</translation>
 <translation id="7492574581995589075">Организација је искључила могућност коришћења и чувања Chrome података на Google налогу. Нови обележивачи, лозинке и други садржај ће се чувати само на овом уређају.</translation>
 <translation id="7581063337314642333">Посетите мрежу са картицама у Chrome-у</translation>
 <translation id="7642373780953416937">Примајте обавештења о свим проблемима у вези са приватношћу или безбедношћу које Chrome аутоматски открије.</translation>
@@ -301,7 +298,6 @@
 <translation id="8857676124663337448">Google менаџер лозинки није успео да провери све лозинке. Пробајте поново сутра.</translation>
 <translation id="8865415417596392024">Chrome подаци на налогу</translation>
 <translation id="8874688701962049679">Савети како да на најбољи начин користите Chrome.</translation>
-<translation id="8891935667620843985">Можете да аутоматски отварате линкове у Chrome-у тако што ћете га подесити као подразумевану апликацију за прегледање.</translation>
 <translation id="8897749957032330183">Лозинке се чувају у Google менаџеру лозинки на овом уређају.</translation>
 <translation id="8949681853939555434">Подесите Chrome као подразумевани прегледач</translation>
 <translation id="9068336935206019333">Отвори у Chrome режиму без архивирања</translation>

@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">Slab signal</translation>
 <translation id="1300115153046603471">APN je zadana vrsta i <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Konvertiranje</translation>
 <translation id="1304014921944666344">Datum izrade</translation>
 <translation id="1308754910631152188">Ažuriranje (dovršeno <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> min</translation>
@@ -77,6 +78,7 @@
 <translation id="1343442362630695901">slano jezero</translation>
 <translation id="1367951781824006909">Odaberite datoteku</translation>
 <translation id="1371650399987522809">Povratne informacije za pozadinu koju omogućuje Googleov AI</translation>
+<translation id="1374385338586507108">Definicija</translation>
 <translation id="1387854245479784695">Ovo je agregacija svih jezgri</translation>
 <translation id="1393206549145430405">Dvorac</translation>
 <translation id="1394661041439318933">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije za kutijicu.</translation>
@@ -463,7 +465,6 @@
 <translation id="346423161771747987">Struja</translation>
 <translation id="346539236881580388">Snimi ponovo</translation>
 <translation id="3484914941826596830">Dok se firmware ažurira, nemojte iskopčavati ovaj vanjski uređaj niti isključivati računalo. Ovaj prozor možete minimizirati. Ažuriranje može potrajati nekoliko minuta i vaš vanjski uređaj tada možda neće funkcionirati.</translation>
-<translation id="3485555238092220889">radnja u vezi s pristupačnošću</translation>
 <translation id="3486220673238053218">definicija</translation>
 <translation id="3487866404496702283">Povratne informacije za značajku Mahi</translation>
 <translation id="3488065109653206955">Djelomično aktivirano</translation>
@@ -672,6 +673,7 @@
 <translation id="4562494484721939086">Nema usluge</translation>
 <translation id="4570558255126759859">Preuzimanje Gemini modela radi sažimanja snimki?</translation>
 <translation id="4573777384450697571">Nije uspjelo – certifikat je istekao</translation>
+<translation id="4575450106703099687">opcije pristupačnosti</translation>
 <translation id="458794348635939462">Razrješavanje svih hostova nije uspjelo</translation>
 <translation id="4593212453765072419">Potrebna je autentifikacija proxy poslužitelja</translation>
 <translation id="4594021849294327751">Izradi prijepis</translation>
@@ -894,6 +896,7 @@
 <translation id="57838592816432529">Isključi zvuk</translation>
 <translation id="5784136236926853061">Visoka latencija HTTP-a</translation>
 <translation id="5790391387506209808">lapis lazulija</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Nije dodijeljen nijedan prečac</translation>
 <translation id="5826644637650799838">O umjetnosti</translation>
 <translation id="5832805196449965646">Dodaj osobu</translation>
@@ -1106,6 +1109,7 @@
 <translation id="6798678288485555829">Kretanje tekstom</translation>
 <translation id="680983167891198932">Ključ</translation>
 <translation id="6816797338148849397">Dostupne su informacije o vašem odabiru. Pristupite im pritiskom strelice prema gore.</translation>
+<translation id="6831043979455480757">Prevedi</translation>
 <translation id="6853312040151791195">Brzina pražnjenja</translation>
 <translation id="6862416241246624313">Povratna informacija je poslana</translation>
 <translation id="6866732840889595464">tratinčica</translation>

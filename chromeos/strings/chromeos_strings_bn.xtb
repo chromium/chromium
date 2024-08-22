@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">এক্সক্লুসিভ <ph name="PRODUCT_NAME" /> অ্যাসেট এখন উপলভ্য</translation>
 <translation id="1022628058306505708">আর্থ ফ্লো</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />"-এর জন্য শর্টকাট ব্যবহার করা হচ্ছে। নতুন শর্টকাট প্রেস করুন। আগে থাকা শর্টকাট পরিবর্তন করতে, আবার এই শর্টকাটে প্রেস করুন।</translation>
+<translation id="1030856839388844477">ডেটা ব্যবহার রিসেট করুন</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />টি থ্রেড, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">নতুন ফিচার উপলভ্য আছে, আরও জানতে, 'উর্ধমুখী তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
 <translation id="1049663189809099096">হাল্কা হলুদ</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">সিগন্যালটি ভাল নয়</translation>
 <translation id="1300115153046603471">APN-এর ধরন হল ডিফল্ট ও <ph name="ATTACH" />।</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">কনভার্ট করুন</translation>
 <translation id="1304014921944666344">তৈরি হওয়ার তারিখ</translation>
 <translation id="1308754910631152188">আপডেট হচ্ছে (<ph name="PERCENTAGE_VALUE" />% সম্পূর্ণ হয়েছে)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> মিনিট</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">সল্ট লেক</translation>
 <translation id="1367951781824006909">একটি ফাইল বেছে নিন</translation>
 <translation id="1371650399987522809">Google AI দ্বারা পরিচালিত ওয়ালপেপারের জন্য মতামত দিন</translation>
+<translation id="1374385338586507108">সংজ্ঞায়িত করুন</translation>
 <translation id="1387854245479784695">এটি সব কোরকে একসাথে দেখায়</translation>
 <translation id="1393206549145430405">দুর্গ</translation>
 <translation id="1394661041439318933">ডিভাইসের কেসে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">বর্তমান</translation>
 <translation id="346539236881580388">আবার তুলুন</translation>
 <translation id="3484914941826596830">ফার্মওয়্যার আপডেট করার সময়, এই এক্সটার্নাল ডিভাইসটি আনপ্লাগ করবেন না বা আপনার কম্পিউটার বন্ধ করবেন না। আপনি এই উইন্ডোটি মিনিমাইজ করতে পারবেন। এই আপডেটে কয়েক মিনিট সময় লাগতে পারে এবং এই সময়ে আপনার এক্সটার্নাল ডিভাইস কাজ নাও করতে পারে।</translation>
-<translation id="3485555238092220889">অ্যাক্সেসিবিলিটি সম্পর্কিত অ্যাকশন</translation>
 <translation id="3486220673238053218">সংজ্ঞা</translation>
 <translation id="3487866404496702283">মাহি ফিচার সম্পর্কিত মতামত</translation>
 <translation id="3488065109653206955">আংশিকভাবে সক্রিয়</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">কোনও পরিষেবা নেই</translation>
 <translation id="4570558255126759859">রেকর্ডিংয়ের সারাংশ তৈরি করার জন্য Gemini মডেল ডাউনলোড করবেন?</translation>
 <translation id="4573777384450697571">করা যায়নি - সার্টিফিকেটের মেয়াদ শেষ হয়ে গেছে</translation>
+<translation id="4575450106703099687">অ্যাক্সেসিবিলিটি সংক্রান্ত বিকল্প</translation>
 <translation id="458794348635939462">সব হোস্ট নেম যাচাই করা ব্যর্থ হয়েছে</translation>
 <translation id="4593212453765072419">প্রক্সি প্রমাণীকরণের প্রয়োজন</translation>
 <translation id="4594021849294327751">ট্রানস্ক্রিপ্ট তৈরি করুন</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />টির মধ্যে <ph name="CURRENT_PAGE" />নম্বর</translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" />-এর জন্য এডিট বোতাম।</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> আপডেট করুন</translation>
+<translation id="5736820754189340309">ডেটার ব্যবহার রিসেট করা হয়েছে</translation>
 <translation id="574392208103952083">মাঝারি</translation>
 <translation id="5757187557809630523">পরবর্তী ট্র্যাক</translation>
 <translation id="5760715441271661976">পোর্টালের স্থিতি</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">মিউট করুন</translation>
 <translation id="5784136236926853061">HTTP লেটেন্সি বেশি</translation>
 <translation id="5790391387506209808">lapis luzuli</translation>
+<translation id="5810692306010756935">গ্র্যাজুয়েশন</translation>
 <translation id="5816802250591013230">কোনও শর্টকাট অ্যাসাইন করা নেই</translation>
 <translation id="5826644637650799838">আর্ট সম্পর্কে</translation>
 <translation id="5832805196449965646">একজন ব্যক্তিকে যোগ করুন</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">টেক্সট নেভিগেশন</translation>
 <translation id="680983167891198932">কী</translation>
 <translation id="6816797338148849397">আপনার বেছে নেওয়া কন্টেন্টের ব্যাপারে তথ্য উপলভ্য আছে। এটি অ্যাক্সেস করতে, 'উর্ধমুখী তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
+<translation id="6831043979455480757">অনুবাদ</translation>
 <translation id="6853312040151791195">ডিসচার্জ হওয়ার রেট</translation>
 <translation id="6862416241246624313">মতামত জমা দেওয়া হয়েছে</translation>
 <translation id="6866732840889595464">ডেইজি</translation>
@@ -1551,6 +1557,7 @@
 <translation id="9087578468327036362">এই কোয়েরি সম্পর্কে রিপোর্ট করুন</translation>
 <translation id="9088306295921699330">বর্তমান ব্যবহার</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">রিসেট করার তারিখ সম্পর্কে আরও তথ্য</translation>
 <translation id="9100765901046053179">উন্নত সেটিংস</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-এর টিকিট রিফ্রেশ করুন</translation>
 <translation id="9106415115617144481">স্ক্যান করা পৃষ্ঠা <ph name="PAGE_NUMBER" /></translation>

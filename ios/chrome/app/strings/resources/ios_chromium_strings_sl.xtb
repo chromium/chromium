@@ -5,7 +5,6 @@
 <translation id="1047130070405668746">Izberite Chromium.</translation>
 <translation id="1091252999271033193">To pomeni, da bo Chromium vsakič zahteval spletno mesto za mobilne naprave.</translation>
 <translation id="1115463765356382667">Če želite kar najbolje izkoristiti Chromium, upoštevajte ta predlagana dejanja.</translation>
-<translation id="1141230343006904201">1. Odprite nastavitve za Chromium</translation>
 <translation id="1171824629317156389">V sistemu iOS odprite nastavitve za Chromium, nato se dotaknite »Default Browser App« (Privzeti brskalnik) in izberite Chromium.</translation>
 <translation id="1185134272377778587">O Chromiumu</translation>
 <translation id="1257458525759135959">Če želite shraniti slike, se dotaknite aplikacije Settings in dovolite, da Chromium dodaja fotografijam</translation>
@@ -92,7 +91,6 @@
 <translation id="347967311580159871">Če želite več nastavitev, ki zaradi izboljšanja izkušnje v Chromiumu uporabljajo podatke, odprite <ph name="BEGIN_LINK" />Googlove storitve<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Geslo ni bilo deljeno. Preverite internetno povezavo in se prepričajte, ali ste prijavljeni v Chromium. Nato poskusite znova.</translation>
 <translation id="3567399274263440288">Če želite kar najbolje izkoristiti Chromium, se prijavite vanj z računom Google.</translation>
-<translation id="3634039384458740619">Odprite nastavitve za Chromium</translation>
 <translation id="3639997914391704523">Chromium lahko preveri vaša gesla, ko se prijavite z računom Google.</translation>
 <translation id="3688710892786762883">Chromium bo zaznal številke za sledenje paketu na spletnih mestih, ki jih obiščete, in vam na novem zavihku s povezavami prikazal obvestila o paketu. Vaši podatki bodo deljeni z Googlom zaradi zagotavljanja te funkcije in izboljšanja Nakupovanja za vse.</translation>
 <translation id="372658070733623520">Če želite v računu Google uporabljati in shranjevati podatke iz Chromiuma, potrdite, da ste to vi.</translation>
@@ -120,6 +118,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chromi
 <translation id="4432744876818348753">Prijavite se, če želite čim bolje izkoristiti Chromium.</translation>
 <translation id="4445228361214254027">Vaša organizacija je izklopila možnost uporabe in shranjevanja podatkov v Chromiumu v računu Google. Novi zaznamki, gesla in drugo bodo shranjeni samo v tej napravi.</translation>
 <translation id="4498832288620833153">Doda vnesene URL-je na bralni seznam v Chromiumu.</translation>
+<translation id="451793238785269934">Vir po meri, ustvarjen za vas. Vključuje novice, šport in vreme.</translation>
 <translation id="452436063477828504">Poskrbite, da boste v računu Google vedno lahko uporabljali podatke v Chromiumu</translation>
 <translation id="4555020257205549924">Kadar je vklopljena ta funkcija, bo Chromium ponudil, da z uporabo Google Prevajalnika prevede strani v drugih jezikih. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="4572441104543926904">Šifriranje gesla ne vključuje plačilnih sredstev in naslovov.
@@ -204,7 +203,6 @@ Kaj je treba upoštevati:
 <translation id="632825460376924298">Omogočanje prijave v Chromium</translation>
 <translation id="6332129548244419716">Brisanje podatkov brskanja v Chromiumu.</translation>
 <translation id="6337530241089703714">Izberite, ali želite izbrisati podatke v Chromiumu iz te naprave ali jih obdržati.</translation>
-<translation id="6348483005826990855">3. Izberite Chromium</translation>
 <translation id="6383607155624074112">Hitrejši dostop do Chromiuma iz vrstice Dock na začetnem zaslonu</translation>
 <translation id="6424492062988593837">Chromium je izboljšan! Na voljo je nova različica.</translation>
 <translation id="6433172051771630690">Nasveti, kako najbolje izkoristiti Chromium.</translation>
@@ -268,11 +266,11 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="8235427517854598594">Želite nastaviti Chromium kot privzeti brskalnik?</translation>
 <translation id="8240981428553046115">Chromium ni mogel preveriti, ali so na voljo posodobitve. Poskusite pozneje.</translation>
 <translation id="8254729934443216898">Raziščite nove funkcije, s katerimi boste lahko najbolje izkoristili Chromium.</translation>
+<translation id="829047622686389424">Vir po meri, ustvarjen za vas.</translation>
 <translation id="8303579360494576778">Upravljanje plačilnih sredstev v Chromiumu</translation>
 <translation id="830951810931292870">Odpre vnesene URL-je v Chromiumu v anonimnem načinu.</translation>
 <translation id="8386869251364507178">Dejanja v Chromiumu</translation>
 <translation id="8409374867500149834">Uporabljate Chromiumovo najmočnejšo zaščito pred škodljivimi spletnimi mesti.</translation>
-<translation id="8458950033462118672">Če nastavite Chromium kot privzeto aplikacijo za brskanje, lahko samodejno odpirate povezave v njem.</translation>
 <translation id="8473874987831035139">Nasvet za Chromium: Chromium premaknite v vrstico Dock</translation>
 <translation id="8502918057530111907">Privzeto uporabljajte Chromium za preprosto pridobivanje vpogledov v cene</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minuto. Podatki, shranjeni samo v tej napravi, ko ste bili prijavljeni, bodo izbrisani. To lahko vključuje zgodovino in gesla.}one{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minuto. Podatki, shranjeni samo v tej napravi, ko ste bili prijavljeni, bodo izbrisani. To lahko vključuje zgodovino in gesla.}two{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minuti. Podatki, shranjeni samo v tej napravi, ko ste bili prijavljeni, bodo izbrisani. To lahko vključuje zgodovino in gesla.}few{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minute. Podatki, shranjeni samo v tej napravi, ko ste bili prijavljeni, bodo izbrisani. To lahko vključuje zgodovino in gesla.}other{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minut. Podatki, shranjeni samo v tej napravi, ko ste bili prijavljeni, bodo izbrisani. To lahko vključuje zgodovino in gesla.}}</translation>

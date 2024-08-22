@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Sérstakar <ph name="PRODUCT_NAME" />-eignir eru nú í boði</translation>
 <translation id="1022628058306505708">Jarðarflæði</translation>
 <translation id="1026212596705997935">Flýtilykillinn er notaður fyrir „<ph name="CONFLICT_ACCEL_NAME" />“. Ýttu á nýjan flýtilykil. Ýttu aftur á þennan flýtilykil til að skipta núverandi flýtilykli út.</translation>
+<translation id="1030856839388844477">Endurstilla gagnanotkun</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> þræðir, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nýr eiginleiki í boði, notaðu ör upp-lykilinn til að fá frekari upplýsingar.</translation>
 <translation id="1049663189809099096">ljósgul(ur)</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Lítill sendistyrkur</translation>
 <translation id="1300115153046603471">Aðgangsstaður er af gerðinni „sjálfgefið“ og „<ph name="ATTACH" />“.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Umbreyta</translation>
 <translation id="1304014921944666344">Búið til</translation>
 <translation id="1308754910631152188">Uppfærir (<ph name="PERCENTAGE_VALUE" />% lokið)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> mínútur</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">salt stöðuvatn</translation>
 <translation id="1367951781824006909">Velja skrá</translation>
 <translation id="1371650399987522809">Ábending um veggfóður sem er knúið af gervigreind Google</translation>
+<translation id="1374385338586507108">Skilgreina</translation>
 <translation id="1387854245479784695">Þetta er samansafn allra kjarna</translation>
 <translation id="1393206549145430405">kastali</translation>
 <translation id="1394661041439318933">Rafhleðsla hulsturs er <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Straumur</translation>
 <translation id="346539236881580388">Taka aftur</translation>
 <translation id="3484914941826596830">Ekki taka þetta ytra tæki úr sambandi eða slökkva á tölvunni þinni á meðan fastbúnaðurinn uppfærist. Þú getur minnkað þennan glugga. Uppfærslan gæti tekið nokkrar mínútur og óvíst er að ytra tækið virki á meðan.</translation>
-<translation id="3485555238092220889">aðgengisaðgerð</translation>
 <translation id="3486220673238053218">skilgreining</translation>
 <translation id="3487866404496702283">Ábendingar um mahi-eiginleika</translation>
 <translation id="3488065109653206955">Virkjað að hluta</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Ekkert símasamband</translation>
 <translation id="4570558255126759859">Sækja Gemini-líkan til að gera samantekt á upptökum?</translation>
 <translation id="4573777384450697571">Mistókst – vottorð útrunnið</translation>
+<translation id="4575450106703099687">Aðgengismöguleikar</translation>
 <translation id="458794348635939462">Ekki tókst að leysa úr öllum hýslum</translation>
 <translation id="4593212453765072419">Auðkenningar staðgengilsþjóns krafist</translation>
 <translation id="4594021849294327751">Búa til textauppskrift</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> af <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Breyta hnappi fyrir <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Uppfæra <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Gagnanotkun hefur verið endurstillt</translation>
 <translation id="574392208103952083">Miðlungs</translation>
 <translation id="5757187557809630523">næsta lag</translation>
 <translation id="5760715441271661976">Vefgáttarstaða</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Þagga</translation>
 <translation id="5784136236926853061">Langur HTTP-biðtími</translation>
 <translation id="5790391387506209808">lapis lazuli</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Engum flýtilykli úthlutað</translation>
 <translation id="5826644637650799838">Um listaverkið</translation>
 <translation id="5832805196449965646">Bæta notanda við</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Fletting í texta</translation>
 <translation id="680983167891198932">Lykill</translation>
 <translation id="6816797338148849397">Tiltækar upplýsingar sem tengjast vali þínu. Notaðu ör upp-lykilinn til að opna.</translation>
+<translation id="6831043979455480757">Þýða</translation>
 <translation id="6853312040151791195">Afhleðsluhraði</translation>
 <translation id="6862416241246624313">Ábending send inn</translation>
 <translation id="6866732840889595464">fagurfífill</translation>
@@ -1551,6 +1557,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="9087578468327036362">Tilkynna þessa fyrirspurn</translation>
 <translation id="9088306295921699330">Núverandi notkun</translation>
 <translation id="9095775724867566971">VM-viðbót</translation>
+<translation id="909856219855259344">Nánari upplýsingar um dagsetningu endurstillingar</translation>
 <translation id="9100765901046053179">Ítarlegar stillingar</translation>
 <translation id="910415269708673980">Endurnýja miða fyrir <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannar síðu <ph name="PAGE_NUMBER" /></translation>

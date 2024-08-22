@@ -157,6 +157,7 @@
 <translation id="3600792891314830896">Mute sites that play sound</translation>
 <translation id="3602290021589620013">Preview</translation>
 <translation id="3628308229821498208">Suggested searches</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site in <ph name="RWS_OWNER" />’s group of sites that can see your activity in the group}other{<ph name="RWS_MEMBERS_COUNT" /> sites in <ph name="RWS_OWNER" />’s group of sites that can see your activity in the group}}</translation>
 <translation id="3697164069658504920">When on, sites can ask to use USB devices. When off, sites can't use USB devices.</translation>
 <translation id="3707034683772193706">A site that you visit can save a small amount of info with Chrome, mainly to validate that you're not a bot</translation>
 <translation id="3721953990244350188">Dismiss and show next available action</translation>
@@ -236,6 +237,7 @@
 <translation id="4996978546172906250">Share via</translation>
 <translation id="5001526427543320409">Third-party cookies</translation>
 <translation id="5007392906805964215">Review</translation>
+<translation id="5014182796621173645">You visited <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5048398596102334565">Allow sites to access motion sensors (recommended)</translation>
 <translation id="5050380848339752099">This site is about to share information with an app outside of Incognito mode.</translation>
@@ -347,10 +349,12 @@
 <translation id="656065428026159829">See more</translation>
 <translation id="6561560012278703671">Use quieter messaging (blocks notification prompts from interrupting you)</translation>
 <translation id="6593061639179217415">Desktop site</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Cookies allowed for <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> site}other{Cookies allowed for <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> sites}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Protected content</translation>
 <translation id="662080504995468778">Stay</translation>
 <translation id="6653342741369270081">Press the back button to exit full screen.</translation>
+<translation id="6683865262523156564">This site is in a group that can see your activity. The group is defined by <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profile photos</translation>
 <translation id="6697925417670533197">Active downloads</translation>
 <translation id="6722828510648505498">Block sign-in prompts from identity services.</translation>

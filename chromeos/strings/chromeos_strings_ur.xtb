@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">اب خاص <ph name="PRODUCT_NAME" /> اثاثے دستیاب ہیں</translation>
 <translation id="1022628058306505708">ارتھ فلو</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />" کے لیے شارٹ کٹ استعمال کیا جا رہا ہے۔ ایک نیا شارٹ کٹ دبائیں۔ موجودہ شارٹ کٹ تبدیل کرنے کے لیے، اس شارٹ کٹ کو دوبارہ دبائیں۔</translation>
+<translation id="1030856839388844477">ڈیٹا کا استعمال ری سیٹ کریں</translation>
 <translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> تھریڈز، GHz<ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">نئی خصوصیت دستیاب ہے، مزید جاننے کے لئے اوپر تیر کے نشان کی کلید کا استعمال کریں۔</translation>
 <translation id="1049663189809099096">پیسٹل پیلا</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">کمزور سگنل</translation>
 <translation id="1300115153046603471">‏APN کی قسم ڈیفالٹ اور <ph name="ATTACH" /> ہے۔</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">تبدیل کریں</translation>
 <translation id="1304014921944666344">تاریخ تخلیق</translation>
 <translation id="1308754910631152188">اپ ڈیٹ ہو رہا ہے (<ph name="PERCENTAGE_VALUE" />% مکمل)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> منٹ</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">سالٹ لیک</translation>
 <translation id="1367951781824006909">ایک فائل منتخب کریں</translation>
 <translation id="1371650399987522809">‏Google AI سے تقویت یافتہ وال پیپر کے لیے تاثرات</translation>
+<translation id="1374385338586507108">وضاحت کریں</translation>
 <translation id="1387854245479784695">یہ سبھی کورز کا مجموعہ ہے</translation>
 <translation id="1393206549145430405">قلعہ</translation>
 <translation id="1394661041439318933">آلے کے کیس میں <ph name="BATTERY_PERCENTAGE" />فیصد بیٹری ہے۔</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">کرنٹ</translation>
 <translation id="346539236881580388">دوبارہ لیں</translation>
 <translation id="3484914941826596830">فرم ویئر اپ ڈیٹ کرنے کے دوران اس خارجی آلے کو ان پلگ یا اپنے کمپیوٹر کو شٹ ڈاؤن نہ کریں۔ آپ اس ونڈو کو چھوٹا کر سکتے ہیں۔ اس اپ ڈیٹ میں کچھ منٹ لگ سکتے ہیں اور ہو سکتا ہے کہ آپ کا خارجی آلہ اس دوران کام نہ کرے۔</translation>
-<translation id="3485555238092220889">ایکسیسبیلٹی کی کارروائی</translation>
 <translation id="3486220673238053218">وضاحت</translation>
 <translation id="3487866404496702283">ماہی خصوصیت کے لیے تاثرات</translation>
 <translation id="3488065109653206955">جزوی طور پر فعال کردہ</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">کوئی سروس نہیں</translation>
 <translation id="4570558255126759859">‏ریکارڈنگز کا خلاصہ کرنے کے لیے Gemini ماڈل ڈاؤن لوڈ کریں؟</translation>
 <translation id="4573777384450697571">ناکام - سرٹیفیکیٹ کی میعاد ختم ہو گئی</translation>
+<translation id="4575450106703099687">ایکسیسبیلٹی کے اختیارات</translation>
 <translation id="458794348635939462">تمام میزبانوں کو حل کرنے میں ناکام</translation>
 <translation id="4593212453765072419">پراکسی کی تصدیق درکار ہے</translation>
 <translation id="4594021849294327751">ٹرانسکرپٹ بنائیں</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> از <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> کیلئے ترمیم کریں بٹن۔</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> اپ ڈیٹ کریں</translation>
+<translation id="5736820754189340309">ڈیٹا کے استعمال کو ری سیٹ کیا گیا</translation>
 <translation id="574392208103952083">متوسط</translation>
 <translation id="5757187557809630523">اگلا ٹریک</translation>
 <translation id="5760715441271661976">پورٹل صورت حال</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">آواز بند کریں</translation>
 <translation id="5784136236926853061">‏زیادہ HTTPS تاخیر</translation>
 <translation id="5790391387506209808">سنگ لاجورد</translation>
+<translation id="5810692306010756935">گریجویشن</translation>
 <translation id="5816802250591013230">کوئی شارٹ کٹ تفویض نہیں کیا گیا</translation>
 <translation id="5826644637650799838">آرٹ کے بارے میں</translation>
 <translation id="5832805196449965646">شخص کو شامل کریں</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">ٹیکسٹ نیویگیشن</translation>
 <translation id="680983167891198932">کلید</translation>
 <translation id="6816797338148849397">آپ کے انتخاب سے متعلقہ معلومات دستیاب ہے۔ رسائی حاصل کرنے کے لئے اوپر تیر کے نشان کی کلید کا استعمال کریں۔</translation>
+<translation id="6831043979455480757">ترجمہ کریں</translation>
 <translation id="6853312040151791195">ڈسچارج ہونے کی شرح</translation>
 <translation id="6862416241246624313">تاثرات جمع ہو گئے</translation>
 <translation id="6866732840889595464">ڈیزی</translation>
@@ -1551,6 +1557,7 @@
 <translation id="9087578468327036362">اس استفسار کی اطلاع دیں</translation>
 <translation id="9088306295921699330">حالیہ استعمال</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">ری سیٹ کی تاریخ سے متعلق مزید معلومات</translation>
 <translation id="9100765901046053179">جدید ترین ترتیبات</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> کے لیے ٹکٹ ریفریش کریں</translation>
 <translation id="9106415115617144481">اسکین شدہ صفحہ <ph name="PAGE_NUMBER" /></translation>

@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Recursos exclusivos do <ph name="PRODUCT_NAME" /> já estão disponíveis</translation>
 <translation id="1022628058306505708">Fluxo da Terra</translation>
 <translation id="1026212596705997935">O atalho está sendo usado para "<ph name="CONFLICT_ACCEL_NAME" />". Pressione um novo atalho. Para substituir o atalho, pressione-o de novo.</translation>
+<translation id="1030856839388844477">Redefinir o uso de dados</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Novo recurso disponível, use a tecla de seta para cima para saber mais.</translation>
 <translation id="1049663189809099096">amarelo-pastel</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">Sinal fraco</translation>
 <translation id="1300115153046603471">O APN é do tipo padrão e <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Conversão</translation>
 <translation id="1304014921944666344">Data de criação</translation>
 <translation id="1308754910631152188">Atualizando (<ph name="PERCENTAGE_VALUE" />% concluído)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutos</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">lago salino</translation>
 <translation id="1367951781824006909">Escolher um arquivo</translation>
 <translation id="1371650399987522809">Feedback sobre o plano de fundo com a tecnologia de IA do Google</translation>
+<translation id="1374385338586507108">Definição</translation>
 <translation id="1387854245479784695">Isso é uma agregação de todos os núcleos</translation>
 <translation id="1393206549145430405">Castelo</translation>
 <translation id="1394661041439318933">O estojo tem <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Corrente</translation>
 <translation id="346539236881580388">Tirar outra</translation>
 <translation id="3484914941826596830">Não desconecte este dispositivo externo ou desligue o computador enquanto o firmware estiver atualizando. Você pode minimizar esta janela. Esta atualização pode levar alguns minutos e é possível que o dispositivo externo não funcione durante esse período.</translation>
-<translation id="3485555238092220889">ação de acessibilidade</translation>
 <translation id="3486220673238053218">definição</translation>
 <translation id="3487866404496702283">Feedback sobre o recurso em mahi</translation>
 <translation id="3488065109653206955">Ativado parcialmente</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Sem serviço</translation>
 <translation id="4570558255126759859">Baixar o modelo do Gemini para resumir as gravações?</translation>
 <translation id="4573777384450697571">Falha: o certificado expirou</translation>
+<translation id="4575450106703099687">opções de acessibilidade</translation>
 <translation id="458794348635939462">Falha na resolução de todos os hosts</translation>
 <translation id="4593212453765072419">Autenticação de proxy necessária</translation>
 <translation id="4594021849294327751">Criar transcrição</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Botão "Editar" para o atalho <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Atualizar o <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">O uso de dados foi redefinido</translation>
 <translation id="574392208103952083">Médio</translation>
 <translation id="5757187557809630523">próxima faixa</translation>
 <translation id="5760715441271661976">Estado do portal</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Desativar som</translation>
 <translation id="5784136236926853061">A latência do HTTP está alta</translation>
 <translation id="5790391387506209808">lápis-lazúli</translation>
+<translation id="5810692306010756935">Formatura</translation>
 <translation id="5816802250591013230">Nenhum atalho atribuído</translation>
 <translation id="5826644637650799838">Sobre a arte</translation>
 <translation id="5832805196449965646">Adicionar pessoa</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Navegação de texto</translation>
 <translation id="680983167891198932">Chave</translation>
 <translation id="6816797338148849397">Informações relacionadas à sua seleção disponíveis. Use a tecla de seta para cima para acessar.</translation>
+<translation id="6831043979455480757">Traduzir</translation>
 <translation id="6853312040151791195">Taxa de descarregamento</translation>
 <translation id="6862416241246624313">Feedback enviado</translation>
 <translation id="6866732840889595464">margarida</translation>
@@ -1551,6 +1557,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="9087578468327036362">Denuncie essa consulta</translation>
 <translation id="9088306295921699330">Uso atual</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Mais informações sobre a data de redefinição</translation>
 <translation id="9100765901046053179">Configurações avançadas</translation>
 <translation id="910415269708673980">Atualizar tíquete para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Digitalizando página <ph name="PAGE_NUMBER" /></translation>

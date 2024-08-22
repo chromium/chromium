@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">مواد العرض الحصرية لأجهزة <ph name="PRODUCT_NAME" /> متاحة الآن</translation>
 <translation id="1022628058306505708">انسياب أرضي</translation>
 <translation id="1026212596705997935">يتم حاليًا استخدام هذا الاختصار لتنفيذ الإجراء "<ph name="CONFLICT_ACCEL_NAME" />". يُرجى الضغط على اختصار جديد. لاستبدال الاختصار الحالي، اضغط على هذا الاختصار مرة أخرى.</translation>
+<translation id="1030856839388844477">إعادة ضبط استخدام البيانات</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> عملية، <ph name="CPU_MAX_CLOCK_SPEED" /> غيغاهرتز)</translation>
 <translation id="1047773237499189053">تتوفر ميزات جديدة. يمكنك استخدام مفتاح السهم المتجه للأعلى للاطّلاع على مزيد من المعلومات.</translation>
 <translation id="1049663189809099096">أصفر باستيل</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">إشارة ضعيفة</translation>
 <translation id="1300115153046603471">اسم نقطة الوصول من النوع التلقائي و<ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">‏بروتوكول GSM</translation>
+<translation id="1301340234286078471">تحويل</translation>
 <translation id="1304014921944666344">تاريخ الإنشاء</translation>
 <translation id="1308754910631152188">جارٍ التحديث (اكتمل تثبيت %<ph name="PERCENTAGE_VALUE" /> من التحديثات)</translation>
 <translation id="1309341072016605398">‫<ph name="MINUTES" /> دقيقة</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">بحيرة مالحة</translation>
 <translation id="1367951781824006909">اختيار ملف</translation>
 <translation id="1371650399987522809">‏ملاحظات حول الخلفيات المستندة إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
+<translation id="1374385338586507108">تعريف</translation>
 <translation id="1387854245479784695">هذه بيانات مجمّعة عن كل النوى.</translation>
 <translation id="1393206549145430405">قلعة</translation>
 <translation id="1394661041439318933">مستوى شحن بطارية الحافظة هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
@@ -242,7 +245,7 @@
 <translation id="2148716181193084225">اليوم</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> صورة</translation>
 <translation id="2156072344042480449">يتم عرض آخر طلبين. يمكنك استخدام هذين الطلبين فقط أثناء تصفُّح هذه الصفحة.</translation>
-<translation id="2157660087437850958">أداة اختيار الرموز التعبيرية</translation>
+<translation id="2157660087437850958">أداة اختيار رموز الإيموجي</translation>
 <translation id="2157959690810728433">تم وضع الاختبار في قائمة الانتظار.</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: إعادة المحاولة</translation>
 <translation id="215916044711630446">‏زر "إضافة اسم نقطة الوصول" (APN) غير مفعَّل الآن</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">الاستهلاك الحالي لطاقة البطارية</translation>
 <translation id="346539236881580388">إعادة التقاط</translation>
 <translation id="3484914941826596830">لا تفصل هذا الجهاز الخارجي أو توقف تشغيل الكمبيوتر أثناء تحديث البرامج الثابتة. يمكنك تصغير هذه النافذة. قد يستغرق هذا التحديث بضع دقائق وقد يتوقف الجهاز الخارجي عن العمل أثناء التحديث.</translation>
-<translation id="3485555238092220889">إجراء تسهيل الاستخدام</translation>
 <translation id="3486220673238053218">تعريف</translation>
 <translation id="3487866404496702283">‏ملاحظات حول ميزة Mahi</translation>
 <translation id="3488065109653206955">نشطة جزئيًا</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">لا تتوفر أي خدمة.</translation>
 <translation id="4570558255126759859">‏هل تريد تنزيل نموذج Gemini لتلخيص التسجيلات؟</translation>
 <translation id="4573777384450697571">تعذَّر تنفيذ المهمة لانتهاء صلاحية الشهادة</translation>
+<translation id="4575450106703099687">خيارات تسهيل الاستخدام</translation>
 <translation id="458794348635939462">تعذَّرت مطابقة جميع الأجهزة المضيفة.</translation>
 <translation id="4593212453765072419">مطلوب مصادقة الخادم الوكيل</translation>
 <translation id="4594021849294327751">إنشاء نص</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> من <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">زر تعديل الاختصار <ph name="SHORTCUT_DESCRIPTION" /></translation>
 <translation id="5733298426544876109">تحديث <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">تمت إعادة ضبط استخدام البيانات</translation>
 <translation id="574392208103952083">متوسط</translation>
 <translation id="5757187557809630523">المقطع الصوتي التالي</translation>
 <translation id="5760715441271661976">حالة المدخل</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">كتم الصوت</translation>
 <translation id="5784136236926853061">‏وقت استجابة بروتوكول HTTP طويل.</translation>
 <translation id="5790391387506209808">الأزرق الغامق</translation>
+<translation id="5810692306010756935">‏تطبيق Graduation</translation>
 <translation id="5816802250591013230">لم يتم تخصيص أي اختصارات.</translation>
 <translation id="5826644637650799838">لمحة عن العمل الفني</translation>
 <translation id="5832805196449965646">إضافة شخص</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">التنقّل بين أجزاء النص</translation>
 <translation id="680983167891198932">المفتاح</translation>
 <translation id="6816797338148849397">تتوفّر معلومات ذات صلة باختيارك. يمكنك استخدام مفتاح السهم المتجه للأعلى للوصول إلى هذه المعلومات.</translation>
+<translation id="6831043979455480757">ترجمة</translation>
 <translation id="6853312040151791195">معدّل تفريغ الشحن</translation>
 <translation id="6862416241246624313">تم إرسال الملاحظات</translation>
 <translation id="6866732840889595464">أقحوان</translation>
@@ -1551,6 +1557,7 @@
 <translation id="9087578468327036362">الإبلاغ عن هذا الطلب</translation>
 <translation id="9088306295921699330">الاستخدام الحالي</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">مزيد من المعلومات حول "تاريخ إعادة الضبط"</translation>
 <translation id="9100765901046053179">الإعدادات المتقدمة</translation>
 <translation id="910415269708673980">تحديث تذكرة من أجل <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">جارٍ المسح ضوئيًا للصفحة رقم <ph name="PAGE_NUMBER" />.</translation>

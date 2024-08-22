@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">Signal kuchsiz</translation>
 <translation id="1300115153046603471">APN turi: standart va <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Oʻgirish</translation>
 <translation id="1304014921944666344">Yaratilgan sana</translation>
 <translation id="1308754910631152188">Yangilanmoqda (<ph name="PERCENTAGE_VALUE" />% yakunlandi)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> daqiqa</translation>
@@ -77,6 +78,7 @@
 <translation id="1343442362630695901">mineral koʻllar</translation>
 <translation id="1367951781824006909">Fayl tanlang</translation>
 <translation id="1371650399987522809">Google AI yordamida yaratilgan fon rasmi yuzasidan fikr-mulohaza</translation>
+<translation id="1374385338586507108">Izohini olish</translation>
 <translation id="1387854245479784695">Bu barcha yadrolarning faoliyati</translation>
 <translation id="1393206549145430405">qasr</translation>
 <translation id="1394661041439318933">Qurilma gʻilofining batareya quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -463,7 +465,6 @@
 <translation id="346423161771747987">Ayni vaqtda</translation>
 <translation id="346539236881580388">Qaytadan</translation>
 <translation id="3484914941826596830">Mikrodastur yangilanayotganda tashqi qurilmani uzmay va kompyuterni oʻchirmay turing. Bu oynani yigʻish mumkin. Bu yangilanish bir necha daqiqa vaqt oladi va bu vaqtda tashqi qurilma ishlamay turishi mumkin.</translation>
-<translation id="3485555238092220889">qulaylik amali</translation>
 <translation id="3486220673238053218">ta’rif</translation>
 <translation id="3487866404496702283">Mahi funksiyasi yuzasidan fikr-mulohaza</translation>
 <translation id="3488065109653206955">Qisman faollashtirilgan</translation>
@@ -672,6 +673,7 @@
 <translation id="4562494484721939086">Tarmoq topilmadi</translation>
 <translation id="4570558255126759859">Yozuvlarni xulosalash uchun Gemini yuklab olinsinmi?</translation>
 <translation id="4573777384450697571">Amalga oshmadi – Sertifikati muddati tugagan</translation>
+<translation id="4575450106703099687">qulaylik parametrlari</translation>
 <translation id="458794348635939462">Hech qaysi host aniqlanmadi</translation>
 <translation id="4593212453765072419">Proksi hisob tekshiruvini talab qiladi</translation>
 <translation id="4594021849294327751">Transkripsiya yaratish</translation>
@@ -884,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> / <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> tugmasini tahrirlash.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> ilovasini yangilang</translation>
+<translation id="5736820754189340309">Trafik sarfi tozalandi</translation>
 <translation id="574392208103952083">O‘rtacha</translation>
 <translation id="5757187557809630523">keyingi trek</translation>
 <translation id="5760715441271661976">Portal holati</translation>
@@ -893,6 +896,7 @@
 <translation id="57838592816432529">Ovozni o‘chirib qo‘yish</translation>
 <translation id="5784136236926853061">HTTP kechikishi yuqori</translation>
 <translation id="5790391387506209808">lazurit</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Tezkor tugma belgilanmagan</translation>
 <translation id="5826644637650799838">Asar haqida</translation>
 <translation id="5832805196449965646">Foydalanuvchi qo‘shish</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6798678288485555829">Matn navigatsiyasi</translation>
 <translation id="680983167891198932">Kalit</translation>
 <translation id="6816797338148849397">Tanlovga aloqador axborot mavjud. Uni ochish uchun tepaga strelkani bosing.</translation>
+<translation id="6831043979455480757">Tarjima</translation>
 <translation id="6853312040151791195">Quvvat sarflanishi tezligi</translation>
 <translation id="6862416241246624313">Fikr-mulohaza yuborildi</translation>
 <translation id="6866732840889595464">dastorgul</translation>

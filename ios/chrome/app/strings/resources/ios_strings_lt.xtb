@@ -373,7 +373,6 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="2789552044937754463">{COUNT,plural, =1{Slaptažodis išsaugotas „Google“ paskyroje ({EMAIL})}one{Slaptažodžiai išsaugoti „Google“ paskyroje ({EMAIL})}few{Slaptažodžiai išsaugoti „Google“ paskyroje ({EMAIL})}many{Slaptažodžiai išsaugoti „Google“ paskyroje ({EMAIL})}other{Slaptažodžiai išsaugoti „Google“ paskyroje ({EMAIL})}}</translation>
 <translation id="2797029671965852011">Rodyti istoriją</translation>
 <translation id="2800683595868705743">Išjungti skirtukų perjungiklį</translation>
-<translation id="2815198996063984598">2. Palieskite „Numatytoji naršyklės programa“</translation>
 <translation id="2818821771744632548">Buvote atjungti nuo paskyros <ph name="USER_NAME" /> nustatant „iPhone“ iš naujo. Jei norite vėl prisijungti, toliau palieskite „Tęsti“.</translation>
 <translation id="2819667972867209401">Įjungus duomenys išsaugomi „Google“ paskyroje. Išjungus šią parinktį, duomenys išsaugomi tik šiame įrenginyje ir ištrinami atsijungus.</translation>
 <translation id="2830972654601096923">Tvarkyti adresus...</translation>
@@ -539,6 +538,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3607167657931203000">Autom. pild. duom.</translation>
 <translation id="3609785682760573515">Sinchronizuojama...</translation>
 <translation id="3625008969091706597">Galite perbraukti kraštą, kad grįžtumėte.</translation>
+<translation id="362709345066740529">Čia galite tinkinti korteles, sklaidos kanalą ir kt.</translation>
 <translation id="3630104167004786843">Negauti naujinių</translation>
 <translation id="3631443864840848029">Išsaugokite dabartinį šios svetainės slaptažodį.</translation>
 <translation id="3638472932233958418">Iš anksto įk. tinkl.</translation>
@@ -567,7 +567,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3775743491439407556">Sinchronizavimas neveikia</translation>
 <translation id="3779810277399252432">Nėra interneto ryšio.</translation>
 <translation id="3785672280731998727">Rodomas pavadinimas</translation>
-<translation id="3789294999358192700">Atlikite toliau nurodytus veiksmus.</translation>
 <translation id="3789841737615482174">Įdiegti</translation>
 <translation id="380329542618494757">Vardas ir pavardė</translation>
 <translation id="3803696231112616155">Siūlyti versti šią svetainę</translation>
@@ -778,6 +777,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4808646838864186379">Pristatymas atšauktas</translation>
 <translation id="4808744395915275922">Naujiniai</translation>
 <translation id="4813345808229079766">Ryšys</translation>
+<translation id="4817408188311787415">Automatiškai užpildyti formą naudojant „<ph name="CELL_ACCESSIBILITY_LABEL" />“</translation>
 <translation id="4818522717893377262">Pridėti kalbą...</translation>
 <translation id="481968316161811770">Slapuk., svet. duom.</translation>
 <translation id="4821595350501541683">Skirtukai uždaryti ir naršymo duomenys ištrinti</translation>
@@ -1227,6 +1227,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6797885426782475225">Paieška balsu</translation>
 <translation id="6800349425672670802">Visus atidarytus skirtukus galite pasiekti naudodami skirtukų perjungiklį.</translation>
 <translation id="6807889908376551050">Rodyti viską...</translation>
+<translation id="6810455365609435460">Inkognito skirtukai</translation>
 <translation id="681368974849482173">Elementas sukurtas</translation>
 <translation id="6824350924364057989">Nustatymai</translation>
 <translation id="6831043979455480757">Vertėjas</translation>

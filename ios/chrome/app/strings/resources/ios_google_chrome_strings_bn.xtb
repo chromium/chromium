@@ -81,7 +81,6 @@
 <translation id="2767464022270041271">কোনও সেভ করা পাসওয়ার্ড নেই। আপনি পাসওয়ার্ড সেভ করলে Google Password Manager সেটি চেক করতে পারবে।</translation>
 <translation id="2869959624320573933">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome কীভাবে আপনার ডেটা ব্যক্তিগত রাখে<ph name="END_LINK" /> সেই সম্পর্কে আরও জানুন</translation>
-<translation id="2952581218264071393">১. Chrome সেটিংস খুলুন</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> বেছে নিন</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> দ্বারা ম্যানেজ করা একটি অ্যাকাউন্ট থেকে আপনি সাইন-আউট করছেন বলে, এই ডিভাইস থেকে আপনার Chrome ডেটা মুছে যাবে। আপনার Google অ্যাকাউন্টে এই ডেটা থেকে যাবে।</translation>
 <translation id="309672519329227863">অন্যান্য অ্যাপ জুড়ে আপনার Chrome পাসওয়ার্ড ও আরও অনেক কিছু অ্যাক্সেস করুন।</translation>
@@ -93,7 +92,6 @@
 <translation id="3340938510625667914">Chrome অ্যাকশন</translation>
 <translation id="3345341804167540816">Chrome সব জায়গায় ব্যবহার করুন</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়}one{Chrome {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়}other{Chrome {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়}}</translation>
-<translation id="3399930248910934354">Chrome সেটিংস খুলুন</translation>
 <translation id="344736123700721678">আপনার হোম স্ক্রিনের ডক থেকে আরও দ্রুত Chrome অ্যাক্সেস করুন</translation>
 <translation id="3472587960215700950">Chrome আপনাকে দিকনির্দেশ এবং শনাক্ত করা ঠিকানায় স্থানীয় তথ্য যাতে দেওয়া যায় তার জন্য Google Maps ব্যবহার করে।</translation>
 <translation id="3503014945441706099">এছাড়াও, এই Chrome প্রোফাইলের জন্য উন্নত Safe Browsing-এর সুবিধা পান</translation>
@@ -211,6 +209,7 @@
 আপনার Chrome ব্যবহার করার অভিজ্ঞতা উন্নত করতে ডেটা ব্যবহার করে, এমন আরও বেশি সেটিংসের জন্য <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> লিঙ্কে যান।</translation>
 <translation id="6916015246697034114">Chrome-এ ভয়েসের মাধ্যমে সার্চ করুন</translation>
 <translation id="6975725306479268850">অটোফিলের জন্য Chrome বেছে নিন</translation>
+<translation id="6979238427560462592">আপনার জন্য Google-এর তৈরি কাস্টম ফিড। এর মধ্যে খবর, খেলাধূলা ও আবহাওয়ার তথ্য আছে।</translation>
 <translation id="7004159181872656283">Chrome-এ ভিজ্যুয়াল সার্চ করুন।</translation>
 <translation id="7056826488869329999">Chrome-এ 'নিরাপত্তা সংক্রান্ত পরীক্ষা' ফিচার খুলে রান করায়।</translation>
 <translation id="7059914902409643750">Chrome-এ সাইন-ইন করুন</translation>
@@ -236,7 +235,6 @@
 <translation id="7394108421562933108">Chrome-এ Maps</translation>
 <translation id="7400722733683201933">Google Chrome সম্বন্ধে</translation>
 <translation id="7466693328838535498">'সার্চ উইজেট' বক্সে, 'Chrome' লিখুন</translation>
-<translation id="746684838091935575">৩. Chrome বেছে নিন</translation>
 <translation id="7492574581995589075">আপনার প্রতিষ্ঠান আপনার Google অ্যাকাউন্টে Chrome ডেটা ব্যবহার ও সেভ করার সুবিধা বন্ধ করে দিয়েছে। নতুন বুকমার্ক, পাসওয়ার্ড ও আরও অনেক কিছু শুধুমাত্র এই ডিভাইসে সেভ হবে।</translation>
 <translation id="7581063337314642333">Chrome-এর ট্যাব গ্রিডে যান</translation>
 <translation id="7642373780953416937">আপনার জন্য Chrome কোনও গোপনীয়তা বা নিরাপত্তা সংক্রান্ত সমস্যা অটোমেটিক শনাক্ত করলে সতর্কতার বিজ্ঞপ্তি পান।</translation>
@@ -300,7 +298,6 @@
 <translation id="8857676124663337448">Google Password Manager সব পাসওয়ার্ড চেক করতে পারেনি। আগামীকাল আবার চেষ্টা করে দেখুন।</translation>
 <translation id="8865415417596392024">আপনার অ্যাকাউন্টের Chrome ডেটা</translation>
 <translation id="8874688701962049679">Chrome থেকে সবচেয়ে বেশি সুবিধা পাওয়া সংক্রান্ত পরামর্শ।</translation>
-<translation id="8891935667620843985">Chrome-কে আপনার ডিফল্ট ব্রাউজার অ্যাপ হিসেবে সেট করে এতে অটোমেটিক লিঙ্ক খুলতে পারবেন।</translation>
 <translation id="8897749957032330183">পাসওয়ার্ড এই ডিভাইসের Google Password Manager বিকল্পে সেভ করা হয়।</translation>
 <translation id="8949681853939555434">Chrome-কে আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করুন</translation>
 <translation id="9068336935206019333">Chrome ছদ্মবেশী ট্যাবে খুলুন</translation>
@@ -308,6 +305,7 @@
 <translation id="9112744793181547300">Chrome ডিফল্ট হিসেবে সেট করতে চান?</translation>
 <translation id="9122931302567044771">এর মানে Chrome প্রতিবার ডেস্কটপ সাইটের অনুরোধ করবে।</translation>
 <translation id="9181628561061032322">Chrome-এর সাম্প্রতিক ট্যাব খোলে।</translation>
+<translation id="9194404253580584015">আপনার জন্য Google-এর তৈরি কাস্টম ফিড।</translation>
 <translation id="953008885340860025">Chrome থেকে সাইন-আউট হয়ে গেছেন</translation>
 <translation id="97300214378190234">অন্যান্য অ্যাপের লিঙ্কে ট্যাপ করার সময় Chrome ব্যবহার করুন।</translation>
 </translationbundle>

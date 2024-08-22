@@ -74,6 +74,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2018528049276128029">Chaque profil possède ses propres informations Chrome, comme des favoris, un historique, des mots de passe, etc.</translation>
 <translation id="2018879682492276940">Échec de l'installation. Veuillez réessayer.</translation>
 <translation id="2022471217832964798">Vous pouvez continuer à utiliser Chrome pendant que nous configurons l'accès au compte. Vous ne pourrez peut-être pas accéder à certaines ressources tant que la configuration ne sera pas terminée.</translation>
+<translation id="2034233344106846793">Chrome convertit automatiquement les connexions non sécurisées en HTTPS lorsque c'est possible</translation>
 <translation id="207902854391093810">Pendant les essais, Ad Measurement autorise les sites que vous visitez à demander à Chrome des informations pour les aider à mesurer les performances de leurs annonces. Cette API limite le suivi intersites en transférant le minimum d'informations entre les sites.</translation>
 <translation id="2091012649849228750">Pour recevoir les futures mises à jour de Google Chrome, vous devez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur utilise Windows 8.</translation>
 <translation id="2094648590148273905">Conditions d'utilisation de ChromeOS Flex</translation>

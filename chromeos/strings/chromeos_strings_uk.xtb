@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Доступні ексклюзивні об’єкти <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Опливина</translation>
 <translation id="1026212596705997935">Ця комбінація клавіш використовується для дії "<ph name="CONFLICT_ACCEL_NAME" />". Застосуйте нову комбінацію. Щоб замінити наявну комбінацію клавіш, натисніть її ще раз.</translation>
+<translation id="1030856839388844477">Скинути дані</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоків: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">Доступна нова функція. Щоб дізнатися більше, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="1049663189809099096">пастельно-жовтий</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">слабкий сигнал</translation>
 <translation id="1300115153046603471">Тип точки доступу: APN за умовчанням і APN <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Конвертація</translation>
 <translation id="1304014921944666344">Дата створення</translation>
 <translation id="1308754910631152188">Оновлення (завершено на <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> хв</translation>
@@ -76,6 +78,7 @@
 <translation id="1343442362630695901">солоне озеро</translation>
 <translation id="1367951781824006909">Вибрати файл</translation>
 <translation id="1371650399987522809">Відгук про шпалери, створені за допомогою ШІ від Google</translation>
+<translation id="1374385338586507108">Визначення</translation>
 <translation id="1387854245479784695">Це зведені дані для всіх ядер</translation>
 <translation id="1393206549145430405">Замок</translation>
 <translation id="1394661041439318933">Рівень заряду акумулятора чохла – <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -462,7 +465,6 @@
 <translation id="346423161771747987">Енергоспоживання</translation>
 <translation id="346539236881580388">Зробити інше фото</translation>
 <translation id="3484914941826596830">Поки мікропрограма оновлюється, не відключайте цей зовнішній пристрій і не завершуйте роботу комп’ютера. Можете згорнути це вікно. Оновлення може зайняти кілька хвилин, і впродовж цього часу зовнішній пристрій, імовірно, не працюватиме.</translation>
-<translation id="3485555238092220889">дія функцій доступності</translation>
 <translation id="3486220673238053218">визначення</translation>
 <translation id="3487866404496702283">Відгук про функцію Mahi</translation>
 <translation id="3488065109653206955">Частково активовано</translation>
@@ -671,6 +673,7 @@
 <translation id="4562494484721939086">Не працює</translation>
 <translation id="4570558255126759859">Завантажити модель Gemini, щоб підсумовувати записи?</translation>
 <translation id="4573777384450697571">Помилка – строк дії сертифіката минув</translation>
+<translation id="4575450106703099687">параметри функцій доступності</translation>
 <translation id="458794348635939462">Не вдалося розпізнати всі хости</translation>
 <translation id="4593212453765072419">Потрібна автентифікація проксі-сервера</translation>
 <translation id="4594021849294327751">Створити текстову версію</translation>
@@ -883,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Кнопка "Редагувати" для опису "<ph name="SHORTCUT_DESCRIPTION" />".</translation>
 <translation id="5733298426544876109">Оновити пристрій: <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">Використання трафіку скинуто</translation>
 <translation id="574392208103952083">Середній</translation>
 <translation id="5757187557809630523">наступна композиція</translation>
 <translation id="5760715441271661976">Стан порталу</translation>
@@ -892,6 +896,7 @@
 <translation id="57838592816432529">Вимкнути звук</translation>
 <translation id="5784136236926853061">Велика затримка HTTP</translation>
 <translation id="5790391387506209808">лазуриту</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Комбінацію клавіш не призначено</translation>
 <translation id="5826644637650799838">Опис зображення</translation>
 <translation id="5832805196449965646">Додати користувача</translation>
@@ -1104,6 +1109,7 @@
 <translation id="6798678288485555829">Навігація текстом</translation>
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Доступна інформація, пов'язана з виділеним текстом. Щоб перейти до неї, натисніть клавішу зі стрілкою вгору.</translation>
+<translation id="6831043979455480757">Перекласти</translation>
 <translation id="6853312040151791195">Швидкість розряджання</translation>
 <translation id="6862416241246624313">Відгук надіслано</translation>
 <translation id="6866732840889595464">маргаритка</translation>
@@ -1551,6 +1557,7 @@
 <translation id="9087578468327036362">Повідомити про проблеми із запитом</translation>
 <translation id="9088306295921699330">Використовується</translation>
 <translation id="9095775724867566971">PluginVM</translation>
+<translation id="909856219855259344">Докладніше про скидання дати</translation>
 <translation id="9100765901046053179">Розширені налаштування</translation>
 <translation id="910415269708673980">Оновити квиток для користувача <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканування сторінки <ph name="PAGE_NUMBER" /></translation>
@@ -1589,7 +1596,7 @@
 <translation id="966787709310836684">меню</translation>
 <translation id="979450713603643090">Світло-рожевий</translation>
 <translation id="982713511914535780">Виконати перевірку розряджання</translation>
-<translation id="98515147261107953">Горизонтальна</translation>
+<translation id="98515147261107953">Пейзаж</translation>
 <translation id="987264212798334818">Загальне</translation>
 <translation id="995062385528875723">Не можна використовувати символи, літери з діакритичними знаками або нелатинський алфавіт</translation>
 </translationbundle>

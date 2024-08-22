@@ -63,6 +63,7 @@
 <translation id="1290331692326790741">Слабы сігнал</translation>
 <translation id="1300115153046603471">Тып APN: "Стандартны" і "<ph name="ATTACH" />".</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Пераўтварыць</translation>
 <translation id="1304014921944666344">Дата стварэння</translation>
 <translation id="1308754910631152188">Ідзе абнаўленне (завершана <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> хв</translation>
@@ -77,6 +78,7 @@
 <translation id="1343442362630695901">салёнае возера</translation>
 <translation id="1367951781824006909">Выбраць файл</translation>
 <translation id="1371650399987522809">Водгук пра шпалеры на аснове AI ад Google</translation>
+<translation id="1374385338586507108">Вызначыць</translation>
 <translation id="1387854245479784695">Гэта даныя па ўсіх ядрах разам</translation>
 <translation id="1393206549145430405">замак</translation>
 <translation id="1394661041439318933">Узровень зараду акумулятара чахла: <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -463,7 +465,6 @@
 <translation id="346423161771747987">Ток</translation>
 <translation id="346539236881580388">Перазняць</translation>
 <translation id="3484914941826596830">Падчас абнаўлення ўбудаванага ПЗ не адключайце знешнюю прыладу і не выключайце камп’ютар. Гэта акно можна згарнуць. Абнаўленне зойме некалькі хвілін, і падчас яго знешняя прылада можа не працаваць.</translation>
-<translation id="3485555238092220889">дзеянне спецыяльных магчымасцей</translation>
 <translation id="3486220673238053218">азначэнне</translation>
 <translation id="3487866404496702283">Водгук пра функцыю</translation>
 <translation id="3488065109653206955">Часткова актывавана</translation>
@@ -672,6 +673,7 @@
 <translation id="4562494484721939086">Не абслугоўваецца</translation>
 <translation id="4570558255126759859">Спампаваць мадэль Gemini, каб падсумоўваць запісы?</translation>
 <translation id="4573777384450697571">Прычына збою: скончыўся тэрмін дзеяння сертыфіката</translation>
+<translation id="4575450106703099687">параметры спецыяльных магчымасцей</translation>
 <translation id="458794348635939462">Не ўдалося супаставіць усе хосты</translation>
 <translation id="4593212453765072419">Патрабуецца аўтэнтыфікацыя проксі-сервера</translation>
 <translation id="4594021849294327751">Ствараць расшыфроўку</translation>
@@ -884,6 +886,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Кнопка "Змяніць" для апісання "<ph name="SHORTCUT_DESCRIPTION" />".</translation>
 <translation id="5733298426544876109">Абнавіць убудаванае ПЗ прылады "<ph name="DEVICE_NAME" />"</translation>
+<translation id="5736820754189340309">Даныя выкарыстання трафіка скінуты</translation>
 <translation id="574392208103952083">Сярэдні</translation>
 <translation id="5757187557809630523">наступны трэк</translation>
 <translation id="5760715441271661976">Стан партала</translation>
@@ -893,6 +896,7 @@
 <translation id="57838592816432529">Выключыць</translation>
 <translation id="5784136236926853061">Вялікая затрымка HTTP-запытаў</translation>
 <translation id="5790391387506209808">лазурыт</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Спалучэнне клавіш не прызначана</translation>
 <translation id="5826644637650799838">Інфармацыя аб ілюстрацыі</translation>
 <translation id="5832805196449965646">Дадаць карыстальніка</translation>
@@ -1105,11 +1109,12 @@
 <translation id="6798678288485555829">Навігацыя па тэксце</translation>
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Ёсць інфармацыя, звязаная з вылучаным вамі фрагментам. Каб атрымаць да яе доступ, націсніце стрэлку ўверх.</translation>
+<translation id="6831043979455480757">Перакласці</translation>
 <translation id="6853312040151791195">Хуткасць разрадкі</translation>
 <translation id="6862416241246624313">Водгук адпраўлены</translation>
 <translation id="6866732840889595464">стакротка</translation>
 <translation id="6871256179359663621">светла-фіялетавы</translation>
-<translation id="6889786074662672253">Падчас перазапуску не адключайце гэту знешнюю прыладу і не выключайце камп'ютар. Гэта акно можна згарнуць. Перазапуск зойме некалькі хвілін – у гэты час знешняя прылада можа не працаваць.</translation>
+<translation id="6889786074662672253">Падчас перазапуску не адключайце гэту знешнюю прыладу і не выключайце камп’ютар. Гэта акно можна згарнуць. Перазапуск зойме некалькі хвілін – у гэты час знешняя прылада можа не працаваць.</translation>
 <translation id="6900701049656042631">У гэтым альбоме няма фота. Дадаць фота можна з сайта <ph name="LINK" />.</translation>
 <translation id="6902359863093437070">Стварыць фон з дапамогай AI</translation>
 <translation id="6905163627763043954">Паспрабаваць</translation>
