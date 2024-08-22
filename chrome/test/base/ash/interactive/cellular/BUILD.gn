@@ -59,9 +59,10 @@ source_set("test_support") {
   ]
 
   deps = [
+    "//chrome/test/base/ash/interactive/network:test_support",
     "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/dbus/shill",
-    "//chromeos/ash/components/network:network",
+    "//chromeos/ash/components/network",
     "//dbus",
     "//ui/base:test_support",
   ]

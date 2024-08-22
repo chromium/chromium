@@ -7,6 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos_ash)
 
 source_set("cpp") {
+  defines = [ "IS_FAKE_PASSPOINT_SERVICE_IMPL" ]
   sources = [
     "connectivity_services.cc",
     "connectivity_services.h",

@@ -47,9 +47,9 @@ IN_PROC_BROWSER_TEST_F(EsimUiElementsInteractiveUiTest, OsSettingsDetailsPage) {
                                     NetworkTypePattern::Cellular(),
                                     esim_info().nickname()),
 
-      WaitForElementTextContains(
-          kOSSettingsId, settings::cellular::CellularDetailsSubpageTitle(),
-          /*text=*/esim_info().nickname()),
+      WaitForElementTextContains(kOSSettingsId,
+                                 settings::InternetSettingsSubpageTitle(),
+                                 /*text=*/esim_info().nickname()),
 
       Log("Checking for the expected UI elements"),
 
