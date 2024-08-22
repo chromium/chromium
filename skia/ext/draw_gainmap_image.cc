@@ -83,8 +83,13 @@ void DrawGainmapImageRect(SkCanvas* canvas,
   // Compute `dest_rect_clipped` to be intersected with the pre-image of the
   // clip rect of `canvas`.
   SkRect dest_rect_clipped = dest_rect;
-  if (!dest_rect_clipped.intersect(canvas->getLocalClipBounds())) {
-    return;
+  const SkMatrix& dest_to_device = canvas->getTotalMatrix();
+  SkMatrix device_to_dest;
+  if (dest_to_device.invert(&device_to_dest)) {
+    SkRect dest_clip_rect;
+    device_to_dest.mapRect(&dest_clip_rect,
+                           SkRect::Make(canvas->getDeviceClipBounds()));
+    dest_rect_clipped.intersect(dest_clip_rect);
   }
 
   // Compute the input rect for the base and gainmap images.

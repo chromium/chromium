@@ -936,8 +936,8 @@ ALWAYS_INLINE void BaseRenderingContext2D::ResetAlphaIfNeeded(
     if (!c->getLocalClipBounds(&alpha_bounds)) {
       return;
     }
-    if (bounds && !alpha_bounds.intersect(gfx::RectFToSkRect(*bounds))) {
-      return;
+    if (bounds) {
+      alpha_bounds.intersect(gfx::RectFToSkRect(*bounds));
     }
     c->drawRect(alpha_bounds, flags);
   }
