@@ -69,6 +69,7 @@ static_library("session") {
     "//chrome/browser/google",
     "//chrome/browser/scalable_iph:scalable_iph_factory",
     "//chrome/browser/screen_ai:screen_ai_dlc_installer",
+    "//chrome/browser/ui/ash/media_client",
     "//chrome/browser/ui/webui/ash",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/common",

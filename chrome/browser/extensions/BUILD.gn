@@ -1240,6 +1240,7 @@ source_set("extensions") {
     if (use_dbus) {
       configs += [ "//build/config/linux/dbus" ]
     }
+
     deps += [
       "//ash",
       "//ash/components/arc",
@@ -1305,6 +1306,7 @@ source_set("extensions") {
       "//chrome/browser/devtools",
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/ui/ash/keyboard",
+      "//chrome/browser/ui/ash/media_client",
       "//chrome/browser/ui/ash/shelf/app_service",
       "//chrome/browser/ui/ash/thumbnail_loader",
       "//chrome/browser/ui/webui/ash",

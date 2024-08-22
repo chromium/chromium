@@ -47,8 +47,6 @@ static_library("ash") {
     "in_session_auth_token_provider_impl.cc",
     "in_session_auth_token_provider_impl.h",
     "login_screen_shown_observer.h",
-    "media_client_impl.cc",
-    "media_client_impl.h",
     "screen_orientation_delegate_chromeos.cc",
     "screen_orientation_delegate_chromeos.h",
     "screenshot_area.cc",
@@ -177,6 +175,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/holding_space",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/ash/media_client",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/network",
     "//chrome/browser/ui/ash/new_window",
@@ -330,7 +329,6 @@ source_set("unit_tests") {
     "arc_vm_data_migration_confirmation_dialog_unittest.cc",
     "ime_controller_client_impl_unittest.cc",
     "in_session_auth_dialog_client_unittest.cc",
-    "media_client_impl_unittest.cc",
     "window_pin_util_ash_unittest.cc",
   ]
 
@@ -383,6 +381,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/global_media_controls:unit_tests",
     "//chrome/browser/ui/ash/holding_space:unit_tests",
     "//chrome/browser/ui/ash/keyboard:unit_tests",
+    "//chrome/browser/ui/ash/media_client:unit_tests",
     "//chrome/browser/ui/ash/multi_user:unit_tests",
     "//chrome/browser/ui/ash/network:unit_tests",
     "//chrome/browser/ui/ash/picker:unit_tests",

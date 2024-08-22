@@ -85,6 +85,7 @@ source_set("webrtc") {
     "webrtc_text_log_handler.h",
     "window_icon_util.h",
   ]
+
   public_deps = [
     "//base",
     "//build:buildflag_header_h",
@@ -111,6 +112,7 @@ source_set("webrtc") {
     "//ui/gfx/geometry",
     "//url",
   ]
+
   deps = [
     "//base:i18n",
     "//chrome/app:branded_strings",
@@ -212,6 +214,7 @@ source_set("webrtc") {
     sources += [ "window_icon_util_ozone.cc" ]
     deps += [ "//ui/ozone" ]
   }
+
   if (is_chromeos_ash) {
     sources += [
       "desktop_media_list_ash.cc",
@@ -232,6 +235,7 @@ source_set("webrtc") {
       "//chrome/browser/ash/system_web_apps/apps/camera_app",
       "//chrome/browser/ash/system_web_apps/apps/recorder_app",
       "//chrome/browser/ui/ash/keyboard",
+      "//chrome/browser/ui/ash/media_client",
       "//chromeos/ash/components/system",
       "//components/user_manager",
     ]
@@ -245,17 +249,21 @@ source_set("webrtc") {
       "//chrome/browser/ash/policy/multi_screen_capture",
       "//chrome/browser/ash/policy/uploading",
       "//chrome/browser/ui/ash/keyboard",
+      "//chrome/browser/ui/ash/media_client",
       "//chrome/browser/ash/system_web_apps/apps/camera_app",
       "//chrome/browser/ash/system_web_apps/apps/recorder_app",
     ]
   }
+
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/lacros" ]
   }
+
   if (is_win) {
     sources += [ "window_icon_util_win.cc" ]
     deps += [ "//ui/views" ]
   }
+
   if (use_aura) {
     deps += [ "//ui/aura" ]
   }
@@ -264,6 +272,7 @@ source_set("webrtc") {
     configs +=
         [ "//third_party/webrtc/modules/desktop_capture:pipewire_config" ]
   }
+
   defines = [ "ZLIB_CONST" ]
 }
 

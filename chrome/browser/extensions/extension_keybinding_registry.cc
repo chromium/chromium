@@ -24,7 +24,7 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/ash/media_client_impl.h"
+#include "chrome/browser/ui/ash/media_client/media_client_impl.h"
 #endif
 
 namespace {
