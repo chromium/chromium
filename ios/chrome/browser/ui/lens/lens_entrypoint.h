@@ -23,8 +23,9 @@ enum class LensEntrypoint {
   Intents = 11,
   WebImagesSearchBar = 12,
   WhatsNewPromo = 13,
-  LensOverlay = 14,
-  kMaxValue = LensOverlay,
+  LensOverlayLocationBar = 14,
+  LensOverlayOverflowMenu = 15,
+  kMaxValue = LensOverlayOverflowMenu,
   //  LINT.ThenChange(//tools/metrics/histograms/enums.xml:AmbientSearchEntryPoint)
 };
 
