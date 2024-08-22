@@ -470,27 +470,6 @@ bool IsShadowContentRelevantForAccessibility(const Node* node) {
     }
   }
 
-  // All other non-slot user agent shadow nodes are relevant.
-  const HTMLSlotElement* slot_element =
-      ToHTMLSlotElementIfSupportsAssignmentOrNull(node);
-  if (!slot_element)
-    return true;
-
-  // Slots are relevant if they have content.
-  // However, this can only be checked during safe times.
-  // During other times we must assume that the <slot> is relevant.
-  // TODO(accessibility) Consider removing this rule, but it will require
-  // a different way of dealing with these PDF test failures:
-  // https://chromium-review.googlesource.com/c/chromium/src/+/2965317
-  // For some reason the iframe tests hang, waiting for content to change. In
-  // other words, returning true here causes some tree updates not to occur.
-  if (node->GetDocument().IsFlatTreeTraversalForbidden() ||
-      node->GetDocument()
-          .GetSlotAssignmentEngine()
-          .HasPendingSlotAssignmentRecalc()) {
-    return true;
-  }
-
   // If the slot element's host is an <object>/<embed>with any descendant nodes
   // (including whitespace), LayoutTreeBuilderTraversal::FirstChild will
   // return a node. We should only treat that node as slot content if it is
@@ -500,7 +479,8 @@ bool IsShadowContentRelevantForAccessibility(const Node* node) {
     return plugin_element->UseFallbackContent();
   }
 
-  return LayoutTreeBuilderTraversal::FirstChild(*slot_element);
+  // All other shadow content is relevant.
+  return true;
 }
 
 bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
