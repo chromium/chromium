@@ -769,8 +769,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
         if (mResponseInfo != null) {
             mResponseInfo.setReceivedByteCount(receivedByteCount);
         }
-        if (errorCode == NetworkException.ERROR_QUIC_PROTOCOL_FAILED
-                || errorCode == NetworkException.ERROR_NETWORK_CHANGED) {
+        if (errorCode == NetworkException.ERROR_QUIC_PROTOCOL_FAILED || nativeQuicError != 0) {
             failWithException(
                     new QuicExceptionImpl(
                             "Exception in CronetUrlRequest: " + errorString,
