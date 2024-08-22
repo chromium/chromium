@@ -244,6 +244,10 @@ interface ShoppingServiceHandler {
   GetPriceInsightsInfoForCurrentUrl()
       => (PriceInsightsInfo priceInsightsInfo);
 
+  // Returns the price insights info for the provided URL.
+  GetPriceInsightsInfoForUrl(url.mojom.Url url)
+      => (url.mojom.Url url, PriceInsightsInfo priceInsightsInfo);
+
   // Returns the product specifications for the provided list of URLs.
   GetProductSpecificationsForUrls(array<url.mojom.Url> urls)
       => (ProductSpecifications productSpecs);

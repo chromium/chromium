@@ -600,6 +600,79 @@ TEST_F(ShoppingServiceHandlerTest, TestGetPriceInsightsInfoForCurrentUrl) {
   run_loop.Run();
 }
 
+TEST_F(ShoppingServiceHandlerTest, TestGetPriceInsightsInfoForUrl) {
+  base::RunLoop run_loop;
+
+  std::optional<commerce::PriceInsightsInfo> info;
+  info.emplace();
+  info->product_cluster_id = 123u;
+  info->currency_code = "usd";
+  info->typical_low_price_micros = 1230000;
+  info->typical_high_price_micros = 2340000;
+  info->catalog_attributes = "Unlocked, 4GB";
+  info->jackpot_url = GURL("http://example.com/jackpot");
+  info->price_bucket = PriceBucket::kHighPrice;
+  info->has_multiple_catalogs = true;
+  info->catalog_history_prices.emplace_back("2021-01-01", 3330000);
+  info->catalog_history_prices.emplace_back("2021-01-02", 4440000);
+
+  shopping_service_->SetIsPriceInsightsEligible(true);
+  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(info);
+
+  handler_->GetPriceInsightsInfoForUrl(
+      GURL("http://example.com/"),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, const GURL& url,
+             shopping_service::mojom::PriceInsightsInfoPtr info) {
+            ASSERT_EQ(123u, info->cluster_id);
+            ASSERT_EQ("$1.23", info->typical_low_price);
+            ASSERT_EQ("$2.34", info->typical_high_price);
+            ASSERT_EQ("Unlocked, 4GB", info->catalog_attributes);
+            ASSERT_EQ("http://example.com/jackpot", info->jackpot.spec());
+            ASSERT_EQ(
+                shopping_service::mojom::PriceInsightsInfo::PriceBucket::kHigh,
+                info->bucket);
+            ASSERT_EQ(true, info->has_multiple_catalogs);
+            ASSERT_EQ(2, (int)info->history.size());
+            ASSERT_EQ("2021-01-01", info->history[0]->date);
+            ASSERT_EQ(3.33f, info->history[0]->price);
+            ASSERT_EQ("$3.33", info->history[0]->formatted_price);
+            ASSERT_EQ("2021-01-02", info->history[1]->date);
+            ASSERT_EQ(4.44f, info->history[1]->price);
+            ASSERT_EQ("$4.44", info->history[1]->formatted_price);
+            ASSERT_EQ("en-us", info->locale);
+            ASSERT_EQ("usd", info->currency_code);
+            run_loop->Quit();
+          },
+          &run_loop));
+
+  run_loop.Run();
+}
+
+TEST_F(ShoppingServiceHandlerTest,
+       TestGetPriceInsightsInfoForUrlWhenNotPriceInsightsEligible) {
+  base::RunLoop run_loop;
+
+  std::optional<commerce::PriceInsightsInfo> info;
+  info.emplace();
+  info->product_cluster_id = 123u;
+
+  shopping_service_->SetIsPriceInsightsEligible(false);
+  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(info);
+
+  handler_->GetPriceInsightsInfoForUrl(
+      GURL("http://example.com/"),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, const GURL& url,
+             shopping_service::mojom::PriceInsightsInfoPtr info) {
+            ASSERT_NE(123u, info->cluster_id);
+            run_loop->Quit();
+          },
+          &run_loop));
+
+  run_loop.Run();
+}
+
 TEST_F(ShoppingServiceHandlerTest, TestGetUrlInfosForProductTabs) {
   base::RunLoop run_loop;
 
