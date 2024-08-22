@@ -1262,7 +1262,7 @@ ChromeFileSystemAccessPermissionContext::GetReadPermissionGrant(
   // but that is exactly what we want.
   auto& origin_state = active_permissions_map_[origin];
   auto*& existing_grant = origin_state.read_grants[path];
-  scoped_refptr<PermissionGrantImpl> new_grant;
+  scoped_refptr<PermissionGrantImpl> grant;
 
   if (existing_grant && existing_grant->handle_type() != handle_type) {
     // |path| changed from being a directory to being a file or vice versa,
@@ -1274,27 +1274,30 @@ ChromeFileSystemAccessPermissionContext::GetReadPermissionGrant(
     existing_grant = nullptr;
   }
 
-  if (!existing_grant) {
-    new_grant = base::MakeRefCounted<PermissionGrantImpl>(
+  bool creating_new_grant = !existing_grant;
+  if (creating_new_grant) {
+    grant = base::MakeRefCounted<PermissionGrantImpl>(
         weak_factory_.GetWeakPtr(), origin, path, handle_type, GrantType::kRead,
         user_action);
-    existing_grant = new_grant.get();
+    existing_grant = grant.get();
+  } else {
+    grant = existing_grant;
   }
 
   const ContentSetting content_setting = GetReadGuardContentSetting(origin);
   switch (content_setting) {
     case CONTENT_SETTING_ALLOW:
       // Don't persist permissions when the origin is allowlisted.
-      existing_grant->SetStatus(
+      grant->SetStatus(
           PermissionStatus::GRANTED,
           PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
       break;
     case CONTENT_SETTING_ASK:
       // If a parent directory is already readable this new grant should also be
       // readable.
-      if (new_grant &&
+      if (creating_new_grant &&
           AncestorHasActivePermission(origin, path, GrantType::kRead)) {
-        existing_grant->SetStatus(
+        grant->SetStatus(
             PermissionStatus::GRANTED,
             PersistedPermissionOptions::kUpdatePersistedPermission);
         break;
@@ -1309,7 +1312,7 @@ ChromeFileSystemAccessPermissionContext::GetReadPermissionGrant(
           [[fallthrough]];
         case UserAction::kDragAndDrop:
           // Drag&drop grants read access for all handles.
-          existing_grant->SetStatus(
+          grant->SetStatus(
               PermissionStatus::GRANTED,
               PersistedPermissionOptions::kUpdatePersistedPermission);
           break;
@@ -1322,8 +1325,8 @@ ChromeFileSystemAccessPermissionContext::GetReadPermissionGrant(
       // Don't bother revoking persisted permissions. If the permissions have
       // not yet expired when the ContentSettingValue is changed, they will
       // effectively be reinstated.
-      if (new_grant) {
-        existing_grant->SetStatus(
+      if (creating_new_grant) {
+        grant->SetStatus(
             PermissionStatus::DENIED,
             PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
       } else {
@@ -1335,11 +1338,11 @@ ChromeFileSystemAccessPermissionContext::GetReadPermissionGrant(
       break;
   }
 
-  if (HasGrantedActivePermissionStatus(existing_grant)) {
+  if (HasGrantedActivePermissionStatus(grant.get())) {
     ScheduleUsageIconUpdate();
   }
 
-  return existing_grant;
+  return grant;
 }
 
 scoped_refptr<content::FileSystemAccessPermissionGrant>
@@ -1353,7 +1356,7 @@ ChromeFileSystemAccessPermissionContext::GetWritePermissionGrant(
   // but that is exactly what we want.
   auto& origin_state = active_permissions_map_[origin];
   auto*& existing_grant = origin_state.write_grants[path];
-  scoped_refptr<PermissionGrantImpl> new_grant;
+  scoped_refptr<PermissionGrantImpl> grant;
 
   if (existing_grant && existing_grant->handle_type() != handle_type) {
     // |path| changed from being a directory to being a file or vice versa,
@@ -1365,27 +1368,30 @@ ChromeFileSystemAccessPermissionContext::GetWritePermissionGrant(
     existing_grant = nullptr;
   }
 
-  if (!existing_grant) {
-    new_grant = base::MakeRefCounted<PermissionGrantImpl>(
+  bool creating_new_grant = !existing_grant;
+  if (creating_new_grant) {
+    grant = base::MakeRefCounted<PermissionGrantImpl>(
         weak_factory_.GetWeakPtr(), origin, path, handle_type,
         GrantType::kWrite, user_action);
-    existing_grant = new_grant.get();
+    existing_grant = grant.get();
+  } else {
+    grant = existing_grant;
   }
 
   const ContentSetting content_setting = GetWriteGuardContentSetting(origin);
   switch (content_setting) {
     case CONTENT_SETTING_ALLOW:
       // Don't persist permissions when the origin is allowlisted.
-      existing_grant->SetStatus(
+      grant->SetStatus(
           PermissionStatus::GRANTED,
           PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
       break;
     case CONTENT_SETTING_ASK:
       // If a parent directory is already writable this new grant should also be
       // writable.
-      if (new_grant &&
+      if (creating_new_grant &&
           AncestorHasActivePermission(origin, path, GrantType::kWrite)) {
-        existing_grant->SetStatus(
+        grant->SetStatus(
             PermissionStatus::GRANTED,
             PersistedPermissionOptions::kUpdatePersistedPermission);
         break;
@@ -1393,7 +1399,7 @@ ChromeFileSystemAccessPermissionContext::GetWritePermissionGrant(
       switch (user_action) {
         case UserAction::kSave:
           // Only automatically grant write access for save dialogs.
-          existing_grant->SetStatus(
+          grant->SetStatus(
               PermissionStatus::GRANTED,
               PersistedPermissionOptions::kUpdatePersistedPermission);
           break;
@@ -1408,8 +1414,8 @@ ChromeFileSystemAccessPermissionContext::GetWritePermissionGrant(
       // Don't bother revoking persisted permissions. If the permissions have
       // not yet expired when the ContentSettingValue is changed, they will
       // effectively be reinstated.
-      if (new_grant) {
-        existing_grant->SetStatus(
+      if (creating_new_grant) {
+        grant->SetStatus(
             PermissionStatus::DENIED,
             PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
       } else {
@@ -1421,11 +1427,11 @@ ChromeFileSystemAccessPermissionContext::GetWritePermissionGrant(
       break;
   }
 
-  if (HasGrantedActivePermissionStatus(existing_grant)) {
+  if (HasGrantedActivePermissionStatus(grant.get())) {
     ScheduleUsageIconUpdate();
   }
 
-  return existing_grant;
+  return grant;
 }
 
 // Return extended permission grants for an origin.
