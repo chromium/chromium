@@ -1862,6 +1862,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderSizeInScoreAdBrowserSignals);
 // Optimize loading data: URLs.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOptimizeLoadingDataUrls);
 
+// Enable the Shared Bitmap to Shared Image conversion for Canvas.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvasSharedBitmapToSharedImage);
 BLINK_COMMON_EXPORT bool IsCanvasSharedBitmapConversionEnabled();
 
 }  // namespace features

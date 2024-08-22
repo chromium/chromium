@@ -10,6 +10,7 @@
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_gles2_interface.h"
@@ -22,6 +23,10 @@
 namespace blink {
 
 TEST(CanvasResourceTest, PrepareTransferableResource_SharedBitmap) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kCanvasSharedBitmapToSharedImage);
+
   test::TaskEnvironment task_environment;
   scoped_refptr<CanvasResource> canvas_resource =
       CanvasResourceSharedBitmap::Create(

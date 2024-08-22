@@ -11,6 +11,7 @@
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
@@ -101,6 +102,9 @@ class CanvasResourceDispatcherTest
   CanvasResourceDispatcherTest() = default;
 
   void CreateCanvasResourceDispatcher() {
+    feature_list_.InitAndDisableFeature(
+        features::kCanvasSharedBitmapToSharedImage);
+
     dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>();
     resource_provider_ = CanvasResourceProvider::CreateSharedBitmapProvider(
         SkImageInfo::MakeN32Premul(kWidth, kHeight),
@@ -112,6 +116,7 @@ class CanvasResourceDispatcherTest
   MockCanvasResourceDispatcher* Dispatcher() { return dispatcher_.get(); }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   scoped_refptr<StaticBitmapImage> PrepareStaticBitmapImage();
   test::TaskEnvironment task_environment_;
   std::unique_ptr<MockCanvasResourceDispatcher> dispatcher_;

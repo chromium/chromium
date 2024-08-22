@@ -8,6 +8,7 @@
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -75,6 +76,7 @@ class OffscreenCanvasTest : public ::testing::Test,
   Document& GetDocument() const { return *GetWindow()->document(); }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   test::TaskEnvironment task_environment_;
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
   Persistent<OffscreenCanvas> offscreen_canvas_;
@@ -88,6 +90,9 @@ class OffscreenCanvasTest : public ::testing::Test,
 OffscreenCanvasTest::OffscreenCanvasTest() = default;
 
 void OffscreenCanvasTest::SetUp() {
+  feature_list_.InitAndDisableFeature(
+      features::kCanvasSharedBitmapToSharedImage);
+
   auto factory = [](FakeGLES2Interface* gl)
       -> std::unique_ptr<WebGraphicsContext3DProvider> {
     gl->SetIsContextLost(false);

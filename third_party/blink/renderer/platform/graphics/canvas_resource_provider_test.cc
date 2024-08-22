@@ -14,6 +14,7 @@
 #include "components/viz/test/test_gles2_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -518,6 +519,9 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderSharedBitmap) {
   const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kCanvasSharedBitmapToSharedImage);
 
   MockCanvasResourceDispatcherClient client;
   CanvasResourceDispatcher resource_dispatcher(

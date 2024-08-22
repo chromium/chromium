@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
@@ -67,10 +68,14 @@ class OffscreenCanvasPlaceholderTest : public Test {
   OffscreenCanvasPlaceholder placeholder_;
   std::unique_ptr<MockCanvasResourceDispatcher> dispatcher_;
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 void OffscreenCanvasPlaceholderTest::SetUp() {
   Test::SetUp();
+  feature_list_.InitAndDisableFeature(
+      features::kCanvasSharedBitmapToSharedImage);
+
   unsigned placeholder_id = GenPlaceholderId();
   placeholder_.RegisterPlaceholderCanvas(placeholder_id);
   dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>(placeholder_id);
