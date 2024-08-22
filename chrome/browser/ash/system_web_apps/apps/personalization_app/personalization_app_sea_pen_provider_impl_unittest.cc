@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
@@ -35,6 +36,8 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/test_sea_pen_observer.h"
@@ -75,6 +78,8 @@ constexpr char kFakeTestEmail2[] = "anotherfakeemail@personalization";
 constexpr char kTestGaiaId2[] = "9876543210";
 constexpr char kGooglerEmail[] = "user@google.com";
 constexpr char kGooglerGaiaId[] = "123459876";
+constexpr char kDemoModeEmail[] = "demo-public-account@example.com";
+
 constexpr uint32_t kSeaPenId1 = 111;
 constexpr uint32_t kSeaPenId2 = 222;
 
@@ -119,6 +124,10 @@ AccountId GetGooglerAccountId() {
   return AccountId::FromUserEmailGaiaId(kGooglerEmail, kGooglerGaiaId);
 }
 
+AccountId GetDemoModeAccountId() {
+  return AccountId::FromUserEmail(kDemoModeEmail);
+}
+
 void AddAndLoginUser(const AccountId& account_id, user_manager::UserType type) {
   user_manager::User* user = nullptr;
   ash::FakeChromeUserManager* user_manager =
@@ -135,6 +144,8 @@ void AddAndLoginUser(const AccountId& account_id, user_manager::UserType type) {
       user = user_manager->AddChildUser(account_id);
       break;
     case user_manager::UserType::kPublicAccount:
+      user = user_manager->AddPublicAccountUser(account_id);
+      break;
     case user_manager::UserType::kKioskApp:
     case user_manager::UserType::kWebKioskApp:
       break;
@@ -177,7 +188,9 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
     scoped_feature_list_.InitWithFeatures(
-        {features::kSeaPen, features::kFeatureManagementSeaPen}, {});
+        {features::kSeaPen, features::kSeaPenDemoMode,
+         features::kFeatureManagementSeaPen},
+        {});
   }
 
   PersonalizationAppSeaPenProviderImplTest(
@@ -943,6 +956,76 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, IsEligibleForSeaPen_Regular) {
   ASSERT_TRUE(sea_pen_provider()->IsEligibleForSeaPen());
 }
 
+TEST_F(PersonalizationAppSeaPenProviderImplTest,
+       IsManagedSeaPenFeedbackEnabledGoogler) {
+  SetUpProfileForTesting(kGooglerEmail, GetGooglerAccountId());
+  profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+  profile()->GetPrefs()->SetInteger(
+      ash::prefs::kGenAIWallpaperSettings,
+      static_cast<int>(ManagedSeaPenSettings::kAllowedWithoutLogging));
+  ASSERT_TRUE(sea_pen_provider()->IsManagedSeaPenFeedbackEnabled())
+      << " SeaPen Wallpaper feedback should be enabled for Googlers";
+}
+
+TEST_F(PersonalizationAppSeaPenProviderImplTest,
+       IsManagedSeaPenFeedbackEnabledPublicAccountDemoMode) {
+  SetUpProfileForTesting(kDemoModeEmail, GetDemoModeAccountId(),
+                         user_manager::UserType::kPublicAccount);
+  profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+  profile()->GetPrefs()->SetInteger(
+      ash::prefs::kGenAIWallpaperSettings,
+      static_cast<int>(ManagedSeaPenSettings::kAllowedWithoutLogging));
+
+  // Force device into demo mode.
+  ASSERT_FALSE(::ash::DemoSession::IsDeviceInDemoMode());
+  profile()->ScopedCrosSettingsTestHelper()->InstallAttributes()->SetDemoMode();
+  ASSERT_TRUE(::ash::DemoSession::IsDeviceInDemoMode());
+
+  // Force demo mode session to start.
+  ASSERT_FALSE(::ash::DemoSession::Get());
+  auto demo_mode_test_helper = std::make_unique<::ash::DemoModeTestHelper>();
+  demo_mode_test_helper->InitializeSession();
+  ASSERT_TRUE(::ash::DemoSession::Get());
+
+  ASSERT_TRUE(sea_pen_provider()->IsManagedSeaPenFeedbackEnabled())
+      << " SeaPen Wallpaper feedback should be enabled for Demo Mode";
+}
+
+TEST_F(PersonalizationAppSeaPenProviderImplTest,
+       IsManagedSeaPenFeedbackEnabledRegular) {
+  SetUpProfileForTesting(kFakeTestEmail2, GetTestAccountId2());
+  ASSERT_TRUE(sea_pen_provider()->IsManagedSeaPenFeedbackEnabled());
+}
+
+TEST_F(PersonalizationAppSeaPenProviderImplTest,
+       IsManagedSeaPenFeedbackEnabledAllowedManaged) {
+  SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
+  profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+  profile()->GetPrefs()->SetInteger(
+      ash::prefs::kGenAIWallpaperSettings,
+      static_cast<int>(ManagedSeaPenSettings::kAllowed));
+  ASSERT_TRUE(sea_pen_provider()->IsManagedSeaPenFeedbackEnabled());
+}
+
+TEST_F(PersonalizationAppSeaPenProviderImplTest,
+       IsManagedSeaPenFeedbackEnabledAllowedWithoutLoggingManaged) {
+  SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
+  profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+  profile()->GetPrefs()->SetInteger(
+      ash::prefs::kGenAIWallpaperSettings,
+      static_cast<int>(ManagedSeaPenSettings::kAllowedWithoutLogging));
+  ASSERT_FALSE(sea_pen_provider()->IsManagedSeaPenFeedbackEnabled());
+}
+
+TEST_F(PersonalizationAppSeaPenProviderImplTest,
+       IsManagedSeaPenFeedbackEnabledDisabledManaged) {
+  SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
+  profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+  profile()->GetPrefs()->SetInteger(
+      ash::prefs::kGenAIWallpaperSettings,
+      static_cast<int>(ManagedSeaPenSettings::kDisabled));
+  ASSERT_FALSE(sea_pen_provider()->IsManagedSeaPenFeedbackEnabled());
+}
 }  // namespace
 
 }  // namespace ash::personalization_app

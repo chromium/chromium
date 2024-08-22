@@ -106,6 +106,12 @@ void VcBackgroundUISeaPenProviderImpl::SelectRecentSeaPenImageInternal(
       CameraEffectsController::SeaPenIdToRelativePath(id), std::move(callback));
 }
 
+bool VcBackgroundUISeaPenProviderImpl::
+    IsManagedSeaPenFeedbackEnabledInternal() {
+  return ::ash::personalization_app::IsManagedSeaPenVcBackgroundFeedbackEnabled(
+      profile_);
+}
+
 void VcBackgroundUISeaPenProviderImpl::GetRecentSeaPenImageIdsInternal(
     GetRecentSeaPenImageIdsCallback callback) {
   GetCameraEffectsController()->GetBackgroundImageFileNames(

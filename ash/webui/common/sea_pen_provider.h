@@ -24,6 +24,10 @@ class SeaPenProvider {
   virtual bool IsEligibleForSeaPen() = 0;
 
   virtual bool IsEligibleForSeaPenTextInput() = 0;
+
+  // Determines if the current active profile is able to see the SeaPen
+  // Feedback.
+  virtual bool IsManagedSeaPenFeedbackEnabled() = 0;
 };
 
 }  // namespace ash::common
