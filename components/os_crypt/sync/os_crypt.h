@@ -232,16 +232,13 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_LINUX)
-  // Create the KeyStorage. Will be null if no service is found. A Config must
-  // be set before every call to this method.
-  std::unique_ptr<KeyStorageLinux> CreateKeyStorage();
-
   // Returns a cached string of "peanuts". Is thread-safe.
   crypto::SymmetricKey* GetPasswordV10();
 
   // Caches and returns the password from the KeyStorage or null if there is no
-  // service. Is thread-safe.
-  crypto::SymmetricKey* GetPasswordV11();
+  // service. Is thread-safe. Set `probe` to true if caller wishes to get
+  // nullptr back rather than crashing due to no config being set.
+  crypto::SymmetricKey* GetPasswordV11(bool probe);
 
   // For password_v10, nullptr means uninitialised.
   std::unique_ptr<crypto::SymmetricKey> password_v10_cache_;
@@ -255,7 +252,7 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
   std::unique_ptr<os_crypt::Config> config_;
 
   base::OnceCallback<std::unique_ptr<KeyStorageLinux>()>
-      storage_provider_factory_;
+      storage_provider_factory_for_testing_;
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
