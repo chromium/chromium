@@ -675,6 +675,11 @@ inline constexpr char kHomeCustomizationMagicStackSafetyCheckIssuesCount[] =
 inline constexpr char kIdentityConfirmationSnackbarLastPromptTime[] =
     "ios.identity_confirmation_snackbar_last_prompt_time";
 
+// The number of times that the new badge has been shown on the Home
+// Customization menu's entrypoint.
+inline constexpr char kNTPHomeCustomizationNewBadgeImpressionCount[] =
+    "ios.home_customization.new_badge_impressions";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_

@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -25,6 +27,8 @@
 #import "ios/chrome/browser/ui/ntp/feed_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_mediator.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
@@ -37,7 +41,7 @@ namespace {
 const char kNTPLensButtonNewBadgeShownHistogram[] =
     "IOS.NTP.LensButtonNewBadgeShown";
 
-// The maximum number of times to show the new badge on the new tab page.
+// The maximum number of times to show the new badge on the Lens entrypoint.
 const NSInteger kMaxShowCountNTPLensButtonNewBadge = 3;
 
 // Logs the Lens button new badge shown histogram.
@@ -70,20 +74,36 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   PrefService* prefService = browser->GetBrowserState()->GetPrefs();
   NSInteger lensNewBadgeShowCount =
       prefService->GetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount);
+
+  BOOL useNewBadgeForCustomizationMenu = NO;
+  NSInteger customizationNewBadgeImpressionCount = prefService->GetInteger(
+      prefs::kNTPHomeCustomizationNewBadgeImpressionCount);
+
+  if (customizationNewBadgeImpressionCount <
+      kCustomizationNewBadgeMaxImpressionCount) {
+    useNewBadgeForCustomizationMenu = YES;
+    base::RecordAction(
+        base::UserMetricsAction(kNTPCustomizationNewBadgeShownAction));
+    prefService->SetInteger(prefs::kNTPHomeCustomizationNewBadgeImpressionCount,
+                            customizationNewBadgeImpressionCount + 1);
+  }
+
   if (lensNewBadgeShowCount < kMaxShowCountNTPLensButtonNewBadge) {
     // Show the "New" badge and colored symbol.
     LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult::kShown);
     prefService->SetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount,
                             lensNewBadgeShowCount + 1);
     return [[NewTabPageHeaderViewController alloc]
-        initWithUseNewBadgeForLensButton:YES];
+        initWithUseNewBadgeForLensButton:YES
+         useNewBadgeForCustomizationMenu:useNewBadgeForCustomizationMenu];
   } else {
     BOOL button_pressed = lensNewBadgeShowCount == INT_MAX;
     LogLensButtonNewBadgeShownHistogram(
         button_pressed ? IOSNTPNewBadgeShownResult::kNotShownButtonPressed
                        : IOSNTPNewBadgeShownResult::kNotShownLimitReached);
     return [[NewTabPageHeaderViewController alloc]
-        initWithUseNewBadgeForLensButton:NO];
+        initWithUseNewBadgeForLensButton:NO
+         useNewBadgeForCustomizationMenu:useNewBadgeForCustomizationMenu];
   }
 }
 

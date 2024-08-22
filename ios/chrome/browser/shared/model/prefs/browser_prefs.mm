@@ -979,6 +979,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kHomeCustomizationMagicStackParcelTrackingEnabled, true);
 
+  registry->RegisterIntegerPref(
+      prefs::kNTPHomeCustomizationNewBadgeImpressionCount, 0);
+
   // Deprecated 05/2024.
   registry->RegisterBooleanPref(kAutologinEnabled, true);
   registry->RegisterListPref(kReverseAutologinRejectedEmailList);

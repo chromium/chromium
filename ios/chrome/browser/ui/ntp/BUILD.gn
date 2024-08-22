@@ -54,6 +54,7 @@ source_set("component_factory") {
   ]
   deps = [
     ":component_factory_protocol",
+    ":constants",
     ":ntp_internal",
     "//components/prefs",
     "//ios/chrome/app:tests_hook",
@@ -70,6 +71,7 @@ source_set("component_factory") {
     "//ios/chrome/browser/ui/content_suggestions",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
     "//ios/chrome/browser/ui/ntp/metrics",
+    "//ios/chrome/browser/ui/ntp/metrics:constants",
     "//ios/chrome/browser/url_loading/model",
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
   ]
