@@ -1440,9 +1440,17 @@ IN_PROC_BROWSER_TEST_P(
                 supervised_user::SupervisionMixin::SignInMode::kSupervised);
 }
 
+// Flaky: crbug.com/361463503
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CheckSameDocumentNavigationAgainstClassifyUrlRPC \
+  DISABLED_CheckSameDocumentNavigationAgainstClassifyUrlRPC
+#else
+#define MAYBE_CheckSameDocumentNavigationAgainstClassifyUrlRPC \
+  CheckSameDocumentNavigationAgainstClassifyUrlRPC
+#endif  // BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(
     SupervisedUserNavigationThrottleOnlyEnabledForSupervisedUsers,
-    CheckSameDocumentNavigationAgainstClassifyUrlRPC) {
+    MAYBE_CheckSameDocumentNavigationAgainstClassifyUrlRPC) {
   kids_management_api_mock().RestrictSubsequentClassifyUrl();
 
   // Only supervised users should call the backend
