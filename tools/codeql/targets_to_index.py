@@ -3,5 +3,6 @@
 # found in the LICENSE file.
 full_targets = [
     "libavif",
+    "d8",
     "chrome",
 ]
