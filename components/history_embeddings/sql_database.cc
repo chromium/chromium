@@ -4,6 +4,8 @@
 
 #include "components/history_embeddings/sql_database.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
@@ -435,6 +437,9 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
           "History.Embeddings.DatabaseIterationSkippedMismatches",
           skipped_mismatches);
       base::UmaHistogramCounts1000(
+          "History.Embeddings.DatabaseIterationSkippedMissizedEmbeddings",
+          skipped_missized);
+      base::UmaHistogramCounts10000(
           "History.Embeddings.DatabaseIterationYielded", yielded);
     }
 
@@ -471,7 +476,18 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
               std::vector(vector.floats().cbegin(), vector.floats().cend()),
               vector.passage_word_count());
         }
+        const size_t expected_dimensions =
+            sql_database->GetEmbeddingDimensions();
+        if (std::ranges::any_of(data.url_embeddings.embeddings,
+                                [=](const Embedding& embedding) {
+                                  return embedding.Dimensions() !=
+                                         expected_dimensions;
+                                })) {
+          skipped_missized++;
+          continue;
+        }
 
+        // Confirm embeddings and passages are 1:1.
         if (data.url_embeddings.embeddings.empty() ||
             data.url_embeddings.embeddings.size() !=
                 static_cast<size_t>(
@@ -492,6 +508,7 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
     int skipped_passages = 0;
     int skipped_embeddings = 0;
     int skipped_mismatches = 0;
+    int skipped_missized = 0;
     int yielded = 0;
   };
 

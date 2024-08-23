@@ -80,6 +80,11 @@ void Embedding::Normalize() {
 float Embedding::ScoreWith(SearchInfo& search_info,
                            const std::string& other_passage,
                            const Embedding& other_embedding) const {
+  // This check is redundant since the database layers ensure embeddings
+  // always have a fixed consistent size, but code can change with time,
+  // and being sure directly before use may eventually catch a bug.
+  CHECK_EQ(data_.size(), other_embedding.data_.size());
+
   float score = 0.0f;
   // Skip non-ASCII strings to avoid scoring problems with the model.
   if (base::IsStringASCII(other_passage)) {
