@@ -149,8 +149,6 @@ class PlusAddressDataChange {
 // Only used by Autofill.
 using autofill::PlusAddressCallback;
 
-using PlusAddressMap = std::map<std::string, PlusAddress>;
-
 // Holds either a PlusProfile or an error that prevented us from getting it.
 using PlusProfileOrError = base::expected<PlusProfile, PlusAddressRequestError>;
 using PlusAddressRequestCallback =
