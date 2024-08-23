@@ -224,6 +224,8 @@ class V4Store {
                            TestReadFullResponseWithValidHashPrefixMap);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
                            TestReadFullResponseWithInvalidHashPrefixMap);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest,
+                           TestWriteFullResponseWithInvalidHashPrefixMap);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestHashPrefixExistsAtTheBeginning);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestHashPrefixExistsInTheMiddle);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestHashPrefixExistsAtTheEnd);

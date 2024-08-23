@@ -131,13 +131,13 @@ TEST_F(HashPrefixMapTest, BuffersWrites) {
 }
 
 TEST_F(HashPrefixMapTest, ReadFile) {
-  base::WriteFile(GetPath("foo"), "foo");
+  base::WriteFile(GetPath("foo"), "fooo");
 
   V4StoreFileFormat file_format;
   auto* hash_file = file_format.add_hash_files();
   hash_file->set_prefix_size(4);
   hash_file->set_extension("foo");
-  hash_file->set_file_size(3);
+  hash_file->set_file_size(4);
 
   MmapHashPrefixMap map(GetBasePath());
   EXPECT_EQ(map.ReadFromDisk(file_format), APPLY_UPDATE_SUCCESS);
@@ -145,7 +145,7 @@ TEST_F(HashPrefixMapTest, ReadFile) {
 
   HashPrefixMapView view = map.view();
   EXPECT_EQ(view.size(), 1u);
-  EXPECT_EQ(view[4], "foo");
+  EXPECT_EQ(view[4], "fooo");
 }
 
 TEST_F(HashPrefixMapTest, ReadFileNotSorted) {
@@ -162,19 +162,19 @@ TEST_F(HashPrefixMapTest, ReadFileNotSorted) {
 }
 
 TEST_F(HashPrefixMapTest, ReadMultipleFiles) {
-  base::WriteFile(GetPath("foo"), "foo");
-  base::WriteFile(GetPath("bar"), "bar");
+  base::WriteFile(GetPath("foo"), "fooo");
+  base::WriteFile(GetPath("bar"), "barr");
 
   V4StoreFileFormat file_format;
   auto* hash_file = file_format.add_hash_files();
   hash_file->set_prefix_size(4);
   hash_file->set_extension("foo");
-  hash_file->set_file_size(3);
+  hash_file->set_file_size(4);
 
   hash_file = file_format.add_hash_files();
   hash_file->set_prefix_size(2);
   hash_file->set_extension("bar");
-  hash_file->set_file_size(3);
+  hash_file->set_file_size(4);
 
   MmapHashPrefixMap map(GetBasePath());
   EXPECT_EQ(map.ReadFromDisk(file_format), APPLY_UPDATE_SUCCESS);
@@ -182,8 +182,8 @@ TEST_F(HashPrefixMapTest, ReadMultipleFiles) {
 
   HashPrefixMapView view = map.view();
   EXPECT_EQ(view.size(), 2u);
-  EXPECT_EQ(view[4], "foo");
-  EXPECT_EQ(view[2], "bar");
+  EXPECT_EQ(view[4], "fooo");
+  EXPECT_EQ(view[2], "barr");
 }
 
 TEST_F(HashPrefixMapTest, ReadFileInvalid) {
@@ -192,7 +192,7 @@ TEST_F(HashPrefixMapTest, ReadFileInvalid) {
   auto* hash_file = file_format.add_hash_files();
   hash_file->set_prefix_size(4);
   hash_file->set_extension("foo");
-  hash_file->set_file_size(3);
+  hash_file->set_file_size(4);
 
   MmapHashPrefixMap map(GetBasePath());
   EXPECT_EQ(map.ReadFromDisk(file_format), MMAP_FAILURE);
@@ -210,6 +210,20 @@ TEST_F(HashPrefixMapTest, ReadFileWrongSize) {
 
   MmapHashPrefixMap map(GetBasePath());
   EXPECT_EQ(map.ReadFromDisk(file_format), MMAP_FAILURE);
+}
+
+TEST_F(HashPrefixMapTest, ReadFileInvalidSize) {
+  // The file size must be a multiple of the prefix size.
+  base::WriteFile(GetPath("foo"), "foo");
+
+  V4StoreFileFormat file_format;
+  auto* hash_file = file_format.add_hash_files();
+  hash_file->set_prefix_size(4);
+  hash_file->set_extension("foo");
+  hash_file->set_file_size(3);
+
+  MmapHashPrefixMap map(GetBasePath());
+  EXPECT_EQ(map.ReadFromDisk(file_format), ADDITIONS_SIZE_UNEXPECTED_FAILURE);
 }
 
 TEST_F(HashPrefixMapTest, WriteAndReadFile) {

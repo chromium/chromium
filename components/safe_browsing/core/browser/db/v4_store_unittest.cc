@@ -616,20 +616,36 @@ TEST_F(V4StoreTest, TestReadFullResponseWithValidHashPrefixMap) {
 // size is 5 so the parser isn't able to split the hash prefixes list
 // completely.
 TEST_F(V4StoreTest, TestReadFullResponseWithInvalidHashPrefixMap) {
-  V4Store write_store(task_runner(), store_path_,
-                      std::make_unique<InMemoryHashPrefixMap>());
-  write_store.hash_prefix_map_->Append(5, "abcdef");
-  write_store.state_ = "test_client_state";
-  EXPECT_FALSE(base::PathExists(write_store.store_path_));
-  EXPECT_EQ(WRITE_SUCCESS, write_store.WriteToDisk(Checksum()));
-  EXPECT_TRUE(base::PathExists(write_store.store_path_));
+  // Manually create an invalid store on disk
+  V4StoreFileFormat file_format;
+  file_format.set_magic_number(0x600D71FE);
+  file_format.set_version_number(9);
+  ListUpdateResponse* list_update_response =
+      file_format.mutable_list_update_response();
+  list_update_response->set_new_client_state("test_client_state");
+  list_update_response->set_platform_type(LINUX_PLATFORM);
+  list_update_response->set_response_type(ListUpdateResponse::FULL_UPDATE);
+  HashFile* hash_file = file_format.add_hash_files();
+  hash_file->set_prefix_size(5);
+  hash_file->set_extension("foo");
+  hash_file->set_file_size(6);
+  base::WriteFile(store_path_, file_format.SerializeAsString());
+  base::WriteFile(store_path_.AddExtensionASCII("foo"), "abcdef");
 
-  V4Store read_store(task_runner(), store_path_,
-                     std::make_unique<InMemoryHashPrefixMap>());
+  V4Store read_store(task_runner(), store_path_);
   EXPECT_EQ(HASH_PREFIX_MAP_GENERATION_FAILURE, read_store.ReadFromDisk());
   EXPECT_TRUE(read_store.state_.empty());
   EXPECT_TRUE(read_store.hash_prefix_map_->view().empty());
   EXPECT_EQ(0, read_store.file_size_);
+}
+
+TEST_F(V4StoreTest, TestWriteFullResponseWithInvalidHashPrefixMap) {
+  V4Store write_store(task_runner(), store_path_);
+  write_store.hash_prefix_map_->Append(5, "abcdef");
+  write_store.state_ = "test_client_state";
+  EXPECT_FALSE(base::PathExists(write_store.store_path_));
+  EXPECT_EQ(UNEXPECTED_WRITE_FAILURE, write_store.WriteToDisk(Checksum()));
+  EXPECT_FALSE(base::PathExists(write_store.store_path_));
 }
 
 TEST_F(V4StoreTest, TestHashPrefixExistsAtTheBeginning) {

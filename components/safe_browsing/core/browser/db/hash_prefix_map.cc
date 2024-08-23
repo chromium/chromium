@@ -411,17 +411,21 @@ ApplyUpdateResult MmapHashPrefixMap::ReadFromDisk(
   DCHECK(file_format.list_update_response().additions().empty());
   for (const auto& hash_file : file_format.hash_files()) {
     PrefixSize prefix_size = hash_file.prefix_size();
+    if (hash_file.file_size() % prefix_size != 0) {
+      return ADDITIONS_SIZE_UNEXPECTED_FAILURE;
+    }
+
     auto& file_info = GetFileInfo(prefix_size);
     if (!file_info.Initialize(hash_file)) {
       return MMAP_FAILURE;
     }
 
-      HashPrefixesView prefixes = file_info.GetView();
-      uint32_t end = prefixes.size() / prefix_size;
-      if (!std::is_sorted(PrefixIterator(prefixes, 0, prefix_size),
-                          PrefixIterator(prefixes, end, prefix_size))) {
-        return READ_FAILURE_NOT_SORTED;
-      }
+    HashPrefixesView prefixes = file_info.GetView();
+    uint32_t end = prefixes.size() / prefix_size;
+    if (!std::is_sorted(PrefixIterator(prefixes, 0, prefix_size),
+                        PrefixIterator(prefixes, end, prefix_size))) {
+      return READ_FAILURE_NOT_SORTED;
+    }
   }
   return APPLY_UPDATE_SUCCESS;
 }
