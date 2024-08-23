@@ -37,6 +37,7 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_modifiers.h"
@@ -540,11 +541,14 @@ class FeaturePromoLifecycleAppUiTest : public FeaturePromoLifecycleUiTest {
   FeaturePromoLifecycleAppUiTest() = default;
   ~FeaturePromoLifecycleAppUiTest() override = default;
 
-  static constexpr char kApp1Url[] = "http://example.org/";
-  static constexpr char kApp2Url[] = "http://foo.com/";
+  static constexpr char kApp1Url[] =
+      "http://example.org/web_apps/no_manifest.html";
+  static constexpr char kApp2Url[] = "http://foo.com/web_apps/basic.html";
 
   void SetUpOnMainThread() override {
     FeaturePromoLifecycleUiTest::SetUpOnMainThread();
+    CHECK(embedded_test_server()->Start());
+    host_resolver()->AddRule("*", "127.0.0.1");
     app1_id_ = InstallPWA(GURL(kApp1Url));
     app2_id_ = InstallPWA(GURL(kApp2Url));
   }
