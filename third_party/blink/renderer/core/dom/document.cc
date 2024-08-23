@@ -8010,6 +8010,16 @@ void Document::AddToTopLayer(Element* element, const Element* before) {
   display_lock_document_state_->ElementAddedToTopLayer(element);
 
   probe::TopLayerElementsChanged(this);
+
+  // In case a top layer element is being synchronously removed and re-added,
+  // we need to do the same to the backdrop in order to keep it next to this
+  // element in the top layer list.
+  if (PseudoElement* backdrop =
+          element->GetPseudoElement(PseudoId::kPseudoIdBackdrop,
+                                    /*view_transition_name=*/g_null_atom)) {
+    CHECK(!backdrop->IsInTopLayer());
+    AddToTopLayer(backdrop, element);
+  }
 }
 
 void Document::ScheduleForTopLayerRemoval(Element* element,
@@ -8069,6 +8079,16 @@ void Document::RemoveFromTopLayerImmediately(Element* element) {
   display_lock_document_state_->ElementRemovedFromTopLayer(element);
 
   probe::TopLayerElementsChanged(this);
+
+  // In case a top layer element is being synchronously removed and re-added,
+  // we need to do the same to the backdrop in order to keep it next to this
+  // element in the top layer list.
+  if (PseudoElement* backdrop =
+          element->GetPseudoElement(PseudoId::kPseudoIdBackdrop,
+                                    /*view_transition_name=*/g_null_atom)) {
+    CHECK(backdrop->IsInTopLayer());
+    RemoveFromTopLayerImmediately(backdrop);
+  }
 }
 
 std::optional<Document::TopLayerReason> Document::IsScheduledForTopLayerRemoval(
