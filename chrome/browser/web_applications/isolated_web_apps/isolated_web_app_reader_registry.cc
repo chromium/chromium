@@ -313,7 +313,8 @@ IsolatedWebAppReaderRegistry::ReadResponseError::ForError(
           "Failed to parse response head: %s", error.message.c_str()));
     case IsolatedWebAppResponseReader::Error::Type::kResponseNotFound:
       return ForResponseNotFound(base::StringPrintf(
-          "Failed to read response: %s", error.message.c_str()));
+          "Failed to read response from Signed Web Bundle: %s",
+          error.message.c_str()));
   }
 }
 

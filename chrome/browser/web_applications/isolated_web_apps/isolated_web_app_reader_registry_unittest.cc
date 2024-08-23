@@ -428,8 +428,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestRequestToNonExistingResponse) {
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().type, ReadResponseError::Type::kResponseNotFound);
   EXPECT_EQ(result.error().message,
-            "Failed to read response: The Web Bundle does not contain a "
-            "response for the provided URL: "
+            "Failed to read response from Signed Web Bundle: The Web Bundle "
+            "does not contain a response for the provided URL: "
             "isolated-app://"
             "aaaaaaacaibaaaaaaaaaaaaaaiaaeaaaaaaaaaaaaabaeaqaaaaaaaic/foo");
 

@@ -349,10 +349,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
     }
 
     if (!response.has_value()) {
-      LogErrorMessageToConsole(
-          frame_tree_node_id_,
-          "Failed to read response from Signed Web Bundle: " +
-              response.error().message);
+      LogErrorMessageToConsole(frame_tree_node_id_, response.error().message);
       switch (response.error().type) {
         case IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError:
           loader_client_->OnComplete(
