@@ -8310,7 +8310,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_CATEGORY_INTERIORS" desc="The label for a wallpaper search category (ex. Desserts).">
         Interiors
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_CATEGORY_LANDSCAPE" desc="The label for a wallpaper search category (ex. Desserts).">
+      <message name="IDS_NTP_WALLPAPER_SEARCH_CATEGORY_LANDSCAPE" desc="The label for a wallpaper search category (ex. Desserts)." meaning="Describes visible features of an area of countryside or land.">
         Landscape
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_CATEGORY_NATURE" desc="The label for a wallpaper search category (ex. Desserts).">
@@ -8538,7 +8538,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_CREATIVE" desc="The label for a wallpaper search mood (ex Chaotic).">
         Creative
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_DARK" desc="The label for a wallpaper search mood (ex Chaotic).">
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_DARK" desc="The label for a wallpaper search mood (ex Chaotic)." meaning="Describes a dark mood or tone.">
         Dark
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_DREAMY" desc="The label for a wallpaper search mood (ex Chaotic).">
