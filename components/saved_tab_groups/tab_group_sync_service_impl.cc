@@ -105,6 +105,14 @@ TabGroupSyncServiceImpl::GetSharedTabGroupControllerDelegate() {
 }
 
 void TabGroupSyncServiceImpl::AddGroup(SavedTabGroup group) {
+  if (!is_initialized_) {
+    VLOG(2) << __func__ << " Invoked before init";
+    pending_actions_.emplace_back(
+        base::BindOnce(&TabGroupSyncServiceImpl::AddGroup,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(group)));
+    return;
+  }
+
   VLOG(2) << __func__;
   base::Uuid group_id = group.saved_guid();
   LocalTabGroupID local_group_id = group.local_group_id().value();
@@ -379,8 +387,15 @@ void TabGroupSyncServiceImpl::UpdateLocalTabId(
 void TabGroupSyncServiceImpl::ConnectLocalTabGroup(
     const base::Uuid& sync_id,
     const LocalTabGroupID& local_id) {
+  if (!is_initialized_) {
+    VLOG(2) << __func__ << " Invoked before init";
+    pending_actions_.emplace_back(
+        base::BindOnce(&TabGroupSyncServiceImpl::ConnectLocalTabGroup,
+                       weak_ptr_factory_.GetWeakPtr(), sync_id, local_id));
+    return;
+  }
+
   VLOG(2) << __func__;
-  CHECK(is_initialized_);
   coordinator_->ConnectLocalTabGroup(sync_id, local_id);
 }
 

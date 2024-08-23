@@ -315,6 +315,28 @@ TEST_F(TabGroupSyncServiceTest, AddGroup) {
       "TabGroups.Sync.TabGroup.Created.GroupCreateOrigin", 1u);
 }
 
+TEST_F(TabGroupSyncServiceTest, AddGroup_BeforeInit) {
+  // Add a new group.
+  SavedTabGroup group_4(test::CreateTestSavedTabGroup());
+  LocalTabGroupID tab_group_id = test::GenerateRandomTabGroupID();
+  group_4.SetLocalGroupId(tab_group_id);
+
+  EXPECT_FALSE(model_->Contains(group_4.saved_guid()));
+  EXPECT_EQ(model_->Count(), 3);
+
+  tab_group_sync_service_->SetIsInitializedForTesting(false);
+  tab_group_sync_service_->AddGroup(group_4);
+  EXPECT_FALSE(model_->Contains(group_4.saved_guid()));
+
+  // Initialize model and add group 4.
+  model_->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
+  task_environment_.RunUntilIdle();
+
+  // Verify model internals.
+  EXPECT_TRUE(model_->Contains(group_4.saved_guid()));
+  EXPECT_EQ(model_->Count(), 4);
+}
+
 TEST_F(TabGroupSyncServiceTest, AddGroupWhenSignedOut) {
   // Add a new group while signed out.
   ON_CALL(processor_, IsTrackingMetadata())
@@ -397,6 +419,23 @@ TEST_F(TabGroupSyncServiceTest, ConnectLocalTabGroup) {
       .Times(1);
   tab_group_sync_service_->ConnectLocalTabGroup(group_2_.saved_guid(),
                                                 local_id);
+}
+
+TEST_F(TabGroupSyncServiceTest, ConnectLocalTabGroup_BeforeInit) {
+  LocalTabGroupID local_id = test::GenerateRandomTabGroupID();
+  tab_group_sync_service_->SetIsInitializedForTesting(false);
+
+  // Expect ConnectLocalTabGroup to not be called before init.
+  EXPECT_CALL(*coordinator_, ConnectLocalTabGroup(_, _)).Times(0);
+
+  tab_group_sync_service_->ConnectLocalTabGroup(group_2_.saved_guid(),
+                                                local_id);
+  // Initialize model and connect the group.
+  EXPECT_CALL(*coordinator_,
+              ConnectLocalTabGroup(group_2_.saved_guid(), local_id))
+      .Times(1);
+  model_->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping_BeforeInit) {
