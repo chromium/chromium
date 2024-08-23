@@ -1123,9 +1123,7 @@ void ShoppingServiceHandler::DeclineProductSpecificationDisclosure() {
 
 void ShoppingServiceHandler::GetProductSpecificationsFeatureState(
     GetProductSpecificationsFeatureStateCallback callback) {
-  if (!shopping_service_ ||
-      !shopping_service_->GetProductSpecificationsService() ||
-      !shopping_service_->GetAccountChecker()) {
+  if (!shopping_service_) {
     std::move(callback).Run(nullptr);
     return;
   }

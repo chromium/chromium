@@ -603,6 +603,21 @@
   <message name="IDS_TOOLTIP_COMPARE_ENTRY_POINT_CLOSE" desc="The tooltip text for the close button within the Compare entry point button.">
     Dismiss suggestion
   </message>
+  <message name="IDS_COMPARE_SYNC_PROMO_MESSAGE" desc="The message on the sync promo for compare when user does not have sync enabled.">
+    Compare products
+  </message>
+  <message name="IDS_COMPARE_SYNC_PROMO_DESCRIPTION" desc="The description on the sync promo for compare when user does not have sync enabled">
+    To see comparison tables, turn on sync
+  </message>
+  <message name="IDS_COMPARE_SYNC_PROMO_BUTTON" desc="The text on the sync button of the sync promo for compare, when user does not have sync enabled.">
+    Turn on sync
+  </message>
+  <message name="IDS_COMPARE_ERROR_TITLE" desc="The title for the error message in the compare UI when data cannot be loaded.">
+    Compare isn't available right now
+  </message>
+  <message name="IDS_COMPARE_ERROR_DESCRIPTION" desc="The description in the compare UI when data cannot be loaded.">
+    Something went wrong. Try again later
+  </message>
   <!-- For Compare Disclosure -->
   <message name="IDS_COMPARE_DISCLOSURE_TITLE" desc="The text for the title of the Compare first-run experience disclosure bubble.">
     Chrome can help you compare similar products side-by-side

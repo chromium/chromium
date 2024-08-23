@@ -5,7 +5,7 @@
 import 'chrome://history/history.js';
 
 import {ensureLazyLoaded, ShoppingBrowserProxyImpl} from 'chrome://history/history.js';
-import type {CrCheckboxElement, ProductSpecificationsListsElement} from 'chrome://history/history.js';
+import type {CrButtonElement, CrCheckboxElement, ProductSpecificationsListsElement} from 'chrome://history/history.js';
 import {ShoppingPageCallbackRouter} from 'chrome://history/history.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -56,15 +56,30 @@ suite('ProductSpecificationsListTest', () => {
         }));
   }
 
+  function initProductSpecsState() {
+    shoppingServiceApi.setResultFor(
+        'getProductSpecificationsFeatureState', Promise.resolve({
+          state: {
+            isSyncingTabCompare: true,
+            canLoadFullPageUi: true,
+            canManageSets: true,
+            canFetchData: true,
+            isAllowedForEnterprise: true,
+          },
+        }));
+  }
+
   setup(function() {
     shoppingServiceApi.reset();
     shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
     ShoppingBrowserProxyImpl.setInstance(shoppingServiceApi);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     initProductSets();
+    initProductSpecsState();
     createProductSpecsList();
     return Promise.all([flushTasks]).then(() => {
       shoppingServiceApi.whenCalled('getAllProductSpecificationsSets');
+      shoppingServiceApi.whenCalled('getProductSpecificationsFeatureState');
     });
   });
 
@@ -375,5 +390,86 @@ suite('ProductSpecificationsListTest', () => {
     const emptyMessage = productSpecificationsList.shadowRoot!.querySelector(
         '.centered-message');
     assertTrue(!!emptyMessage);
+  });
+
+  test('sync button click and message when not synced', async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    shoppingServiceApi.reset();
+    initProductSets();
+    shoppingServiceApi.setResultFor(
+        'getProductSpecificationsFeatureState', Promise.resolve({
+          state: {
+            isSyncingTabCompare: false,
+            canLoadFullPageUi: true,
+            canManageSets: true,
+            canFetchData: true,
+            isAllowedForEnterprise: true,
+          },
+        }));
+    shoppingServiceApi.setResultFor(
+        'getAllProductSpecificationsSets', Promise.resolve({sets: []}));
+    shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
+
+    productSpecificationsList =
+        document.createElement('product-specifications-lists');
+    document.body.appendChild(productSpecificationsList);
+    await ensureLazyLoaded();
+    await flushTasks();
+
+    const items = productSpecificationsList.shadowRoot!.querySelectorAll(
+        'product-specifications-item');
+    assertEquals(0, items.length);
+    const imageTextContainer =
+        productSpecificationsList.shadowRoot!.querySelector<HTMLElement>(
+            '#sync-or-error-message-picture-and-text-container');
+    assertTrue(!!imageTextContainer);
+    assertFalse(imageTextContainer.hidden);
+    const syncButton =
+        productSpecificationsList.shadowRoot!.querySelector<CrButtonElement>(
+            '#turn-on-sync-button');
+    assertTrue(!!syncButton);
+
+    syncButton.click();
+    shoppingServiceApi.whenCalled('showSyncSetupFlow');
+  });
+
+  test('error message displays', async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    shoppingServiceApi.reset();
+    initProductSets();
+    shoppingServiceApi.setResultFor(
+        'getProductSpecificationsFeatureState', Promise.resolve({
+          state: {
+            isSyncingTabCompare: true,
+            canLoadFullPageUi: true,
+            canManageSets: false,
+            canFetchData: false,
+            isAllowedForEnterprise: false,
+          },
+        }));
+    shoppingServiceApi.setResultFor(
+        'getAllProductSpecificationsSets', Promise.resolve({sets: []}));
+    shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
+
+    productSpecificationsList =
+        document.createElement('product-specifications-lists');
+    document.body.appendChild(productSpecificationsList);
+    await ensureLazyLoaded();
+    await flushTasks();
+    shoppingServiceApi.whenCalled('getProductSpecificationsFeatureState');
+
+    const items = productSpecificationsList.shadowRoot!.querySelectorAll(
+        'product-specifications-item');
+    assertEquals(0, items.length);
+    const imageTextContainer =
+        productSpecificationsList.shadowRoot!.querySelector<HTMLElement>(
+            '#sync-or-error-message-picture-and-text-container');
+    assertTrue(!!imageTextContainer);
+    assertFalse(imageTextContainer.hidden);
+    const errorMessage =
+        productSpecificationsList.shadowRoot!.querySelector<HTMLElement>(
+            '#error-message');
+    assertTrue(!!errorMessage);
+    assertFalse(errorMessage.hidden);
   });
 });
