@@ -2028,6 +2028,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
                  r'FindTabbedBrowser|'
                  r'FindAnyBrowser|'
                  r'FindBrowserWithProfile|'
+                 r'FindLastActive|'
                  r'FindBrowserWithActiveWindow'),
         explanation=
         ('Most code should already be scoped to a Browser. Pass in a Browser* '
