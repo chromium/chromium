@@ -862,6 +862,18 @@ void LensOverlayController::IssueTranslateFullPageRequest(
                                                              target_language);
 }
 
+void LensOverlayController::NotifyOverlayInitialized() {
+  // Now that the overlay is actually showing, it is safe to start doing a Lens
+  // request without showing the page reflowing.
+  if (pending_region_) {
+    // If there is a pending region (i.e. for image right click)
+    // use INJECTED_IMAGE as the selection type.
+    DoLensRequest(std::move(pending_region_), lens::INJECTED_IMAGE,
+                  std::make_optional<SkBitmap>(pending_region_bitmap_));
+    pending_region_bitmap_.reset();
+  }
+}
+
 void LensOverlayController::CopyText(const std::string& text) {
   ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
   clipboard_writer.WriteText(base::UTF8ToUTF16(text));

@@ -259,6 +259,13 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       this.browserProxy.callbackRouter.triggerCopyText.addListener(() => {
         this.handleCopy();
       }),
+      this.browserProxy.callbackRouter.setPostRegionSelection.addListener(
+          () => {
+            // If we get a post selection from the browser, we can assume that
+            // the side panel will be opening and we don't want to play the
+            // initial flash animation.
+            this.isInitialSize = false;
+          }),
     ];
     ScreenshotBitmapBrowserProxyImpl.getInstance().fetchScreenshot(
         this.screenshotDataReceived.bind(this));
@@ -514,16 +521,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     // Let the parent know it is safe to blur the background.
     this.dispatchEvent(new CustomEvent(
         'screenshot-rendered', {bubbles: true, composed: true}));
-
-    // Tell the browser to blur the background on next animation frame.
-    // TODO(b/352622136): Using requestAnimationFrame is not a reliable way to
-    // make the user not see the background blur. Instead, we should wait for
-    // a paint on the browser side.
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        this.browserProxy.handler.addBackgroundBlur();
-      });
-    });
+    this.browserProxy.handler.notifyOverlayInitialized();
   }
 
   private onPointerDown(event: PointerEvent) {
@@ -824,6 +822,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     }
     this.hasInitialFlashAnimationEnded = true;
     this.eventTracker_.remove(this.$.initialFlashScrim, 'animationend');
+
+    this.browserProxy.handler.addBackgroundBlur();
 
     // Let the parent know the initial flash image animation has finished.
     this.dispatchEvent(new CustomEvent(

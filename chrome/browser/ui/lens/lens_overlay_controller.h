@@ -765,6 +765,7 @@ class LensOverlayController : public LensSearchboxClient,
   void IssueTranslateFullPageRequest(
       const std::string& source_language,
       const std::string& target_language) override;
+  void NotifyOverlayInitialized() override;
   void CopyText(const std::string& text) override;
   void CloseSearchBubble() override;
   void ClosePreselectionBubble() override;
