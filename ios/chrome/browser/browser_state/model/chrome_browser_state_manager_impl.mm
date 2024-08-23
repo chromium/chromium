@@ -373,9 +373,12 @@ void ChromeBrowserStateManagerImpl::OnChromeBrowserStateCreationFinished(
     std::move(callback).Run(browser_state);
   }
 
-  // Notify the observers after invoking the callbacks.
-  for (auto& observer : observers_) {
-    observer.OnChromeBrowserStateLoaded(this, browser_state);
+  // Notify the observers after invoking the callbacks in case of success.
+  if (success) {
+    DCHECK(browser_state);
+    for (auto& observer : observers_) {
+      observer.OnChromeBrowserStateLoaded(this, browser_state);
+    }
   }
 }
 
