@@ -84,6 +84,7 @@ ${this.toggleExpand ? html`
         id="bookmark-${item.id}"
         .bookmark="${item}"
         .compact="${this.compact}"
+        .updatedElementIds="${this.updatedElementIds}"
         trailingIconTooltip="$i18n{tooltipMore}"
         .hasCheckbox="${this.hasCheckbox}"
         .renamingId="${this.renamingId}"
