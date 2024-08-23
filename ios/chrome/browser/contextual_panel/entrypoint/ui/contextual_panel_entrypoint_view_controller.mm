@@ -433,6 +433,18 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
       "IOSContextualPanelEntrypointLargeChipDismissedWithSwipe"));
 }
 
+// Refreshes the VoiceOver bounding box if VoiceOver is currently running and
+// the entrypoint is focused.
+- (void)refreshVoiceOverBoundingBoxIfFocused {
+  if (!UIAccessibilityIsVoiceOverRunning() ||
+      ![_entrypointContainer accessibilityElementIsFocused]) {
+    return;
+  }
+
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  _entrypointContainer);
+}
+
 #pragma mark - ContextualPanelEntrypointConsumer
 
 - (void)setEntrypointConfig:
@@ -479,15 +491,19 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   self.view.hidden = !_entrypointDisplayed;
   _entrypointContainer.isAccessibilityElement = !self.view.hidden;
 
+  __weak ContextualPanelEntrypointViewController* weakSelf = self;
+
   [UIView animateWithDuration:kEntrypointDisplayingAnimationTime
-                        delay:0
-                      options:(UIViewAnimationOptionCurveEaseIn |
-                               UIViewAnimationOptionAllowUserInteraction)
-                   animations:^{
-                     self.view.alpha = 1;
-                     self.view.transform = CGAffineTransformIdentity;
-                   }
-                   completion:nil];
+      delay:0
+      options:(UIViewAnimationOptionCurveEaseIn |
+               UIViewAnimationOptionAllowUserInteraction)
+      animations:^{
+        self.view.alpha = 1;
+        self.view.transform = CGAffineTransformIdentity;
+      }
+      completion:^(BOOL completed) {
+        [weakSelf refreshVoiceOverBoundingBoxIfFocused];
+      }];
 }
 
 - (void)hideEntrypoint {
@@ -501,6 +517,8 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   [self.mutator setLocationBarLabelCenteredBetweenContent:NO];
 
   [self.view layoutIfNeeded];
+
+  [self refreshVoiceOverBoundingBoxIfFocused];
 }
 
 - (void)transitionToLargeEntrypoint {
@@ -539,7 +557,9 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
                       options:(UIViewAnimationOptionCurveEaseOut |
                                UIViewAnimationOptionAllowUserInteraction)
                    animations:animateTransitionToLargeEntrypoint
-                   completion:nil];
+                   completion:^(BOOL completed) {
+                     [weakSelf refreshVoiceOverBoundingBoxIfFocused];
+                   }];
 }
 
 - (void)transitionToSmallEntrypoint {
@@ -566,7 +586,9 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
                       options:(UIViewAnimationOptionCurveEaseOut |
                                UIViewAnimationOptionAllowUserInteraction)
                    animations:animateTransitionToSmallEntrypoint
-                   completion:nil];
+                   completion:^(BOOL completed) {
+                     [weakSelf refreshVoiceOverBoundingBoxIfFocused];
+                   }];
 
   [_entrypointContainer removeGestureRecognizer:_swipeRecognizer];
 
