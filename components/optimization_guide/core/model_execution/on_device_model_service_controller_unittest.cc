@@ -833,6 +833,42 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdateSafetyModel) {
   }
 }
 
+TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelResetsSession) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::internal::kModelAdaptationCompose, {}},
+       {features::internal::kOnDeviceModelTestFeature,
+        {{"enable_adaptation", "false"}}}},
+      {});
+
+  auto config_compose = SimpleComposeConfig();
+  config_compose.set_can_skip_text_safety(false);
+  auto config_test = SimpleComposeConfig();
+  config_test.set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
+  config_test.set_can_skip_text_safety(true);
+  Initialize({.config = config_compose, .config2 = config_test});
+  EXPECT_FALSE(test_controller_->CreateSession(
+      ModelBasedCapabilityKey::kCompose, base::DoNothing(),
+      logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt));
+  EXPECT_TRUE(test_controller_->CreateSession(ModelBasedCapabilityKey::kTest,
+                                              base::DoNothing(),
+                                              logger_.GetWeakPtr(), nullptr,
+                                              /*config_params=*/std::nullopt));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(1ull, test_controller_->on_device_model_receiver_count());
+  auto model_info = FakeSafetyModelInfo(ComposeSafetyConfig());
+  test_controller_->MaybeUpdateSafetyModel(*model_info);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(0ull, test_controller_->on_device_model_receiver_count());
+  EXPECT_TRUE(test_controller_->CreateSession(ModelBasedCapabilityKey::kCompose,
+                                              base::DoNothing(),
+                                              logger_.GetWeakPtr(), nullptr,
+                                              /*config_params=*/std::nullopt));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(1ull, test_controller_->on_device_model_receiver_count());
+}
+
 TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
   auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
