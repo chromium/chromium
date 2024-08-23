@@ -7355,10 +7355,8 @@ void Document::MaybeExecuteDelayedAsyncScripts(
   if (!delay_async_script_execution_is_enabled)
     return;
 
-  // Cache for performance reason.
-  static const features::DelayAsyncScriptDelayType
-      delay_async_script_delay_type =
-          features::kDelayAsyncScriptExecutionDelayParam.Get();
+  const features::DelayAsyncScriptDelayType delay_async_script_delay_type =
+      features::kDelayAsyncScriptExecutionDelayParam.Get();
   switch (delay_async_script_delay_type) {
     case features::DelayAsyncScriptDelayType::kFirstPaintOrFinishedParsing:
       // Notify the ScriptRunner if the first paint has been recorded and

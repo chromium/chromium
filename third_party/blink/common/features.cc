@@ -93,11 +93,13 @@ const base::FeatureParam<AlignFontDisplayAutoTimeoutWithLCPGoalMode>::Option
         {AlignFontDisplayAutoTimeoutWithLCPGoalMode::kToFailurePeriod,
          "failure"},
         {AlignFontDisplayAutoTimeoutWithLCPGoalMode::kToSwapPeriod, "swap"}};
-const base::FeatureParam<AlignFontDisplayAutoTimeoutWithLCPGoalMode>
-    kAlignFontDisplayAutoTimeoutWithLCPGoalModeParam{
-        &kAlignFontDisplayAutoTimeoutWithLCPGoal, "intervention-mode",
-        AlignFontDisplayAutoTimeoutWithLCPGoalMode::kToSwapPeriod,
-        &align_font_display_auto_timeout_with_lcp_goal_modes};
+BASE_FEATURE_ENUM_PARAM(
+    AlignFontDisplayAutoTimeoutWithLCPGoalMode,
+    kAlignFontDisplayAutoTimeoutWithLCPGoalModeParam,
+    &kAlignFontDisplayAutoTimeoutWithLCPGoal,
+    "intervention-mode",
+    AlignFontDisplayAutoTimeoutWithLCPGoalMode::kToSwapPeriod,
+    &align_font_display_auto_timeout_with_lcp_goal_modes);
 
 BASE_FEATURE(kAllowDatapipeDrainedAsBytesConsumerInBFCache,
              "AllowDatapipeDrainedAsBytesConsumerInBFCache",
@@ -639,11 +641,12 @@ const base::FeatureParam<DelayAsyncScriptDelayType>::Option
          "till_first_lcp_candidate"},
 };
 
-const base::FeatureParam<DelayAsyncScriptDelayType>
-    kDelayAsyncScriptExecutionDelayParam{
-        &kDelayAsyncScriptExecution, "delay_async_exec_delay_type",
-        DelayAsyncScriptDelayType::kFinishedParsing,
-        &delay_async_script_execution_delay_types};
+BASE_FEATURE_ENUM_PARAM(DelayAsyncScriptDelayType,
+                        kDelayAsyncScriptExecutionDelayParam,
+                        &kDelayAsyncScriptExecution,
+                        "delay_async_exec_delay_type",
+                        DelayAsyncScriptDelayType::kFinishedParsing,
+                        &delay_async_script_execution_delay_types);
 
 const base::FeatureParam<DelayAsyncScriptTarget>::Option
     delay_async_script_target_types[] = {
@@ -654,9 +657,12 @@ const base::FeatureParam<DelayAsyncScriptTarget>::Option
         {DelayAsyncScriptTarget::kCrossSiteWithAllowListReportOnly,
          "cross_site_with_allow_list_report_only"},
 };
-const base::FeatureParam<DelayAsyncScriptTarget> kDelayAsyncScriptTargetParam{
-    &kDelayAsyncScriptExecution, "delay_async_exec_target",
-    DelayAsyncScriptTarget::kAll, &delay_async_script_target_types};
+BASE_FEATURE_ENUM_PARAM(DelayAsyncScriptTarget,
+                        kDelayAsyncScriptTargetParam,
+                        &kDelayAsyncScriptExecution,
+                        "delay_async_exec_target",
+                        DelayAsyncScriptTarget::kAll,
+                        &delay_async_script_target_types);
 
 // kDelayAsyncScriptExecution will delay executing async script at max
 // |delay_async_exec_delay_limit|.
@@ -706,11 +712,12 @@ const base::FeatureParam<AsyncScriptExperimentalSchedulingTarget>::Option
         {AsyncScriptExperimentalSchedulingTarget::kNonAds, "non_ads"},
         {AsyncScriptExperimentalSchedulingTarget::kBoth, "both"},
 };
-const base::FeatureParam<AsyncScriptExperimentalSchedulingTarget>
-    kDelayAsyncScriptExecutionTargetParam{
-        &kDelayAsyncScriptExecution, "delay_async_exec_target",
-        AsyncScriptExperimentalSchedulingTarget::kBoth,
-        &async_script_experimental_scheduling_targets};
+BASE_FEATURE_ENUM_PARAM(AsyncScriptExperimentalSchedulingTarget,
+                        kDelayAsyncScriptExecutionTargetParam,
+                        &kDelayAsyncScriptExecution,
+                        "delay_async_exec_target",
+                        AsyncScriptExperimentalSchedulingTarget::kBoth,
+                        &async_script_experimental_scheduling_targets);
 
 BASE_FEATURE_PARAM(bool,
                    kDelayAsyncScriptExecutionOptOutLowFetchPriorityHintParam,

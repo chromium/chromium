@@ -37,6 +37,14 @@ bool IsCacheEnabled() {
 
 }  // namespace
 
+namespace field_trial_params_internal {
+
+bool IsFeatureParamWithCacheEnabled() {
+  return IsCacheEnabled();
+}
+
+}  // namespace field_trial_params_internal
+
 void LogInvalidValue(const Feature& feature,
                      const char* type,
                      const std::string& param_name,

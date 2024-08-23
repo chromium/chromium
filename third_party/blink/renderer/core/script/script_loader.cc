@@ -360,7 +360,7 @@ bool IsEligibleForDelay(const Resource& resource,
   }
 
   bool is_ad_resource = resource.GetResourceRequest().IsAdResource();
-  static const features::AsyncScriptExperimentalSchedulingTarget target =
+  const features::AsyncScriptExperimentalSchedulingTarget target =
       features::kDelayAsyncScriptExecutionTargetParam.Get();
   switch (target) {
     case features::AsyncScriptExperimentalSchedulingTarget::kAds:
@@ -404,7 +404,7 @@ bool IsEligibleForDelay(const Resource& resource,
       break;
   }
 
-  static const features::DelayAsyncScriptTarget delay_async_script_target =
+  const features::DelayAsyncScriptTarget delay_async_script_target =
       features::kDelayAsyncScriptTargetParam.Get();
   switch (delay_async_script_target) {
     case features::DelayAsyncScriptTarget::kAll:
@@ -1229,9 +1229,8 @@ PendingScript* ScriptLoader::PrepareScript(
         // kCrossSiteWithAllowListReportOnly.
         if (is_eligible_for_delay &&
             script_scheduling_type == ScriptSchedulingType::kAsync) {
-          static const features::DelayAsyncScriptTarget
-              delay_async_script_target =
-                  features::kDelayAsyncScriptTargetParam.Get();
+          const features::DelayAsyncScriptTarget delay_async_script_target =
+              features::kDelayAsyncScriptTargetParam.Get();
           if (delay_async_script_target ==
               features::DelayAsyncScriptTarget::
                   kCrossSiteWithAllowListReportOnly) {

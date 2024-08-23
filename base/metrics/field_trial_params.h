@@ -23,6 +23,10 @@
 
 namespace base {
 
+namespace field_trial_params_internal {
+BASE_EXPORT bool IsFeatureParamWithCacheEnabled();
+}
+
 // Key-value mapping type for field trial parameters.
 typedef std::map<std::string, std::string> FieldTrialParams;
 
@@ -331,34 +335,47 @@ struct FeatureParam<Enum, true> {
   };
 
   template <size_t option_count>
-  constexpr FeatureParam(const Feature* feature,
-                         const char* name,
-                         const Enum default_value,
-                         const std::array<Option, option_count>& options)
+  constexpr FeatureParam(
+      const Feature* feature,
+      const char* name,
+      const Enum default_value,
+      const std::array<Option, option_count>& options,
+      Enum (*cache_getter)(const FeatureParam<Enum>*) = nullptr)
       : feature(feature),
         name(name),
         default_value(default_value),
         options(options.data()),
-        option_count(option_count) {
+        option_count(option_count),
+        cache_getter(cache_getter) {
     static_assert(option_count >= 1, "FeatureParam<enum> has no options");
   }
 
   template <size_t option_count>
-  constexpr FeatureParam(const Feature* feature,
-                         const char* name,
-                         const Enum default_value,
-                         const Option (*options)[option_count])
+  constexpr FeatureParam(
+      const Feature* feature,
+      const char* name,
+      const Enum default_value,
+      const Option (*options)[option_count],
+      Enum (*cache_getter)(const FeatureParam<Enum>*) = nullptr)
       : feature(feature),
         name(name),
         default_value(default_value),
         options(*options),
-        option_count(option_count) {
+        option_count(option_count),
+        cache_getter(cache_getter) {
     static_assert(option_count >= 1, "FeatureParam<enum> has no options");
   }
 
-  // Calling Get() will activate the field trial associated with |feature|. See
-  // GetFieldTrialParamValueByFeature() for more details.
+  // Calling Get() or GetWithoutCache() will activate the field trial associated
+  // with |feature|. See GetFieldTrialParamValueByFeature() for more details.
   Enum Get() const {
+    if (field_trial_params_internal::IsFeatureParamWithCacheEnabled() &&
+        cache_getter) {
+      return cache_getter(this);
+    }
+    return GetWithoutCache();
+  }
+  Enum GetWithoutCache() const {
     std::string value = GetFieldTrialParamValueByFeature(*feature, name);
     if (value.empty())
       return default_value;
@@ -387,6 +404,7 @@ struct FeatureParam<Enum, true> {
   // RAW_PTR_EXCLUSION: #global-scope
   RAW_PTR_EXCLUSION const Option* const options;
   const size_t option_count;
+  Enum (*const cache_getter)(const FeatureParam<Enum>*);
 };
 
 }  // namespace base

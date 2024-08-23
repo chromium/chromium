@@ -58,9 +58,9 @@ enum class AlignFontDisplayAutoTimeoutWithLCPGoalMode {
   kToFailurePeriod,
   kToSwapPeriod
 };
-BLINK_COMMON_EXPORT extern const base::FeatureParam<
-    AlignFontDisplayAutoTimeoutWithLCPGoalMode>
-    kAlignFontDisplayAutoTimeoutWithLCPGoalModeParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    AlignFontDisplayAutoTimeoutWithLCPGoalMode,
+    kAlignFontDisplayAutoTimeoutWithLCPGoalModeParam);
 
 // Allows running DevTools main thread debugger even when a renderer process
 // hosts multiple main frames.
@@ -353,8 +353,9 @@ enum class DelayAsyncScriptDelayType {
   kEachPaint,
   kTillFirstLcpCandidate,
 };
-BLINK_COMMON_EXPORT extern const base::FeatureParam<DelayAsyncScriptDelayType>
-    kDelayAsyncScriptExecutionDelayParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    DelayAsyncScriptDelayType,
+    kDelayAsyncScriptExecutionDelayParam);
 enum class DelayAsyncScriptTarget {
   kAll,
   kCrossSiteOnly,
@@ -366,8 +367,8 @@ enum class DelayAsyncScriptTarget {
   kCrossSiteWithAllowList,
   kCrossSiteWithAllowListReportOnly,
 };
-BLINK_COMMON_EXPORT extern const base::FeatureParam<DelayAsyncScriptTarget>
-    kDelayAsyncScriptTargetParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(DelayAsyncScriptTarget,
+                                               kDelayAsyncScriptTargetParam);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
     kDelayAsyncScriptExecutionDelayLimitParam);
@@ -390,9 +391,9 @@ enum class AsyncScriptExperimentalSchedulingTarget {
   kNonAds,
   kBoth,
 };
-BLINK_COMMON_EXPORT extern const base::FeatureParam<
-    AsyncScriptExperimentalSchedulingTarget>
-    kDelayAsyncScriptExecutionTargetParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    AsyncScriptExperimentalSchedulingTarget,
+    kDelayAsyncScriptExecutionTargetParam);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kDelayAsyncScriptExecutionOptOutLowFetchPriorityHintParam);
