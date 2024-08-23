@@ -6721,27 +6721,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VTVDA.HardwareAccelerated"
-    enum="BooleanHardwareAccelerated" expires_after="2024-09-25">
-  <owner>sandersd@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Whether a VTDecompressionSession is internally using hardware accelerated
-    decoding.
-  </summary>
-</histogram>
-
-<histogram name="Media.VTVDA.SessionFailureReason"
-    enum="VTVDASessionFailureType" expires_after="2025-01-19">
-  <owner>sandersd@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Count of VTVDA session failure reasons. Successful initializations are
-    counted as a special failure type. Since only successfully initialized
-    session can fail, failures rates are computed as a simple ratio.
-  </summary>
-</histogram>
-
 <histogram name="Media.WatchTime" units="ms" expires_after="2025-01-05">
   <owner>dalecurtis@chromium.org</owner>
   <summary>

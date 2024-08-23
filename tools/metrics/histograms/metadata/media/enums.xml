@@ -2332,15 +2332,6 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="VIDIOC_S_EXT_CTRLS"/>
 </enum>
 
-<enum name="VTVDASessionFailureType">
-  <int value="0" label="Successfully Initialized"/>
-  <int value="1" label="Platform Error"/>
-  <int value="2" label="Invalid Stream"/>
-  <int value="3" label="Unsupported Stream Parameters"/>
-  <int value="4" label="Decode Error"/>
-  <int value="5" label="Unsupported Stream"/>
-</enum>
-
 </enums>
 
 </histogram-configuration>
