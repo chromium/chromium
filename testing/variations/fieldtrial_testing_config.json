@@ -11435,6 +11435,37 @@
             ]
         }
     ],
+    "IOSAccountCapabilitiesMigration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS",
+                        "ReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSAutofillAcrossIframes": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAcrossIframesIos"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSBackgroundPasteboardAccess": [
         {
             "platforms": [
