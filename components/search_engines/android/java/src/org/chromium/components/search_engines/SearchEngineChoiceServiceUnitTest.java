@@ -90,6 +90,43 @@ public class SearchEngineChoiceServiceUnitTest {
     }
 
     @Test
+    public void testFakeDelegate() {
+        var service =
+                new SearchEngineChoiceService(
+                        new FakeSearchEngineCountryDelegate(mContext, /* enableLogging= */ true));
+
+        if (mIsClayBlockingEnabled) {
+            // It should have generally sensible values and make the dialog be shown.
+            assertTrue(service.getDeviceCountry().isFulfilled());
+
+            assertTrue(service.isDeviceChoiceDialogEligible());
+            assertTrue(service.getIsDeviceChoiceRequiredSupplier().get());
+
+            var shouldShowDeviceDialogPromise = service.shouldShowDeviceChoiceDialog();
+            ShadowLooper.runUiThreadTasks();
+            assertTrue(shouldShowDeviceDialogPromise.isFulfilled());
+            assertTrue(shouldShowDeviceDialogPromise.getResult());
+        } else {
+            // Same as the abstract delegate.
+            assertTrue(service.getDeviceCountry().isRejected());
+
+            assertFalse(service.isDeviceChoiceDialogEligible());
+            assertFalse(service.getIsDeviceChoiceRequiredSupplier().get());
+
+            var shouldShowDeviceDialogPromise = service.shouldShowDeviceChoiceDialog();
+            ShadowLooper.runUiThreadTasks();
+
+            assertTrue(shouldShowDeviceDialogPromise.isRejected());
+        }
+
+        // The calls below should be fine to run without triggering anything.
+        service.launchDeviceChoiceScreens();
+        service.notifyDeviceChoiceBlockCleared();
+        service.notifyDeviceChoiceBlockShown();
+        ShadowLooper.runUiThreadTasks();
+    }
+
+    @Test
     public void testGetDeviceCountry_rejected() {
         reset(mDelegate);
         doReturn(Promise.rejected()).when(mDelegate).getDeviceCountry();

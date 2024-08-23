@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.components.search_engines;
 
+import android.text.TextUtils;
+
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -60,10 +62,16 @@ public class SearchEngineChoiceService {
     public static SearchEngineChoiceService getInstance() {
         ThreadUtils.checkUiThread();
         if (sInstance == null) {
-            sInstance =
-                    new SearchEngineChoiceService(
-                            new SearchEngineCountryDelegateImpl(
-                                    ContextUtils.getApplicationContext()));
+            String useFakeBackendParamValue =
+                    SearchEnginesFeatures.getFieldTrialParamByFeature(
+                            SearchEnginesFeatures.CLAY_BLOCKING, "use_fake_backend");
+            var context = ContextUtils.getApplicationContext();
+            var delegate =
+                    TextUtils.equals(useFakeBackendParamValue, "true")
+                            ? new FakeSearchEngineCountryDelegate(
+                                    context, /* enableLogging= */ true)
+                            : new SearchEngineCountryDelegateImpl(context);
+            sInstance = new SearchEngineChoiceService(delegate);
         }
         return sInstance;
     }
