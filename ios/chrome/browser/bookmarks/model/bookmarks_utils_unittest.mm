@@ -9,8 +9,8 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "testing/gmock/include/gmock/gmock.h"
 
 namespace {

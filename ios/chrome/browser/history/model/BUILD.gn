@@ -98,6 +98,7 @@ source_set("unit_tests") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/web",
     "//ios/web/public/test/fakes",
