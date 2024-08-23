@@ -10,6 +10,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/base_paths.h"
 #include "base/check.h"
@@ -215,8 +216,8 @@ bool KillProcesses(const base::FilePath::StringType& executable_name,
 }
 
 scoped_refptr<PolicyService> CreateTestPolicyService() {
-  PolicyService::PolicyManagerVector managers;
-  managers.push_back(GetDefaultValuesPolicyManager());
+  std::vector<scoped_refptr<PolicyManagerInterface>> managers{
+      GetDefaultValuesPolicyManager()};
   return base::MakeRefCounted<PolicyService>(std::move(managers));
 }
 

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
@@ -82,20 +83,20 @@ class PolicyStatus {
 // This class is sequence affine and its instance is bound to the main sequence.
 class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
  public:
-  using PolicyManagerVector =
-      std::vector<scoped_refptr<PolicyManagerInterface>>;
-  using PolicyManagerNameMap =
-      base::flat_map<std::string, scoped_refptr<PolicyManagerInterface>>;
   struct PolicyManagers {
-    PolicyManagers(PolicyManagerVector manager_vector,
-                   PolicyManagerNameMap manager_name_map);
+    PolicyManagers(
+        std::vector<scoped_refptr<PolicyManagerInterface>> managers,
+        base::flat_map<std::string, scoped_refptr<PolicyManagerInterface>>
+            manager_names);
     ~PolicyManagers();
 
-    PolicyManagerVector vector;
-    PolicyManagerNameMap name_map;
+    std::vector<scoped_refptr<PolicyManagerInterface>> managers;
+    base::flat_map<std::string, scoped_refptr<PolicyManagerInterface>>
+        manager_names;
   };
 
-  explicit PolicyService(PolicyManagerVector managers);
+  explicit PolicyService(
+      std::vector<scoped_refptr<PolicyManagerInterface>> managers);
   explicit PolicyService(scoped_refptr<ExternalConstants> external_constants);
   PolicyService(const PolicyService&) = delete;
   PolicyService& operator=(const PolicyService&) = delete;
@@ -163,8 +164,9 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
       int result,
       scoped_refptr<PolicyManagerInterface> dm_policy_manager);
 
-  void PolicyManagerLoaded(int result,
-                           PolicyService::PolicyManagerVector managers);
+  void PolicyManagerLoaded(
+      int result,
+      std::vector<scoped_refptr<PolicyManagerInterface>> managers);
 
   // List of policy providers in descending order of priority. All managed
   // providers should be ahead of non-managed providers.
@@ -215,7 +217,7 @@ struct PolicyServiceProxyConfiguration {
   std::optional<std::string> proxy_url;
 };
 
-PolicyService::PolicyManagerVector CreatePolicyManagerVector(
+std::vector<scoped_refptr<PolicyManagerInterface>> CreateManagers(
     bool should_take_policy_critical_section,
     scoped_refptr<ExternalConstants> external_constants,
     scoped_refptr<PolicyManagerInterface> dm_policy_manager);

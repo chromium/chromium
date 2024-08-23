@@ -32,6 +32,8 @@
 
 namespace updater {
 
+using PolicyManagers = std::vector<scoped_refptr<PolicyManagerInterface>>;
+
 // The Policy Manager Interface is implemented by policy managers such as Group
 // Policy and Device Management.
 class FakePolicyManager : public PolicyManagerInterface {
@@ -178,7 +180,7 @@ class FakePolicyManager : public PolicyManagerInterface {
 };
 
 TEST(PolicyService, DefaultPolicyValue) {
-  PolicyService::PolicyManagerVector managers;
+  PolicyManagers managers;
   managers.push_back(GetDefaultValuesPolicyManager());
   auto policy_service =
       base::MakeRefCounted<PolicyService>(std::move(managers));
@@ -213,7 +215,7 @@ TEST(PolicyService, DefaultPolicyValue) {
 
 TEST(PolicyService, ValidatePolicyValues) {
   {
-    PolicyService::PolicyManagerVector managers;
+    PolicyManagers managers;
     auto manager = base::MakeRefCounted<FakePolicyManager>(true, "manager");
     manager->SetDownloadPreference("unknown-download-preferences");
     manager->SetProxyMode("random-value");
@@ -228,7 +230,7 @@ TEST(PolicyService, ValidatePolicyValues) {
   }
 
   {
-    PolicyService::PolicyManagerVector managers;
+    PolicyManagers managers;
     auto manager = base::MakeRefCounted<FakePolicyManager>(true, "manager");
     manager->SetCloudPolicyOverridesPlatformPolicy(false);
     manager->SetDownloadPreference("cacheable");
@@ -252,7 +254,7 @@ TEST(PolicyService, SinglePolicyManager) {
   manager->SetCloudPolicyOverridesPlatformPolicy(true);
   manager->SetChannel("app1", "test_channel");
   manager->SetUpdatePolicy("app2", 3);
-  PolicyService::PolicyManagerVector managers;
+  PolicyManagers managers;
   managers.push_back(std::move(manager));
   auto policy_service =
       base::MakeRefCounted<PolicyService>(std::move(managers));
@@ -284,7 +286,7 @@ TEST(PolicyService, SinglePolicyManager) {
 }
 
 TEST(PolicyService, MultiplePolicyManagers) {
-  PolicyService::PolicyManagerVector managers;
+  PolicyManagers managers;
 
   auto manager = base::MakeRefCounted<FakePolicyManager>(true, "group_policy");
   manager->SetCloudPolicyOverridesPlatformPolicy(false);
@@ -509,7 +511,7 @@ TEST(PolicyService, MultiplePolicyManagers) {
 }
 
 TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
-  PolicyService::PolicyManagerVector managers;
+  PolicyManagers managers;
 
   auto manager =
       base::MakeRefCounted<FakePolicyManager>(true, "device_management");
@@ -662,7 +664,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(PolicyServiceAreUpdatesSuppressedNowTest, TestCases) {
   auto manager = base::MakeRefCounted<FakePolicyManager>(true, "group_policy");
   manager->SetUpdatesSuppressedTimes(GetParam().updates_suppressed_times);
-  PolicyService::PolicyManagerVector managers;
+  PolicyManagers managers;
   managers.push_back(std::move(manager));
 
   base::Time now;
@@ -674,7 +676,7 @@ TEST_P(PolicyServiceAreUpdatesSuppressedNowTest, TestCases) {
 }
 
 #if BUILDFLAG(IS_WIN)
-TEST(PolicyService, CreatePolicyManagerVector) {
+TEST(PolicyService, CreateManagers) {
   registry_util::RegistryOverrideManager registry_overrides;
   ASSERT_NO_FATAL_FAILURE(
       registry_overrides.OverrideRegistry(HKEY_LOCAL_MACHINE));
@@ -683,8 +685,8 @@ TEST(PolicyService, CreatePolicyManagerVector) {
       std::make_unique<::wireless_android_enterprise_devicemanagement::
                            OmahaSettingsClientProto>();
   auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
-  PolicyService::PolicyManagerVector managers =
-      CreatePolicyManagerVector(false, CreateExternalConstants(), dm_policy);
+  PolicyManagers managers =
+      CreateManagers(false, CreateExternalConstants(), dm_policy);
   EXPECT_EQ(managers.size(), size_t{4});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
   EXPECT_EQ(managers[1]->source(), "Group Policy");
@@ -695,8 +697,7 @@ TEST(PolicyService, CreatePolicyManagerVector) {
                         Wow6432(KEY_WRITE));
   EXPECT_EQ(ERROR_SUCCESS,
             key.WriteValue(L"CloudPolicyOverridesPlatformPolicy", 1));
-  managers =
-      CreatePolicyManagerVector(false, CreateExternalConstants(), dm_policy);
+  managers = CreateManagers(false, CreateExternalConstants(), dm_policy);
   EXPECT_EQ(managers.size(), size_t{4});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
   EXPECT_EQ(managers[1]->source(), "Device Management");
@@ -704,13 +705,13 @@ TEST(PolicyService, CreatePolicyManagerVector) {
   EXPECT_EQ(managers[3]->source(), "Default");
 }
 #elif BUILDFLAG(IS_MAC)
-TEST(PolicyService, CreatePolicyManagerVector) {
+TEST(PolicyService, CreateManagers) {
   auto omaha_settings =
       std::make_unique<::wireless_android_enterprise_devicemanagement::
                            OmahaSettingsClientProto>();
   auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
-  PolicyService::PolicyManagerVector managers =
-      CreatePolicyManagerVector(false, CreateExternalConstants(), dm_policy);
+  PolicyManagers managers =
+      CreateManagers(false, CreateExternalConstants(), dm_policy);
   EXPECT_EQ(managers.size(), size_t{4});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
   EXPECT_EQ(managers[1]->source(), "Device Management");
@@ -718,13 +719,13 @@ TEST(PolicyService, CreatePolicyManagerVector) {
   EXPECT_EQ(managers[3]->source(), "Default");
 }
 #else
-TEST(PolicyService, CreatePolicyManagerVector) {
+TEST(PolicyService, CreateManagers) {
   auto omaha_settings =
       std::make_unique<::wireless_android_enterprise_devicemanagement::
                            OmahaSettingsClientProto>();
   auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
-  PolicyService::PolicyManagerVector managers =
-      CreatePolicyManagerVector(false, CreateExternalConstants(), dm_policy);
+  PolicyManagers managers =
+      CreateManagers(false, CreateExternalConstants(), dm_policy);
   EXPECT_EQ(managers.size(), size_t{3});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
   EXPECT_EQ(managers[1]->source(), "Device Management");
@@ -734,7 +735,7 @@ TEST(PolicyService, CreatePolicyManagerVector) {
 
 TEST(PolicyService, PolicyServiceProxyConfiguration_Get) {
   // Test proxy mode "auto_detect".
-  PolicyService::PolicyManagerVector managers;
+  PolicyManagers managers;
   auto manager = base::MakeRefCounted<FakePolicyManager>(true, "manager");
   manager->SetProxyMode("auto_detect");
   manager->SetProxyPacUrl("pac://server");
