@@ -1422,16 +1422,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Missive.StorageQueueParsingFailure" enum="Boolean"
-    expires_after="2024-09-30">
-  <owner>lbaraz@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
-  <summary>
-    Logging 'true' whenever `StorageQueue::Write` cannot parse a wrapper record
-    back after serializing it.
-  </summary>
-</histogram>
-
 <histogram name="Platform.Missive.StorageUsage" units="MiB"
     expires_after="2025-02-10">
   <owner>xuhong@chromium.org</owner>
@@ -1477,25 +1467,6 @@ chromium-metrics-reviews@google.com.
     Would only be true. Recorded whenever an unusual timestamp is encountered
     when enqueuing a record, which will be rejected.
   </summary>
-</histogram>
-
-<histogram name="Platform.Missive.UploadToStorageRate.{Priority}" units="%"
-    expires_after="2024-09-15">
-  <owner>lbaraz@chromium.org</owner>
-  <owner>cros-reporting-team@google.com</owner>
-  <summary>
-    {Priority} upload size as a fraction of storage used. Recorded with every
-    upload.
-  </summary>
-  <token key="Priority">
-    <variant name="BACKGROUND_BATCH"/>
-    <variant name="FAST_BATCH"/>
-    <variant name="IMMEDIATE"/>
-    <variant name="MANUAL_BATCH"/>
-    <variant name="MANUAL_BATCH_LACROS"/>
-    <variant name="SECURITY"/>
-    <variant name="SLOW_BATCH"/>
-  </token>
 </histogram>
 
 <histogram name="Platform.Modemfwd.CheckForWedgedModemResult"
