@@ -17,7 +17,9 @@ enum DeviceType {
 
 // Reasons for showing tab in Tab Resumption module.
 enum Decorator {
+  kVisitedXAgo,
   kMostRecent,
+  kFrequentlyVisitedAtTime,
 };
 
 // Represents a tab generated from synced sessions.
