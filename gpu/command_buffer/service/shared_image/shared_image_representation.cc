@@ -203,7 +203,7 @@ SkiaImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
 }
 
 bool SkiaImageRepresentation::ScopedWriteAccess::NeedGraphiteContextSubmit() {
-  return representation()->NeedGraphiteContextSubmit();
+  return representation()->NeedGraphiteContextSubmitBeforeEndAccess();
 }
 
 SkiaImageRepresentation::ScopedReadAccess::ScopedReadAccess(
@@ -229,7 +229,7 @@ SkiaImageRepresentation::ScopedReadAccess::~ScopedReadAccess() {
 }
 
 bool SkiaImageRepresentation::ScopedReadAccess::NeedGraphiteContextSubmit() {
-  return representation()->NeedGraphiteContextSubmit();
+  return representation()->NeedGraphiteContextSubmitBeforeEndAccess();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -243,7 +243,7 @@ SkiaGaneshImageRepresentation::SkiaGaneshImageRepresentation(
     : SkiaImageRepresentation(manager, backing, tracker),
       gr_context_(gr_context) {}
 
-bool SkiaGaneshImageRepresentation::NeedGraphiteContextSubmit() {
+bool SkiaGaneshImageRepresentation::NeedGraphiteContextSubmitBeforeEndAccess() {
   // Ganesh shouldn't need a Graphite context submit.
   return false;
 }
@@ -529,7 +529,8 @@ SkiaGraphiteImageRepresentation::SkiaGraphiteImageRepresentation(
     MemoryTypeTracker* tracker)
     : SkiaImageRepresentation(manager, backing, tracker) {}
 
-bool SkiaGraphiteImageRepresentation::NeedGraphiteContextSubmit() {
+bool SkiaGraphiteImageRepresentation::
+    NeedGraphiteContextSubmitBeforeEndAccess() {
   // As default, assume Graphite context submit is needed.
   return true;
 }

@@ -113,7 +113,7 @@ class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
   bool SupportsMultipleConcurrentReadAccess() override { return true; }
 
   // Graphite context submit is done only once per frame for Dawn D3D backend.
-  bool NeedGraphiteContextSubmit() override {
+  bool NeedGraphiteContextSubmitBeforeEndAccess() override {
     return !context_state_->IsGraphiteDawnD3D();
   }
 

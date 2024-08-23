@@ -482,7 +482,7 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
       std::vector<GrBackendSemaphore>* end_semaphores) = 0;
 
   // NOTE: Implemented only for Graphite.
-  virtual bool NeedGraphiteContextSubmit() = 0;
+  virtual bool NeedGraphiteContextSubmitBeforeEndAccess() = 0;
 
   virtual bool SupportsMultipleConcurrentReadAccess();
 
@@ -602,7 +602,7 @@ class GPU_GLES2_EXPORT SkiaGaneshImageRepresentation
       std::vector<GrBackendSemaphore>* end_semaphores) override;
 
   // Return false for ganesh.
-  bool NeedGraphiteContextSubmit() final;
+  bool NeedGraphiteContextSubmitBeforeEndAccess() final;
 
  protected:
   friend class WrappedSkiaGaneshCompoundImageRepresentation;
@@ -740,7 +740,7 @@ class GPU_GLES2_EXPORT SkiaGraphiteImageRepresentation
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores) override;
 
-  bool NeedGraphiteContextSubmit() override;
+  bool NeedGraphiteContextSubmitBeforeEndAccess() override;
 
  protected:
   friend class WrappedSkiaGraphiteCompoundImageRepresentation;

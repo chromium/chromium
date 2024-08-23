@@ -123,7 +123,9 @@ void DawnD3DImageRepresentation::EndAccess() {
 // representation does so. This representation meets both of the above
 // constraints.
 bool DawnD3DImageRepresentation::SupportsMultipleConcurrentReadAccess() {
-  return true;
+  D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
+  // KeyedMutex does not support concurrent read access.
+  return !d3d_image_backing->has_keyed_mutex();
 }
 
 OverlayD3DImageRepresentation::OverlayD3DImageRepresentation(
