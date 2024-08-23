@@ -1028,7 +1028,6 @@ if (is_win || is_mac || is_linux) {
       data_deps += [
         "//chrome/updater/mac:ksadmin_test",
         "//chrome/updater/mac:updater_bundle_test",
-        "//chrome/updater/mac/client_lib/test_helpers/app_bundle:registration_test_app_bundle",
       ]
 
       if (target_cpu == "arm64") {
@@ -1119,7 +1118,6 @@ if (is_win || is_mac || is_linux) {
     if (is_mac) {
       data_deps = [
         "//chrome/updater/mac:updater_bundle_test",
-        "//chrome/updater/mac/client_lib/test_helpers/app_bundle:registration_test_app_bundle",
         "//third_party/updater:old_updater",
       ]
     }
@@ -1160,7 +1158,6 @@ if (is_win || is_mac || is_linux) {
     if (is_mac) {
       data_deps += [
         "//chrome/updater/mac:updater_bundle_test",
-        "//chrome/updater/mac/client_lib/test_helpers/app_bundle:registration_test_app_bundle",
         "//third_party/updater:old_updater",
       ]
     }

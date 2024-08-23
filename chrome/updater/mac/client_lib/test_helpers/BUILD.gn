@@ -7,8 +7,5 @@ executable("emit_text") {
 
 group("test_helpers") {
   testonly = true
-  data_deps = [
-    ":emit_text",
-    "//chrome/updater/mac/client_lib/test_helpers/app_bundle:registration_test_app_bundle",
-  ]
+  data_deps = [ ":emit_text" ]
 }

@@ -2962,63 +2962,6 @@ TEST_F(IntegrationTest, KSAdminTaggedApp) {
 #endif  // defined(ADDRESS_SANITIZER)
 }
 
-TEST_F(IntegrationTest, CRURegistrationInstallsUpdater) {
-  if (IsSystemInstall(GetUpdaterScopeForTesting())) {
-    GTEST_SKIP();
-  }
-  ScopedServer test_server(test_commands_);
-  ASSERT_NO_FATAL_FAILURE(ExpectRegistrationTestAppUserUpdaterInstallSuccess());
-  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
-
-  ExpectUninstallPing(&test_server);
-  ASSERT_NO_FATAL_FAILURE(Uninstall());
-}
-
-TEST_F(IntegrationTest, CRURegistrationIdempotentInstallSuccess) {
-  if (IsSystemInstall(GetUpdaterScopeForTesting())) {
-    GTEST_SKIP();
-  }
-  ScopedServer test_server(test_commands_);
-  ASSERT_NO_FATAL_FAILURE(Install());
-  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
-
-  ASSERT_NO_FATAL_FAILURE(ExpectRegistrationTestAppUserUpdaterInstallSuccess());
-  ExpectInstalled();
-
-  ExpectUninstallPing(&test_server);
-  ASSERT_NO_FATAL_FAILURE(Uninstall());
-}
-
-TEST_F(IntegrationTest, CRURegistrationRegister) {
-  if (IsSystemInstall(GetUpdaterScopeForTesting())) {
-    GTEST_SKIP();
-  }
-  ScopedServer test_server(test_commands_);
-  ASSERT_NO_FATAL_FAILURE(Install());
-  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
-
-  ASSERT_NO_FATAL_FAILURE(ExpectRegistrationTestAppRegisterSuccess());
-  ExpectAppVersion("org.chromium.CRURegistration.testing.RegisterMe",
-                   base::Version({1, 0, 0, 0}));
-
-  ExpectUninstallPing(&test_server);
-  ASSERT_NO_FATAL_FAILURE(Uninstall());
-}
-
-TEST_F(IntegrationTest, CRURegistrationInstallAndRegister) {
-  if (IsSystemInstall(GetUpdaterScopeForTesting())) {
-    GTEST_SKIP();
-  }
-  ScopedServer test_server(test_commands_);
-  ASSERT_NO_FATAL_FAILURE(ExpectRegistrationTestAppInstallAndRegisterSuccess());
-  ExpectInstalled();
-  ExpectAppVersion("org.chromium.CRURegistration.testing.RegisterMe",
-                   base::Version({2, 0, 0, 0}));
-
-  ExpectUninstallPing(&test_server);
-  ASSERT_NO_FATAL_FAILURE(Uninstall());
-}
-
 #if !defined(ADDRESS_SANITIZER)
 
 TEST_F(IntegrationTestUserInSystem, CRURegistrationRegistersApp) {

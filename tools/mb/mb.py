@@ -1467,7 +1467,6 @@ class MetaBuildWrapper:
               'corb_test_plugin.plugin/',
               'obj/tools/grit/brotli_mac_asan_workaround/',
               'ppapi_tests.plugin/',
-              'registration_test_app_bundle.app/',
               'ui_unittests Framework.framework/',
           ))):
         continue

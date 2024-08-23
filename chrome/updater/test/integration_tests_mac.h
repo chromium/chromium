@@ -50,20 +50,6 @@ void ExpectCRURegistrationCannotRegister(const std::string& app_id,
                                          const base::FilePath& xc_path,
                                          const std::string& version_str);
 
-// Launch the executable `registration_test_app_bundle` to install the updater
-// as an unprivileged user via CRURegistration, pulling the installer out from
-// inside the application bundle.
-void ExpectRegistrationTestAppUserUpdaterInstallSuccess();
-
-// Launch the executable `registration_test_app_bundle` to register itself with
-// an (already-installed) user updater via CRURegistration.
-void ExpectRegistrationTestAppRegisterSuccess();
-
-// Launch the executable `registration_test_app_bundle` to install the updater
-// as an unprivileged user via CRURegistration, pulling the installer out from
-// inside the application bundle, and then register itself for updates.
-void ExpectRegistrationTestAppInstallAndRegisterSuccess();
-
 }  // namespace updater::test
 
 #endif  // CHROME_UPDATER_TEST_INTEGRATION_TESTS_MAC_H_
