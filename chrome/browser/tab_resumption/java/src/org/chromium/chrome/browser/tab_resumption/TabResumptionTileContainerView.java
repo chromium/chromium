@@ -244,7 +244,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
                     tileView.setFavicon(urlDrawable);
                 });
         urlImageProvider.getTabThumbnail(
-                localTabEntry.localTabId, mThumbnailSize, tileView::setTabThumbnail);
+                localTabEntry.getLocalTabId(), mThumbnailSize, tileView::setTabThumbnail);
 
         bindSuggestionClickCallback(tileView, suggestionClickCallback, localTabEntry, clickInfo);
 

@@ -48,7 +48,7 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
         SuggestionClickCallback suggstionClickCallback =
                 (SuggestionEntry entry) -> {
                     if (entry.isLocalTab()) {
-                        mModuleDelegate.onTabClicked(entry.localTabId, getModuleType());
+                        mModuleDelegate.onTabClicked(entry.getLocalTabId(), getModuleType());
                     } else {
                         if (entry.type == SuggestionEntryType.FOREIGN_TAB) {
                             RecordUserAction.record("MobileCrossDeviceTabJourney");

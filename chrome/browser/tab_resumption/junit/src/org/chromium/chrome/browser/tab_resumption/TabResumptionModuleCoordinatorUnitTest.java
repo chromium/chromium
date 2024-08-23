@@ -174,7 +174,8 @@ public class TabResumptionModuleCoordinatorUnitTest extends TestSupportExtended 
                 /* expectRemoveModuleCalls= */ 0);
 
         SuggestionEntry entry = clickOnEntry(0);
-        verify(mModuleDelegate, times(1)).onTabClicked(entry.localTabId, ModuleType.TAB_RESUMPTION);
+        verify(mModuleDelegate, times(1))
+                .onTabClicked(entry.getLocalTabId(), ModuleType.TAB_RESUMPTION);
     }
 
     @Test

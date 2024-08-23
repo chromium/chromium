@@ -19,10 +19,11 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
     public final GURL url;
     public final String title;
     public final long lastActiveTime;
-    public final int localTabId;
+
     @Nullable public final String appId;
     @Nullable public String reasonToShowTab;
     @Nullable public TrainingInfo trainingInfo;
+    private int mLocalTabId;
 
     /**
      * @param type Type of the entry, one of the enum {@link SuggestionEntryType}.
@@ -49,7 +50,7 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
         this.url = url;
         this.title = title;
         this.lastActiveTime = lastActiveTime;
-        this.localTabId = localTabId;
+        mLocalTabId = localTabId;
         this.appId = appId;
         this.reasonToShowTab = reasonToShowTab;
         // this.trainingInfo defaults to null, and gets assigned separately.
@@ -108,11 +109,28 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
         if (compareResult != 0) {
             return compareResult;
         }
-        return Integer.compare(this.localTabId, other.localTabId);
+        return Integer.compare(mLocalTabId, other.mLocalTabId);
     }
 
     /** Returns whether the entry represents a Local Tab suggestion. */
     public boolean isLocalTab() {
-        return this.type == SuggestionEntryType.LOCAL_TAB && this.localTabId != Tab.INVALID_TAB_ID;
+        return (this.type == SuggestionEntryType.LOCAL_TAB
+                        || this.type == SuggestionEntryType.HISTORY)
+                && mLocalTabId != Tab.INVALID_TAB_ID;
+    }
+
+    /** Gets the local Tab Id. */
+    public int getLocalTabId() {
+        return mLocalTabId;
+    }
+
+    /**
+     * Sets the local Tab id.
+     *
+     * @param tabId The new Tab Id.
+     */
+    public void setLocalTabId(int tabId) {
+        assert mLocalTabId == Tab.INVALID_TAB_ID;
+        mLocalTabId = tabId;
     }
 }
