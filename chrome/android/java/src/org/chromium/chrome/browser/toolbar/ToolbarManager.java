@@ -1566,6 +1566,7 @@ public class ToolbarManager
                         mLayoutManager,
                         mCompositorViewHolder.getResourceManager(),
                         mBottomControlsStacker,
+                        mControlsVisibilityDelegate,
                         mFullscreenManager,
                         mEdgeToEdgeControllerSupplier,
                         (ScrollingBottomViewResourceFrameLayout) root,
