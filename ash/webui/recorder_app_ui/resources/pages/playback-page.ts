@@ -390,19 +390,21 @@ export class PlaybackPage extends ReactiveLitElement {
   });
 
   // This is marked as protected to suppress the unused member error.
-  protected readonly autoplay = new ScopedAsyncEffect(this, async (signal) => {
-    const id = this.recordingIdSignal.value;
-    if (id === null) {
-      return;
-    }
-    const data = await this.recordingDataManager.getAudioFile(id);
-    signal.throwIfAborted();
-    this.revokeAudio();
-    this.latestAudioSrc = URL.createObjectURL(data);
-    this.audio.src = this.latestAudioSrc;
-    this.audio.load();
-    await this.audio.play();
-  });
+  protected readonly loadAudioData = new ScopedAsyncEffect(
+    this,
+    async (signal) => {
+      const id = this.recordingIdSignal.value;
+      if (id === null) {
+        return;
+      }
+      const data = await this.recordingDataManager.getAudioFile(id);
+      signal.throwIfAborted();
+      this.revokeAudio();
+      this.latestAudioSrc = URL.createObjectURL(data);
+      this.audio.src = this.latestAudioSrc;
+      this.audio.load();
+    },
+  );
 
   private readonly transcription = new ScopedAsyncComputed(this, async () => {
     if (this.recordingIdSignal.value === null) {
