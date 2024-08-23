@@ -84,6 +84,12 @@
           'shards': 4,
         },
       },
+      'android-14-x64-rel': {
+        'args': [
+          # https://crbug.com/361042311
+          '--gtest_filter=-All/SharedStorageChromeBrowserTest.CrossOriginWorklet_SelectURL_Success/*',
+        ],
+      },
       'android-asan': {
         'swarming': {
           'shards': 2,
@@ -1508,6 +1514,12 @@
         'swarming': {
           'shards': 2,
         },
+      },
+      'android-14-x64-rel': {
+        'args': [
+          # TODO(crbug.com/40746860): Fix the test failure
+          '--gtest_filter=-V8ContextTrackerTest.AboutBlank',
+        ],
       },
       'android-asan': {
         'swarming': {

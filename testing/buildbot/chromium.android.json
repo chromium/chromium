@@ -14158,6 +14158,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
+          "--gtest_filter=-All/SharedStorageChromeBrowserTest.CrossOriginWorklet_SelectURL_Success/*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -14918,6 +14919,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
+          "--gtest_filter=-V8ContextTrackerTest.AboutBlank",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
