@@ -78,24 +78,29 @@ if (this.shouldExpand_()) {
     @expanded-changed=${this.onExpandedChanged_}>
   ${urlListItem}
 </cr-expand-button>
-${this.toggleExpand ? html`
-  ${children!.map((item: chrome.bookmarks.BookmarkTreeNode)=> html`
-    <power-bookmark-row
-        id="bookmark-${item.id}"
-        .bookmark="${item}"
-        .compact="${this.compact}"
-        .updatedElementIds="${this.updatedElementIds}"
-        trailingIconTooltip="$i18n{tooltipMore}"
-        .hasCheckbox="${this.hasCheckbox}"
-        .renamingId="${this.renamingId}"
-        .imageUrls="${this.imageUrls}"
-        .shoppingCollectionFolderId="${this.shoppingCollectionFolderId}"
-        .bookmarksService="${this.bookmarksService}"
-        .contextMenuBookmark="${this.contextMenuBookmark}">
-    </power-bookmark-row>
-  `)}`: ''
+  ${this.toggleExpand ? html`
+    ${children!.map((item: chrome.bookmarks.BookmarkTreeNode)=> html`
+      <power-bookmark-row
+          id="bookmark-${item.id}"
+          .bookmark="${item}"
+          .compact="${this.compact}"
+          .depth="${this.depth + 1}"
+          trailingIconTooltip="$i18n{tooltipMore}"
+          .hasCheckbox="${this.hasCheckbox}"
+          .renamingId="${this.renamingId}"
+          .imageUrls="${this.imageUrls}"
+          .shoppingCollectionFolderId="${this.shoppingCollectionFolderId}"
+          .bookmarksService="${this.bookmarksService}"
+          .contextMenuBookmark="${this.contextMenuBookmark}">
+      </power-bookmark-row>
+    `)}`: ''
   }`;
 } else {
-    return urlListItem;
+    return html`
+    ${this.compact && this.bookmarksTreeViewEnabled ? html`
+      <div id="bookmark">
+        ${urlListItem}
+      </div>` : urlListItem
+    }`;
   }
 }
