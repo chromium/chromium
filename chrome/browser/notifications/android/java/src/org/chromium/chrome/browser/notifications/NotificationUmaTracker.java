@@ -590,6 +590,28 @@ public class NotificationUmaTracker {
     }
 
     /**
+     * Records how long the pre-native processing for the `PRE_UNSUBSCRIBE` action button took in
+     * real time, which includes time spent in power-saving modes and/or display being dark.
+     */
+    public void recordPreUnsubscribeRealDuration(long durationMillis) {
+        RecordHistogram.recordMediumTimesHistogram(
+                "Mobile.SystemNotification.Permission.OneTapUnsubscribe."
+                        + "PreUnsubscribePreNativeRealDuration",
+                durationMillis);
+    }
+
+    /**
+     * Records how long the pre-native processing for the `PRE_UNSUBSCRIBE` action button took in
+     * `uptimeMillis`, which stops the clock when in power-saving modes and/or display being dark.
+     */
+    public void recordPreUnsubscribeDuration(long durationMillis) {
+        RecordHistogram.recordMediumTimesHistogram(
+                "Mobile.SystemNotification.Permission.OneTapUnsubscribe."
+                        + "PreUnsubscribePreNativeDuration",
+                durationMillis);
+    }
+
+    /**
      * Records whether the Java global state was preserved between `PRE_UNSUBSCRIBE` and the
      * `UNDO_UNSUBSCRIBE`/`COMMIT_UNSUBSCRIBE_*` events.
      */

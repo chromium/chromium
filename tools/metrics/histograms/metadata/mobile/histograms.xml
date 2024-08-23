@@ -639,6 +639,42 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.PreUnsubscribePreNativeDuration"
+    units="ms" expires_after="2025-01-26">
+  <owner>engedy@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records how long the pre-native processing for the `PRE_UNSUBSCRIBE` action
+    button intent took. The clocks starts when the broadcast receiver
+    syncronously calls into `onNotificationPreUnsubcribe`; and ends when the
+    posted task to show the `provisionally unsubscribed` notification and
+    suspend all other notifications is completed. Only recorded for each
+    non-duplicate tap on the `PRE_UNSUBSCRIBE` action.
+
+    Measures time as `uptimeMillis`, which stops the clock when in power-saving
+    modes and/or display being dark.
+  </summary>
+</histogram>
+
+<histogram
+    name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.PreUnsubscribePreNativeRealDuration"
+    units="ms" expires_after="2025-01-26">
+  <owner>engedy@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records how long the pre-native processing for the `PRE_UNSUBSCRIBE` action
+    button intent took. The clocks starts when the broadcast receiver
+    syncronously calls into `onNotificationPreUnsubcribe`; and ends when the
+    posted task to show the `provisionally unsubscribed` notification and
+    suspend all other notifications is completed. Only recorded for each
+    non-duplicate tap on the `PRE_UNSUBSCRIBE` action.
+
+    Measures time as `elapsedRealtime`, which includes time spent in
+    power-saving modes and/or display being dark.
+  </summary>
+</histogram>
+
+<histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.SuspendedNotificationCount"
     units="notifications" expires_after="2025-01-26">
   <owner>engedy@chromium.org</owner>
