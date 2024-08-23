@@ -253,7 +253,7 @@ void RecorderAppUI::AddQuietModeMonitor(
 }
 
 void RecorderAppUI::LoadModel(
-    const base::Uuid& uuid,
+    const base::Uuid& model_id,
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -269,10 +269,17 @@ void RecorderAppUI::LoadModel(
       progress_receiver;
 
   on_device_model_service_->LoadPlatformModel(
-      uuid, std::move(model), progress_receiver.InitWithNewPipeAndPassRemote(),
-      std::move(callback));
+      model_id, std::move(model),
+      progress_receiver.InitWithNewPipeAndPassRemote(), std::move(callback));
 
-  model_progress_receivers_.Add(this, std::move(progress_receiver), uuid);
+  model_progress_receivers_.Add(this, std::move(progress_receiver), model_id);
+
+  // The first callback from the progress callback of LoadPlatformModel is
+  // often very slow, so we do optimistic update here and show the installing
+  // state for the model. Note that if the model is already installed,
+  // UpdateModelState would prevent it from going back to installing.
+  UpdateModelState(model_id,
+                   {recorder_app::mojom::ModelStateType::kInstalling, 0});
 }
 
 void RecorderAppUI::FormatModelInput(
@@ -280,6 +287,8 @@ void RecorderAppUI::FormatModelInput(
     on_device_model::mojom::FormatFeature feature,
     const base::flat_map<std::string, std::string>& fields,
     FormatModelInputCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   EnsureOnDeviceModelService();
 
   if (!on_device_model_service_) {
@@ -348,6 +357,19 @@ void RecorderAppUI::GetPlatformModelStateCallback(
 void RecorderAppUI::UpdateModelState(const base::Uuid& model_id,
                                      recorder_app::mojom::ModelState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (state.type == recorder_app::mojom::ModelStateType::kInstalling) {
+    // On device model reports "loading" model and "download/installing" model
+    // in a same way. To avoid confusing the user, don't go back to installing
+    // state from installed state.
+    // TODO: b/361718207 - Consider how to drop this workaround.
+    auto old_state_iter = model_states_.find(model_id);
+    if (old_state_iter != model_states_.end() &&
+        old_state_iter->second.type ==
+            recorder_app::mojom::ModelStateType::kInstalled) {
+      return;
+    }
+  }
 
   for (const auto& monitor : model_monitors_[model_id]) {
     monitor->Update(state.Clone());
