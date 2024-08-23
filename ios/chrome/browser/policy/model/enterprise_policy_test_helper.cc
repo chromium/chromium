@@ -13,8 +13,8 @@
 #include "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #include "ios/chrome/browser/policy/model/configuration_policy_handler_list_factory.h"
 #include "ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
