@@ -8,8 +8,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/checked_math.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/timer/elapsed_timer.h"
@@ -61,9 +63,12 @@ TEST_F(V4StorePerftest, StressTest) {
     prefixes.push_back(full_hashes.substr(index, kMinHashPrefixLength));
   }
 
-  auto store = std::make_unique<TestV4Store>(
-      base::MakeRefCounted<base::TestSimpleTaskRunner>(), base::FilePath());
-  store->SetPrefixes(std::move(prefixes), kMinHashPrefixLength);
+  auto store = std::make_unique<V4Store>(
+      base::MakeRefCounted<base::TestSimpleTaskRunner>(), base::FilePath(),
+      std::make_unique<InMemoryHashPrefixMap>());
+  std::sort(prefixes.begin(), prefixes.end());
+  store->hash_prefix_map_->Clear();
+  store->hash_prefix_map_->Append(kMinHashPrefixLength, base::StrCat(prefixes));
 
   size_t matches = 0;
   auto reporter = SetUpV4StoreReporter("stress_test");

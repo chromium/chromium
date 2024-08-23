@@ -39,6 +39,8 @@ class TestV4Store : public V4Store {
   // |prefixes| does not need to be sorted.
   void SetPrefixes(std::vector<HashPrefixStr> prefixes, PrefixSize size);
 
+  HashPrefixStr GetMatchingHashPrefix(const FullHashStr& full_hash) override;
+
  private:
   // Holds mock prefixes from calls to MarkPrefixAsBad / SetPrefixes. Stored as
   // a vector for simplicity.
