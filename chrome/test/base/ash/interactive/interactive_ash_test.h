@@ -77,6 +77,13 @@ class InteractiveAshTest
   NavigateSettingsToBluetoothPage(const ui::ElementIdentifier& element_id);
 
   // Navigates the Settings app, which is expected to be associated with
+  // `element_id`, to the subpage of the network with type `network_pattern`.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  NavigateSettingsToNetworkSubpage(
+      const ui::ElementIdentifier& element_id,
+      const ash::NetworkTypePattern network_pattern);
+
+  // Navigates the Settings app, which is expected to be associated with
   // `element_id`, to the details page for the network named `network_name`
   // with type `network_pattern`.
   ui::test::internal::InteractiveTestPrivate::MultiStep

@@ -297,11 +297,33 @@ InteractiveAshTest::NavigateQuickSettingsToHotspotPage() {
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::NavigateSettingsToNetworkSubpage(
+    const ui::ElementIdentifier& element_id,
+    const ash::NetworkTypePattern network_pattern) {
+  WebContentsInteractionTestUtil::DeepQuery internet_summary_row;
+
+  if (network_pattern.MatchesPattern(ash::NetworkTypePattern::Mobile())) {
+    internet_summary_row = ash::settings::cellular::CellularSummaryItem();
+  } else if (network_pattern.MatchesPattern(ash::NetworkTypePattern::VPN())) {
+    internet_summary_row = ash::settings::vpn::VpnSummaryItem();
+  } else if (network_pattern.MatchesPattern(ash::NetworkTypePattern::WiFi())) {
+    internet_summary_row = ash::settings::wifi::WifiSummaryItem();
+  } else {
+    // Unsupported Network pattern.
+    NOTREACHED();
+  }
+
+  return Steps(NavigateSettingsToInternetPage(element_id),
+               WaitForElementExists(element_id, internet_summary_row),
+               ScrollIntoView(element_id, internet_summary_row),
+               MoveMouseTo(element_id, internet_summary_row), ClickMouse());
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::NavigateToInternetDetailsPage(
     const ui::ElementIdentifier& element_id,
     const ash::NetworkTypePattern network_pattern,
     const std::string& network_name) {
-  WebContentsInteractionTestUtil::DeepQuery internet_summary_row;
   WebContentsInteractionTestUtil::DeepQuery network_list;
   WebContentsInteractionTestUtil::DeepQuery network_list_item(
       {"network-list-item"});
@@ -313,22 +335,17 @@ InteractiveAshTest::NavigateToInternetDetailsPage(
 
   // TODO: Add other network types.
   if (network_pattern.MatchesPattern(ash::NetworkTypePattern::Mobile())) {
-    internet_summary_row = ash::settings::cellular::CellularSummaryItem();
     network_list = ash::settings::cellular::CellularNetworksList();
     network_list_item = WebContentsInteractionTestUtil::DeepQuery(
         {"network-list", "network-list-item"});
   } else if (network_pattern.MatchesPattern(ash::NetworkTypePattern::VPN())) {
-    internet_summary_row = ash::settings::vpn::VpnSummaryItem();
     network_list = ash::settings::vpn::VpnNetworksList();
   } else {
     // Unsupported Network pattern.
     NOTREACHED();
   }
 
-  return Steps(NavigateSettingsToInternetPage(element_id),
-               WaitForElementExists(element_id, internet_summary_row),
-               ScrollIntoView(element_id, internet_summary_row),
-               MoveMouseTo(element_id, internet_summary_row), ClickMouse(),
+  return Steps(NavigateSettingsToNetworkSubpage(element_id, network_pattern),
                FindElementAndDoActionOnChildren(
                    element_id, network_list, network_list_item,
                    ClickElementWithSiblingContainsText(

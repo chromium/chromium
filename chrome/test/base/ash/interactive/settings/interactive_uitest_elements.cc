@@ -41,6 +41,10 @@ WebContentsInteractionTestUtil::DeepQuery SettingsSubpageNetworkState() {
   return InternetDetailsSubpage() + "div#networkState";
 }
 
+WebContentsInteractionTestUtil::DeepQuery SettingsSubpagePolicyIcon() {
+  return InternetDetailsSubpage() + "div#titleDiv" + "cr-policy-indicator";
+}
+
 WebContentsInteractionTestUtil::DeepQuery SettingsSubpageConfigureButton() {
   return InternetDetailsSubpage() + "cr-button#configureButton";
 }
@@ -258,6 +262,11 @@ WebContentsInteractionTestUtil::DeepQuery MobileDataToggle() {
 WebContentsInteractionTestUtil::DeepQuery CellularNetworksList() {
   return InternetPage() + "settings-internet-subpage" +
          "cellular-networks-list";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularNetworkListItemPolicyIcon() {
+  return CellularNetworksList() + "network-list" + "network-list-item" +
+         "cr-policy-indicator";
 }
 
 WebContentsInteractionTestUtil::DeepQuery CellularSubpagePsimListTitle() {

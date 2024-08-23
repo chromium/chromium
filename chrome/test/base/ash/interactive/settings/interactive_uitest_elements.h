@@ -27,6 +27,9 @@ WebContentsInteractionTestUtil::DeepQuery InternetSettingsSubpageTitle();
 // The network state shown on a settings subpage.
 WebContentsInteractionTestUtil::DeepQuery SettingsSubpageNetworkState();
 
+// The policy icon shown on a settings subpage.
+WebContentsInteractionTestUtil::DeepQuery SettingsSubpagePolicyIcon();
+
 // The network state shown on a settings subpage.
 WebContentsInteractionTestUtil::DeepQuery SettingsSubpagePropertyList();
 
@@ -192,6 +195,9 @@ WebContentsInteractionTestUtil::DeepQuery MobileDataToggle();
 
 // The cellular networks list page.
 WebContentsInteractionTestUtil::DeepQuery CellularNetworksList();
+
+// The policy icon shown on the network list item row in cellular networks list.
+WebContentsInteractionTestUtil::DeepQuery CellularNetworkListItemPolicyIcon();
 
 // The cellular networks subpage pSIM networks list title.
 WebContentsInteractionTestUtil::DeepQuery CellularSubpagePsimListTitle();

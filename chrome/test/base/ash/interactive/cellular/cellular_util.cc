@@ -21,7 +21,7 @@ EuiccInfo::EuiccInfo(unsigned int id)
 EuiccInfo::~EuiccInfo() = default;
 
 SimInfo::SimInfo(unsigned int id)
-    : guid_(base::StringPrintf("guid_%u", id)),
+    : guid_(base::StringPrintf("esim_guid%018u", id)),
       profile_path_(base::StringPrintf("/profile/path%u", id)),
       iccid_(base::StringPrintf("%018u", id)),
       name_(base::StringPrintf("Profile Name %u", id)),
