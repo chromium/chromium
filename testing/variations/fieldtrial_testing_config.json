@@ -14642,6 +14642,69 @@
             ]
         }
     ],
+    "OcclusionCullingQuadSplitLimit": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "quad_split_limit_8",
+                    "params": {
+                        "num_of_splits": "8"
+                    },
+                    "enable_features": [
+                        "DrawQuadSplitLimit"
+                    ]
+                },
+                {
+                    "name": "quad_split_limit_6",
+                    "params": {
+                        "num_of_splits": "6"
+                    },
+                    "enable_features": [
+                        "DrawQuadSplitLimit"
+                    ]
+                },
+                {
+                    "name": "quad_split_limit_7",
+                    "params": {
+                        "num_of_splits": "7"
+                    },
+                    "enable_features": [
+                        "DrawQuadSplitLimit"
+                    ]
+                },
+                {
+                    "name": "quad_split_limit_10",
+                    "params": {
+                        "num_of_splits": "10"
+                    },
+                    "enable_features": [
+                        "DrawQuadSplitLimit"
+                    ]
+                },
+                {
+                    "name": "quad_split_limit_12",
+                    "params": {
+                        "num_of_splits": "12"
+                    },
+                    "enable_features": [
+                        "DrawQuadSplitLimit"
+                    ]
+                },
+                {
+                    "name": "quad_split_limit_14",
+                    "params": {
+                        "num_of_splits": "14"
+                    },
+                    "enable_features": [
+                        "DrawQuadSplitLimit"
+                    ]
+                }
+            ]
+        }
+    ],
     "OidcAuthProfileManagement": [
         {
             "platforms": [
