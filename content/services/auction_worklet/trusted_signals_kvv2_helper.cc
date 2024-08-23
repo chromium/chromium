@@ -50,6 +50,8 @@ constexpr size_t kCborStringLengthSize = 4;   // bytes
 constexpr size_t kOhttpHeaderSize = 55;       // bytes
 constexpr char kTagInterestGroupName[] = "interestGroupNames";
 constexpr char kTagKey[] = "keys";
+constexpr char kTagRenderUrls[] = "renderUrls";
+constexpr char kTagAdComponentRenderUrls[] = "adComponentRenderUrls";
 
 // Add hardcoded `acceptCompression` to request body.
 void AddPostRequestConstants(cbor::Value::MapValue& request_map_value) {
@@ -137,7 +139,7 @@ ParseCompressionGroup(
     int& compression_group_id_out) {
   if (!group.is_map()) {
     return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-        "Compression group is not type of Map."));
+        "Compression group is not type of map."));
   }
   const cbor::Value::MapValue& group_map = group.GetMap();
   auto compression_group_id_it =
@@ -157,7 +159,7 @@ ParseCompressionGroup(
       compression_group_id_it->second;
   if (!compression_group_id_value.is_integer()) {
     return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-        "Compression group id is not type of Integer."));
+        "Compression group id is not type of integer."));
   }
   // Compression group id must be a valid 32-bit integer.
   if (!base::IsValueInRangeForNumericType<int>(
@@ -173,7 +175,7 @@ ParseCompressionGroup(
     const cbor::Value& ttl_ms_value = ttl_ms_it->second;
     if (!ttl_ms_value.is_integer()) {
       return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-          "Compression group ttl is not type of Integer."));
+          "Compression group ttl is not type of integer."));
     }
     ttl = base::Milliseconds(ttl_ms_value.GetInteger());
   }
@@ -182,7 +184,7 @@ ParseCompressionGroup(
   const cbor::Value& content_value = content_it->second;
   if (!content_value.is_bytestring()) {
     return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-        "Compression group content is not type of Byte String."));
+        "Compression group content is not type of byte string."));
   }
 
   compression_group_id_out =
@@ -272,7 +274,7 @@ ParseKeyGroupOutputsToMap(const cbor::Value::ArrayValue& key_group_outputs) {
     // Parse each entry of `key_group_outputs` array to map.
     if (!output_value.is_map()) {
       return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-          "KeyGroupOutput value is not type of Map."));
+          "KeyGroupOutput value is not type of map."));
     }
 
     const cbor::Value::MapValue& key_group_output = output_value.GetMap();
@@ -291,7 +293,7 @@ ParseKeyGroupOutputsToMap(const cbor::Value::ArrayValue& key_group_outputs) {
     const cbor::Value& tags_value = tags_it->second;
     if (!tags_value.is_array()) {
       return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-          "Tags value in keyGroupOutputs map is not type of Array."));
+          "Tags value in keyGroupOutputs map is not type of array."));
     }
     const cbor::Value::ArrayValue& tags = tags_value.GetArray();
 
@@ -302,7 +304,7 @@ ParseKeyGroupOutputsToMap(const cbor::Value::ArrayValue& key_group_outputs) {
     if (!tags[0].is_string()) {
       return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
           "Tag value in tags array of keyGroupOutputs map is not type of "
-          "String."));
+          "string."));
     }
     const std::string& tag_string = tags[0].GetString();
 
@@ -310,7 +312,7 @@ ParseKeyGroupOutputsToMap(const cbor::Value::ArrayValue& key_group_outputs) {
     const cbor::Value& key_values_value = key_values_it->second;
     if (!key_values_value.is_map()) {
       return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-          "KeyValue value in keyGroupOutputs map is not type of Map."));
+          "KeyValue value in keyGroupOutputs map is not type of map."));
     }
 
     // Try to emplace tag to `key_group_outputs_map`. Return an error if
@@ -348,7 +350,7 @@ GetKeyValueDataString(
     // It is up to the caller to guarantee this.
     CHECK(key_value_pair.first.is_string());
     return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-        base::StringPrintf("Value of \"%s\" is not type of Map.",
+        base::StringPrintf("Value of \"%s\" is not type of map.",
                            key_value_pair.first.GetString().c_str())));
   }
   const cbor::Value::MapValue& cbor_value_map = cbor_value.GetMap();
@@ -365,48 +367,168 @@ GetKeyValueDataString(
   return value_data.GetString();
 }
 
-// Retrieve the data string corresponding to each `key` from `keys` in
-// `key_group_output_map` and serialize it to `AuctionV8Helper::SerializedValue`
-// as the value. Insert this into a map with the `key` as the key. Return
-// `ErrorInfo` in case of any failure.
+// Retrieve the json string corresponding to each `key` from `keys` in
+// `key_group_output_map` with specified tag, and serialize it to
+// `AuctionV8Helper::SerializedValue` as the value. Insert this into a
+// map with the `key` as the key. Return `ErrorInfo` in case of any failure.
 base::expected<std::map<std::string, AuctionV8Helper::SerializedValue>,
                TrustedSignalsKVv2ResponseParser::ErrorInfo>
-SerializeKeyGroupOutputsMap(AuctionV8Helper* v8_helper,
-                            const cbor::Value::MapValue& key_group_output_map,
-                            const std::set<std::string>& keys) {
+SerializeKeyGroupOutputsMap(
+    AuctionV8Helper* v8_helper,
+    const std::map<std::string, const cbor::Value::MapValue*>&
+        key_group_outputs_map,
+    const std::set<std::string>& keys,
+    const char* tag) {
   std::map<std::string, AuctionV8Helper::SerializedValue> serialized_value_map;
 
+  auto tag_it = key_group_outputs_map.find(tag);
+
+  // A tag is not required to exist in the keyGroupOutputs field, so an error
+  // does not need to be returned in this case.
+  if (tag_it == key_group_outputs_map.end()) {
+    return serialized_value_map;
+  }
+
   for (const auto& key : keys) {
-    auto cbor_it = key_group_output_map.find(cbor::Value(key));
-    if (cbor_it != key_group_output_map.end()) {
-      base::expected<std::string_view,
-                     TrustedSignalsKVv2ResponseParser::ErrorInfo>
-          data_string = GetKeyValueDataString(*cbor_it);
+    const auto& key_values_map = tag_it->second;
+    auto cbor_it = key_values_map->find(cbor::Value(key));
 
-      if (!data_string.has_value()) {
-        return base::unexpected(std::move(data_string).error());
-      }
-
-      v8::Local<v8::Value> data_v8_value;
-      if (!v8_helper
-               ->CreateValueFromJson(v8_helper->scratch_context(),
-                                     std::move(data_string).value())
-               .ToLocal(&data_v8_value)) {
-        return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-            "Failed to parse key-value string to JSON."));
-      }
-
-      AuctionV8Helper::SerializedValue serialized_value =
-          v8_helper->Serialize(v8_helper->scratch_context(), data_v8_value);
-      if (!serialized_value.IsOK()) {
-        return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-            "Failed to serialize data value."));
-      }
-      serialized_value_map.emplace(key, std::move(serialized_value));
+    if (cbor_it == key_values_map->end()) {
+      continue;
     }
+
+    base::expected<std::string_view,
+                   TrustedSignalsKVv2ResponseParser::ErrorInfo>
+        data_string = GetKeyValueDataString(*cbor_it);
+
+    if (!data_string.has_value()) {
+      return base::unexpected(std::move(data_string).error());
+    }
+
+    v8::Local<v8::Value> data_v8_value;
+    if (!v8_helper
+             ->CreateValueFromJson(v8_helper->scratch_context(),
+                                   std::move(data_string).value())
+             .ToLocal(&data_v8_value)) {
+      return base::unexpected(
+          TrustedSignalsKVv2ResponseParser::ErrorInfo(base::StringPrintf(
+              "Failed to parse key-value string to JSON for key \"%s\".",
+              key.c_str())));
+    }
+
+    AuctionV8Helper::SerializedValue serialized_value =
+        v8_helper->Serialize(v8_helper->scratch_context(), data_v8_value);
+    if (!serialized_value.IsOK()) {
+      return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+          "Failed to serialize data value."));
+    }
+    serialized_value_map.emplace(key, std::move(serialized_value));
   }
 
   return serialized_value_map;
+}
+
+// Extract or decompress the content CBOR value from compression group result.
+// Return a CBOR value with array type, or `ErrorInfo` in case of any parsing
+// failure.
+base::expected<cbor::Value, TrustedSignalsKVv2ResponseParser::ErrorInfo>
+GetContentFromCompressionGroup(const CompressionGroupResult& group_result) {
+  base::span<const uint8_t> content_bytes;
+  // Buffer for holding the data if we need to decompress.
+  std::string decompressed_string;
+
+  if (group_result.compression_scheme ==
+      auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone) {
+    content_bytes = base::as_byte_span(group_result.content);
+  } else if (group_result.compression_scheme ==
+             auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip) {
+    bool is_decompressed =
+        compression::GzipUncompress(group_result.content, &decompressed_string);
+    if (!is_decompressed) {
+      return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+          "Failed to decompress content string with Gzip."));
+    }
+    content_bytes = base::as_byte_span(decompressed_string);
+  } else {
+    NOTREACHED();
+  }
+
+  std::optional<cbor::Value> maybe_content = cbor::Reader::Read(content_bytes);
+  if (!maybe_content.has_value()) {
+    return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+        "Failed to parse content as CBOR."));
+  }
+  if (!maybe_content->is_array()) {
+    return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+        "Content is not type of array."));
+  }
+
+  return std::move(maybe_content).value();
+}
+
+// Extract the "keyGroupOutputs" field data from a partition CBOR value. Also,
+// assign the partition ID and data version to `id_out` and `data_version_out`,
+// respectively. Return `ErrorInfo` in case of any parsing failure.
+base::expected<const cbor::Value::ArrayValue*,
+               TrustedSignalsKVv2ResponseParser::ErrorInfo>
+GetKeyGroupOutputsFromPartition(const cbor::Value& partition_value,
+                                int& id_out,
+                                std::optional<uint32_t>& data_version_out) {
+  if (!partition_value.is_map()) {
+    return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+        "Partition is not type of map."));
+  }
+  const cbor::Value::MapValue& partition = partition_value.GetMap();
+  auto id_it = partition.find(cbor::Value("id"));
+  auto key_group_outputs_it = partition.find(cbor::Value("keyGroupOutputs"));
+  if (id_it == partition.end()) {
+    return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+        "Key \"id\" is missing in partition map."));
+  }
+  if (key_group_outputs_it == partition.end()) {
+    return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+        "Key \"keyGroupOutputs\" is missing in partition map."));
+  }
+
+  // Build each partition to a `TrustedSignals::Result`.
+  const cbor::Value& id_value = id_it->second;
+  if (!id_value.is_integer()) {
+    return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+        "Partition id is not type of integer."));
+  }
+
+  // Partition id must be a valid 32-bit integer.
+  if (!base::IsValueInRangeForNumericType<int>(id_value.GetInteger())) {
+    return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+        "Partition id is out of range for int."));
+  }
+  id_out = static_cast<int>(id_value.GetInteger());
+
+  // Try to find "dataVersion".
+  auto data_version_it = partition.find(cbor::Value("dataVersion"));
+  if (data_version_it != partition.end()) {
+    const cbor::Value& data_version_value = data_version_it->second;
+    if (!data_version_value.is_integer()) {
+      return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+          "DataVersion is not type of integer."));
+    }
+
+    // "dataVersion" field must be a valid 32-bit unsigned integer.
+    if (!base::IsValueInRangeForNumericType<uint32_t>(
+            data_version_value.GetInteger())) {
+      return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+          "DataVersion field is out of range for uint32."));
+    }
+    data_version_out = static_cast<uint32_t>(data_version_value.GetInteger());
+  }
+
+  // Parse keyGroupOutputs to a map.
+  const cbor::Value& key_group_outputs_value = key_group_outputs_it->second;
+  if (!key_group_outputs_value.is_array()) {
+    return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+        "Partition key group outputs is not type of array."));
+  }
+  return &key_group_outputs_value.GetArray();
 }
 
 }  // namespace
@@ -679,7 +801,7 @@ TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
 
   auction_worklet::mojom::TrustedSignalsCompressionScheme compression_scheme =
       extract_result->first;
-  std::vector<uint8_t> cbor_bytes = extract_result->second;
+  std::vector<uint8_t>& cbor_bytes = extract_result->second;
 
   // Parse CBOR bytes.
   TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap result_map;
@@ -692,7 +814,7 @@ TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
   const cbor::Value& body_value = std::move(body).value();
   if (!body->is_map()) {
     return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-        "Response body is not type of Map."));
+        "Response body is not type of map."));
   }
   const cbor::Value::MapValue& body_map = body_value.GetMap();
 
@@ -705,7 +827,7 @@ TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
   const cbor::Value& compression_groups_value = compression_groups_it->second;
   if (!compression_groups_value.is_array()) {
     return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-        "Compression groups is not type of Array."));
+        "Compression groups is not type of array."));
   }
   const cbor::Value::ArrayValue& compression_groups =
       compression_groups_value.GetArray();
@@ -737,126 +859,50 @@ TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
 TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMap
 TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
     AuctionV8Helper* v8_helper,
-    const std::optional<std::set<std::string>>& interest_group_names,
-    const std::optional<std::set<std::string>>& keys,
+    const std::set<std::string>& interest_group_names,
+    const std::set<std::string>& keys,
     const TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap&
         compression_group_result_map) {
   TrustedSignalsResultMap result_map;
 
   for (const auto& group : compression_group_result_map) {
-    // Get content from each compression group.
-    base::span<const uint8_t> content_bytes;
-    // Buffer for holding the data if we need to decompress.
-    std::string decompressed_string;
-
-    if (group.second.compression_scheme ==
-        auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone) {
-      content_bytes = base::as_byte_span(group.second.content);
-    } else if (group.second.compression_scheme ==
-               auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip) {
-      bool is_decompressed = compression::GzipUncompress(group.second.content,
-                                                         &decompressed_string);
-      if (!is_decompressed) {
-        return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-            "Failed to decompress content string with Gzip."));
-      }
-      content_bytes = base::as_byte_span(decompressed_string);
-    }
-
-    std::optional<cbor::Value> maybe_content =
-        cbor::Reader::Read(content_bytes);
+    auto maybe_content = GetContentFromCompressionGroup(group.second);
     if (!maybe_content.has_value()) {
       return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-          "Failed to parse content to CBOR."));
-    }
-    cbor::Value& content_value = maybe_content.value();
-    if (!content_value.is_array()) {
-      return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-          "Content is not type of Array."));
+          std::move(maybe_content).error().error_msg));
     }
 
-    for (const auto& partition_value : content_value.GetArray()) {
-      scoped_refptr<TrustedSignals::Result> result;
-      TrustedSignals::Result::PerInterestGroupDataMap
-          per_interest_group_data_map;
-      std::map<std::string, AuctionV8Helper::SerializedValue> bidding_data_map;
-
-      if (!partition_value.is_map()) {
-        return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-            "Partition is not type of Map."));
-      }
-      const cbor::Value::MapValue& partition = partition_value.GetMap();
-      auto id_it = partition.find(cbor::Value("id"));
-      auto key_group_outputs_it =
-          partition.find(cbor::Value("keyGroupOutputs"));
-      if (id_it == partition.end()) {
-        return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-            "Key \"id\" is missing in partition map."));
-      }
-      if (key_group_outputs_it == partition.end()) {
-        return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-            "Key \"keyGroupOutputs\" is missing in partition map."));
-      }
-
-      // Build each partition to a `TrustedSignals::Result`.
-      const cbor::Value& id_value = id_it->second;
-      if (!id_value.is_integer()) {
-        return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-            "Partition id is not type of Integer."));
-      }
-
-      // Partition id must be a valid 32-bit integer.
-      if (!base::IsValueInRangeForNumericType<int>(id_value.GetInteger())) {
-        return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-            "Partition id is out of range for int."));
-      }
-      int id = static_cast<int>(id_value.GetInteger());
-
-      // Try to find "dataVersion".
+    for (const auto& partition_value : maybe_content.value().GetArray()) {
+      // Partition id and data version to be extracted from each partition.
+      int id;
       std::optional<uint32_t> data_version;
-      auto data_version_it = partition.find(cbor::Value("dataVersion"));
-      if (data_version_it != partition.end()) {
-        const cbor::Value& data_version_value = data_version_it->second;
-        if (!data_version_value.is_integer()) {
-          return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-              "DataVersion is not type of Integer."));
-        }
 
-        // "dataVersion" field must be a valid 32-bit unsigned integer.
-        if (!base::IsValueInRangeForNumericType<uint32_t>(
-                data_version_value.GetInteger())) {
-          return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-              "DataVersion field is out of range for uint32."));
-        }
-        data_version = static_cast<uint32_t>(data_version_value.GetInteger());
-      }
-
-      // Parse keyGroupOutputs to a map.
-      const cbor::Value& key_group_outputs_value = key_group_outputs_it->second;
-      if (!key_group_outputs_value.is_array()) {
+      auto maybe_key_group_outputs =
+          GetKeyGroupOutputsFromPartition(partition_value, id, data_version);
+      if (!maybe_key_group_outputs.has_value()) {
         return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-            "Partition key group outputs is not type of Array."));
+            std::move(maybe_key_group_outputs).error().error_msg));
       }
-      const cbor::Value::ArrayValue& key_group_outputs =
-          key_group_outputs_value.GetArray();
 
       base::expected<std::map<std::string, const cbor::Value::MapValue*>,
                      TrustedSignalsKVv2ResponseParser::ErrorInfo>
-          key_group_outputs_map = ParseKeyGroupOutputsToMap(key_group_outputs);
+          key_group_outputs_map =
+              ParseKeyGroupOutputsToMap(*maybe_key_group_outputs.value());
 
       if (!key_group_outputs_map.has_value()) {
         return base::unexpected(std::move(key_group_outputs_map).error());
       }
 
       // Try to find `kTagInterestGroupName` tag and parse the map.
+      TrustedSignals::Result::PerInterestGroupDataMap
+          per_interest_group_data_map;
       auto tag_interest_group_name_it =
           key_group_outputs_map->find(kTagInterestGroupName);
       if (tag_interest_group_name_it != key_group_outputs_map->end()) {
-        DCHECK(interest_group_names.has_value());
         const cbor::Value::MapValue& key_values =
             *tag_interest_group_name_it->second;
 
-        for (auto& name : interest_group_names.value()) {
+        for (auto& name : interest_group_names) {
           auto name_it = key_values.find(cbor::Value(name));
           if (name_it != key_values.end()) {
             base::expected<std::string_view,
@@ -908,28 +954,97 @@ TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
       }
 
       // Try to find `kTagKey` tag and parse the map.
-      auto tag_key_it = key_group_outputs_map->find(kTagKey);
-      if (tag_key_it != key_group_outputs_map->end()) {
-        DCHECK(keys.has_value());
-        base::expected<std::map<std::string, AuctionV8Helper::SerializedValue>,
-                       TrustedSignalsKVv2ResponseParser::ErrorInfo>
-            key_group = SerializeKeyGroupOutputsMap(
-                v8_helper, *tag_key_it->second, keys.value());
-
-        if (!key_group.has_value()) {
-          return base::unexpected(std::move(key_group).error());
-        }
-
-        bidding_data_map = std::move(key_group).value();
+      auto maybe_key_data_map = SerializeKeyGroupOutputsMap(
+          v8_helper, key_group_outputs_map.value(), keys, kTagKey);
+      if (!maybe_key_data_map.has_value()) {
+        return base::unexpected(std::move(maybe_key_data_map).error());
       }
 
-      result = base::MakeRefCounted<TrustedSignals::Result>(
-          std::move(per_interest_group_data_map), std::move(bidding_data_map),
-          data_version);
-      result_map->try_emplace(
-          TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(group.first,
-                                                                 id),
-          result);
+      scoped_refptr<TrustedSignals::Result> result =
+          base::MakeRefCounted<TrustedSignals::Result>(
+              std::move(per_interest_group_data_map),
+              std::move(maybe_key_data_map).value(), data_version);
+      if (!result_map
+               ->try_emplace(
+                   TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(
+                       group.first, id),
+                   result)
+               .second) {
+        return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+            base::StringPrintf("Duplicated partition id \"%d\" found in "
+                               "compression group \"%d\".",
+                               id, group.first)));
+      }
+    }
+  }
+  return result_map;
+}
+
+TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMap
+TrustedSignalsKVv2ResponseParser::ParseScoringSignalsFetchResultToResultMap(
+    AuctionV8Helper* v8_helper,
+    const std::set<std::string>& render_urls,
+    const std::set<std::string>& ad_component_render_urls,
+    const TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap&
+        compression_group_result_map) {
+  TrustedSignalsResultMap result_map;
+
+  for (const auto& group : compression_group_result_map) {
+    auto maybe_content_value = GetContentFromCompressionGroup(group.second);
+    if (!maybe_content_value.has_value()) {
+      return base::unexpected(std::move(maybe_content_value).error());
+    }
+
+    for (const auto& partition_value : maybe_content_value.value().GetArray()) {
+      // Partition id and data version to be extracted from each partition.
+      int id;
+      std::optional<uint32_t> data_version;
+
+      auto maybe_key_group_outputs =
+          GetKeyGroupOutputsFromPartition(partition_value, id, data_version);
+      if (!maybe_key_group_outputs.has_value()) {
+        return base::unexpected(std::move(maybe_key_group_outputs).error());
+      }
+
+      base::expected<std::map<std::string, const cbor::Value::MapValue*>,
+                     TrustedSignalsKVv2ResponseParser::ErrorInfo>
+          key_group_outputs_map =
+              ParseKeyGroupOutputsToMap(*maybe_key_group_outputs.value());
+      if (!key_group_outputs_map.has_value()) {
+        return base::unexpected(std::move(key_group_outputs_map).error());
+      }
+
+      // Try to find `kTagRenderUrls` tag and parse the map.
+      auto maybe_render_urls_data_map =
+          SerializeKeyGroupOutputsMap(v8_helper, key_group_outputs_map.value(),
+                                      render_urls, kTagRenderUrls);
+      if (!maybe_render_urls_data_map.has_value()) {
+        return base::unexpected(std::move(maybe_render_urls_data_map).error());
+      }
+
+      // Try to find `kTagKey` tag and parse the map.
+      auto maybe_ad_component_data_map = SerializeKeyGroupOutputsMap(
+          v8_helper, key_group_outputs_map.value(), ad_component_render_urls,
+          kTagAdComponentRenderUrls);
+      if (!maybe_ad_component_data_map.has_value()) {
+        return base::unexpected(std::move(maybe_ad_component_data_map).error());
+      }
+
+      scoped_refptr<TrustedSignals::Result> result =
+          base::MakeRefCounted<TrustedSignals::Result>(
+              std::move(maybe_render_urls_data_map).value(),
+              std::move(maybe_ad_component_data_map).value(), data_version);
+      if (!result_map
+               ->try_emplace(
+                   TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(
+                       group.first, id),
+                   result)
+               .second) {
+        return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+            base::StringPrintf("Duplicated partition id \"%d\" found in "
+                               "compression group \"%d\".",
+                               id, group.first)));
+      }
     }
   }
   return result_map;

@@ -283,10 +283,28 @@ class CONTENT_EXPORT TrustedSignalsKVv2ResponseParser {
 
   // Parse trusted bidding signals fetch result to result map for integration
   // with bidder worklet trusted bidding signals fetch call flow.
+  //
+  // TODO(crbug.com/337917489): Use a map for `interest_group_names` and `keys`,
+  // where the key is the isolation index and the value is a set of strings.
+  // This allows searching for each string within a specific compression group
+  // and partition.
   static TrustedSignalsResultMap ParseBiddingSignalsFetchResultToResultMap(
       AuctionV8Helper* v8_helper,
-      const std::optional<std::set<std::string>>& interest_group_names,
-      const std::optional<std::set<std::string>>& keys,
+      const std::set<std::string>& interest_group_names,
+      const std::set<std::string>& keys,
+      const CompressionGroupResultMap& compression_group_result_map);
+
+  // Parse trusted scoring signals fetch result to result map for integration
+  // with seller worklet trusted scoring signals fetch call flow.
+  //
+  // TODO(crbug.com/337917489): Use a map for `render_urls` and
+  // `ad_component_render_urls`, where the key is the isolation index and the
+  // value is a set of strings. This allows searching for each string within a
+  // specific compression group and partition.
+  static TrustedSignalsResultMap ParseScoringSignalsFetchResultToResultMap(
+      AuctionV8Helper* v8_helper,
+      const std::set<std::string>& render_urls,
+      const std::set<std::string>& ad_component_render_urls,
       const CompressionGroupResultMap& compression_group_result_map);
 };
 
