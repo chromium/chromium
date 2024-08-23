@@ -163,12 +163,6 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
 
   base::TimeTicks GetWebContentsStartTicks() const;
 
-  void EmitHistogramWithTemperatureAndTraceEvent(
-      void (*histogram_function)(const std::string& name, base::TimeDelta),
-      const char* histogram_basename,
-      base::TimeTicks begin_ticks,
-      base::TimeTicks end_ticks);
-
   // Mark as volatile to defensively make sure usage is thread-safe.
   // Note that at the time of this writing, access is only on the UI thread.
   volatile bool main_window_startup_interrupted_ = false;
