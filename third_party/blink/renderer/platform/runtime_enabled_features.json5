@@ -1540,7 +1540,6 @@
       origin_trial_feature_name: "DocumentPolicyIncludeJSCallStacksInCrashReports",
       status: "experimental",
       base_feature_status: "enabled",
-      browser_process_read_access: true,
       copied_from_base_feature_if: "overridden",
     },
     {
