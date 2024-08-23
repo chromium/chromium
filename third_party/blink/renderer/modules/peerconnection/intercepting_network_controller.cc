@@ -13,16 +13,39 @@ namespace blink {
 
 namespace {
 
+webrtc::TargetTransferRate CreateTargetTransferRate(
+    webrtc::Timestamp at_time,
+    uint64_t custom_max_bitrate_bps) {
+  webrtc::DataRate data_rate =
+      webrtc::DataRate::BitsPerSec(custom_max_bitrate_bps);
+
+  webrtc::NetworkEstimate network_estimate;
+  network_estimate.at_time = at_time;
+  network_estimate.bandwidth = data_rate;
+
+  // This RTT is used within libwebrtc to configure FEC.
+  // TODO(crbug.com/345101934): Supply it from a different RTT estimator, or add
+  // it to the JS interface.
+  network_estimate.round_trip_time = webrtc::TimeDelta::Millis(0);
+  // The bwe_period field is deprecated in webrtc, having been replaced by
+  // stable_target_rate, but must still be set.
+  network_estimate.bwe_period = webrtc::TimeDelta::Millis(0);
+  return {
+      .at_time = at_time,
+      .network_estimate = network_estimate,
+      .target_rate = data_rate,
+      .stable_target_rate = data_rate,
+  };
+}
+
 webrtc::NetworkControlUpdate OverwriteTargetRate(
     webrtc::NetworkControlUpdate fallback_update,
     std::optional<uint64_t> custom_max_bitrate_bps) {
   if (!fallback_update.target_rate || !custom_max_bitrate_bps) {
     return fallback_update;
   }
-  webrtc::TargetTransferRate target_transfer_rate = {
-      .at_time = fallback_update.target_rate->at_time,
-      .network_estimate = fallback_update.target_rate->network_estimate,
-      .target_rate = webrtc::DataRate::BitsPerSec(*custom_max_bitrate_bps)};
+  webrtc::TargetTransferRate target_transfer_rate = CreateTargetTransferRate(
+      fallback_update.target_rate->at_time, *custom_max_bitrate_bps);
 
   fallback_update.target_rate = target_transfer_rate;
   return fallback_update;
@@ -60,12 +83,17 @@ InterceptingNetworkController::OnNetworkRouteChange(
 
 webrtc::NetworkControlUpdate InterceptingNetworkController::OnProcessInterval(
     webrtc::ProcessInterval pi) {
-  auto fallback_update = fallback_controller_->OnProcessInterval(pi);
-  if (fallback_update.target_rate) {
-    fallback_update.target_rate->at_time = pi.at_time;
+  webrtc::NetworkControlUpdate fallback_update =
+      fallback_controller_->OnProcessInterval(pi);
+
+  if (!feedback_provider_->CustomMaxBitrateBps()) {
+    return fallback_update;
   }
-  return OverwriteTargetRate(fallback_update,
-                             feedback_provider_->CustomMaxBitrateBps());
+  webrtc::TargetTransferRate target_rate = CreateTargetTransferRate(
+      pi.at_time, *feedback_provider_->CustomMaxBitrateBps());
+  webrtc::NetworkControlUpdate update;
+  update.target_rate = target_rate;
+  return update;
 }
 
 webrtc::NetworkControlUpdate
