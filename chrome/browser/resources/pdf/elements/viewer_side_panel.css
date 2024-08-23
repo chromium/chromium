@@ -10,11 +10,9 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --side-panel-border-color: rgb(94, 94, 94);
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-margin-start: 0;
-  background-color: var(--viewer-pdf-toolbar-background-color);
-  border-inline-start: 1px solid var(--side-panel-border-color);
+  background-color: var(--viewer-side-background-color);
   padding-top: 8px;
   width: 288px;
 }
@@ -35,7 +33,7 @@ h2 {
 }
 
 #brush-selector {
-  border-bottom: 1px solid var(--side-panel-border-color);
+  border-bottom: 1px solid var(--viewer-border-color);
   display: flex;
   justify-content: center;
   padding-bottom: 8px;

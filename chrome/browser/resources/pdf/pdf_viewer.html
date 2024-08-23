@@ -12,6 +12,12 @@
     --pdf-toolbar-text-color: rgb(241, 241, 241);
   }
 
+<if expr="enable_pdf_ink2">
+  viewer-side-panel {
+    border-inline-start: 1px solid var(--viewer-border-color);
+  }
+</if>
+
   viewer-toolbar {
     --active-button-bg: rgba(255, 255, 255, 0.24);
     z-index: 1;
