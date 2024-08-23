@@ -127,6 +127,7 @@ namespace ash {
 const char kAccelWindowSnap[] = "Ash.Accelerators.WindowSnap";
 const char kAccelRotation[] = "Ash.Accelerators.Rotation.Usage";
 const char kAccelActivateDeskByIndex[] = "Ash.Accelerators.ActivateDeskByIndex";
+const char kAccelTogglePicker[] = "Ash.Accelerators.TogglePicker.Action";
 
 namespace accelerators {
 
@@ -167,6 +168,14 @@ enum class ActivateDeskAcceleratorAction {
   kMaxValue = kDesk8,
 };
 
+// Record what action is triggered by pressing toggle picker.
+// The enum value is 1:1 mapped to what's defined in enums.xml.
+enum class TogglePickerAction {
+  kToggleCapsLock = 0,
+  kTogglePicker = 1,
+  kMaxValue = kTogglePicker,
+};
+
 void RecordRotationAcceleratorAction(const RotationAcceleratorAction& action) {
   UMA_HISTOGRAM_ENUMERATION(kAccelRotation, action);
 }
@@ -179,6 +188,10 @@ void RecordActivateDeskByIndexAcceleratorAction(
 void RecordWindowSnapAcceleratorAction(
     const WindowSnapAcceleratorAction& action) {
   UMA_HISTOGRAM_ENUMERATION(kAccelWindowSnap, action);
+}
+
+void RecordTogglePickerAcceleratorAction(const TogglePickerAction& action) {
+  UMA_HISTOGRAM_ENUMERATION(kAccelTogglePicker, action);
 }
 
 display::Display::Rotation GetNextRotationInClamshell(
@@ -1425,12 +1438,14 @@ void TogglePicker(base::TimeTicks accelerator_timestamp) {
   const bool is_modal_window = Shell::IsSystemModalWindowOpen();
   if (outside_user_session || is_oobe || is_modal_window) {
     ToggleCapsLock();
+    RecordTogglePickerAcceleratorAction(TogglePickerAction::kToggleCapsLock);
     return;
   }
 
   CHECK(Shell::Get()->picker_controller());
   if (auto* picker_controller = Shell::Get()->picker_controller()) {
     picker_controller->ToggleWidget(accelerator_timestamp);
+    RecordTogglePickerAcceleratorAction(TogglePickerAction::kTogglePicker);
   }
 }
 

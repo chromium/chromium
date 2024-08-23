@@ -491,6 +491,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Accelerators.TogglePicker.Action"
+    enum="TogglePickerAction" expires_after="2025-08-14">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>Action triggered by pressing toggle picker accelerator.</summary>
+</histogram>
+
 <histogram name="Ash.Accelerators.WindowSnap"
     enum="WindowSnapAcceleratorAction" expires_after="2025-02-10">
   <owner>xdai@chromium.org</owner>

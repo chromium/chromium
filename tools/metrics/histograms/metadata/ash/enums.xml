@@ -2256,6 +2256,11 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="51" label="Informed Restore Onboarding Turn On Ask Every Time"/>
 </enum>
 
+<enum name="TogglePickerAction">
+  <int value="0" label="ToggleCapsLock"/>
+  <int value="1" label="TogglePicker"/>
+</enum>
+
 <enum name="TrayBackgroundViewCatalogName">
 <!-- Defined in ash/constants/tray_background_view_catalog.h -->
 
