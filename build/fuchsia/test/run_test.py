@@ -39,6 +39,9 @@ def _get_test_runner(runner_args: argparse.Namespace,
                      test_args: List[str]) -> TestRunner:
     """Initialize a suitable TestRunner class."""
 
+    if not runner_args.out_dir:
+        raise ValueError('--out-dir must be specified.')
+
     if runner_args.test_type == 'blink':
         return BlinkTestRunner(runner_args.out_dir, test_args,
                                runner_args.target_id)
@@ -83,9 +86,6 @@ def main():
 
     # Treat unrecognized arguments as test specific arguments.
     runner_args, test_args = parser.parse_known_args()
-
-    if not runner_args.out_dir:
-        raise ValueError('--out-dir must be specified.')
 
     if runner_args.target_id:
         runner_args.device = True
@@ -144,22 +144,21 @@ def main():
         test_runner = _get_test_runner(runner_args, test_args)
         package_deps = test_runner.package_deps
 
-        if not runner_args.repo:
-            # Create a directory that serves as a temporary repository.
-            runner_args.repo = stack.enter_context(
-                tempfile.TemporaryDirectory())
-
-        publish_packages(package_deps.values(), runner_args.repo,
-                         not runner_args.no_repo_init)
-
-        stack.enter_context(serve_repository(runner_args))
-
         # Start system logging, after all possible restarts of the ffx daemon
         # so that logging will not be interrupted.
         start_system_log(log_manager, False, package_deps.values(),
                          ('--since', 'now'), runner_args.target_id)
 
-        resolve_packages(package_deps.keys(), runner_args.target_id)
+        if package_deps:
+            if not runner_args.repo:
+                # Create a directory that serves as a temporary repository.
+                runner_args.repo = stack.enter_context(
+                    tempfile.TemporaryDirectory())
+            publish_packages(package_deps.values(), runner_args.repo,
+                             not runner_args.no_repo_init)
+            stack.enter_context(serve_repository(runner_args))
+            resolve_packages(package_deps.keys(), runner_args.target_id)
+
         return test_runner.run_test().returncode
 
 
